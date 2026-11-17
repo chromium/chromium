@@ -12,6 +12,7 @@
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #import "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_util.h"
 #import "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
+#import "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
@@ -160,7 +161,8 @@
 - (void)preloadVehicleDisclosureIfNeeded {
   autofill::EntityType vehicleType(autofill::EntityTypeName::kVehicle);
   ProfileIOS* profile = self.browser->GetProfile();
-  if (!autofill::IsWalletPublicPassStorageEnabled(profile) ||
+  if (!autofill::CanPerformAutofillAiAction(
+          profile, autofill::AutofillAiAction::kImportToWallet, vehicleType) ||
       !autofill::IsEligibleForWalletNotice(
           vehicleType, autofill::EntityInstance::RecordType::kServerWallet) ||
       !base::FeatureList::IsEnabled(

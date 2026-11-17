@@ -481,6 +481,7 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/sync",
       "//chrome/browser/ui/autofill",
+      "//components/account_settings:test_support",
     ]
   }
 }

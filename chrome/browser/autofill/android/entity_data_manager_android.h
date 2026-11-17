@@ -229,6 +229,10 @@ class EntityDataManagerAndroid : public EntityDataManager::Observer {
   // on Google Wallet servers.
   bool IsEligibleForWalletStorage(EntityType entity_type) const;
 
+  // Returns true if `entity_type` is eligible for Wallet storage and public
+  // pass disclosure.
+  bool IsEntityTypeEligibleForUpsertPass(EntityType entity_type) const;
+
   // `entity_instance` is the instance that is going to be saved either locally
   // or to Google Wallet servers. `targeted_record_type` reflects whether the
   // user attempted to store the entity locally or to Wallet when

@@ -278,7 +278,8 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
 void EntityDataManagerAndroid::PreloadDetailsForUpsertPass(JNIEnv* env,
                                                            int entity_type) {
   std::optional<EntityTypeName> type_name = ToSafeEntityTypeName(entity_type);
-  if (!type_name || !wallet_pass_access_manager_) {
+  if (!type_name || !wallet_pass_access_manager_ ||
+      !IsEntityTypeEligibleForUpsertPass(EntityType(*type_name))) {
     return;
   }
   wallet_pass_access_manager_->PreloadDetailsForUpsertPass(
@@ -290,7 +291,8 @@ EntityDataManagerAndroid::ExtractPreloadedDetailsForUpsertPass(
     JNIEnv* env,
     int entity_type) {
   std::optional<EntityTypeName> type_name = ToSafeEntityTypeName(entity_type);
-  if (!type_name || !wallet_pass_access_manager_) {
+  if (!type_name || !wallet_pass_access_manager_ ||
+      !IsEntityTypeEligibleForUpsertPass(EntityType(*type_name))) {
     return std::nullopt;
   }
   std::optional<WalletPassAccessManager::GetDetailsForUpsertPassResponse>
@@ -566,6 +568,13 @@ bool EntityDataManagerAndroid::IsEligibleForWalletStorage(
     EntityType entity_type) const {
   return RunMayPerformAutofillAiAction(AutofillAiAction::kImportToWallet,
                                        entity_type);
+}
+
+bool EntityDataManagerAndroid::IsEntityTypeEligibleForUpsertPass(
+    EntityType entity_type) const {
+  return IsEligibleForWalletStorage(entity_type) &&
+         autofill::IsEligibleForWalletNotice(
+             entity_type, EntityInstance::RecordType::kServerWallet);
 }
 
 void EntityDataManagerAndroid::OnSavePrivatePassToWalletFinished(

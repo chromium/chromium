@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
@@ -22,6 +23,8 @@
 #include "chrome/browser/autofill/android/entity_data_manager_android_test_api.h"
 #include "chrome/browser/autofill/android/entity_instance_android.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/account_settings/account_settings.h"
+#include "components/account_settings/mock_account_setting_service.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -54,6 +57,8 @@ using ::testing::_;
 using ::testing::DoAll;
 using ::testing::NiceMock;
 using ::testing::Optional;
+using ::testing::Ref;
+using ::testing::Return;
 using ::testing::SaveArg;
 
 class MockWebDataServiceObserver
@@ -90,11 +95,20 @@ class EntityDataManagerAndroidTest : public testing::Test {
         /*obj=*/nullptr,
         /*google_groups_manager=*/nullptr, &prefs_,
         identity_test_env_.identity_manager(), &sync_service_,
-        /*account_setting_service=*/nullptr, &consent_auditor_,
+        &account_setting_service_, &consent_auditor_,
         /*personal_context_eligibility_service=*/nullptr,
         /*subscription_eligibility_service=*/nullptr,
         /*is_off_the_record=*/false, &mock_wallet_pass_access_manager_,
         entity_data_manager_.get());
+  }
+
+  void SetUpWalletPublicPassStorageEligibility() {
+    identity_test_env_.MakePrimaryAccountAvailable(
+        "test@example.com", signin::ConsentLevel::kSignin);
+    ON_CALL(
+        account_setting_service_,
+        GetBoolean(Ref(account_settings::kWalletPrivacyContextualSurfacing)))
+        .WillByDefault(Return(true));
   }
 
   EntityDataManager& entity_data_manager() { return *entity_data_manager_; }
@@ -107,6 +121,8 @@ class EntityDataManagerAndroidTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
+  NiceMock<account_settings::MockAccountSettingService>
+      account_setting_service_;
   consent_auditor::FakeConsentAuditor consent_auditor_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   syncer::TestSyncService sync_service_;
@@ -463,6 +479,8 @@ TEST_F(EntityDataManagerAndroidTest, IsEligibleForWalletNotice) {
 }
 
 TEST_F(EntityDataManagerAndroidTest, PreloadDetailsForUpsertPass) {
+  SetUpWalletPublicPassStorageEligibility();
+
   EXPECT_CALL(mock_wallet_pass_access_manager(),
               PreloadDetailsForUpsertPass(EntityType(EntityTypeName::kVehicle)))
       .Times(1);
@@ -476,7 +494,38 @@ TEST_F(EntityDataManagerAndroidTest, PreloadDetailsForUpsertPass) {
 }
 
 TEST_F(EntityDataManagerAndroidTest,
+       PreloadDetailsForUpsertPass_IneligibleForWalletStorage) {
+  EXPECT_CALL(mock_wallet_pass_access_manager(), PreloadDetailsForUpsertPass)
+      .Times(0);
+
+  // Signed-out user is ineligible.
+  entity_data_manager_android_->PreloadDetailsForUpsertPass(
+      env(), std::to_underlying(EntityTypeName::kVehicle));
+
+  // Signed-in user with `kWalletPrivacyContextualSurfacing` disabled is
+  // ineligible.
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+  ON_CALL(account_setting_service_,
+          GetBoolean(Ref(account_settings::kWalletPrivacyContextualSurfacing)))
+      .WillByDefault(Return(false));
+  entity_data_manager_android_->PreloadDetailsForUpsertPass(
+      env(), std::to_underlying(EntityTypeName::kVehicle));
+
+  // User with `kWalletPrivacyContextualSurfacing` enabled but
+  // `kAutofillAiTravelEntitiesEnabled` disabled is ineligible.
+  ON_CALL(account_setting_service_,
+          GetBoolean(Ref(account_settings::kWalletPrivacyContextualSurfacing)))
+      .WillByDefault(Return(true));
+  prefs_.SetBoolean(prefs::kAutofillAiTravelEntitiesEnabled, false);
+  entity_data_manager_android_->PreloadDetailsForUpsertPass(
+      env(), std::to_underlying(EntityTypeName::kVehicle));
+}
+
+TEST_F(EntityDataManagerAndroidTest,
        ExtractPreloadedDetailsForUpsertPass_EligibleUserSuccess) {
+  SetUpWalletPublicPassStorageEligibility();
+
   // Include non-UTF-8 bytes (`\xff\xfe`) to verify binary `bytes` handling.
   WalletPassAccessManager::GetDetailsForUpsertPassResponse expected_response{
       .legal_message_lines = {TestLegalMessageLine("Legal message")},
@@ -485,7 +534,7 @@ TEST_F(EntityDataManagerAndroidTest,
   EXPECT_CALL(mock_wallet_pass_access_manager(),
               ExtractPreloadedDetailsForUpsertPass(
                   EntityType(EntityTypeName::kVehicle)))
-      .WillOnce(testing::Return(expected_response));
+      .WillOnce(Return(expected_response));
 
   std::optional<WalletPassAccessManager::GetDetailsForUpsertPassResponse>
       response =
@@ -495,7 +544,7 @@ TEST_F(EntityDataManagerAndroidTest,
   // Verify that `ToJniType` converts raw binary bytes to a Java byte array.
   EXPECT_TRUE(jni_zero::ToJniType(env(), *response));
 
-  // Invalid entity type returns std::nullopt without calling the manager.
+  // Invalid entity type returns `std::nullopt` without calling the manager.
   EXPECT_CALL(mock_wallet_pass_access_manager(),
               ExtractPreloadedDetailsForUpsertPass)
       .Times(0);
@@ -505,14 +554,49 @@ TEST_F(EntityDataManagerAndroidTest,
 }
 
 TEST_F(EntityDataManagerAndroidTest,
+       ExtractPreloadedDetailsForUpsertPass_IneligibleForWalletStorage) {
+  EXPECT_CALL(mock_wallet_pass_access_manager(),
+              ExtractPreloadedDetailsForUpsertPass)
+      .Times(0);
+
+  // Signed-out user returns `std::nullopt`.
+  EXPECT_EQ(entity_data_manager_android_->ExtractPreloadedDetailsForUpsertPass(
+                env(), std::to_underlying(EntityTypeName::kVehicle)),
+            std::nullopt);
+
+  // Signed-in user with `kWalletPrivacyContextualSurfacing` disabled returns
+  // `std::nullopt`.
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+  ON_CALL(account_setting_service_,
+          GetBoolean(Ref(account_settings::kWalletPrivacyContextualSurfacing)))
+      .WillByDefault(Return(false));
+  EXPECT_EQ(entity_data_manager_android_->ExtractPreloadedDetailsForUpsertPass(
+                env(), std::to_underlying(EntityTypeName::kVehicle)),
+            std::nullopt);
+
+  // User with `kWalletPrivacyContextualSurfacing` enabled but
+  // `kAutofillAiTravelEntitiesEnabled` disabled returns `std::nullopt`.
+  ON_CALL(account_setting_service_,
+          GetBoolean(Ref(account_settings::kWalletPrivacyContextualSurfacing)))
+      .WillByDefault(Return(true));
+  prefs_.SetBoolean(prefs::kAutofillAiTravelEntitiesEnabled, false);
+  EXPECT_EQ(entity_data_manager_android_->ExtractPreloadedDetailsForUpsertPass(
+                env(), std::to_underlying(EntityTypeName::kVehicle)),
+            std::nullopt);
+}
+
+TEST_F(EntityDataManagerAndroidTest,
        ExtractPreloadedDetailsForUpsertPass_IneligibleUserReturnsEmptyDetails) {
+  SetUpWalletPublicPassStorageEligibility();
+
   WalletPassAccessManager::GetDetailsForUpsertPassResponse response{
       .user_eligibility =
           WalletPassAccessManager::UserEligibility::kIneligible};
   EXPECT_CALL(mock_wallet_pass_access_manager(),
               ExtractPreloadedDetailsForUpsertPass(
                   EntityType(EntityTypeName::kVehicle)))
-      .WillOnce(testing::Return(response));
+      .WillOnce(Return(response));
 
   EXPECT_EQ(entity_data_manager_android_->ExtractPreloadedDetailsForUpsertPass(
                 env(), static_cast<int>(EntityTypeName::kVehicle)),
@@ -522,6 +606,8 @@ TEST_F(EntityDataManagerAndroidTest,
 TEST_F(
     EntityDataManagerAndroidTest,
     ExtractPreloadedDetailsForUpsertPass_EligibleUserWithMissingDetailsReturnsNullopt) {
+  SetUpWalletPublicPassStorageEligibility();
+
   // Missing `legal_message_lines`.
   WalletPassAccessManager::GetDetailsForUpsertPassResponse
       missing_legal_message{
@@ -536,8 +622,8 @@ TEST_F(
   EXPECT_CALL(mock_wallet_pass_access_manager(),
               ExtractPreloadedDetailsForUpsertPass(
                   EntityType(EntityTypeName::kVehicle)))
-      .WillOnce(testing::Return(missing_legal_message))
-      .WillOnce(testing::Return(missing_token));
+      .WillOnce(Return(missing_legal_message))
+      .WillOnce(Return(missing_token));
 
   EXPECT_EQ(entity_data_manager_android_->ExtractPreloadedDetailsForUpsertPass(
                 env(), static_cast<int>(EntityTypeName::kVehicle)),
