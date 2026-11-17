@@ -2723,15 +2723,118 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_FALSE(CanStartAnimation("nested-svg-offset"));
   EXPECT_FALSE(CanStartAnimation("nested-svg-viewbox"));
   EXPECT_TRUE(CanStartAnimation("nested-svg-identity-viewbox"));
-  EXPECT_FALSE(CanStartAnimation("nested-svg-zoomed"));
+  EXPECT_TRUE(CanStartAnimation("nested-svg-zoomed"));
   EXPECT_FALSE(CanStartAnimation("nested-svg-vector-effect"));
   EXPECT_TRUE(CanStartAnimation("foreign"));
   EXPECT_FALSE(CanStartAnimation("foreign-zoomed"));
   EXPECT_TRUE(CanStartAnimation("use"));
   EXPECT_FALSE(CanStartAnimation("use-offset"));
 
-  EXPECT_FALSE(CanStartAnimation("svg-zoomed"));
-  EXPECT_FALSE(CanStartAnimation("rect-zoomed"));
+  EXPECT_TRUE(CanStartAnimation("svg-zoomed"));
+  EXPECT_TRUE(CanStartAnimation("rect-zoomed"));
+}
+
+TEST_P(AnimationCompositorAnimationsTest,
+       ZoomedSVGTransformAnimationKeyframesAndOrigin) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes move {
+        0% { transform: translate(10px, 20px); }
+        50% { transform: translate(calc(10px + 50%), 20px) matrix(1, 0, 0, 1, 30, 40); }
+        100% { transform: translate(50%, 50%) rotate(90deg); }
+      }
+      #rect {
+        transform-box: fill-box;
+        transform-origin: 50% 50%;
+        animation: move 10s linear infinite;
+      }
+      #foreign {
+        animation: move 10s linear infinite;
+      }
+    </style>
+    <svg id="svg" style="zoom: 2" width="100" height="100">
+      <rect id="rect" x="20" y="30" width="40" height="50" fill="green"/>
+    </svg>
+    <svg width="100" height="100">
+      <foreignObject id="foreign" width="40" height="50">
+        <div style="width: 40px; height: 50px"></div>
+      </foreignObject>
+    </svg>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  // Zoomed SVG child should run on the compositor with unzoomed SVG user-unit
+  // origin and keyframes.
+  Element* rect = GetElementById("rect");
+  Animation* rect_animation =
+      rect->GetElementAnimations()->Animations().begin()->key;
+  EXPECT_TRUE(rect_animation->HasActiveAnimationsOnCompositor());
+
+  const ObjectPaintProperties* rect_properties =
+      rect->GetLayoutObject()->FirstFragment().PaintProperties();
+  ASSERT_NE(nullptr, rect_properties);
+  const auto* rect_transform = rect_properties->Transform();
+  ASSERT_NE(nullptr, rect_transform);
+  EXPECT_TRUE(rect_transform->HasActiveTransformAnimation());
+  // fill-box is (20, 30, 40, 50) in SVG user units -> 50% 50% is (40, 55, 0).
+  EXPECT_EQ(gfx::Point3F(40, 55, 0), rect_transform->Origin());
+
+  const cc::KeyframeModel* keyframe_model =
+      cc::KeyframeModel::ToCcKeyframeModel(
+          rect_animation->GetCompositorAnimation()
+              ->CcAnimation()
+              ->keyframe_effect()
+              ->GetKeyframeModel(cc::TargetProperty::TRANSFORM));
+  ASSERT_NE(nullptr, keyframe_model);
+  const gfx::TransformAnimationCurve* curve =
+      gfx::TransformAnimationCurve::ToTransformAnimationCurve(
+          keyframe_model->curve());
+  ASSERT_NE(nullptr, curve);
+
+  // Keyframe 0: translate(10px, 20px) unzoomed to (10, 20) in SVG user units.
+  gfx::Transform t0 =
+      curve
+          ->GetTransformedValue(base::Seconds(0),
+                                gfx::TimingFunction::LimitDirection::RIGHT)
+          .Apply();
+  EXPECT_EQ(gfx::Vector2dF(10, 20), t0.To2dTranslation());
+
+  // Keyframe 50%: translate(calc(10px + 50%), 20px) matrix(1, 0, 0, 1, 30, 40)
+  // -> (10 + 20, 20) + (30, 40) = (60, 60) in SVG user units.
+  gfx::Transform t50 =
+      curve
+          ->GetTransformedValue(base::Seconds(5),
+                                gfx::TimingFunction::LimitDirection::RIGHT)
+          .Apply();
+  EXPECT_EQ(gfx::Vector2dF(60, 60), t50.To2dTranslation());
+
+  // Keyframe 100%: translate(50%, 50%) rotate(90deg) -> translate(20, 25) *
+  // R(90).
+  gfx::Transform t1 =
+      curve
+          ->GetTransformedValue(base::Seconds(10),
+                                gfx::TimingFunction::LimitDirection::RIGHT)
+          .Apply();
+  gfx::Transform expected_t1;
+  expected_t1.Translate(20, 25);
+  expected_t1.Rotate(90);
+  EXPECT_NEAR(expected_t1.rc(0, 0), t1.rc(0, 0), 1e-4f);
+  EXPECT_NEAR(expected_t1.rc(0, 1), t1.rc(0, 1), 1e-4f);
+  EXPECT_NEAR(expected_t1.rc(1, 0), t1.rc(1, 0), 1e-4f);
+  EXPECT_NEAR(expected_t1.rc(1, 1), t1.rc(1, 1), 1e-4f);
+  EXPECT_NEAR(expected_t1.rc(0, 3), t1.rc(0, 3), 1e-4f);
+  EXPECT_NEAR(expected_t1.rc(1, 3), t1.rc(1, 3), 1e-4f);
+
+  // <foreignObject> starts composited at zoom: 1, but cancels when zoomed.
+  Element* foreign = GetElementById("foreign");
+  Animation* foreign_animation =
+      foreign->GetElementAnimations()->Animations().begin()->key;
+  EXPECT_TRUE(foreign_animation->HasActiveAnimationsOnCompositor());
+
+  foreign->setAttribute(html_names::kStyleAttr, AtomicString("zoom: 2"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(foreign_animation->HasActiveAnimationsOnCompositor());
 }
 
 TEST_P(AnimationCompositorAnimationsTest,

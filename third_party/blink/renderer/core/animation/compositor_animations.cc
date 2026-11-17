@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/transforms/transform_operations.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 
@@ -938,11 +939,16 @@ void AddKeyframeToCurve(gfx::KeyframedTransformAnimationCurve& curve,
                         Keyframe::PropertySpecificKeyframe* keyframe,
                         const CompositorKeyframeValue* value,
                         const TimingFunction& keyframe_timing_function,
-                        const gfx::SizeF& box_size) {
+                        const gfx::SizeF& box_size,
+                        float zoom_factor) {
+  const TransformOperations& operations =
+      To<CompositorKeyframeTransform>(value)->GetTransformOperations();
   gfx::TransformOperations ops;
-  ToGfxTransformOperations(
-      To<CompositorKeyframeTransform>(value)->GetTransformOperations(), &ops,
-      box_size);
+  if (zoom_factor != 1.0f) {
+    ToGfxTransformOperations(operations.Zoom(zoom_factor), &ops, box_size);
+  } else {
+    ToGfxTransformOperations(operations, &ops, box_size);
+  }
 
   std::unique_ptr<gfx::TransformKeyframe> transform_keyframe =
       gfx::TransformKeyframe::Create(base::Seconds(keyframe->Offset()), ops,
@@ -1056,11 +1062,24 @@ void CompositorAnimations::GetAnimationOnCompositor(
       case CSSPropertyID::kScale:
       case CSSPropertyID::kTranslate:
       case CSSPropertyID::kTransform: {
-        gfx::SizeF box_size(ComputedStyleUtils::ReferenceBoxForTransform(
-                                *target_element.GetLayoutObject())
-                                .size());
+        const LayoutObject& layout_object = *target_element.GetLayoutObject();
+        gfx::SizeF box_size(
+            ComputedStyleUtils::ReferenceBoxForTransform(layout_object).size());
+        // CSS transforms operate in zoomed pixels, while SVG child transform
+        // nodes operate in unzoomed SVG user units because zoom is applied at
+        // the SVG root (see TransformHelper::ComputeTransform3D()).
+        float zoom_factor = 1.0f;
+        if (RuntimeEnabledFeatures::
+                CompositeZoomedSVGTransformAnimationsEnabled() &&
+            layout_object.IsSVGChild()) {
+          const float effective_zoom = layout_object.Style().EffectiveZoom();
+          if (effective_zoom != 1.0f) {
+            zoom_factor = 1.0f / effective_zoom;
+            box_size.Scale(zoom_factor);
+          }
+        }
         auto transform_curve = gfx::KeyframedTransformAnimationCurve::Create();
-        AddKeyframesToCurve(*transform_curve, values, box_size);
+        AddKeyframesToCurve(*transform_curve, values, box_size, zoom_factor);
         transform_curve->SetTimingFunction(timing.timing_function->CloneToCC());
         transform_curve->set_scaled_duration(scale);
         curve = std::move(transform_curve);
@@ -1227,17 +1246,18 @@ CompositorAnimations::CheckCanStartTransformAnimationOnCompositorForSVG(
     const SVGElement& svg_element) {
   FailureReasons reasons = kNoFailure;
   if (const auto* layout_object = svg_element.GetLayoutObject()) {
-    if (layout_object->Style().EffectiveZoom() != 1) {
-      // TODO(crbug.com/1186312): Composited transform animation with non-1
-      // effective zoom is incorrectly scaled for now.
-      // TODO(crbug.com/1134775): If a foreignObject's effect zoom is not 1,
+    if (layout_object->Style().EffectiveZoom() != 1 &&
+        (!RuntimeEnabledFeatures::
+             CompositeZoomedSVGTransformAnimationsEnabled() ||
+         layout_object->IsSVGForeignObject())) {
+      // TODO(crbug.com/40151604): If a foreignObject's effective zoom is not 1,
       // its transform node contains an additional scale which would be removed
       // by composited animation.
       reasons |= kTransformRelatedPropertyCannotBeAcceleratedOnTarget;
     } else if (layout_object->IsSVGTransformableContainer() &&
                To<LayoutSVGTransformableContainer>(layout_object)
                    ->HasAdditionalTransform()) {
-      // TODO(crbug.com/1134775): Composited animation would replace the
+      // TODO(crbug.com/40151604): Composited animation would replace the
       // element's CSS transform and drop any extra transform post-multiplied
       // into LocalToSVGParentTransform() (e.g. the additional translation
       // from a <use> element's x/y attributes, or the viewBox/x/y transform

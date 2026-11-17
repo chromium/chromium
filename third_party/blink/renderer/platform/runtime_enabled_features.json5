@@ -1457,6 +1457,12 @@
       name: "CompositeHoverStyle",
     },
     {
+      // Kill switch for compositing SVG transform animations under non-default
+      // zoom (e.g. high-DPI device scale factor or CSS zoom).
+      name: "CompositeZoomedSVGTransformAnimations",
+      status: "stable",
+    },
+    {
       name: "CompositingDecisionAtAnimationPhaseBoundaries"
     },
     {

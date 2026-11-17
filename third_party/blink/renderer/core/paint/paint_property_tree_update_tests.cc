@@ -2557,33 +2557,62 @@ TEST_P(PaintPropertyTreeUpdateTest, SVGTransformAnimationZoomChange) {
         from { transform: rotate(0deg); }
         to { transform: rotate(10deg); }
       }
-      #target {
+      .animate {
         transform-origin: 50% 50%;
         animation: anim 1s infinite;
       }
     </style>
     <svg width="100" height="100">
-      <rect id="target" width="100" height="100"/>
+      <rect id="rect" width="100" height="100" class="animate"/>
+      <foreignObject id="foreign" width="100" height="100" class="animate"/>
     </svg>
   )HTML");
 
-  const auto* transform = PaintPropertiesForElement("target")->Transform();
-  ASSERT_TRUE(transform);
-  EXPECT_EQ(gfx::Point3F(50, 50, 0), transform->Origin());
+  const auto* rect_transform = PaintPropertiesForElement("rect")->Transform();
+  ASSERT_TRUE(rect_transform);
+  EXPECT_TRUE(rect_transform->HasActiveTransformAnimation());
+  EXPECT_EQ(gfx::Point3F(50, 50, 0), rect_transform->Origin());
 
-  // Non-default zoom disables composited transform animations on SVG elements
-  // (removing CompositingReason::kActiveTransformAnimation). With an identity
-  // transform at t=0 (rotate(0deg)), the transform node is cleared.
-  GetElementById("target")->setAttribute(html_names::kStyleAttr,
-                                         AtomicString("zoom: 2"));
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(PaintPropertiesForElement("target"));
+  const auto* foreign_transform =
+      PaintPropertiesForElement("foreign")->Transform();
+  ASSERT_TRUE(foreign_transform);
+  EXPECT_TRUE(foreign_transform->HasActiveTransformAnimation());
+  EXPECT_EQ(gfx::Point3F(50, 50, 0), foreign_transform->Origin());
 
-  GetElementById("target")->removeAttribute(html_names::kStyleAttr);
+  // Regular SVG shapes remain composited under non-default zoom with their
+  // transform origin preserved in unzoomed SVG user units.
+  GetElementById("rect")->setAttribute(html_names::kStyleAttr,
+                                       AtomicString("zoom: 2"));
+  // Non-default zoom disables composited transform animations on
+  // <foreignObject> because LocalToSVGParentTransform() includes Scale(1/zoom).
+  GetElementById("foreign")->setAttribute(html_names::kStyleAttr,
+                                          AtomicString("zoom: 2"));
   UpdateAllLifecyclePhasesForTest();
-  transform = PaintPropertiesForElement("target")->Transform();
-  ASSERT_TRUE(transform);
-  EXPECT_EQ(gfx::Point3F(50, 50, 0), transform->Origin());
+
+  rect_transform = PaintPropertiesForElement("rect")->Transform();
+  ASSERT_TRUE(rect_transform);
+  EXPECT_TRUE(rect_transform->HasActiveTransformAnimation());
+  EXPECT_EQ(gfx::Point3F(50, 50, 0), rect_transform->Origin());
+
+  foreign_transform = PaintPropertiesForElement("foreign")->Transform();
+  ASSERT_TRUE(foreign_transform);
+  EXPECT_FALSE(foreign_transform->HasActiveTransformAnimation());
+  EXPECT_EQ(gfx::Transform::MakeScale(0.5), foreign_transform->Matrix());
+  EXPECT_EQ(gfx::Point3F(), foreign_transform->Origin());
+
+  GetElementById("rect")->removeAttribute(html_names::kStyleAttr);
+  GetElementById("foreign")->removeAttribute(html_names::kStyleAttr);
+  UpdateAllLifecyclePhasesForTest();
+
+  rect_transform = PaintPropertiesForElement("rect")->Transform();
+  ASSERT_TRUE(rect_transform);
+  EXPECT_TRUE(rect_transform->HasActiveTransformAnimation());
+  EXPECT_EQ(gfx::Point3F(50, 50, 0), rect_transform->Origin());
+
+  foreign_transform = PaintPropertiesForElement("foreign")->Transform();
+  ASSERT_TRUE(foreign_transform);
+  EXPECT_TRUE(foreign_transform->HasActiveTransformAnimation());
+  EXPECT_EQ(gfx::Point3F(50, 50, 0), foreign_transform->Origin());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, SVGTransformAnimationVectorEffectChange) {

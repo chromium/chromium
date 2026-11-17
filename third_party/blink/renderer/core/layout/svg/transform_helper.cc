@@ -233,7 +233,7 @@ gfx::PointF TransformHelper::ComputeTransformOrigin(
                                          reference_box.height()) +
                          reference_box.y());
   // See the comment in ComputeTransform() for the reason of scaling by 1/zoom.
-  return gfx::ScalePoint(origin, style.EffectiveZoom());
+  return gfx::ScalePoint(origin, 1 / style.EffectiveZoom());
 }
 
 }  // namespace blink
