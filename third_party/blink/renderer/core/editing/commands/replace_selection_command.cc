@@ -1539,6 +1539,8 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
 
   ReplacementFragment fragment(&GetDocument(), document_fragment_.Get(),
                                selection);
+  ABORT_EDITING_COMMAND_IF(!selection.IsValidFor(GetDocument()) ||
+                           !EndingSelection().IsValidFor(GetDocument()));
 
   bool trivial_replace_result =
       PerformTrivialReplace(fragment, editing_state, password_echo_behavior_);
@@ -2632,7 +2634,8 @@ bool ReplaceSelectionCommand::PerformTrivialReplace(
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
-  if (node_after_insertion_pos && node_after_insertion_pos->parentNode() &&
+  if (node_after_insertion_pos && node_after_insertion_pos->isConnected() &&
+      node_after_insertion_pos->GetDocument() == GetDocument() &&
       IsA<HTMLBRElement>(*node_after_insertion_pos) &&
       ShouldRemoveEndBR(
           To<HTMLBRElement>(node_after_insertion_pos),
@@ -2650,6 +2653,12 @@ bool ReplaceSelectionCommand::PerformTrivialReplace(
     if (editing_state->IsAborted()) {
       return false;
     }
+  }
+
+  if (!start.IsValidFor(GetDocument()) || !end.IsValidFor(GetDocument()) ||
+      (start.IsNotNull() && start > end)) {
+    editing_state->Abort();
+    return false;
   }
 
   SetEndingSelection(SelectionForUndoStep::From(
