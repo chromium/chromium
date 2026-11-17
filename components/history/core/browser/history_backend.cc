@@ -2855,7 +2855,7 @@ QueryResults HistoryBackend::QueryHistory(const std::u16string& text_query,
                                           const QueryOptions& options) {
   QueryResults query_results;
   if (db_) {
-    if (text_query.empty() && options.hostname_suffix.empty()) {
+    if (text_query.empty()) {
       // Basic history query for the main database.
       QueryHistoryBasic(options, &query_results);
     } else {
@@ -3026,23 +3026,16 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
                                       QueryResults* result) {
   base::ElapsedTimer timer;
 
-  URLRows text_matches;
-  if (text_query.empty()) {
-    // Host-only search.
-    text_matches = GetMatchesForHost(options.hostname_suffix);
-  } else {
-    // Text search or combined text + host search.
-    text_matches = db_->GetTextMatchesWithAlgorithm(
-        text_query, options.matching_algorithm.value_or(
-                        query_parser::MatchingAlgorithm::DEFAULT));
+  URLRows text_matches = db_->GetTextMatchesWithAlgorithm(
+      text_query, options.matching_algorithm.value_or(
+                      query_parser::MatchingAlgorithm::DEFAULT));
 
-    if (!options.hostname_suffix.empty()) {
-      const std::string hostname_suffix =
-          base::ToLowerASCII(options.hostname_suffix);
-      std::erase_if(text_matches, [&](const URLRow& row) {
-        return !row.url().DomainIs(hostname_suffix);
-      });
-    }
+  if (!options.hostname_suffix.empty()) {
+    const std::string hostname_suffix =
+        base::ToLowerASCII(options.hostname_suffix);
+    std::erase_if(text_matches, [&](const URLRow& row) {
+      return !row.url().DomainIs(hostname_suffix);
+    });
   }
 
   std::vector<URLResult> matching_visits;
@@ -3108,23 +3101,6 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
 
   result->SetURLResults(std::move(matching_visits));
   result->set_has_more_results(has_more_results);
-}
-
-URLRows HistoryBackend::GetMatchesForHost(const std::string& hostname_suffix) {
-  URLRows results;
-  URLDatabase::URLEnumerator iter;
-
-  if (db_ && db_->InitURLEnumeratorForEverything(&iter)) {
-    URLRow row;
-    const std::string target_host = base::ToLowerASCII(hostname_suffix);
-    while (iter.GetNextURL(&row)) {
-      if (row.url().is_valid() && row.url().DomainIs(target_host)) {
-        results.push_back(std::move(row));
-      }
-    }
-  }
-
-  return results;
 }
 
 RedirectList HistoryBackend::QueryRedirectsFrom(const GURL& from_url) {

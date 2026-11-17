@@ -280,6 +280,32 @@ TEST_F(HistoryQueryTest, BasicCount) {
   EXPECT_TRUE(NthResultIs(results, 1, 2));
 }
 
+TEST_F(HistoryQueryTest, HostnameSuffix) {
+  ASSERT_TRUE(history_.get());
+
+  QueryOptions options;
+  QueryResults results;
+
+  // Querying with hostname_suffix = "example.test" should match entries
+  // 8, 9, 10, 11 (sorted recent first).
+  options.hostname_suffix = "example.test";
+  QueryHistory(std::string(), options, &results);
+  EXPECT_EQ(4U, results.size());
+  EXPECT_TRUE(NthResultIs(results, 0, 8));
+  EXPECT_TRUE(NthResultIs(results, 1, 9));
+  EXPECT_TRUE(NthResultIs(results, 2, 10));
+  EXPECT_TRUE(NthResultIs(results, 3, 11));
+
+  // Case-insensitivity check: "EXAMPLE.TEST".
+  options.hostname_suffix = "EXAMPLE.TEST";
+  QueryHistory(std::string(), options, &results);
+  EXPECT_EQ(4U, results.size());
+  EXPECT_TRUE(NthResultIs(results, 0, 8));
+  EXPECT_TRUE(NthResultIs(results, 1, 9));
+  EXPECT_TRUE(NthResultIs(results, 2, 10));
+  EXPECT_TRUE(NthResultIs(results, 3, 11));
+}
+
 TEST_F(HistoryQueryTest, HasMoreResults) {
   ASSERT_TRUE(history_.get());
 

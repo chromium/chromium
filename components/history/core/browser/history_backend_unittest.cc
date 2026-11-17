@@ -2562,8 +2562,8 @@ TEST_F(HistoryBackendTest, QueryHistoryWithTextQueryIncludesActorSource) {
                       testing::Property(&URLResult::has_actor_source, true))));
 }
 
-// Tests that text and host-only searches record
-// History.QueryHistoryText.Duration, and not the basic query histogram.
+// Tests that text searches record History.QueryHistoryText.Duration, while
+// host-only searches record History.QueryHistoryBasic.Duration.
 TEST_F(HistoryBackendTest, QueryHistoryTextRecordsDuration) {
   ASSERT_TRUE(backend_.get());
 
@@ -2585,13 +2585,13 @@ TEST_F(HistoryBackendTest, QueryHistoryTextRecordsDuration) {
   }
 
   {
-    // Host-only searches also go through `QueryHistoryText()`.
+    // Host-only searches go through `QueryHistoryBasic()`.
     options.hostname_suffix = "example.com";
     base::HistogramTester histogram_tester;
     QueryResults results = backend_->QueryHistory(/*text_query=*/{}, options);
     EXPECT_EQ(1u, results.size());
-    histogram_tester.ExpectTotalCount("History.QueryHistoryText.Duration", 1);
-    histogram_tester.ExpectTotalCount("History.QueryHistoryBasic.Duration", 0);
+    histogram_tester.ExpectTotalCount("History.QueryHistoryText.Duration", 0);
+    histogram_tester.ExpectTotalCount("History.QueryHistoryBasic.Duration", 1);
   }
 }
 

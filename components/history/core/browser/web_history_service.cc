@@ -313,6 +313,11 @@ std::string BuildQueryPostData(const std::u16string& text_query,
     }
     lookup.Set("client_id", std::move(client_ids_list));
   }
+  if (!options.hostname_suffix.empty()) {
+    base::ListValue hostname_suffixes_list;
+    hostname_suffixes_list.Append(options.hostname_suffix);
+    lookup.Set("hostname_suffix", std::move(hostname_suffixes_list));
+  }
   lookup_list.Append(std::move(lookup));
 
   request.Set("lookup", std::move(lookup_list));

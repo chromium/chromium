@@ -375,14 +375,8 @@ void BrowsingHistoryService::QueryHistoryInternal(
       // If no remote results were needed, ShouldQueryRemote() should have
       // returned false and control flow wouldn't reach here.
       CHECK(options.max_count > 0);
-      // TODO(b:549736398): Update this to support remote history matching using
-      // both hostname_suffix and text_query at the same time.
-      const std::u16string remote_query =
-          !state->search_text.empty()
-              ? state->search_text
-              : base::UTF8ToUTF16(state->original_options.hostname_suffix);
       web_history_request_ = web_history_->QueryHistory(
-          remote_query, options,
+          state->search_text, options,
           base::BindOnce(&BrowsingHistoryService::WebHistoryQueryComplete,
                          weak_factory_.GetWeakPtr(), state, clock_->Now()),
           partial_traffic_annotation);

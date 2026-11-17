@@ -317,6 +317,7 @@ TEST_F(WebHistoryServiceTest, QueryHistoryUrlConstruction) {
   options.end_time = base::Time::FromMillisecondsSinceUnixEpoch(67890000);
   options.max_count = 50;
   options.client_ids = {"client_1", "client_2"};
+  options.hostname_suffix = "example.com";
 
   QueryHistorySynchronous("search term", options);
 
@@ -338,6 +339,11 @@ TEST_F(WebHistoryServiceTest, QueryHistoryUrlConstruction) {
   ASSERT_EQ(2u, client_ids->size());
   EXPECT_EQ("client_1", client_ids->front().GetString());
   EXPECT_EQ("client_2", client_ids->back().GetString());
+  const base::ListValue* hostname_suffixes =
+      lookup->FindList("hostname_suffix");
+  ASSERT_TRUE(hostname_suffixes);
+  ASSERT_EQ(1u, hostname_suffixes->size());
+  EXPECT_EQ("example.com", (*hostname_suffixes)[0].GetString());
 }
 
 TEST_F(WebHistoryServiceTest, QueryWebAndAppActivityEnabled) {

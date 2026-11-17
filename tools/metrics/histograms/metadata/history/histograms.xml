@@ -2072,11 +2072,10 @@ chromium-metrics-reviews@google.com.
   <owner>kalinino@google.com</owner>
   <owner>src/components/history/OWNERS</owner>
   <summary>
-    Records how long a history search takes on the history backend thread, in
-    milliseconds. A history search looks for visits whose page title or URL
-    matches a search text, or whose host matches a hostname. Recorded once per
-    search. History queries without a search text or hostname are recorded in
-    History.QueryHistoryBasic.Duration.
+    Records how long a history text search takes on the history backend thread,
+    in milliseconds. A history text search looks for visits whose page title or
+    URL matches a search text. Recorded once per search. History queries without
+    a search text are recorded in History.QueryHistoryBasic.Duration.
   </summary>
 </histogram>
 

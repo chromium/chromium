@@ -88,6 +88,7 @@ class FakeWebHistoryService : public WebHistoryService {
       base::Time end,
       size_t count,
       const std::vector<std::string>& client_ids,
+      const std::string& hostname_suffix,
       bool* more_results_left);
 
  private:

@@ -1129,6 +1129,108 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange_ClientIds) {
   ASSERT_EQ(3U, results.size());
 }
 
+TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange_HostnameSuffix) {
+  URLRow url_row1(GURL("http://example.com/url1"));
+  URLID url_id1 = AddURL(url_row1);
+  ASSERT_NE(0, url_id1);
+
+  URLRow url_row2(GURL("https://sub.example.com/url2"));
+  URLID url_id2 = AddURL(url_row2);
+  ASSERT_NE(0, url_id2);
+
+  URLRow url_row3(GURL("http://other.com/url3"));
+  URLID url_id3 = AddURL(url_row3);
+  ASSERT_NE(0, url_id3);
+
+  URLRow url_row4(GURL("http://anotherexample.com/url4"));
+  URLID url_id4 = AddURL(url_row4);
+  ASSERT_NE(0, url_id4);
+
+  URLRow url_row5(GURL("https://sub.sub.example.com:8080/url5"));
+  URLID url_id5 = AddURL(url_row5);
+  ASSERT_NE(0, url_id5);
+
+  URLRow url_row6(GURL("http://example.com.attacker.com/url6"));
+  URLID url_id6 = AddURL(url_row6);
+  ASSERT_NE(0, url_id6);
+
+  auto create_visit = [&](URLID url_id, base::Time visit_time) {
+    VisitRow visit(url_id, visit_time, 0,
+                   ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                             ui::PAGE_TRANSITION_CHAIN_START |
+                                             ui::PAGE_TRANSITION_CHAIN_END),
+                   0, false, 0);
+    visit.source = SOURCE_BROWSED;
+    return visit;
+  };
+
+  base::Time now = base::Time::Now();
+  VisitRow visit1 = create_visit(url_id1, now);
+  ASSERT_TRUE(AddVisit(&visit1));
+
+  VisitRow visit2 = create_visit(url_id2, now + base::Seconds(1));
+  ASSERT_TRUE(AddVisit(&visit2));
+
+  VisitRow visit3 = create_visit(url_id3, now + base::Seconds(2));
+  ASSERT_TRUE(AddVisit(&visit3));
+
+  VisitRow visit4 = create_visit(url_id4, now + base::Seconds(3));
+  ASSERT_TRUE(AddVisit(&visit4));
+
+  VisitRow visit5 = create_visit(url_id5, now + base::Seconds(4));
+  ASSERT_TRUE(AddVisit(&visit5));
+
+  VisitRow visit6 = create_visit(url_id6, now + base::Seconds(5));
+  ASSERT_TRUE(AddVisit(&visit6));
+
+  QueryOptions options;
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  VisitVector results;
+
+  // Default: empty hostname_suffix returns all visits.
+  GetVisibleVisitsInRange(options, &results);
+  ASSERT_EQ(6U, results.size());
+
+  // Filter for "example.com" should match visit1, visit2, visit5 (not visit4
+  // or visit6).
+  options.hostname_suffix = "example.com";
+  GetVisibleVisitsInRange(options, &results);
+  ASSERT_EQ(3U, results.size());
+  EXPECT_EQ(visit5.visit_time, results[0].visit_time);
+  EXPECT_EQ(visit2.visit_time, results[1].visit_time);
+  EXPECT_EQ(visit1.visit_time, results[2].visit_time);
+
+  // Case-insensitivity: "EXAMPLE.COM".
+  options.hostname_suffix = "EXAMPLE.COM";
+  GetVisibleVisitsInRange(options, &results);
+  ASSERT_EQ(3U, results.size());
+  EXPECT_EQ(visit5.visit_time, results[0].visit_time);
+  EXPECT_EQ(visit2.visit_time, results[1].visit_time);
+  EXPECT_EQ(visit1.visit_time, results[2].visit_time);
+
+  // Filter for "sub.example.com" should match visit2 and visit5.
+  options.hostname_suffix = "sub.example.com";
+  GetVisibleVisitsInRange(options, &results);
+  ASSERT_EQ(2U, results.size());
+  EXPECT_EQ(visit5.visit_time, results[0].visit_time);
+  EXPECT_EQ(visit2.visit_time, results[1].visit_time);
+
+  // Filter for non-matching domain.
+  options.hostname_suffix = "nonexistent.com";
+  GetVisibleVisitsInRange(options, &results);
+  EXPECT_TRUE(results.empty());
+
+  // Also verify GetVisibleVisitsForURL respects hostname_suffix.
+  options.hostname_suffix = "example.com";
+  GetVisibleVisitsForURL(url_id1, options, &results);
+  ASSERT_EQ(1U, results.size());
+  EXPECT_EQ(visit1.visit_time, results[0].visit_time);
+
+  options.hostname_suffix = "other.com";
+  GetVisibleVisitsForURL(url_id1, options, &results);
+  EXPECT_TRUE(results.empty());
+}
+
 TEST_F(VisitDatabaseTest, VisitSource) {
   // Add visits.
   VisitRow visit_info1(111, Time::Now(), 0, ui::PAGE_TRANSITION_LINK, 0, false,

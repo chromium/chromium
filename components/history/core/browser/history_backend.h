@@ -983,10 +983,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                         const QueryOptions& options,
                         QueryResults* result);
 
-  // Performs a brute force search over the database to find any host names that
-  // match the `hostname_suffix` string. Returns any matches.
-  URLRows GetMatchesForHost(const std::string& hostname_suffix);
-
   // Committing ----------------------------------------------------------------
 
   // We always keep a transaction open on the history database so that multiple

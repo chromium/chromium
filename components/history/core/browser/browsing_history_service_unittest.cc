@@ -262,9 +262,10 @@ class ReversedWebHistoryService : public TestWebHistoryService {
       base::Time end,
       size_t count,
       const std::vector<std::string>& client_ids,
+      const std::string& hostname_suffix,
       bool* more_results_left) override {
     auto result = FakeWebHistoryService::GetVisitsBetween(
-        begin, end, count, client_ids, more_results_left);
+        begin, end, count, client_ids, hostname_suffix, more_results_left);
     std::ranges::reverse(result);
     return result;
   }
@@ -525,6 +526,30 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryWithClientIdFilter) {
                        false, "client_1"},
                       {kUrl1, 1, kRemote, "", VisitSource::SOURCE_BROWSED,
                        false, "client_1"}}));
+}
+
+TEST_F(BrowsingHistoryServiceTest, QueryHistoryWithHostnameSuffixFilter) {
+  AddHistory({{kUrl1, 1, kRemote},
+              {kUrl2, 2, kRemote},
+              {"http://sub.domain.one.com", 3, kRemote},
+              {"http://notone.com", 4, kRemote}});
+
+  QueryOptions options;
+  options.hostname_suffix = "one.com";
+
+  EXPECT_THAT(QueryHistory(options),
+              MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
+                                 std::vector<TestResult>{
+                                     {"http://sub.domain.one.com", 3, kRemote},
+                                     {kUrl1, 1, kRemote}}));
+
+  // Case-insensitivity check: "ONE.COM" should match "one.com".
+  options.hostname_suffix = "ONE.COM";
+  EXPECT_THAT(QueryHistory(options),
+              MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
+                                 std::vector<TestResult>{
+                                     {"http://sub.domain.one.com", 3, kRemote},
+                                     {kUrl1, 1, kRemote}}));
 }
 
 TEST_F(BrowsingHistoryServiceTest, EmptyQueryHistoryJustWeb) {

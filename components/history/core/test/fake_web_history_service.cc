@@ -108,6 +108,7 @@ const std::string& FakeWebHistoryService::FakeRequest::GetResponseBody() const {
     base::Time end;
     int max_count = 0;
     std::vector<std::string> client_ids;
+    std::string hostname_suffix;
     std::optional<base::DictValue> request_data =
         base::JSONReader::ReadDict(post_data_, base::JSON_PARSE_RFC);
     if (request_data) {
@@ -144,6 +145,13 @@ const std::string& FakeWebHistoryService::FakeRequest::GetResponseBody() const {
               }
             }
           }
+
+          const base::ListValue* hostname_suffix_list =
+              lookup_dict.FindList("hostname_suffix");
+          if (hostname_suffix_list && !hostname_suffix_list->empty() &&
+              hostname_suffix_list->front().is_string()) {
+            hostname_suffix = hostname_suffix_list->front().GetString();
+          }
         }
       }
     }
@@ -152,8 +160,9 @@ const std::string& FakeWebHistoryService::FakeRequest::GetResponseBody() const {
     }
 
     bool more_results_left = false;
-    auto visits = service_->GetVisitsBetween(begin, end, max_count, client_ids,
-                                             &more_results_left);
+    auto visits =
+        service_->GetVisitsBetween(begin, end, max_count, client_ids,
+                                   hostname_suffix, &more_results_left);
 
     std::vector<std::string> results;
     for (const FakeWebHistoryService::Visit& visit : visits) {
@@ -253,6 +262,7 @@ FakeWebHistoryService::GetVisitsBetween(
     base::Time end,
     size_t count,
     const std::vector<std::string>& client_ids,
+    const std::string& hostname_suffix,
     bool* more_results_left) {
   // Make sure that `visits_` is sorted in reverse chronological order before we
   // return anything. This means that the most recent results are returned
@@ -262,6 +272,7 @@ FakeWebHistoryService::GetVisitsBetween(
               return lhs.timestamp > rhs.timestamp;
             });
   *more_results_left = false;
+  std::string lower_suffix = base::ToLowerASCII(hostname_suffix);
   std::vector<Visit> result;
   for (const Visit& visit : visits_) {
     // `begin` is inclusive, `end` is exclusive.
@@ -269,6 +280,13 @@ FakeWebHistoryService::GetVisitsBetween(
       if (!client_ids.empty() &&
           !std::ranges::contains(client_ids, visit.client_id)) {
         continue;
+      }
+
+      if (!lower_suffix.empty()) {
+        GURL url(visit.url);
+        if (!url.DomainIs(lower_suffix)) {
+          continue;
+        }
       }
 
       // We found another valid result, but cannot return it because we've
