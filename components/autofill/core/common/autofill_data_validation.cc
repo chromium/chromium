@@ -37,6 +37,9 @@ bool IsValidOption(const SelectOption& option) {
 bool IsValidFormFieldData(const FormFieldData& field) {
   return IsValidString16(field.label()) && IsValidString16(field.name()) &&
          IsValidString16(field.value()) &&
+         field.selected_text().size() <= kMaxSelectedTextLength &&
+         (!field.selected_option_text().has_value() ||
+          IsValidString16(*field.selected_option_text())) &&
          mojom::IsKnownEnumValue(field.form_control_type()) &&
          (!field.IsSelectElement() || field.max_length() == 0) &&
          IsValidString(field.autocomplete_attribute()) &&
