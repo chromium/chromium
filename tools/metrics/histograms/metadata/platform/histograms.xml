@@ -968,8 +968,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FlexPartitionSize.{Partition}" units="MiB"
-    expires_after="2026-11-29">
-  <owner>nicholasbishop@google.com</owner>
+    expires_after="2027-11-29">
+  <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
     A sparse histogram of the size (in MiB) of the partition labeled
