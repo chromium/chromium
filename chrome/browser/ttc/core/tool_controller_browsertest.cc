@@ -81,9 +81,11 @@
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "components/ttc/app/public/tool_types.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -97,6 +99,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/point.h"
@@ -3138,6 +3141,60 @@ class ToolControllerGetPointerBrowserTest : public ToolControllerBrowserTest {
     return embedded_https_test_server().GetURL("example.com", "/title1.html");
   }
 
+  // Presses the mouse on the middle of the element that `selector` selects,
+  // calls get_pointer, and returns the text of the node that it found there.
+  // If any of that fails, or no node with text is found, fails the test with
+  // the reason and returns nothing.
+  std::string PointAtAndGetNodeText(SessionControllerImpl& controller,
+                                    std::string_view selector) {
+    // From the layout viewport's CSS pixels to the visual viewport's DIPs,
+    // however the page is zoomed, scaled and panned.
+    const content::EvalJsResult center = content::EvalJs(
+        web_contents(),
+        content::JsReplace(
+            "(() => {"
+            "  const r = document.querySelector($1).getBoundingClientRect();"
+            "  const v = visualViewport;"
+            "  const s = window.devicePixelRatio * v.scale / $2;"
+            "  return [Math.floor((r.left - v.offsetLeft + r.width / 2) * s),"
+            "          Math.floor((r.top - v.offsetTop + r.height / 2) * s)];"
+            "})()",
+            selector,
+            web_contents()->GetRenderWidgetHostView()->GetDeviceScaleFactor()));
+    if (!center.is_list() || center.ExtractList().size() != 2u ||
+        !center.ExtractList()[0].is_int() ||
+        !center.ExtractList()[1].is_int()) {
+      ADD_FAILURE() << "No position for " << selector << ": " << center;
+      return std::string();
+    }
+    // So that the press is the only place the session has seen the pointer:
+    // the machine's own pointer may be over the window.
+    controller.pointer_tracker()->Clear();
+    PressAt(gfx::Point(center.ExtractList()[0].GetInt(),
+                       center.ExtractList()[1].GetInt()));
+    base::test::TestFuture<ToolResponse> future;
+    CallGetPointer(controller, future);
+    ToolResponse response = future.Take();
+    if (!response.Ok()) {
+      const ToolError& error = response.error();
+      ADD_FAILURE() << "get_pointer failed for " << selector << ": code "
+                    << (error.code ? static_cast<int>(*error.code) : -1)
+                    << ", message: " << error.message.value_or("(none)");
+      return std::string();
+    }
+    const base::ListValue* points = response.GetResult().FindList("points");
+    const std::string* text =
+        points && !points->empty()
+            ? points->front().GetDict().FindStringByDottedPath("node.text")
+            : nullptr;
+    if (!text) {
+      ADD_FAILURE() << "No node with text at " << selector << ": "
+                    << response.GetResult().DebugString();
+      return std::string();
+    }
+    return *text;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -3310,6 +3367,59 @@ IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest, DisallowedUrl) {
   CallGetPointer(*controller, future);
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kUrlBlocked);
+}
+
+// What the user points at is found on a page that is zoomed in too: the
+// positions that the session tracks and the page content's geometry both take
+// the zoom into account.
+IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest, ZoomedPage) {
+  SessionControllerImpl* controller = StartSessionAt(PageWithText());
+  ASSERT_TRUE(controller);
+
+  // Give the page two buttons, one near the top left of the viewport and one
+  // at its bottom right. The first is where it does not overlap where it
+  // would be without the zoom, so that it is only found there if both the
+  // pointer's position and the page content's geometry take the zoom into
+  // account.
+  //
+  // Also have the page laid out at the device's width, as pages made for
+  // phones are. A phone scales other pages down to fit its screen, and the
+  // page content of a scaled-down page lacks the z-order of nodes outside the
+  // top left of the viewport, so that a hit test of it misses them whatever
+  // the zoom is.
+  // TODO(crbug.com/585719868): Test a scaled-down page too once that is
+  // fixed.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.head.insertAdjacentHTML('beforeend',"
+      "    `<meta name='viewport' content='width=device-width,"
+      "         initial-scale=1, minimum-scale=1'>`);"
+      "document.body.innerHTML ="
+      "    `<button id='near' style='position: fixed; left: 80px; top: 60px;"
+      "         width: 30px; height: 24px'>Near</button>"
+      "     <button id='far' style='position: fixed; right: 0; bottom: 0;"
+      "         width: 100px; height: 60px'>Far</button>`;"));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_contents(), "visualViewport.scale")
+               .ExtractDouble() == 1.0;
+  }));
+
+  // Zoom in to 150%.
+  const double ratio_before =
+      content::EvalJs(web_contents(), "window.devicePixelRatio")
+          .ExtractDouble();
+  content::HostZoomMap::SetZoomLevel(web_contents(),
+                                     blink::ZoomFactorToZoomLevel(1.5));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_contents(), "window.devicePixelRatio")
+               .ExtractDouble() > ratio_before;
+  }));
+
+  EXPECT_EQ(PointAtAndGetNodeText(*controller, "#near"), "Near");
+  // The page content used to leave out the geometry of nodes at the right and
+  // bottom of a zoomed-in page, as it clamped their boxes to a viewport that
+  // it took to be smaller than it is (crbug.com/585268204).
+  EXPECT_EQ(PointAtAndGetNodeText(*controller, "#far"), "Far");
 }
 
 // A capture that the page changes under is not reported, whether the capture
