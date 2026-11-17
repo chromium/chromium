@@ -15,7 +15,6 @@ import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -298,31 +297,6 @@ public interface SideUiCoordinator extends SideUiStateProvider {
         public int hashCode() {
             return Objects.hash(mSideUiId, mSuppressAnimations, mUpdateReason);
         }
-
-        @Override
-        public String toString() {
-            return String.format(
-                    Locale.US,
-                    "UiUpdateRequest{sideUiId=%s, suppressAnimations=%b, updateReason=%s}",
-                    mSideUiId,
-                    mSuppressAnimations,
-                    updateReasonToString(mUpdateReason));
-        }
-
-        /** Returns the name of the given {@link UpdateReason}. */
-        private static String updateReasonToString(@UpdateReason int reason) {
-            return switch (reason) {
-                case UpdateReason.SIDE_UI_REQUEST -> "SIDE_UI_REQUEST";
-                case UpdateReason.ANDROID_CONFIGURATION_CHANGED -> "ANDROID_CONFIGURATION_CHANGED";
-                case UpdateReason.TOP_CONTROLS_HEIGHT_CHANGED -> "TOP_CONTROLS_HEIGHT_CHANGED";
-                case UpdateReason.FULL_SCREEN_MODE_ENTERED -> "FULL_SCREEN_MODE_ENTERED";
-                case UpdateReason.FULL_SCREEN_MODE_EXITED -> "FULL_SCREEN_MODE_EXITED";
-                case UpdateReason.RESIZE_LIVE -> "RESIZE_LIVE";
-                case UpdateReason.RESIZE_COMMITTED -> "RESIZE_COMMITTED";
-                case UpdateReason.UPDATES_RESUMED -> "UPDATES_RESUMED";
-                default -> "UNKNOWN(" + reason + ")";
-            };
-        }
     }
 
     /**
@@ -380,16 +354,6 @@ public interface SideUiCoordinator extends SideUiStateProvider {
             @Override
             public int hashCode() {
                 return Objects.hash(mReservedWidth, mRenderedWidth, mHeightType);
-            }
-
-            @Override
-            public String toString() {
-                return String.format(
-                        Locale.ENGLISH,
-                        "[reservedWidth: %d, renderedWidth: %d, heightType: %d]",
-                        mReservedWidth,
-                        mRenderedWidth,
-                        mHeightType);
             }
         }
 
@@ -511,12 +475,8 @@ public interface SideUiCoordinator extends SideUiStateProvider {
         }
 
         @Override
-        public String toString() {
-            return String.format(
-                    Locale.ENGLISH,
-                    "[LeftContainerSpec: %s, RightContainerSpec: %s]",
-                    mSideUiSpecs.get(AnchorSide.LEFT),
-                    mSideUiSpecs.get(AnchorSide.RIGHT));
+        public int hashCode() {
+            return mSideUiSpecs.hashCode();
         }
     }
 
