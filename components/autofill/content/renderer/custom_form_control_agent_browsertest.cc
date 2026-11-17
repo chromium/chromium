@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/check_deref.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
@@ -331,9 +330,11 @@ TEST_F(CustomFormControlAgentTest, IgnoresScriptForPreviousDocument) {
 TEST_F(CustomFormControlAgentTest, RebindReplacesConnection) {
   Remote first;
   ASSERT_TRUE(Bind(first));
+  base::test::TestFuture<void> disconnected;
+  first.set_disconnect_handler(disconnected.GetCallback());
   Remote second;
   ASSERT_TRUE(Bind(second));
-  EXPECT_TRUE(base::test::RunUntil([&] { return !first.is_connected(); }));
+  EXPECT_TRUE(disconnected.Wait());
   EXPECT_TRUE(LoadUnsafeScript(second, GetDocumentToken(), kValidScript));
 }
 
@@ -392,11 +393,12 @@ TEST_F(CustomFormControlAgentTest, DropsReplyIfScriptDetachesFrame) {
     frameElement.remove();
     function createCustomFormControlManager() { return {}; }
   )";
+  base::test::TestFuture<void> disconnected;
+  remote.set_disconnect_handler(disconnected.GetCallback());
   base::test::TestFuture<bool> loaded;
   remote->LoadUnsafeScript(child_frame->GetDocument().Token(), kDetachingScript,
                            loaded.GetCallback());
-  ASSERT_TRUE(
-      base::test::RunUntil([&remote] { return !remote.is_connected(); }));
+  ASSERT_TRUE(disconnected.Wait());
   EXPECT_FALSE(loaded.IsReady());
 }
 
@@ -515,12 +517,13 @@ TEST_F(CustomFormControlAgentTest, DropsDetectReplyIfScriptDetachesFrame) {
   ASSERT_TRUE(LoadUnsafeScript(remote, child_frame->GetDocument().Token(),
                                kDetachingScript));
 
+  base::test::TestFuture<void> disconnected;
+  remote.set_disconnect_handler(disconnected.GetCallback());
   base::test::TestFuture<std::vector<mojom::DetectedCustomFormControlPtr>>
       detected;
   remote->DetectCustomFormControls(child_frame->GetDocument().Token(),
                                    detected.GetCallback());
-  ASSERT_TRUE(
-      base::test::RunUntil([&remote] { return !remote.is_connected(); }));
+  ASSERT_TRUE(disconnected.Wait());
   EXPECT_FALSE(detected.IsReady());
 }
 
@@ -659,11 +662,12 @@ TEST_F(CustomFormControlAgentTest,
       SetUpChildFrameAgent(remote, child_registry, kDetachingFillingScript);
   ASSERT_TRUE(document);
 
+  base::test::TestFuture<void> disconnected;
+  remote.set_disconnect_handler(disconnected.GetCallback());
   base::test::TestFuture<mojom::ExtractedCustomFormControlOptionsPtr> extracted;
   remote->ExtractOptions(*document, GetChildFieldRendererIdOf("state"),
                          extracted.GetCallback());
-  ASSERT_TRUE(
-      base::test::RunUntil([&remote] { return !remote.is_connected(); }));
+  ASSERT_TRUE(disconnected.Wait());
   EXPECT_FALSE(extracted.IsReady());
 }
 
@@ -678,11 +682,12 @@ TEST_F(CustomFormControlAgentTest,
       SetUpChildFrameAgent(remote, child_registry, kDetachingFillingScript);
   ASSERT_TRUE(document);
 
+  base::test::TestFuture<void> disconnected;
+  remote.set_disconnect_handler(disconnected.GetCallback());
   base::test::TestFuture<void> closed;
   remote->ClosePopover(*document, GetChildFieldRendererIdOf("state"),
                        closed.GetCallback());
-  ASSERT_TRUE(
-      base::test::RunUntil([&remote] { return !remote.is_connected(); }));
+  ASSERT_TRUE(disconnected.Wait());
   EXPECT_FALSE(closed.IsReady());
 }
 
@@ -696,12 +701,13 @@ TEST_F(CustomFormControlAgentTest, DropsSetValueReplyIfScriptDetachesFrame) {
       SetUpChildFrameAgent(remote, child_registry, kDetachingFillingScript);
   ASSERT_TRUE(document);
 
+  base::test::TestFuture<void> disconnected;
+  remote.set_disconnect_handler(disconnected.GetCallback());
   base::test::TestFuture<void> result;
   remote->SetValue(*document, GetChildFieldRendererIdOf("state"),
                    mojom::SelectOption::New(u"BY", u"Bavaria"),
                    result.GetCallback());
-  ASSERT_TRUE(
-      base::test::RunUntil([&remote] { return !remote.is_connected(); }));
+  ASSERT_TRUE(disconnected.Wait());
   EXPECT_FALSE(result.IsReady());
 }
 
