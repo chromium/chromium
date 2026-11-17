@@ -937,7 +937,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
 
   reading_list_side_panel_coordinator_ =
       GetUserDataFactory().CreateInstance<ReadingListSidePanelCoordinator>(
-          *browser, browser, profile, browser->GetTabStripModel());
+          *browser, browser, profile);
 
   if (browser_view) {
     skills_ui_window_controller_ =

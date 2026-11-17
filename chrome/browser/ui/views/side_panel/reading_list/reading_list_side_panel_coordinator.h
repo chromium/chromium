@@ -10,7 +10,6 @@
 
 class BrowserWindowInterface;
 class Profile;
-class TabStripModel;
 
 // ReadingListSidePanelCoordinator handles the creation and registration of the
 // bookmarks SidePanelEntry.
@@ -19,8 +18,7 @@ class ReadingListSidePanelCoordinator {
   DECLARE_USER_DATA(ReadingListSidePanelCoordinator);
 
   ReadingListSidePanelCoordinator(BrowserWindowInterface* interface,
-                                  Profile* profile,
-                                  TabStripModel* tab_strip_model);
+                                  Profile* profile);
   ReadingListSidePanelCoordinator(const ReadingListSidePanelCoordinator&) =
       delete;
   ReadingListSidePanelCoordinator& operator=(
@@ -32,7 +30,6 @@ class ReadingListSidePanelCoordinator {
 
  private:
   const raw_ref<Profile> profile_;
-  const raw_ref<TabStripModel> tab_strip_model_;
 
   ui::ScopedUnownedUserData<ReadingListSidePanelCoordinator>
       scoped_unowned_user_data_;

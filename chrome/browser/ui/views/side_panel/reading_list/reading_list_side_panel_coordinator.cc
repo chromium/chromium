@@ -13,16 +13,14 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/side_panel/reading_list/read_later_side_panel_web_view.h"
 
 namespace {
 std::unique_ptr<views::View> CreateReadingListWebView(
     Profile* profile,
-    TabStripModel* tab_strip_model,
     SidePanelEntryScope& scope) {
-  return std::make_unique<ReadLaterSidePanelWebView>(
-      profile, tab_strip_model, scope, base::RepeatingClosure());
+  return std::make_unique<ReadLaterSidePanelWebView>(profile, scope,
+                                                     base::RepeatingClosure());
 }
 }  // namespace
 
@@ -36,15 +34,12 @@ ReadingListSidePanelCoordinator* ReadingListSidePanelCoordinator::From(
 
 ReadingListSidePanelCoordinator::ReadingListSidePanelCoordinator(
     BrowserWindowInterface* interface,
-    Profile* profile,
-    TabStripModel* tab_strip_model)
+    Profile* profile)
     : profile_(CHECK_DEREF(profile)),
-      tab_strip_model_(CHECK_DEREF(tab_strip_model)),
       scoped_unowned_user_data_(interface->GetUnownedUserDataHost(), *this) {
   SidePanelRegistry::From(interface)->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadingList),
-      base::BindRepeating(&CreateReadingListWebView, &profile_.get(),
-                          &tab_strip_model_.get()),
+      base::BindRepeating(&CreateReadingListWebView, &profile_.get()),
       /*default_content_width_callback=*/base::NullCallback()));
 }
 

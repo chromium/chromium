@@ -5,25 +5,26 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READING_LIST_READ_LATER_SIDE_PANEL_WEB_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READING_LIST_READ_LATER_SIDE_PANEL_WEB_VIEW_H_
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/webview.h"
 
+class BrowserWindowInterface;
 class Profile;
-class TabStripModel;
 
-class ReadLaterSidePanelWebView : public SidePanelWebUIViewT<ReadingListUI>,
-                                  public TabStripModelObserver {
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
+class ReadLaterSidePanelWebView : public SidePanelWebUIViewT<ReadingListUI> {
   using SidePanelWebUIViewT_ReadingListUI = SidePanelWebUIViewT<ReadingListUI>;
   METADATA_HEADER(ReadLaterSidePanelWebView, SidePanelWebUIViewT_ReadingListUI)
 
  public:
   ReadLaterSidePanelWebView(Profile* profile,
-                            TabStripModel* tab_strip_model,
                             SidePanelEntryScope& scope,
                             base::RepeatingClosure close_cb);
   ReadLaterSidePanelWebView(const ReadLaterSidePanelWebView&) = delete;
@@ -31,20 +32,16 @@ class ReadLaterSidePanelWebView : public SidePanelWebUIViewT<ReadingListUI>,
       delete;
   ~ReadLaterSidePanelWebView() override;
 
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-
-  void OnTabChangedAt(tabs::TabInterface* tab,
-                      TabChangeType change_type) override;
-
   void UpdateActiveURL(content::WebContents* contents);
   void UpdateActiveURLToActiveTab();
 
  private:
-  const raw_ptr<TabStripModel> tab_strip_model_;
+  void OnActiveTabChanged(BrowserWindowInterface* browser);
+  void UpdateActiveTabSubscription(tabs::TabInterface* tab);
+  void OnTabUIChanged();
+
+  base::CallbackListSubscription active_tab_subscription_;
+  base::CallbackListSubscription tab_ui_subscription_;
   base::WeakPtrFactory<ReadLaterSidePanelWebView> weak_factory_{this};
 };
 
