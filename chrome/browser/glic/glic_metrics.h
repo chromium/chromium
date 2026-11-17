@@ -69,12 +69,6 @@ class GlicMetrics {
   // after the first query following FRE acceptance.
   void OnResponseStopped(mojom::ResponseStopCause cause);
 
-  // See glic.mojom for details. These are events from the web client.
-  void OnContextUploadStarted();
-  void OnContextUploadCompleted();
-  void OnSessionTerminated();
-  void OnResponseRated(bool positive);
-
   // ----Public API called by other glic classes-----
   // Called when the web client reports that the user completed the
   // FRE (consented).
@@ -111,12 +105,6 @@ class GlicMetrics {
   // records open metrics (see the implementation).
   void OnGlicWindowStartedOpening(bool attached,
                                   mojom::InvocationSource source);
-
-  // Called when a response is received with closed captions showing.
-  void LogClosedCaptionsShown();
-
-  // Called when a tab is activated via the glic page.
-  void OnActivateTabFromInstance(tabs::TabInterface* tab);
 
   // Records user preferences for the profile. Called when the GlicKeyedService
   // for each profile is created.
@@ -196,9 +184,6 @@ class GlicMetrics {
   // currently showing. Set in OnInstanceOpened() and reset, after recording
   // Glic.Fre.TotalTime.*, when the onboarding is accepted or dismissed.
   base::TimeTicks onboarding_shown_time_;
-
-  // Start time of the in-flight context upload, if any.
-  std::optional<base::TimeTicks> last_upload_start_time_;
 };
 
 // Records the hotkey cleared preference metric.

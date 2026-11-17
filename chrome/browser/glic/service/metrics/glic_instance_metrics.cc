@@ -23,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
@@ -2214,6 +2215,44 @@ void GlicInstanceMetrics::LogGetContextForActorFromTabError(
 void GlicInstanceMetrics::LogGetImageBytesFromTabError(
     GlicGetContextFromTabError error) {
   metric_reporter_.RecordEnumeration("Api.GetImageBytesFromTab.Error", error);
+}
+
+void GlicInstanceMetrics::OnContextUploadStarted() {
+  last_upload_start_time_ = base::TimeTicks::Now();
+  base::RecordAction(base::UserMetricsAction("GlicContextUploadStarted"));
+}
+
+void GlicInstanceMetrics::OnContextUploadCompleted() {
+  if (last_upload_start_time_) {
+    metric_reporter_.RecordMediumTimes(
+        "TabContext.UploadTime",
+        base::TimeTicks::Now() - *last_upload_start_time_);
+    last_upload_start_time_ = std::nullopt;
+  }
+  base::RecordAction(base::UserMetricsAction("GlicContextUploadCompleted"));
+}
+
+void GlicInstanceMetrics::OnSessionTerminated() {
+  base::RecordAction(base::UserMetricsAction("GlicWebClientSessionEnd"));
+}
+
+void GlicInstanceMetrics::OnResponseRated(bool positive) {
+  metric_reporter_.RecordBoolean("Response.Rated", positive);
+}
+
+void GlicInstanceMetrics::LogClosedCaptionsShown() {
+  bool pref_enabled = pref_service_ && pref_service_->GetBoolean(
+                                           prefs::kGlicClosedCaptioningEnabled);
+  metric_reporter_.RecordBoolean("Response.ClosedCaptionsShown", pref_enabled);
+}
+
+void GlicInstanceMetrics::OnActivateTabFromInstance(tabs::TabInterface* tab) {
+  if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
+    if (actor_service->GetTaskFromTab(*tab)) {
+      base::RecordAction(
+          base::UserMetricsAction("Glic.Instance.TaskTabForegrounded"));
+    }
+  }
 }
 
 void GlicInstanceMetrics::RecordAttachedContextTabCount(int tab_count) {

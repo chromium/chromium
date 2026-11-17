@@ -343,6 +343,14 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void LogGetContextForActorFromTabError(GlicGetContextFromTabError error);
   void LogGetImageBytesFromTabError(GlicGetContextFromTabError error);
 
+  // Events from the web client / instance UI.
+  void OnContextUploadStarted();
+  void OnContextUploadCompleted();
+  void OnSessionTerminated();
+  void OnResponseRated(bool positive);
+  void LogClosedCaptionsShown();
+  void OnActivateTabFromInstance(tabs::TabInterface* tab);
+
   // Records the number of tabs attached as context for a Glic response.
   void RecordAttachedContextTabCount(int tab_count);
 
@@ -704,6 +712,9 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   // Tracks whether a multi-tab tooltip is currently displayed to the user.
   bool tooltip_currently_visible_ = false;
+
+  // Start time of the in-flight context upload, if any.
+  std::optional<base::TimeTicks> last_upload_start_time_;
 
   base::WeakPtrFactory<GlicInstanceMetrics> weak_ptr_factory_{this};
 };

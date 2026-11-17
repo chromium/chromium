@@ -1716,28 +1716,6 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   </summary>
 </histogram>
 
-<histogram name="Glic.Response.ClosedCaptionsShown" enum="Boolean"
-    expires_after="2026-01-15">
-  <owner>sanaakbani@google.com</owner>
-  <owner>carlosk@chromium.org</owner>
-  <summary>
-    Records if closed captions were being shown at the moment when glic returns
-    a response to the user. Records true if the closed captions pref was enabled
-    by the user; records false otherwise (an error condition).
-  </summary>
-</histogram>
-
-<histogram name="Glic.Response.Rated" enum="BooleanPositive"
-    expires_after="2027-04-11">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Recorded anytime a response is rated. There is no guarantee of correlation
-    with any other Response.* metrics. This exists for diagnostic purposes only.
-  </summary>
-</histogram>
-
 <histogram name="Glic.ScrollTo.ErrorReason" enum="GlicScrollToErrorReason"
     expires_after="2027-01-15">
   <owner>liuwilliam@google.com</owner>
@@ -1865,19 +1843,6 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <owner>vollick@chromium.org</owner>
   <summary>
     Recorded after an attempt is made to share an image with glic.
-  </summary>
-</histogram>
-
-<histogram name="Glic.TabContext.UploadTime" units="ms"
-    expires_after="2026-11-04">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <summary>
-    Recorded when the glic web client reports that it has completed uploading
-    all necessary tab context. Reports the time taken to upload. Note that
-    upload may happen none or many times for any given query, and this may
-    report the wrong timings if the web client performs concurrent upload
-    operations.
   </summary>
 </histogram>
 
@@ -3728,6 +3693,33 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 
+<histogram name="Glic{GlicProvider}.Response.ClosedCaptionsShown"
+    enum="Boolean" expires_after="2027-05-17">
+  <owner>sanaakbani@google.com</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records if closed captions were being shown at the moment when glic returns
+    a response to the user. Records true if the closed captions pref was enabled
+    by the user; records false otherwise (an error condition). Warning: this
+    histogram was expired from 2026-01-15 to 2026-11-17; data may be missing.
+    Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Response.Rated" enum="BooleanPositive"
+    expires_after="2027-04-11">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded anytime a response is rated. There is no guarantee of correlation
+    with any other Response.* metrics. This exists for diagnostic purposes only.
+    Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
 <histogram name="Glic{GlicProvider}.Response.Segmentation"
     enum="GlicResponseSegmentation" expires_after="2027-04-18">
   <owner>iwells@google.com</owner>
@@ -3922,6 +3914,20 @@ ApiRequestType variants; see go/geic-metrics-split. -->
     Records the number of unique Glic instances a tab was pinned to during its
     lifetime. Recorded when the tab is destroyed, but only if it was pinned to
     at least one instance.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.TabContext.UploadTime" units="ms"
+    expires_after="2027-05-17">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Recorded when the glic web client reports that it has completed uploading
+    all necessary tab context. Reports the time taken to upload. Note that
+    upload may happen none or many times for any given query, and this may
+    report the wrong timings if the web client performs concurrent upload
+    operations. Scope: {GlicProvider}.
   </summary>
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>

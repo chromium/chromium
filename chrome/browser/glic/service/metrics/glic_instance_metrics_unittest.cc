@@ -5079,4 +5079,45 @@ TEST_F(GlicInstanceMetricsTest,
       GlicGetContextFromTabError::kPermissionDenied, 1);
 }
 
+TEST_F(GlicInstanceMetricsTest, ClosedCaptionsResponse_PrefLogsFalse) {
+  metrics_.LogClosedCaptionsShown();
+
+  histogram_tester_.ExpectUniqueSample("Glic.Response.ClosedCaptionsShown",
+                                       false, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, ClosedCaptionsResponse_PrefLogsTrue) {
+  profile_.GetPrefs()->SetBoolean(prefs::kGlicClosedCaptioningEnabled, true);
+  metrics_.LogClosedCaptionsShown();
+
+  histogram_tester_.ExpectUniqueSample("Glic.Response.ClosedCaptionsShown",
+                                       true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.Response.ClosedCaptionsShown", true, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, ContextUploadAndResponseRated) {
+  metrics_.OnContextUploadStarted();
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  metrics_.OnContextUploadCompleted();
+
+  EXPECT_EQ(user_action_tester_.GetActionCount("GlicContextUploadStarted"), 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("GlicContextUploadCompleted"),
+            1);
+  histogram_tester_.ExpectUniqueTimeSample("Glic.TabContext.UploadTime",
+                                           base::Milliseconds(250), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Consumer.TabContext.UploadTime", base::Milliseconds(250), 1);
+
+  metrics_.OnSessionTerminated();
+  EXPECT_EQ(user_action_tester_.GetActionCount("GlicWebClientSessionEnd"), 1);
+
+  metrics_.OnResponseRated(true);
+  metrics_.OnResponseRated(false);
+  histogram_tester_.ExpectBucketCount("Glic.Response.Rated", true, 1);
+  histogram_tester_.ExpectBucketCount("Glic.Response.Rated", false, 1);
+  histogram_tester_.ExpectBucketCount("Glic.Consumer.Response.Rated", true, 1);
+  histogram_tester_.ExpectBucketCount("Glic.Consumer.Response.Rated", false, 1);
+}
+
 }  // namespace glic

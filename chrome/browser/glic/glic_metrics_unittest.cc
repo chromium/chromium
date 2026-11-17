@@ -374,21 +374,6 @@ TEST_F(GlicMetricsTest, WindowOpenUkm) {
   EXPECT_FALSE(source);
 }
 
-TEST_F(GlicMetricsTest, ClosedCaptionsResponse_PrefLogsFalse) {
-  metrics()->LogClosedCaptionsShown();
-
-  histogram_tester().ExpectUniqueSample("Glic.Response.ClosedCaptionsShown",
-                                        false, 1);
-}
-
-TEST_F(GlicMetricsTest, ClosedCaptionsResponse_PrefLogsTrue) {
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicClosedCaptioningEnabled, true);
-  metrics()->LogClosedCaptionsShown();
-
-  histogram_tester().ExpectUniqueSample("Glic.Response.ClosedCaptionsShown",
-                                        true, 1);
-}
-
 TEST_F(GlicMetricsTest, ImpressionBeforeFreNotPermittedByPolicy) {
   enabling()->SetCompletedFre(prefs::FreStatus::kNotStarted);
 

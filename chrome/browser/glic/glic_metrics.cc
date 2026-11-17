@@ -10,7 +10,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -249,29 +248,6 @@ void GlicMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
   first_query_after_fre_time_ = base::TimeTicks();
 }
 
-void GlicMetrics::OnContextUploadStarted() {
-  last_upload_start_time_ = base::TimeTicks::Now();
-  base::RecordAction(base::UserMetricsAction("GlicContextUploadStarted"));
-}
-
-void GlicMetrics::OnContextUploadCompleted() {
-  if (last_upload_start_time_) {
-    base::UmaHistogramMediumTimes(
-        "Glic.TabContext.UploadTime",
-        base::TimeTicks::Now() - *last_upload_start_time_);
-    last_upload_start_time_ = std::nullopt;
-  }
-  base::RecordAction(base::UserMetricsAction("GlicContextUploadCompleted"));
-}
-
-void GlicMetrics::OnSessionTerminated() {
-  base::RecordAction(base::UserMetricsAction("GlicWebClientSessionEnd"));
-}
-
-void GlicMetrics::OnResponseRated(bool positive) {
-  base::UmaHistogramBoolean("Glic.Response.Rated", positive);
-}
-
 void GlicMetrics::OnGlicWindowStartedOpening(bool attached,
                                              mojom::InvocationSource source) {
   // Sets `invocation_source_`, triggers web client FRE metrics via
@@ -306,22 +282,6 @@ void GlicMetrics::OnGlicWindowStartedOpening(bool attached,
   // timestamp, instead of the previously dismissal timestamp.
   profile_->GetPrefs()->SetTime(prefs::kGlicWindowLastDismissedTime,
                                 base::Time::Now());
-}
-
-void GlicMetrics::LogClosedCaptionsShown() {
-  bool pref_enabled =
-      profile_->GetPrefs()->GetBoolean(prefs::kGlicClosedCaptioningEnabled);
-  base::UmaHistogramBoolean("Glic.Response.ClosedCaptionsShown", pref_enabled);
-}
-
-void GlicMetrics::OnActivateTabFromInstance(tabs::TabInterface* tab) {
-  const actor::ActorTask* task =
-      actor::ActorKeyedService::Get(profile_)->GetTaskFromTab(*tab);
-  // Record user action if the tab is associated with an ActorTask.
-  if (task) {
-    base::RecordAction(
-        base::UserMetricsAction("Glic.Instance.TaskTabForegrounded"));
-  }
 }
 
 void GlicMetrics::OnImpressionTimerFired() {

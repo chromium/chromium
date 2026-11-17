@@ -1166,7 +1166,7 @@ class GlicWebClientHandler
       return;
     }
 
-    glic_service_->metrics()->OnActivateTabFromInstance(tab);
+    host().instance_metrics().OnActivateTabFromInstance(tab);
     contents->GetDelegate()->ActivateContents(contents);
   }
 
@@ -1566,12 +1566,12 @@ class GlicWebClientHandler
 
   void OnContextUploadStarted() override {
     LogApiRequest(GlicHostApiRequestId::kOnContextUploadStarted);
-    glic_service_->metrics()->OnContextUploadStarted();
+    host().instance_metrics().OnContextUploadStarted();
   }
 
   void OnContextUploadCompleted() override {
     LogApiRequest(GlicHostApiRequestId::kOnContextUploadCompleted);
-    glic_service_->metrics()->OnContextUploadCompleted();
+    host().instance_metrics().OnContextUploadCompleted();
   }
 
   void OnReaction(mojom::MetricUserInputReactionType reaction_type) override {
@@ -1600,7 +1600,7 @@ class GlicWebClientHandler
 
   void OnSessionTerminated() override {
     LogApiRequest(GlicHostApiRequestId::kOnSessionTerminated);
-    glic_service_->metrics()->OnSessionTerminated();
+    host().instance_metrics().OnSessionTerminated();
   }
 
   void OnTurnCompleted(glic::mojom::WebClientModel model,
@@ -1611,12 +1611,12 @@ class GlicWebClientHandler
 
   void OnResponseRated(bool positive) override {
     LogApiRequest(GlicHostApiRequestId::kOnResponseRated);
-    glic_service_->metrics()->OnResponseRated(positive);
+    host().instance_metrics().OnResponseRated(positive);
   }
 
   void OnClosedCaptionsShown() override {
     LogApiRequest(GlicHostApiRequestId::kOnClosedCaptionsShown);
-    glic_service_->metrics()->LogClosedCaptionsShown();
+    host().instance_metrics().LogClosedCaptionsShown();
   }
 
   void OnActionSubmitted(bool is_retry) override {
