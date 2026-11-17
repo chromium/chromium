@@ -154,6 +154,22 @@
             ]
         }
     ],
+    "AccessibilityAndroidMath": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261112",
+                    "enable_features": [
+                        "AccessibilityAndroidMath"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilityGoogleTtsAutomaticReconnect": [
         {
             "platforms": [
