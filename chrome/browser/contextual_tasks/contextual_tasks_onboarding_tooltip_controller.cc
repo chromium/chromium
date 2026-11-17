@@ -28,9 +28,13 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "ui/base/interaction/element_events.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -70,7 +74,31 @@ void ContextualTasksOnboardingTooltipController::PanelWebContentsObserver::
 
 void ContextualTasksOnboardingTooltipController::PanelWebContentsObserver::
     DidGetUserInteraction(const blink::WebInputEvent& event) {
-  if (controller_->IsBubbleShowing()) {
+  // A mouse press or a touch dismisses the bubble, as does activating a
+  // control with Enter or Space. Scrolling, typing in a text field, and other
+  // key presses do not.
+  bool is_dismissing_event = false;
+  switch (event.GetType()) {
+    case blink::WebInputEvent::Type::kMouseDown:
+    case blink::WebInputEvent::Type::kTouchStart:
+      is_dismissing_event = true;
+      break;
+    case blink::WebInputEvent::Type::kRawKeyDown:
+    case blink::WebInputEvent::Type::kKeyDown: {
+      const int key_code =
+          static_cast<const blink::WebKeyboardEvent&>(event).windows_key_code;
+
+      // Only Enter and Space dismiss the bubble, and only if the user isn't
+      // typing in a text field.
+      is_dismissing_event =
+          (key_code == ui::VKEY_RETURN || key_code == ui::VKEY_SPACE) &&
+          !web_contents()->IsFocusedElementEditable();
+      break;
+    }
+    default:
+      break;
+  }
+  if (is_dismissing_event && controller_->IsBubbleShowing()) {
     controller_->CloseBubble();
   }
 }
