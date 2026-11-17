@@ -134,8 +134,8 @@ std::optional<ConnectionAllowlist> ParseConnectionAllowlist(
     }
   }
 
-  // Process the list's parameters, ignoring any other than `report-to` or
-  // special global tokens like `redirection-allowed` or `webrtc-allowed`.
+  // Process the list's parameters, ignoring any other than `report-to`,
+  // `redirects`, or `webrtc`.
   for (auto& [key, value] : inner_list->params) {
     if (key == kReportToParam) {
       if (std::string* token = value.GetIfToken()) {
