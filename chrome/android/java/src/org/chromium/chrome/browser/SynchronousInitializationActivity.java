@@ -19,9 +19,9 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.profiles.ProfileTokenUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 
@@ -113,8 +113,8 @@ public abstract class SynchronousInitializationActivity extends ChromeBaseAppCom
 
     private void initProfile() {
         assert ProfileManager.isInitialized();
-        if (ProfileIntentUtils.hasProfileToken(getIntent())) {
-            ProfileIntentUtils.retrieveProfileFromIntent(
+        if (ProfileTokenUtils.hasProfileToken(getIntent())) {
+            ProfileTokenUtils.retrieveProfileFromIntent(
                     getIntent(),
                     (profile) -> {
                         if (profile == null) {

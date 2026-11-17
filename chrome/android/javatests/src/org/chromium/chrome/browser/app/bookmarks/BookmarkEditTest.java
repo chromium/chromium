@@ -52,8 +52,8 @@ import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.ProfileTokenUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -458,7 +458,7 @@ public class BookmarkEditTest {
                             Intent intent = new Intent(context, BookmarkEditActivity.class);
                             intent.putExtra(
                                     BookmarkEditActivity.INTENT_BOOKMARK_ID, bookmarkId.toString());
-                            ProfileIntentUtils.addProfileToIntent(
+                            ProfileTokenUtils.addProfileToIntent(
                                     ProfileManager.getLastUsedRegularProfile(), intent);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             context.startActivity(intent);

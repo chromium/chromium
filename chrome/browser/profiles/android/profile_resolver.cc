@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
@@ -121,6 +122,8 @@ void ResolveProfileKey(std::string token, ProfileKeyCallback callback) {
   }
 }
 
+// The returned token is persisted (e.g. in PendingIntents); see the comment on
+// ProfileToken before changing what is serialized here.
 std::string TokenizeProfile(Profile* profile) {
   if (!profile) {
     return std::string();
@@ -156,6 +159,9 @@ std::string TokenizeProfileKey(ProfileKey* profile_key) {
   return token_string;
 }
 
+// TODO(crbug.com/40254448): Remove once PartitionResolver and
+// BackgroundTabPoolManager use the encoded token from ProfileTokenUtils and
+// legacy intents have expired (crbug.com/585922618).
 static void JNI_ProfileResolver_ResolveProfile(
     std::optional<std::string> token,
     base::OnceCallback<void(Profile*)> callback) {
@@ -185,6 +191,20 @@ static std::string JNI_ProfileResolver_TokenizeProfile(Profile* profile) {
 static std::string JNI_ProfileResolver_TokenizeProfileKey(
     ProfileKey* profile_key) {
   return TokenizeProfileKey(profile_key);
+}
+
+// Like JNI_ProfileResolver_TokenizeProfile(), but passes the token's bytes to
+// Java unchanged rather than converting them to a Java String.
+static std::vector<uint8_t> JNI_ProfileResolver_TokenizeProfileToBytes(
+    Profile* profile) {
+  std::string token = TokenizeProfile(profile);
+  return std::vector<uint8_t>(token.begin(), token.end());
+}
+
+static void JNI_ProfileResolver_ResolveProfileFromBytes(
+    std::vector<uint8_t> token,
+    base::OnceCallback<void(Profile*)> callback) {
+  ResolveProfile(std::string(token.begin(), token.end()), std::move(callback));
 }
 
 }  // namespace profile_resolver

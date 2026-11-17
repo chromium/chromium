@@ -14,7 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
+import org.chromium.chrome.browser.profiles.ProfileTokenUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
@@ -67,7 +67,7 @@ public class HistoryManagerUtils {
             intent.setClass(appContext, HistoryActivity.class);
 
             intent.putExtra(IntentHandler.EXTRA_PARENT_COMPONENT, activity.getComponentName());
-            ProfileIntentUtils.addProfileToIntent(profile, intent);
+            ProfileTokenUtils.addProfileToIntent(profile, intent);
             activity.startActivity(intent);
         }
     }
@@ -86,7 +86,7 @@ public class HistoryManagerUtils {
             Activity activity, Profile profile, String clientPackageName) {
         Intent intent = new Intent();
         intent.setClass(activity, HistoryActivity.class);
-        ProfileIntentUtils.addProfileToIntent(profile, intent);
+        ProfileTokenUtils.addProfileToIntent(profile, intent);
         intent.putExtra(IntentHandler.EXTRA_APP_SPECIFIC_HISTORY, true);
         intent.putExtra(Intent.EXTRA_PACKAGE_NAME, clientPackageName);
         activity.startActivityForResult(intent, HISTORY_REQUEST_CODE);

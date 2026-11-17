@@ -26,7 +26,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/profiles/Profile.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileAttributesEntry.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileAttributesStorage.java",
-    "java/src/org/chromium/chrome/browser/profiles/ProfileIntentUtils.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileKey.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileKeyUtil.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileKeyedMap.java",
@@ -34,6 +33,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/profiles/ProfileManagerUtils.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileProvider.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileResolver.java",
+    "java/src/org/chromium/chrome/browser/profiles/ProfileTokenUtils.java",
   ]
 }
 
@@ -54,9 +54,9 @@ generate_jni("jni_headers") {
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/profiles/ProfileAttributesStorageTest.java",
-    "java/src/org/chromium/chrome/browser/profiles/ProfileIntentUtilsTest.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileKeyedMapTest.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileManagerTest.java",
+    "java/src/org/chromium/chrome/browser/profiles/ProfileTokenUtilsTest.java",
   ]
 
   deps = [

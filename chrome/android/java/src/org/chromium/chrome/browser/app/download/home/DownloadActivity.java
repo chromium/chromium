@@ -64,7 +64,7 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
     protected void onProfileAvailable(Profile profile) {
         super.onProfileAvailable(profile);
 
-        // TODO(crbug.com/40254448): Update DownloadActivity to use ProfileIntentUtils instead of
+        // TODO(crbug.com/40254448): Update DownloadActivity to use ProfileTokenUtils instead of
         // the existing custom profile passing logic.
         //
         // If the profile doesn't exist, then do not perform any action.
@@ -96,7 +96,7 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
                 new ModalDialogManager(
                         new AppModalPresenter(this), ModalDialogManager.ModalDialogType.APP);
         // TODO(crbug.com/40254448): Pass `profile` directly (and use `profile.getOtrProfileId()`)
-        // once DownloadActivityLauncher passes a ProfileToken via ProfileIntentUtils instead of
+        // once DownloadActivityLauncher passes a ProfileToken via ProfileTokenUtils instead of
         // EXTRA_OTR_PROFILE_ID.
         Profile originalProfile = profile.getOriginalProfile();
         Profile downloadProfile =

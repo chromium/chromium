@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderPickerActivity;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
+import org.chromium.chrome.browser.profiles.ProfileTokenUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
@@ -103,7 +103,7 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
         intent.putStringArrayListExtra(
                 BookmarkFolderPickerActivity.INTENT_BOOKMARK_IDS,
                 BookmarkUtils.bookmarkIdsToStringList(bookmarkIds));
-        ProfileIntentUtils.addProfileToIntent(profile, intent);
+        ProfileTokenUtils.addProfileToIntent(profile, intent);
         // When launched from BookmarkEditActivity, the folder picker is opened as a child dialog.
         // It needs to know it was opened from another bookmark dialog (to show the back arrow at
         // the root folder on desktop) and needs to report results so dismissals chain properly.
@@ -138,7 +138,7 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
                 new Intent(
                         activity == null ? ContextUtils.getApplicationContext() : activity,
                         BookmarkActivity.class);
-        ProfileIntentUtils.addProfileToIntent(profile, intent);
+        ProfileTokenUtils.addProfileToIntent(profile, intent);
         intent.setData(Uri.parse(url));
         // Lets BookmarkActivity reopen the manager as a child tab if the display becomes tablet
         // width.
@@ -189,7 +189,7 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
     private Intent getEditActivityIntent(Context context, Profile profile, BookmarkId bookmarkId) {
         Intent intent = new Intent(context, BookmarkEditActivity.class);
         intent.putExtra(BookmarkEditActivity.INTENT_BOOKMARK_ID, bookmarkId.toString());
-        ProfileIntentUtils.addProfileToIntent(profile, intent);
+        ProfileTokenUtils.addProfileToIntent(profile, intent);
         return intent;
     }
 }

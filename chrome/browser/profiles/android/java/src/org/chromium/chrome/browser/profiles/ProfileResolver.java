@@ -72,9 +72,25 @@ public class ProfileResolver implements PartitionResolver {
         ProfileResolverJni.get().resolveProfileKey(token, callback);
     }
 
+    /**
+     * Like {@link #tokenize(BrowserContextHandle)}, but returns the token's bytes unchanged rather
+     * than converting them to a String.
+     */
+    /* package */ byte[] tokenizeToBytes(Profile profile) {
+        return ProfileResolverJni.get().tokenizeProfileToBytes(profile);
+    }
+
+    /** Like {@link #resolveProfile}, for a token returned by {@link #tokenizeToBytes}. */
+    /* package */ void resolveProfileFromBytes(byte[] token, Callback<@Nullable Profile> callback) {
+        ProfileResolverJni.get().resolveProfileFromBytes(token, callback);
+    }
+
     @VisibleForTesting
     @NativeMethods
     public interface Natives {
+        // TODO(crbug.com/40254448): Remove once PartitionResolver and BackgroundTabPoolManager use
+        // the encoded token from ProfileTokenUtils and legacy intents have expired
+        // (crbug.com/585922618).
         @JniType("std::string")
         String tokenizeProfile(@JniType("Profile*") @Nullable Profile profile);
 
@@ -90,5 +106,13 @@ public class ProfileResolver implements PartitionResolver {
                 @JniType("std::optional<std::string>") @Nullable String token,
                 @JniType("base::OnceCallback<void(ProfileKey*)>")
                         Callback<@Nullable ProfileKey> callback);
+
+        @JniType("std::vector<uint8_t>")
+        byte[] tokenizeProfileToBytes(@JniType("Profile*") Profile profile);
+
+        void resolveProfileFromBytes(
+                @JniType("std::vector<uint8_t>") byte[] token,
+                @JniType("base::OnceCallback<void(Profile*)>")
+                        Callback<@Nullable Profile> callback);
     }
 }

@@ -44,7 +44,7 @@ import org.chromium.chrome.browser.actor.notifications.ActorNotificationFactory;
 import org.chromium.chrome.browser.actor.ui.R;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
+import org.chromium.chrome.browser.profiles.ProfileTokenUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -495,7 +495,7 @@ public class ActorPictureInPictureController
 
         Profile profile = mProfileSupplier.get();
         if (profile != null) {
-            ProfileIntentUtils.addProfileToIntent(profile, intent);
+            ProfileTokenUtils.addProfileToIntent(profile, intent);
         }
 
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);

@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "chrome/browser/android/proto/profile_token.pb.h"
 #include "chrome/browser/profiles/profile.h"
@@ -66,6 +67,32 @@ TEST_F(ProfileResolverTest, TestTokenizeResolve) {
 
   std::string another_token = TokenizeProfile(profile);
   ASSERT_EQ(token, another_token);
+}
+
+// Tokens are persisted (see ProfileToken), so the serialized token of an
+// existing regular profile must not change.
+TEST_F(ProfileResolverTest, TestTokenizeProfileFormatIsStable) {
+  TestingProfile* profile = manager()->CreateTestingProfile("Default");
+  EXPECT_EQ(std::string("\n\x07") + "Default", TokenizeProfile(profile));
+}
+
+TEST_F(ProfileResolverTest, TestResolveNonAsciiAndLongProfilePaths) {
+  // A field length >= 128 encodes as a multi-byte protobuf varint whose
+  // leading byte has the high bit set and is not valid UTF-8 on its own.
+  TestingProfile* long_profile =
+      manager()->CreateTestingProfile(std::string(130, 'a'));
+  Profile* non_ascii_otr_profile = long_profile->GetOffTheRecordProfile(
+      Profile::OTRProfileID::CreateUnique("Test:\xc3\xa9"),
+      /*create_if_needed=*/true);
+
+  std::string long_token = TokenizeProfile(long_profile);
+  EXPECT_FALSE(base::IsStringUTF8(long_token));
+  EXPECT_EQ(long_profile, ResolveProfileSync(long_token));
+  EXPECT_EQ(
+      long_profile->GetProfileKey(),
+      ResolveProfileKeySync(TokenizeProfileKey(long_profile->GetProfileKey())));
+  EXPECT_EQ(non_ascii_otr_profile,
+            ResolveProfileSync(TokenizeProfile(non_ascii_otr_profile)));
 }
 
 TEST_F(ProfileResolverTest, TestResolveDifferentProfiles) {

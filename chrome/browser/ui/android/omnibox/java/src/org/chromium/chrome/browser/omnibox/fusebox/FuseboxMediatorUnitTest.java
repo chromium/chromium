@@ -332,6 +332,11 @@ public class FuseboxMediatorUnitTest {
         mTabModelSelectorSupplier.set(mTabModelSelector);
 
         ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
+
+        // Only used by the tab picker tests.
+        lenient()
+                .when(mProfileResolverNatives.tokenizeProfileToBytes(any()))
+                .thenReturn(new byte[] {1, 2, 3});
         TrackerFactory.setTrackerForTests(mTracker);
 
         mContext =

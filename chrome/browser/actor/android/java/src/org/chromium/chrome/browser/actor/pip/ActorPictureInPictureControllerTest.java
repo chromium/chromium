@@ -138,7 +138,7 @@ public class ActorPictureInPictureControllerTest {
         mController.setOverlayCoordinatorForTesting(mMockCoordinator);
 
         ProfileResolverJni.setInstanceForTesting(mProfileResolverJni);
-        when(mProfileResolverJni.tokenizeProfile(any())).thenReturn("test_token");
+        when(mProfileResolverJni.tokenizeProfileToBytes(any())).thenReturn(new byte[] {1, 2, 3});
 
         ActorKeyedServiceFactory.setForTesting(mActorService);
 

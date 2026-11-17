@@ -62,7 +62,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.PopupButtonData.PopupButtonTy
 import org.chromium.chrome.browser.omnibox.fusebox.consent.DriveConsentDialog;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
+import org.chromium.chrome.browser.profiles.ProfileTokenUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.utilities.TabLoadingService;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -951,7 +951,7 @@ class FuseboxMediator implements BackPressHandler {
             FuseboxMetrics.recordTabPickerOutcome(MobileFuseboxPickerOutcome.LOCAL_ERROR);
             return;
         }
-        ProfileIntentUtils.addProfileToIntent(mProfile, intent);
+        ProfileTokenUtils.addProfileToIntent(mProfile, intent);
 
         beginPickerInteraction(FuseboxAttachmentButtonType.TAB_PICKER);
         TabLoadingService.getInstance().checkpointLoadDurations(mModelList.getAttachedTabIds());

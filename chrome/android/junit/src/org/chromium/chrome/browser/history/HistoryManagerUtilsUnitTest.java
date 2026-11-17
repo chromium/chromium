@@ -84,7 +84,8 @@ public class HistoryManagerUtilsUnitTest {
     public void setUp() {
         DeviceInfo.setIsDesktopForTesting(true);
         ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
-        when(mProfileResolverNatives.tokenizeProfile(any())).thenReturn("profile_token");
+        when(mProfileResolverNatives.tokenizeProfileToBytes(any()))
+                .thenReturn(new byte[] {1, 2, 3});
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUserDataHost);
         when(mIncognitoTabModel.isIncognitoBranded()).thenReturn(true);
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(true);

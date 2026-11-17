@@ -8,6 +8,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.isEmptyString;
 
+import android.content.Intent;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -16,6 +18,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.PayloadCallbackHelper;
@@ -112,6 +116,20 @@ public class ProfileResolverTest {
                 () -> {
                     mProfileResolver.resolveProfile(
                             token, (Profile p) -> callbackHelper.notifyCalled(p));
+                });
+        return callbackHelper.getOnlyPayloadBlocking();
+    }
+
+    private static Intent createSelfTargetedIntent() {
+        return new Intent().setPackage(ContextUtils.getApplicationContext().getPackageName());
+    }
+
+    private Profile retrieveProfileFromIntentSync(Intent intent) {
+        PayloadCallbackHelper<Profile> callbackHelper = new PayloadCallbackHelper<>();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ProfileTokenUtils.retrieveProfileFromIntent(
+                            intent, (Profile p) -> callbackHelper.notifyCalled(p));
                 });
         return callbackHelper.getOnlyPayloadBlocking();
     }
@@ -308,5 +326,111 @@ public class ProfileResolverTest {
                     "#resolveProfileKey() did not resolve null for " + token,
                     resolveProfileKeySync(token));
         }
+    }
+
+    @Test
+    @SmallTest
+    public void testProfileTokenUtils_RegularProfileAndNotificationTag() throws ExecutionException {
+        initToFullMode();
+        Profile profile = getLastUsedRegularProfileOnUiThread();
+
+        Intent intent =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Intent i = createSelfTargetedIntent();
+                            ProfileTokenUtils.addProfileToIntent(profile, i);
+                            return i;
+                        });
+        Assert.assertTrue(ProfileTokenUtils.hasProfileToken(intent));
+        Assert.assertEquals(
+                "Round tripping through ProfileTokenUtils should result in the same Profile object",
+                profile,
+                retrieveProfileFromIntentSync(intent));
+
+        String expectedTag =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> ProfileTokenUtils.getNotificationTag("TestPrefix", profile));
+        Assert.assertEquals(
+                "Notification tag from intent should match tag from profile",
+                expectedTag,
+                ProfileTokenUtils.getNotificationTagFromIntent("TestPrefix", intent));
+    }
+
+    @Test
+    @SmallTest
+    public void testProfileTokenUtils_OtrProfiles() throws ExecutionException {
+        initToFullMode();
+        Profile regularProfile = getLastUsedRegularProfileOnUiThread();
+        Profile primaryOtrProfile = getPrimaryOtrProfileOnUiThread();
+        Profile uniqueOtrProfile = newOtrProfileOnUiThread("foo");
+
+        Intent regularIntent =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Intent i = createSelfTargetedIntent();
+                            ProfileTokenUtils.addProfileToIntent(regularProfile, i);
+                            return i;
+                        });
+        Intent primaryOtrIntent =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Intent i = createSelfTargetedIntent();
+                            ProfileTokenUtils.addProfileToIntent(primaryOtrProfile, i);
+                            return i;
+                        });
+        Intent uniqueOtrIntent =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Intent i = createSelfTargetedIntent();
+                            ProfileTokenUtils.addProfileToIntent(uniqueOtrProfile, i);
+                            return i;
+                        });
+
+        Profile resolvedPrimaryOtr = retrieveProfileFromIntentSync(primaryOtrIntent);
+        Assert.assertEquals(
+                "Round tripped primary OTR profile should match",
+                primaryOtrProfile,
+                resolvedPrimaryOtr);
+        Assert.assertNotEquals(regularProfile, resolvedPrimaryOtr);
+
+        Profile resolvedUniqueOtr = retrieveProfileFromIntentSync(uniqueOtrIntent);
+        Assert.assertEquals(
+                "Round tripped unique OTR profile should match",
+                uniqueOtrProfile,
+                resolvedUniqueOtr);
+        Assert.assertNotEquals(regularProfile, resolvedUniqueOtr);
+        Assert.assertNotEquals(primaryOtrProfile, resolvedUniqueOtr);
+
+        String regularToken = regularIntent.getStringExtra(ProfileTokenUtils.PROFILE_TOKEN_EXTRA);
+        String primaryOtrToken =
+                primaryOtrIntent.getStringExtra(ProfileTokenUtils.PROFILE_TOKEN_EXTRA);
+        String uniqueOtrToken =
+                uniqueOtrIntent.getStringExtra(ProfileTokenUtils.PROFILE_TOKEN_EXTRA);
+        Assert.assertNotNull(regularToken);
+        Assert.assertNotNull(primaryOtrToken);
+        Assert.assertNotNull(uniqueOtrToken);
+        Assert.assertNotEquals(regularToken, primaryOtrToken);
+        Assert.assertNotEquals(regularToken, uniqueOtrToken);
+        Assert.assertNotEquals(primaryOtrToken, uniqueOtrToken);
+    }
+
+    @Test
+    @SmallTest
+    public void testProfileTokenUtils_LegacyIntent() throws ExecutionException {
+        initToFullMode();
+        Profile profile = getLastUsedRegularProfileOnUiThread();
+
+        String legacyRawToken = tokenizeOnUiThread(profile);
+        Intent legacyIntent = createSelfTargetedIntent();
+        legacyIntent.putExtra(ProfileTokenUtils.LEGACY_PROFILE_TOKEN_EXTRA, legacyRawToken);
+        IntentUtils.addTrustedIntentExtras(legacyIntent);
+
+        Assert.assertTrue(ProfileTokenUtils.hasProfileToken(legacyIntent));
+        Assert.assertNull(
+                ProfileTokenUtils.getNotificationTagFromIntent("TestPrefix", legacyIntent));
+        Assert.assertEquals(
+                "Legacy raw token intent should resolve to the same Profile object",
+                profile,
+                retrieveProfileFromIntentSync(legacyIntent));
     }
 }

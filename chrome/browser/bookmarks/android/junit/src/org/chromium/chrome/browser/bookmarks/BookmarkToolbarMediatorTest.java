@@ -18,6 +18,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.Intent;
@@ -128,6 +129,9 @@ public class BookmarkToolbarMediatorTest {
         mIncognitoEnabledSupplier = () -> mIncognitoEnabled;
 
         ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
+
+        when(mProfileResolverNatives.tokenizeProfileToBytes(any()))
+                .thenReturn(new byte[] {1, 2, 3});
 
         initModelAndMediator();
     }

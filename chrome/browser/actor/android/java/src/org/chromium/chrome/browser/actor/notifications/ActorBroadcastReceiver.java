@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.foreground_service.ActorForegroundServiceManager;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
+import org.chromium.chrome.browser.profiles.ProfileTokenUtils;
 
 /** Handles broadcast intents for Actor tasks from notifications. */
 @NullMarked
@@ -44,7 +44,7 @@ public class ActorBroadcastReceiver extends BroadcastReceiver {
         }
         final PendingResult pendingResult = goAsync();
 
-        ProfileIntentUtils.retrieveProfileFromIntent(
+        ProfileTokenUtils.retrieveProfileFromIntent(
                 intent,
                 (profile) -> {
                     try {

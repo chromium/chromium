@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.bookmarks;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
@@ -52,6 +54,8 @@ public class BookmarkManagerOpenerTest {
     @Before
     public void setUp() {
         ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
+        when(mProfileResolverNatives.tokenizeProfileToBytes(any()))
+                .thenReturn(new byte[] {1, 2, 3});
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
 
