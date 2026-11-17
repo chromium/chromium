@@ -17,7 +17,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
+#include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/features.h"
@@ -99,11 +101,36 @@ class MockBackgroundTabLoadingPolicy : public BackgroundTabLoadingPolicy {
 
 }  // namespace
 
-class BackgroundTabLoadingPolicyTest : public GraphTestHarness {
+// Base class listed before `GraphTestHarness` so `ScopedFeatureList` is
+// initialized before `BrowserTaskEnvironment` starts background threads and
+// destroyed only after `~GraphTestHarness()` stops them.
+class BackgroundTabLoadingPolicyFeatureListSetup {
+ protected:
+  explicit BackgroundTabLoadingPolicyFeatureListSetup(
+      bool enable_defer_while_visible_loading = true) {
+    if (enable_defer_while_visible_loading) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kDeferBackgroundTabLoadsWhileVisiblePageLoads);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kDeferBackgroundTabLoadsWhileVisiblePageLoads);
+    }
+  }
+  ~BackgroundTabLoadingPolicyFeatureListSetup() = default;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class BackgroundTabLoadingPolicyTest
+    : public BackgroundTabLoadingPolicyFeatureListSetup,
+      public GraphTestHarness {
  public:
   using Super = GraphTestHarness;
 
-  BackgroundTabLoadingPolicyTest() = default;
+  explicit BackgroundTabLoadingPolicyTest(
+      bool enable_defer_while_visible_loading = true)
+      : BackgroundTabLoadingPolicyFeatureListSetup(
+            enable_defer_while_visible_loading) {}
   ~BackgroundTabLoadingPolicyTest() override = default;
   BackgroundTabLoadingPolicyTest(const BackgroundTabLoadingPolicyTest& other) =
       delete;
@@ -832,6 +859,431 @@ TEST_F(BackgroundTabLoadingPolicyTest,
   page_node->SetLoadingState(PageNode::LoadingState::kLoading);
   page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
   EXPECT_FALSE(policy()->has_restored_tabs_to_load_);
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest, DeferWhileVisiblePageLoading) {
+  auto visible_page = CreateNode<performance_manager::PageNodeImpl>();
+  visible_page->SetType(PageType::kTab);
+  visible_page->SetIsVisible(true);
+  visible_page->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  auto bg_page = CreateNode<performance_manager::PageNodeImpl>();
+  bg_page->SetType(PageType::kTab);
+  bg_page->SetIsVisible(false);
+
+  policy()->SetMaxSimultaneousLoadsForTesting(4);
+
+  std::vector<PageNodeData> to_load;
+  to_load.emplace_back(bg_page.get()->GetWeakPtr());
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
+  EXPECT_EQ(0, num_all_tabs_loaded_calls());
+
+  // Background loads remain deferred through `kLoadedBusy` until quiescence.
+  visible_page->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
+  ::testing::Mock::VerifyAndClear(loader());
+  EXPECT_EQ(0, num_all_tabs_loaded_calls());
+
+  // Once the visible page reaches `kLoadedIdle`, the background tab load
+  // starts.
+  EXPECT_CALL(*loader(), LoadPageNode(bg_page.get()));
+  visible_page->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  ::testing::Mock::VerifyAndClear(loader());
+
+  bg_page->SetLoadingState(PageNode::LoadingState::kLoading);
+  bg_page->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
+  bg_page->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  EXPECT_EQ(1, num_all_tabs_loaded_calls());
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest,
+       DeferWhileAnyOfMultipleVisiblePagesLoading) {
+  auto visible_page_1 = CreateNode<performance_manager::PageNodeImpl>();
+  visible_page_1->SetType(PageType::kTab);
+  visible_page_1->SetIsVisible(true);
+  visible_page_1->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  auto visible_page_2 = CreateNode<performance_manager::PageNodeImpl>();
+  visible_page_2->SetType(PageType::kTab);
+  visible_page_2->SetIsVisible(true);
+  visible_page_2->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  auto bg_page = CreateNode<performance_manager::PageNodeImpl>();
+  bg_page->SetType(PageType::kTab);
+  bg_page->SetIsVisible(false);
+
+  policy()->SetMaxSimultaneousLoadsForTesting(4);
+
+  std::vector<PageNodeData> to_load;
+  to_load.emplace_back(bg_page.get()->GetWeakPtr());
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
+
+  // Hiding the first visible page does not start background loads while a
+  // second visible page is still loading.
+  visible_page_1->SetIsVisible(false);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
+
+  EXPECT_CALL(*loader(), LoadPageNode(bg_page.get()));
+  visible_page_2->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
+  visible_page_2->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  ::testing::Mock::VerifyAndClear(loader());
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest,
+       ResumeWhenLoadingVisiblePageBecomesHidden) {
+  auto visible_page = CreateNode<performance_manager::PageNodeImpl>();
+  visible_page->SetType(PageType::kTab);
+  visible_page->SetIsVisible(true);
+  visible_page->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  auto bg_page = CreateNode<performance_manager::PageNodeImpl>();
+  bg_page->SetType(PageType::kTab);
+  bg_page->SetIsVisible(false);
+
+  policy()->SetMaxSimultaneousLoadsForTesting(4);
+
+  std::vector<PageNodeData> to_load;
+  to_load.emplace_back(bg_page.get()->GetWeakPtr());
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
+
+  // If the loading visible page becomes hidden, background tab loading resumes.
+  EXPECT_CALL(*loader(), LoadPageNode(bg_page.get()));
+  visible_page->SetIsVisible(false);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
+
+  bg_page->SetLoadingState(PageNode::LoadingState::kLoading);
+  bg_page->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
+  bg_page->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  EXPECT_EQ(1, num_all_tabs_loaded_calls());
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest,
+       DoNotResumeDuringSynchronousVisibleTabSwitch) {
+  auto visible_page = CreateNode<performance_manager::PageNodeImpl>();
+  visible_page->SetType(PageType::kTab);
+  visible_page->SetIsVisible(true);
+  visible_page->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  auto switched_page = CreateNode<performance_manager::PageNodeImpl>();
+  switched_page->SetType(PageType::kTab);
+  switched_page->SetIsVisible(false);
+
+  auto bg_page = CreateNode<performance_manager::PageNodeImpl>();
+  bg_page->SetType(PageType::kTab);
+  bg_page->SetIsVisible(false);
+
+  policy()->SetMaxSimultaneousLoadsForTesting(4);
+
+  std::vector<PageNodeData> to_load;
+  to_load.emplace_back(switched_page.get()->GetWeakPtr());
+  to_load.emplace_back(bg_page.get()->GetWeakPtr());
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
+
+  // Simulate BrowserView::OnActiveTabChanged() hiding the outgoing tab before
+  // showing and starting load on the newly selected tab in the same task.
+  visible_page->SetIsVisible(false);
+  switched_page->SetIsVisible(true);
+  switched_page->SetLoadingState(PageNode::LoadingState::kLoading);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
+
+  // Once the newly selected foreground tab finishes loading, the remaining
+  // background tab starts loading even if the old hidden tab is still loading.
+  EXPECT_CALL(*loader(), LoadPageNode(bg_page.get()));
+  switched_page->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
+  switched_page->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  ::testing::Mock::VerifyAndClear(loader());
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest, ResumeAfterVisibleLoadingTimeout) {
+  auto visible_page = CreateNode<performance_manager::PageNodeImpl>();
+  visible_page->SetType(PageType::kTab);
+  visible_page->SetIsVisible(true);
+  visible_page->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  auto bg_page = CreateNode<performance_manager::PageNodeImpl>();
+  bg_page->SetType(PageType::kTab);
+  bg_page->SetIsVisible(false);
+
+  policy()->SetMaxSimultaneousLoadsForTesting(4);
+
+  std::vector<PageNodeData> to_load;
+  to_load.emplace_back(bg_page.get()->GetWeakPtr());
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
+
+  // Background tab loads remain deferred prior to the 15s timeout while the
+  // visible page stays in `kLoading`.
+  task_env().FastForwardBy(base::Seconds(14));
+  ::testing::Mock::VerifyAndClear(loader());
+
+  // Reaching the 15s timeout unblocks background tab loads even if the visible
+  // page never leaves `kLoading`.
+  EXPECT_CALL(*loader(), LoadPageNode(bg_page.get()));
+  task_env().FastForwardBy(base::Seconds(1));
+  ::testing::Mock::VerifyAndClear(loader());
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest,
+       VisiblePageStartsLoadingMidRestoreArmsTimeoutImmediately) {
+  auto visible_page = CreateNode<performance_manager::PageNodeImpl>();
+  visible_page->SetType(PageType::kTab);
+  visible_page->SetIsVisible(true);
+
+  auto bg_page1 = CreateNode<performance_manager::PageNodeImpl>();
+  bg_page1->SetType(PageType::kTab);
+  bg_page1->SetIsVisible(false);
+
+  auto bg_page2 = CreateNode<performance_manager::PageNodeImpl>();
+  bg_page2->SetType(PageType::kTab);
+  bg_page2->SetIsVisible(false);
+
+  auto bg_page3 = CreateNode<performance_manager::PageNodeImpl>();
+  bg_page3->SetType(PageType::kTab);
+  bg_page3->SetIsVisible(false);
+
+  // Use 2 loading slots so `bg_page1` and `bg_page2` occupy both slots while
+  // `bg_page3` waits in `page_nodes_to_load_`.
+  policy()->SetMaxSimultaneousLoadsForTesting(2);
+
+  EXPECT_CALL(*loader(), LoadPageNode(bg_page1.get()));
+  EXPECT_CALL(*loader(), LoadPageNode(bg_page2.get()));
+  std::vector<PageNodeData> to_load;
+  to_load.emplace_back(bg_page1.get()->GetWeakPtr());
+  to_load.emplace_back(bg_page2.get()->GetWeakPtr());
+  to_load.emplace_back(bg_page3.get()->GetWeakPtr());
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
+  bg_page1->SetLoadingState(PageNode::LoadingState::kLoading);
+  bg_page2->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  // `visible_page` enters `kLoading` mid-restore while all slots are occupied
+  // (so `MaybeLoadSomeTabs()` is not called at `t = 0`). The 15s deferral timer
+  // should start immediately.
+  visible_page->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  // At `t = 10s`, `bg_page1` and `bg_page2` finish loading (leaving 1 free slot
+  // alongside `visible_page`), but `bg_page3` remains deferred because only 10s
+  // of the 15s window elapsed.
+  task_env().FastForwardBy(base::Seconds(10));
+  bg_page1->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
+  bg_page1->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  bg_page2->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
+  bg_page2->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  ::testing::Mock::VerifyAndClear(loader());
+
+  // At `t = 14s`, `bg_page3` is still deferred.
+  task_env().FastForwardBy(base::Seconds(4));
+  ::testing::Mock::VerifyAndClear(loader());
+
+  // At `t = 15s` from when `visible_page` started loading, the timeout fires
+  // and `bg_page3` loads.
+  EXPECT_CALL(*loader(), LoadPageNode(bg_page3.get()));
+  task_env().FastForwardBy(base::Seconds(1));
+  ::testing::Mock::VerifyAndClear(loader());
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest,
+       TimeoutNotRearmedWhileAnotherVisiblePageRemainsLoading) {
+  auto visible_page1 = CreateNode<performance_manager::PageNodeImpl>();
+  visible_page1->SetType(PageType::kTab);
+  visible_page1->SetIsVisible(true);
+  visible_page1->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  auto visible_page2 = CreateNode<performance_manager::PageNodeImpl>();
+  visible_page2->SetType(PageType::kTab);
+  visible_page2->SetIsVisible(true);
+  visible_page2->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  auto bg_page1 = CreateNode<performance_manager::PageNodeImpl>();
+  bg_page1->SetType(PageType::kTab);
+  bg_page1->SetIsVisible(false);
+
+  auto bg_page2 = CreateNode<performance_manager::PageNodeImpl>();
+  bg_page2->SetType(PageType::kTab);
+  bg_page2->SetIsVisible(false);
+
+  // 3 slots: 2 occupied by `visible_page1` and `visible_page2`, leaving 1 free
+  // slot once the 15s deferral timeout expires.
+  policy()->SetMaxSimultaneousLoadsForTesting(3);
+
+  std::vector<PageNodeData> to_load;
+  to_load.emplace_back(bg_page1.get()->GetWeakPtr());
+  to_load.emplace_back(bg_page2.get()->GetWeakPtr());
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
+
+  // At `t = 15s`, the contiguous visible-loading episode times out and
+  // `bg_page1` fills the 3rd loading slot.
+  EXPECT_CALL(*loader(), LoadPageNode(bg_page1.get()));
+  task_env().FastForwardBy(base::Seconds(15));
+  ::testing::Mock::VerifyAndClear(loader());
+  bg_page1->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  // When `visible_page1` finishes loading while `visible_page2` remains in
+  // `kLoading`, `bg_page2` loads immediately without starting a second 15s
+  // deferral within the same contiguous visible-loading episode.
+  EXPECT_CALL(*loader(), LoadPageNode(bg_page2.get()));
+  visible_page1->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
+  visible_page1->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  ::testing::Mock::VerifyAndClear(loader());
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest,
+       TimeoutResetsAfterVisiblePageFinishesLoading) {
+  auto visible_page1 = CreateNode<performance_manager::PageNodeImpl>();
+  visible_page1->SetType(PageType::kTab);
+  visible_page1->SetIsVisible(true);
+  visible_page1->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  auto visible_page2 = CreateNode<performance_manager::PageNodeImpl>();
+  visible_page2->SetType(PageType::kTab);
+  visible_page2->SetIsVisible(true);
+
+  auto bg_page1 = CreateNode<performance_manager::PageNodeImpl>();
+  bg_page1->SetType(PageType::kTab);
+  bg_page1->SetIsVisible(false);
+
+  auto bg_page2 = CreateNode<performance_manager::PageNodeImpl>();
+  bg_page2->SetType(PageType::kTab);
+  bg_page2->SetIsVisible(false);
+
+  auto bg_page3 = CreateNode<performance_manager::PageNodeImpl>();
+  bg_page3->SetType(PageType::kTab);
+  bg_page3->SetIsVisible(false);
+
+  policy()->SetMaxSimultaneousLoadsForTesting(2);
+
+  std::vector<PageNodeData> to_load;
+  to_load.emplace_back(bg_page1.get()->GetWeakPtr());
+  to_load.emplace_back(bg_page2.get()->GetWeakPtr());
+  to_load.emplace_back(bg_page3.get()->GetWeakPtr());
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
+
+  // `visible_page1` finishes loading at `t = 10s` (before the 15s timeout),
+  // stopping the timer and starting `bg_page1` and `bg_page2`.
+  task_env().FastForwardBy(base::Seconds(10));
+  EXPECT_CALL(*loader(), LoadPageNode(bg_page1.get()));
+  EXPECT_CALL(*loader(), LoadPageNode(bg_page2.get()));
+  visible_page1->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
+  visible_page1->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  ::testing::Mock::VerifyAndClear(loader());
+  bg_page1->SetLoadingState(PageNode::LoadingState::kLoading);
+  bg_page2->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  // `visible_page2` now starts a new visible-loading episode and gets a fresh
+  // 15s deferral window when `bg_page1` and `bg_page2` finish.
+  visible_page2->SetLoadingState(PageNode::LoadingState::kLoading);
+  bg_page1->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
+  bg_page1->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  bg_page2->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
+  bg_page2->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  ::testing::Mock::VerifyAndClear(loader());
+
+  task_env().FastForwardBy(base::Seconds(14));
+  ::testing::Mock::VerifyAndClear(loader());
+
+  EXPECT_CALL(*loader(), LoadPageNode(bg_page3.get()));
+  task_env().FastForwardBy(base::Seconds(1));
+  ::testing::Mock::VerifyAndClear(loader());
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest,
+       StopLoadingTabsCancelsVisibleLoadingTimeout) {
+  auto visible_page = CreateNode<performance_manager::PageNodeImpl>();
+  visible_page->SetType(PageType::kTab);
+  visible_page->SetIsVisible(true);
+  visible_page->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  auto bg_page = CreateNode<performance_manager::PageNodeImpl>();
+  bg_page->SetType(PageType::kTab);
+  bg_page->SetIsVisible(false);
+
+  policy()->SetMaxSimultaneousLoadsForTesting(4);
+
+  std::vector<PageNodeData> to_load;
+  to_load.emplace_back(bg_page.get()->GetWeakPtr());
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
+
+  // Moderate memory pressure invokes `StopLoadingTabs()`, clearing
+  // `page_nodes_to_load_` and stopping the deferral timer.
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
+      base::MemoryLimit::ModeratePressureThreshold());
+  task_env().RunUntilIdle();
+
+  task_env().FastForwardBy(base::Seconds(15));
+  ::testing::Mock::VerifyAndClear(loader());
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest,
+       RemovingLoadingVisiblePageResumesImmediately) {
+  auto visible_page = CreateNode<performance_manager::PageNodeImpl>();
+  visible_page->SetType(PageType::kTab);
+  visible_page->SetIsVisible(true);
+  visible_page->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  auto bg_page = CreateNode<performance_manager::PageNodeImpl>();
+  bg_page->SetType(PageType::kTab);
+  bg_page->SetIsVisible(false);
+
+  policy()->SetMaxSimultaneousLoadsForTesting(4);
+
+  std::vector<PageNodeData> to_load;
+  to_load.emplace_back(bg_page.get()->GetWeakPtr());
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
+
+  // Closing the loading visible page removes it from the graph and immediately
+  // unblocks `bg_page` without waiting for the 15s timeout.
+  EXPECT_CALL(*loader(), LoadPageNode(bg_page.get()));
+  visible_page.reset();
+  ::testing::Mock::VerifyAndClear(loader());
+}
+
+class BackgroundTabLoadingPolicyFeatureDisabledTest
+    : public BackgroundTabLoadingPolicyTest {
+ public:
+  BackgroundTabLoadingPolicyFeatureDisabledTest()
+      : BackgroundTabLoadingPolicyTest(
+            /*enable_defer_while_visible_loading=*/false) {}
+};
+
+TEST_F(BackgroundTabLoadingPolicyFeatureDisabledTest,
+       DeferWhileVisiblePageLoading) {
+  auto visible_page = CreateNode<performance_manager::PageNodeImpl>();
+  visible_page->SetType(PageType::kTab);
+  visible_page->SetIsVisible(true);
+  visible_page->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  auto bg_page = CreateNode<performance_manager::PageNodeImpl>();
+  bg_page->SetType(PageType::kTab);
+  bg_page->SetIsVisible(false);
+
+  policy()->SetMaxSimultaneousLoadsForTesting(4);
+
+  EXPECT_CALL(*loader(), LoadPageNode(bg_page.get()));
+  std::vector<PageNodeData> to_load;
+  to_load.emplace_back(bg_page.get()->GetWeakPtr());
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
 }
 
 }  // namespace policies

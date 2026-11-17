@@ -10,11 +10,15 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_pressure_level_proto.h"
 #include "base/trace_event/named_trigger.h"
@@ -22,6 +26,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy_helpers.h"
+#include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/public/background_tab_loading_policy.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -73,6 +78,8 @@ constexpr base::TimeDelta
 constexpr uint32_t BackgroundTabLoadingPolicy::kMinSimultaneousTabLoads;
 constexpr uint32_t BackgroundTabLoadingPolicy::kMaxSimultaneousTabLoads;
 constexpr uint32_t BackgroundTabLoadingPolicy::kCoresPerSimultaneousTabLoad;
+constexpr base::TimeDelta
+    BackgroundTabLoadingPolicy::kMaxVisibleLoadingDeferralTimeout;
 
 BackgroundTabLoadingPolicy::PageNodeData::PageNodeData(
     base::WeakPtr<PageNode> page_node,
@@ -198,6 +205,24 @@ void BackgroundTabLoadingPolicy::OnTakenFromGraph(Graph* graph) {
   graph->RemovePageNodeObserver(this);
 }
 
+void BackgroundTabLoadingPolicy::OnIsVisibleChanged(const PageNode* page_node) {
+  if (page_nodes_to_load_.empty() || !page_nodes_loading_.contains(page_node) ||
+      !base::FeatureList::IsEnabled(
+          features::kDeferBackgroundTabLoadsWhileVisiblePageLoads)) {
+    return;
+  }
+  if (page_node->IsVisible()) {
+    UpdateVisiblePageLoadDeferralTimeout();
+    return;
+  }
+  // Post asynchronously because switching tabs detaches and hides the
+  // outgoing active WebContents before attaching and starting load on the
+  // incoming active WebContents within the same task.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&BackgroundTabLoadingPolicy::MaybeLoadSomeTabs,
+                                weak_factory_.GetWeakPtr()));
+}
+
 void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
     const PageNode* page_node,
     PageNode::LoadingState previous_state) {
@@ -256,6 +281,8 @@ void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
         // scored.
         DispatchNotifyAllTabsScoredIfNeeded();
       }
+
+      UpdateVisiblePageLoadDeferralTimeout();
 
       return;
     }
@@ -327,6 +354,8 @@ void BackgroundTabLoadingPolicy::ScheduleLoadForRestoredTabs(
        i < page_nodes_to_load_.size(); ++i) {
     SetUsedInBackgroundAsync(page_nodes_to_load_[i].page_node);
   }
+
+  UpdateVisiblePageLoadDeferralTimeout();
 
   // All restored tabs may be loaded.
   UpdateHasRestoredTabsToLoad();
@@ -467,6 +496,7 @@ void BackgroundTabLoadingPolicy::StopLoadingTabs() {
   // Clear out the remaining tabs to load and clean ourselves up.
   page_nodes_to_load_.clear();
   tabs_scored_ = 0;
+  UpdateVisiblePageLoadDeferralTimeout();
 
   // Ideally we'd interrupt all ongoing loads (see crbug.com/40126598)
 
@@ -590,6 +620,7 @@ void BackgroundTabLoadingPolicy::RemovePageNode(const PageNode* page_node) {
   const bool erased_page_node_to_load_data = ErasePageNodeToLoadData(page_node);
   std::erase(page_nodes_load_initiated_, page_node);
   page_nodes_loading_.erase(page_node);
+  UpdateVisiblePageLoadDeferralTimeout();
 
   // All restored tabs may be loaded.
   UpdateHasRestoredTabsToLoad();
@@ -602,6 +633,7 @@ void BackgroundTabLoadingPolicy::RemovePageNode(const PageNode* page_node) {
 
 void BackgroundTabLoadingPolicy::MaybeLoadSomeTabs() {
   TRACE_EVENT("browser", "BackgroundTabLoadingPolicy::MaybeLoadSomeTabs");
+
   // Continue to load tabs while possible. This is in a loop with a
   // recalculation of GetMaxNewTabLoads() as reentrancy can cause conditions
   // to change as each tab load is initiated.
@@ -609,14 +641,30 @@ void BackgroundTabLoadingPolicy::MaybeLoadSomeTabs() {
     LoadNextTab();
   }
 
+  UpdateVisiblePageLoadDeferralTimeout();
+
   // All restored tabs may be loaded.
   UpdateHasRestoredTabsToLoad();
 }
 
 size_t BackgroundTabLoadingPolicy::GetMaxNewTabLoads() const {
-  // Can't load tabs until all tabs have been scored.
-  if (tabs_scored_ < page_nodes_to_load_.size())
+  // Can't load tabs until there are tabs to load and all tabs have been scored.
+  if (page_nodes_to_load_.empty() ||
+      tabs_scored_ < page_nodes_to_load_.size()) {
     return 0U;
+  }
+
+  // Defer starting background tab loads while any visible page is still in
+  // `page_nodes_loading_` (`kLoading` or `kLoadedBusy` prior to CPU/network
+  // quiescence), up to `kMaxVisibleLoadingDeferralTimeout`, so background tab
+  // navigation and renderer creation do not contend with the active foreground
+  // tab during startup/session restore.
+  if (!has_visible_page_load_timed_out_ &&
+      base::FeatureList::IsEnabled(
+          features::kDeferBackgroundTabLoadsWhileVisiblePageLoads) &&
+      HasLoadingVisiblePage()) {
+    return 0U;
+  }
 
   // This takes into account all tabs currently loading across the browser,
   // including ones that BackgroundTabLoadingPolicy isn't explicitly managing.
@@ -636,6 +684,38 @@ size_t BackgroundTabLoadingPolicy::GetMaxNewTabLoads() const {
   page_nodes_to_load = std::min(page_nodes_to_load, page_nodes_to_load_.size());
 
   return page_nodes_to_load;
+}
+
+bool BackgroundTabLoadingPolicy::HasLoadingVisiblePage() const {
+  for (const auto& [page_node, _] : page_nodes_loading_) {
+    if (page_node->IsVisible()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void BackgroundTabLoadingPolicy::UpdateVisiblePageLoadDeferralTimeout() {
+  if (page_nodes_to_load_.empty() ||
+      !base::FeatureList::IsEnabled(
+          features::kDeferBackgroundTabLoadsWhileVisiblePageLoads) ||
+      !HasLoadingVisiblePage()) {
+    has_visible_page_load_timed_out_ = false;
+    visible_page_load_timeout_timer_.Stop();
+    return;
+  }
+  if (!has_visible_page_load_timed_out_ &&
+      !visible_page_load_timeout_timer_.IsRunning()) {
+    visible_page_load_timeout_timer_.Start(
+        FROM_HERE, kMaxVisibleLoadingDeferralTimeout,
+        base::BindOnce(&BackgroundTabLoadingPolicy::OnVisiblePageLoadTimedOut,
+                       base::Unretained(this)));
+  }
+}
+
+void BackgroundTabLoadingPolicy::OnVisiblePageLoadTimedOut() {
+  has_visible_page_load_timed_out_ = true;
+  MaybeLoadSomeTabs();
 }
 
 void BackgroundTabLoadingPolicy::LoadNextTab() {

@@ -152,6 +152,10 @@ struct TrimOnMemoryPressureParams {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// When enabled, BackgroundTabLoadingPolicy defers initiating restored
+// background tab loads while any visible page is loading.
+BASE_DECLARE_FEATURE(kDeferBackgroundTabLoadsWhileVisiblePageLoads);
+
 BASE_DECLARE_FEATURE(kSustainedPMUrgentDiscarding);
 
 BASE_DECLARE_FEATURE_PARAM(int,

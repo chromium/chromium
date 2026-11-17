@@ -149,6 +149,9 @@ TrimOnMemoryPressureParams TrimOnMemoryPressureParams::GetParams() {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+BASE_FEATURE(kDeferBackgroundTabLoadsWhileVisiblePageLoads,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSustainedPMUrgentDiscarding, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The percentage of available memory threshold under which it is considered
