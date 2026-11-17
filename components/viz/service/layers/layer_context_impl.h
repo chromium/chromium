@@ -200,7 +200,7 @@ class VIZ_SERVICE_EXPORT LayerContextImpl
   FrameSinkId pending_unbounded_frame_sink_id_;
   LocalSurfaceId pending_unbounded_local_surface_id_;
   FrameSinkId bound_unbounded_frame_sink_id_;
-  std::unique_ptr<CompositorFrameSinkSupport> unbounded_support_;
+  std::unique_ptr<CompositorFrameSinkSupport> unbounded_frame_sink_;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

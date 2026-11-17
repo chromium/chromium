@@ -2611,7 +2611,7 @@ void LayerContextImpl::ResetBoundUnboundedFrameSink() {
     }
     bound_unbounded_frame_sink_id_ = FrameSinkId();
   }
-  unbounded_support_.reset();
+  unbounded_frame_sink_.reset();
 }
 
 void LayerContextImpl::SetUnboundedLocalSurfaceId(
@@ -2645,7 +2645,8 @@ void LayerContextImpl::TryBindUnboundedFrameSink() {
   CompositorFrameSinkSupport* existing_frame_sink =
       compositor_sink_->frame_sink_manager()->GetFrameSinkForId(
           pending_unbounded_frame_sink_id_);
-  if (existing_frame_sink && existing_frame_sink != unbounded_support_.get()) {
+  if (existing_frame_sink &&
+      existing_frame_sink != unbounded_frame_sink_.get()) {
     // A live support for the ID that wasn't created here belongs to another
     // client, so don't bind to it. The ID stays pending, so binding is retried
     // once that support is gone.
@@ -2656,13 +2657,13 @@ void LayerContextImpl::TryBindUnboundedFrameSink() {
     host_impl_->DismissUnboundedFrameSink();
   }
   CHECK(base::FeatureList::IsEnabled(features::kTreesInViz));
-  unbounded_support_ = std::make_unique<CompositorFrameSinkSupport>(
+  unbounded_frame_sink_ = std::make_unique<CompositorFrameSinkSupport>(
       /*client=*/nullptr, compositor_sink_->frame_sink_manager(),
       pending_unbounded_frame_sink_id_, /*is_root=*/false);
-  unbounded_support_->set_resource_return_delegate(this);
+  unbounded_frame_sink_->set_resource_return_delegate(this);
   bound_unbounded_frame_sink_id_ = pending_unbounded_frame_sink_id_;
   auto direct_sink = std::make_unique<DirectLayerTreeFrameSink>(
-      unbounded_support_->GetWeakPtr(), pending_unbounded_local_surface_id_);
+      unbounded_frame_sink_->GetWeakPtr(), pending_unbounded_local_surface_id_);
   host_impl_->SetUnboundedFrameSink(std::move(direct_sink),
                                     pending_unbounded_local_surface_id_);
   pending_unbounded_frame_sink_id_ = FrameSinkId();
