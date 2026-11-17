@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.multiwindow;
 
 import org.chromium.build.annotations.NullMarked;
 
-import java.util.Locale;
-
 /** Data holder for information relevant to windows requiring recovery after an app crash. */
 @NullMarked
 final class CrashRecoveryWindowInfo {
@@ -17,14 +15,5 @@ final class CrashRecoveryWindowInfo {
     CrashRecoveryWindowInfo(int windowId, boolean isVisible) {
         this.windowId = windowId;
         this.isVisible = isVisible;
-    }
-
-    @Override
-    public String toString() {
-        return String.format(
-                Locale.ENGLISH,
-                "CrashRecoveryWindowInfo(windowId=%d, isVisible=%b)",
-                windowId,
-                isVisible);
     }
 }
