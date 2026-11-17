@@ -1517,11 +1517,6 @@ public class LocationBarMediator
 
         connectObservers();
         updateButtonVisibility();
-
-        // Serve the cached suggestions while we wait for Profile.
-        if (mCurrentInput.isInCacheableContext() && mAutocompleteCoordinator != null) {
-            mAutocompleteCoordinator.serveCachedZeroSuggest(mCurrentInput);
-        }
     }
 
     /**

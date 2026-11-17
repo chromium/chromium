@@ -669,13 +669,6 @@ public final class ChromePreferenceKeys {
             "Chrome.OfflineMeasurements.SystemStateList";
 
     /**
-     * Serialized GroupsInfo data used by Omnibox Suggestions to present suggestions before natives
-     * are ready.
-     */
-    public static final String OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO =
-            "Chrome.Omnibox.CachedZeroSuggestGroupsInfo";
-
-    /**
      * Prefix of the preferences to persist pushed notifications when native is not initialized.
      * Each suffix pertains to a specific OptimizationType. All entries are cleared when native is
      * initialized.
@@ -1161,36 +1154,6 @@ public final class ChromePreferenceKeys {
     public static final String WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES =
             "Chrome.WindowControlsOverlay.EnabledPackages";
 
-    /** Cached Suggestions and Suggestion Headers. */
-    public static final String KEY_ZERO_SUGGEST_LIST_SIZE = "zero_suggest_list_size";
-
-    public static final KeyPrefix KEY_ZERO_SUGGEST_URL_PREFIX = new KeyPrefix("zero_suggest_url*");
-    public static final KeyPrefix KEY_ZERO_SUGGEST_DISPLAY_TEXT_PREFIX =
-            new KeyPrefix("zero_suggest_display_text*");
-    public static final KeyPrefix KEY_ZERO_SUGGEST_DESCRIPTION_PREFIX =
-            new KeyPrefix("zero_suggest_description*");
-    public static final KeyPrefix KEY_ZERO_SUGGEST_NATIVE_TYPE_PREFIX =
-            new KeyPrefix("zero_suggest_native_type*");
-    public static final KeyPrefix KEY_ZERO_SUGGEST_NATIVE_SUBTYPES_PREFIX =
-            new KeyPrefix("zero_suggest_native_subtypes*");
-    public static final KeyPrefix KEY_ZERO_SUGGEST_IS_SEARCH_TYPE_PREFIX =
-            new KeyPrefix("zero_suggest_is_search*");
-    public static final KeyPrefix KEY_ZERO_SUGGEST_ANSWER_TEXT_PREFIX =
-            new KeyPrefix("zero_suggest_answer_text*");
-    public static final KeyPrefix KEY_ZERO_SUGGEST_GROUP_ID_PREFIX =
-            new KeyPrefix("zero_suggest_group_id*");
-
-    @Deprecated
-    public static final KeyPrefix KEY_ZERO_SUGGEST_IS_DELETABLE_PREFIX =
-            new KeyPrefix("zero_suggest_is_deletable*");
-
-    public static final KeyPrefix KEY_ZERO_SUGGEST_IS_STARRED_PREFIX =
-            new KeyPrefix("zero_suggest_is_starred*");
-    public static final KeyPrefix KEY_ZERO_SUGGEST_POST_CONTENT_TYPE_PREFIX =
-            new KeyPrefix("zero_suggest_post_content_type*");
-    public static final KeyPrefix KEY_ZERO_SUGGEST_POST_CONTENT_DATA_PREFIX =
-            new KeyPrefix("zero_suggest_post_content_data*");
-
     public static final String BLUETOOTH_NOTIFICATION_IDS = "Chrome.Bluetooth.NotificationIds";
     public static final String SERIAL_NOTIFICATION_IDS = "Chrome.Serial.NotificationIds";
     public static final String USB_NOTIFICATION_IDS = "Chrome.USB.NotificationIds";
@@ -1332,7 +1295,6 @@ public final class ChromePreferenceKeys {
                 OFFLINE_MEASUREMENTS_LAST_CHECK_MILLIS,
                 OFFLINE_MEASUREMENTS_SYSTEM_STATE_LIST,
                 OFFLINE_MEASUREMENTS_USER_AGENT_STRING,
-                OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO,
                 OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CACHE.pattern(),
                 OS_ADVANCED_PROTECTION_SETTING,
                 OS_ADVANCED_PROTECTION_SETTING_UPDATED_TIME,
@@ -1523,8 +1485,7 @@ public final class ChromePreferenceKeys {
                 TWA_DISCLOSURE_ACCEPTED_PACKAGES,
                 UI_THEME_SETTING,
                 VERIFIED_DIGITAL_ASSET_LINKS,
-                WEBAPK_UNINSTALLED_PACKAGES,
-                KEY_ZERO_SUGGEST_LIST_SIZE);
+                WEBAPK_UNINSTALLED_PACKAGES);
     }
 
     /**
@@ -1539,19 +1500,7 @@ public final class ChromePreferenceKeys {
         return Arrays.asList(
                 CUSTOM_TABS_DEX_LAST_UPDATE_TIME_PREF_PREFIX,
                 PAYMENTS_PAYMENT_INSTRUMENT_USE_COUNT,
-                PAYMENTS_PAYMENT_INSTRUMENT_USE_DATE,
-                KEY_ZERO_SUGGEST_URL_PREFIX,
-                KEY_ZERO_SUGGEST_DISPLAY_TEXT_PREFIX,
-                KEY_ZERO_SUGGEST_DESCRIPTION_PREFIX,
-                KEY_ZERO_SUGGEST_NATIVE_TYPE_PREFIX,
-                KEY_ZERO_SUGGEST_NATIVE_SUBTYPES_PREFIX,
-                KEY_ZERO_SUGGEST_IS_SEARCH_TYPE_PREFIX,
-                KEY_ZERO_SUGGEST_ANSWER_TEXT_PREFIX,
-                KEY_ZERO_SUGGEST_GROUP_ID_PREFIX,
-                KEY_ZERO_SUGGEST_IS_DELETABLE_PREFIX,
-                KEY_ZERO_SUGGEST_IS_STARRED_PREFIX,
-                KEY_ZERO_SUGGEST_POST_CONTENT_TYPE_PREFIX,
-                KEY_ZERO_SUGGEST_POST_CONTENT_DATA_PREFIX);
+                PAYMENTS_PAYMENT_INSTRUMENT_USE_DATE);
     }
 
     private ChromePreferenceKeys() {}

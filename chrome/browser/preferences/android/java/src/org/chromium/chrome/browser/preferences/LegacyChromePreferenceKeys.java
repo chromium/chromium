@@ -129,8 +129,7 @@ final class LegacyChromePreferenceKeys {
                 "trusted_web_activity_disclosure_accepted_packages",
                 "ui_theme_setting",
                 "verified_digital_asset_links",
-                "webapk_uninstalled_packages",
-                "zero_suggest_list_size");
+                "webapk_uninstalled_packages");
     }
 
     /** Returns the grandfathered key prefixes that do not conform to the format. */
@@ -138,19 +137,7 @@ final class LegacyChromePreferenceKeys {
         return Arrays.asList(
                 new KeyPrefix("payment_instrument_use_count_*"),
                 new KeyPrefix("payment_instrument_use_date_*"),
-                new KeyPrefix("pref_local_custom_tabs_module_dex_last_update_time_*"),
-                new KeyPrefix("zero_suggest_answer_text*"),
-                new KeyPrefix("zero_suggest_description*"),
-                new KeyPrefix("zero_suggest_display_text*"),
-                new KeyPrefix("zero_suggest_group_id*"),
-                new KeyPrefix("zero_suggest_is_deletable*"),
-                new KeyPrefix("zero_suggest_is_search*"),
-                new KeyPrefix("zero_suggest_is_starred*"),
-                new KeyPrefix("zero_suggest_native_subtypes*"),
-                new KeyPrefix("zero_suggest_native_type*"),
-                new KeyPrefix("zero_suggest_post_content_data*"),
-                new KeyPrefix("zero_suggest_post_content_type*"),
-                new KeyPrefix("zero_suggest_url*"));
+                new KeyPrefix("pref_local_custom_tabs_module_dex_last_update_time_*"));
     }
 
     private LegacyChromePreferenceKeys() {}

@@ -344,16 +344,6 @@ public class OmniboxMetrics {
     }
 
     /**
-     * Record whether the used suggestion originates from Cache or Autocomplete subsystem.
-     *
-     * @param isFromCache Whether the suggestion selected by the User comes from suggestion cache.
-     */
-    public static void recordUsedSuggestionFromCache(boolean isFromCache) {
-        RecordHistogram.recordBooleanHistogram(
-                "Android.Omnibox.UsedSuggestionFromCache", isFromCache);
-    }
-
-    /**
      * Record the Refine action button usage. Unlike the MobileOmniobxRefineSuggestion UserAction,
      * this is recorded only once at the end of an Omnibox interaction, and includes the cases where
      * the user has not interacted with the Refine button at all.

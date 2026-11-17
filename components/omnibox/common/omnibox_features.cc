@@ -706,10 +706,6 @@ BASE_FEATURE(kUrlBarNoHandwritingBoundsAbove, ENABLED);
 // composition for AI Mode requests, restarting input on transitions.
 BASE_FEATURE(kOmniboxUrlBarAimNaturalTextIme, DISABLED);
 
-// If enabled, Java-cached ZPS will be served.
-// The cached ZPS made sense on sub-4GB Android Go devices
-BASE_FEATURE(kServeJavaCachedZeroSuggest, DISABLED);
-
 // If enabled, OmniboxSuggestionsDropdown will force reset the scroll position
 // of the Omnibox suggestion list to the top during any re-layout.
 BASE_FEATURE(kResetSuggestionsScroll, DISABLED);
@@ -774,7 +770,6 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxFuseboxUserEdTabPickerIph,
       &kOmniboxFuseboxUserEdFakeboxAnimation,
       &kOmniboxFuseboxUserEdGuidedTour,
-      &kServeJavaCachedZeroSuggest,
       &kAIMSuppressVerbatimMatch,
       &kAim3pEntrypoint,
       &kResetSuggestionsScroll,

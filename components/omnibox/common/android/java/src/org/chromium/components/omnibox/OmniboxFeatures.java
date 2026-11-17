@@ -283,11 +283,6 @@ public class OmniboxFeatures {
     public static final CachedFlag sPreviewMatchFavicons =
             newFlag(OmniboxFeatureList.EXACT_MATCH_FAVICONS, FeatureState.ENABLED_IN_PROD);
 
-    public static final CachedFlag sServeJavaCachedZeroSuggest =
-            newFlag(
-                    OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST,
-                    FeatureState.DISABLED_IN_PROD);
-
     public static final CachedFlag sResetSuggestionsScroll =
             newFlag(OmniboxFeatureList.RESET_SUGGESTIONS_SCROLL, FeatureState.DISABLED_IN_PROD);
 

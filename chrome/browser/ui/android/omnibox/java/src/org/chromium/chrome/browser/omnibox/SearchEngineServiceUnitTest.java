@@ -43,23 +43,18 @@ import org.robolectric.shadow.api.Shadow;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineIconObserver;
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineNameObserver;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
-import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.SearchEngineType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.components.image_fetcher.ImageFetcher;
-import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
-import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxCapabilities;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.components.search_engines.StarterPackId;
@@ -201,88 +196,7 @@ public class SearchEngineServiceUnitTest {
         doReturn(shortName).when(mTemplateUrl).getShortName();
     }
 
-    private void verifyPersistedSearchEngine(String keyword) {
-        var dseMetadata = CachedZeroSuggestionsManager.readSearchEngineMetadata();
-        assertEquals(keyword, dseMetadata.keyword);
-    }
-
-    private void saveSearchEngineSpecificDataToCache() {
-        CachedZeroSuggestionsManager.saveToCache(
-                PageClassification.ANDROID_SEARCH_WIDGET, AutocompleteResult.fromCache(null, null));
-    }
-
-    private void verifyNoSearchEngineSpecificDataInCache() {
-        assertFalse(
-                ContextUtils.getAppSharedPreferences()
-                        .contains(
-                                "omnibox:cached_suggestions:"
-                                        + PageClassification.ANDROID_SEARCH_WIDGET));
-    }
-
-    private void verifySearchEngineSpecificDataRetainedInCache() {
-        assertTrue(
-                ContextUtils.getAppSharedPreferences()
-                        .contains(
-                                "omnibox:cached_suggestions:"
-                                        + PageClassification.ANDROID_SEARCH_WIDGET));
-    }
-
     @Test
-    @EnableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
-    public void onTemplateUrlServiceChanged_newTemplateUrl_noPreviousEngine() {
-        {
-            // To Google
-            saveSearchEngineSpecificDataToCache();
-            configureSearchEngine("google", "Google");
-            new SearchEngineService(mProfile, mFaviconHelper, mImageFetcher);
-            verifyPersistedSearchEngine("google");
-            verifyNoSearchEngineSpecificDataInCache();
-        }
-
-        {
-            // To Non-Google
-            saveSearchEngineSpecificDataToCache();
-            configureSearchEngine("engine", "Some Engine");
-            new SearchEngineService(mProfile, mFaviconHelper, mImageFetcher);
-            verifyPersistedSearchEngine("engine");
-            verifyNoSearchEngineSpecificDataInCache();
-        }
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
-    public void onTemplateUrlServiceChanged_newTemplateUrl_withDifferentPreviousEngine() {
-        {
-            // To Google
-            configureSearchEngine("engine", "Some Engine");
-            var searchEngineService =
-                    new SearchEngineService(mProfile, mFaviconHelper, mImageFetcher);
-
-            // Make an update
-            saveSearchEngineSpecificDataToCache();
-            configureSearchEngine("google", "Google");
-            searchEngineService.onTemplateURLServiceChanged();
-            verifyPersistedSearchEngine("google");
-            verifyNoSearchEngineSpecificDataInCache();
-        }
-
-        {
-            // To Non-Google
-            configureSearchEngine("google", "Google");
-            var searchEngineService =
-                    new SearchEngineService(mProfile, mFaviconHelper, mImageFetcher);
-
-            // Make an update
-            saveSearchEngineSpecificDataToCache();
-            configureSearchEngine("engine", "Some Engine");
-            searchEngineService.onTemplateURLServiceChanged();
-            verifyPersistedSearchEngine("engine");
-            verifyNoSearchEngineSpecificDataInCache();
-        }
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
     public void onTemplateUrlServiceChanged_newTemplateUrl_withSamePreviousEngine() {
         {
             // Google to Google
@@ -296,11 +210,8 @@ public class SearchEngineServiceUnitTest {
             clearInvocations(mHintTextObserver);
 
             // Make an update
-            saveSearchEngineSpecificDataToCache();
             configureSearchEngine("google", "Google");
             searchEngineService.onTemplateURLServiceChanged();
-            verifyPersistedSearchEngine("google");
-            verifySearchEngineSpecificDataRetainedInCache();
 
             // Verify observer not notified if engine name didn't change.
             verify(mHintTextObserver, never()).onSearchEngineNameChanged();
@@ -317,11 +228,8 @@ public class SearchEngineServiceUnitTest {
             clearInvocations(mHintTextObserver);
 
             // Make an update
-            saveSearchEngineSpecificDataToCache();
             configureSearchEngine("engine", "Another Engine");
             searchEngineService.onTemplateURLServiceChanged();
-            verifyPersistedSearchEngine("engine");
-            verifySearchEngineSpecificDataRetainedInCache();
 
             // Verify observer notified of name change.
             verify(mHintTextObserver).onSearchEngineNameChanged();
@@ -338,11 +246,8 @@ public class SearchEngineServiceUnitTest {
             clearInvocations(mHintTextObserver);
 
             // Make an update
-            saveSearchEngineSpecificDataToCache();
             configureSearchEngine("engine", null);
             searchEngineService.onTemplateURLServiceChanged();
-            verifyPersistedSearchEngine("engine");
-            verifySearchEngineSpecificDataRetainedInCache();
 
             // Verify observer notified.
             verify(mHintTextObserver).onSearchEngineNameChanged();

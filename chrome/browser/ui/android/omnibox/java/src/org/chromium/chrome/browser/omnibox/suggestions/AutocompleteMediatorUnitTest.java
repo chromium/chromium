@@ -147,7 +147,6 @@ import java.lang.ref.WeakReference;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 
 /** Tests for {@link AutocompleteMediator}. */
@@ -196,9 +195,6 @@ public class AutocompleteMediatorUnitTest {
     @Mock private WebContents mWebContents;
     @Mock private ExtensionUiBackend mExtensionUiBackend;
 
-    @Mock
-    private CachedZeroSuggestionsManager.OverridesForTesting mMockCachedZeroSuggestionsManager;
-
     @Captor private ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
     @Captor private ArgumentCaptor<Consumer<SiteSearchData>> mKeywordModeEnteredCaptor;
     @Captor private ArgumentCaptor<Callback<GURL>> mUrlCallbackCaptor;
@@ -229,7 +225,6 @@ public class AutocompleteMediatorUnitTest {
         mResourceProvider =
                 new OmniboxResourceProvider(mContext, BrandedColorScheme.LIGHT_BRANDED_THEME);
 
-        CachedZeroSuggestionsManager.setOverridesForTesting(mMockCachedZeroSuggestionsManager);
         UserPrefs.setPrefServiceForTesting(mPrefService);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         PreloadingFeatureMap.setInstanceForTesting(mPreloadingFeatureMap);
@@ -292,11 +287,8 @@ public class AutocompleteMediatorUnitTest {
 
         mSuggestionsList = buildSampleSuggestionsList(10, "Suggestion");
         mAutocompleteResult = spy(AutocompleteResult.fromCache(mSuggestionsList, null));
-        lenient()
-                .doReturn(mAutocompleteResult)
-                .when(mMockCachedZeroSuggestionsManager)
-                .readFromCache(anyInt());
         lenient().doReturn(true).when(mAutocompleteDelegate).isKeyboardActive();
+        lenient().doReturn("").when(mTextStateProvider).getTextWithAutocomplete();
         lenient()
                 .when(mAutocompleteController.onSuggestionTouchDown(any(), any(), anyInt()))
                 .thenReturn(true);
@@ -2234,126 +2226,6 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.onTopResumedActivityChanged(/* isTopResumedActivity= */ true);
         verifyAutocompleteStartZeroSuggest("", url, pageClassification, title);
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
-    public void onTextChanged_cachedZpsEligibleOnSelectPageClasses() {
-        Set<@PageClassification Integer> eligibleClasses =
-                Set.of(
-                        PageClassification.ANDROID_SEARCH_WIDGET,
-                        PageClassification.ANDROID_SHORTCUTS_WIDGET);
-
-        var session = createSession(PAGE_URL, PAGE_TITLE, 0);
-        mMediator.beginInput(session);
-
-        for (@PageClassification int pageClass = PageClassification.MIN_VALUE;
-                pageClass <= PageClassification.MAX_VALUE;
-                pageClass++) {
-            session.getAutocompleteInput().setPageClassification(pageClass);
-            mMediator.serveCachedZeroSuggest(session.getAutocompleteInput());
-
-            // Should only be invoked if page class is eligible.
-            int numTimesInvoked = eligibleClasses.contains(pageClass) ? 1 : 0;
-            verify(mMockCachedZeroSuggestionsManager, times(numTimesInvoked))
-                    .readFromCache(anyInt());
-            verify(mMockCachedZeroSuggestionsManager, never()).saveToCache(anyInt(), any());
-
-            clearInvocations(mMockCachedZeroSuggestionsManager);
-        }
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
-    public void onTextChanged_cachedZpsNotInvokedInTypedContext() {
-        var session = createSession(PAGE_URL, PAGE_TITLE, 0);
-        mMediator.beginInput(session);
-
-        for (@PageClassification int pageClass = PageClassification.MIN_VALUE;
-                pageClass <= PageClassification.MAX_VALUE;
-                pageClass++) {
-            session.getAutocompleteInput().setPageClassification(pageClass);
-
-            session.getAutocompleteInput().setUserText("text");
-
-            // Should only be invoked if page class is eligible.
-            verify(mMockCachedZeroSuggestionsManager, never()).readFromCache(anyInt());
-            verify(mMockCachedZeroSuggestionsManager, never()).saveToCache(anyInt(), any());
-
-            clearInvocations(mMockCachedZeroSuggestionsManager);
-        }
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
-    public void onTextChanged_cacheZpsFromEligiblePageClasses() {
-        Set<@PageClassification Integer> eligibleClasses =
-                Set.of(
-                        PageClassification.ANDROID_SEARCH_WIDGET,
-                        PageClassification.ANDROID_SHORTCUTS_WIDGET);
-
-        mMediator.beginInput(createEmptySession());
-        doReturn(false).when(mAutocompleteResult).isFromCachedResult();
-
-        for (@PageClassification int pageClass = PageClassification.MIN_VALUE;
-                pageClass <= PageClassification.MAX_VALUE;
-                pageClass++) {
-            mMediator.getAutocompleteInputForTesting().setPageClassification(pageClass);
-
-            mMediator.onSuggestionsReceived(mAutocompleteResult, true);
-
-            // Should only be invoked if page class is eligible.
-            int numTimesInvoked = eligibleClasses.contains(pageClass) ? 1 : 0;
-            verify(mMockCachedZeroSuggestionsManager, times(numTimesInvoked))
-                    .saveToCache(anyInt(), any());
-
-            clearInvocations(mMockCachedZeroSuggestionsManager);
-        }
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
-    public void onTextChanged_dontCacheTypedSuggestions() {
-        for (@PageClassification int pageClass = PageClassification.MIN_VALUE;
-                pageClass <= PageClassification.MAX_VALUE;
-                pageClass++) {
-            var session = createSession(PAGE_URL, PAGE_TITLE, pageClass);
-            mMediator.beginInput(session);
-            session.getAutocompleteInput().setUserText("x");
-            verify(mMockCachedZeroSuggestionsManager, never()).saveToCache(anyInt(), any());
-            clearInvocations(mMockCachedZeroSuggestionsManager);
-        }
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
-    public void onTextChanged_dontCacheCachedSuggestions() {
-        for (@PageClassification int pageClass = PageClassification.MIN_VALUE;
-                pageClass <= PageClassification.MAX_VALUE;
-                pageClass++) {
-            var session = createSession(PAGE_URL, PAGE_TITLE, pageClass);
-            mMediator.beginInput(session);
-            // Force an update as "" -> "" is not an observable change.
-            mMediator.onInputChanged();
-            verify(mMockCachedZeroSuggestionsManager, never()).saveToCache(anyInt(), any());
-            clearInvocations(mMockCachedZeroSuggestionsManager);
-        }
-    }
-
-    @Test
-    @DisableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
-    public void cachedZeroSuggest_notInvokedWhenFeatureDisabled() {
-        for (@PageClassification int pageClass = PageClassification.MIN_VALUE;
-                pageClass <= PageClassification.MAX_VALUE;
-                pageClass++) {
-            var session = createSession(PAGE_URL, PAGE_TITLE, pageClass);
-            mMediator.beginInput(session);
-            mMediator.serveCachedZeroSuggest(session.getAutocompleteInput());
-            mMediator.onSuggestionsReceived(mAutocompleteResult, true);
-
-            verify(mMockCachedZeroSuggestionsManager, never()).readFromCache(anyInt());
-            verify(mMockCachedZeroSuggestionsManager, never()).saveToCache(anyInt(), any());
-        }
     }
 
     @Test

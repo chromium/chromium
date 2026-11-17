@@ -453,41 +453,12 @@ class AutocompleteMediator
     void startZeroSuggest() {
         if (!isInInputSession()) return;
 
-        if (OmniboxFeatures.sServeJavaCachedZeroSuggest.isEnabled()) {
-            // Serve suggestions anticipating higher latency from the server?
-            serveCachedZeroSuggest(mAutocompleteInput);
-        }
-
-        fetchZeroSuggest();
-    }
-
-    /** Save AutocompleteResult to Cache for early serving. */
-    private void maybeCacheResult(AutocompleteResult result) {
-        if (!isInInputSession()
-                || !mAutocompleteInput.isInCacheableContext()
-                || result.isFromCachedResult()) {
-            return;
-        }
-
-        CachedZeroSuggestionsManager.saveToCache(
-                mAutocompleteInput.getPageClassification(), result);
-    }
-
-    /**
-     * Show cached zero suggest results. Enables Autocomplete subsystem to offer most recently
-     * presented suggestions in the event where Native counterpart is not yet initialized.
-     *
-     * @param input The AutocompleteInput for which to show cached suggestions.
-     */
-    public void serveCachedZeroSuggest(AutocompleteInput input) {
-        if (input == null || !input.isInCacheableContext()) {
-            return;
-        }
-
-        showSuggestions(
-                input,
-                CachedZeroSuggestionsManager.readFromCache(input.getPageClassification()),
-                true);
+        // Reset "edited" state in the omnibox if zero suggest is triggered -- new edits
+        // now count as a new session.
+        mNewOmniboxEditSessionTimestamp = -1;
+        startMeasuringSuggestionRequestToUiModelTime();
+        mAutocomplete.startZeroSuggest(
+                mSessionState.getContextualTasksWebContents(), mAutocompleteInput);
     }
 
     /** Notify the mediator that a item selection is pending and should be accepted. */
@@ -1254,12 +1225,6 @@ class AutocompleteMediator
 
     @Override
     public void onSuggestionsReceived(AutocompleteResult autocompleteResult, boolean isFinal) {
-        // Persist AutocompleteResult in cache even if the interaction has just finished.
-        // This allows us to cache most up-to-date information even after navigation was initiated.
-        if (isFinal && !autocompleteResult.getSuggestionsList().isEmpty()) {
-            maybeCacheResult(autocompleteResult);
-        }
-
         if (!isInInputSession()) return;
 
         if (PreloadingFeatureMap.getInstance().shouldPrewarmOnAutocomplete()) {
@@ -1962,22 +1927,6 @@ class AutocompleteMediator
                 () -> autocomplete.startPrefetch(dataProvider.getWebContents(), input));
     }
 
-    /**
-     * Make a zero suggest request if: - The URL bar has focus. - The the tab/overview is not
-     * incognito. This method should not be called directly. Schedule execution using
-     * postAutocompleteRequest.
-     */
-    private void fetchZeroSuggest() {
-        // Reset "edited" state in the omnibox if zero suggest is triggered -- new edits
-        // now count as a new session.
-        mNewOmniboxEditSessionTimestamp = -1;
-        startMeasuringSuggestionRequestToUiModelTime();
-
-        if (!isInInputSession()) return;
-        mAutocomplete.startZeroSuggest(
-                mSessionState.getContextualTasksWebContents(), mAutocompleteInput);
-    }
-
     /** Update whether the Omnibox session is active. */
     @VisibleForTesting
     void propagateOmniboxSessionStateChange(boolean isActive) {
@@ -2158,16 +2107,7 @@ class AutocompleteMediator
             if (mAutocompleteResult == null) return;
             assert isInInputSession();
 
-            boolean autocompleteResultIsFromCache =
-                    mAutocompleteResult != null ? mAutocompleteResult.isFromCachedResult() : true;
-
-            OmniboxMetrics.recordUsedSuggestionFromCache(autocompleteResultIsFromCache);
             OmniboxMetrics.recordTouchDownPrefetchResult(match, mLastPrefetchStartedSuggestion);
-
-            // Do not attempt to record other metrics for cached suggestions if the source of the
-            // list is local cache. These suggestions do not have corresponding native objects and
-            // will fail validation.
-            if (autocompleteResultIsFromCache) return;
 
             GURL currentPageUrl = mAutocompleteInput.getPageUrl();
             long elapsedTimeSinceModified = getElapsedTimeSinceInputChange();

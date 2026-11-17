@@ -14,7 +14,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.omnibox.AutocompleteProto.AutocompleteResultProto;
 import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
 
 import java.lang.annotation.Retention;
@@ -58,7 +57,6 @@ public class AutocompleteResult {
 
     private final GroupsInfo mGroupsInfo;
     private final List<AutocompleteMatch> mSuggestions;
-    private final boolean mIsFromCachedResult;
     private long mNativeAutocompleteResult;
 
     /**
@@ -75,13 +73,6 @@ public class AutocompleteResult {
             long nativeResult,
             @Nullable List<AutocompleteMatch> suggestions,
             @Nullable GroupsInfo groupsInfo) {
-        // Consider all locally constructed AutocompleteResult objects as coming from Cache.
-        // These results do not have a native counterpart, meaning there's no corresponding C++
-        // structure describing the same AutocompleteResult.
-        // Note that the mNativeResult might change at any point during the lifecycle of this object
-        // to reflect relocation or destruction of the native object, so we cache this information
-        // separately.
-        mIsFromCachedResult = nativeResult == 0;
         mNativeAutocompleteResult = nativeResult;
         mSuggestions = suggestions != null ? suggestions : new ArrayList<>();
         mGroupsInfo = groupsInfo != null ? groupsInfo : GroupsInfo.newBuilder().build();
@@ -158,10 +149,6 @@ public class AutocompleteResult {
         return mGroupsInfo;
     }
 
-    public boolean isFromCachedResult() {
-        return mIsFromCachedResult;
-    }
-
     /**
      * Verifies coherency of this AutocompleteResult object with its C++ counterpart. Records
      * histogram data reflecting the outcome.
@@ -215,36 +202,6 @@ public class AutocompleteResult {
         }
 
         return null;
-    }
-
-    /** Serialize AutocompleteResult to a protocol buffer message. */
-    public AutocompleteResultProto serialize() {
-        var builder = AutocompleteResultProto.newBuilder();
-        builder.setGroups(mGroupsInfo);
-        for (var match : mSuggestions) {
-            // Note: intentionally skip clipboard and cross-device tab suggestions from being
-            // preserved.
-            int type = match.getType();
-            if (type == OmniboxSuggestionType.CLIPBOARD_URL
-                    || type == OmniboxSuggestionType.CLIPBOARD_TEXT
-                    || type == OmniboxSuggestionType.CLIPBOARD_IMAGE
-                    || type == OmniboxSuggestionType.CROSS_DEVICE_TAB) {
-                continue;
-            }
-
-            builder.addMatch(match.serialize());
-        }
-        return builder.build();
-    }
-
-    /** Deserialize AutocompleteResult from a protocol buffer message. */
-    public static AutocompleteResult deserialize(AutocompleteResultProto input) {
-        List<AutocompleteMatch> matches = new ArrayList<>(input.getMatchList().size());
-        for (var match : input.getMatchList()) {
-            matches.add(AutocompleteMatch.deserialize(match));
-        }
-
-        return AutocompleteResult.fromCache(matches, input.getGroups());
     }
 
     @NativeMethods

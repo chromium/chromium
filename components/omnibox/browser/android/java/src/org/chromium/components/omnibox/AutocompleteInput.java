@@ -634,15 +634,6 @@ public class AutocompleteInput implements UserData {
                         || TextUtils.equals(mUserText.get(), mInitialUserText));
     }
 
-    /** Returns whether current context enables suggestions caching. */
-    public boolean isInCacheableContext() {
-        if (!OmniboxFeatures.sServeJavaCachedZeroSuggest.isEnabled()) return false;
-        if (!isInZeroPrefixContext()) return false;
-
-        return mPageClassification == PageClassification.ANDROID_SEARCH_WIDGET
-                || mPageClassification == PageClassification.ANDROID_SHORTCUTS_WIDGET;
-    }
-
     public void setHasAttachments(boolean hasAttachments) {
         mHasAttachments = hasAttachments;
     }

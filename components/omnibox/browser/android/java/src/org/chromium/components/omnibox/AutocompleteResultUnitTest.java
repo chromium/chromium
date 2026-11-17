@@ -5,7 +5,6 @@
 package org.chromium.components.omnibox;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -309,32 +308,6 @@ public class AutocompleteResultUnitTest {
         AutocompleteResult res2 = AutocompleteResult.fromCache(list2, null);
         assertNotEquals(res1, res2);
         assertNotEquals(res1.hashCode(), res2.hashCode());
-    }
-
-    @Test
-    public void resultCreatedFromCacheIsIdentifiedAsCached() {
-        AutocompleteResult res = new AutocompleteResult(0, null, null);
-        assertTrue(res.isFromCachedResult());
-        res.notifyNativeDestroyed();
-        assertTrue(res.isFromCachedResult());
-
-        res = AutocompleteResult.fromCache(new ArrayList<>(), GroupsInfo.newBuilder().build());
-        assertTrue(res.isFromCachedResult());
-        res.notifyNativeDestroyed();
-        assertTrue(res.isFromCachedResult());
-    }
-
-    @Test
-    public void resultCreatedFromNativeAreNotIdentifiedAsCached() {
-        AutocompleteResult res = new AutocompleteResult(0x12345678, null, null);
-        assertFalse(res.isFromCachedResult());
-        res.notifyNativeDestroyed();
-        assertFalse(res.isFromCachedResult());
-
-        res = AutocompleteResult.fromNative(0xfedcba98, new AutocompleteMatch[0], new byte[0]);
-        assertFalse(res.isFromCachedResult());
-        res.notifyNativeDestroyed();
-        assertFalse(res.isFromCachedResult());
     }
 
     @Test

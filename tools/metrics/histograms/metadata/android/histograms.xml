@@ -5020,29 +5020,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Omnibox.UsedSuggestionFromCache" enum="Boolean"
-    expires_after="2027-10-01">
-  <owner>ender@google.com</owner>
-  <owner>chrome-mobile-search@google.com</owner>
-  <summary>
-    Records whether users interacted with suggestion originating from Java
-    cache.
-
-    Android presents the Cached suggestions for a brief time before the Native
-    libraries become available, replacing these with a fresh content as soon as
-    Autocomplete subsystem serves them. This histogram records all the events
-    where the cached suggestions were shown for an extended period of time -
-    long enough for the User to identify and interact with a suggestion of their
-    choice.
-
-    Recorded every time the User initiates navigation using the Omnibox or the
-    Suggestions list, regardless of context.
-
-    Note: starting Chrome 118 this is recorded for every Autocomplete action
-    requiring native AutocompleteMatch instance.
-  </summary>
-</histogram>
-
 <histogram
     name="Android.Omnibox.{AndroidSearchPrefetch}.GeoLocationHeaderTime.{AndroidNavigationOrSuggestionPrefetch}"
     units="ms" expires_after="2027-10-01">

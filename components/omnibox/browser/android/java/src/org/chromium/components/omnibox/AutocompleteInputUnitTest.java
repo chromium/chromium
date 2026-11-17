@@ -21,8 +21,6 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
@@ -35,11 +33,9 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /** Tests for {@link AutocompleteInput}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
 public class AutocompleteInputUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -49,22 +45,6 @@ public class AutocompleteInputUnitTest {
     @Mock private Callback<GURL> mGurlCallback;
     private final AutocompleteInput mInput = new AutocompleteInput();
 
-    private void verifyCacheablePageClasses(Set<@PageClassification Integer> allowedPageClasses) {
-        for (@PageClassification int pageClass = PageClassification.MIN_VALUE;
-                pageClass <= PageClassification.MAX_VALUE;
-                pageClass++) {
-            mInput.setPageClassification(pageClass);
-
-            // Typed contexts are never cacheable.
-            mInput.setUserText("text");
-            assertFalse(mInput.isInCacheableContext());
-
-            // Only ZPS contexts are cacheable.
-            mInput.setUserText("");
-            assertEquals(mInput.isInCacheableContext(), allowedPageClasses.contains(pageClass));
-        }
-    }
-
     @Test
     public void testReset_clearsKeyword() {
         AutocompleteInput input = new AutocompleteInput();
@@ -73,20 +53,6 @@ public class AutocompleteInputUnitTest {
 
         input.reset();
         assertEquals(null, input.getSiteSearchData());
-    }
-
-    @Test
-    public void isInCacheableContext_defaultContexts() {
-        verifyCacheablePageClasses(
-                Set.of(
-                        PageClassification.ANDROID_SEARCH_WIDGET,
-                        PageClassification.ANDROID_SHORTCUTS_WIDGET));
-    }
-
-    @Test
-    @DisableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
-    public void isInCacheableContext_serveJavaCachedZeroSuggestDisabled() {
-        verifyCacheablePageClasses(Set.of());
     }
 
     @Test
@@ -342,25 +308,22 @@ public class AutocompleteInputUnitTest {
     }
 
     @Test
-    public void integrationTest_cacheableContextAndKeywordMatch() {
-        // Set up cacheable context
+    public void integrationTest_zeroPrefixContextAndKeywordMatch() {
+        // Set up zero-prefix context
         mInput.setPageClassification(PageClassification.ANDROID_SEARCH_WIDGET);
         mInput.setUserText("");
 
-        // Should be cacheable and zero-prefix, but not allow keyword match
-        assertTrue(mInput.isInCacheableContext());
+        // Should be zero-prefix, but not allow keyword match
         assertTrue(mInput.isInZeroPrefixContext());
         assertFalse(mInput.allowExactKeywordMatch());
 
-        // Add text with first space - should disable caching but enable keyword match
+        // Add text with first space - should disable zero-prefix and enable keyword match
         mInput.setUserText("search ");
-        assertFalse(mInput.isInCacheableContext());
         assertFalse(mInput.isInZeroPrefixContext());
         assertTrue(mInput.allowExactKeywordMatch());
 
-        // Back to empty - should be cacheable again, keyword match disabled
+        // Back to empty - should be zero-prefix again, keyword match disabled
         mInput.setUserText("");
-        assertTrue(mInput.isInCacheableContext());
         assertTrue(mInput.isInZeroPrefixContext());
         assertFalse(mInput.allowExactKeywordMatch());
     }

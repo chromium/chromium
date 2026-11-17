@@ -35,8 +35,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
-import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager.SearchEngineMetadata;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.search_engines.SearchEngineType;
@@ -99,7 +97,6 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
 
     private long mNativeSearchEngineServiceAndroid;
 
-    private @Nullable SearchEngineMetadata mDefaultSearchEngineMetadata;
     private @Nullable Boolean mNeedToCheckForSearchEnginePromo;
     private boolean mDoesDefaultSearchEngineHaveLogo;
     private @Nullable StatusIconResource mFavicon;
@@ -147,7 +144,6 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
 
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         mTemplateUrlService.addObserver(this);
-        mDefaultSearchEngineMetadata = CachedZeroSuggestionsManager.readSearchEngineMetadata();
 
         // Only initialize the native peer if the Profile is native-backed. In unit tests,
         // Profile is typically a mock without a backing native pointer. Real profiles are
@@ -206,14 +202,6 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
             setSearchEngineName(templateUrl.getShortName());
         } else {
             setSearchEngineName(null);
-        }
-
-        if (mDefaultSearchEngineMetadata == null
-                || !TextUtils.equals(
-                        mDefaultSearchEngineMetadata.keyword, templateUrl.getKeyword())) {
-            mDefaultSearchEngineMetadata = new SearchEngineMetadata(templateUrl.getKeyword());
-            CachedZeroSuggestionsManager.eraseCachedData();
-            CachedZeroSuggestionsManager.saveSearchEngineMetadata(mDefaultSearchEngineMetadata);
         }
 
         retrieveFavicon(templateUrl, this::setSearchEngineIcon);

@@ -21,8 +21,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
-import org.chromium.components.omnibox.AutocompleteProto.AutocompleteMatchProto;
-import org.chromium.components.omnibox.AutocompleteProto.MatchClassificationProto;
 import org.chromium.components.omnibox.GroupsProto.GroupId;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.SuggestTemplateInfoProtoIntDef.ActionIconType;
@@ -687,111 +685,6 @@ public class AutocompleteMatch {
         if (mNativeMatch == 0) return null;
         return AutocompleteMatchJni.get()
                 .getVectorIconBitmap(mNativeMatch, isBookmark, sizeDip, scale);
-    }
-
-    /** Serialize suggestion to a protocol buffer message. */
-    public AutocompleteMatchProto serialize() {
-        var builder = AutocompleteMatchProto.newBuilder();
-        builder.setType(mType)
-                .setDisplayText(mDisplayText)
-                .setFillIntoEdit(mFillIntoEdit)
-                .setUrl(mUrl.getSpec())
-                .setTransition(mTransition)
-                .setGroupId(mGroupId)
-                .setIsSearchType(mIsSearchType)
-                .setAllowedToBeDefaultMatch(mAllowedToBeDefaultMatch)
-                .setIconType(mIconType)
-                .setStarterPackId(mStarterPackId);
-
-        if (!TextUtils.isEmpty(mFillIntoEdit)) {
-            builder.setFillIntoEdit(mFillIntoEdit);
-        }
-        if (!TextUtils.isEmpty(mDescription)) {
-            builder.setDescription(mDescription);
-        }
-        if (!TextUtils.isEmpty(mInlineAutocompletion)) {
-            builder.setInlineAutocompletion(mInlineAutocompletion);
-        }
-        if (!TextUtils.isEmpty(mAdditionalText)) {
-            builder.setAdditionalText(mAdditionalText);
-        }
-        if (mImageUrl.isValid()) {
-            builder.setImageUrl(mImageUrl.getSpec());
-        }
-
-        for (int subtype : mSubtypes) {
-            builder.addSubtype(subtype);
-        }
-        for (var displayTextClassification : mDisplayTextClassifications) {
-            builder.addDisplayTextClassification(
-                    MatchClassificationProto.newBuilder()
-                            .setOffset(displayTextClassification.offset)
-                            .setStyle(displayTextClassification.style));
-        }
-        for (var descriptionClassification : mDescriptionClassifications) {
-            builder.addDescriptionClassification(
-                    MatchClassificationProto.newBuilder()
-                            .setOffset(descriptionClassification.offset)
-                            .setStyle(descriptionClassification.style));
-        }
-        return builder.build();
-    }
-
-    /** Deserialize suggestion from a protocol buffer message. */
-    public static AutocompleteMatch deserialize(AutocompleteMatchProto input) {
-        List<MatchClassification> displayTextClassifications = new ArrayList<>();
-        List<MatchClassification> descriptionClassifications = new ArrayList<>();
-
-        for (var displayTextClassification : input.getDisplayTextClassificationList()) {
-            displayTextClassifications.add(
-                    new MatchClassification(
-                            displayTextClassification.getOffset(),
-                            displayTextClassification.getStyle()));
-        }
-
-        for (var descriptionClassification : input.getDescriptionClassificationList()) {
-            descriptionClassifications.add(
-                    new MatchClassification(
-                            descriptionClassification.getOffset(),
-                            descriptionClassification.getStyle()));
-        }
-
-        return new AutocompleteMatch(
-                input.getType(),
-                new ArraySet<>(input.getSubtypeList()),
-                input.getIsSearchType(),
-                OmniboxSuggestionKind.NAVIGATION,
-                input.getIconType(),
-                input.getTransition(),
-                input.getDisplayText(),
-                displayTextClassifications,
-                input.getDescription(),
-                descriptionClassifications,
-                input.getFillIntoEdit(),
-                new GURL(input.getUrl()),
-                new GURL(input.getImageUrl()),
-                /* imageDominantColor= */ null,
-                /* isDeletable= */ false,
-                input.getStarterPackId(),
-                /* postContentType= */ null,
-                /* postData= */ null,
-                input.getGroupId(),
-                /* swapContentsAndDescription= */ false,
-                /* clipboardImageData= */ null,
-                /* hasTabMatch= */ false,
-                /* androidTabId= */ 0,
-                /* actions= */ null,
-                /* takeoverAction= */ null,
-                input.getAllowedToBeDefaultMatch(),
-                input.getInlineAutocompletion(),
-                input.getAdditionalText(),
-                /* tabGroupUuid= */ null,
-                /* associatedKeyword= */ null,
-                /* serializedSuggestTemplate= */ null,
-                DocumentType.NONE,
-                /* isExtensionMatch= */ false,
-                /* vectorIconName= */ "",
-                /* bookmarkVectorIconName= */ "");
     }
 
     @Override
