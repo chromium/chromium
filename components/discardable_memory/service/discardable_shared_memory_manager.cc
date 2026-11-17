@@ -342,11 +342,6 @@ void DiscardableSharedMemoryManager::Bind(
 }
 
 std::unique_ptr<base::DiscardableMemory>
-DiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(size_t size) {
-  return AllocateLockedDiscardableMemory(base::ByteSize(size));
-}
-
-std::unique_ptr<base::DiscardableMemory>
 DiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
     base::ByteSize size) {
   DCHECK(!size.is_zero());
@@ -465,10 +460,6 @@ void DiscardableSharedMemoryManager::EnforceMemoryPolicy() {
 
   enforce_memory_policy_pending_ = false;
   ReduceMemoryUsageUntilWithinMaxBytes();
-}
-
-size_t DiscardableSharedMemoryManager::GetBytesAllocated() const {
-  return base::checked_cast<size_t>(GetAllocatedSize().InBytes());
 }
 
 base::ByteSize DiscardableSharedMemoryManager::GetAllocatedSize() const {

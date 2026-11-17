@@ -74,8 +74,6 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
 
   // Overridden from base::DiscardableMemoryAllocator:
   std::unique_ptr<base::DiscardableMemory> AllocateLockedDiscardableMemory(
-      size_t size) override;
-  std::unique_ptr<base::DiscardableMemory> AllocateLockedDiscardableMemory(
       base::ByteSize size) override;
 
   // Overridden from base::trace_event::MemoryDumpProvider:
@@ -107,7 +105,6 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
   void EnforceMemoryPolicy();
 
   // Returns bytes of allocated discardable memory.
-  size_t GetBytesAllocated() const override;
   base::ByteSize GetAllocatedSize() const override;
 
   void ReleaseFreeMemory() override {

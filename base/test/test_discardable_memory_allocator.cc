@@ -5,6 +5,7 @@
 #include "base/test/test_discardable_memory_allocator.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 
@@ -58,17 +59,9 @@ class DiscardableMemoryImpl : public DiscardableMemory {
 }  // namespace
 
 std::unique_ptr<DiscardableMemory>
-TestDiscardableMemoryAllocator::AllocateLockedDiscardableMemory(size_t size) {
-  return std::make_unique<DiscardableMemoryImpl>(size);
-}
-
-std::unique_ptr<DiscardableMemory>
 TestDiscardableMemoryAllocator::AllocateLockedDiscardableMemory(ByteSize size) {
-  return AllocateLockedDiscardableMemory(checked_cast<size_t>(size.InBytes()));
-}
-
-size_t TestDiscardableMemoryAllocator::GetBytesAllocated() const {
-  return checked_cast<size_t>(GetAllocatedSize().InBytes());
+  return std::make_unique<DiscardableMemoryImpl>(
+      checked_cast<size_t>(size.InBytes()));
 }
 
 ByteSize TestDiscardableMemoryAllocator::GetAllocatedSize() const {

@@ -5,7 +5,7 @@
 #ifndef BASE_TEST_TEST_DISCARDABLE_MEMORY_ALLOCATOR_H_
 #define BASE_TEST_TEST_DISCARDABLE_MEMORY_ALLOCATOR_H_
 
-#include <stddef.h>
+#include <memory>
 
 #include "base/byte_size.h"
 #include "base/memory/discardable_memory_allocator.h"
@@ -26,11 +26,8 @@ class TestDiscardableMemoryAllocator : public DiscardableMemoryAllocator {
 
   // Overridden from DiscardableMemoryAllocator:
   std::unique_ptr<DiscardableMemory> AllocateLockedDiscardableMemory(
-      size_t size) override;
-  std::unique_ptr<DiscardableMemory> AllocateLockedDiscardableMemory(
       ByteSize size) override;
 
-  size_t GetBytesAllocated() const override;
   ByteSize GetAllocatedSize() const override;
 
   void ReleaseFreeMemory() override {

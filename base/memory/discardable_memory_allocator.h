@@ -5,8 +5,6 @@
 #ifndef BASE_MEMORY_DISCARDABLE_MEMORY_ALLOCATOR_H_
 #define BASE_MEMORY_DISCARDABLE_MEMORY_ALLOCATOR_H_
 
-#include <stddef.h>
-
 #include <memory>
 
 #include "base/base_export.h"
@@ -44,9 +42,7 @@ class BASE_EXPORT DiscardableMemoryAllocator {
   // discard memory under pressure. Otherwise, discardable memory is emulated
   // and manually discarded heuristicly (via memory pressure notifications).
   virtual std::unique_ptr<DiscardableMemory> AllocateLockedDiscardableMemory(
-      size_t size) = 0;
-  virtual std::unique_ptr<DiscardableMemory> AllocateLockedDiscardableMemory(
-      ByteSize size);
+      ByteSize size) = 0;
 
   // Allocates discardable memory the same way |AllocateLockedDiscardableMemory|
   // does. In case of failure, calls |on_no_memory| and retries once. As a
@@ -58,16 +54,12 @@ class BASE_EXPORT DiscardableMemoryAllocator {
   //
   // As a consequence, does *not* return nullptr.
   std::unique_ptr<DiscardableMemory>
-  AllocateLockedDiscardableMemoryWithRetryOrDie(size_t size,
-                                                OnceClosure on_no_memory);
-  std::unique_ptr<DiscardableMemory>
   AllocateLockedDiscardableMemoryWithRetryOrDie(ByteSize size,
                                                 OnceClosure on_no_memory);
 
   // Gets the total number of bytes allocated by this allocator which have not
   // been discarded.
-  virtual size_t GetBytesAllocated() const = 0;
-  virtual ByteSize GetAllocatedSize() const;
+  virtual ByteSize GetAllocatedSize() const = 0;
 
   // Release any memory used in the implementation of discardable memory that is
   // not immediately being used.

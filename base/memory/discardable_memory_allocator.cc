@@ -4,10 +4,13 @@
 
 #include "base/memory/discardable_memory_allocator.h"
 
+#include <stddef.h>
+
 #include <utility>
 
 #include "base/byte_size.h"
 #include "base/check.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/memory.h"
 
 namespace base {
@@ -35,19 +38,6 @@ bool DiscardableMemoryAllocator::HasInstance() {
 }
 
 std::unique_ptr<DiscardableMemory>
-DiscardableMemoryAllocator::AllocateLockedDiscardableMemory(ByteSize size) {
-  return AllocateLockedDiscardableMemory(static_cast<size_t>(size.InBytes()));
-}
-
-std::unique_ptr<base::DiscardableMemory>
-DiscardableMemoryAllocator::AllocateLockedDiscardableMemoryWithRetryOrDie(
-    size_t size,
-    OnceClosure on_no_memory) {
-  return AllocateLockedDiscardableMemoryWithRetryOrDie(ByteSize(size),
-                                                       std::move(on_no_memory));
-}
-
-std::unique_ptr<DiscardableMemory>
 DiscardableMemoryAllocator::AllocateLockedDiscardableMemoryWithRetryOrDie(
     ByteSize size,
     OnceClosure on_no_memory) {
@@ -65,14 +55,10 @@ DiscardableMemoryAllocator::AllocateLockedDiscardableMemoryWithRetryOrDie(
 
   memory = allocator->AllocateLockedDiscardableMemory(size);
   if (!memory) {
-    TerminateBecauseOutOfMemory(static_cast<size_t>(size.InBytes()));
+    TerminateBecauseOutOfMemory(checked_cast<size_t>(size.InBytes()));
   }
 
   return memory;
-}
-
-ByteSize DiscardableMemoryAllocator::GetAllocatedSize() const {
-  return ByteSize(GetBytesAllocated());
 }
 
 }  // namespace base
