@@ -92,15 +92,18 @@ NSString* const kAccessoryKeyboardAccessibilityIdentifier =
         static_cast<UIViewController*>(traitEnvironment);
     // When presented inside a `UIPopoverPresentationController`, UIKit
     // overrides the presented view controller's `horizontalSizeClass` to
-    // `UIUserInterfaceSizeClassCompact`. Check `modalPresentationStyle` first
-    // so presented manual fill view controllers continue to recognize popover
-    // mode.
-    UIModalPresentationStyle modalPresentationStyle =
-        viewController.parentViewController
-            ? viewController.parentViewController.modalPresentationStyle
-            : viewController.modalPresentationStyle;
-    if (modalPresentationStyle == UIModalPresentationPopover) {
-      return YES;
+    // `UIUserInterfaceSizeClassCompact`. Check `modalPresentationStyle` only
+    // when actually presented so unpresented view controllers (whose default
+    // style is `UIModalPresentationAutomatic`) avoid UIKit's visual style
+    // provider resolution.
+    if (viewController.presentingViewController) {
+      UIModalPresentationStyle modalPresentationStyle =
+          viewController.parentViewController
+              ? viewController.parentViewController.modalPresentationStyle
+              : viewController.modalPresentationStyle;
+      if (modalPresentationStyle == UIModalPresentationPopover) {
+        return YES;
+      }
     }
   }
   return IsRegularXRegularSizeClass(traitEnvironment);

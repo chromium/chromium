@@ -939,9 +939,12 @@ void UndoInSessionSuppressedEntity(
 #pragma mark - CRWResponderInputView
 
 - (UIView*)inputView {
+  if (!_formInputViewController) {
+    return nil;
+  }
   return [ManualFillUtil shouldUsePopover:_formInputAccessoryViewController]
              ? nil
-             : self.formInputViewController.view;
+             : _formInputViewController.view;
 }
 
 - (UIView*)inputAccessoryView {

@@ -10,7 +10,6 @@
 #import "base/ios/ios_util.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_action_cell.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/passwords/password_suggestion/ui/password_suggestion_utils.h"
@@ -64,12 +63,14 @@ enum class ItemType { kItemTypeData = kItemTypeEnumZero, kItemTypeAction };
 
 // Returns whether the view should be resized to match the desired popover UI.
 bool ShouldResizeViewForPopover(UIViewController* view_controller) {
+  if (!view_controller.presentingViewController) {
+    return false;
+  }
   UIModalPresentationStyle modal_presentation_style =
       view_controller.parentViewController
           ? view_controller.parentViewController.modalPresentationStyle
           : view_controller.modalPresentationStyle;
-  return [ManualFillUtil shouldUsePopover:view_controller] &&
-         modal_presentation_style == UIModalPresentationPopover;
+  return modal_presentation_style == UIModalPresentationPopover;
 }
 
 }  // namespace

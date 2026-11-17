@@ -7,6 +7,25 @@
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
+
+// Test subclass allowing `presentingViewController` to be stubbed without a
+// live window hierarchy.
+@interface TestFallbackViewController : FallbackViewController
+@property(nonatomic, strong) UIViewController* stubbedPresentingViewController;
+@end
+
+@implementation TestFallbackViewController
+
+- (UIViewController*)presentingViewController {
+  if (self.stubbedPresentingViewController) {
+    return self.stubbedPresentingViewController;
+  }
+  return self.parentViewController.presentingViewController;
+}
+
+@end
 
 namespace {
 
@@ -181,4 +200,41 @@ TEST_F(FallbackViewControllerTest, CheckNoDataItemsMessageWhenNoActions) {
   EXPECT_EQ(NumberOfItemsInSection(0), 0);
 
   EXPECT_EQ(GetHeaderItemType(/*section=*/0), ItemTypeSampleOne);
+}
+
+// Tests that an unpresented `FallbackViewController` does not query
+// `modalPresentationStyle` or set a popover `preferredContentSize`.
+TEST_F(FallbackViewControllerTest,
+       UnpresentedControllerSkipsModalPresentationStyle) {
+  FallbackViewController* fallback_view_controller =
+      [[FallbackViewController alloc] init];
+  id partial_mock = OCMPartialMock(fallback_view_controller);
+  OCMReject([partial_mock modalPresentationStyle]);
+
+  [fallback_view_controller loadViewIfNeeded];
+  [fallback_view_controller viewDidLayoutSubviews];
+
+  EXPECT_TRUE(CGSizeEqualToSize(fallback_view_controller.preferredContentSize,
+                                CGSizeZero));
+  EXPECT_OCMOCK_VERIFY(partial_mock);
+  [partial_mock stopMocking];
+}
+
+// Tests that `FallbackViewController` updates `preferredContentSize` when its
+// parent view controller is presented as a popover.
+TEST_F(FallbackViewControllerTest,
+       PresentedPopoverParentResizesPreferredContentSize) {
+  UIViewController* presenter = [[UIViewController alloc] init];
+  TestFallbackViewController* parent =
+      [[TestFallbackViewController alloc] init];
+  parent.modalPresentationStyle = UIModalPresentationPopover;
+  parent.stubbedPresentingViewController = presenter;
+
+  TestFallbackViewController* child = [[TestFallbackViewController alloc] init];
+  [parent addChildViewController:child];
+  [child didMoveToParentViewController:parent];
+
+  [child loadViewIfNeeded];
+  EXPECT_GT(child.preferredContentSize.width, 0);
+  EXPECT_GT(child.preferredContentSize.height, 0);
 }

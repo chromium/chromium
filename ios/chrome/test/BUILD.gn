@@ -281,6 +281,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/autofill/form_input_accessory/ui:unit_tests",
     "//ios/chrome/browser/autofill/manual_fill/coordinator:unit_tests",
     "//ios/chrome/browser/autofill/manual_fill/model:unit_tests",
+    "//ios/chrome/browser/autofill/manual_fill/public:unit_tests",
     "//ios/chrome/browser/autofill/manual_fill/ui:unit_tests",
     "//ios/chrome/browser/autofill/model:unit_tests",
     "//ios/chrome/browser/autofill/model/bottom_sheet:unit_tests",

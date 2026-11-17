@@ -8,9 +8,20 @@ source_set("public") {
     "manual_fill_constants.mm",
     "manual_fill_content_injector.h",
   ]
+  public_deps = [ "//components/autofill/core/browser" ]
   deps = [
-    "//components/autofill/core/browser",
     "//components/webauthn/ios:features",
     "//ios/chrome/common/ui/util",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "manual_fill_constants_unittest.mm" ]
+  deps = [
+    ":public",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }

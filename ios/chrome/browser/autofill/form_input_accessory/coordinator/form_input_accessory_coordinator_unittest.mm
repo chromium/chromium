@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_source_item.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_sources_view_controller.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/public/autofill_suggestion_context_menu_handler.h"
+#import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_view_controller_delegate.h"
+#import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/public/autofill_settings_navigator.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -38,7 +40,8 @@
 // unit tests.
 @interface FormInputAccessoryCoordinator (Testing) <
     AutofillAiSourcesViewControllerDelegate,
-    AutofillSuggestionContextMenuHandler>
+    AutofillSuggestionContextMenuHandler,
+    FormInputAccessoryViewControllerDelegate>
 @end
 
 namespace {
@@ -354,4 +357,44 @@ TEST_F(FormInputAccessoryCoordinatorTest, OpenSourceItem) {
   [coordinator_ sourcesViewController:nil didSelectSourceItem:source_item];
 
   EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
+}
+
+// Tests that `inputView` returns `nil` without querying
+// `+[ManualFillUtil shouldUsePopover:]` when no manual fill custom input view
+// controller is active.
+TEST_F(FormInputAccessoryCoordinatorTest,
+       InputViewSkipsPopoverCheckWhenManualFillClosed) {
+  id mock_manual_fill_util = OCMClassMock([ManualFillUtil class]);
+  OCMReject([mock_manual_fill_util shouldUsePopover:OCMOCK_ANY]);
+
+  EXPECT_EQ([coordinator_ inputView], nil);
+
+  EXPECT_OCMOCK_VERIFY(mock_manual_fill_util);
+  [mock_manual_fill_util stopMocking];
+}
+
+// Tests that `inputView` returns the active manual fill input view in compact
+// mode and `nil` when `shouldUsePopover:` transitions to `YES`.
+TEST_F(FormInputAccessoryCoordinatorTest,
+       InputViewReflectsPopoverModeWhenManualFillOpen) {
+  id mock_manual_fill_util = OCMClassMock([ManualFillUtil class]);
+  __block BOOL should_use_popover = NO;
+  OCMStub([mock_manual_fill_util shouldUsePopover:OCMOCK_ANY])
+      .andDo(^(NSInvocation* invocation) {
+        [invocation setReturnValue:&should_use_popover];
+      });
+
+  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
+  [coordinator_
+      formInputAccessoryViewController:nil
+              didPressManualFillButton:button
+                           forDataType:manual_fill::ManualFillDataType::
+                                           kPaymentMethod];
+
+  EXPECT_NE([coordinator_ inputView], nil);
+
+  should_use_popover = YES;
+  EXPECT_EQ([coordinator_ inputView], nil);
+
+  [mock_manual_fill_util stopMocking];
 }
