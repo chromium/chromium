@@ -88,8 +88,8 @@ FactoryType CreatePrefetchURLLoaderFactory(
 
     // Intercept the request for testing, if any (but not for
     // PrePrefetch-promoted cases (which is done in
-    // `CreatePrePrefetchURLLoaderFactoryOnUI()` below), see the method comment
-    // in the header).
+    // `CreatePrePrefetchURLLoaderFactoryOnUIThread()` below), see the method
+    // comment in the header).
     if (g_url_loader_factory_for_testing) {
       return url_loader_factory::TerminalParams::ForNonNetwork(
           base::WrapRefCounted(g_url_loader_factory_for_testing),
@@ -127,10 +127,10 @@ scoped_refptr<network::SharedURLLoaderFactory> CreatePrefetchURLLoaderFactory(
 }
 
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
-CreatePrePrefetchURLLoaderFactoryOnUI(BrowserContext* browser_context) {
+CreatePrePrefetchURLLoaderFactoryOnUIThread(BrowserContext* browser_context) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(browser_context);
-  TRACE_EVENT0("loading", "CreatePrePrefetchURLLoaderFactoryOnUI");
+  TRACE_EVENT0("loading", "CreatePrePrefetchURLLoaderFactoryOnUIThread");
 
   // This is the same default network context that should be used in normal
   // prefetch's `URLLoaderFactory` on the UI thread, created via

@@ -20,7 +20,7 @@ PrePrefetchHandleImpl::PrePrefetchHandleImpl(
 PrePrefetchHandleImpl::~PrePrefetchHandleImpl() = default;
 
 std::unique_ptr<PrePrefetchContainer>
-PrePrefetchHandleImpl::TakePrePrefetchContainerOnUI() {
+PrePrefetchHandleImpl::TakePrePrefetchContainerOnUIThread() {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(pre_prefetch_container_);
   return std::move(pre_prefetch_container_);

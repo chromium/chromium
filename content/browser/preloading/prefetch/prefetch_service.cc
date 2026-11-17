@@ -547,10 +547,10 @@ PrefetchService::CreatePrefetchContainerFromPrePrefetchForTesting(  // IN-TEST
 
   std::unique_ptr<PrePrefetchContainer> pre_prefetch_container =
       static_cast<PrePrefetchHandleImpl&>(*pre_prefetch_handle)
-          .TakePrePrefetchContainerOnUI();
+          .TakePrePrefetchContainerOnUIThread();
   CHECK(pre_prefetch_container);
   std::unique_ptr<const PrefetchRequest> prefetch_request_of_pre_prefetch =
-      pre_prefetch_container->TakePrefetchRequestOnUI();
+      pre_prefetch_container->TakePrefetchRequestOnUIThread();
   return CreatePrefetchContainer(std::move(prefetch_request_of_pre_prefetch),
                                  std::move(pre_prefetch_container));
 }
@@ -780,12 +780,12 @@ PrefetchService::AddPrefetchRequestFromPrePrefetch(
   auto* handle_impl =
       static_cast<PrePrefetchHandleImpl*>(pre_prefetch_handle.get());
   std::unique_ptr<PrePrefetchContainer> pre_prefetch_container =
-      handle_impl->TakePrePrefetchContainerOnUI();
+      handle_impl->TakePrePrefetchContainerOnUIThread();
 
   CHECK(pre_prefetch_container);
 
   std::unique_ptr<const PrefetchRequest> prefetch_request =
-      pre_prefetch_container->TakePrefetchRequestOnUI();
+      pre_prefetch_container->TakePrefetchRequestOnUIThread();
 
   base::WeakPtr<PrefetchContainer> prefetch_container =
       AddPrefetchRequestInternal(std::move(prefetch_request),

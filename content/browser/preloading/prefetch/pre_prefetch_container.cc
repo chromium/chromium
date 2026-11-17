@@ -138,28 +138,28 @@ void PrePrefetchContainer::Start(
 // Methods should be called from the UI thread.
 
 std::unique_ptr<const PrefetchRequest>
-PrePrefetchContainer::TakePrefetchRequestOnUI() {
+PrePrefetchContainer::TakePrefetchRequestOnUIThread() {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(prefetch_request_);
   return std::move(prefetch_request_);
 }
 
 std::unique_ptr<network::ResourceRequest>
-PrePrefetchContainer::TakeResourceRequestOnUI() {
+PrePrefetchContainer::TakeResourceRequestOnUIThread() {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(resource_request_);
   return std::move(resource_request_);
 }
 
 mojo::PendingRemote<network::mojom::URLLoader>
-PrePrefetchContainer::TakePendingURLLoaderOnUI() {
+PrePrefetchContainer::TakePendingURLLoaderOnUIThread() {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(url_loader_);
   return std::move(url_loader_);
 }
 
 mojo::PendingReceiver<network::mojom::URLLoaderClient>
-PrePrefetchContainer::TakePendingURLLoaderClientReceiverOnUI() {
+PrePrefetchContainer::TakePendingURLLoaderClientReceiverOnUIThread() {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(url_loader_client_receiver_);
   return std::move(url_loader_client_receiver_);

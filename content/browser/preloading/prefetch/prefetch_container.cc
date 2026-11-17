@@ -600,12 +600,13 @@ PrefetchContainer::PrefetchContainer(
 
   if (pre_prefetch_container) {
     CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
-    pre_prefetch_loader_ = pre_prefetch_container->TakePendingURLLoaderOnUI();
+    pre_prefetch_loader_ =
+        pre_prefetch_container->TakePendingURLLoaderOnUIThread();
     pre_prefetch_loader_client_receiver_ =
-        pre_prefetch_container->TakePendingURLLoaderClientReceiverOnUI();
+        pre_prefetch_container->TakePendingURLLoaderClientReceiverOnUIThread();
 
     resource_request_for_pre_prefetch_ =
-        pre_prefetch_container->TakeResourceRequestOnUI();
+        pre_prefetch_container->TakeResourceRequestOnUIThread();
   }
 
   is_likely_ahead_of_prerender_ =

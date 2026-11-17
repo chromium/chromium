@@ -45,7 +45,7 @@ CreatePrefetchURLLoaderFactory(network::mojom::NetworkContext* network_context,
 // This must be called/created on the UI thread and then will be passed to/used
 // on the `PrePrefetchServiceCore` sequence.
 CONTENT_EXPORT mojo::PendingRemote<network::mojom::URLLoaderFactory>
-CreatePrePrefetchURLLoaderFactoryOnUI(BrowserContext* browser_context);
+CreatePrePrefetchURLLoaderFactoryOnUIThread(BrowserContext* browser_context);
 
 // Sets the URLLoaderFactory to intercept *network requests* just before being
 // sent to a NetworkContext. This intercepts all prefetch-related requests:

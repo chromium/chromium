@@ -158,7 +158,7 @@ class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
     auto pre_prefetch_container = future.Take();
 
     std::unique_ptr<const PrefetchRequest> prefetch_request =
-        pre_prefetch_container->TakePrefetchRequestOnUI();
+        pre_prefetch_container->TakePrefetchRequestOnUIThread();
 
     return PrefetchContainer::CreateForTesting(
         std::move(prefetch_request), std::move(pre_prefetch_container));

@@ -66,11 +66,12 @@ class CONTENT_EXPORT PrePrefetchContainer final {
 
   // Takes associated resources upon `PrePrefetchContainer`'s consumption
   // handled in UI thread `PrefetchService`.
-  std::unique_ptr<const PrefetchRequest> TakePrefetchRequestOnUI();
-  std::unique_ptr<network::ResourceRequest> TakeResourceRequestOnUI();
-  mojo::PendingRemote<network::mojom::URLLoader> TakePendingURLLoaderOnUI();
+  std::unique_ptr<const PrefetchRequest> TakePrefetchRequestOnUIThread();
+  std::unique_ptr<network::ResourceRequest> TakeResourceRequestOnUIThread();
+  mojo::PendingRemote<network::mojom::URLLoader>
+  TakePendingURLLoaderOnUIThread();
   mojo::PendingReceiver<network::mojom::URLLoaderClient>
-  TakePendingURLLoaderClientReceiverOnUI();
+  TakePendingURLLoaderClientReceiverOnUIThread();
 
  private:
   // Called only from `CreateAndStart()` or `CreateAndStartForTesting()`.

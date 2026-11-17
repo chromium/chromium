@@ -20,7 +20,7 @@ class CONTENT_EXPORT PrePrefetchHandleImpl final : public PrePrefetchHandle {
 
   // Takes the ownership of `pre_prefetch_container_` for its consumption
   // handled in UI thread `PrefetchService`.
-  std::unique_ptr<PrePrefetchContainer> TakePrePrefetchContainerOnUI();
+  std::unique_ptr<PrePrefetchContainer> TakePrePrefetchContainerOnUIThread();
 
  private:
   std::unique_ptr<PrePrefetchContainer> pre_prefetch_container_;

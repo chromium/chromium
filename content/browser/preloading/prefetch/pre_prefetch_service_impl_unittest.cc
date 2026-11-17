@@ -492,7 +492,7 @@ TEST_F(PrePrefetchServiceImplTest,
 
   // Setup to refresh a new factory **on the main thread**
   // (`g_url_loader_factory_for_testing`) that will be picked up during
-  // `CreateURLLoaderFactoryOnUI()`.
+  // `CreatePrePrefetchURLLoaderFactoryOnUIThread()`.
   // The pending factory on `PrePrefetchServiceCore` is not updated and thus
   // still disconnected.
   auto local_factory2 = std::make_unique<network::TestURLLoaderFactory>();

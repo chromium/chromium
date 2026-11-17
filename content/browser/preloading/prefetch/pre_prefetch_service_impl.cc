@@ -51,11 +51,12 @@ void RecordPrePrefetchStartResultHistogram(PrePrefetchStartResult result) {
                                 result);
 }
 
-network::HttpRequestHeadersUpdateParams PreCalculatePrePrefetchHeadersOnUI(
+network::HttpRequestHeadersUpdateParams
+PreCalculatePrePrefetchHeadersOnUIThread(
     BrowserContext* browser_context,
     const PrePrefetchPreCalculatedHeadersKey& key) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
-  TRACE_EVENT("loading", "PreCalculatePrePrefetchHeadersOnUI");
+  TRACE_EVENT("loading", "PreCalculatePrePrefetchHeadersOnUIThread");
   // Create a tentative `PrefetchRequest` to pre-calculate headers based on
   // `PrePrefetchPreCalculatedHeadersKey`.
   // TODO(crbug.com/470242977): Creating a full `PrefetchRequest` just to
@@ -217,10 +218,11 @@ class PrePrefetchServiceCore {
         base::BindOnce(
             [](base::WeakPtr<BrowserContext> browser_context) {
               CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
-              return browser_context ? CreatePrePrefetchURLLoaderFactoryOnUI(
-                                           browser_context.get())
-                                     : mojo::PendingRemote<
-                                           network::mojom::URLLoaderFactory>();
+              return browser_context
+                         ? CreatePrePrefetchURLLoaderFactoryOnUIThread(
+                               browser_context.get())
+                         : mojo::PendingRemote<
+                               network::mojom::URLLoaderFactory>();
             },
             browser_context_weak_on_ui_thread_),
         base::BindOnce(&PrePrefetchServiceCore::UpdateURLLoaderFactory,
@@ -256,10 +258,11 @@ class PrePrefetchServiceCore {
                PrePrefetchPreCalculatedHeadersKey key)
                 -> std::optional<network::HttpRequestHeadersUpdateParams> {
               CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
-              return browser_context ? std::make_optional(
-                                           PreCalculatePrePrefetchHeadersOnUI(
-                                               browser_context.get(), key))
-                                     : std::nullopt;
+              return browser_context
+                         ? std::make_optional(
+                               PreCalculatePrePrefetchHeadersOnUIThread(
+                                   browser_context.get(), key))
+                         : std::nullopt;
             },
             browser_context_weak_on_ui_thread_, key),
         base::BindOnce(&PrePrefetchServiceCore::UpdatePreCalculatedHeaders,
@@ -353,7 +356,7 @@ PrePrefetchServiceImpl::PrePrefetchServiceImpl(
   browser_context_weak_on_ui_thread_ = browser_context->GetWeakPtr();
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_factory =
-      CreatePrePrefetchURLLoaderFactoryOnUI(browser_context);
+      CreatePrePrefetchURLLoaderFactoryOnUIThread(browser_context);
 
   // Pre-calculate headers based on the hints. If we can utilize this upon
   // PrePrefetch happening on the UI thread, we can save a thread hop to the UI
@@ -370,7 +373,7 @@ PrePrefetchServiceImpl::PrePrefetchServiceImpl(
     key.should_append_variations_header =
         initial_should_append_variations_header_hint.value();
     ui_thread_pre_calculated_headers_map[key] =
-        PreCalculatePrePrefetchHeadersOnUI(browser_context, key);
+        PreCalculatePrePrefetchHeadersOnUIThread(browser_context, key);
   }
 
   core_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
