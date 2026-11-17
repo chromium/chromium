@@ -3,6 +3,7 @@ file://ui/accessibility/OWNERS
 # For Android
 per-file *android*=kyraseevers@chromium.org
 per-file *android*=aerynm@google.com
+per-file *android*=pkotwicz@google.com
 
 # For ATK / AuraLinux
 jdiggs@igalia.com
@@ -20,3 +21,5 @@ per-file *test*=janewman@microsoft.com
 chrishtr@chromium.org
 per-file dump_accessibility_browsertest_base.*=adibatra@google.com
 per-file dump_accessibility_tree_browsertest.*=adibatra@google.com
+per-file dump_accessibility_browsertest_base.*=pkotwicz@google.com
+per-file dump_accessibility_tree_browsertest.*=pkotwicz@google.com
