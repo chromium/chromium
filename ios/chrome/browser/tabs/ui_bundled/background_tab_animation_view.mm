@@ -161,6 +161,9 @@ constexpr CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
   // Note: adding to the superview, as adding to `self` breaks its layout.
   [self.superview addLayoutGuide:tabGridButtonLayoutGuide];
   CGRect frame = [tabGridButtonLayoutGuide layoutFrame];
+  // The frame is only needed once, so remove the guide to avoid accumulating
+  // guides (and their tracking views) on `superview` across animations.
+  [self.superview removeLayoutGuide:tabGridButtonLayoutGuide];
   return CGPointMake(CGRectGetMidX(frame), CGRectGetMidY(frame));
 }
 

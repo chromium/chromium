@@ -156,6 +156,10 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   GestureInProductHelpView* _pullToRefreshGestureIPH;
   GestureInProductHelpView* _swipeBackForwardGestureIPH;
   ToolbarSwipeGestureInProductHelpView* _toolbarSwipeGestureIPH;
+  // Layout guide positioning `_toolbarSwipeGestureIPH`, attached to the root
+  // view only while the IPH is shown (its top constraints are toggled on trait
+  // changes, so it must outlive presentation).
+  UILayoutGuide* _toolbarSwipeGestureIPHGuide;
 }
 
 - (instancetype)
@@ -778,6 +782,7 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   [toolbarSwipeGestureIPH setTranslatesAutoresizingMaskIntoConstraints:NO];
   if (!CanGestureInProductHelpViewFitInGuide(toolbarSwipeGestureIPH, guide) ||
       !_engagementTracker->ShouldTriggerHelpUI(feature)) {
+    [self.rootViewController.view removeLayoutGuide:guide];
     return;
   }
   toolbarSwipeGestureIPH.topConstraintForBottomEdgeSwipe =
@@ -794,6 +799,7 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   }
   [toolbarSwipeGestureIPH startAnimation];
   _toolbarSwipeGestureIPH = toolbarSwipeGestureIPH;
+  _toolbarSwipeGestureIPHGuide = guide;
 }
 
 - (void)presentFeedSwipeGestureInProductHelp {
@@ -1111,6 +1117,13 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
         kIOSSwipeToolbarToChangeTabIPHDismissButtonTapped;
     [self featureDismissed:feature_engagement::
                                kIPHiOSSwipeToolbarToChangeTabFeature];
+    // `view` has already been removed from its superview, so its positioning
+    // guide is no longer needed.
+    if (_toolbarSwipeGestureIPHGuide) {
+      [self.rootViewController.view
+          removeLayoutGuide:_toolbarSwipeGestureIPHGuide];
+      _toolbarSwipeGestureIPHGuide = nil;
+    }
   } else {
     NOTREACHED();
   }
@@ -1599,9 +1612,11 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
       bubbleBoundingSize:boundingSizeGuide.layoutFrame.size
           swipeDirection:direction];
   [gestureIPHView setTranslatesAutoresizingMaskIntoConstraints:NO];
-  if (CanGestureInProductHelpViewFitInGuide(gestureIPHView,
-                                            boundingSizeGuide) &&
-      _engagementTracker->ShouldTriggerHelpUI(feature)) {
+  BOOL canFit =
+      CanGestureInProductHelpViewFitInGuide(gestureIPHView, boundingSizeGuide);
+  // `boundingSizeGuide` is only used to measure the available space.
+  [self.rootViewController.view removeLayoutGuide:boundingSizeGuide];
+  if (canFit && _engagementTracker->ShouldTriggerHelpUI(feature)) {
     [self.rootViewController.view addSubview:gestureIPHView];
     gestureIPHView.delegate = self;
     AddSameConstraints(gestureIPHView, contentAreaGuide);

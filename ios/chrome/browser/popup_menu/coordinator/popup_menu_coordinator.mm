@@ -408,17 +408,13 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
 
   LayoutGuideCenter* layoutGuideCenter = LayoutGuideCenterForBrowser(browser);
   mediator.layoutGuideCenter = layoutGuideCenter;
-  UILayoutGuide* layoutGuide =
-      [layoutGuideCenter makeLayoutGuideNamed:kToolsMenuGuide];
-  [self.baseViewController.view addLayoutGuide:layoutGuide];
   menu.modalPresentationStyle = UIModalPresentationPopover;
 
   UIPopoverPresentationController* popoverPresentationController =
       menu.popoverPresentationController;
   popoverPresentationController.popoverBackgroundViewClass =
       [InvisibleArrowPopoverBackgroundView class];
-  popoverPresentationController.sourceView = self.baseViewController.view;
-  popoverPresentationController.sourceRect = layoutGuide.layoutFrame;
+  [self anchorPopoverToToolsMenuButton:popoverPresentationController];
   popoverPresentationController.permittedArrowDirections =
       UIPopoverArrowDirectionUp;
   popoverPresentationController.delegate = self;
@@ -561,14 +557,8 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
     UIPopoverPresentationController* popoverPresentationController =
         menu.popoverPresentationController;
 
-    LayoutGuideCenter* layoutGuideCenter =
-        LayoutGuideCenterForBrowser(self.browser);
-    UILayoutGuide* layoutGuide =
-        [layoutGuideCenter makeLayoutGuideNamed:kToolsMenuGuide];
-    [self.baseViewController.view addLayoutGuide:layoutGuide];
-
     // Re-anchor the popover if necessary, when the parent view's size changes.
-    popoverPresentationController.sourceRect = layoutGuide.layoutFrame;
+    [self anchorPopoverToToolsMenuButton:popoverPresentationController];
   }
 }
 
@@ -723,6 +713,26 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
 }
 
 #pragma mark - Private
+
+// Anchors `popover` to the tools menu button so UIKit tracks the button as it
+// moves (e.g. during rotation), falling back to the top-leading corner of the
+// base view when no button is referenced in the base view's window (e.g. while
+// the toolbar is hidden).
+- (void)anchorPopoverToToolsMenuButton:
+    (UIPopoverPresentationController*)popover {
+  UIView* toolsMenuButton = [LayoutGuideCenterForBrowser(self.browser)
+      referencedViewUnderName:kToolsMenuGuide];
+  if (toolsMenuButton.window &&
+      toolsMenuButton.window == self.baseViewController.view.window) {
+    if (popover.sourceItem != toolsMenuButton) {
+      popover.sourceItem = toolsMenuButton;
+    }
+    return;
+  }
+  popover.sourceItem = nil;
+  popover.sourceView = self.baseViewController.view;
+  popover.sourceRect = CGRectZero;
+}
 
 - (void)trackToolsMenuNoHorizontalScrollOrAction {
   if (!self.profile) {

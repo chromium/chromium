@@ -170,6 +170,11 @@ enum class PopupMenuIPHSessionType {
 
   SceneState* sceneState = self.browser->GetSceneState();
   [sceneState removeObserver:self];
+
+  if (self.layoutGuide) {
+    [self.baseViewController.view removeLayoutGuide:self.layoutGuide];
+    self.layoutGuide = nil;
+  }
 }
 
 - (void)prepareToShowIPHInOverflowMenu {

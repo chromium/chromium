@@ -53,9 +53,9 @@ class PopupMenuHelpCoordinatorTest : public PlatformTest {
         [[LayoutGuideSceneAgent alloc] init];
     [scene_state_ addAgent:layout_guide_scene_agent];
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
-    UIViewController* root_view_controller = [[UIViewController alloc] init];
+    root_view_controller_ = [[UIViewController alloc] init];
     popup_menu_help_coordinator_ = [[PopupMenuHelpCoordinator alloc]
-        initWithBaseViewController:root_view_controller
+        initWithBaseViewController:root_view_controller_
                            browser:browser_.get()];
     popupMenuUIUpdating_ = OCMProtocolMock(@protocol(PopupMenuUIUpdating));
     popup_menu_help_coordinator_.UIUpdater = popupMenuUIUpdating_;
@@ -70,6 +70,7 @@ class PopupMenuHelpCoordinatorTest : public PlatformTest {
     ClearDefaultBrowserPromoData();
     [popup_menu_help_coordinator_ stop];
     popup_menu_help_coordinator_ = nil;
+    root_view_controller_ = nil;
     browser_.reset();
     tracker_ = nullptr;
     profile_.reset();
@@ -84,6 +85,7 @@ class PopupMenuHelpCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   SceneState* scene_state_;
   std::unique_ptr<TestBrowser> browser_;
+  UIViewController* root_view_controller_;
   PopupMenuHelpCoordinator* popup_menu_help_coordinator_;
   id<PopupMenuUIUpdating> popupMenuUIUpdating_;
   raw_ptr<feature_engagement::test::MockTracker> tracker_;
@@ -128,6 +130,18 @@ TEST_F(PopupMenuHelpCoordinatorTest, HasToolsMenuLayoutGuideLevelUpTarget) {
   LayoutGuideCenter* layoutGuideCenter =
       LayoutGuideCenterForBrowser(browser_.get());
   EXPECT_NE([layoutGuideCenter makeLayoutGuideNamed:kToolsMenuGuide], nil);
+}
+
+// Tests that `stop` removes the layout guide attached to the base view by
+// `start`.
+TEST_F(PopupMenuHelpCoordinatorTest, StopRemovesLayoutGuideFromBaseView) {
+  ASSERT_EQ(1u, root_view_controller_.view.layoutGuides.count);
+  UILayoutGuide* guide = root_view_controller_.view.layoutGuides.firstObject;
+
+  [popup_menu_help_coordinator_ stop];
+
+  EXPECT_FALSE([root_view_controller_.view.layoutGuides containsObject:guide]);
+  EXPECT_EQ(nil, guide.owningView);
 }
 
 }  // namespace
