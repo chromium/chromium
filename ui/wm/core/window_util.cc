@@ -161,8 +161,10 @@ void Restore(aura::Window* window) {
 }
 
 void Unminimize(aura::Window* window) {
-  CHECK_EQ(window->GetProperty(aura::client::kShowStateKey),
-           ui::mojom::WindowShowState::kMinimized, base::NotFatalUntil::M163);
+  // TODO(crbug.com/586381264): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(window->GetProperty(aura::client::kShowStateKey),
+            ui::mojom::WindowShowState::kMinimized);
   Restore(window);
 }
 
