@@ -189,8 +189,8 @@ class CORE_EXPORT IntersectionGeometry {
                   const Element& target_element,
                   bool has_target_margin,
                   bool has_scroll_margin);
-    const LayoutObject* target;
-    const LayoutObject* root;
+    const LayoutObject* target = nullptr;
+    const LayoutObject* root = nullptr;
     enum Relationship {
       kInvalid,
       // The target is in a sub-frame of the implicit root.

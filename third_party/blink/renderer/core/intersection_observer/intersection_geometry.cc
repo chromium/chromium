@@ -303,9 +303,14 @@ IntersectionGeometry::RootAndTarget::RootAndTarget(
     const Node* root_node,
     const Element& target_element,
     bool has_target_margin,
-    bool has_scroll_margin)
-    : target(GetTargetLayoutObject(target_element)),
-      root(target ? GetRootLayoutObject(root_node) : nullptr) {
+    bool has_scroll_margin) {
+  if (root_node && root_node->GetDocument().GetFrame() !=
+                       target_element.GetDocument().GetFrame()) {
+    relationship = kInvalid;
+    return;
+  }
+  target = GetTargetLayoutObject(target_element);
+  root = target ? GetRootLayoutObject(root_node) : nullptr;
   ComputeRelationship(!root_node, has_target_margin, has_scroll_margin);
 }
 
@@ -402,14 +407,6 @@ void IntersectionGeometry::RootAndTarget::ComputeRelationship(
       // get populated.
       return;
     }
-  }
-
-  if (target->GetFrame() != root->GetFrame() && !root_is_implicit) {
-    // The case of different frame with implicit root has been covered by the
-    // previous condition.
-    // The target and the explicit root are required to be in the same frame.
-    relationship = kInvalid;
-    return;
   }
 
   bool has_intermediate_scrollers = false;

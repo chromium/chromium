@@ -3531,4 +3531,70 @@ TEST_F(IntersectionObserverTest,
   EXPECT_EQ(observer_delegate->EntryCount(), 2);
 }
 
+// Regression test for https://crbug.com/583238769 (vulnerability 3):
+// An explicit-root IntersectionObserver whose root is in an unthrottled
+// document and whose target is in a throttled frame must reject the cross-frame
+// root/target relationship before inspecting the target's layout or flat tree.
+TEST_F(IntersectionObserverTest,
+       DirtySlotAssignmentWithCrossDocumentExplicitRoot) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest iframe_resource("https://example.com/iframe.html", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <iframe id="iframe" src="iframe.html" sandbox
+            style="position: absolute; top: 1000px"></iframe>
+  )HTML");
+  iframe_resource.Complete(R"HTML(
+    <div id="host">
+      <template shadowrootmode="open">
+        <slot></slot>
+      </template>
+      <div id="target">Hello, world!</div>
+      <div id="wrap"></div>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  auto* iframe = To<WebLocalFrameImpl>(MainFrame().FirstChild());
+  ASSERT_TRUE(iframe);
+  Document* iframe_document = iframe->GetFrame()->GetDocument();
+  EXPECT_TRUE(iframe_document->View()->CanThrottleRendering());
+
+  Element* target = iframe_document->getElementById(AtomicString("target"));
+  Element* wrap = iframe_document->getElementById(AtomicString("wrap"));
+  Element* host = iframe_document->getElementById(AtomicString("host"));
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(wrap);
+  ASSERT_TRUE(host);
+  ShadowRoot* shadow_root = host->OpenShadowRoot();
+  ASSERT_TRUE(shadow_root);
+
+  // Create an observer whose explicit root is the main document, observing a
+  // target in the throttled subframe.
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+  IntersectionObserver* observer = MakeGarbageCollected<IntersectionObserver>(
+      *observer_delegate, std::nullopt,
+      IntersectionObserver::Params{.root = &GetDocument(), .thresholds = {0}});
+  observer->observe(target);
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(observer_delegate->EntryCount(), 1);
+  EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
+
+  // Now dirty slot assignment in the throttled subframe and trigger a main
+  // frame intersection update while the subframe remains throttled.
+  wrap->setAttribute(html_names::kSlotAttr, AtomicString("x"));
+  EXPECT_TRUE(shadow_root->NeedsSlotAssignmentRecalc());
+  GetDocument().View()->SetIntersectionObservationState(
+      LocalFrameView::kRequired);
+  GetDocument().View()->ScheduleAnimation();
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_TRUE(shadow_root->NeedsSlotAssignmentRecalc());
+}
+
 }  // namespace blink
