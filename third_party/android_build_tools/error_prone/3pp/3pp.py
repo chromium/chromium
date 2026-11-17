@@ -29,6 +29,9 @@ import graalvm
 import maven
 
 _NULLAWAY_PACKAGE = 'com.uber.nullaway:nullaway'
+# NullAway is rolled from its snapshot builds (published on every commit to
+# its main branch) in order to pick up fixes sooner.
+_NULLAWAY_MAVEN_URL = 'https://central.sonatype.com/repository/maven-snapshots'
 _PLUGIN_DIR = 'tools/android/errorprone_plugin'
 # Temporary copies of Error Prone checks, which are a part of the plugin.
 _CHECKS_DIR = 'third_party/android_build_tools/error_prone/java'
@@ -315,12 +318,11 @@ def _post_process(src_jar_path, dst_jar_path):
     output_dir = os.path.dirname(dst_jar_path)
     shutil.move(src_jar_path, dst_jar_path)
 
-    # The version is also looked up by _version_strings(). If a release happens
-    # in between, the package will be rebuilt by the next 3pp run.
-    nullaway_version = maven.latest_version(maven.APACHE_MAVEN_URL,
-                                            _NULLAWAY_PACKAGE)
+    # The version is also looked up by _version_strings(). If a snapshot is
+    # published in between, the package will be rebuilt by the next 3pp run.
+    nullaway_version = _nullaway_version()
     nullaway_src_jar = maven.build_jar_with_dependencies(
-        maven.APACHE_MAVEN_URL,
+        _NULLAWAY_MAVEN_URL,
         _NULLAWAY_PACKAGE,
         nullaway_version,
         work_dir='nullaway_build',
@@ -342,10 +344,13 @@ def _post_process(src_jar_path, dst_jar_path):
     )
 
 
+def _nullaway_version():
+    return maven.latest_snapshot_version(_NULLAWAY_MAVEN_URL, _NULLAWAY_PACKAGE)
+
+
 def _version_strings():
     # Rebuild when either NullAway or GraalVM change.
-    return [maven.latest_version(maven.APACHE_MAVEN_URL, _NULLAWAY_PACKAGE)
-            ] + graalvm.version_strings()
+    return [_nullaway_version()] + graalvm.version_strings()
 
 
 maven.main(

@@ -61,14 +61,22 @@ _POM_TEMPLATE = """\
 """
 
 
+def _fetch_metadata(maven_url, package, version=None):
+    """Returns the contents of maven-metadata.xml for |package|.
+
+    Do not parse the result with the Python included parser since it is
+    susceptible to maliciously crafted xmls. Only use regular expression parsing
+    to be safe. RE should be enough to handle what we need to extract.
+    """
+    url = maven_url + '/' + package.replace('.', '/').replace(':', '/')
+    if version:
+        url += '/' + version
+    url += '/maven-metadata.xml'
+    return urllib.request.urlopen(url).read().decode('utf-8')
+
+
 def _detect_latest(maven_url, package):
-    metadata_url = '{}/{}/maven-metadata.xml'.format(
-        maven_url, package.replace('.', '/').replace(':', '/')
-    )
-    metadata = urllib.request.urlopen(metadata_url).read().decode('utf-8')
-    # Do not parse xml with the Python included parser since it is susceptible
-    # to maliciously crafted xmls. Only use regular expression parsing to be
-    # safe. RE should be enough to handle what we need to extract.
+    metadata = _fetch_metadata(maven_url, package)
     # TODO(agrieve): Use 'if m := ..." once docker image updates from Python 3.6.
     m = re.search('<latest>([^<]+)</latest>', metadata)
     if m:
@@ -80,9 +88,31 @@ def _detect_latest(maven_url, package):
     return latest
 
 
-def latest_version(maven_url, package):
-    """Returns the latest version of |package| (e.g. some.package:some-thing)."""
-    return _detect_latest(maven_url, package)
+def latest_snapshot_version(maven_url, package):
+    """Returns the timestamped version of the latest snapshot of |package|.
+
+    E.g. "1.2.3-20260101.123456-7" rather than "1.2.3-SNAPSHOT", so that the
+    version changes whenever a new snapshot is published. Maven resolves such
+    versions to that exact snapshot build.
+    """
+    snapshot_version = _detect_latest(maven_url, package)
+    if not snapshot_version.endswith('-SNAPSHOT'):
+        raise RuntimeError(
+            f'Expected a -SNAPSHOT version for {package}. '
+            f'Found: {snapshot_version}'
+        )
+    metadata = _fetch_metadata(maven_url, package, snapshot_version)
+    # Not using <snapshotVersions>, since it can contain stale entries for
+    # artifacts that are no longer published.
+    timestamp = re.search('<timestamp>([^<]+)</timestamp>', metadata)
+    build_number = re.search('<buildNumber>([^<]+)</buildNumber>', metadata)
+    if not timestamp or not build_number:
+        raise RuntimeError(
+            f'Failed to parse snapshot metadata for {package} '
+            f'{snapshot_version}:\n{metadata}'
+        )
+    base_version = snapshot_version[: -len('-SNAPSHOT')]
+    return f'{base_version}-{timestamp.group(1)}-{build_number.group(1)}'
 
 
 def _exclusions_xml(exclusions):

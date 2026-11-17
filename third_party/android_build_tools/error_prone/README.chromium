@@ -30,7 +30,8 @@ deleted once Error Prone's upstream check picks up the fixes it introduces.
 What version is this:
   * Run print_version.sh to find out the version.
   * The NullAway version is in cipd/NULLAWAY_VERSION. NullAway is updated
-    whenever a new Error Prone package is built.
+    whenever a new Error Prone package is built, using its latest snapshot
+    build from https://central.sonatype.com/repository/maven-snapshots/
   * New instances are uploaded by the packager bot:
     https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
   * The bot autoruns every 6 hours. Ping a trooper or a clank-build-core@ dev to
