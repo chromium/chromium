@@ -840,18 +840,6 @@ std::vector<PrefetchRearchParam> PrefetchRearchParam::Params() {
           .check_will_create_url_loader_factory = true,
           .unblock_async_policy = std::nullopt,
       },
-      PrefetchRearchParam{
-          .force_off_the_main_thread = true,
-          .check_will_create_url_loader_factory = true,
-          .unblock_async_policy =
-              features::PrefetchMatchResolverUnblockAsyncPolicy::kAsyncBlocked,
-      },
-      PrefetchRearchParam{
-          .force_off_the_main_thread = true,
-          .check_will_create_url_loader_factory = true,
-          .unblock_async_policy = features::
-              PrefetchMatchResolverUnblockAsyncPolicy::kAsyncBlockedUnmatch,
-      },
   };
 }
 
