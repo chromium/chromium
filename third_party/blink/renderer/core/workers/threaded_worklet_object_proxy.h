@@ -51,6 +51,10 @@ class CORE_EXPORT ThreadedWorkletObjectProxy : public ThreadedObjectProxyBase {
       WorkletPendingTasks*,
       WorkerThread*);
 
+  static void FreezeOnWorkletThread(WorkerThread*,
+                                    bool is_in_back_forward_cache);
+  static void ResumeOnWorkletThread(WorkerThread*);
+
  protected:
   ThreadedWorkletObjectProxy(ThreadedWorkletMessagingProxy*,
                              ParentExecutionContextTaskRunners*,

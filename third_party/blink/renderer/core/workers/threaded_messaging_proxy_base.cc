@@ -10,6 +10,8 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/devtools_agent.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -125,6 +127,20 @@ void ThreadedMessagingProxyBase::CountWebDXFeature(
     mojom::blink::WebDXFeature feature) {
   DCHECK(IsParentContextThread());
   UseCounter::CountWebDXFeature(execution_context_, feature);
+}
+
+void ThreadedMessagingProxyBase::EvictFromBackForwardCache(
+    mojom::blink::RendererEvictionReason reason) {
+  DCHECK(IsParentContextThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (asked_to_terminate_ || !execution_context_) {
+    return;
+  }
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context_.Get())) {
+    if (LocalFrame* frame = window->GetFrame()) {
+      frame->EvictFromBackForwardCache(reason, /*source_location=*/nullptr);
+    }
+  }
 }
 
 void ThreadedMessagingProxyBase::ReportConsoleMessage(

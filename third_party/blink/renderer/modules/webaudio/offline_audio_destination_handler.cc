@@ -130,11 +130,20 @@ void OfflineAudioDestinationHandler::StopRendering() {
 }
 
 void OfflineAudioDestinationHandler::Pause() {
-  NOTREACHED();
+  DCHECK(IsMainThread());
+  is_paused_.store(true, std::memory_order_release);
 }
 
 void OfflineAudioDestinationHandler::Resume() {
-  NOTREACHED();
+  DCHECK(IsMainThread());
+  is_paused_.store(false, std::memory_order_release);
+  if (render_thread_task_runner_) {
+    PostCrossThreadTask(
+        *render_thread_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(
+            &OfflineAudioDestinationHandler::ResumeOfflineRenderingIfPaused,
+            WrapRefCounted(this)));
+  }
 }
 
 void OfflineAudioDestinationHandler::EnsureOfflineRenderThreadInitialized() {
@@ -207,6 +216,7 @@ void OfflineAudioDestinationHandler::DoOfflineRendering() {
               "OfflineAudioDestinationHandler::DoOfflineRendering", "this",
               reinterpret_cast<void*>(this));
 
+  is_paused_in_render_loop_ = false;
   unsigned number_of_channels = shared_render_target_->numberOfChannels();
 
   // If there is more to process and there is no suspension at the moment,
@@ -214,6 +224,11 @@ void OfflineAudioDestinationHandler::DoOfflineRendering() {
   // will pick up the render loop again from where it was suspended.
   while (frames_to_process_ > 0) {
     if (WasStopRequested()) {
+      return;
+    }
+
+    if (IsPaused()) {
+      is_paused_in_render_loop_ = true;
       return;
     }
 
@@ -252,6 +267,14 @@ void OfflineAudioDestinationHandler::DoOfflineRendering() {
 
   DCHECK_EQ(frames_to_process_, 0u);
   FinishOfflineRendering();
+}
+
+void OfflineAudioDestinationHandler::ResumeOfflineRenderingIfPaused() {
+  DCHECK(!IsMainThread());
+  if (!is_paused_in_render_loop_ || IsPaused() || WasStopRequested()) {
+    return;
+  }
+  DoOfflineRendering();
 }
 
 void OfflineAudioDestinationHandler::SuspendOfflineRendering() {

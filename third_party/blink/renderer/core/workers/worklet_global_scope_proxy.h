@@ -42,6 +42,11 @@ class CORE_EXPORT WorkletGlobalScopeProxy : public GarbageCollectedMixin {
 
   // Terminates the worklet global scope from the main thread.
   virtual void TerminateWorkletGlobalScope() = 0;
+
+  // Freezes or resumes the worklet global scope when the owning document is
+  // frozen (e.g. in the back/forward cache) or resumed.
+  virtual void Freeze(bool is_in_back_forward_cache) {}
+  virtual void Resume() {}
 };
 
 }  // namespace blink

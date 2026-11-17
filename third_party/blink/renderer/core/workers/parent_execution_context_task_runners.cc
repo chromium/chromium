@@ -66,10 +66,12 @@ ParentExecutionContextTaskRunners::ParentExecutionContextTaskRunners(
   DCHECK(context.IsContextThread());
   // For now we only support very limited task types. Sort in the TaskType enum
   // value order.
-  for (auto type : {TaskType::kNetworking, TaskType::kPostedMessage,
-                    TaskType::kWorkerAnimation, TaskType::kInternalDefault,
-                    TaskType::kInternalLoading, TaskType::kInternalTest,
-                    TaskType::kInternalMedia, TaskType::kInternalInspector}) {
+  for (auto type :
+       {TaskType::kNetworking, TaskType::kNetworkingUnfreezable,
+        TaskType::kPostedMessage, TaskType::kWorkerAnimation,
+        TaskType::kInternalDefault, TaskType::kInternalLoading,
+        TaskType::kInternalTest, TaskType::kInternalMedia,
+        TaskType::kInternalInspector}) {
     task_runners_.insert(type, context.GetTaskRunner(type));
   }
 }

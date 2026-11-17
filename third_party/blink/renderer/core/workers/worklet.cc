@@ -8,6 +8,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -25,14 +26,49 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
 Worklet::Worklet(LocalDOMWindow& window)
-    : ExecutionContextLifecycleObserver(&window),
+    : ExecutionContextLifecycleStateObserver(&window),
       module_responses_map_(MakeGarbageCollected<WorkletModuleResponsesMap>()) {
   DCHECK(IsMainThread());
+  UpdateStateIfNeeded();
+}
+
+void Worklet::ContextLifecycleStateChanged(
+    mojom::blink::FrameLifecycleState state) {
+  DCHECK(IsMainThread());
+  if (!RuntimeEnabledFeatures::FreezeWorkletsInBFCacheEnabled()) {
+    return;
+  }
+  switch (state) {
+    case mojom::blink::FrameLifecycleState::kPaused:
+      // Do not do anything in this case. kPaused is only used for when the main
+      // thread is paused; we shouldn't worry about pausing the worklet thread
+      // in this case.
+      break;
+    case mojom::blink::FrameLifecycleState::kFrozen:
+      if (!requested_frozen_) {
+        requested_frozen_ = true;
+        const bool is_in_back_forward_cache =
+            GetExecutionContext()->is_in_back_forward_cache();
+        for (const auto& proxy : proxies_) {
+          proxy->Freeze(is_in_back_forward_cache);
+        }
+      }
+      break;
+    case mojom::blink::FrameLifecycleState::kRunning:
+      if (requested_frozen_) {
+        requested_frozen_ = false;
+        for (const auto& proxy : proxies_) {
+          proxy->Resume();
+        }
+      }
+      break;
+  }
 }
 
 Worklet::~Worklet() {
@@ -40,8 +76,9 @@ Worklet::~Worklet() {
 }
 
 void Worklet::Dispose() {
-  for (const auto& proxy : proxies_)
+  for (const auto& proxy : proxies_) {
     proxy->WorkletObjectDestroyed();
+  }
 
   // Abort any pending tasks as a safeguard before pre-finalization.
   // This ensures that HasPendingTasks() will be false in the destructor.
@@ -112,8 +149,9 @@ void Worklet::ContextDestroyed() {
   // load is in flight during navigation.
   AbortPendingTasks();
 
-  for (const auto& proxy : proxies_)
+  for (const auto& proxy : proxies_) {
     proxy->TerminateWorkletGlobalScope();
+  }
 }
 
 void Worklet::AbortPendingTasks() {
@@ -150,8 +188,9 @@ void Worklet::FetchAndInvokeScript(const KURL& module_url_record,
                                    V8RequestCredentials::Enum credentials,
                                    WorkletPendingTasks* pending_tasks) {
   DCHECK(IsMainThread());
-  if (!GetExecutionContext())
+  if (!GetExecutionContext()) {
     return;
+  }
 
   if (!pending_tasks_set_.Contains(pending_tasks)) {
     return;
@@ -193,8 +232,13 @@ void Worklet::FetchAndInvokeScript(const KURL& module_url_record,
   // "Depending on the type of worklet the user agent may create additional
   // WorkletGlobalScopes at this time."
 
-  while (NeedsToCreateGlobalScope())
-    proxies_.push_back(CreateGlobalScope());
+  while (NeedsToCreateGlobalScope()) {
+    WorkletGlobalScopeProxy* proxy = CreateGlobalScope();
+    if (requested_frozen_) {
+      proxy->Freeze(GetExecutionContext()->is_in_back_forward_cache());
+    }
+    proxies_.push_back(proxy);
+  }
 
   // Step 11: "Let pendingTaskStruct be a new pending tasks struct with counter
   // initialized to the length of worklet's WorkletGlobalScopes."
@@ -225,7 +269,7 @@ void Worklet::Trace(Visitor* visitor) const {
   visitor->Trace(module_responses_map_);
   visitor->Trace(pending_tasks_set_);
   ScriptWrappable::Trace(visitor);
-  ExecutionContextLifecycleObserver::Trace(visitor);
+  ExecutionContextLifecycleStateObserver::Trace(visitor);
 }
 
 }  // namespace blink

@@ -89,6 +89,20 @@ void PaintWorkletGlobalScopeProxy::TerminateWorkletGlobalScope() {
   reporting_proxy_.reset();
 }
 
+void PaintWorkletGlobalScopeProxy::Freeze(bool is_in_back_forward_cache) {
+  DCHECK(IsMainThread());
+  if (global_scope_) {
+    global_scope_->Freeze(is_in_back_forward_cache);
+  }
+}
+
+void PaintWorkletGlobalScopeProxy::Resume() {
+  DCHECK(IsMainThread());
+  if (global_scope_) {
+    global_scope_->Resume();
+  }
+}
+
 CSSPaintDefinition* PaintWorkletGlobalScopeProxy::FindDefinition(
     const String& name) {
   DCHECK(IsMainThread());

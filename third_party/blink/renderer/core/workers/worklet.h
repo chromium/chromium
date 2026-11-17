@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_credentials.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope_proxy.h"
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
 #include "third_party/blink/renderer/core/workers/worklet_pending_tasks.h"
@@ -27,7 +27,7 @@ class WorkletOptions;
 // Although some worklets run off the main thread, this must be created and
 // destroyed on the main thread.
 class CORE_EXPORT Worklet : public ScriptWrappable,
-                            public ExecutionContextLifecycleObserver {
+                            public ExecutionContextLifecycleStateObserver {
   DEFINE_WRAPPERTYPEINFO();
   USING_PRE_FINALIZER(Worklet, Dispose);
 
@@ -45,8 +45,9 @@ class CORE_EXPORT Worklet : public ScriptWrappable,
                                         const WorkletOptions*,
                                         ExceptionState&);
 
-  // ExecutionContextLifecycleObserver
+  // ExecutionContextLifecycleStateObserver
   void ContextDestroyed() override;
+  void ContextLifecycleStateChanged(mojom::blink::FrameLifecycleState) override;
 
   // Returns true if there is ongoing module loading tasks. BaseAudioContext
   // uses this check to keep itself alive until pending tasks are resolved.
@@ -103,6 +104,8 @@ class CORE_EXPORT Worklet : public ScriptWrappable,
 
   // Keeps track of pending tasks from addModule() call.
   HeapHashSet<Member<WorkletPendingTasks>> pending_tasks_set_;
+
+  bool requested_frozen_ = false;
 };
 
 }  // namespace blink

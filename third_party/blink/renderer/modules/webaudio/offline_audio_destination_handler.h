@@ -83,6 +83,10 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
   // Start the rendering loop.
   void DoOfflineRendering();
 
+  // Resumes offline rendering on the render thread if a previous render loop
+  // exited early due to `Pause()`.
+  void ResumeOfflineRenderingIfPaused();
+
   // Finish the rendering loop and notify the main thread to resolve the
   // promise with the rendered buffer.
   void FinishOfflineRendering();
@@ -93,6 +97,8 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
   bool WasStopRequested() const {
     return stop_requested_.load(std::memory_order_relaxed);
   }
+
+  bool IsPaused() const { return is_paused_.load(std::memory_order_acquire); }
 
   // Suspend/completion/stop callbacks for the main thread.
   void NotifySuspend(size_t);
@@ -142,6 +148,14 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
   // Set by the main thread and checked by the render thread between render
   // quanta. Cleanup still waits for the render-sequence acknowledgment.
   std::atomic<bool> stop_requested_{false};
+
+  // Set on the main thread when the execution context is frozen/resumed and
+  // checked by the render thread between render quanta.
+  std::atomic<bool> is_paused_{false};
+
+  // Accessed only on the render thread; true when `DoOfflineRendering()`
+  // yielded because `is_paused_` was set.
+  bool is_paused_in_render_loop_ = false;
 
   unsigned number_of_channels_;
   float sample_rate_;

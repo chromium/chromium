@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/mojo/browser_interface_broker_proxy_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/public/worker_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -55,6 +56,7 @@ class CORE_EXPORT WorkletGlobalScope : public WorkerOrWorkletGlobalScope {
   ExecutionContext* GetExecutionContext() const override;
 
   // ExecutionContext
+  void SetIsInBackForwardCache(bool) override;
   const KURL& Url() const final { return url_; }
   const KURL& BaseURL() const final { return url_; }
   KURL CompleteURL(const String&) const final;
@@ -74,6 +76,14 @@ class CORE_EXPORT WorkletGlobalScope : public WorkerOrWorkletGlobalScope {
   // WorkerOrWorkletGlobalScope
   void Dispose() override;
   WorkerThread* GetThread() const final;
+  void Freeze(bool is_in_back_forward_cache);
+  void Resume();
+
+  // BackForwardCacheLoaderHelperImpl::Delegate
+  void EvictFromBackForwardCache(mojom::blink::RendererEvictionReason reason,
+                                 SourceLocation* source_location) override;
+  void DidBufferLoadWhileInBackForwardCache(bool update_process_wide_count,
+                                            size_t num_bytes) override;
   const base::UnguessableToken& GetDevToolsToken() const override;
   CodeCacheHost* GetCodeCacheHost() override;
   std::optional<mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
@@ -194,6 +204,15 @@ class CORE_EXPORT WorkletGlobalScope : public WorkerOrWorkletGlobalScope {
   // |worker_thread_| is available only when |thread_type_| is kOffMainThread.
   raw_ptr<WorkerThread, UnprotectedInRelease | DanglingUntriaged>
       worker_thread_;
+
+  // Held while Freeze() is in effect; keeps this scope's WorkerScheduler
+  // paused. Only used for threaded worklets.
+  std::unique_ptr<scheduler::WorkerScheduler::PauseHandle> freeze_pause_handle_;
+
+  // The total bytes buffered by all network requests in this worklet while
+  // frozen due to back-forward cache. This number gets reset when the worklet
+  // gets out of the back-forward cache.
+  size_t total_bytes_buffered_while_in_back_forward_cache_ = 0;
 
   // The token identifying the LocalFrame that caused this scope to be created.
   const LocalFrameToken frame_token_;

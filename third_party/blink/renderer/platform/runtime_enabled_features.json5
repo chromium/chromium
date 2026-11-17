@@ -3572,6 +3572,18 @@
       status: "experimental",
     },
     {
+      // Kill switch for pausing OfflineAudioContext rendering in BFCache.
+      // crbug.com/583125654
+      name: "FreezeOfflineAudioContextInBFCache",
+      status: "stable",
+    },
+    {
+      // Kill switch for freezing Worklets in BFCache.
+      // crbug.com/583125654
+      name: "FreezeWorkletsInBFCache",
+      status: "stable",
+    },
+    {
       name: "GamepadButtonTypes",
       status: "experimental",
     },

@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
@@ -248,8 +249,12 @@ void BaseAudioContext::DetachPendingResolvers() {
 
 void BaseAudioContext::ContextLifecycleStateChanged(
     mojom::blink::FrameLifecycleState state) {
-  // Don't need to do anything for an offline context.
-  if (!HasRealtimeConstraint()) {
+  if (!destinationNode()) {
+    return;
+  }
+
+  if (!HasRealtimeConstraint() &&
+      !RuntimeEnabledFeatures::FreezeOfflineAudioContextInBFCacheEnabled()) {
     return;
   }
 

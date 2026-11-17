@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_THREADED_WORKLET_MESSAGING_PROXY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_THREADED_WORKLET_MESSAGING_PROXY_H_
 
+#include <optional>
+
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -31,6 +33,8 @@ class CORE_EXPORT ThreadedWorkletMessagingProxy
       WorkletPendingTasks*) final;
   void WorkletObjectDestroyed() final;
   void TerminateWorkletGlobalScope() final;
+  void Freeze(bool is_in_back_forward_cache) final;
+  void Resume() final;
 
   // Normally, for worklets created in-process, the worklet thread will be
   // initialized with state taking from the original Window context. When
@@ -65,6 +69,9 @@ class CORE_EXPORT ThreadedWorkletMessagingProxy
           parent_agent_group_task_runner);
 
   std::unique_ptr<ThreadedWorkletObjectProxy> worklet_object_proxy_;
+
+  // Tracks the freeze state when the worklet thread is not yet created.
+  std::optional<bool> pending_freeze_is_in_back_forward_cache_;
 };
 
 }  // namespace blink

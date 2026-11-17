@@ -153,12 +153,12 @@ BackForwardCacheBrowserTest::~BackForwardCacheBrowserTest() {
     // TODO(crbug.com/40925798): Remove this.
     // As above but `LocalMainFrameHost::DidFirstVisuallyNonEmptyPaint()`.
     std::erase_if(samples, [](base::Bucket bucket) {
-      return bucket.min ==
-                 static_cast<base::HistogramBase::Sample32>(base::HashMetricName(
-                     blink::mojom::LocalFrameHost::Name_)) ||
-             bucket.min ==
-                 static_cast<base::HistogramBase::Sample32>(base::HashMetricName(
-                     blink::mojom::LocalMainFrameHost::Name_));
+      return bucket.min == static_cast<base::HistogramBase::Sample32>(
+                               base::HashMetricName(
+                                   blink::mojom::LocalFrameHost::Name_)) ||
+             bucket.min == static_cast<base::HistogramBase::Sample32>(
+                               base::HashMetricName(
+                                   blink::mojom::LocalMainFrameHost::Name_));
     });
 
     EXPECT_THAT(samples, testing::ElementsAre());
@@ -201,20 +201,20 @@ void BackForwardCacheBrowserTest::SetUpCommandLine(
   EnableFeatureAndSetParams(features::kBackForwardCache,
                             "process_binding_strength", "NORMAL");
 #endif
-    // Allow BackForwardCache for all devices regardless of their memory.
-    DisableFeature(features::kBackForwardCacheMemoryControls);
-    // Many browser tests assume a cache size of 1.
-    EnableCacheSize(1, std::nullopt);
+  // Allow BackForwardCache for all devices regardless of their memory.
+  DisableFeature(features::kBackForwardCacheMemoryControls);
+  // Many browser tests assume a cache size of 1.
+  EnableCacheSize(1, std::nullopt);
 
-    SetupFeaturesAndParameters();
+  SetupFeaturesAndParameters();
 
-    command_line->AppendSwitchASCII(
-        switches::kAutoplayPolicy,
-        switches::autoplay::kNoUserGestureRequiredPolicy);
-    // Unfortunately needed for one test on slow bots, TextInputStateUpdated,
-    // where deferred commits delays input too much.
-    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
-    ContentBrowserTest::SetUpCommandLine(command_line);
+  command_line->AppendSwitchASCII(
+      switches::kAutoplayPolicy,
+      switches::autoplay::kNoUserGestureRequiredPolicy);
+  // Unfortunately needed for one test on slow bots, TextInputStateUpdated,
+  // where deferred commits delays input too much.
+  command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  ContentBrowserTest::SetUpCommandLine(command_line);
 }
 
 void BackForwardCacheBrowserTest::SetUpInProcessBrowserTestFixture() {
@@ -372,8 +372,8 @@ void BackForwardCacheBrowserTest::DoNotFailForUnexpectedMessagesWhileCached() {
   fail_for_unexpected_messages_while_cached_ = false;
 }
 
-  // Navigates to a page at |page_url| with an img element with src set to
-  // "image.png".
+// Navigates to a page at |page_url| with an img element with src set to
+// "image.png".
 RenderFrameHostImpl* BackForwardCacheBrowserTest::NavigateToPageWithImage(
     const GURL& page_url) {
   EXPECT_TRUE(NavigateToURL(shell(), page_url));
@@ -569,8 +569,9 @@ class ReadyToCommitNavigationCallback : public WebContentsObserver {
  private:
   // WebContentsObserver:
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
-    if (callback_)
+    if (callback_) {
       std::move(callback_).Run(navigation_handle);
+    }
   }
 
   base::OnceCallback<void(NavigationHandle*)> callback_;
@@ -581,8 +582,9 @@ class FirstVisuallyNonEmptyPaintObserver : public WebContentsObserver {
   explicit FirstVisuallyNonEmptyPaintObserver(WebContents* contents)
       : WebContentsObserver(contents) {}
   void DidFirstVisuallyNonEmptyPaint() override {
-    if (observed_)
+    if (observed_) {
       return;
+    }
     observed_ = true;
     run_loop_.Quit();
   }
@@ -597,8 +599,9 @@ class FirstVisuallyNonEmptyPaintObserver : public WebContentsObserver {
 };
 
 void WaitForFirstVisuallyNonEmptyPaint(WebContents* contents) {
-  if (contents->CompletedFirstVisuallyNonEmptyPaint())
+  if (contents->CompletedFirstVisuallyNonEmptyPaint()) {
     return;
+  }
   FirstVisuallyNonEmptyPaintObserver observer(contents);
   observer.Wait();
 }
@@ -641,8 +644,9 @@ PageLifecycleStateManagerTestDelegate::PageLifecycleStateManagerTestDelegate(
 
 PageLifecycleStateManagerTestDelegate::
     ~PageLifecycleStateManagerTestDelegate() {
-  if (manager_)
+  if (manager_) {
     manager_->SetDelegateForTesting(nullptr);
+  }
 }
 
 bool PageLifecycleStateManagerTestDelegate::WaitForInBackForwardCacheAck() {
@@ -675,8 +679,9 @@ void PageLifecycleStateManagerTestDelegate::OnLastAcknowledgedStateChanged(
     const blink::mojom::PageLifecycleState& old_state,
     const blink::mojom::PageLifecycleState& new_state) {
   if (store_in_back_forward_cache_ack_received_ &&
-      new_state.is_in_back_forward_cache)
+      new_state.is_in_back_forward_cache) {
     std::move(store_in_back_forward_cache_ack_received_).Run();
+  }
 }
 
 void PageLifecycleStateManagerTestDelegate::OnUpdateSentToRenderer(
@@ -1878,7 +1883,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 }
 
 #if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID))
-#define MAYBE_SubframeTextInputStateUpdated DISABLED_SubframeTextInputStateUpdated
+#define MAYBE_SubframeTextInputStateUpdated \
+  DISABLED_SubframeTextInputStateUpdated
 #else
 #define MAYBE_SubframeTextInputStateUpdated SubframeTextInputStateUpdated
 #endif
@@ -3558,7 +3564,6 @@ INSTANTIATE_TEST_SUITE_P(
     &BackForwardCacheWithSubframeNavigationWithParamBrowserTest::
         DescribeParams);
 
-
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        RendererInitiatedNavigateToSameUrl) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -3723,6 +3728,266 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // message.
   std::string result = EvalJs(rfh_a, "window.receivedMsg").ExtractString();
   EXPECT_EQ("Hello from nested worker!", result);
+}
+
+// Test that an AudioWorklet whose addModule() response arrives while the
+// owning document is in the Back-Forward Cache is frozen and does not fetch
+// static imports or evaluate module script until the page is restored.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       BFCacheBypassViaUnfrozenWorklet) {
+  net::test_server::ControllableHttpResponse worklet_response(
+      embedded_test_server(), "/worklet.js");
+  net::test_server::ControllableHttpResponse dep_response(
+      embedded_test_server(), "/dep.js");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Use 127.0.0.1 (the default host for embedded_test_server) because Worklet
+  // requires a SecureContext.
+  GURL url_a(embedded_test_server()->GetURL("/back_forward_cache/empty.html"));
+  GURL url_b(embedded_test_server()->GetURL("/title1.html"));
+
+  // Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver deleted(rfh_a);
+
+  std::string worklet_url =
+      embedded_test_server()->GetURL("/worklet.js").spec();
+
+  std::string js_script = R"(
+    window.ctx = new OfflineAudioContext(1, 128, 48000);
+    window.workletReady = window.ctx.audioWorklet.addModule(')" +
+                          worklet_url + R"(').then(() => {
+      return new Promise(resolve => {
+        const node = new AudioWorkletNode(window.ctx, 'test-proc');
+        node.port.onmessage = (e) => resolve(e.data);
+      });
+    });
+    "started";
+  )";
+  EXPECT_TRUE(ExecJs(rfh_a, js_script));
+
+  // Wait for the request for worklet.js to hit the server.
+  worklet_response.WaitForRequest();
+
+  // Navigate to B to put A into BFCache while worklet.js is in flight.
+  PageLifecycleStateManagerTestDelegate delegate(
+      rfh_a->render_view_host()->GetPageLifecycleStateManager());
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_TRUE(delegate.WaitForInBackForwardCacheAck());
+  EXPECT_FALSE(deleted.deleted());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Now respond to the worklet.js request while A is in BFCache.
+  worklet_response.Send(
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: application/javascript\r\n"
+      "\r\n"
+      "import {depEvalTime} from './dep.js';\n"
+      "const evalTime = Date.now();\n"
+      "class TestProc extends AudioWorkletProcessor {\n"
+      "  constructor() {\n"
+      "    super();\n"
+      "    this.port.postMessage(Math.min(depEvalTime, evalTime));\n"
+      "  }\n"
+      "  process() { return false; }\n"
+      "}\n"
+      "registerProcessor('test-proc', TestProc);\n");
+  worklet_response.Done();
+
+  // Allow any outstanding tasks to execute on the renderer and record the time
+  // before restoring A.
+  RenderFrameHostImpl* rfh_b = current_frame_host();
+  double before_restore_ms =
+      EvalJs(rfh_b, "new Promise(r => setTimeout(() => r(Date.now()), 100))")
+          .ExtractDouble();
+  EXPECT_EQ(nullptr, dep_response.http_request());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Go back to page A.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+
+  // Once page A is restored, the worklet thread should fetch the static import
+  // and evaluate both modules, so the evaluation timestamp must be >=
+  // before_restore_ms.
+  dep_response.WaitForRequest();
+  dep_response.Send(
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: application/javascript\r\n"
+      "\r\n"
+      "export const depEvalTime = Date.now();\n");
+  dep_response.Done();
+
+  double worklet_eval_ms = EvalJs(rfh_a, "window.workletReady").ExtractDouble();
+  EXPECT_GE(worklet_eval_ms, before_restore_ms);
+}
+
+class BackForwardCacheWorkletNetworkLimitBrowserTest
+    : public BackForwardCacheBrowserTest {
+ public:
+  static constexpr size_t kMaxBufferedBytesPerProcess = 10000;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(
+        blink::features::kLoadingTasksUnfreezable,
+        "max_buffered_bytes_per_process",
+        base::NumberToString(kMaxBufferedBytesPerProcess));
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+// Test that when an in-flight Worklet addModule() response arriving while the
+// owning document is in the Back-Forward Cache exceeds the per-process buffer
+// limit, the page is evicted from the Back-Forward Cache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWorkletNetworkLimitBrowserTest,
+                       WorkletAddModuleResponseExceedsBufferLimitInBFCache) {
+  net::test_server::ControllableHttpResponse worklet_response(
+      embedded_test_server(), "/worklet.js");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Use 127.0.0.1 (the default host for embedded_test_server) because Worklet
+  // requires a SecureContext.
+  GURL url_a(embedded_test_server()->GetURL("/back_forward_cache/empty.html"));
+  GURL url_b(embedded_test_server()->GetURL("/title1.html"));
+
+  // Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  std::string worklet_url =
+      embedded_test_server()->GetURL("/worklet.js").spec();
+
+  std::string js_script = R"(
+    window.ctx = new OfflineAudioContext(1, 128, 48000);
+    window.workletPromise = window.ctx.audioWorklet.addModule(')" +
+                          worklet_url + R"(');
+    "started";
+  )";
+  EXPECT_TRUE(ExecJs(rfh_a.get(), js_script));
+
+  // Wait for the request for worklet.js to hit the server.
+  worklet_response.WaitForRequest();
+
+  // Navigate to B to put A into BFCache while worklet.js is in flight.
+  PageLifecycleStateManagerTestDelegate delegate(
+      rfh_a->render_view_host()->GetPageLifecycleStateManager());
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_TRUE(delegate.WaitForInBackForwardCacheAck());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Respond with a body exceeding the per-process buffer limit while A is
+  // cached.
+  std::string body(kMaxBufferedBytesPerProcess + 1, '*');
+  worklet_response.Send(net::HTTP_OK, "application/javascript");
+  worklet_response.Send(body);
+  worklet_response.Done();
+
+  // Page A should be evicted and deleted from the Back-Forward Cache.
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  // Go back to page A and verify the eviction reason.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectNotRestored({NotRestoredReason::kNetworkExceedsBufferLimit}, {}, {}, {},
+                    {}, FROM_HERE);
+}
+
+// Test that an OfflineAudioContext actively rendering via startRendering() is
+// paused while the owning document is in the Back-Forward Cache and resumes
+// rendering when the document is restored.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       OfflineAudioContextPausedInBFCache) {
+  net::test_server::ExpectationHandler handler(embedded_test_server());
+  handler.OnRequest("/worklet_render.js")
+      .RespondWith("application/javascript", R"(
+        class RenderProc extends AudioWorkletProcessor {
+          constructor() {
+            super();
+            this.started = false;
+          }
+          process() {
+            if (!this.started) {
+              this.started = true;
+              this.port.postMessage('started');
+            }
+            const t = Date.now();
+            while (Date.now() - t < 5) {}
+            return true;
+          }
+        }
+        registerProcessor('render-proc', RenderProc);
+      )");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("/back_forward_cache/empty.html"));
+  GURL url_b(embedded_test_server()->GetURL("/title1.html"));
+
+  // Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver deleted(rfh_a);
+
+  std::string worklet_url =
+      embedded_test_server()->GetURL("/worklet_render.js").spec();
+
+  // Use a long context (10000 quanta * 5ms = ~50s) so rendering cannot finish
+  // during navigation, then suspend and close it after restore.
+  std::string js_script = R"(
+    (async () => {
+      window.ctx = new OfflineAudioContext(1, 128 * 10000, 48000);
+      await window.ctx.audioWorklet.addModule(')" +
+                          worklet_url + R"(');
+      const node = new AudioWorkletNode(window.ctx, 'render-proc');
+      node.connect(window.ctx.destination);
+      const started = new Promise(resolve => {
+        node.port.onmessage = (e) => {
+          if (e.data === 'started') {
+            resolve();
+          }
+        };
+      });
+      window.renderResolved = false;
+      window.renderDone = window.ctx.startRendering().then(() => {
+        window.renderResolved = true;
+      });
+      await started;
+      return "started";
+    })();
+  )";
+  EXPECT_EQ("started", EvalJs(rfh_a, js_script));
+
+  // Navigate to B and wait for the renderer to ack entering BFCache.
+  PageLifecycleStateManagerTestDelegate delegate(
+      rfh_a->render_view_host()->GetPageLifecycleStateManager());
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_TRUE(delegate.WaitForInBackForwardCacheAck());
+  EXPECT_FALSE(deleted.deleted());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Go back to page A.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+
+  // Rendering should still be active (not finished while in BFCache) and
+  // should resume and reach a newly scheduled suspend point, then close
+  // cleanly.
+  EXPECT_EQ(false, EvalJs(rfh_a, "window.renderResolved"));
+  EXPECT_EQ("running", EvalJs(rfh_a, "window.ctx.state"));
+  EXPECT_EQ("suspended", EvalJs(rfh_a, R"(
+    (async () => {
+      await window.ctx.suspend(window.ctx.currentTime + 5 * 128 / 48000);
+      return window.ctx.state;
+    })();
+  )"));
+  EXPECT_EQ("closed", EvalJs(rfh_a, R"(
+    (async () => {
+      await window.ctx.close();
+      return window.ctx.state;
+    })();
+  )"));
 }
 
 // BEFORE ADDING A NEW TEST HERE

@@ -91,6 +91,20 @@ void LayoutWorkletGlobalScopeProxy::TerminateWorkletGlobalScope() {
   reporting_proxy_.reset();
 }
 
+void LayoutWorkletGlobalScopeProxy::Freeze(bool is_in_back_forward_cache) {
+  DCHECK(IsMainThread());
+  if (global_scope_) {
+    global_scope_->Freeze(is_in_back_forward_cache);
+  }
+}
+
+void LayoutWorkletGlobalScopeProxy::Resume() {
+  DCHECK(IsMainThread());
+  if (global_scope_) {
+    global_scope_->Resume();
+  }
+}
+
 CSSLayoutDefinition* LayoutWorkletGlobalScopeProxy::FindDefinition(
     const AtomicString& name) {
   DCHECK(IsMainThread());

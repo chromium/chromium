@@ -40,6 +40,8 @@ class CORE_EXPORT LayoutWorkletGlobalScopeProxy
       WorkletPendingTasks*) override;
   void WorkletObjectDestroyed() override;
   void TerminateWorkletGlobalScope() override;
+  void Freeze(bool is_in_back_forward_cache) override;
+  void Resume() override;
 
   CSSLayoutDefinition* FindDefinition(const AtomicString& name);
 

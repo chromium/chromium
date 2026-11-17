@@ -10,6 +10,7 @@
 #include "base/sequence_checker.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/core/inspector/worker_devtools_params.h"
@@ -59,6 +60,7 @@ class CORE_EXPORT ThreadedMessagingProxyBase
 
   void CountFeature(WebFeature);
   void CountWebDXFeature(mojom::blink::WebDXFeature);
+  void EvictFromBackForwardCache(mojom::blink::RendererEvictionReason);
 
   void ReportConsoleMessage(mojom::ConsoleMessageSource,
                             mojom::ConsoleMessageLevel,

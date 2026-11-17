@@ -40,6 +40,8 @@ class MODULES_EXPORT PaintWorkletGlobalScopeProxy
       WorkletPendingTasks*) override;
   void WorkletObjectDestroyed() override;
   void TerminateWorkletGlobalScope() override;
+  void Freeze(bool is_in_back_forward_cache) override;
+  void Resume() override;
 
   CSSPaintDefinition* FindDefinition(const String& name);
 

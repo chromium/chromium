@@ -43,6 +43,22 @@ void ThreadedObjectProxyBase::CountWebDXFeature(WebDXFeature feature) {
                           MessagingProxyWeakPtr(), feature));
 }
 
+void ThreadedObjectProxyBase::EvictFromBackForwardCache(
+    mojom::blink::RendererEvictionReason reason) {
+  if (!GetParentExecutionContextTaskRunners()) {
+    DCHECK(GetParentAgentGroupTaskRunner());
+    return;
+  }
+
+  PostCrossThreadTask(
+      *GetParentExecutionContextTaskRunners()->Get(
+          TaskType::kNetworkingUnfreezable),
+      FROM_HERE,
+      CrossThreadBindOnce(
+          &ThreadedMessagingProxyBase::EvictFromBackForwardCache,
+          MessagingProxyWeakPtr(), reason));
+}
+
 void ThreadedObjectProxyBase::ReportConsoleMessage(
     mojom::ConsoleMessageSource source,
     mojom::ConsoleMessageLevel level,

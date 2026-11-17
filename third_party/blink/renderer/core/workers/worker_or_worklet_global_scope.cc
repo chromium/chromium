@@ -479,8 +479,9 @@ ResourceFetcher* WorkerOrWorkletGlobalScope::CreateFetcherInternal(
                             nullptr /* loader_factory */, this,
                             nullptr /* back_forward_cache_loader_helper */));
   }
-  if (IsContextPaused())
-    fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
+  if (GetLoaderFreezeMode() != LoaderFreezeMode::kNone) {
+    fetcher->SetDefersLoading(GetLoaderFreezeMode());
+  }
   resource_fetchers_.insert(fetcher);
   return fetcher;
 }

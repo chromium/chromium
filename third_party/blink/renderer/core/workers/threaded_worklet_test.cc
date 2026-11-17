@@ -169,6 +169,19 @@ class ThreadedWorkletThreadForTest : public WorkerThread {
                         CrossThreadBindOnce(std::move(quit_closure)));
   }
 
+  void VerifyFrozenState(bool expected_frozen,
+                         bool expected_in_bfcache,
+                         CrossThreadOnceClosure quit_closure) {
+    EXPECT_TRUE(IsCurrentThread());
+    EXPECT_EQ(expected_frozen, GlobalScope()->IsContextFrozenOrPaused());
+    EXPECT_EQ(expected_in_bfcache, GlobalScope()->is_in_back_forward_cache());
+    EXPECT_EQ(expected_in_bfcache ? LoaderFreezeMode::kBufferIncoming
+                                  : LoaderFreezeMode::kNone,
+              GlobalScope()->GetLoaderFreezeMode());
+    PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
+                        CrossThreadBindOnce(std::move(quit_closure)));
+  }
+
  private:
   WorkerOrWorkletGlobalScope* CreateWorkerGlobalScope(
       std::unique_ptr<GlobalScopeCreationParams> creation_params) final {
@@ -230,6 +243,10 @@ class ThreadedWorkletMessagingProxyForTest
             GetExecutionContext()->GetAgentClusterID(), ukm::kInvalidSourceId,
             GetExecutionContext()->GetExecutionContextToken()),
         std::nullopt, std::nullopt);
+    if (pending_freeze_is_in_back_forward_cache_.has_value()) {
+      Freeze(*pending_freeze_is_in_back_forward_cache_);
+      pending_freeze_is_in_back_forward_cache_.reset();
+    }
   }
 
  private:
@@ -476,6 +493,93 @@ TEST_F(ThreadedWorkletTest, NestedRunLoopTermination) {
                           CrossThreadUnretained(GetWorkerThread()),
                           CrossThreadBindOnce(loop.QuitClosure())));
   loop.Run();
+}
+
+TEST_F(ThreadedWorkletTest, FreezeAndResume) {
+  MessagingProxy()->Start();
+  WaitForReady(GetWorkerThread());
+
+  MessagingProxy()->Freeze(/*is_in_back_forward_cache=*/true);
+
+  std::atomic<bool> pausable_task_ran{false};
+  base::RunLoop frozen_check_loop;
+  PostCrossThreadTask(
+      *GetWorkerThread()->GetTaskRunner(TaskType::kInternalLoading), FROM_HERE,
+      CrossThreadBindOnce(
+          [](std::atomic<bool>* flag, CrossThreadOnceClosure quit_closure,
+             scoped_refptr<base::SingleThreadTaskRunner> parent_runner) {
+            flag->store(true, std::memory_order_release);
+            PostCrossThreadTask(*parent_runner, FROM_HERE,
+                                CrossThreadBindOnce(std::move(quit_closure)));
+          },
+          CrossThreadUnretained(&pausable_task_ran),
+          CrossThreadBindOnce(frozen_check_loop.QuitClosure()),
+          GetWorkerThread()->GetParentTaskRunnerForTesting()));
+
+  {
+    base::RunLoop verify_frozen_loop;
+    PostCrossThreadTask(
+        *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+        CrossThreadBindOnce(
+            &ThreadedWorkletThreadForTest::VerifyFrozenState,
+            CrossThreadUnretained(GetWorkerThread()),
+            /*expected_frozen=*/true,
+            /*expected_in_bfcache=*/true,
+            CrossThreadBindOnce(verify_frozen_loop.QuitClosure())));
+    verify_frozen_loop.Run();
+  }
+  EXPECT_FALSE(pausable_task_ran.load(std::memory_order_acquire));
+
+  MessagingProxy()->Resume();
+  frozen_check_loop.Run();
+  EXPECT_TRUE(pausable_task_ran.load(std::memory_order_acquire));
+
+  {
+    base::RunLoop verify_resumed_loop;
+    PostCrossThreadTask(
+        *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+        CrossThreadBindOnce(
+            &ThreadedWorkletThreadForTest::VerifyFrozenState,
+            CrossThreadUnretained(GetWorkerThread()),
+            /*expected_frozen=*/false,
+            /*expected_in_bfcache=*/false,
+            CrossThreadBindOnce(verify_resumed_loop.QuitClosure())));
+    verify_resumed_loop.Run();
+  }
+}
+
+TEST_F(ThreadedWorkletTest, FreezeBeforeWorkerThreadCreated) {
+  MessagingProxy()->Freeze(/*is_in_back_forward_cache=*/true);
+  MessagingProxy()->Start();
+  WaitForReady(GetWorkerThread());
+
+  {
+    base::RunLoop verify_frozen_loop;
+    PostCrossThreadTask(
+        *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+        CrossThreadBindOnce(
+            &ThreadedWorkletThreadForTest::VerifyFrozenState,
+            CrossThreadUnretained(GetWorkerThread()),
+            /*expected_frozen=*/true,
+            /*expected_in_bfcache=*/true,
+            CrossThreadBindOnce(verify_frozen_loop.QuitClosure())));
+    verify_frozen_loop.Run();
+  }
+
+  MessagingProxy()->Resume();
+
+  {
+    base::RunLoop verify_resumed_loop;
+    PostCrossThreadTask(
+        *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+        CrossThreadBindOnce(
+            &ThreadedWorkletThreadForTest::VerifyFrozenState,
+            CrossThreadUnretained(GetWorkerThread()),
+            /*expected_frozen=*/false,
+            /*expected_in_bfcache=*/false,
+            CrossThreadBindOnce(verify_resumed_loop.QuitClosure())));
+    verify_resumed_loop.Run();
+  }
 }
 
 }  // namespace blink

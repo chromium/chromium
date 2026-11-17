@@ -11,6 +11,7 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -36,6 +37,7 @@
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
 #include "third_party/blink/renderer/core/workers/worklet_module_tree_client.h"
 #include "third_party/blink/renderer/core/workers/worklet_pending_tasks.h"
+#include "third_party/blink/renderer/platform/back_forward_cache_buffer_limit_tracker.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 
@@ -249,9 +251,71 @@ void WorkletGlobalScope::ExceptionThrown(
 }
 
 void WorkletGlobalScope::Dispose() {
+  BackForwardCacheBufferLimitTracker::Get()
+      .DidRemoveFrameOrWorkerFromBackForwardCache(
+          total_bytes_buffered_while_in_back_forward_cache_);
+  total_bytes_buffered_while_in_back_forward_cache_ = 0;
+  freeze_pause_handle_.reset();
   frame_ = nullptr;
   worker_thread_ = nullptr;
   WorkerOrWorkletGlobalScope::Dispose();
+}
+
+void WorkletGlobalScope::Freeze(bool is_in_back_forward_cache) {
+  DCHECK(IsContextThread());
+  SetIsInBackForwardCache(is_in_back_forward_cache);
+  SetLifecycleState(mojom::blink::FrameLifecycleState::kFrozen);
+  SetDefersLoadingForResourceFetchers(GetLoaderFreezeMode());
+  if (IsThreadedWorkletGlobalScope() && worker_thread_ &&
+      !freeze_pause_handle_) {
+    freeze_pause_handle_ = worker_thread_->GetScheduler()->Pause();
+  }
+}
+
+void WorkletGlobalScope::Resume() {
+  DCHECK(IsContextThread());
+  if (IsThreadedWorkletGlobalScope()) {
+    freeze_pause_handle_.reset();
+  }
+  SetDefersLoadingForResourceFetchers(LoaderFreezeMode::kNone);
+  SetIsInBackForwardCache(false);
+  SetLifecycleState(mojom::blink::FrameLifecycleState::kRunning);
+}
+
+void WorkletGlobalScope::SetIsInBackForwardCache(
+    bool is_in_back_forward_cache) {
+  WorkerOrWorkletGlobalScope::SetIsInBackForwardCache(is_in_back_forward_cache);
+  if (!is_in_back_forward_cache) {
+    BackForwardCacheBufferLimitTracker::Get()
+        .DidRemoveFrameOrWorkerFromBackForwardCache(
+            total_bytes_buffered_while_in_back_forward_cache_);
+    total_bytes_buffered_while_in_back_forward_cache_ = 0;
+  }
+}
+
+void WorkletGlobalScope::EvictFromBackForwardCache(
+    mojom::blink::RendererEvictionReason reason,
+    SourceLocation* source_location) {
+  if (!is_in_back_forward_cache()) {
+    return;
+  }
+  if (IsMainThreadWorkletGlobalScope()) {
+    if (frame_) {
+      frame_->EvictFromBackForwardCache(reason, source_location);
+    }
+    return;
+  }
+  CHECK(!source_location);
+  ReportingProxy().EvictFromBackForwardCache(reason);
+}
+
+void WorkletGlobalScope::DidBufferLoadWhileInBackForwardCache(
+    bool update_process_wide_count,
+    size_t num_bytes) {
+  total_bytes_buffered_while_in_back_forward_cache_ += num_bytes;
+  if (update_process_wide_count) {
+    BackForwardCacheBufferLimitTracker::Get().DidBufferBytes(num_bytes);
+  }
 }
 
 WorkerThread* WorkletGlobalScope::GetThread() const {

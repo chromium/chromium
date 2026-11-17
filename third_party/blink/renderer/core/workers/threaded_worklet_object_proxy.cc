@@ -48,6 +48,25 @@ void ThreadedWorkletObjectProxy::FetchAndInvokeScript(
       std::move(outside_settings_task_runner), pending_tasks);
 }
 
+void ThreadedWorkletObjectProxy::FreezeOnWorkletThread(
+    WorkerThread* worker_thread,
+    bool is_in_back_forward_cache) {
+  DCHECK(worker_thread->IsCurrentThread());
+  if (auto* global_scope =
+          DynamicTo<WorkletGlobalScope>(worker_thread->GlobalScope())) {
+    global_scope->Freeze(is_in_back_forward_cache);
+  }
+}
+
+void ThreadedWorkletObjectProxy::ResumeOnWorkletThread(
+    WorkerThread* worker_thread) {
+  DCHECK(worker_thread->IsCurrentThread());
+  if (auto* global_scope =
+          DynamicTo<WorkletGlobalScope>(worker_thread->GlobalScope())) {
+    global_scope->Resume();
+  }
+}
+
 ThreadedWorkletObjectProxy::ThreadedWorkletObjectProxy(
     ThreadedWorkletMessagingProxy* messaging_proxy_weak_ptr,
     ParentExecutionContextTaskRunners* parent_execution_context_task_runners,

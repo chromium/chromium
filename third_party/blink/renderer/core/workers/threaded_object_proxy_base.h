@@ -32,6 +32,8 @@ class CORE_EXPORT ThreadedObjectProxyBase : public WorkerReportingProxy {
   // WorkerReportingProxy overrides.
   void CountFeature(WebFeature) override;
   void CountWebDXFeature(WebDXFeature) override;
+  void EvictFromBackForwardCache(
+      mojom::blink::RendererEvictionReason) override;
   void ReportConsoleMessage(mojom::ConsoleMessageSource,
                             mojom::ConsoleMessageLevel,
                             const String& message,
