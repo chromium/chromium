@@ -69,15 +69,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplInteractiveUiTest,
     // Explicitly use Window 2 context.
     InContext(BrowserElements::From(second_browser)->GetContext(),
               Do([this, window2_contents] {
-                ASSERT_TRUE(content::ExecJs(
-                    window2_contents,
-                    "document.getElementById('text_id').focus();"));
-                // Wait for focus to propagate to the editable element.
-                EXPECT_TRUE(base::test::RunUntil([&]() {
-                  auto* frame = window2_contents->GetFocusedFrame();
-                  return frame && !frame->GetFocusedDOMNodeId().is_null();
-                }));
-
+                FocusTextarea(window2_contents);
                 dictation_service().ToggleHotkeyHandler();
               })),
 
@@ -87,86 +79,6 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplInteractiveUiTest,
     InContext(BrowserElements::From(browser())->GetContext(),
               EnsureNotPresent(DictationBubbleUi::kViewElementIdForTesting)),
     CheckHasSession(true)
-  );
-  // clang-format on
-}
-
-IN_PROC_BROWSER_TEST_F(DictationSessionUiImplInteractiveUiTest,
-                       HotkeyStartEndSession) {
-  // Ensure onboarding is completed and hotkey is configured.
-  profile()->GetPrefs()->SetBoolean(prefs::kPrefDictationOnboardingCompleted,
-                                    true);
-  profile()->GetPrefs()->SetString(prefs::kVoiceTypingHotkey, "Alt+D");
-  DictationKeyedService::Get(profile())->DidInstallConnector();
-  ui::Accelerator hotkey(ui::VKEY_D, ui::EF_ALT_DOWN);
-
-  const GURL url =
-      embedded_test_server()->GetURL("/textinput/simple_textarea.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
-  content::MainThreadFrameObserver frame_observer(
-      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
-  frame_observer.Wait();
-
-  // clang-format off
-  RunTestSequence(
-    ActivateSurface(kBrowserViewElementId),
-    Do([this] {
-      ASSERT_TRUE(content::ExecJs(
-          web_contents(),
-          "document.getElementById('text_id').focus();"));
-      EXPECT_TRUE(base::test::RunUntil([&]() {
-        auto* frame = web_contents()->GetFocusedFrame();
-        return frame && !frame->GetFocusedDOMNodeId().is_null();
-      }));
-
-      auto* focused_frame = web_contents()->GetFocusedFrame();
-      ASSERT_NE(focused_frame, nullptr);
-      EXPECT_EQ(focused_frame->GetFocusedEditableLevel(),
-                content::EditableLevel::kPlaintextEditable);
-
-      auto* service = DictationKeyedService::Get(profile());
-      ASSERT_NE(service, nullptr);
-      ASSERT_TRUE(service->IsEnabledAndReady());
-      ASSERT_EQ(service->session_controller(), nullptr);
-
-      // Verify the browser under test. GetLastActiveBrowser is preferred over
-      // GetActiveBrowser here to avoid test flakiness due to async focus
-      // propagation.
-      auto* active_browser =
-          GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
-      ASSERT_NE(active_browser, nullptr);
-      EXPECT_EQ(active_browser, browser());
-    }),
-
-    // Send actual hotkey press to start session
-    SendAccelerator(kBrowserViewElementId, hotkey),
-
-    Do([this] {
-      auto* service = DictationKeyedService::Get(profile());
-      ASSERT_NE(service->session_controller(), nullptr);
-      auto* stream_provider =
-          service->session_controller()->attached_stream_provider();
-      ASSERT_NE(stream_provider, nullptr);
-      auto* target = stream_provider->GetTarget();
-      ASSERT_NE(target, nullptr);
-
-      std::optional<int> expected_node_id = content::GetDOMNodeId(
-          *web_contents()->GetPrimaryMainFrame(), "#text_id");
-      ASSERT_TRUE(expected_node_id.has_value());
-      EXPECT_EQ(target->global_dom_node_id().target_element_dom_id,
-                blink::DOMNodeIdType(*expected_node_id));
-    }),
-
-    // Send actual hotkey press to end session
-    SendAccelerator(kBrowserViewElementId, hotkey),
-
-    Do([this] {
-      auto* service = DictationKeyedService::Get(profile());
-      EXPECT_NE(service->session_controller(), nullptr);
-      EXPECT_EQ(service->session_controller()->attached_stream_provider(),
-                nullptr);
-    })
   );
   // clang-format on
 }

@@ -9,6 +9,7 @@
 
 #include "chrome/browser/dictation/dictation_keyed_service_factory.h"
 #include "chrome/browser/dictation/features.h"
+#include "chrome/browser/dictation/hotkey_hold_watcher.h"
 #include "chrome/browser/dictation/scoped_global_hotkey.h"
 #include "chrome/browser/dictation/session_state.h"
 #include "chrome/browser/dictation/test_util.h"
@@ -338,6 +339,22 @@ TEST_F(DictationHotkeyManagerTest, AcceleratorRepeatIgnored) {
   ui::Accelerator repeat_accelerator(ui::VKEY_D,
                                      ui::EF_CONTROL_DOWN | ui::EF_IS_REPEAT);
   EXPECT_TRUE(manager_->AcceleratorPressed(repeat_accelerator));
+}
+
+TEST_F(DictationHotkeyManagerTest, IsChordKeyMatchesMainKeyAndModifiers) {
+  const ui::Accelerator hold_accelerator(ui::VKEY_SPACE,
+                                         ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(HotkeyHoldWatcher::IsChordKey(hold_accelerator, ui::VKEY_SPACE));
+  EXPECT_TRUE(HotkeyHoldWatcher::IsChordKey(hold_accelerator, ui::VKEY_MENU));
+  EXPECT_TRUE(HotkeyHoldWatcher::IsChordKey(hold_accelerator, ui::VKEY_LMENU));
+  EXPECT_TRUE(HotkeyHoldWatcher::IsChordKey(hold_accelerator, ui::VKEY_RMENU));
+  EXPECT_TRUE(HotkeyHoldWatcher::IsChordKey(hold_accelerator, ui::VKEY_SHIFT));
+  EXPECT_TRUE(HotkeyHoldWatcher::IsChordKey(hold_accelerator, ui::VKEY_LSHIFT));
+  EXPECT_TRUE(HotkeyHoldWatcher::IsChordKey(hold_accelerator, ui::VKEY_RSHIFT));
+
+  EXPECT_FALSE(
+      HotkeyHoldWatcher::IsChordKey(hold_accelerator, ui::VKEY_CONTROL));
+  EXPECT_FALSE(HotkeyHoldWatcher::IsChordKey(hold_accelerator, ui::VKEY_A));
 }
 
 }  // namespace

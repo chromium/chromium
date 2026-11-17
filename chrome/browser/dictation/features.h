@@ -59,6 +59,17 @@ extern const base::FeatureParam<std::string> kPopulateEditContextHosts;
 // Enables press-and-hold (push-to-talk) hotkey support for Dictation.
 BASE_DECLARE_FEATURE(kDictationPressAndHold);
 
+// Minimum hold duration before a dedicated press-and-hold hotkey press
+// transitions to press-and-hold (push-to-talk) mode.
+extern const base::FeatureParam<base::TimeDelta>
+    kDictationPressAndHoldThreshold;
+
+// Minimum hold duration before a shared hotkey (when toggle and press-and-hold
+// are configured to the same shortcut) transitions from tap-to-toggle mode to
+// press-and-hold (push-to-talk) mode.
+extern const base::FeatureParam<base::TimeDelta>
+    kDictationSharedHotkeyPressAndHoldThreshold;
+
 }  // namespace dictation
 
 #endif  // CHROME_BROWSER_DICTATION_FEATURES_H_

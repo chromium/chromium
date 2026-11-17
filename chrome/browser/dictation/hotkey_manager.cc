@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/features.h"
+#include "chrome/browser/dictation/hotkey_hold_watcher.h"
 #include "chrome/browser/dictation/logging.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/scoped_global_hotkey.h"
@@ -19,10 +20,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/accelerators/command.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
+#include "ui/views/widget/widget.h"
 
 namespace dictation {
 
@@ -114,7 +117,58 @@ HotkeyManager::SetGlobalAcceleratorListenerForTesting(
 
 void HotkeyManager::OnSessionStateChanged(SessionState state) {
   listening_ = IsListeningState(state);
+  if (!listening_) {
+    hold_watcher_.reset();
+  }
   UpdateGlobalRegistration();
+}
+
+void HotkeyManager::StartHoldWatcher() {
+  const ui::Accelerator hold_accelerator =
+      GetDictationPressAndHoldHotkeyFromPrefs(profile_);
+  CHECK(!hold_accelerator.IsEmpty());
+
+  BrowserWindowInterface* const browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+  if (!browser || browser->GetProfile() != profile_) {
+    return;
+  }
+  tabs::TabInterface* const tab = browser->GetActiveTabInterface();
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser);
+  views::Widget* const widget =
+      browser_view ? browser_view->GetWidget() : nullptr;
+  if (!tab || !widget || !widget->GetNativeWindow()) {
+    return;
+  }
+
+  const bool is_shared_hotkey =
+      hold_accelerator == GetDictationHotkeyFromPrefs(profile_);
+  const base::TimeDelta hold_threshold =
+      is_shared_hotkey ? kDictationSharedHotkeyPressAndHoldThreshold.Get()
+                       : kDictationPressAndHoldThreshold.Get();
+
+  // `base::Unretained(this)` is safe because `this` owns `hold_watcher_`.
+  hold_watcher_ = std::make_unique<HotkeyHoldWatcher>(
+      *browser, *tab, *widget, hold_accelerator,
+      base::BindOnce(&HotkeyManager::OnHotkeyHoldEnded, base::Unretained(this)),
+      hold_threshold);
+}
+
+void HotkeyManager::OnHotkeyHoldEnded(
+    std::optional<DictationStreamEndTrigger> trigger) {
+  hold_watcher_.reset();
+  UpdateGlobalRegistration();
+
+  // If `trigger` is nullopt, the key was released before the hold threshold,
+  // so Dictation stays active in toggle mode.
+  if (!trigger.has_value()) {
+    return;
+  }
+  if (SessionController* const controller = service().session_controller();
+      controller && controller->attached_stream_provider()) {
+    controller->EndDictationStream(*trigger);
+  }
 }
 
 DictationKeyedService& HotkeyManager::service() {
@@ -124,13 +178,26 @@ DictationKeyedService& HotkeyManager::service() {
 }
 
 bool HotkeyManager::AcceleratorPressed(const ui::Accelerator& accelerator) {
-  if (accelerator.IsRepeat()) {
+  if (accelerator.IsRepeat() || is_hold_watcher_active()) {
     return true;
   }
   const ui::Accelerator hold_accelerator =
       GetDictationPressAndHoldHotkeyFromPrefs(profile_);
   if (!hold_accelerator.IsEmpty() && accelerator == hold_accelerator) {
-    service().PressAndHoldHotkeyHandler();
+    // Construct `hold_watcher_` before triggering the session so that
+    // `UpdateGlobalRegistration()` sees `hold_watcher_` and defers registering
+    // the OS-wide global hotkey while the hold watcher is active.
+    StartHoldWatcher();
+    if (!service().PressAndHoldHotkeyHandler() || !listening_) {
+      hold_watcher_.reset();
+      UpdateGlobalRegistration();
+    } else if (!hold_watcher_) {
+      // If `PressAndHoldHotkeyHandler()` switched from a previous session in
+      // another window (which briefly transitioned through a non-listening
+      // state and cleared `hold_watcher_`), recreate it for the new session.
+      StartHoldWatcher();
+      UpdateGlobalRegistration();
+    }
     return true;
   }
   CHECK(accelerator == GetDictationHotkeyFromPrefs(profile_));
@@ -176,7 +243,8 @@ void HotkeyManager::UpdateHotkeyRegistrations() {
 
 void HotkeyManager::UpdateGlobalRegistration() {
   const ui::Accelerator accelerator =
-      listening_ ? GetDictationHotkeyFromPrefs(profile_) : ui::Accelerator();
+      (listening_ && !hold_watcher_) ? GetDictationHotkeyFromPrefs(profile_)
+                                     : ui::Accelerator();
   if (accelerator.IsEmpty()) {
     global_hotkey_.reset();
     return;

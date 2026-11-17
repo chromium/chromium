@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/notimplemented.h"
 #include "chrome/browser/dictation/application_registration_delegate.h"
 #include "chrome/browser/dictation/connector_component_extension.h"
 #include "chrome/browser/dictation/dictation_keyed_service_factory.h"
@@ -443,6 +442,14 @@ void DictationKeyedService::ContextMenuHandler(
 }
 
 void DictationKeyedService::ToggleHotkeyHandler() {
+  HandleHotkeyPressed();
+}
+
+bool DictationKeyedService::PressAndHoldHotkeyHandler() {
+  return HandleHotkeyPressed();
+}
+
+bool DictationKeyedService::HandleHotkeyPressed() {
   CHECK(IsEnabledAndReady(), base::NotFatalUntil::M155);
 
   CHECK(HasCompletedOnboarding());
@@ -450,12 +457,12 @@ void DictationKeyedService::ToggleHotkeyHandler() {
   BrowserWindowInterface* active_browser =
       GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   if (!active_browser || active_browser->GetProfile() != profile_) {
-    return;
+    return false;
   }
 
   tabs::TabInterface* active_tab = active_browser->GetActiveTabInterface();
   if (!active_tab) {
-    return;
+    return false;
   }
 
   std::optional<TargetDetails> target_details =
@@ -471,19 +478,16 @@ void DictationKeyedService::ToggleHotkeyHandler() {
     if (same_tab || !target_details) {
       session_->controller_.EndDictationStream(
           DictationStreamEndTrigger::kHotkeyToggle);
-      return;
+      return false;
     }
   }
 
   if (!target_details) {
-    return;
+    return false;
   }
 
   TriggerSession(*target_details, DictationSessionEntryPoint::kHotkeyToggle);
-}
-
-void DictationKeyedService::PressAndHoldHotkeyHandler() {
-  NOTIMPLEMENTED();
+  return true;
 }
 
 bool DictationKeyedService::IsEnabledAndReady() const {

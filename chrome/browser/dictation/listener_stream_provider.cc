@@ -300,6 +300,7 @@ void ListenerStreamProvider::RecordExitMetric(
     case DictationStreamEndTrigger::kEscapeKey:
     case DictationStreamEndTrigger::kEnterKey:
     case DictationStreamEndTrigger::kHotkeyToggle:
+    case DictationStreamEndTrigger::kHotkeyHoldReleased:
       status = DictationStreamExitStatus::kUserDone;
       break;
     case DictationStreamEndTrigger::kCancelButton:
@@ -310,6 +311,7 @@ void ListenerStreamProvider::RecordExitMetric(
     case DictationStreamEndTrigger::kUserTyping:
     case DictationStreamEndTrigger::kNewSessionTriggered:
     case DictationStreamEndTrigger::kShutdown:
+    case DictationStreamEndTrigger::kHotkeyHoldAbort:
       status = DictationStreamExitStatus::kAutoDone;
       break;
     case DictationStreamEndTrigger::kDestructor:

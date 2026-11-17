@@ -46,6 +46,18 @@ content::WebContents* DictationInteractiveBrowserTestBase::web_contents() {
   return chrome_test_utils::GetActiveWebContents(this);
 }
 
+void DictationInteractiveBrowserTestBase::FocusTextarea(
+    content::WebContents* contents) {
+  content::WebContents* const target_contents =
+      contents ? contents : web_contents();
+  ASSERT_TRUE(content::ExecJs(target_contents,
+                              "document.getElementById('text_id').focus();"));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    auto* frame = target_contents->GetFocusedFrame();
+    return frame && !frame->GetFocusedDOMNodeId().is_null();
+  }));
+}
+
 DictationInteractiveBrowserTestBase::StepBuilder
 DictationInteractiveBrowserTestBase::CheckHasSession(
     bool expected_has_session) {

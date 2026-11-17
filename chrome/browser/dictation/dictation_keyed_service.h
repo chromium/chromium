@@ -121,7 +121,8 @@ class DictationKeyedService : public KeyedService,
 
   // Handles the dictation press-and-hold hotkey press (including when the
   // toggle and press-and-hold hotkeys are configured to the same shortcut).
-  virtual void PressAndHoldHotkeyHandler();
+  // Returns true if a dictation session stream was triggered.
+  virtual bool PressAndHoldHotkeyHandler();
 
   // Returns null when no session is in progress.
   SessionController* session_controller() {
@@ -149,6 +150,9 @@ class DictationKeyedService : public KeyedService,
       const GURL& url) const;
 
   HotkeyManager* hotkey_manager_for_testing() { return hotkey_manager_.get(); }
+  bool is_hold_watcher_active() const {
+    return hotkey_manager_ && hotkey_manager_->is_hold_watcher_active();
+  }
 
   DictationLogBuffer& log_buffer() { return log_buffer_; }
   const DictationLogBuffer& log_buffer() const { return log_buffer_; }
@@ -205,6 +209,10 @@ class DictationKeyedService : public KeyedService,
   // tab.
   void TriggerSession(const TargetDetails& target_details,
                       DictationSessionEntryPoint entry_point);
+
+  // Toggles dictation on the active browser's focused editable field (or stops
+  // an active stream). Returns true if a new stream was triggered.
+  bool HandleHotkeyPressed();
 
   raw_ptr<Profile> profile_;
 

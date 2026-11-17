@@ -45,6 +45,10 @@ class DictationInteractiveBrowserTestBase
 
   content::WebContents* web_contents();
 
+  // Focuses the `#text_id` element in `contents` (or `web_contents()` if null)
+  // and waits until focus is reported on the frame.
+  void FocusTextarea(content::WebContents* contents = nullptr);
+
   StepBuilder CheckHasSession(bool expected_has_session);
 
   // Starts a dictation session. If a stream is created this will also block

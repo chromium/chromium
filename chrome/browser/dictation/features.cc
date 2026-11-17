@@ -42,4 +42,12 @@ const base::FeatureParam<std::string> kPopulateEditContextHosts{
 
 BASE_FEATURE(kDictationPressAndHold, base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<base::TimeDelta> kDictationPressAndHoldThreshold{
+    &kDictationPressAndHold, "hold_threshold", base::Milliseconds(250)};
+
+const base::FeatureParam<base::TimeDelta>
+    kDictationSharedHotkeyPressAndHoldThreshold{&kDictationPressAndHold,
+                                                "shared_hotkey_hold_threshold",
+                                                base::Milliseconds(500)};
+
 }  // namespace dictation

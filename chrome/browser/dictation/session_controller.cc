@@ -16,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/hotkey_manager.h"
 #include "chrome/browser/dictation/logging.h"
@@ -180,11 +181,21 @@ void SessionController::DidGetUserInteraction(
     return;
   }
 
-  // If the user starts typing, end the stream.
-  const bool event_has_text = !base::IsUnicodeControl(key_event.text[0]);
-  if (attached_stream_provider_ && web_contents()->IsFocusedElementEditable() &&
-      event_has_text) {
-    EndDictationStream(DictationStreamEndTrigger::kUserTyping);
+  // While the hotkey hold watcher is active, any non-chord key press is
+  // handled by `HotkeyHoldWatcher` (ending with `kHotkeyHoldAbort`), and
+  // synthetic IME composition events (`VKEY_PROCESSKEY` on macOS during key
+  // auto-repeat while `_hasMarkedText` is true) must not be treated as user
+  // typing.
+  const DictationKeyedService* const service =
+      DictationKeyedService::Get(profile);
+  CHECK(service);
+  if (!service->is_hold_watcher_active()) {
+    // If the user starts typing, end the stream.
+    const bool event_has_text = !base::IsUnicodeControl(key_event.text[0]);
+    if (attached_stream_provider_ &&
+        web_contents()->IsFocusedElementEditable() && event_has_text) {
+      EndDictationStream(DictationStreamEndTrigger::kUserTyping);
+    }
   }
 }
 

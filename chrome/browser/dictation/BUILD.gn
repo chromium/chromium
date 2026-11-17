@@ -22,6 +22,7 @@ source_set("dictation") {
     "dictation_keyed_service_factory.h",
     "dictation_multiplexer.h",
     "format_transcription.h",
+    "hotkey_hold_watcher.h",
     "hotkey_manager.h",
     "logging.h",
     "onboarding_manager.h",
@@ -50,6 +51,8 @@ source_set("dictation") {
     ":metrics",
     "//chrome/browser/ui/views/dictation",
     "//components/prefs",
+    "//components/tabs:public",
+    "//ui/views",
   ]
 }
 
@@ -65,6 +68,7 @@ source_set("impl") {
     "dictation_keyed_service_factory.cc",
     "dictation_multiplexer.cc",
     "format_transcription.cc",
+    "hotkey_hold_watcher.cc",
     "hotkey_manager.cc",
     "listener_stream_provider.cc",
     "listener_stream_provider.h",
@@ -258,6 +262,7 @@ source_set("interactive_ui_tests") {
   sources = [
     "dictation_global_hotkey_interactive_uitest.cc",
     "dictation_onboarding_interactive_uitest.cc",
+    "hotkeys_interactive_uitest.cc",
     "session_ui_impl_interactive_uitest.cc",
   ]
   deps = [
