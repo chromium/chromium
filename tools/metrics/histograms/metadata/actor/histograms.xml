@@ -84,6 +84,7 @@ chromium-metrics-reviews@google.com.
   <variant name="CreateWindow" summary="Create Window"/>
   <variant name="DragAndRelease" summary="Drag And Release"/>
   <variant name="EnterFullscreen" summary="Enter Fullscreen"/>
+  <variant name="ExecuteJsTool" summary="Execute JS Tool"/>
   <variant name="ExitFullscreen" summary="Exit Fullscreen"/>
   <variant name="FileUpload" summary="File Upload"/>
   <variant name="FindAndHighlight" summary="Find And Highlight"/>
