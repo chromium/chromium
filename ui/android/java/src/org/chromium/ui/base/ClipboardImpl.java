@@ -633,6 +633,10 @@ public class ClipboardImpl extends Clipboard
 
     @Override
     public void setImageUri(final Uri uri, boolean notifyOnSuccess) {
+        setImageUri(uri, notifyOnSuccess, /* isNativeWrite= */ false);
+    }
+
+    private void setImageUri(final Uri uri, boolean notifyOnSuccess, boolean isNativeWrite) {
         if (uri == null) {
             showCopyToClipboardFailureMessage();
             return;
@@ -649,14 +653,20 @@ public class ClipboardImpl extends Clipboard
 
             @Override
             protected void onPostExecute(@Nullable ClipData clipData) {
-                setImageUri(uri, clipData, notifyOnSuccess);
+                setImageUri(uri, clipData, notifyOnSuccess, isNativeWrite);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @Override
     public void setImageUri(Uri uri, ClipData clipData, boolean notifyOnSuccess) {
-        if (setPrimaryClipNoException(clipData)) {
+        setImageUri(uri, clipData, notifyOnSuccess, /* isNativeWrite= */ false);
+    }
+
+    private void setImageUri(
+            Uri uri, ClipData clipData, boolean notifyOnSuccess, boolean isNativeWrite) {
+        boolean clipWritten = setPrimaryClipNoException(clipData);
+        if (clipWritten) {
             if (notifyOnSuccess) {
                 showToastIfNeeded(R.string.image_copied);
             }
@@ -668,10 +678,18 @@ public class ClipboardImpl extends Clipboard
         // cause the clipboard access notification to show up, when we try to clean up the
         // image file. There is a small chance that the clipboard image is updated between
         // |setPrimaryClipNoException| and |getImageTimestamp|, and we will get a wrong
-        // timestamp. But it is okay since the timestamp is for deciding if the image file
-        // need to be deleted. If the timestamp is wrong here, we just keep the image file a
-        // little longer than expected.
+        // timestamp. That is okay: if the timestamp is wrong here, we just keep the image
+        // file (and, for native writes, local-only formats) until the next clipboard change.
         long imageTimestamp = getImageTimestamp();
+        if (clipWritten
+                && isNativeWrite
+                && imageTimestamp != ClipboardUriMetadata.INVALID_TIMESTAMP) {
+            // The image clip lands asynchronously after CommitToAndroidClipboard() finished, so
+            // its timestamp is newer than native's recorded write time. Record this clip as
+            // native's own so onPrimaryClipChanged() and window focus checks do not mistake it
+            // for an external clipboard change.
+            onNativeImageClipWritten(imageTimestamp);
+        }
 
         if (mImageFileProvider == null) {
             mPendingCopiedImageMetadata = new ClipboardUriMetadata(uri, imageTimestamp);
@@ -693,7 +711,7 @@ public class ClipboardImpl extends Clipboard
                 imageData,
                 extension,
                 (Uri uri) -> {
-                    setImageUri(uri);
+                    setImageUri(uri, /* notifyOnSuccess= */ false, /* isNativeWrite= */ true);
                 });
     }
 
@@ -832,17 +850,18 @@ public class ClipboardImpl extends Clipboard
     public void onPrimaryClipChanged() {
         RecordUserAction.record("MobileClipboardChanged");
         // Android delivers onPrimaryClipChanged for our own writes as well as
-        // for foreign clipboard changes. Our own write already bumped the native
-        // clipboard sequence number synchronously in CommitToAndroidClipboard
-        // and recorded its time as the last-modified time. Bumping the sequence
-        // number again would signal a false divergence for any listeners that captured
-        // it synchronously relative to the write. Only foreign changes,
-        // which carry a newer timestamp, should notify.
+        // for foreign clipboard changes. Native writes already bumped the native clipboard
+        // sequence number synchronously in CommitToAndroidClipboard and recorded last-modified
+        // time (updated in onNativeImageClipWritten for images). Bumping the sequence number
+        // again would signal a false divergence for any listeners that captured it synchronously
+        // relative to the write, so ignore native echoes. Newer non-native clips clear
+        // local-only formats and notify; empty clips notify without clearing local-only formats.
         ClipDescription clipDescription = getPrimaryClipDescriptionNoException();
-        if (clipDescription != null
-                && clipDescription.getTimestamp() > 0
-                && clipDescription.getTimestamp() <= getLastModifiedTimeMs()) {
-            return;
+        if (clipDescription != null && clipDescription.getTimestamp() > 0) {
+            if (clipDescription.getTimestamp() <= getLastModifiedTimeMs()) {
+                return;
+            }
+            clearLocalOnlyFormats();
         }
         notifyPrimaryClipChanged();
     }
@@ -874,6 +893,9 @@ public class ClipboardImpl extends Clipboard
         if (clipDescription == null) return;
 
         long timestamp = clipDescription.getTimestamp();
+        if (timestamp > getLastModifiedTimeMs()) {
+            clearLocalOnlyFormats();
+        }
         notifyPrimaryClipTimestampInvalidated(timestamp);
     }
 

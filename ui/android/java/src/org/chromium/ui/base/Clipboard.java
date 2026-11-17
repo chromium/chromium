@@ -470,6 +470,16 @@ public class Clipboard {
         ClipboardJni.get().onPrimaryClipTimestampInvalidated(mNativeClipboard, timestamp);
     }
 
+    protected void clearLocalOnlyFormats() {
+        if (mNativeClipboard == 0) return;
+        ClipboardJni.get().clearLocalOnlyFormats(mNativeClipboard);
+    }
+
+    protected void onNativeImageClipWritten(long timestamp) {
+        if (mNativeClipboard == 0) return;
+        ClipboardJni.get().onNativeImageClipWritten(mNativeClipboard, timestamp);
+    }
+
     protected long getLastModifiedTimeToJavaTime() {
         if (mNativeClipboard == 0) return 0;
         return ClipboardJni.get().getLastModifiedTimeToJavaTime(mNativeClipboard);
@@ -480,6 +490,10 @@ public class Clipboard {
         void onPrimaryClipChanged(long nativeClipboardAndroid);
 
         void onPrimaryClipTimestampInvalidated(long nativeClipboardAndroid, long timestamp);
+
+        void clearLocalOnlyFormats(long nativeClipboardAndroid);
+
+        void onNativeImageClipWritten(long nativeClipboardAndroid, long timestamp);
 
         long getLastModifiedTimeToJavaTime(long nativeClipboardAndroid);
 

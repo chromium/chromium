@@ -144,6 +144,8 @@ class ClipboardMap {
       ClipboardBuffer buffer);
   void OnPrimaryClipboardChanged();
   void OnPrimaryClipTimestampInvalidated(base::Time timestamp);
+  void ClearLocalOnlyFormats();
+  void OnNativeImageClipWritten(base::Time timestamp);
   void Set(const ClipboardFormatType& format, std::string_view data);
   const std::vector<ui::FileInfo>& GetFilenames();
   void SetFilenames(std::vector<ui::FileInfo> filenames);
@@ -376,6 +378,19 @@ void ClipboardMap::OnPrimaryClipboardChanged() {
 void ClipboardMap::OnPrimaryClipTimestampInvalidated(base::Time timestamp) {
   sequence_number_ = ClipboardSequenceNumberToken();
   UpdateLastModifiedTime(timestamp);
+  map_state_ = MapState::kOutOfDate;
+}
+
+void ClipboardMap::ClearLocalOnlyFormats() {
+  base::AutoLock lock(lock_);
+  std::erase_if(map_, [](const auto& entry) {
+    return !IsAndroidBackedFormat(entry.first);
+  });
+  data_source_off_the_record_ = false;
+}
+
+void ClipboardMap::OnNativeImageClipWritten(base::Time timestamp) {
+  UpdateLastModifiedTime(std::max(last_modified_time_, timestamp));
   map_state_ = MapState::kOutOfDate;
 }
 
@@ -654,6 +669,15 @@ void ClipboardAndroid::OnPrimaryClipTimestampInvalidated(
     GetClipboardMap().OnPrimaryClipTimestampInvalidated(timestamp);
     ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
   }
+}
+
+void ClipboardAndroid::ClearLocalOnlyFormats() {
+  GetClipboardMap().ClearLocalOnlyFormats();
+}
+
+void ClipboardAndroid::OnNativeImageClipWritten(int64_t j_timestamp_ms) {
+  GetClipboardMap().OnNativeImageClipWritten(
+      base::Time::FromMillisecondsSinceUnixEpoch(j_timestamp_ms));
 }
 
 int64_t ClipboardAndroid::GetLastModifiedTimeToJavaTime(JNIEnv* env) {

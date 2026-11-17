@@ -145,6 +145,24 @@ TEST_F(ClipboardAndroidTest, StaleImageFormatsClearedOnPrimaryClipChanged) {
   EXPECT_FALSE(formats.contains(ClipboardFormatType::BitmapType()));
 }
 
+TEST_F(ClipboardAndroidTest, ClearLocalOnlyFormats) {
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteSvg(u"<svg></svg>");
+  }
+  auto read_svg = [&]() {
+    std::u16string svg;
+    clipboard_->ReadSvg(
+        ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
+        base::BindLambdaForTesting([&](std::u16string s) { svg = s; }));
+    return svg;
+  };
+  EXPECT_EQ(u"<svg></svg>", read_svg());
+
+  static_cast<ClipboardAndroid*>(clipboard_)->ClearLocalOnlyFormats();
+  EXPECT_EQ(u"", read_svg());
+}
+
 TEST_F(ClipboardAndroidTest, ReentrantReadInsideGetSourceCallback) {
   const ClipboardFormatType test_format =
       ClipboardFormatType::CustomPlatformType("chromium/x-test-token");

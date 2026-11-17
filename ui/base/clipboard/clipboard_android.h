@@ -45,6 +45,16 @@ class ClipboardAndroid : public Clipboard {
   void OnPrimaryClipTimestampInvalidated(JNIEnv* env,
                                          const int64_t j_timestamp_ms);
 
+  // Drops formats cached only in `ClipboardMap` (those without an Android
+  // clipboard representation, such as SVG or source URL) when a newer clip
+  // replaces the native clipboard's last write.
+  COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
+  void ClearLocalOnlyFormats();
+
+  // Called by Java when an asynchronous `setImage` clip initiated by the native
+  // clipboard finishes writing to the Android clipboard.
+  void OnNativeImageClipWritten(int64_t j_timestamp_ms);
+
   // Called by Java side.
   int64_t GetLastModifiedTimeToJavaTime(JNIEnv* env);
 

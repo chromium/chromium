@@ -6,6 +6,7 @@ package org.chromium.ui.base;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -206,12 +207,25 @@ public class ClipboardAndroidTest {
         // last-modified time. It must be swallowed and must NOT notify native.
         when(mMockClipDescription.getTimestamp()).thenReturn(lastModifiedMs);
         clipboard.onPrimaryClipChanged();
+        clipboard.onWindowFocusChanged(true);
+        verify(mMockClipboardNatives, never()).clearLocalOnlyFormats(nativeClipboard);
         verify(mMockClipboardNatives, never()).onPrimaryClipChanged(nativeClipboard);
+        verify(mMockClipboardNatives)
+                .onPrimaryClipTimestampInvalidated(nativeClipboard, lastModifiedMs);
 
-        // A genuine foreign change carries a newer timestamp and must notify native.
+        // A genuine foreign change carries a newer timestamp and must clear local-only formats
+        // on both the listener and focus-regain paths.
         when(mMockClipDescription.getTimestamp()).thenReturn(lastModifiedMs + 100000);
         clipboard.onPrimaryClipChanged();
+        verify(mMockClipboardNatives).clearLocalOnlyFormats(nativeClipboard);
         verify(mMockClipboardNatives).onPrimaryClipChanged(nativeClipboard);
+
+        clearInvocations(mMockClipboardNatives);
+
+        clipboard.onWindowFocusChanged(true);
+        verify(mMockClipboardNatives).clearLocalOnlyFormats(nativeClipboard);
+        verify(mMockClipboardNatives)
+                .onPrimaryClipTimestampInvalidated(nativeClipboard, lastModifiedMs + 100000);
     }
 
     @Test
