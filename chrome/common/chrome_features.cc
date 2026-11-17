@@ -1545,9 +1545,6 @@ BASE_FEATURE(kOverridePrefetchOnSingleton, base::FEATURE_DISABLED_BY_DEFAULT);
 // Allows Chrome to do preconnect when prerender fails.
 BASE_FEATURE(kPrerenderFallbackToPreconnect, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Shows a confirmation dialog when updates to a PWAs icon has been detected.
-BASE_FEATURE(kPwaUpdateDialogForIcon, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables using quiet prompts for notification permission requests.
 BASE_FEATURE(kQuietNotificationPrompts, base::FEATURE_ENABLED_BY_DEFAULT);
 

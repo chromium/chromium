@@ -224,7 +224,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kMigrateManagementPageToWebUIOnMobile,
     &features::kNetworkServiceInProcess,
     &features::kPushMessagingDisallowSenderIDs,
-    &features::kPwaUpdateDialogForIcon,
     &features::kQuietNotificationPrompts,
     &features::kRFHHiddenWhenHiddenButPainting,
     &features::kSafetyHubDisruptiveNotificationRevocation,

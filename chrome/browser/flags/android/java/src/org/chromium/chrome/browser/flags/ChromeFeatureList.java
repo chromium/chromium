@@ -788,7 +788,6 @@ public abstract class ChromeFeatureList {
             "PushMessagingDisallowSenderIDs";
     public static final String PWA_RESTORE_UI = "PwaRestoreUi";
     public static final String PWA_RESTORE_UI_AT_STARTUP = "PwaRestoreUiAtStartup";
-    public static final String PWA_UPDATE_DIALOG_FOR_ICON = "PwaUpdateDialogForIcon";
     public static final String QUEUED_COMPOSITOR_WEB_CONTENTS_UPDATES =
             "QueuedCompositorWebContentsUpdates";
     public static final String QUIET_NOTIFICATION_PROMPTS = "QuietNotificationPrompts";

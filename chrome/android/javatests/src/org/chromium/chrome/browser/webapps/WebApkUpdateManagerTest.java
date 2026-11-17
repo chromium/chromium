@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -41,7 +40,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
@@ -78,19 +76,15 @@ public class WebApkUpdateManagerTest {
 
     private WebPageStation mPage;
 
-    /** The parameters for the App Identity tests (for which flag is enabled). */
+    /** The parameters for the App Identity icon update tests. */
     public static class FeatureResolveParams implements ParameterProvider {
         @Override
         public Iterable<ParameterSet> getParameters() {
             // The parameters provided for the tests below are:
-            // iconDialogEnabled: whether updates to app identity are enabled via app id
-            // dialog.
             // iconChangeSignificant: whether to treat the icon change as above threshold (blocked).
             return Arrays.asList(
-                    new ParameterSet().value(false, true).name("majorIconUpdateNoFlag"),
-                    new ParameterSet().value(false, false).name("minorIconUpdateNoFlag"),
-                    new ParameterSet().value(true, true).name("majorIconUpdateDlgEnabled"),
-                    new ParameterSet().value(true, false).name("minorIconUpdateDlgEnabled"));
+                    new ParameterSet().value(true).name("majorIconUpdate"),
+                    new ParameterSet().value(false).name("minorIconUpdate"));
         }
     }
 
@@ -402,10 +396,6 @@ public class WebApkUpdateManagerTest {
         return WebApkProto.WebApk.parseFrom(requestFile);
     }
 
-    private void enableUpdateDialogForIcon(boolean enabled) {
-        FeatureOverrides.overrideFlag(ChromeFeatureList.PWA_UPDATE_DIALOG_FOR_ICON, enabled);
-    }
-
     /**
      * Test that the canonicalized URLs are used in determining whether the fetched Web Manifest
      * data differs from the metadata in the WebAPK's Android Manifest. This is important because
@@ -462,7 +452,6 @@ public class WebApkUpdateManagerTest {
                 mTestServer, mTab, WEBAPK_MANIFEST_WITH_MASKABLE_ICON_URL);
 
         // Icon changes should trigger the warning dialog, if the platform supports maskable icons.
-        enableUpdateDialogForIcon(true);
         Assert.assertTrue(checkUpdateNeeded(creationData, /* acceptDialogIfAppears= */ true));
         assertUpdateReasonsEqual(WebApkUpdateReason.PRIMARY_ICON_MASKABLE_DIFFERS);
         Assert.assertTrue(mUpdateRequested);
@@ -495,9 +484,7 @@ public class WebApkUpdateManagerTest {
         Assert.assertFalse(checkUpdateNeeded(creationData, /* acceptDialogIfAppears= */ false));
     }
 
-    private void resolveFeatureParams(boolean iconDialogEnabled, boolean iconChangeSignificant) {
-        enableUpdateDialogForIcon(iconDialogEnabled);
-
+    private void resolveFeatureParams(boolean iconChangeSignificant) {
         // The same icon is always used for tests, but the threshold is raised or lowered, depending
         // on the outcome we want.
         WebApkUpdateManager.setIconThresholdForTesting(iconChangeSignificant ? 0 : 101);
@@ -507,9 +494,8 @@ public class WebApkUpdateManagerTest {
     @MediumTest
     @Feature({"WebApk"})
     @ParameterAnnotations.UseMethodParameter(FeatureResolveParams.class)
-    public void testMultipleUpdateReasons(boolean iconEnabled, boolean iconChangeSignificant)
-            throws Exception {
-        resolveFeatureParams(iconEnabled, iconChangeSignificant);
+    public void testMultipleUpdateReasons(boolean iconChangeSignificant) throws Exception {
+        resolveFeatureParams(iconChangeSignificant);
 
         CreationData creationData = defaultCreationData();
         creationData.startUrl =
@@ -526,12 +512,10 @@ public class WebApkUpdateManagerTest {
         WebappTestPage.navigateToPageWithManifest(mTestServer, mTab, WEBAPK_MANIFEST_URL);
         Assert.assertTrue(checkUpdateNeeded(creationData, /* acceptDialogIfAppears= */ true));
 
-        if (iconEnabled || !iconChangeSignificant) {
+        if (!iconChangeSignificant) {
             expectedUpdateReasons.add(WebApkUpdateReason.PRIMARY_ICON_HASH_DIFFERS);
             expectedUpdateReasons.add(WebApkUpdateReason.SPLASH_ICON_HASH_DIFFERS);
-            if (!iconChangeSignificant) {
-                expectedUpdateReasons.add(WebApkUpdateReason.PRIMARY_ICON_CHANGE_BELOW_THRESHOLD);
-            }
+            expectedUpdateReasons.add(WebApkUpdateReason.PRIMARY_ICON_CHANGE_BELOW_THRESHOLD);
         }
         expectedUpdateReasons.add(WebApkUpdateReason.SHORT_NAME_DIFFERS);
         expectedUpdateReasons.add(WebApkUpdateReason.NAME_DIFFERS);
@@ -542,7 +526,6 @@ public class WebApkUpdateManagerTest {
     }
 
     private void testAppIdentityChange(
-            boolean iconEnabled,
             boolean iconChangeSignificant,
             boolean changeName,
             boolean changeShortName,
@@ -565,14 +548,11 @@ public class WebApkUpdateManagerTest {
                     mTestServer.getURL(WEBAPK_ICON_URL), WEBAPK_ICON_MURMUR2_HASH + "1");
             creationData.primaryIcon = new WebappIcon(WHITE_2X2);
 
-            expectIconChange = iconEnabled || !iconChangeSignificant;
+            expectIconChange = !iconChangeSignificant;
             if (expectIconChange) {
                 expectedUpdateReasons.add(WebApkUpdateReason.PRIMARY_ICON_HASH_DIFFERS);
                 expectedUpdateReasons.add(WebApkUpdateReason.SPLASH_ICON_HASH_DIFFERS);
-                if (!iconChangeSignificant) {
-                    expectedUpdateReasons.add(
-                            WebApkUpdateReason.PRIMARY_ICON_CHANGE_BELOW_THRESHOLD);
-                }
+                expectedUpdateReasons.add(WebApkUpdateReason.PRIMARY_ICON_CHANGE_BELOW_THRESHOLD);
             }
         }
         if (changeShortName) {
@@ -600,14 +580,9 @@ public class WebApkUpdateManagerTest {
                 expectedUpdateReasons.toArray(new Integer[expectedUpdateReasons.size()]));
         Assert.assertTrue(mUpdateRequested);
 
-        // The App Identity Update dialog should always appear if:
-        // - Either the name or shortName changes.
-        // - Icon changes are enabled via the dialog, and there is a *significant* icon change.
-        //   - Except when shell version is being updated (those should be silent).
-        boolean expectingDialog =
-                changeShortName
-                        || changeName
-                        || (expectIconChange && iconEnabled && iconChangeSignificant);
+        // The App Identity Update dialog should always appear if either the name or shortName
+        // changes.
+        boolean expectingDialog = changeShortName || changeName;
         Assert.assertEquals(expectingDialog, mIconOrNameUpdateDialogShown);
     }
 
@@ -615,12 +590,10 @@ public class WebApkUpdateManagerTest {
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(FeatureResolveParams.class)
     @Feature({"WebApk"})
-    public void testUpdateWarningOnNoChange(boolean iconEnabled, boolean iconChangeSignificant)
-            throws Exception {
-        resolveFeatureParams(iconEnabled, iconChangeSignificant);
+    public void testUpdateWarningOnNoChange(boolean iconChangeSignificant) throws Exception {
+        resolveFeatureParams(iconChangeSignificant);
 
         testAppIdentityChange(
-                iconEnabled,
                 iconChangeSignificant,
                 /* changeName= */ false,
                 /* changeShortName= */ false,
@@ -631,12 +604,10 @@ public class WebApkUpdateManagerTest {
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(FeatureResolveParams.class)
     @Feature({"WebApk"})
-    public void testUpdateWarningOnIconChange(boolean iconEnabled, boolean iconChangeSignificant)
-            throws Exception {
-        resolveFeatureParams(iconEnabled, iconChangeSignificant);
+    public void testUpdateWarningOnIconChange(boolean iconChangeSignificant) throws Exception {
+        resolveFeatureParams(iconChangeSignificant);
 
         testAppIdentityChange(
-                iconEnabled,
                 iconChangeSignificant,
                 /* changeName= */ false,
                 /* changeShortName= */ false,
@@ -647,11 +618,9 @@ public class WebApkUpdateManagerTest {
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(FeatureResolveParams.class)
     @Feature({"WebApk"})
-    public void testUpdateWarningOnShortnameChange(
-            boolean iconEnabled, boolean iconChangeSignificant) throws Exception {
-        resolveFeatureParams(iconEnabled, iconChangeSignificant);
+    public void testUpdateWarningOnShortnameChange(boolean iconChangeSignificant) throws Exception {
+        resolveFeatureParams(iconChangeSignificant);
         testAppIdentityChange(
-                iconEnabled,
                 iconChangeSignificant,
                 /* changeName= */ false,
                 /* changeShortName= */ true,
@@ -662,11 +631,10 @@ public class WebApkUpdateManagerTest {
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(FeatureResolveParams.class)
     @Feature({"WebApk"})
-    public void testUpdateWarningOnShortnameAndIconChange(
-            boolean iconEnabled, boolean iconChangeSignificant) throws Exception {
-        resolveFeatureParams(iconEnabled, iconChangeSignificant);
+    public void testUpdateWarningOnShortnameAndIconChange(boolean iconChangeSignificant)
+            throws Exception {
+        resolveFeatureParams(iconChangeSignificant);
         testAppIdentityChange(
-                iconEnabled,
                 iconChangeSignificant,
                 /* changeName= */ false,
                 /* changeShortName= */ true,
@@ -677,11 +645,9 @@ public class WebApkUpdateManagerTest {
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(FeatureResolveParams.class)
     @Feature({"WebApk"})
-    public void testUpdateWarningOnNameChange(boolean iconEnabled, boolean iconChangeSignificant)
-            throws Exception {
-        resolveFeatureParams(iconEnabled, iconChangeSignificant);
+    public void testUpdateWarningOnNameChange(boolean iconChangeSignificant) throws Exception {
+        resolveFeatureParams(iconChangeSignificant);
         testAppIdentityChange(
-                iconEnabled,
                 iconChangeSignificant,
                 /* changeName= */ true,
                 /* changeShortName= */ false,
@@ -692,11 +658,10 @@ public class WebApkUpdateManagerTest {
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(FeatureResolveParams.class)
     @Feature({"WebApk"})
-    public void testUpdateWarningOnNameAndIconChange(
-            boolean iconEnabled, boolean iconChangeSignificant) throws Exception {
-        resolveFeatureParams(iconEnabled, iconChangeSignificant);
+    public void testUpdateWarningOnNameAndIconChange(boolean iconChangeSignificant)
+            throws Exception {
+        resolveFeatureParams(iconChangeSignificant);
         testAppIdentityChange(
-                iconEnabled,
                 iconChangeSignificant,
                 /* changeName= */ true,
                 /* changeShortName= */ false,
@@ -707,11 +672,10 @@ public class WebApkUpdateManagerTest {
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(FeatureResolveParams.class)
     @Feature({"WebApk"})
-    public void testUpdateWarningOnNameAndShortnameChange(
-            boolean iconEnabled, boolean iconChangeSignificant) throws Exception {
-        resolveFeatureParams(iconEnabled, iconChangeSignificant);
+    public void testUpdateWarningOnNameAndShortnameChange(boolean iconChangeSignificant)
+            throws Exception {
+        resolveFeatureParams(iconChangeSignificant);
         testAppIdentityChange(
-                iconEnabled,
                 iconChangeSignificant,
                 /* changeName= */ true,
                 /* changeShortName= */ true,
@@ -722,11 +686,9 @@ public class WebApkUpdateManagerTest {
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(FeatureResolveParams.class)
     @Feature({"WebApk"})
-    public void testUpdateWarningOnAllChange(boolean iconEnabled, boolean iconChangeSignificant)
-            throws Exception {
-        resolveFeatureParams(iconEnabled, iconChangeSignificant);
+    public void testUpdateWarningOnAllChange(boolean iconChangeSignificant) throws Exception {
+        resolveFeatureParams(iconChangeSignificant);
         testAppIdentityChange(
-                iconEnabled,
                 iconChangeSignificant,
                 /* changeName= */ true,
                 /* changeShortName= */ true,
