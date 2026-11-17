@@ -9182,7 +9182,7 @@
   {
     "name": "stylus-handwriting-win",
     "owners": [ "johna@microsoft.com", "gerchiko@microsoft.com", "flackr@chromium.org" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 180
   },
   {
     "name": "submenu-type-override",
