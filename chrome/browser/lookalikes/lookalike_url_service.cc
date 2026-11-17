@@ -53,9 +53,10 @@ std::vector<DomainInfo> UpdateEngagedSitesOnWorkerThread(
   new_engaged_sites.reserve(details.size());
   for (const site_engagement::mojom::SiteEngagementDetails& detail : details) {
     CHECK(detail.origin.SchemeIsHTTPOrHTTPS(), base::NotFatalUntil::M161);
-    CHECK(site_engagement::SiteEngagementService::IsEngagementAtLeast(
-              detail.total_score, blink::mojom::EngagementLevel::MEDIUM),
-          base::NotFatalUntil::M161);
+    // TODO(crbug.com/585788739): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(site_engagement::SiteEngagementService::IsEngagementAtLeast(
+        detail.total_score, blink::mojom::EngagementLevel::MEDIUM));
     const DomainInfo domain_info = lookalikes::GetDomainInfo(detail.origin);
     if (domain_info.domain_and_registry.empty()) {
       continue;
