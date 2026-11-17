@@ -1498,7 +1498,6 @@ if (!is_android) {
       "//chrome/renderer/webui_browser:browser_tests",
       "//chrome/test/base:browser_tests",
       "//chrome/test/base:browser_tests_runner",
-      "//chrome/test/components_tests:browser_tests",
       "//chrome/test/data/webui/mojo:browser_tests",
       "//chrome/test/gpu:browser_tests",
       "//chrome/test/interaction:browser_tests",

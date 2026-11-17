@@ -356,28 +356,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LanguageUsage.AcceptLanguageAndContentLanguageUsage"
-    enum="AcceptLanguageAndContentLanguageUsage" expires_after="2026-05-03">
-  <owner>victortan@chromium.org</owner>
-  <owner>katabolism-finch@google.com</owner>
-  <summary>
-    Metrics that record matches between the Content-Language response header and
-    Accept-Language request header values. This is recorded every time
-    DocumentLoader commit navigation.
-  </summary>
-</histogram>
-
-<histogram name="LanguageUsage.AcceptLanguageAndXmlHtmlLangUsage"
-    enum="AcceptLanguageAndXmlHtmlLangUsage" expires_after="2026-05-03">
-  <owner>victortan@chromium.org</owner>
-  <owner>katabolism-finch@google.com</owner>
-  <summary>
-    Metrics that record matches between the xml:lang, html lang and
-    Accept-Language request header values. This is recorded every time the
-    translate agent captures the page.
-  </summary>
-</histogram>
-
 <histogram name="LanguageUsage.MostFrequentPageLanguages" enum="LanguageName"
     expires_after="2027-03-21">
   <owner>perrier@chromium.org</owner>

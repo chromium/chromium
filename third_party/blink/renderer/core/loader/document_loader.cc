@@ -65,7 +65,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/javascript_framework_detection.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
-#include "third_party/blink/public/common/metrics/accept_language_and_content_language_usage.h"
 #include "third_party/blink/public/common/navigation/commit_url.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom-blink.h"
@@ -3430,13 +3429,6 @@ void DocumentLoader::CommitNavigation() {
   // will use stale values from HTMLParserOption.
   DidCommitNavigation();
 
-  // This must be called after DidInstallNewDocument which sets the content
-  // language for the document.
-  if (url_.ProtocolIsInHttpFamily()) {
-    RecordAcceptLanguageAndContentLanguageMetric();
-    RecordParentAndChildContentLanguageMetric();
-  }
-
   bool is_same_origin_initiator = IsSameOriginInitiator();
 
   // No requestor origin means it's browser-initiated (which includes *all*
@@ -3735,77 +3727,6 @@ void DocumentLoader::CountDeprecation(mojom::WebFeature feature) {
 
 void DocumentLoader::CountWebDXFeature(mojom::blink::WebDXFeature feature) {
   return use_counter_.CountWebDXFeature(feature, GetFrame());
-}
-
-void DocumentLoader::RecordAcceptLanguageAndContentLanguageMetric() {
-  // Get document Content-Language value, which has been set as the top-most
-  // content language value from http head.
-  constexpr const char language_histogram_name[] =
-      "LanguageUsage.AcceptLanguageAndContentLanguageUsage";
-
-  const AtomicString& content_language =
-      frame_->GetDocument()->ContentLanguage();
-  if (!content_language) {
-    base::UmaHistogramEnumeration(
-        language_histogram_name,
-        AcceptLanguageAndContentLanguageUsage::kContentLanguageEmpty);
-    return;
-  }
-
-  if (content_language == "*") {
-    base::UmaHistogramEnumeration(
-        language_histogram_name,
-        AcceptLanguageAndContentLanguageUsage::kContentLanguageWildcard);
-    return;
-  }
-
-  // Get Accept-Language header value from Prefs
-  bool is_accept_language_dirty =
-      frame_->DomWindow()->navigator()->IsLanguagesDirty();
-  const Vector<String>& accept_languages =
-      frame_->DomWindow()->navigator()->languages();
-
-  // Match content languages and accept languages list:
-  // 1. If any value in content languages matches the top-most accept languages
-  // 2. If there are any overlap between content languages and accept languages
-  if (accept_languages.front() == content_language) {
-    base::UmaHistogramEnumeration(
-        language_histogram_name,
-        AcceptLanguageAndContentLanguageUsage::
-            kContentLanguageMatchesPrimaryAcceptLanguage);
-  }
-
-  if (std::ranges::contains(accept_languages, content_language)) {
-    base::UmaHistogramEnumeration(language_histogram_name,
-                                  AcceptLanguageAndContentLanguageUsage::
-                                      kContentLanguageMatchesAnyAcceptLanguage);
-  }
-
-  // navigator()->languages() is a potential update operation, it could set
-  // |is_dirty_language| to false which causes future override operations
-  // can't update the accep_language list. We should reset the language to
-  // dirty if accept language is dirty before we read from Prefs.
-  if (is_accept_language_dirty) {
-    frame_->DomWindow()->navigator()->SetLanguagesDirty();
-  }
-}
-
-void DocumentLoader::RecordParentAndChildContentLanguageMetric() {
-  // Check child frame and parent frame content language value.
-  if (auto* parent = DynamicTo<LocalFrame>(frame_->Tree().Parent())) {
-    const AtomicString& content_language =
-        frame_->GetDocument()->ContentLanguage();
-
-    const AtomicString& parent_content_language =
-        parent->GetDocument()->ContentLanguage();
-
-    if (parent_content_language != content_language) {
-      base::UmaHistogramEnumeration(
-          "LanguageUsage.AcceptLanguageAndContentLanguageUsage",
-          AcceptLanguageAndContentLanguageUsage::
-              kContentLanguageSubframeDiffers);
-    }
-  }
 }
 
 void DocumentLoader::RecordUseCountersForCommit() {

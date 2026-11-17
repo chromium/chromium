@@ -21,10 +21,6 @@ struct BLINK_EXPORT WebLanguageDetectionDetails {
 
   static WebLanguageDetectionDetails CollectLanguageDetectionDetails(
       const WebDocument&);
-
-  // Use to record UMA metrics on the matches between the xml:lang value, html
-  // lang value and the Accept-Language request header values.
-  static void RecordAcceptLanguageAndXmlHtmlLangMetric(const WebDocument&);
 };
 
 }  // namespace blink

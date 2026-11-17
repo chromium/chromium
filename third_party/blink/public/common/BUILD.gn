@@ -226,7 +226,6 @@ source_set("headers") {
     "messaging/transferable_message.h",
     "messaging/transferable_message_mojom_traits.h",
     "messaging/web_message_port.h",
-    "metrics/accept_language_and_content_language_usage.h",
     "metrics/document_update_reason.h",
     "mime_util/mime_util.h",
     "navigation/commit_url.h",

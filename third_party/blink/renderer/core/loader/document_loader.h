@@ -570,16 +570,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   void DidCommitNavigation();
   void RecordUseCountersForCommit();
   void RecordConsoleMessagesForCommit();
-
-  // Use to record UMA metrics on the matches between the Content-Language
-  // response header value and the Accept-Language request header values.
-  void RecordAcceptLanguageAndContentLanguageMetric();
-
-  // Use to record UMA metrics on the matches between the parent frame's
-  // Content-Language request header value and child frame's Content-Language
-  // request header values.
-  void RecordParentAndChildContentLanguageMetric();
-
   void CreateParserPostCommit();
 
   void CommitSameDocumentNavigationInternal(
