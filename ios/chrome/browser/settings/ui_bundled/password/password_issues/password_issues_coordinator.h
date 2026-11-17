@@ -24,6 +24,11 @@ enum class WarningType;
 - (void)passwordIssuesCoordinatorDidRemove:
     (PasswordIssuesCoordinator*)coordinator;
 
+// Called when Local Authentication succeeds in `coordinator` (or a nested child
+// coordinator).
+- (void)passwordIssuesCoordinatorDidAuthenticate:
+    (PasswordIssuesCoordinator*)coordinator;
+
 @end
 
 // This coordinator presents a list of compromised credentials for the user.

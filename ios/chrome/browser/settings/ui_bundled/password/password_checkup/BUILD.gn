@@ -119,6 +119,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/safety_check_notifications/utils:constants",
     "//ios/chrome/browser/safety_check_notifications/utils:test_utils",
     "//ios/chrome/browser/settings/ui_bundled/cells",
+    "//ios/chrome/browser/settings/ui_bundled/password/password_issues:password_issues_ui",
     "//ios/chrome/browser/settings/ui_bundled/password/reauthentication:reauthentication_ui",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",

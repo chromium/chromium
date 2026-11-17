@@ -22,8 +22,10 @@
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
+#import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_issues/password_issues_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -51,6 +53,7 @@
 #import "third_party/ocmock/gtest_support.h"
 
 using password_manager::PasswordCheckReferrer;
+using ::testing::Values;
 
 namespace password_manager {
 
@@ -61,7 +64,13 @@ class PasswordCheckupCoordinatorTest
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
+    SetUpCoordinatorWithReferrer(GetParam());
+    AttachWindowAndStartCoordinator();
+  }
 
+  // Creates the test environment and `coordinator_` for `referrer` without
+  // starting it.
+  void SetUpCoordinatorWithReferrer(PasswordCheckReferrer referrer) {
     TestProfileIOS::Builder builder;
     // Add test password store and affiliation service. Used by the mediator.
     builder.AddTestingFactory(
@@ -129,8 +138,12 @@ class PasswordCheckupCoordinatorTest
     coordinator_ = [[PasswordCheckupCoordinator alloc]
         initWithBaseNavigationController:base_navigation_controller_
                                  browser:browser_.get()
-                                referrer:GetParam()];
+                                referrer:referrer];
+  }
 
+  // Attaches `base_navigation_controller_` to the key window, starts
+  // `coordinator_`, and waits for presentation.
+  void AttachWindowAndStartCoordinator() {
     scoped_window_.Get().rootViewController = base_navigation_controller_;
 
     [coordinator_ start];
@@ -201,6 +214,29 @@ TEST_P(PasswordCheckupCoordinatorWithoutReauthenticationTest,
   CheckPasswordCheckupVisitMetricsCount(1);
 }
 
+// Tests that opening Password Issues when `coordinator_` does not require
+// authentication on start presents `PasswordIssuesTableViewController` directly
+// without prompting.
+TEST_P(PasswordCheckupCoordinatorWithoutReauthenticationTest,
+       PasswordIssuesPresentedWithoutAuth) {
+  CheckPasswordCheckupIsPresented();
+
+  [coordinator_ showPasswordIssuesWithWarningType:
+                    password_manager::WarningType::kWeakPasswordsWarning];
+
+  UINavigationController* navigation_controller = base_navigation_controller_;
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        return [navigation_controller.topViewController
+                   isKindOfClass:[PasswordIssuesTableViewController class]] &&
+               navigation_controller.transitionCoordinator == nil;
+      }));
+  EXPECT_EQ(nil, fake_reauth_module_.localizedReasonForAuthentication);
+  histogram_tester_.ExpectBucketCount(
+      password_manager::kPasswordManagerSurfaceVisitHistogramName,
+      password_manager::PasswordManagerSurface::kPasswordIssues, 1);
+}
+
 // Tests that Password Check is presented only after passing authentication
 TEST_P(PasswordCheckupCoordinatorWithReauthenticationTest,
        PasswordCheckupPresentedWithAuth) {
@@ -217,6 +253,43 @@ TEST_P(PasswordCheckupCoordinatorWithReauthenticationTest,
 
   // One visit should have been recorded.
   CheckPasswordCheckupVisitMetricsCount(1);
+}
+
+// Tests that opening Password Issues after passing authentication on Password
+// Checkup presents `PasswordIssuesTableViewController` directly without a
+// second prompt.
+TEST_P(PasswordCheckupCoordinatorWithReauthenticationTest,
+       PasswordIssuesOpenedAfterAuthSkipsSecondAuth) {
+  [fake_reauth_module_ returnMockedReauthenticationResult];
+  CheckPasswordCheckupIsPresented();
+
+  // Wait for `UINavigationController` to finish showing
+  // `PasswordCheckupViewController` after popping
+  // `LocalReauthenticationViewController` before pushing Password Issues.
+  UINavigationController* navigation_controller = base_navigation_controller_;
+  UIViewController* checkup_view_controller =
+      navigation_controller.topViewController;
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        return checkup_view_controller.viewIfLoaded.window != nil &&
+               checkup_view_controller.view.userInteractionEnabled &&
+               navigation_controller.transitionCoordinator == nil;
+      }));
+
+  fake_reauth_module_.localizedReasonForAuthentication = nil;
+  [coordinator_ showPasswordIssuesWithWarningType:
+                    password_manager::WarningType::kWeakPasswordsWarning];
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        return [navigation_controller.topViewController
+                   isKindOfClass:[PasswordIssuesTableViewController class]] &&
+               navigation_controller.transitionCoordinator == nil;
+      }));
+  EXPECT_EQ(nil, fake_reauth_module_.localizedReasonForAuthentication);
+  histogram_tester_.ExpectBucketCount(
+      password_manager::kPasswordManagerSurfaceVisitHistogramName,
+      password_manager::PasswordManagerSurface::kPasswordIssues, 1);
 }
 
 // Verifies that Password Checkup visits are logged only once after the first
@@ -245,19 +318,145 @@ TEST_P(PasswordCheckupCoordinatorWithReauthenticationTest,
 }
 
 // Test Password Checkup entry points that do not require authentication.
-INSTANTIATE_TEST_SUITE_P(
-    ,  // Empty instantiation name.
-    PasswordCheckupCoordinatorWithoutReauthenticationTest,
-    ::testing::Values(PasswordCheckReferrer::kPasswordSettings));
+INSTANTIATE_TEST_SUITE_P(,  // Empty instantiation name.
+                         PasswordCheckupCoordinatorWithoutReauthenticationTest,
+                         Values(PasswordCheckReferrer::kPasswordSettings));
 
 // Test Password Checkup entry points that require authentication.
+INSTANTIATE_TEST_SUITE_P(,  // Empty instantiation name.
+                         PasswordCheckupCoordinatorWithReauthenticationTest,
+                         Values(PasswordCheckReferrer::kPhishGuardDialog,
+                                PasswordCheckReferrer::kSafetyCheck,
+                                PasswordCheckReferrer::kPasswordBreachDialog,
+                                PasswordCheckReferrer::kMoreToFixBubble,
+                                PasswordCheckReferrer::kSafetyCheckMagicStack));
+
+// Test fixture for the entry point used by `SceneCoordinator` when Password
+// Issues is opened directly from outside the Password Manager: starts
+// `coordinator_` and opens Password Issues in the same call frame before
+// `base_navigation_controller_` is presented.
+class PasswordCheckupCoordinatorPasswordIssuesEntryTest
+    : public PasswordCheckupCoordinatorTest {
+ protected:
+  void SetUp() override {
+    PlatformTest::SetUp();
+    SetUpCoordinatorWithReferrer(GetParam());
+  }
+
+  // Replays the `SceneCoordinator` sequence: starts `coordinator_`, opens
+  // Password Issues, attaches `base_navigation_controller_` to the window, and
+  // waits until `LocalReauthenticationViewController` requests authentication.
+  void StartCoordinatorAndOpenPasswordIssues() {
+    [coordinator_ start];
+    [coordinator_ showPasswordIssuesWithWarningType:
+                      password_manager::WarningType::kWeakPasswordsWarning];
+    scoped_window_.Get().rootViewController = base_navigation_controller_;
+
+    EXPECT_FALSE([base_navigation_controller_.topViewController
+        isKindOfClass:[PasswordIssuesTableViewController class]]);
+    ASSERT_TRUE([base_navigation_controller_.topViewController
+        isKindOfClass:[LocalReauthenticationViewController class]]);
+
+    FakeReauthenticationModule* fake_reauth_module = fake_reauth_module_;
+    ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForUIElementTimeout, ^bool {
+          return fake_reauth_module.localizedReasonForAuthentication != nil;
+        }));
+  }
+};
+
+// Tests that opening Password Issues right after starting `coordinator_` and
+// before `base_navigation_controller_` is presented requires Local
+// Authentication, and navigating back after authenticating does not prompt a
+// second time.
+TEST_P(PasswordCheckupCoordinatorPasswordIssuesEntryTest,
+       PasswordIssuesOpenedBeforePresentationRequiresAuth) {
+  ASSERT_NO_FATAL_FAILURE(StartCoordinatorAndOpenPasswordIssues());
+
+  // No surface visits recorded until successful authentication.
+  histogram_tester_.ExpectBucketCount(
+      password_manager::kPasswordManagerSurfaceVisitHistogramName,
+      password_manager::PasswordManagerSurface::kPasswordIssues, 0);
+  CheckPasswordCheckupVisitMetricsCount(0);
+
+  [fake_reauth_module_ returnMockedReauthenticationResult];
+
+  // Successful authentication should leave `PasswordIssuesTableViewController`
+  // visible and record its visit.
+  ASSERT_TRUE([base_navigation_controller_.topViewController
+      isKindOfClass:[PasswordIssuesTableViewController class]]);
+  histogram_tester_.ExpectBucketCount(
+      password_manager::kPasswordManagerSurfaceVisitHistogramName,
+      password_manager::PasswordManagerSurface::kPasswordIssues, 1);
+
+  // Navigating back to Password Checkup should not require a second prompt.
+  [base_navigation_controller_ popViewControllerAnimated:NO];
+  EXPECT_TRUE([base_navigation_controller_.topViewController
+      isKindOfClass:[PasswordCheckupViewController class]]);
+  histogram_tester_.ExpectBucketCount(
+      password_manager::kPasswordManagerSurfaceVisitHistogramName,
+      password_manager::PasswordManagerSurface::kPasswordCheckup, 1);
+}
+
+// Tests that failing Local Authentication when Password Issues is opened
+// directly dismisses the Password Manager UI without recording surface visits.
+TEST_P(PasswordCheckupCoordinatorPasswordIssuesEntryTest,
+       PasswordIssuesFailedAuthDismissesUI) {
+  OCMockObject<PasswordCheckupCoordinatorDelegate>* mocked_delegate =
+      OCMProtocolMock(@protocol(PasswordCheckupCoordinatorDelegate));
+  OCMExpect(
+      [mocked_delegate dismissPasswordManagerAfterFailedReauthentication]);
+  coordinator_.delegate = mocked_delegate;
+  fake_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+
+  ASSERT_NO_FATAL_FAILURE(StartCoordinatorAndOpenPasswordIssues());
+
+  [fake_reauth_module_ returnMockedReauthenticationResult];
+
+  EXPECT_OCMOCK_VERIFY(mocked_delegate);
+  histogram_tester_.ExpectBucketCount(
+      password_manager::kPasswordManagerSurfaceVisitHistogramName,
+      password_manager::PasswordManagerSurface::kPasswordIssues, 0);
+  CheckPasswordCheckupVisitMetricsCount(0);
+}
+
+// Tests that if Password Issues is removed before Local Authentication
+// succeeds, Password Checkup is not left unauthenticated.
+TEST_P(PasswordCheckupCoordinatorPasswordIssuesEntryTest,
+       PasswordIssuesRemovedBeforeAuthDoesNotLeaveCheckupUnauthenticated) {
+  __block bool dismissed = false;
+  id<PasswordCheckupCoordinatorDelegate> mocked_delegate =
+      OCMProtocolMock(@protocol(PasswordCheckupCoordinatorDelegate));
+  OCMStub([mocked_delegate dismissPasswordManagerAfterFailedReauthentication])
+      .andDo(^(NSInvocation*) {
+        dismissed = true;
+      });
+  coordinator_.delegate = mocked_delegate;
+
+  ASSERT_NO_FATAL_FAILURE(StartCoordinatorAndOpenPasswordIssues());
+
+  // Pop `LocalReauthenticationViewController` and
+  // `PasswordIssuesTableViewController` without completing authentication.
+  [base_navigation_controller_ popViewControllerAnimated:NO];
+  [base_navigation_controller_ popViewControllerAnimated:NO];
+
+  // Either `PasswordCheckupCoordinator` re-pushes
+  // `LocalReauthenticationViewController` or fails closed by dismissing.
+  if (!dismissed) {
+    EXPECT_TRUE([base_navigation_controller_.topViewController
+        isKindOfClass:[LocalReauthenticationViewController class]]);
+    EXPECT_FALSE([base_navigation_controller_.topViewController
+        isKindOfClass:[PasswordCheckupViewController class]]);
+  }
+  CheckPasswordCheckupVisitMetricsCount(0);
+}
+
+// Entry points opening Password Issues directly from outside the Password
+// Manager.
 INSTANTIATE_TEST_SUITE_P(
     ,  // Empty instantiation name.
-    PasswordCheckupCoordinatorWithReauthenticationTest,
-    ::testing::Values(PasswordCheckReferrer::kPhishGuardDialog,
-                      PasswordCheckReferrer::kSafetyCheck,
-                      PasswordCheckReferrer::kPasswordBreachDialog,
-                      PasswordCheckReferrer::kMoreToFixBubble,
-                      PasswordCheckReferrer::kSafetyCheckMagicStack));
+    PasswordCheckupCoordinatorPasswordIssuesEntryTest,
+    Values(PasswordCheckReferrer::kSafetyCheckMagicStack,
+           PasswordCheckReferrer::kSafetyCheckNotification));
 
 }  // namespace password_manager

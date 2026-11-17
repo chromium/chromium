@@ -247,6 +247,12 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   [self onChildCoordinatorDidRemove];
 }
 
+- (void)passwordIssuesCoordinatorDidAuthenticate:
+    (PasswordIssuesCoordinator*)coordinator {
+  CHECK_EQ(_dismissedPasswordIssuesCoordinator, coordinator);
+  [self.delegate passwordIssuesCoordinatorDidAuthenticate:self];
+}
+
 #pragma mark - PasswordManagerReauthenticationDelegate
 
 - (void)dismissPasswordManagerAfterFailedReauthentication {
@@ -257,7 +263,9 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 
 - (void)successfulReauthenticationWithCoordinator:
     (LocalReauthenticationCoordinator*)coordinator {
+  CHECK_EQ(_reauthCoordinator, coordinator);
   [_visitsRecorder maybeRecordVisitMetric];
+  [self.delegate passwordIssuesCoordinatorDidAuthenticate:self];
 }
 
 - (void)dismissUIAfterFailedReauthenticationWithCoordinator:

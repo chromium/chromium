@@ -82,6 +82,11 @@ using password_manager::PasswordCheckReferrer;
 
   // The service responsible for running the password checks.
   scoped_refptr<IOSChromePasswordCheckManager> _passwordCheckManager;
+
+  // Whether Local Authentication was passed since this coordinator was started
+  // (or was not required for `_referrer`). Child coordinators may only skip
+  // authentication on start when this is `YES`.
+  BOOL _authenticated;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -135,6 +140,7 @@ using password_manager::PasswordCheckReferrer;
   _mediator.delegate = self;
 
   BOOL requireAuthOnStart = [self shouldRequireAuthOnStart];
+  _authenticated = !requireAuthOnStart;
 
   _baseNavigationController.delegate = self;
 
@@ -193,9 +199,10 @@ using password_manager::PasswordCheckReferrer;
             initForWarningType:warningType
       baseNavigationController:self.baseNavigationController
                        browser:self.browser];
-  // No need to authenticate the user before showing password issues as the user
-  // was already authenticated when opening the password manager.
-  _passwordIssuesCoordinator.skipAuthenticationOnStart = YES;
+  // Skip authentication only if the user already passed Local Authentication
+  // for this surface (for example when tapping a row on the Checkup page, as
+  // opposed to opening Password Issues right after `start`).
+  _passwordIssuesCoordinator.skipAuthenticationOnStart = _authenticated;
   _passwordIssuesCoordinator.delegate = self;
   [_passwordIssuesCoordinator start];
 }
@@ -253,7 +260,16 @@ using password_manager::PasswordCheckReferrer;
     (PasswordIssuesCoordinator*)coordinator {
   CHECK_EQ(_passwordIssuesCoordinator, coordinator);
   [self stopPasswordIssuesCoordinator];
+  if (_authenticated) {
+    [_visitsRecorder maybeRecordVisitMetric];
+  }
   [self restartReauthCoordinator];
+}
+
+- (void)passwordIssuesCoordinatorDidAuthenticate:
+    (PasswordIssuesCoordinator*)coordinator {
+  CHECK_EQ(_passwordIssuesCoordinator, coordinator);
+  _authenticated = YES;
 }
 
 #pragma mark - PasswordManagerReauthenticationDelegate
@@ -277,6 +293,8 @@ using password_manager::PasswordCheckReferrer;
 
 - (void)successfulReauthenticationWithCoordinator:
     (LocalReauthenticationCoordinator*)coordinator {
+  CHECK_EQ(_reauthCoordinator, coordinator);
+  _authenticated = YES;
   [_visitsRecorder maybeRecordVisitMetric];
 }
 
@@ -427,9 +445,10 @@ using password_manager::PasswordCheckReferrer;
 
 // Starts reauthCoordinator after a child coordinator content was dismissed.
 - (void)restartReauthCoordinator {
-  // Restart reauth coordinator so it monitors scene state changes and requests
-  // local authentication after the scene goes to the background.
-  [self startReauthCoordinatorWithAuthOnStart:NO];
+  // Restart `_reauthCoordinator` so it monitors scene state changes and
+  // requests local authentication after the scene goes to the background, or
+  // right away if Local Authentication was never passed for this surface.
+  [self startReauthCoordinatorWithAuthOnStart:!_authenticated];
 }
 
 // Whether Local Authentication sould be required when the coordinator is

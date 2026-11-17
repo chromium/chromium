@@ -163,8 +163,13 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
   PasswordIssuesCoordinator* coordinator_ = nil;
 };
 
-// Tests that Password Issues is presented only after passing authentication.
+// Tests that Password Issues is presented only after passing authentication
+// and notifies `delegate` via `passwordIssuesCoordinatorDidAuthenticate:`.
 TEST_F(PasswordIssuesCoordinatorTest, PasswordIssuesPresentedWithAuth) {
+  OCMockObject<PasswordIssuesCoordinatorDelegate>* mocked_delegate =
+      OCMProtocolMock(@protocol(PasswordIssuesCoordinatorDelegate));
+  coordinator_.delegate = mocked_delegate;
+
   StartCoordinatorSkippingAuth(/*skip_auth_on_start=*/NO);
 
   // Password Issues should be covered until auth is passed.
@@ -173,12 +178,34 @@ TEST_F(PasswordIssuesCoordinatorTest, PasswordIssuesPresentedWithAuth) {
   // No visits logged until successful auth.
   CheckPasswordIssuesVisitMetricsCount(0);
 
+  OCMExpect(
+      [mocked_delegate passwordIssuesCoordinatorDidAuthenticate:coordinator_]);
   [fake_reauth_module_ returnMockedReauthenticationResult];
 
   // Successful auth should leave Password Issues visible and record visit.
   CheckPasswordIssuesIsPresented();
-
   CheckPasswordIssuesVisitMetricsCount(1);
+  EXPECT_OCMOCK_VERIFY(mocked_delegate);
+}
+
+// Tests that failing authentication dismisses the Password Manager UI without
+// calling `passwordIssuesCoordinatorDidAuthenticate:` or recording a visit.
+TEST_F(PasswordIssuesCoordinatorTest,
+       PasswordIssuesFailedAuthDismissesUIWithoutAuthenticating) {
+  OCMockObject<PasswordIssuesCoordinatorDelegate>* mocked_delegate =
+      OCMStrictProtocolMock(@protocol(PasswordIssuesCoordinatorDelegate));
+  coordinator_.delegate = mocked_delegate;
+  fake_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
+
+  StartCoordinatorSkippingAuth(/*skip_auth_on_start=*/NO);
+  CheckPasswordIssuesIsNotPresented();
+
+  OCMExpect(
+      [mocked_delegate dismissPasswordManagerAfterFailedReauthentication]);
+  [fake_reauth_module_ returnMockedReauthenticationResult];
+
+  CheckPasswordIssuesVisitMetricsCount(0);
+  EXPECT_OCMOCK_VERIFY(mocked_delegate);
 }
 
 // Tests that Password Issues visits are only logged once after the first
