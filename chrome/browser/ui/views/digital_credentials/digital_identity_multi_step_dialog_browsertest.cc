@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/digital_credentials/digital_identity_multi_step_dialog.h"
 
 #include "base/scoped_observation.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/digital_credentials/digital_identity_provider_desktop.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -22,6 +23,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -268,23 +270,6 @@ class TestDigitalIdentityProviderDesktop
   DigitalIdentityMultiStepDialog* GetDialog() { return EnsureDialogCreated(); }
 };
 
-class ProviderDestroyerOnWidgetClosingObserver : public views::WidgetObserver {
- public:
-  explicit ProviderDestroyerOnWidgetClosingObserver(
-      base::OnceClosure destruction_callback)
-      : destruction_callback_(std::move(destruction_callback)) {}
-
-  void OnWidgetClosing(views::Widget* widget) override {
-    widget->RemoveObserver(this);
-    if (destruction_callback_) {
-      std::move(destruction_callback_).Run();
-    }
-  }
-
- private:
-  base::OnceClosure destruction_callback_;
-};
-
 class ProviderDestroyerOnChildViewAddedObserver : public views::ViewObserver {
  public:
   explicit ProviderDestroyerOnChildViewAddedObserver(
@@ -332,12 +317,13 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityMultiStepDialogBrowserTest,
 
   // Set up the observer to synchronously destroy the provider when the widget
   // closes.
-  ProviderDestroyerOnWidgetClosingObserver observer(base::BindOnce(
-      [](std::unique_ptr<TestDigitalIdentityProviderDesktop>* provider) {
-        provider->reset();
-      },
-      base::Unretained(&provider)));
-  widget->AddObserver(&observer);
+  views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+  observer.set_closing_callback(
+      base::BindLambdaForTesting([&](views::Widget* closing_widget) {
+        if (closing_widget == widget && provider) {
+          provider.reset();
+        }
+      }));
 
   // Trigger cancellation. OnDialogCanceled() will PostTask a call to
   // OnCanceled() -> EndRequestWithError().
@@ -354,7 +340,6 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityMultiStepDialogBrowserTest,
 
   // Clean up if the widget is still alive.
   if (weak_widget) {
-    weak_widget->RemoveObserver(&observer);
     views::test::WidgetDestroyedWaiter(weak_widget.get()).Wait();
   }
 }
