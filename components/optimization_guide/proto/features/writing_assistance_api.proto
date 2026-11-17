@@ -60,6 +60,9 @@ message WritingAssistanceApiOptions {
   // configured in the configured
   // WritingAssistanceApiMetadata::available_prompt_languages.
   string output_language = 4 [features = { field_presence: EXPLICIT }]; // TODO(crbug.com/372099809): Should this be an enum?
+
+  // Which Writing Assistance API (Writer or Rewriter) issued the request.
+  WritingAssistanceApiType api_type = 5 [features = { field_presence: EXPLICIT }];
 }
 
 message WritingAssistanceApiResponse {
@@ -93,4 +96,12 @@ enum WritingAssistanceApiOutputLength {
   WRITING_ASSISTANCE_API_OUTPUT_LENGTH_MEDIUM = 2;
 
   WRITING_ASSISTANCE_API_OUTPUT_LENGTH_LONG = 3;
+}
+
+enum WritingAssistanceApiType {
+  WRITING_ASSISTANCE_API_TYPE_NOT_SPECIFIED = 0;
+
+  WRITING_ASSISTANCE_API_TYPE_WRITER = 1;
+
+  WRITING_ASSISTANCE_API_TYPE_REWRITER = 2;
 }

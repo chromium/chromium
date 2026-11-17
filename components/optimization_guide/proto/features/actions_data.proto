@@ -841,7 +841,7 @@ message TabObservation {
 }
 
 // Result of executing a JavaScript action.
-// Next ID: 5
+// Next ID: 7
 message ExecuteJsResult {
   // The 0-based index of the ExecuteJsAction in the Actions proto.
   int32 index_of_execute_js_action = 1 [features = { field_presence: EXPLICIT }];
@@ -854,6 +854,34 @@ message ExecuteJsResult {
 
   // Error message populated when script execution fails or times out.
   string js_error_message = 4 [features = { field_presence: EXPLICIT }];
+
+  // JavaScript dialogs (alert/confirm/prompt) intercepted during execution, in
+  // the order they fired.
+  repeated JavaScriptDialog javascript_dialogs = 5;
+
+  // Human-readable console output (`console.{log,info,warn,error}`) captured
+  // inside the actor's isolated world while executing the script.
+  string console_logs = 6 [features = { field_presence: EXPLICIT }];
+
+  // Details of a JavaScript dialog intercepted while executing the script.
+  // Next ID: 3
+  message JavaScriptDialog {
+    // The type of dialog that was triggered (alert, confirm, or prompt).
+    Type type = 1 [features = { field_presence: EXPLICIT }];
+
+    // The message text displayed by the dialog.
+    string dialog_message = 2 [features = { field_presence: EXPLICIT }];
+
+    enum Type {
+      TYPE_UNSPECIFIED = 0;
+
+      TYPE_ALERT = 1;
+
+      TYPE_CONFIRM = 2;
+
+      TYPE_PROMPT = 3;
+    }
+  }
 }
 
 // All relevant state in chrome after the actions are taken or an error has
