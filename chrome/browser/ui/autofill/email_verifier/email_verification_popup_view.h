@@ -41,8 +41,7 @@ class EmailVerificationPopupView {
   // lifetime is controlled by its hosting widget. `issuer_logo` is shown in the
   // header if it is non-empty, square, at least as large as the header icon at
   // 1x (the display's scale factor is not taken into account) and not larger
-  // than the limit the view imposes; otherwise the issuer site's favicon is
-  // shown, or a generic email icon if there is none.
+  // than the limit the view imposes; otherwise a generic email icon is shown.
   static base::WeakPtr<EmailVerificationPopupView> Show(
       base::WeakPtr<EmailVerificationPopupController> controller,
       views::Widget* parent_widget,

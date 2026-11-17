@@ -5,35 +5,26 @@
 #include "chrome/browser/ui/views/autofill/popup/email_verifier/email_verification_popup_view_impl.h"
 
 #include <memory>
-#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/numerics/safe_conversions.h"
-#include "chrome/browser/favicon/large_icon_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/favicon/core/large_icon_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
-#include "content/public/browser/web_contents.h"
 #include "net/base/schemeful_site.h"
 #include "skia/ext/image_operations.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/layout.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
-#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
@@ -67,16 +58,16 @@ constexpr int kEmailVerificationMaxWidth = 400;
 // while the popup is open, so an unreasonably large one is not used.
 constexpr int kMaxIssuerLogoSize = 1024;
 
-// Returns the issuer logo resized to the header icon size, or nullopt if the
-// issuer did not provide a usable one.
-std::optional<ui::ImageModel> CreateIssuerLogoIcon(
-    const gfx::Image& issuer_logo) {
+// Returns the header icon: the issuer's logo if it provides a usable one, and a
+// generic email icon otherwise.
+ui::ImageModel CreateHeaderIcon(const gfx::Image& issuer_logo) {
   // A logo is used only if it is square, so that it is not distorted, covers
   // the icon at 1x, and does not exceed the size limit.
   if (issuer_logo.IsEmpty() || issuer_logo.Width() != issuer_logo.Height() ||
       issuer_logo.Width() < kDesiredIconSize ||
       issuer_logo.Width() > kMaxIssuerLogoSize) {
-    return std::nullopt;
+    return ui::ImageModel::FromVectorIcon(vector_icons::kMarkEmailReadIcon,
+                                          ui::kColorIcon, kDesiredIconSize);
   }
   // The decoded logo is an unscaled bitmap, which `views::ImageView` paints as
   // is. Tag it as 1x so that a HiDPI display resamples it, and resize lazily
@@ -131,39 +122,8 @@ EmailVerificationPopupViewImpl::EmailVerificationPopupViewImpl(
           .Build());
 
   icon_view_ = headline->AddChildView(
-      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kMarkEmailReadIcon, ui::kColorIcon, kDesiredIconSize)));
+      std::make_unique<views::ImageView>(CreateHeaderIcon(issuer_logo)));
   icon_view_->SetImageSize(gfx::Size(kDesiredIconSize, kDesiredIconSize));
-
-  // Prefer the logo advertised by the issuer, and fall back to the issuer
-  // site's favicon otherwise.
-  if (std::optional<ui::ImageModel> logo = CreateIssuerLogoIcon(issuer_logo)) {
-    icon_view_->SetImage(*std::move(logo));
-  } else if (controller && controller->GetWebContents()) {
-    Profile* profile = Profile::FromBrowserContext(
-        controller->GetWebContents()->GetBrowserContext());
-    if (auto* favicon_service =
-            LargeIconServiceFactory::GetForBrowserContext(profile)) {
-      // Request the favicon at the physical pixel size needed to render
-      // `kDesiredIconSize` DIPs crisply on the current display (e.g. 40px on a
-      // 2x display). `GetIconRawBitmapOrFallbackStyleForPageUrl()` never
-      // upscales: it only returns a bitmap if the stored icon is at least
-      // `desired_size_in_pixel` (downscaling larger ones), and otherwise
-      // returns just a fallback style, in which case the static email-verified
-      // icon above is kept.
-      const float device_scale_factor =
-          parent_widget
-              ? ui::GetScaleFactorForNativeView(parent_widget->GetNativeView())
-              : 1.0f;
-      favicon_service->GetIconRawBitmapOrFallbackStyleForPageUrl(
-          issuer_origin.GetURL(),
-          /*desired_size_in_pixel=*/
-          base::ClampCeil(kDesiredIconSize * device_scale_factor),
-          base::BindOnce(&EmailVerificationPopupViewImpl::OnFaviconLoaded,
-                         weak_ptr_factory_.GetWeakPtr(), device_scale_factor),
-          &favicon_task_tracker_);
-    }
-  }
 
   headline->AddChildView(
       views::Builder<views::Label>()
@@ -304,22 +264,6 @@ void EmailVerificationPopupViewImpl::OnCancel(const ui::Event& event) {
   if (callback_) {
     std::move(callback_).Run(false);
   }
-}
-
-void EmailVerificationPopupViewImpl::OnFaviconLoaded(
-    float device_scale_factor,
-    favicon_base::LargeIconResult result) {
-  if (!icon_view_ || !result.bitmap.is_valid()) {
-    return;
-  }
-  SkBitmap bitmap = gfx::PNGCodec::Decode(*result.bitmap.bitmap_data);
-  if (bitmap.isNull()) {
-    return;
-  }
-  // Tag the bitmap with the device scale factor it was requested for so that it
-  // maps to `kDesiredIconSize` DIPs without being upscaled.
-  icon_view_->SetImage(ui::ImageModel::FromImageSkia(
-      gfx::ImageSkia::CreateFromBitmap(bitmap, device_scale_factor)));
 }
 
 BEGIN_METADATA(EmailVerificationPopupViewImpl)

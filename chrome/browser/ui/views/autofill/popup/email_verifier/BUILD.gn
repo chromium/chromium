@@ -12,26 +12,20 @@ source_set("email_verifier") {
     "//base",
     "//chrome/browser/ui/autofill/email_verifier",
     "//chrome/browser/ui/views/autofill/popup",
-    "//components/favicon_base",
     "//ui/views",
     "//url",
   ]
 
   deps = [
-    "//chrome/browser/favicon",
-    "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/views:layout_provider",
-    "//components/favicon/core",
     "//components/strings:components_strings_grit",
     "//components/url_formatter",
     "//components/vector_icons",
-    "//content/public/browser",
     "//net",
     "//skia",
     "//ui/base",
     "//ui/gfx",
-    "//ui/gfx/codec",
   ]
 }
 
@@ -42,14 +36,9 @@ source_set("unit_tests") {
 
   deps = [
     ":email_verifier",
-    "//base/test:test_support",
-    "//chrome/browser/favicon",
     "//chrome/test:test_support",
-    "//components/favicon/core",
-    "//components/favicon/core/test:test_support",
-    "//components/favicon_base",
     "//ui/base",
-    "//ui/display",
     "//ui/gfx",
+    "//ui/gfx:test_support",
   ]
 }

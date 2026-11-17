@@ -11,10 +11,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
-#include "components/favicon_base/favicon_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/md_text_button_with_spinner.h"
 #include "ui/views/input_event_activation_protector.h"
@@ -90,17 +88,12 @@ class EmailVerificationPopupViewImpl : public EmailVerificationPopupView,
   void Show();
   void OnConfirm(const ui::Event& event);
   void OnCancel(const ui::Event& event);
-  // Called with the issuer favicon, which was requested at `kDesiredIconSize`
-  // DIPs times `device_scale_factor` of the display the popup is shown on.
-  void OnFaviconLoaded(float device_scale_factor,
-                       favicon_base::LargeIconResult result);
 
   base::OnceCallback<void(bool)> callback_;
   views::InputEventActivationProtector input_protector_;
   raw_ptr<views::ImageView> icon_view_ = nullptr;
   raw_ptr<views::MdTextButtonWithSpinner> confirm_button_ = nullptr;
   raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
-  base::CancelableTaskTracker favicon_task_tracker_;
   base::WeakPtrFactory<EmailVerificationPopupViewImpl> weak_ptr_factory_{this};
 };
 
