@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled} from 'chrome://settings/lazy_load.js';
+import type {OnDeviceAiBrowserProxy, OnDeviceAiCapability, OnDeviceAiEnabled} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestOnDeviceAiBrowserProxy extends TestBrowserProxy implements
@@ -11,12 +11,16 @@ export class TestOnDeviceAiBrowserProxy extends TestBrowserProxy implements
     enabled: true,
     allowedByPolicy: true,
   };
+  private capabilities_: OnDeviceAiCapability[] = [];
+  private deleteCapabilityResponse_: OnDeviceAiCapability[] = [];
 
   constructor() {
     super([
+      'deleteOnDeviceAiCapability',
+      'getOnDeviceAiCapabilities',
       'getOnDeviceAiEnabled',
-      'setOnDeviceAiEnabled',
       'openFeedbackDialog',
+      'setOnDeviceAiEnabled',
     ]);
   }
 
@@ -35,5 +39,23 @@ export class TestOnDeviceAiBrowserProxy extends TestBrowserProxy implements
 
   openFeedbackDialog() {
     this.methodCalled('openFeedbackDialog');
+  }
+
+  getOnDeviceAiCapabilities() {
+    this.methodCalled('getOnDeviceAiCapabilities');
+    return Promise.resolve(this.capabilities_);
+  }
+
+  setGetOnDeviceAiCapabilitiesResponse(response: OnDeviceAiCapability[]) {
+    this.capabilities_ = response;
+  }
+
+  deleteOnDeviceAiCapability(id: number) {
+    this.methodCalled('deleteOnDeviceAiCapability', id);
+    return Promise.resolve(this.deleteCapabilityResponse_);
+  }
+
+  setDeleteOnDeviceAiCapabilityResponse(response: OnDeviceAiCapability[]) {
+    this.deleteCapabilityResponse_ = response;
   }
 }

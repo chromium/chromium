@@ -578,6 +578,8 @@ build_webui("build") {
       "ai_page/on_device_ai_browser_proxy.ts",
       "ai_page/on_device_ai_page.html.ts",
       "ai_page/on_device_ai_page.ts",
+      "ai_page/on_device_ai_page_entry.html.ts",
+      "ai_page/on_device_ai_page_entry.ts",
     ]
   }
 
@@ -791,6 +793,13 @@ build_webui("build") {
     "site_settings/zoom_levels.css",
     "system_page/system_page.css",
   ]
+
+  if (is_chrome_branded) {
+    css_files += [
+      "ai_page/on_device_ai_page.css",
+      "ai_page/on_device_ai_page_entry.css",
+    ]
+  }
 
   mojo_files_deps = [
     "//chrome/browser/ui/webui/settings/search/mojom:mojom_ts__generator",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {html, repeat} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsOnDeviceAiPageElement} from './on_device_ai_page.js';
 
@@ -58,6 +58,29 @@ export function getHtml(this: SettingsOnDeviceAiPageElement) {
         </li>
       </ul>
     </div>
+  </div>
+
+  <div class="models-section">
+    <h2 id="modelsHeader" class="cr-title-text">
+      $i18n{onDeviceAiModelsHeader}
+    </h2>
+    <div class="models-description secondary">
+      $i18n{onDeviceAiModelsDescription}
+    </div>
+    ${this.capabilities_.length > 0 ? html`
+      <settings-focus-list-container id="modelsList" role="list"
+          aria-labelledby="modelsHeader">
+        ${repeat(this.capabilities_, item => item.id, item => html`
+          <settings-on-device-ai-page-entry role="listitem"
+              .capability="${item}" @delete-click="${this.onEntryDeleteClick_}">
+          </settings-on-device-ai-page-entry>
+        `)}
+      </settings-focus-list-container>
+    ` : html`
+      <div id="noModels" class="secondary">
+        $i18n{onDeviceAiNoModels}
+      </div>
+    `}
   </div>
 </settings-subpage>
 <!--_html_template_end_-->`;

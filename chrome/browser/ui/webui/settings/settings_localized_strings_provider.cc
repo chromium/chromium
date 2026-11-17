@@ -524,6 +524,15 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_ON_DEVICE_AI_TURN_OFF_DIALOG_BODY},
       {"onDeviceAiTurnOffDialogConfirmButton",
        IDS_SETTINGS_ON_DEVICE_AI_TURN_OFF_DIALOG_CONFIRM_BUTTON},
+      {"onDeviceAiModelsHeader", IDS_SETTINGS_ON_DEVICE_AI_MODELS_HEADER},
+      {"onDeviceAiModelsDescription",
+       IDS_SETTINGS_ON_DEVICE_AI_MODELS_DESCRIPTION},
+      {"onDeviceAiNoModels", IDS_SETTINGS_ON_DEVICE_AI_NO_MODELS},
+      {"onDeviceAiModelExpandA11yLabel",
+       IDS_SETTINGS_ON_DEVICE_AI_MODEL_EXPAND_A11Y_LABEL},
+      {"onDeviceAiModelDeleteA11yLabel",
+       IDS_SETTINGS_ON_DEVICE_AI_MODEL_DELETE_A11Y_LABEL},
+      {"onDeviceAiModelMetadata", IDS_SETTINGS_ON_DEVICE_AI_MODEL_METADATA},
 #endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

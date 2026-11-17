@@ -272,7 +272,9 @@ build_webui_tests("build") {
   if (is_chrome_branded) {
     files += [
       "ai_page_official_test.ts",
+      "on_device_ai_page_entry_test.ts",
       "on_device_ai_page_test.ts",
+      "on_device_ai_page_test_util.ts",
       "test_on_device_ai_browser_proxy.ts",
     ]
   }

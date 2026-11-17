@@ -221,7 +221,6 @@ void OnDeviceAiSettingsHandler::OnCapabilitiesLoaded(
     const std::string& callback_id,
     std::vector<optimization_guide::OnDeviceModelControl::ModelInfo> models) {
   std::vector<VisibleCapabilityRow> rows;
-  base::ByteSize total_size;
 
   for (const auto& model : models) {
     std::optional<optimization_guide::OnDeviceModelUiMetadata> metadata =
@@ -229,13 +228,11 @@ void OnDeviceAiSettingsHandler::OnCapabilitiesLoaded(
     if (!metadata) {
       continue;
     }
-    base::ByteSize model_size(model.size_bytes);
-    total_size += model_size;
     rows.push_back(VisibleCapabilityRow{
         .base_model = model.base_model,
         .status = model.status,
         .metadata = std::move(*metadata),
-        .size = model_size,
+        .size = base::ByteSize(model.size_bytes),
     });
   }
 
@@ -250,10 +247,7 @@ void OnDeviceAiSettingsHandler::OnCapabilitiesLoaded(
     capabilities_list.Append(row.ToDict());
   }
 
-  base::DictValue response;
-  response.Set("totalSize", ui::FormatBytes(total_size));
-  response.Set("capabilities", std::move(capabilities_list));
-  ResolveJavascriptCallback(base::Value(callback_id), response);
+  ResolveJavascriptCallback(base::Value(callback_id), capabilities_list);
 }
 
 void OnDeviceAiSettingsHandler::SendOnDeviceAiEnabledChange() {

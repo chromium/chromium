@@ -253,10 +253,7 @@ TEST_F(OnDeviceAiSettingsHandlerTest, GetCapabilities_NoModelControl) {
   EXPECT_EQ("cr.webUIResponse", call_data.function_name());
   EXPECT_EQ("callback_id", call_data.arg1()->GetString());
   EXPECT_TRUE(call_data.arg2()->GetBool());
-  const base::DictValue& result = call_data.arg3()->GetDict();
-  EXPECT_EQ(base::UTF16ToUTF8(ui::FormatBytes(base::ByteSize(0))),
-            *result.FindString("totalSize"));
-  EXPECT_TRUE(result.FindList("capabilities")->empty());
+  EXPECT_TRUE(call_data.arg3()->GetList().empty());
 }
 
 TEST_F(OnDeviceAiSettingsHandlerTest,
@@ -298,19 +295,13 @@ TEST_F(OnDeviceAiSettingsHandlerTest,
   EXPECT_EQ("callback_id", call_data.arg1()->GetString());
   EXPECT_TRUE(call_data.arg2()->GetBool());
 
-  const base::DictValue& result = call_data.arg3()->GetDict();
-  EXPECT_EQ(
-      base::UTF16ToUTF8(ui::FormatBytes(kGemmaSize + kNanoSize + kAsrSize)),
-      *result.FindString("totalSize"));
-
-  const base::ListValue* capabilities = result.FindList("capabilities");
-  ASSERT_NE(nullptr, capabilities);
-  ASSERT_EQ(3u, capabilities->size());
+  const base::ListValue& capabilities = call_data.arg3()->GetList();
+  ASSERT_EQ(3u, capabilities.size());
 
   // Sorted by category first (GeneralPurpose before LiveTranscription), then
   // by size descending within each category: Gemma4 (2 GiB), V3NanoGpu (1 GiB),
   // ASR (3 GiB).
-  const base::DictValue& row0 = (*capabilities)[0].GetDict();
+  const base::DictValue& row0 = capabilities[0].GetDict();
   EXPECT_EQ(static_cast<int>(OnDeviceBaseModel::kGemma4), row0.FindInt("id"));
   EXPECT_EQ(static_cast<int>(OnDeviceModelControl::ModelStatus::kReady),
             row0.FindInt("status"));
@@ -333,7 +324,7 @@ TEST_F(OnDeviceAiSettingsHandlerTest,
                 IDS_ON_DEVICE_MODEL_CATEGORY_GENERAL_PURPOSE_DETAIL_2),
             (*row0_details)[1].GetString());
 
-  const base::DictValue& row1 = (*capabilities)[1].GetDict();
+  const base::DictValue& row1 = capabilities[1].GetDict();
   EXPECT_EQ(static_cast<int>(OnDeviceBaseModel::kV3NanoGpu),
             row1.FindInt("id"));
   EXPECT_EQ(static_cast<int>(OnDeviceModelControl::ModelStatus::kReady),
@@ -342,7 +333,7 @@ TEST_F(OnDeviceAiSettingsHandlerTest,
   EXPECT_EQ(base::UTF16ToUTF8(ui::FormatBytes(kNanoSize)),
             *row1.FindString("size"));
 
-  const base::DictValue& row2 = (*capabilities)[2].GetDict();
+  const base::DictValue& row2 = capabilities[2].GetDict();
   EXPECT_EQ(static_cast<int>(OnDeviceBaseModel::kSpeechRecognitionSmallExpert),
             row2.FindInt("id"));
   EXPECT_EQ(static_cast<int>(OnDeviceModelControl::ModelStatus::kReady),
@@ -399,23 +390,18 @@ TEST_F(OnDeviceAiSettingsHandlerTest, HandleDeleteOnDeviceAiCapability) {
   EXPECT_EQ("delete_callback_id", call_data.arg1()->GetString());
   EXPECT_TRUE(call_data.arg2()->GetBool());
 
-  const base::DictValue& result = call_data.arg3()->GetDict();
-  EXPECT_EQ(base::UTF16ToUTF8(ui::FormatBytes(kNanoSize)),
-            *result.FindString("totalSize"));
-
-  const base::ListValue* capabilities = result.FindList("capabilities");
-  ASSERT_NE(nullptr, capabilities);
-  ASSERT_EQ(2u, capabilities->size());
+  const base::ListValue& capabilities = call_data.arg3()->GetList();
+  ASSERT_EQ(2u, capabilities.size());
   EXPECT_EQ(static_cast<int>(OnDeviceBaseModel::kV3NanoGpu),
-            (*capabilities)[0].GetDict().FindInt("id"));
+            capabilities[0].GetDict().FindInt("id"));
   EXPECT_EQ(static_cast<int>(OnDeviceModelControl::ModelStatus::kReady),
-            (*capabilities)[0].GetDict().FindInt("status"));
+            capabilities[0].GetDict().FindInt("status"));
   EXPECT_EQ(static_cast<int>(OnDeviceBaseModel::kGemma4),
-            (*capabilities)[1].GetDict().FindInt("id"));
+            capabilities[1].GetDict().FindInt("id"));
   EXPECT_EQ(static_cast<int>(OnDeviceModelControl::ModelStatus::kDownloadable),
-            (*capabilities)[1].GetDict().FindInt("status"));
+            capabilities[1].GetDict().FindInt("status"));
   EXPECT_EQ(base::UTF16ToUTF8(ui::FormatBytes(base::ByteSize(0))),
-            *(*capabilities)[1].GetDict().FindString("size"));
+            *capabilities[1].GetDict().FindString("size"));
 }
 
 }  // namespace settings

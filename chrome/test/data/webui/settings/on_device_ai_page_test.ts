@@ -6,13 +6,14 @@ import 'chrome://settings/lazy_load.js';
 import 'chrome://settings/settings.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import type {SettingsOnDeviceAiPageElement} from 'chrome://settings/lazy_load.js';
-import {OnDeviceAiBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import type {SettingsOnDeviceAiPageElement, SettingsOnDeviceAiPageEntryElement} from 'chrome://settings/lazy_load.js';
+import {OnDeviceAiBrowserProxyImpl, OnDeviceModelStatus} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, OpenWindowProxyImpl, PrefsBrowserProxy, PrefService, resetRouterForTesting} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {createAsrCapability, createGemmaCapability} from './on_device_ai_page_test_util.js';
 import {TestOnDeviceAiBrowserProxy} from './test_on_device_ai_browser_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
@@ -27,8 +28,15 @@ suite('OnDeviceAiPage', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-on-device-ai-page');
     document.body.appendChild(page);
-    await testBrowserProxy.whenCalled('getOnDeviceAiEnabled');
+    await Promise.all([
+      testBrowserProxy.whenCalled('getOnDeviceAiEnabled'),
+      testBrowserProxy.whenCalled('getOnDeviceAiCapabilities'),
+    ]);
     await microtasksFinished();
+  }
+
+  function getModelEntries(): NodeListOf<SettingsOnDeviceAiPageEntryElement> {
+    return page.shadowRoot.querySelectorAll('settings-on-device-ai-page-entry');
   }
 
   setup(async function() {
@@ -168,5 +176,85 @@ suite('OnDeviceAiPage', function() {
     });
     await microtasksFinished();
     assertFalse(page.$.onDeviceAiToggle.checked);
+  });
+
+  test('models section shows empty state when no models', function() {
+    assertTrue(isVisible(page.shadowRoot.querySelector('#noModels')));
+    assertFalse(!!page.shadowRoot.querySelector('#modelsList'));
+    assertEquals(0, getModelEntries().length);
+  });
+
+  test('models section lists installed models', async function() {
+    testBrowserProxy.reset();
+    testBrowserProxy.setGetOnDeviceAiCapabilitiesResponse(
+        [createGemmaCapability(), createAsrCapability()]);
+    await createPage();
+
+    assertFalse(!!page.shadowRoot.querySelector('#noModels'));
+    const entries = getModelEntries();
+    assertEquals(2, entries.length);
+    assertDeepEquals(createGemmaCapability(), entries[0]!.capability);
+    assertDeepEquals(createAsrCapability(), entries[1]!.capability);
+  });
+
+  test('models section hides downloadable models', async function() {
+    testBrowserProxy.reset();
+    testBrowserProxy.setGetOnDeviceAiCapabilitiesResponse([
+      createGemmaCapability(),
+      {...createAsrCapability(), status: OnDeviceModelStatus.DOWNLOADABLE},
+    ]);
+    await createPage();
+
+    assertFalse(!!page.shadowRoot.querySelector('#noModels'));
+    const entries = getModelEntries();
+    assertEquals(1, entries.length);
+    assertDeepEquals(createGemmaCapability(), entries[0]!.capability);
+  });
+
+  test('delete button removes model', async function() {
+    testBrowserProxy.reset();
+    testBrowserProxy.setGetOnDeviceAiCapabilitiesResponse(
+        [createGemmaCapability(), createAsrCapability()]);
+    await createPage();
+    assertEquals(2, getModelEntries().length);
+
+    // Expand the second entry to ensure deleting the first preserves its state.
+    getModelEntries()[1]!.$.expand.click();
+    await microtasksFinished();
+    assertTrue(getModelEntries()[1]!.$.collapse.opened);
+
+    // The browser still lists a deleted model, but no longer as ready.
+    testBrowserProxy.setDeleteOnDeviceAiCapabilityResponse([
+      {...createGemmaCapability(), status: OnDeviceModelStatus.DOWNLOADABLE},
+      createAsrCapability(),
+    ]);
+    getModelEntries()[0]!.$.delete.click();
+    assertEquals(
+        createGemmaCapability().id,
+        await testBrowserProxy.whenCalled('deleteOnDeviceAiCapability'));
+    await microtasksFinished();
+
+    const entries = getModelEntries();
+    assertEquals(1, entries.length);
+    assertDeepEquals(createAsrCapability(), entries[0]!.capability);
+    assertTrue(entries[0]!.$.collapse.opened);
+  });
+
+  test('deleting last model shows empty state', async function() {
+    testBrowserProxy.reset();
+    testBrowserProxy.setGetOnDeviceAiCapabilitiesResponse(
+        [createGemmaCapability()]);
+    await createPage();
+    assertEquals(1, getModelEntries().length);
+
+    testBrowserProxy.setDeleteOnDeviceAiCapabilityResponse([
+      {...createGemmaCapability(), status: OnDeviceModelStatus.DOWNLOADABLE},
+    ]);
+    getModelEntries()[0]!.$.delete.click();
+    await testBrowserProxy.whenCalled('deleteOnDeviceAiCapability');
+    await microtasksFinished();
+
+    assertEquals(0, getModelEntries().length);
+    assertTrue(isVisible(page.shadowRoot.querySelector('#noModels')));
   });
 });

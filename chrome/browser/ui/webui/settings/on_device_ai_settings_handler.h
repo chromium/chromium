@@ -66,7 +66,7 @@ class OnDeviceAiSettingsHandler : public SettingsPageUIHandler {
   base::DictValue GetOnDeviceAiState();
 
   // Queries installed models from OnDeviceModelControl and resolves
-  // `callback_id` with the formatted capabilities dictionary.
+  // `callback_id` with the formatted list of capabilities.
   void QueryAndResolveCapabilities(const std::string& callback_id);
 
   // Callback invoked when installed models and their disk sizes are loaded.

@@ -3707,6 +3707,21 @@
     <message name="IDS_SETTINGS_ON_DEVICE_AI_TURN_OFF_DIALOG_CONFIRM_BUTTON" translateable="false" desc="Label of the button that confirms turning off on-device AI in the confirmation dialog of the On-device AI settings subpage.">
       Turn off
     </message>
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_MODELS_HEADER" translateable="false" desc="Header of the section in the On-device AI settings subpage that lists the AI models downloaded to the device.">
+      AI models on this device
+    </message>
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_NO_MODELS" translateable="false" desc="Placeholder text shown in the On-device AI settings subpage when no AI models are downloaded to the device.">
+      No on-device AI added
+    </message>
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_MODEL_EXPAND_A11Y_LABEL" translateable="false" desc="Accessibility label for the button that expands or collapses the details of a downloaded on-device AI model. Only visible by screen reader software.">
+      Show details for <ph name="MODEL_CATEGORY">$1<ex>General-purpose writing</ex></ph>
+    </message>
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_MODEL_DELETE_A11Y_LABEL" translateable="false" desc="Accessibility label for the button that deletes a downloaded on-device AI model. Only visible by screen reader software.">
+      Delete <ph name="MODEL_CATEGORY">$1<ex>General-purpose writing</ex></ph>
+    </message>
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_MODEL_METADATA" translateable="false" desc="Metadata line under an on-device AI capability row showing the model name and size separated by a middle dot (·).">
+      <ph name="MODEL_NAME">$1<ex>Gemini Nano</ex></ph> · <ph name="SIZE">$2<ex>2.0 GB</ex></ph>
+    </message>
 
     <message name="IDS_PAGE_NOT_AVAILABLE_FOR_GUEST_HEADING" desc="This is the heading for the page not available for guest.">
       <ph name="PAGE_NAME">$1<ex>Bookmarks</ex></ph> is not available to Guest users.

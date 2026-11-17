@@ -4,9 +4,11 @@
 
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../controls/settings_toggle_button.js';
+import '../focus_list_container.js';
 import '../icons.html.js';
 import '../settings_page/settings_subpage.js';
 import '../simple_confirmation_dialog.js';
+import './on_device_ai_page_entry.js';
 
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
@@ -17,12 +19,11 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {getCss as getSettingsColumnedSectionCss} from '../settings_columned_section_lit.css.js';
 import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
-import {getCss as getSettingsSharedCss} from '../settings_shared_lit.css.js';
 
-import type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled} from './on_device_ai_browser_proxy.js';
-import {OnDeviceAiBrowserProxyImpl} from './on_device_ai_browser_proxy.js';
+import type {OnDeviceAiBrowserProxy, OnDeviceAiCapability, OnDeviceAiEnabled} from './on_device_ai_browser_proxy.js';
+import {OnDeviceAiBrowserProxyImpl, OnDeviceModelStatus} from './on_device_ai_browser_proxy.js';
+import {getCss} from './on_device_ai_page.css.js';
 import {getHtml} from './on_device_ai_page.html.js';
 
 const ON_DEVICE_AI_PREF_KEY = 'synthetic.settings.on_device_ai_enabled';
@@ -43,10 +44,7 @@ export class SettingsOnDeviceAiPageElement extends
   }
 
   static override get styles() {
-    return [
-      getSettingsSharedCss(),
-      getSettingsColumnedSectionCss(),
-    ];
+    return getCss();
   }
 
   override render() {
@@ -55,10 +53,12 @@ export class SettingsOnDeviceAiPageElement extends
 
   static override get properties() {
     return {
+      capabilities_: {type: Array},
       showTurnOffDialog_: {type: Boolean},
     };
   }
 
+  protected accessor capabilities_: OnDeviceAiCapability[] = [];
   protected accessor showTurnOffDialog_: boolean = false;
 
   private onDeviceAiBrowserProxy_: OnDeviceAiBrowserProxy =
@@ -76,6 +76,9 @@ export class SettingsOnDeviceAiPageElement extends
           PrefService.getInstance().whenInitialized(),
         ])
         .then(([onDeviceAiEnabled]) => setOnDeviceAiPref(onDeviceAiEnabled));
+
+    this.onDeviceAiBrowserProxy_.getOnDeviceAiCapabilities().then(
+        capabilities => this.updateCapabilities_(capabilities));
   }
 
   // SettingsViewMixinLit implementation.
@@ -120,6 +123,17 @@ export class SettingsOnDeviceAiPageElement extends
   private applyToggleValue_(toggle: SettingsToggleButtonElement) {
     toggle.sendPrefChange();
     this.onDeviceAiBrowserProxy_.setOnDeviceAiEnabled(toggle.checked);
+  }
+
+  protected onEntryDeleteClick_(e: CustomEvent<number>) {
+    e.stopPropagation();
+    this.onDeviceAiBrowserProxy_.deleteOnDeviceAiCapability(e.detail).then(
+        capabilities => this.updateCapabilities_(capabilities));
+  }
+
+  private updateCapabilities_(capabilities: OnDeviceAiCapability[]) {
+    this.capabilities_ =
+        capabilities.filter(item => item.status === OnDeviceModelStatus.READY);
   }
 
   private setOnDeviceAiPref_(onDeviceAiEnabled: OnDeviceAiEnabled) {
