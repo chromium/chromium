@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.provider.Browser;
 import android.text.TextUtils;
 
+import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.IntDef;
 import androidx.core.app.ActivityOptionsCompat;
 
@@ -170,6 +171,7 @@ public class CustomTabActivityNavigationController
             };
 
     /** Whether the feature of predictive back gesture is supported. */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.BAKLAVA)
     public static boolean supportsPredictiveBackGesture() {
         return (sVersionForTesting == null ? Build.VERSION.SDK_INT : sVersionForTesting)
                 >= Build.VERSION_CODES.BAKLAVA;

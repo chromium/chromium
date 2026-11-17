@@ -7,6 +7,7 @@ package org.chromium.components.omnibox;
 import android.content.Context;
 import android.os.Build;
 
+import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.ResettersForTesting;
@@ -425,6 +426,7 @@ public class OmniboxFeatures {
      * Returns whether off-main-thread (OMT) prefetch of search suggestions upon touch down is
      * enabled on Android.
      */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.BAKLAVA)
     public static boolean isPrefetchSelectedSuggestionsOmtAndroidEnabled() {
         return sPrefetchSelectedSuggestionsOmtAndroid.isEnabled()
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA;

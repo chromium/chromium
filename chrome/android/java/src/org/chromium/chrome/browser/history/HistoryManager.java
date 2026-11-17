@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -110,6 +111,7 @@ public class HistoryManager
 
     private boolean mIsSearching;
 
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public static boolean isAppSpecificHistoryEnabled() {
         return ChromeFeatureList.sAppSpecificHistory.isEnabled()
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;

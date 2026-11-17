@@ -16,6 +16,7 @@ import android.content.pm.verify.domain.DomainVerificationUserState;
 import android.net.Uri;
 import android.os.Build;
 
+import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ApkInfo;
@@ -254,6 +255,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.S)
     public boolean shouldLaunchWebApksOnInitialIntent() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
     }

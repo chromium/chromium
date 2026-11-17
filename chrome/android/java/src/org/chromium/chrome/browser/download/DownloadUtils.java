@@ -28,6 +28,7 @@ import android.text.style.StyleSpan;
 import android.view.ViewConfiguration;
 import android.webkit.MimeTypeMap;
 
+import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
@@ -229,6 +230,7 @@ public class DownloadUtils {
      *
      * @return True for using Jobs. False for using Foreground service.
      */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public static boolean shouldUseUserInitiatedJobs() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
     }
