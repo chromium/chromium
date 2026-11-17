@@ -208,9 +208,6 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   // `WarmupSpare()` is still responsible for creating the first one.
   void MaybeCreateExtraSpare();
 
-  // Records heartbeat metrics for the spare RPHs. Called every 2 minutes.
-  void OnMetricsHeartbeatTimerFired();
-
 #if BUILDFLAG(IS_ANDROID)
   FRIEND_TEST_ALL_PREFIXES(
       SpareRenderProcessHostManagerMemoryThresholdBrowserTest,
@@ -273,8 +270,6 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
 
   // Indicates if the browser is not currently loading content.
   bool is_browser_idle_ = true;
-
-  base::RepeatingTimer metrics_heartbeat_timer_;
 
   std::optional<LastSpareRendererCreationInfo>
       last_spare_renderer_creation_info_;

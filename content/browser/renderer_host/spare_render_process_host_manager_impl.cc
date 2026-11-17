@@ -347,13 +347,7 @@ SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
           "SpareRenderProcessHostManagerImpl",
           kSpareRenderProcessHostManagerTraits,
           this,
-          base::MemoryConsumerRegistration::CheckUnregister::kDisabled),
-      metrics_heartbeat_timer_(
-          FROM_HERE,
-          base::Minutes(2),
-          base::BindRepeating(
-              &SpareRenderProcessHostManagerImpl::OnMetricsHeartbeatTimerFired,
-              base::Unretained(this)))
+          base::MemoryConsumerRegistration::CheckUnregister::kDisabled)
 #if BUILDFLAG(IS_ANDROID)
       ,
       app_status_listener_(
@@ -362,8 +356,6 @@ SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
               base::Unretained(this))))
 #endif
 {
-  metrics_heartbeat_timer_.Reset();
-
   // Need to register first before checking the state to make sure we don't miss
   // a notification.
   if (auto performance_scenario_observer_list =
@@ -1143,11 +1135,6 @@ void SpareRenderProcessHostManagerImpl::MaybeCreateExtraSpare() {
   spare_rphs_.push_back(new_spare_rph);
   new_spare_rph->AddObserver(this);
   new_spare_rph->Init();
-}
-
-void SpareRenderProcessHostManagerImpl::OnMetricsHeartbeatTimerFired() {
-  base::UmaHistogramCounts100("BrowserRenderProcessHost.SpareCount",
-                              spare_rphs_.size());
 }
 
 #if BUILDFLAG(IS_ANDROID)
