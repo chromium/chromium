@@ -7,8 +7,10 @@
 
 #include "chromecast/starboard/media/media/starboard_resampler.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <limits>
 #include <memory>
 #include <vector>
 
@@ -54,7 +56,7 @@ TEST(StarboardResamplerTest, PCM8ToS16) {
 
   // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatS16,
-                                               kSampleFormatU8, kCodecPCM, 2,
+                                               kSampleFormatU8, kCodecPCM, 1,
                                                buffer_data)
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
@@ -63,7 +65,7 @@ TEST(StarboardResamplerTest, PCM8ToS16) {
   EXPECT_THAT(
       ResamplePCMAudioDataForStarboard(
           kStarboardPcmSampleFormatS16, ::media::SampleFormat::kSampleFormatU8,
-          ::media::AudioCodec::kPCM, 2, buffer_data)
+          ::media::AudioCodec::kPCM, 1, buffer_data)
           .as_span(),
       ElementsAreArray(base::as_byte_span(expected_data)));
 }
@@ -75,7 +77,7 @@ TEST(StarboardResamplerTest, PCM8ToS32) {
 
   // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatS32,
-                                               kSampleFormatU8, kCodecPCM, 2,
+                                               kSampleFormatU8, kCodecPCM, 1,
                                                buffer_data)
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
@@ -84,7 +86,7 @@ TEST(StarboardResamplerTest, PCM8ToS32) {
   EXPECT_THAT(
       ResamplePCMAudioDataForStarboard(
           kStarboardPcmSampleFormatS32, ::media::SampleFormat::kSampleFormatU8,
-          ::media::AudioCodec::kPCM, 2, buffer_data)
+          ::media::AudioCodec::kPCM, 1, buffer_data)
           .as_span(),
       ElementsAreArray(base::as_byte_span(expected_data)));
 }
@@ -117,7 +119,7 @@ TEST(StarboardResamplerTest, PCMS16ToS16) {
 
   // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatS16,
-                                               kSampleFormatS16, kCodecPCM, 2,
+                                               kSampleFormatS16, kCodecPCM, 1,
                                                base::as_byte_span(buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
@@ -126,7 +128,7 @@ TEST(StarboardResamplerTest, PCMS16ToS16) {
   EXPECT_THAT(
       ResamplePCMAudioDataForStarboard(
           kStarboardPcmSampleFormatS16, ::media::SampleFormat::kSampleFormatS16,
-          ::media::AudioCodec::kPCM, 2, base::as_byte_span(buffer_data))
+          ::media::AudioCodec::kPCM, 1, base::as_byte_span(buffer_data))
           .as_span(),
       ElementsAreArray(base::as_byte_span(expected_data)));
 }
@@ -139,7 +141,7 @@ TEST(StarboardResamplerTest, PCMS16ToS32) {
 
   // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatS32,
-                                               kSampleFormatS16, kCodecPCM, 2,
+                                               kSampleFormatS16, kCodecPCM, 1,
                                                base::as_byte_span(buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
@@ -148,7 +150,7 @@ TEST(StarboardResamplerTest, PCMS16ToS32) {
   EXPECT_THAT(
       ResamplePCMAudioDataForStarboard(
           kStarboardPcmSampleFormatS32, ::media::SampleFormat::kSampleFormatS16,
-          ::media::AudioCodec::kPCM, 2, base::as_byte_span(buffer_data))
+          ::media::AudioCodec::kPCM, 1, base::as_byte_span(buffer_data))
           .as_span(),
       ElementsAreArray(base::as_byte_span(expected_data)));
 }
@@ -162,7 +164,7 @@ TEST(StarboardResamplerTest, PCMS16ToFloat) {
 
   // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatF32,
-                                               kSampleFormatS16, kCodecPCM, 2,
+                                               kSampleFormatS16, kCodecPCM, 1,
                                                base::as_byte_span(buffer_data)),
               MatchesFloatSpan(expected_f32_data));
 
@@ -170,7 +172,7 @@ TEST(StarboardResamplerTest, PCMS16ToFloat) {
   EXPECT_THAT(
       ResamplePCMAudioDataForStarboard(
           kStarboardPcmSampleFormatF32, ::media::SampleFormat::kSampleFormatS16,
-          ::media::AudioCodec::kPCM, 2, base::as_byte_span(buffer_data)),
+          ::media::AudioCodec::kPCM, 1, base::as_byte_span(buffer_data)),
       MatchesFloatSpan(expected_f32_data));
 }
 
@@ -184,7 +186,7 @@ TEST(StarboardResamplerTest, PCMS24ToS16) {
 
   // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatS16,
-                                               kSampleFormatS24, kCodecPCM, 2,
+                                               kSampleFormatS24, kCodecPCM, 1,
                                                base::as_byte_span(buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
@@ -193,7 +195,7 @@ TEST(StarboardResamplerTest, PCMS24ToS16) {
   EXPECT_THAT(
       ResamplePCMAudioDataForStarboard(
           kStarboardPcmSampleFormatS16, ::media::SampleFormat::kSampleFormatS24,
-          ::media::AudioCodec::kPCM, 2, base::as_byte_span(buffer_data))
+          ::media::AudioCodec::kPCM, 1, base::as_byte_span(buffer_data))
           .as_span(),
       ElementsAreArray(base::as_byte_span(expected_data)));
 }
@@ -208,7 +210,7 @@ TEST(StarboardResamplerTest, PCMS24ToS32) {
 
   // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatS32,
-                                               kSampleFormatS24, kCodecPCM, 2,
+                                               kSampleFormatS24, kCodecPCM, 1,
                                                base::as_byte_span(buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
@@ -217,7 +219,7 @@ TEST(StarboardResamplerTest, PCMS24ToS32) {
   EXPECT_THAT(
       ResamplePCMAudioDataForStarboard(
           kStarboardPcmSampleFormatS32, ::media::SampleFormat::kSampleFormatS24,
-          ::media::AudioCodec::kPCM, 2, base::as_byte_span(buffer_data))
+          ::media::AudioCodec::kPCM, 1, base::as_byte_span(buffer_data))
           .as_span(),
       ElementsAreArray(base::as_byte_span(expected_data)));
 }
@@ -229,7 +231,7 @@ TEST(StarboardResamplerTest, PCMS24ToFloat) {
 
   // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatF32,
-                                               kSampleFormatS24, kCodecPCM, 2,
+                                               kSampleFormatS24, kCodecPCM, 1,
                                                base::as_byte_span(buffer_data)),
               MatchesFloatSpan(expected_f32_data));
 
@@ -237,7 +239,7 @@ TEST(StarboardResamplerTest, PCMS24ToFloat) {
   EXPECT_THAT(
       ResamplePCMAudioDataForStarboard(
           kStarboardPcmSampleFormatF32, ::media::SampleFormat::kSampleFormatS24,
-          ::media::AudioCodec::kPCM, 2, base::as_byte_span(buffer_data)),
+          ::media::AudioCodec::kPCM, 1, base::as_byte_span(buffer_data)),
       MatchesFloatSpan(expected_f32_data));
 }
 
@@ -270,7 +272,7 @@ TEST(StarboardResamplerTest, PCMS32ToS32) {
 
   // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatS32,
-                                               kSampleFormatS32, kCodecPCM, 2,
+                                               kSampleFormatS32, kCodecPCM, 1,
                                                base::as_byte_span(buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
@@ -279,7 +281,7 @@ TEST(StarboardResamplerTest, PCMS32ToS32) {
   EXPECT_THAT(
       ResamplePCMAudioDataForStarboard(
           kStarboardPcmSampleFormatS32, ::media::SampleFormat::kSampleFormatS32,
-          ::media::AudioCodec::kPCM, 2, base::as_byte_span(buffer_data))
+          ::media::AudioCodec::kPCM, 1, base::as_byte_span(buffer_data))
           .as_span(),
       ElementsAreArray(base::as_byte_span(expected_data)));
 }
@@ -291,7 +293,7 @@ TEST(StarboardResamplerTest, PCMS32ToFloat) {
 
   // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatF32,
-                                               kSampleFormatS32, kCodecPCM, 2,
+                                               kSampleFormatS32, kCodecPCM, 1,
                                                base::as_byte_span(buffer_data)),
               MatchesFloatSpan(expected_f32_data));
 
@@ -299,7 +301,7 @@ TEST(StarboardResamplerTest, PCMS32ToFloat) {
   EXPECT_THAT(
       ResamplePCMAudioDataForStarboard(
           kStarboardPcmSampleFormatF32, ::media::SampleFormat::kSampleFormatS32,
-          ::media::AudioCodec::kPCM, 2, base::as_byte_span(buffer_data)),
+          ::media::AudioCodec::kPCM, 1, base::as_byte_span(buffer_data)),
       MatchesFloatSpan(expected_f32_data));
 }
 
@@ -312,7 +314,7 @@ TEST(StarboardResamplerTest, PCMFloatToS16) {
 
   // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(
-                  kStarboardPcmSampleFormatS16, kSampleFormatF32, kCodecPCM, 2,
+                  kStarboardPcmSampleFormatS16, kSampleFormatF32, kCodecPCM, 1,
                   base::as_byte_span(base::allow_nonunique_obj, buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
@@ -321,7 +323,7 @@ TEST(StarboardResamplerTest, PCMFloatToS16) {
   EXPECT_THAT(
       ResamplePCMAudioDataForStarboard(
           kStarboardPcmSampleFormatS16, ::media::SampleFormat::kSampleFormatF32,
-          ::media::AudioCodec::kPCM, 2,
+          ::media::AudioCodec::kPCM, 1,
           base::as_byte_span(base::allow_nonunique_obj, buffer_data))
           .as_span(),
       ElementsAreArray(base::as_byte_span(expected_data)));
@@ -333,7 +335,7 @@ TEST(StarboardResamplerTest, PCMFloatToS32) {
 
   // Cast enum version.
   EXPECT_THAT(ResamplePCMAudioDataForStarboard(
-                  kStarboardPcmSampleFormatS32, kSampleFormatF32, kCodecPCM, 2,
+                  kStarboardPcmSampleFormatS32, kSampleFormatF32, kCodecPCM, 1,
                   base::as_byte_span(base::allow_nonunique_obj, buffer_data))
                   .as_span(),
               ElementsAreArray(base::as_byte_span(expected_data)));
@@ -342,7 +344,7 @@ TEST(StarboardResamplerTest, PCMFloatToS32) {
   EXPECT_THAT(
       ResamplePCMAudioDataForStarboard(
           kStarboardPcmSampleFormatS32, ::media::SampleFormat::kSampleFormatF32,
-          ::media::AudioCodec::kPCM, 2,
+          ::media::AudioCodec::kPCM, 1,
           base::as_byte_span(base::allow_nonunique_obj, buffer_data))
           .as_span(),
       ElementsAreArray(base::as_byte_span(expected_data)));
@@ -527,6 +529,207 @@ TEST(StarboardResamplerTest,
 }
 
 // End of Signed 16 Conversions
+
+TEST(StarboardResamplerTest, ValidatesPcmBufferSize) {
+  EXPECT_TRUE(IsValidPcmBufferSize(kStarboardPcmSampleFormatS16,
+                                   kSampleFormatS32,
+                                   /*audio_channels=*/2, /*byte_size=*/8));
+  EXPECT_TRUE(IsValidPcmBufferSize(kStarboardPcmSampleFormatS16,
+                                   kSampleFormatS24,
+                                   /*audio_channels=*/2, /*byte_size=*/6));
+  EXPECT_TRUE(IsValidPcmBufferSize(kStarboardPcmSampleFormatS16,
+                                   kSampleFormatPlanarS16,
+                                   /*audio_channels=*/2, /*byte_size=*/8));
+  EXPECT_TRUE(IsValidPcmBufferSize(kStarboardPcmSampleFormatS16,
+                                   ::media::SampleFormat::kSampleFormatS32,
+                                   /*audio_channels=*/2, /*byte_size=*/16));
+
+  // Empty buffers and non-positive channel counts are invalid.
+  EXPECT_FALSE(IsValidPcmBufferSize(kStarboardPcmSampleFormatS16,
+                                    kSampleFormatS32,
+                                    /*audio_channels=*/2, /*byte_size=*/0));
+  EXPECT_FALSE(IsValidPcmBufferSize(kStarboardPcmSampleFormatS16,
+                                    kSampleFormatS32,
+                                    /*audio_channels=*/0, /*byte_size=*/8));
+  EXPECT_FALSE(IsValidPcmBufferSize(kStarboardPcmSampleFormatS16,
+                                    kSampleFormatS32,
+                                    /*audio_channels=*/-1, /*byte_size=*/8));
+
+  // Sub-sample, sample-unaligned, and channel-unaligned sizes are invalid.
+  EXPECT_FALSE(IsValidPcmBufferSize(kStarboardPcmSampleFormatS16,
+                                    kSampleFormatS32,
+                                    /*audio_channels=*/1, /*byte_size=*/1));
+  EXPECT_FALSE(IsValidPcmBufferSize(kStarboardPcmSampleFormatS16,
+                                    kSampleFormatS32,
+                                    /*audio_channels=*/1, /*byte_size=*/5));
+  EXPECT_FALSE(IsValidPcmBufferSize(kStarboardPcmSampleFormatS16,
+                                    kSampleFormatS32,
+                                    /*audio_channels=*/2, /*byte_size=*/4));
+  EXPECT_FALSE(IsValidPcmBufferSize(kStarboardPcmSampleFormatS16,
+                                    kSampleFormatS24,
+                                    /*audio_channels=*/2, /*byte_size=*/5));
+  EXPECT_FALSE(IsValidPcmBufferSize(kStarboardPcmSampleFormatS16,
+                                    kSampleFormatPlanarS16,
+                                    /*audio_channels=*/2, /*byte_size=*/2));
+  EXPECT_FALSE(IsValidPcmBufferSize(kStarboardPcmSampleFormatS16,
+                                    ::media::SampleFormat::kSampleFormatS32,
+                                    /*audio_channels=*/1, /*byte_size=*/1));
+  EXPECT_FALSE(IsValidPcmBufferSize(kStarboardPcmSampleFormatS16,
+                                    ::media::SampleFormat::kSampleFormatS32,
+                                    /*audio_channels=*/1, /*byte_size=*/5));
+
+  // Unsupported sample formats must return false cleanly without crashing.
+  EXPECT_FALSE(IsValidPcmBufferSize(kStarboardPcmSampleFormatS16,
+                                    kSampleFormatPlanarU8,
+                                    /*audio_channels=*/2, /*byte_size=*/8));
+  EXPECT_FALSE(
+      IsValidPcmBufferSize(kStarboardPcmSampleFormatS16,
+                           ::media::SampleFormat::kSampleFormatPlanarU8,
+                           /*audio_channels=*/2, /*byte_size=*/8));
+  EXPECT_FALSE(IsValidPcmBufferSize(kStarboardPcmSampleFormatS16,
+                                    ::media::SampleFormat::kSampleFormatAc3,
+                                    /*audio_channels=*/2, /*byte_size=*/8));
+
+  // Sizes that would overflow output scaling must be rejected.
+  EXPECT_FALSE(IsValidPcmBufferSize(
+      kStarboardPcmSampleFormatS32, kSampleFormatU8,
+      /*audio_channels=*/1, std::numeric_limits<size_t>::max()));
+}
+
+TEST(StarboardResamplerTest, ReturnsEmptyArrayForInvalidOrUnsupportedInputs) {
+  const std::vector<uint8_t> valid_8_bytes(8, 0);
+  const std::vector<uint8_t> empty_bytes;
+  const std::vector<uint8_t> unaligned_1_byte = {0x01};
+  const std::vector<uint8_t> unaligned_4_bytes(4, 0);
+  const std::vector<uint8_t> unaligned_5_bytes(5, 0);
+
+  // 1. Unsupported Cast SampleFormat values.
+  EXPECT_TRUE(ResamplePCMAudioDataForStarboard(kStarboardPcmSampleFormatS16,
+                                               kSampleFormatPlanarU8, kCodecPCM,
+                                               /*audio_channels=*/2,
+                                               valid_8_bytes)
+                  .empty());
+  EXPECT_TRUE(ResamplePCMAudioDataForStarboard(
+                  kStarboardPcmSampleFormatS16, kUnknownSampleFormat, kCodecPCM,
+                  /*audio_channels=*/2, valid_8_bytes)
+                  .empty());
+
+  // 2. Unsupported output StarboardPcmSampleFormat values.
+  const auto invalid_out_format = static_cast<StarboardPcmSampleFormat>(999);
+  EXPECT_TRUE(ResamplePCMAudioDataForStarboard(
+                  invalid_out_format, kSampleFormatS16, kCodecPCM,
+                  /*audio_channels=*/2, valid_8_bytes)
+                  .empty());
+  EXPECT_TRUE(ResamplePCMAudioDataForStarboard(
+                  invalid_out_format, ::media::SampleFormat::kSampleFormatS16,
+                  ::media::AudioCodec::kPCM, /*audio_channels=*/2,
+                  valid_8_bytes)
+                  .empty());
+
+  // 3. Unsupported Chromium SampleFormat values.
+  EXPECT_TRUE(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatS16, ::media::SampleFormat::kSampleFormatAc3,
+          ::media::AudioCodec::kPCM, /*audio_channels=*/2, valid_8_bytes)
+          .empty());
+  EXPECT_TRUE(ResamplePCMAudioDataForStarboard(
+                  kStarboardPcmSampleFormatS16,
+                  ::media::SampleFormat::kSampleFormatPlanarU8,
+                  ::media::AudioCodec::kPCM, /*audio_channels=*/2,
+                  valid_8_bytes)
+                  .empty());
+  EXPECT_TRUE(ResamplePCMAudioDataForStarboard(
+                  kStarboardPcmSampleFormatS16,
+                  ::media::SampleFormat::kUnknownSampleFormat,
+                  ::media::AudioCodec::kPCM, /*audio_channels=*/2,
+                  valid_8_bytes)
+                  .empty());
+
+  // 4. Unsupported Cast and Chromium AudioCodec values.
+  EXPECT_TRUE(ResamplePCMAudioDataForStarboard(
+                  kStarboardPcmSampleFormatS16, kSampleFormatS16, kCodecAAC,
+                  /*audio_channels=*/2, valid_8_bytes)
+                  .empty());
+  EXPECT_TRUE(ResamplePCMAudioDataForStarboard(
+                  kStarboardPcmSampleFormatS16, kSampleFormatS32,
+                  kAudioCodecUnknown, /*audio_channels=*/2, valid_8_bytes)
+                  .empty());
+  EXPECT_TRUE(ResamplePCMAudioDataForStarboard(
+                  kStarboardPcmSampleFormatS16,
+                  ::media::SampleFormat::kSampleFormatS24,
+                  ::media::AudioCodec::kPCM_S24BE, /*audio_channels=*/1,
+                  std::vector<uint8_t>(6, 0))
+                  .empty());
+  EXPECT_TRUE(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatS16, ::media::SampleFormat::kSampleFormatS16,
+          ::media::AudioCodec::kAAC, /*audio_channels=*/2, valid_8_bytes)
+          .empty());
+  EXPECT_TRUE(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatS16, ::media::SampleFormat::kSampleFormatS16,
+          ::media::AudioCodec::kUnknown, /*audio_channels=*/2, valid_8_bytes)
+          .empty());
+
+  // 5. Non-positive channel counts, empty input, and unaligned input buffers
+  // across both resampling and same-format paths.
+  for (int invalid_channels : {0, -1}) {
+    EXPECT_TRUE(ResamplePCMAudioDataForStarboard(
+                    kStarboardPcmSampleFormatS16, kSampleFormatS32, kCodecPCM,
+                    invalid_channels, valid_8_bytes)
+                    .empty());
+    EXPECT_TRUE(ResamplePCMAudioDataForStarboard(
+                    kStarboardPcmSampleFormatS32, kSampleFormatS32, kCodecPCM,
+                    invalid_channels, valid_8_bytes)
+                    .empty());
+    EXPECT_TRUE(ResamplePCMAudioDataForStarboard(
+                    kStarboardPcmSampleFormatS16,
+                    ::media::SampleFormat::kSampleFormatS32,
+                    ::media::AudioCodec::kPCM, invalid_channels, valid_8_bytes)
+                    .empty());
+  }
+
+  EXPECT_TRUE(ResamplePCMAudioDataForStarboard(
+                  kStarboardPcmSampleFormatS16, kSampleFormatS32, kCodecPCM,
+                  /*audio_channels=*/2, empty_bytes)
+                  .empty());
+  EXPECT_TRUE(ResamplePCMAudioDataForStarboard(
+                  kStarboardPcmSampleFormatS32, kSampleFormatS32, kCodecPCM,
+                  /*audio_channels=*/2, empty_bytes)
+                  .empty());
+  EXPECT_TRUE(ResamplePCMAudioDataForStarboard(
+                  kStarboardPcmSampleFormatS16,
+                  ::media::SampleFormat::kSampleFormatS32,
+                  ::media::AudioCodec::kPCM, /*audio_channels=*/2, empty_bytes)
+                  .empty());
+
+  for (const auto& unaligned : {unaligned_1_byte, unaligned_5_bytes}) {
+    EXPECT_TRUE(ResamplePCMAudioDataForStarboard(
+                    kStarboardPcmSampleFormatS16, kSampleFormatS32, kCodecPCM,
+                    /*audio_channels=*/1, unaligned)
+                    .empty());
+    EXPECT_TRUE(ResamplePCMAudioDataForStarboard(
+                    kStarboardPcmSampleFormatS32, kSampleFormatS32, kCodecPCM,
+                    /*audio_channels=*/1, unaligned)
+                    .empty());
+    EXPECT_TRUE(ResamplePCMAudioDataForStarboard(
+                    kStarboardPcmSampleFormatS16,
+                    ::media::SampleFormat::kSampleFormatS32,
+                    ::media::AudioCodec::kPCM, /*audio_channels=*/1, unaligned)
+                    .empty());
+  }
+
+  // Channel-unaligned 2-channel S32 buffer (4 bytes = 1 sample, half a frame).
+  EXPECT_TRUE(ResamplePCMAudioDataForStarboard(
+                  kStarboardPcmSampleFormatS16, kSampleFormatS32, kCodecPCM,
+                  /*audio_channels=*/2, unaligned_4_bytes)
+                  .empty());
+  EXPECT_TRUE(
+      ResamplePCMAudioDataForStarboard(
+          kStarboardPcmSampleFormatS16, ::media::SampleFormat::kSampleFormatS32,
+          ::media::AudioCodec::kPCM, /*audio_channels=*/2, unaligned_4_bytes)
+          .empty());
+}
 
 }  // namespace
 }  // namespace media

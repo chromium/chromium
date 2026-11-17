@@ -14,6 +14,7 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "chromecast/public/media/cast_decoder_buffer.h"
 #include "chromecast/starboard/chromecast/starboard_cast_api/cast_starboard_api_types.h"
 #include "chromecast/starboard/media/media/drm_util.h"
@@ -132,10 +133,15 @@ bool StarboardAudioDecoder::SetConfig(const AudioConfig& config) {
     return false;
   }
 
-  if ((config.codec == kCodecPCM || config.codec == kCodecPCM_S16BE) &&
-      config.channel_number > 8) {
-    LOG(ERROR) << "Config channels exceeds 8, which is not supported.";
-    return false;
+  if (config.codec == kCodecPCM || config.codec == kCodecPCM_S16BE) {
+    if (config.is_encrypted()) {
+      LOG(ERROR) << "Encrypted PCM audio is not supported.";
+      return false;
+    }
+    if (config.channel_number > 8) {
+      LOG(ERROR) << "Config channels exceeds 8, which is not supported.";
+      return false;
+    }
   }
 
   config_ = config;
@@ -193,8 +199,22 @@ BufferStatus StarboardAudioDecoder::PushBuffer(CastDecoderBuffer* buffer) {
 
   DCHECK(audio_sample_info_);
 
-  if (on_first_push_cb_) {
-    std::move(on_first_push_cb_).Run();
+  if (!buffer->data() || buffer->data_size() == 0) {
+    LOG(ERROR) << "Empty audio buffers are not supported.";
+    return BufferStatus::kBufferFailed;
+  }
+
+  if (audio_sample_info_->codec == kStarboardAudioCodecPcm) {
+    if (buffer->decrypt_config() != nullptr) {
+      LOG(ERROR) << "Encrypted PCM audio buffers are not supported.";
+      return BufferStatus::kBufferFailed;
+    }
+    if (!IsValidPcmBufferSize(format_to_decode_to_, config_.sample_format,
+                              audio_sample_info_->number_of_channels,
+                              buffer->data_size())) {
+      LOG(ERROR) << "Invalid PCM audio buffer size: " << buffer->data_size();
+      return BufferStatus::kBufferFailed;
+    }
   }
 
   // SAFETY: This is not safe, but is necessary since the CastDecoderBuffer API
@@ -216,16 +236,31 @@ BufferStatus StarboardAudioDecoder::PushBuffer(CastDecoderBuffer* buffer) {
     data_copy = base::HeapArray<uint8_t>::CopiedFrom(buffer_span);
   }
 
+  DrmInfoWrapper drm_info = DrmInfoWrapper::Create(*buffer);
+  if (data_copy.empty() ||
+      !base::IsValueInRangeForNumericType<int>(data_copy.size()) ||
+      !drm_info.VerifySubsamplesMatchSize(data_copy.size())) {
+    LOG(ERROR) << "Invalid audio buffer size or DRM subsample mismatch.";
+    return BufferStatus::kBufferFailed;
+  }
+
+  if (on_first_push_cb_) {
+    std::move(on_first_push_cb_).Run();
+  }
+
   StarboardSampleInfo sample = {};
   sample.type = kStarboardMediaTypeAudio;
   sample.timestamp = buffer->timestamp();
   sample.side_data = base::span<const StarboardSampleSideData>();
   sample.audio_sample_info = *audio_sample_info_;
 
-  decoded_bytes_ += data_copy.size();
-
-  return PushBufferInternal(std::move(sample), DrmInfoWrapper::Create(*buffer),
-                            std::move(data_copy));
+  const size_t copy_size = data_copy.size();
+  const BufferStatus status = PushBufferInternal(
+      std::move(sample), std::move(drm_info), std::move(data_copy));
+  if (status != BufferStatus::kBufferFailed) {
+    decoded_bytes_ += copy_size;
+  }
+  return status;
 }
 
 void StarboardAudioDecoder::GetStatistics(Statistics* statistics) {

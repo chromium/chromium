@@ -6,10 +6,13 @@
 
 #include <array>
 #include <cmath>
+#include <cstddef>
+#include <optional>
+#include <vector>
 
-#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_math.h"
 #include "chromecast/starboard/chromecast/starboard_cast_api/cast_starboard_api_types.h"
 
 namespace chromecast {
@@ -95,46 +98,38 @@ void WriteDoubleToFloat(double in, base::span<uint8_t> out) {
       base::allow_nonunique_obj, static_cast<float>(in)));
 }
 
-// Returns the number of bytes per channel for `format`. `format` must not be
-// unknown.
-//
-// Note that this is different from the implementation of
-// ::media::SampleFormatToBitsPerChannel(). That one maps S24 to 4 bytes instead
-// of 3.
-size_t BytesPerChannel(SampleFormat format) {
+// Returns the number of bytes per channel for the given format, or nullopt if
+// unsupported. Note that this differs from
+// ::media::SampleFormatToBitsPerChannel(), which maps S24 to 4 bytes instead of
+// 3.
+std::optional<size_t> TryGetBytesPerChannel(SampleFormat format) {
   switch (format) {
-    case chromecast::media::kSampleFormatU8: {
+    case chromecast::media::kSampleFormatU8:
       return 1u;
-    }
     case chromecast::media::kSampleFormatPlanarS16:
-    case chromecast::media::kSampleFormatS16: {
+    case chromecast::media::kSampleFormatS16:
       return 2u;
-    }
-    case chromecast::media::kSampleFormatS24: {
+    case chromecast::media::kSampleFormatS24:
       return 3u;
-    }
     case chromecast::media::kSampleFormatPlanarS32:
     case chromecast::media::kSampleFormatS32:
     case chromecast::media::kSampleFormatF32:
-    case chromecast::media::kSampleFormatPlanarF32: {
+    case chromecast::media::kSampleFormatPlanarF32:
       return 4u;
-    }
-    default: {
-      LOG(FATAL) << "Unsupported sample format: " << format;
-    }
+    default:
+      return std::nullopt;
   }
 }
 
-// Returns the number of bytes per channel for `format`.
-int BytesPerChannel(StarboardPcmSampleFormat format) {
+std::optional<size_t> TryGetBytesPerChannel(StarboardPcmSampleFormat format) {
   switch (format) {
     case kStarboardPcmSampleFormatS16:
-      return 2;
+      return 2u;
     case kStarboardPcmSampleFormatS32:
     case kStarboardPcmSampleFormatF32:
-      return 4;
+      return 4u;
     default:
-      LOG(FATAL) << "Unsupported StarboardPcmSampleFormat: " << format;
+      return std::nullopt;
   }
 }
 
@@ -142,7 +137,7 @@ int BytesPerChannel(StarboardPcmSampleFormat format) {
 // double. `in_audio_codec` is needed because Big Endian S16 data is treated as
 // its own codec (kCodecPCM_S16BE).
 //
-// This function crashes if an invalid in_sample_format is passed to it.
+// Returns nullptr if an unsupported in_sample_format is passed to it.
 ToDoubleFn GetInputConversionFunction(SampleFormat in_sample_format,
                                       AudioCodec in_audio_codec) {
   switch (in_sample_format) {
@@ -166,13 +161,16 @@ ToDoubleFn GetInputConversionFunction(SampleFormat in_sample_format,
       return &FloatToDouble;
     }
     default: {
-      LOG(FATAL) << "Unsupported input format: " << in_sample_format;
+      LOG(ERROR) << "Unsupported input format: " << in_sample_format;
+      return nullptr;
     }
   }
 }
 
 // Returns the conversion function needed to convert double values to
 // `out_sample_format`.
+//
+// Returns nullptr if an unsupported out_sample_format is passed to it.
 ToOutputFn GetOutputConversionFunction(
     StarboardPcmSampleFormat out_sample_format) {
   switch (out_sample_format) {
@@ -186,7 +184,8 @@ ToOutputFn GetOutputConversionFunction(
       return &WriteDoubleToFloat;
     }
     default: {
-      LOG(FATAL) << "Unsupported output format: " << out_sample_format;
+      LOG(ERROR) << "Unsupported output format: " << out_sample_format;
+      return nullptr;
     }
   }
 }
@@ -199,14 +198,19 @@ base::HeapArray<uint8_t> ResamplePCM(base::span<const uint8_t> in_data,
                                      SampleFormat in_sample_format,
                                      StarboardPcmSampleFormat out_sample_format,
                                      AudioCodec in_audio_codec) {
-  DCHECK_GT(num_channels, 0);
+  if (!IsValidPcmBufferSize(out_sample_format, in_sample_format, num_channels,
+                            in_data.size())) {
+    LOG(ERROR) << "Invalid PCM input parameters for resampling: byte_size="
+               << in_data.size() << ", channels=" << num_channels
+               << ", in_format=" << in_sample_format
+               << ", out_format=" << out_sample_format;
+    return {};
+  }
 
-  const size_t in_bytes_per_channel = BytesPerChannel(in_sample_format);
-  const size_t out_bytes_per_channel = BytesPerChannel(out_sample_format);
-
-  auto out_data = base::HeapArray<uint8_t>::WithSize(
-      (in_data.size() * out_bytes_per_channel) / in_bytes_per_channel);
-
+  const std::optional<size_t> in_bytes_per_channel =
+      TryGetBytesPerChannel(in_sample_format);
+  const std::optional<size_t> out_bytes_per_channel =
+      TryGetBytesPerChannel(out_sample_format);
   // These two functions are used to convert any input type to any output type.
   // The conversion goes:
   //   input -> double -> output
@@ -216,6 +220,24 @@ base::HeapArray<uint8_t> ResamplePCM(base::span<const uint8_t> in_data,
       GetInputConversionFunction(in_sample_format, in_audio_codec);
   const ToOutputFn write_output_type =
       GetOutputConversionFunction(out_sample_format);
+  if (!in_bytes_per_channel.has_value() || !out_bytes_per_channel.has_value() ||
+      convert_to_double == nullptr || write_output_type == nullptr) {
+    LOG(ERROR) << "Unsupported PCM conversion formats: in_format="
+               << in_sample_format << ", out_format=" << out_sample_format;
+    return {};
+  }
+
+  const size_t total_samples = in_data.size() / *in_bytes_per_channel;
+  const base::CheckedNumeric<size_t> out_size =
+      (*in_bytes_per_channel == *out_bytes_per_channel)
+          ? base::CheckedNumeric<size_t>(in_data.size())
+          : base::CheckMul(total_samples, *out_bytes_per_channel);
+  if (!out_size.IsValid()) {
+    LOG(ERROR) << "PCM output buffer size overflow.";
+    return {};
+  }
+
+  auto out_data = base::HeapArray<uint8_t>::WithSize(out_size.ValueOrDie());
 
   const bool is_input_planar =
       in_sample_format == chromecast::media::kSampleFormatPlanarS16 ||
@@ -226,6 +248,7 @@ base::HeapArray<uint8_t> ResamplePCM(base::span<const uint8_t> in_data,
       is_input_planar ? static_cast<size_t>(num_channels) : 1u;
 
   std::vector<size_t> plane_offsets;
+  plane_offsets.reserve(num_planes);
   for (size_t plane = 0; plane < num_planes; ++plane) {
     plane_offsets.push_back(plane * (in_data.size() / num_planes));
   }
@@ -241,16 +264,15 @@ base::HeapArray<uint8_t> ResamplePCM(base::span<const uint8_t> in_data,
   //   AAAABBBB
   // whereas 4 samples of interleaved data would be:
   //   ABABABAB
-  for (size_t i = 0;
-       i * static_cast<size_t>(in_bytes_per_channel) < in_data.size(); ++i) {
+  for (size_t i = 0; i < total_samples; ++i) {
     const size_t plane = i % num_planes;
     const size_t index_by_plane = i / num_planes;
 
     write_output_type(
         convert_to_double(in_data.subspan(
-            plane_offsets[plane] + index_by_plane * in_bytes_per_channel,
-            in_bytes_per_channel)),
-        out_data.subspan(i * out_bytes_per_channel, out_bytes_per_channel));
+            plane_offsets[plane] + index_by_plane * *in_bytes_per_channel,
+            *in_bytes_per_channel)),
+        out_data.subspan(i * *out_bytes_per_channel, *out_bytes_per_channel));
   }
 
   return out_data;
@@ -270,10 +292,8 @@ bool RequiresResampling(StarboardPcmSampleFormat format_to_decode_to,
   return !same_format;
 }
 
-// Converts from chromium SampleFormat to cast SampleFormat.
-//
-// TODO(crbug.com/323610278): remove this after deprecating CMA.
-SampleFormat ToCastSampleFormat(::media::SampleFormat format) {
+std::optional<SampleFormat> TryToCastSampleFormat(
+    ::media::SampleFormat format) {
   switch (format) {
     case ::media::kSampleFormatU8:
       return kSampleFormatU8;
@@ -294,43 +314,23 @@ SampleFormat ToCastSampleFormat(::media::SampleFormat format) {
     case ::media::kSampleFormatPlanarS32:
       return kSampleFormatPlanarS32;
     default:
-      LOG(FATAL) << "Unsupported ::media::SampleFormat: " << format;
+      return std::nullopt;
   }
 }
 
-// Converts from chromium AudioCodec to cast AudioCodec.
+// Converts supported Chromium PCM AudioCodec values to Cast AudioCodec.
 //
 // TODO(crbug.com/323610278): remove this after deprecating CMA.
-AudioCodec ToCastAudioCodec(::media::AudioCodec codec) {
+std::optional<AudioCodec> TryToCastAudioCodec(::media::AudioCodec codec) {
   switch (codec) {
-    case ::media::AudioCodec::kAAC:
-      return kCodecAAC;
-    case ::media::AudioCodec::kMP3:
-      return kCodecMP3;
     case ::media::AudioCodec::kPCM:
       return kCodecPCM;
     case ::media::AudioCodec::kPCM_S16BE:
       return kCodecPCM_S16BE;
-    case ::media::AudioCodec::kVorbis:
-      return kCodecVorbis;
-    case ::media::AudioCodec::kOpus:
-      return kCodecOpus;
-    case ::media::AudioCodec::kFLAC:
-      return kCodecFLAC;
-    case ::media::AudioCodec::kEAC3:
-      return kCodecEAC3;
-    case ::media::AudioCodec::kAC3:
-      return kCodecAC3;
-    case ::media::AudioCodec::kMpegHAudio:
-      return kCodecMpegHAudio;
-    case ::media::AudioCodec::kDTS:
-      return kCodecDTS;
-    case ::media::AudioCodec::kDTSXP2:
-      return kCodecDTSXP2;
-    case ::media::AudioCodec::kDTSE:
-      return kCodecDTSE;
     default:
-      LOG(FATAL) << "Unsupported audio codec: " << codec;
+      LOG(ERROR) << "Unsupported PCM audio codec: " << codec << " ("
+                 << static_cast<int>(codec) << ")";
+      return std::nullopt;
   }
 }
 
@@ -342,6 +342,20 @@ base::HeapArray<uint8_t> ResamplePCMAudioDataForStarboard(
     AudioCodec audio_codec,
     int audio_channels,
     base::span<const uint8_t> in_data) {
+  if (audio_codec != AudioCodec::kCodecPCM &&
+      audio_codec != AudioCodec::kCodecPCM_S16BE) {
+    LOG(ERROR) << "Unsupported PCM audio codec: " << audio_codec;
+    return {};
+  }
+  if (!IsValidPcmBufferSize(format_to_decode_to, format_to_decode_from,
+                            audio_channels, in_data.size())) {
+    LOG(ERROR) << "Invalid PCM buffer size or format: byte_size="
+               << in_data.size() << ", channels=" << audio_channels
+               << ", in_format=" << format_to_decode_from
+               << ", out_format=" << format_to_decode_to;
+    return {};
+  }
+
   // The check for kCodecPCM is necessary because there is a separate codec,
   // kCodecPCM_S16BE, which is in Big Endian format instead of Little Endian
   // like all the other formats. In that case, at minimum we need to change the
@@ -363,9 +377,65 @@ base::HeapArray<uint8_t> ResamplePCMAudioDataForStarboard(
     ::media::AudioCodec audio_codec,
     int audio_channels,
     base::span<const uint8_t> in_data) {
-  return ResamplePCMAudioDataForStarboard(
-      format_to_decode_to, ToCastSampleFormat(format_to_decode_from),
-      ToCastAudioCodec(audio_codec), audio_channels, in_data);
+  const std::optional<SampleFormat> cast_format =
+      TryToCastSampleFormat(format_to_decode_from);
+  if (!cast_format.has_value()) {
+    LOG(ERROR) << "Unsupported ::media::SampleFormat: "
+               << format_to_decode_from;
+    return {};
+  }
+  const std::optional<AudioCodec> cast_codec = TryToCastAudioCodec(audio_codec);
+  if (!cast_codec.has_value()) {
+    return {};
+  }
+  return ResamplePCMAudioDataForStarboard(format_to_decode_to, *cast_format,
+                                          *cast_codec, audio_channels, in_data);
+}
+
+bool IsValidPcmBufferSize(StarboardPcmSampleFormat format_to_decode_to,
+                          SampleFormat format_to_decode_from,
+                          int audio_channels,
+                          size_t byte_size) {
+  if (byte_size == 0 || audio_channels <= 0) {
+    return false;
+  }
+
+  const std::optional<size_t> in_bytes_per_channel =
+      TryGetBytesPerChannel(format_to_decode_from);
+  const std::optional<size_t> out_bytes_per_channel =
+      TryGetBytesPerChannel(format_to_decode_to);
+  if (!in_bytes_per_channel.has_value() || !out_bytes_per_channel.has_value()) {
+    return false;
+  }
+
+  const base::CheckedNumeric<size_t> frame_bytes = base::CheckMul(
+      *in_bytes_per_channel, static_cast<size_t>(audio_channels));
+  if (!frame_bytes.IsValid()) {
+    return false;
+  }
+  const size_t frame_byte_size = frame_bytes.ValueOrDie();
+  if (byte_size % frame_byte_size != 0) {
+    return false;
+  }
+
+  if (*in_bytes_per_channel == *out_bytes_per_channel) {
+    return true;
+  }
+  const size_t total_samples = byte_size / *in_bytes_per_channel;
+  return base::CheckMul(total_samples, *out_bytes_per_channel).IsValid();
+}
+
+bool IsValidPcmBufferSize(StarboardPcmSampleFormat format_to_decode_to,
+                          ::media::SampleFormat format_to_decode_from,
+                          int audio_channels,
+                          size_t byte_size) {
+  const std::optional<SampleFormat> cast_sample_format =
+      TryToCastSampleFormat(format_to_decode_from);
+  if (!cast_sample_format.has_value()) {
+    return false;
+  }
+  return IsValidPcmBufferSize(format_to_decode_to, *cast_sample_format,
+                              audio_channels, byte_size);
 }
 
 }  // namespace media

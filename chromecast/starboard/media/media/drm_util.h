@@ -5,6 +5,7 @@
 #ifndef CHROMECAST_STARBOARD_MEDIA_MEDIA_DRM_UTIL_H_
 #define CHROMECAST_STARBOARD_MEDIA_MEDIA_DRM_UTIL_H_
 
+#include <cstddef>
 #include <memory>
 #include <vector>
 
@@ -40,6 +41,9 @@ class DrmInfoWrapper {
   // Verifies that the subsamples in `buffer` match its data size.
   static bool VerifySubsamplesMatchSize(const CastDecoderBuffer& buffer);
 
+  // Verifies that explicit subsample mappings in the buffer match its size.
+  static bool VerifySubsamplesMatchSize(const ::media::DecoderBuffer& buffer);
+
   // DrmInfoWrapper is movable but not copyable.
   DrmInfoWrapper(DrmInfoWrapper&& other);
   DrmInfoWrapper& operator=(DrmInfoWrapper&& other);
@@ -51,6 +55,10 @@ class DrmInfoWrapper {
   // Returns a pointer to the DrmSampleInfo owned by this wrapper, or null if
   // there is no sample info.
   StarboardDrmSampleInfo* GetDrmSampleInfo();
+
+  // Verifies that the subsample mappings owned by this wrapper match the given
+  // buffer size, or returns true if this wrapper is unencrypted.
+  bool VerifySubsamplesMatchSize(size_t buffer_size) const;
 
  private:
   // Constructs a DrmInfoWrapper for unencrypted content. GetDrmSampleInfo()

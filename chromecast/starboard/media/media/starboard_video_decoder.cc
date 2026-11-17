@@ -244,6 +244,12 @@ BufferStatus StarboardVideoDecoder::PushBuffer(CastDecoderBuffer* buffer) {
     return BufferStatus::kBufferFailed;
   }
 
+  if (!buffer->end_of_stream() &&
+      (!buffer->data() || buffer->data_size() == 0)) {
+    LOG(ERROR) << "Empty video buffers are not supported.";
+    return BufferStatus::kBufferFailed;
+  }
+
   if (!IsInitialized() && (!has_pending_pre_init_push_ ||
                            !HasPendingFirstPush() || buffer->end_of_stream())) {
     has_pending_pre_init_push_ = false;
@@ -283,10 +289,13 @@ BufferStatus StarboardVideoDecoder::PushBuffer(CastDecoderBuffer* buffer) {
   sample.side_data = base::span<const StarboardSampleSideData>();
   sample.video_sample_info = *video_sample_info_;
 
-  decoded_bytes_ += data_copy.size();
-
-  return PushBufferInternal(std::move(sample), DrmInfoWrapper::Create(*buffer),
-                            std::move(data_copy));
+  const size_t copy_size = data_copy.size();
+  const BufferStatus status = PushBufferInternal(
+      std::move(sample), DrmInfoWrapper::Create(*buffer), std::move(data_copy));
+  if (status != BufferStatus::kBufferFailed) {
+    decoded_bytes_ += copy_size;
+  }
+  return status;
 }
 
 void StarboardVideoDecoder::GetStatistics(Statistics* statistics) {
