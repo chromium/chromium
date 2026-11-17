@@ -888,7 +888,7 @@ BASE_FEATURE(kSecondaryGoogleAccountsSigninAllowedOnAndroid,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kSigninButtonProfileMenu, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSigninButtonProfileMenu, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSigninButtonProfileMenuErrorCard,
              base::FEATURE_DISABLED_BY_DEFAULT);
