@@ -482,6 +482,15 @@ void DesktopWindowTreeHostPlatform::Show(ui::mojom::WindowShowState show_state,
     compositor()->SetVisible(true);
   }
 
+  if (show_state == ui::mojom::WindowShowState::kMaximized &&
+      !restore_bounds.IsEmpty() && !IsVisible()) {
+    // Size the window to its restored bounds before it is shown. Some
+    // platforms (e.g. X11) restore an unmaximized window to the geometry it
+    // had when it was mapped, so a window that was never sized (e.g. a popup
+    // created maximized) would otherwise restore to a tiny size.
+    platform_window()->SetBoundsInDIP(restore_bounds);
+  }
+
   platform_window()->Show(DetermineInactivity(show_state));
 
   auto weak_ptr = weak_factory_.GetWeakPtr();

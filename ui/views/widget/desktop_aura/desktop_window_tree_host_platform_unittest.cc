@@ -678,6 +678,94 @@ TEST_F(DesktopWindowTreeHostPlatformTest, ShowInitiallyMinimizedWidget) {
   EXPECT_TRUE(widget->IsActive());
 }
 
+// A StubWindow that records its bounds at the time it is shown.
+class ShowBoundsRecordingStubWindow : public ui::StubWindow {
+ public:
+  explicit ShowBoundsRecordingStubWindow(std::optional<gfx::Rect>* show_bounds)
+      : ui::StubWindow(gfx::Rect()), show_bounds_(show_bounds) {}
+
+  // ui::StubWindow:
+  void Show(bool inactive) override {
+    const ui::PlatformWindow* platform_window = this;
+    *show_bounds_ = platform_window->GetBoundsInDIP();
+    visible_ = true;
+  }
+  void Hide() override { visible_ = false; }
+  bool IsVisible() const override { return visible_; }
+
+ private:
+  raw_ptr<std::optional<gfx::Rect>> show_bounds_;
+  bool visible_ = false;
+};
+
+class ShowBoundsRecordingPlatformWindowFactoryDelegate
+    : public aura::WindowTreeHostPlatform::
+          PlatformWindowFactoryDelegateForTesting {
+ public:
+  ShowBoundsRecordingPlatformWindowFactoryDelegate() {
+    aura::WindowTreeHostPlatform::SetPlatformWindowFactoryDelegateForTesting(
+        this);
+  }
+  ~ShowBoundsRecordingPlatformWindowFactoryDelegate() override {
+    aura::WindowTreeHostPlatform::SetPlatformWindowFactoryDelegateForTesting(
+        nullptr);
+  }
+
+  std::unique_ptr<ui::PlatformWindow> Create(
+      aura::WindowTreeHostPlatform* host) override {
+    auto window = std::make_unique<ShowBoundsRecordingStubWindow>(&show_bounds);
+    window->InitDelegateWithWidget(/*delegate=*/host,
+                                   /*widget=*/++last_accelerated_widget_);
+    return window;
+  }
+
+  std::optional<gfx::Rect> show_bounds;
+
+ private:
+  gfx::AcceleratedWidget last_accelerated_widget_ = gfx::kNullAcceleratedWidget;
+};
+
+// A widget delegate whose saved placement is maximized, like a browser popup
+// created with a maximized show state.
+class SavedMaximizedWidgetDelegate : public WidgetDelegate {
+ public:
+  explicit SavedMaximizedWidgetDelegate(const gfx::Rect& restored_bounds)
+      : restored_bounds_(restored_bounds) {}
+
+  // WidgetDelegate:
+  bool GetSavedWindowPlacement(
+      const Widget* widget,
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const override {
+    *bounds = restored_bounds_;
+    *show_state = ui::mojom::WindowShowState::kMaximized;
+    return true;
+  }
+
+ private:
+  const gfx::Rect restored_bounds_;
+};
+
+// A widget whose window was never sized (e.g. a maximized popup) must be sized
+// to its restored bounds before it is shown, so the window manager restores
+// it to that size rather than to a tiny one.
+TEST_F(DesktopWindowTreeHostPlatformTest,
+       ShowMaximizedAppliesRestoredBoundsBeforeShowing) {
+  const gfx::Rect restored_bounds(50, 60, 400, 300);
+  ShowBoundsRecordingPlatformWindowFactoryDelegate factory_delegate;
+  SavedMaximizedWidgetDelegate delegate(restored_bounds);
+
+  Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                            Widget::InitParams::TYPE_WINDOW);
+  params.delegate = &delegate;
+  std::unique_ptr<Widget> widget =
+      CreateWidgetWithNativeWidgetWithParams(std::move(params));
+
+  widget->Show();
+  ASSERT_TRUE(factory_delegate.show_bounds.has_value());
+  EXPECT_EQ(restored_bounds, *factory_delegate.show_bounds);
+}
+
 TEST_F(DesktopWindowTreeHostPlatformTest, FocusParentWindowWillActivate) {
 #if BUILDFLAG(IS_OZONE)
   if (!base::FeatureList::IsEnabled(
