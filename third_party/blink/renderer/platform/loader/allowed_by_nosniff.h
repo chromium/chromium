@@ -17,10 +17,23 @@ class PLATFORM_EXPORT AllowedByNosniff final {
  public:
   enum class MimeTypeCheck { kStrict, kLaxForElement, kLaxForWorker };
 
+  // Represents the usage of the fetched classic script.
+  enum class ClassicScriptUsage {
+    // The `src` of a <script> element, or the top-level script of a worker.
+    // https://html.spec.whatwg.org/C/#fetch-a-classic-script
+    // https://html.spec.whatwg.org/C/#fetch-a-classic-worker-script
+    kScriptElementOrTopLevelWorkerScript,
+
+    // A script imported by importScripts() in a worker.
+    // https://html.spec.whatwg.org/C/#fetch-a-classic-worker-imported-script
+    kImportScripts
+  };
+
   static bool MimeTypeAsScript(UseCounter&,
                                ConsoleLogger*,
                                const ResourceResponse&,
-                               MimeTypeCheck mime_type_check_mode);
+                               MimeTypeCheck mime_type_check_mode,
+                               ClassicScriptUsage script_usage);
 
   static bool MimeTypeAsXMLExternalEntity(ConsoleLogger*,
                                           const ResourceResponse&);

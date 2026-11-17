@@ -3928,6 +3928,15 @@
       status: "stable",
     },
     {
+      // Makes importScripts() reject data:, blob: and filesystem: URLs unless
+      // their MIME type is a JavaScript MIME type.
+      // https://html.spec.whatwg.org/C/#fetch-a-classic-worker-imported-script
+      // https://github.com/whatwg/html/issues/8869
+      // crbug.com/582540332
+      name: "IgnoreSchemeExemptionForImportScriptsMimeTypeCheck",
+      status: "experimental",
+    },
+    {
       name: "ImageDataPixelFormat",
       status: "stable",
     },

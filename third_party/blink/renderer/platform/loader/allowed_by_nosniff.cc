@@ -157,22 +157,36 @@ static bool AllowMimeTypeAsScript(
 bool AllowedByNosniff::MimeTypeAsScript(UseCounter& use_counter,
                                         ConsoleLogger* console_logger,
                                         const ResourceResponse& response,
-                                        MimeTypeCheck mime_type_check_mode) {
-  // The content type is really only meaningful for `http:`-family schemes.
-  if (!response.CurrentRequestUrl().ProtocolIsInHttpFamily()) {
+                                        MimeTypeCheck mime_type_check_mode,
+                                        ClassicScriptUsage script_usage) {
+  if (response.CurrentRequestUrl().ProtocolIsData() ||
+      response.CurrentRequestUrl().ProtocolIs(url::kBlobScheme) ||
+      response.CurrentRequestUrl().ProtocolIs(url::kFileSystemScheme)) {
+    if (script_usage ==
+        ClassicScriptUsage::kScriptElementOrTopLevelWorkerScript) {
+      // Exclude `data:`, `blob:` and `filesystem:` URLs from MIME checks for
+      // <script> and top-level worker scripts, as the page or worker already
+      // has access to the content of the URLs.
+      return true;
+    }
+
+    if (!MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
+            response.HttpContentType())) {
+      use_counter.CountUse(
+          WebFeature::kImportScriptsMimeTypeCheckFailedForExemptScheme);
+      if (!RuntimeEnabledFeatures::
+              IgnoreSchemeExemptionForImportScriptsMimeTypeCheckEnabled()) {
+        return true;
+      }
+    }
+  } else if (!response.CurrentRequestUrl().ProtocolIsInHttpFamily()) {
+    // The content type is really only meaningful for `http:`-family schemes.
     StringView last_path_component =
         response.CurrentRequestUrl().LastPathComponent();
     if (last_path_component.ends_with(".js") ||
         last_path_component.ends_with(".mjs")) {
       return true;
     }
-  }
-
-  // Exclude `data:`, `blob:` and `filesystem:` URLs from MIME checks.
-  if (response.CurrentRequestUrl().ProtocolIsData() ||
-      response.CurrentRequestUrl().ProtocolIs(url::kBlobScheme) ||
-      response.CurrentRequestUrl().ProtocolIs(url::kFileSystemScheme)) {
-    return true;
   }
 
   String mime_type = response.HttpContentType();

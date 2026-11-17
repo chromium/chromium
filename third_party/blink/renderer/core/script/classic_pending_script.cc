@@ -496,7 +496,9 @@ void ClassicPendingScript::NotifyFinished(Resource* resource) {
   auto* fetcher = execution_context->Fetcher();
   const bool mime_type_failure = !AllowedByNosniff::MimeTypeAsScript(
       fetcher->GetUseCounter(), &fetcher->GetConsoleLogger(),
-      resource->GetResponse(), AllowedByNosniff::MimeTypeCheck::kLaxForElement);
+      resource->GetResponse(), AllowedByNosniff::MimeTypeCheck::kLaxForElement,
+      AllowedByNosniff::ClassicScriptUsage::
+          kScriptElementOrTopLevelWorkerScript);
 
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("v8.compile"),
               "ClassicPendingScript::NotifyFinished",

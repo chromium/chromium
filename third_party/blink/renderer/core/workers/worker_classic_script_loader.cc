@@ -238,7 +238,11 @@ void WorkerClassicScriptLoader::DidReceiveResponse(
           &fetch_client_settings_object_fetcher_->GetConsoleLogger(), response,
           fetch_client_settings_object_fetcher_->GetProperties()
               .GetFetchClientSettingsObject()
-              .MimeTypeCheckForClassicWorkerScript())) {
+              .MimeTypeCheckForClassicWorkerScript(),
+          is_top_level_script_
+              ? AllowedByNosniff::ClassicScriptUsage::
+                    kScriptElementOrTopLevelWorkerScript
+              : AllowedByNosniff::ClassicScriptUsage::kImportScripts)) {
     NotifyError();
     return;
   }

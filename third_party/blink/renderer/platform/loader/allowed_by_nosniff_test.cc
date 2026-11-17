@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_loader_factory.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
+#include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -23,6 +24,7 @@ namespace blink {
 namespace {
 
 using MimeTypeCheck = AllowedByNosniff::MimeTypeCheck;
+using ClassicScriptUsage = AllowedByNosniff::ClassicScriptUsage;
 using WebFeature = mojom::WebFeature;
 using WebDXFeature = mojom::blink::WebDXFeature;
 using ::testing::_;
@@ -122,9 +124,10 @@ TEST_P(AllowedByNosniffTest, AllowedOrNot) {
     EXPECT_CALL(*use_counter, CountUse(_)).Times(::testing::AnyNumber());
     if (!testcase.allowed)
       EXPECT_CALL(*logger, AddConsoleMessageImpl(_, _, _, _, _));
-    EXPECT_EQ(testcase.allowed, AllowedByNosniff::MimeTypeAsScript(
-                                    *use_counter, logger, response,
-                                    MimeTypeCheck::kLaxForElement));
+    EXPECT_EQ(testcase.allowed,
+              AllowedByNosniff::MimeTypeAsScript(
+                  *use_counter, logger, response, MimeTypeCheck::kLaxForElement,
+                  ClassicScriptUsage::kScriptElementOrTopLevelWorkerScript));
     ::testing::Mock::VerifyAndClear(use_counter);
 
     EXPECT_CALL(*use_counter, CountUse(_)).Times(::testing::AnyNumber());
@@ -135,16 +138,18 @@ TEST_P(AllowedByNosniffTest, AllowedOrNot) {
     if (!expect_allowed)
       EXPECT_CALL(*logger, AddConsoleMessageImpl(_, _, _, _, _));
     EXPECT_EQ(expect_allowed,
-              AllowedByNosniff::MimeTypeAsScript(*use_counter, logger, response,
-                                                 MimeTypeCheck::kLaxForWorker));
+              AllowedByNosniff::MimeTypeAsScript(
+                  *use_counter, logger, response, MimeTypeCheck::kLaxForWorker,
+                  ClassicScriptUsage::kScriptElementOrTopLevelWorkerScript));
     ::testing::Mock::VerifyAndClear(use_counter);
 
     EXPECT_CALL(*use_counter, CountUse(_)).Times(::testing::AnyNumber());
     if (!testcase.strict_allowed)
       EXPECT_CALL(*logger, AddConsoleMessageImpl(_, _, _, _, _));
     EXPECT_EQ(testcase.strict_allowed,
-              AllowedByNosniff::MimeTypeAsScript(*use_counter, logger, response,
-                                                 MimeTypeCheck::kStrict));
+              AllowedByNosniff::MimeTypeAsScript(
+                  *use_counter, logger, response, MimeTypeCheck::kStrict,
+                  ClassicScriptUsage::kScriptElementOrTopLevelWorkerScript));
     ::testing::Mock::VerifyAndClear(use_counter);
   }
 }
@@ -220,8 +225,9 @@ TEST_P(AllowedByNosniffTest, Counters) {
     EXPECT_CALL(*use_counter, CountUse(testcase.expected));
     EXPECT_CALL(*use_counter, CountUse(::testing::Ne(testcase.expected)))
         .Times(::testing::AnyNumber());
-    AllowedByNosniff::MimeTypeAsScript(*use_counter, logger, response,
-                                       MimeTypeCheck::kLaxForElement);
+    AllowedByNosniff::MimeTypeAsScript(
+        *use_counter, logger, response, MimeTypeCheck::kLaxForElement,
+        ClassicScriptUsage::kScriptElementOrTopLevelWorkerScript);
     ::testing::Mock::VerifyAndClear(use_counter);
 
     // kLaxForWorker should (by default) behave the same as kLaxForElement,
@@ -236,8 +242,9 @@ TEST_P(AllowedByNosniffTest, Counters) {
         .Times(expect_worker_lax);
     EXPECT_CALL(*use_counter, CountUse(::testing::Ne(testcase.expected)))
         .Times(::testing::AnyNumber());
-    AllowedByNosniff::MimeTypeAsScript(*use_counter, logger, response,
-                                       MimeTypeCheck::kLaxForWorker);
+    AllowedByNosniff::MimeTypeAsScript(
+        *use_counter, logger, response, MimeTypeCheck::kLaxForWorker,
+        ClassicScriptUsage::kScriptElementOrTopLevelWorkerScript);
     ::testing::Mock::VerifyAndClear(use_counter);
 
     // The kStrictMimeTypeChecksWouldBlockWorker counter should only be active
@@ -249,8 +256,9 @@ TEST_P(AllowedByNosniffTest, Counters) {
                 CountUse(::testing::Ne(
                     WebFeature::kStrictMimeTypeChecksWouldBlockWorker)))
         .Times(::testing::AnyNumber());
-    AllowedByNosniff::MimeTypeAsScript(*use_counter, logger, response,
-                                       MimeTypeCheck::kLaxForWorker);
+    AllowedByNosniff::MimeTypeAsScript(
+        *use_counter, logger, response, MimeTypeCheck::kLaxForWorker,
+        ClassicScriptUsage::kScriptElementOrTopLevelWorkerScript);
     ::testing::Mock::VerifyAndClear(use_counter);
   }
 }
@@ -302,14 +310,99 @@ TEST_P(AllowedByNosniffTest, AllTheSchemes) {
     response.SetHttpHeaderField(http_names::kXContentTypeOptions,
                                 AtomicString("nosniff"));
     EXPECT_EQ(testcase.allowed,
-              AllowedByNosniff::MimeTypeAsScript(*use_counter, logger, response,
-                                                 MimeTypeCheck::kStrict));
-    EXPECT_EQ(testcase.allowed, AllowedByNosniff::MimeTypeAsScript(
-                                    *use_counter, logger, response,
-                                    MimeTypeCheck::kLaxForElement));
+              AllowedByNosniff::MimeTypeAsScript(
+                  *use_counter, logger, response, MimeTypeCheck::kStrict,
+                  ClassicScriptUsage::kScriptElementOrTopLevelWorkerScript));
     EXPECT_EQ(testcase.allowed,
-              AllowedByNosniff::MimeTypeAsScript(*use_counter, logger, response,
-                                                 MimeTypeCheck::kLaxForWorker));
+              AllowedByNosniff::MimeTypeAsScript(
+                  *use_counter, logger, response, MimeTypeCheck::kLaxForElement,
+                  ClassicScriptUsage::kScriptElementOrTopLevelWorkerScript));
+    EXPECT_EQ(testcase.allowed,
+              AllowedByNosniff::MimeTypeAsScript(
+                  *use_counter, logger, response, MimeTypeCheck::kLaxForWorker,
+                  ClassicScriptUsage::kScriptElementOrTopLevelWorkerScript));
+  }
+}
+
+TEST_P(AllowedByNosniffTest, ClassicScriptUsage) {
+  RuntimeEnabledFeaturesTestHelpers::ScopedStrictMimeTypesForWorkers
+      strict_mime_types_feature(GetParam());
+
+  struct {
+    const char* url;
+    const char* mime_type;
+  } data[] = {
+      {"data:text/javascript,", "text/javascript"},
+      {"data:text/html,", "text/html"},
+      {"data:text/html,a.js", "text/html"},
+      {"blob:https://example.com/bla", "text/javascript"},
+      {"blob:https://example.com/bla", ""},
+      {"blob:https://example.com/bla.js", "text/plain"},
+      {"filesystem:https://example.com/temporary/bla.js", "image/png"},
+  };
+
+  const WebFeature counter =
+      WebFeature::kImportScriptsMimeTypeCheckFailedForExemptScheme;
+
+  for (bool ignore_scheme_exemption_enabled : {true, false}) {
+    RuntimeEnabledFeaturesTestHelpers::
+        ScopedIgnoreSchemeExemptionForImportScriptsMimeTypeCheck
+            ignore_scheme_exemption_feature(ignore_scheme_exemption_enabled);
+
+    for (auto& testcase : data) {
+      SCOPED_TRACE(testing::Message()
+                   << "\n  ignore scheme exemption: "
+                   << ignore_scheme_exemption_enabled << "\n  url: "
+                   << testcase.url << "\n  mime type: " << testcase.mime_type);
+      ResourceResponse response(KURL(testcase.url));
+      response.SetHttpHeaderField(http_names::kContentType,
+                                  AtomicString(testcase.mime_type));
+
+      // Treat all MIME types as script for <script> elements and top-level
+      // worker script URLs with data:, blob:, or filesystem: scheme.
+      {
+        auto* use_counter = MockUseCounter::Create();
+        EXPECT_CALL(*use_counter, CountUse(_)).Times(0);
+        auto* logger = MakeGarbageCollected<MockConsoleLogger>();
+        EXPECT_CALL(*logger, AddConsoleMessageImpl(_, _, _, _, _)).Times(0);
+        EXPECT_TRUE(AllowedByNosniff::MimeTypeAsScript(
+            *use_counter, logger, response, MimeTypeCheck::kStrict,
+            ClassicScriptUsage::kScriptElementOrTopLevelWorkerScript));
+      }
+
+      // When IgnoreSchemeExemptionForImportScriptsMimeTypeCheck is enabled,
+      // check MIME type for importScripts() with data:, blob:, or filesystem:
+      // URLs, so non-JavaScript MIME types are blocked. Otherwise, treat all
+      // MIME types as script.
+      {
+        auto* logger = MakeGarbageCollected<MockConsoleLogger>();
+        auto* use_counter = MockUseCounter::Create();
+
+        const bool is_script_mime_type =
+            MIMETypeRegistry::IsSupportedJavaScriptMIMEType(testcase.mime_type);
+
+        // Non-JavaScript MIME types are counted regardless of the feature.
+        // Other counters for the MIME type are not checked here.
+        EXPECT_CALL(*use_counter, CountUse(counter))
+            .Times(is_script_mime_type ? 0 : 1);
+        EXPECT_CALL(*use_counter, CountUse(::testing::Ne(counter)))
+            .Times(::testing::AnyNumber());
+
+        if (ignore_scheme_exemption_enabled) {
+          EXPECT_CALL(*logger, AddConsoleMessageImpl(_, _, _, _, _))
+              .Times(is_script_mime_type ? 0 : 1);
+          EXPECT_EQ(is_script_mime_type,
+                    AllowedByNosniff::MimeTypeAsScript(
+                        *use_counter, logger, response, MimeTypeCheck::kStrict,
+                        ClassicScriptUsage::kImportScripts));
+        } else {
+          EXPECT_CALL(*logger, AddConsoleMessageImpl(_, _, _, _, _)).Times(0);
+          EXPECT_TRUE(AllowedByNosniff::MimeTypeAsScript(
+              *use_counter, logger, response, MimeTypeCheck::kStrict,
+              ClassicScriptUsage::kImportScripts));
+        }
+      }
+    }
   }
 }
 
