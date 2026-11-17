@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
@@ -11,23 +13,37 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.signin.services.BadgeConfig;
+import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninCoordinator.Delegate;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.CreateProfileDataCache;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.RecordNativeInitialized;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.AccountsUpdated;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.NativeReady;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.ProfileDataCacheCreated;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninReducer.Result;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.IdentityManager.RefreshTokensLoadingState;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.ArrayDeque;
+import java.util.List;
 
 /**
  * State-machine implementation of {@link FullscreenSigninCoordinator.Mediator}, behind {@link
  * org.chromium.components.signin.SigninFeatures#FULLSCREEN_SIGNIN_MEDIATOR_STATE_MACHINE}.
  *
- * <p>Decisions are made by {@link FullscreenSigninReducer}. This class feeds it events and runs the
- * effects it returns.
+ * <p>Decisions are made by {@link FullscreenSigninReducer}. This class feeds it events, runs the
+ * effects it returns and renders the resulting {@link FullscreenSigninState} into the model.
  */
 @NullMarked
 class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
@@ -35,9 +51,34 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
     private final Delegate mDelegate;
     private final @SigninAccessPoint int mAccessPoint;
     private final PropertyModel mModel;
+    private final ProfileDataCache.Observer mProfileDataCacheObserver =
+            new ProfileDataCache.Observer() {
+                @Override
+                public void onAccountsUpdated(List<DisplayableProfileData> accounts) {
+                    List<AccountInfo> loadedAccounts = getAccountsIfLoaded();
+                    if (loadedAccounts != null) dispatch(new AccountsUpdated(loadedAccounts));
+                }
+
+                @Override
+                public void onProfileDataUpdated(DisplayableProfileData profileData) {
+                    // The selected account's name or avatar can arrive after its account.
+                    AccountInfo selectedAccount = mState.getSelectedAccount();
+                    if (selectedAccount != null
+                            && selectedAccount.getId().equals(profileData.getAccountId())) {
+                        render();
+                    }
+                }
+            };
 
     private FullscreenSigninConfig mConfig;
     private FullscreenSigninState mState = new FullscreenSigninState();
+    // Created once native is ready. Provides the account list and the selected account's data.
+    private @Nullable ProfileDataCache mProfileDataCache;
+    // Set with the cache.
+    private @Nullable IdentityManager mIdentityManager;
+    // Events dispatched while another event is being handled, in order.
+    private final ArrayDeque<FullscreenSigninEvent> mPendingEvents = new ArrayDeque<>();
+    private boolean mIsDispatching;
     private boolean mDestroyed;
 
     FullscreenSigninMediator(
@@ -73,6 +114,7 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
                         });
 
         SigninMetricsUtils.logSigninStarted(mAccessPoint);
+        render();
     }
 
     @Override
@@ -83,6 +125,10 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
     @Override
     public void destroy() {
         assert !mDestroyed;
+        if (mProfileDataCache != null) {
+            mProfileDataCache.removeObserver(mProfileDataCacheObserver);
+            mProfileDataCache = null;
+        }
         mDestroyed = true;
     }
 
@@ -155,22 +201,82 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
         dispatch(new NativeReady());
     }
 
-    /** Reduces {@code event} and runs the resulting effects in order. */
+    /**
+     * Reduces {@code event}, renders the new state and runs the resulting effects in order. An
+     * event dispatched while another is being handled (from {@link #render()} or an effect) is
+     * queued and handled after it.
+     */
     private void dispatch(FullscreenSigninEvent event) {
         // Inputs arrive asynchronously, so they can arrive after the mediator is destroyed. See
         // https://crbug.com/40214143.
         if (mDestroyed) return;
-        Result result = FullscreenSigninReducer.reduce(mState, event);
-        mState = result.getState();
-        for (FullscreenSigninEffect effect : result.getEffects()) {
-            runEffect(effect);
+        mPendingEvents.add(event);
+        if (mIsDispatching) return;
+        mIsDispatching = true;
+        // An effect can destroy the mediator, so stop handling effects and events once it is.
+        while (!mDestroyed && !mPendingEvents.isEmpty()) {
+            Result result = FullscreenSigninReducer.reduce(mState, mPendingEvents.remove());
+            mState = result.getState();
+            render();
+            for (FullscreenSigninEffect effect : result.getEffects()) {
+                if (mDestroyed) break;
+                runEffect(effect);
+            }
         }
+        mIsDispatching = false;
     }
 
     private void runEffect(FullscreenSigninEffect effect) {
         switch (effect) {
             case RecordNativeInitialized _ -> mDelegate.recordNativeInitializedHistogram();
+            case CreateProfileDataCache _ -> {
+                assert mProfileDataCache == null;
+                // TODO(crbug.com/571803558): Remove once MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS
+                // is enabled by default. The cache must read accounts from IdentityManager too.
+                assert SigninFeatureMap.isEnabled(
+                        SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS);
+                IdentityManager identityManager =
+                        assertNonNull(
+                                IdentityServicesProvider.get()
+                                        .getIdentityManager(
+                                                assertNonNull(mDelegate.getProfileSupplier().get())
+                                                        .getOriginalProfile()));
+                mIdentityManager = identityManager;
+                ProfileDataCache profileDataCache =
+                        ProfileDataCache.createWithDefaultImageSize(mContext, identityManager);
+                mProfileDataCache = profileDataCache;
+                profileDataCache.addObserver(mProfileDataCacheObserver);
+                // The cache doesn't notify its observers about the accounts it already has, so
+                // send them with ProfileDataCacheCreated.
+                dispatch(new ProfileDataCacheCreated(getAccountsIfLoaded()));
+            }
         }
+    }
+
+    private void render() {
+        // An account can only be selected once the cache has loaded the accounts.
+        @Nullable AccountInfo selectedAccount = mState.getSelectedAccount();
+        mModel.set(
+                FullscreenSigninProperties.BOTTOM_GROUP_ACCOUNT_DATA,
+                selectedAccount == null
+                        ? null
+                        : assertNonNull(mProfileDataCache).getById(selectedAccount.getId()));
+    }
+
+    /**
+     * Returns the accounts, or null if they haven't finished loading.
+     *
+     * <p>Accounts are read only from IdentityManager. This assumes
+     * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS is enabled (so {@link ProfileDataCache} also reads
+     * from IdentityManager), which must be the default before this mediator launches.
+     */
+    private @Nullable List<AccountInfo> getAccountsIfLoaded() {
+        if (!assertNonNull(mProfileDataCache).getAccounts().isFulfilled()) return null;
+        IdentityManager identityManager = assertNonNull(mIdentityManager);
+        // As in ProfileDataCache, a failed load counts as no accounts.
+        return identityManager.getRefreshTokensLoadingState() == RefreshTokensLoadingState.SUCCEEDED
+                ? identityManager.getExtendedAccountInfoForAccountsWithRefreshToken()
+                : List.of();
     }
 
     private void onSelectedAccountClicked() {

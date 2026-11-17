@@ -20,4 +20,14 @@ sealed interface FullscreenSigninEffect {
 
         private RecordNativeInitialized() {}
     }
+
+    /**
+     * Creates the {@link org.chromium.chrome.browser.signin.services.ProfileDataCache}, then
+     * dispatches {@link FullscreenSigninEvent.ProfileDataCacheCreated}.
+     */
+    final class CreateProfileDataCache implements FullscreenSigninEffect {
+        static final CreateProfileDataCache INSTANCE = new CreateProfileDataCache();
+
+        private CreateProfileDataCache() {}
+    }
 }

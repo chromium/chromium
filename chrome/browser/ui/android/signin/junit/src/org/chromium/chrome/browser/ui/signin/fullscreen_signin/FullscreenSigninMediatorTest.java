@@ -311,7 +311,6 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testProfileDataUpdateUpdatesSelectedAccount() {
-        assumeFalse(mIsStateMachineEnabled);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
         initializeNative();
@@ -327,7 +326,6 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testAccountRemovalClearsSelectedAccount() {
-        assumeFalse(mIsStateMachineEnabled);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
         initializeNative();
@@ -414,7 +412,6 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testDestroyStopsObservingAccounts() {
-        assumeFalse(mIsStateMachineEnabled);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
         initializeNative();

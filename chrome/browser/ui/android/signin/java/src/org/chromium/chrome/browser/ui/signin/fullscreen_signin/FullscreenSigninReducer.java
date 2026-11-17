@@ -5,8 +5,13 @@
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.CreateProfileDataCache;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.RecordNativeInitialized;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.AccountsUpdated;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.NativeReady;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.ProfileDataCacheCreated;
+import org.chromium.components.signin.base.AccountInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,9 +52,31 @@ final class FullscreenSigninReducer {
                 // Native initialization only completes once, so a repeated event changes nothing.
                 if (state.isNativeLoaded()) return new Result(state, List.of());
                 builder.setNativeLoaded();
+                // Record the native-initialized histogram before creating the cache, as the
+                // legacy mediator does, so the timing isn't inflated.
                 effects.add(RecordNativeInitialized.INSTANCE);
+                effects.add(CreateProfileDataCache.INSTANCE);
             }
+            case ProfileDataCacheCreated e -> {
+                List<AccountInfo> accounts = e.getAccounts();
+                if (accounts != null) onAccountsLoaded(builder, accounts);
+            }
+            case AccountsUpdated e -> onAccountsLoaded(builder, e.getAccounts());
         }
         return new Result(builder.build(), effects);
+    }
+
+    /** Updates the state for a newly loaded account list. */
+    private static void onAccountsLoaded(
+            FullscreenSigninState.Builder builder, List<AccountInfo> accounts) {
+        builder.setSelectedAccount(selectAccount(accounts));
+    }
+
+    /** Selects the first account, or none if there are no accounts. */
+    private static @Nullable AccountInfo selectAccount(List<AccountInfo> accounts) {
+        // TODO(crbug.com/579875669): As in the legacy mediator, select the preselected (config)
+        // or preferred account when there is one, and keep the current selection when the
+        // accounts change.
+        return accounts.isEmpty() ? null : accounts.get(0);
     }
 }

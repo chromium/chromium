@@ -14,9 +14,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.CreateProfileDataCache;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.RecordNativeInitialized;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.AccountsUpdated;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.NativeReady;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninReducer.Result;
+import org.chromium.components.signin.test.util.TestAccounts;
 
 import java.util.List;
 
@@ -25,14 +28,17 @@ import java.util.List;
 @NullMarked
 public class FullscreenSigninReducerTest {
     @Test
-    public void testNativeReady_recordsNativeInitialized() {
+    public void testNativeReady_recordsNativeInitializedThenCreatesProfileDataCache() {
         FullscreenSigninState state = new FullscreenSigninState();
         assertFalse(state.isNativeLoaded());
 
         Result result = FullscreenSigninReducer.reduce(state, new NativeReady());
 
         assertTrue(result.getState().isNativeLoaded());
-        assertEquals(List.of(RecordNativeInitialized.INSTANCE), result.getEffects());
+        // The native-initialized histogram must be recorded before the cache is created.
+        assertEquals(
+                List.of(RecordNativeInitialized.INSTANCE, CreateProfileDataCache.INSTANCE),
+                result.getEffects());
     }
 
     @Test
@@ -44,6 +50,17 @@ public class FullscreenSigninReducerTest {
         Result result = FullscreenSigninReducer.reduce(state, new NativeReady());
 
         assertSame(state, result.getState());
+        assertTrue(result.getEffects().isEmpty());
+    }
+
+    @Test
+    public void testAccountsUpdated_selectsFirstAccount() {
+        Result result =
+                FullscreenSigninReducer.reduce(
+                        new FullscreenSigninState(),
+                        new AccountsUpdated(List.of(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2)));
+
+        assertEquals(TestAccounts.ACCOUNT1, result.getState().getSelectedAccount());
         assertTrue(result.getEffects().isEmpty());
     }
 }
