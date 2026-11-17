@@ -1087,7 +1087,7 @@ void RTCPeerConnectionHandler::SetLocalDescription(
     reason_str.Append(error.line.c_str());
     reason_str.Append(" ");
     reason_str.Append(error.description.c_str());
-    LOG(ERROR) << reason_str.ToString();
+    LOG(ERROR) << StringView(reason_str);
     if (peer_connection_tracker_) {
       peer_connection_tracker_->TrackSessionDescriptionCallback(
           this, PeerConnectionTracker::kActionSetLocalDescription, "OnFailure",
@@ -1158,7 +1158,7 @@ void RTCPeerConnectionHandler::SetRemoteDescription(
     reason_str.Append(error.line.c_str());
     reason_str.Append(" ");
     reason_str.Append(error.description.c_str());
-    LOG(ERROR) << reason_str.ToString();
+    LOG(ERROR) << StringView(reason_str);
     if (peer_connection_tracker_) {
       peer_connection_tracker_->TrackSessionDescriptionCallback(
           this, PeerConnectionTracker::kActionSetRemoteDescription, "OnFailure",

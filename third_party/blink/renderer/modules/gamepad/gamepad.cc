@@ -68,9 +68,9 @@ void Gamepad::UpdateFromDeviceState(const device::Gamepad& device_gamepad,
   }
 
   GamepadComparisons::HasGamepadConnectionChanged(
-      connected(),                              // Old connected.
-      device_gamepad.connected,                 // New connected.
-      id() != id_u16string_builder.ToString(),  // ID changed.
+      connected(),                   // Old connected.
+      device_gamepad.connected,      // New connected.
+      id() != id_u16string_builder,  // ID changed.
       &newly_connected, nullptr);
 
   SetConnected(device_gamepad.connected);

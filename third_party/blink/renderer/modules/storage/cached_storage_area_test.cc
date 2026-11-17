@@ -837,7 +837,7 @@ TEST_P(StringEncoding, RoundTrip_InvalidUTF16) {
     validKey.Append("bar");
     EXPECT_EQ(Uint8VectorToString(
                   StringToUint8Vector(key.ToString(), GetParam()), GetParam()),
-              validKey.ToString());
+              validKey);
   }
 }
 

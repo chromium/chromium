@@ -3019,7 +3019,7 @@ TEST_F(AIPageContentAgentTest, MathML_OmitWhenExceedingSizeLimit) {
   mathml_builder.Append("</math></body>");
 
   frame_test_helpers::LoadHTMLString(
-      helper_.LocalMainFrame(), mathml_builder.ToString().Utf8(),
+      helper_.LocalMainFrame(), mathml_builder.Utf8(),
       url_test_helpers::ToKURL("http://foobar.com"));
 
   GetAIPageContent();
@@ -3278,7 +3278,7 @@ TEST_F(AIPageContentAgentTest, MathML_RecursionDepthCapped) {
   html.Append("</math></body>");
 
   frame_test_helpers::LoadHTMLString(
-      helper_.LocalMainFrame(), html.ToString().Utf8(),
+      helper_.LocalMainFrame(), html.Utf8(),
       url_test_helpers::ToKURL("http://foobar.com"));
 
   GetAIPageContent();
@@ -3325,7 +3325,7 @@ TEST_F(AIPageContentAgentTest, MathML_RecursionDepthAtCapSucceeds) {
   expected.Append("</math>");
 
   frame_test_helpers::LoadHTMLString(
-      helper_.LocalMainFrame(), html.ToString().Utf8(),
+      helper_.LocalMainFrame(), html.Utf8(),
       url_test_helpers::ToKURL("http://foobar.com"));
 
   GetAIPageContent();

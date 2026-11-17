@@ -478,7 +478,7 @@ TEST_F(DocumentMetadataExtractorTest, truncateLongString) {
       "\n"
       "{\"@type\": \"Restaurant\","
       "\"name\": \"" +
-      tooLongString.ToString() +
+      StringView(tooLongString) +
       "\""
       "}\n"
       "\n"
@@ -556,7 +556,7 @@ TEST_F(DocumentMetadataExtractorTest, truncateTooManyValuesInField) {
       "\n"
       "{\"@type\": \"Restaurant\","
       "\"name\": " +
-      largeRepeatedField.ToString() +
+      StringView(largeRepeatedField) +
       "}\n"
       "\n"
       "</script>"

@@ -890,7 +890,7 @@ TEST_P(MediaRecorderHandlerTest, ActualMimeType) {
   }
 
   EXPECT_EQ(media_recorder_handler_->ActualMimeType(),
-            actual_mime_type.ToString());
+            StringView(actual_mime_type));
 }
 
 TEST_P(MediaRecorderHandlerTest, PauseRecorderForVideo) {
