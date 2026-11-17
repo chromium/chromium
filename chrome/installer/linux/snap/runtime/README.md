@@ -77,6 +77,11 @@ solutions = [
 ]
 ```
 
+The variable also sets the default of the GN arg `enable_snap_package`, so
+x64 builds in such a checkout build the snap package along with the `.deb` and
+`.rpm` packages. The `linux-rel` builders set it through the
+`checkout_snap_runtime` gclient config of the chromium recipe module.
+
 ## Updating
 
 For example, for Ubuntu security updates:

@@ -4,6 +4,7 @@
 
 import("//build/config/c++/c++.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/gclient_args.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/sysroot.gni")
 import("//build/linux/strip_binary.gni")
@@ -31,8 +32,10 @@ declare_args() {
   # Enables building Flatpak package bundles (.flatpak).
   enable_flatpak = false
 
-  # Enable building snap packages
-  enable_snap_package = false
+  # Enable building snap packages. Defaults to true when the snap runtime
+  # libraries are checked out ("checkout_snap_runtime" in .gclient
+  # custom_vars), which are currently only available for x64.
+  enable_snap_package = checkout_snap_runtime && target_cpu == "x64"
 }
 
 assert(is_linux)

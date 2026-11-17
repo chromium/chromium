@@ -49,6 +49,7 @@ gclient_gn_args = [
   'checkout_ios_webkit',
   'checkout_mutter',
   'checkout_openxr',
+  'checkout_snap_runtime',
   'checkout_src_internal',
   'checkout_src_internal_infra',
   'checkout_clusterfuzz_data',
@@ -192,8 +193,8 @@ vars = {
   'checkout_instrumented_libraries': False,
 
   # By default, do not check out the Linux snap runtime libraries. They are
-  # only needed to build the Linux snap package (`enable_snap_package = true`
-  # in GN).
+  # only needed to build the Linux snap package (`enable_snap_package` in GN,
+  # which defaults to this value).
   'checkout_snap_runtime': False,
 
   # By default, do not check out WebKit for iOS, as it is not needed unless

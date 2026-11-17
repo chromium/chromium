@@ -350,6 +350,10 @@ ci.builder(
                 # This is necessary due to child builders running the
                 # telemetry_perf_unittests suite.
                 "chromium_with_telemetry_dependencies",
+                # Checks out the snap runtime libraries, which also turns on
+                # building the snap package (the `enable_snap_package` GN arg
+                # defaults to `checkout_snap_runtime`).
+                "checkout_snap_runtime",
             ],
         ),
         chromium_config = builder_config.chromium_config(

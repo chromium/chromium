@@ -133,10 +133,11 @@ shared_gpu.ci.linux_builder(
             config = "chromium",
             apply_configs = [
                 "use_clang_coverage",
-                # This is not necessary for this builder itself, but is
+                # These are not necessary for this builder itself, but are
                 # necessary in order to keep configs in sync with
                 # "ci/Linux Builder" in order for mirroring to work correctly.
                 "chromium_with_telemetry_dependencies",
+                "checkout_snap_runtime",
             ],
         ),
         chromium_config = builder_config.chromium_config(
