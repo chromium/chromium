@@ -502,6 +502,27 @@ namespace autofillPrivate {
     DOMString walletUrl;
   };
 
+  // A Google Wallet direct offer which can be displayed in the settings UI.
+  dictionary WalletDirectOfferEntry {
+    // The unique server ID of the offer.
+    DOMString offerId;
+
+    // The name of the merchant that issued the offer.
+    DOMString? issuerName;
+
+    // The short title of the offer, like "5% off on shoes".
+    DOMString? shortTitle;
+
+    // The promo code to be autofilled for the offer.
+    DOMString? promoCode;
+
+    // The localized expiration date of the offer.
+    DOMString? expirationDate;
+
+    // The link to the offer in Google Wallet.
+    DOMString? offerDetailsUrl;
+  };
+
   // A link inside a legal message line.
   dictionary LegalMessageLink {
     long start;
@@ -541,6 +562,7 @@ namespace autofillPrivate {
   callback SetWalletablePassDetectionOptInStatusCallback = void(boolean success);
   callback GetPayOverTimeIssuerListCallback = void(PayOverTimeIssuerEntry[] entries);
   callback GetLoyaltyCardListCallback = void(LoyaltyCardEntry[] entries);
+  callback GetWalletDirectOfferListCallback = void(WalletDirectOfferEntry[] entries);
   callback AuthenticateUserBeforeViewingEntityDataCallback = void(boolean success);
   callback UserDataProcessingConsentCallback = void(UserDataProcessingConsentStates states);
   callback GetDetailsForUpsertPassCallback = void(optional UpsertPassDetails details);
@@ -640,6 +662,10 @@ namespace autofillPrivate {
     // |callback|: Callback which will be called with the list of loyalty
     //             cards.
     static void getLoyaltyCardList(GetLoyaltyCardListCallback callback);
+    // Gets the list of active Google Wallet direct offers.
+    // |callback|: Callback which will be called with the list of offers.
+    static void getWalletDirectOfferList(
+        GetWalletDirectOfferListCallback callback);
 
     // Authenticates the user via device authentication and if successful, it
     // will then flip the mandatory auth toggle.

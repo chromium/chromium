@@ -62,9 +62,8 @@ class AutofillOfferData {
   // result of first found difference.
   int Compare(const AutofillOfferData& other_offer_data) const;
 
-  // Returns true if the current offer is 1) not expired and 2) eligible for the
-  // given `origin` (see `IsEligibleForOrigin()`).
-  bool IsActiveAndEligibleForOrigin(const GURL& origin) const;
+  // Returns true if the offer is not expired.
+  bool IsActive() const;
 
   // Returns true if the given `origin` has the same eTLD+1 as one of the
   // `merchant_origins`, e.g. a merchant origin of https://store.example.com/

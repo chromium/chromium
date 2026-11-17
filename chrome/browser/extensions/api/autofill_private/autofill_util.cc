@@ -15,6 +15,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/to_vector.h"
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -35,6 +36,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
@@ -267,6 +269,24 @@ autofill_private::PayOverTimeIssuerEntry BnplIssuerToPayOverTimeIssuerEntry(
   return issuer_entry;
 }
 
+autofill_private::WalletDirectOfferEntry
+WalletDirectOfferToWalletDirectOfferEntry(
+    const autofill::AutofillOfferData& offer) {
+  autofill_private::WalletDirectOfferEntry offer_entry;
+  offer_entry.offer_id = offer.GetOfferId();
+  offer_entry.issuer_name = offer.issuer_name();
+  offer_entry.short_title = offer.GetOfferShortTitle();
+  offer_entry.promo_code = offer.GetPromoCode();
+  // Formatted the same way as the expiration date in the promo code
+  // suggestions.
+  offer_entry.expiration_date =
+      base::UTF16ToUTF8(base::TimeFormatShortDate(offer.GetExpiry()));
+  // TODO(crbug.com/546252995): Use `offer.GetOfferDetailsUrl()` once it
+  // redirects to wallet.google.com instead of pay.google.com.
+  offer_entry.offer_details_url = chrome::kWalletPassesPageURL;
+  return offer_entry;
+}
+
 }  // namespace
 
 namespace extensions::autofill_util {
@@ -363,6 +383,15 @@ LoyaltyCardEntryList GenerateLoyaltyCardList(
         // available.
         entry.wallet_url = chrome::kWalletPassesPageURL;
         return entry;
+      });
+}
+
+WalletDirectOfferEntryList GenerateWalletDirectOfferList(
+    const autofill::PaymentsDataManager& paydm) {
+  return base::ToVector(
+      paydm.GetActiveAutofillPromoCodeOffers(),
+      [](const autofill::AutofillOfferData* offer) {
+        return WalletDirectOfferToWalletDirectOfferEntry(*offer);
       });
 }
 

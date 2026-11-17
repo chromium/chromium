@@ -339,6 +339,15 @@ declare global {
         walletUrl: string;
       }
 
+      export interface WalletDirectOfferEntry {
+        offerId: string;
+        issuerName?: string;
+        shortTitle?: string;
+        promoCode?: string;
+        expirationDate?: string;
+        offerDetailsUrl?: string;
+      }
+
       export function getAccountInfo(): Promise<AccountInfo|undefined>;
       export function saveAddress(address: AddressEntry): void;
       export function removeAddress(guid: string): void;
@@ -360,6 +369,8 @@ declare global {
       export function getPayOverTimeIssuerList():
           Promise<PayOverTimeIssuerEntry[]>;
       export function getLoyaltyCardList(): Promise<LoyaltyCardEntry[]>;
+      export function getWalletDirectOfferList():
+          Promise<WalletDirectOfferEntry[]>;
       export function authenticateUserAndFlipMandatoryAuthToggle(): void;
       export function authenticateUserBeforeViewingEntityData():
           Promise<boolean>;

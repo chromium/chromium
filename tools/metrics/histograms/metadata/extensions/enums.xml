@@ -2950,6 +2950,7 @@ Called by update_extension_histograms.py.-->
   <int value="1993" label="EXPERIMENTALAIDATA_GETTEXTSURROUNDINGSELECTION"/>
   <int value="1994" label="CONTEXTUALTASKSPRIVATE_REGISTERAIMTHREADFORPROMO"/>
   <int value="1995" label="AUTOFILLPRIVATE_GETLOYALTYCARDLIST"/>
+  <int value="1996" label="AUTOFILLPRIVATE_GETWALLETDIRECTOFFERLIST"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

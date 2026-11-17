@@ -449,6 +449,11 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest, GetEmptyLoyaltyCardList) {
   ASSERT_TRUE(RunAutofillSubtest("getEmptyLoyaltyCardList"));
 }
 
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
+                       GetEmptyWalletDirectOfferList) {
+  ASSERT_TRUE(RunAutofillSubtest("getEmptyWalletDirectOfferList"));
+}
+
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest, SetAutofillAiOptIn) {
   autofill_client()->SetUpPrefsAndIdentityForAutofillAi();
   EXPECT_TRUE(autofill::SetAutofillAiOptInStatus(

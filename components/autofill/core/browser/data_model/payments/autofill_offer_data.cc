@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "url/gurl.h"
@@ -128,8 +129,10 @@ int AutofillOfferData::Compare(
   return 0;
 }
 
-bool AutofillOfferData::IsActiveAndEligibleForOrigin(const GURL& origin) const {
-  return expiry_ > AutofillClock::Now() && IsEligibleForOrigin(origin);
+bool AutofillOfferData::IsActive() const {
+  // TODO(crbug.com/546252995): Migrate to base::Time::Now() once tests no
+  // longer override AutofillClock, which will be deprecated.
+  return expiry_ > AutofillClock::Now();
 }
 
 bool AutofillOfferData::IsEligibleForOrigin(const GURL& origin) const {

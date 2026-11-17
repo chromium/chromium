@@ -1501,6 +1501,13 @@ const availableTests = [
     chrome.test.succeed();
   },
 
+  async function getEmptyWalletDirectOfferList() {
+    const walletDirectOfferList =
+        await chrome.autofillPrivate.getWalletDirectOfferList();
+    chrome.test.assertEq([], walletDirectOfferList);
+    chrome.test.succeed();
+  },
+
   async function optIntoAutofillAi() {
     await chrome.autofillPrivate.setAutofillAiOptInStatus(true);
     chrome.test.succeed();
@@ -1750,6 +1757,7 @@ const TESTS_FOR_CONFIG = {
       ['testEntityTypeInEntityInstanceWithLabels'],
   'getEmptyPayOverTimeIssuerList': ['getEmptyPayOverTimeIssuerList'],
   'getEmptyLoyaltyCardList': ['getEmptyLoyaltyCardList'],
+  'getEmptyWalletDirectOfferList': ['getEmptyWalletDirectOfferList'],
   'optIntoAutofillAi': ['optIntoAutofillAi'],
   'optOutOfAutofillAi': ['optOutOfAutofillAi'],
   'verifyUserOptedIntoAutofillAi': ['verifyUserOptedIntoAutofillAi'],

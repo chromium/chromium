@@ -29,6 +29,8 @@ using PayOverTimeIssuerEntryList =
     std::vector<api::autofill_private::PayOverTimeIssuerEntry>;
 using LoyaltyCardEntryList =
     std::vector<api::autofill_private::LoyaltyCardEntry>;
+using WalletDirectOfferEntryList =
+    std::vector<api::autofill_private::WalletDirectOfferEntry>;
 using CallbackAfterSuccessfulUserAuth = base::OnceCallback<void(bool)>;
 
 // Uses `adm` to generate a list of up-to-date AddressEntry objects.
@@ -54,6 +56,12 @@ PayOverTimeIssuerEntryList GeneratePayOverTimeIssuerList(
 // Uses `vdm` to generate a list of up-to-date LoyaltyCardEntry objects.
 LoyaltyCardEntryList GenerateLoyaltyCardList(
     const autofill::ValuablesDataManager& vdm);
+
+// Uses `paydm` to generate a list of up-to-date WalletDirectOfferEntry
+// objects. Only active offers are included, in the same order as
+// `PaymentsDataManager::GetActiveAutofillPromoCodeOffers()`.
+WalletDirectOfferEntryList GenerateWalletDirectOfferList(
+    const autofill::PaymentsDataManager& paydm);
 
 // Uses `adm` to get primary account info.
 std::optional<api::autofill_private::AccountInfo> GetAccountInfo(

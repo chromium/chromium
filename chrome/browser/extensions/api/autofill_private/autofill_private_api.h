@@ -368,6 +368,24 @@ class AutofillPrivateGetLoyaltyCardListFunction
   ResponseAction Run() override;
 };
 
+class AutofillPrivateGetWalletDirectOfferListFunction
+    : public AutofillPrivateExtensionFunction {
+ public:
+  AutofillPrivateGetWalletDirectOfferListFunction() = default;
+  AutofillPrivateGetWalletDirectOfferListFunction(
+      const AutofillPrivateGetWalletDirectOfferListFunction&) = delete;
+  AutofillPrivateGetWalletDirectOfferListFunction& operator=(
+      const AutofillPrivateGetWalletDirectOfferListFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.getWalletDirectOfferList",
+                             AUTOFILLPRIVATE_GETWALLETDIRECTOFFERLIST)
+
+ protected:
+  ~AutofillPrivateGetWalletDirectOfferListFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 class AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction
     : public AutofillPrivateExtensionFunction {
  public:

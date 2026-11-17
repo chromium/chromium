@@ -1133,6 +1133,86 @@ TEST_P(PaymentsDataManagerServerTest,
             1U);
 }
 
+// Tests that GetActiveAutofillPromoCodeOffers returns active promo code offers
+// for all origins, in the order they were added.
+TEST_P(PaymentsDataManagerServerTest, GetActiveAutofillPromoCodeOffers) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableWalletDirectOffers);
+
+  AddOfferDataForTest(test::GetPromoCodeOfferData(
+      /*origin=*/GURL("http://www.example.com"), /*is_expired=*/false,
+      /*offer_id=*/"active1"));
+  // Expired promo code offers should not be returned.
+  AddOfferDataForTest(test::GetPromoCodeOfferData(
+      /*origin=*/GURL("http://www.example.com"), /*is_expired=*/true,
+      /*offer_id=*/"expired"));
+  // Active promo code offers for other sites should be returned.
+  AddOfferDataForTest(test::GetPromoCodeOfferData(
+      /*origin=*/GURL("http://www.some-other-merchant.com"),
+      /*is_expired=*/false, /*offer_id=*/"active2"));
+  // Offers without a promo code should not be returned.
+  AutofillOfferData no_promo_code = test::GetPromoCodeOfferData(
+      /*origin=*/GURL("http://www.example.com"), /*is_expired=*/false,
+      /*offer_id=*/"no_promo_code");
+  AddOfferDataForTest(AutofillOfferData(
+      no_promo_code.GetOfferId(), no_promo_code.GetExpiry(),
+      no_promo_code.GetMerchantOrigins(), no_promo_code.GetOfferDetailsUrl(),
+      no_promo_code.GetDisplayStrings(), /*promo_code=*/"",
+      no_promo_code.GetOfferShortTitle(), no_promo_code.GetIssueTime(),
+      no_promo_code.issuer_name()));
+
+  std::vector<const AutofillOfferData*> offers =
+      payments_data_manager().GetActiveAutofillPromoCodeOffers();
+  ASSERT_EQ(offers.size(), 2U);
+  EXPECT_EQ(offers[0]->GetOfferId(), "active1");
+  EXPECT_EQ(offers[1]->GetOfferId(), "active2");
+}
+
+// Tests that GetActiveAutofillPromoCodeOffers does not return any offers if
+// `kAutofillEnableWalletDirectOffers` is disabled.
+TEST_P(PaymentsDataManagerServerTest,
+       GetActiveAutofillPromoCodeOffers_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableWalletDirectOffers);
+
+  AddOfferDataForTest(test::GetPromoCodeOfferData());
+
+  EXPECT_TRUE(
+      payments_data_manager().GetActiveAutofillPromoCodeOffers().empty());
+}
+
+// Tests that GetActiveAutofillPromoCodeOffers does not return any offers if
+// the locale and country are not supported.
+TEST_P(PaymentsDataManagerServerTest,
+       GetActiveAutofillPromoCodeOffers_LocaleAndCountryNotSupported) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableWalletDirectOffers);
+  ResetPaymentsDataManager(UseSyncTransportMode(), "fr-FR", "FR");
+
+  AddOfferDataForTest(test::GetPromoCodeOfferData());
+
+  EXPECT_TRUE(
+      payments_data_manager().GetActiveAutofillPromoCodeOffers().empty());
+}
+
+// Tests that GetActiveAutofillPromoCodeOffers does not return any offers if
+// `IsAutofillPaymentMethodsEnabled()` returns `false`.
+TEST_P(PaymentsDataManagerServerTest,
+       GetActiveAutofillPromoCodeOffers_AutofillCreditCardDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableWalletDirectOffers);
+
+  AddOfferDataForTest(test::GetPromoCodeOfferData());
+  ASSERT_EQ(payments_data_manager().GetActiveAutofillPromoCodeOffers().size(),
+            1U);
+
+  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
+
+  EXPECT_TRUE(
+      payments_data_manager().GetActiveAutofillPromoCodeOffers().empty());
+}
+
 // Tests that GetAutofillOffers does not return any offers if
 // |IsAutofillWalletImportEnabled()| returns |false|.
 TEST_P(PaymentsDataManagerServerTest, GetAutofillOffers_WalletImportDisabled) {

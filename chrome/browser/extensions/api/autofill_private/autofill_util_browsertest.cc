@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/i18n/time_formatting.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/url_constants.h"
@@ -14,8 +16,10 @@
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/test_valuables_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager_test_api.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_util.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/device_reauth/mock_device_authenticator.h"
@@ -72,6 +76,22 @@ class AutofillUtilTestForBnpl : public AutofillUtilTest {
 
   AutofillUtilTestForBnpl(const AutofillUtilTestForBnpl&) = delete;
   AutofillUtilTestForBnpl& operator=(const AutofillUtilTestForBnpl&) = delete;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class AutofillUtilTestForWalletDirectOffers : public AutofillUtilTest {
+ public:
+  AutofillUtilTestForWalletDirectOffers() {
+    scoped_feature_list_.InitAndEnableFeature(
+        autofill::features::kAutofillEnableWalletDirectOffers);
+  }
+
+  AutofillUtilTestForWalletDirectOffers(
+      const AutofillUtilTestForWalletDirectOffers&) = delete;
+  AutofillUtilTestForWalletDirectOffers& operator=(
+      const AutofillUtilTestForWalletDirectOffers&) = delete;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -189,6 +209,83 @@ IN_PROC_BROWSER_TEST_F(AutofillUtilTest, GenerateLoyaltyCardList) {
               entry.loyalty_card_number);
     EXPECT_EQ(entry.wallet_url, chrome::kWalletPassesPageURL);
   }
+}
+
+// Tests that Wallet direct offers are converted to `WalletDirectOfferEntry`s.
+IN_PROC_BROWSER_TEST_F(AutofillUtilTestForWalletDirectOffers,
+                       GenerateWalletDirectOfferList) {
+  autofill::TestPaymentsDataManager paydm;
+  paydm.SetAutofillWalletImportEnabled(true);
+  paydm.SetAutofillPaymentMethodsEnabled(true);
+  autofill::AutofillOfferData offer = autofill::test::GetPromoCodeOfferData(
+      GURL("https://www.example.com"), /*is_expired=*/false,
+      /*offer_id=*/"1");
+  paydm.AddAutofillOfferData(offer);
+
+  WalletDirectOfferEntryList offer_list = GenerateWalletDirectOfferList(paydm);
+
+  ASSERT_EQ(offer_list.size(), 1u);
+  const api::autofill_private::WalletDirectOfferEntry& entry = offer_list[0];
+  EXPECT_EQ(entry.offer_id, "1");
+  EXPECT_EQ(entry.issuer_name, offer.issuer_name());
+  EXPECT_EQ(entry.short_title, offer.GetOfferShortTitle());
+  EXPECT_EQ(entry.promo_code, offer.GetPromoCode());
+  EXPECT_EQ(entry.expiration_date,
+            base::UTF16ToUTF8(base::TimeFormatShortDate(offer.GetExpiry())));
+  EXPECT_EQ(entry.offer_details_url, chrome::kWalletPassesPageURL);
+}
+
+// Tests that expired offers are not included, and that the order of the active
+// offers is kept.
+IN_PROC_BROWSER_TEST_F(AutofillUtilTestForWalletDirectOffers,
+                       GenerateWalletDirectOfferList_ExcludesExpiredOffers) {
+  autofill::TestPaymentsDataManager paydm;
+  paydm.SetAutofillWalletImportEnabled(true);
+  paydm.SetAutofillPaymentMethodsEnabled(true);
+  paydm.AddAutofillOfferData(autofill::test::GetPromoCodeOfferData(
+      GURL("https://www.example.com"), /*is_expired=*/false,
+      /*offer_id=*/"active1"));
+  paydm.AddAutofillOfferData(autofill::test::GetPromoCodeOfferData(
+      GURL("https://www.example.com"), /*is_expired=*/true,
+      /*offer_id=*/"expired"));
+  paydm.AddAutofillOfferData(autofill::test::GetPromoCodeOfferData(
+      GURL("https://www.other-example.com"), /*is_expired=*/false,
+      /*offer_id=*/"active2"));
+
+  WalletDirectOfferEntryList offer_list = GenerateWalletDirectOfferList(paydm);
+
+  ASSERT_EQ(offer_list.size(), 2u);
+  EXPECT_EQ(offer_list[0].offer_id, "active1");
+  EXPECT_EQ(offer_list[1].offer_id, "active2");
+}
+
+class AutofillUtilTestForWalletDirectOffersDisabled : public AutofillUtilTest {
+ public:
+  AutofillUtilTestForWalletDirectOffersDisabled() {
+    scoped_feature_list_.InitAndDisableFeature(
+        autofill::features::kAutofillEnableWalletDirectOffers);
+  }
+
+  AutofillUtilTestForWalletDirectOffersDisabled(
+      const AutofillUtilTestForWalletDirectOffersDisabled&) = delete;
+  AutofillUtilTestForWalletDirectOffersDisabled& operator=(
+      const AutofillUtilTestForWalletDirectOffersDisabled&) = delete;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that no offers are returned if Wallet direct offers are disabled.
+IN_PROC_BROWSER_TEST_F(AutofillUtilTestForWalletDirectOffersDisabled,
+                       GenerateWalletDirectOfferList) {
+  autofill::TestPaymentsDataManager paydm;
+  paydm.SetAutofillWalletImportEnabled(true);
+  paydm.SetAutofillPaymentMethodsEnabled(true);
+  paydm.AddAutofillOfferData(autofill::test::GetPromoCodeOfferData(
+      GURL("https://www.example.com"), /*is_expired=*/false,
+      /*offer_id=*/"active"));
+
+  EXPECT_TRUE(GenerateWalletDirectOfferList(paydm).empty());
 }
 
 }  // namespace

@@ -978,6 +978,28 @@ AutofillPrivateGetLoyaltyCardListFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateGetWalletDirectOfferListFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateGetWalletDirectOfferListFunction::Run() {
+  PaymentsDataManager* paydm = payments_data_manager();
+  if (!paydm) {
+    return RespondNow(
+        Error(base::StrCat({"Get wallet direct offer list - ",
+                            kErrorPaymentsDataManagerUnavailable})));
+  }
+  if (!paydm->is_payments_data_loaded()) {
+    return RespondNow(ArgumentList(
+        api::autofill_private::GetWalletDirectOfferList::Results::Create({})));
+  }
+  autofill_util::WalletDirectOfferEntryList wallet_direct_offer_list =
+      autofill_util::GenerateWalletDirectOfferList(*paydm);
+  return RespondNow(ArgumentList(
+      api::autofill_private::GetWalletDirectOfferList::Results::Create(
+          wallet_direct_offer_list)));
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction
 
 ExtensionFunction::ResponseAction

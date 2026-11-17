@@ -942,11 +942,7 @@ std::vector<const AutofillOfferData*> PaymentsDataManager::GetAutofillOffers()
 }
 
 std::vector<const AutofillOfferData*>
-PaymentsDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
-    GURL origin) const {
-  if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
-    return {};
-  }
+PaymentsDataManager::GetActiveAutofillPromoCodeOffers() const {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableWalletDirectOffers)) {
     return {};
@@ -959,19 +955,28 @@ PaymentsDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
        GetCountryCodeForExperimentGroup() != "US")) {
     return {};
   }
-  std::vector<const AutofillOfferData*> promo_code_offers_for_origin;
-  promo_code_offers_for_origin.reserve(autofill_offer_data_.size());
-  for (const std::unique_ptr<AutofillOfferData>& autofill_offer_data :
-       autofill_offer_data_) {
-    // TODO(crbug.com/546252995): Drop empty promo codes at the sync
-    // bridge / disk loading level instead of filtering them here.
-    if (autofill_offer_data->IsActiveAndEligibleForOrigin(origin) &&
-        !autofill_offer_data->GetPromoCode().empty()) {
-      promo_code_offers_for_origin.push_back(autofill_offer_data.get());
-    }
-  }
+  std::vector<const AutofillOfferData*> active_promo_code_offers =
+      GetAutofillOffers();
+  // TODO(crbug.com/546252995): Drop empty promo codes at the sync
+  // bridge / disk loading level instead of filtering them here.
+  std::erase_if(active_promo_code_offers, [](const AutofillOfferData* offer) {
+    return !offer->IsActive() || offer->GetPromoCode().empty();
+  });
+  return active_promo_code_offers;
+}
+
+std::vector<const AutofillOfferData*>
+PaymentsDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
+    GURL origin) const {
+  std::vector<const AutofillOfferData*> promo_code_offers_for_origin =
+      GetActiveAutofillPromoCodeOffers();
+  std::erase_if(promo_code_offers_for_origin,
+                [&origin](const AutofillOfferData* offer) {
+                  return !offer->IsEligibleForOrigin(origin);
+                });
   return promo_code_offers_for_origin;
 }
+
 GURL PaymentsDataManager::GetCardArtURL(const CreditCard& credit_card) const {
   if (credit_card.card_art_url().is_valid()) {
     return credit_card.card_art_url();

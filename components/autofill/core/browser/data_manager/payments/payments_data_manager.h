@@ -246,9 +246,16 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // the order returned by `PaymentsAutofillTable::GetAutofillOffers()`.
   std::vector<const AutofillOfferData*> GetAutofillOffers() const;
 
-  // Returns autofill offer data, but only promo code offers that are not
-  // expired and that are for the given `origin`, in the same order as
-  // `GetAutofillOffers()`.
+  // Returns the promo code offers from `GetAutofillOffers()` that are not
+  // expired, with the most recently issued offers first, in the order returned
+  // by `PaymentsAutofillTable::GetAutofillOffers()`. Returns an empty list if
+  // promo code offers are not available, e.g. because the feature is disabled
+  // or the locale or country is not supported.
+  std::vector<const AutofillOfferData*> GetActiveAutofillPromoCodeOffers()
+      const;
+
+  // Returns the offers from `GetActiveAutofillPromoCodeOffers()` that are for
+  // the given `origin`, in the same order.
   std::vector<const AutofillOfferData*>
   GetActiveAutofillPromoCodeOffersForOrigin(GURL origin) const;
 

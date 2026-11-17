@@ -23,6 +23,7 @@ source_set("autofill_private") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//chrome/browser:browser_process",
     "//chrome/browser/autofill",
     "//chrome/browser/extensions",
