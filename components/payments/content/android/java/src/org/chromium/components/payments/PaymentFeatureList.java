@@ -48,8 +48,6 @@ public abstract class PaymentFeatureList {
     public static final String PAYMENT_HANDLER_DIALOG_USE_INITIATOR_IN_URL_LOAD =
             "PaymentHandlerDialogUseInitiatorInUrlLoad";
     public static final String SECURE_PAYMENT_CONFIRMATION = "SecurePaymentConfirmationBrowser";
-    public static final String SECURE_PAYMENT_CONFIRMATION_BBKS_ALLOW_TEE_STORAGE =
-            "SecurePaymentConfirmationBbksAllowTeeStorage";
     public static final String THREE_D_SECURE_TELEMETRY = "ThreeDSecureTelemetry";
 
     /**

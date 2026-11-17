@@ -12,12 +12,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/payments/content/android/payment_feature_map.h"
 #include "components/payments/content/browser_binding/browser_bound_key.h"
 #include "components/payments/content/browser_binding/browser_bound_key_android.h"
 #include "components/payments/content/browser_binding/browser_bound_key_store.h"
-#include "components/payments/content/browser_binding/browser_bound_key_store_android.h"
 #include "device/fido/public/public_key_credential_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,17 +35,7 @@ constexpr std::array<device::PublicKeyCredentialParams::CredentialInfo, 1>
         .algorithm = base::strict_cast<int32_t>(
             device::CoseAlgorithmIdentifier::kEs256)}};
 
-class BrowserBoundKeyStoreAndroidTest : public ::testing::Test {
- public:
-  // Allow software-backed TEE keys so that key creation works on emulators.
-  BrowserBoundKeyStoreAndroidTest() {
-    BrowserBoundKeyStoreAndroid::SetAllowSoftwareKeysForTesting(true);
-  }
-
-  ~BrowserBoundKeyStoreAndroidTest() override {
-    BrowserBoundKeyStoreAndroid::SetAllowSoftwareKeysForTesting(false);
-  }
-};
+using BrowserBoundKeyStoreAndroidTest = ::testing::Test;
 
 TEST_F(BrowserBoundKeyStoreAndroidTest,
        ConvertsBrowserBoundKeyNullJavaRefToNullPtr) {
@@ -62,21 +49,19 @@ TEST_F(BrowserBoundKeyStoreAndroidTest,
   EXPECT_EQ(bbk_cxx, nullptr);
 }
 
-TEST_F(BrowserBoundKeyStoreAndroidTest,
-       GetsPublicKeyWhenSupportsHardwareKeys_TeeStorageEnabled) {
-  base::test::ScopedFeatureList feature_list(
-      android::kSecurePaymentConfirmationBbksAllowTeeStorage);
+TEST_F(BrowserBoundKeyStoreAndroidTest, GetsPublicKeyWhenSupportsStrongBox) {
   scoped_refptr<BrowserBoundKeyStore> bbk_store =
       GetBrowserBoundKeyStoreInstance();
   ASSERT_TRUE(bbk_store);
   if (!bbk_store->GetDeviceSupportsHardwareKeys()) {
-    // Hardware key storage (StrongBox or TEE) is required for this test.
+    // StrongBox is required for this test.
     GTEST_SKIP();
   }
+  std::vector<uint8_t> bbk_id{1, 2, 3, 4};
 
   std::unique_ptr<BrowserBoundKey> bbk =
       bbk_store->GetOrCreateBrowserBoundKeyForCredentialId(
-          {1, 2, 3, 4}, base::ToVector(kEs256Allowed));
+          std::move(bbk_id), base::ToVector(kEs256Allowed));
 
   EXPECT_THAT(
       bbk,
@@ -89,11 +74,7 @@ TEST_F(BrowserBoundKeyStoreAndroidTest,
   }
 }
 
-TEST_F(BrowserBoundKeyStoreAndroidTest,
-       DoesNotGetBbkWhenNoStrongBoxSupport_TeeStorageDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      android::kSecurePaymentConfirmationBbksAllowTeeStorage);
+TEST_F(BrowserBoundKeyStoreAndroidTest, DoesNotGetBbkWhenNoStrongBoxSupport) {
   scoped_refptr<BrowserBoundKeyStore> bbk_store =
       GetBrowserBoundKeyStoreInstance();
   ASSERT_TRUE(bbk_store);
@@ -101,10 +82,11 @@ TEST_F(BrowserBoundKeyStoreAndroidTest,
     // This test does not run with StrongBox.
     GTEST_SKIP();
   }
+  std::vector<uint8_t> bbk_id{1, 2, 3, 4};
 
   std::unique_ptr<BrowserBoundKey> bbk =
       bbk_store->GetOrCreateBrowserBoundKeyForCredentialId(
-          {1, 2, 3, 4}, base::ToVector(kEs256Allowed));
+          std::move(bbk_id), base::ToVector(kEs256Allowed));
 
   EXPECT_EQ(bbk, nullptr);
 }
