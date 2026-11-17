@@ -11,6 +11,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --threads-rail-icon-size: 20px;
   background-color: var(--color-new-tab-page-threads-rail-background);
   display: block;
   height: 100%;
@@ -42,7 +43,7 @@
 }
 
 cr-icon-button {
-  --cr-icon-button-icon-size: 22px;
+  --cr-icon-button-icon-size: var(--threads-rail-icon-size);
   --cr-icon-button-size: 40px;
   --cr-icon-button-focus-outline-color: var(--threads-rail-focus-outline-color);
   --cr-icon-button-fill-color:
