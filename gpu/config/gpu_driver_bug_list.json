@@ -511,19 +511,6 @@
       ]
     },
     {
-      "id": 164,
-      "cr_bugs": [595948],
-      "description": "glColorMask does not work for multisample renderbuffers on old AMD GPUs.",
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x1002",
-      "device_id": ["0x6720", "0x6740", "0x6741", "0x68b8"],
-      "features": [
-        "disable_multisampling_color_mask_usage"
-      ]
-    },
-    {
       "id": 165,
       "cr_bugs": [596774],
       "description": "Unpacking overlapping rows from unpack buffers is unstable on NVIDIA GL driver",

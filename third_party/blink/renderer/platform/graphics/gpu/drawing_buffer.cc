@@ -1822,17 +1822,6 @@ void DrawingBuffer::ResolveMultisampleFramebufferInternal() {
 
     gl_->BlitFramebufferCHROMIUM(0, 0, width, height, 0, 0, width, height,
                                  GL_COLOR_BUFFER_BIT, filter);
-
-    // On old AMD GPUs on OS X, glColorMask doesn't work correctly for
-    // multisampled renderbuffers and the alpha channel can be overwritten.
-    // Clear the alpha channel of |m_fbo|.
-    if (DefaultBufferRequiresAlphaChannelToBePreserved() &&
-        ContextProvider()->GetGpuFeatureInfo().IsWorkaroundEnabled(
-            gpu::DISABLE_MULTISAMPLING_COLOR_MASK_USAGE)) {
-      gl_->ClearColor(0, 0, 0, 1);
-      gl_->ColorMask(false, false, false, true);
-      gl_->Clear(GL_COLOR_BUFFER_BIT);
-    }
   }
 
   gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
