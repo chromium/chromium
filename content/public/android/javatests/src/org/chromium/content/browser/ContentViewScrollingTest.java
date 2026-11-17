@@ -87,7 +87,7 @@ public class ContentViewScrollingTest {
     private RenderCoordinatesImpl mCoordinates;
 
     private void waitForScroll(final boolean hugLeft, final boolean hugTop) {
-        CriteriaHelper.pollInstrumentationThread(
+        CriteriaHelper.pollUiThread(
                 () -> {
                     // Scrolling and flinging don't result in exact coordinates.
                     final int minThreshold = 5;
@@ -109,7 +109,9 @@ public class ContentViewScrollingTest {
                                 mCoordinates.getScrollYPixInt(),
                                 Matchers.greaterThan(maxThreshold));
                     }
-                });
+                },
+                CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL_LONG,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     private void waitForScrollToPosition(final int x, final int y) {
