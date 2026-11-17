@@ -464,7 +464,9 @@ int MacKeyCodeForWindowsKeyCode(KeyboardCode keycode,
 
   // In release code, |flags| is used to lookup accelerators, so logic to handle
   // caps lock properly isn't implemented.
-  CHECK_EQ(0u, flags & NSEventModifierFlagCapsLock, base::NotFatalUntil::M163);
+  // TODO(crbug.com/586414719): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(0u, flags & NSEventModifierFlagCapsLock);
 
   auto it = kMap.find(keycode);
   if (it == kMap.end() || it->second.mac_keycode == -1) {
