@@ -102,7 +102,9 @@ public class MultiInstanceManagerApi31Test {
                             mMultiInstanceManager.closeWindows(
                                     Collections.singletonList(activity.getWindowId()),
                                     CloseWindowAppSource.OTHER));
+            ApplicationTestUtils.waitForActivityState(activity, Stage.DESTROYED);
         }
+        mExtraActivities.clear();
     }
 
     @Test
@@ -362,12 +364,14 @@ public class MultiInstanceManagerApi31Test {
         assertEquals(0, recentlyClosedEntriesManager.getRecentlyClosedEntries().size());
 
         // Close one window.
+        ChromeTabbedActivity closedActivity = otherActivities[otherActivities.length - 1];
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mMultiInstanceManager.closeWindows(
-                                Collections.singletonList(
-                                        otherActivities[otherActivities.length - 1].getWindowId()),
+                                Collections.singletonList(closedActivity.getWindowId()),
                                 CloseWindowAppSource.WINDOW_MANAGER));
+        ApplicationTestUtils.waitForActivityState(closedActivity, Stage.DESTROYED);
+        mExtraActivities.remove(closedActivity);
 
         // Check state of instances after one instance is closed - the closed window should become
         // an inactive one.
@@ -383,8 +387,13 @@ public class MultiInstanceManagerApi31Test {
         RecentlyClosedWindow window = (RecentlyClosedWindow) entries.get(0);
 
         // Restore window.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> recentlyClosedEntriesManager.openRecentlyClosedEntry(window));
+        ChromeTabbedActivity restoredActivity =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.RESUMED,
+                        () -> recentlyClosedEntriesManager.openRecentlyClosedEntry(window));
+        waitForActivityReady(restoredActivity);
+        mExtraActivities.add(restoredActivity);
 
         // Verify window is restored and removed from recentlyClosedEntries.
         entries = recentlyClosedEntriesManager.getRecentlyClosedEntries();
@@ -468,14 +477,23 @@ public class MultiInstanceManagerApi31Test {
                                                                 /* preferNew= */ true,
                                                                 isIncognito,
                                                                 openInTabGroup)));
-        CriteriaHelper.pollUiThread(
-                () ->
-                        Criteria.checkThat(
-                                "Activity tab should be non-null.",
-                                targetActivity.getActivityTab(),
-                                notNullValue()));
+        waitForActivityReady(targetActivity);
         mExtraActivities.add(targetActivity);
         return targetActivity;
+    }
+
+    private static void waitForActivityReady(ChromeTabbedActivity activity) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Activity tab should be non-null.",
+                            activity.getActivityTab(),
+                            notNullValue());
+                    Criteria.checkThat(
+                            "Tab state should be initialized.",
+                            activity.getTabModelSelector().isTabStateInitialized(),
+                            is(true));
+                });
     }
 
     private ChromeTabbedActivity[] createNewWindows(
@@ -509,12 +527,7 @@ public class MultiInstanceManagerApi31Test {
                         ChromeTabbedActivity.class,
                         Stage.RESUMED,
                         () -> ContextUtils.getApplicationContext().startActivity(intent));
-        CriteriaHelper.pollUiThread(
-                () ->
-                        Criteria.checkThat(
-                                "Activity tab should be non-null.",
-                                activity.getActivityTab(),
-                                notNullValue()));
+        waitForActivityReady(activity);
         Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab());
         if (loadCustomUrl) {
             ChromeTabUtils.loadUrlOnUiThread(tab, UrlConstants.GOOGLE_URL);
