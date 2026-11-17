@@ -225,6 +225,36 @@ suite('SearchboxInputTest', () => {
     assertEquals(5, input.inputElement.selectionEnd);
   });
 
+
+  test('Typing key shortcut over inline autocompletion', async () => {
+    loadTimeData.overrideValues({
+      reportMetrics: false,
+    });
+    input = await createInput();
+    input.setInput({text: 'hel', inline: 'lo'});
+
+    let textUpdatedEventCount = 0;
+    input.addEventListener('searchbox-input-text-updated', (_e: Event) => {
+      textUpdatedEventCount++;
+    });
+
+    // Press 'ctrl-l' which shares the next char in inline autocompletion 'lo',
+    // but shouldn't advance completion.
+    const keydownEvent = new KeyboardEvent('keydown', {
+      key: 'l',
+      ctrlKey: true,
+      cancelable: true,
+    });
+    input.inputElement.dispatchEvent(keydownEvent);
+
+    // Nothing should change --- no text update, selection isn't moved, etc.
+    assertFalse(keydownEvent.defaultPrevented);
+    assertEquals(0, textUpdatedEventCount);
+    assertEquals('hello', input.inputElement.value);
+    assertEquals(3, input.inputElement.selectionStart);
+    assertEquals(5, input.inputElement.selectionEnd);
+  });
+
   test('Text input type', async () => {
     // By default, the input is a search field.
     input = await createInput();
