@@ -402,10 +402,10 @@ class CORE_EXPORT HTMLInputElement
   // before that). While an input is in its Document's list of such inputs
   // (Document::ScheduleShadowTreeCreation()), it remembers the low
   // kShadowTreeCreationIndexBits bits of its position in that list, so that
-  // removal can find and take it out again in O(1) (or, with more than 2^16
+  // removal can find and take it out again in O(1) (or, with more than 2^15
   // inputs pending in one document, in a few probes; see
   // Document::UnscheduleShadowTreeCreation()).
-  static constexpr unsigned kShadowTreeCreationIndexBits = 16;
+  static constexpr unsigned kShadowTreeCreationIndexBits = 15;
   static constexpr wtf_size_t kShadowTreeCreationIndexHintRange =
       wtf_size_t{1} << kShadowTreeCreationIndexBits;
   bool IsShadowTreeCreationScheduled() const {
@@ -560,7 +560,10 @@ class CORE_EXPORT HTMLInputElement
   unsigned is_checked_ : 1;
   // https://html.spec.whatwg.org/C/#concept-input-checked-dirty-flag
   unsigned dirty_checkedness_ : 1;
+  // https://html.spec.whatwg.org/C/#concept-input-indeterminate
   unsigned is_indeterminate_ : 1;
+  // https://html.spec.whatwg.org/C/#concept-input-indeterminate-dirty-flag
+  unsigned dirty_indeterminateness_ : 1;
   unsigned is_activated_submit_ : 1;
   unsigned autocomplete_ : 2;  // AutoCompleteSetting
   unsigned has_non_empty_list_ : 1;
@@ -571,8 +574,8 @@ class CORE_EXPORT HTMLInputElement
   unsigned needs_to_update_view_value_ : 1;
   unsigned is_placeholder_visible_ : 1;
   unsigned has_been_password_field_ : 1;
-  // See ScheduledShadowTreeCreationIndexHint(). The flags above take 15 bits,
-  // so with these 1 + 16 the bit-fields fill exactly one 32-bit word (there
+  // See ScheduledShadowTreeCreationIndexHint(). The flags above take 16 bits,
+  // so with these 1 + 15 the bit-fields fill exactly one 32-bit word (there
   // is a static_assert in the constructor).
   unsigned is_shadow_tree_creation_scheduled_ : 1;
   unsigned scheduled_shadow_tree_creation_index_hint_

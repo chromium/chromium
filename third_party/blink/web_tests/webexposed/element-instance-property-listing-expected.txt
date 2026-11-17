@@ -848,6 +848,7 @@ html element input
     property colorSpace
     property createValueRange
     property defaultChecked
+    property defaultIndeterminate
     property defaultValue
     property dirName
     property disabled

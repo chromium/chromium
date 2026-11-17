@@ -4483,6 +4483,7 @@ interface HTMLInputElement : HTMLElement
     getter checked
     getter colorSpace
     getter defaultChecked
+    getter defaultIndeterminate
     getter defaultValue
     getter dirName
     getter disabled
@@ -4547,6 +4548,7 @@ interface HTMLInputElement : HTMLElement
     setter checked
     setter colorSpace
     setter defaultChecked
+    setter defaultIndeterminate
     setter defaultValue
     setter dirName
     setter disabled

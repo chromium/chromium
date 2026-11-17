@@ -1236,6 +1236,18 @@ TEST_F(HTMLInputElementTest, ResetIndeterminateCheckboxUseCounter) {
   EXPECT_TRUE(TestElement().indeterminate());
 }
 
+TEST_F(HTMLInputElementTest, DefaultIndeterminateAttributeEnabled) {
+  ScopedInputDefaultIndeterminateAttributeForTest scoped_feature(true);
+  SetBodyContent("<input id=test type=checkbox defaultindeterminate>");
+  EXPECT_TRUE(TestElement().indeterminate());
+}
+
+TEST_F(HTMLInputElementTest, DefaultIndeterminateAttributeDisabled) {
+  ScopedInputDefaultIndeterminateAttributeForTest scoped_feature(false);
+  SetBodyContent("<input id=test type=checkbox defaultindeterminate>");
+  EXPECT_FALSE(TestElement().indeterminate());
+}
+
 // Removing a disabled <fieldset> notifies its descendants in tree order.
 // Removing the checked radio button re-validates the remaining (still
 // connected, still fieldset-descendant) radio button of the group while the

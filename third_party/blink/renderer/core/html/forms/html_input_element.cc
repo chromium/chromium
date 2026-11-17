@@ -156,6 +156,7 @@ HTMLInputElement::HTMLInputElement(Document& document,
       is_checked_(false),
       dirty_checkedness_(false),
       is_indeterminate_(false),
+      dirty_indeterminateness_(false),
       is_activated_submit_(false),
       autocomplete_(kUninitialized),
       has_non_empty_list_(false),
@@ -975,6 +976,13 @@ void HTMLInputElement::ParseAttribute(
       dirty_checkedness_ = false;
     }
     PseudoStateChanged(CSSSelector::kPseudoDefault);
+  } else if (name == html_names::kDefaultindeterminateAttr &&
+             RuntimeEnabledFeatures::
+                 InputDefaultIndeterminateAttributeEnabled()) {
+    if (!dirty_indeterminateness_) {
+      setIndeterminate(!value.IsNull());
+      dirty_indeterminateness_ = false;
+    }
   } else if (name == html_names::kMaxlengthAttr) {
     SetNeedsValidityCheck();
   } else if (name == html_names::kMinlengthAttr) {
@@ -1269,6 +1277,9 @@ void HTMLInputElement::SetChecked(bool now_checked,
 }
 
 void HTMLInputElement::setIndeterminate(bool new_value) {
+  if (RuntimeEnabledFeatures::InputDefaultIndeterminateAttributeEnabled()) {
+    dirty_indeterminateness_ = true;
+  }
   if (indeterminate() == new_value)
     return;
 

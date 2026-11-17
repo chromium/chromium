@@ -49,6 +49,7 @@ enum SelectionMode { "select", "start", "end", "preserve" };
     [CEReactions, Reflect] attribute boolean formNoValidate;
     [CEReactions, Reflect] attribute DOMString formTarget;
     [CEReactions] attribute unsigned long height;
+    [CEReactions, Reflect, RuntimeEnabled=InputDefaultIndeterminateAttribute] attribute boolean defaultIndeterminate;
     attribute boolean indeterminate;
     [ImplementedAs=listForBinding] readonly attribute HTMLElement? list;
     [CEReactions, Reflect] attribute DOMString max;

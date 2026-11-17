@@ -4031,6 +4031,7 @@
       // Enables the defaultindeterminate attribute on <input type="checkbox">.
       // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/DefaultIndeterminate/explainer.md
       name: "InputDefaultIndeterminateAttribute",
+      status: "test",
     },
     {
       // Prevents running DefaultEventHandler on disabled input elements.
