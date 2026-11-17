@@ -236,7 +236,7 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
 
   // Create or reconfigure the codec to match the size of |frame|.
   if (!codec_ || !frame_size.equals(previous_frame_size)) {
-    Configure(frame_size);
+    Configure(frame_size, params);
   }
 
   UpdateConfig(params);
@@ -344,7 +344,8 @@ WebrtcVideoEncoderVpx::WebrtcVideoEncoderVpx(bool use_vp9)
   }
 }
 
-void WebrtcVideoEncoderVpx::Configure(const webrtc::DesktopSize& size) {
+void WebrtcVideoEncoderVpx::Configure(const webrtc::DesktopSize& size,
+                                      const FrameParams& params) {
   DCHECK(use_vp9_ || !lossless_color_);
 
   if (use_vp9_) {
@@ -387,6 +388,16 @@ void WebrtcVideoEncoderVpx::Configure(const webrtc::DesktopSize& size) {
   }
 
   config_.rc_target_bitrate = EncoderBitrateFilter::kDefaultMinimumBitrateKbps;
+  if (params.bitrate_kbps >= 0) {
+    bitrate_filter_.SetBandwidthEstimateKbps(params.bitrate_kbps);
+    config_.rc_target_bitrate = bitrate_filter_.GetTargetBitrateKbps();
+  }
+  if (params.vpx_min_quantizer >= 0) {
+    config_.rc_min_quantizer = params.vpx_min_quantizer;
+  }
+  if (params.vpx_max_quantizer >= 0) {
+    config_.rc_max_quantizer = params.vpx_max_quantizer;
+  }
 
   // Initialize or re-configure the codec with the custom configuration.
   if (!codec_) {

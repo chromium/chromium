@@ -56,8 +56,8 @@ class WebrtcVideoEncoderVpx : public WebrtcVideoEncoder {
   explicit WebrtcVideoEncoderVpx(bool use_vp9);
 
   // (Re)Configures this instance to encode frames of the specified |size|,
-  // with the configured lossless color mode.
-  void Configure(const webrtc::DesktopSize& size);
+  // with the configured lossless color mode and initial |params|.
+  void Configure(const webrtc::DesktopSize& size, const FrameParams& params);
 
   // Updates codec configuration.
   void UpdateConfig(const FrameParams& params);
