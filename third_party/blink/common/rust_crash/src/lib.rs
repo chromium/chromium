@@ -8,10 +8,10 @@
 #[cxx::bridge(namespace = "blink")]
 mod ffi {
     extern "Rust" {
-        fn crash_in_rust(); // step 1 of main crash trigger. We bounce back to C++
-                            // then back to Rust to ensure crossing the language
-                            // boundary in both directions is represented in crash
-                            // dumps.
+        fn crash_in_rust(); // step 1 of main crash trigger. We bounce back to
+                            // C++ then back to Rust to ensure crossing the
+                            // language boundary in both directions is
+                            // represented in crash dumps.
         fn reenter_rust(); // step 3
 
         #[cfg(IS_ASAN)]
@@ -49,6 +49,9 @@ mod some_mod {
 /// Code that's only enabled if we're doing an ASAN build.
 #[cfg(IS_ASAN)]
 #[inline(never)]
+// This deliberately writes out of bounds, to check that ASan catches it and
+// that crash reporting handles Rust, so there's no safety justification.
+#[allow(clippy::undocumented_unsafe_blocks)]
 fn crash_in_rust_with_overflow() {
     let mut some_array = Box::new([1usize, 2usize, 3usize, 4usize]);
     let array_ptr = &mut some_array[0] as *mut usize;
