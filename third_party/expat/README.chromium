@@ -1,10 +1,10 @@
 Name: Expat XML Parser
 Short Name: expat
 URL: https://github.com/libexpat/libexpat
-Version: R_2_8_1-189-ga851869e
-CPEPrefix: cpe:/a:libexpat_project:libexpat:2.8.1
-Date: 2026-06-22
-Revision: a851869e111c06fbcdc89edf639abf5fc2b6deba
+Version: R_2_9_0
+CPEPrefix: cpe:/a:libexpat_project:libexpat:2.9.0
+Date: 2026-10-29
+Revision: a76b1174c1ea52abb639a4c69d52b630a8a106a2
 Update Mechanism: Manual
 Security Critical: yes
 Shipped: yes
@@ -18,11 +18,15 @@ Description:
   We include it here because libjingle depends on it.
 
 Roll process:
+  Expat is rolled to upstream release tags (upstream/R_X_Y_Z). If a roll
+  needs more than the DEPS and README.chromium changes, e.g. new upstream
+  source files or configure changes, roll by hand:
+
   cd $CHROMIUM_SRC
-  roll-dep --roll-to origin/upstream/master src/third_party/expat/src/
+  roll-dep --roll-to upstream/R_X_Y_Z src/third_party/expat/src/
   cd $CHROMIUM_SRC/third_party/expat/src/expat
   ./buildconf.sh
-  ./configure --without-arc4random --without-arc4random-buf --without-getentropy --without-getrandom --without-sys-getrandom
+  ./configure --without-arc4random --without-arc4random-buf --without-getentropy --without-getrandom --without-sys-getrandom --with-dev-urandom
   cp expat_config.h $CHROMIUM_SRC/third_party/expat/include/expat_config/
   cd $CHROMIUM_SRC/third_party/expat
 

@@ -3,15 +3,18 @@
 roll_deps() {
   STEP="roll-deps" &&
   REVIEWERS=$(grep -E -v "^$|#" third_party/expat/OWNERS | paste -s -d, -)
-  roll-dep -r "${REVIEWERS}" --roll-to origin/upstream/master "$@" src/third_party/expat/src/
+  # Roll to the newest upstream release tag, as the autoroller does.
+  git -C third_party/expat/src/ fetch --quiet origin "+refs/tags/upstream/R_*:refs/tags/upstream/R_*" &&
+  EXPAT_TAG=$(git -C third_party/expat/src/ tag -l 'upstream/R_*' | sort -V | tail -n 1) &&
+  roll-dep -r "${REVIEWERS}" --roll-to "${EXPAT_TAG}" "$@" src/third_party/expat/src/
 }
 
 update_readme() {
   STEP="update README.chromium" &&
-  EXPAT_VERSION=$(git -C third_party/expat/src/ describe --long) &&
+  EXPAT_VERSION=$(git -C third_party/expat/src/ tag --points-at HEAD -l 'upstream/R_*' | sort -V | tail -n 1 | sed -e 's@^upstream/@@') &&
   EXPAT_COMMIT=$(git -C third_party/expat/src/ rev-parse HEAD) &&
   EXPAT_DATE=$(date "+%Y-%m-%d") &&
-  EXPAT_CPE_VERSION=$(echo ${EXPAT_VERSION} | sed -r -e's/^R_([0-9]+)_([0-9]+)_([0-9]+)-[0-9]+-g[0-9a-f]+$/\1.\2.\3/') &&
+  EXPAT_CPE_VERSION=$(echo ${EXPAT_VERSION} | sed -r -e's/^R_([0-9]+)_([0-9]+)_([0-9]+)$/\1.\2.\3/') &&
   [ ${EXPAT_VERSION} != ${EXPAT_CPE_VERSION} ] &&
   sed -i'' -e "s/^Version: .*\$/Version: ${EXPAT_VERSION}/" third_party/expat/README.chromium &&
   sed -i'' -e "s@^CPEPrefix: cpe:/a:libexpat.*\$@CPEPrefix: cpe:/a:libexpat_project:libexpat:${EXPAT_CPE_VERSION}@" third_party/expat/README.chromium &&
@@ -46,7 +49,7 @@ update_expat_config_h() {
   STEP="update expat config.h" &&
   ( cd third_party/expat/src/expat &&
     ./buildconf.sh &&
-    ./configure --without-arc4random --without-arc4random-buf --without-getentropy --without-getrandom --without-sys-getrandom) &&
+    ./configure --without-arc4random --without-arc4random-buf --without-getentropy --without-getrandom --without-sys-getrandom --with-dev-urandom) &&
   cp third_party/expat/src/expat/expat_config.h third_party/expat/include/expat_config/ &&
   git add third_party/expat/include/expat_config/expat_config.h
 }

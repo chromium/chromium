@@ -54,6 +54,8 @@ if (((is_linux && !is_castos) || is_chromeos) && !use_fuzzing_engine) {
     visibility = expat_visibility
     sources = [
       "src/expat/lib/expat.h",
+      "src/expat/lib/xcs.c",
+      "src/expat/lib/xcs.h",
       "src/expat/lib/xmlparse.c",
       "src/expat/lib/xmlrole.c",
       "src/expat/lib/xmltok.c",
