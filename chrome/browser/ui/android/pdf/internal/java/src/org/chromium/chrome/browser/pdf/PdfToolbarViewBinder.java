@@ -51,19 +51,6 @@ class PdfToolbarViewBinder {
             EditText zoomValue = view.findViewById(R.id.zoom_value);
             if (!zoomValue.isFocused()) {
                 zoomValue.setText(formatZoomPercentage(model));
-                // Lock the EditText width once on the initial bind (before a layout pass has
-                // measured the view) by measuring the default zoom text ("100%") plus horizontal
-                // padding, preventing the input field from resizing as the text changes.
-                if (zoomValue.getMinWidth() <= 0) {
-                    int textWidth =
-                            (int)
-                                    Math.ceil(
-                                            zoomValue
-                                                    .getPaint()
-                                                    .measureText(zoomValue.getText().toString()));
-                    zoomValue.setWidth(
-                            textWidth + zoomValue.getPaddingStart() + zoomValue.getPaddingEnd());
-                }
             }
         } else if (PdfToolbarProperties.ON_CLICK_LISTENER == key) {
             View.OnClickListener listener = model.get(PdfToolbarProperties.ON_CLICK_LISTENER);

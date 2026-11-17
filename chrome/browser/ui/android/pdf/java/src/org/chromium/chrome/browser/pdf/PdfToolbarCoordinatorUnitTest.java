@@ -1376,14 +1376,54 @@ public class PdfToolbarCoordinatorUnitTest {
     @Test
     public void testZoomValueFixedWidth() {
         EditText zoomValue = mPdfPageView.findViewById(R.id.zoom_value);
-        int expectedWidth =
-                (int) Math.ceil(zoomValue.getPaint().measureText("100%"))
-                        + zoomValue.getPaddingStart()
-                        + zoomValue.getPaddingEnd();
-        assertEquals(expectedWidth, zoomValue.getMinWidth());
-        assertEquals(expectedWidth, zoomValue.getMaxWidth());
+        float density = mActivity.getResources().getDisplayMetrics().density;
+        int minWidthPx = Math.round(48 * density);
+
+        setToolbarWidth(1000);
+        int expectedWidth = zoomValue.getMeasuredWidth();
+        assertTrue(expectedWidth >= minWidthPx);
+
+        mPdfToolbarCoordinator.onViewportChanged(0, 0.75f);
+        setToolbarWidth(1000);
+        assertEquals("75%", zoomValue.getText().toString());
+        assertEquals(expectedWidth, zoomValue.getMeasuredWidth());
+
+        mPdfToolbarCoordinator.onViewportChanged(0, 1.0f);
+        setToolbarWidth(1000);
+        assertEquals("100%", zoomValue.getText().toString());
+        assertEquals(expectedWidth, zoomValue.getMeasuredWidth());
+
+        mPdfToolbarCoordinator.onViewportChanged(0, 5.0f);
+        setToolbarWidth(1000);
+        assertEquals("500%", zoomValue.getText().toString());
+        assertEquals(expectedWidth, zoomValue.getMeasuredWidth());
+
         assertTrue(zoomValue.isSingleLine());
         assertTrue(zoomValue.isHorizontallyScrollable());
+    }
+
+    @Test
+    public void testFitToPageToggle_maintainsWidth() {
+        setToolbarWidth(1000);
+        View fitToPageButton = mPdfPageView.findViewById(R.id.fit_to_page_button);
+        int initialWidth = fitToPageButton.getMeasuredWidth();
+        assertEquals(
+                mActivity.getString(R.string.pdf_fit_page),
+                fitToPageButton.getContentDescription());
+
+        fitToPageButton.performClick();
+        setToolbarWidth(1000);
+        assertEquals(
+                mActivity.getString(R.string.pdf_fit_width),
+                fitToPageButton.getContentDescription());
+        assertEquals(initialWidth, fitToPageButton.getMeasuredWidth());
+
+        fitToPageButton.performClick();
+        setToolbarWidth(1000);
+        assertEquals(
+                mActivity.getString(R.string.pdf_fit_page),
+                fitToPageButton.getContentDescription());
+        assertEquals(initialWidth, fitToPageButton.getMeasuredWidth());
     }
 
     private ListView openMoreMenu() {
