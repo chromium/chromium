@@ -27,6 +27,7 @@
 #include "net/base/url_util.h"
 #include "third_party/omnibox_proto/input_type.pb.h"
 #include "third_party/omnibox_proto/rule_set.pb.h"
+#include "third_party/omnibox_proto/tool_config.pb.h"
 #include "url/gurl.h"
 
 namespace contextual_search {
@@ -1055,19 +1056,20 @@ void InputStateModel::RebuildAllowedInputTypes() {
 
 std::map<std::string, std::string> InputStateModel::GetAdditionalQueryParams() {
   std::map<std::string, std::string> additional_params;
+  bool disable_active_model_selection = false;
   if (state_.active_tool != omnibox::ToolMode::TOOL_MODE_UNSPECIFIED) {
-    const auto tool_it =
-        std::find_if(state_.tool_configs.begin(), state_.tool_configs.end(),
-                     [&](const omnibox::ToolConfig& config) {
-                       return config.tool() == state_.active_tool;
-                     });
+    const auto tool_it = std::ranges::find(
+        state_.tool_configs, state_.active_tool, &omnibox::ToolConfig::tool);
     if (tool_it != state_.tool_configs.end()) {
+      disable_active_model_selection =
+          tool_it->disable_active_model_selection();
       for (const auto& param : tool_it->aim_url_params()) {
         additional_params[param.param_key()] = param.param_value();
       }
     }
   }
-  if (state_.active_model != omnibox::ModelMode::MODEL_MODE_UNSPECIFIED) {
+  if (!disable_active_model_selection &&
+      state_.active_model != omnibox::ModelMode::MODEL_MODE_UNSPECIFIED) {
     const auto model_it =
         std::find_if(state_.model_configs.begin(), state_.model_configs.end(),
                      [&](const omnibox::ModelConfig& config) {
@@ -1079,8 +1081,9 @@ std::map<std::string, std::string> InputStateModel::GetAdditionalQueryParams() {
       }
     }
   } else {
-    // If no model is selected, add a default param to indicate that the query
-    // is an AIM query.
+    // If no model is selected, or the active tool disables active model
+    // selection, add a default param to indicate that the query is an AIM
+    // query.
     additional_params[kUdmParamKey] = "50";
   }
   // `nem` (from a model) takes priority over `udm` (e.g. from a tool).

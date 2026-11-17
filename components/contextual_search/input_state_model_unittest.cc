@@ -1176,6 +1176,115 @@ TEST_F(InputStateModelTest, GetAdditionalQueryParams_DuplicateUdmMerges) {
                                             testing::Pair("udm", "50")));
 }
 
+// Tools with `disable_active_model_selection` omit the active model's
+// `aim_url_params` (like `arv`) and emit `udm=50`, while keeping `active_model`
+// intact when the tool is cleared.
+TEST_F(InputStateModelTest,
+       GetAdditionalQueryParams_DisableActiveModelSelectionOmitsArv) {
+  auto* deep_search_config = config_.add_tool_configs();
+  deep_search_config->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  deep_search_config->set_disable_active_model_selection(true);
+  auto* deep_search_param = deep_search_config->add_aim_url_params();
+  deep_search_param->set_param_key("tool_param");
+  deep_search_param->set_param_value("1");
+
+  auto* gemini_pro_config = config_.add_model_configs();
+  gemini_pro_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  auto* gemini_pro_udm = gemini_pro_config->add_aim_url_params();
+  gemini_pro_udm->set_param_key("udm");
+  gemini_pro_udm->set_param_value("50");
+  auto* gemini_pro_arv = gemini_pro_config->add_aim_url_params();
+  gemini_pro_arv->set_param_key("arv");
+  gemini_pro_arv->set_param_value("3");
+
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
+      /*browser_identity_matches_aim_identity=*/false);
+  input_state_model_->SetPrefService(&pref_service_);
+  input_state_model_->SetActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("udm", "50"),
+                                            testing::Pair("arv", "3")));
+
+  // Selecting a tool with `disable_active_model_selection` omits `arv=3` and
+  // emits `udm=50` + the tool's param while preserving `active_model`.
+  input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  EXPECT_EQ(input_state_model_->GetInputState().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("tool_param", "1"),
+                                            testing::Pair("udm", "50")));
+
+  // Clearing the tool restores the preserved model's URL params.
+  input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+  EXPECT_EQ(input_state_model_->GetInputState().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("udm", "50"),
+                                            testing::Pair("arv", "3")));
+}
+
+// Tools with `disable_active_model_selection` omit a model's `nem` param and
+// keep `udm=50`, restoring `nem` when the tool is cleared.
+TEST_F(InputStateModelTest,
+       GetAdditionalQueryParams_DisableActiveModelSelectionOmitsNem) {
+  auto* deep_search_config = config_.add_tool_configs();
+  deep_search_config->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  deep_search_config->set_disable_active_model_selection(true);
+  auto* deep_search_param = deep_search_config->add_aim_url_params();
+  deep_search_param->set_param_key("tool_param");
+  deep_search_param->set_param_value("1");
+
+  auto* canvas_config = config_.add_tool_configs();
+  canvas_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  canvas_config->set_disable_active_model_selection(true);
+  auto* canvas_param = canvas_config->add_aim_url_params();
+  canvas_param->set_param_key("tool_param");
+  canvas_param->set_param_value("2");
+  auto* canvas_udm = canvas_config->add_aim_url_params();
+  canvas_udm->set_param_key("udm");
+  canvas_udm->set_param_value("50");
+
+  auto* gemini_pro_config = config_.add_model_configs();
+  gemini_pro_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  auto* gemini_pro_param = gemini_pro_config->add_aim_url_params();
+  gemini_pro_param->set_param_key("nem");
+  gemini_pro_param->set_param_value("143");
+
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
+      /*browser_identity_matches_aim_identity=*/false);
+  input_state_model_->SetPrefService(&pref_service_);
+  input_state_model_->SetActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("nem", "143")));
+
+  // Tool without `udm` emits `udm=50` + tool param and omits `nem=143`.
+  input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  EXPECT_EQ(input_state_model_->GetInputState().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("tool_param", "1"),
+                                            testing::Pair("udm", "50")));
+
+  // Tool already carrying `udm=50` keeps `udm=50` because `nem=143` is omitted.
+  input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  EXPECT_EQ(input_state_model_->GetInputState().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("tool_param", "2"),
+                                            testing::Pair("udm", "50")));
+
+  // Clearing the tool restores `nem=143`.
+  input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+  EXPECT_EQ(input_state_model_->GetInputState().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("nem", "143")));
+}
+
 TEST_F(InputStateModelCompatibilityTest, PolicyDisablesInputs) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({omnibox::kComposeboxDriveContextMenuOption},
@@ -2447,6 +2556,41 @@ TEST_F(InputStateModelHintTextTest, UpdateConfigUpdatesPersonalizedHintText) {
   config_.set_personalized_hint_text("Hi Alex, what's on your mind?");
   EXPECT_TRUE(model->UpdateConfig(config_));
   EXPECT_EQ("Hi Alex, what's on your mind?", model->GetInputState().hint_text);
+}
+
+TEST_F(InputStateModelDynamicAimTest,
+       DisableActiveModelSelectionPreservesModel) {
+  AddModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, "nem", "143");
+  auto* deep_search_config = config_.add_tool_configs();
+  deep_search_config->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  deep_search_config->set_disable_active_model_selection(true);
+  auto* deep_search_param = deep_search_config->add_aim_url_params();
+  deep_search_param->set_param_key("tool_param");
+  deep_search_param->set_param_value("1");
+  auto* deep_search_udm = deep_search_config->add_aim_url_params();
+  deep_search_udm->set_param_key("udm");
+  deep_search_udm->set_param_value("50");
+  input_state_model_->UpdateConfig(config_);
+  input_state_model_->EnableDynamicAimFulfillment();
+
+  input_state_model_->SetActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  ASSERT_TRUE(WillFulfillInAim());
+  ASSERT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+
+  // Selecting the tool omits `nem=143` while preserving `active_model`.
+  input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  EXPECT_TRUE(WillFulfillInAim());
+  EXPECT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("tool_param", "1"),
+                                            testing::Pair("udm", "50")));
+
+  // Clearing the tool keeps `active_model` and restores `nem=143`.
+  input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+  EXPECT_TRUE(WillFulfillInAim());
+  EXPECT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  EXPECT_THAT(input_state_model_->GetAdditionalQueryParams(),
+              testing::UnorderedElementsAre(testing::Pair("nem", "143")));
 }
 
 }  // namespace contextual_search

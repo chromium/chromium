@@ -109,9 +109,10 @@ bool AttachmentsCanGoToSrp(const AttachmentCounts& attachments,
 
 // Routes to AIM if AI Mode is on, there's no server config yet, the tool's
 // params include `udm=50` or `nem` (or it has no config), a tool is used with
-// attachments (not covered by the SRP input modes), or the attachments can't
-// go to SRP. Otherwise routes to SRP with the tool's params. For AIM, adds the
-// active (or default) model's params, with `nem` replacing `udm`.
+// attachments (not covered by the SRP input modes), or the attachments can't go
+// to SRP. Otherwise routes to SRP with the tool's params. For AIM, adds the
+// active (or default) model's params unless the active tool disables active
+// model selection, with `nem` replacing `udm`.
 FulfillmentDecision ComputeFulfillment(const omnibox::InputState& state,
                                        bool aim_mode_active,
                                        const AttachmentCounts& attachments,

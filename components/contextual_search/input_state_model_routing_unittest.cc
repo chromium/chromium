@@ -155,9 +155,11 @@ TEST(InputStateModelRoutingTest, AttachmentsCanGoToSrpPerMode) {
 
 omnibox::ToolConfig MakeTool(
     ToolMode tool,
-    std::vector<std::pair<std::string, std::string>> params) {
+    std::vector<std::pair<std::string, std::string>> params,
+    bool disable_active_model_selection = false) {
   omnibox::ToolConfig config;
   config.set_tool(tool);
+  config.set_disable_active_model_selection(disable_active_model_selection);
   for (const auto& [key, value] : params) {
     auto* param = config.add_aim_url_params();
     param->set_param_key(key);
@@ -278,6 +280,59 @@ TEST(InputStateModelRoutingTest, AimModeRoutesToAim) {
 
   // Outside AI Mode, a model (e.g. shown before an update) doesn't count.
   EXPECT_FALSE(Compute(state).will_fulfill_in_aim);
+}
+
+TEST(InputStateModelRoutingTest, DisableActiveModelSelectionOmitsModelParams) {
+  omnibox::InputState state;
+  state.tool_configs = {
+      MakeTool(ToolMode::TOOL_MODE_CANVAS, {{"rc", "1"}, {"udm", "50"}},
+               /*disable_active_model_selection=*/true),
+      MakeTool(ToolMode::TOOL_MODE_DEEP_SEARCH, {{"tool_param", "1"}},
+               /*disable_active_model_selection=*/true),
+  };
+  state.model_configs = {
+      MakeModel(ModelMode::MODEL_MODE_GEMINI_REGULAR,
+                {{"udm", "50"}, {"arv", "1"}}),
+      MakeModel(ModelMode::MODEL_MODE_GEMINI_PRO, {{"nem", "143"}}),
+  };
+  state.allowed_models = {ModelMode::MODEL_MODE_GEMINI_REGULAR,
+                          ModelMode::MODEL_MODE_GEMINI_PRO};
+
+  // Active model with `nem`: tool keeps `udm=50` and omits `nem`, while
+  // preserving `decision.model`.
+  state.active_tool = ToolMode::TOOL_MODE_CANVAS;
+  state.active_model = ModelMode::MODEL_MODE_GEMINI_PRO;
+  FulfillmentDecision canvas_result = Compute(state);
+  EXPECT_TRUE(canvas_result.will_fulfill_in_aim);
+  EXPECT_EQ(canvas_result.model, ModelMode::MODEL_MODE_GEMINI_PRO);
+  EXPECT_EQ(canvas_result.url_params, UrlParams({{"rc", "1"}, {"udm", "50"}}));
+
+  // Tool without `udm` in AI Mode emits `udm=50` + tool param and omits `nem`.
+  state.active_tool = ToolMode::TOOL_MODE_DEEP_SEARCH;
+  FulfillmentDecision deep_search_result =
+      Compute(state, {}, /*aim_mode_active=*/true);
+  EXPECT_TRUE(deep_search_result.will_fulfill_in_aim);
+  EXPECT_EQ(deep_search_result.model, ModelMode::MODEL_MODE_GEMINI_PRO);
+  EXPECT_EQ(deep_search_result.url_params,
+            UrlParams({{"tool_param", "1"}, {"udm", "50"}}));
+
+  // Clearing the tool restores the active model's params.
+  state.active_tool = ToolMode::TOOL_MODE_UNSPECIFIED;
+  FulfillmentDecision cleared_result =
+      Compute(state, {}, /*aim_mode_active=*/true);
+  EXPECT_TRUE(cleared_result.will_fulfill_in_aim);
+  EXPECT_EQ(cleared_result.model, ModelMode::MODEL_MODE_GEMINI_PRO);
+  EXPECT_EQ(cleared_result.url_params, UrlParams({{"nem", "143"}}));
+
+  // Default model fallback (`arv=1`) is also omitted when the active tool
+  // disables active model selection.
+  state.active_tool = ToolMode::TOOL_MODE_CANVAS;
+  state.active_model = ModelMode::MODEL_MODE_UNSPECIFIED;
+  FulfillmentDecision default_model_result = Compute(state);
+  EXPECT_TRUE(default_model_result.will_fulfill_in_aim);
+  EXPECT_EQ(default_model_result.model, ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  EXPECT_EQ(default_model_result.url_params,
+            UrlParams({{"rc", "1"}, {"udm", "50"}}));
 }
 
 }  // namespace
