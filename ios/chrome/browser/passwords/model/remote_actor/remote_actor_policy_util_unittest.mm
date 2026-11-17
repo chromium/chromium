@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -135,12 +136,8 @@ TEST_F(RemoteActorPolicyUtilTest, PlatformManagedDeviceRequiresPolicyEnabled) {
 TEST_F(RemoteActorPolicyUtilTest, ManagedAccountRequiresPolicyEnabled) {
   FakeSystemIdentity* managed_identity =
       [FakeSystemIdentity fakeManagedIdentity];
-  FakeSystemIdentityManager::FromSystemIdentityManager(
-      GetApplicationContext()->GetSystemIdentityManager())
-      ->AddIdentity(managed_identity);
-  TestProfileIOS* managed_profile =
-      profile_manager_.AddManagedProfileForGaiaIDWithBuilder(
-          managed_identity.gaiaId, CreateProfileBuilder());
+  TestProfileIOS* managed_profile = AddManagedProfileWithBuilder(
+      profile_manager_, managed_identity, CreateProfileBuilder());
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForProfile(managed_profile);
   auth_service->SignIn(managed_identity,
