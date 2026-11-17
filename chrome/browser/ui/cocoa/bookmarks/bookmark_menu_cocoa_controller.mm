@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
 #import "chrome/browser/ui/cocoa/l10n_util.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -73,7 +74,9 @@ void DoOpenBookmark(Profile* profile,
       ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser(
           /*match_original_profiles=*/true);
   if (!browser) {
-    browser = CreateBrowserWindow(BrowserWindowCreateParams(profile, true));
+    browser = waap::CreateBrowserWindowAndRecordCreationSource(
+        BrowserWindowCreateParams(profile, true),
+        waap::NewWindowCreationSource::kNavigation);
   }
   OpenURLParams params = OpenURLParams::CreateBrowserInitiated(
       node->url(), disposition, ui::PAGE_TRANSITION_AUTO_BOOKMARK);

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_frame_host.h"
@@ -66,8 +67,10 @@ WebContents* ChromeWebContentsHandler::OpenURLFromTab(
     }
     // TODO(erg): OpenURLParams should pass a user_gesture flag, pass it to
     // CreateParams, and pass the real value to nav_params below.
-    browser = CreateBrowserWindow(BrowserWindowCreateParams(
-        BrowserWindowInterface::TYPE_NORMAL, profile, true));
+    browser = waap::CreateBrowserWindowAndRecordCreationSource(
+        BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL, profile,
+                                  true),
+        waap::NewWindowCreationSource::kNavigation);
   }
   NavigateParams nav_params(browser, params.url, params.transition);
   nav_params.FillNavigateParamsFromOpenURLParams(params);
@@ -125,8 +128,10 @@ void ChromeWebContentsHandler::AddNewContents(
         BrowserWindowInterface::CreationStatus::kOk) {
       return;
     }
-    browser = CreateBrowserWindow(BrowserWindowCreateParams(
-        BrowserWindowInterface::TYPE_NORMAL, profile, user_gesture));
+    browser = waap::CreateBrowserWindowAndRecordCreationSource(
+        BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL, profile,
+                                  user_gesture),
+        waap::NewWindowCreationSource::kNavigation);
   }
   NavigateParams params(browser, std::move(new_contents));
   params.source_contents = source;

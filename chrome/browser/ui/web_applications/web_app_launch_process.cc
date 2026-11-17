@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/share_target_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
@@ -552,9 +553,11 @@ BrowserWindowInterface* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
 
 BrowserWindowInterface* WebAppLaunchProcess::CreateBrowserForLaunch() {
   if (params_->container == apps::LaunchContainer::kLaunchContainerTab) {
-    return CreateBrowserWindow(BrowserWindowCreateParams(
-        BrowserWindowInterface::TYPE_NORMAL, &profile_.get(),
-        /*from_user_gesture=*/true));
+    return waap::CreateBrowserWindowAndRecordCreationSource(
+        BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL,
+                                  &profile_.get(),
+                                  /*from_user_gesture=*/true),
+        waap::NewWindowCreationSource::kLaunch);
   }
 
   BrowserWindowCreateParams browser_params = web_app::CreateParamsForApp(

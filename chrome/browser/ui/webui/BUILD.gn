@@ -856,6 +856,7 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/navigator",
+      "//chrome/browser/ui/waap:window_creation",
       "//components/captive_portal/core:buildflags",
       "//content/public/browser",
       "//ui/base",

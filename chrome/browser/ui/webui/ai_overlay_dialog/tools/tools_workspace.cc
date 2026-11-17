@@ -55,6 +55,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "ui/base/base_window.h"
@@ -1508,7 +1509,9 @@ base::DictValue AiOverlayTools::ExecuteWorkspaceSubAgentOutput(
           continue;
         }
         BrowserWindowInterface* new_browser =
-            CreateBrowserWindow(BrowserWindowCreateParams(*profile, true));
+            waap::CreateBrowserWindowAndRecordCreationSource(
+                BrowserWindowCreateParams(*profile, true),
+                waap::NewWindowCreationSource::kMoveTabsToNewWindow);
         if (!new_browser) {
           continue;
         }

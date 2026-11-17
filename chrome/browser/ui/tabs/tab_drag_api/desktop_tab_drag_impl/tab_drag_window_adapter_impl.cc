@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "components/browser_apis/tab_drag/sessions/tab_drag_session_manager.h"
 #include "components/browser_apis/tab_drag/sessions/tab_drag_window_registry.h"
 #include "mojo/public/mojom/base/error.mojom.h"
@@ -142,7 +143,9 @@ TabDragWindowAdapterImpl::DetachToNewWindow(
   params.initial_show_state = ui::mojom::WindowShowState::kDefault;
   params.initial_workspace = std::string();
 
-  BrowserWindowInterface* new_window = CreateBrowserWindow(std::move(params));
+  BrowserWindowInterface* new_window =
+      waap::CreateBrowserWindowAndRecordCreationSource(
+          std::move(params), waap::NewWindowCreationSource::kDragToNewWindow);
   if (!new_window) {
     return base::unexpected(
         mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInternal,

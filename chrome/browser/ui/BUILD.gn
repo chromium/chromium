@@ -568,6 +568,7 @@ if (!is_android) {
       "//chrome/browser/ui/tabs:tab_group",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs/saved_tab_groups",
+      "//chrome/browser/ui/waap:window_creation",
       "//chrome/browser/ui/window_metadata",
       "//chrome/browser/web_applications",
       "//components/saved_tab_groups/public",
@@ -1602,6 +1603,7 @@ if (!is_android) {
       "//chrome/browser/ui/tabs/saved_tab_groups",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/contextual_tasks",
+      "//chrome/browser/ui/waap:window_creation",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/window_feature_controller",
       "//chrome/common:constants",
@@ -1677,6 +1679,7 @@ if (!is_android) {
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/waap:window_creation",
       "//chrome/browser/ui/webui/bookmarks",
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/ui/window_feature_controller",
@@ -2541,6 +2544,7 @@ if (is_mac) {
     deps = [
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window:create_browser_window",
+      "//chrome/browser/ui/waap:window_creation",
       "//ui/base",
     ]
   }

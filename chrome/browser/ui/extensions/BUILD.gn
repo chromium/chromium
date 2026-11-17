@@ -321,7 +321,10 @@ source_set("impl") {
   }
 
   if (!is_android) {
-    deps += [ "//chrome/browser/ui/views/frame:browser_view_header" ]
+    deps += [
+      "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/waap:window_creation",
+    ]
   }
 }
 

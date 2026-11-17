@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/common/url_constants.h"
 #include "components/sessions/core/session_id.h"
@@ -105,8 +106,10 @@
     return nil;
   }
 
-  BrowserWindowInterface* browser = CreateBrowserWindow(
-      BrowserWindowCreateParams(aProfile, /*from_user_gesture=*/false));
+  BrowserWindowInterface* browser =
+      waap::CreateBrowserWindowAndRecordCreationSource(
+          BrowserWindowCreateParams(aProfile, /*from_user_gesture=*/false),
+          waap::NewWindowCreationSource::kNewEmptyWindow);
   // TODO(crbug.com/452431839): Make a new NewTabTypes enum value for new tabs
   // made with AppleScript requests.
   chrome::NewTab(browser, NewTabTypes::kNewTabCommand);

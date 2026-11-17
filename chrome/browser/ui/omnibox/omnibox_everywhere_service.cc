@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -412,7 +413,8 @@ void OmniboxEverywhereService::OpenUrlWithInPlaceWindow(
     browser_params.initial_bounds = GetInPlaceWindowBounds();
     browser_params.initial_origin_specified =
         BrowserWindowCreateParams::ValueSpecified::kSpecified;
-    bwi = CreateBrowserWindow(std::move(browser_params));
+    bwi = waap::CreateBrowserWindowAndRecordCreationSource(
+        std::move(browser_params), waap::NewWindowCreationSource::kNavigation);
   }
 
   NavigateInBrowserWindow(bwi, url,

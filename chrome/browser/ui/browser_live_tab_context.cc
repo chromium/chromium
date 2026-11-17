@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_selection_state.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -586,7 +587,9 @@ sessions::LiveTabContext* BrowserLiveTabContext::Create(
   }
 
   BrowserWindowInterface* browser =
-      CreateBrowserWindow(std::move(*create_params));
+      waap::CreateBrowserWindowAndRecordCreationSource(
+          std::move(*create_params),
+          waap::NewWindowCreationSource::kSessionRestore);
 
   return BrowserLiveTabContext::From(browser);
 }

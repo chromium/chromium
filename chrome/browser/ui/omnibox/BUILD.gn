@@ -187,6 +187,7 @@ source_set("impl") {
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/views/search_engines",
+      "//chrome/browser/ui/waap:window_creation",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/composebox",
       "//chrome/browser/ui/webui/omnibox_everywhere",

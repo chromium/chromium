@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
@@ -314,7 +315,9 @@ BrowserWindowInterface* GetOrCreateBrowserForProfile(Profile* profile) {
   BrowserWindowInterface* browser =
       ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
   if (!browser) {
-    return CreateBrowserWindow(BrowserWindowCreateParams(profile, true));
+    return waap::CreateBrowserWindowAndRecordCreationSource(
+        BrowserWindowCreateParams(profile, true),
+        waap::NewWindowCreationSource::kNewEmptyWindow);
   }
   return browser;
 }

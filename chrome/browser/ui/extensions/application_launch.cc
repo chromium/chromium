@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -273,8 +274,10 @@ WebContents* OpenApplicationTab(Profile* profile,
 
     // TODO(erg): AppLaunchParams should pass user_gesture from the extension
     // system to here.
-    browser = CreateBrowserWindow(BrowserWindowCreateParams(
-        BrowserWindowInterface::TYPE_NORMAL, profile, true));
+    browser = waap::CreateBrowserWindowAndRecordCreationSource(
+        BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL, profile,
+                                  true),
+        waap::NewWindowCreationSource::kLaunch);
     browser->GetWindow()->Show();
     // There's no current tab in this browser window, so add a new one.
     disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
