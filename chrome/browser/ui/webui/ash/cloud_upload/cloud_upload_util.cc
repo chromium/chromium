@@ -10,10 +10,9 @@
 #include "ash/constants/ash_extension_constants.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
@@ -25,11 +24,18 @@
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "chromeos/ash/experiences/extensions/common/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
+#include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_service.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -258,12 +264,16 @@ bool IsODFSMounted(Profile* profile) {
 }
 
 bool IsOfficeWebAppInstalled(Profile* profile) {
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
-    return false;
-  }
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  // Whether the app is installed is a property of the user of the session, so
+  // look up the AppService for the user. Note that AccountId is annotated to
+  // the original Profile, including the one for Guest session.
+  CHECK(profile);
+  const AccountId& account_id =
+      CHECK_DEREF(AnnotatedAccountId::Get(profile->GetOriginalProfile()));
+  apps::AppService& app_service =
+      CHECK_DEREF(apps::AppServiceRegistry::Get()->Find(account_id));
   bool installed = false;
-  proxy->AppRegistryCache().ForOneApp(
+  app_service.AppRegistryCache().ForOneApp(
       ash::kMicrosoft365AppId, [&installed](const apps::AppUpdate& update) {
         installed = apps_util::IsInstalled(update.Readiness());
       });
