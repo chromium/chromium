@@ -4915,7 +4915,7 @@ void AXObjectCacheImpl::TableCellRoleMaybeChanged(Node* node) {
     }
     HandleRoleMaybeChangedWithCleanLayout(cell);
     for (auto* next = LayoutTreeBuilderTraversal::NextSibling(*cell); next;
-         next = LayoutTreeBuilderTraversal::PreviousSibling(*next)) {
+         next = LayoutTreeBuilderTraversal::NextSibling(*next)) {
       HandleRoleMaybeChangedWithCleanLayout(next);
     }
   }

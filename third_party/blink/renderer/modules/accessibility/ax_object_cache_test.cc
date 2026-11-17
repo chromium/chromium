@@ -1112,6 +1112,36 @@ TEST_F(AccessibilityTest, FormRoleUpdatesWhenAriaLabelIsAdded) {
   EXPECT_EQ(ax::mojom::Role::kForm, form->RoleValue());
 }
 
+// Test to make sure that inserting a cell updates the roles of all of the cells
+// after it in the row, not only the next one.
+TEST_F(AccessibilityTest, TableHeaderRolesUpdateWhenCellIsInsertedBefore) {
+  SetBodyInnerHTML(R"HTML(
+    <table>
+      <tr id="row"><th>A</th><th>B</th><th>C</th><th id="last">D</th></tr>
+      <tr><td>1</td><td>2</td><td>3</td><td>4</td></tr>
+    </table>
+  )HTML");
+
+  AXObject* last = GetAXObjectByElementId("last");
+  ASSERT_NE(nullptr, last);
+  EXPECT_EQ(ax::mojom::Role::kColumnHeader, last->RoleValue());
+
+  // A non-empty data cell at the start of the row makes the last header cell a
+  // row header.
+  Element* cell = GetDocument().CreateRawElement(html_names::kTdTag);
+  cell->setTextContent("x");
+  Element* row = GetElementById("row");
+  ASSERT_NE(nullptr, row);
+  row->insertBefore(cell, row->firstChild());
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  last = GetAXObjectByElementId("last");
+  ASSERT_NE(nullptr, last);
+  EXPECT_EQ(ax::mojom::Role::kRowHeader, last->RoleValue());
+}
+
 TEST_F(AccessibilityTest, AccessibilityFocus) {
   String test_content =
       "<body>"
