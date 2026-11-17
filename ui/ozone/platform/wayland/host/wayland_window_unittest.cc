@@ -65,9 +65,11 @@
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_popup.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
+#include "ui/ozone/platform/wayland/host/xdg_popup.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
@@ -4773,6 +4775,127 @@ TEST_P(WaylandWindowTest, MenuParentedToBubbleIsPopup) {
   ASSERT_TRUE(menu);
   EXPECT_TRUE(menu->AsWaylandPopup());
   EXPECT_FALSE(menu->AsWaylandBubble());
+}
+
+// Compositors such as Mutter dismiss a popup that neither overlaps nor touches
+// its parent. Verify that a menu requested as a child of a menu, but placed
+// over an open submenu of that menu, is parented to the submenu instead
+// (crbug.com/414635394), and that the requested parent is restored on hide.
+TEST_P(WaylandWindowTest, ReparentsMenuOutsideParentToOverlappedSubmenu) {
+  MockWaylandPlatformWindowDelegate menu_delegate(connection_.get());
+  auto menu = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::Rect(0, 0, 50, 100), &menu_delegate,
+      window_->GetWidget());
+  ASSERT_TRUE(menu);
+
+  // A submenu adjacent to the right edge of the menu.
+  MockWaylandPlatformWindowDelegate submenu_delegate(connection_.get());
+  auto submenu = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::Rect(50, 10, 50, 50), &submenu_delegate,
+      menu->GetWidget());
+  ASSERT_TRUE(submenu);
+  EXPECT_EQ(submenu->parent_window(), menu.get());
+
+  // A context menu over the submenu only, requested as a child of the menu.
+  MockWaylandPlatformWindowDelegate context_delegate(connection_.get());
+  auto context_menu = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::Rect(70, 20, 60, 60), &context_delegate,
+      menu->GetWidget());
+  ASSERT_TRUE(context_menu);
+  ASSERT_TRUE(context_menu->IsVisible());
+  EXPECT_EQ(context_menu->parent_window(), submenu.get());
+  EXPECT_EQ(context_menu->GetXdgParentWindow(), submenu.get());
+
+  // Hiding the submenu hides the context menu, and restores its parent.
+  submenu->Hide();
+  EXPECT_FALSE(context_menu->IsVisible());
+  EXPECT_EQ(context_menu->parent_window(), menu.get());
+
+  // A context menu that overlaps the menu keeps the menu as its parent, even
+  // if it also overlaps the submenu.
+  submenu->Show(false);
+  MockWaylandPlatformWindowDelegate context_delegate2(connection_.get());
+  auto context_menu2 = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::Rect(40, 20, 60, 60), &context_delegate2,
+      menu->GetWidget());
+  ASSERT_TRUE(context_menu2);
+  EXPECT_EQ(context_menu2->parent_window(), menu.get());
+}
+
+// A grabbing popup must be a child of the topmost grabbing popup. Verify that
+// with explicit grabs, a popup whose parent already has a grabbing child popup
+// does not take a grab.
+TEST_P(WaylandWindowTest, NoExplicitGrabIfParentHasGrabbingChild) {
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kUseWaylandExplicitGrab);
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    wl_seat_send_capabilities(server->seat()->resource(),
+                              WL_SEAT_CAPABILITY_POINTER);
+  });
+  constexpr uint32_t kPointerEnterSerial = 1;
+  constexpr uint32_t kButtonPressSerial = 2;
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* toplevel_surface = server->GetObject<wl::MockSurface>(id);
+    wl_pointer_send_enter(server->seat()->pointer()->resource(),
+                          kPointerEnterSerial, toplevel_surface->resource(),
+                          wl_fixed_from_int(0), wl_fixed_from_int(0));
+    wl_pointer_send_button(server->seat()->pointer()->resource(),
+                           kButtonPressSerial, 1002, BTN_RIGHT,
+                           WL_POINTER_BUTTON_STATE_PRESSED);
+  });
+
+  MockWaylandPlatformWindowDelegate menu_delegate(connection_.get());
+  auto menu = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::Rect(0, 0, 50, 100), &menu_delegate,
+      window_->GetWidget());
+  ASSERT_TRUE(menu);
+  EXPECT_TRUE(menu->AsWaylandPopup()->xdg_popup()->has_grab());
+
+  MockWaylandPlatformWindowDelegate submenu_delegate(connection_.get());
+  auto submenu = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::Rect(50, 10, 50, 50), &submenu_delegate,
+      menu->GetWidget());
+  ASSERT_TRUE(submenu);
+  EXPECT_TRUE(submenu->AsWaylandPopup()->xdg_popup()->has_grab());
+
+  // A context menu over the menu while the submenu is open: the menu is not
+  // the topmost grabbing popup, so the context menu must not grab.
+  MockWaylandPlatformWindowDelegate context_delegate(connection_.get());
+  auto context_menu = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::Rect(5, 20, 60, 60), &context_delegate,
+      menu->GetWidget());
+  ASSERT_TRUE(context_menu);
+  EXPECT_EQ(context_menu->parent_window(), menu.get());
+  EXPECT_FALSE(context_menu->AsWaylandPopup()->xdg_popup()->has_grab());
+  const uint32_t context_surface_id =
+      context_menu->root_surface()->get_surface_id();
+  PostToServerAndWait(
+      [context_surface_id](wl::TestWaylandServerThread* server) {
+        auto* test_popup = GetTestXdgPopupByWindow(server, context_surface_id);
+        ASSERT_TRUE(test_popup);
+        EXPECT_EQ(test_popup->grab_serial(), 0u);
+      });
+  context_menu.reset();
+
+  // A context menu over the submenu only is parented to the submenu, which is
+  // the topmost grabbing popup, so it grabs.
+  MockWaylandPlatformWindowDelegate context_delegate2(connection_.get());
+  auto context_menu2 = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::Rect(70, 20, 60, 60), &context_delegate2,
+      menu->GetWidget());
+  ASSERT_TRUE(context_menu2);
+  EXPECT_EQ(context_menu2->parent_window(), submenu.get());
+  EXPECT_TRUE(context_menu2->AsWaylandPopup()->xdg_popup()->has_grab());
+  const uint32_t context2_surface_id =
+      context_menu2->root_surface()->get_surface_id();
+  PostToServerAndWait([context2_surface_id, kButtonPressSerial](
+                          wl::TestWaylandServerThread* server) {
+    auto* test_popup = GetTestXdgPopupByWindow(server, context2_surface_id);
+    ASSERT_TRUE(test_popup);
+    EXPECT_EQ(test_popup->grab_serial(), kButtonPressSerial);
+  });
 }
 
 TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {

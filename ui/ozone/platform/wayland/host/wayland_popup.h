@@ -51,6 +51,10 @@ class WaylandPopup final : public WaylandWindow {
   // Creates a popup window, which is visible as a menu window.
   bool CreateShellPopup();
 
+  // Changes the parent of a menu that would be placed outside its parent to
+  // an open descendant menu of the parent that it overlaps or touches.
+  void MaybeReparentMenu();
+
   // Decorates the surface, which requires custom extensions based on exo.
   void UpdateDecoration();
 
@@ -69,6 +73,10 @@ class WaylandPopup final : public WaylandWindow {
   // Ozone/Wayland may not do so. Otherwise, a new state (if bounds has been
   // changed) won't be applied.
   bool schedule_redraw_ = false;
+
+  // The parent requested at creation when MaybeReparentMenu() changed it.
+  // Restored on Hide().
+  base::WeakPtr<WaylandWindow> requested_parent_;
 
   base::WeakPtrFactory<WaylandPopup> weak_ptr_factory_{this};
 };

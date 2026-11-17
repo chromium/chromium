@@ -2046,6 +2046,231 @@ class BookmarkBarViewTest21 : public BookmarkBarViewEventTestBase {
 
 VIEW_TEST(BookmarkBarViewTest21, ContextMenusForEmptyFolder)
 
+// Tests opening a context menu from the "(empty)" item of a nested empty
+// folder submenu and executing a command (crbug.com/414635394).
+class BookmarkBarViewTest21Nested : public BookmarkBarViewEventTestBase {
+ public:
+  BookmarkBarViewTest21Nested()
+      : step4_barrier_(base::BarrierClosure(
+            2,
+            CreateEventTask(this, &BookmarkBarViewTest21Nested::Step4))),
+        observer_(step4_barrier_) {}
+
+ protected:
+  void DoTestOnMessageLoop() override {
+    const auto& f1 = model_->bookmark_bar_node()->children().front();
+    model_->AddFolder(f1.get(), 3, u"F12");
+    OpenMenuByClick(GetBookmarkButton(0),
+                    CreateEventTask(this, &BookmarkBarViewTest21Nested::Step2));
+  }
+
+ private:
+  void Step2() {
+    views::MenuItemView* f12_item =
+        bb_view_->GetMenu()->GetSubmenu()->GetMenuItemAt(3);
+    ASSERT_NE(nullptr, f12_item);
+    ui_test_utils::MoveMouseToCenterAndClick(
+        f12_item, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
+        CreateEventTask(this, &BookmarkBarViewTest21Nested::Step3));
+  }
+
+  void Step3() {
+    views::MenuItemView* f12_item =
+        bb_view_->GetMenu()->GetSubmenu()->GetMenuItemAt(3);
+    ASSERT_TRUE(MenuIsShowing(f12_item));
+    views::SubmenuView* submenu = f12_item->GetSubmenu();
+    ASSERT_EQ(1u, submenu->children().size());
+    auto* empty_item =
+        AsViewClass<views::EmptyMenuMenuItem>(submenu->children().front());
+    ASSERT_NE(nullptr, empty_item);
+
+    // Right-click near the right edge of the "(empty)" item so the resulting
+    // context menu does not overlap the parent folder's menu widget.
+    gfx::Point right_side(empty_item->width() - 3, empty_item->height() / 2);
+    views::View::ConvertPointToScreen(empty_item, &right_side);
+    MoveMouseAndPress(right_side, ui_controls::RIGHT,
+                      ui_controls::DOWN | ui_controls::UP, step4_barrier_);
+  }
+
+  void Step4() {
+    // The "(empty)" submenu stays open under the context menu.
+    views::MenuItemView* f12_item =
+        bb_view_->GetMenu()->GetSubmenu()->GetMenuItemAt(3);
+    EXPECT_TRUE(MenuIsShowing(f12_item));
+
+    views::MenuItemView* context_menu = bb_view_->GetContextMenu();
+    ASSERT_TRUE(MenuIsShowing(context_menu));
+
+    views::MenuItemView* delete_menu =
+        context_menu->GetMenuItemByID(IDC_BOOKMARK_BAR_REMOVE);
+    ASSERT_TRUE(delete_menu);
+
+    ui_test_utils::MoveMouseToCenterAndClick(
+        delete_menu, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
+        CreateEventTask(this, &BookmarkBarViewTest21Nested::Step5));
+  }
+
+  void Step5() {
+    const auto& f1 = model_->bookmark_bar_node()->children().front();
+    ASSERT_EQ(3u, f1->children().size());
+    EXPECT_FALSE(MenuIsShowing(bb_view_->GetContextMenu()));
+    bb_view_->GetMenu()->GetMenuController()->Cancel(
+        views::MenuController::ExitType::kAll);
+    Done();
+  }
+
+  base::RepeatingClosure step4_barrier_;
+  BookmarkContextMenuNotificationObserver observer_;
+};
+
+VIEW_TEST(BookmarkBarViewTest21Nested, ContextMenusForNestedEmptyFolder)
+
+// Tests dismissing a context menu opened from a nested empty folder submenu by
+// clicking outside all menus, verifying Wayland popup teardown order.
+class BookmarkBarViewTest21NestedDismiss : public BookmarkBarViewEventTestBase {
+ public:
+  BookmarkBarViewTest21NestedDismiss()
+      : step4_barrier_(base::BarrierClosure(
+            2,
+            CreateEventTask(this, &BookmarkBarViewTest21NestedDismiss::Step4))),
+        observer_(step4_barrier_) {}
+
+ protected:
+  void DoTestOnMessageLoop() override {
+    const auto& f1 = model_->bookmark_bar_node()->children().front();
+    model_->AddFolder(f1.get(), 3, u"F12");
+    OpenMenuByClick(
+        GetBookmarkButton(0),
+        CreateEventTask(this, &BookmarkBarViewTest21NestedDismiss::Step2));
+  }
+
+ private:
+  void Step2() {
+    views::MenuItemView* f12_item =
+        bb_view_->GetMenu()->GetSubmenu()->GetMenuItemAt(3);
+    ASSERT_NE(nullptr, f12_item);
+    ui_test_utils::MoveMouseToCenterAndClick(
+        f12_item, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
+        CreateEventTask(this, &BookmarkBarViewTest21NestedDismiss::Step3));
+  }
+
+  void Step3() {
+    views::MenuItemView* f12_item =
+        bb_view_->GetMenu()->GetSubmenu()->GetMenuItemAt(3);
+    ASSERT_TRUE(MenuIsShowing(f12_item));
+    views::SubmenuView* submenu = f12_item->GetSubmenu();
+    ASSERT_EQ(1u, submenu->children().size());
+    auto* empty_item =
+        AsViewClass<views::EmptyMenuMenuItem>(submenu->children().front());
+    ASSERT_NE(nullptr, empty_item);
+
+    gfx::Point right_side(empty_item->width() - 3, empty_item->height() / 2);
+    views::View::ConvertPointToScreen(empty_item, &right_side);
+    MoveMouseAndPress(right_side, ui_controls::RIGHT,
+                      ui_controls::DOWN | ui_controls::UP, step4_barrier_);
+  }
+
+  void Step4() {
+    // The "(empty)" submenu stays open under the context menu.
+    views::MenuItemView* f12_item =
+        bb_view_->GetMenu()->GetSubmenu()->GetMenuItemAt(3);
+    EXPECT_TRUE(MenuIsShowing(f12_item));
+
+    views::MenuItemView* context_menu = bb_view_->GetContextMenu();
+    ASSERT_TRUE(MenuIsShowing(context_menu));
+
+    gfx::Point mouse_loc;
+    views::View::ConvertPointToScreen(bb_view_, &mouse_loc);
+    MoveMouseAndPress(
+        mouse_loc, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
+        CreateEventTask(this, &BookmarkBarViewTest21NestedDismiss::Step5));
+  }
+
+  void Step5() {
+    EXPECT_FALSE(MenuIsShowing());
+    EXPECT_FALSE(MenuIsShowing(bb_view_->GetContextMenu()));
+    Done();
+  }
+
+  base::RepeatingClosure step4_barrier_;
+  BookmarkContextMenuNotificationObserver observer_;
+};
+
+VIEW_TEST(BookmarkBarViewTest21NestedDismiss,
+          ContextMenusForNestedEmptyFolderDismiss)
+
+// Tests opening a context menu from a folder row while that folder's submenu
+// is open, then executing a command (crbug.com/397490962).
+class BookmarkBarViewTest21FolderRow : public BookmarkBarViewEventTestBase {
+ public:
+  BookmarkBarViewTest21FolderRow()
+      : step4_barrier_(base::BarrierClosure(
+            2,
+            CreateEventTask(this, &BookmarkBarViewTest21FolderRow::Step4))),
+        observer_(step4_barrier_) {}
+
+ protected:
+  void DoTestOnMessageLoop() override {
+    OpenMenuByClick(
+        GetBookmarkButton(0),
+        CreateEventTask(this, &BookmarkBarViewTest21FolderRow::Step2));
+  }
+
+ private:
+  void Step2() {
+    views::MenuItemView* f11_item =
+        bb_view_->GetMenu()->GetSubmenu()->GetMenuItemAt(1);
+    ASSERT_NE(nullptr, f11_item);
+    ui_test_utils::MoveMouseToCenterAndClick(
+        f11_item, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
+        CreateEventTask(this, &BookmarkBarViewTest21FolderRow::Step3));
+  }
+
+  void Step3() {
+    views::MenuItemView* f11_item =
+        bb_view_->GetMenu()->GetSubmenu()->GetMenuItemAt(1);
+    ASSERT_TRUE(MenuIsShowing(f11_item));
+
+    // Right-click near the left edge of the folder row so the context menu
+    // is anchored in the outer menu rather than in the open submenu.
+    gfx::Point left_side(3, f11_item->height() / 2);
+    views::View::ConvertPointToScreen(f11_item, &left_side);
+    MoveMouseAndPress(left_side, ui_controls::RIGHT,
+                      ui_controls::DOWN | ui_controls::UP, step4_barrier_);
+  }
+
+  void Step4() {
+    views::MenuItemView* context_menu = bb_view_->GetContextMenu();
+    ASSERT_TRUE(MenuIsShowing(context_menu));
+
+    views::MenuItemView* delete_menu =
+        context_menu->GetMenuItemByID(IDC_BOOKMARK_BAR_REMOVE);
+    ASSERT_TRUE(delete_menu);
+
+    ui_test_utils::MoveMouseToCenterAndClick(
+        delete_menu, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
+        CreateEventTask(this, &BookmarkBarViewTest21FolderRow::Step5));
+  }
+
+  void Step5() {
+    // F11 was removed from F1.
+    const auto& f1 = model_->bookmark_bar_node()->children().front();
+    ASSERT_EQ(2u, f1->children().size());
+    EXPECT_EQ(u"f1b", f1->children()[1]->GetTitle());
+    EXPECT_FALSE(MenuIsShowing(bb_view_->GetContextMenu()));
+    if (bb_view_->GetMenu()) {
+      bb_view_->GetMenu()->GetMenuController()->Cancel(
+          views::MenuController::ExitType::kAll);
+    }
+    Done();
+  }
+
+  base::RepeatingClosure step4_barrier_;
+  BookmarkContextMenuNotificationObserver observer_;
+};
+
+VIEW_TEST(BookmarkBarViewTest21FolderRow, ContextMenuOnOpenFolderRow)
+
 // Test that closing the source browser window while dragging a bookmark does
 // not cause a crash.
 class BookmarkBarViewTest22 : public BookmarkBarViewDragTestBase {

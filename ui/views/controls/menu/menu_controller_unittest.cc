@@ -3129,7 +3129,6 @@ TEST_F(MenuControllerTest, RepostEventToEmptyMenuItem) {
   EXPECT_EQ(menu_controller_delegate(), current_controller_delegate());
 }
 
-#if BUILDFLAG(IS_OZONE)
 // Tests that if a context menu is opened above a submenu from a top level
 // bookmark folder with no parent, and a right-click occurs over the submenu,
 // the folder does not get dismissed. This is a regression test for
@@ -3138,15 +3137,6 @@ TEST_F(MenuControllerTest, RepostEventToEmptyMenuItem) {
 TEST_F(MenuControllerTest,
        TopLevelBookmarkFolderContextMenuShouldNotDismissFolder) {
   CreateMenu();
-  // Override the platform property to force
-  // PlatformSetsParentForNonTopLevelWindows()
-  // to return true for this test.
-  using SupportsForTest =
-      ui::OzonePlatform::PlatformProperties::SupportsForTest;
-  base::AutoReset<SupportsForTest> auto_reset(
-      &ui::OzonePlatform::PlatformProperties::
-          override_set_parent_for_non_top_level_windows_for_test,
-      SupportsForTest::kYes);
 
   MenuItemView* root_item = menu_item();
   ASSERT_EQ(nullptr, root_item->GetParentMenuItem());
@@ -3190,7 +3180,6 @@ TEST_F(MenuControllerTest,
   EXPECT_FALSE(context_menu->SubmenuIsShowing());
   EXPECT_FALSE(root_item->SubmenuIsShowing());
 }
-#endif  // BUILDFLAG(IS_OZONE)
 
 // Drag the mouse from an external view into a menu
 // When the mouse leaves the menu while still in the process of dragging

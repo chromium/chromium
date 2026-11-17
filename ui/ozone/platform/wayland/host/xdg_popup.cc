@@ -23,6 +23,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 #include "ui/ozone/platform/wayland/host/xdg_toplevel.h"
 #include "ui/ozone/public/ozone_switches.h"
 
@@ -169,11 +170,26 @@ bool XdgPopup::Initialize(const InitParams& params) {
   }
   connection()->window_manager()->NotifyWindowRoleAssigned(window());
 
-  std::optional<bool> parent_xdg_popup_has_grab;
+  // The parent of a grabbing popup must either be an xdg_toplevel surface or
+  // another xdg_popup with an explicit grab. It must also be the topmost
+  // grabbing popup, which it is not if it already has another grabbing child
+  // popup, e.g. when a context menu is opened from a menu row while the row's
+  // submenu is open. Compositors raise a protocol error otherwise.
+  bool parent_allows_grab = true;
   if (auto* parent_popup = xdg_parent->AsWaylandPopup()) {
-    parent_xdg_popup_has_grab.emplace(parent_popup->xdg_popup()->has_grab());
+    parent_allows_grab = parent_popup->xdg_popup()->has_grab();
   }
-  GrabIfPossible(connection(), parent_xdg_popup_has_grab);
+  for (WaylandWindow* sibling :
+       connection()->window_manager()->GetAllWindows()) {
+    auto* sibling_popup = sibling->AsWaylandPopup();
+    if (sibling != window() && sibling_popup && sibling_popup->xdg_popup() &&
+        sibling_popup->xdg_popup()->has_grab() &&
+        sibling->GetXdgParentWindow() == xdg_parent) {
+      parent_allows_grab = false;
+      break;
+    }
+  }
+  GrabIfPossible(connection(), parent_allows_grab);
 
   static constexpr xdg_popup_listener kXdgPopupListener = {
       .configure = &OnConfigure,
@@ -293,7 +309,7 @@ wl::Object<xdg_positioner> XdgPopup::CreatePositioner() {
 }
 
 void XdgPopup::GrabIfPossible(WaylandConnection* connection,
-                              std::optional<bool> parent_shell_popup_has_grab) {
+                              bool parent_allows_grab) {
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (!cmd_line->HasSwitch(switches::kUseWaylandExplicitGrab)) {
     return;
@@ -317,10 +333,7 @@ void XdgPopup::GrabIfPossible(WaylandConnection* connection,
     return;
   }
 
-  // The parent of a grabbing popup must either be an xdg_toplevel surface or
-  // another xdg_popup with an explicit grab. If it is a popup that did not take
-  // an explicit grab, an error will be raised, so early out if that's the case.
-  if (!parent_shell_popup_has_grab.value_or(true)) {
+  if (!parent_allows_grab) {
     return;
   }
 

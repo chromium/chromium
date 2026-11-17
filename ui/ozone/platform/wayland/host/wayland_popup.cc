@@ -23,10 +23,27 @@
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
+#include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 #include "ui/ozone/platform/wayland/host/xdg_popup.h"
 #include "ui/ozone/platform/wayland/host/xdg_surface.h"
 
 namespace ui {
+
+namespace {
+
+// Returns true if `a` and `b` overlap or share part of an edge. Compositors
+// such as Mutter dismiss a popup whose surface does neither with its parent's.
+bool OverlapsOrIsAdjacent(const gfx::Rect& a, const gfx::Rect& b) {
+  if (a.Intersects(b)) {
+    return true;
+  }
+  const bool overlap_x = a.x() < b.right() && b.x() < a.right();
+  const bool overlap_y = a.y() < b.bottom() && b.y() < a.bottom();
+  return ((a.x() == b.right() || a.right() == b.x()) && overlap_y) ||
+         ((a.y() == b.bottom() || a.bottom() == b.y()) && overlap_x);
+}
+
+}  // namespace
 
 WaylandPopup::WaylandPopup(PlatformWindowDelegate* delegate,
                            WaylandConnection* connection,
@@ -49,6 +66,8 @@ WaylandPopup::~WaylandPopup() {
 
 bool WaylandPopup::CreateShellPopup() {
   CHECK(parent_window() && !xdg_popup_, base::NotFatalUntil::M163);
+
+  MaybeReparentMenu();
 
   // Use `xdg_parent_window` and do appropriate origin transformations when
   // sending requests through Wayland.
@@ -113,6 +132,44 @@ bool WaylandPopup::CreateShellPopup() {
   return true;
 }
 
+void WaylandPopup::MaybeReparentMenu() {
+  // A menu can be requested as a child of a menu while it is placed over a
+  // descendant of that menu instead, e.g. a context menu opened from an empty
+  // nested submenu (crbug.com/414635394). If it neither overlaps nor touches
+  // its requested parent, use the deepest open descendant menu that it does
+  // overlap or touch as the parent.
+  if (type() != PlatformWindowType::kMenu) {
+    return;
+  }
+  WaylandWindow* const parent = GetXdgParentWindow();
+  const gfx::Rect bounds = GetBoundsInDIP();
+  if (!parent || OverlapsOrIsAdjacent(bounds, parent->GetBoundsInDIP())) {
+    return;
+  }
+  WaylandWindow* new_parent = nullptr;
+  for (WaylandWindow* current = parent; current;) {
+    WaylandWindow* child = nullptr;
+    for (WaylandWindow* window :
+         connection()->window_manager()->GetAllWindows()) {
+      if (window != this && window->AsWaylandPopup() &&
+          window->type() == PlatformWindowType::kMenu && window->IsVisible() &&
+          window->GetXdgParentWindow() == current) {
+        child = window;
+        break;
+      }
+    }
+    if (child && OverlapsOrIsAdjacent(bounds, child->GetBoundsInDIP())) {
+      new_parent = child;
+    }
+    current = child;
+  }
+  if (!new_parent) {
+    return;
+  }
+  requested_parent_ = parent_window()->AsWeakPtr();
+  set_parent_window(new_parent);
+}
+
 void WaylandPopup::Show(bool inactive) {
   if (xdg_popup_) {
     return;
@@ -170,6 +227,12 @@ void WaylandPopup::Hide() {
     parent_window()->set_child_popup(nullptr);
   }
   xdg_popup_.reset();
+
+  // Restore the requested parent so that the next Show() starts from it.
+  if (requested_parent_) {
+    set_parent_window(requested_parent_.get());
+    requested_parent_.reset();
+  }
 
   WaylandWindow::Hide();
   // Mutter compositor crashes if we don't reset subsurfaces when hiding.
