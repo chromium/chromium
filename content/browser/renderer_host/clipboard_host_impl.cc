@@ -7,9 +7,11 @@
 #include <algorithm>
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -19,7 +21,6 @@
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/pickle.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1400,13 +1401,17 @@ void ClipboardHostImpl::OnReadAvailableTypesForUpdate(
 
   // Static list of allowed standard MIME types
   // https://w3c.github.io/clipboard-apis/#mandatory-data-types-x
-  auto filtered_types = base::STLSetIntersection<std::vector<std::u16string>>(
-      base::flat_set<std::u16string>{
+  static constexpr auto kAllowedTypes =
+      base::MakeFixedFlatSet<std::u16string_view>({
           ui::kMimeTypePng16,
           ui::kMimeTypeHtml16,
           ui::kMimeTypePlainText16,
-      },
-      base::flat_set<std::u16string>(std::move(types)));
+      });
+  std::erase_if(types, [](const std::u16string& type) {
+    return !kAllowedTypes.contains(type);
+  });
+  std::vector<std::u16string> filtered_types =
+      base::flat_set<std::u16string>(std::move(types)).extract();
 
   clipboard_listener_->OnClipboardDataChanged(
       filtered_types, last_change_id_.emplace(change_id));
