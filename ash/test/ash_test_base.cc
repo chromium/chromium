@@ -98,7 +98,7 @@ namespace {
 // Constants -------------------------------------------------------------------
 
 constexpr char kKioskUserEmail[] =
-    "fake_kiosk@kioks-apps.device-local.localhost";
+    "fake_kiosk@kiosk-apps.device-local.localhost";
 
 // AshEventGeneratorDelegate ---------------------------------------------------
 
