@@ -174,3 +174,18 @@ TEST_F(SearchEngineUtilTemplateUrlTest, GetUrlForAim_QsubtsFlag) {
                      base::Time::Now(), u"test", std::nullopt, {});
   EXPECT_TRUE(net::GetValueForKeyInQuery(url, "qsubts", &qsubts));
 }
+
+// Without context, the SRP URL keeps the given params and `aep`, and adds no
+// `udm` or `cinpts`.
+TEST_F(SearchEngineUtilTemplateUrlTest, GetUrlForContextualSrp_NoContext) {
+  GURL url = GetUrlForContextualSrp(
+      &template_url_service(), omnibox::ChromeAimEntryPoint(7),
+      base::Time::Now(), u"test", std::nullopt, {{"imgn", "1"}});
+  std::string value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "imgn", &value));
+  EXPECT_EQ(value, "1");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "aep", &value));
+  EXPECT_EQ(value, "7");
+  EXPECT_FALSE(net::GetValueForKeyInQuery(url, "udm", &value));
+  EXPECT_FALSE(net::GetValueForKeyInQuery(url, "cinpts", &value));
+}

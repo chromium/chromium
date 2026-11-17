@@ -90,10 +90,14 @@ class ContextualSearchContextController {
 
   // The possible search url types.
   enum class SearchUrlType {
-    // The standard "All" tab search experience
+    // The Lens results URL (`udm=24` or `udm=26`), sending a single file as
+    // `vsrid`.
     kStandard = 0,
     // The AIM search type.
     kAim = 1,
+    // The Search results page, with no `udm`. Attached context is always sent
+    // as `cinpts`.
+    kSrp = 2,
   };
 
   // Struct containing information needed to construct a search url.

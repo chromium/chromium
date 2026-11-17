@@ -734,6 +734,8 @@ void ComposeboxQueryController::CreateSearchUrl(
 
   bool is_aim_search =
       search_url_request_info->search_url_type == SearchUrlType::kAim;
+  bool is_srp_search =
+      search_url_request_info->search_url_type == SearchUrlType::kSrp;
   bool should_create_multimodal_url =
       !active_files_.empty() && !search_url_request_info->file_tokens.empty();
   bool should_wait_for_uploads =
@@ -766,9 +768,9 @@ void ComposeboxQueryController::CreateSearchUrl(
         {kVoiceSearchQueryParameterKey, "1"});
   }
 
-  if (is_aim_search) {
-    // For AIM queries, add the added inputs param to the request url params,
-    // regardless of if any of the context was a Lens upload.
+  if (is_aim_search || is_srp_search) {
+    // For AIM and SRP queries, add the added inputs param to the request url
+    // params, regardless of if any of the context was a Lens upload.
     bool include_files_without_lens_usage_intent =
         !search_url_request_info->image_crop.has_value();
     lens::AddedInputs added_inputs =
@@ -802,8 +804,9 @@ void ComposeboxQueryController::CreateSearchUrl(
   size_t num_validated_files = 0;
   if (should_create_multimodal_url && cluster_info_.has_value()) {
     std::unique_ptr<lens::LensOverlayContextualInputs> contextual_inputs =
-        CreateContextualInputs(search_url_request_info->file_tokens,
-                               /*send_upload_type=*/is_aim_search);
+        CreateContextualInputs(
+            search_url_request_info->file_tokens,
+            /*send_upload_type=*/is_aim_search || is_srp_search);
     const FileInfo* last_active_lens_file = nullptr;
     bool has_image_upload = false;
     bool has_drive_id = false;
@@ -925,6 +928,19 @@ void ComposeboxQueryController::CreateSearchUrl(
           (!suppress_lns_surface_param_if_no_image_ || has_image_upload);
       std::string lns_surface =
           should_send_lns_surface ? kLnsSurfaceParameterValue : std::string();
+      if (is_srp_search) {
+        // For SRP, send the context as `cinpts`, even for a single file,
+        // skipping the URL building below.
+        std::move(callback).Run(GetUrlForContextualSrp(
+            template_url_service_, search_url_request_info->aim_entry_point,
+            search_url_request_info->query_start_time,
+            base::UTF8ToUTF16(search_url_request_info->query_text),
+            search_url_request_info->invocation_source,
+            std::move(search_url_request_info->additional_params),
+            cluster_info_->search_session_id(), contextual_inputs.get(),
+            lns_surface));
+        return;
+      }
       if (contextual_inputs->inputs_size() == 1 && !is_aim_search &&
           !has_drive_id) {
         bool is_raw_file = last_active_lens_file->request_id->media_type() ==
@@ -990,6 +1006,16 @@ void ComposeboxQueryController::CreateSearchUrl(
   // Lens contextual inputs, use the non-Lens AIM url creation flow.
   // TODO(crbug.com/432125987): Handle file reupload after cluster info
   // expiration.
+  if (is_srp_search) {
+    // SRP falls back to an SRP URL without context, never AIM.
+    std::move(callback).Run(GetUrlForContextualSrp(
+        template_url_service_, search_url_request_info->aim_entry_point,
+        search_url_request_info->query_start_time,
+        base::UTF8ToUTF16(search_url_request_info->query_text),
+        search_url_request_info->invocation_source,
+        std::move(search_url_request_info->additional_params)));
+    return;
+  }
   std::move(callback).Run(GetUrlForAim(
       template_url_service_, search_url_request_info->aim_entry_point,
       search_url_request_info->query_start_time,

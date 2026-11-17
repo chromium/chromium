@@ -343,4 +343,20 @@ GURL GetUrlForMultimodalSearch(
     const std::u16string& query_text = std::u16string(),
     std::map<std::string, std::string> additional_params = {});
 
+// Retrieves the URL for the Search results page. Unlike `GetUrlForAim()`, it
+// doesn't add `udm`.
+// `aim_entrypoint` (aep) is the source of the request.
+// `contextual_inputs` (cinpts) are the uploaded inputs to send, if any. They're
+// sent with `search_session_id` (gsessionid) and `lns_surface`.
+GURL GetUrlForContextualSrp(
+    TemplateURLService* turl_service,
+    omnibox::ChromeAimEntryPoint aim_entrypoint,
+    const base::Time& query_start_time,
+    const std::u16string& query_text,
+    const std::optional<lens::LensOverlayInvocationSource> invocation_source,
+    std::map<std::string, std::string> additional_params,
+    const std::string& search_session_id = std::string(),
+    const lens::LensOverlayContextualInputs* contextual_inputs = nullptr,
+    const std::string& lns_surface = std::string());
+
 #endif  // COMPONENTS_SEARCH_ENGINES_UTIL_H_

@@ -5,6 +5,7 @@
 #include "components/contextual_search/internal/composebox_query_controller.h"
 
 #include <algorithm>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -615,6 +616,24 @@ class ComposeboxQueryControllerTest
     lens::AddedInputs proto;
     EXPECT_TRUE(proto.ParseFromString(serialized_proto));
     return proto;
+  }
+
+  // Creates the search URL for the query "hello" with `type`.
+  GURL CreateSearchUrlForType(
+      ComposeboxQueryController::SearchUrlType type,
+      std::vector<base::UnguessableToken> file_tokens = {},
+      std::map<std::string, std::string> additional_params = {}) {
+    auto search_url_request_info =
+        std::make_unique<CreateSearchUrlRequestInfo>();
+    search_url_request_info->query_text = "hello";
+    search_url_request_info->query_start_time = kTestQueryStartTime;
+    search_url_request_info->search_url_type = type;
+    search_url_request_info->file_tokens = std::move(file_tokens);
+    search_url_request_info->additional_params = std::move(additional_params);
+    base::test::TestFuture<GURL> url_future;
+    controller().CreateSearchUrl(std::move(search_url_request_info),
+                                 url_future.GetCallback());
+    return url_future.Take();
   }
 
  protected:
@@ -1347,6 +1366,43 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_TRUE(url_future.IsReady());
   EXPECT_FALSE(controller().has_stashed_search_url_request());
   EXPECT_FALSE(url_future.Take().is_empty());
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateSearchUrl_SrpWaitsForUploadsWithNonBlockingUrlNavigation) {
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_viewport_images=*/false,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false,
+      /*attach_page_title_and_url_to_suggest_requests=*/false,
+      /*enable_send_vit_for_single_context_next_queries=*/true,
+      /*enable_send_raw_file_media_types=*/false,
+      /*enable_only_send_aai_for_modality_chips=*/true,
+      /*exclude_raw_and_drive_files=*/true,
+      /*enable_contextual_tasks_upload_chunking=*/false,
+      /*enable_non_blocking_url_navigation=*/true);
+  controller().InitializeIfNeeded();
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+  EXPECT_TRUE(controller().is_any_context_uploading());
+
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "test";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->search_url_type =
+      ComposeboxQueryController::SearchUrlType::kSrp;
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+
+  EXPECT_FALSE(url_future.IsReady());
+  EXPECT_TRUE(controller().has_stashed_search_url_request());
 }
 
 TEST_F(ComposeboxQueryControllerTest,
@@ -5400,6 +5456,74 @@ TEST_F(ComposeboxQueryControllerTest,
   ASSERT_EQ(contextual_inputs.inputs_size(), 1);
   EXPECT_EQ(lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE,
             contextual_inputs.inputs(0).request_id().media_type());
+}
+
+TEST_F(ComposeboxQueryControllerTest, SrpSearch_SendsImageAsCinptsWithoutUdm) {
+  controller().InitializeIfNeeded();
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+  StartImageFileUploadFlow(file_token, CreateJPGBytes(100, 100), image_options);
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kImage);
+
+  GURL url = CreateSearchUrlForType(
+      ComposeboxQueryController::SearchUrlType::kSrp, {file_token});
+  std::string value;
+  EXPECT_FALSE(
+      net::GetValueForKeyInQuery(url, kSearchModeQueryParameterKey, &value));
+  EXPECT_FALSE(
+      net::GetValueForKeyInQuery(url, kLnsModeQueryParameterKey, &value));
+  EXPECT_FALSE(net::GetValueForKeyInQuery(url, kRequestIdParameterKey, &value));
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(url, kSessionIdQueryParameterKey, &value));
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(url, kAimMultiContextQueryParameter, &value));
+  lens::LensOverlayContextualInputs contextual_inputs =
+      GetContextualInputsFromUrl(url.spec());
+  ASSERT_EQ(contextual_inputs.inputs_size(), 1);
+  EXPECT_EQ(contextual_inputs.inputs(0).upload_type(),
+            lens::LensOverlayContextualInputUploadType::
+                CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT);
+}
+
+TEST_F(ComposeboxQueryControllerTest, SrpSearch_TextOnlyWithoutUdm) {
+  controller().InitializeIfNeeded();
+
+  GURL url = CreateSearchUrlForType(
+      ComposeboxQueryController::SearchUrlType::kSrp, {}, {{"imgn", "1"}});
+  std::string value;
+  EXPECT_FALSE(
+      net::GetValueForKeyInQuery(url, kSearchModeQueryParameterKey, &value));
+  EXPECT_FALSE(
+      net::GetValueForKeyInQuery(url, kContextualInputsParameterKey, &value));
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "imgn", &value));
+  EXPECT_EQ(value, "1");
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(url, kAimMultiContextQueryParameter, &value));
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       SrpSearch_ExpiredClusterInfoSendsNoContext) {
+  controller().set_enable_cluster_info_ttl(true);
+  controller().InitializeIfNeeded();
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token, /*file_data=*/std::vector<uint8_t>());
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+  task_environment().FastForwardBy(base::Hours(1));
+
+  GURL url = CreateSearchUrlForType(
+      ComposeboxQueryController::SearchUrlType::kSrp, {file_token});
+  std::string value;
+  EXPECT_FALSE(
+      net::GetValueForKeyInQuery(url, kSearchModeQueryParameterKey, &value));
+  EXPECT_FALSE(
+      net::GetValueForKeyInQuery(url, kContextualInputsParameterKey, &value));
+  EXPECT_FALSE(
+      net::GetValueForKeyInQuery(url, kSessionIdQueryParameterKey, &value));
 }
 
 TEST_F(ComposeboxQueryControllerTest,

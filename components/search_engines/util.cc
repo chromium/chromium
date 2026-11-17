@@ -163,6 +163,25 @@ GURL GetBaseSearchUrl(TemplateURLService* turl_service,
   return result_url;
 }
 
+GURL AppendContextualInputsParams(
+    const GURL& url,
+    const std::string& search_session_id,
+    const lens::LensOverlayContextualInputs& contextual_inputs,
+    const std::string& lns_surface) {
+  std::string serialized_contextual_inputs;
+  CHECK(contextual_inputs.SerializeToString(&serialized_contextual_inputs));
+  std::string encoded_contextual_inputs;
+  base::Base64UrlEncode(serialized_contextual_inputs,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_contextual_inputs);
+  GURL result_url = net::AppendOrReplaceQueryParameter(
+      url, kContextualInputsParameterKey, encoded_contextual_inputs);
+  result_url = net::AppendOrReplaceQueryParameter(
+      result_url, kSearchSessionIdParameterKey, search_session_id);
+  return net::AppendOrReplaceQueryParameter(result_url, kLnsSurfaceParameterKey,
+                                            lns_surface);
+}
+
 std::string StringifyDuplicates(
     const std::map<int, size_t>& duplicate_counts_by_id) {
   if (duplicate_counts_by_id.empty()) {
@@ -1255,12 +1274,6 @@ GURL GetUrlForMultimodalSearch(
   GURL result_url =
       GetBaseSearchUrl(turl_service, aim_entrypoint, is_aim_search,
                        query_start_time, query_text, additional_params);
-  std::string serialized_contextual_inputs;
-  CHECK(contextual_inputs->SerializeToString(&serialized_contextual_inputs));
-  std::string encoded_contextual_inputs;
-  base::Base64UrlEncode(serialized_contextual_inputs,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_contextual_inputs);
   if (invocation_source.has_value()) {
     // If the invocation source is set, this is a Lens query that is migrated
     // to the common ContextualSearchSessionHandle, which is only used for the
@@ -1268,11 +1281,31 @@ GURL GetUrlForMultimodalSearch(
     result_url = lens::AppendInvocationSourceParamToURL(
         result_url, *invocation_source, /*is_contextual_tasks=*/true);
   }
-  result_url = net::AppendOrReplaceQueryParameter(
-      result_url, kContextualInputsParameterKey, encoded_contextual_inputs);
-  result_url = net::AppendOrReplaceQueryParameter(
-      result_url, kSearchSessionIdParameterKey, search_session_id);
-  result_url = net::AppendOrReplaceQueryParameter(
-      result_url, kLnsSurfaceParameterKey, lns_surface);
+  return AppendContextualInputsParams(result_url, search_session_id,
+                                      *contextual_inputs, lns_surface);
+}
+
+GURL GetUrlForContextualSrp(
+    TemplateURLService* turl_service,
+    omnibox::ChromeAimEntryPoint aim_entrypoint,
+    const base::Time& query_start_time,
+    const std::u16string& query_text,
+    const std::optional<lens::LensOverlayInvocationSource> invocation_source,
+    std::map<std::string, std::string> additional_params,
+    const std::string& search_session_id,
+    const lens::LensOverlayContextualInputs* contextual_inputs,
+    const std::string& lns_surface) {
+  GURL result_url = GetBaseSearchUrl(
+      turl_service, aim_entrypoint, /*is_aim_search=*/false, query_start_time,
+      query_text, std::move(additional_params),
+      /*append_multimodal_udm_if_not_aim=*/false);
+  if (invocation_source.has_value()) {
+    result_url = lens::AppendInvocationSourceParamToURL(
+        result_url, *invocation_source, /*is_contextual_tasks=*/true);
+  }
+  if (contextual_inputs && contextual_inputs->inputs_size() > 0) {
+    result_url = AppendContextualInputsParams(result_url, search_session_id,
+                                              *contextual_inputs, lns_surface);
+  }
   return result_url;
 }
