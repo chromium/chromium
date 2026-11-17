@@ -243,6 +243,19 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   // clicked. This is per tab dependent.
   virtual bool AreLensEntrypointsVisible() const;
 
+  // Returns true if the "Ask Google about this page" contextual search action
+  // can be shown and fulfilled without Lens, e.g. on desktop Android where the
+  // action opens the Contextual Tasks (CoBrowse) side panel in zero state. When
+  // true, the action is shown even if Lens is not enabled.
+  virtual bool CanOpenCoBrowsePanelWithoutLens() const;
+
+  // Returns true if contextual zero-prefix suggestions can be requested and
+  // fulfilled without Lens, e.g. on desktop Android where clicking a
+  // contextual suggestion issues an AI Mode query with the current tab as
+  // context in the contextual tasks side panel. When true, contextual
+  // suggestions are requested and shown even if Lens is not enabled.
+  virtual bool CanFulfillContextualSuggestionsWithoutLens() const;
+
   // Returns true if the page contains the paywall hint in the HTML. Returns
   // false if the page does not contain the paywall hint. Returns std::nullopt
   // if the page content wasn't extracted and therefore the signal could not be

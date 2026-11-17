@@ -56,6 +56,15 @@ bool AutocompleteProviderClient::AreLensEntrypointsVisible() const {
   return false;
 }
 
+bool AutocompleteProviderClient::CanOpenCoBrowsePanelWithoutLens() const {
+  return false;
+}
+
+bool AutocompleteProviderClient::CanFulfillContextualSuggestionsWithoutLens()
+    const {
+  return false;
+}
+
 std::optional<bool> AutocompleteProviderClient::IsPagePaywalled() const {
   return std::nullopt;
 }

@@ -3449,6 +3449,45 @@ TEST_F(ZeroSuggestProviderTest, SuggestUrlIncludesCtxus) {
   }
 }
 
+TEST_F(ZeroSuggestProviderTest,
+       SuggestUrlIncludesCtxusWhenFulfillableWithoutLens) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::ContextualSearch>
+      config;
+  config.Get().contextual_url_suggest_param = "1";
+
+  EXPECT_CALL(*client_, ShouldSendContextualUrlSuggestParam())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*client_, IsLensEnabled()).WillRepeatedly(testing::Return(false));
+
+  {
+    SCOPED_TRACE("Lens disabled, Lens-free fulfillment unavailable: no param.");
+    EXPECT_CALL(*client_, CanFulfillContextualSuggestionsWithoutLens())
+        .WillRepeatedly(testing::Return(false));
+    GURL url =
+        GetProviderRequestURL(ZeroPrefixInputForWeb(/*is_prefetch=*/false));
+    EXPECT_EQ(url.spec().find("ctxus=1"), std::string::npos);
+  }
+  {
+    SCOPED_TRACE(
+        "Lens disabled, Lens-free fulfillment available (e.g. desktop "
+        "Android): web gets the param.");
+    EXPECT_CALL(*client_, CanFulfillContextualSuggestionsWithoutLens())
+        .WillRepeatedly(testing::Return(true));
+    GURL url =
+        GetProviderRequestURL(ZeroPrefixInputForWeb(/*is_prefetch=*/false));
+    EXPECT_NE(url.spec().find("ctxus=1"), std::string::npos);
+  }
+  {
+    SCOPED_TRACE("NTP never gets the param.");
+    EXPECT_CALL(*client_, CanFulfillContextualSuggestionsWithoutLens())
+        .WillRepeatedly(testing::Return(true));
+    GURL url =
+        GetProviderRequestURL(ZeroPrefixInputForNTP(/*is_prefetch=*/false));
+    EXPECT_EQ(url.spec().find("ctxus=1"), std::string::npos);
+  }
+}
+
 TEST_F(ZeroSuggestProviderTest, SuggestUrlIncludesPageTitle) {
   // Ensure it's not included by default.
   {

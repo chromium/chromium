@@ -132,6 +132,33 @@ TEST_F(ContextualSearchProviderTest, LensAdActionConditions) {
   }
 }
 
+TEST_F(ContextualSearchProviderTest, LensAdActionShownWithoutLensForCoBrowse) {
+  auto has_actions = [this] {
+    return std::ranges::any_of(provider_->matches(), [](const auto& match) {
+      return !!match.takeover_action;
+    });
+  };
+  EXPECT_CALL(*client_, IsLensEnabled()).WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*client_, AreLensEntrypointsVisible())
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*client_, CanOpenCoBrowsePanelWithoutLens())
+      .WillRepeatedly(testing::Return(true));
+
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  input.set_current_url(GURL("https://example.com"));
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  provider_->Start(input, false);
+  EXPECT_TRUE(provider_->done());
+  EXPECT_TRUE(has_actions());
+
+  // The action is still restricted to web pages.
+  input.set_current_url(GURL("chrome://flags"));
+  provider_->Start(input, false);
+  EXPECT_TRUE(provider_->done());
+  EXPECT_FALSE(has_actions());
+}
+
 TEST_F(ContextualSearchProviderTest, LensAdActionFillsEditAndElidesWwwOnly) {
   EXPECT_CALL(*client_, IsLensEnabled()).WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*client_, AreLensEntrypointsVisible())

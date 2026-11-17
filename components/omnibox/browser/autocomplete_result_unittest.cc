@@ -4016,6 +4016,58 @@ TEST_F(AutocompleteResultTest, AttachContextualSearchOpenLensActionToMatches) {
   EXPECT_FALSE(result.match_at(3)->takeover_action);
 }
 
+TEST_F(AutocompleteResultTest,
+       AttachContextualSearchFulfillmentActionToMatches) {
+  ACMatches matches;
+
+  // Match 1: Contextual search suggestion with Lens action.
+  AutocompleteMatch match1;
+  match1.subtypes.insert(omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
+  match1.suggest_template = omnibox::SuggestTemplateInfo();
+  match1.suggest_template->add_action_suggestions()->set_action_type(
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS);
+  matches.push_back(match1);
+
+  // Match 2: Contextual search suggestion without Lens action.
+  AutocompleteMatch match2;
+  match2.subtypes.insert(omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
+  matches.push_back(match2);
+
+  // Match 3: Non-contextual search suggestion.
+  AutocompleteMatch match3;
+  matches.push_back(match3);
+
+  // By default, matches that the server marked as Lens-fulfillable are
+  // skipped.
+  {
+    AutocompleteResult result;
+    result.AppendMatches(matches);
+    result.AttachContextualSearchFulfillmentActionToMatches();
+    ASSERT_EQ(3u, result.size());
+    EXPECT_FALSE(result.match_at(0)->takeover_action);
+    ASSERT_TRUE(result.match_at(1)->takeover_action);
+    EXPECT_EQ(result.match_at(1)->takeover_action->ActionId(),
+              OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT);
+    EXPECT_FALSE(result.match_at(2)->takeover_action);
+  }
+
+  // When fulfilling without Lens, all contextual matches get the action.
+  {
+    AutocompleteResult result;
+    result.AppendMatches(matches);
+    result.AttachContextualSearchFulfillmentActionToMatches(
+        /*include_lens_search_matches=*/true);
+    ASSERT_EQ(3u, result.size());
+    ASSERT_TRUE(result.match_at(0)->takeover_action);
+    EXPECT_EQ(result.match_at(0)->takeover_action->ActionId(),
+              OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT);
+    ASSERT_TRUE(result.match_at(1)->takeover_action);
+    EXPECT_EQ(result.match_at(1)->takeover_action->ActionId(),
+              OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT);
+    EXPECT_FALSE(result.match_at(2)->takeover_action);
+  }
+}
+
 TEST_F(AutocompleteResultTest, AttachSiteSearchActionToMatches) {
   // Register a template URL that corresponds to 'foo' search engine.
   TemplateURLData url_data;
