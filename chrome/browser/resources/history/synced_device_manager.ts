@@ -352,8 +352,8 @@ export class HistorySyncedDeviceManagerElement extends
   }
 
   protected shouldShowHistorySyncOptIn_(): boolean {
-    return this.replaceSyncPromosWithSignInPromos_ &&
-        !this.isTabsSyncDisabled_() &&
+    return this.replaceSyncPromosWithSignInPromos_ && !this.guestSession_ &&
+        this.signInAllowed_ && !this.isTabsSyncDisabled_() &&
         !(this.isSignInState_(HistorySignInState.SIGNED_IN) &&
           this.isTabsSyncTurnedOn_());
   }

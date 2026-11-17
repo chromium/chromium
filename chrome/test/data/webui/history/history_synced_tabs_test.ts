@@ -495,17 +495,24 @@ suite('<history-synced-device-manager>', function() {
   });
 
   test('hide sign in promo in guest mode', async () => {
-    element.configureSignInForTest({
-      signInAllowed: true,
-      guestSession: true,
-    });
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGNED_OUT,
       tabsSync: SyncState.TURNED_OFF,
       historySync: SyncState.TURNED_OFF,
     });
     await microtasksFinished();
+    // <if expr="not is_chromeos">
+    assertTrue(isChildVisible(element, '#history-sync-optin'));
+    // </if>
+    element.configureSignInForTest({
+      signInAllowed: true,
+      guestSession: true,
+    });
+    await microtasksFinished();
     assertTrue(element.$.signInGuide.hidden);
+    // <if expr="not is_chromeos">
+    assertFalse(isChildVisible(element, '#history-sync-optin'));
+    // </if>
   });
 
   test('hide sign-in promo if sign-in is disabled', async function() {
@@ -514,12 +521,19 @@ suite('<history-synced-device-manager>', function() {
       tabsSync: SyncState.TURNED_OFF,
       historySync: SyncState.TURNED_OFF,
     });
+    await microtasksFinished();
+    // <if expr="not is_chromeos">
+    assertTrue(isChildVisible(element, '#history-sync-optin'));
+    // </if>
     element.configureSignInForTest({
       signInAllowed: false,
       guestSession: false,
     });
     await microtasksFinished();
     assertTrue(element.$.signInGuide.hidden);
+    // <if expr="not is_chromeos">
+    assertFalse(isChildVisible(element, '#history-sync-optin'));
+    // </if>
   });
 
   test('no synced tabs message displays on load', async () => {
