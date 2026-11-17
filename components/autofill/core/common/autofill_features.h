@@ -339,6 +339,8 @@ BASE_DECLARE_FEATURE(kAutofillIgnoreLayoutInducedScrollEvents);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillImproveClassificationForTwoWordLastNames);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillImproveZipCodeRegexPrecision);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillIntroduceGlobalEmptyValueRewriterRules);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillLabelSensitiveAutocomplete);

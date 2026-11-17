@@ -371,6 +371,10 @@ public final class ProductionSupportedFlagList {
                 "When enabled, applies a stricter phone extension regex to avoid false"
                         + " positives."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_IMPROVE_ZIP_CODE_REGEX_PRECISION,
+                "When enabled, stricter zip code regex patterns are applied to avoid false"
+                        + " positives."),
+        Flag.baseFeature(
                 FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
                 "When enabled, merchant bound virtual cards will be offered in the keyboard "
                         + "accessory."),

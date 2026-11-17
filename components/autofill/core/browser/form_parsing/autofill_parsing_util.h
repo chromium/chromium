@@ -90,7 +90,8 @@ enum class RegexFeature : uint8_t {
   kAutofillSupportCombinedZipAndCityFR = 5,
   kAutofillEnableExpandIbanRegexPattern = 6,
   kAutofillStricterPhoneExtensionRegex = 7,
-  kMaxValue = kAutofillStricterPhoneExtensionRegex,
+  kAutofillImproveZipCodeRegexPrecision = 8,
+  kMaxValue = kAutofillImproveZipCodeRegexPrecision,
 };
 
 // Returns a `DenseSet` containing all `RegexFeature`s whose corresponding

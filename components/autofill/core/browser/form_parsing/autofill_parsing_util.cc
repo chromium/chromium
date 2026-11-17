@@ -33,6 +33,8 @@ const base::Feature* GetFeatureOfRegexFeature(RegexFeature feature) {
       return &features::kAutofillEnableExpandIbanRegexPattern;
     case RegexFeature::kAutofillStricterPhoneExtensionRegex:
       return &features::kAutofillStricterPhoneExtensionRegex;
+    case RegexFeature::kAutofillImproveZipCodeRegexPrecision:
+      return &features::kAutofillImproveZipCodeRegexPrecision;
   }
   NOTREACHED();
 }

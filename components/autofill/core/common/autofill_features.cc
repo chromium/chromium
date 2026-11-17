@@ -869,6 +869,13 @@ BASE_FEATURE(kAutofillIgnoreLayoutInducedScrollEvents,
 BASE_FEATURE(kAutofillImproveClassificationForTwoWordLastNames,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, stricter `ZIP_CODE` regex patterns are applied in English and
+// Portuguese to avoid misclassifying unrelated code fields (e.g. OTP or promo
+// codes) as `ADDRESS_HOME_ZIP`.
+// TODO(crbug.com/586788282): Remove when launched.
+BASE_FEATURE(kAutofillImproveZipCodeRegexPrecision,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, global rules are applied to rewrite empty string values like
 // "null" to an empty string. These rules are applied for all types during
 // address normalization.
