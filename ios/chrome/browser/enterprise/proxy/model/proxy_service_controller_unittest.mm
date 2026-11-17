@@ -89,14 +89,17 @@ class TestProxyConfigurationProvider : public web::ProxyConfigurationProvider {
   explicit TestProxyConfigurationProvider(web::BrowserState* browser_state)
       : web::ProxyConfigurationProvider(browser_state) {}
 
-  void UpdateProxyConfiguration(std::vector<web::ProxyRule> rules) override {
+  RequestId UpdateProxyConfiguration(
+      std::vector<web::ProxyRule> rules) override {
     rules_ = std::move(rules);
+    return request_id_generator_.GenerateNextId();
   }
 
   const std::vector<web::ProxyRule>& rules() const { return rules_; }
 
  private:
   std::vector<web::ProxyRule> rules_;
+  RequestId::Generator request_id_generator_;
 };
 
 net::ProxyConfig::DynamicRoutingConfig CreateSampleRoutingConfig(

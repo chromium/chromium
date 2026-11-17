@@ -116,13 +116,15 @@ ProxyConfigurationProvider::~ProxyConfigurationProvider() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void ProxyConfigurationProvider::UpdateProxyConfiguration(
+ProxyConfigurationProvider::RequestId
+ProxyConfigurationProvider::UpdateProxyConfiguration(
     std::vector<ProxyRule> rules) API_AVAILABLE(ios(17.0)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (cancel_flag_) {
     cancel_flag_->data.Set();
   }
   cancel_flag_ = base::MakeRefCounted<base::RefCountedData<base::AtomicFlag>>();
+  const RequestId request_id = request_id_generator_.GenerateNextId();
 
   // Mapping proxy rules to native Apple proxy configurations is performed on a
   // background thread to avoid blocking the main UI sequence when processing
@@ -134,11 +136,13 @@ void ProxyConfigurationProvider::UpdateProxyConfiguration(
       base::BindOnce(&MapProxyRulesToNative, std::move(rules), cancel_flag_),
       base::BindOnce(
           &ProxyConfigurationProvider::OnNativeProxyConfigurationsMapped,
-          weak_ptr_factory_.GetWeakPtr(), cancel_flag_));
+          weak_ptr_factory_.GetWeakPtr(), cancel_flag_, request_id));
+  return request_id;
 }
 
 void ProxyConfigurationProvider::OnNativeProxyConfigurationsMapped(
     scoped_refptr<base::RefCountedData<base::AtomicFlag>> cancel_flag,
+    RequestId request_id,
     std::optional<NSArray<nw_proxy_config_t>*> native_configs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (cancel_flag->data.IsSet() || !native_configs.has_value()) {
@@ -150,7 +154,22 @@ void ProxyConfigurationProvider::OnNativeProxyConfigurationsMapped(
   WKWebsiteDataStore* data_store = config_provider.GetWebsiteDataStore();
   if (data_store) {
     data_store.proxyConfigurations = *native_configs;
+    NotifyProxyConfigurationsApplied(request_id, [*native_configs count]);
   }
+}
+
+base::CallbackListSubscription
+ProxyConfigurationProvider::RegisterProxyConfigurationsAppliedCallback(
+    ProxyConfigurationsAppliedCallbackList::CallbackType callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return proxy_configurations_applied_callbacks_.Add(std::move(callback));
+}
+
+void ProxyConfigurationProvider::NotifyProxyConfigurationsApplied(
+    RequestId request_id,
+    size_t config_count) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  proxy_configurations_applied_callbacks_.Notify(request_id, config_count);
 }
 
 }  // namespace web
