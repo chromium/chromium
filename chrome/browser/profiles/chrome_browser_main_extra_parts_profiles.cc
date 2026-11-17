@@ -504,6 +504,7 @@
 #include "chrome/browser/notebooks/notebooks_service_factory.h"
 #include "chrome/browser/password_manager/factories/startup_passwords_import_service_factory.h"  // nogncheck (Desktop only)
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
+#include "chrome/browser/webauthn/gpm_pin_service_factory.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "device/fido/public/features.h"
 #endif
@@ -1576,6 +1577,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   WebApkInstallServiceFactory::GetInstance();
 #endif
 #if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(device::kWebAuthnLocalGpmPasskeys)) {
+    webauthn::GpmPinServiceFactory::GetInstance();
+  }
   webauthn::ImmediateRequestRateLimiterFactory::GetInstance();
 #endif
   WebDataServiceFactory::GetInstance();
