@@ -270,7 +270,9 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // Centralized internal implementation of site isolation enforcements for
   // already-committed origins, including CanAccessDataForOrigin and
   // HostsOrigin. It supports the following types of access checks, in order of
-  // increasing strictness:
+  // increasing strictness. This should stay in sync with the corresponding
+  // Rust-side AccessType enum.
+  // LINT.IfChange(AccessType)
   enum class AccessType {
     // Whether the process has previously committed a document or instantiated a
     // worker with the particular origin. This can be used to verify whether a
@@ -296,6 +298,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     // This access type can be used on any thread.
     kCanAccessDataForCommittedOrigin,
   };
+  // LINT.ThenChange(process_state.rs:AccessType)
   bool CanAccessOrigin(ChildProcessId child_id,
                        const url::Origin& origin,
                        AccessType access_type);
@@ -1296,12 +1299,14 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                   const GURL& url,
                                   bool url_is_precursor_of_opaque_origin,
                                   AccessType access_type);
+  bool CanAccessMaybeOpaqueOrigin_Cpp(ChildProcessId child_id,
+                                      const GURL& url,
+                                      bool url_is_precursor_of_opaque_origin,
+                                      AccessType access_type);
 
   // Helper used by CanAccessOrigin to impose additional restrictions on a
-  // sandboxed process locked to `process_lock`.
-  bool IsAccessAllowedForSandboxedProcess(const ProcessLock& process_lock,
-                                          const GURL& url,
-                                          bool url_is_for_opaque_origin,
+  // sandboxed process.
+  bool IsAccessAllowedForSandboxedProcess(bool url_is_for_opaque_origin,
                                           AccessType access_type);
 
   // Helper used by CanAccessOrigin to impose additional restrictions on a

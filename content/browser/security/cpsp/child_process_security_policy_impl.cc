@@ -2750,8 +2750,6 @@ bool ChildProcessSecurityPolicyImpl::CanCommitNewOrigin(
 }
 
 bool ChildProcessSecurityPolicyImpl::IsAccessAllowedForSandboxedProcess(
-    const ProcessLock& process_lock,
-    const GURL& url,
     bool url_is_for_opaque_origin,
     AccessType access_type) {
   switch (access_type) {
@@ -3110,9 +3108,11 @@ bool ChildProcessSecurityPolicyImpl::CanCommitMaybeOpaqueNewOrigin(
     ProcessLock actual_process_lock = process_state->process_lock();
 
     if (actual_process_lock.is_invalid()) {
-      // Deny access if the process is unlocked. An unlocked process means
+      // Deny access if the process lock is invalid. An invalid lock means
       // that the process has not been associated with a SiteInstance yet
-      // and therefore this request is likely invalid.
+      // and therefore this request is likely invalid. Note that this is
+      // different from an unlocked process (i.e., one whose lock allows any
+      // site), which is still subject to the checks below.
       failure_reason = "process_lock_is_invalid";
     } else {
       // TODO(crbug.com/325410297): Sandboxed frames (`actual_process_lock` with
@@ -3178,6 +3178,35 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
     const GURL& url,
     bool url_is_precursor_of_opaque_origin,
     AccessType access_type) {
+  // Note: When running in kRustAndCpp mode, the macro below will evaluate the
+  // Rust implementation, drop the internal lock, and then re-acquire it on the
+  // C++ side when evaluating the C++ implementation, before comparing the
+  // results with a CHECK. It is theoretically possible, though very unlikely,
+  // for the process state to change between these two evaluations. If you are
+  // triaging a crash where the Rust and C++ results differed here, a race
+  // condition during this gap is a possible cause. This only matters during
+  // the transition where both Rust and C++ implementations run.
+  //
+  // TODO(crbug.com/575911997): When access is denied, the Rust implementation
+  // does not yet set crash keys or call
+  // NoChildProcessSecurityPolicySecurityStateFound() (which may call
+  // DumpWithoutCrashing()), so these only happen when the C++ implementation
+  // runs.
+  RUST_CPP_PROCESS_STATE_RETURN_FUNCTION(
+      rust::child_process_security_policy::can_access_maybe_opaque_origin(
+          child_id,
+          // Make a copy for Rust to own.
+          std::make_unique<GURL>(url), url_is_precursor_of_opaque_origin,
+          access_type),
+      CanAccessMaybeOpaqueOrigin_Cpp(
+          child_id, url, url_is_precursor_of_opaque_origin, access_type));
+}
+
+bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin_Cpp(
+    ChildProcessId child_id,
+    const GURL& url,
+    bool url_is_precursor_of_opaque_origin,
+    AccessType access_type) {
   base::AutoLock lock(lock_);
 
   const ProcessState* process_state =
@@ -3190,14 +3219,15 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
     ProcessLock actual_process_lock = process_state->process_lock();
 
     if (actual_process_lock.is_invalid()) {
-      // Deny access if the process is unlocked. An unlocked process means
+      // Deny access if the process lock is invalid. An invalid lock means
       // that the process has not been associated with a SiteInstance yet
-      // and therefore this request is likely invalid.
+      // and therefore this request is likely invalid. Note that this is
+      // different from an unlocked process (i.e., one whose lock allows any
+      // site), which is still subject to the checks below.
       failure_reason = "process_lock_is_invalid";
     } else if (actual_process_lock.is_sandboxed() &&
                !IsAccessAllowedForSandboxedProcess(
-                   actual_process_lock, url, url_is_precursor_of_opaque_origin,
-                   access_type)) {
+                   url_is_precursor_of_opaque_origin, access_type)) {
       failure_reason = "sandboxing_restrictions";
     } else if (actual_process_lock.is_pdf() &&
                !IsAccessAllowedForPdfProcess(access_type)) {
@@ -4734,9 +4764,12 @@ void ChildProcessSecurityPolicyImpl::AddCommittedOrigin(
   }
 
   // Note: We explicitly continue with C++ state update as well even when in
-  // Rust-only mode, since CanAccessMaybeOpaqueOrigin() has not yet been
-  // implemented in Rust. Once it is supported in Rust, this should be combined
-  // into a RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
+  // Rust-only mode, since the crash keys logged when
+  // CanCommitMaybeOpaqueNewOrigin() or CanAccessMaybeOpaqueOrigin() fail still
+  // read the list of committed origins from the C++ ProcessState (see
+  // GetCommittedOriginsForCrashKey()). Once those crash keys are supported in
+  // Rust, this should be combined into a RUST_CPP_PROCESS_STATE_VOID_FUNCTION
+  // call.
   AddCommittedOrigin_Cpp(child_id, origin);
 }
 

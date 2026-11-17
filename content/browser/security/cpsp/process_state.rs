@@ -24,6 +24,7 @@ pub(crate) mod ffi {
         include!("content/public/common/child_process_id.h");
         include!("content/browser/process_lock.h");
         include!("content/browser/process_lock_shim.h");
+        include!("content/browser/security/cpsp/child_process_security_policy_impl.h");
         include!("content/browser/security/cpsp/child_process_security_policy_shim.h");
         include!("content/browser/site_instance_impl.h");
         include!("url/origin.rs.h");
@@ -37,6 +38,9 @@ pub(crate) mod ffi {
         #[namespace = "url"]
         type Origin = super::url_rust::origin::ffi::Origin;
 
+        #[namespace = "content::ChildProcessSecurityPolicyImpl"]
+        type AccessType = super::AccessType;
+
         #[namespace = "content"]
         #[rust_name = "CppProcessLock"]
         type ProcessLock;
@@ -46,6 +50,8 @@ pub(crate) mod ffi {
         #[rust_name = "allows_any_site"]
         fn AllowsAnySite(self: &CppProcessLock) -> bool;
         fn is_unused(self: &CppProcessLock) -> bool;
+        fn is_sandboxed(self: &CppProcessLock) -> bool;
+        fn is_pdf(self: &CppProcessLock) -> bool;
 
         #[namespace = "content"]
         type SiteInstanceImpl;
@@ -92,6 +98,12 @@ pub(crate) mod ffi {
         fn get_process_lock(child_id: ChildProcessId) -> UniquePtr<CppProcessLock>;
 
         fn add_committed_origin(child_id: ChildProcessId, origin: UniquePtr<Origin>);
+        fn can_access_maybe_opaque_origin(
+            child_id: ChildProcessId,
+            url: UniquePtr<GURL>,
+            url_is_precursor_of_opaque_origin: bool,
+            access_type: AccessType,
+        ) -> bool;
         fn matches_committed_origin_for_testing(
             child_id: ChildProcessId,
             url: UniquePtr<GURL>,
@@ -185,6 +197,82 @@ fn add_committed_origin(child_id: ChildProcessId, origin: UniquePtr<ffi::Origin>
     let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
     let state = cpsp.process_states.get_mut(&child_id).expect("The process state should exist.");
     state.add_committed_origin(origin);
+}
+
+fn can_access_maybe_opaque_origin(
+    child_id: ChildProcessId,
+    url: UniquePtr<ffi::GURL>,
+    url_is_precursor_of_opaque_origin: bool,
+    access_type: AccessType,
+) -> bool {
+    let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    // TODO(crbug.com/575911997): For cases that end up returning false, figure
+    // out how to preserve the failure reason and crash keys for the C++ side.
+    let Some(process_state) = cpsp.process_states.get_for_query(&child_id) else {
+        return false;
+    };
+
+    // Deny access if the process lock is invalid. An invalid lock means that
+    // the process has not been associated with a SiteInstance yet and therefore
+    // this request is likely invalid. Note that this is different from an
+    // unlocked process, which is still subject to the checks below.
+    if process_state.has_invalid_process_lock() {
+        return false;
+    }
+
+    if process_state.process_lock().is_sandboxed()
+        && !is_access_allowed_for_sandboxed_process(url_is_precursor_of_opaque_origin, access_type)
+    {
+        return false;
+    }
+
+    if process_state.process_lock().is_pdf() && !is_access_allowed_for_pdf_process(access_type) {
+        return false;
+    }
+
+    // Check whether `url` matches an origin that has previously committed in
+    // the process. Note that it's important to perform this check *after* the
+    // PDF and sandboxing restrictions above, since those checks may deny access
+    // even for origins that have previously committed in a process. In other
+    // words, PDF and sandboxed processes should never be allowed to access
+    // data, even to their own committed origins.
+    process_state.matches_committed_origin(&url, url_is_precursor_of_opaque_origin)
+}
+
+/// Helper used by can_access_maybe_opaque_origin() to impose additional
+/// restrictions on a sandboxed process. Corresponds to
+/// ChildProcessSecurityPolicyImpl::IsAccessAllowedForSandboxedProcess() in C++.
+fn is_access_allowed_for_sandboxed_process(
+    url_is_for_opaque_origin: bool,
+    access_type: AccessType,
+) -> bool {
+    match access_type {
+        AccessType::HostsOrigin => {
+            // Sandboxed frame processes should only be able to host opaque
+            // origins, and only those origins should ever be used as a source
+            // or initiator origin in things like postMessage.
+            url_is_for_opaque_origin
+        }
+        AccessType::CanAccessDataForCommittedOrigin => {
+            // Sandboxed frames should never access passwords, storage, or other
+            // data for any origin.
+            false
+        }
+    }
+}
+
+/// Helper used by can_access_maybe_opaque_origin() to impose additional
+/// restrictions on a process that only hosts PDF documents. Corresponds to
+/// ChildProcessSecurityPolicyImpl::IsAccessAllowedForPdfProcess() in C++.
+fn is_access_allowed_for_pdf_process(access_type: AccessType) -> bool {
+    // PDF processes should be able to claim that they host a regular origin
+    // for things like verifying source origins for postMessage. However, PDF
+    // renderers should never need to access passwords, storage, or other data
+    // for the PDF document's origin or any other origin.
+    match access_type {
+        AccessType::HostsOrigin => true,
+        AccessType::CanAccessDataForCommittedOrigin => false,
+    }
 }
 
 fn matches_committed_origin_for_testing(
@@ -573,6 +661,10 @@ impl ProcessState {
         self.process_lock.as_ffi()
     }
 
+    fn has_invalid_process_lock(&self) -> bool {
+        matches!(self.process_lock, StatefulProcessLock::Invalid(_))
+    }
+
     fn matches_committed_origin(&self, url: &ffi::GURL, url_is_for_precursor_origin: bool) -> bool {
         // TODO(crbug.com/522872468): Currently, this is mostly a line-by-line
         // translation of ProcessState::MatchesCommittedOrigin() in C++. In the
@@ -852,6 +944,37 @@ enum MidiPermission {
     /// Permits a child process to send system exclusive (SysEx) messages to any
     /// MIDI device. Granting this also grants `MidiPermission::CanSendMidi`.
     CanSendMidiSysEx,
+}
+
+/// Rust equivalent of the C++ ChildProcessSecurityPolicyImpl::AccessType enum.
+/// Using cxx::ExternType with cxx::kind::Trivial ensures that this enum can be
+/// passed over from C++ to Rust with zero cost. See the C++ declaration for
+/// documentation on each value.
+///
+/// Note: While this creates a second Rust-side definition of this type, this
+/// is preferred over the approach where the C++ enum is the source of truth
+/// (via https://cxx.rs/shared.html#extern-enums), because the latter produces
+/// a non-ergonomic Rust enum with runtime checks to deal with the possibility
+/// of C++ passing in an arbitrary int value.
+///
+/// [allow(dead_code)] is necessary because the values are currently only
+/// created on the C++ side.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(i32)]
+#[allow(dead_code)]
+// LINT.IfChange(AccessType)
+pub(crate) enum AccessType {
+    HostsOrigin,
+    CanAccessDataForCommittedOrigin,
+}
+// LINT.ThenChange(child_process_security_policy_impl.h:AccessType)
+
+#[allow(unsafe_code)]
+// SAFETY: AccessType is a simple enum with a fixed repr(i32) that matches the
+// C++ enum's underlying type and values.
+unsafe impl cxx::ExternType for AccessType {
+    type Id = cxx::type_id!("content::ChildProcessSecurityPolicyImpl::AccessType");
+    type Kind = cxx::kind::Trivial;
 }
 
 /// Returns whether `origin` is allowed to be granted a WebView origin check
