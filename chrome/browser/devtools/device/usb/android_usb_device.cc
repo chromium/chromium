@@ -263,7 +263,9 @@ AndroidUsbDevice::~AndroidUsbDevice() {
 }
 
 void AndroidUsbDevice::Queue(std::unique_ptr<AdbMessage> message) {
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/585036856): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(task_runner_->BelongsToCurrentThread());
 
   // Queue header.
   std::vector<uint32_t> header;
