@@ -148,9 +148,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.PowerwashCount" units="powerwashes"
-    expires_after="2026-12-31">
+    expires_after="2027-11-16">
   <owner>kimjae@chromium.org</owner>
-  <owner>chromeos-core-services@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
   <summary>
     The number of times a Chrome OS device has been powerwashed (factory reset)
     without subsequently going through recovery and/or changing the dev mode
@@ -176,7 +176,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Recovery.NbrDurationMinutes" units="minutes"
-    expires_after="2026-12-31">
+    expires_after="2027-11-16">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
