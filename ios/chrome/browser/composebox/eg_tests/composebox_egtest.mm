@@ -122,23 +122,16 @@ void OpenTabPicker() {
 
 // Selects a tab in the tab picker with the given `title`.
 void SelectTabWithTitle(NSString* title) {
-  id<GREYMatcher> tabMatcher = TabWithTitle(title);
-  NSError* error = nil;
-  [[EarlGrey selectElementWithMatcher:tabMatcher]
-      assertWithMatcher:grey_minimumVisiblePercent(0.8)
-                  error:&error];
-
-  // Attempt to make the item visible by scrolling.
-  if (error) {
-    [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityID(
-                       kTabPickerCollectionViewAccessibilityIdentifier)]
-        performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
-    [[EarlGrey selectElementWithMatcher:tabMatcher]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  }
-
-  [[EarlGrey selectElementWithMatcher:tabMatcher] performAction:grey_tap()];
+  id<GREYMatcher> tab_matcher =
+      grey_allOf(TabWithTitle(title), grey_minimumVisiblePercent(0.8), nil);
+  [[[EarlGrey selectElementWithMatcher:tab_matcher]
+         usingSearchAction:grey_scrollInDirectionWithStartPoint(
+                               kGREYDirectionUp, /*amount=*/150,
+                               /*xOriginStartPercentage=*/0.5,
+                               /*yOriginStartPercentage=*/0.5)
+      onElementWithMatcher:grey_accessibilityID(
+                               kTabPickerCollectionViewAccessibilityIdentifier)]
+      performAction:grey_tap()];
 }
 
 id<GREYMatcher> TabCellAttachmentMatcherWithTitle(NSString* title) {
