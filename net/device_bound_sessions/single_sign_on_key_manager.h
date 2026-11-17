@@ -106,6 +106,15 @@ class NET_EXPORT SingleSignOnKeyManager {
   void ClearPreProvisionedKeys(
       const SessionService::OriginAndSiteMatcher& matcher);
 
+  // Returns whether any pre-provisioned key is stored.
+  bool HasPreProvisionedKeysForTesting() const {
+    return !pre_provisioned_keys_.empty();
+  }
+  // Returns whether a `GenerateKey()` request is still in flight.
+  bool HasGenerateKeyRequestsForTesting() const {
+    return !generate_key_requests_.empty();
+  }
+
  private:
   class GenerateKeyRequest;
   struct GeneratedKey;

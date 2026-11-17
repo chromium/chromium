@@ -61,15 +61,20 @@ Chrome makes two decisions for the overall stability of the system:
   parameters here are not particularly important. Our goal is to stop a
   malicious site from overwhelming the TPM without blocking any
   legitimate use cases. Because we cache signed challenges, this only
-  applies to refreshes with fresh challenges or new session
-  registration. Signing operations are tracked by
+  applies to refreshes with fresh challenges, new session registration
+  and `Secure-Session-GenerateKey`. Signing operations are tracked by
   `SessionServiceImpl::signing_quota_`. `RegistrationFetcher` charges the
   quota right before signing with
   `SessionServiceImpl::TryConsumeSigningQuota`, which counts hardware
   operations: an attested registration costs 3 units, everything else 1.
-  Key generation and unwrapping a stored key are not counted.
-  Session prewarms (`SessionServiceImpl::PrewarmSessionsForUrl`) don't
-  start a new refresh when the site has no quota left.
+  Key generation and unwrapping a stored key are not counted;
+  `SessionServiceImpl::HandleGenerateKeyHeader`'s unit pays for certifying
+  the relying party key with the attestation key. It charges the identity
+  provider's site up front and ignores the header when that site has no
+  quota left. The unit is not refunded when the request is cancelled,
+  since otherwise a site could cancel in a loop to generate TPM keys for
+  free. Session prewarms (`SessionServiceImpl::PrewarmSessionsForUrl`)
+  don't start a new refresh when the site has no quota left.
 - Chrome attempts to proactively refresh a session if a request is made
   where a bound cookie would expire within 2 minutes. This is identical
   to a blocking refresh, but without deferring the triggering

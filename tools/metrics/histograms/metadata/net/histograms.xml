@@ -85,6 +85,8 @@ chromium-metrics-reviews@google.com.
   <variant name="AttestedRegistration"
       summary="attested session registration (aik_required, which is only
                parsed with the DeviceBoundSessionsForSingleSignOn feature)"/>
+  <variant name="GenerateKey"
+      summary="Secure-Session-GenerateKey key certification"/>
   <variant name="Refresh" summary="session refresh"/>
   <variant name="Registration" summary="non-attested session registration"/>
 </variants>

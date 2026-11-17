@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
@@ -36,19 +37,26 @@
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "net/cookies/cookie_store.h"
 #include "net/device_bound_sessions/challenge_result.h"
+#include "net/device_bound_sessions/dbsc_request.h"
+#include "net/device_bound_sessions/generate_key_param.h"
 #include "net/device_bound_sessions/jwk_utils.h"
 #include "net/device_bound_sessions/registration_request_param.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/device_bound_sessions/session_display.h"
 #include "net/device_bound_sessions/session_error.h"
+#include "net/device_bound_sessions/session_key.h"
+#include "net/device_bound_sessions/session_service.h"
 #include "net/device_bound_sessions/session_store.h"
+#include "net/http/http_response_headers.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_private_key.h"
+#include "net/url_request/device_bound_session_mode.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
+#include "url/origin.h"
 
 namespace net::device_bound_sessions {
 
@@ -81,6 +89,7 @@ constexpr size_t GetSigningQuotaCost(SigningQuotaOperation operation) {
   switch (operation) {
     case SigningQuotaOperation::kRegistration:
     case SigningQuotaOperation::kRefresh:
+    case SigningQuotaOperation::kGenerateKey:
       return 1;
     case SigningQuotaOperation::kAttestedRegistration:
       // Inner JWT sign, AIK certification, and outer JWT sign.
@@ -2009,4 +2018,65 @@ void SessionServiceImpl::HandleResponseHeaders(DbscRequest& request,
   }
 }
 
+bool SessionServiceImpl::HandleGenerateKeyHeader(
+    DbscRequest& request,
+    const HttpResponseHeaders& headers,
+    KeyBindingCallback callback) {
+  // Like `ShouldDefer()`, this also skips requests that bypass deferral
+  // (internal refresh requests), so they aren't held for key generation.
+  if (request.device_bound_session_mode() != DeviceBoundSessionMode::kAllowed) {
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          features::kDeviceBoundSessionsForSingleSignOn)) {
+    return false;
+  }
+
+  ASSIGN_OR_RETURN(GenerateKeyParam param,
+                   headers.GetNormalizedHeader("Secure-Session-GenerateKey")
+                       .and_then(&GenerateKeyParam::Parse),
+                   [] { return false; });
+
+  url::Origin provider_origin = url::Origin::Create(request.url());
+  if (!sso_key_manager_.CanGenerateKey(provider_origin, param.target_origin)) {
+    return false;
+  }
+
+  SessionKey idp_session_key(SchemefulSite(request.url()),
+                             param.provider_session_id);
+  Session* idp_session = GetSession(idp_session_key);
+  // Like for Secure-Session-Challenge, also require that the request can set
+  // one of the session's bound cookies, which `CanGenerateKey()` doesn't check.
+  // https://github.com/WICG/dbsc-sso/pull/31 proposes this for the explainer.
+  // TODO(crbug.com/481629977): Drop the reference once that PR is merged.
+  if (!idp_session || !idp_session->IncludesUrl(request.url()) ||
+      !idp_session->CanSetBoundCookie(request)) {
+    return false;
+  }
+
+  ASSIGN_OR_RETURN(
+      std::optional<unexportable_keys::UnexportableAttestationKeyId> idp_aik,
+      idp_session->maybe_unexportable_attestation_key_id(),
+      [](unexportable_keys::ServiceError) { return false; });
+  if (!idp_aik) {
+    return false;
+  }
+
+  // Ignore the header silently when the IdP site is out of quota. The unit is
+  // deliberately not refunded when `callback` is cancelled and certification
+  // is skipped. The page controls cancellation, so a refund would let it
+  // trigger TPM key generation for free in a loop.
+  if (!TryConsumeSigningQuota(idp_session_key.site,
+                              SigningQuotaOperation::kGenerateKey)) {
+    return false;
+  }
+
+  NotifySessionAccess(request.device_bound_session_access_callback(),
+                      SessionAccess::AccessType::kUpdate, idp_session_key,
+                      *idp_session);
+  sso_key_manager_.GenerateKey(*idp_aik, std::move(param),
+                               std::move(provider_origin), std::move(callback));
+  return true;
+}
 }  // namespace net::device_bound_sessions

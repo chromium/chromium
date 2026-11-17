@@ -32,6 +32,7 @@ class IsolationInfo;
 class SiteForCookies;
 class URLRequestContext;
 class HttpRequestHeaders;
+class HttpResponseHeaders;
 class SSLCertRequestInfo;
 class X509Certificate;
 class SSLPrivateKey;
@@ -57,6 +58,8 @@ enum class SigningQuotaOperation {
   kAttestedRegistration,
   // Session refresh.
   kRefresh,
+  // Secure-Session-GenerateKey RP key certification with the IdP's AIK.
+  kGenerateKey,
 };
 
 template <typename Sink>
@@ -70,6 +73,9 @@ void AbslStringify(Sink& sink, SigningQuotaOperation operation) {
       return;
     case SigningQuotaOperation::kRefresh:
       sink.Append("Refresh");
+      return;
+    case SigningQuotaOperation::kGenerateKey:
+      sink.Append("GenerateKey");
       return;
   }
 }
@@ -298,6 +304,26 @@ class NET_EXPORT SessionService {
   // in `headers` on the response to `request`.
   virtual void HandleResponseHeaders(DbscRequest& request,
                                      HttpResponseHeaders* headers) = 0;
+
+  // Handles the Secure-Session-GenerateKey response header, see
+  // https://github.com/WICG/dbsc-sso#dbsc-key-generation-header. If `headers`
+  // carry it and the request qualifies, starts generating an RP key and
+  // returns true. Otherwise returns false and drops `callback`. After a true
+  // return, `callback` runs once asynchronously (never before this method
+  // returns) with the KeyBinding value or an error, unless the service is
+  // destroyed first. If `callback` is cancelled, key generation stops early
+  // and no key is stored. Cancellation is detected via
+  // `callback.IsCancelled()`, so bind `callback` to a `WeakPtr` and don't wrap
+  // it in another callback.
+  //
+  // This is separate from `HandleResponseHeaders()`, which is called on a
+  // response that gets delivered and reports nothing back. Here the caller
+  // holds the response until `callback` runs. With a KeyBinding value it drops
+  // the response, without calling `HandleResponseHeaders()` on it, and sends
+  // the request again with Secure-Session-KeyBinding.
+  virtual bool HandleGenerateKeyHeader(DbscRequest& request,
+                                       const HttpResponseHeaders& headers,
+                                       KeyBindingCallback callback) = 0;
 
   virtual void SelectClientCertificate(
       const GURL& url,

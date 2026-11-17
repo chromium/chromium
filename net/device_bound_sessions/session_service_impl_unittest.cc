@@ -5,6 +5,8 @@
 #include "net/device_bound_sessions/session_service_impl.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -14,10 +16,19 @@
 #include <variant>
 #include <vector>
 
+#include "base/base64url.h"
+#include "base/cancelable_callback.h"
+#include "base/containers/extend.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
@@ -26,10 +37,17 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/types/optional_ref.h"
+#include "base/types/optional_util.h"
+#include "base/values.h"
 #include "components/unexportable_keys/background_task_origin.h"
+#include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/features.h"
 #include "components/unexportable_keys/mock_unexportable_key_service.h"
+#include "components/unexportable_keys/service_error.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "crypto/keypair.h"
@@ -39,15 +57,29 @@
 #include "crypto/sign.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
+#include "net/base/load_flags.h"
+#include "net/base/network_handle.h"
+#include "net/base/request_priority.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/device_bound_sessions/challenge_result.h"
+#include "net/device_bound_sessions/dbsc_request.h"
 #include "net/device_bound_sessions/jwk_utils.h"
 #include "net/device_bound_sessions/mock_session_store.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
+#include "net/device_bound_sessions/registration_fetcher.h"
+#include "net/device_bound_sessions/registration_fetcher_param.h"
+#include "net/device_bound_sessions/registration_result.h"
+#include "net/device_bound_sessions/session.h"
+#include "net/device_bound_sessions/session_access.h"
+#include "net/device_bound_sessions/session_error.h"
+#include "net/device_bound_sessions/session_key.h"
+#include "net/device_bound_sessions/session_service.h"
 #include "net/device_bound_sessions/session_store.h"
 #include "net/device_bound_sessions/single_sign_on_key_manager.h"
 #include "net/device_bound_sessions/test_support.h"
 #include "net/device_bound_sessions/unexportable_key_service_factory.h"
+#include "net/http/http_response_headers.h"
+#include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/test/test_with_task_environment.h"
@@ -60,9 +92,11 @@
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
+using base::test::HasValue;
 using base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ElementsAre;
@@ -277,6 +311,91 @@ class RequestContextCapturingInterceptor : public URLRequestInterceptor {
   const bool auto_advance_ = true;
   base::RepeatingCallback<void(CapturedRequestContext)> on_intercept_;
 };
+
+// Creates a `URLRequest` for `url` with `DeviceBoundSessionMode::kAllowed`.
+std::unique_ptr<URLRequest> CreateAllowedRequest(URLRequestContext* context,
+                                                 const GURL& url) {
+  std::unique_ptr<URLRequest> request = context->CreateRequest(
+      url, DEFAULT_PRIORITY, /*delegate=*/nullptr, kDummyAnnotation,
+      net::handles::kInvalidNetworkHandle);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(url));
+  request->set_device_bound_session_mode(DeviceBoundSessionMode::kAllowed);
+  return request;
+}
+
+// Returns 401 response headers with a Secure-Session-GenerateKey header.
+scoped_refptr<HttpResponseHeaders> CreateGenerateKeyHeaders(
+    std::string_view provider_session_id) {
+  return HttpResponseHeaders::Builder({1, 1}, "401 Unauthorized")
+      .AddHeader(
+          "Secure-Session-GenerateKey",
+          absl::StrFormat(R"((ES256); target_origin="%s"; )"
+                          R"(provider_session_id="%s"; challenge="test_chal")",
+                          kRelyingPartyOrigin, provider_session_id))
+      .Build();
+}
+
+SessionService::KeyBindingCallback KeyBindingCallbackNotRun(
+    const base::Location& location = FROM_HERE) {
+  return base::IgnoreArgs<SessionErrorOr<std::string>>(
+      base::MakeExpectedNotRunClosure(location));
+}
+
+// Returns the JWK thumbprint of the key that `binding_statement` certifies, or
+// nullopt if the statement can't be parsed. The fake key provider certifies in
+// the TPM 2.0 format (`crypto::AttestationStatement::kTpm`), so "sub_key" is a
+// `TPMT_PUBLIC`. For a P-256 key that structure ends with the public point: X
+// and Y, each 32 bytes after a 2-byte length.
+std::optional<std::string> GetSubjectKeyThumbprint(
+    std::string_view binding_statement) {
+  static constexpr size_t kLengthSize = 2;
+  static constexpr size_t kCoordinateSize = 32;
+  static constexpr size_t kTpmPointSize = 2 * (kLengthSize + kCoordinateSize);
+
+  ASSIGN_OR_RETURN(
+      std::vector<uint8_t> json,
+      base::Base64UrlDecode(binding_statement,
+                            base::Base64UrlDecodePolicy::DISALLOW_PADDING));
+  ASSIGN_OR_RETURN(base::DictValue statement,
+                   base::JSONReader::ReadDict(base::as_string_view(json),
+                                              base::JSON_PARSE_RFC));
+  ASSIGN_OR_RETURN(std::string encoded_sub_key,
+                   base::OptionalFromPtr(statement.FindString("sub_key")));
+  ASSIGN_OR_RETURN(
+      std::vector<uint8_t> sub_key,
+      base::Base64UrlDecode(encoded_sub_key,
+                            base::Base64UrlDecodePolicy::DISALLOW_PADDING));
+  if (sub_key.size() < kTpmPointSize) {
+    return std::nullopt;
+  }
+
+  // Build the uncompressed X9.62 point: 0x04 || X || Y.
+  base::span<const uint8_t, kTpmPointSize> tpm_point =
+      base::span(sub_key).last<kTpmPointSize>();
+  base::span<const uint8_t, kCoordinateSize> x =
+      tpm_point.subspan<kLengthSize, kCoordinateSize>();
+  base::span<const uint8_t, kCoordinateSize> y =
+      tpm_point.last<kCoordinateSize>();
+  std::vector<uint8_t> point = {0x04};
+  base::Extend(point, x);
+  base::Extend(point, y);
+  return crypto::keypair::PublicKey::FromEcP256Point(point).and_then(
+      &CreateJwkThumbprint);
+}
+
+// Consumes `expected_remaining_units` signing quota units on
+// https://provider.test, expecting each to succeed, and expects the site's
+// quota to be exhausted afterwards.
+void ExhaustProviderSigningQuota(SessionServiceImpl& service,
+                                 size_t expected_remaining_units) {
+  const SchemefulSite site{GURL(kIdentityProviderOrigin)};
+  for (size_t i = 0; i < expected_remaining_units; ++i) {
+    EXPECT_TRUE(
+        service.TryConsumeSigningQuota(site, SigningQuotaOperation::kRefresh));
+  }
+  EXPECT_FALSE(
+      service.TryConsumeSigningQuota(site, SigningQuotaOperation::kRefresh));
+}
 
 class SessionServiceImplTest : public ::testing::Test,
                                public WithTaskEnvironment {
@@ -5952,12 +6071,19 @@ class SessionServiceImplPreProvisionedKeyTest : public SessionServiceImplTest {
         /*restricted_sites=*/std::vector<SchemefulSite>(),
         /*has_cookie_access_cb=*/
         base::BindLambdaForTesting([&](const CookieAccessCheckParams& params) {
-          return allow_cookie_access_;
+          return cookie_access_cb_.Run(params);
         }),
         /*client_cert_handler=*/base::DoNothing()));
   }
 
-  void SetCookieAccess(bool allow) { allow_cookie_access_ = allow; }
+  void SetCookieAccess(bool allow) {
+    cookie_access_cb_ = base::BindLambdaForTesting(
+        [allow](const CookieAccessCheckParams&) { return allow; });
+  }
+
+  void SetCookieAccessCallback(SessionService::CookieAccessCallback callback) {
+    cookie_access_cb_ = std::move(callback);
+  }
 
   bool AddPreProvisionedKey(
       const url::Origin& rp_origin,
@@ -5976,8 +6102,63 @@ class SessionServiceImplPreProvisionedKeyTest : public SessionServiceImplTest {
         provider_key, original_request_initiator);
   }
 
+  // Returns whether any pre-provisioned key is stored.
+  bool HasPreProvisionedKeys() {
+    return service().sso_key_manager_.HasPreProvisionedKeysForTesting();
+  }
+
+  // Returns whether a `GenerateKey()` request is still in flight.
+  bool HasGenerateKeyRequests() {
+    return service().sso_key_manager_.HasGenerateKeyRequestsForTesting();
+  }
+
+  void SetLastRefreshResult(const SchemefulSite& site,
+                            SessionError::ErrorType result) {
+    service().refresh_last_result_.insert_or_assign(site, SessionError(result));
+  }
+
+  // Registers an origin-scoped provider session for `kIdentityProviderOrigin`
+  // with an attestation key.
+  void AddProviderSessionWithAttestationKey() {
+    base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableAttestationKeyId>>
+        aik_future;
+    key_service()->GenerateAttestationKeySlowlyAsync(
+        {crypto::sign::ECDSA_SHA256},
+        unexportable_keys::BackgroundTaskPriority::kUserBlocking,
+        aik_future.GetCallback());
+    ASSERT_OK_AND_ASSIGN(unexportable_keys::UnexportableAttestationKeyId aik_id,
+                         aik_future.Get());
+
+    const GURL refresh_url = GURL(kIdentityProviderOrigin).Resolve("/refresh");
+    auto scoped_fetcher =
+        ScopedTestRegistrationFetcher(base::BindLambdaForTesting(
+            [aik_id, refresh_url](
+                RegistrationFetcher::RegistrationCompleteCallback callback) {
+              std::move(callback).Run(
+                  nullptr, RegistrationResult(Session::CreateIfValid({
+                               .session_id = "SessionWithAik",
+                               .fetcher_url = refresh_url,
+                               .refresh_url = refresh_url.spec(),
+                               .scope = {.include_site = false,
+                                         .origin = kIdentityProviderOrigin},
+                               .credentials = {{.name = "test_cookie",
+                                                .attributes = "secure"}},
+                               .attestation_key_id = aik_id,
+                           })));
+            }));
+
+    auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+        refresh_url, {crypto::sign::ECDSA_SHA256}, "challenge", std::nullopt);
+    service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
+                                   IsolationInfo::CreateTransient(std::nullopt),
+                                   SiteForCookies(), NetLogWithSource(),
+                                   std::nullopt);
+  }
+
  private:
-  bool allow_cookie_access_ = true;
+  SessionService::CookieAccessCallback cookie_access_cb_ =
+      base::BindRepeating([](const CookieAccessCheckParams&) { return true; });
 };
 
 TEST_F(SessionServiceImplPreProvisionedKeyTest,
@@ -6834,4 +7015,290 @@ TEST_F(SessionServiceImplTest,
 
   EXPECT_EQ(future2_retry.Take(), RefreshResult::kRefreshed);
 }
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       HandleGenerateKeyHeader_FeatureDisabled) {
+  AddProviderSessionWithAttestationKey();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      net::features::kDeviceBoundSessionsForSingleSignOn);
+
+  std::unique_ptr<URLRequest> request =
+      CreateAllowedRequest(context(), GURL("https://provider.test"));
+  DbscRequest dbsc_request(request.get());
+
+  EXPECT_FALSE(service().HandleGenerateKeyHeader(
+      dbsc_request, *CreateGenerateKeyHeaders("SessionWithAik"),
+      KeyBindingCallbackNotRun()));
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       HandleGenerateKeyHeader_MissingHeader) {
+  AddProviderSessionWithAttestationKey();
+
+  std::unique_ptr<URLRequest> request =
+      CreateAllowedRequest(context(), GURL("https://provider.test"));
+  DbscRequest dbsc_request(request.get());
+
+  EXPECT_FALSE(service().HandleGenerateKeyHeader(
+      dbsc_request, *HttpResponseHeaders::Builder({1, 1}, "200 OK").Build(),
+      KeyBindingCallbackNotRun()));
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       HandleGenerateKeyHeader_UnparsableHeader) {
+  AddProviderSessionWithAttestationKey();
+
+  std::unique_ptr<URLRequest> request =
+      CreateAllowedRequest(context(), GURL("https://provider.test"));
+  DbscRequest dbsc_request(request.get());
+
+  EXPECT_FALSE(service().HandleGenerateKeyHeader(
+      dbsc_request,
+      *HttpResponseHeaders::Builder({1, 1}, "401 Unauthorized")
+           .AddHeader("Secure-Session-GenerateKey", "invalid")
+           .Build(),
+      KeyBindingCallbackNotRun()));
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       HandleGenerateKeyHeader_BypassDeferralMode) {
+  AddProviderSessionWithAttestationKey();
+
+  std::unique_ptr<URLRequest> request =
+      CreateAllowedRequest(context(), GURL("https://provider.test"));
+  request->set_device_bound_session_mode(
+      DeviceBoundSessionMode::kBypassDeferral);
+  DbscRequest dbsc_request(request.get());
+
+  EXPECT_FALSE(service().HandleGenerateKeyHeader(
+      dbsc_request, *CreateGenerateKeyHeaders("SessionWithAik"),
+      KeyBindingCallbackNotRun()));
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       HandleGenerateKeyHeader_CookieAccessDenied) {
+  AddProviderSessionWithAttestationKey();
+  SetCookieAccess(false);
+
+  std::unique_ptr<URLRequest> request =
+      CreateAllowedRequest(context(), GURL("https://provider.test"));
+  DbscRequest dbsc_request(request.get());
+
+  EXPECT_FALSE(service().HandleGenerateKeyHeader(
+      dbsc_request, *CreateGenerateKeyHeaders("SessionWithAik"),
+      KeyBindingCallbackNotRun()));
+  ExhaustProviderSigningQuota(service(), 6);
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       HandleGenerateKeyHeader_NoProviderSession) {
+  std::unique_ptr<URLRequest> request =
+      CreateAllowedRequest(context(), GURL("https://provider.test"));
+  DbscRequest dbsc_request(request.get());
+
+  EXPECT_FALSE(service().HandleGenerateKeyHeader(
+      dbsc_request, *CreateGenerateKeyHeaders("NonExistentSession"),
+      KeyBindingCallbackNotRun()));
+  ExhaustProviderSigningQuota(service(), 6);
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       HandleGenerateKeyHeader_ProviderSessionWithoutAttestationKey) {
+  // Add a session without attestation key.
+  AddSessionsForTesting({{"SessionNoAik", "https://provider.test/refresh",
+                          "https://provider.test"}});
+
+  std::unique_ptr<URLRequest> request =
+      CreateAllowedRequest(context(), GURL("https://provider.test"));
+  DbscRequest dbsc_request(request.get());
+
+  EXPECT_FALSE(service().HandleGenerateKeyHeader(
+      dbsc_request, *CreateGenerateKeyHeaders("SessionNoAik"),
+      KeyBindingCallbackNotRun()));
+  ExhaustProviderSigningQuota(service(), 6);
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       HandleGenerateKeyHeader_AttestationKeyNotReadyWithoutStore) {
+  SessionKey session_key(SchemefulSite(GURL("https://provider.test")),
+                         Session::Id("SessionWithAik"));
+  AddSessionsForTesting({{"SessionWithAik", "https://provider.test/refresh",
+                          "https://provider.test"}});
+  Session* session = service().GetSession(session_key);
+  ASSERT_TRUE(session);
+  session->set_unexportable_attestation_key_id(
+      base::unexpected(unexportable_keys::ServiceError::kKeyNotReady));
+
+  std::unique_ptr<URLRequest> request =
+      CreateAllowedRequest(context(), GURL("https://provider.test"));
+  DbscRequest dbsc_request(request.get());
+
+  EXPECT_FALSE(service().HandleGenerateKeyHeader(
+      dbsc_request, *CreateGenerateKeyHeaders("SessionWithAik"),
+      KeyBindingCallbackNotRun()));
+  ExhaustProviderSigningQuota(service(), 6);
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       HandleGenerateKeyHeader_RequestUrlOutsideScope) {
+  AddProviderSessionWithAttestationKey();
+
+  // Request to a different origin on the same site when include_site is false.
+  std::unique_ptr<URLRequest> request = CreateAllowedRequest(
+      context(), GURL("https://subdomain.provider.test/auth"));
+  DbscRequest dbsc_request(request.get());
+
+  EXPECT_FALSE(service().HandleGenerateKeyHeader(
+      dbsc_request, *CreateGenerateKeyHeaders("SessionWithAik"),
+      KeyBindingCallbackNotRun()));
+  ExhaustProviderSigningQuota(service(), 6);
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       HandleGenerateKeyHeader_CantSetBoundCookie) {
+  AddProviderSessionWithAttestationKey();
+
+  std::unique_ptr<URLRequest> request =
+      CreateAllowedRequest(context(), GURL("https://provider.test/auth"));
+  request->SetLoadFlags(LOAD_DO_NOT_SAVE_COOKIES);
+  DbscRequest dbsc_request(request.get());
+
+  EXPECT_FALSE(service().HandleGenerateKeyHeader(
+      dbsc_request, *CreateGenerateKeyHeaders("SessionWithAik"),
+      KeyBindingCallbackNotRun()));
+  EXPECT_FALSE(HasPreProvisionedKeys());
+  ExhaustProviderSigningQuota(service(), 6);
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       HandleGenerateKeyHeader_SigningQuotaExceeded) {
+  AddProviderSessionWithAttestationKey();
+  // Use up the quota without a refusal, so that the GenerateKey refusal below
+  // is the first of its out-of-quota episode and gets recorded.
+  const SchemefulSite provider_site{GURL(kIdentityProviderOrigin)};
+  for (size_t i = 0; i < 6; ++i) {
+    EXPECT_TRUE(service().TryConsumeSigningQuota(
+        provider_site, SigningQuotaOperation::kRefresh));
+  }
+  SetLastRefreshResult(provider_site, SessionError::kNetError);
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<URLRequest> request =
+      CreateAllowedRequest(context(), GURL("https://provider.test/auth"));
+  FakeDeviceBoundSessionObserver access_observer;
+  request->SetDeviceBoundSessionAccessCallback(access_observer.GetCallback());
+  DbscRequest dbsc_request(request.get());
+
+  EXPECT_FALSE(service().HandleGenerateKeyHeader(
+      dbsc_request, *CreateGenerateKeyHeaders("SessionWithAik"),
+      KeyBindingCallbackNotRun()));
+  EXPECT_THAT(access_observer.notifications(), IsEmpty());
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Net.DeviceBoundSessions.SigningQuotaUnitsNeeded.GenerateKey"),
+      BucketsAre(base::Bucket(7, 1)));
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.SigningQuotaExceededLastResult2",
+      SessionError::kNetError, 1);
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       HandleGenerateKeyHeader_NotifiesSessionAccess) {
+  AddProviderSessionWithAttestationKey();
+
+  FakeDeviceBoundSessionObserver access_observer;
+  std::unique_ptr<URLRequest> refused_request = CreateAllowedRequest(
+      context(), GURL("https://subdomain.provider.test/auth"));
+  refused_request->SetDeviceBoundSessionAccessCallback(
+      access_observer.GetCallback());
+  DbscRequest refused_dbsc_request(refused_request.get());
+  EXPECT_FALSE(service().HandleGenerateKeyHeader(
+      refused_dbsc_request, *CreateGenerateKeyHeaders("SessionWithAik"),
+      KeyBindingCallbackNotRun()));
+  EXPECT_THAT(access_observer.notifications(), IsEmpty());
+
+  std::unique_ptr<URLRequest> request =
+      CreateAllowedRequest(context(), GURL("https://provider.test/auth"));
+  request->SetDeviceBoundSessionAccessCallback(access_observer.GetCallback());
+  DbscRequest dbsc_request(request.get());
+  base::test::TestFuture<SessionErrorOr<std::string>> key_binding_future;
+  ASSERT_TRUE(service().HandleGenerateKeyHeader(
+      dbsc_request, *CreateGenerateKeyHeaders("SessionWithAik"),
+      key_binding_future.GetCallback()));
+  EXPECT_THAT(access_observer.notifications(),
+              ElementsAre(SessionAccess{
+                  SessionAccess::AccessType::kUpdate,
+                  SessionKey(SchemefulSite(GURL(kIdentityProviderOrigin)),
+                             Session::Id("SessionWithAik"))}));
+  EXPECT_THAT(key_binding_future.Take(), HasValue());
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       HandleGenerateKeyHeader_Success) {
+  AddProviderSessionWithAttestationKey();
+
+  // Request URL has a path and query.
+  GURL request_url("https://provider.test/auth/signin?prompt=consent");
+  std::unique_ptr<URLRequest> request =
+      CreateAllowedRequest(context(), request_url);
+  DbscRequest dbsc_request(request.get());
+
+  std::optional<url::Origin> captured_provider_origin;
+  std::optional<url::Origin> captured_rp_origin;
+  SetCookieAccessCallback(base::BindLambdaForTesting(
+      [&captured_provider_origin,
+       &captured_rp_origin](const CookieAccessCheckParams& params) {
+        captured_provider_origin = *params.provider_origin;
+        captured_rp_origin = *params.relying_party_origin;
+        return true;
+      }));
+
+  base::test::TestFuture<SessionErrorOr<std::string>> key_binding_future;
+  ASSERT_TRUE(service().HandleGenerateKeyHeader(
+      dbsc_request, *CreateGenerateKeyHeaders("SessionWithAik"),
+      key_binding_future.GetCallback()));
+  EXPECT_EQ(captured_provider_origin, url::Origin::Create(request_url));
+  url::Origin rp_origin = url::Origin::Create(GURL(kRelyingPartyOrigin));
+  EXPECT_EQ(captured_rp_origin, rp_origin);
+  EXPECT_FALSE(key_binding_future.IsReady());
+
+  // The key stored for the RP is the one that the binding statement certifies.
+  ASSERT_OK_AND_ASSIGN(std::string binding_statement,
+                       key_binding_future.Take());
+  ASSERT_OK_AND_ASSIGN(std::string thumbprint,
+                       GetSubjectKeyThumbprint(binding_statement));
+  // The lookup checks cookie access for the provider origin that the key was
+  // generated for.
+  captured_provider_origin.reset();
+  EXPECT_THAT(FindPreProvisionedKey(thumbprint, rp_origin), HasValue());
+  EXPECT_EQ(captured_provider_origin, url::Origin::Create(request_url));
+
+  // `HandleGenerateKeyHeader()` consumed 1 unit of the 6-unit quota.
+  ExhaustProviderSigningQuota(service(), 5);
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       HandleGenerateKeyHeader_CancelledCallbackStoresNoKey) {
+  AddProviderSessionWithAttestationKey();
+
+  std::unique_ptr<URLRequest> request =
+      CreateAllowedRequest(context(), GURL("https://provider.test/auth"));
+  DbscRequest dbsc_request(request.get());
+  base::CancelableOnceCallback<void(SessionErrorOr<std::string>)> key_callback(
+      KeyBindingCallbackNotRun());
+  ASSERT_TRUE(service().HandleGenerateKeyHeader(
+      dbsc_request, *CreateGenerateKeyHeaders("SessionWithAik"),
+      key_callback.callback()));
+
+  // Cancel before keygen replies. The key manager only sees this if
+  // `HandleGenerateKeyHeader()` passes the callback on without wrapping it.
+  key_callback.Cancel();
+  ASSERT_TRUE(base::test::RunUntil([&] { return !HasGenerateKeyRequests(); }));
+
+  EXPECT_FALSE(HasPreProvisionedKeys());
+  // The quota unit is not refunded.
+  ExhaustProviderSigningQuota(service(), 5);
+}
+
 }  // namespace net::device_bound_sessions

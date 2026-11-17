@@ -157,6 +157,9 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
                               SigningQuotaOperation operation) override;
   void HandleResponseHeaders(DbscRequest& request,
                              HttpResponseHeaders* headers) override;
+  bool HandleGenerateKeyHeader(DbscRequest& request,
+                               const HttpResponseHeaders& headers,
+                               KeyBindingCallback callback) override;
   void SelectClientCertificate(
       const GURL& url,
       scoped_refptr<SSLCertRequestInfo> cert_info,

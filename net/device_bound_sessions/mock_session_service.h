@@ -121,6 +121,12 @@ class SessionServiceMock : public SessionService {
               PrewarmSessionsForUrl,
               (const GURL& url, PrewarmCallback callback),
               (override));
+  MOCK_METHOD(bool,
+              HandleGenerateKeyHeader,
+              (DbscRequest & request,
+               const HttpResponseHeaders& headers,
+               KeyBindingCallback callback),
+              (override));
 };
 
 }  // namespace net::device_bound_sessions
