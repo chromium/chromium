@@ -79,13 +79,26 @@ action("workaround_list") {
   }
 }
 
+# Split out of :config so that the GpuPreferences mojom traits in
+# //gpu/ipc/common:gpu_preferences_interface can depend on gpu_preferences.h
+# while gpu_preferences.cc in :config includes the generated mojom header.
+source_set("gpu_preferences_headers") {
+  sources = [
+    "gpu_config_export.h",
+    "gpu_preferences.h",
+  ]
+  public_deps = [
+    "//base",
+    "//ui/gfx:buffer_types",
+  ]
+}
+
 component("config") {
   sources = [
     "device_perf_info.cc",
     "device_perf_info.h",
     "gpu_blocklist.cc",
     "gpu_blocklist.h",
-    "gpu_config_export.h",
     "gpu_control_list.cc",
     "gpu_control_list.h",
     "gpu_crash_keys.cc",
@@ -107,7 +120,6 @@ component("config") {
     "gpu_info_collector.h",
     "gpu_mode.h",
     "gpu_preferences.cc",
-    "gpu_preferences.h",
     "gpu_switches.cc",
     "gpu_switches.h",
     "gpu_test_config.cc",
@@ -131,6 +143,7 @@ component("config") {
   defines = [ "GPU_CONFIG_IMPLEMENTATION" ]
 
   public_deps = [
+    ":gpu_preferences_headers",
     ":process_json",
     "//components/crash/core/common:crash_key",
     "//third_party/dawn/include/dawn:cpp_headers",
@@ -172,11 +185,6 @@ component("config") {
       "//third_party/dawn/src/dawn/native",
     ]
   }
-
-  # GpuPreferences is using its own mojo bindings which creates a
-  # cycle between this target and gpu_preferences_interface.
-  allow_circular_includes_from =
-      [ "//gpu/ipc/common:gpu_preferences_interface" ]
 
   if (is_android) {
     sources += [ "gpu_info_collector_android.cc" ]

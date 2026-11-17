@@ -662,16 +662,13 @@ mojom("gpu_preferences_interface") {
         },
       ]
       traits_headers = [ "gpu_preferences_mojom_traits.h" ]
-      traits_public_deps = [ "//media:media_buildflags" ]
+      traits_public_deps = [
+        "//gpu/config:gpu_preferences_headers",
+        "//media:media_buildflags",
+      ]
       if (use_ozone) {
         traits_public_deps += [ "//ui/base:features" ]
       }
-      traits_deps = [
-        # We depend on gpu_preferences but since it also depends on its own
-        # mojo bindings, that is handled with an |allowed_circular_includes|
-        # in //gpu/config:gpu_preferences.
-        # "//gpu/config:gpu_preferences",
-      ]
     },
   ]
 }
