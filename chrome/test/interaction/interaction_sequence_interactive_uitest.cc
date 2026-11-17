@@ -6,11 +6,14 @@
 
 #include <string.h>
 
+#include <memory>
+
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -18,16 +21,18 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
-#include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/test_support/app_menu_test_accessor.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence_test_util.h"
+#include "ui/base/interaction/interaction_test_util.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
-#include "ui/views/interaction/interaction_sequence_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 
 // This test ensures basic compatibility of InteractionSequence[Views] and a
@@ -41,12 +46,30 @@
 // dialog or multiple submenus.
 class InteractionSequenceUiTest : public InProcessBrowserTest {
  public:
+  InteractionSequenceUiTest() {
+    test_util_.AddSimulator(
+        std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
+    InteractionTestUtilBrowser::PopulateSimulators(test_util_);
+  }
+
+  ~InteractionSequenceUiTest() override = default;
+
   static void ClearEventQueue() {
     base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
+
+ protected:
+  // Simulates pressing `element` and verifies that the action succeeded.
+  void PressButton(ui::TrackedElement* element) {
+    EXPECT_EQ(ui::test::ActionResult::kSucceeded,
+              test_util_.PressButton(element));
+  }
+
+  // Dispatches framework-agnostic UI actions across Views and WebUI elements.
+  ui::test::InteractionTestUtil test_util_;
 };
 
 IN_PROC_BROWSER_TEST_F(InteractionSequenceUiTest, OpenMainMenuAndViewHelpItem) {
@@ -57,14 +80,17 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceUiTest, OpenMainMenuAndViewHelpItem) {
       views::ElementTrackerViews::GetContextForView(
           BrowserView::GetBrowserViewForBrowser(browser()));
 
+  WaitForInitialWebUIToolbar(browser());
+
   // Demonstrate that we can find the app button without having to pick through
-  // the BrowserView hierarcny.
-  views::View* const button_view =
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          kToolbarAppMenuButtonElementId, context);
-  BrowserAppMenuButton* const app_menu_button =
-      static_cast<BrowserAppMenuButton*>(button_view);
-  DCHECK_EQ("BrowserAppMenuButton", app_menu_button->GetClassName());
+  // the BrowserView hierarchy.
+  ui::TrackedElement* app_menu_button = nullptr;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    app_menu_button =
+        ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+            kToolbarAppMenuButtonElementId, context);
+    return app_menu_button != nullptr;
+  }));
 
   // Define a simple sequence of:
   // - spotting the app menu button
@@ -74,8 +100,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceUiTest, OpenMainMenuAndViewHelpItem) {
       ui::InteractionSequence::Builder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .AddStep(
-              views::InteractionSequenceViews::WithInitialView(app_menu_button))
+          .AddStep(ui::InteractionSequence::WithInitialElement(app_menu_button))
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetElementID(kToolbarAppMenuButtonElementId)
                        .SetType(ui::InteractionSequence::StepType::kActivated)
@@ -91,10 +116,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceUiTest, OpenMainMenuAndViewHelpItem) {
   ClearEventQueue();
 
   // Click the app menu button, displaying the target element.
-  EXPECT_ASYNC_CALL_IN_SCOPE(
-      completed, Run,
-      views::test::InteractionTestUtilSimulatorViews::PressButton(
-          app_menu_button));
+  EXPECT_ASYNC_CALL_IN_SCOPE(completed, Run, PressButton(app_menu_button));
 
   // Verify that we found the correct element and it is visible.
   EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
