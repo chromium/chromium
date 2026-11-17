@@ -853,6 +853,53 @@ TEST_P(CredentialManagerImplTest, CredentialManagerGetOverwriteZeroClick) {
   EXPECT_FALSE(passwords[form_.signon_realm][0].skip_zero_click);
 }
 
+// Verifies that choosing an unnotified shared credential in the Credential
+// Management API's account chooser does not clear `skip_zero_click` (since the
+// chooser does not show sharing attribution), whereas choosing it after
+// `sharing_notification_displayed` is true opts into zero-click as usual.
+TEST_P(CredentialManagerImplTest,
+       CredentialManagerGetPreservesZeroClickForUnnotifiedSharedCredential) {
+  client_->set_zero_click_enabled(true);
+  form_.type = PasswordForm::Type::kReceivedViaSharing;
+  form_.sharing_notification_displayed = false;
+  form_.skip_zero_click = true;
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
+
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr);
+  EXPECT_CALL(*client_, NotifyUserAutoSigninPtr).Times(0);
+
+  bool called = false;
+  CredentialManagerError error;
+  std::optional<CredentialInfo> credential;
+  CallGet(CredentialMediationRequirement::kOptional, true, /*federations=*/{},
+          base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
+  RunAllPendingTasks();
+
+  EXPECT_TRUE(called);
+  EXPECT_EQ(CredentialManagerError::SUCCESS, error);
+  EXPECT_EQ(CredentialType::CREDENTIAL_TYPE_PASSWORD, credential->type);
+
+  // `skip_zero_click` remains true while the sharing notification is unshown.
+  TestPasswordStore::PasswordMap passwords = GetAllLoginsSync(store_.get());
+  EXPECT_TRUE(passwords[form_.signon_realm][0].skip_zero_click);
+
+  // After the user has been notified about the shared credential, selecting it
+  // in the account chooser clears `skip_zero_click` for future auto-sign-in.
+  form_.sharing_notification_displayed = true;
+  store_->UpdateLogin(password_manager::FromPasswordForm(form_));
+  RunAllPendingTasks();
+
+  called = false;
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr);
+  CallGet(CredentialMediationRequirement::kOptional, true, /*federations=*/{},
+          base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
+  RunAllPendingTasks();
+
+  EXPECT_TRUE(called);
+  passwords = GetAllLoginsSync(store_.get());
+  EXPECT_FALSE(passwords[form_.signon_realm][0].skip_zero_click);
+}
+
 TEST_P(CredentialManagerImplTest,
        CredentialManagerSignInWithSavingDisabledForCurrentPage) {
   auto info = PasswordFormToCredentialInfo(form_);

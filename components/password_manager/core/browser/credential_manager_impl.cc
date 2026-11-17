@@ -241,7 +241,17 @@ void CredentialManagerImpl::SendPasswordForm(
                                         ? GetAccountPasswordStore()
                                         : GetProfilePasswordStore();
     if (store) {
-      if (form->skip_zero_click && IsZeroClickAllowed()) {
+      // Selecting a credential in `AccountChooser` normally opts it into future
+      // zero-click auto-sign-in (`skip_zero_click = false`). However,
+      // `AccountChooser` does not display password-sharing sender attribution
+      // or mark `sharing_notification_displayed`, so keep `skip_zero_click`
+      // enabled across all store backends until the user has been notified of
+      // the shared credential.
+      const bool is_unnotified_shared_credential =
+          form->type == PasswordForm::Type::kReceivedViaSharing &&
+          !form->sharing_notification_displayed;
+      if (form->skip_zero_click && !is_unnotified_shared_credential &&
+          IsZeroClickAllowed()) {
         PasswordForm update_form = *form;
         update_form.skip_zero_click = false;
         store->UpdateLogin(

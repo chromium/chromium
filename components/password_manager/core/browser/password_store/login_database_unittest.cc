@@ -24,6 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -66,6 +67,7 @@
 
 using base::ASCIIToUTF16;
 using base::UTF16ToASCII;
+using base::test::ValueIs;
 using signin::GaiaIdHash;
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -75,8 +77,10 @@ using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Ne;
 using ::testing::NiceMock;
+using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::Pointee;
+using ::testing::Property;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 
@@ -1618,6 +1622,112 @@ TEST_F(LoginDatabaseTest, UpdateCredentialSyncPreservesLocalSkipZeroClick) {
   changes = store_sync.UpdateCredentialSync(regular_specifics);
   ASSERT_EQ(1U, changes.size());
   EXPECT_TRUE(changes[0].credential().skip_zero_click);
+}
+
+// Verifies that `LoginDatabaseAsyncHelper` enforces `skip_zero_click = true` on
+// both reads and local writes for shared credentials whose notification has not
+// yet been displayed, while keeping raw `LoginDatabase` agnostic of sharing.
+TEST_F(LoginDatabaseTest, SharedCredentialEnforcesSkipZeroClickUntilNotified) {
+  const base::FilePath db_path =
+      temp_dir_.GetPath().AppendASCII("shared_skip_zero_click.db");
+
+  StoredCredential cred;
+  cred.url = GURL("https://example.com/login");
+  cred.signon_realm = "https://example.com/";
+  cred.username_value = u"my_username";
+  cred.password_value = password_manager::PasswordString(u"my_password");
+  cred.type = PasswordForm::Type::kReceivedViaSharing;
+  cred.sharing_notification_displayed = false;
+  cred.skip_zero_click = false;
+
+  // Seed a pre-existing SQLite row directly via `LoginDatabase` with
+  // `skip_zero_click = false` while `sharing_notification_displayed` is false.
+  {
+    LoginDatabase raw_db(db_path, IsAccountStore(false));
+    ASSERT_TRUE(raw_db.Init(
+        /*on_undecryptable_passwords_removed=*/base::NullCallback(),
+        CreateEncryptor()));
+    ASSERT_FALSE(raw_db.AddLogin(CloneStoredCredential(cred)).empty());
+    EXPECT_EQ(raw_db.GetSkipZeroClick(cred), false);
+  }
+
+  StoredCredential unnotified_write_cred;
+  unnotified_write_cred.url = GURL("https://other.example.com/login");
+  unnotified_write_cred.signon_realm = "https://other.example.com/";
+  unnotified_write_cred.username_value = u"other_user";
+  unnotified_write_cred.password_value =
+      password_manager::PasswordString(u"other_pass");
+  unnotified_write_cred.type = PasswordForm::Type::kReceivedViaSharing;
+  unnotified_write_cred.sharing_notification_displayed = false;
+  unnotified_write_cred.skip_zero_click = false;
+
+  {
+    std::unique_ptr<LoginDatabase> async_db =
+        std::make_unique<LoginDatabase>(db_path, IsAccountStore(false));
+    LoginDatabaseAsyncHelper helper(
+        std::move(async_db), base::SequencedTaskRunner::GetCurrentDefault(),
+        syncer::WipeModelUponSyncDisabledBehavior::kNever);
+    ASSERT_TRUE(helper.Initialize(
+        /*remote_form_changes_received=*/base::DoNothing(),
+        /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
+        /*on_undecryptable_passwords_removed=*/base::NullCallback(),
+        CreateEncryptor()));
+
+    const PasswordFormDigest digest(ToPasswordForm(cred));
+
+    // Even though the pre-existing SQLite row had `skip_zero_click = 0`, all
+    // `LoginDatabaseAsyncHelper` read paths enforce `skip_zero_click = true`
+    // until `sharing_notification_displayed` becomes true.
+    EXPECT_THAT(
+        helper.GetAllLogins(),
+        ValueIs(ElementsAre(Field(&StoredCredential::skip_zero_click, true))));
+    EXPECT_THAT(
+        helper.GetAutofillableLogins(),
+        ValueIs(ElementsAre(Field(&StoredCredential::skip_zero_click, true))));
+    EXPECT_THAT(
+        helper.FillMatchingLogins({digest}, /*include_psl=*/false),
+        ValueIs(ElementsAre(Field(&StoredCredential::skip_zero_click, true))));
+
+    // Once `sharing_notification_displayed` is true, `skip_zero_click = false`
+    // is respected across all read paths.
+    cred.sharing_notification_displayed = true;
+    cred.skip_zero_click = false;
+    ASSERT_OK(helper.UpdateLogin(cred));
+
+    EXPECT_THAT(
+        helper.GetAllLogins(),
+        ValueIs(ElementsAre(Field(&StoredCredential::skip_zero_click, false))));
+    EXPECT_THAT(
+        helper.GetAutofillableLogins(),
+        ValueIs(ElementsAre(Field(&StoredCredential::skip_zero_click, false))));
+    EXPECT_THAT(
+        helper.FillMatchingLogins({digest}, /*include_psl=*/false),
+        ValueIs(ElementsAre(Field(&StoredCredential::skip_zero_click, false))));
+
+    // Local writes via `AddLogin` and `UpdateLogin` cannot persist
+    // `skip_zero_click = false` while `sharing_notification_displayed` is
+    // false.
+    EXPECT_THAT(helper.AddLogin(CloneStoredCredential(unnotified_write_cred)),
+                ValueIs(Optional(ElementsAre(Property(
+                    &PasswordStoreChange::credential,
+                    Field(&StoredCredential::skip_zero_click, true))))));
+
+    unnotified_write_cred.password_value =
+        password_manager::PasswordString(u"updated_pass");
+    unnotified_write_cred.skip_zero_click = false;
+    EXPECT_THAT(helper.UpdateLogin(unnotified_write_cred),
+                ValueIs(Optional(ElementsAre(Property(
+                    &PasswordStoreChange::credential,
+                    Field(&StoredCredential::skip_zero_click, true))))));
+  }
+
+  // Confirm `AddLogin` and `UpdateLogin` persisted `skip_zero_click = true` to
+  // the underlying SQLite table as well.
+  LoginDatabase check_db(db_path, IsAccountStore(false));
+  ASSERT_TRUE(check_db.Init(
+      /*on_undecryptable_passwords_removed=*/base::NullCallback(),
+      CreateEncryptor()));
+  EXPECT_EQ(check_db.GetSkipZeroClick(unnotified_write_cred), true);
 }
 
 TEST_F(LoginDatabaseTest, RemoveWrongForm) {
