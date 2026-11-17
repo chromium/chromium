@@ -309,8 +309,13 @@ void GlicInstanceMetrics::OnTooltipImpression(
     return;
   }
   tooltip_shown_in_session_ = true;
+  tooltip_currently_visible_ = true;
   last_tooltip_impression_time_ = base::TimeTicks::Now();
   metric_reporter_.RecordEnumeration("Tooltip.MultiTab.Impression", impression);
+}
+
+void GlicInstanceMetrics::OnTooltipHidden() {
+  tooltip_currently_visible_ = false;
 }
 
 void GlicInstanceMetrics::OnTooltipMultiTabPromptSubmitted() {
@@ -319,16 +324,23 @@ void GlicInstanceMetrics::OnTooltipMultiTabPromptSubmitted() {
                                  true);
 }
 
-void GlicInstanceMetrics::RecordTooltipPanelClosedWithin10s() {
+void GlicInstanceMetrics::RecordTooltipClosedMetrics() {
   tooltip_shown_in_session_ = false;
-  if (!last_tooltip_impression_time_.is_null()) {
-    const bool within_10s =
-        base::TimeTicks::Now() - last_tooltip_impression_time_ <=
-        base::Seconds(10);
-    last_tooltip_impression_time_ = base::TimeTicks();
-    metric_reporter_.RecordBoolean("Tooltip.MultiTab.PanelCloseWithin10s",
-                                   within_10s);
+  if (last_tooltip_impression_time_.is_null()) {
+    return;
   }
+
+  const bool closed_while_shown = tooltip_currently_visible_;
+  tooltip_currently_visible_ = false;
+  metric_reporter_.RecordBoolean("Tooltip.MultiTab.ClosedWhileShown",
+                                 closed_while_shown);
+
+  const bool within_10s =
+      base::TimeTicks::Now() - last_tooltip_impression_time_ <=
+      base::Seconds(10);
+  last_tooltip_impression_time_ = base::TimeTicks();
+  metric_reporter_.RecordBoolean("Tooltip.MultiTab.PanelCloseWithin10s",
+                                 within_10s);
 }
 
 void GlicInstanceMetrics::OnGlicScrollAttempt() {
@@ -381,7 +393,9 @@ void GlicInstanceMetrics::OnInstanceDestroyed() {
 
   session_manager_.OnOwnerDestroyed();
 
-  RecordTooltipPanelClosedWithin10s();
+  if (visibility_tracker_ && visibility_tracker_->state()) {
+    RecordTooltipClosedMetrics();
+  }
 
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Destroyed"));
 
@@ -642,13 +656,13 @@ void GlicInstanceMetrics::OnShowInFloaty(const ShowOptions& options) {
 }
 
 void GlicInstanceMetrics::OnFloatyClosed() {
-  RecordTooltipPanelClosedWithin10s();
   if (floaty_open_time_.is_null()) {
     metric_reporter_.RecordEnumeration(
         "Instance.Metrics.Error",
         GlicInstanceMetricsError::kFloatyClosedWithoutOpen);
     return;
   }
+  RecordTooltipClosedMetrics();
   base::TimeDelta duration = base::TimeTicks::Now() - floaty_open_time_;
   metric_reporter_.RecordCustomTimes("Instance.Floaty.OpenDuration", duration,
                                      base::Milliseconds(1), base::Hours(1), 50);
@@ -696,7 +710,7 @@ void GlicInstanceMetrics::OnSidePanelClosed(
   MaybeRecordFirstSidePanelOpenMetrics(duration);
 
   if (reason != CloseReason::kTabSwitched) {
-    RecordTooltipPanelClosedWithin10s();
+    RecordTooltipClosedMetrics();
     std::erase(tabs_with_side_panel_, tab->GetHandle());
     if (tabs_with_side_panel_.empty() &&
         initial_invocation_source_ ==
@@ -752,6 +766,7 @@ void GlicInstanceMetrics::OnUnbindEmbedder(EmbedderKey key) {
     tabs::TabHandle tab_handle = tab.GetHandle();
     auto it = side_panel_open_times_.find(tab_handle);
     if (it != side_panel_open_times_.end()) {
+      RecordTooltipClosedMetrics();
       base::TimeDelta duration = base::TimeTicks::Now() - it->second;
       metric_reporter_.RecordCustomTimes("Instance.SidePanel.OpenDuration",
                                          duration, base::Milliseconds(1),
@@ -769,6 +784,7 @@ void GlicInstanceMetrics::OnUnbindEmbedder(EmbedderKey key) {
     }
   } else {
     if (!floaty_open_time_.is_null()) {
+      RecordTooltipClosedMetrics();
       base::TimeDelta duration = base::TimeTicks::Now() - floaty_open_time_;
       metric_reporter_.RecordCustomTimes("Instance.Floaty.OpenDuration",
                                          duration, base::Milliseconds(1),
@@ -1114,7 +1130,11 @@ void GlicInstanceMetrics::OnToggle(glic::mojom::InvocationSource source,
   LogEvent(GlicInstanceEvent::kToggle);
 }
 
-void GlicInstanceMetrics::OnBoundTabDestroyed() {
+void GlicInstanceMetrics::OnBoundTabDestroyed(tabs::TabInterface* tab,
+                                              bool is_active_embedder) {
+  if (is_active_embedder && side_panel_open_times_.contains(tab->GetHandle())) {
+    RecordTooltipClosedMetrics();
+  }
   base::RecordAction(
       base::UserMetricsAction("Glic.Instance.BoundTabDestroyed"));
   LogEvent(GlicInstanceEvent::kBoundTabDestroyed);
@@ -1352,6 +1372,12 @@ void GlicInstanceMetrics::RecordPanelPresentationTime(
                                        50);
   }
   invocation_load_state_ = {};
+}
+
+void GlicInstanceMetrics::OnWebClientCleared() {
+  tooltip_currently_visible_ = false;
+  last_tooltip_impression_time_ = base::TimeTicks();
+  tooltip_shown_in_session_ = false;
 }
 
 void GlicInstanceMetrics::OnNativeFreAccepted() {

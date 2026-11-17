@@ -1279,6 +1279,10 @@ class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
     this.handler.onTooltipImpression(
         enumFromClient(impression) ?? TooltipImpressionTypeMojo.kUnknown);
   }
+
+  onTooltipHidden(): void {
+    this.handler.onTooltipHidden();
+  }
 }
 
 export interface ClientStorageHandler {

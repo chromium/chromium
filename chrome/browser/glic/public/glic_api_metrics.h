@@ -122,6 +122,7 @@ enum class GlicHostApiRequestId {
   kGetSendTabToSelfDevices = 108,
   kOnInputFocused = 109,
   kOnTooltipImpression = 110,
+  kOnTooltipHidden = 111,
 };
 // LINT.ThenChange(
 // //tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType,

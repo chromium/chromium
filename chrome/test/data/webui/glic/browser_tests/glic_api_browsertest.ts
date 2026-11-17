@@ -2904,6 +2904,7 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(metrics.onSessionTerminated);
     assertDefined(metrics.onClosedCaptionsShown);
     assertDefined(metrics.onTooltipImpression);
+    assertDefined(metrics.onTooltipHidden);
     metrics.onResponseRated(true);
     metrics.onUserInputSubmitted(WebClientMode.TEXT);
     metrics.onContextUploadStarted();
@@ -2914,6 +2915,7 @@ class ApiTests extends ApiTestFixtureBase {
     metrics.onSessionTerminated();
     metrics.onClosedCaptionsShown();
     metrics.onTooltipImpression(TooltipImpressionType.TOOLTIP1);
+    metrics.onTooltipHidden();
   }
 
   async testUserInputSubmittedPromptType() {

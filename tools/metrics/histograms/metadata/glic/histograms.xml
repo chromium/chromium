@@ -78,6 +78,7 @@ chromium-metrics-reviews@google.com.
   <variant name="OnResponseStarted"/>
   <variant name="OnResponseStopped"/>
   <variant name="OnSessionTerminated"/>
+  <variant name="OnTooltipHidden"/>
   <variant name="OnTooltipImpression"/>
   <variant name="OnTurnCompleted"/>
   <variant name="OnUserInputSubmitted"/>
@@ -3813,6 +3814,25 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 
+<histogram name="Glic{GlicProvider}.Tooltip.MultiTab.ClosedWhileShown"
+    enum="Boolean" expires_after="2027-10-01">
+  <owner>andreaxg@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Recorded as a boolean at most once per shown-tooltip episode (starting on a
+    valid multi-tab tooltip impression and resetting on close or web-client
+    reload). Recorded when: (1) the side panel closes (including when replaced
+    by another side panel entry, excluding tab switches), (2) the floating panel
+    closes, (3) an open embedder is unbound, (4) a bound tab with the active
+    open side panel is destroyed, or (5) the Glic instance is destroyed while
+    the panel is currently visible (destroying a hidden or switched-away
+    instance does not record). Emits true if the tooltip was still displayed at
+    close, or false if the user had already dismissed, timed out, or engaged
+    with the tooltip before closing. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
 <histogram name="Glic{GlicProvider}.Tooltip.MultiTab.Impression"
     enum="GlicTooltipMultiTabImpression" expires_after="2027-10-01">
   <owner>andreaxg@google.com</owner>
@@ -3841,10 +3861,14 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <owner>andreaxg@google.com</owner>
   <owner>glic-dev@google.com</owner>
   <summary>
-    Emitted when the side panel, floaty window, or Glic instance closes after a
-    tooltip showing. Recorded as true if closed within 10 seconds of the
-    impression, or false if closed more than 10 seconds later. Scope:
-    {GlicProvider}.
+    Recorded as a boolean at most once per shown-tooltip episode at the same
+    close triggers as Glic{GlicProvider}.Tooltip.MultiTab.ClosedWhileShown (side
+    panel close or replacement by another entry excluding tab switches, floating
+    panel close, unbinding an open embedder, destroying a bound tab with the
+    active open side panel, or destroying a visible Glic instance). Not emitted
+    if the web client reloads or hibernates before close. Emits true if closed
+    within 10 seconds of the latest multi-tab tooltip impression, or false
+    otherwise. Scope: {GlicProvider}.
   </summary>
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>

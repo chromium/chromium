@@ -216,6 +216,8 @@ std::string_view ToString(GlicHostApiRequestId request_id) {
       return "OnInputFocused";
     case GlicHostApiRequestId::kOnTooltipImpression:
       return "OnTooltipImpression";
+    case GlicHostApiRequestId::kOnTooltipHidden:
+      return "OnTooltipHidden";
   }
   return "";
 }

@@ -90,6 +90,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   // Multi-tab tooltip metrics.
   void OnTooltipImpression(mojom::TooltipImpressionType impression);
+  void OnTooltipHidden();
 
   // TODO(crbug.com/545714879): Remove OptInShownCallback once
   // OnFreOptInShown is logged directly or via direct profile helpers instead of
@@ -187,7 +188,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   bool ResetShownState(EmbedderKey key);
 
   // Called when a tab that was bound to this instance is destroyed.
-  void OnBoundTabDestroyed();
+  void OnBoundTabDestroyed(tabs::TabInterface* tab, bool is_active_embedder);
 
   // Called when GlicInstanceImpl::CreateTab is called.
   void OnCreateTab();
@@ -223,6 +224,10 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   // Called when the client is ready to show.
   void OnClientReady();
+
+  // Called when the web client is cleared (reload, crash, navigation, or
+  // hibernation).
+  void OnWebClientCleared();
 
   // Updates metrics state when the user accepts the native FRE.
   void OnNativeFreAccepted();
@@ -336,8 +341,10 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // impression.
   void OnTooltipMultiTabPromptSubmitted();
 
-  // Records whether the panel closed within 10s of a tooltip impression.
-  void RecordTooltipPanelClosedWithin10s();
+  // Records ClosedWhileShown and PanelCloseWithin10s if a multi-tab tooltip was
+  // shown since the last close or web-client load, then clears tooltip close
+  // state so each episode counts at most once.
+  void RecordTooltipClosedMetrics();
 
   void RecordSkillsInvokeFunnelStep(SkillsInvokeFunnel invoke_funnel);
   void RecordAndResetAutoOpenPdfMetric();
@@ -516,6 +523,9 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   // Tracks if a tooltip was shown during the current session.
   bool tooltip_shown_in_session_ = false;
+
+  // Tracks whether a multi-tab tooltip is currently displayed to the user.
+  bool tooltip_currently_visible_ = false;
 
   base::WeakPtrFactory<GlicInstanceMetrics> weak_ptr_factory_{this};
 };

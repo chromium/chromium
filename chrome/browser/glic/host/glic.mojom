@@ -1536,6 +1536,12 @@ interface WebClientHandler {
   // impression.
   // `impression`: The specific tooltip step and copy variant shown.
   OnTooltipImpression(TooltipImpressionType impression);
+
+  // Reports when a currently shown multi-tab sharing tooltip is hidden (e.g.
+  // close button, click outside, timeout, typing, or engaging with the
+  // tooltip) so Chrome stops considering it visible for ClosedWhileShown
+  // tracking.
+  OnTooltipHidden();
 };
 
 // Accesses zero state suggestions from the web client.
