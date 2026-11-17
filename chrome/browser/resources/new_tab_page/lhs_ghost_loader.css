@@ -1,0 +1,242 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #css_wrapper_metadata_end */
+
+/* "Search:" blocks are copied from Search (paths relative to
+ * google3/java/com/google/search/next/aim/ui/ unless noted). "NTP:" marks
+ * NTP-specific code. Mapping doc: go/ntp-lhs-ghost-loader. */
+
+/* NTP: stands in for lhspanel/lhs_panel.scss &Panel. */
+:host {
+  /* TODO(crbug.com/570203672): Remove this comment and the fallback colors
+   * once crrev.com/c/8687239 defines these colors. Until then, Search
+   * defaults apply. */
+  --aim-loading-bar-base-color:
+      var(--color-new-tab-page-threads-rail-loader-base);
+  --aim-loading-bar-highlight-color:
+      var(--color-new-tab-page-threads-rail-loader-highlight);
+  background-color: var(--color-new-tab-page-threads-rail-background);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+/* NTP: placeholders for icons, labels and the logo. */
+.ghost-icon,
+.ghost-label,
+.ghost-wordmark {
+  background: var(--aim-loading-bar-base-color, #e4e7ee);
+}
+
+:host([is-dark]) .ghost-icon,
+:host([is-dark]) .ghost-label,
+:host([is-dark]) .ghost-wordmark {
+  background: var(--aim-loading-bar-base-color, #25262e);
+}
+
+/* NTP: size from AIRY_ICON_SIZE in lhspanel/consts.tsx. */
+.ghost-icon {
+  block-size: 22px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  inline-size: 22px;
+}
+
+/* Search: lhspanel/lhs_panel.scss &HeaderContainer */
+.ghost-header {
+  padding-block-start: 88px;
+  /* NTP: Search uses sticky. */
+  position: relative;
+}
+
+/* Search: google3/java/com/google/gws/plugins/magi/jslayout/ghosttaco/
+ * aim_header_brandmark.html .lhs-brandmark-wordmark */
+.ghost-logo {
+  top: 32px;
+  inset-inline-start: 20px;
+  display: flex;
+  align-items: center;
+  block-size: 44px;
+  /* NTP: Search uses fixed. */
+  position: absolute;
+}
+
+/* NTP: size from google3/gws/output/pages/elements/search_form_logo.html */
+.ghost-wordmark {
+  block-size: 30px;
+  border-radius: 15px;
+  inline-size: 92px;
+}
+
+/* Search: threads/threads_header.scss &ActionButton, &CloseMenuButton and
+ * &ScootedCloseButton */
+.ghost-close-button {
+  display: flex;
+  align-items: center;
+  block-size: 48px;
+  inline-size: 40px;
+  justify-content: center;
+  top: 0;
+  position: absolute;
+  margin-block-start: 26px;
+  inset-inline: auto 12px;
+}
+
+/* Search: lhspanel/lhs_panel.scss &AiryButtonsGroup */
+.ghost-actions {
+  display: flex;
+  flex-direction: column;
+  padding-inline: 8px 12px;
+}
+
+/* Search: lhspanel/lhs_panel.scss &AiryButton */
+.ghost-button {
+  display: flex;
+  align-items: center;
+  block-size: 40px;
+  padding-inline: 12px;
+  border-radius: 12px;
+  inline-size: 100%;
+  box-sizing: border-box;
+}
+
+/* Search: lhspanel/lhs_panel.scss &AiryButtonIcon */
+.ghost-actions .ghost-icon {
+  margin-inline-end: 12px;
+}
+
+/* NTP: widths roughly match the English labels. */
+.ghost-label {
+  block-size: 16px;
+  border-radius: 8px;
+}
+
+.ghost-label.new-thread {
+  inline-size: 80px;
+}
+
+.ghost-label.search-threads {
+  inline-size: 100px;
+}
+
+.ghost-label.settings {
+  inline-size: 60px;
+}
+
+.ghost-threads {
+  /* Search: lhspanel/lhs_panel.scss &ThreadsViewContainer */
+  padding-inline: 8px 0;
+  /* Search: threads/v1p5/loading_ghost_bars.scss &Container */
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding-block-start: 24px; /* --sds-sys-measurement--space-xxl */
+  /* NTP */
+  flex: 1;
+  min-block-size: 0;
+  overflow: hidden;
+}
+
+/* Search: threads/v1p5/loading_ghost_bars.scss &Item */
+.ghost-line-item {
+  display: flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 12px;
+}
+
+/* Search: loadingbar/loading_bar.scss &Wrapper */
+.ghost-line {
+  --loading-bar-delay: 2000ms;
+  --loading-bar-width: 100%;
+  position: relative;
+  overflow: hidden;
+  width: var(--loading-bar-width, 100%);
+  background: var(--aim-loading-bar-base-color, #e4e7ee);
+}
+
+:host([is-dark]) .ghost-line {
+  background: var(--aim-loading-bar-base-color, #25262e);
+}
+
+/* Search: loadingbar/loading_bar.scss &Gradient */
+.ghost-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 300%;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    var(--aim-loading-bar-base-color, #e4e7ee) 20%,
+    var(--aim-loading-bar-highlight-color, #f2f3f5) 50%,
+    var(--aim-loading-bar-base-color, #e4e7ee) 80%,
+    transparent 100%
+  );
+}
+
+:host([is-dark]) .ghost-shimmer {
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    var(--aim-loading-bar-base-color, #25262e) 20%,
+    var(--aim-loading-bar-highlight-color, #33394d) 50%,
+    var(--aim-loading-bar-base-color, #25262e) 80%,
+    transparent 100%
+  );
+}
+
+/* Search: loadingbar/loading_bar.scss @keyframes ghost-loading-slide */
+@keyframes ghost-loading-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(50%);
+  }
+}
+
+/* Search: lhspanel/lhs_panel.scss &SettingsButtonContainer */
+.ghost-footer {
+  padding-block: 8px 16px;
+  padding-inline: 8px 12px;
+  height: 64px;
+  box-sizing: border-box;
+  /* NTP */
+  flex-shrink: 0;
+}
+
+/* Search: lhspanel/lhs_panel.scss &SettingsButtonAiry */
+.ghost-footer .ghost-button {
+  block-size: 40px;
+  inline-size: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding-inline: 12px;
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+
+/* cr_shared_vars.css only defines --cr-animations-disabled: 1 under
+ * prefers-reduced-motion: reduce (leaving it unset otherwise), so animate
+ * whenever it is not 1. */
+@container not style(--cr-animations-disabled: 1) {
+  /* Search: loadingbar/loading_bar.scss &Gradient:nth-child(1..3) */
+  .ghost-shimmer:nth-child(1),
+  .ghost-shimmer:nth-child(2),
+  .ghost-shimmer:nth-child(3) {
+    animation: 6000ms cubic-bezier(0.33, 1, 0.68, 1) var(--loading-bar-delay)
+      infinite normal both running ghost-loading-slide;
+  }
+}

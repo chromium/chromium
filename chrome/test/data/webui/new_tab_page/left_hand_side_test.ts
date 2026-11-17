@@ -30,6 +30,18 @@ suite('NewTabPageLeftHandSideTest', () => {
     return leftHandSide.shadowRoot.querySelector<IframeElement>('#expanded');
   }
 
+  function getGhostLoader(): HTMLElement|null {
+    return leftHandSide.shadowRoot.querySelector<HTMLElement>('#ghostLoader');
+  }
+
+  // The ghost loader is only in the DOM while the rail is expanded, so a
+  // missing ghost loader is not visible.
+  function isGhostLoaderVisible(): boolean {
+    const ghostLoader = getGhostLoader();
+    return !!ghostLoader &&
+        getComputedStyle(ghostLoader).visibility === 'visible';
+  }
+
   function getExpandedIframeWindow(): Window {
     const iframeElement = getExpandedIframe();
     assertTrue(!!iframeElement);
@@ -140,17 +152,15 @@ suite('NewTabPageLeftHandSideTest', () => {
       assertEquals(EXPANDED_LHS_URL, iframe.src);
       assertEquals('clipboard-write; unbounded-element', iframe.allow);
       assertEquals(enableThreadsRailHybrid ? '261px' : '', iframe.style.width);
-      // In hybrid mode the host starts at the folded rail's width. In
-      // full-iframe mode no width is known until the iframe reports one.
-      const folded =
-          leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded');
-      if (enableThreadsRailHybrid) {
-        assertTrue(!!folded);
-        assertTrue(folded.offsetWidth > 0 && folded.offsetWidth < 261);
-      }
+      // In hybrid mode the host expands to the default expanded width while the
+      // ghost loader is shown. In full-iframe mode no width is known until the
+      // iframe reports one.
       assertEquals(
-          enableThreadsRailHybrid ? `${folded!.offsetWidth}px` : '',
-          getHostWidthProperty());
+          enableThreadsRailHybrid ? '261px' : '', getHostWidthProperty());
+      assertEquals(enableThreadsRailHybrid, !!getGhostLoader());
+      if (enableThreadsRailHybrid) {
+        assertTrue(isGhostLoaderVisible());
+      }
       assertTrue(iframe.hidden);
       assertFalse(iframe.classList.contains('ready'));
     });
@@ -281,7 +291,6 @@ suite('NewTabPageLeftHandSideTest', () => {
     await microtasksFinished();
     assertFalse(expanded.hidden);
     assertFalse(expanded.inert);
-    assertFalse(folded.hidden);
     assertTrue(folded.inert);
     assertEquals('320px', getHostWidthProperty());
 
@@ -290,7 +299,6 @@ suite('NewTabPageLeftHandSideTest', () => {
     assertEquals(expanded, getExpandedIframe());
     assertFalse(expanded.hidden);
     assertTrue(expanded.inert);
-    assertFalse(folded.hidden);
     assertFalse(folded.inert);
     assertEquals(collapsedWidth, getHostWidthProperty());
   });
@@ -302,6 +310,7 @@ suite('NewTabPageLeftHandSideTest', () => {
     assertFalse(!!getExpandedIframe());
     const folded =
         leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+    assertFalse(isGhostLoaderVisible());
     const collapsedWidth = `${folded.offsetWidth}px`;
 
     await expandLeftHandSide();
@@ -309,16 +318,16 @@ suite('NewTabPageLeftHandSideTest', () => {
     const initialExpanded = getExpandedIframe();
     assertTrue(!!initialExpanded);
     assertTrue(initialExpanded.hidden);
-    assertFalse(folded.hidden);
-    assertFalse(folded.inert);
-    assertEquals(collapsedWidth, getHostWidthProperty());
+    assertEquals('hidden', getComputedStyle(folded).visibility);
+    assertTrue(isGhostLoaderVisible());
+    assertEquals('261px', getHostWidthProperty());
 
     postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 320});
     await microtasksFinished();
     assertFalse(initialExpanded.hidden);
     assertFalse(initialExpanded.inert);
-    assertFalse(folded.hidden);
     assertTrue(folded.inert);
+    assertFalse(isGhostLoaderVisible());
     assertEquals('320px', getHostWidthProperty());
 
     postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
@@ -326,8 +335,8 @@ suite('NewTabPageLeftHandSideTest', () => {
     assertEquals(initialExpanded, getExpandedIframe());
     assertFalse(initialExpanded.hidden);
     assertTrue(initialExpanded.inert);
-    assertFalse(folded.hidden);
     assertFalse(folded.inert);
+    assertFalse(isGhostLoaderVisible());
     assertEquals(collapsedWidth, getHostWidthProperty());
 
     await expandLeftHandSide();
@@ -335,8 +344,8 @@ suite('NewTabPageLeftHandSideTest', () => {
     assertEquals(initialExpanded, getExpandedIframe());
     assertFalse(initialExpanded.hidden);
     assertFalse(initialExpanded.inert);
-    assertFalse(folded.hidden);
     assertTrue(folded.inert);
+    assertFalse(isGhostLoaderVisible());
     assertEquals('320px', getHostWidthProperty());
   });
 
@@ -347,6 +356,7 @@ suite('NewTabPageLeftHandSideTest', () => {
     assertFalse(!!getExpandedIframe());
     const folded =
         leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+    assertFalse(isGhostLoaderVisible());
 
     folded.dispatchEvent(
         new CustomEvent('expand-rail', {bubbles: true, composed: true}));
@@ -355,14 +365,15 @@ suite('NewTabPageLeftHandSideTest', () => {
     const expanded = getExpandedIframe();
     assertTrue(!!expanded);
     assertTrue(expanded.hidden);
-    assertFalse(folded.hidden);
-    assertFalse(folded.inert);
+    assertEquals('hidden', getComputedStyle(folded).visibility);
+    assertTrue(isGhostLoaderVisible());
 
     postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY});
     await microtasksFinished();
     assertFalse(expanded.hidden);
-    assertFalse(folded.hidden);
+    assertFalse(expanded.inert);
     assertTrue(folded.inert);
+    assertFalse(isGhostLoaderVisible());
   });
 
   ['pointerenter', 'focusin'].forEach(eventName => {
@@ -385,7 +396,6 @@ suite('NewTabPageLeftHandSideTest', () => {
           const preloaded = getExpandedIframe();
           assertTrue(!!preloaded);
           assertTrue(preloaded.hidden);
-          assertFalse(folded.hidden);
           assertFalse(folded.inert);
           assertEquals(collapsedWidth, getHostWidthProperty());
 
@@ -398,7 +408,6 @@ suite('NewTabPageLeftHandSideTest', () => {
           assertTrue(preloaded.classList.contains('ready'));
           assertFalse(preloaded.hidden);
           assertTrue(preloaded.inert);
-          assertFalse(folded.hidden);
           assertFalse(folded.inert);
           assertEquals(collapsedWidth, getHostWidthProperty());
 
@@ -408,7 +417,6 @@ suite('NewTabPageLeftHandSideTest', () => {
           await microtasksFinished();
           assertFalse(preloaded.hidden);
           assertFalse(preloaded.inert);
-          assertFalse(folded.hidden);
           assertTrue(folded.inert);
           assertEquals('320px', getHostWidthProperty());
         });
@@ -589,6 +597,7 @@ suite('NewTabPageLeftHandSideTest', () => {
                 '#folded')!;
 
         assertFalse(!!getExpandedIframe());
+        assertFalse(isGhostLoaderVisible());
 
         // Clicking FOCUS_REALBOX_AIM bubbles open-composebox without expanding.
         const newSearchButton =
@@ -600,8 +609,8 @@ suite('NewTabPageLeftHandSideTest', () => {
         await microtasksFinished();
         assertEquals(0, windowProxy.getCallCount('ensureLazyLoaded'));
         assertFalse(!!getExpandedIframe());
-        assertFalse(folded.hidden);
         assertFalse(folded.inert);
+        assertFalse(isGhostLoaderVisible());
 
         // Clicking EXPAND_RAIL expands the LHS iframe.
         const expandButton =
@@ -612,14 +621,15 @@ suite('NewTabPageLeftHandSideTest', () => {
         const expanded = getExpandedIframe();
         assertTrue(!!expanded);
         assertTrue(expanded.hidden);
-        assertFalse(folded.hidden);
-        assertFalse(folded.inert);
+        assertEquals('hidden', getComputedStyle(folded).visibility);
+        assertTrue(isGhostLoaderVisible());
 
         postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 320});
         await microtasksFinished();
         assertFalse(expanded.hidden);
-        assertFalse(folded.hidden);
+        assertFalse(expanded.inert);
         assertTrue(folded.inert);
+        assertFalse(isGhostLoaderVisible());
         assertEquals('320px', getHostWidthProperty());
       });
 
@@ -691,7 +701,8 @@ suite('NewTabPageLeftHandSideTest', () => {
       });
 
   test(
-      'keeps folded width until expanded iframe is ready in hybrid mode',
+      'shows ghost loader and expands width before iframe is ready in hybrid ' +
+          'mode',
       async () => {
         loadTimeData.overrideValues({enableThreadsRailHybrid: true});
         await createLeftHandSide();
@@ -699,24 +710,48 @@ suite('NewTabPageLeftHandSideTest', () => {
         const folded =
             leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
         assertTrue(folded.offsetWidth > 0 && folded.offsetWidth < 261);
-        const collapsedWidth = `${folded.offsetWidth}px`;
+        // The ghost loader is not in the DOM while the rail is folded.
+        assertFalse(!!getGhostLoader());
 
-        // Clicking the folded rail before the embedded page is ready keeps
-        // showing the folded rail, so the host must keep its width too.
+        // Clicking the folded rail before the embedded page is ready hides the
+        // folded rail, shows the ghost loader, and expands the host width
+        // immediately.
         await expandLeftHandSide();
         const expanded = getExpandedIframe();
         assertTrue(!!expanded);
         assertTrue(expanded.hidden);
-        assertFalse(folded.hidden);
-        assertFalse(folded.inert);
-        assertEquals(collapsedWidth, getHostWidthProperty());
+        assertEquals('hidden', getComputedStyle(folded).visibility);
+        const ghostLoader = getGhostLoader();
+        assertTrue(!!ghostLoader);
+        assertTrue(isGhostLoaderVisible());
+        assertEquals('261px', ghostLoader.style.width);
+        // The ghost loader exposes a named, busy region to screen readers,
+        // while its decorative placeholders stay hidden from the a11y tree.
+        assertEquals('region', ghostLoader.getAttribute('role'));
+        assertEquals('true', ghostLoader.getAttribute('aria-busy'));
+        assertEquals(
+            loadTimeData.getString('aimThreadsHistoryLabel'),
+            ghostLoader.getAttribute('aria-label'));
+        assertFalse(ghostLoader.hasAttribute('aria-hidden'));
+        assertTrue(!!ghostLoader.shadowRoot);
+        assertEquals(3, ghostLoader.shadowRoot.children.length);
+        for (const child of ghostLoader.shadowRoot.children) {
+          assertEquals('true', child.getAttribute('aria-hidden'));
+        }
+        assertEquals('261px', getHostWidthProperty());
 
         postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 320});
         await microtasksFinished();
         assertFalse(expanded.hidden);
-        assertFalse(folded.hidden);
+        assertFalse(expanded.inert);
         assertTrue(folded.inert);
+        assertFalse(isGhostLoaderVisible());
         assertEquals('320px', getHostWidthProperty());
+
+        // Collapsing the rail removes the ghost loader from the DOM.
+        postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
+        await microtasksFinished();
+        assertFalse(!!getGhostLoader());
       });
 
   test(
@@ -738,10 +773,13 @@ suite('NewTabPageLeftHandSideTest', () => {
         assertEquals('0s', getComputedStyle(folded).transitionDuration);
         assertEquals('0s', getComputedStyle(expanded).transitionDuration);
 
-        // Removing --cr-animations-disabled enables transitions via
-        // @container not style(--cr-animations-disabled: 1).
-        document.documentElement.style.removeProperty(
-            '--cr-animations-disabled');
+        // Overriding --cr-animations-disabled enables transitions via
+        // @container not style(--cr-animations-disabled: 1). Set it to 0
+        // instead of removing it, so that the test does not depend on
+        // prefers-reduced-motion (cr_shared_vars.css sets it to 1 under
+        // prefers-reduced-motion: reduce).
+        document.documentElement.style.setProperty(
+            '--cr-animations-disabled', '0');
         assertEquals('0.3s', getComputedStyle(leftHandSide).transitionDuration);
         assertEquals('0.15s, 0s', getComputedStyle(folded).transitionDuration);
         assertEquals(
@@ -749,7 +787,6 @@ suite('NewTabPageLeftHandSideTest', () => {
         document.documentElement.style.setProperty(
             '--cr-animations-disabled', '1');
 
-        assertFalse(folded.hidden);
         assertFalse(folded.inert);
         assertEquals('visible', getComputedStyle(folded).visibility);
         assertEquals('1', getComputedStyle(folded).opacity);
