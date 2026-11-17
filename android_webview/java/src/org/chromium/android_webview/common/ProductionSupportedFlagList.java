@@ -1607,6 +1607,9 @@ public final class ProductionSupportedFlagList {
                 UiAndroidFeatures.DRAG_DROP_REQUIRES_URI_PERMISSIONS,
                 "When enabled, content URIs from other apps in a drop are ignored unless the drop"
                         + " granted URI permissions for them."),
+        Flag.baseFeature(
+                BlinkFeatures.SIMDUTF_TEXT_CODEC_UTF8_DECODE,
+                "When enabled, parses the HTML UTF-8 text with simdutf"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
