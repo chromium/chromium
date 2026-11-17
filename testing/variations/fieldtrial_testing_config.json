@@ -7011,14 +7011,11 @@
     "DesktopNtpShortcutsReorder": [
         {
             "platforms": [
-                "android",
+                "android_desktop",
                 "chromeos",
                 "linux",
                 "mac",
                 "windows"
-            ],
-            "form_factors": [
-                "desktop"
             ],
             "experiments": [
                 {
