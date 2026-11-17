@@ -4402,6 +4402,8 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kAbs:
       case CSSValueID::kSign:
         return true;
+      case CSSValueID::kRangeIndex:
+        return RuntimeEnabledFeatures::CSSCustomHighlightExtensionsEnabled();
       case CSSValueID::kProgress:
         return RuntimeEnabledFeatures::CSSProgressNotationEnabled();
       case CSSValueID::kMediaProgress:
@@ -4666,11 +4668,12 @@ class CSSMathExpressionNodeParser {
                                                                calculation);
   }
 
-  CSSMathExpressionNode* ParseSiblingIndexOrCount(CSSValueID function_id,
-                                                  CSSParserTokenStream& stream,
-                                                  State state) {
+  CSSMathExpressionNode* ParseIndexOrCountFunction(
+      CSSValueID function_id,
+      CSSParserTokenStream& stream) {
     if (function_id != CSSValueID::kSiblingCount &&
-        function_id != CSSValueID::kSiblingIndex) {
+        function_id != CSSValueID::kSiblingIndex &&
+        function_id != CSSValueID::kRangeIndex) {
       return nullptr;
     }
     if (!context_.InElementContext()) {
@@ -4679,6 +4682,9 @@ class CSSMathExpressionNodeParser {
     if (!stream.AtEnd()) {
       // These do not take any arguments.
       return nullptr;
+    }
+    if (function_id == CSSValueID::kRangeIndex) {
+      return MakeGarbageCollected<CSSMathExpressionRangeIndexFunction>();
     }
     cssvalue::CSSScopedKeywordValue* scoped_function =
         MakeGarbageCollected<cssvalue::CSSScopedKeywordValue>(function_id);
@@ -4708,9 +4714,9 @@ class CSSMathExpressionNodeParser {
       context_.Count(WebFeature::kCSSCalcSizeFunction);
       return calc_size;
     }
-    if (CSSMathExpressionNode* sibling_function =
-            ParseSiblingIndexOrCount(function_id, stream, state)) {
-      return sibling_function;
+    if (CSSMathExpressionNode* index_or_count =
+            ParseIndexOrCountFunction(function_id, stream)) {
+      return index_or_count;
     }
 
     // "arguments" refers to comma separated ones.
@@ -4925,6 +4931,7 @@ class CSSMathExpressionNodeParser {
 
       case CSSValueID::kSiblingIndex:
       case CSSValueID::kSiblingCount:
+      case CSSValueID::kRangeIndex:
         // Handled above.
         return nullptr;
       case CSSValueID::kRandom: {
@@ -5562,6 +5569,13 @@ CSSMathExpressionNode* CSSMathExpressionNode::ParseMathFunction(
 
   // TODO(pjh0718): Do simplificiation for result above.
   return result;
+}
+
+const CalculationExpressionNode*
+CSSMathExpressionRangeIndexFunction::ToCalculationExpression(
+    const CSSLengthResolver&) const {
+  // TODO(crbug.com/579833788): Lower the actual range index instead of zero.
+  return MakeGarbageCollected<CalculationExpressionNumberNode>(0);
 }
 
 String CSSMathExpressionSiblingFunction::CustomCSSText() const {

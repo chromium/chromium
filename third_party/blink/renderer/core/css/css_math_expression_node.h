@@ -231,6 +231,7 @@ class CORE_EXPORT CSSMathExpressionNode
   virtual bool IsKeywordLiteral() const { return false; }
   virtual bool IsContainerFeature() const { return false; }
   virtual bool IsSiblingFunction() const { return false; }
+  virtual bool IsRangeIndexFunction() const { return false; }
   virtual bool IsCalcSize() const { return false; }
   virtual bool IsRandomFunction() const { return false; }
 
@@ -1140,6 +1141,71 @@ template <>
 struct DowncastTraits<CSSMathExpressionSiblingFunction> {
   static bool AllowFrom(const CSSMathExpressionNode& node) {
     return node.IsSiblingFunction();
+  }
+};
+
+class CORE_EXPORT CSSMathExpressionRangeIndexFunction final
+    : public CSSMathExpressionNode {
+ public:
+  CSSMathExpressionRangeIndexFunction() : CSSMathExpressionNode(kCalcNumber) {}
+
+  CSSMathExpressionNode* Copy() const final {
+    return MakeGarbageCollected<CSSMathExpressionRangeIndexFunction>();
+  }
+  bool IsMathFunction() const final { return true; }
+  bool IsRangeIndexFunction() const final { return true; }
+  std::optional<double> GetValueIfKnown() const final { return 0; }
+  double DoubleValue() const final { return 0; }
+  const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
+      const final {
+    return this;
+  }
+  double ComputeLengthPx(const CSSLengthResolver&) const final { return 0; }
+  bool AccumulateLengthArray(CSSLengthArray&, double) const final {
+    return false;
+  }
+  void AccumulateLengthUnitTypes(
+      CSSPrimitiveValue::LengthTypeFlags&) const final {}
+  const CalculationExpressionNode* ToCalculationExpression(
+      const CSSLengthResolver&) const final;
+  std::optional<PixelsAndPercent> ToPixelsAndPercent(
+      const CSSLengthResolver&) const final {
+    return PixelsAndPercent(0, 0, /*has_explicit_pixels=*/true,
+                            /*has_explicit_percent=*/false);
+  }
+  std::optional<double> ComputeValueInCanonicalUnit() const final { return 0; }
+  std::optional<double> ComputeValueInCanonicalUnit(
+      const CSSLengthResolver&) const final {
+    return 0;
+  }
+  String CustomCSSText() const final { return "range-index()"; }
+  bool operator==(const CSSMathExpressionNode& other) const final {
+    return other.IsRangeIndexFunction();
+  }
+  bool IsComputationallyIndependent() const final { return false; }
+  bool IsElementDependent() const final { return true; }
+  bool MayHaveRelativeUnit() const final { return false; }
+  CSSPrimitiveValue::UnitType ResolvedUnitType() const final {
+    return CSSPrimitiveValue::UnitType::kNumber;
+  }
+  const CSSMathExpressionNode& PopulateWithTreeScope(
+      const TreeScope*) const final {
+    return *this;
+  }
+  const CSSMathExpressionNode* TransformAnchors(
+      LogicalAxis,
+      const TryTacticTransform&,
+      const WritingDirectionMode&) const final {
+    return this;
+  }
+  bool HasInvalidAnchorFunctions(const CSSLengthResolver&) const final {
+    return false;
+  }
+
+ protected:
+  double ComputeDouble(const CSSLengthResolver&) const final {
+    // TODO(crbug.com/579833788): Return actual range index.
+    return 0;
   }
 };
 

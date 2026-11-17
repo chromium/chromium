@@ -2067,6 +2067,7 @@
     // Used as functions in calc()
     "sibling-count",
     "sibling-index",
+    "range-index",
 
     // https://drafts.csswg.org/css-values-5/#ident
     "ident",

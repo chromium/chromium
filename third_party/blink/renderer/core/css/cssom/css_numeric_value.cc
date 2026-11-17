@@ -183,8 +183,9 @@ CSSNumericValue* CalcToNumericValue(const CSSMathExpressionNode& root) {
                                  std::move(max), std::move(step));
   }
 
-  // TODO(crbug.com/40243221): Implement Typed OM API for `anchor()` and
-  // `sibling-index()`, and turn that if below into a DCHECK.
+  // TODO(crbug.com/40243221): Implement Typed OM API for `anchor()`,
+  // `sibling-index()`, and `range-index()`, and turn that if below into a
+  // DCHECK.
   if (!root.IsOperation()) {
     return nullptr;
   }
