@@ -4065,6 +4065,8 @@ TEST_F(RenderWidgetHostViewAuraTest,
     view_->CreateUnboundedSurface(kSurfaceBounds, nullptr);
     UnboundedSurfaceWindow* surface = view_->GetUnboundedSurfaceWindow();
     ASSERT_TRUE(surface);
+    EXPECT_TRUE(surface->GetNativeWindow()->GetProperty(
+        aura::client::kAnimationsDisabledKey));
     EXPECT_EQ(wm::kShadowElevationDefault,
               surface->GetNativeWindow()->GetProperty(wm::kShadowElevationKey));
     surface->Dismiss();
