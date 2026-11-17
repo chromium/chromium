@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -1488,7 +1489,7 @@ bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
       activate_->GetAllocatedString(MFT_FRIENDLY_NAME_Attribute, &friendly_name,
                                     &name_length);
       std::string friendly_name_str;
-      if (base::WideToUTF8(friendly_name.get(), name_length,
+      if (base::WideToUTF8(std::wstring_view(friendly_name.get(), name_length),
                            &friendly_name_str)) {
         hardware_encoder_name_ = std::move(friendly_name_str);
       } else {

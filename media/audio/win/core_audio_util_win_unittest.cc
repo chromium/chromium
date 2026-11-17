@@ -728,8 +728,7 @@ TEST_F(CoreAudioUtilWinTest, GetMatchingOutputDeviceID) {
     collection->Item(i, &device);
     base::win::ScopedCoMem<WCHAR> wide_id;
     device->GetId(&wide_id);
-    std::string id;
-    base::WideToUTF8(wide_id, wcslen(wide_id), &id);
+    std::string id = base::WideToUTF8(wide_id.get());
     found_a_pair = !CoreAudioUtil::GetMatchingOutputDeviceID(id).empty();
   }
 
