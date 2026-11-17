@@ -6,6 +6,7 @@
 
 #include <unistd.h>
 
+#include <cstddef>
 #include <cstdio>
 #include <iostream>
 #include <optional>
@@ -39,7 +40,6 @@
 #include "remoting/host/linux/host_types.h"
 #include "remoting/host/pairing_registry_delegate_linux.h"
 #include "remoting/host/setup/daemon_controller_delegate_linux_multi_process.h"
-#include "remoting/host/setup/daemon_controller_delegate_linux_single_process.h"
 #include "remoting/protocol/pairing_registry.h"
 
 namespace remoting {
@@ -52,10 +52,29 @@ constexpr char kSaveMultiProcessPairingsSwitch[] =
     "save-multi-process-pairings";
 constexpr char kSaveSingleProcessHostRegistrationSwitch[] =
     "save-single-process-host-registration";
+constexpr char kLoadSingleProcessHostRegistrationSwitch[] =
+    "load-single-process-host-registration";
+constexpr char kDeleteSingleProcessHostRegistrationSwitch[] =
+    "delete-single-process-host-registration";
 
+// The keys of the JSON dictionary that the single-process host registration
+// is passed to and from the child processes as.
+constexpr char kHostConfigKey[] = "host_config";
+constexpr char kPairingsKey[] = "pairings";
+
+// The maximum size of the output of a child process that is read by
+// RunAsUser(), since root reads it from a child that is run as another user.
+constexpr size_t kMaxChildOutputSize = 1024 * 1024;
+
+// Runs the current program as `user_name` with `sudo -u`, passing `args`.
+// Returns whether it exited with 0.
+// `input`: if not empty, it is written to the child's stdin.
+// `output`: if not null, it is set to what the child writes to its stdout.
+//   Fails if that exceeds kMaxChildOutputSize.
 bool RunAsUser(std::string_view user_name,
                base::span<const std::string_view> args,
-               std::string_view input) {
+               std::string_view input = {},
+               std::string* output = nullptr) {
   CHECK(!user_name.empty());
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   std::vector<std::string> full_args{"/usr/bin/sudo", "-u",
@@ -70,11 +89,23 @@ bool RunAsUser(std::string_view user_name,
 
   base::ScopedFD stdin_read_fd;
   base::ScopedFD stdin_write_fd;
-  if (!base::CreatePipe(&stdin_read_fd, &stdin_write_fd)) {
-    PLOG(ERROR) << "Failed to create stdin pipe";
-    return false;
+  if (!input.empty()) {
+    if (!base::CreatePipe(&stdin_read_fd, &stdin_write_fd)) {
+      PLOG(ERROR) << "Failed to create stdin pipe";
+      return false;
+    }
+    options.fds_to_remap.emplace_back(stdin_read_fd.get(), STDIN_FILENO);
   }
-  options.fds_to_remap.emplace_back(stdin_read_fd.get(), STDIN_FILENO);
+
+  base::ScopedFD stdout_read_fd;
+  base::ScopedFD stdout_write_fd;
+  if (output) {
+    if (!base::CreatePipe(&stdout_read_fd, &stdout_write_fd)) {
+      PLOG(ERROR) << "Failed to create stdout pipe";
+      return false;
+    }
+    options.fds_to_remap.emplace_back(stdout_write_fd.get(), STDOUT_FILENO);
+  }
 
   base::Process process = base::LaunchProcess(command_line, options);
   if (!process.IsValid()) {
@@ -83,17 +114,41 @@ bool RunAsUser(std::string_view user_name,
     return false;
   }
 
-  stdin_read_fd.reset();
-  bool write_ok = base::WriteFileDescriptor(stdin_write_fd.get(), input);
-  if (!write_ok) {
-    PLOG(ERROR) << "Failed to write to pipe: "
-                << command_line.GetCommandLineString();
+  bool write_ok = true;
+  if (!input.empty()) {
+    // Close the read end in the parent process.
+    stdin_read_fd.reset();
+    write_ok = base::WriteFileDescriptor(stdin_write_fd.get(), input);
+    if (!write_ok) {
+      PLOG(ERROR) << "Failed to write to pipe: "
+                  << command_line.GetCommandLineString();
+    }
+    // Close the write end to signal EOF.
+    stdin_write_fd.reset();
   }
-  stdin_write_fd.reset();
+
+  bool read_ok = true;
+  if (output) {
+    // Close the write end in the parent process, so that reading ends when
+    // the child exits.
+    stdout_write_fd.reset();
+
+    base::ScopedFILE stdout_stream(
+        base::FileToFILE(base::File(stdout_read_fd.release()), "r"));
+    if (!stdout_stream ||
+        !base::ReadStreamToStringWithMaxSize(stdout_stream.get(),
+                                             kMaxChildOutputSize, output)) {
+      LOG(ERROR) << "Failed to read the output, or it is too large: "
+                 << command_line.GetCommandLineString();
+      // Partial output must not be used.
+      output->clear();
+      read_ok = false;
+    }
+  }
 
   int exit_code = -1;
   bool exited = process.WaitForExit(&exit_code);
-  if (!write_ok || !exited || exit_code != 0) {
+  if (!write_ok || !read_ok || !exited || exit_code != 0) {
     LOG(ERROR) << "Process failed with status " << exit_code << ": "
                << command_line.GetCommandLineString();
     return false;
@@ -173,9 +228,42 @@ bool SaveMultiProcessPairingsAsNetworkUser() {
   return true;
 }
 
+base::FilePath GetSingleProcessConfigDir(const PasswdUserInfo& user_info) {
+  return user_info.home_dir.Append(GetPerUserConfigRelativeDir());
+}
+
+base::FilePath GetSingleProcessConfigFile(const PasswdUserInfo& user_info) {
+  return GetSingleProcessConfigDir(user_info).Append(GetHostHash() + ".json");
+}
+
+base::FilePath GetSingleProcessPairingDir(const PasswdUserInfo& user_info) {
+  return GetSingleProcessConfigDir(user_info).Append(
+      PairingRegistryDelegateLinux::kRegistryDirectory);
+}
+
+// Returns the passwd entry of the user that runs this process, i.e. the user
+// that the child processes below are run as with sudo -u. Its home directory
+// is used rather than $HOME, so that the same paths are used as by the parent
+// process. Prints an error and returns std::nullopt on failure.
+std::optional<PasswdUserInfo> GetCurrentUserInfo() {
+  std::string user_name = GetUsername();
+  auto user_info = GetPasswdUserInfo(user_name);
+  if (!user_info.has_value()) {
+    std::cerr << "Failed to look up the current user " << user_name << ": "
+              << user_info.error() << "\n";
+    return std::nullopt;
+  }
+  return std::move(*user_info);
+}
+
 bool SaveSingleProcessHostRegistrationAsUser() {
   CHECK_NE(getuid(), 0u);
   CHECK_NE(GetUsername(), GetNetworkProcessUsername());
+
+  std::optional<PasswdUserInfo> user_info = GetCurrentUserInfo();
+  if (!user_info.has_value()) {
+    return false;
+  }
 
   std::string json;
   if (!base::ReadStreamToString(stdin, &json)) {
@@ -193,14 +281,15 @@ bool SaveSingleProcessHostRegistrationAsUser() {
   }
 
   const base::DictValue* host_config =
-      registration_dict->FindDict("host_config");
-  const base::ListValue* pairings = registration_dict->FindList("pairings");
+      registration_dict->FindDict(kHostConfigKey);
+  const base::ListValue* pairings = registration_dict->FindList(kPairingsKey);
   if (!host_config || !pairings) {
     std::cerr << "Single-process host registration JSON is missing fields.\n";
     return false;
   }
 
-  PairingRegistryDelegateLinux user_pairing_delegate;
+  PairingRegistryDelegateLinux user_pairing_delegate(
+      GetSingleProcessPairingDir(*user_info), /*use_unprivileged_file=*/false);
   if (!user_pairing_delegate.DeleteAll()) {
     std::cerr
         << "Failed to clear existing pairings from single-process registry.\n";
@@ -218,8 +307,7 @@ bool SaveSingleProcessHostRegistrationAsUser() {
     }
   }
 
-  base::FilePath config_path =
-      DaemonControllerDelegateLinuxSingleProcess::GetConfigPath();
+  base::FilePath config_path = GetSingleProcessConfigFile(*user_info);
   base::FilePath config_dir = config_path.DirName();
   if (!base::DirectoryExists(config_dir)) {
     base::File::Error error;
@@ -244,17 +332,69 @@ bool SaveSingleProcessHostRegistrationAsUser() {
   return true;
 }
 
-base::FilePath GetSingleProcessConfigDir(const PasswdUserInfo& user_info) {
-  return user_info.home_dir.Append(GetPerUserConfigRelativeDir());
+// Run as the user of the single-process host, so that root doesn't follow
+// symlinks in the user's home directory. Writes a JSON dictionary to stdout:
+// - {"host_config": {...}, "pairings": [...]} if there is a host;
+// - {} if there is no host (see ReadHostConfig()).
+// If the host config exists but can't be read or parsed, nothing is written,
+// the error is printed to stderr, and false is returned, so that the parent
+// never mistakes a host that may be running for a deleted one.
+bool LoadSingleProcessHostRegistrationAsUser() {
+  CHECK_NE(getuid(), 0u);
+  CHECK_NE(GetUsername(), GetNetworkProcessUsername());
+
+  std::optional<PasswdUserInfo> user_info = GetCurrentUserInfo();
+  if (!user_info.has_value()) {
+    return false;
+  }
+  base::expected<std::optional<base::DictValue>, std::string> host_config =
+      ReadHostConfig(GetSingleProcessConfigFile(*user_info));
+  if (!host_config.has_value()) {
+    std::cerr << host_config.error() << "\n";
+    return false;
+  }
+  base::DictValue registration_dict;
+  if (host_config->has_value()) {
+    PairingRegistryDelegateLinux user_pairing_delegate(
+        GetSingleProcessPairingDir(*user_info),
+        /*use_unprivileged_file=*/false);
+    registration_dict.Set(kHostConfigKey, std::move(**host_config));
+    registration_dict.Set(kPairingsKey, user_pairing_delegate.LoadAll());
+  }
+  std::string registration_json;
+  if (!base::JSONWriter::Write(registration_dict, &registration_json)) {
+    std::cerr << "Failed to serialize single-process host registration to "
+                 "JSON.\n";
+    return false;
+  }
+  std::cout << registration_json;
+  std::cout.flush();
+  return std::cout.good();
 }
 
-base::FilePath GetSingleProcessConfigFile(const PasswdUserInfo& user_info) {
-  return GetSingleProcessConfigDir(user_info).Append(GetHostHash() + ".json");
-}
+// Run as the user of the single-process host, so that only files that the
+// user can delete are deleted. Deletes the host config, then the pairings of
+// the single-process host. Attempts both deletions, even if the first fails.
+bool DeleteSingleProcessHostRegistrationAsUser() {
+  CHECK_NE(getuid(), 0u);
+  CHECK_NE(GetUsername(), GetNetworkProcessUsername());
 
-base::FilePath GetSingleProcessPairingDir(const PasswdUserInfo& user_info) {
-  return GetSingleProcessConfigDir(user_info).Append(
-      PairingRegistryDelegateLinux::kRegistryDirectory);
+  std::optional<PasswdUserInfo> user_info = GetCurrentUserInfo();
+  if (!user_info.has_value()) {
+    return false;
+  }
+  bool success = true;
+  base::FilePath config_file = GetSingleProcessConfigFile(*user_info);
+  if (!base::DeleteFile(config_file)) {
+    std::cerr << "Failed to delete " << config_file.value() << "\n";
+    success = false;
+  }
+  base::FilePath pairing_dir = GetSingleProcessPairingDir(*user_info);
+  if (!base::DeletePathRecursively(pairing_dir)) {
+    std::cerr << "Failed to delete " << pairing_dir.value() << "\n";
+    success = false;
+  }
+  return success;
 }
 
 }  // namespace
@@ -266,6 +406,12 @@ std::optional<int> RunMigrationChildIfRequested(
   }
   if (command_line.HasSwitch(kSaveSingleProcessHostRegistrationSwitch)) {
     return SaveSingleProcessHostRegistrationAsUser() ? 0 : 1;
+  }
+  if (command_line.HasSwitch(kLoadSingleProcessHostRegistrationSwitch)) {
+    return LoadSingleProcessHostRegistrationAsUser() ? 0 : 1;
+  }
+  if (command_line.HasSwitch(kDeleteSingleProcessHostRegistrationSwitch)) {
+    return DeleteSingleProcessHostRegistrationAsUser() ? 0 : 1;
   }
   return std::nullopt;
 }
@@ -397,27 +543,59 @@ bool HostTypeMigrator::Run() {
 
 base::expected<std::optional<HostTypeMigrator::HostRegistration>, std::string>
 HostTypeMigrator::LoadRegistration(bool multi_process) {
-  if (!multi_process) {
-    CHECK(local_user_);
+  if (multi_process) {
+    base::expected<std::optional<base::DictValue>, std::string> config =
+        ReadHostConfig(DaemonControllerDelegateLinuxMultiProcess::
+                           GetPrivilegedConfigPath());
+    if (!config.has_value()) {
+      return base::unexpected(std::move(config.error()));
+    }
+    if (!config->has_value()) {
+      return std::nullopt;
+    }
+    PairingRegistryDelegateLinux multi_pairing_delegate(
+        PairingRegistryDelegateLinux::GetDefaultRegistryPath(),
+        /*use_unprivileged_file=*/false);
+    return HostRegistration(std::move(**config),
+                            multi_pairing_delegate.LoadAll());
   }
-  base::FilePath config_path =
-      multi_process
-          ? DaemonControllerDelegateLinuxMultiProcess::GetPrivilegedConfigPath()
-          : GetSingleProcessConfigFile(*local_user_);
-  base::expected<std::optional<base::DictValue>, std::string> config =
-      ReadHostConfig(config_path);
-  if (!config.has_value()) {
-    return base::unexpected(std::move(config.error()));
+
+  CHECK(local_user_);
+  // Loaded by a child process that is run as the user, since root shouldn't
+  // follow symlinks in the user's home directory. The child fails if the host
+  // config exists but can't be read or parsed (it prints why), and "no host"
+  // is only concluded from a successful child whose well-formed output has no
+  // host config. Anything else is an error, since the host may be running.
+  std::string registration_json;
+  if (!RunAsUser(local_user_->username,
+                 {"--" + std::string(kLoadSingleProcessHostRegistrationSwitch)},
+                 /*input=*/{}, &registration_json)) {
+    return base::unexpected(
+        base::StrCat({"Failed to load the single-process host config and "
+                      "pairings of ",
+                      local_user_->username, "."}));
   }
-  if (!config->has_value()) {
+  std::optional<base::DictValue> registration_dict =
+      base::JSONReader::ReadDict(registration_json, base::JSON_PARSE_RFC);
+  if (!registration_dict.has_value()) {
+    return base::unexpected(
+        base::StrCat({"Failed to parse the single-process host config and "
+                      "pairings of ",
+                      local_user_->username, "."}));
+  }
+  if (!registration_dict->contains(kHostConfigKey)) {
     return std::nullopt;
   }
-  base::FilePath pairing_dir =
-      multi_process ? PairingRegistryDelegateLinux::GetDefaultRegistryPath()
-                    : GetSingleProcessPairingDir(*local_user_);
-  PairingRegistryDelegateLinux pairing_delegate(
-      pairing_dir, /*use_unprivileged_file=*/false);
-  return HostRegistration(std::move(**config), pairing_delegate.LoadAll());
+  base::DictValue* config = registration_dict->FindDict(kHostConfigKey);
+  base::ListValue* pairings = registration_dict->FindList(kPairingsKey);
+  const std::string* host_id =
+      config ? config->FindString(kHostIdConfigPath) : nullptr;
+  if (!pairings || !host_id || host_id->empty()) {
+    return base::unexpected(
+        base::StrCat({"The single-process host config and pairings of ",
+                      local_user_->username, " are malformed."}));
+  }
+  return HostRegistration(std::move(*config), std::move(*pairings));
 }
 
 bool HostTypeMigrator::SaveRegistration(bool multi_process,
@@ -455,8 +633,8 @@ bool HostTypeMigrator::SaveRegistration(bool multi_process,
 
   CHECK(local_user_);
   base::DictValue registration_dict;
-  registration_dict.Set("host_config", registration.host_config.Clone());
-  registration_dict.Set("pairings", registration.pairings.Clone());
+  registration_dict.Set(kHostConfigKey, registration.host_config.Clone());
+  registration_dict.Set(kPairingsKey, registration.pairings.Clone());
 
   std::string registration_json;
   if (!base::JSONWriter::Write(registration_dict, &registration_json)) {
@@ -487,11 +665,13 @@ bool HostTypeMigrator::DeleteRegistration(bool multi_process) {
   } else {
     CHECK(local_user_);
     std::cout << "Deleting old single-process config.\n";
+    // Deleted by a child process that is run as the user, since root
+    // shouldn't follow symlinks in the user's home directory.
+    success = RunAsUser(
+        local_user_->username,
+        {"--" + std::string(kDeleteSingleProcessHostRegistrationSwitch)});
     paths = {GetSingleProcessConfigFile(*local_user_),
              GetSingleProcessPairingDir(*local_user_)};
-    bool config_deleted = base::DeleteFile(paths[0]);
-    bool pairings_deleted = base::DeletePathRecursively(paths[1]);
-    success = config_deleted && pairings_deleted;
   }
   if (!success) {
     std::cerr << "Failed to delete the old host config and pairings. Delete "
