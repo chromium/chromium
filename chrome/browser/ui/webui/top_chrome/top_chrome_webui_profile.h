@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TOP_CHROME_TOP_CHROME_WEBUI_PROFILE_H_
 #define CHROME_BROWSER_UI_WEBUI_TOP_CHROME_TOP_CHROME_WEBUI_PROFILE_H_
 
+class GURL;
 class Profile;
 
 namespace content {
@@ -16,7 +17,8 @@ class WebUI;
 // ProfileManager. See TopChromeWebUIProfileImpl.
 namespace webui {
 
-// Returns whether Top Chrome WebUIs are created in the profile:
+// Returns whether the Top Chrome WebUIs in the list of
+// GetProfileForTopChromeWebUIContents() are created in the profile:
 // features::kTopChromeWebUISharedRenderer is enabled, and renderers don't run
 // in the browser process (--single-process), where the only renderer process
 // can't host the WebUIs of another BrowserContext.
@@ -35,10 +37,12 @@ void DestroyTopChromeWebUIProfile();
 // destroyed.
 Profile* GetTopChromeWebUIProfile();
 
-// Returns the profile to create the WebContents of a Top Chrome WebUI in for a
-// window of `user_profile`: this profile if
-// ShouldUseTopChromeWebUIProfile(), or `user_profile` otherwise.
-Profile& GetProfileForTopChromeWebUIContents(Profile* user_profile);
+// Returns the profile to create the WebContents of the Top Chrome WebUI at
+// `url` in for a window of `user_profile`: this profile if
+// ShouldUseTopChromeWebUIProfile() and the WebUI has moved to this profile, or
+// `user_profile` otherwise.
+Profile& GetProfileForTopChromeWebUIContents(Profile* user_profile,
+                                             const GURL& url);
 
 // Returns whether the WebUIDataSource of `web_ui` is shared by the windows of
 // all profiles, i.e. it is in this profile. If so, the loadTimeData values that

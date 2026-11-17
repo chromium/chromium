@@ -9,7 +9,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/common/chrome_features.h"
@@ -36,11 +35,9 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserModalUISharedRendererBrowserTest,
   Profile* const user_profile = browser()->GetProfile();
   auto contents_wrapper =
       std::make_unique<WebUIContentsWrapperT<DefaultBrowserModalUI>>(
-          GURL(chrome::kChromeUIDefaultBrowserModalURL),
-          &webui::GetProfileForTopChromeWebUIContents(user_profile),
+          GURL(chrome::kChromeUIDefaultBrowserModalURL), user_profile,
           /*task_manager_string_id=*/0,
-          /*esc_closes_ui=*/true,
-          /*supports_draggable_regions=*/false, user_profile);
+          /*esc_closes_ui=*/true);
   content::WebContents* web_contents = contents_wrapper->web_contents();
   EXPECT_TRUE(Profile::FromBrowserContext(web_contents->GetBrowserContext())
                   ->IsTopChromeWebUIProfile());

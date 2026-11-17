@@ -127,6 +127,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view_util_mac.h"
@@ -438,7 +439,9 @@ WebUIToolbarWebView::WebUIToolbarWebView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto web_view = std::make_unique<WebUIToolbarInternalWebView>(
-      &webui::GetProfileForTopChromeWebUIContents(browser->GetProfile()), this);
+      &webui::GetProfileForTopChromeWebUIContents(
+          browser->GetProfile(), GURL(chrome::kChromeUIWebUIToolbarURL)),
+      this);
   std::unique_ptr<content::WebContents> pre_created_contents;
 
   if (auto* manager = InitialWebUIManager::From(browser)) {

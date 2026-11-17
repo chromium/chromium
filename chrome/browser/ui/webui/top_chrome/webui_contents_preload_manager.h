@@ -70,9 +70,10 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // make a preloaded contents.
   void WarmupForBrowser(BrowserWindowInterface* browser);
 
-  // Make a WebContents that shows `webui_url` under `browser_context`. If a
-  // preloaded WebContents exists for the same `browser_context`, it will be
-  // reused.
+  // Make a WebContents that shows `webui_url` for a window of
+  // `browser_context`, in the profile that
+  // webui::GetProfileForTopChromeWebUIContents() returns. If a preloaded
+  // WebContents exists in that profile, it will be reused.
   // This method handles navigation to `webui_url` internally.
   // A new preloaded contents will be created, unless the system is under heavy
   // memory pressure.
@@ -80,14 +81,8 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // Note: The returned WebContents has a WebContentsModalDialogManager
   // initialized, but its delegate is NOT set. Consumers must set the delegate
   // (e.g. via WebUIContentsWrapper) before any web-modal dialogs can be shown.
-  //
-  // If `browser_context` is TopChromeWebUIProfile, which is shared by the
-  // windows of all profiles, `user_profile` must be the profile of the window
-  // showing the WebUI. It is set as the user profile of a newly created
-  // WebContents.
   RequestResult Request(const GURL& webui_url,
-                        content::BrowserContext* browser_context,
-                        Profile* user_profile = nullptr);
+                        content::BrowserContext* browser_context);
 
   // Returns the timeticks when the specific `web_contents` was requested.
   std::optional<base::TimeTicks> GetRequestTime(

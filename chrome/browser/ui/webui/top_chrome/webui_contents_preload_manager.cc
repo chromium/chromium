@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/webui/top_chrome/profile_preload_candidate_selector.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_state.h"
 #include "chrome/common/webui_url_constants.h"
@@ -466,9 +467,11 @@ void WebUIContentsPreloadManager::SetPreloadedContents(
 
 RequestResult WebUIContentsPreloadManager::Request(
     const GURL& webui_url,
-    content::BrowserContext* browser_context,
-    Profile* user_profile) {
+    content::BrowserContext* browser_context) {
   const base::TimeTicks request_time = base::TimeTicks::Now();
+  Profile* user_profile = Profile::FromBrowserContext(browser_context);
+  content::BrowserContext* contents_browser_context =
+      &webui::GetProfileForTopChromeWebUIContents(user_profile, webui_url);
   std::unique_ptr<content::WebContents> web_contents_ret;
   WebUIPreloadResult preload_result = preloaded_web_contents_
                                           ? WebUIPreloadResult::kMiss
@@ -478,7 +481,8 @@ RequestResult WebUIContentsPreloadManager::Request(
   // context. Navigating to or from a blank page is also allowed.
   // TODO(325836830): allow navigations between WebUIs.
   if (preloaded_web_contents_ &&
-      preloaded_web_contents_->GetBrowserContext() == browser_context &&
+      preloaded_web_contents_->GetBrowserContext() ==
+          contents_browser_context &&
       (preloaded_web_contents_->GetURL().host() == webui_url.host() ||
        preloaded_web_contents_->GetURL().IsAboutBlank() ||
        webui_url.IsAboutBlank())) {
@@ -492,7 +496,7 @@ RequestResult WebUIContentsPreloadManager::Request(
     SetPreloadedContents(nullptr);
   } else {
     web_contents_ret =
-        CreateNewContents(browser_context, webui_url, user_profile);
+        CreateNewContents(contents_browser_context, webui_url, user_profile);
   }
 
   // Navigate to path if the request URL has a different path.

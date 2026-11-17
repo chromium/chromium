@@ -231,8 +231,8 @@ ui::ColorProviderKey PrewarmHelper::GetColorProviderKey(Profile* profile) {
 std::unique_ptr<content::WebContents> PrewarmHelper::PrewarmWebUIContents(
     Profile* profile,
     bool pre_navigate) {
-  Profile& contents_profile =
-      webui::GetProfileForTopChromeWebUIContents(profile);
+  Profile& contents_profile = webui::GetProfileForTopChromeWebUIContents(
+      profile, GURL(chrome::kChromeUIWebUIToolbarURL));
   std::unique_ptr<content::WebContents> web_contents =
       CreateToolbarWebContents(contents_profile);
 

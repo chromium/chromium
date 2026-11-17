@@ -40,11 +40,10 @@ bool IsEscapeEvent(const input::NativeWebKeyboardEvent& event) {
 }
 
 RequestResult Request(const GURL& webui_url,
-                      content::BrowserContext* browser_context,
-                      Profile* user_profile) {
+                      content::BrowserContext* browser_context) {
   auto* preload_manager = WebUIContentsPreloadManager::GetInstance();
   CHECK(preload_manager);
-  return preload_manager->Request(webui_url, browser_context, user_profile);
+  return preload_manager->Request(webui_url, browser_context);
 }
 
 // Enables the web contents to automatically resize to its content and
@@ -103,14 +102,12 @@ WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
                                            bool webui_resizes_host,
                                            bool esc_closes_ui,
                                            bool supports_draggable_regions,
-                                           std::string_view webui_name,
-                                           Profile* user_profile)
+                                           std::string_view webui_name)
     : webui_resizes_host_(webui_resizes_host),
       esc_closes_ui_(esc_closes_ui),
       supports_draggable_regions_(supports_draggable_regions) {
   CHECK_GE(task_manager_string_id, 0, base::NotFatalUntil::M162);
-  RequestResult make_contents_result =
-      Request(webui_url, profile, user_profile);
+  RequestResult make_contents_result = Request(webui_url, profile);
   web_contents_ = std::move(make_contents_result.web_contents);
   is_ready_to_show_ = make_contents_result.is_ready_to_show;
 
@@ -137,7 +134,8 @@ WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
   task_manager::WebContentsTags::CreateForToolContents(web_contents_.get(),
                                                        task_manager_string_id);
   if (site_engagement::SiteEngagementService::IsEnabled()) {
-    if (profile->IsTopChromeWebUIProfile()) {
+    if (Profile::FromBrowserContext(web_contents_->GetBrowserContext())
+            ->IsTopChromeWebUIProfile()) {
       // TopChromeWebUIProfile has no SiteEngagementService. The engagement
       // score is only used to pick a Top Chrome WebUI to preload, so a
       // preloadable WebUI in TopChromeWebUIProfile would need to record it in

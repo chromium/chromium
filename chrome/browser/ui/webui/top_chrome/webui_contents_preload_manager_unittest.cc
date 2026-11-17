@@ -17,8 +17,11 @@
 #include "chrome/browser/ui/webui/top_chrome/preload_candidate_selector.h"
 #include "chrome/browser/ui/webui/top_chrome/preload_context.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager_test_api.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_state.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -153,6 +156,23 @@ TEST_F(WebUIContentsPreloadManagerTest,
   preload_manager()->Request(GURL("about:blank"), browser_context.get());
   FastForwardToTriggerPreload();
   EXPECT_NE(preload_manager()->preloaded_web_contents(), nullptr);
+}
+
+// With kTopChromeWebUISharedRenderer, a request for a WebUI that has moved to
+// TopChromeWebUIProfile creates it there for the user profile.
+TEST_F(WebUIContentsPreloadManagerTest,
+       RequestCreatesMovedWebUIInTopChromeWebUIProfile) {
+  base::test::ScopedFeatureList feature_list(
+      features::kTopChromeWebUISharedRenderer);
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_profile;
+  std::unique_ptr<TestingProfile> user_profile =
+      std::make_unique<TestingProfile>();
+  RequestResult result = preload_manager()->Request(
+      GURL(chrome::kChromeUIWebUIToolbarURL), user_profile.get());
+  EXPECT_EQ(webui::GetTopChromeWebUIProfile(),
+            result.web_contents->GetBrowserContext());
+  EXPECT_EQ(user_profile.get(),
+            webui::GetUserProfile(result.web_contents.get()));
 }
 
 TEST_F(WebUIContentsPreloadManagerTest,
