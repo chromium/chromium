@@ -94,7 +94,7 @@ webview {
 #loadingPanel #floatingLoading .p1 {
   flex: 1;
   height: 17px;
-  margin-right: 60px;
+  margin-inline-end: 60px;
   margin-top: 4px;
   border-radius: 5px;
 }
@@ -152,11 +152,13 @@ webview {
 }
 
 .panel .header {
-  padding: 12px 20px 12px 12px;
   height: 24px;
   display: flex;
   justify-content: space-between;
   -webkit-app-region: drag;
+  padding-block: 12px;
+  padding-inline-end: 20px;
+  padding-inline-start: 12px;
 }
 
 #loadingPanel .header {
@@ -172,7 +174,7 @@ webview {
 }
 
 .panel .logo {
-  padding: 0 0 0 2px;
+  padding-inline-start: 2px;
 }
 
 /* Adjust brightness of SVG logo */
