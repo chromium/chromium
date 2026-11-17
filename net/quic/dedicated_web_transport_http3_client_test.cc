@@ -10,9 +10,12 @@
 #include <optional>
 #include <string_view>
 
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "build/build_config.h"
 #include "net/base/proxy_chain.h"
@@ -27,6 +30,7 @@
 #include "net/test/test_with_task_environment.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/http_constants.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_constants.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packet_writer_wrapper.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_dispatcher_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_session_peer.h"
@@ -143,6 +147,49 @@ class TestConnectionHelper : public quic::QuicConnectionHelperInterface {
  private:
   TestWallClock clock_;
   quiche::SimpleBufferAllocator allocator_;
+};
+
+class SwitchableDroppingWriter : public quic::QuicPacketWriterWrapper {
+ public:
+  quic::WriteResult WritePacket(
+      const char* buffer,
+      size_t buf_len,
+      const quic::QuicIpAddress& self_address,
+      const quic::QuicSocketAddress& peer_address,
+      quic::PerPacketOptions* options,
+      const quic::QuicPacketWriterParams& params) override {
+    if (drop_packets_) {
+      return quic::WriteResult(quic::WRITE_STATUS_OK, buf_len);
+    }
+    return QuicPacketWriterWrapper::WritePacket(buffer, buf_len, self_address,
+                                                peer_address, options, params);
+  }
+
+  void set_drop_packets(bool drop_packets) { drop_packets_ = drop_packets; }
+
+ private:
+  bool drop_packets_ = false;
+};
+
+class ResponseDroppingBackend : public quic::test::QuicTestBackend {
+ public:
+  void set_writer(SwitchableDroppingWriter* writer) { writer_ = writer; }
+  void set_request_run_loop(base::RunLoop* request_run_loop) {
+    request_run_loop_ = request_run_loop;
+  }
+
+  WebTransportResponse ProcessWebTransportRequest(
+      const quiche::HttpHeaderBlock& request_headers,
+      quic::WebTransportSession* session) override {
+    writer_->set_drop_packets(true);
+    request_run_loop_->Quit();
+    return QuicTestBackend::ProcessWebTransportRequest(request_headers,
+                                                       session);
+  }
+
+ private:
+  raw_ptr<SwitchableDroppingWriter> writer_ = nullptr;
+  raw_ptr<base::RunLoop> request_run_loop_ = nullptr;
 };
 
 class DedicatedWebTransportHttp3Test : public TestWithTaskEnvironment {
@@ -339,6 +386,58 @@ TEST_F(DedicatedWebTransportHttp3Test, Connect) {
   client_->Close(std::nullopt);
   EXPECT_CALL(visitor_, OnClosed(_)).WillOnce(StopRunning());
   Run();
+}
+
+TEST_F(DedicatedWebTransportHttp3Test, ConnectionClosedDuringHandshake) {
+  ResponseDroppingBackend backend;
+  backend.set_enable_webtransport(true);
+  auto server = std::make_unique<QuicSimpleServer>(
+      quic::test::crypto_test_utils::ProofSourceForTesting(),
+      quic::QuicConfig(), quic::QuicCryptoServerConfig::ConfigOptions(),
+      AllSupportedQuicVersions(), &backend);
+  ASSERT_TRUE(server->CreateUDPSocketAndListen(
+      quic::QuicSocketAddress(quiche::QuicheIpAddress::Any6(), /*port=*/0)));
+  port_ = server->server_address().port();
+
+  auto* writer = new SwitchableDroppingWriter();
+  quic::test::QuicDispatcherPeer::UseWriter(server->dispatcher(), writer);
+  backend.set_writer(writer);
+
+  client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
+      GetURL("/echo"), origin_, &visitor_, anonymization_key_,
+      handles::kInvalidNetworkHandle, context_.get(), WebTransportParameters());
+
+  EXPECT_CALL(visitor_, OnBeforeConnect);
+  EXPECT_CALL(visitor_, OnConnected(_)).Times(0);
+  EXPECT_CALL(visitor_, OnClosed(_)).Times(0);
+  EXPECT_CALL(visitor_, OnError(_)).Times(0);
+  WebTransportError error;
+  EXPECT_CALL(visitor_, OnConnectionFailed).WillOnce(SaveArg<0>(&error));
+
+  base::RunLoop request_received;
+  backend.set_request_run_loop(&request_received);
+  client_->Connect();
+  request_received.Run();
+
+  EXPECT_EQ(client_->state(), WebTransportState::CONNECTING);
+  client_->OnConnectionClosed(quic::QUIC_NO_ERROR,
+                              "Connection closed during WebTransport handshake",
+                              quic::ConnectionCloseSource::FROM_PEER);
+
+  EXPECT_EQ(client_->state(), WebTransportState::FAILED);
+  EXPECT_EQ(error.net_error, ERR_QUIC_PROTOCOL_ERROR);
+  EXPECT_EQ(error.quic_error, quic::QUIC_NO_ERROR);
+  EXPECT_EQ(error.details, "Connection closed during WebTransport handshake");
+
+  base::RunLoop pending_tasks;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, pending_tasks.QuitClosure());
+  pending_tasks.Run();
+
+  backend.set_writer(nullptr);
+  backend.set_request_run_loop(nullptr);
+  server->Shutdown();
+  server.reset();
 }
 
 TEST_F(DedicatedWebTransportHttp3Test,

@@ -1241,18 +1241,12 @@ void DedicatedWebTransportHttp3Client::OnConnectionClosed(
     // If there are no supported versions, treat this as a regular error.
   }
 
-  if (error == quic::QUIC_NO_ERROR) {
+  if (error == quic::QUIC_NO_ERROR && state_ == WebTransportState::CONNECTED) {
     TransitionToState(WebTransportState::CLOSED);
     return;
   }
 
   SetErrorIfNecessary(ERR_QUIC_PROTOCOL_ERROR, error, error_details);
-
-  if (state_ == WebTransportState::CONNECTING) {
-    DoLoop(OK);
-    return;
-  }
-
   TransitionToState(WebTransportState::FAILED);
 }
 
