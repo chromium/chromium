@@ -42,18 +42,21 @@ public class SuggestionSpannable extends SpannableString {
     }
 
     /**
-     * Applies text color to this spannable string, using {@code dimColor} for regions with {@link
-     * MatchClassificationStyle#DIM} and {@code defaultColor} for all other regions.
+     * Applies text color to this spannable string, using the secondary text color for regions with
+     * {@link MatchClassificationStyle#DIM}, the URL text color for regions with {@link
+     * MatchClassificationStyle#URL}, and the primary text color for all other regions.
      *
      * @param classifications Classifications describing how to format text.
-     * @param defaultColor Default text color for non-dimmed regions.
-     * @param dimColor Dimmed text color for regions with {@link MatchClassificationStyle#DIM}.
+     * @param resourceProvider Resource provider used to resolve suggestion text colors.
      */
     public void applyTextColor(
             @Nullable List<MatchClassification> classifications,
-            @ColorInt int defaultColor,
-            @ColorInt int dimColor) {
+            OmniboxResourceProvider resourceProvider) {
         if (TextUtils.isEmpty(this)) return;
+
+        @ColorInt int defaultColor = resourceProvider.getSuggestionPrimaryTextColor();
+        @ColorInt int dimColor = resourceProvider.getSuggestionSecondaryTextColor();
+        @ColorInt int urlColor = resourceProvider.getSuggestionUrlTextColor();
 
         // Combine adjacent classifications that resolve to the same color into a single
         // ColorSpan. Classifications are ordered by offset, and consecutive entries may
@@ -68,12 +71,16 @@ public class SuggestionSpannable extends SpannableString {
                 int offset = classification.offset;
                 if (offset >= length) break;
 
-                @ColorInt
-                int color =
-                        ((classification.style & MatchClassificationStyle.DIM)
-                                        == MatchClassificationStyle.DIM)
-                                ? dimColor
-                                : defaultColor;
+                @ColorInt int color;
+                if ((classification.style & MatchClassificationStyle.URL)
+                        == MatchClassificationStyle.URL) {
+                    color = urlColor;
+                } else if ((classification.style & MatchClassificationStyle.DIM)
+                        == MatchClassificationStyle.DIM) {
+                    color = dimColor;
+                } else {
+                    color = defaultColor;
+                }
 
                 if (color != currentColor) {
                     if (offset > currentStart) {

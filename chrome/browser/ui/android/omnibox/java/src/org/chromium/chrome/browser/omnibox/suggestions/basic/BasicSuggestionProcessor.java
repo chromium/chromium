@@ -470,10 +470,13 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
 
         SuggestionSpannable str = new SuggestionSpannable(suggestedQuery);
         if (shouldHighlight) applyHighlightToMatchRegions(str, classifications);
-        str.applyTextColor(
-                classifications,
-                mUiContext.resourceProvider.getSuggestionPrimaryTextColor(),
-                mUiContext.resourceProvider.getSuggestionSecondaryTextColor());
+        if (showDescriptionIfPresent
+                && !suggestion.getUrl().isEmpty()
+                && TextUtils.isEmpty(suggestion.getDescription())) {
+            applyTextColor(str, mUiContext.resourceProvider.getSuggestionPrimaryTextColor());
+        } else {
+            str.applyTextColor(classifications, mUiContext.resourceProvider);
+        }
         return str;
     }
 
