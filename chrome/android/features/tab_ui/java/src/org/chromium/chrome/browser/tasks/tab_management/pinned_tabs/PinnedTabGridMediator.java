@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -81,7 +82,9 @@ public class PinnedTabGridMediator {
                         // loop below.
                         Set<Integer> mainTabIds = new HashSet<>();
                         for (int i = 0; i < mMainModelList.size(); i++) {
-                            int tabId = TabProperties.getTabId(mMainModelList.get(i).model);
+                            PropertyModel model = mMainModelList.get(i).model;
+                            if (TabProperties.isTabGroupHeader(model)) continue;
+                            int tabId = TabProperties.getTabId(model);
                             if (tabId != Tab.INVALID_TAB_ID) {
                                 mainTabIds.add(tabId);
                             }

@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB_GROUP;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -124,6 +126,25 @@ public class PinnedTabGridMediatorUnitTest {
         assertEquals(item1, mPinnedModelList.get(0));
 
         // Remove item1 from main list. ListObserver should remove it from pinned.
+        mMainModelList.removeAt(0);
+        assertTrue(mPinnedModelList.isEmpty());
+    }
+
+    @Test
+    public void testItemRemovedFromMainList_HeaderWithSameTabId_RemovedFromPinned() {
+        ListItem item1 = addTabToMainList(mTab1); // Pinned.
+        // A group header whose TAB_ID still points at pinned tab 1.
+        PropertyModel headerModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, 1)
+                        .with(
+                                TabProperties.TAB_GROUP_HEADER_ID,
+                                new Token(/* high= */ 1L, /* low= */ 2L))
+                        .with(CARD_TYPE, TAB_GROUP)
+                        .build();
+        mMainModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, headerModel));
+        assertEquals(item1, mPinnedModelList.get(0));
+
         mMainModelList.removeAt(0);
         assertTrue(mPinnedModelList.isEmpty());
     }
