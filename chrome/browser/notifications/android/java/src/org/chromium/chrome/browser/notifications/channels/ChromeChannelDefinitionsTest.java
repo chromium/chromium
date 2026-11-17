@@ -24,4 +24,28 @@ public class ChromeChannelDefinitionsTest {
                 ChromeChannelDefinitions.getInstance().getStartupChannelIds(),
                 everyItem(not(isIn(ChromeChannelDefinitions.getInstance().getLegacyChannelIds()))));
     }
+
+    @Test
+    public void testReplacedLegacyChannelsAreLegacyChannels() {
+        assertThat(
+                ChromeChannelDefinitions.getInstance().getLegacyChannelReplacements().keySet(),
+                everyItem(isIn(ChromeChannelDefinitions.getInstance().getLegacyChannelIds())));
+    }
+
+    @Test
+    public void testLegacyChannelReplacementsArePredefined() {
+        assertThat(
+                ChromeChannelDefinitions.getInstance().getLegacyChannelReplacements().values(),
+                everyItem(isIn(ChromeChannelDefinitions.getInstance().getAllChannelIds())));
+    }
+
+    @Test
+    public void testLegacyChannelReplacementsAreNotStartupChannels() {
+        // A startup channel is created before the legacy channels are cleaned up, so the legacy
+        // channel would never be copied to it.
+        assertThat(
+                ChromeChannelDefinitions.getInstance().getLegacyChannelReplacements().values(),
+                everyItem(
+                        not(isIn(ChromeChannelDefinitions.getInstance().getStartupChannelIds()))));
+    }
 }

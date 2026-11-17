@@ -15,8 +15,10 @@ import android.net.Uri;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -55,6 +57,19 @@ public abstract class ChannelDefinitions {
      * #getStartupChannelIds} in the past, but are no longer in use.
      */
     public abstract List<String> getLegacyChannelIds();
+
+    /**
+     * Before {@link ChannelsInitializer#deleteLegacyChannels} deletes a legacy channel that is a
+     * key in this map, it copies the channel to its replacement if the legacy channel is enabled
+     * and the replacement doesn't exist yet. This is for legacy channels that the user enabled to
+     * opt in to a feature, where the channel is the only record of that decision.
+     *
+     * @return A map from a legacy channel id, which must also be in {@link #getLegacyChannelIds},
+     *     to the id of the predefined channel that replaces it.
+     */
+    public Map<String, String> getLegacyChannelReplacements() {
+        return Collections.emptyMap();
+    }
 
     public PredefinedChannelGroup getChannelGroupForChannel(PredefinedChannel channel) {
         return assumeNonNull(getChannelGroup(channel.mGroupId));

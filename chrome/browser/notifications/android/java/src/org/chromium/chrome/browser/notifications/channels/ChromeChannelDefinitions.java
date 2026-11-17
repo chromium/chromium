@@ -78,7 +78,8 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
      * To define a new channel, add the channel ID to this StringDef and add a new entry to
      * PredefinedChannels.MAP below with the appropriate channel parameters. To remove an existing
      * channel, remove the ID from this StringDef, remove its entry from Predefined Channels.MAP,
-     * and add the ID to the LEGACY_CHANNELS_ID array below. See the README in this directory for
+     * and add the ID to the LEGACY_CHANNELS_ID array below. If the channel holds a user's opt-in
+     * decision, also add it to LEGACY_CHANNEL_REPLACEMENTS. See the README in this directory for
      * more detailed instructions.
      */
     // LINT.IfChange(ChannelId)
@@ -183,6 +184,9 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
          */
         static final Set<String> STARTUP;
 
+        // This block must only build the definitions and must not have side effects, such as
+        // reading or writing notification channels. The class is loaded lazily, so this code runs
+        // at an unpredictable point, e.g. after ChannelsUpdater has deleted the legacy channels.
         static {
             Map<String, PredefinedChannel> map = new HashMap<>();
             Set<String> startup = new HashSet<>();
@@ -435,6 +439,19 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         ChromeChannelDefinitions.ChannelId.TIPS,
     };
 
+    /**
+     * Legacy channels that hold a user's opt-in decision, mapped to the channels that replace them.
+     * The channel's importance is the only record of that decision, so an enabled legacy channel is
+     * copied to its replacement before it is deleted. Every key must also be in LEGACY_CHANNEL_IDS,
+     * and a replacement must not be a startup channel.
+     */
+    private static final Map<String, String> LEGACY_CHANNEL_REPLACEMENTS =
+            Map.of(
+                    // A user opted in to V1 Tips by enabling this channel in system settings. See
+                    // crbug.com/581908995.
+                    ChromeChannelDefinitions.ChannelId.TIPS,
+                    ChromeChannelDefinitions.ChannelId.TIPS_V2);
+
     // Map defined in static inner class so it's only initialized lazily.
     private static class PredefinedChannelGroups {
         static final Map<String, PredefinedChannelGroup> MAP;
@@ -473,6 +490,11 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
     public List<String> getLegacyChannelIds() {
         List<String> legacyChannels = new ArrayList<>(Arrays.asList(LEGACY_CHANNEL_IDS));
         return legacyChannels;
+    }
+
+    @Override
+    public Map<String, String> getLegacyChannelReplacements() {
+        return LEGACY_CHANNEL_REPLACEMENTS;
     }
 
     @Override

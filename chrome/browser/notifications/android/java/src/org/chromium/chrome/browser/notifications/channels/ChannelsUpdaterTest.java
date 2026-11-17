@@ -9,6 +9,12 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -26,8 +32,11 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 
+import org.chromium.base.Callback;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
@@ -35,6 +44,7 @@ import org.chromium.components.browser_ui.notifications.BaseNotificationManagerP
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Tests that ChannelsUpdater correctly initializes channels on the notification manager. */
@@ -101,6 +111,7 @@ public class ChannelsUpdaterTest {
     public void testUpdateChannels_createsExpectedChannelsAndUpdatesPref() {
         ChannelsUpdater updater = new ChannelsUpdater(mSharedPreferences, mChannelsInitializer, 21);
         updater.updateChannels();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertThat(getChannelsIgnoringDefault(), hasSize(greaterThan(0)));
         assertThat(
@@ -137,14 +148,91 @@ public class ChannelsUpdaterTest {
                                 mNotificationManagerProxy, definitions, mMockResources),
                         12);
         updater.updateChannels();
+        RobolectricUtil.runAllBackgroundAndUi();
 
+        // The legacy Tips channel was enabled, so it is replaced by the Tips V2 channel.
         assertThat(
                 getChannelIds(getChannelsIgnoringDefault()),
                 containsInAnyOrder(
                         ChromeChannelDefinitions.ChannelId.BROWSER,
                         ChromeChannelDefinitions.ChannelId.DOWNLOADS,
                         ChromeChannelDefinitions.ChannelId.INCOGNITO,
-                        ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK));
+                        ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK,
+                        ChromeChannelDefinitions.ChannelId.TIPS_V2));
+    }
+
+    @Test
+    public void testUpdateChannels_migratesEnabledTipsChannelBeforeStoringVersion() {
+        // Simulates an upgrade from M149 or older, where the user opted in to Tips by enabling the
+        // V1 Tips channel in system settings. See crbug.com/581908995.
+        createTipsChannel(NotificationManager.IMPORTANCE_DEFAULT);
+        ChannelsUpdater updater = createUpdaterAtVersion7(mChannelsInitializer);
+
+        updater.updateChannels();
+        // The existing channels have been read, but the background task that copies and deletes
+        // the legacy channels hasn't run. An update interrupted here must be retried.
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+        assertThat(updater.shouldUpdateChannels(), is(true));
+
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertThat(findChannel(ChromeChannelDefinitions.ChannelId.TIPS), nullValue());
+        assertThat(
+                findChannel(ChromeChannelDefinitions.ChannelId.TIPS_V2).getImportance(),
+                is(NotificationManager.IMPORTANCE_DEFAULT));
+        assertThat(updater.shouldUpdateChannels(), is(false));
+    }
+
+    @Test
+    public void testUpdateChannels_doesNotStoreVersionIfChannelsCannotBeRead() {
+        // A failed read of the existing channels is reported as an empty list.
+        BaseNotificationManagerProxy proxy = mock(BaseNotificationManagerProxy.class);
+        doAnswer(
+                        invocation -> {
+                            Callback<List<NotificationChannel>> callback =
+                                    invocation.getArgument(0);
+                            callback.onResult(Collections.emptyList());
+                            return null;
+                        })
+                .when(proxy)
+                .getNotificationChannels(any());
+        ChannelsUpdater updater =
+                createUpdaterAtVersion7(
+                        new ChannelsInitializer(
+                                proxy, ChromeChannelDefinitions.getInstance(), mMockResources));
+
+        updater.updateChannels();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(proxy, never()).deleteNotificationChannel(any());
+        assertThat(updater.shouldUpdateChannels(), is(true));
+    }
+
+    /** Returns an updater for an install that last updated its channels in M149 or older. */
+    private ChannelsUpdater createUpdaterAtVersion7(ChannelsInitializer channelsInitializer) {
+        mSharedPreferences.writeInt(ChromePreferenceKeys.NOTIFICATIONS_CHANNELS_VERSION, 7);
+        return new ChannelsUpdater(
+                mSharedPreferences, channelsInitializer, ChromeChannelDefinitions.CHANNELS_VERSION);
+    }
+
+    private void createTipsChannel(int importance) {
+        mNotificationManagerProxy.createNotificationChannelGroup(
+                ChromeChannelDefinitions.getInstance()
+                        .getChannelGroup(ChromeChannelDefinitions.ChannelGroupId.GENERAL)
+                        .toNotificationChannelGroup(mMockResources));
+        NotificationChannel channel =
+                new NotificationChannel(
+                        ChromeChannelDefinitions.ChannelId.TIPS,
+                        ChromeChannelDefinitions.ChannelId.TIPS,
+                        importance);
+        channel.setGroup(ChromeChannelDefinitions.ChannelGroupId.GENERAL);
+        mNotificationManagerProxy.createNotificationChannel(channel);
+    }
+
+    private @Nullable NotificationChannel findChannel(String channelId) {
+        for (NotificationChannel channel : getChannelsIgnoringDefault()) {
+            if (channel.getId().equals(channelId)) return channel;
+        }
+        return null;
     }
 
     private static List<String> getChannelIds(List<NotificationChannel> channels) {

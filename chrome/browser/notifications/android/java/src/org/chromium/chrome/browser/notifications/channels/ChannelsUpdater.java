@@ -60,9 +60,12 @@ public class ChannelsUpdater {
     public void updateChannels() {
         synchronized (sLock) {
             assert mChannelsInitializer != null;
-            mChannelsInitializer.deleteLegacyChannels();
+            // The startup channels are created first. The legacy channel cleanup reads the
+            // existing channels, and treats an empty list as a failed read.
             mChannelsInitializer.initializeStartupChannels();
-            storeChannelVersionInPrefs();
+            // The version is only stored once the legacy channels have been cleaned up, so that
+            // an update that doesn't finish, e.g. because the process is killed, is retried.
+            mChannelsInitializer.deleteLegacyChannels(this::storeChannelVersionInPrefs);
         }
     }
 

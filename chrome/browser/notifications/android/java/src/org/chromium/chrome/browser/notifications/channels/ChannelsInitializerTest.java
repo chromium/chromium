@@ -11,21 +11,29 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.os.Looper;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.Shadows;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge;
 import org.chromium.chrome.browser.notifications.R;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
@@ -34,9 +42,11 @@ import org.chromium.components.browser_ui.notifications.channels.ChannelsInitial
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Robolectric tests for ChannelsInitializer, using ChromeChannelDefinitions. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -84,15 +94,135 @@ public class ChannelsInitializerTest {
     public void testDeleteLegacyChannels_noopOnCurrentDefinitions() {
         assertThat(getChannelsIgnoringDefault(), is(empty()));
 
-        mChannelsInitializer.deleteLegacyChannels();
+        mChannelsInitializer.deleteLegacyChannels(() -> {});
         assertThat(getChannelsIgnoringDefault(), is(empty()));
 
         mChannelsInitializer.initializeStartupChannels();
         assertThat(getChannelsIgnoringDefault(), is(not(empty())));
 
         int nChannels = getChannelsIgnoringDefault().size();
-        mChannelsInitializer.deleteLegacyChannels();
+        mChannelsInitializer.deleteLegacyChannels(() -> {});
         assertThat(getChannelsIgnoringDefault(), hasSize(nChannels));
+    }
+
+    @Test
+    @Feature({"Browser", "Notifications"})
+    public void testDeleteLegacyChannels_copiesEnabledChannelToReplacement() {
+        createChannel(
+                ChromeChannelDefinitions.ChannelId.TIPS, NotificationManager.IMPORTANCE_DEFAULT);
+        AtomicBoolean completed = new AtomicBoolean();
+
+        mChannelsInitializer.deleteLegacyChannels(() -> completed.set(true));
+        runUntilIdle();
+
+        assertThat(findChannel(ChromeChannelDefinitions.ChannelId.TIPS), nullValue());
+        NotificationChannel tipsV2 = findChannel(ChromeChannelDefinitions.ChannelId.TIPS_V2);
+        assertThat(tipsV2, notNullValue());
+        assertThat(
+                tipsV2.getName().toString(),
+                is(mContext.getString(R.string.notification_category_tips)));
+        assertThat(tipsV2.getImportance(), is(NotificationManager.IMPORTANCE_DEFAULT));
+        assertThat(tipsV2.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
+        assertThat(completed.get(), is(true));
+    }
+
+    @Test
+    @Feature({"Browser", "Notifications"})
+    public void testDeleteLegacyChannels_capsReplacementAtPredefinedImportance() {
+        createChannel(ChromeChannelDefinitions.ChannelId.TIPS, NotificationManager.IMPORTANCE_HIGH);
+
+        mChannelsInitializer.deleteLegacyChannels(() -> {});
+        runUntilIdle();
+
+        assertThat(findChannel(ChromeChannelDefinitions.ChannelId.TIPS), nullValue());
+        assertThat(
+                findChannel(ChromeChannelDefinitions.ChannelId.TIPS_V2).getImportance(),
+                is(NotificationManager.IMPORTANCE_DEFAULT));
+    }
+
+    @Test
+    @Feature({"Browser", "Notifications"})
+    public void testDeleteLegacyChannels_keepsLowerImportanceOnReplacement() {
+        createChannel(ChromeChannelDefinitions.ChannelId.TIPS, NotificationManager.IMPORTANCE_LOW);
+
+        mChannelsInitializer.deleteLegacyChannels(() -> {});
+        runUntilIdle();
+
+        assertThat(findChannel(ChromeChannelDefinitions.ChannelId.TIPS), nullValue());
+        assertThat(
+                findChannel(ChromeChannelDefinitions.ChannelId.TIPS_V2).getImportance(),
+                is(NotificationManager.IMPORTANCE_LOW));
+    }
+
+    @Test
+    @Feature({"Browser", "Notifications"})
+    public void testDeleteLegacyChannels_doesNotCopyDisabledChannel() {
+        createChannel(ChromeChannelDefinitions.ChannelId.TIPS, NotificationManager.IMPORTANCE_NONE);
+
+        mChannelsInitializer.deleteLegacyChannels(() -> {});
+        runUntilIdle();
+
+        assertThat(getChannelsIgnoringDefault(), is(empty()));
+    }
+
+    @Test
+    @Feature({"Browser", "Notifications"})
+    public void testDeleteLegacyChannels_keepsExistingReplacement() {
+        // The user turned the replacement off, which the legacy channel must not override.
+        createChannel(
+                ChromeChannelDefinitions.ChannelId.TIPS, NotificationManager.IMPORTANCE_DEFAULT);
+        createChannel(
+                ChromeChannelDefinitions.ChannelId.TIPS_V2, NotificationManager.IMPORTANCE_NONE);
+
+        mChannelsInitializer.deleteLegacyChannels(() -> {});
+        runUntilIdle();
+
+        assertThat(findChannel(ChromeChannelDefinitions.ChannelId.TIPS), nullValue());
+        assertThat(
+                findChannel(ChromeChannelDefinitions.ChannelId.TIPS_V2).getImportance(),
+                is(NotificationManager.IMPORTANCE_NONE));
+    }
+
+    @Test
+    @Feature({"Browser", "Notifications"})
+    public void testDeleteLegacyChannels_emptyChannelListDeletesNothing() {
+        // A failed read of the existing channels is reported as an empty list. A legacy channel
+        // can't be copied then, so it must not be deleted, and the caller must not be told that
+        // the cleanup is done.
+        BaseNotificationManagerProxy proxy = mock(BaseNotificationManagerProxy.class);
+        doAnswer(
+                        invocation -> {
+                            Callback<List<NotificationChannel>> callback =
+                                    invocation.getArgument(0);
+                            callback.onResult(Collections.emptyList());
+                            return null;
+                        })
+                .when(proxy)
+                .getNotificationChannels(any());
+        ChannelsInitializer channelsInitializer =
+                new ChannelsInitializer(
+                        proxy, ChromeChannelDefinitions.getInstance(), mContext.getResources());
+        AtomicBoolean completed = new AtomicBoolean();
+
+        channelsInitializer.deleteLegacyChannels(() -> completed.set(true));
+        runUntilIdle();
+
+        verify(proxy, never()).deleteNotificationChannel(any());
+        verify(proxy, never()).createNotificationChannel(any());
+        assertThat(completed.get(), is(false));
+    }
+
+    @Test
+    @Feature({"Browser", "Notifications"})
+    public void testDeleteLegacyChannels_runsNextPendingTask() {
+        mChannelsInitializer.initializeStartupChannels();
+        AtomicBoolean secondCompleted = new AtomicBoolean();
+
+        mChannelsInitializer.deleteLegacyChannels(() -> {});
+        mChannelsInitializer.deleteLegacyChannels(() -> secondCompleted.set(true));
+        runUntilIdle();
+
+        assertThat(secondCompleted.get(), is(true));
     }
 
     @Test
@@ -160,7 +290,7 @@ public class ChannelsInitializerTest {
         mContext = RuntimeEnvironment.getApplication();
         mChannelsInitializer.updateLocale(mContext.getResources());
 
-        mChannelsInitializer.deleteLegacyChannels();
+        mChannelsInitializer.deleteLegacyChannels(() -> {});
 
         runUntilIdle();
         assertThat(getChannelsIgnoringDefault(), hasSize(0));
@@ -394,6 +524,23 @@ public class ChannelsInitializerTest {
         assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
     }
 
+    private void createChannel(String channelId, int importance) {
+        mNotificationManagerProxy.createNotificationChannelGroup(
+                ChromeChannelDefinitions.getInstance()
+                        .getChannelGroup(ChromeChannelDefinitions.ChannelGroupId.GENERAL)
+                        .toNotificationChannelGroup(mContext.getResources()));
+        NotificationChannel channel = new NotificationChannel(channelId, channelId, importance);
+        channel.setGroup(ChromeChannelDefinitions.ChannelGroupId.GENERAL);
+        mNotificationManagerProxy.createNotificationChannel(channel);
+    }
+
+    private @Nullable NotificationChannel findChannel(String channelId) {
+        for (NotificationChannel channel : getChannelsIgnoringDefault()) {
+            if (channel.getId().equals(channelId)) return channel;
+        }
+        return null;
+    }
+
     /**
      * Gets the current notification channels from the notification manager, except for any with the
      * default ID, which will be removed from the list before returning.
@@ -415,7 +562,8 @@ public class ChannelsInitializerTest {
         return channels;
     }
 
+    /** Runs the UI tasks, and the background task that deleteLegacyChannels() posts. */
     private static void runUntilIdle() {
-        Shadows.shadowOf(Looper.getMainLooper()).idle();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 }

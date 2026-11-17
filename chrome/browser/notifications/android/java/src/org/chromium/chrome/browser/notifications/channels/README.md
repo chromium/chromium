@@ -101,6 +101,27 @@ This should only happen infrequently. Note a 'deleted channels' count in
 the browser's system notification settings will appear & increment every time a
 channel is deleted.
 
+### Channels that hold a user's opt-in decision
+
+Some channels are created disabled, and the user turns them on in system
+settings to opt in to a feature. For these channels, the channel's importance is
+the only record of the user's decision. Deleting the channel on its own loses
+that decision.
+
+To replace such a channel, follow the steps above, and also:
+
+1. Add it to `LEGACY_CHANNEL_REPLACEMENTS` in `ChromeChannelDefinitions.java`,
+mapped to its replacement channel. `ChannelsInitializer.deleteLegacyChannels`
+then copies an enabled legacy channel to its replacement (unless the
+replacement already exists) before deleting it. The replacement must not be a
+startup channel.
+2. Add a test to `ChannelsUpdaterTest.java` that upgrades from a version that
+still had the old channel enabled, and checks that the user's decision survives.
+
+Never put migration code in the static initializer of `PredefinedChannels`.
+That class is loaded lazily, so the code runs at an unpredictable point, e.g.
+after the legacy channels have already been deleted (see crbug.com/581908995).
+
 
 ## Appendix: History of channels in Clank
 

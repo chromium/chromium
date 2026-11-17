@@ -4,21 +4,27 @@
 
 package org.chromium.components.browser_ui.notifications.channels;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.content.res.Resources;
 
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
@@ -95,19 +101,90 @@ public class ChannelsInitializer {
     }
 
     /**
-     * Cleans up any old channels that are no longer required from previous versions of the app.
-     * It's safe to call this multiple times since deleting an already-deleted channel is a no-op.
+     * Cleans up any old channels that are no longer required from previous versions of the app. A
+     * legacy channel with an entry in {@link ChannelDefinitions#getLegacyChannelReplacements} is
+     * first copied to its replacement, if the legacy channel is enabled and the replacement doesn't
+     * exist yet. It's safe to call this multiple times since every step is idempotent.
+     *
+     * <p>The existing channels are read asynchronously, and then updated on a background thread.
+     *
+     * @param onComplete Run on a background thread once the channels have been updated. Not run if
+     *     the existing channels couldn't be read, so that the caller can try again later.
      */
-    public void deleteLegacyChannels() {
-        mPendingTasks.add(() -> runDeleteLegacyChannelsTask());
+    public void deleteLegacyChannels(Runnable onComplete) {
+        mPendingTasks.add(() -> runDeleteLegacyChannelsTask(onComplete));
         processPendingTasks();
     }
 
-    private void runDeleteLegacyChannelsTask() {
-        for (String channelId : mChannelDefinitions.getLegacyChannelIds()) {
-            mNotificationManager.deleteNotificationChannel(channelId);
+    private void runDeleteLegacyChannelsTask(Runnable onComplete) {
+        mNotificationManager.getNotificationChannels(
+                (channels) -> onLegacyChannelsRetrieved(channels, onComplete));
+    }
+
+    private void onLegacyChannelsRetrieved(
+            List<NotificationChannel> channels, Runnable onComplete) {
+        // A failed read is reported as an empty list. Without knowing which channels exist, a
+        // legacy channel can't be copied to its replacement, so nothing is deleted.
+        if (channels.isEmpty()) {
+            onCurrentTaskFinished();
+            return;
         }
-        onCurrentTaskFinished();
+
+        Map<String, NotificationChannel> existingChannels = new HashMap<>();
+        for (NotificationChannel channel : channels) {
+            existingChannels.put(channel.getId(), channel);
+        }
+
+        List<NotificationChannelGroup> groupsToCreate = new ArrayList<>();
+        List<NotificationChannel> channelsToCreate = new ArrayList<>();
+        for (Map.Entry<String, String> entry :
+                mChannelDefinitions.getLegacyChannelReplacements().entrySet()) {
+            NotificationChannel legacyChannel = existingChannels.get(entry.getKey());
+            // A replacement that already exists holds a newer decision, e.g. the user turned it
+            // off, so it must not be overwritten.
+            if (legacyChannel == null
+                    || legacyChannel.getImportance() == NotificationManager.IMPORTANCE_NONE
+                    || existingChannels.containsKey(entry.getValue())) {
+                continue;
+            }
+            ChannelDefinitions.PredefinedChannel predefinedChannel =
+                    assumeNonNull(mChannelDefinitions.getChannelFromId(entry.getValue()));
+            groupsToCreate.add(
+                    mChannelDefinitions
+                            .getChannelGroupForChannel(predefinedChannel)
+                            .toNotificationChannelGroup(mResources));
+            NotificationChannel replacement = predefinedChannel.toNotificationChannel(mResources);
+            // The user hasn't changed the replacement yet, so ensureInitialized() would lower an
+            // importance above the predefined one anyway.
+            replacement.setImportance(
+                    Math.min(legacyChannel.getImportance(), replacement.getImportance()));
+            channelsToCreate.add(replacement);
+        }
+        List<String> channelIdsToDelete = mChannelDefinitions.getLegacyChannelIds();
+
+        // This runs on the UI thread, and the calls below block on the notification service.
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> {
+                    try {
+                        // Channel groups must be created before the channels, and replacements
+                        // before the legacy channels are deleted.
+                        for (NotificationChannelGroup group : groupsToCreate) {
+                            mNotificationManager.createNotificationChannelGroup(group);
+                        }
+                        for (NotificationChannel channel : channelsToCreate) {
+                            mNotificationManager.createNotificationChannel(channel);
+                        }
+                        for (String channelId : channelIdsToDelete) {
+                            mNotificationManager.deleteNotificationChannel(channelId);
+                        }
+                        onComplete.run();
+                    } finally {
+                        // The next pending task is started on the UI thread, like after the
+                        // other tasks.
+                        PostTask.postTask(TaskTraits.UI_DEFAULT, this::onCurrentTaskFinished);
+                    }
+                });
     }
 
     /**
