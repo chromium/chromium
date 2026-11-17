@@ -3631,6 +3631,47 @@ suite('OmniboxPopupSearchboxTest', function() {
          assertTrue(isOnFocus);
        });
 
+   test(`${name}_DiscardsPendingResults`, async () => {
+     callbackRouter.setInputState(createDefaultOmniboxInputState({
+       text: '',
+       isFocused: true,
+     }));
+     await microtasksFinished();
+
+     // Type 'youtub' and press the shortcut before its results arrive.
+     const inputEl = searchbox.getInputElement().inputElement;
+     inputEl.value = 'youtub';
+     inputEl.setSelectionRange(6, 6);
+     inputEl.dispatchEvent(
+         new InputEvent('input', {bubbles: true, composed: true}));
+     await microtasksFinished();
+     const queryId = searchbox.activeQueryId;
+     inputEl.dispatchEvent(new KeyboardEvent('keydown', {
+       ...eventInit,
+       bubbles: true,
+       composed: true,
+     }));
+     await microtasksFinished();
+     assertEquals(0, inputEl.selectionStart);
+     assertEquals(6, inputEl.selectionEnd);
+
+     // The pending results are discarded, so their inline autocompletion
+     // doesn't replace the selection and they don't open the dropdown.
+     searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+       queryId,
+       input: 'youtub',
+       matches: [createSearchMatchForTesting({
+         allowedToBeDefaultMatch: true,
+         inlineAutocompletion: 'e.com',
+       })],
+     }));
+     await microtasksFinished();
+     assertEquals('youtub', inputEl.value);
+     assertEquals(0, inputEl.selectionStart);
+     assertEquals(6, inputEl.selectionEnd);
+     assertFalse(searchbox.dropdownIsVisible);
+   });
+
    test(`${name}_DoesNotRequeryZpsWhenDropdownAlreadyOpen`, async () => {
      const testUrl = 'https://example.com';
      callbackRouter.setInputState(createDefaultOmniboxInputState({

@@ -1079,6 +1079,10 @@ export class OmniboxPopupSearchboxElement extends
       // select omnibox text, & query ZPS if no user input in progress.
       e.preventDefault();
       e.stopPropagation();
+      // This returns before `super.onInputWrapperKeydown()` freezes the
+      // results, so freeze them here too. Otherwise, pending results would
+      // replace the selection below.
+      this.activeQueryId = -1;
       if (this.keywordModeManager.isInKeywordMode) {
         this.keywordModeManager.clearKeyword(
             this.getInputElement().inputElement.value);
