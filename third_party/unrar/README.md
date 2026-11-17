@@ -18,14 +18,14 @@ Now apply the Chromium patch file. This command will apply the hunks
 that apply, and create .rej files in //third_party/unrar/src for hunks
 that do not:
 ```
-git apply --reject third_party/unrar/patches/chromium_changes.patch
+git apply --reject --directory=third_party/unrar third_party/unrar/patches/chromium_changes.patch
 ```
 
 For each .rej file, identify whether it still applies and manually fix
 the conflict, then delete the .rej file. Then regenerate the
 `chromium_changes.patch` file with:
 ```
-git diff $raw_src_hash -- third_party/unrar/src/* > third_party/unrar/patches/chromium_changes.patch
+git diff --relative=third_party/unrar --src-prefix=a/ --dst-prefix=b/ $raw_src_hash -- third_party/unrar/src > third_party/unrar/patches/chromium_changes.patch
 ```
 
 Update README.chromium to mention the new version and source URL and
