@@ -39,8 +39,6 @@ import type {ChromeSigninUserChoiceInfo, SyncBrowserProxy, SyncStatus} from '/sh
 import {ChromeSigninUserChoice, SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
-import type {MetricsReporting, PrivacyPageBrowserProxy} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
-import {PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 // <if expr="is_chromeos">
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
@@ -56,6 +54,8 @@ import {RelaunchMixinLit, RestartType} from '../relaunch_mixin_lit.js';
 
 import {getCss} from './personalization_options.css.js';
 import {getHtml} from './personalization_options.html.js';
+import type {MetricsReporting, PrivacyPageBrowserProxy} from './privacy_page_browser_proxy.js';
+import {PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 
 export interface SettingsPersonalizationOptionsElement {
   $: {

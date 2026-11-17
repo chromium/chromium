@@ -36,7 +36,6 @@ build_webui("build") {
     "prefs2/pref_key_observer_mixin_lit.ts",
     "prefs2/pref_service.ts",
     "prefs2/pref_service_observer_mixin_lit.ts",
-    "privacy_page/privacy_page_browser_proxy.ts",
     "security_page/security_page_browser_proxy.ts",
   ]
 

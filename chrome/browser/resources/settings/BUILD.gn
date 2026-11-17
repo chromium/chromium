@@ -390,6 +390,7 @@ build_webui("build") {
     "privacy_page/privacy_guide/step_indicator.ts",
     "privacy_page/privacy_page.html.ts",
     "privacy_page/privacy_page.ts",
+    "privacy_page/privacy_page_browser_proxy.ts",
     "privacy_page/security/fingerprint_progress_arc.html.ts",
     "privacy_page/security/fingerprint_progress_arc.ts",
     "privacy_page/security/safe_browsing_types.ts",
