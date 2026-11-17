@@ -179,7 +179,9 @@ ExpandState MessageCenterImpl::GetNotificationExpandState(
 void MessageCenterImpl::SetNotificationExpandState(
     const std::string& id,
     const ExpandState expand_state) {
-  CHECK(FindVisibleNotificationById(id), base::NotFatalUntil::M163);
+  // TODO(crbug.com/585458319): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(FindVisibleNotificationById(id));
 
   notification_list_->SetNotificationExpandState(id, expand_state);
 }
