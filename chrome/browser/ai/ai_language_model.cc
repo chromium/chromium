@@ -277,6 +277,8 @@ ConvertToOnDeviceExecutionResult(
   switch (status) {
     case blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest:
     case blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge:
+    case blink::mojom::ModelStreamingResponseStatus::
+        kErrorResponseExceedsRemainingContext:
       return optimization_guide::OnDeviceRequestTelemetryLogger::Result::
           kFailedConstructingMessage;
     case blink::mojom::ModelStreamingResponseStatus::kErrorCancelled:
@@ -492,6 +494,10 @@ class AILanguageModel::PromptState
       case on_device_model::mojom::GenerateError::kInvalidConstraint:
         error =
             blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest;
+        break;
+      case on_device_model::mojom::GenerateError::kContextWindowExceeded:
+        error = blink::mojom::ModelStreamingResponseStatus::
+            kErrorResponseExceedsRemainingContext;
         break;
     }
     OnError(error);

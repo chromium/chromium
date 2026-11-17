@@ -161,6 +161,11 @@ enum class ChromeMLGenerateStatus {
 
   // Generation failed because there was an error creating the constraint.
   kInvalidConstraint,
+
+  // Generation failed because the session's context window (KV cache) was
+  // exceeded, so the input could not be processed or no output could be
+  // generated. This is the last output.
+  kContextWindowExceeded,
 };
 using ChromeMLExecutionStatus = ChromeMLGenerateStatus;
 

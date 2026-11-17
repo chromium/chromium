@@ -239,6 +239,13 @@ class Responder final {
                   &Responder::OnError, weak_ptr,
                   on_device_model::mojom::GenerateError::kInvalidConstraint));
           return;
+        case ChromeMLExecutionStatus::kContextWindowExceeded:
+          DCHECK(!output->text);
+          task_runner->PostTask(
+              FROM_HERE, base::BindOnce(&Responder::OnError, weak_ptr,
+                                        on_device_model::mojom::GenerateError::
+                                            kContextWindowExceeded));
+          return;
       }
 
       task_runner->PostTask(

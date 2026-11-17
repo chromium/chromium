@@ -287,6 +287,7 @@ void OnDeviceExecution::OnResponderDisconnect(uint32_t custom_reason,
       CancelPendingResponse(Result::kDisconnectAndCancel);
       break;
     case on_device_model::mojom::GenerateError::kInvalidConstraint:
+    case on_device_model::mojom::GenerateError::kContextWindowExceeded:
       CancelPendingResponse(Result::kFailedConstructingMessage,
                             OnDeviceError::kInvalidRequest);
       break;

@@ -1282,6 +1282,19 @@ TEST_F(AILanguageModelTest, DisconnectErrorInvalidConstraint) {
             blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
 }
 
+TEST_F(AILanguageModelTest, DisconnectErrorContextWindowExceeded) {
+  auto session = CreateSession();
+  fake_broker_->settings().set_execute_error(
+      on_device_model::mojom::GenerateError::kContextWindowExceeded);
+  AITestUtils::TestStreamingResponder responder;
+  session->Prompt(MakeInput("foo"), nullptr, std::nullopt,
+                  responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::
+                kErrorResponseExceedsRemainingContext);
+}
+
 TEST_F(AILanguageModelTest, Destroy) {
   auto session = CreateSession();
   base::RunLoop run_loop;

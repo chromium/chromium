@@ -319,6 +319,17 @@ TEST_F(SessionImplTest, ExecutionDisconnectInvalidConstraint) {
   EXPECT_EQ(response_.error(), OnDeviceError::kInvalidRequest);
 }
 
+TEST_F(SessionImplTest, ExecutionDisconnectContextWindowExceeded) {
+  Initialize();
+  auto session = CreateSession(SessionConfigParams{});
+  broker_.settings().set_execute_error(
+      on_device_model::mojom::GenerateError::kContextWindowExceeded);
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
+  EXPECT_FALSE(response_.GetFinalStatus());
+  EXPECT_EQ(response_.error(), OnDeviceError::kInvalidRequest);
+}
+
 TEST_F(SessionImplTest, ReturnsErrorOnServiceDisconnect) {
   Initialize();
 

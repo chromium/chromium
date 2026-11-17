@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 10
+// Next MinVersion: 11
 
 module on_device_model.mojom;
 
@@ -81,6 +81,9 @@ enum GenerateError {
   [Default] kUnknown = 0,
   // The constraint is invalid or incompatible with the given assistant prefix.
   kInvalidConstraint = 1,
+  // The session's context window (KV cache) was exceeded, so the input
+  // could not be processed or no output could be generated.
+  [MinVersion=10] kContextWindowExceeded = 2,
 };
 
 // Streams a response from a call to execute a model. Close this pipe to cancel
