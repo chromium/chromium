@@ -137,6 +137,11 @@ void RemoteActorCredentialSharingController::
         sync_util::IsSyncFeatureActiveIncludingPasswords(sync_service_);
 
     for (StoredCredential& login : logins) {
+      if (login.blocked_by_user ||
+          login.scheme != PasswordForm::Scheme::kHtml ||
+          login.federation_origin.IsValid() || login.password_value.empty()) {
+        continue;
+      }
       password_manager_util::GetLoginMatchType match_type =
           password_manager_util::GetMatchType(login);
       if (match_type != password_manager_util::GetLoginMatchType::kExact &&
@@ -144,10 +149,9 @@ void RemoteActorCredentialSharingController::
           match_type != password_manager_util::GetLoginMatchType::kPSL) {
         continue;
       }
-      PasswordForm form = ToPasswordForm(std::move(login));
-      if (form.IsUsingAccountStore() ||
-          (form.IsUsingProfileStore() && is_sync_active)) {
-        credentials_.push_back(std::move(form));
+      if (login.IsUsingAccountStore() ||
+          (login.IsUsingProfileStore() && is_sync_active)) {
+        credentials_.push_back(std::move(login));
       }
     }
   }
@@ -227,17 +231,22 @@ void RemoteActorCredentialSharingController::OnAllLoginsRetrieved() {
     return;
   }
 
-  if (credentials_.empty()) {
-    LogResult(
-        RemoteActorCredentialSharingResult::kNoPasswordsFound);
+  std::vector<StoredCredential> best_matches =
+      password_manager_util::FindBestMatches(credentials_);
+  credentials_.clear();
+
+  if (best_matches.empty()) {
+    LogResult(RemoteActorCredentialSharingResult::kNoPasswordsFound);
     std::move(callback_).Run(
         RemoteActorCredentialSharingResult::kNoPasswordsFound);
     return;
   }
 
   std::vector<std::unique_ptr<PasswordForm>> credentials_ptr;
-  for (PasswordForm& form : credentials_) {
-    credentials_ptr.push_back(std::make_unique<PasswordForm>(std::move(form)));
+  credentials_ptr.reserve(best_matches.size());
+  for (StoredCredential& match : best_matches) {
+    credentials_ptr.push_back(
+        std::make_unique<PasswordForm>(ToPasswordForm(std::move(match))));
   }
 
   delegate_->ShowCredentialSelection(

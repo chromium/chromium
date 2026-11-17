@@ -176,7 +176,7 @@ class RemoteActorCredentialSharingController : public PasswordStoreConsumer {
   // The number of password store queries that have completed.
   size_t received_callbacks_ = 0;
   // Collected credentials from the stores.
-  std::vector<PasswordForm> credentials_;
+  std::vector<StoredCredential> credentials_;
   // Device authenticator used when re-authentication is required.
   std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator_;
 

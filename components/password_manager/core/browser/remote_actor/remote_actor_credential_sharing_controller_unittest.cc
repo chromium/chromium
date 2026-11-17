@@ -302,6 +302,164 @@ TEST_F(RemoteActorCredentialSharingControllerTest,
 }
 
 TEST_F(RemoteActorCredentialSharingControllerTest,
+       SyncInactive_LocalOnlyCredentialNotOffered) {
+  SignIn("user@gmail.com");
+  SetAccountStorageState(true);
+
+  // Add password only to the local profile store (not in the account store).
+  PasswordForm profile_form;
+  profile_form.signon_realm = "https://google.com/";
+  profile_form.url = GURL("https://google.com");
+  profile_form.username_value = u"local_only_user";
+  profile_form.password_value = PasswordString(u"pass");
+  profile_form.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(FromPasswordForm(profile_form));
+
+  base::test::TestFuture<RemoteActorCredentialSharingResult> result;
+  std::unique_ptr<RemoteActorCredentialSharingController> controller =
+      StartController(/*gaia_id=*/account_info_.GetGaiaId().ToString(),
+                      /*domain=*/"google.com", result.GetCallback());
+
+  EXPECT_EQ(result.Get(),
+            RemoteActorCredentialSharingResult::kNoPasswordsFound);
+}
+
+TEST_F(RemoteActorCredentialSharingControllerTest,
+       DuplicateCredentials_CollapsedToBestMatch) {
+  SignIn("user@gmail.com");
+
+  // Older exact match for "alice".
+  PasswordForm older_exact_form;
+  older_exact_form.signon_realm = "https://example.com/";
+  older_exact_form.url = GURL("https://example.com/login");
+  older_exact_form.username_element = u"old_user_field";
+  older_exact_form.username_value = u"alice";
+  older_exact_form.password_value = PasswordString(u"older_exact_pass");
+  older_exact_form.date_last_used = base::Time::FromTimeT(100);
+  older_exact_form.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(FromPasswordForm(older_exact_form));
+
+  // Newer exact match for "alice" (on a different form element).
+  PasswordForm newer_exact_form;
+  newer_exact_form.signon_realm = "https://example.com/";
+  newer_exact_form.url = GURL("https://example.com/signin");
+  newer_exact_form.username_element = u"new_user_field";
+  newer_exact_form.username_value = u"alice";
+  newer_exact_form.password_value = PasswordString(u"newer_exact_pass");
+  newer_exact_form.date_last_used = base::Time::FromTimeT(200);
+  newer_exact_form.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(FromPasswordForm(newer_exact_form));
+
+  // Even newer PSL match for "alice" (exact match still takes priority over
+  // PSL).
+  PasswordForm psl_form;
+  psl_form.signon_realm = "https://sub.example.com/";
+  psl_form.url = GURL("https://sub.example.com/login");
+  psl_form.username_value = u"alice";
+  psl_form.password_value = PasswordString(u"psl_pass");
+  psl_form.date_last_used = base::Time::FromTimeT(300);
+  psl_form.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(FromPasswordForm(psl_form));
+
+  // Second distinct username "bob".
+  PasswordForm bob_form;
+  bob_form.signon_realm = "https://example.com/";
+  bob_form.url = GURL("https://example.com/login");
+  bob_form.username_value = u"bob";
+  bob_form.password_value = PasswordString(u"bob_pass");
+  bob_form.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(FromPasswordForm(bob_form));
+
+  std::unique_ptr<RemoteActorCredentialSharingController> controller =
+      StartController(/*gaia_id=*/account_info_.GetGaiaId().ToString(),
+                      /*domain=*/"example.com", base::DoNothing());
+  std::vector<std::unique_ptr<PasswordForm>> credentials =
+      delegate_.TakeShownCredentials();
+
+  // Duplicate rows for "alice" collapse to a single entry with the best match
+  // (the newer exact match).
+  EXPECT_THAT(credentials,
+              UnorderedElementsAre(
+                  Pointee(AllOf(Field(&PasswordForm::username_value, u"alice"),
+                                Field(&PasswordForm::password_value,
+                                      PasswordString(u"newer_exact_pass")))),
+                  Pointee(AllOf(Field(&PasswordForm::username_value, u"bob"),
+                                Field(&PasswordForm::password_value,
+                                      PasswordString(u"bob_pass"))))));
+}
+
+TEST_F(RemoteActorCredentialSharingControllerTest,
+       BlockedByUserAndNonPasswordEntries_AreNotOffered) {
+  SignIn("user@gmail.com");
+
+  // Blocklisted ("Never save") entry.
+  PasswordForm blocked_form;
+  blocked_form.signon_realm = "https://example.com/";
+  blocked_form.url = GURL("https://example.com");
+  blocked_form.blocked_by_user = true;
+  blocked_form.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(FromPasswordForm(blocked_form));
+
+  // Non-HTML (e.g. HTTP Basic auth) entry.
+  PasswordForm basic_auth_form;
+  basic_auth_form.scheme = PasswordForm::Scheme::kBasic;
+  basic_auth_form.signon_realm = "https://example.com/";
+  basic_auth_form.url = GURL("https://example.com");
+  basic_auth_form.username_value = u"basic_user";
+  basic_auth_form.password_value = PasswordString(u"basic_pass");
+  basic_auth_form.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(FromPasswordForm(basic_auth_form));
+
+  // Federated credential entry (with non-empty password so
+  // `federation_origin.IsValid()` is exercised independently).
+  PasswordForm federated_form;
+  federated_form.signon_realm = "federation://example.com/idp.example.com";
+  federated_form.url = GURL("https://example.com");
+  federated_form.username_value = u"federated_user";
+  federated_form.password_value = PasswordString(u"federated_pass");
+  federated_form.federation_origin =
+      url::SchemeHostPort(GURL("https://idp.example.com"));
+  federated_form.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(FromPasswordForm(federated_form));
+
+  // Empty-password entry.
+  PasswordForm empty_password_form;
+  empty_password_form.signon_realm = "https://example.com/";
+  empty_password_form.url = GURL("https://example.com");
+  empty_password_form.username_value = u"empty_pass_user";
+  empty_password_form.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(FromPasswordForm(empty_password_form));
+
+  // When only non-offer-eligible entries exist, the request fails with
+  // `kNoPasswordsFound`.
+  {
+    base::test::TestFuture<RemoteActorCredentialSharingResult> result;
+    std::unique_ptr<RemoteActorCredentialSharingController> controller =
+        StartController(/*gaia_id=*/account_info_.GetGaiaId().ToString(),
+                        /*domain=*/"example.com", result.GetCallback());
+    EXPECT_EQ(result.Get(),
+              RemoteActorCredentialSharingResult::kNoPasswordsFound);
+  }
+
+  // When a valid password also exists alongside them, only the valid password
+  // is offered.
+  PasswordForm valid_form;
+  valid_form.signon_realm = "https://example.com/";
+  valid_form.url = GURL("https://example.com");
+  valid_form.username_value = u"valid_user";
+  valid_form.password_value = PasswordString(u"valid_pass");
+  valid_form.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(FromPasswordForm(valid_form));
+
+  std::unique_ptr<RemoteActorCredentialSharingController> controller =
+      StartController(/*gaia_id=*/account_info_.GetGaiaId().ToString(),
+                      /*domain=*/"example.com", base::DoNothing());
+  EXPECT_THAT(delegate_.TakeShownCredentials(),
+              UnorderedElementsAre(Pointee(
+                  Field(&PasswordForm::username_value, u"valid_user"))));
+}
+
+TEST_F(RemoteActorCredentialSharingControllerTest,
        SyncActive_OnlyProfileStoreQueried) {
   SignIn("user@gmail.com");
   SetSyncActive(true);
