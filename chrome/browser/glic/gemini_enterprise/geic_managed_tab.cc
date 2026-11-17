@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "chrome/browser/glic/common/glic_navigation.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_url_allowlist.h"
 #include "chrome/browser/glic/gemini_enterprise/gemini_enterprise.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -89,7 +90,10 @@ bool GeicManagedTab::IsExpectedOrigin(const GURL& url) const {
   }
   switch (purpose_) {
     case mojom::AuthTabPurpose::kSignIn:
-      return origin == gaia_origin_ || IsWorkforceSignInOrigin(url);
+      return origin == gaia_origin_ ||
+             geic::IsPairedWorkforceAuthPortalOrigin(origin,
+                                                     guest_origin_.GetURL()) ||
+             IsWorkforceSignInOrigin(url);
     case mojom::AuthTabPurpose::kConnectorOauth:
       return origin.Serialize() == kDefaultConnectorOAuthRedirectorOrigin;
     case mojom::AuthTabPurpose::kUnknown:

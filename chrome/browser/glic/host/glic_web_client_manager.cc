@@ -19,9 +19,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_sign_in_controller.h"
 #include "chrome/browser/glic/host/glic_guest_page_load_metrics_observer.h"
 #include "chrome/browser/glic/host/glic_web_client_handler.h"
 #include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/glic/host/guest_util_internal.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
@@ -416,8 +418,10 @@ void GlicWebClientManager::SetGuestMounted(bool mounted) {
 }
 
 void GlicWebClientManager::OnGuestNavigationBlocked(
-    mojom::GuestPageType page_type) {
-  if (!base::FeatureList::IsEnabled(kGlicShowSecurityInterstitials)) {
+    mojom::GuestPageType page_type,
+    const GURL& blocked_url) {
+  if (page_type != mojom::GuestPageType::kSignInRequired &&
+      !base::FeatureList::IsEnabled(kGlicShowSecurityInterstitials)) {
     DVLOG(1) << "Glic [WebClientManager] OnGuestNavigationBlocked "
              << page_type;
     return;
@@ -436,9 +440,11 @@ void GlicWebClientManager::OnGuestNavigationBlocked(
   // page, a cancelled navigation (e.g. a subframe attempting to navigate the
   // top frame to about:blank) leaves the primary main frame on its active
   // document and should not tear down the connected client or show the error
-  // screen unless the navigation was explicitly blocked by admin policy.
+  // screen unless the navigation was explicitly blocked by admin policy or
+  // requires sign-in.
   if ((web_client_owned_ || pending_web_client_receiver_.is_valid()) &&
-      page_type != mojom::GuestPageType::kDisabledByAdmin) {
+      page_type != mojom::GuestPageType::kDisabledByAdmin &&
+      page_type != mojom::GuestPageType::kSignInRequired) {
     if (delegate_) {
       // Restore the delegate's ready state that `DidStartNavigation()` cleared
       // to `GuestState::kLoading` when the cancelled navigation began.
@@ -455,19 +461,26 @@ void GlicWebClientManager::OnGuestNavigationBlocked(
   }
   // When no web client is active (e.g. clicking "Go back" on an initial
   // security interstitial, or a blocked initial load) or when the navigation is
-  // blocked by admin policy (`kDisabledByAdmin`), mirror `DidFinishNavigation`
-  // for a failed navigation: reset state, record the navigation metric, notify
-  // the delegate to transition the panel to the error UI, and disconnect any
-  // active web client.
+  // blocked by admin policy (`kDisabledByAdmin`) or requires sign-in
+  // (`kSignInRequired`), mirror `DidFinishNavigation` for a failed navigation:
+  // reset state, record the navigation metric, notify the delegate to
+  // transition the panel to the error UI, and disconnect any active web client.
   guest_presentation_tracker_->Reset();
   pending_web_client_receiver_.reset();
   last_committed_page_type_ = page_type;
   last_committed_is_api_allowed_ = false;
   guest_main_page_loaded_ = false;
+  if (page_type == mojom::GuestPageType::kSignInRequired && web_contents()) {
+    if (Profile* profile =
+            Profile::FromBrowserContext(web_contents()->GetBrowserContext())) {
+      GeicSignInController::GetForProfile(profile)->OnSignInRequired(
+          blocked_url);
+    }
+  }
   metrics_->OnGuestNavigation(page_type, /*is_api_allowed=*/false);
   if (delegate_) {
     delegate_->OnGuestNavigated(
-        GURL(), /*is_api_allowed=*/false, page_type,
+        blocked_url, /*is_api_allowed=*/false, page_type,
         /*is_initial_commit=*/!has_navigation_committed_);
   }
   if (web_client_owned_) {
@@ -581,21 +594,18 @@ void GlicWebClientManager::DidFinishNavigation(
   }
 
   if (!navigation_handle->HasCommitted()) {
-    if (base::FeatureList::IsEnabled(kGlicShowSecurityInterstitials)) {
-      // In NoWebview mode, PwcNavigationThrottle cancels navigations to
-      // disallowed origins (e.g. when a user clicks "Go back" on a security
-      // interstitial and it navigates to a default safe page like about:blank
-      // or chrome://newtab). Transition directly to the appropriate error
-      // state.
-      if (auto* privileged =
-              pwc::PrivilegedWebContents::FromWebContents(web_contents())) {
-        const GURL& url = navigation_handle->GetURL();
-        if (!privileged->policy().IsNavigationAllowed(
-                url::Origin::Create(url))) {
-          OnGuestNavigationBlocked(IsAdminBlockedUrl(url)
-                                       ? mojom::GuestPageType::kDisabledByAdmin
-                                       : mojom::GuestPageType::kOriginBlocked);
-        }
+    // In NoWebview mode, PwcNavigationThrottle cancels navigations to
+    // disallowed origins (e.g. when a user clicks "Go back" on a security
+    // interstitial and it navigates to a default safe page like about:blank
+    // or chrome://newtab, or when a Workforce Auth Portal redirect continues
+    // to a 3P IdP). Transition directly to the appropriate error state.
+    if (auto* privileged =
+            pwc::PrivilegedWebContents::FromWebContents(web_contents())) {
+      const GURL& url = navigation_handle->GetURL();
+      if (!privileged->policy().IsNavigationAllowed(url::Origin::Create(url))) {
+        const BlockedGuestNavigation blocked =
+            ClassifyBlockedGuestNavigation(*navigation_handle);
+        OnGuestNavigationBlocked(blocked.page_type, blocked.blocked_url);
       }
     }
     return;

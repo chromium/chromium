@@ -13,6 +13,7 @@
 
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
@@ -53,6 +54,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -2442,4 +2444,208 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<ReloadFromErrorParams>& info) {
       return std::string(info.param.name);
     });
+
+class GlicNoWebviewGeicSignInOverlayBrowserTest : public GlicBrowserTest {
+ public:
+  GlicNoWebviewGeicSignInOverlayBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGeic,
+          {{features::kGeicGuestURL.name,
+            "https://auth.cloud.google/signin/locations/global/workforcePools/"
+            "pool-1/providers/idp-1?continueUrl=https%3A%2F%2F"
+            "vertexaisearch.cloud.google%2Fhome%2Fcid%2Fcfg-1"}}},
+         {features::kGlicDisconnectedWebview, {}},
+         {features::kGlicNoWebview, {}}},
+        {});
+    embedded_https_test_server().SetCertHostnames(
+        {"vertexaisearch.cloud.google", "auth.cloud.google", "127.0.0.1"});
+    embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
+        &GlicNoWebviewGeicSignInOverlayBrowserTest::HandleRequest,
+        base::Unretained(this)));
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    GlicBrowserTest::SetUpCommandLine(command_line);
+    const int port = embedded_https_test_server().port();
+    command_line->AppendSwitchASCII(
+        network::switches::kHostResolverRules,
+        base::StringPrintf("MAP vertexaisearch.cloud.google 127.0.0.1:%d, "
+                           "MAP auth.cloud.google 127.0.0.1:%d",
+                           port, port));
+  }
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    auto host_it = request.headers.find("Host");
+    const GURL url =
+        (host_it != request.headers.end() && !host_it->second.empty())
+            ? GURL(base::StrCat(
+                  {"https://", host_it->second, request.relative_url}))
+            : request.GetURL();
+    if (url.host() == "vertexaisearch.cloud.google" &&
+        url.path() == "/side-panel" &&
+        url.query().find("csesidx=") == std::string::npos) {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_FOUND);
+      response->AddCustomHeader(
+          "Location",
+          "https://auth.cloud.google/select-session?continueUrl="
+          "https%3A%2F%2Fvertexaisearch.cloud.google%2Fside-panel");
+      return response;
+    }
+    if (url.host() == "auth.cloud.google" && url.path() == "/select-session") {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/html");
+      response->set_content("<html><body>Workforce Auth Portal</body></html>");
+      return response;
+    }
+    if (url.host() == "vertexaisearch.cloud.google" &&
+        url.path() == "/side-panel" &&
+        url.query().find("csesidx=") != std::string::npos) {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/html");
+      response->set_content(
+          "<!DOCTYPE html><html><body>"
+          "<script type=\"module\" "
+          "src=\"/glic/browser_tests/minimal_client.js\"></script>"
+          "</body></html>");
+      return response;
+    }
+    return nullptr;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    GlicNoWebviewGeicSignInOverlayBrowserTest,
+    GeicSignInOverlayOpensAuthTabAndReloadsSidePanelWithCsesIdxOnCompletion) {
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_EQ(tab_list->GetTabCount(), 1);
+  tabs::TabInterface* initial_tab = tab_list->GetActiveTab();
+  ASSERT_TRUE(initial_tab);
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+
+  // Opening Glic navigates to `/side-panel`, which redirects to
+  // `auth.cloud.google/select-session` (returning `200 OK`), and
+  // `GlicGuestNavigationThrottle::WillProcessResponse` cancels the response and
+  // shows the native Sign-In overlay.
+  ASSERT_OK(WaitForOverlayErrorPanel(mojom::ErrorPanelType::kSignIn, instance));
+
+  // Click Sign-In on the overlay: opens a foreground sign-in tab with
+  // `auth_popout=1` and `provider_name` attached.
+  tabs::TabInterface* signin_tab = nullptr;
+  {
+    GlicTestTabAddedWaiter waiter(GetProfile());
+    ClickOverlayElement(manager->overlay_contents(), "#signInButton");
+    signin_tab = waiter.Wait();
+  }
+  ASSERT_TRUE(signin_tab);
+  EXPECT_EQ(tab_list->GetTabCount(), 2);
+  EXPECT_EQ(tab_list->GetActiveTab(), signin_tab);
+  ASSERT_TRUE(content::WaitForLoadStop(signin_tab->GetContents()));
+
+  const GURL opened_url = signin_tab->GetContents()->GetLastCommittedURL();
+  EXPECT_EQ(opened_url.host(), "auth.cloud.google");
+  EXPECT_EQ(opened_url.path(), "/select-session");
+  EXPECT_NE(opened_url.query().find("provider_name=locations%2Fglobal%2F"
+                                    "workforcePools%2Fpool-1%2Fproviders%2F"
+                                    "idp-1"),
+            std::string::npos);
+  EXPECT_NE(opened_url.query().find("auth_popout%3D1"), std::string::npos);
+
+  // Simulate the user completing sign-in in the tab, which redirects back to
+  // `vertexaisearch.cloud.google/side-panel?...&csesidx=7&auth_popout=1`.
+  const GURL completed_url(
+      "https://vertexaisearch.cloud.google/side-panel?"
+      "configId=cfg-1&csesidx=7&auth_popout=1");
+  signin_tab->GetContents()->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(completed_url));
+
+  // `GeicSignInController::SignInObserver` detects `csesidx=7`, closes the
+  // sign-in tab, restores focus to `initial_tab`, clears the sign-in error
+  // state, and reloads the side-panel guest with `&csesidx=7`.
+  ASSERT_OK(WaitForGlicClient(instance));
+  EXPECT_EQ(tab_list->GetTabCount(), 1);
+  EXPECT_EQ(tab_list->GetActiveTab(), initial_tab);
+  EXPECT_EQ(manager->error_type(), std::nullopt);
+  EXPECT_EQ(manager->guest_state().get(),
+            GlicNoWebviewContentsManager::GuestState::kReady);
+  if (auto* side_panel = GlicSidePanelCoordinator::GetForTab(initial_tab);
+      side_panel && side_panel->SupportsPeek()) {
+    // On non-desktop Android (`SupportsPeek()`), switching away to the sign-in
+    // tab and returning to `initial_tab` restores the bottom sheet in peek mode
+    // (`kAttachedHidden`); expand the side panel to display the guest.
+    instance->Show(ShowOptions::ForSidePanel(*initial_tab));
+  }
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingGuest);
+  EXPECT_NE(manager->guest_contents()->GetLastCommittedURL().query().find(
+                "csesidx=7"),
+            std::string::npos);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicNoWebviewGeicSignInOverlayBrowserTest,
+    GeicSignInOverlayReusesExistingSignInTabOnRepeatedClick) {
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_EQ(tab_list->GetTabCount(), 1);
+  tabs::TabInterface* initial_tab = tab_list->GetActiveTab();
+  ASSERT_TRUE(initial_tab);
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+
+  ASSERT_OK(WaitForOverlayErrorPanel(mojom::ErrorPanelType::kSignIn, instance));
+
+  tabs::TabInterface* signin_tab = nullptr;
+  {
+    GlicTestTabAddedWaiter waiter(GetProfile());
+    manager->GetOverlayPageHandlerForTesting()->OnSignInClicked();
+    signin_tab = waiter.Wait();
+  }
+  ASSERT_TRUE(signin_tab);
+  ASSERT_TRUE(content::WaitForLoadStop(signin_tab->GetContents()));
+  EXPECT_EQ(tab_list->GetTabCount(), 2);
+  EXPECT_EQ(tab_list->GetActiveTab(), signin_tab);
+
+  // Switch back to the original tab and click Sign-In again: must reactivate
+  // the existing sign-in tab without opening a duplicate.
+  tab_list->ActivateTab(initial_tab->GetHandle());
+  ASSERT_EQ(tab_list->GetActiveTab(), initial_tab);
+
+  manager->GetOverlayPageHandlerForTesting()->OnSignInClicked();
+  EXPECT_EQ(tab_list->GetTabCount(), 2);
+  EXPECT_EQ(tab_list->GetActiveTab(), signin_tab);
+
+  // Because `GeicSignInController` is Profile-scoped, the sign-in tab and its
+  // observer survive `Host::Hibernate()` (e.g. during a slow >20s SSO flow),
+  // and completing sign-in wakes the host and loads the guest with `csesidx`.
+  instance->host().Hibernate();
+  EXPECT_FALSE(instance->host().IsAwake());
+
+  const GURL completed_url(
+      "https://vertexaisearch.cloud.google/side-panel?"
+      "configId=cfg-1&csesidx=9&auth_popout=1");
+  signin_tab->GetContents()->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(completed_url));
+
+  ASSERT_OK(WaitForGlicClient(instance));
+  EXPECT_TRUE(instance->host().IsAwake());
+  EXPECT_EQ(tab_list->GetTabCount(), 1);
+  EXPECT_EQ(tab_list->GetActiveTab(), initial_tab);
+  auto* awakened_manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(awakened_manager);
+  EXPECT_NE(
+      awakened_manager->guest_contents()->GetLastCommittedURL().query().find(
+          "csesidx=9"),
+      std::string::npos);
+}
 }  // namespace glic

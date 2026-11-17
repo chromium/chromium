@@ -9,6 +9,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace geic {
 namespace {
@@ -327,6 +328,213 @@ TEST_F(GeicUrlAllowlistTest, ParseWorkforceAuthPortalUrlErrors) {
               WorkforceAuthPortalUrlError::kDisallowedInnerHost)
         << raw_url;
   }
+}
+
+TEST_F(GeicUrlAllowlistTest,
+       IsPairedWorkforceAuthPortalOriginMatchesProdPortals) {
+  EXPECT_TRUE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin::Create(GURL("https://auth.cloud.google")),
+      GURL("https://vertexaisearch.cloud.google/side-panel?configId=123")));
+  EXPECT_TRUE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin::Create(GURL("https://auth.cloud.google")),
+      GURL("https://enterprise.gemini.cloud.google/side-panel")));
+  EXPECT_TRUE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin::Create(GURL("https://auth.cloud.google")),
+      GURL("https://gemini.cloud.google/side-panel")));
+  EXPECT_TRUE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin::Create(GURL("https://auth.business.gemini.google")),
+      GURL("https://business.gemini.google/side-panel?configId=123")));
+  EXPECT_TRUE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin::Create(GURL("https://auth.gemini-us.google")),
+      GURL("https://vertexaisearch.gemini-us.google/side-panel?configId=123")));
+}
+
+TEST_F(GeicUrlAllowlistTest,
+       IsPairedWorkforceAuthPortalOriginRejectsCrossDomainAnd1P) {
+  // Cross-domain portal mismatch.
+  EXPECT_FALSE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin::Create(GURL("https://auth.cloud.google")),
+      GURL("https://business.gemini.google/side-panel")));
+  EXPECT_FALSE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin::Create(GURL("https://auth.business.gemini.google")),
+      GURL("https://vertexaisearch.cloud.google/side-panel")));
+  EXPECT_FALSE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin::Create(GURL("https://auth.gemini-us.google")),
+      GURL("https://vertexaisearch.cloud.google/side-panel")));
+
+  // 1P Gaia `.google.com` hosts do not use Workforce Identity Auth Portals.
+  EXPECT_FALSE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin::Create(GURL("https://auth.cloud.google")),
+      GURL("https://vertexaisearch.cloud.google.com/side-panel")));
+  EXPECT_FALSE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin::Create(GURL("https://auth.cloud.google")),
+      GURL("https://enterprise.gemini.google.com/side-panel")));
+
+  // Non-HTTPS, custom ports, opaque origins, or disallowed guest hosts.
+  EXPECT_FALSE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin::Create(GURL("http://auth.cloud.google")),
+      GURL("https://vertexaisearch.cloud.google/side-panel")));
+  EXPECT_FALSE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin::Create(GURL("https://auth.cloud.google:8443")),
+      GURL("https://vertexaisearch.cloud.google/side-panel")));
+  EXPECT_FALSE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin(), GURL("https://vertexaisearch.cloud.google/side-panel")));
+  EXPECT_FALSE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin::Create(GURL("https://auth.cloud.google")),
+      GURL("https://console.cloud.google/side-panel")));
+  EXPECT_FALSE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin::Create(GURL("https://evil.com")),
+      GURL("https://vertexaisearch.cloud.google/side-panel")));
+}
+
+TEST_F(GeicUrlAllowlistTest,
+       IsPairedWorkforceAuthPortalOriginMatchesPreProdPortals) {
+  EXPECT_TRUE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin::Create(GURL("https://auth-autopush.corp.cloud.google")),
+      GURL("https://ucs-app-autopush.corp.cloud.google/side-panel")));
+  EXPECT_TRUE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin::Create(
+          GURL("https://auth-staging.business-staging.gemini.google")),
+      GURL("https://business-staging.gemini.google/side-panel")));
+  EXPECT_TRUE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin::Create(GURL("https://auth-staging.gemini-us.google")),
+      GURL("https://vertexaisearch-staging.gemini-us.google/side-panel")));
+
+  // Pre-prod portal does not match mismatched pre-prod environment label.
+  EXPECT_FALSE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin::Create(
+          GURL("https://auth-staging.business-staging.gemini.google")),
+      GURL("https://business-autopush.gemini.google/side-panel")));
+  // Pre-prod portal does not match a production guest host on the same parent
+  // domain.
+  EXPECT_FALSE(IsPairedWorkforceAuthPortalOrigin(
+      url::Origin::Create(GURL("https://auth-staging.gemini-us.google")),
+      GURL("https://vertexaisearch.gemini-us.google/side-panel")));
+}
+
+TEST_F(GeicUrlAllowlistTest,
+       IsWorkforceAuthPortalInteractiveSignInPathClassifiesEndpoints) {
+  EXPECT_TRUE(IsWorkforceAuthPortalInteractiveSignInPath("/signin"));
+  EXPECT_TRUE(IsWorkforceAuthPortalInteractiveSignInPath("/signin/"));
+  EXPECT_TRUE(IsWorkforceAuthPortalInteractiveSignInPath(
+      "/signin/locations/global/workforcePools/p/providers/idp"));
+  EXPECT_TRUE(IsWorkforceAuthPortalInteractiveSignInPath("/login"));
+  EXPECT_TRUE(IsWorkforceAuthPortalInteractiveSignInPath("/login/federated"));
+  EXPECT_TRUE(IsWorkforceAuthPortalInteractiveSignInPath("/reauth"));
+  EXPECT_TRUE(IsWorkforceAuthPortalInteractiveSignInPath("/reauth/challenge"));
+
+  // Silent 302 session-check/cookie-refresh endpoints are not interactive
+  // sign-in paths.
+  EXPECT_FALSE(IsWorkforceAuthPortalInteractiveSignInPath("/select-session"));
+  EXPECT_FALSE(IsWorkforceAuthPortalInteractiveSignInPath("/account-chooser"));
+  EXPECT_FALSE(IsWorkforceAuthPortalInteractiveSignInPath("/refreshcookies"));
+  EXPECT_FALSE(IsWorkforceAuthPortalInteractiveSignInPath("/submit"));
+  EXPECT_FALSE(IsWorkforceAuthPortalInteractiveSignInPath("/signin-other"));
+}
+
+TEST_F(GeicUrlAllowlistTest,
+       BuildWorkforceSignInTabUrlConstructsExpectedTarget) {
+  const GURL guest_url(
+      "https://vertexaisearch.cloud.google/side-panel?"
+      "configId=cfg-1&idp=locations%2Fglobal%2FworkforcePools%2Fpool-1%2F"
+      "providers%2Fprovider-1&csesidx=42&hl=en");
+
+  // When intercepted on `/select-session` on the paired Auth Portal, updates
+  // `continueUrl` (stripping stale `csesidx` and adding `auth_popout=1`) and
+  // injects `provider_name` from the guest URL's `idp` param.
+  const GURL intercepted_select_session(
+      "https://auth.cloud.google/select-session?"
+      "continueUrl=https%3A%2F%2Fvertexaisearch.cloud.google%2Fside-panel");
+  const GURL built =
+      BuildWorkforceSignInTabUrl(guest_url, intercepted_select_session);
+  EXPECT_EQ(
+      built,
+      GURL("https://auth.cloud.google/select-session?"
+           "continueUrl=https%3A%2F%2Fvertexaisearch.cloud.google%2Fside-panel"
+           "%3FconfigId%3Dcfg-1%26idp%3Dlocations%252Fglobal%252FworkforcePools"
+           "%252Fpool-1%252Fproviders%252Fprovider-1%26hl%3Den"
+           "%26auth_popout%3D1&"
+           "provider_name=locations%2Fglobal%2FworkforcePools%2Fpool-1%2F"
+           "providers%2Fprovider-1"));
+
+  // When intercepted on `/submit`, also injects `provider_name`.
+  const GURL intercepted_submit(
+      "https://auth.cloud.google/submit?"
+      "continueUrl=https%3A%2F%2Fvertexaisearch.cloud.google%2Fside-panel");
+  EXPECT_EQ(
+      BuildWorkforceSignInTabUrl(guest_url, intercepted_submit),
+      GURL("https://auth.cloud.google/submit?"
+           "continueUrl=https%3A%2F%2Fvertexaisearch.cloud.google%2Fside-panel"
+           "%3FconfigId%3Dcfg-1%26idp%3Dlocations%252Fglobal%252FworkforcePools"
+           "%252Fpool-1%252Fproviders%252Fprovider-1%26hl%3Den"
+           "%26auth_popout%3D1&"
+           "provider_name=locations%2Fglobal%2FworkforcePools%2Fpool-1%2F"
+           "providers%2Fprovider-1"));
+
+  // When intercepted on `/signin` or `/signin/`, rewrites the path to
+  // `/signin/<workforce_provider>`.
+  const GURL intercepted_signin(
+      "https://auth.cloud.google/signin?"
+      "continueUrl=https%3A%2F%2Fvertexaisearch.cloud.google%2Fside-panel");
+  EXPECT_EQ(
+      BuildWorkforceSignInTabUrl(guest_url, intercepted_signin),
+      GURL("https://auth.cloud.google/signin/locations/global/workforcePools/"
+           "pool-1/providers/provider-1?"
+           "continueUrl=https%3A%2F%2Fvertexaisearch.cloud.google%2Fside-panel"
+           "%3FconfigId%3Dcfg-1%26idp%3Dlocations%252Fglobal%252FworkforcePools"
+           "%252Fpool-1%252Fproviders%252Fprovider-1%26hl%3Den"
+           "%26auth_popout%3D1"));
+
+  // When intercepted on `/account-chooser` on Gemini Business, updates
+  // `continueUrl` without appending `provider_name`.
+  const GURL business_guest_url(
+      "https://business.gemini.google/side-panel?"
+      "configId=cfg-1&idp=locations%2Fglobal%2FworkforcePools%2Fpool-1%2F"
+      "providers%2Fprovider-1&hl=en");
+  const GURL intercepted_account_chooser(
+      "https://auth.business.gemini.google/account-chooser?"
+      "continueUrl=https%3A%2F%2Fbusiness.gemini.google%2Fside-panel");
+  EXPECT_EQ(
+      BuildWorkforceSignInTabUrl(business_guest_url,
+                                 intercepted_account_chooser),
+      GURL("https://auth.business.gemini.google/account-chooser?"
+           "continueUrl=https%3A%2F%2Fbusiness.gemini.google%2Fside-panel"
+           "%3FconfigId%3Dcfg-1%26idp%3Dlocations%252Fglobal%252FworkforcePools"
+           "%252Fpool-1%252Fproviders%252Fprovider-1%26hl%3Den"
+           "%26auth_popout%3D1"));
+
+  // When `provider_name=` is present with an empty value, replaces it with
+  // `workforce_provider`.
+  const GURL intercepted_empty_provider(
+      "https://auth.cloud.google/select-session?"
+      "provider_name=&continueUrl=https%3A%2F%2Fvertexaisearch.cloud.google"
+      "%2Fside-panel");
+  EXPECT_EQ(
+      BuildWorkforceSignInTabUrl(guest_url, intercepted_empty_provider),
+      GURL("https://auth.cloud.google/select-session?"
+           "provider_name=locations%2Fglobal%2FworkforcePools%2Fpool-1%2F"
+           "providers%2Fprovider-1&"
+           "continueUrl=https%3A%2F%2Fvertexaisearch.cloud.google%2Fside-panel"
+           "%3FconfigId%3Dcfg-1%26idp%3Dlocations%252Fglobal%252FworkforcePools"
+           "%252Fpool-1%252Fproviders%252Fprovider-1%26hl%3Den"
+           "%26auth_popout%3D1"));
+
+  // Nested non-HTTPS URLs (e.g. `blob:https://auth.cloud.google/...`) do not
+  // match the Workforce Auth Portal and fall back to the guest URL.
+  EXPECT_EQ(BuildWorkforceSignInTabUrl(
+                guest_url, GURL("blob:https://auth.cloud.google/1234-5678")),
+            GURL("https://vertexaisearch.cloud.google/side-panel?"
+                 "configId=cfg-1&idp=locations%2Fglobal%2FworkforcePools%2F"
+                 "pool-1%2Fproviders%2Fprovider-1&hl=en&auth_popout=1"));
+
+  // When no intercepted URL (or an external 3P IdP URL) is present, falls back
+  // to the guest URL with `auth_popout=1` and `csesidx` stripped.
+  const GURL fallback = BuildWorkforceSignInTabUrl(
+      guest_url, GURL("https://login.microsoftonline.com/common/oauth2"));
+  EXPECT_EQ(fallback,
+            GURL("https://vertexaisearch.cloud.google/side-panel?"
+                 "configId=cfg-1&idp=locations%2Fglobal%2FworkforcePools%2F"
+                 "pool-1%2Fproviders%2Fprovider-1&hl=en&auth_popout=1"));
 }
 
 }  // namespace

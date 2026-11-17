@@ -380,6 +380,9 @@ export class GlicAppController implements WebviewDelegate {
       case GuestPageType.kDisabledByAdmin:
         this.webviewDeniedByAdmin();
         break;
+      case GuestPageType.kSignInRequired:
+        this.setState(WebUiState.kSignIn);
+        break;
       default:
         assertNotReachedCase(type);
     }

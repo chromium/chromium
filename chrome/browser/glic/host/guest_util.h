@@ -69,6 +69,10 @@ url::Origin GetGuestOrigin(content::BrowserContext* browser_context);
 std::string GetGlicAllowedOrigins();
 bool IsOriginAllowedGlicApi(const url::Origin& origin,
                             content::BrowserContext* browser_context);
+// Returns true if `origin` is the HTTPS Workforce Identity (BYOID) Auth Portal
+// origin paired with `browser_context`'s guest URL.
+bool IsPairedWorkforceAuthOrigin(const url::Origin& origin,
+                                 content::BrowserContext* browser_context);
 bool IsGuestOriginAllowed(const url::Origin& origin,
                           content::BrowserContext* browser_context);
 bool IsAdminBlockedUrl(const GURL& url);

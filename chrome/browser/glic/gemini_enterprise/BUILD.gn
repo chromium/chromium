@@ -108,11 +108,14 @@ source_set("gemini_enterprise") {
   sources = [
     "geic_managed_tab.cc",
     "geic_managed_tab.h",
+    "geic_sign_in_controller.cc",
+    "geic_sign_in_controller.h",
     "glic_gemini_enterprise_manager.cc",
     "glic_gemini_enterprise_manager.h",
   ]
 
   deps = [
+    ":url_allowlist",
     "//base",
     "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
@@ -126,6 +129,7 @@ source_set("gemini_enterprise") {
     "//content/public/browser",
     "//google_apis",
     "//mojo/public/cpp/bindings",
+    "//net",
     "//ui/base",
     "//url",
   ]
@@ -137,6 +141,7 @@ source_set("unit_tests") {
     "geic_enabling_unittest.cc",
     "geic_fre_unittest.cc",
     "geic_guest_url_unittest.cc",
+    "geic_sign_in_controller_unittest.cc",
     "geic_url_allowlist_unittest.cc",
     "glic_gemini_enterprise_manager_unittest.cc",
   ]
@@ -158,6 +163,7 @@ source_set("unit_tests") {
     "//chrome/browser/policy",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:testing_browser_process",
     "//components/optimization_guide/core:features",
     "//components/policy:generated",

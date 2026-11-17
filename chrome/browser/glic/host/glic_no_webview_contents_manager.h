@@ -414,6 +414,7 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   base::RepeatingCallbackList<void(bool)> native_loading_changed_callbacks_;
 
   base::CallbackListSubscription profile_ready_subscription_;
+  base::CallbackListSubscription sign_in_completed_subscription_;
 
   base::OneShotTimer overlay_deletion_timer_;
   base::OneShotTimer loading_timer_;

@@ -15,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_sign_in_controller.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_url_allowlist.h"
 #include "chrome/browser/glic/glic_fre_store_impl.h"
 #include "chrome/browser/glic/host/guest_util.h"
@@ -188,6 +189,7 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
   }
   bool MigratesWebviewLocalStorage() const override { return true; }
   bool RequiresGeminiAccountEligibility() const override { return true; }
+  bool UsesGeicSignIn() const override { return false; }
   bool SupportsFeature(GlicFeature feature) const override {
     switch (feature) {
       case GlicFeature::kLive:
@@ -339,7 +341,12 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
       VLOG(1) << "GEiC is enabled but no guest URL was provided.";
       return GURL();
     }
-    return guest_url_;
+    GURL url = guest_url_;
+    if (const GeicSignInController* controller =
+            GeicSignInController::GetIfExists(profile)) {
+      url = controller->ResolveGuestUrl(std::move(url));
+    }
+    return url;
   }
   GURL GetGuestUrl(Profile* profile) const override {
     GURL url = GetUnlocalizedGuestUrl(profile);
@@ -358,6 +365,7 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
   // GEiC only loads in NoWebview mode, so it never used the webview partition.
   bool MigratesWebviewLocalStorage() const override { return false; }
   bool RequiresGeminiAccountEligibility() const override { return false; }
+  bool UsesGeicSignIn() const override { return true; }
   bool SupportsFeature(GlicFeature feature) const override {
     switch (feature) {
       case GlicFeature::kLive:

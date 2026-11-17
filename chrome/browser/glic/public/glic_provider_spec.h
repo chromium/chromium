@@ -195,6 +195,9 @@ class GlicProviderSpec {
   // checks shared by all providers (the Glic feature, country, locale,
   // system and OS requirements and FRE consent) still apply.
   virtual bool RequiresGeminiAccountEligibility() const = 0;
+  // Whether this provider authenticates the guest via a Gemini Enterprise
+  // sign-in browser tab rather than Chrome profile primary-account reauth.
+  virtual bool UsesGeicSignIn() const = 0;
   // Returns whether `feature` is enabled for the profile if the provider
   // supports it, otherwise false. For the consumer provider, this checks the
   // feature's flag(s), if it has any. Callers still apply profile requirements

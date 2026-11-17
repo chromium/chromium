@@ -109,5 +109,29 @@ TEST_F(GlicPwcPolicyDelegateTest, GlicDevDoesNotBlessOtherSchemes) {
   EXPECT_FALSE(policy.IsNavigationAllowed(url::Origin()));
 }
 
+// The paired Workforce Auth Portal origin is permitted for navigation transit
+// (Tier 1) but denied Glic Mojo capabilities (Tier 2).
+TEST_F(GlicPwcPolicyDelegateTest,
+       PairedWorkforceAuthOriginAllowedForNavigationButDeniedCapabilities) {
+  SetGuestUrl("https://vertexaisearch.cloud.google/side-panel");
+  pwc::PwcComponentPolicy policy = MakePolicy();
+
+  const url::Origin guest_origin =
+      url::Origin::Create(GURL("https://vertexaisearch.cloud.google"));
+  const url::Origin paired_auth_origin =
+      url::Origin::Create(GURL("https://auth.cloud.google"));
+  const url::Origin unpaired_auth_origin =
+      url::Origin::Create(GURL("https://auth.business.gemini.google"));
+
+  EXPECT_TRUE(policy.IsNavigationAllowed(guest_origin));
+  EXPECT_TRUE(policy.IsCapabilityOrigin(guest_origin));
+
+  EXPECT_TRUE(policy.IsNavigationAllowed(paired_auth_origin));
+  EXPECT_FALSE(policy.IsCapabilityOrigin(paired_auth_origin));
+
+  EXPECT_FALSE(policy.IsNavigationAllowed(unpaired_auth_origin));
+  EXPECT_FALSE(policy.IsCapabilityOrigin(unpaired_auth_origin));
+}
+
 }  // namespace
 }  // namespace glic

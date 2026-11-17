@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/types/expected.h"
 #include "net/base/url_util.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -160,6 +161,13 @@ ParseWorkforceAuthPortalUrlInternal(
   };
 }
 
+bool MatchesPathPrefixOrSegment(std::string_view path,
+                                std::string_view prefix) {
+  return path == prefix ||
+         (path.starts_with(prefix) &&
+          (path[prefix.size()] == '/' || path[prefix.size()] == '?'));
+}
+
 }  // namespace
 
 bool IsAllowedGeminiEnterpriseHost(const GURL& url) {
@@ -219,6 +227,83 @@ ParsePreProductionWorkforceAuthPortalUrl(const GURL& url) {
   return ParseWorkforceAuthPortalUrlInternal(
       url, GetPairedPreProductionWorkforceAuthDomain(url),
       &IsAllowedGeminiEnterprisePreProductionHost);
+}
+
+bool IsPairedWorkforceAuthPortalOrigin(const url::Origin& candidate_origin,
+                                       const GURL& guest_url) {
+  if (candidate_origin.opaque() ||
+      candidate_origin.scheme() != url::kHttpsScheme ||
+      candidate_origin.port() != 443 || !guest_url.is_valid() ||
+      !guest_url.SchemeIs(url::kHttpsScheme)) {
+    return false;
+  }
+
+  const GURL candidate_url = candidate_origin.GetURL();
+  if (std::string_view prod_domain =
+          GetPairedWorkforceAuthDomain(candidate_url);
+      !prod_domain.empty()) {
+    return IsAllowedGeminiEnterpriseHost(guest_url) &&
+           guest_url.DomainIs(prod_domain);
+  }
+
+  if (std::string_view preprod_domain =
+          GetPairedPreProductionWorkforceAuthDomain(candidate_url);
+      !preprod_domain.empty()) {
+    return IsAllowedGeminiEnterprisePreProductionHost(guest_url) &&
+           guest_url.DomainIs(preprod_domain);
+  }
+
+  return false;
+}
+
+bool IsWorkforceAuthPortalInteractiveSignInPath(std::string_view path) {
+  return MatchesPathPrefixOrSegment(path, "/signin") ||
+         MatchesPathPrefixOrSegment(path, "/login") ||
+         MatchesPathPrefixOrSegment(path, "/reauth");
+}
+
+GURL BuildWorkforceSignInTabUrl(const GURL& guest_url,
+                                const GURL& intercepted_url) {
+  if (!guest_url.is_valid()) {
+    return GURL();
+  }
+  GURL popout_continue_url = net::AppendOrReplaceQueryParameter(
+      guest_url, kSessionIndexQueryParam, std::nullopt);
+  popout_continue_url = net::AppendOrReplaceQueryParameter(
+      popout_continue_url, kAuthPopoutQueryParam, "1");
+
+  std::string workforce_provider;
+  net::GetValueForKeyInQuery(guest_url, kWorkforceProviderQueryParam,
+                             &workforce_provider);
+
+  if (intercepted_url.is_valid() &&
+      intercepted_url.SchemeIs(url::kHttpsScheme) &&
+      IsPairedWorkforceAuthPortalOrigin(url::Origin::Create(intercepted_url),
+                                        guest_url)) {
+    GURL result = net::AppendOrReplaceQueryParameter(
+        intercepted_url, "continueUrl", popout_continue_url.spec());
+    if (!workforce_provider.empty()) {
+      if (result.path() == "/signin" || result.path() == "/signin/") {
+        const std::string provider_signin_path =
+            base::StrCat({"/signin/", workforce_provider});
+        GURL::Replacements replacements;
+        replacements.SetPathStr(provider_signin_path);
+        result = result.ReplaceComponents(replacements);
+      } else if (result.path() == "/select-session" ||
+                 result.path() == "/submit") {
+        std::string existing_provider;
+        if (!net::GetValueForKeyInQuery(result, "provider_name",
+                                        &existing_provider) ||
+            existing_provider.empty()) {
+          result = net::AppendOrReplaceQueryParameter(result, "provider_name",
+                                                      workforce_provider);
+        }
+      }
+    }
+    return result;
+  }
+
+  return popout_continue_url;
 }
 
 }  // namespace geic

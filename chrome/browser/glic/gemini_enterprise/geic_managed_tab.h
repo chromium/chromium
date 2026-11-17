@@ -71,7 +71,7 @@ class GeicManagedTab {
   // the managed tab was the active tab in its window when closed.
   CloseOutcome Close();
 
-  tabs::TabInterface* GetTabForTesting() const { return tab_.Get(); }
+  tabs::TabInterface* GetTab() const { return tab_.Get(); }
 
   // Returns whether `url` is on an expected origin for this managed tab's
   // purpose.

@@ -29,6 +29,7 @@
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/host/guest_source.h"
 #include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/glic/host/guest_util_internal.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -41,16 +42,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/pwc/privileged_web_contents.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/base/signin_metrics.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -68,7 +64,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/android/background_tabs/offscreen_rendering_manager_android.h"
-#include "chrome/browser/glic/android/settings/glic_navigation_utils_android.h"
 #include "ui/android/view_android.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #endif
@@ -525,20 +520,27 @@ void GlicNoWebviewContentsManager::OverlayContentsManager::OnRetryClicked() {
 
 void GlicNoWebviewContentsManager::OverlayContentsManager::OnSignInClicked() {
   base::RecordAction(base::UserMetricsAction("Glic.Overlay.SignInClicked"));
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-  std::string email;
-  if (identity_manager) {
-    email =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-            .email;
-  }
-#if !BUILDFLAG(IS_ANDROID)
-  signin_ui_util::ShowReauthForAccount(
-      profile_, email, signin_metrics::AccessPoint::kGlicLaunchButton);
-#else
-  glic::ShowSignIn(
-      profile_, web_contents_ ? web_contents_.get() : owner_->guest_contents());
-#endif
+  StartGlicSignIn(
+      profile_, web_contents_ ? web_contents_.get() : owner_->guest_contents(),
+      base::BindOnce(
+          [](base::WeakPtr<GlicNoWebviewContentsManager> self,
+             base::WeakPtr<Host> host) {
+            if (self) {
+              if (self->error_type_.get() == mojom::ErrorPanelType::kSignIn) {
+                self->ClearErrorState();
+                self->LoadGuest();
+              }
+            } else if (host) {
+              if (!host->IsAwake()) {
+                host->Awaken();
+              } else if (host->client_load_error_reason() ==
+                         ClientLoadErrorReason::kSignIn) {
+                host->Reload();
+              }
+            }
+          },
+          owner_->weak_ptr_factory_.GetWeakPtr(),
+          owner_->host_ ? owner_->host_->GetWeakPtr() : nullptr));
 }
 
 void GlicNoWebviewContentsManager::OverlayContentsManager::
@@ -656,6 +658,20 @@ GlicNoWebviewContentsManager::GlicNoWebviewContentsManager(
   profile_ready_subscription_ =
       enabling_->RegisterProfileReadyStateChanged(base::BindRepeating(
           &GlicNoWebviewContentsManager::OnProfileReadyStateChanged,
+          base::Unretained(this)));
+  sign_in_completed_subscription_ = RegisterGlicSignInCompletedCallback(
+      profile_,
+      base::BindRepeating(
+          [](GlicNoWebviewContentsManager* self) {
+            if (self->error_type_.get() == mojom::ErrorPanelType::kSignIn ||
+                (self->guest_state_.get() == GuestState::kLoading &&
+                 self->guest_contents() &&
+                 self->guest_contents()->GetVisibleURL() !=
+                     GetGuestURL(self->profile_))) {
+              self->ClearErrorState();
+              self->LoadGuest();
+            }
+          },
           base::Unretained(this)));
 
   UpdateForProfileReadyState(/*is_initial=*/true);
@@ -980,6 +996,14 @@ void GlicNoWebviewContentsManager::OnGuestNavigationStarted() {
   guest_main_page_loaded_.Set(false);
   guest_state_.Set(GuestState::kLoading);
   ClearTransientErrorState();
+  // If `ErrorPanelType::kSignIn` was set by a guest navigation redirect (rather
+  // than a profile-level account sign-in requirement), clear it so a subsequent
+  // guest navigation or retry can proceed cleanly.
+  if (error_type_.get() == mojom::ErrorPanelType::kSignIn &&
+      GlicEnabling::GetProfileReadyState(profile_) !=
+          mojom::ProfileReadyState::kSignInRequired) {
+    ClearErrorState();
+  }
   UpdateClientLoadFailed();
   // Allow the full loading time after navigation. UpdateDisplayState() will
   // start the timer.
@@ -1030,6 +1054,11 @@ void GlicNoWebviewContentsManager::OnGuestNavigated(
       guest_state_.Set(GuestState::kLoading);
       SetErrorState(mojom::ErrorPanelType::kError,
                     ClientLoadErrorReason::kGuestOriginBlocked);
+      break;
+    case mojom::GuestPageType::kSignInRequired:
+      guest_state_.Set(GuestState::kLoading);
+      SetErrorState(mojom::ErrorPanelType::kSignIn,
+                    ClientLoadErrorReason::kSignIn);
       break;
     case mojom::GuestPageType::kLogin:
       // When the guest encounters a web login or proxy authentication page,

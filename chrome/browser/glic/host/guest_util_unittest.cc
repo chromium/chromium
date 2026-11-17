@@ -887,6 +887,53 @@ TEST_F(GuestUtilMultiInstanceTest,
               Not(Contains(mojom::HostCapability::kChromeTools)));
 }
 
+TEST_F(GuestUtilMultiInstanceTest,
+       IsGuestOriginAllowedPermitsPairedWorkforceAuthOriginOnly) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGeic);
+  TestingProfile* profile = CreateTestingProfileWithGeicPolicyUrl(
+      "https://vertexaisearch.cloud.google/home/cid/abc123");
+
+  const url::Origin paired_auth_origin =
+      url::Origin::Create(GURL("https://auth.cloud.google"));
+  const url::Origin unpaired_auth_origin =
+      url::Origin::Create(GURL("https://auth.business.gemini.google"));
+
+  EXPECT_TRUE(IsPairedWorkforceAuthOrigin(paired_auth_origin, profile));
+  EXPECT_FALSE(IsPairedWorkforceAuthOrigin(unpaired_auth_origin, profile));
+  EXPECT_TRUE(IsGuestOriginAllowed(paired_auth_origin, profile));
+  EXPECT_FALSE(IsGuestOriginAllowed(unpaired_auth_origin, profile));
+}
+
+TEST_F(GuestUtilMultiInstanceTest,
+       IsOriginAllowedGlicApiDeniesPairedWorkforceAuthOrigin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGeic);
+  TestingProfile* profile = CreateTestingProfileWithGeicPolicyUrl(
+      "https://vertexaisearch.cloud.google/home/cid/abc123");
+
+  const url::Origin paired_auth_origin =
+      url::Origin::Create(GURL("https://auth.cloud.google"));
+  EXPECT_TRUE(IsGuestOriginAllowed(paired_auth_origin, profile));
+  EXPECT_FALSE(IsOriginAllowedGlicApi(paired_auth_origin, profile));
+}
+
+TEST_F(
+    GuestUtilMultiInstanceTest,
+    IsGuestOriginAllowedDeniesPairedWorkforceAuthOriginWhenThrottleDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kGeic},
+      /*disabled_features=*/{features::kGlicDisconnectedWebview});
+  TestingProfile* profile = CreateTestingProfileWithGeicPolicyUrl(
+      "https://vertexaisearch.cloud.google/home/cid/abc123");
+
+  const url::Origin paired_auth_origin =
+      url::Origin::Create(GURL("https://auth.cloud.google"));
+  EXPECT_TRUE(IsPairedWorkforceAuthOrigin(paired_auth_origin, profile));
+  EXPECT_FALSE(IsGuestOriginAllowed(paired_auth_origin, profile));
+}
+
 }  // namespace
 
 }  // namespace glic

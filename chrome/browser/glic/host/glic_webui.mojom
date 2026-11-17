@@ -99,6 +99,9 @@ enum GuestPageType {
   kHttpClientError = 8,
   // The navigation committed an HTTP 5xx response.
   kHttpServerError = 9,
+  // The navigation was cancelled before commit because it requires interactive
+  // sign-in in a browser tab (e.g. Workforce Identity Auth Portal).
+  kSignInRequired = 10,
 };
 
 // Functions provided by the WebUI page.

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -32,6 +33,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/common/glic_navigation.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_sign_in_controller.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_url_allowlist.h"
 #include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic_client_data_storage.h"
@@ -53,6 +56,8 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
@@ -70,6 +75,9 @@
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/origin_matcher/origin_matcher.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/skills/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
@@ -115,6 +123,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
+#include "chrome/browser/glic/android/settings/glic_navigation_utils_android.h"
 #include "ui/android/event_forwarder.h"
 #include "ui/android/view_android.h"
 #endif
@@ -515,12 +524,95 @@ bool IsOriginAllowedGlicApi(const url::Origin& origin,
   return cached_matcher->Matches(api_allowed_origins, origin);
 }
 
+bool IsPairedWorkforceAuthOrigin(const url::Origin& origin,
+                                 content::BrowserContext* browser_context) {
+  if (!browser_context || origin.opaque()) {
+    return false;
+  }
+  return geic::IsPairedWorkforceAuthPortalOrigin(origin,
+                                                 GetGuestURL(browser_context));
+}
+
+GURL GetLastWorkforceAuthPortalUrl(
+    content::NavigationHandle& navigation_handle) {
+  content::BrowserContext* browser_context =
+      navigation_handle.GetWebContents()->GetBrowserContext();
+  const std::vector<GURL>& chain = navigation_handle.GetRedirectChain();
+  for (const GURL& url : base::Reversed(chain)) {
+    if (url.SchemeIsHTTPOrHTTPS() &&
+        IsPairedWorkforceAuthOrigin(url::Origin::Create(url),
+                                    browser_context)) {
+      return url;
+    }
+  }
+  return GURL();
+}
+
+BlockedGuestNavigation ClassifyBlockedGuestNavigation(
+    content::NavigationHandle& navigation_handle) {
+  if (IsAdminBlockedUrl(navigation_handle.GetURL())) {
+    return {mojom::GuestPageType::kDisabledByAdmin, GURL()};
+  }
+  GURL workforce_auth_url = GetLastWorkforceAuthPortalUrl(navigation_handle);
+  if (workforce_auth_url.is_valid()) {
+    return {mojom::GuestPageType::kSignInRequired,
+            std::move(workforce_auth_url)};
+  }
+  return {mojom::GuestPageType::kOriginBlocked, GURL()};
+}
+
+base::CallbackListSubscription RegisterGlicSignInCompletedCallback(
+    Profile* profile,
+    base::RepeatingClosure on_geic_sign_in_completed) {
+  if (!profile || !GetGlicProviderSpec(profile).UsesGeicSignIn()) {
+    return {};
+  }
+  return GeicSignInController::GetForProfile(profile)
+      ->RegisterSignInCompletedCallback(std::move(on_geic_sign_in_completed));
+}
+
+void StartGlicSignIn(Profile* profile,
+                     content::WebContents* contents,
+                     base::OnceClosure on_geic_sign_in_completed) {
+  if (!profile) {
+    return;
+  }
+  if (GetGlicProviderSpec(profile).UsesGeicSignIn()) {
+    GeicSignInController::GetForProfile(profile)->StartSignIn(
+        GetGuestURL(profile), std::move(on_geic_sign_in_completed));
+    return;
+  }
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  std::string email;
+  if (identity_manager) {
+    email =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .email;
+  }
+#if !BUILDFLAG(IS_ANDROID)
+  signin_ui_util::ShowReauthForAccount(
+      profile, email, signin_metrics::AccessPoint::kGlicLaunchButton);
+#else
+  glic::ShowSignIn(profile, contents);
+#endif
+}
+
 bool IsGuestOriginAllowed(const url::Origin& origin,
                           content::BrowserContext* browser_context) {
   if (origin.opaque()) {
     return false;
   }
   if (IsOriginAllowedGlicApi(origin, browser_context)) {
+    return true;
+  }
+
+  // Allow 302 redirect transit through the Workforce Identity Auth Portal
+  // paired with the guest URL (e.g. auth.cloud.google /select-session,
+  // /refreshcookies, /submit) when GlicGuestNavigationThrottle is active.
+  // GlicGuestNavigationThrottle::WillProcessResponse prevents any document on
+  // this origin from committing in the guest.
+  if (base::FeatureList::IsEnabled(features::kGlicDisconnectedWebview) &&
+      IsPairedWorkforceAuthOrigin(origin, browser_context)) {
     return true;
   }
 

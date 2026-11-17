@@ -6,15 +6,24 @@
 #define CHROME_BROWSER_GLIC_GEMINI_ENTERPRISE_GEIC_URL_ALLOWLIST_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/types/expected.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace geic {
 
 // Query parameter carrying the Workforce Identity provider resource name on
 // the unwrapped side-panel URL.
 inline constexpr char kWorkforceProviderQueryParam[] = "idp";
+
+// Query parameter added to the popout sign-in `continueUrl` so the GE web
+// application knows the tab was opened for side-panel authentication.
+inline constexpr char kAuthPopoutQueryParam[] = "auth_popout";
+
+// Query parameter carrying the Cloud Identity session index (`csesidx`).
+inline constexpr char kSessionIndexQueryParam[] = "csesidx";
 
 // Returns true if `url`'s host is one of the production hosts that may serve
 // the Gemini Enterprise web application. This is the only set accepted for the
@@ -62,6 +71,21 @@ ParseWorkforceAuthPortalUrl(const GURL& url);
 // Accepted from Finch or `--geic-guest-url`, not policy.
 base::expected<WorkforceAuthPortalInfo, WorkforceAuthPortalUrlError>
 ParsePreProductionWorkforceAuthPortalUrl(const GURL& url);
+
+// Returns true if `candidate_origin` is the HTTPS Workforce Identity (BYOID)
+// Auth Portal origin paired with `guest_url`'s host.
+bool IsPairedWorkforceAuthPortalOrigin(const url::Origin& candidate_origin,
+                                       const GURL& guest_url);
+
+// Returns true if `path` on a Workforce Auth Portal host is an interactive
+// sign-in endpoint (`/signin*`, `/login*`, `/reauth*`) that cannot silently
+// `302` back to the Gemini Enterprise host without interactive authentication.
+bool IsWorkforceAuthPortalInteractiveSignInPath(std::string_view path);
+
+// Builds the URL to open in a foreground browser tab when the user clicks
+// Sign-In on the side panel overlay.
+GURL BuildWorkforceSignInTabUrl(const GURL& guest_url,
+                                const GURL& intercepted_url);
 
 }  // namespace geic
 

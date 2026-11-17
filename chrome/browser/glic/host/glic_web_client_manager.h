@@ -18,6 +18,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "url/gurl.h"
 
 namespace content {
 class RenderFrameHost;
@@ -86,8 +87,9 @@ class GlicWebClientManager : public content::WebContentsObserver {
   void SetGuestMounted(bool mounted);
 
   // Called when a guest navigation is cancelled before it commits. `page_type`
-  // says why: kDisabledByAdmin or kOriginBlocked.
-  void OnGuestNavigationBlocked(mojom::GuestPageType page_type);
+  // says why: kDisabledByAdmin, kSignInRequired, or kOriginBlocked.
+  void OnGuestNavigationBlocked(mojom::GuestPageType page_type,
+                                const GURL& blocked_url = GURL());
 
   content::RenderFrameHost* GetGuestMainFrame() const;
   content::WebContents* web_client_contents() const;

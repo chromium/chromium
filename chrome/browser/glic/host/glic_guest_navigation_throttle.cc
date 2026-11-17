@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/host/glic_guest_navigation_throttle.h"
 
 #include "base/feature_list.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_url_allowlist.h"
 #include "chrome/browser/glic/host/glic_web_client_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/host/guest_util.h"
@@ -49,6 +50,27 @@ GlicGuestNavigationThrottle::WillRedirectRequest() {
 }
 
 content::NavigationThrottle::ThrottleCheckResult
+GlicGuestNavigationThrottle::WillProcessResponse() {
+  const GURL& url = navigation_handle()->GetURL();
+  content::BrowserContext* browser_context =
+      navigation_handle()->GetWebContents()->GetBrowserContext();
+
+  if (url.SchemeIsHTTPOrHTTPS() &&
+      IsPairedWorkforceAuthOrigin(url::Origin::Create(url), browser_context)) {
+    if (navigation_handle()->IsInPrimaryMainFrame()) {
+      if (GlicWebClientManager* manager = GetWebClientManagerForWebContents(
+              navigation_handle()->GetWebContents())) {
+        manager->OnGuestNavigationBlocked(mojom::GuestPageType::kSignInRequired,
+                                          url);
+      }
+    }
+    return CANCEL_AND_IGNORE;
+  }
+
+  return PROCEED;
+}
+
+content::NavigationThrottle::ThrottleCheckResult
 GlicGuestNavigationThrottle::WillCommitWithoutUrlLoader() {
   return CheckUrl();
 }
@@ -60,6 +82,9 @@ const char* GlicGuestNavigationThrottle::GetNameForLogging() {
 content::NavigationThrottle::ThrottleCheckResult
 GlicGuestNavigationThrottle::CheckUrl() {
   const GURL& url = navigation_handle()->GetURL();
+  content::BrowserContext* browser_context =
+      navigation_handle()->GetWebContents()->GetBrowserContext();
+  const url::Origin origin = url::Origin::Create(url);
 
   // `MaybeCreateAndAdd` attaches this throttle to both the primary main frame
   // and speculative prerendered main frames (`IsInPrerenderedMainFrame()`). If
@@ -79,11 +104,30 @@ GlicGuestNavigationThrottle::CheckUrl() {
     return CANCEL_AND_IGNORE;
   }
 
-  if (!IsGuestOriginAllowed(
-          url::Origin::Create(url),
-          navigation_handle()->GetWebContents()->GetBrowserContext())) {
+  if (url.SchemeIsHTTPOrHTTPS() &&
+      IsPairedWorkforceAuthOrigin(origin, browser_context)) {
+    if (geic::IsWorkforceAuthPortalInteractiveSignInPath(url.path())) {
+      if (manager) {
+        manager->OnGuestNavigationBlocked(mojom::GuestPageType::kSignInRequired,
+                                          url);
+      }
+      return CANCEL_AND_IGNORE;
+    }
+    return PROCEED;
+  }
+
+  // Once a navigation has visited the paired Workforce Auth Portal, only allow
+  // redirects back to an API-allowed guest origin (e.g.
+  // `/side-panel?...&csesidx=<N>`); any redirect to a third-party or 1P login
+  // origin (such as `accounts.google.com` or `login.corp.google.com`) requires
+  // interactive sign-in in a pop-out browser tab.
+  if (!IsGuestOriginAllowed(origin, browser_context) ||
+      (!IsOriginAllowedGlicApi(origin, browser_context) &&
+       GetLastWorkforceAuthPortalUrl(*navigation_handle()).is_valid())) {
     if (manager) {
-      manager->OnGuestNavigationBlocked(mojom::GuestPageType::kOriginBlocked);
+      const BlockedGuestNavigation blocked =
+          ClassifyBlockedGuestNavigation(*navigation_handle());
+      manager->OnGuestNavigationBlocked(blocked.page_type, blocked.blocked_url);
     }
     return CANCEL_AND_IGNORE;
   }
