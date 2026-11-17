@@ -9,35 +9,24 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.chromium.base.Callback;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
+
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for the critical actions section of a history row and its action items. */
 @NullMarked
 class CriticalActionsViewBinder {
-    /**
-     * Views and setters of the host history row that {@link #bindRow} updates. The setters are
-     * callbacks because the row (HistoryItemView) lives in chrome_java, which this target can't
-     * depend on.
-     */
+    /** Views of the host history row that {@link #bindRow} updates. */
     static class ViewHolder {
         final ImageView mExpandIcon;
         final ViewGroup mPanelContainer;
-        final Callback<@Nullable Runnable> mSetRowClickHandler;
-        final Callback<@Nullable CharSequence> mSetRowClickAccessibilityLabel;
 
-        ViewHolder(
-                ImageView expandIcon,
-                ViewGroup panelContainer,
-                Callback<@Nullable Runnable> setRowClickHandler,
-                Callback<@Nullable CharSequence> setRowClickAccessibilityLabel) {
+        ViewHolder(ImageView expandIcon, ViewGroup panelContainer) {
             mExpandIcon = expandIcon;
             mPanelContainer = panelContainer;
-            mSetRowClickHandler = setRowClickHandler;
-            mSetRowClickAccessibilityLabel = setRowClickAccessibilityLabel;
         }
     }
 
@@ -57,12 +46,17 @@ class CriticalActionsViewBinder {
         } else if (key == CriticalActionsProperties.PANEL_VISIBLE) {
             holder.mPanelContainer.setVisibility(
                     model.get(CriticalActionsProperties.PANEL_VISIBLE) ? View.VISIBLE : View.GONE);
-        } else if (key == CriticalActionsProperties.ROW_CLICK_HANDLER) {
-            holder.mSetRowClickHandler.onResult(
-                    model.get(CriticalActionsProperties.ROW_CLICK_HANDLER));
-        } else if (key == CriticalActionsProperties.ROW_CLICK_ACCESSIBILITY_LABEL) {
-            holder.mSetRowClickAccessibilityLabel.onResult(
-                    model.get(CriticalActionsProperties.ROW_CLICK_ACCESSIBILITY_LABEL));
+        } else if (key == CriticalActionsProperties.EXPAND_ICON_CLICK_HANDLER) {
+            Runnable handler = model.get(CriticalActionsProperties.EXPAND_ICON_CLICK_HANDLER);
+            holder.mExpandIcon.setOnClickListener(handler == null ? null : v -> handler.run());
+            holder.mExpandIcon.setClickable(handler != null);
+        } else if (key == CriticalActionsProperties.EXPAND_ICON_CLICK_ACCESSIBILITY_LABEL) {
+            // The chevron is a plain button, so replacing its accessibility delegate is safe.
+            ViewCompat.replaceAccessibilityAction(
+                    holder.mExpandIcon,
+                    AccessibilityActionCompat.ACTION_CLICK,
+                    model.get(CriticalActionsProperties.EXPAND_ICON_CLICK_ACCESSIBILITY_LABEL),
+                    null);
         }
     }
 

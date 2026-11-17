@@ -1369,6 +1369,16 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_ACCESSIBILITY_EXPAND_SECTION" desc="Content description for the button to expand a cluster in history.">
         Expand section
       </message>
+      <!-- TODO(b/584252621): Make the critical actions strings below translatable when they are
+           finalized. -->
+      <message name="IDS_HISTORY_CRITICAL_ACTIONS_SUMMARY" desc="Accessibility description of the icon on a history item indicating that tapping the item shows the key actions (e.g. filling a form or using a saved password) Gemini performed during the visit, stating how many there are." translateable="false">
+        {COUNT, plural,
+          =1 {1 key browsing action}
+          other {# key browsing actions}}
+      </message>
+      <message name="IDS_HISTORY_CRITICAL_ACTIONS_TITLE" desc="Title of the list of key actions (e.g. filling a form or using a saved password) Gemini performed during a visit, shown when tapping the visit's history item." translateable="false">
+        Gemini actions
+      </message>
 
       <!-- Privacy Guide -->
       <message name="IDS_PRIVACY_GUIDE_PREF_TITLE" desc="The title of the privacy guide menu item.">

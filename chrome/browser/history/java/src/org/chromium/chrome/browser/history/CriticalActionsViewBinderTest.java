@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.history;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -38,8 +40,6 @@ public class CriticalActionsViewBinderTest {
     private TestActivity mActivity;
     private ImageView mExpandIcon;
     private FrameLayout mPanelContainer;
-    private @Nullable Runnable mRowClickHandler;
-    private @Nullable CharSequence mRowClickAccessibilityLabel;
     private PropertyModel mModel;
     private PropertyModelChangeProcessor<
                     PropertyModel, CriticalActionsViewBinder.ViewHolder, PropertyKey>
@@ -54,11 +54,7 @@ public class CriticalActionsViewBinderTest {
         mProcessor =
                 PropertyModelChangeProcessor.create(
                         mModel,
-                        new CriticalActionsViewBinder.ViewHolder(
-                                mExpandIcon,
-                                mPanelContainer,
-                                handler -> mRowClickHandler = handler,
-                                label -> mRowClickAccessibilityLabel = label),
+                        new CriticalActionsViewBinder.ViewHolder(mExpandIcon, mPanelContainer),
                         CriticalActionsViewBinder::bindRow);
     }
 
@@ -94,17 +90,27 @@ public class CriticalActionsViewBinderTest {
     }
 
     @Test
-    public void testRowClick() {
-        Runnable handler = () -> {};
-        mModel.set(CriticalActionsProperties.ROW_CLICK_HANDLER, handler);
-        assertSame(handler, mRowClickHandler);
-        mModel.set(CriticalActionsProperties.ROW_CLICK_HANDLER, null);
-        assertNull(mRowClickHandler);
+    public void testExpandIconClick() {
+        int[] clickCount = new int[1];
+        mModel.set(CriticalActionsProperties.EXPAND_ICON_CLICK_HANDLER, () -> clickCount[0]++);
+        assertTrue(mExpandIcon.isClickable());
+        mExpandIcon.performClick();
+        assertEquals(1, clickCount[0]);
 
-        mModel.set(CriticalActionsProperties.ROW_CLICK_ACCESSIBILITY_LABEL, "Expand section");
-        assertEquals("Expand section", mRowClickAccessibilityLabel);
-        mModel.set(CriticalActionsProperties.ROW_CLICK_ACCESSIBILITY_LABEL, null);
-        assertNull(mRowClickAccessibilityLabel);
+        mModel.set(CriticalActionsProperties.EXPAND_ICON_CLICK_HANDLER, null);
+        assertFalse(mExpandIcon.hasOnClickListeners());
+        assertFalse(mExpandIcon.isClickable());
+        mExpandIcon.performClick();
+        assertEquals(1, clickCount[0]);
+    }
+
+    @Test
+    public void testExpandIconClickAccessibilityLabel() {
+        mModel.set(
+                CriticalActionsProperties.EXPAND_ICON_CLICK_ACCESSIBILITY_LABEL, "Expand section");
+        assertEquals("Expand section", getClickActionLabel(mExpandIcon));
+        mModel.set(CriticalActionsProperties.EXPAND_ICON_CLICK_ACCESSIBILITY_LABEL, null);
+        assertNull(getClickActionLabel(mExpandIcon));
     }
 
     @Test
@@ -118,5 +124,13 @@ public class CriticalActionsViewBinderTest {
                 itemModel, view, CriticalActionsViewBinder::bindActionItem);
 
         assertEquals("Filled a form", view.getText().toString());
+    }
+
+    private static @Nullable CharSequence getClickActionLabel(View view) {
+        for (AccessibilityNodeInfo.AccessibilityAction action :
+                view.createAccessibilityNodeInfo().getActionList()) {
+            if (action.getId() == AccessibilityNodeInfo.ACTION_CLICK) return action.getLabel();
+        }
+        return null;
     }
 }

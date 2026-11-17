@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.history;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -12,9 +14,18 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** PropertyModel keys for the critical actions section of a history row. */
 @NullMarked
 class CriticalActionsProperties {
+    @IntDef({ItemType.ACTION})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface ItemType {
+        int ACTION = 0;
+    }
+
     /** Whether the row's expand/collapse chevron is visible. */
     static final WritableBooleanPropertyKey EXPAND_ICON_VISIBLE = new WritableBooleanPropertyKey();
 
@@ -28,21 +39,21 @@ class CriticalActionsProperties {
     /** Whether the below-row "Gemini actions" panel container is visible. */
     static final WritableBooleanPropertyKey PANEL_VISIBLE = new WritableBooleanPropertyKey();
 
-    /** Non-selection row click override when tapping the row should toggle critical actions. */
-    static final WritableObjectPropertyKey<@Nullable Runnable> ROW_CLICK_HANDLER =
+    /** Toggles the panel when the chevron is clicked. Null when there are no critical actions. */
+    static final WritableObjectPropertyKey<@Nullable Runnable> EXPAND_ICON_CLICK_HANDLER =
             new WritableObjectPropertyKey<>();
 
-    /** Click accessibility action label on the row ("Expand section" / "Collapse section"). */
-    static final WritableObjectPropertyKey<@Nullable CharSequence> ROW_CLICK_ACCESSIBILITY_LABEL =
-            new WritableObjectPropertyKey<>();
+    /** Accessibility click label of the chevron ("Expand section" / "Collapse section"). */
+    static final WritableObjectPropertyKey<@Nullable CharSequence>
+            EXPAND_ICON_CLICK_ACCESSIBILITY_LABEL = new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {
         EXPAND_ICON_VISIBLE,
         EXPAND_ICON_CONTENT_DESCRIPTION,
         EXPAND_ICON_ROTATION,
         PANEL_VISIBLE,
-        ROW_CLICK_HANDLER,
-        ROW_CLICK_ACCESSIBILITY_LABEL,
+        EXPAND_ICON_CLICK_HANDLER,
+        EXPAND_ICON_CLICK_ACCESSIBILITY_LABEL,
     };
 
     /** Localized label of an individual critical action row. */

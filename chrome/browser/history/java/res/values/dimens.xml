@@ -8,4 +8,12 @@ found in the LICENSE file.
 <resources>
     <!-- Matches Desktop's DISTANCE_BUBBLE_PREFERRED_WIDTH. -->
     <dimen name="incognito_history_disclaimer_popup_width">320dp</dimen>
+
+    <!-- Aligns the critical action labels with the row's title:
+         list_item_default_margin + list_item_start_icon_width +
+         list_item_start_icon_right_margin - critical_action_padding. -->
+    <dimen name="critical_actions_panel_padding_start">56dp</dimen>
+    <dimen name="critical_actions_panel_padding_bottom">8dp</dimen>
+    <dimen name="critical_actions_title_padding_top">12dp</dimen>
+    <dimen name="critical_action_padding">16dp</dimen>
 </resources>
