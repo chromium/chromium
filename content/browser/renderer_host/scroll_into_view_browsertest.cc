@@ -671,7 +671,9 @@ IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInSingleNestedFrame) {
   RunTest();
 }
 
-#if BUILDFLAG(IS_WIN)
+// Flaky on Windows (https://crbug.com/522251388) and Linux
+// (https://crbug.com/567559501).
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_EditableInLocalRoot DISABLED_EditableInLocalRoot
 #else
 #define MAYBE_EditableInLocalRoot EditableInLocalRoot
