@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
@@ -67,6 +68,9 @@ public class HistoryItemView extends CheckableSelectableItemView<HistoryItem> {
     private BooleanSupplier mShowSourceApp;
     private ChipView mChipView;
     private View mSparkContainer;
+
+    private ImageView mCriticalActionsExpandIcon;
+    private ViewGroup mCriticalActionsContainer;
 
     public HistoryItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -127,6 +131,8 @@ public class HistoryItemView extends CheckableSelectableItemView<HistoryItem> {
                         .getDimensionPixelSize(R.dimen.history_item_remove_button_lateral_padding),
                 getPaddingBottom());
 
+        mCriticalActionsExpandIcon = findViewById(R.id.critical_actions_expand_icon);
+        mCriticalActionsContainer = findViewById(R.id.critical_actions_container);
         mChipView = findViewById(R.id.chip);
         mChipView.getPrimaryTextView().setEllipsize(TextUtils.TruncateAt.END);
 
@@ -218,6 +224,16 @@ public class HistoryItemView extends CheckableSelectableItemView<HistoryItem> {
         mSparkContainer.setVisibility(showSpark ? View.VISIBLE : View.GONE);
     }
 
+    /** Returns the chevron that CriticalActionsCoordinator binds. */
+    ImageView getCriticalActionsExpandIcon() {
+        return mCriticalActionsExpandIcon;
+    }
+
+    /** Returns the container below the row that hosts the critical actions panel. */
+    ViewGroup getCriticalActionsContainer() {
+        return mCriticalActionsContainer;
+    }
+
     @Initializer
     void initialize(AppInfoCache appInfoCache, BooleanSupplier showSourceApp) {
         mAppInfoCache = appInfoCache;
@@ -279,11 +295,21 @@ public class HistoryItemView extends CheckableSelectableItemView<HistoryItem> {
      */
     public void setRemoveButtonVisiblity(int visibility) {
         mRemoveButton.setVisibility(visibility);
-        int endPadding = visibility == View.GONE ? mEndPadding : 0;
+        updateContentEndPadding();
+    }
+
+    /**
+     * Adds end padding to the row only when it has no end button, so that its text doesn't touch
+     * the edge.
+     */
+    void updateContentEndPadding() {
+        boolean hasEndButton =
+                mRemoveButton.getVisibility() != View.GONE
+                        || mCriticalActionsExpandIcon.getVisibility() != View.GONE;
         mContentView.setPaddingRelative(
                 ViewCompat.getPaddingStart(mContentView),
                 mContentView.getPaddingTop(),
-                endPadding,
+                hasEndButton ? 0 : mEndPadding,
                 mContentView.getPaddingBottom());
     }
 

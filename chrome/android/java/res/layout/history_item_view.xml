@@ -13,20 +13,42 @@ found in the LICENSE file.
     android:layout_height="wrap_content">
 
     <LinearLayout
-        android:id="@+id/content"
-        style="@style/ListItemContainer">
+        android:id="@+id/row_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/start_icon"
-            style="@style/ListItemStartIcon"
-            android:background="@drawable/list_item_icon_modern_bg"
-            android:importantForAccessibility="no" />
+        <LinearLayout
+            android:id="@+id/content"
+            style="@style/ListItemContainer">
 
-        <include layout="@layout/title_and_description_layout" />
+            <ImageView
+                android:id="@+id/start_icon"
+                style="@style/ListItemStartIcon"
+                android:background="@drawable/list_item_icon_modern_bg"
+                android:importantForAccessibility="no" />
 
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/end_button"
-            style="@style/ListItemEndIcon"
+            <include layout="@layout/title_and_description_layout" />
+
+            <!-- Content description and click handling are set by
+                 CriticalActionsCoordinator. -->
+            <org.chromium.ui.widget.ChromeImageButton
+                android:id="@+id/critical_actions_expand_icon"
+                style="@style/ListItemEndIcon"
+                android:src="@drawable/ic_expand_more_black_24dp"
+                android:visibility="gone"
+                app:tint="@color/default_icon_color_secondary_tint_list" />
+
+            <org.chromium.ui.widget.ChromeImageButton
+                android:id="@+id/end_button"
+                style="@style/ListItemEndIcon"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/critical_actions_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:visibility="gone" />
     </LinearLayout>
 

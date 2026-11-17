@@ -37,7 +37,11 @@ import android.os.Build.VERSION_CODES;
 import android.provider.Browser;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedDispatcher;
@@ -70,6 +74,7 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
@@ -119,12 +124,14 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -140,7 +147,8 @@ import java.util.function.Supplier;
     ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_ACTOR,
     ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DEVICE,
     ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN_V2,
-    ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_TIME
+    ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_TIME,
+    ChromeFeatureList.CRITICAL_ACTION_HISTORY
 })
 public class HistoryUiTest {
     private static final int PAGE_INCREMENT = 2;
@@ -396,6 +404,232 @@ public class HistoryUiTest {
         Assert.assertEquals(blockedActorItem, blockedActorView.getItem());
         Assert.assertEquals(
                 View.GONE, blockedActorView.getSparkContainerForTests().getVisibility());
+    }
+
+    /**
+     * Returns a new item with 2 critical actions, which is older than the items added in setUp(),
+     * so that it's shown after them.
+     */
+    private HistoryItem createItemWithCriticalActions() {
+        long timestamp = mItem2.getTimestamp() - 1000;
+        GURL url = JUnitTestGURLs.URL_1;
+        return new HistoryItem(
+                url,
+                "www.one.com",
+                "Bar",
+                /* appId= */ null,
+                timestamp,
+                Map.of(url, new long[] {timestamp * 1000}),
+                /* blockedVisit= */ false,
+                /* isActorVisit= */ true,
+                List.of(
+                        new CriticalAction("id1", 1, "Filled a form", "tooltip1"),
+                        new CriticalAction("id2", 5, "Used a password", "tooltip2")));
+    }
+
+    private void loadItems() {
+        mAdapter.startLoadingItems();
+        RobolectricUtil.runAllBackgroundAndUi();
+        mRecyclerView.measure(0, 0);
+        mHeight = mRecyclerView.getMeasuredHeight();
+        layoutRecyclerView();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CRITICAL_ACTION_HISTORY)
+    public void testCriticalActions() {
+        HistoryItem itemWithActions = createItemWithCriticalActions();
+        HistoryItem itemWithoutActions =
+                StubbedHistoryProvider.createHistoryItem(
+                        1,
+                        itemWithActions.getTimestamp() - 1,
+                        /* blockedVisit= */ false,
+                        /* isActorVisit= */ true);
+        mHistoryProvider.addItem(itemWithActions);
+        mHistoryProvider.addItem(itemWithoutActions);
+        loadItems();
+
+        // The new items come after the 2 items added in setUp() (positions 2 and 3).
+        HistoryItemView view = (HistoryItemView) getItemView(4);
+        Assert.assertEquals(itemWithActions, view.getItem());
+        ImageView expandIcon = view.getCriticalActionsExpandIcon();
+        Assert.assertEquals(View.VISIBLE, expandIcon.getVisibility());
+        Assert.assertTrue(expandIcon.isClickable());
+        Assert.assertEquals("2 key browsing actions", expandIcon.getContentDescription());
+        // The expand icon is placed right before the remove button.
+        ViewGroup row = (ViewGroup) expandIcon.getParent();
+        Assert.assertEquals(
+                row.indexOfChild(view.getRemoveButtonForTests()) - 1, row.indexOfChild(expandIcon));
+        // The panel container is placed below the row, rather than inside it.
+        ViewGroup panelContainer = view.getCriticalActionsContainer();
+        Assert.assertEquals(row.getParent(), panelContainer.getParent());
+        Assert.assertNotNull(
+                panelContainer.findViewById(
+                        org.chromium.chrome.browser.history.R.id.critical_actions_panel));
+        // Collapsed by default.
+        Assert.assertEquals(View.GONE, panelContainer.getVisibility());
+        Assert.assertEquals(0f, expandIcon.getRotation(), 0f);
+        assertClickActionLabel(expandIcon, "Expand section");
+        // The row keeps its default click action, which opens the page.
+        assertClickActionLabel(view, /* expectedLabel= */ null);
+        layoutRecyclerView();
+        int collapsedStartIconTop = view.getIconView().getTop();
+        int collapsedRemoveButtonTop = view.getRemoveButtonForTests().getTop();
+
+        // Tapping the chevron expands the list of actions.
+        expandIcon.performClick();
+        layoutRecyclerView();
+        Assert.assertNull(shadowOf(mActivity).peekNextStartedActivity());
+        Assert.assertEquals(View.VISIBLE, panelContainer.getVisibility());
+        Assert.assertEquals(180f, expandIcon.getRotation(), 0f);
+        LinearLayout list =
+                panelContainer.findViewById(
+                        org.chromium.chrome.browser.history.R.id.critical_actions_list);
+        Assert.assertNotNull(list);
+        Assert.assertEquals(2, list.getChildCount());
+        Assert.assertEquals(
+                "Filled a form",
+                ((TextView)
+                                list.getChildAt(0)
+                                        .findViewById(
+                                                org.chromium.chrome.browser.history.R.id
+                                                        .critical_action_label))
+                        .getText());
+        Assert.assertEquals(
+                "Used a password",
+                ((TextView)
+                                list.getChildAt(1)
+                                        .findViewById(
+                                                org.chromium.chrome.browser.history.R.id
+                                                        .critical_action_label))
+                        .getText());
+        assertClickActionLabel(expandIcon, "Collapse section");
+        assertClickActionLabel(view, /* expectedLabel= */ null);
+        // The favicon and the remove button stay in place when the panel is expanded below the row.
+        Assert.assertEquals(collapsedStartIconTop, view.getIconView().getTop());
+        Assert.assertEquals(collapsedRemoveButtonTop, view.getRemoveButtonForTests().getTop());
+
+        // Entering selection mode hides the chevron, and tapping the row selects it rather than
+        // opening the page. Exiting selection mode restores the chevron.
+        toggleItemSelection(2);
+        Assert.assertEquals(View.GONE, expandIcon.getVisibility());
+        view.performClick();
+        Assert.assertTrue(view.isChecked());
+        view.performClick();
+        Assert.assertFalse(view.isChecked());
+        Assert.assertNull(shadowOf(mActivity).peekNextStartedActivity());
+        toggleItemSelection(2);
+        Assert.assertEquals(View.VISIBLE, expandIcon.getVisibility());
+        assertClickActionLabel(expandIcon, "Collapse section");
+
+        // Tapping the chevron again collapses the list.
+        expandIcon.performClick();
+        layoutRecyclerView();
+        Assert.assertNull(shadowOf(mActivity).peekNextStartedActivity());
+        Assert.assertEquals(View.GONE, panelContainer.getVisibility());
+        Assert.assertEquals(0f, expandIcon.getRotation(), 0f);
+        assertClickActionLabel(expandIcon, "Expand section");
+
+        // Expand it again, and rebind the ViewHolder to another item and back, as when recycled.
+        expandIcon.performClick();
+        ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(4);
+        Assert.assertNotNull(holder);
+        mAdapter.onBindViewHolder(holder, 5);
+        Assert.assertEquals(View.GONE, expandIcon.getVisibility());
+        Assert.assertEquals(View.GONE, panelContainer.getVisibility());
+        mAdapter.onBindViewHolder(holder, 4);
+        // The expanded state is restored, with the icon flipped.
+        Assert.assertEquals(View.VISIBLE, panelContainer.getVisibility());
+        Assert.assertEquals(2, list.getChildCount());
+        Assert.assertEquals(180f, expandIcon.getRotation(), 0f);
+
+        // Tapping the row opens the page, and leaves the list of actions as it is.
+        view.performClick();
+        assertThat(
+                shadowOf(mActivity).getNextStartedActivity(),
+                allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(itemWithActions.getUrl())));
+        Assert.assertEquals(View.VISIBLE, panelContainer.getVisibility());
+
+        HistoryItemView viewWithoutActions = (HistoryItemView) getItemView(5);
+        Assert.assertEquals(itemWithoutActions, viewWithoutActions.getItem());
+        // The expand icon stays hidden and the panel is not inflated on rows without actions.
+        Assert.assertEquals(
+                View.GONE, viewWithoutActions.getCriticalActionsExpandIcon().getVisibility());
+        Assert.assertEquals(0, viewWithoutActions.getCriticalActionsContainer().getChildCount());
+        // Tapping them opens the page.
+        viewWithoutActions.performClick();
+        assertThat(
+                shadowOf(mActivity).peekNextStartedActivity(),
+                allOf(
+                        hasAction(equalTo(Intent.ACTION_VIEW)),
+                        hasData(itemWithoutActions.getUrl())));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CRITICAL_ACTION_HISTORY)
+    public void testCriticalActions_DeletionDisabled_NoExtraEndPadding() {
+        // Deleting history is disabled by policy, so rows have no remove button.
+        doReturn(false).when(mPrefService).getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
+        mAdapter.setSelectionActive(false);
+        HistoryItem itemWithActions = createItemWithCriticalActions();
+        HistoryItem itemWithoutActions =
+                StubbedHistoryProvider.createHistoryItem(
+                        1,
+                        itemWithActions.getTimestamp() - 1,
+                        /* blockedVisit= */ false,
+                        /* isActorVisit= */ true);
+        mHistoryProvider.addItem(itemWithActions);
+        mHistoryProvider.addItem(itemWithoutActions);
+        loadItems();
+
+        // The chevron is the row's end button, so no extra end padding is added.
+        HistoryItemView viewWithActions = (HistoryItemView) getItemView(4);
+        Assert.assertEquals(itemWithActions, viewWithActions.getItem());
+        Assert.assertEquals(View.GONE, viewWithActions.getRemoveButtonForTests().getVisibility());
+        Assert.assertEquals(
+                View.VISIBLE, viewWithActions.getCriticalActionsExpandIcon().getVisibility());
+        Assert.assertEquals(0, getContentEndPadding(viewWithActions));
+
+        // Without any end button, the end padding keeps the text off the edge.
+        HistoryItemView viewWithoutActions = (HistoryItemView) getItemView(5);
+        Assert.assertEquals(itemWithoutActions, viewWithoutActions.getItem());
+        Assert.assertEquals(
+                mActivity.getResources().getDimensionPixelSize(R.dimen.default_list_row_padding),
+                getContentEndPadding(viewWithoutActions));
+    }
+
+    private static int getContentEndPadding(HistoryItemView view) {
+        return view.findViewById(R.id.content).getPaddingEnd();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CRITICAL_ACTION_HISTORY)
+    public void testCriticalActions_Disabled() {
+        HistoryItem itemWithActions = createItemWithCriticalActions();
+        mHistoryProvider.addItem(itemWithActions);
+        loadItems();
+
+        HistoryItemView view = (HistoryItemView) getItemView(4);
+        Assert.assertEquals(itemWithActions, view.getItem());
+        Assert.assertEquals(View.GONE, view.getCriticalActionsExpandIcon().getVisibility());
+        Assert.assertEquals(0, view.getCriticalActionsContainer().getChildCount());
+
+        // When the feature flag is disabled, tapping the row opens the page normally.
+        view.performClick();
+        assertThat(
+                shadowOf(mActivity).peekNextStartedActivity(),
+                allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(itemWithActions.getUrl())));
+    }
+
+    private static void assertClickActionLabel(View view, @Nullable String expectedLabel) {
+        for (AccessibilityNodeInfo.AccessibilityAction action :
+                view.createAccessibilityNodeInfo().getActionList()) {
+            if (action.getId() == AccessibilityNodeInfo.ACTION_CLICK) {
+                Assert.assertEquals(expectedLabel, action.getLabel());
+                return;
+            }
+        }
+        Assert.assertNull("No click action", expectedLabel);
     }
 
     @Test

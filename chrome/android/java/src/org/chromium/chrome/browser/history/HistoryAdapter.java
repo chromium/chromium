@@ -42,8 +42,10 @@ import org.chromium.ui.text.SpanApplier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /** Bridges the user's browsing history and the UI used to display it. */
@@ -105,8 +107,12 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private boolean mShowSourceApp;
 
     private boolean mIsLargeFormFactorDevice;
+    private boolean mIsSelectionActive;
     private final boolean mShouldClusterByDomain;
     private final Set<String> mExpandedClusterKeys = new HashSet<>();
+    private final Set<Long> mExpandedCriticalActionItemIds = new HashSet<>();
+    private final Map<HistoryItemView, CriticalActionsCoordinator> mCriticalActionsCoordinators =
+            new HashMap<>();
     private final List<HistoryItem> mAllItems = new ArrayList<>();
     // Monotonically increasing ID for clustering.
     private long mNextClusterId = 1;
@@ -146,6 +152,11 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mIsDestroyed = true;
         mInitialLoadStartTimeMs = 0;
         mQueryStartTimeMs = 0;
+
+        for (CriticalActionsCoordinator coordinator : mCriticalActionsCoordinators.values()) {
+            coordinator.destroy();
+        }
+        mCriticalActionsCoordinators.clear();
 
         mHistoryProvider.destroy();
         mHistoryProvider = null;
@@ -327,6 +338,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
      * @param active Whether the selection mode is on or not.
      */
     public void setSelectionActive(boolean active) {
+        mIsSelectionActive = active;
         if (mClearBrowsingDataButton != null) {
             mClearBrowsingDataButton.setEnabled(!active);
         }
@@ -340,6 +352,12 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         }
         for (HistoryItemView item : mItemViews) {
             item.setRemoveButtonVisiblity(visibility);
+        }
+        for (Map.Entry<HistoryItemView, CriticalActionsCoordinator> entry :
+                mCriticalActionsCoordinators.entrySet()) {
+            entry.getValue().setSelectionActive(active);
+            // The chevron may have been shown or hidden.
+            entry.getKey().updateContentEndPadding();
         }
     }
 
@@ -355,6 +373,12 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         itemView.setFaviconHelper(mFaviconHelper);
         itemView.setRemoveButtonVisiblity(mManager.getRemoveItemButtonVisibility());
         mItemViews.add(itemView);
+        mCriticalActionsCoordinators.put(
+                itemView,
+                new CriticalActionsCoordinator(
+                        itemView.getContext(),
+                        itemView.getCriticalActionsExpandIcon(),
+                        itemView.getCriticalActionsContainer()));
         return viewHolder;
     }
 
@@ -370,6 +394,40 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         }
 
         mManager.bindViewHolderForHistoryItem(current, item);
+        bindCriticalActions(itemView, item);
+        // The chevron may have been shown or hidden.
+        itemView.updateContentEndPadding();
+    }
+
+    private void bindCriticalActions(HistoryItemView itemView, HistoryItem item) {
+        CriticalActionsCoordinator coordinator = mCriticalActionsCoordinators.get(itemView);
+        if (coordinator == null) return;
+
+        // Cluster heads represent a whole domain, so their sub-items show their own actions.
+        List<CriticalAction> actions =
+                item.isClusterHead() ? Collections.emptyList() : item.getCriticalActions();
+        List<String> actionLabels;
+        if (actions.isEmpty()) {
+            actionLabels = Collections.emptyList();
+        } else {
+            actionLabels = new ArrayList<>(actions.size());
+            for (CriticalAction action : actions) {
+                actionLabels.add(action.getLabel());
+            }
+        }
+
+        long stableId = item.getStableId();
+        coordinator.attachToHistoryItem(
+                actionLabels,
+                mExpandedCriticalActionItemIds.contains(stableId),
+                mIsSelectionActive,
+                expanded -> {
+                    if (expanded) {
+                        mExpandedCriticalActionItemIds.add(stableId);
+                    } else {
+                        mExpandedCriticalActionItemIds.remove(stableId);
+                    }
+                });
     }
 
     @Override
