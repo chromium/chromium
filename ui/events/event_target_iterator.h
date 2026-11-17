@@ -19,52 +19,43 @@ class EventTargetIterator {
   virtual EventTarget* GetNextTarget() = 0;
 };
 
+namespace internal {
+
 // Provides EventTargetIterator implementations for iterating over a list of
 // EventTargets. The list is iterated in the reverse order, since typically the
 // EventTargets are maintained in increasing z-order in the lists.
 template <typename T>
 class EventTargetIteratorPtrImpl : public EventTargetIterator {
  public:
-  explicit EventTargetIteratorPtrImpl(
-      const std::vector<raw_ptr<T, VectorExperimental>>& children)
+  explicit EventTargetIteratorPtrImpl(const std::vector<T>& children)
       : begin_(children.rbegin()), end_(children.rend()) {}
-  ~EventTargetIteratorPtrImpl() override {}
+  EventTargetIteratorPtrImpl(EventTargetIteratorPtrImpl&&) = default;
+  ~EventTargetIteratorPtrImpl() override = default;
 
   EventTarget* GetNextTarget() override {
-    if (begin_ == end_)
+    if (begin_ == end_) {
       return nullptr;
-    EventTarget* target = *(begin_);
-    ++begin_;
-    return target;
+    }
+    // This works with all pointer-like objects, including raw_ptr, unique_ptr,
+    // etc.
+    return &**begin_++;
   }
 
  private:
-  typename std::vector<raw_ptr<T, VectorExperimental>>::const_reverse_iterator
-      begin_;
-  typename std::vector<raw_ptr<T, VectorExperimental>>::const_reverse_iterator
-      end_;
+  typename std::vector<T>::const_reverse_iterator begin_;
+  typename std::vector<T>::const_reverse_iterator end_;
 };
 
+}  // namespace internal
+
+// Convenience method for wrapping `targets` in an event target iterator.
+// Targets should be a vector of some pointer-like object; this can be actual
+// pointers, `raw_ptr`, `unique_ptr`, etc.
 template <typename T>
-class EventTargetIteratorUniquePtrImpl : public EventTargetIterator {
- public:
-  explicit EventTargetIteratorUniquePtrImpl(
-      const std::vector<std::unique_ptr<T>>& children)
-      : begin_(children.rbegin()), end_(children.rend()) {}
-  ~EventTargetIteratorUniquePtrImpl() override {}
-
-  EventTarget* GetNextTarget() override {
-    if (begin_ == end_)
-      return nullptr;
-    EventTarget* target = begin_->get();
-    ++begin_;
-    return target;
-  }
-
- private:
-  typename std::vector<std::unique_ptr<T>>::const_reverse_iterator begin_;
-  typename std::vector<std::unique_ptr<T>>::const_reverse_iterator end_;
-};
+std::unique_ptr<EventTargetIterator> MakeEventTargetIterator(
+    const std::vector<T>& targets) {
+  return std::make_unique<internal::EventTargetIteratorPtrImpl<T>>(targets);
+}
 
 }  // namespace ui
 

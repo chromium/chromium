@@ -2003,7 +2003,7 @@ ui::EventTarget* Window::GetParentTarget() {
 }
 
 std::unique_ptr<ui::EventTargetIterator> Window::GetChildIterator() const {
-  return std::make_unique<ui::EventTargetIteratorPtrImpl<Window>>(children());
+  return ui::MakeEventTargetIterator(children());
 }
 
 ui::EventTargeter* Window::GetEventTargeter() {

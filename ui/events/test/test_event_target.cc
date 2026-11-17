@@ -11,8 +11,7 @@
 #include "ui/events/event_target_iterator.h"
 #include "ui/events/event_targeter.h"
 
-namespace ui {
-namespace test {
+namespace ui::test {
 
 TestEventTarget::TestEventTarget()
     : parent_(nullptr),
@@ -67,8 +66,7 @@ EventTarget* TestEventTarget::GetParentTarget() {
 }
 
 std::unique_ptr<EventTargetIterator> TestEventTarget::GetChildIterator() const {
-  return std::make_unique<EventTargetIteratorUniquePtrImpl<TestEventTarget>>(
-      children_);
+  return MakeEventTargetIterator(children_);
 }
 
 EventTargeter* TestEventTarget::GetEventTargeter() {
@@ -93,5 +91,4 @@ bool TestEventTarget::Contains(TestEventTarget* target) const {
   return target == this;
 }
 
-}  // namespace test
-}  // namespace ui
+}  // namespace ui::test

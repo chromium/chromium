@@ -1929,7 +1929,7 @@ ui::EventTarget* View::GetParentTarget() {
 }
 
 std::unique_ptr<ui::EventTargetIterator> View::GetChildIterator() const {
-  return std::make_unique<ui::EventTargetIteratorPtrImpl<View>>(children_);
+  return ui::MakeEventTargetIterator(children_);
 }
 
 ui::EventTargeter* View::GetEventTargeter() {
