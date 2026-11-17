@@ -627,12 +627,10 @@ TEST_F(CredentialSuggestionBottomSheetMediatorTest, IncrementDismissCount) {
   EXPECT_EQ(prefs_ptr_->GetInteger(prefs::kIosPasswordBottomSheetDismissCount),
             3);
 
-  // Expect failure after 3 times.
-#if defined(GTEST_HAS_DEATH_TEST)
-  EXPECT_DEATH([mediator_ onDismissWithoutAnyCredentialAction],
-               "Failed when dismiss count is incremented higher than the "
-               "expected value.");
-#endif  // defined(GTEST_HAS_DEATH_TEST)
+  // Expect the count to stay at 3 after 3 times.
+  [mediator_ onDismissWithoutAnyCredentialAction];
+  EXPECT_EQ(prefs_ptr_->GetInteger(prefs::kIosPasswordBottomSheetDismissCount),
+            3);
 }
 
 TEST_F(CredentialSuggestionBottomSheetMediatorTest,
