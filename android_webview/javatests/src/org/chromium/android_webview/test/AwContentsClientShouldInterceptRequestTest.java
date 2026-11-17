@@ -1029,6 +1029,8 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         final String contentResourceName = "target";
         final String existingContentUrl = TestContentProvider.createContentUrl(contentResourceName);
 
+        mAwContents.getSettings().setAllowContentAccess(true);
+
         notCalledForUrlTemplate(existingContentUrl);
 
         int contentRequestCount =
@@ -1043,6 +1045,8 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
     @Feature({"AndroidWebView"})
     @SkipMutations(reason = "This test depends on AwSettings.setAllowContentAccess(true)")
     public void testCalledForNonexistentContentUrl() throws Throwable {
+        mAwContents.getSettings().setAllowContentAccess(true);
+
         calledForUrlTemplate("content://org.chromium.webview.NoSuchProvider/foo");
     }
 

@@ -714,6 +714,7 @@ public class LoadDataWithBaseUrlTest extends AwParameterizedTest {
         AwSettings contentSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
         contentSettings.setImagesEnabled(true);
         contentSettings.setJavaScriptEnabled(true);
+        contentSettings.setAllowContentAccess(true);
 
         String histogramName = "Android.WebView.LoadDataWithBaseUrl.ContentAccessDestination";
         int destinationImage = 8;

@@ -27,7 +27,7 @@ public class AwServiceWorkerSettings {
     private static final String TAG = "AwSWSettings";
     private static final boolean TRACE = false;
     private int mCacheMode = WebSettings.LOAD_DEFAULT;
-    private boolean mAllowContentUrlAccess = true;
+    private boolean mAllowContentUrlAccess;
     private boolean mAllowFileUrlAccess = true;
     private boolean mBlockNetworkLoads; // Default depends on permission of the embedding APK
     private boolean mBlockSpecialFileUrls;
@@ -46,6 +46,8 @@ public class AwServiceWorkerSettings {
         synchronized (mAwServiceWorkerSettingsLock) {
             mHasInternetPermission = hasInternetPermission;
             mBlockNetworkLoads = !hasInternetPermission;
+            mAllowContentUrlAccess =
+                    CompatQuirks.isEnabled(CompatQuirks.Quirk.ALLOW_CONTENT_URL_ACCESS_BY_DEFAULT);
 
             // The application context we receive in the sdk runtime is a separate
             // context from the context that actual SDKs receive (and contains asset

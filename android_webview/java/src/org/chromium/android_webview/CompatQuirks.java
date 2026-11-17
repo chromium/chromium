@@ -35,6 +35,7 @@ public abstract class CompatQuirks {
         Quirk.LEGACY_DARK_MODE,
         Quirk.FULL_USERAGENT,
         Quirk.DISABLE_FILESYSTEM_ACCESS_API,
+        Quirk.ALLOW_CONTENT_URL_ACCESS_BY_DEFAULT,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Quirk {
@@ -79,6 +80,9 @@ public abstract class CompatQuirks {
          * WebChromeClient.onShowFileChooser(). Normally enabled for apps targeting < C.
          */
         int DISABLE_FILESYSTEM_ACCESS_API = 7;
+
+        /** Allow loading content:// URLs by default. Normally enabled for apps targeting < D. */
+        int ALLOW_CONTENT_URL_ACCESS_BY_DEFAULT = 8;
     }
 
     /**

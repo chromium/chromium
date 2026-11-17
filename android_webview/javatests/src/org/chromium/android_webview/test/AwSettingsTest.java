@@ -804,12 +804,12 @@ public class AwSettingsTest {
 
         @Override
         protected Boolean getAlteredValue() {
-            return DISABLED;
+            return ENABLED;
         }
 
         @Override
         protected Boolean getInitialValue() {
-            return ENABLED;
+            return DISABLED;
         }
 
         @Override
@@ -861,12 +861,12 @@ public class AwSettingsTest {
 
         @Override
         protected Boolean getAlteredValue() {
-            return DISABLED;
+            return ENABLED;
         }
 
         @Override
         protected Boolean getInitialValue() {
-            return ENABLED;
+            return DISABLED;
         }
 
         @Override

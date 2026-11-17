@@ -1116,6 +1116,10 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                     Build.VERSION.SDK_INT < Build.VERSION_CODES.CINNAMON_BUN
                             || !CompatChanges.isChangeEnabled(
                                     WebChromeClient.FileChooserParams.ENABLE_FILE_SYSTEM_ACCESS);
+            case CompatQuirks.Quirk.ALLOW_CONTENT_URL_ACCESS_BY_DEFAULT -> {
+                AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+                yield delegate == null || !delegate.isContentAccessDisabledByDefaultForWebView();
+            }
             default -> false;
         };
     }

@@ -227,7 +227,7 @@ public class AwSettings {
     // Not accessed by the native side.
     private boolean mBlockSpecialFileUrls;
     private boolean mBlockNetworkLoads; // Default depends on permission of embedding APK.
-    private boolean mAllowContentUrlAccess = true;
+    private boolean mAllowContentUrlAccess;
     private boolean mAllowFileUrlAccess;
     private int mCacheMode = WebSettings.LOAD_DEFAULT;
     private boolean mShouldFocusFirstNode = true;
@@ -447,6 +447,8 @@ public class AwSettings {
 
             mAllowFileUrlAccess =
                     CompatQuirks.isEnabled(CompatQuirks.Quirk.ALLOW_FILE_URL_ACCESS_BY_DEFAULT);
+            mAllowContentUrlAccess =
+                    CompatQuirks.isEnabled(CompatQuirks.Quirk.ALLOW_CONTENT_URL_ACCESS_BY_DEFAULT);
             mIntegrityApiStatusConfig = new AwMediaIntegrityApiStatusConfig();
             mSpeculativeLoadingAllowedFlags =
                     SpeculativeLoadingAllowedFlags.SPECULATIVE_LOADING_DISABLED;

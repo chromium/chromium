@@ -149,4 +149,12 @@ public interface AconfigFlaggedApiDelegate {
     default boolean isProjectedToCarDisplay(Activity activity) {
         return false;
     }
+
+    /**
+     * Returns whether the DISABLE_CONTENT_ACCESS_BY_DEFAULT compat change is enabled for WebView's
+     * host app.
+     */
+    default boolean isContentAccessDisabledByDefaultForWebView() {
+        return false;
+    }
 }
