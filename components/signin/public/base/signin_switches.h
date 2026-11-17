@@ -68,6 +68,14 @@ BASE_DECLARE_FEATURE(kAddSessionReauthPrimaryAccountFirst);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kAiSubscriptionAvatarRingFollowup);
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, the accounts on the device reach each profile's identity stack
+// through the browser-wide native AccountProfileMapper instead of each
+// profile observing AccountManagerFacade directly.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kAndroidAccountProfileMapper);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kAvoidAutoTriggerListAccountsOnStale);
 
