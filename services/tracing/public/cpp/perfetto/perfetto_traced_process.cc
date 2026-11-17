@@ -283,8 +283,10 @@ void PerfettoTracedProcess::DeferOrConnectProducerSocket(
 }
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 
-void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer,
-                                               bool enable_system_backend) {
+void PerfettoTracedProcess::SetupClientLibrary(
+    bool enable_consumer,
+    bool enable_system_backend,
+    bool defer_thread_pool_data_sources) {
   perfetto::TracingInitArgs init_args;
   init_args.platform = &base::tracing::PerfettoPlatform::Get();
   init_args.custom_backend = tracing_backend_.get();
@@ -321,7 +323,8 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer,
   base::UmaHistogramTimes("Tracing.Init.Perfetto.Initialize",
                           base::TimeTicks::Now() - initialize_start);
 
-  RegisterCommonPerfettoDataSources(enable_consumer);
+  RegisterCommonPerfettoDataSources(enable_consumer,
+                                    defer_thread_pool_data_sources);
 }
 
 void PerfettoTracedProcess::SetAllowSystemTracingConsumerCallback(

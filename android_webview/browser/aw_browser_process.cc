@@ -14,6 +14,7 @@
 #include "base/android/path_utils.h"
 #include "base/android/pre_freeze_background_memory_trimmer.h"
 #include "base/base_paths_posix.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
@@ -34,6 +35,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/process_visibility_util.h"
+#include "services/tracing/public/cpp/perfetto/common_data_sources.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
 #include "services/tracing/public/cpp/tracing_features.h"
@@ -384,7 +386,8 @@ static void JNI_AwBrowserProcess_InitTracing(JNIEnv* env,
                        /*will_trace_thread_restart=*/false,
                        /*enable_system_backend=*/enable_system_backend ||
                            tracing::ShouldSetupSystemTracing(),
-                       base::NullCallback());
+                       base::NullCallback(),
+                       /*defer_thread_pool_data_sources=*/true);
   if (called_on_background_thread) {
     GetTracingInitEvent()->Signal();
   }
@@ -411,6 +414,16 @@ void AwBrowserProcess::WaitForBackgroundTracingInit() {
     base::UmaHistogramTimes(
         "Android.WebView.TracingInit.BackgroundInitMainThreadWaitTime",
         init_wait_time);
+  }
+  if (!g_init_tracing_during_browser_main) {
+    // Tracing was initialized before the browser ThreadPool existed (either on
+    // the main thread via WebViewEarlyTracingInit or on a background thread via
+    // WebViewBackgroundTracingInit). Register thread-pool dependent data
+    // sources now that the ThreadPool has been created.
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        base::BindOnce(&tracing::RegisterThreadPoolDependentDataSources,
+                       /*enable_consumer=*/true));
   }
 }
 

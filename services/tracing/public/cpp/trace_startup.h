@@ -31,11 +31,16 @@ bool COMPONENT_EXPORT(TRACING_CPP) IsTracingInitialized();
 // `enable_system_backend` enables tracing to the system backend on Posix
 // systems, and is ignored on other platforms. The system backend may also be
 // enabled if this is a debug Android device.
+// If `defer_thread_pool_data_sources` is true, data sources that depend on
+// `base::ThreadPool` are skipped and the caller must invoke
+// `RegisterThreadPoolDependentDataSources()` once `base::ThreadPool` has been
+// created.
 void COMPONENT_EXPORT(TRACING_CPP)
     InitTracing(bool enable_consumer,
                 bool will_trace_thread_restart,
                 bool enable_system_backend,
-                base::RepeatingCallback<bool()> allow_system_tracing_consumer);
+                base::RepeatingCallback<bool()> allow_system_tracing_consumer,
+                bool defer_thread_pool_data_sources = false);
 
 // Calls `InitTracing` with `enable_system_backend` supplied by a feature flag
 // check.

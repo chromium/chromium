@@ -195,10 +195,14 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess
   // process.
   // |enable_consumer| should be true if the system consumer can be enabled.
   // Currently this is only the case if this is running in the browser process.
-  // Called on the process's main thread once the thread pool is ready.
   // |enable_system_backend| indicates if the system backend should be enabled
   // on Posix platforms. It is ignored on other platforms.
-  void SetupClientLibrary(bool enable_consumer, bool enable_system_backend);
+  // |defer_thread_pool_data_sources| skips registering data sources that depend
+  // on `base::ThreadPool`; if true, the caller must call
+  // `RegisterThreadPoolDependentDataSources` once the thread pool is created.
+  void SetupClientLibrary(bool enable_consumer,
+                          bool enable_system_backend,
+                          bool defer_thread_pool_data_sources = false);
 
   // Set a callback that returns whether a system tracing session is allowed.
   // The callback will be executed on the sequence that set it. Only a single

@@ -103,11 +103,11 @@ bool IsTracingInitialized() {
   return g_tracing_initialized;
 }
 
-void InitTracing(
-    bool enable_consumer,
-    bool will_trace_thread_restart,
-    bool enable_system_backend,
-    base::RepeatingCallback<bool()> allow_system_tracing_consumer) {
+void InitTracing(bool enable_consumer,
+                 bool will_trace_thread_restart,
+                 bool enable_system_backend,
+                 base::RepeatingCallback<bool()> allow_system_tracing_consumer,
+                 bool defer_thread_pool_data_sources) {
   DCHECK(!g_tracing_initialized);
   g_tracing_initialized = true;
   base::TimeTicks init_start = base::TimeTicks::Now();
@@ -119,7 +119,8 @@ void InitTracing(
     traced_process.SetAllowSystemTracingConsumerCallback(
         std::move(allow_system_tracing_consumer));
   }
-  traced_process.SetupClientLibrary(enable_consumer, enable_system_backend);
+  traced_process.SetupClientLibrary(enable_consumer, enable_system_backend,
+                                    defer_thread_pool_data_sources);
 
   RegisterTracedValueProtoWriter();
 
