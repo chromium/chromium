@@ -105,14 +105,6 @@ crbug.com/329041548 [ Mac15-arm64 ] media/video-colorspace-yuv422.html [ Failure
 
 # *** END Graphite suppressions ***
 
-# We don't support extracting fuzzy information from .ini files, which these
-# WPT infrastructure tests rely on.
-crbug.com/997202 external/wpt/infrastructure/reftest/legacy/reftest_fuzzy_chain_ini.html [ Failure ]
-crbug.com/997202 external/wpt/infrastructure/reftest/legacy/fuzzy-ref-2.html [ Failure ]
-crbug.com/997202 external/wpt/infrastructure/reftest/reftest_fuzzy_ini_full.html [ Failure ]
-crbug.com/997202 external/wpt/infrastructure/reftest/reftest_fuzzy_ini_ref_only.html [ Failure ]
-crbug.com/997202 external/wpt/infrastructure/reftest/reftest_fuzzy_ini_short.html [ Failure ]
-
 # WPT HTTP/2 is not fully supported by run_web_tests.
 crbug.com/1048761 external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html?wpt_flags=https [ Failure ]
