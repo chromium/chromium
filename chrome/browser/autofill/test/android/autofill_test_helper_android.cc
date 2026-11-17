@@ -164,6 +164,17 @@ static void JNI_AutofillTestHelper_ClearServerData() {
 }
 
 // static
+static bool JNI_AutofillTestHelper_HasPendingPersonalDataManagerQueries() {
+  PersonalDataManager* personal_data_manager =
+      GetPersonalDataManagerForLastUsedProfile();
+  return !personal_data_manager->IsDataLoaded() ||
+         personal_data_manager->address_data_manager()
+             .IsAwaitingPendingAddressChanges() ||
+         personal_data_manager->payments_data_manager()
+             .HasPendingPaymentQueries();
+}
+
+// static
 static void JNI_AutofillTestHelper_SetSyncService() {
   GetPersonalDataManagerForLastUsedProfile()
       ->payments_data_manager()

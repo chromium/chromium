@@ -357,6 +357,7 @@ public class AutofillTestHelper {
      * #addServerCreditCard(CreditCard)}}.
      */
     public void clearAllDataForTesting() throws TimeoutException {
+        waitForPendingQueries();
         runOnUiThreadBlocking(() -> AutofillTestHelperJni.get().clearServerData());
         runOnUiThreadBlocking(
                 () -> getAutofillImageFetcherForLastUsedProfile().clearCachedImagesForTesting());
@@ -383,15 +384,7 @@ public class AutofillTestHelper {
                                         .deleteIban(iban.getGuid()));
             }
         }
-        // Ensure all data is cleared. Waiting for a single callback for each operation is not
-        // enough since tests or production code can also trigger callbacks and not consume them.
-        int callCount = mOnPersonalDataChangedHelper.getCallCount();
-        while (getProfilesForSettings().size() > 0
-                || getCreditCardsForSettings().size() > 0
-                || getIbansForSettings().length > 0) {
-            mOnPersonalDataChangedHelper.waitForCallback(callCount);
-            callCount = mOnPersonalDataChangedHelper.getCallCount();
-        }
+        waitForPendingQueries();
     }
 
     /** Returns the YYYY value of the year after the current year. */
@@ -540,17 +533,23 @@ public class AutofillTestHelper {
 
     private void registerDataObserver() {
         try {
-            int callCount = mOnPersonalDataChangedHelper.getCallCount();
-            boolean isDataLoaded =
-                    runOnUiThreadBlocking(
-                            () ->
-                                    getPersonalDataManagerForLastUsedProfile()
-                                            .registerDataObserver(
-                                                    mOnPersonalDataChangedHelper::notifyCalled));
-            if (isDataLoaded) return;
-            mOnPersonalDataChangedHelper.waitForCallback(callCount);
+            runOnUiThreadBlocking(
+                    () ->
+                            getPersonalDataManagerForLastUsedProfile()
+                                    .registerDataObserver(
+                                            mOnPersonalDataChangedHelper::notifyCalled));
+            waitForPendingQueries();
         } catch (TimeoutException e) {
             throw new AssertionError(e);
+        }
+    }
+
+    private void waitForPendingQueries() throws TimeoutException {
+        int callCount = mOnPersonalDataChangedHelper.getCallCount();
+        while (runOnUiThreadBlocking(
+                () -> AutofillTestHelperJni.get().hasPendingPersonalDataManagerQueries())) {
+            mOnPersonalDataChangedHelper.waitForCallback(callCount);
+            callCount = mOnPersonalDataChangedHelper.getCallCount();
         }
     }
 
@@ -696,6 +695,8 @@ public class AutofillTestHelper {
         long getCurrentDate();
 
         void clearServerData();
+
+        boolean hasPendingPersonalDataManagerQueries();
 
         void setSyncService();
 
