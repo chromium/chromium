@@ -2825,15 +2825,10 @@ TEST_P(CloudPolicyClientUploadSecurityEventTest, TestWithProtoFormat) {
     EXPECT_EQ(GetOSPlatform(), request.device().os_platform());
     EXPECT_EQ(GetOSVersion(), request.device().os_version());
     EXPECT_EQ(policy::GetDeviceName(), request.device().name());
-    if (policy::features::IsEnhancedSecurityEventFieldsEnabled()) {
-      EXPECT_EQ(policy::GetDeviceFqdn(), request.device().device_fqdn());
-      // No `NetworkNameCache` is set on the test `DeviceManagementService`.
-      EXPECT_EQ(policy::GetNetworkName(/*network_name_cache=*/nullptr),
-                request.device().network_name());
-    } else {
-      EXPECT_EQ(request.device().device_fqdn(), "");
-      EXPECT_EQ(request.device().network_name(), "");
-    }
+    EXPECT_EQ(policy::GetDeviceFqdn(), request.device().device_fqdn());
+    // No `NetworkNameCache` is set on the test `DeviceManagementService`.
+    EXPECT_EQ(policy::GetNetworkName(/*network_name_cache=*/nullptr),
+              request.device().network_name());
   } else {
     EXPECT_EQ(request.device().dm_token(), "");
     EXPECT_EQ(request.device().client_id(), "");

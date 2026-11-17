@@ -319,9 +319,9 @@ std::string GetDeviceFqdn() {
 std::string GetNetworkName(NetworkNameCache* network_name_cache) {
   if (!base::FeatureList::IsEnabled(kUseCachedNetworkName)) {
 #if BUILDFLAG(IS_WIN)
-    // TODO(crbug.com/585174438): Re-enable once the network name query is made
-    // asynchronous. On Windows 11 24H2+, the synchronous WLAN API calls made by
-    // `net::GetWifiSSID()` can hang the calling thread.
+    // On Windows 11 24H2+, the synchronous WLAN API calls made by
+    // `net::GetWifiSSID()` can hang the calling thread, so skip querying it
+    // when the `kUseCachedNetworkName` kill switch is disabled.
     if (base::win::GetVersion() >= base::win::Version::WIN11_24H2) {
       return std::string();
     }

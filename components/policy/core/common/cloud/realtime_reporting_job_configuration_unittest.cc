@@ -44,10 +44,6 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 namespace em = enterprise_management;
 
 using testing::_;
@@ -215,15 +211,10 @@ TEST_F(RealtimeReportingJobConfigurationTest, ValidatePayload) {
   EXPECT_EQ(GetOSVersion(), request.device().os_version());
   EXPECT_FALSE(GetDeviceName().empty());
   EXPECT_EQ(GetDeviceName(), request.device().name());
-  if (policy::features::IsEnhancedSecurityEventFieldsEnabled()) {
-    EXPECT_FALSE(GetDeviceFqdn().empty());
-    EXPECT_EQ(GetDeviceFqdn(), request.device().device_fqdn());
-    EXPECT_EQ(GetNetworkName(service_.network_name_cache()),
-              request.device().network_name());
-  } else {
-    EXPECT_TRUE(request.device().device_fqdn().empty());
-    EXPECT_TRUE(request.device().network_name().empty());
-  }
+  EXPECT_FALSE(GetDeviceFqdn().empty());
+  EXPECT_EQ(GetDeviceFqdn(), request.device().device_fqdn());
+  EXPECT_EQ(GetNetworkName(service_.network_name_cache()),
+            request.device().network_name());
 
   EXPECT_EQ(kIds.size(), base::checked_cast<size_t>(request.events_size()));
   int i = -1;
@@ -406,12 +397,6 @@ TEST_F(RealtimeReportingJobConfigurationTest, EnhancedFieldsDisabled) {
 
 TEST_F(RealtimeReportingJobConfigurationTest,
        CachedNetworkNamePopulatedAfterAsyncRefresh) {
-  // The network name is only reported when enhanced security event fields are
-  // enabled, which isn't the case on every platform (e.g. Windows 11 24H2+).
-  if (!policy::features::IsEnhancedSecurityEventFieldsEnabled()) {
-    GTEST_SKIP() << "Enhanced security event fields are disabled.";
-  }
-
   // The configuration reads the network name from the cache owned by the
   // client's `DeviceManagementService`.
   service_.SetNetworkNameCache(NetworkNameCache::CreateForTesting(

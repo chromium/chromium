@@ -435,8 +435,7 @@ class ConnectorsServiceAnalysisProfileBrowserTest
       ASSERT_EQ(metadata.device().name(),
                 *reporting_metadata.FindStringByDottedPath("device.name"));
 
-      if (enhanced_fields_enabled() &&
-          policy::features::IsEnhancedSecurityEventFieldsEnabled()) {
+      if (enhanced_fields_enabled()) {
         ASSERT_TRUE(metadata.device().has_device_fqdn());
         ASSERT_EQ(
             metadata.device().device_fqdn(),
@@ -451,10 +450,8 @@ class ConnectorsServiceAnalysisProfileBrowserTest
             reporting_metadata.FindStringByDottedPath("device.deviceFqdn"));
         ASSERT_FALSE(
             reporting_metadata.FindStringByDottedPath("device.networkName"));
-        if (!enhanced_fields_enabled()) {
-          ASSERT_FALSE(metadata.device().has_device_fqdn());
-          ASSERT_FALSE(metadata.device().has_network_name());
-        }
+        ASSERT_FALSE(metadata.device().has_device_fqdn());
+        ASSERT_FALSE(metadata.device().has_network_name());
       }
     }
 
@@ -938,18 +935,12 @@ IN_PROC_BROWSER_TEST_F(ConnectorsServiceCachedNetworkNameBrowserTest,
   EXPECT_EQ("EnterpriseCorpWiFi",
             refreshed_settings->client_metadata->device().network_name());
 
-  // Reporting only includes the network name when enhanced security event
-  // fields are enabled, which isn't the case on every platform (e.g. Windows 11
-  // 24H2+).
-  if (policy::features::IsEnhancedSecurityEventFieldsEnabled()) {
-    base::DictValue device_dict = policy::ReportingJobConfigurationBase::
-        DeviceDictionaryBuilder::BuildDeviceDictionary(
-            kFakeBrowserDMToken, kFakeBrowserClientId, cache);
-    const std::string* dict_network_name =
-        device_dict.FindString("networkName");
-    ASSERT_TRUE(dict_network_name);
-    EXPECT_EQ("EnterpriseCorpWiFi", *dict_network_name);
-  }
+  base::DictValue device_dict = policy::ReportingJobConfigurationBase::
+      DeviceDictionaryBuilder::BuildDeviceDictionary(
+          kFakeBrowserDMToken, kFakeBrowserClientId, cache);
+  const std::string* dict_network_name = device_dict.FindString("networkName");
+  ASSERT_TRUE(dict_network_name);
+  EXPECT_EQ("EnterpriseCorpWiFi", *dict_network_name);
 }
 
 }  // namespace enterprise_connectors
