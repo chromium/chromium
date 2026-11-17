@@ -6907,6 +6907,28 @@
             ]
         }
     ],
+    "DesktopNtpShortcutsReorder": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "form_factors": [
+                "desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NtpShortcutsReorder"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopNtpTabResumption": [
         {
             "platforms": [
@@ -13804,28 +13826,6 @@
                     "name": "Enabled_20260828",
                     "enable_features": [
                         "NtpRealboxCyclingPlaceholders"
-                    ]
-                }
-            ]
-        }
-    ],
-    "NtpShortcutsReorder": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "form_factors": [
-                "desktop"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NtpShortcutsReorder"
                     ]
                 }
             ]
