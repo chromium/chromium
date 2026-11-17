@@ -232,6 +232,11 @@ BASE_DECLARE_FEATURE(kGlicAndroidTablet);
 // toggle in Glic settings.
 BASE_DECLARE_FEATURE(kGlicVoice);
 
+// When enabled, Auto Browse settings show a variant of the second "things to
+// consider" disclosure to users in the countries listed by its
+// `enabled_countries` param (defaults to "gb,au,nz").
+BASE_DECLARE_FEATURE(kGlicWebActuationDisclosureCountryVariant);
+
 // When enabled, the Android experimental opt-in dialog uses a taller 380x710dp
 // max size, so its content fits without scrolling, instead of the default
 // 380x567dp.

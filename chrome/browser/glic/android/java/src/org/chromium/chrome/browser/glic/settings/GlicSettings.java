@@ -825,8 +825,12 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         if (consider2 != null && consider2.getMovementMethod() == null) {
             ChromeExpandableSwitchPreference autoBrowsePref =
                     assertNonNull(findPreference(PERMISSION_AUTO_BROWSE));
-            String text =
-                    getString(R.string.settings_glic_permissions_web_actuation_toggle_consider_2);
+            int stringId =
+                    GlicEnabling.shouldUseWebActuationDisclosureCountryVariant()
+                            ? R.string
+                                    .settings_glic_permissions_web_actuation_toggle_consider_2_country_variant
+                            : R.string.settings_glic_permissions_web_actuation_toggle_consider_2;
+            String text = getString(stringId);
             consider2.setText(
                     SpanApplier.applySpans(
                             text,

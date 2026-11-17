@@ -85,6 +85,14 @@ public class GlicEnabling {
         return GlicEnablingJni.get().shouldShowExperimentalTriggeringToggle(profile);
     }
 
+    /**
+     * Returns true if Auto Browse settings should show the country variant of the "things to
+     * consider" disclosure.
+     */
+    public static boolean shouldUseWebActuationDisclosureCountryVariant() {
+        return GlicEnablingJni.get().shouldUseWebActuationDisclosureCountryVariant();
+    }
+
     /** Returns true if Glic is ready to be used for the given profile. */
     public static boolean isReadyForProfile(@Nullable Profile profile) {
         if (profile == null) return false;
@@ -179,6 +187,8 @@ public class GlicEnabling {
         boolean isReadyForProfile(@JniType("Profile*") Profile profile);
 
         boolean isDisabledByPolicy(@JniType("Profile*") Profile profile);
+
+        boolean shouldUseWebActuationDisclosureCountryVariant();
 
         boolean isProfileManaged(@JniType("Profile*") Profile profile);
 

@@ -1097,6 +1097,8 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
                     features::kGlicExtensionsManagementUrl.Get());
   add_localized_url("glicWebActuationToggleLearnMoreUrl",
                     features::kGlicWebActuationToggleLearnMoreURL.Get());
+  const bool use_disclosure_country_variant =
+      glic::GlicEnabling::ShouldUseWebActuationDisclosureCountryVariant();
   if (base::FeatureList::IsEnabled(features::kGlicSettingsA11yContextFix)) {
     html_source->AddString(
         "glicWebActuationToggleSublabelV2",
@@ -1109,7 +1111,9 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
     html_source->AddString(
         "glicWebActuationToggleConsider2V2",
         l10n_util::GetStringFUTF16(
-            IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2_V2,
+            use_disclosure_country_variant
+                ? IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2_V2_COUNTRY_VARIANT
+                : IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2_V2,
             base::EscapeForHTML(base::UTF8ToUTF16(
                 features::kGlicWebActuationToggleConsiderSafelyURL.Get())),
             base::EscapeForHTML(base::UTF8ToUTF16(
@@ -1128,7 +1132,9 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
     html_source->AddString(
         "glicWebActuationToggleConsider2V2",
         l10n_util::GetStringFUTF16(
-            IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2,
+            use_disclosure_country_variant
+                ? IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2_COUNTRY_VARIANT
+                : IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2,
             base::EscapeForHTML(base::UTF8ToUTF16(
                 features::kGlicWebActuationToggleConsiderSafelyURL.Get())),
             base::EscapeForHTML(base::UTF8ToUTF16(

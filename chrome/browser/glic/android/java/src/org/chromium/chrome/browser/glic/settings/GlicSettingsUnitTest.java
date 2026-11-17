@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.widget.TextView;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
@@ -43,6 +44,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -70,6 +72,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSett
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarActionEligibility;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
+import org.chromium.components.browser_ui.settings.ChromeExpandableSwitchPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
@@ -515,6 +518,33 @@ public class GlicSettingsUnitTest {
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(GLIC_AUTO_BROWSE_SETTING_ENABLED, true));
         verify(mGlicKeyedServiceMock).setUserEnabledActuationOnWeb(false);
+    }
+
+    private String getAutoBrowseConsider2Text() {
+        GlicSettings fragment = launchFragment();
+        ChromeExpandableSwitchPreference preference =
+                fragment.findPreference("glic_permissions_auto_browse");
+        preference.setExpanded(true);
+        fragment.scrollToPreference(preference);
+        ShadowLooper.idleMainLooper();
+        TextView consider2 =
+                fragment.getView()
+                        .findViewById(
+                                R.id.glic_auto_browse_consider_user_responsibility_description);
+        return consider2.getText().toString();
+    }
+
+    @Test
+    public void testAutoBrowseConsider2_Default() {
+        when(mGlicEnablingJniMock.shouldUseWebActuationDisclosureCountryVariant())
+                .thenReturn(false);
+        assertTrue(getAutoBrowseConsider2Text().contains("You are responsible"));
+    }
+
+    @Test
+    public void testAutoBrowseConsider2_CountryVariant() {
+        when(mGlicEnablingJniMock.shouldUseWebActuationDisclosureCountryVariant()).thenReturn(true);
+        assertTrue(getAutoBrowseConsider2Text().contains("It can make mistakes"));
     }
 
     @Test

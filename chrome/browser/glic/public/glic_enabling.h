@@ -186,6 +186,10 @@ class GlicGlobalEnabling {
   // Same as IsCountryEnabled(), but for users who cannot use adult features
   // (e.g. minors).
   bool IsCountryEnabledForMinorAccounts();
+  // Whether Auto Browse settings should show the country variant of the
+  // "things to consider" disclosure. Controlled by
+  // kGlicWebActuationDisclosureCountryVariant.
+  bool ShouldUseWebActuationDisclosureCountryVariant() const;
 
   void UpdateStateForTesting(
       std::unique_ptr<GlicEnablingDelegate> new_delegate);
@@ -412,6 +416,11 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // * The profile has model execution privileges
   // * The profile has completed the first run experience
   static bool ShouldShowSettingsPage(Profile* profile);
+
+  // Whether Auto Browse settings should show the country variant of the "things
+  // to consider" disclosure. Controlled by
+  // `features::kGlicWebActuationDisclosureCountryVariant`.
+  static bool ShouldUseWebActuationDisclosureCountryVariant();
 
   // The Glic Button is shown when:
   // * Glic is enabled for the client and profile
