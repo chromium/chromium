@@ -29,8 +29,12 @@
 # kills the embedder's renderer via content::CrashTab(), and
 # ReadyOnceRendererIsGone calls Shutdown() directly, then hangs in
 # RenderProcessHostWatcher::Wait().
-# (Refer https://crrev.com/c/8648832 and https://crrev.com/c/8690988)
+# Some tests also expect different renderer processes, which tvOS can't have.
+# (Refer https://crrev.com/c/8648832, https://crrev.com/c/8690988 and
+# https://crrev.com/c/8793351)
 -PerformanceManagerBrowserTest.DestroySurfaceEmbedChildAfterEmbedderProcessDied
+-PerformanceManagerBrowserTest.DetachSurfaceEmbedChildAfterEmbedderProcessDied
+-PerformanceManagerBrowserTest.VisibilitySyncAfterSurfaceEmbedderProcessDied
 -ScriptToolsReadyWaiterBrowserTest.ReadyOnceRendererIsGone
 
 # TODO(crbug.com/516839852): The test has been failing on tvOS since
