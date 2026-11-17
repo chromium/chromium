@@ -30,28 +30,6 @@ TEST_F(ConfigTest, ConfigUsesDefaultEnabledCountries) {
                                             "us", "zm", "zw"));
 }
 
-TEST_F(ConfigTest, ConfigUsesEnabledCountryFinchValues) {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      compose::features::kEnableCompose,
-      {{"enabled_countries", " a,b c\td'e\"f\ng "}});
-  compose::ResetConfigForTesting();
-  compose::Config config = compose::GetComposeConfig();
-  EXPECT_THAT(config.enabled_countries,
-              testing::UnorderedElementsAre("a", "b", "c", "d", "e", "f", "g"));
-}
-
-TEST_F(ConfigTest, ConfigFallbackToDefaultEnabledCountriesOnEmptyList) {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      compose::features::kEnableCompose,
-      {{"enabled_countries", ", \t' \n ,\" ,\"\t\n"}});
-  compose::ResetConfigForTesting();
-  compose::Config config = compose::GetComposeConfig();
-  EXPECT_THAT(config.enabled_countries,
-              testing::UnorderedElementsAre("bd", "ca", "gh", "in", "ke", "my",
-                                            "ng", "ph", "pk", "sg", "tz", "ug",
-                                            "us", "zm", "zw"));
-}
-
 TEST_F(ConfigTest, ConfigUsesDefaultProactiveNudgeCountries) {
   compose::Config config = compose::GetComposeConfig();
   EXPECT_THAT(config.proactive_nudge_countries,

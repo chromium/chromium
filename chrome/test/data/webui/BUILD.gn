@@ -434,7 +434,6 @@ source_set("browser_tests") {
   }
   if (enable_compose) {
     sources += [ "compose/compose_browsertest.cc" ]
-    deps += [ "//components/compose/core/browser:features" ]
   }
 
   if (enable_webui_certificate_viewer) {
@@ -577,10 +576,7 @@ source_set("interactive_ui_tests") {
 
   if (enable_compose) {
     sources += [ "compose/compose_focus_interactive_uitest.cc" ]
-    deps += [
-      "//chrome/browser/compose",
-      "//components/compose/core/browser:features",
-    ]
+    deps += [ "//chrome/browser/compose" ]
   }
 }
 

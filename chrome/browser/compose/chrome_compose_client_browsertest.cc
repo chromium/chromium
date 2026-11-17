@@ -122,10 +122,8 @@ std::unique_ptr<KeyedService> BuildMockOptimizationGuideKeyedService(
 class ChromeComposeClientBrowserTest : public InProcessBrowserTest {
  public:
   ChromeComposeClientBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {compose::features::kEnableCompose,
-         optimization_guide::features::kOptimizationGuideModelExecution},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        optimization_guide::features::kOptimizationGuideModelExecution);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -2815,9 +2813,8 @@ class ChromeComposeClientLinksBrowserTest
     : public ChromeComposeClientBrowserTest {
  public:
   ChromeComposeClientLinksBrowserTest() {
-    links_feature_list_.InitWithFeatures(
-        {compose::features::kEnableCompose},
-        {compose::features::kEnableComposeProactiveNudge});
+    links_feature_list_.InitAndDisableFeature(
+        compose::features::kEnableComposeProactiveNudge);
   }
 
  private:

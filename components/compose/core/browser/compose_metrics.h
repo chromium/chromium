@@ -154,7 +154,8 @@ enum class ComposeShowStatus {
   kNotComposeEligible = 9,
   kIncorrectScheme = 10,
   kFormFieldNestedInFencedFrame = 11,
-  kComposeFeatureFlagDisabled = 12,
+  // DEPRECATED: Compose feature flag was removed.
+  // kComposeFeatureFlagDisabled = 12,
   kDisabledOnChromeOS = 13,
   kAutocompleteOff = 14,
   kWritingSuggestionsFalse = 15,

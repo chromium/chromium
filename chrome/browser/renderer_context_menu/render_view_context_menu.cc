@@ -181,7 +181,6 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/buildflags.h"
-#include "components/compose/core/browser/compose_features.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/download/public/common/download_url_parameters.h"
@@ -3226,12 +3225,6 @@ void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
       menu_model_.SetElementIdentifierAt(
           menu_model_.GetIndexOfCommandId(IDC_CONTEXT_COMPOSE).value(),
           kComposeMenuItem);
-
-      // TODO(b/303646344): Remove new feature tag when no longer new.
-      menu_model_.SetIsNewFeatureAt(
-          menu_model_.GetItemCount() - 1,
-          UserEducationService::MaybeShowNewBadge(
-              GetBrowserContext(), compose::features::kEnableCompose));
       render_separator = true;
     }
 
@@ -5209,8 +5202,6 @@ void RenderViewContextMenu::ExecOpenCompose() {
             frame_token,
             autofill::FieldRendererId(params_.field_renderer_id.value())),
         compose::ComposeManagerImpl::UiEntryPoint::kContextMenu);
-    BrowserUserEducationInterface::From(GetBrowser())
-        ->NotifyNewBadgeFeatureUsed(compose::features::kEnableCompose);
   } else {
     compose::LogOpenComposeDialogResult(
         compose::OpenComposeDialogResult::kNoContentAutofillDriver);

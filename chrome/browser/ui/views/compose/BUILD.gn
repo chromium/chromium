@@ -67,6 +67,5 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/test:test_support",
     "//components/compose/core/browser",
-    "//components/compose/core/browser:features",
   ]
 }

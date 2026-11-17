@@ -237,7 +237,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Field in fenced frame">
     Blocked for element appearing inside a fenced frame
   </int>
-  <int value="12" label="Compose feature disabled"/>
+  <int value="12" label="DEPRECATED: Compose feature disabled"/>
   <int value="13" label="Unsupported ChromeOS device">
     Blocked for unsupported ChromeOS device
   </int>

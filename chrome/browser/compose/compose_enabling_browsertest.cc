@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/about_flags.h"
@@ -21,7 +20,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/compose/core/browser/compose_features.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -70,10 +68,6 @@ class ComposeEnablingBrowserTestBase : public InProcessBrowserTest {
     PrefService* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
-
-    // Confirm that the required feature flags are enabled by default.
-    EXPECT_TRUE(
-        base::FeatureList::IsEnabled(compose::features::kEnableCompose));
 
     // Enable Compose via the Optimization Guide's pref.
     browser()->GetProfile()->GetPrefs()->SetInteger(

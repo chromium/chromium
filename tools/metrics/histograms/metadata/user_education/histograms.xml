@@ -26,8 +26,6 @@ chromium-metrics-reviews@google.com.
   <variant name="AutofillForUnclassifiedFieldsAvailable"
       summary="For address and card field-by-field filling; shown in the
                autofill section of the context menu."/>
-  <variant name="Compose"
-      summary="For Compose feature; shown in web context menu."/>
   <variant name="ComposeNudge"
       summary="For Compose feature; shown on autofill popup when there is
                saved state to resume.."/>

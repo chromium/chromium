@@ -121,8 +121,7 @@ class ComposeEnablingTest : public ChromeRenderViewHostTestHarness {
     // without relyong on their default state. In other words, a change in
     // default state should not cause these tests to break.
     // Note: individual tests may reset flags to their default state.
-    ResetFeaturesAndConfig({compose::features::kEnableCompose,
-                            compose::features::kEnableComposeSavedStateNudge},
+    ResetFeaturesAndConfig({compose::features::kEnableComposeSavedStateNudge},
                            {compose::features::kEnableComposeProactiveNudge});
 
     mock_translate_ranker_ =
@@ -254,17 +253,9 @@ class ComposeEnablingTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(ComposeEnablingTest, EverythingDisabledTest) {
-  ResetFeaturesAndConfig({}, {compose::features::kEnableCompose});
+  ResetFeaturesAndConfig({}, {compose::features::kComposeEligible});
   // We intentionally don't call sign in to make our state not signed in.
   EXPECT_NE(compose_enabling_->IsEnabled(), base::ok());
-}
-
-TEST_F(ComposeEnablingTest, FeatureNotEnabledTest) {
-  ResetFeaturesAndConfig({}, {compose::features::kEnableCompose});
-  SignIn();
-
-  CheckIsEnabledError(compose_enabling_.get(),
-                      compose::ComposeShowStatus::kComposeFeatureFlagDisabled);
 }
 
 TEST_F(ComposeEnablingTest, NotSignedInTest) {
@@ -298,12 +289,12 @@ TEST_F(ComposeEnablingTest, SignedInErrorTest) {
 
 TEST_F(ComposeEnablingTest, ComposeEligibleTest) {
   scoped_feature_list_.Reset();
-  // Turn on the enable switch and off the eligible switch.
-  scoped_feature_list_.InitWithFeatures({compose::features::kEnableCompose},
-                                        {compose::features::kComposeEligible});
+  // Turn off the eligible switch.
+  scoped_feature_list_.InitAndDisableFeature(
+      compose::features::kComposeEligible);
   SignIn();
 
-  // The ComposeEligible switch should win, and disable the feature.
+  // The ComposeEligible switch should disable the feature.
   CheckIsEnabledError(compose_enabling_.get(),
                       compose::ComposeShowStatus::kNotComposeEligible);
 }
@@ -325,8 +316,8 @@ TEST_F(ComposeEnablingTest, UserNotAllowedTest) {
 
 TEST_F(ComposeEnablingTest, StaticMethodEverythingDisabledTest) {
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures({},
-                                        {compose::features::kEnableCompose});
+  scoped_feature_list_.InitAndDisableFeature(
+      compose::features::kComposeEligible);
   // We intentionally don't call sign in to make our state not signed in.
   EXPECT_FALSE(ComposeEnabling::IsEnabledForProfile(GetProfile()));
 }
@@ -336,7 +327,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuDisabledTest) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {compose::features::kEnableComposeSavedStateNudge},
-      {compose::features::kEnableCompose});
+      {compose::features::kComposeEligible});
 
   EXPECT_FALSE(compose_enabling_->ShouldTriggerContextMenu(
       GetProfile(), /*rfh=*/GetRenderFrameHost(), context_menu_params_));
@@ -906,12 +897,10 @@ TEST_F(ComposeEnablingTest, ProactiveNudgeDisabledSitesPreferenceTest) {
                 kProactiveNudgeDisabledForSiteByUserPreference);
 }
 
-TEST_F(ComposeEnablingTest, ClientCountryNotInFinchCountryListForCompose) {
-  // Sets a country list via Finch that does not include "us".
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      compose::features::kEnableCompose, {{"enabled_countries", "a, b, c"}});
-  compose::ResetConfigForTesting();
+TEST_F(ComposeEnablingTest, ClientCountryNotInCountryListForCompose) {
+  // Replace the client country override with a country not in the enabled list.
+  scoped_country_override_.reset();
+  scoped_country_override_ = ComposeEnabling::OverrideCountryForTesting("aa");
   EXPECT_THAT(compose_enabling_->IsEnabled(),
               ErrorIs(compose::ComposeShowStatus::kComposeNotEnabledInCountry));
 }
@@ -926,10 +915,7 @@ TEST_F(ComposeEnablingTest, ClientCountryUndefinedForCompose) {
 
 TEST_F(ComposeEnablingTest, AnyAndAllCountriesAllowedForCompose) {
   // Set the country list to the wildcard element.
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      compose::features::kEnableCompose, {{"enabled_countries", "*"}});
-  compose::ResetConfigForTesting();
+  compose::GetMutableConfigForTesting().enabled_countries = {"*"};
 
   // If the country check passes the signed out check will fail next.
   EXPECT_THAT(compose_enabling_->IsEnabled(),
@@ -950,14 +936,13 @@ TEST_F(ComposeEnablingTest, AnyAndAllCountriesAllowedForCompose) {
 TEST_F(ComposeEnablingTest,
        ClientCountryNotInFinchCountryListForProactiveNudge) {
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{compose::features::kEnableComposeProactiveNudge,
-        // Sets a country list for the proactive nudge that does not include
-        // "us".
-        {{"proactive_nudge_countries", "a, b, c"}}},
-       {compose::features::kEnableCompose, {{"enabled_countries", "*"}}}},
-      {});
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      compose::features::kEnableComposeProactiveNudge,
+      // Sets a country list for the proactive nudge that does not include
+      // "us".
+      {{"proactive_nudge_countries", "a, b, c"}});
   compose::ResetConfigForTesting();
+  compose::GetMutableConfigForTesting().enabled_countries = {"*"};
 
   std::string autocomplete_attribute;
   auto no_state_status = compose_enabling_->ShouldTriggerNoStatePopup(
@@ -969,10 +954,7 @@ TEST_F(ComposeEnablingTest,
 }
 
 TEST_F(ComposeEnablingTest, ClientCountryUndefinedForProactiveNudge) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      compose::features::kEnableCompose, {{"enabled_countries", "*"}});
-  compose::ResetConfigForTesting();
+  compose::GetMutableConfigForTesting().enabled_countries = {"*"};
 
   // Replace the client country override with an undefined country.
   scoped_country_override_.reset();
@@ -989,13 +971,12 @@ TEST_F(ComposeEnablingTest, ClientCountryUndefinedForProactiveNudge) {
 
 TEST_F(ComposeEnablingTest, AnyAndAllCountriesAllowedForProactiveNudge) {
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{compose::features::kEnableComposeProactiveNudge,
-        // Set both client country lists to the wildcard element.
-        {{"proactive_nudge_countries", "*"}}},
-       {compose::features::kEnableCompose, {{"enabled_countries", "*"}}}},
-      {});
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      compose::features::kEnableComposeProactiveNudge,
+      // Set both client country lists to the wildcard element.
+      {{"proactive_nudge_countries", "*"}});
   compose::ResetConfigForTesting();
+  compose::GetMutableConfigForTesting().enabled_countries = {"*"};
 
   std::string autocomplete_attribute;
   auto no_state_status = compose_enabling_->ShouldTriggerNoStatePopup(

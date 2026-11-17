@@ -217,13 +217,6 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
     return base::unexpected(compose::ComposeShowStatus::kNotComposeEligible);
   }
 
-  // Check that the feature flag is enabled.
-  if (!base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
-    DVLOG(2) << "feature not enabled ";
-    return base::unexpected(
-        compose::ComposeShowStatus::kComposeFeatureFlagDisabled);
-  }
-
   // Check if we're running in an enabled country. Note that an empty country
   // code will cause Compose to be disabled.
   std::string country_code;

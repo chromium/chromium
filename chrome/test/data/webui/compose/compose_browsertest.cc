@@ -5,7 +5,6 @@
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
-#include "components/compose/core/browser/compose_features.h"
 #include "content/public/test/browser_test.h"
 
 class ComposeTest : public WebUIMochaBrowserTest {
@@ -14,12 +13,9 @@ class ComposeTest : public WebUIMochaBrowserTest {
     set_test_loader_host(chrome::kChromeUIUntrustedComposeHost);
     set_test_loader_scheme(content::kChromeUIUntrustedScheme);
     scoped_compose_enabled_ = ComposeEnabling::ScopedEnableComposeForTesting();
-    scoped_feature_list_.InitAndEnableFeature(
-        compose::features::kEnableCompose);
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   ComposeEnabling::ScopedOverride scoped_compose_enabled_;
 };
 

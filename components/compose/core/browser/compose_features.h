@@ -9,9 +9,6 @@
 
 namespace compose::features {
 
-// Controls whether the Compose feature is available
-BASE_DECLARE_FEATURE(kEnableCompose);
-
 // Has flags for tweaking the valid sizes of input.
 BASE_DECLARE_FEATURE(kComposeInputParams);
 

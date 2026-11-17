@@ -5,7 +5,6 @@
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
-#include "components/compose/core/browser/compose_features.h"
 #include "content/public/test/browser_test.h"
 
 class ComposeFocusTest : public WebUIMochaFocusTest {
@@ -17,8 +16,6 @@ class ComposeFocusTest : public WebUIMochaFocusTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      compose::features::kEnableCompose};
   ComposeEnabling::ScopedOverride scoped_compose_enabled_;
 };
 

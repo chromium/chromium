@@ -2914,11 +2914,6 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
                                "Used to test \"New\" Badge logic.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
-      compose::features::kEnableCompose,
-      user_education::Metadata(124, "dewittj@chromium.org",
-                               "Shown in Help Me Write context menu item.", {},
-                               kComposePlatforms)));
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
       compose::features::kEnableComposeSavedStateNudge,
       user_education::Metadata(124, "dewittj@chromium.org",
                                "Shown in autofill-style suggestion UI to "

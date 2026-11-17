@@ -169,10 +169,8 @@ class ChromeComposeClientTest : public ChromeRenderViewHostTestHarness {
     EXPECT_CALL(*mock_hats_service(), CanShowAnySurvey(_))
         .WillRepeatedly(testing::Return(true));
 
-    scoped_feature_list_.InitWithFeatures(
-        {compose::features::kEnableCompose,
-         optimization_guide::features::kOptimizationGuideModelExecution},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        optimization_guide::features::kOptimizationGuideModelExecution);
     // Needed for feature params to reset.
     compose::ResetConfigForTesting();
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
@@ -272,8 +270,7 @@ class ChromeComposeClientTest : public ChromeRenderViewHostTestHarness {
   void EnableAutoCompose() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{compose::features::kEnableCompose,
-                              optimization_guide::features::
+        /*enabled_features=*/{optimization_guide::features::
                                   kOptimizationGuideModelExecution,
                               compose::features::kComposeAutoSubmit},
         /*disabled_features=*/{});
@@ -684,10 +681,9 @@ TEST_F(ChromeComposeClientTest, TestComposeSetTriggeredFromModifierOnError) {
 TEST_F(ChromeComposeClientTest, TestOptimizationGuideDisabled) {
   scoped_feature_list_.Reset();
 
-  // Enable Compose and disable optimization guide model execution.
-  scoped_feature_list_.InitWithFeatures(
-      {compose::features::kEnableCompose},
-      {optimization_guide::features::kOptimizationGuideModelExecution});
+  // Disable optimization guide model execution.
+  scoped_feature_list_.InitAndDisableFeature(
+      optimization_guide::features::kOptimizationGuideModelExecution);
 
   ShowDialogAndBindMojo();
 

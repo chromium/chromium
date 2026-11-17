@@ -166,23 +166,18 @@ Config::Config() {
           "request_latency_timeout_seconds",
           request_latency_timeout.InSeconds()));
 
-  // The "countries" field trial params must contain a list of lowercase
-  // country codes, following the format described in the documentation for the
+  enabled_countries =
+      base::flat_set<std::string>(DEFAULT_COMPOSE_ENABLED_COUNTRIES.begin(),
+                                  DEFAULT_COMPOSE_ENABLED_COUNTRIES.end());
+
+  // The "proactive_nudge_countries" field trial param must contain a list of
+  // lowercase country codes, following the format described in the
+  // documentation for the
   // variations::VariationsService::GetStoredPermanentCountry method. Commas,
   // spaces, tabs, new lines, single and double quotes are all treated as
   // separators and then discarded. A resulting empty list will be ignored in
   // favor of the default launched countries list.
   // To enable all countries, set it to have a single "*" element.
-  std::vector<std::string> enabled_countries_from_finch =
-      GetFieldTrialParamAsSplitString(features::kEnableCompose,
-                                      "enabled_countries");
-  enabled_countries =
-      (enabled_countries_from_finch.empty())
-          ? base::flat_set<std::string>(
-                DEFAULT_COMPOSE_ENABLED_COUNTRIES.begin(),
-                DEFAULT_COMPOSE_ENABLED_COUNTRIES.end())
-          : base::flat_set<std::string>(enabled_countries_from_finch);
-
   std::vector<std::string> proactive_nudge_countries_from_finch =
       GetFieldTrialParamAsSplitString(features::kEnableComposeProactiveNudge,
                                       "proactive_nudge_countries");
@@ -192,11 +187,6 @@ Config::Config() {
                 DEFAULT_PROACTIVE_NUDGE_ENABLED_COUNTRIES.begin(),
                 DEFAULT_PROACTIVE_NUDGE_ENABLED_COUNTRIES.end())
           : base::flat_set<std::string>(proactive_nudge_countries_from_finch);
-
-  session_max_allowed_lifetime =
-      base::Minutes(base::GetFieldTrialParamByFeatureAsInt(
-          features::kEnableCompose, "session_max_allowed_lifetime_minutes",
-          session_max_allowed_lifetime.InMinutes()));
 }
 
 Config::Config(const Config& other) = default;

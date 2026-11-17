@@ -134,8 +134,8 @@ struct Config {
   // error message.
   base::TimeDelta request_latency_timeout = base::Seconds(20);
 
-  // Finch-controllable list of countries where Compose should be enabled. The
-  // default value is set in the constructor.
+  // List of countries where Compose should be enabled. The default value is set
+  // in the constructor.
   base::flat_set<std::string> enabled_countries;
 
   // The threshold for the lifetime of a Compose session. A session whose

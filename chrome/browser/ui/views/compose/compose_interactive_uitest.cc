@@ -22,7 +22,6 @@
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/config.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -77,10 +76,8 @@ const DeepQuery kTextarea = {"#elem1"};
 class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
  public:
   MAYBE_ComposeInteractiveUiTest() {
-    feature_list_.InitWithFeatures(
-        {compose::features::kEnableCompose,
-         optimization_guide::features::kOptimizationGuideModelExecution},
-        {});
+    feature_list_.InitAndEnableFeature(
+        optimization_guide::features::kOptimizationGuideModelExecution);
     subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(

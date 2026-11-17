@@ -176,7 +176,6 @@ source_set("impl") {
       "//chrome/browser/user_education",
       "//chrome/common:mojo_bindings",
       "//components/compose/core/browser",
-      "//components/compose/core/browser:features",
       "//components/feature_engagement/public",
       "//components/guest_view/browser",
       "//components/live_caption:constants",
