@@ -12,9 +12,9 @@
 }
 
 #crUrlListItem {
-  --organizer-list-section-item-trailing-icon-size_: 16px;
-  --organizer-list-section-item-trailing-button-size_: 32px;
   --cr-url-list-item-padding: 4px 8px;
+  --organizer-list-section-item-trailing-button-size_: 32px;
+  --organizer-list-section-item-trailing-icon-size_: 16px;
 
   border-radius: 8px;
 }
@@ -49,6 +49,11 @@
   flex-direction: row;
 }
 
+[slot='customIcon'] cr-icon {
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+}
+
 #trailingIcon {
   --iron-icon-height: var(--organizer-list-section-item-trailing-icon-size_);
   --iron-icon-width: var(--organizer-list-section-item-trailing-icon-size_);
@@ -69,7 +74,7 @@
       var(--organizer-list-section-item-trailing-icon-size_);
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-margin-start: 0;
-  --cr-icon-button-size: 0px;
+  --cr-icon-button-size: 0;
   opacity: 0;
   pointer-events: none;
   position: absolute;

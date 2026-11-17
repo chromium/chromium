@@ -77,14 +77,6 @@ export class OrganizerListSectionElement extends CrLitElement implements
     };
   }
 
-  private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
-  private sectionStateChangedListenerId_: number|null = null;
-  private reducedMotionQuery_: MediaQueryList|null = null;
-  private windowShownTimestamp_: number = performance.now();
-  private loadPromise_: Promise<unknown> = Promise.resolve();
-  // Generation identifier used to associate async reload results with the
-  // current show/hide cycle.
-  private loadGeneration_: number = 0;
   accessor delegate: OrganizerListSectionDelegate<unknown>|null = null;
   accessor items: Array<OrganizerListSectionItem<unknown>> = [];
   accessor expanded: boolean = true;
@@ -101,6 +93,15 @@ export class OrganizerListSectionElement extends CrLitElement implements
   override accessor hidden: boolean = false;
 
   private activeDelegate_: OrganizerListSectionDelegate<unknown>|null = null;
+  private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
+  private sectionStateChangedListenerId_: number|null = null;
+  private reducedMotionQuery_: MediaQueryList|null = null;
+  private windowShownTimestamp_: number = performance.now();
+  private loadPromise_: Promise<unknown> = Promise.resolve();
+  // Generation identifier used to associate async reload results with the
+  // current show/hide cycle.
+  private loadGeneration_: number = 0;
+
   private searchOptions_:
       SearchOptions<HighlightableOrganizerListSectionItem<unknown>> = {
         distance: 200,

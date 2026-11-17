@@ -40,8 +40,7 @@
   --cr-toolbar-search-field-prompt-color: var(--color-toolbar-text);
   --cr-toolbar-search-field-term-margin: 0 6px;
   flex-shrink: 0;
-  margin: 12px;
-  margin-top: 4px;
+  margin: 4px 12px 12px;
   padding: 0 4px;
   width: auto;
 }
@@ -52,7 +51,7 @@
       var(--cr-secondary-text-color));
   display: flex;
   height: 100%;
-  padding-right: 12px;
+  padding-inline-end: 12px;
 }
 
 #list {

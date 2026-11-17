@@ -5,9 +5,9 @@
 import '../organizer_zero_state.js';
 
 import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerSection} from '../organizer_list_section_delegate.js';
 import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
@@ -88,13 +88,13 @@ export class RecentTabsDelegate implements
     const data = item.data;
     assert(data);
     if (isTabGroup(data)) {
-      chrome.metricsPrivate?.recordUserAction?.(
+      chrome.metricsPrivate.recordUserAction(
           'OrganizerPanel.OpenRecentlyClosedTabGroup');
     } else if (isSplitView(data)) {
-      chrome.metricsPrivate?.recordUserAction?.(
+      chrome.metricsPrivate.recordUserAction(
           'OrganizerPanel.OpenRecentlyClosedSplitView');
     } else {
-      chrome.metricsPrivate?.recordUserAction?.(
+      chrome.metricsPrivate.recordUserAction(
           'OrganizerPanel.OpenRecentlyClosedTab');
     }
     const id =

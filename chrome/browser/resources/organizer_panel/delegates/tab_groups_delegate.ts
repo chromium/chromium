@@ -27,6 +27,10 @@ export class TabGroupsDelegate implements
   private client_?: OrganizerListSectionClient;
   private listenerIds_: number[] = [];
   private tabGroups_: TabGroup[] = [];
+  private onCreateTabGroupClick_ = () => {
+    chrome.metricsPrivate.recordUserAction('OrganizerPanel.CreateTabGroup');
+    this.browserProxy_.handler.createNewTabGroup();
+  };
 
   init(sectionClient: OrganizerListSectionClient) {
     assert(this.listenerIds_.length === 0);
@@ -71,15 +75,13 @@ export class TabGroupsDelegate implements
     const item: OrganizerListSectionItem<unknown> = {
       title: [loadTimeData.getString('createTabGroup')],
       prefixIcon: {
-        element: html`<cr-icon icon="organizer-panel:library-add"
-            style="--iron-icon-height: 20px; --iron-icon-width: 20px;">
-        </cr-icon>`,
+        element: html`<cr-icon icon="organizer-panel:library-add"></cr-icon>`,
       },
       size: CrUrlListItemSize.COMPACT,
     };
     return html`
       <organizer-list-section-item .item="${item}"
-          @click="${() => this.onCreateTabGroupClick_()}">
+          @click="${this.onCreateTabGroupClick_}">
       </organizer-list-section-item>
     `;
   }
@@ -88,13 +90,8 @@ export class TabGroupsDelegate implements
     return true;
   }
 
-  private onCreateTabGroupClick_() {
-    chrome.metricsPrivate?.recordUserAction?.('OrganizerPanel.CreateTabGroup');
-    this.browserProxy_.handler.createNewTabGroup();
-  }
-
   onItemClick(item: OrganizerListSectionItem<TabGroup>) {
-    chrome.metricsPrivate?.recordUserAction?.('OrganizerPanel.OpenTabGroup');
+    chrome.metricsPrivate.recordUserAction('OrganizerPanel.OpenTabGroup');
     const data = item.data;
     assert(data);
     this.browserProxy_.handler.openTabGroup(data.id);
@@ -130,8 +127,7 @@ export class TabGroupsDelegate implements
   private async showContextMenu_(
       id: string,
       anchorRect: {x: number, y: number, width: number, height: number}) {
-    chrome.metricsPrivate?.recordUserAction?.(
-        'OrganizerPanel.OpenTabGroupMenu');
+    chrome.metricsPrivate.recordUserAction('OrganizerPanel.OpenTabGroupMenu');
     await this.browserProxy_.handler.showContextMenu(id, anchorRect);
   }
 
