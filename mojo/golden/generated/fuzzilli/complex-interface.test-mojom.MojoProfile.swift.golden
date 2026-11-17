@@ -1853,8 +1853,8 @@ let mojoPrimaryProfile = Profile(
     additionalCodeGenerators: [
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
-        (MojoGoldenRemoteFromJsRouterListenerGenerator, 5000),
-        (MojoGoldenReceiverFromBrowserRouterListenerGenerator, 5000),
+        (MojoGoldenRemoteFromJsRouterListenerGenerator, 2500),
+        (MojoGoldenReceiverFromBrowserRouterListenerGenerator, 2500),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,

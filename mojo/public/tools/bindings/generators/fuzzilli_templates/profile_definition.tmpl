@@ -162,10 +162,10 @@ let mojo{{primary.name}}Profile = Profile(
     additionalCodeGenerators: [
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
-{%- for receiver in js_implemented_interfaces %}
-    {%- if receiver.methods %}
-        (Mojo{{receiver|format_unique_name}}RouterListenerGenerator, 5000),
-    {%- endif %}
+{#- The router listener generators share one weight, so profiles with many
+    JS-implemented interfaces do not spend most of the generation on listeners. #}
+{%- for receiver in js_implemented_interfaces if receiver.methods %}
+        (Mojo{{receiver|format_unique_name}}RouterListenerGenerator, {{5000 // loop.length}}),
 {%- endfor %}
 {%- for array in js_arrays %}
         (Mojo{{array|format_unique_name}}Generator, 1),
