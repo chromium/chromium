@@ -31,11 +31,6 @@ using base::OnceClosure;
 
 class TestSingleThreadTaskRunner : public base::SingleThreadTaskRunner {
   ~TestSingleThreadTaskRunner() override = default;
-  bool PostTask(const Location& from_here, OnceClosure task) { return true; }
-  template <class T>
-  bool DeleteSoon(const Location& from_here, const T* object) {
-    return true;
-  }
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure task,
                        base::TimeDelta delay) override {
@@ -66,11 +61,6 @@ class TestClientDiscardableSharedMemoryManager
   }
 
   void DeletedDiscardableSharedMemory(int32_t id) override {}
-
-  size_t GetSize() const {
-    base::AutoLock lock(lock_);
-    return heap_->GetSize();
-  }
 
   size_t GetFreelistSize() const {
     base::AutoLock lock(lock_);

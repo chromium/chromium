@@ -33,10 +33,8 @@ bool IsInFreeList(DiscardableSharedMemoryHeap::Span* span) {
 DiscardableSharedMemoryHeap::Span::Span(
     base::DiscardableSharedMemory* shared_memory,
     size_t first_block,
-    size_t num_blocks,
-    DiscardableSharedMemoryHeap::ScopedMemorySegment* memory_segment)
-    : memory_segment_(memory_segment),
-      shared_memory_(shared_memory),
+    size_t num_blocks)
+    : shared_memory_(shared_memory),
       first_block_(first_block),
       num_blocks_(num_blocks) {}
 
@@ -55,11 +53,6 @@ DiscardableSharedMemoryHeap::ScopedMemorySegment::ScopedMemorySegment(
 base::span<uint8_t> DiscardableSharedMemoryHeap::Span::memory() const {
   return shared_memory_->memory().subspan(first_block_ * base::GetPageSize(),
                                           num_blocks_ * base::GetPageSize());
-}
-
-DiscardableSharedMemoryHeap::ScopedMemorySegment*
-DiscardableSharedMemoryHeap::Span::GetScopedMemorySegmentForTesting() const {
-  return memory_segment_;
 }
 
 DiscardableSharedMemoryHeap::ScopedMemorySegment::~ScopedMemorySegment() {
@@ -130,8 +123,8 @@ DiscardableSharedMemoryHeap::Grow(
   auto* raw_shared_memory = shared_memory.get();
   auto scoped_memory_segment = std::make_unique<ScopedMemorySegment>(
       this, std::move(shared_memory), size, id, std::move(deleted_callback));
-  std::unique_ptr<Span> span(new Span(raw_shared_memory, 0u, size / block_size_,
-                                      scoped_memory_segment.get()));
+  std::unique_ptr<Span> span(
+      new Span(raw_shared_memory, 0u, size / block_size_));
   CHECK(spans_.find(SpanBeginKey(*span)) == spans_.end());
   CHECK(spans_.find(SpanEndKey(*span)) == spans_.end());
   RegisterSpan(span.get());
@@ -190,9 +183,9 @@ DiscardableSharedMemoryHeap::Split(Span* span, size_t blocks) {
   DCHECK(blocks);
   CHECK_LT(blocks, span->num_blocks_);
 
-  std::unique_ptr<Span> leftover(
-      new Span(span->shared_memory_, span->first_block_ + blocks,
-               span->num_blocks_ - blocks, span->memory_segment_));
+  std::unique_ptr<Span> leftover(new Span(span->shared_memory_,
+                                          span->first_block_ + blocks,
+                                          span->num_blocks_ - blocks));
   CHECK(leftover->num_blocks_ == 1u ||
         spans_.find(SpanBeginKey(*leftover)) == spans_.end());
   RegisterSpan(leftover.get());
@@ -355,9 +348,8 @@ DiscardableSharedMemoryHeap::Carve(Span* span, size_t blocks) {
 
   const size_t extra = serving->num_blocks_ - blocks;
   if (extra) {
-    std::unique_ptr<Span> leftover(new Span(serving->shared_memory_.get(),
-                                            serving->first_block_ + blocks,
-                                            extra, serving->memory_segment_));
+    std::unique_ptr<Span> leftover(new Span(
+        serving->shared_memory_.get(), serving->first_block_ + blocks, extra));
     leftover->set_is_locked(false);
     CHECK(extra == 1u || spans_.find(SpanBeginKey(*leftover)) == spans_.end());
     RegisterSpan(leftover.get());

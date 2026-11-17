@@ -160,11 +160,6 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
     base::TimeTicks last_locked_ GUARDED_BY(manager_->lock_);
   };
 
-  struct Statistics {
-    size_t total_size;
-    size_t freelist_size;
-  };
-
   base::trace_event::MemoryAllocatorDump* CreateMemoryAllocatorDump(
       DiscardableSharedMemoryHeap::Span* span,
       const char* name,

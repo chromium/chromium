@@ -101,11 +101,6 @@ constexpr base::MemoryConsumerTraits kMemoryConsumerTraits(
 
 }  // namespace
 
-constexpr base::TimeDelta
-    ClientDiscardableSharedMemoryManager::kMinAgeForScheduledPurge;
-constexpr base::TimeDelta
-    ClientDiscardableSharedMemoryManager::kScheduledPurgeInterval;
-
 ClientDiscardableSharedMemoryManager::DiscardableMemoryImpl::
     DiscardableMemoryImpl(
         ClientDiscardableSharedMemoryManager* manager,
@@ -547,7 +542,6 @@ void ClientDiscardableSharedMemoryManager::UnlockAndReleaseMemory(
     DiscardableMemoryImpl* memory,
     std::unique_ptr<DiscardableSharedMemoryHeap::Span> span) {
   memory->manager_->lock_.AssertAcquired();
-  // lock_.AssertAcquired();
   if (memory->is_locked()) {
     UnlockSpan(span.get());
   }

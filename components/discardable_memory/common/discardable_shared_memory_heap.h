@@ -30,9 +30,6 @@ namespace discardable_memory {
 // Implements a heap of discardable shared memory. An array of free lists
 // is used to keep track of free blocks.
 class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
- private:
-  class ScopedMemorySegment;
-
  public:
   class DISCARDABLE_MEMORY_EXPORT Span : public base::UnsafeLinkNode<Span> {
    public:
@@ -50,19 +47,13 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
     // The bytes of memory in `shared_memory()` that are covered by this Span.
     base::span<uint8_t> memory() const;
 
-    ScopedMemorySegment* GetScopedMemorySegmentForTesting() const;
-
    private:
     friend class DiscardableSharedMemoryHeap;
 
     Span(base::DiscardableSharedMemory* shared_memory,
          size_t first_block,
-         size_t length,
-         DiscardableSharedMemoryHeap::ScopedMemorySegment* memory_segment);
+         size_t num_blocks);
 
-    const raw_ptr<DiscardableSharedMemoryHeap::ScopedMemorySegment,
-                  DanglingUntriaged>
-        memory_segment_;
     raw_ptr<base::DiscardableSharedMemory> shared_memory_;
     size_t first_block_;
     size_t num_blocks_;
@@ -127,7 +118,7 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
       base::trace_event::ProcessMemoryDump* pmd) const;
 
  private:
-  class DISCARDABLE_MEMORY_EXPORT ScopedMemorySegment {
+  class ScopedMemorySegment {
    public:
     ScopedMemorySegment(
         DiscardableSharedMemoryHeap* heap,
