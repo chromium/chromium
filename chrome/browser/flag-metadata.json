@@ -2401,7 +2401,7 @@
   {
     "name": "contextual-tasks",
     "owners": ["mdjones@chromium.org", "chrome-contextual-tasks-eng@google.com"],
-    "expiry_milestone": 159
+    "expiry_milestone": 170
   },
   {
     "name": "contextual-tasks-allow-signed-out-user-in-desktop-android",
