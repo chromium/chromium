@@ -22,7 +22,8 @@ class FencedFrameStubBrowserTest : public ContentBrowserTest {
  public:
   FencedFrameStubBrowserTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kFencedFrames},
+        /*enabled_features=*/{blink::features::kFencedFrames,
+                              blink::features::kFencedFramesAPIChanges},
         /*disabled_features=*/{});
   }
 

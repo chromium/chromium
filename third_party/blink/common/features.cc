@@ -677,23 +677,23 @@ BASE_FEATURE_PARAM(bool,
 // this feature does not automatically expose this element to the web, it only
 // allows the element to be enabled by the runtime enabled feature, for origin
 // trials.
-BASE_FEATURE(kFencedFrames, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFencedFrames, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable sending event-level reports through reportEvent() in cross-origin
 // subframes. This requires opt-in both from the cross-origin subframe that is
 // sending the beacon as well as the document that contains information about
 // the reportEvent() endpoints.
 BASE_FEATURE(kFencedFramesCrossOriginEventReporting,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Temporarily un-disable credentials on fenced frame automatic beacons until
 // third party cookie deprecation.
 // TODO(crbug.com/1496395): Remove this after 3PCD.
 BASE_FEATURE(kFencedFramesAutomaticBeaconCredentials,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFencedFramesCrossOriginAutomaticBeaconData,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls functionality related to network revocation/local unpartitioned
 // data access in fenced frames.
@@ -701,13 +701,13 @@ BASE_FEATURE(kFencedFramesLocalUnpartitionedDataAccess,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFencedFramesReportEventHeaderChanges,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables a bug fix that allows a 'src' allowlist in the |allow| parameter of a
 // <fencedframe> or <iframe> loaded with a FencedFrameConfig to behave as
 // expected. See: https://crbug.com/349080952
 BASE_FEATURE(kFencedFramesSrcPermissionsPolicy,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use "style" and "json" destinations for CSS and JSON modules.
 // https://crbug.com/1491336

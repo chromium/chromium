@@ -3198,16 +3198,13 @@
       // the support of the browser process to fully enable the feature.
       // Enabling this runtime enabled feature alone has no effect.
       public: true,
-      status: "stable",
     },
     {
       name: "FencedFramesAPIChanges",
       // Various new IDL attributes on the <fencedframe> element (such as
       // `config`, `sandbox`, and `allow`).
-      base_feature_status: "enabled",
+      base_feature_status: "disabled",
       copied_from_base_feature_if: "enabled_or_overridden",
-      status: "stable",
-
     },
     {
       // Allows fenced frames to access unpartioned data via Shared Storage in

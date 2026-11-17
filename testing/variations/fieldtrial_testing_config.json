@@ -9097,33 +9097,6 @@
             ]
         }
     ],
-    "FencedFramesDeprecation": [
-        {
-            "platforms": [
-                "android",
-                "android_desktop",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "FencedFrames",
-                        "FencedFramesAPIChanges",
-                        "FencedFramesAutomaticBeaconCredentials",
-                        "FencedFramesCrossOriginAutomaticBeaconData",
-                        "FencedFramesCrossOriginEventReporting",
-                        "FencedFramesLocalUnpartitionedDataAccess",
-                        "FencedFramesReportEventHeaderChanges",
-                        "FencedFramesSrcPermissionsPolicy"
-                    ]
-                }
-            ]
-        }
-    ],
     "FetchAccountCapabilitiesOnRestartIos": [
         {
             "platforms": [

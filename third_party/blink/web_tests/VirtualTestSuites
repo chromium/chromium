@@ -1435,7 +1435,7 @@
       "external/wpt/fenced-frame"
     ],
     "args": [
-      "--enable-features=FencedFrames,PrivacySandboxAdsAPIsOverride,FencedFramesEnforceFocus,FencedFramesLocalUnpartitionedDataAccess,FencedFramesCrossOriginEventReportingAllTraffic,FencedFramesReportEventHeaderChanges,FencedFramesSrcPermissionsPolicy,FencedFramesCrossOriginAutomaticBeaconData"
+      "--enable-features=FencedFrames,FencedFramesAPIChanges,PrivacySandboxAdsAPIsOverride,FencedFramesEnforceFocus,FencedFramesLocalUnpartitionedDataAccess,FencedFramesCrossOriginEventReportingAllTraffic,FencedFramesReportEventHeaderChanges,FencedFramesSrcPermissionsPolicy,FencedFramesCrossOriginAutomaticBeaconData"
     ],
     "expires": "Jan 9, 2027"
   },
@@ -1462,7 +1462,7 @@
       "wpt_internal/fenced_frame"
     ],
     "args": [
-      "--enable-features=PrivacySandboxAdsAPIsOverride,FencedFramesEnforceFocus,FencedFramesLocalUnpartitionedDataAccess,FencedFramesCrossOriginEventReportingAllTraffic,FencedFramesReportEventHeaderChanges"
+      "--enable-features=FencedFrames,FencedFramesAPIChanges,PrivacySandboxAdsAPIsOverride,FencedFramesEnforceFocus,FencedFramesLocalUnpartitionedDataAccess,FencedFramesCrossOriginEventReportingAllTraffic,FencedFramesReportEventHeaderChanges"
     ],
     "expires": "Jan 9, 2027"
   },
