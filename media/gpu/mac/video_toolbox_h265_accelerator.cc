@@ -16,9 +16,11 @@ namespace media {
 
 VideoToolboxH265Accelerator::VideoToolboxH265Accelerator(
     std::unique_ptr<MediaLog> media_log,
+    VideoDecoderConfig::AlphaMode alpha_mode,
     DecodeCB decode_cb,
     OutputCB output_cb)
     : media_log_(std::move(media_log)),
+      alpha_mode_(alpha_mode),
       decode_cb_(std::move(decode_cb)),
       output_cb_(std::move(output_cb)),
       vps_tracker_("VPS", media_log_.get()),
@@ -46,7 +48,7 @@ void VideoToolboxH265Accelerator::ProcessVPS(
            << " vps_video_parameter_set_id=" << vps->vps_video_parameter_set_id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   vps_tracker_.Process(vps->vps_video_parameter_set_id, vps_nalu_data);
-  if (vps->aux_alpha_layer_id) {
+  if (IsAlphaLayerSupported() && vps->aux_alpha_layer_id) {
     alpha_vps_ids_.insert(vps->vps_video_parameter_set_id);
   } else {
     alpha_vps_ids_.erase(vps->vps_video_parameter_set_id);
@@ -149,6 +151,7 @@ VideoToolboxH265Accelerator::SubmitFrameMetadata(
   }
 
   // Update frame state.
+  frame_base_config_ = H265Decoder::AlphaLayerConfig::FromSPS(*sps);
   frame_is_keyframe_ = slice_hdr->irap_pic;
   frame_bit_depth_ = sps->bit_depth_y;
   frame_chroma_sampling_ = sps->GetChromaSampling();
@@ -175,6 +178,12 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitSlice(
 
   if (drop_frame_) {
     return Status::kOk;
+  }
+
+  if (!frame_base_config_ || !sps ||
+      H265Decoder::AlphaLayerConfig::FromSPS(*sps) != *frame_base_config_) {
+    MEDIA_LOG(ERROR, media_log_.get()) << "Slice SPS does not match frame SPS";
+    return Status::kFail;
   }
 
   vps_tracker_.ReferenceInFrame(sps->sps_video_parameter_set_id);
@@ -258,6 +267,7 @@ void VideoToolboxH265Accelerator::ResetFrameData() {
   sps_tracker_.ResetFrame();
   pps_tracker_.ResetFrame();
   frame_slice_data_.clear();
+  frame_base_config_.reset();
   frame_bit_depth_ = 8;
   frame_chroma_sampling_ = VideoChromaSampling::k420;
   frame_is_keyframe_ = false;
@@ -271,7 +281,7 @@ bool VideoToolboxH265Accelerator::IsChromaSamplingSupported(
 }
 
 bool VideoToolboxH265Accelerator::IsAlphaLayerSupported() {
-  return true;
+  return alpha_mode_ == VideoDecoderConfig::AlphaMode::kHasAlpha;
 }
 
 }  // namespace media

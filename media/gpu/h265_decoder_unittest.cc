@@ -79,8 +79,9 @@ class HasPocMatcher : public MatcherInterface<scoped_refptr<H265Picture>> {
 
   bool MatchAndExplain(scoped_refptr<H265Picture> p,
                        MatchResultListener* listener) const override {
-    if (p->pic_order_cnt_val_ == expected_poc_)
+    if (p->pic_order_cnt_val_ == expected_poc_) {
       return true;
+    }
     *listener << "with poc: " << p->pic_order_cnt_val_;
     return false;
   }
@@ -385,8 +386,9 @@ void H265DecoderTest::SetUp() {
 
 void H265DecoderTest::SetInputFrameFiles(
     const std::vector<std::string>& input_frame_files) {
-  for (auto f : input_frame_files)
+  for (auto f : input_frame_files) {
     input_frame_files_.push(f);
+  }
 }
 
 AcceleratedVideoDecoder::DecodeResult H265DecoderTest::Decode(
@@ -395,16 +397,18 @@ AcceleratedVideoDecoder::DecodeResult H265DecoderTest::Decode(
     auto result = decoder_->Decode();
     int32_t bitstream_id = 0;
     if (result != AcceleratedVideoDecoder::kRanOutOfStreamData ||
-        input_frame_files_.empty())
+        input_frame_files_.empty()) {
       return result;
+    }
     auto input_file = GetTestDataFilePath(input_frame_files_.front());
     input_frame_files_.pop();
     CHECK(
         base::OptionalUnwrapTo(base::ReadFileToBytes(input_file), bitstream_));
     decoder_buffer_ = DecoderBuffer::CopyFrom(bitstream_);
     EXPECT_NE(decoder_buffer_.get(), nullptr);
-    if (set_stream_expect)
+    if (set_stream_expect) {
       EXPECT_CALL(*accelerator_, SetStream(_, _));
+    }
     decoder_->SetStream(bitstream_id++, decoder_buffer_);
   }
 }
@@ -1611,6 +1615,115 @@ TEST_F(H265DecoderTest, NoConfigChangeAfterResetWithSameSps) {
   }
   EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode());
   EXPECT_TRUE(decoder_->Flush());
+}
+
+// Regression tests for b/585327095: an auxiliary alpha layer (nuh_layer_id ==
+// aux_alpha_layer_id) whose SPS geometry, CTB size, chroma format, or bit depth
+// does not match the active base-layer SPS must be rejected with kDecodeError
+// rather than forwarded to the platform accelerator.
+TEST_F(H265DecoderTest, AlphaLayerSameGeometryInHvcCOrderSucceeds) {
+  H26xAnnexBBitstreamBuilder builder;
+  AppendVpsWithAlpha(builder);
+
+  H265SPS base_sps = MakeTestSps();
+  base_sps.pic_width_in_luma_samples = 256;
+  base_sps.pic_height_in_luma_samples = 256;
+  BuildPackedH265SPS(builder, base_sps);
+
+  H265SPS alpha_sps = base_sps;
+  alpha_sps.sps_seq_parameter_set_id = 1;
+  AppendSpsWithLayerId(builder, alpha_sps, /*nuh_layer_id=*/1);
+
+  BuildPackedH265PPS(builder, MakeTestPps());
+
+  H265PPS alpha_pps = MakeTestPps();
+  alpha_pps.pps_pic_parameter_set_id = 1;
+  alpha_pps.pps_seq_parameter_set_id = 1;
+  AppendPpsWithLayerId(builder, alpha_pps, /*nuh_layer_id=*/1);
+
+  AppendIntraPicture(builder, H265NALU::IDR_N_LP, /*poc_lsb=*/0);
+  AppendIntraPicture(builder, H265NALU::IDR_N_LP, /*poc_lsb=*/0,
+                     /*no_output_of_prior_pics_flag=*/false, /*poc_lsb_bits=*/8,
+                     /*nuh_layer_id=*/1);
+
+  auto buffer = DecoderBuffer::CopyFrom(builder.data());
+  ExpectAnyAcceleratorCalls();
+  EXPECT_CALL(*accelerator_, ProcessSPS(_, _)).Times(2);
+  EXPECT_CALL(*accelerator_, ProcessPPS(_, _)).Times(2);
+  EXPECT_CALL(*accelerator_, OutputPicture(_)).WillOnce(Return(true));
+
+  decoder_->SetStream(1, buffer);
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, decoder_->Decode());
+  EXPECT_EQ(gfx::Size(256, 256), decoder_->GetPicSize());
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, decoder_->Decode());
+  EXPECT_TRUE(decoder_->Flush());
+}
+
+TEST_F(H265DecoderTest, AlphaLayerGeometryMismatchInHvcCOrderRejected) {
+  H26xAnnexBBitstreamBuilder builder;
+  AppendVpsWithAlpha(builder);
+
+  H265SPS base_sps = MakeTestSps();
+  base_sps.pic_width_in_luma_samples = 256;
+  base_sps.pic_height_in_luma_samples = 256;
+  BuildPackedH265SPS(builder, base_sps);
+
+  H265SPS alpha_sps = base_sps;
+  alpha_sps.sps_seq_parameter_set_id = 1;
+  alpha_sps.pic_width_in_luma_samples = 768;
+  alpha_sps.pic_height_in_luma_samples = 768;
+  AppendSpsWithLayerId(builder, alpha_sps, /*nuh_layer_id=*/1);
+
+  BuildPackedH265PPS(builder, MakeTestPps());
+
+  H265PPS alpha_pps = MakeTestPps();
+  alpha_pps.pps_pic_parameter_set_id = 1;
+  alpha_pps.pps_seq_parameter_set_id = 1;
+  AppendPpsWithLayerId(builder, alpha_pps, /*nuh_layer_id=*/1);
+
+  AppendIntraPicture(builder, H265NALU::IDR_N_LP, /*poc_lsb=*/0);
+  AppendIntraPicture(builder, H265NALU::IDR_N_LP, /*poc_lsb=*/0,
+                     /*no_output_of_prior_pics_flag=*/false, /*poc_lsb_bits=*/8,
+                     /*nuh_layer_id=*/1);
+
+  auto buffer = DecoderBuffer::CopyFrom(builder.data());
+  ExpectAnyAcceleratorCalls();
+  EXPECT_CALL(*accelerator_, ProcessSPS(_, _)).Times(1);
+
+  decoder_->SetStream(1, buffer);
+  EXPECT_EQ(AcceleratedVideoDecoder::kDecodeError, decoder_->Decode());
+}
+
+TEST_F(H265DecoderTest, AlphaLayerGeometryMismatchMidPictureRejected) {
+  H26xAnnexBBitstreamBuilder builder;
+  AppendVpsWithAlpha(builder);
+
+  H265SPS base_sps = MakeTestSps();
+  base_sps.pic_width_in_luma_samples = 256;
+  base_sps.pic_height_in_luma_samples = 256;
+  BuildPackedH265SPS(builder, base_sps);
+  BuildPackedH265PPS(builder, MakeTestPps());
+
+  AppendIntraPicture(builder, H265NALU::CRA_NUT, /*poc_lsb=*/0);
+
+  H265SPS alpha_sps = base_sps;
+  alpha_sps.pic_width_in_luma_samples = 256;
+  alpha_sps.pic_height_in_luma_samples = 512;
+  AppendSpsWithLayerId(builder, alpha_sps, /*nuh_layer_id=*/1);
+  AppendPpsWithLayerId(builder, MakeTestPps(), /*nuh_layer_id=*/1);
+  AppendIntraPicture(builder, H265NALU::CRA_NUT, /*poc_lsb=*/0,
+                     /*no_output_of_prior_pics_flag=*/false, /*poc_lsb_bits=*/8,
+                     /*nuh_layer_id=*/1);
+
+  auto buffer = DecoderBuffer::CopyFrom(builder.data());
+  ExpectAnyAcceleratorCalls();
+  EXPECT_CALL(*accelerator_, ProcessSPS(_, _)).Times(1);
+  EXPECT_CALL(*accelerator_, ProcessPPS(_, _)).Times(1);
+
+  decoder_->SetStream(1, buffer);
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, decoder_->Decode());
+  EXPECT_EQ(gfx::Size(256, 256), decoder_->GetPicSize());
+  EXPECT_EQ(AcceleratedVideoDecoder::kDecodeError, decoder_->Decode());
 }
 
 }  // namespace media

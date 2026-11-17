@@ -10,6 +10,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -40,6 +41,25 @@ namespace media {
 // never actually occur.
 class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
  public:
+  // Subset of H265SPS fields that must match between the base layer and an
+  // auxiliary alpha layer (nuh_layer_id == aux_alpha_layer_id_). Extracted into
+  // a compact value type to avoid copying ~68 KB H265SPS structs per frame.
+  struct MEDIA_GPU_EXPORT AlphaLayerConfig {
+    static AlphaLayerConfig FromSPS(const H265SPS& sps);
+    bool operator==(const AlphaLayerConfig&) const = default;
+
+    int sps_video_parameter_set_id = 0;
+    int pic_width_in_luma_samples = 0;
+    int pic_height_in_luma_samples = 0;
+    int log2_min_luma_coding_block_size_minus3 = 0;
+    int log2_diff_max_min_luma_coding_block_size = 0;
+    int ctb_log2_size_y = 0;
+    int chroma_format_idc = 0;
+    bool separate_colour_plane_flag = false;
+    int bit_depth_y = 0;
+    int bit_depth_c = 0;
+  };
+
   class MEDIA_GPU_EXPORT H265Accelerator {
    public:
     // Methods may return kTryAgain if they need additional data (provided
@@ -330,7 +350,6 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   // Parser in use.
   H265Parser parser_;
 
-
   // Decrypting config for the most recent data passed to SetStream().
   std::unique_ptr<DecryptConfig> current_decrypt_config_;
 
@@ -423,6 +442,11 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   uint8_t bit_depth_ = 0;
   // Active SPS of input bitstream.
   std::unique_ptr<H265SPS> active_sps_;
+  // Active base-layer alpha compatibility config, plus pending base/alpha
+  // configs parsed prior to starting the next frame.
+  std::optional<AlphaLayerConfig> active_base_alpha_config_;
+  std::optional<AlphaLayerConfig> pending_base_alpha_config_;
+  std::optional<AlphaLayerConfig> pending_alpha_config_;
   // Chroma sampling format of input bitstream
   VideoChromaSampling chroma_sampling_ = VideoChromaSampling::kUnknown;
   // Video color space of input bitstream.

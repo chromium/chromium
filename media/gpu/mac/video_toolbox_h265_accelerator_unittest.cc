@@ -59,13 +59,18 @@ class VideoToolboxH265AcceleratorTest : public testing::Test {
                     scoped_refptr<CodecPicture>));
   MOCK_METHOD1(OnOutput, void(scoped_refptr<CodecPicture>));
 
+  std::unique_ptr<VideoToolboxH265Accelerator> CreateAccelerator(
+      VideoDecoderConfig::AlphaMode alpha_mode) {
+    return std::make_unique<VideoToolboxH265Accelerator>(
+        std::make_unique<NullMediaLog>(), alpha_mode,
+        base::BindRepeating(&VideoToolboxH265AcceleratorTest::OnDecode,
+                            base::Unretained(this)),
+        base::BindRepeating(&VideoToolboxH265AcceleratorTest::OnOutput,
+                            base::Unretained(this)));
+  }
+
   std::unique_ptr<VideoToolboxH265Accelerator> accelerator_{
-      std::make_unique<VideoToolboxH265Accelerator>(
-          std::make_unique<NullMediaLog>(),
-          base::BindRepeating(&VideoToolboxH265AcceleratorTest::OnDecode,
-                              base::Unretained(this)),
-          base::BindRepeating(&VideoToolboxH265AcceleratorTest::OnOutput,
-                              base::Unretained(this)))};
+      CreateAccelerator(VideoDecoderConfig::AlphaMode::kHasAlpha)};
 };
 
 TEST_F(VideoToolboxH265AcceleratorTest, Construct) {}
@@ -253,6 +258,38 @@ TEST_F(VideoToolboxH265AcceleratorTest, DecodeTwo_ConfigChange) {
   // The two samples should still have the same configurations.
   EXPECT_EQ(CMSampleBufferGetFormatDescription(sample0.get()),
             CMSampleBufferGetFormatDescription(sample1.get()));
+}
+
+TEST_F(VideoToolboxH265AcceleratorTest, AlphaModeOpaqueDisablesAlphaLayer) {
+  auto opaque_accelerator =
+      CreateAccelerator(VideoDecoderConfig::AlphaMode::kIsOpaque);
+  EXPECT_FALSE(opaque_accelerator->IsAlphaLayerSupported());
+  EXPECT_TRUE(accelerator_->IsAlphaLayerSupported());
+
+  scoped_refptr<H265Picture> pic = opaque_accelerator->CreateH265Picture();
+  H265VPS vps;
+  vps.aux_alpha_layer_id = 1;
+  H265SPS sps;
+  H265PPS pps;
+  H265SliceHeader slice_hdr;
+  H265Picture::Vector ref_pic_list;
+  std::vector<SubsampleEntry> subsamples;
+
+  opaque_accelerator->ProcessVPS(&vps, base::span(kVPS0));
+  opaque_accelerator->ProcessSPS(&sps, base::span(kSPS0));
+  opaque_accelerator->ProcessPPS(&pps, base::span(kPPS0));
+  opaque_accelerator->SubmitFrameMetadata(&sps, &pps, &slice_hdr, ref_pic_list,
+                                          ref_pic_list, ref_pic_list,
+                                          ref_pic_list, pic);
+  opaque_accelerator->SubmitSlice(&sps, &pps, &slice_hdr, ref_pic_list,
+                                  ref_pic_list, ref_pic_list, ref_pic_list,
+                                  ref_pic_list, pic, kSliceData,
+                                  sizeof(kSliceData), subsamples);
+
+  VideoToolboxDecompressionSessionMetadata metadata;
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<1>(&metadata));
+  opaque_accelerator->SubmitDecode(pic);
+  EXPECT_FALSE(metadata.has_alpha);
 }
 
 }  // namespace media

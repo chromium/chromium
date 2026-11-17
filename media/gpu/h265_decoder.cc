@@ -81,6 +81,25 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
 }
 }  // namespace
 
+// static
+H265Decoder::AlphaLayerConfig H265Decoder::AlphaLayerConfig::FromSPS(
+    const H265SPS& sps) {
+  return AlphaLayerConfig{
+      .sps_video_parameter_set_id = sps.sps_video_parameter_set_id,
+      .pic_width_in_luma_samples = sps.pic_width_in_luma_samples,
+      .pic_height_in_luma_samples = sps.pic_height_in_luma_samples,
+      .log2_min_luma_coding_block_size_minus3 =
+          sps.log2_min_luma_coding_block_size_minus3,
+      .log2_diff_max_min_luma_coding_block_size =
+          sps.log2_diff_max_min_luma_coding_block_size,
+      .ctb_log2_size_y = sps.ctb_log2_size_y,
+      .chroma_format_idc = sps.chroma_format_idc,
+      .separate_colour_plane_flag = sps.separate_colour_plane_flag,
+      .bit_depth_y = sps.bit_depth_y,
+      .bit_depth_c = sps.bit_depth_c,
+  };
+}
+
 H265Decoder::H265Accelerator::H265Accelerator() = default;
 
 H265Decoder::H265Accelerator::~H265Accelerator() = default;
@@ -194,6 +213,8 @@ void H265Decoder::Reset() {
   max_dec_pic_buffering_minus1_ = 0;
   max_latency_increase_plus1_ = 0;
   aux_alpha_layer_id_ = 0;
+  pending_base_alpha_config_.reset();
+  pending_alpha_config_.reset();
 
   prev_tid0_pic_ = nullptr;
   ref_pic_list_.clear();
@@ -303,6 +324,12 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
             const H265PPS* pps =
                 parser_.GetPPS(curr_slice_hdr_->slice_pic_parameter_set_id);
             const H265SPS* sps = parser_.GetSPS(pps->pps_seq_parameter_set_id);
+            if (!active_base_alpha_config_ || !sps ||
+                AlphaLayerConfig::FromSPS(*sps) != *active_base_alpha_config_) {
+              DVLOG(1)
+                  << "Alpha-layer slice SPS does not match active base SPS";
+              SET_ERROR_AND_RETURN();
+            }
             H265Picture::Vector empty;
             CHECK_ACCELERATOR_RESULT(accelerator_->SubmitSlice(
                 sps, pps, curr_slice_hdr_.get(), empty, empty, empty, empty,
@@ -323,7 +350,21 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
             if (par_res != H265Parser::kOk) {
               SET_ERROR_AND_RETURN();
             }
-            accelerator_->ProcessSPS(parser_.GetSPS(sps_id), curr_nalu_->data);
+            const H265SPS* alpha_sps = parser_.GetSPS(sps_id);
+            const std::optional<AlphaLayerConfig>& base_config =
+                curr_pic_ ? active_base_alpha_config_
+                          : (pending_base_alpha_config_.has_value()
+                                 ? pending_base_alpha_config_
+                                 : active_base_alpha_config_);
+            if (!base_config || !alpha_sps ||
+                AlphaLayerConfig::FromSPS(*alpha_sps) != *base_config) {
+              DVLOG(1) << "Incompatible alpha-layer SPS";
+              SET_ERROR_AND_RETURN();
+            }
+            if (!curr_pic_) {
+              pending_alpha_config_ = AlphaLayerConfig::FromSPS(*alpha_sps);
+            }
+            accelerator_->ProcessSPS(alpha_sps, curr_nalu_->data);
             break;
           }
           case H265NALU::PPS_NUT: {
@@ -332,7 +373,21 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
             if (par_res != H265Parser::kOk) {
               SET_ERROR_AND_RETURN();
             }
-            accelerator_->ProcessPPS(parser_.GetPPS(pps_id), curr_nalu_->data);
+            const H265PPS* alpha_pps = parser_.GetPPS(pps_id);
+            const H265SPS* alpha_sps =
+                alpha_pps ? parser_.GetSPS(alpha_pps->pps_seq_parameter_set_id)
+                          : nullptr;
+            const std::optional<AlphaLayerConfig>& base_config =
+                curr_pic_ ? active_base_alpha_config_
+                          : (pending_base_alpha_config_.has_value()
+                                 ? pending_base_alpha_config_
+                                 : active_base_alpha_config_);
+            if (!base_config || !alpha_sps ||
+                AlphaLayerConfig::FromSPS(*alpha_sps) != *base_config) {
+              DVLOG(1) << "Incompatible alpha-layer PPS/SPS";
+              SET_ERROR_AND_RETURN();
+            }
+            accelerator_->ProcessPPS(alpha_pps, curr_nalu_->data);
             break;
           }
           default:
@@ -375,8 +430,9 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
             last_slice_hdr_.reset();
             break;
           }
-          if (par_res != H265Parser::kOk)
+          if (par_res != H265Parser::kOk) {
             SET_ERROR_AND_RETURN();
+          }
           if (!curr_slice_hdr_->irap_pic && state_ == kAfterReset) {
             // We can't resume from a non-IRAP picture.
             curr_slice_hdr_.reset();
@@ -417,10 +473,12 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
             } else {
               curr_pic_ = accelerator_->CreateH265Picture();
             }
-            if (!curr_pic_)
+            if (!curr_pic_) {
               return kRanOutOfSurfaces;
-            if (current_decrypt_config_)
+            }
+            if (current_decrypt_config_) {
               curr_pic_->set_decrypt_config(current_decrypt_config_->Clone());
+            }
             curr_pic_->SetDynamicHdrMetadata(hdr_metadata_bitstream_,
                                              decoder_buffer_.get());
 
@@ -458,16 +516,20 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         CHECK_ACCELERATOR_RESULT(FinishPrevFrameIfPresent());
         int sps_id;
         par_res = parser_.ParseSPS(&sps_id);
-        if (par_res != H265Parser::kOk)
+        if (par_res != H265Parser::kOk) {
           SET_ERROR_AND_RETURN();
+        }
+        pending_base_alpha_config_ =
+            AlphaLayerConfig::FromSPS(*parser_.GetSPS(sps_id));
         accelerator_->ProcessSPS(parser_.GetSPS(sps_id), curr_nalu_->data);
         break;
       case H265NALU::PPS_NUT:
         CHECK_ACCELERATOR_RESULT(FinishPrevFrameIfPresent());
         int pps_id;
         par_res = parser_.ParsePPS(*curr_nalu_, &pps_id);
-        if (par_res != H265Parser::kOk)
+        if (par_res != H265Parser::kOk) {
           SET_ERROR_AND_RETURN();
+        }
         accelerator_->ProcessPPS(parser_.GetPPS(pps_id), curr_nalu_->data);
 
         // For ARC CTS tests they expect us to request the buffers after only
@@ -511,8 +573,9 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         break;
       case H265NALU::PREFIX_SEI_NUT: {
         H265SEI sei;
-        if (parser_.ParseSEI(&sei) != H265Parser::kOk)
+        if (parser_.ParseSEI(&sei) != H265Parser::kOk) {
           break;
+        }
         for (const auto& sei_msg : sei.msgs) {
           std::visit(absl::Overload{
                          [](const H265SEIAlphaChannelInfo& info) {},
@@ -588,8 +651,15 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
   // PPS parsing already verified this should exist.
   DCHECK(sps);
 
-  if (need_new_buffers)
+  const AlphaLayerConfig new_alpha_config = AlphaLayerConfig::FromSPS(*sps);
+  if (pending_alpha_config_ && new_alpha_config != *pending_alpha_config_) {
+    DVLOG(1) << "Pending alpha-layer SPS does not match active base SPS";
+    return false;
+  }
+
+  if (need_new_buffers) {
     *need_new_buffers = false;
+  }
 
   gfx::Size new_pic_size = sps->GetCodedSize();
   gfx::Rect new_visible_rect = sps->GetVisibleRect();
@@ -688,10 +758,12 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
     chroma_sampling_ = new_chroma_sampling;
     picture_color_space_ = new_color_space;
     dpb_.set_max_num_pics(sps->max_dpb_size);
-    if (need_new_buffers)
+    if (need_new_buffers) {
       *need_new_buffers = true;
+    }
   }
 
+  active_base_alpha_config_ = new_alpha_config;
   return true;
 }
 
@@ -702,8 +774,9 @@ H265Decoder::H265Accelerator::Status H265Decoder::PreprocessCurrentSlice() {
   if (slice_hdr->first_slice_segment_in_pic_flag) {
     // New picture, so first finish the previous one before processing it.
     H265Accelerator::Status result = FinishPrevFrameIfPresent();
-    if (result != H265Accelerator::Status::kOk)
+    if (result != H265Accelerator::Status::kOk) {
       return result;
+    }
 
     DCHECK(!curr_pic_);
   } else if (!curr_pic_) {
@@ -841,10 +914,11 @@ bool H265Decoder::CalcRefPicPocs(const H265SPS* sps,
       DVLOG(1) << "Invalid POC";
       return false;
     }
-    if (curr_st_ref_pic_set.used_by_curr_pic_s0[i])
+    if (curr_st_ref_pic_set.used_by_curr_pic_s0[i]) {
       poc_st_curr_before_[j++] = poc.ValueOrDefault(0);
-    else
+    } else {
       poc_st_foll_[k++] = poc.ValueOrDefault(0);
+    }
   }
   num_poc_st_curr_before_ = j;
   for (i = 0, j = 0; i < curr_st_ref_pic_set.num_positive_pics; ++i) {
@@ -854,10 +928,11 @@ bool H265Decoder::CalcRefPicPocs(const H265SPS* sps,
       DVLOG(1) << "Invalid POC";
       return false;
     }
-    if (curr_st_ref_pic_set.used_by_curr_pic_s1[i])
+    if (curr_st_ref_pic_set.used_by_curr_pic_s1[i]) {
       poc_st_curr_after_[j++] = poc.ValueOrDefault(0);
-    else
+    } else {
       poc_st_foll_[k++] = poc.ValueOrDefault(0);
+    }
   }
   num_poc_st_curr_after_ = j;
   num_poc_st_foll_ = k;
@@ -930,28 +1005,32 @@ bool H265Decoder::MarkRefPicSets(const H265SPS* sps) {
   // which is covered in the spec.
   int total_ref_pics = 0;
   for (int i = 0; i < num_poc_lt_curr_; ++i) {
-    if (!curr_delta_poc_msb_present_flag_[i])
+    if (!curr_delta_poc_msb_present_flag_[i]) {
       ref_pic_set_lt_curr_[i] = dpb_.GetPicByPocMaskedAndMark(
           poc_lt_curr_[i], sps->max_pic_order_cnt_lsb - 1,
           H265Picture::kLongTermCurr);
-    else
+    } else {
       ref_pic_set_lt_curr_[i] =
           dpb_.GetPicByPocAndMark(poc_lt_curr_[i], H265Picture::kLongTermCurr);
+    }
 
-    if (ref_pic_set_lt_curr_[i])
+    if (ref_pic_set_lt_curr_[i]) {
       total_ref_pics++;
+    }
   }
   for (int i = 0; i < num_poc_lt_foll_; ++i) {
-    if (!foll_delta_poc_msb_present_flag_[i])
+    if (!foll_delta_poc_msb_present_flag_[i]) {
       ref_pic_set_lt_foll[i] = dpb_.GetPicByPocMaskedAndMark(
           poc_lt_foll_[i], sps->max_pic_order_cnt_lsb - 1,
           H265Picture::kLongTermFoll);
-    else
+    } else {
       ref_pic_set_lt_foll[i] =
           dpb_.GetPicByPocAndMark(poc_lt_foll_[i], H265Picture::kLongTermFoll);
+    }
 
-    if (ref_pic_set_lt_foll[i])
+    if (ref_pic_set_lt_foll[i]) {
       total_ref_pics++;
+    }
   }
 
   // Equation 8-7.
@@ -959,20 +1038,23 @@ bool H265Decoder::MarkRefPicSets(const H265SPS* sps) {
     ref_pic_set_st_curr_before_[i] = dpb_.GetPicByPocAndMark(
         poc_st_curr_before_[i], H265Picture::kShortTermCurrBefore);
 
-    if (ref_pic_set_st_curr_before_[i])
+    if (ref_pic_set_st_curr_before_[i]) {
       total_ref_pics++;
+    }
   }
   for (int i = 0; i < num_poc_st_curr_after_; ++i) {
     ref_pic_set_st_curr_after_[i] = dpb_.GetPicByPocAndMark(
         poc_st_curr_after_[i], H265Picture::kShortTermCurrAfter);
-    if (ref_pic_set_st_curr_after_[i])
+    if (ref_pic_set_st_curr_after_[i]) {
       total_ref_pics++;
+    }
   }
   for (int i = 0; i < num_poc_st_foll_; ++i) {
     ref_pic_set_st_foll[i] =
         dpb_.GetPicByPocAndMark(poc_st_foll_[i], H265Picture::kShortTermFoll);
-    if (ref_pic_set_st_foll[i])
+    if (ref_pic_set_st_foll[i]) {
       total_ref_pics++;
+    }
   }
 
   // Verify that the total number of reference pictures in the DPB matches the
@@ -1101,6 +1183,15 @@ H265Decoder::H265Accelerator::Status H265Decoder::StartNewFrame(
   const H265SPS* sps = parser_.GetSPS(curr_sps_id_);
   // Slice header parsing already verified this should exist.
   DCHECK(sps);
+
+  pending_base_alpha_config_.reset();
+  if (pending_alpha_config_) {
+    if (!active_base_alpha_config_ ||
+        *pending_alpha_config_ != *active_base_alpha_config_) {
+      return H265Accelerator::Status::kFail;
+    }
+    pending_alpha_config_.reset();
+  }
 
   // Snapshot the bumping limits of the current picture's SPS. C.5.2.2 uses
   // them immediately. C.5.2.3 in FinishPicture() cannot re-resolve them: an
@@ -1297,8 +1388,9 @@ bool H265Decoder::PerformDpbOperations() {
 
 bool H265Decoder::FinishPicture(scoped_refptr<H265Picture> pic) {
   // 8.3.1
-  if (pic->valid_for_prev_tid0_pic_)
+  if (pic->valid_for_prev_tid0_pic_) {
     prev_tid0_pic_ = pic;
+  }
 
   // C.5.2.3 - Additional bumping
   if (pic->pic_output_flag_) {
@@ -1367,8 +1459,9 @@ bool H265Decoder::OutputAllRemainingPics() {
   std::sort(to_output.begin(), to_output.end(), POCAscCompare());
 
   for (auto& pic : to_output) {
-    if (!OutputPic(std::move(pic)))
+    if (!OutputPic(std::move(pic))) {
       return false;
+    }
   }
   return true;
 }
@@ -1376,8 +1469,9 @@ bool H265Decoder::OutputAllRemainingPics() {
 bool H265Decoder::Flush() {
   DVLOG(2) << "Decoder flush";
 
-  if (!OutputAllRemainingPics())
+  if (!OutputAllRemainingPics()) {
     return false;
+  }
 
   dpb_.Clear();
   prev_tid0_pic_ = nullptr;

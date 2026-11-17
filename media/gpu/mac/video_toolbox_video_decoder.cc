@@ -205,7 +205,8 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
     case VideoCodec::kHEVC:
       accelerator_ = std::make_unique<H265Decoder>(
           std::make_unique<VideoToolboxH265Accelerator>(
-              media_log_->Clone(), std::move(accelerator_decode_cb),
+              media_log_->Clone(), config.alpha_mode(),
+              std::move(accelerator_decode_cb),
               std::move(accelerator_output_cb)),
           config.profile(), config.color_space_info());
       break;

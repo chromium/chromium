@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/apple/scoped_cftyperef.h"
@@ -18,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/sequence_checker.h"
+#include "media/base/video_decoder_config.h"
 #include "media/base/video_types.h"
 #include "media/gpu/h265_decoder.h"
 #include "media/gpu/mac/video_toolbox_decompression_metadata.h"
@@ -38,6 +40,7 @@ class MEDIA_GPU_EXPORT VideoToolboxH265Accelerator
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<CodecPicture>)>;
 
   VideoToolboxH265Accelerator(std::unique_ptr<MediaLog> media_log,
+                              VideoDecoderConfig::AlphaMode alpha_mode,
                               DecodeCB decode_cb,
                               OutputCB output_cb);
   ~VideoToolboxH265Accelerator() override;
@@ -82,6 +85,7 @@ class MEDIA_GPU_EXPORT VideoToolboxH265Accelerator
   void ResetFrameData();
 
   std::unique_ptr<MediaLog> media_log_;
+  const VideoDecoderConfig::AlphaMode alpha_mode_;
 
   // Callbacks are called synchronously, which is always re-entrant.
   DecodeCB decode_cb_;
@@ -103,6 +107,7 @@ class MEDIA_GPU_EXPORT VideoToolboxH265Accelerator
   // Accumulated slice data and format properties for the current frame.
   // TODO(367764863) Rewrite to base::raw_span.
   RAW_PTR_EXCLUSION std::vector<base::span<const uint8_t>> frame_slice_data_;
+  std::optional<H265Decoder::AlphaLayerConfig> frame_base_config_;
   uint8_t frame_bit_depth_ = 8;
   VideoChromaSampling frame_chroma_sampling_ = VideoChromaSampling::k420;
   bool frame_is_keyframe_ = false;
