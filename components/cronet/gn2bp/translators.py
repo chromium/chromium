@@ -793,32 +793,6 @@ def get_bindgen_flags(args: List[str]) -> List[str]:
     return bindgen_flags
 
 
-def _create_extract_rust_files_target(bindgen_module, blueprint, context):
-    module = soong_ast.create_module(
-        "cc_genrule",
-        bindgen_module.name + "__extract_rust_files",
-        f"Extract rust files from {bindgen_module.name}",
-        context,
-        is_test=bindgen_module._is_test,
-    )
-    module.srcs = [f":{bindgen_module.name}"]
-    module.cmd = [
-        f'for f in $(locations :{bindgen_module.name}); do',
-        'if [[ "$$f" == *.rs ]]; then',
-        'cp "$$f" $(out);',
-        'fi;',
-        'done',
-    ]
-    module.out = [f"{bindgen_module.source_stem}.rs"]
-    module.device_supported = bindgen_module.device_supported
-    module.host_supported = bindgen_module.host_supported
-    module.host_cross_supported = bindgen_module.host_cross_supported
-    module.target['host'].compile_multilib = '64'
-    module.apex_available.add(common.tethering_apex)
-    blueprint.add_module(module)
-    return module
-
-
 def _get_bindgen_cpp_std(
     gn: gn_utils.GnParser,
     target: gn_utils.GnParser.Target,
@@ -2141,22 +2115,16 @@ def _resolve_dependencies(
                     )
             elif dep_module.type == "rust_bindgen":
                 if module.type.startswith("rust"):
-                    # Soong does not support using `rust_bindgen` modules directly as an input because
-                    # it produces more than a single output (b/467420029). Create an intermediate
-                    # genrule that copies that rust file and use it instead.
-                    intermediate_target = _create_extract_rust_files_target(
-                        dep_module, blueprint, context
-                    ).name
-                    module.srcs.add(":" + intermediate_target)
+                    module.srcs.add(f":{dep_module.name}")
                     if module.crate_root and module.crate_root.startswith(
                         "out/"
                     ):
                         # Sometimes the crate_root is an output of another module which is indicated
                         # by a path starting with "out/". The only case where this happens at the moment
                         # is when a rust_library is created for the rust_bindgen output.
-                        module.crate_root = f":{intermediate_target}"
+                        module.crate_root = f":{dep_module.name}"
                 else:
-                    module.srcs.add(":" + dep_module.name)
+                    module.srcs.add(f":{dep_module.name}{{.c}}")
                 if module_target.type == "cc_library_static":
                     # This is a bindgen _static_fns GN target. We need to translate that
                     # to the Soong rust_bindgen "static inline library" concept.
