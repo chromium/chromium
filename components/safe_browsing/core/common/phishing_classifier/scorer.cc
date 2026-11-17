@@ -8,8 +8,10 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
@@ -136,7 +138,7 @@ std::unique_ptr<tflite::task::vision::ImageEmbedder> CreateImageEmbedder(
   TRACE_EVENT0("safe_browsing", "CreateTfLiteImageEmbedder");
   tflite::task::vision::ImageEmbedderOptions embedder_options;
   embedder_options.mutable_model_file_with_metadata()->set_file_content(
-      model_data);
+      std::move(model_data));
   auto embedder = tflite::task::vision::ImageEmbedder::CreateFromOptions(
       embedder_options, CreateOpResolver());
   if (!embedder.ok()) {
@@ -371,7 +373,7 @@ void Scorer::ApplyImageEmbeddingTfLiteModelHelper(
     const SkBitmap& bitmap,
     int input_width,
     int input_height,
-    const std::string& model_data,
+    std::string model_data,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(ImageFeatureEmbedding)> callback) {
   TRACE_EVENT0("safe_browsing", "ApplyImageEmbeddingTfLiteModel");
