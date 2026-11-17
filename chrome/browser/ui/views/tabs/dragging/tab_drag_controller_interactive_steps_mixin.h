@@ -16,11 +16,14 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller_interactive_uitest.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_group.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/polling_state_observer.h"
@@ -31,6 +34,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/native_ui_types.h"
+#include "ui/gfx/range/range.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -80,6 +84,7 @@ class TabDragControllerInteractiveStepsMixin : public T {
   using T::StopAnimating;
   using T::WaitForState;
   using typename T::MultiStep;
+  using typename T::RelativePositionSpecifier;
 
   // Starts the state pollers that the steps below wait on. If `attach_target`
   // is set, also tracks whether the drag has attached to `attach_target`.
@@ -112,26 +117,61 @@ class TabDragControllerInteractiveStepsMixin : public T {
   // `ReleaseDrag()` / `CancelDragWithEsc()` end the drag. Steps named
   // `*UntilDetached()` / `*UntilAttached()` also wait for that state.
 
-  // Presses the pointer on the center of `tab_strip->tab_at(index)`.
-  auto PressTab(TabStrip* tab_strip, int index) {
+  // Presses the pointer on `tab_strip->tab_at(index)` at `pos` (center by
+  // default).
+  auto PressTab(TabStrip* tab_strip,
+                int index,
+                RelativePositionSpecifier pos = typename T::CenterPoint()) {
     static constexpr char kPressedTab[] = "PressedTab";
-    return Steps(NameTab(kPressedTab, tab_strip, index),
-                 MoveMouseTo(kPressedTab).SetMustRemainVisible(false),
-                 ClickMouse(ui_controls::LEFT, /*release=*/false));
+    return Steps(
+        NameTab(kPressedTab, tab_strip, index),
+        MoveMouseTo(kPressedTab, std::move(pos)).SetMustRemainVisible(false),
+        ClickMouse(ui_controls::LEFT, /*release=*/false));
   }
 
-  // Moves the pressed pointer to the center of `tab_strip->tab_at(index)`.
-  auto MoveToTab(TabStrip* tab_strip, int index) {
+  // Moves the pressed pointer to `tab_strip->tab_at(index)` at `pos` (center by
+  // default).
+  MultiStep MoveToTab(
+      TabStrip* tab_strip,
+      int index,
+      RelativePositionSpecifier pos = typename T::CenterPoint()) {
     static constexpr char kTargetTab[] = "TargetTab";
-    return Steps(NameTab(kTargetTab, tab_strip, index),
-                 MoveMouseTo(kTargetTab).SetMustRemainVisible(false));
+    return Steps(
+        NameTab(kTargetTab, tab_strip, index),
+        MoveMouseTo(kTargetTab, std::move(pos)).SetMustRemainVisible(false));
+  }
+  MultiStep MoveToTab(TabStrip* tab_strip, int index, gfx::Vector2d offset) {
+    return MoveToTab(tab_strip, index, CenterPointWithOffset(offset));
   }
 
-  // Drags `tab_strip->tab_at(from)` onto `tab_strip->tab_at(to)` and releases.
-  auto DragTabInStripAndRelease(TabStrip* tab_strip, int from, int to) {
-    return Steps(PressTab(tab_strip, from), MoveToTab(tab_strip, to),
+  // Drags `tab_strip->tab_at(from)` onto `tab_strip->tab_at(to)` at `to_pos`
+  // (or `+ to_offset`) and releases.
+  MultiStep DragTabInStripAndRelease(
+      TabStrip* tab_strip,
+      int from,
+      int to,
+      RelativePositionSpecifier to_pos = typename T::CenterPoint()) {
+    return Steps(PressTab(tab_strip, from),
+                 MoveToTab(tab_strip, to, std::move(to_pos)),
                  ReleaseMouse(ui_controls::LEFT),
                  Do([this, tab_strip]() { StopAnimating(tab_strip); }));
+  }
+  MultiStep DragTabInStripAndRelease(TabStrip* tab_strip,
+                                     int from,
+                                     int to,
+                                     gfx::Vector2d to_offset) {
+    return DragTabInStripAndRelease(tab_strip, from, to,
+                                    CenterPointWithOffset(to_offset));
+  }
+
+  // Returns a position halfway between the left edge and center of the target
+  // element (matching `GetLeftCenterInScreenCoordinates`).
+  static base::RepeatingCallback<gfx::Point(ui::TrackedElement*)>
+  LeftCenterPoint() {
+    return base::BindLambdaForTesting([](ui::TrackedElement* el) {
+      const gfx::Rect bounds = el->GetScreenBounds();
+      return bounds.CenterPoint() - gfx::Vector2d(bounds.width() / 4, 0);
+    });
   }
 
   // Moves the pressed pointer straight down from `tab_strip->tab_at(index)`
@@ -201,13 +241,14 @@ class TabDragControllerInteractiveStepsMixin : public T {
   // Windows nested run loop timer leak is fixed.
   auto ReleaseDrag() {
 #if BUILDFLAG(IS_WIN)
-    return Steps(Do([]() {
+    return Steps(WaitForState(kTabDragActiveState, true), Do([]() {
                    ASSERT_TRUE(ui_controls::SendMouseEvents(ui_controls::LEFT,
                                                             ui_controls::UP));
                  }),
                  WaitForState(kTabDragActiveState, false));
 #else
-    return Steps(ReleaseMouse(ui_controls::LEFT),
+    return Steps(WaitForState(kTabDragActiveState, true),
+                 ReleaseMouse(ui_controls::LEFT),
                  WaitForState(kTabDragActiveState, false));
 #endif
   }
@@ -219,7 +260,7 @@ class TabDragControllerInteractiveStepsMixin : public T {
   // a temporary window created mid-drag that has no named element (matching
   // `common/tab_drag_interactive_uitest.cc`).
   auto CancelDragWithEsc() {
-    return Steps(Do([this]() {
+    return Steps(WaitForState(kTabDragActiveState, true), Do([this]() {
                    ASSERT_TRUE(TabDragController::IsActive());
                    const gfx::NativeWindow window = GetAttachedDragWindow();
                    ASSERT_TRUE(window);
@@ -250,6 +291,17 @@ class TabDragControllerInteractiveStepsMixin : public T {
     return CheckResult(
         [browser]() { return test::IDString(browser->GetTabStripModel()); },
         expected, "CheckTabOrder()");
+  }
+
+  // Checks that `group` in `group_model` spans `expected`.
+  static auto CheckTabGroupRange(TabGroupModel* group_model,
+                                 tab_groups::TabGroupId group,
+                                 gfx::Range expected) {
+    return CheckResult(
+        [group_model, group]() {
+          return group_model->GetTabGroup(group)->ListTabs();
+        },
+        expected, "CheckTabGroupRange()");
   }
 
   // Waits for the drag to detach from `source` into a new, temporary window,
@@ -345,6 +397,14 @@ class TabDragControllerInteractiveStepsMixin : public T {
         NameView(name, base::BindLambdaForTesting([tab_strip, index]() {
                    return static_cast<views::View*>(tab_strip->tab_at(index));
                  })));
+  }
+
+  // Returns a position at the center of the target element plus `offset`.
+  static base::RepeatingCallback<gfx::Point(ui::TrackedElement*)>
+  CenterPointWithOffset(gfx::Vector2d offset) {
+    return base::BindLambdaForTesting([offset](ui::TrackedElement* el) {
+      return el->GetScreenBounds().CenterPoint() + offset;
+    });
   }
 
   // Returns a position directly below the center of the target element, far
