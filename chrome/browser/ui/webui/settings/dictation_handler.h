@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_DICTATION_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_DICTATION_HANDLER_H_
 
+#include <string_view>
+
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
@@ -27,6 +29,12 @@ class DictationHandler : public SettingsPageUIHandler {
  private:
   void HandleGetDictationShortcut(const base::ListValue& args);
   void HandleSetDictationShortcut(const base::ListValue& args);
+  void HandleGetDictationPressAndHoldShortcut(const base::ListValue& args);
+  void HandleSetDictationPressAndHoldShortcut(const base::ListValue& args);
+  void HandleGetShortcutForPref(const base::ListValue& args,
+                                std::string_view pref_name);
+  void HandleSetShortcutForPref(const base::ListValue& args,
+                                std::string_view pref_name);
 };
 
 }  // namespace settings

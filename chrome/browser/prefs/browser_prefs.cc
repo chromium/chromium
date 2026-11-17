@@ -2208,6 +2208,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #else
   registry->RegisterStringPref(prefs::kVoiceTypingHotkey, "Alt+Space");
 #endif
+  // TODO(b/586957826): Replace these placeholder default shortcuts once the
+  // official Dictation shortcuts are finalized.
+  registry->RegisterStringPref(prefs::kVoiceTypingPressAndHoldHotkey,
+                               "Ctrl+Shift+Alt+D");
 
 #if !BUILDFLAG(IS_ANDROID)
   indigo::prefs::RegisterProfilePrefs(registry);

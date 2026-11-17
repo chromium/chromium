@@ -558,8 +558,12 @@ inline constexpr char kVoiceTypingSettings[] = "browser.voice_typing_settings";
 inline constexpr char kPrefDictationOnboardingCompleted[] =
     "browser.dictation_onboarding_completed";
 
-// String pref storing the accelerator for the Dictation hotkey.
+// String pref storing the accelerator for the Dictation toggle hotkey.
 inline constexpr char kVoiceTypingHotkey[] = "browser.voice_typing_hotkey";
+
+// String pref storing the accelerator for the Dictation press-and-hold hotkey.
+inline constexpr char kVoiceTypingPressAndHoldHotkey[] =
+    "browser.voice_typing_press_and_hold_hotkey";
 
 // Comma separated list of domain names (e.g. "google.com,school.edu").
 // When this pref is set, the user will be able to access Google Apps

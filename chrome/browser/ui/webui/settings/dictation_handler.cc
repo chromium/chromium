@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/dictation_handler.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,16 +31,44 @@ void DictationHandler::RegisterMessages() {
       "setDictationShortcut",
       base::BindRepeating(&DictationHandler::HandleSetDictationShortcut,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getDictationPressAndHoldShortcut",
+      base::BindRepeating(
+          &DictationHandler::HandleGetDictationPressAndHoldShortcut,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setDictationPressAndHoldShortcut",
+      base::BindRepeating(
+          &DictationHandler::HandleSetDictationPressAndHoldShortcut,
+          base::Unretained(this)));
 }
 
 void DictationHandler::HandleGetDictationShortcut(const base::ListValue& args) {
+  HandleGetShortcutForPref(args, prefs::kVoiceTypingHotkey);
+}
+
+void DictationHandler::HandleSetDictationShortcut(const base::ListValue& args) {
+  HandleSetShortcutForPref(args, prefs::kVoiceTypingHotkey);
+}
+
+void DictationHandler::HandleGetDictationPressAndHoldShortcut(
+    const base::ListValue& args) {
+  HandleGetShortcutForPref(args, prefs::kVoiceTypingPressAndHoldHotkey);
+}
+
+void DictationHandler::HandleSetDictationPressAndHoldShortcut(
+    const base::ListValue& args) {
+  HandleSetShortcutForPref(args, prefs::kVoiceTypingPressAndHoldHotkey);
+}
+
+void DictationHandler::HandleGetShortcutForPref(const base::ListValue& args,
+                                                std::string_view pref_name) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
   AllowJavascript();
 
   std::string pref_shortcut =
-      Profile::FromWebUI(web_ui())->GetPrefs()->GetString(
-          prefs::kVoiceTypingHotkey);
+      Profile::FromWebUI(web_ui())->GetPrefs()->GetString(pref_name);
   ui::Accelerator accelerator = ui::Command::StringToAccelerator(pref_shortcut);
 
   ResolveJavascriptCallback(
@@ -47,7 +76,8 @@ void DictationHandler::HandleGetDictationShortcut(const base::ListValue& args) {
       base::Value(base::UTF16ToUTF8(accelerator.GetShortcutText())));
 }
 
-void DictationHandler::HandleSetDictationShortcut(const base::ListValue& args) {
+void DictationHandler::HandleSetShortcutForPref(const base::ListValue& args,
+                                                std::string_view pref_name) {
   AllowJavascript();
   CHECK_EQ(2U, args.size());
   const base::Value& callback_id = args[0];
@@ -67,8 +97,8 @@ void DictationHandler::HandleSetDictationShortcut(const base::ListValue& args) {
   }
 
   if (is_valid) {
-    Profile::FromWebUI(web_ui())->GetPrefs()->SetString(
-        prefs::kVoiceTypingHotkey, accelerator_string);
+    Profile::FromWebUI(web_ui())->GetPrefs()->SetString(pref_name,
+                                                        accelerator_string);
   }
 
   ResolveJavascriptCallback(callback_id, base::Value(is_valid));

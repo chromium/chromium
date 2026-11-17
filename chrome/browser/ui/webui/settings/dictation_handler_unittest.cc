@@ -141,4 +141,23 @@ TEST_F(DictationHandlerTest, ClearShortcut) {
   EXPECT_TRUE(data.arg3()->GetBool());
 }
 
+TEST_F(DictationHandlerTest, SetPressAndHoldShortcutAllowsSameAsToggle) {
+  const ui::Accelerator shared_accelerator(ui::VKEY_D, ui::EF_CONTROL_DOWN);
+  const std::string shared_str =
+      ui::Command::AcceleratorToString(shared_accelerator);
+  profile()->GetPrefs()->SetString(prefs::kVoiceTypingHotkey, shared_str);
+
+  base::ListValue args;
+  args.Append("callback-id-hold-shared");
+  args.Append(shared_str);
+  test_web_ui()->ProcessWebUIMessage(GURL(), "setDictationPressAndHoldShortcut",
+                                     std::move(args));
+
+  const content::TestWebUI::CallData& data = *test_web_ui()->call_data().back();
+  ASSERT_TRUE(data.arg3()->is_bool());
+  EXPECT_TRUE(data.arg3()->GetBool());
+  EXPECT_EQ(shared_str, profile()->GetPrefs()->GetString(
+                            prefs::kVoiceTypingPressAndHoldHotkey));
+}
+
 }  // namespace settings

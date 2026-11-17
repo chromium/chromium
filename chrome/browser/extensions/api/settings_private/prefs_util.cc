@@ -1429,6 +1429,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
 
   // Dictation / Voice typing prefs
   (*s_allowlist)[prefs::kVoiceTypingHotkey] = settings_api::PrefType::kString;
+  (*s_allowlist)[prefs::kVoiceTypingPressAndHoldHotkey] =
+      settings_api::PrefType::kString;
 
   return *s_allowlist;
 }
