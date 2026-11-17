@@ -100,9 +100,6 @@ void LogTotalTime(base::TimeTicks start_time, bool interrupted) {
   if (interrupted) {
     base::UmaHistogramTimes("Omnibox.DocumentSuggest.TotalTime.Interrupted",
                             elapsed_time);
-  } else {
-    base::UmaHistogramTimes("Omnibox.DocumentSuggest.TotalTime.NotInterrupted",
-                            elapsed_time);
   }
 }
 

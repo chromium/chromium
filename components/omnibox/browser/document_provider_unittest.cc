@@ -1109,8 +1109,6 @@ TEST_F(DocumentProviderTest, Logging) {
     histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.TotalTime", 0);
     histogram_tester.ExpectTotalCount(
         "Omnibox.DocumentSuggest.TotalTime.Interrupted", 0);
-    histogram_tester.ExpectTotalCount(
-        "Omnibox.DocumentSuggest.TotalTime.NotInterrupted", 0);
     histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.RequestTime", 0);
     histogram_tester.ExpectTotalCount(
         "Omnibox.DocumentSuggest.RequestTime.Interrupted", 0);
@@ -1127,8 +1125,6 @@ TEST_F(DocumentProviderTest, Logging) {
     histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.TotalTime", 1);
     histogram_tester.ExpectTotalCount(
         "Omnibox.DocumentSuggest.TotalTime.Interrupted", 1);
-    histogram_tester.ExpectTotalCount(
-        "Omnibox.DocumentSuggest.TotalTime.NotInterrupted", 0);
     histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.RequestTime", 0);
     histogram_tester.ExpectTotalCount(
         "Omnibox.DocumentSuggest.RequestTime.Interrupted", 0);
@@ -1153,8 +1149,6 @@ TEST_F(DocumentProviderTest, Logging) {
     histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.TotalTime", 1);
     histogram_tester.ExpectTotalCount(
         "Omnibox.DocumentSuggest.TotalTime.Interrupted", 1);
-    histogram_tester.ExpectTotalCount(
-        "Omnibox.DocumentSuggest.TotalTime.NotInterrupted", 0);
     histogram_tester.ExpectTotalCount("Omnibox.DocumentSuggest.RequestTime", 1);
     histogram_tester.ExpectTotalCount(
         "Omnibox.DocumentSuggest.RequestTime.Interrupted", 1);
