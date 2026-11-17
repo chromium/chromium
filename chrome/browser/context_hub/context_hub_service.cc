@@ -40,6 +40,7 @@
 #include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todos_store.h"
 #include "chrome/browser/context_hub/features.h"
+#include "chrome/browser/context_hub/image_caption_job.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
 #include "chrome/browser/context_hub/prefs.h"
@@ -57,6 +58,7 @@
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -415,11 +417,14 @@ void AppendTrimmedPart(std::vector<std::string_view>& parts,
   }
 }
 
-// Returns the passage to embed for an image `entry`, combining its host page
-// title and any user-provided annotations (note, collection, and tags).
+// Returns the passage to embed for an image `entry`, combining an optional
+// on-device visual `caption` with its host page title and any user-provided
+// annotations (note, collection, and tags).
 std::vector<std::string> GetPassagesForImageMemoryBankEntry(
-    const MemoryBankEntry& entry) {
+    const MemoryBankEntry& entry,
+    std::string_view caption = {}) {
   std::vector<std::string_view> parts;
+  AppendTrimmedPart(parts, caption);
   AppendTrimmedPart(parts, entry.tab_title);
   if (entry.note) {
     AppendTrimmedPart(parts, *entry.note);
@@ -489,7 +494,8 @@ ContextHubService::ContextHubService(
     std::unique_ptr<MemoryBank> memory_bank,
     std::unique_ptr<TabGroupStore> tab_group_store,
     std::unique_ptr<ContextHubBackend> context_hub_backend,
-    std::unique_ptr<AutoTodosStore> auto_todos_store)
+    std::unique_ptr<AutoTodosStore> auto_todos_store,
+    std::unique_ptr<optimization_guide::ModelBrokerClient> model_broker_client)
     : profile_(CHECK_DEREF(profile)),
       identity_manager_(CHECK_DEREF(identity_manager)),
       personal_context_service_(CHECK_DEREF(personal_context_service)),
@@ -506,6 +512,7 @@ ContextHubService::ContextHubService(
       todo_feedback_cache_(features::kMaxTodoFeedbackCacheSize.Get()),
       context_hub_backend_(std::move(context_hub_backend)),
       memory_bank_(std::move(memory_bank)),
+      model_broker_client_(std::move(model_broker_client)),
       tab_group_store_(std::move(tab_group_store)),
       auto_todos_store_(std::move(auto_todos_store)) {
   CHECK(memory_bank_);
@@ -546,9 +553,10 @@ ContextHubService::ContextHubService(
     browser_tab_strip_tracker_->Init();
 #endif
   }
-  // Embeddings are only stored in the database backend. Observe last since the
-  // provider may notify synchronously, which starts the embeddings backfill.
-  if (embedder_ && embedder_metadata_provider && context_hub_backend_) {
+  if (embedder_ && context_hub_backend_ && embedder_metadata_provider) {
+    // Embeddings are only stored in the database backend. Observe last since
+    // the provider may notify synchronously, which starts the embeddings
+    // backfill.
     embedder_metadata_observation_.Observe(embedder_metadata_provider);
   }
 }
@@ -742,6 +750,7 @@ void ContextHubService::EmbedderMetadataUpdated(
   // in-flight jobs from a previous model version and let the backend wipe
   // stored embeddings before recomputing them below.
   memory_bank_pending_annotation_update_ids_.clear();
+  memory_bank_image_caption_jobs_.clear();
   memory_bank_embedding_jobs_.clear();
   memory_bank_query_embedding_job_.reset();
   context_hub_backend_->SetMemoryBankEmbeddingsVersion(
@@ -756,6 +765,7 @@ void ContextHubService::OnMemoryBankEmbeddingsVersionSet(bool success) {
     // new ones rather than mixing models. A later metadata update retries.
     embedder_metadata_.reset();
     memory_bank_pending_annotation_update_ids_.clear();
+    memory_bank_image_caption_jobs_.clear();
     memory_bank_embedding_jobs_.clear();
     memory_bank_query_embedding_job_.reset();
     return;
@@ -807,21 +817,79 @@ void ContextHubService::ComputeMemoryBankEmbeddings(
   if (!CanComputeMemoryBankEmbeddings()) {
     return;
   }
-  std::vector<std::string> passages = GetPassagesForMemoryBankEntry(entry);
+  if (entry.type == MemoryBankType::kImage &&
+      MaybeEnqueueImageCaptionJob(entry)) {
+    return;
+  }
+  StartMemoryBankEmbeddingJob(entry.id, GetPassagesForMemoryBankEntry(entry));
+}
+
+bool ContextHubService::MaybeEnqueueImageCaptionJob(
+    const MemoryBankEntry& entry) {
+  if (!base::FeatureList::IsEnabled(features::kMemoryBankImageCaptions) ||
+      !HasHttpImageUrl(entry) || !image_fetcher_ || !model_broker_client_) {
+    if (memory_bank_image_caption_jobs_.erase(entry.id) > 0) {
+      MaybeStartNextImageCaptionJob();
+    }
+    return false;
+  }
+  // Cancel any in-flight embedding job for this entry while its visual
+  // caption is being generated.
+  memory_bank_embedding_jobs_.erase(entry.id);
+  // TODO(crbug.com/570703760): Use a dedicated traffic annotation for caption
+  // image fetches. `kMemoryBankImageFetchTrafficAnnotation` only describes
+  // Memory Bank Chat fetches.
+  memory_bank_image_caption_jobs_.insert_or_assign(
+      entry.id, std::make_unique<ImageCaptionJob>(
+                    entry, image_fetcher_.get(), model_broker_client_.get(),
+                    kMemoryBankImageFetchTrafficAnnotation,
+                    base::BindOnce(&ContextHubService::OnImageCaptionGenerated,
+                                   weak_factory_.GetWeakPtr())));
+  MaybeStartNextImageCaptionJob();
+  return true;
+}
+
+void ContextHubService::MaybeStartNextImageCaptionJob() {
+  for (const auto& [id, job] : memory_bank_image_caption_jobs_) {
+    if (job->is_running()) {
+      return;
+    }
+  }
+  if (!memory_bank_image_caption_jobs_.empty()) {
+    memory_bank_image_caption_jobs_.begin()->second->Start();
+  }
+}
+
+void ContextHubService::OnImageCaptionGenerated(MemoryBankEntry entry,
+                                                std::string caption) {
+  const int64_t entry_id = entry.id;
+  memory_bank_image_caption_jobs_.erase(entry_id);
+  MaybeStartNextImageCaptionJob();
+  if (memory_bank_pending_annotation_update_ids_.contains(entry_id)) {
+    return;
+  }
+  StartMemoryBankEmbeddingJob(
+      entry_id, GetPassagesForImageMemoryBankEntry(entry, caption));
+}
+
+void ContextHubService::StartMemoryBankEmbeddingJob(
+    int64_t entry_id,
+    std::vector<std::string> passages) {
+  CHECK(CanComputeMemoryBankEmbeddings());
   if (passages.empty()) {
     // TODO(crbug.com/570703760): Clear stored embeddings for the entry in
     // `ContextHubBackend` once per-entry embedding deletion is supported.
-    memory_bank_embedding_jobs_.erase(entry.id);
+    memory_bank_embedding_jobs_.erase(entry_id);
     return;
   }
   // Saved entries are not time critical, so yield to user-initiated work such
   // as search queries.
   memory_bank_embedding_jobs_.insert_or_assign(
-      entry.id,
+      entry_id,
       embedder_->ComputePassagesEmbeddings(
           passage_embeddings::PassagePriority::kPassive, std::move(passages),
           base::BindOnce(&ContextHubService::OnMemoryBankEmbeddingsComputed,
-                         weak_factory_.GetWeakPtr(), entry.id)));
+                         weak_factory_.GetWeakPtr(), entry_id)));
 }
 
 void ContextHubService::OnMemoryBankEmbeddingsComputed(
@@ -1605,12 +1673,14 @@ void ContextHubService::UpdateMemoryBankEntryAnnotations(
 void ContextHubService::DeleteEntries(
     base::span<const int64_t> ids,
     MemoryBank::OperationCompleteCallback callback) {
-  // Drop in-flight embedding jobs first so a late result cannot store
-  // embeddings for an entry that no longer exists.
+  // Drop in-flight captioning and embedding jobs first so a late result cannot
+  // store embeddings for an entry that no longer exists.
   for (int64_t id : ids) {
     memory_bank_pending_annotation_update_ids_.erase(id);
+    memory_bank_image_caption_jobs_.erase(id);
     memory_bank_embedding_jobs_.erase(id);
   }
+  MaybeStartNextImageCaptionJob();
   memory_bank_->DeleteEntries(ids, std::move(callback));
 }
 
@@ -2270,6 +2340,7 @@ void ContextHubService::OnSmartSearchFetched(
 void ContextHubService::SetImageFetcherForTesting(
     std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher) {
   CHECK_IS_TEST();
+  memory_bank_image_caption_jobs_.clear();
   image_fetcher_ = std::move(image_fetcher);
 }
 

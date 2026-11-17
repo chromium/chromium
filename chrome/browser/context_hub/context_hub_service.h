@@ -73,6 +73,7 @@ class BackoffEntry;
 }  // namespace net
 
 namespace optimization_guide {
+class ModelBrokerClient;
 class ModelQualityLogEntry;
 class RemoteModelExecutor;
 struct OptimizationGuideModelExecutionResult;
@@ -93,8 +94,9 @@ class TabGroupSyncService;
 
 namespace context_hub {
 
-class TabGroupStore;
 class ContextHubBackend;
+class ImageCaptionJob;
+class TabGroupStore;
 struct FetchedChatImage;
 
 class ContextHubService : public KeyedService,
@@ -149,7 +151,9 @@ class ContextHubService : public KeyedService,
       std::unique_ptr<MemoryBank> memory_bank,
       std::unique_ptr<TabGroupStore> tab_group_store,
       std::unique_ptr<ContextHubBackend> context_hub_backend,
-      std::unique_ptr<AutoTodosStore> auto_todos_store);
+      std::unique_ptr<AutoTodosStore> auto_todos_store,
+      std::unique_ptr<optimization_guide::ModelBrokerClient>
+          model_broker_client);
 
   ContextHubService(const ContextHubService&) = delete;
   ContextHubService& operator=(const ContextHubService&) = delete;
@@ -482,6 +486,24 @@ class ContextHubService : public KeyedService,
       int64_t id,
       std::vector<MemoryBankEntry> entries);
 
+  // Enqueues an on-device visual captioning job for `entry` (replacing any
+  // queued or running job for the entry) and starts the queue if idle. Returns
+  // false if image captioning is disabled or unavailable for `entry`.
+  bool MaybeEnqueueImageCaptionJob(const MemoryBankEntry& entry);
+
+  // Starts the next queued image captioning job if none is currently running.
+  // Jobs run one at a time since the on-device model handles one request at a
+  // time and each caption can take several seconds on CPU-only devices.
+  void MaybeStartNextImageCaptionJob();
+
+  // Handles the async response when an on-device visual caption is generated
+  // (or falls back to an empty string) for an image `entry`.
+  void OnImageCaptionGenerated(MemoryBankEntry entry, std::string caption);
+
+  // Starts a passage embedding computation job for `entry_id` with `passages`.
+  void StartMemoryBankEmbeddingJob(int64_t entry_id,
+                                   std::vector<std::string> passages);
+
   // Handles the async response from the embedder for `entry_id`.
   void OnMemoryBankEmbeddingsComputed(
       int64_t entry_id,
@@ -717,6 +739,19 @@ class ContextHubService : public KeyedService,
   base::ScopedObservation<MemoryBank, MemoryBank::Observer>
       memory_bank_observation_{this};
 
+  // Fetches saved images for Memory Bank Chat and visual caption generation.
+  std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
+
+  // Client for on-device multimodal model execution used to caption image
+  // memory bank entries before embedding. May be null if unavailable.
+  std::unique_ptr<optimization_guide::ModelBrokerClient> model_broker_client_;
+
+  // In-flight image captioning jobs keyed by memory bank entry ID. Declared
+  // after `image_fetcher_` and `model_broker_client_` because each job holds
+  // references to them.
+  base::flat_map<int64_t, std::unique_ptr<ImageCaptionJob>>
+      memory_bank_image_caption_jobs_;
+
   // In-flight embedding jobs keyed by memory bank entry ID. Destroying a job
   // cancels it if it has not started yet. Declared after
   // `context_hub_backend_` since completed jobs write to it.
@@ -735,7 +770,8 @@ class ContextHubService : public KeyedService,
   // changes.
   base::flat_map<int64_t, int> memory_bank_pending_annotation_update_ids_;
 
-  // Declared after `context_hub_backend_`, `memory_bank_embedding_jobs_`, and
+  // Declared after `context_hub_backend_`, `memory_bank_image_caption_jobs_`,
+  // `memory_bank_embedding_jobs_`, and
   // `memory_bank_pending_annotation_update_ids_` because the provider may
   // notify synchronously when observed.
   base::ScopedObservation<passage_embeddings::EmbedderMetadataProvider,
@@ -745,8 +781,6 @@ class ContextHubService : public KeyedService,
   std::unique_ptr<TabGroupStore> tab_group_store_;
 
   std::unique_ptr<AutoTodosStore> auto_todos_store_;
-
-  std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
 
   // Metadata for the most recent First Party Auto Todos generation during the
   // current browser session.

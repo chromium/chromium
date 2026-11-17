@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -18,6 +19,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -44,16 +46,19 @@
 #include "chrome/browser/context_hub/storage/context_hub_backend.h"
 #include "chrome/browser/context_hub/storage/context_hub_backend_impl.h"
 #include "chrome/browser/context_hub/tab_group_store/in_memory_tab_group_store.h"
+#include "chrome/browser/context_hub/test/test_image_caption_model_broker.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/image_fetcher/core/mock_image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
+#include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "components/page_content_annotations/content/mock_page_content_services.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/passage_embeddings/core/passage_embeddings_test_util.h"
@@ -84,6 +89,7 @@
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -246,7 +252,8 @@ class ContextHubServiceTest : public testing::Test {
                  std::make_unique<InMemoryMemoryBank>(),
                  std::make_unique<InMemoryTabGroupStore>(),
                  /*context_hub_backend=*/nullptr,
-                 std::make_unique<InMemoryAutoTodosStore>()) {
+                 std::make_unique<InMemoryAutoTodosStore>(),
+                 /*model_broker_client=*/nullptr) {
     // Advance mock clock past Unix epoch so that relative timestamps (e.g.
     // `base::Time::Now() - base::Hours(3)`) are positive regardless of host
     // uptime.
@@ -423,7 +430,8 @@ class ContextHubServiceTest : public testing::Test {
         std::make_unique<InMemoryMemoryBank>(),
         std::make_unique<InMemoryTabGroupStore>(),
         /*context_hub_backend=*/nullptr,
-        /*auto_todos_store=*/nullptr);
+        /*auto_todos_store=*/nullptr,
+        /*model_broker_client=*/nullptr);
   }
 
   const base::DictValue& GetTopicFeedbackPref() const {
@@ -1860,6 +1868,13 @@ TEST_F(ContextHubServiceTest,
 // embedder that embeds every passage asynchronously.
 class ContextHubServiceEmbeddingsTest : public ContextHubServiceTest {
  protected:
+  static constexpr char kTestImageUrl[] = "https://example.com/photo.png";
+
+  ContextHubServiceEmbeddingsTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kMemoryBankImageCaptions);
+  }
   class TestContextHubBackend : public ContextHubBackendImpl {
    public:
     using StoreEmbeddingsCallback =
@@ -1950,7 +1965,12 @@ class ContextHubServiceEmbeddingsTest : public ContextHubServiceTest {
   // Creates `database_service_`, which stores memory bank entries in a database
   // under `profile_`. Embeddings are only computed once embedder metadata is
   // provided (`with_embedder_metadata` or `EmbedderMetadataUpdated`).
-  void CreateDatabaseService(bool with_embedder_metadata = true) {
+  void CreateDatabaseService(bool with_embedder_metadata = true,
+                             std::unique_ptr<TestImageCaptionModelBroker>
+                                 caption_model_broker = nullptr) {
+    mock_image_fetcher_ = nullptr;
+    database_service_.reset();
+    caption_model_broker_ = std::move(caption_model_broker);
     base::test::TestFuture<void> initial_backfill_future;
     auto backend = std::make_unique<TestContextHubBackend>(
         profile_.GetPath().Append(FILE_PATH_LITERAL("ContextHub.db")),
@@ -1964,7 +1984,13 @@ class ContextHubServiceEmbeddingsTest : public ContextHubServiceTest {
         &mock_embedder_,
         with_embedder_metadata ? &embedder_metadata_provider_ : nullptr,
         std::move(memory_bank), std::make_unique<InMemoryTabGroupStore>(),
-        std::move(backend), /*auto_todos_store=*/nullptr);
+        std::move(backend), /*auto_todos_store=*/nullptr,
+        caption_model_broker_ ? caption_model_broker_->CreateClient()
+                              : nullptr);
+    auto mock_image_fetcher =
+        std::make_unique<testing::NiceMock<image_fetcher::MockImageFetcher>>();
+    mock_image_fetcher_ = mock_image_fetcher.get();
+    database_service_->SetImageFetcherForTesting(std::move(mock_image_fetcher));
     if (with_embedder_metadata && !fail_set_embeddings_version_) {
       // Wait for the backfill started by the initial metadata to finish, so
       // entries saved by the test are embedded only by their own save-time job.
@@ -1972,9 +1998,18 @@ class ContextHubServiceEmbeddingsTest : public ContextHubServiceTest {
     }
   }
 
+  TestImageCaptionModelBroker& CreateDatabaseServiceWithCaptionModel(
+      std::string response_text) {
+    CreateDatabaseService(
+        /*with_embedder_metadata=*/true,
+        std::make_unique<TestImageCaptionModelBroker>(
+            std::move(response_text)));
+    return *caption_model_broker_;
+  }
+
   static MemoryBankEntry MakeImageEntry(
       std::string tab_title = "",
-      const GURL& image_url = GURL("https://example.com/photo.png")) {
+      const GURL& image_url = GURL(kTestImageUrl)) {
     return MemoryBankEntry(MemoryBankType::kImage, GURL("https://example.com"),
                            std::move(tab_title), /*selected_text=*/std::nullopt,
                            image_url);
@@ -1997,8 +2032,11 @@ class ContextHubServiceEmbeddingsTest : public ContextHubServiceTest {
   int64_t last_entry_id_ = 0;
   // Receives the entry ID and embedding count of each store request.
   base::test::TestFuture<int64_t, size_t> store_embeddings_future_;
+  std::unique_ptr<TestImageCaptionModelBroker> caption_model_broker_;
   // Destroyed before `mock_embedder_`, which must outlive its jobs.
   std::unique_ptr<ContextHubService> database_service_;
+  // Declared after `database_service_`, which owns the `MockImageFetcher`.
+  raw_ptr<image_fetcher::MockImageFetcher> mock_image_fetcher_ = nullptr;
 };
 
 TEST_F(ContextHubServiceEmbeddingsTest,
@@ -2291,6 +2329,204 @@ TEST_F(ContextHubServiceEmbeddingsTest,
   EXPECT_THAT(first_search_future.Get(), IsEmpty());
   EXPECT_THAT(second_search_future.Get(),
               ElementsAre(Field(&MemoryBankEntry::id, id)));
+}
+
+TEST_F(ContextHubServiceEmbeddingsTest,
+       SaveImage_WithOnDeviceCaption_StoresCombinedPassageEmbedding) {
+  CreateDatabaseServiceWithCaptionModel(
+      "  A steaming bowl of tonkotsu ramen with sliced pork and green "
+      "onions.\n");
+
+  EXPECT_CALL(*mock_image_fetcher_,
+              FetchImageAndData_(GURL(kTestImageUrl), _, _, _))
+      .WillOnce(FulfillImageFetch(gfx::test::CreateImage(16, 16)));
+  EXPECT_CALL(
+      mock_embedder_,
+      ComputePassagesEmbeddings(
+          _,
+          ElementsAre("A steaming bowl of tonkotsu ramen with sliced pork "
+                      "and green onions. Page Title My note Recipes food"),
+          _));
+
+  MemoryBankEntry entry = MakeImageEntry("Page Title");
+  entry.note = "My note";
+  entry.collection = "Recipes";
+  entry.tags = {"food"};
+  const int64_t id = SaveEntry(std::move(entry));
+
+  EXPECT_EQ(std::make_tuple(id, size_t{1}), store_embeddings_future_.Take());
+}
+
+TEST_F(
+    ContextHubServiceEmbeddingsTest,
+    SaveImage_EmptyMetadataWithOnDeviceCaption_StoresCaptionPassageEmbedding) {
+  CreateDatabaseServiceWithCaptionModel(
+      "Whiteboard diagram showing service architecture.");
+
+  const GURL image_url("https://example.com/diagram.png");
+  EXPECT_CALL(*mock_image_fetcher_, FetchImageAndData_(image_url, _, _, _))
+      .WillOnce(FulfillImageFetch(gfx::test::CreateImage(16, 16)));
+  EXPECT_CALL(
+      mock_embedder_,
+      ComputePassagesEmbeddings(
+          _, ElementsAre("Whiteboard diagram showing service architecture."),
+          _));
+
+  const int64_t id = SaveEntry(MakeImageEntry(/*tab_title=*/"", image_url));
+
+  EXPECT_EQ(std::make_tuple(id, size_t{1}), store_embeddings_future_.Take());
+}
+
+TEST_F(ContextHubServiceEmbeddingsTest,
+       SaveImage_ImageCaptionsFeatureDisabled_FallsBackToMetadataPassage) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kMemoryBankImageCaptions);
+  CreateDatabaseServiceWithCaptionModel("Unused caption");
+
+  EXPECT_CALL(*mock_image_fetcher_, FetchImageAndData_).Times(0);
+  EXPECT_CALL(mock_embedder_,
+              ComputePassagesEmbeddings(_, ElementsAre("Page Title"), _));
+
+  const int64_t id = SaveEntry(MakeImageEntry("Page Title"));
+
+  EXPECT_EQ(std::make_tuple(id, size_t{1}), store_embeddings_future_.Take());
+}
+
+TEST_F(ContextHubServiceEmbeddingsTest,
+       SaveImage_OnDeviceModelUnavailable_FallsBackToMetadataPassage) {
+  TestImageCaptionModelBroker& model_broker =
+      CreateDatabaseServiceWithCaptionModel("Unused caption");
+  model_broker.SetAvailable(false);
+
+  EXPECT_CALL(*mock_image_fetcher_, FetchImageAndData_).Times(0);
+  EXPECT_CALL(mock_embedder_,
+              ComputePassagesEmbeddings(_, ElementsAre("Page Title"), _));
+
+  const int64_t id = SaveEntry(MakeImageEntry("Page Title"));
+
+  EXPECT_EQ(std::make_tuple(id, size_t{1}), store_embeddings_future_.Take());
+}
+
+TEST_F(
+    ContextHubServiceEmbeddingsTest,
+    SaveImage_ModelBecomesPendingAssetsDuringFetch_FallsBackWithoutBlockingQueue) {
+  TestImageCaptionModelBroker& model_broker =
+      CreateDatabaseServiceWithCaptionModel("Visual caption");
+
+  const GURL first_image_url("https://example.com/first.png");
+  const GURL second_image_url("https://example.com/second.png");
+  HeldImageFetch first_fetch;
+  EXPECT_CALL(*mock_image_fetcher_,
+              FetchImageAndData_(first_image_url, _, _, _))
+      .WillOnce(first_fetch.Hold());
+  EXPECT_CALL(*mock_image_fetcher_,
+              FetchImageAndData_(second_image_url, _, _, _))
+      .Times(0);
+  EXPECT_CALL(mock_embedder_,
+              ComputePassagesEmbeddings(_, ElementsAre("First Page"), _));
+  EXPECT_CALL(mock_embedder_,
+              ComputePassagesEmbeddings(_, ElementsAre("Second Page"), _));
+
+  const int64_t first_id =
+      SaveEntry(MakeImageEntry("First Page", first_image_url));
+  const int64_t second_id =
+      SaveEntry(MakeImageEntry("Second Page", second_image_url));
+  ASSERT_TRUE(first_fetch.WaitUntilStarted());
+
+  // If the model transitions to `kPendingAssets` while the image fetch is in
+  // flight, the job must fall back to metadata immediately instead of hanging
+  // the serial caption queue.
+  model_broker.SetUnavailable(
+      optimization_guide::mojom::ModelUnavailableReason::kPendingAssets);
+  first_fetch.Complete(gfx::test::CreateImage(16, 16));
+
+  EXPECT_EQ(std::make_tuple(first_id, size_t{1}),
+            store_embeddings_future_.Take());
+  EXPECT_EQ(std::make_tuple(second_id, size_t{1}),
+            store_embeddings_future_.Take());
+}
+
+TEST_F(ContextHubServiceEmbeddingsTest,
+       UpdateImageAnnotations_DuringImageCaptionJob_DropsStaleCaptionResult) {
+  CreateDatabaseServiceWithCaptionModel("Visual caption");
+
+  testing::NiceMock<MockServiceObserver> observer;
+  base::ScopedObservation<ContextHubService, ContextHubService::Observer>
+      observation(&observer);
+  observation.Observe(database_service_.get());
+
+  HeldImageFetch initial_fetch;
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(*mock_image_fetcher_,
+                FetchImageAndData_(GURL(kTestImageUrl), _, _, _))
+        .WillOnce(initial_fetch.Hold());
+    EXPECT_CALL(*mock_image_fetcher_,
+                FetchImageAndData_(GURL(kTestImageUrl), _, _, _))
+        .WillOnce(FulfillImageFetch(gfx::test::CreateImage(16, 16)));
+  }
+
+  const int64_t id = SaveEntry(MakeImageEntry("Page Title"));
+  ASSERT_TRUE(initial_fetch.WaitUntilStarted());
+
+  // Complete the save-time caption job right as `OnMemoryBankEntryUpdated()`
+  // records the pending annotation lookup, so `OnImageCaptionGenerated()` drops
+  // the stale pre-update entry and only embeds the updated entry once fetched.
+  EXPECT_CALL(observer, OnMemoryBankEntryUpdated(id, _, _, _))
+      .WillOnce([&initial_fetch] { initial_fetch.Complete(gfx::Image()); });
+  EXPECT_CALL(
+      mock_embedder_,
+      ComputePassagesEmbeddings(
+          _,
+          ElementsAre("Visual caption Page Title Updated note Design diagram"),
+          _));
+
+  base::test::TestFuture<bool> update_future;
+  database_service_->UpdateMemoryBankEntryAnnotations(
+      id, /*tags=*/{"diagram"}, /*note=*/"Updated note",
+      /*collection=*/"Design", update_future.GetCallback());
+  ASSERT_TRUE(update_future.Get());
+
+  EXPECT_EQ(std::make_tuple(id, size_t{1}), store_embeddings_future_.Take());
+}
+
+TEST_F(ContextHubServiceEmbeddingsTest,
+       DeleteEntries_DropsInFlightImageCaptionJob) {
+  CreateDatabaseServiceWithCaptionModel("Visual caption");
+
+  const GURL first_image_url("https://example.com/first.png");
+  const GURL second_image_url("https://example.com/second.png");
+  HeldImageFetch first_fetch;
+  EXPECT_CALL(*mock_image_fetcher_,
+              FetchImageAndData_(first_image_url, _, _, _))
+      .WillOnce(first_fetch.Hold());
+  EXPECT_CALL(*mock_image_fetcher_,
+              FetchImageAndData_(second_image_url, _, _, _))
+      .WillOnce(FulfillImageFetch(gfx::test::CreateImage(16, 16)));
+  EXPECT_CALL(mock_embedder_,
+              ComputePassagesEmbeddings(
+                  _, ElementsAre("Visual caption Second Page"), _));
+
+  const int64_t first_id =
+      SaveEntry(MakeImageEntry("First Page", first_image_url));
+  const int64_t second_id =
+      SaveEntry(MakeImageEntry("Second Page", second_image_url));
+  ASSERT_TRUE(first_fetch.WaitUntilStarted());
+
+  // Delete the first image entry while its image fetch is still in flight. This
+  // drops the first job and starts the queued job for `second_id`.
+  base::test::TestFuture<bool> delete_future;
+  const std::vector<int64_t> ids_to_delete = {first_id};
+  database_service_->DeleteEntries(ids_to_delete, delete_future.GetCallback());
+  ASSERT_TRUE(delete_future.Get());
+
+  // Completing the first image fetch after deletion must not compute or store
+  // embeddings for the deleted entry.
+  first_fetch.Complete(gfx::test::CreateImage(16, 16));
+
+  EXPECT_EQ(std::make_tuple(second_id, size_t{1}),
+            store_embeddings_future_.Take());
 }
 #endif
 
@@ -2594,7 +2830,8 @@ TEST_F(ContextHubServiceTest, ReplaceTabGroups_NullStore) {
       std::make_unique<InMemoryMemoryBank>(),
       /*tab_group_store=*/nullptr,
       /*context_hub_backend=*/nullptr,
-      /*auto_todos_store=*/nullptr);
+      /*auto_todos_store=*/nullptr,
+      /*model_broker_client=*/nullptr);
 
   TabGroupEntry group;
   group.label = "Group";
@@ -2639,7 +2876,8 @@ TEST_F(ContextHubServiceTest, ChatHistory_LRUEviction) {
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
-      std::make_unique<InMemoryAutoTodosStore>());
+      std::make_unique<InMemoryAutoTodosStore>(),
+      /*model_broker_client=*/nullptr);
 
   for (size_t i = 0; i < 4; ++i) {
     service.AddTabGroupChatHistoryTurn(
@@ -2772,7 +3010,8 @@ TEST_F(ContextHubServiceTest,
       std::make_unique<InMemoryMemoryBank>(),
       /*tab_group_store=*/nullptr,
       /*context_hub_backend=*/nullptr,
-      std::make_unique<InMemoryAutoTodosStore>());
+      std::make_unique<InMemoryAutoTodosStore>(),
+      /*model_broker_client=*/nullptr);
   EXPECT_FALSE(profile_.GetPrefs()->HasPrefPath(
       prefs::kContextHubAutoTabGroupsPreferences));
   EXPECT_FALSE(service.SetAutoTabGroupsPreferences("- Should not be stored."));
@@ -2807,7 +3046,8 @@ TEST_F(ContextHubServiceTest,
       std::make_unique<InMemoryMemoryBank>(),
       /*tab_group_store=*/nullptr,
       /*context_hub_backend=*/nullptr,
-      std::make_unique<InMemoryAutoTodosStore>());
+      std::make_unique<InMemoryAutoTodosStore>(),
+      /*model_broker_client=*/nullptr);
   EXPECT_EQ(prefs->GetString(prefs::kContextHubAutoTabGroupsPreferences),
             kStored);
   EXPECT_EQ(service.GetEffectiveAutoTabGroupsPreferences(), kStored);
@@ -4466,7 +4706,8 @@ TEST_F(ContextHubServiceTest, TabGroupStore_Null) {
       std::make_unique<InMemoryMemoryBank>(),
       /*tab_group_store=*/nullptr,
       /*context_hub_backend=*/nullptr,
-      std::make_unique<InMemoryAutoTodosStore>());
+      std::make_unique<InMemoryAutoTodosStore>(),
+      /*model_broker_client=*/nullptr);
 
   base::test::TestFuture<std::vector<TabGroupEntry>> get_future;
   service_null_store.GetTabGroups(get_future.GetCallback());
@@ -4568,7 +4809,8 @@ TEST_F(ContextHubServiceTest, AutoTodos_TriggersOnStartupWhenTokensLoaded) {
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
-      std::make_unique<InMemoryAutoTodosStore>());
+      std::make_unique<InMemoryAutoTodosStore>(),
+      /*model_broker_client=*/nullptr);
 }
 
 TEST_F(ContextHubServiceTest,
@@ -4588,7 +4830,8 @@ TEST_F(ContextHubServiceTest,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
-      std::make_unique<InMemoryAutoTodosStore>());
+      std::make_unique<InMemoryAutoTodosStore>(),
+      /*model_broker_client=*/nullptr);
 }
 
 TEST_F(ContextHubServiceTest, AutoTodos_TriggersWhenPrimaryAccountSignedIn) {
@@ -4607,7 +4850,8 @@ TEST_F(ContextHubServiceTest, AutoTodos_TriggersWhenPrimaryAccountSignedIn) {
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
-      std::make_unique<InMemoryAutoTodosStore>());
+      std::make_unique<InMemoryAutoTodosStore>(),
+      /*model_broker_client=*/nullptr);
 
   // When the user signs in, generation is triggered.
   EXPECT_CALL(
@@ -4640,7 +4884,8 @@ TEST_F(ContextHubServiceTest, AutoTodos_TriggersWhenRefreshTokensLoaded) {
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
-      std::make_unique<InMemoryAutoTodosStore>());
+      std::make_unique<InMemoryAutoTodosStore>(),
+      /*model_broker_client=*/nullptr);
 
   // When refresh tokens finish loading from disk, generation is triggered.
   EXPECT_CALL(
@@ -4669,7 +4914,8 @@ TEST_F(ContextHubServiceTest, AutoTodos_DoesNotRunWhenFeatureDisabled) {
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
-      /*auto_todos_store=*/nullptr);
+      /*auto_todos_store=*/nullptr,
+      /*model_broker_client=*/nullptr);
 }
 
 TEST_F(ContextHubServiceTest,
@@ -4698,7 +4944,8 @@ TEST_F(ContextHubServiceTest,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
-      std::make_unique<InMemoryAutoTodosStore>());
+      std::make_unique<InMemoryAutoTodosStore>(),
+      /*model_broker_client=*/nullptr);
 
   // 12 hours later: should not trigger yet.
   task_environment_.FastForwardBy(base::Hours(12));
@@ -4737,7 +4984,8 @@ TEST_F(ContextHubServiceTest, AutoTodos_ManualGenerationResetsPeriodicTimer) {
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
-      std::make_unique<InMemoryAutoTodosStore>());
+      std::make_unique<InMemoryAutoTodosStore>(),
+      /*model_broker_client=*/nullptr);
 
   // Advance to 2 hours before the 24-hour periodic timer would trigger (22
   // hours after startup).
@@ -4801,7 +5049,8 @@ TEST_F(ContextHubServiceTest,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
-      std::make_unique<InMemoryAutoTodosStore>());
+      std::make_unique<InMemoryAutoTodosStore>(),
+      /*model_broker_client=*/nullptr);
 
   // 10 hours of uptime.
   task_environment_.FastForwardBy(base::Hours(10));
@@ -4852,7 +5101,8 @@ TEST_F(ContextHubServiceTest,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
-      std::make_unique<InMemoryAutoTodosStore>());
+      std::make_unique<InMemoryAutoTodosStore>(),
+      /*model_broker_client=*/nullptr);
 
   // 6 hours of uptime.
   task_environment_.FastForwardBy(base::Hours(6));
@@ -4929,7 +5179,8 @@ TEST_F(ContextHubServiceTest,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
-      std::make_unique<InMemoryAutoTodosStore>());
+      std::make_unique<InMemoryAutoTodosStore>(),
+      /*model_broker_client=*/nullptr);
 
   // Advance time by only 10 minutes.
   task_environment_.FastForwardBy(base::Minutes(10));
@@ -4954,7 +5205,8 @@ TEST_F(ContextHubServiceTest, PendingMemoryBankEntryLifecycle) {
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
-      std::make_unique<InMemoryAutoTodosStore>());
+      std::make_unique<InMemoryAutoTodosStore>(),
+      /*model_broker_client=*/nullptr);
 
   // When no pending entry is set, GetPendingMemoryBankEntry returns nullopt.
   EXPECT_FALSE(service.GetPendingMemoryBankEntry().has_value());
@@ -5003,7 +5255,8 @@ TEST_F(ContextHubServiceTest,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
-      std::make_unique<InMemoryAutoTodosStore>());
+      std::make_unique<InMemoryAutoTodosStore>(),
+      /*model_broker_client=*/nullptr);
 
   MemoryBankEntry pending(MemoryBankType::kTextSelection,
                           GURL("https://example.com/pending"), "Pending Title",

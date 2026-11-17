@@ -62,6 +62,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/passage_embeddings/core/passage_embeddings_test_util.h"
@@ -312,7 +313,8 @@ class ContextHubPageHandlerTest : public testing::Test {
                   GetForProfile(profile),
               &embedder_, &embedder_metadata_provider_, std::move(memory_bank),
               std::make_unique<InMemoryTabGroupStore>(), std::move(backend),
-              std::make_unique<InMemoryAutoTodosStore>());
+              std::make_unique<InMemoryAutoTodosStore>(),
+              /*model_broker_client=*/nullptr);
         }));
 #if !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_CHROMEOS)

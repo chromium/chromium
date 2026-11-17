@@ -79,6 +79,8 @@ BASE_FEATURE_PARAM(double, kMemoryBankSearchScoreThreshold, &kMemoryBanks, 0.7);
 
 BASE_FEATURE_PARAM(size_t, kMaxMemoryBankSearchResults, &kMemoryBanks, 10);
 
+BASE_FEATURE(kMemoryBankImageCaptions, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE_PARAM(int,
                    kMaxTabGroups,
                    &browser::context_hub::mojom::kAutoTabGroups,

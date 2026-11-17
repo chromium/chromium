@@ -69,6 +69,10 @@ BASE_DECLARE_FEATURE_PARAM(double, kMemoryBankSearchScoreThreshold);
 // The maximum number of entries returned by memory bank semantic search.
 BASE_DECLARE_FEATURE_PARAM(size_t, kMaxMemoryBankSearchResults);
 
+// Enables generating on-device visual captions and including them when
+// computing passage embeddings for image memory bank entries.
+BASE_DECLARE_FEATURE(kMemoryBankImageCaptions);
+
 // The maximum number of tab groups stored in the in-memory tab group store.
 BASE_DECLARE_FEATURE_PARAM(int, kMaxTabGroups);
 

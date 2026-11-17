@@ -4,6 +4,9 @@
 
 #include "chrome/browser/context_hub/context_hub_service_factory.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -29,6 +32,7 @@
 #include "chrome/browser/sync/tab_context_sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
+#include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_service_controller.h"
@@ -173,6 +177,7 @@ ContextHubServiceFactory::BuildServiceInstanceForBrowserContext(
   passage_embeddings::Embedder* embedder = nullptr;
   passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider =
       nullptr;
+  std::unique_ptr<optimization_guide::ModelBrokerClient> model_broker_client;
   if (backend &&
       passage_embeddings::PassageEmbedderModelObserverFactory::GetForProfile(
           profile)) {
@@ -180,6 +185,11 @@ ContextHubServiceFactory::BuildServiceInstanceForBrowserContext(
         passage_embeddings::GetChromePassageEmbeddingsServiceController();
     embedder = controller->GetEmbedder();
     embedder_metadata_provider = controller;
+    if (embedder && base::FeatureList::IsEnabled(
+                        context_hub::features::kMemoryBankImageCaptions)) {
+      model_broker_client =
+          optimization_guide_service->CreateModelBrokerClient();
+    }
   }
 
   return std::make_unique<context_hub::ContextHubService>(
@@ -187,5 +197,5 @@ ContextHubServiceFactory::BuildServiceInstanceForBrowserContext(
       optimization_guide_service, tab_group_sync_service,
       page_content_extraction_service, embedder, embedder_metadata_provider,
       std::move(memory_bank), std::move(tab_group_store), std::move(backend),
-      std::move(auto_todos_store));
+      std::move(auto_todos_store), std::move(model_broker_client));
 }
