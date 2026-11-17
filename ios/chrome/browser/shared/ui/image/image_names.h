@@ -20,6 +20,7 @@ extern NSString* const kChromeNotificationsOptInBannerLandscapeImage;
 extern NSString* const kChromeSearchEngineChoiceIcon;
 extern NSString* const kChromeSigninBannerImage;
 extern NSString* const kChromeSigninPromoLogoImage;
+extern NSString* const kGeminiSparkMulticolor40ptImage;
 extern NSString* const kGoogleSearchEngineLogoImage;
 extern NSString* const kGooglePasswordManagerWidgetPromoImage;
 extern NSString* const kGooglePasswordManagerWidgetPromoDisabledImage;

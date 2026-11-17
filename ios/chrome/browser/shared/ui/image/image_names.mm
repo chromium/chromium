@@ -21,6 +21,8 @@ NSString* const kChromeSearchEngineChoiceIcon =
     @"chrome_search_engine_choice_icon";
 NSString* const kChromeSigninBannerImage = @"chrome_signin_banner";
 NSString* const kChromeSigninPromoLogoImage = @"chrome_signin_promo_logo";
+NSString* const kGeminiSparkMulticolor40ptImage =
+    @"gemini_spark_multicolor_40pt";
 NSString* const kGoogleSearchEngineLogoImage = @"google_logo";
 NSString* const kGooglePasswordManagerWidgetPromoImage =
     @"google_password_manager_widget_promo";

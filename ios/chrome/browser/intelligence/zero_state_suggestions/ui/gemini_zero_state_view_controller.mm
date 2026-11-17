@@ -24,7 +24,6 @@ constexpr CGFloat kChipInterItemSpacing = 8.0;
 constexpr CGFloat kChipContentPaddingVertical = 12.0;
 constexpr CGFloat kChipContentPaddingHorizontal = 16.0;
 constexpr CGFloat kContainerTopPadding = 36.0;
-constexpr CGFloat kGeminiLogoSize = 38.0;
 constexpr CGFloat kLogoToGreetingSpacing = 16.0;
 constexpr CGFloat kCloseButtonSize = 44.0;
 constexpr CGFloat kCloseButtonSymbolPointSize = 18.0;
@@ -61,8 +60,7 @@ constexpr CGFloat kCloseButtonSymbolPointSize = 18.0;
   _logoImageView = [[UIImageView alloc] init];
   _logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
   _logoImageView.contentMode = UIViewContentModeCenter;
-  _logoImageView.image =
-      [GeminiUIUtils createGradientGeminiLogo:kGeminiLogoSize];
+  _logoImageView.image = [GeminiUIUtils multicolorGeminiSpark];
   [_logoImageView setContentHuggingPriority:UILayoutPriorityRequired
                                     forAxis:UILayoutConstraintAxisVertical];
   [_logoImageView

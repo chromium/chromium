@@ -16,6 +16,10 @@
 // Create the Gemini logo with a diagonal linear gradient color palette.
 + (UIImage*)createGradientGeminiLogo:(CGFloat)pointSize;
 
+// Returns the 40pt multicolor Gemini spark at its native size. Falls back to
+// the gradient sparkle in non-branded builds.
++ (UIImage*)multicolorGeminiSpark;
+
 // Returns an attributed string for `text` where `targetWord` is rendered with a
 // linear gradient color palette defined by `colors` and matching `font`.
 // Note: Callers displaying this attributed string in a UILabel should set the

@@ -8,6 +8,7 @@
 #import "base/check_op.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/shared/ui/buildflags.h"
+#import "ios/chrome/browser/shared/ui/image/image_names.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -57,6 +58,12 @@ CAGradientLayer* CreateGeminiBlueGradientLayer(CGSize size,
                              GeminiBlueGradientColors());
 }
 
+#if !BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+// Point size of the non-branded fallback, chosen to approximate the 40pt
+// branded gemini_spark_multicolor_40pt asset.
+constexpr CGFloat kMulticolorGeminiSparkPointSize = 40.0;
+#endif
+
 }  // namespace
 
 @implementation GeminiUIUtils
@@ -88,6 +95,16 @@ CAGradientLayer* CreateGeminiBlueGradientLayer(CGSize size,
       }];
 
   return gradientImage;
+}
+
++ (UIImage*)multicolorGeminiSpark {
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+  UIImage* spark = [UIImage imageNamed:kGeminiSparkMulticolor40ptImage];
+  CHECK(spark);
+  return spark;
+#else
+  return [self createGradientGeminiLogo:kMulticolorGeminiSparkPointSize];
+#endif
 }
 
 + (NSAttributedString*)attributedStringByReplacingWord:(NSString*)targetWord
