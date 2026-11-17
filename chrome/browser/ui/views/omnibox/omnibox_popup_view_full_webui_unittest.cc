@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
+#include "chrome/browser/ui/omnibox/test_omnibox_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_content_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -177,6 +178,31 @@ TEST_F(OmniboxPopupViewFullWebUITest, BlurOmniboxKeepsPopupOpenForDraft) {
   EXPECT_FALSE(controller_->edit_model()->has_focus());
   EXPECT_EQ(controller_->popup_state_manager()->popup_state(),
             OmniboxPopupState::kFull);
+}
+
+TEST_F(OmniboxPopupViewFullWebUITest,
+       BlurOmniboxAcceptsTemporaryTextWhenInputInProgress) {
+  TestOmniboxView view(controller_.get());
+  controller_->edit_model()->set_view(&view);
+  CreatePopupView();
+  popup_view_->OnFocus(/*query_zps=*/false, /*select_all=*/false,
+                       /*show_full_url=*/false);
+  OmniboxEditModel* edit_model = controller_->edit_model();
+  edit_model->SetInputInProgress(true);
+  edit_model->OnPopupDataChanged(u"temporary match",
+                                 /*is_temporary_text=*/true, std::u16string(),
+                                 std::u16string(), std::u16string(),
+                                 KeywordState::kNone, std::u16string(), {});
+  ASSERT_TRUE(edit_model->has_temporary_text());
+
+  OmniboxPopupViewFullWebUI::BlurOmnibox(*controller_, [] {});
+
+  EXPECT_FALSE(edit_model->has_temporary_text());
+  EXPECT_TRUE(edit_model->user_input_in_progress());
+  EXPECT_EQ(edit_model->user_text(), u"temporary match");
+  EXPECT_EQ(controller_->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kFull);
+  edit_model->set_view(nullptr);
 }
 
 TEST_F(OmniboxPopupViewFullWebUITest,

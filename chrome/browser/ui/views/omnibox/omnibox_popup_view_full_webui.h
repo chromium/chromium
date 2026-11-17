@@ -87,7 +87,8 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
   // messy.
   bool is_focused() const { return focused_; }
 
-  // The Full popup's blur sequence: reverts unedited text (see
+  // The Full popup's blur sequence: accepts any temporary text while user
+  // input is in progress as the user's draft, reverts unedited text (see
   // `OmniboxEditModel::RevertUneditedText()`), tells the WebUI it lost focus
   // (`edit_model->popup_view()->OnBlur()`, when the popup view is still
   // registered), runs `move_focus` (the host's own focus change, e.g. clearing

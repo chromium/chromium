@@ -69,6 +69,7 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler,
   void LogEscapeAction(
       omnibox_popup::mojom::OmniboxEscapeAction action) override;
   void OnInputCleared(uint32_t sequence_number) override;
+  void StartUserInput(uint32_t sequence_number) override;
   void OnPaste(const std::string& text,
                const gfx::Range& selection,
                uint32_t sequence_number) override;

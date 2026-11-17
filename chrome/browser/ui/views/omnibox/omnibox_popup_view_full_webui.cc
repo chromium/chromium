@@ -92,6 +92,12 @@ void OmniboxPopupViewFullWebUI::BlurOmnibox(
     OmniboxController& controller,
     base::FunctionRef<void()> move_focus) {
   OmniboxEditModel* edit_model = controller.edit_model();
+  // Blurring closes the dropdown, so keep the selected match as the user's
+  // draft, as `OmniboxController::OnResultChanged()` does in Views.
+  if (edit_model->user_input_in_progress() &&
+      edit_model->has_temporary_text()) {
+    edit_model->AcceptTemporaryTextAsUserText();
+  }
   edit_model->RevertUneditedText();
 
   if (OmniboxPopupView* popup_view = edit_model->popup_view()) {
