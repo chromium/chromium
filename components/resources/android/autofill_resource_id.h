@@ -25,14 +25,10 @@
 // Autofill popup and keyboard accessory images.
 // We use Android's |VectorDrawableCompat| for the following images that are
 // displayed using |DropdownAdapter|.
-LINK_RESOURCE_ID(IDR_AUTOFILL_CC_AMEX_OLD, R.drawable.amex_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_AMEX, R.drawable.amex_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_AMEX_NEW, R.drawable.amex_card)
-LINK_RESOURCE_ID(IDR_AUTOFILL_CC_DINERS_OLD, R.drawable.diners_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_DINERS, R.drawable.diners_card)
-LINK_RESOURCE_ID(IDR_AUTOFILL_CC_DISCOVER_OLD, R.drawable.discover_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_DISCOVER, R.drawable.discover_card)
-LINK_RESOURCE_ID(IDR_AUTOFILL_CC_ELO_OLD, R.drawable.elo_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_ELO, R.drawable.elo_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_GENERIC_OLD, R.drawable.ic_credit_card_black)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_GENERIC, R.drawable.ic_credit_card_black)
@@ -40,19 +36,12 @@ LINK_RESOURCE_ID(IDR_AUTOFILL_CC_GENERIC_PRIMARY_OLD,
                  R.drawable.ic_credit_card_primary)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_GENERIC_PRIMARY,
                  R.drawable.ic_credit_card_primary)
-LINK_RESOURCE_ID(IDR_AUTOFILL_CC_JCB_OLD, R.drawable.jcb_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_JCB, R.drawable.jcb_card)
-LINK_RESOURCE_ID(IDR_AUTOFILL_CC_MASTERCARD_OLD, R.drawable.mc_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_MASTERCARD, R.drawable.mc_card)
-LINK_RESOURCE_ID(IDR_AUTOFILL_CC_MIR_OLD, R.drawable.mir_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_MIR, R.drawable.mir_card)
-LINK_RESOURCE_ID(IDR_AUTOFILL_CC_TROY_OLD, R.drawable.troy_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_TROY, R.drawable.troy_card)
-LINK_RESOURCE_ID(IDR_AUTOFILL_CC_UNIONPAY_OLD, R.drawable.unionpay_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_UNIONPAY, R.drawable.unionpay_card)
-LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VERVE_OLD, R.drawable.verve_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VERVE, R.drawable.verve_card)
-LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VISA_OLD, R.drawable.visa_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VISA, R.drawable.visa_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY, R.drawable.google_pay)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT,
