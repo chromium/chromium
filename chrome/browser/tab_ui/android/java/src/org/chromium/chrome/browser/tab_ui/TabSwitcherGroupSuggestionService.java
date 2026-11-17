@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import static java.util.Comparator.comparingInt;
 
 import androidx.annotation.IntDef;
@@ -354,7 +356,7 @@ public class TabSwitcherGroupSuggestionService {
             return null;
         }
 
-        tabs.sort(comparingInt(tab -> tabIdsToIndices.get(tab.getId())));
+        tabs.sort(comparingInt(tab -> assumeNonNull(tabIdsToIndices.get(tab.getId()))));
         return tabs;
     }
 

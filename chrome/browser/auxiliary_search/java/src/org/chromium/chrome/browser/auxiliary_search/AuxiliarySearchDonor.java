@@ -243,7 +243,7 @@ public class AuxiliarySearchDonor {
                 session -> {
                     SetSchemaRequest setSchemaRequest = buildSetSchemaRequest();
                     if (setSchemaRequest == null) {
-                        return null;
+                        return Futures.immediateCancelledFuture();
                     }
 
                     ListenableFuture<SetSchemaResponse> responseFutureCallback =

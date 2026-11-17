@@ -113,8 +113,9 @@ public class PlayerFrameBitmapState {
         assumeNonNull(mBitmapMatrix);
         for (int i = 0; i < mBitmapMatrix.length; i++) {
             for (int j = 0; j < mBitmapMatrix[i].length; j++) {
-                if (mBitmapMatrix[i][j] != null) {
-                    mBitmapMatrix[i][j].recycle();
+                Bitmap bitmap = mBitmapMatrix[i][j];
+                if (bitmap != null) {
+                    bitmap.recycle();
                 }
             }
         }
@@ -248,8 +249,9 @@ public class PlayerFrameBitmapState {
                         bitmapRequestHandler::onError);
         // It is possible that the request failed immediately, so make sure the request still
         // exists.
-        if (mPendingBitmapRequests[row][col] != null) {
-            mPendingBitmapRequests[row][col].setRequestId(requestId);
+        BitmapRequestHandler pendingRequest = mPendingBitmapRequests[row][col];
+        if (pendingRequest != null) {
+            pendingRequest.setRequestId(requestId);
         }
         return true;
     }
@@ -323,10 +325,11 @@ public class PlayerFrameBitmapState {
 
         for (int row = 0; row < mPendingBitmapRequests.length; row++) {
             for (int col = 0; col < mPendingBitmapRequests[row].length; col++) {
-                if (mPendingBitmapRequests[row][col] != null && !mRequiredBitmaps[row][col]) {
+                BitmapRequestHandler pendingRequest = mPendingBitmapRequests[row][col];
+                if (pendingRequest != null && !mRequiredBitmaps[row][col]) {
                     // If the cancellation failed, the bitmap is being processed already. If this
                     // happens don't delete the request.
-                    if (mPendingBitmapRequests[row][col].cancel()) {
+                    if (pendingRequest.cancel()) {
                         mPendingBitmapRequests[row][col] = null;
                     }
                 }
