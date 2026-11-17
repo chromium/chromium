@@ -41,6 +41,7 @@ static_library("settings") {
     "//chrome/browser/site_isolation",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/settings",

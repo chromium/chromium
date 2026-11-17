@@ -275,6 +275,7 @@ source_set("browser_tests") {
     "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/dbus/update_engine",

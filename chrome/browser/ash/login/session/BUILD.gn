@@ -91,6 +91,7 @@ static_library("session") {
     "//chromeos/ash/components/consent_auditor:consent_auditor_provider",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/ash/components/dbus/pciguard",
     "//chromeos/ash/components/dbus/rmad",
     "//chromeos/ash/components/demo_mode",

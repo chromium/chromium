@@ -588,6 +588,7 @@ if (!is_android) {
         "//chrome/browser/ash/ownership",
         "//chrome/browser/ash/settings",
         "//chromeos/ash/components/cryptohome",
+        "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
         "//chromeos/ash/components/dbus/session_manager",
         "//chromeos/constants",
         "//components/user_manager",

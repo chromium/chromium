@@ -18,6 +18,7 @@ static_library("boot_phase_monitor") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/experiences/arc",
     "//components/account_id",

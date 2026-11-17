@@ -5,12 +5,17 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_USERDATAAUTH_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_USERDATAAUTH_CLIENT_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation_traits.h"
-#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/common/dbus_callback.h"
+
+namespace cryptohome {
+class AccountIdentifier;
+}  // namespace cryptohome
 
 namespace user_data_auth {
 class AddAuthFactorReply;

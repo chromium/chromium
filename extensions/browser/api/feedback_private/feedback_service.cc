@@ -45,6 +45,7 @@
 #include "base/base64.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "components/account_id/account_id.h"
 #include "content/public/browser/storage_partition.h"
 #include "crypto/hpke.h"

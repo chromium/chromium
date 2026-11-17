@@ -49,6 +49,7 @@ static_library("session") {
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/concierge:concierge_proto",
+    "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/patchpanel",
     "//chromeos/ash/components/dbus/session_manager",

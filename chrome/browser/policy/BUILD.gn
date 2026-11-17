@@ -620,6 +620,7 @@ source_set("browser_tests") {
       "//chrome/browser/ui/web_applications/test:test_support_ui",
       "//chromeos/ash/components/audio",
       "//chromeos/ash/components/cryptohome",
+      "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
       "//chromeos/ash/components/dbus/userdataauth",
       "//chromeos/ash/experiences/arc:arc_test_support",
       "//chromeos/ash/experiences/arc:prefs",

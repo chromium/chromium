@@ -190,6 +190,7 @@ source_set("impl") {
       "//chromeos/ash/components/dbus/attestation",
       "//chromeos/ash/components/dbus/attestation:attestation_proto_gen",
       "//chromeos/ash/components/dbus/constants",
+      "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
       "//chromeos/components/mahi/public/cpp",
       "//components/crash/core/app",
     ]

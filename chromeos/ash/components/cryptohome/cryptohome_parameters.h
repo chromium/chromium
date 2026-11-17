@@ -13,12 +13,13 @@
 
 #include "base/component_export.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
-#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 
 class AccountId;
 
 namespace cryptohome {
+
+class AccountIdentifier;
 
 enum AuthKeyPrivileges {
   PRIV_ADD = 1 << 1,      // Can add new keys.

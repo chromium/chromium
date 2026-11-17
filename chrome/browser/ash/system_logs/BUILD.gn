@@ -61,6 +61,7 @@ static_library("system_logs") {
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/logging",
