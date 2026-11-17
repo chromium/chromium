@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_boundary.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -851,7 +852,7 @@ Element* DisplayLockUtilities::LockedAncestorPreventingStyle(const Node& node) {
 
 #if DCHECK_IS_ON()
 bool DisplayLockUtilities::AssertStyleAllowed(const Node& node) {
-  if (node.GetDocument().IsFlatTreeTraversalForbidden() ||
+  if (SlotAssignmentRecalcInProgressScope::IsFlatTreeTraversalForbidden() ||
       node.GetDocument()
           .GetSlotAssignmentEngine()
           .HasPendingSlotAssignmentRecalc()) {

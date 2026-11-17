@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/xml_document.h"
@@ -2779,9 +2780,8 @@ InspectorDOMAgent::BuildDistributedNodesForSlot(HTMLSlotElement* slot_element) {
   // while a slot assignment recalc is already running (e.g. a paused debugger
   // session inspecting DOM). Synchronous protocol commands still recalc on
   // demand, including for detached trees.
-  const bool skip_recalc =
-      suppress_slot_assignment_recalc_ ||
-      slot_element->GetDocument().IsInSlotAssignmentRecalc();
+  const bool skip_recalc = suppress_slot_assignment_recalc_ ||
+                           SlotAssignmentRecalcInProgressScope::IsActive();
   const HeapVector<Member<Node>>& nodes =
       skip_recalc ? slot_element->AssignedNodesNoRecalc()
                   : slot_element->AssignedNodes();

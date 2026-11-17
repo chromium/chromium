@@ -912,6 +912,8 @@ unsigned HTMLVideoElement::webkitDecodedFrameCount() const {
 
 void HTMLVideoElement::DidChangeIsInCanvasSubtree(
     CanvasSubtreePropagation propagation_behavior) {
+  // Reachable from slot assignment recalc; see "Recalc hooks" in
+  // slot_assignment.h.
   HTMLMediaElement::DidChangeIsInCanvasSubtree(propagation_behavior);
   if (IsInCanvasSubtree()) {
     UpdateLayoutObject();

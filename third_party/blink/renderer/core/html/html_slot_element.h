@@ -61,6 +61,10 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   // Element::SetIsCanvasOrInCanvasSubtree where eventual consistency is
   // guaranteed by subsequent FlatTreeParentChanged/RemovedFromFlatTree
   // hooks).
+  //
+  // May return stale data if the containing shadow root's assignment is
+  // dirty (see "Stale accessors" in slot_assignment.h). Approved callers:
+  // mutation-time style dirty-marking and canvas subtree propagation.
   const HeapVector<Member<Node>>& AssignedNodesNoRecalc() const {
     return assigned_nodes_;
   }
@@ -105,12 +109,13 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
 
   // Returns true if the slot has assigned nodes, without doing assignment
   // recalc. Used by FlatTreeParentForChildDirty() which needs to avoid doing
-  // slot assignments while marking the tree style-dirty.
+  // slot assignments while marking the tree style-dirty. May be stale; see
+  // AssignedNodesNoRecalc().
   bool HasAssignedNodesNoRecalc() const { return !assigned_nodes_.empty(); }
 
   // Returns true if FlattenedAssignedNodes() would be non-empty, without
   // doing assignment recalc. Used for :has-slotted matching during style
-  // resolution.
+  // resolution. May be stale; see AssignedNodesNoRecalc().
   bool HasFlattenedAssignedNodesNoRecalc() const;
 
   bool SupportsAssignment() const { return IsInShadowTree(); }

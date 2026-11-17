@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/shadow_including_tree_order_traversal.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
@@ -241,7 +242,7 @@ void AXRelationCache::CheckElementWasProcessed(Element& element) {
 
   // Find first ancestor that was not processed.
   Node* ancestor = &element;
-  if (element.GetDocument().IsFlatTreeTraversalForbidden()) {
+  if (SlotAssignmentRecalcInProgressScope::IsFlatTreeTraversalForbidden()) {
     DVLOG(1) << "Note: flat tree traversal forbidden.";
   } else {
     while (true) {

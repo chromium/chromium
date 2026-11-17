@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -3710,6 +3711,10 @@ HTMLSlotElement* Node::AssignedSlot() const {
     return nullptr;
   }
 
+  SlotAssignmentRecalcInProgressScope::ReportViolationIf(
+      SlotAssignmentRecalcInProgressScope::IsFlatTreeTraversalForbidden(),
+      SlotAssignmentInvariant::kNoFlatTreeAccessWhileForbidden);
+
   // TODO(hayato): Node::AssignedSlot() shouldn't be called while
   // in executing RecalcAssignment(), however, unfortunately,
   // that could happen as follows:
@@ -3722,8 +3727,8 @@ HTMLSlotElement* Node::AssignedSlot() const {
   // in the long term.
   //
   // If we can remove such code path, we don't need to check
-  // IsInSlotAssignmentRecalc() here.
-  if (GetDocument().IsInSlotAssignmentRecalc()) {
+  // SlotAssignmentRecalcInProgressScope::IsActive() here.
+  if (SlotAssignmentRecalcInProgressScope::IsActive()) {
     // FlatTreeNodeData is not realiable here. Entering slow path.
     return root->AssignedSlotFor(*this);
   }
@@ -3747,7 +3752,8 @@ HTMLSlotElement* Node::AssignedSlot() const {
 }
 
 // Used when assignment recalc is forbidden, i.e., DetachLayoutTree().
-// Returned assignedSlot is not guaranteed up to date.
+// Returned assignedSlot is not guaranteed up to date (see "Stale accessors" in
+// slot_assignment.h).
 HTMLSlotElement* Node::AssignedSlotWithoutRecalc() const {
   if (!GetSlotAssignmentRoot()) {
     return nullptr;

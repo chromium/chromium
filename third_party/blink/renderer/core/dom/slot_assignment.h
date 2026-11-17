@@ -17,6 +17,61 @@ class HTMLSlotElement;
 class Node;
 class ShadowRoot;
 
+// Slot assignment for one shadow root.
+//
+// Dirty/clean model
+// -----------------
+// DOM mutations do not recompute slot assignment. They only mark the shadow
+// root dirty (SetNeedsAssignmentRecalc()), and record it in the document's
+// SlotAssignmentEngine. The assignment data (HTMLSlotElement's assigned nodes
+// and flat tree children, and each slotted node's FlatTreeNodeData) is
+// recomputed lazily, by RecalcAssignment(), either:
+//  - from the document lifecycle (SlotAssignmentEngine::
+//    RecalcSlotAssignments(), before style recalc), or
+//  - from a lazy entry point that needs clean data: HTMLSlotElement::
+//    AssignedNodes(), FlatTreeTraversal::TraverseSiblingsForHostChild() (and
+//    so all of FlatTreeTraversal), and Node::AssignedSlot().
+//
+// Rules
+// -----
+// R1. No script and no event dispatch during recalc. This covers synchronous
+//     DispatchEvent(), DispatchScopedEvent() outside a queue scope,
+//     focus/blur, and microtask checkpoints.
+// R2. No DOM mutation during recalc: child-list, attribute, and
+//     character-data changes, including in UA shadow trees and in other
+//     documents.
+// R3. No focus change during recalc, even without script, because
+//     FocusedElementChangeObservers run.
+// R4. Recalc does not dirty slot assignment and does not re-enter recalc.
+// R5. Recalc is never triggered while the tree is unstable: in the middle of
+//     a DOM mutation, during layout-tree detach, or during style, layout, or
+//     paint (see SlotAssignmentRecalcForbiddenScope).
+// R6. No partial staleness. Side effects run only after every dirty shadow
+//     root they can reach has its assignment data recomputed.
+// R7. The flat tree is not read while assignment data is being recomputed
+//     (while flat tree traversal is forbidden), because that data is only
+//     partly updated.
+//
+// R1-R5 and R7 are checked by SlotAssignmentRecalcInProgressScope. R6 is
+// checked indirectly: a side effect that reads a dirty shadow root triggers a
+// re-entrant recalc (R4), and reading partly updated data violates R7.
+//
+// Recalc hooks
+// ------------
+// Hooks reachable from recalc (Element::ManuallyAssignSlots(),
+// Node::FlatTreeParentChanged(), Node::RemovedFromFlatTree(),
+// Element::DidChangeIsInCanvasSubtree()) must follow these rules. In
+// practice, they may only mark style or layout-tree dirty, detach layout
+// trees, update node flags, notify accessibility (without traversing dirty
+// data), and queue work for later. Anything else must be posted as a task,
+// or suppressed, by the code that wants it.
+//
+// Stale accessors
+// ---------------
+// The *NoRecalc and *WithoutRecalc accessors read cached assignment data
+// without recalculating it, so they may return stale data. They are allowed
+// only where documented, mostly mutation-time style dirty-marking
+// (Node::FlatTreeParentForChildDirty()) and canvas subtree propagation.
 class SlotAssignment final : public GarbageCollected<SlotAssignment> {
  public:
   explicit SlotAssignment(ShadowRoot& owner);

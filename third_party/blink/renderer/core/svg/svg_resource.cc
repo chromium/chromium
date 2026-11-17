@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
@@ -306,7 +307,8 @@ bool IsResourceTargetAffectedByDisplayLock(
     return false;
   }
   Document& document = target.GetDocument();
-  if (!element.isConnected() || document.IsFlatTreeTraversalForbidden() ||
+  if (!element.isConnected() ||
+      SlotAssignmentRecalcInProgressScope::IsFlatTreeTraversalForbidden() ||
       document.IsSlotAssignmentDirty()) {
     return true;
   }

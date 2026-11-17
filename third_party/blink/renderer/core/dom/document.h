@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/core/dom/live_node_list_registry.h"
 #include "third_party/blink/renderer/core/dom/node_list_invalidation_type.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/dom/text_link_colors.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/dom/user_action_element_set.h"
@@ -1528,6 +1529,11 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void IncDOMTreeVersion() {
     DCHECK(lifecycle_.StateAllowsTreeMutations());
+    // Catch-all for DOM mutations during slot assignment recalc (rule R2 in
+    // slot_assignment.h). This runs after the mutation, but before control
+    // returns to the recalc.
+    SlotAssignmentRecalcInProgressScope::CheckNotActive(
+        SlotAssignmentInvariant::kNoDOMMutation);
     dom_tree_version_ = ++global_tree_version_;
   }
   uint64_t DomTreeVersion() const { return dom_tree_version_; }
@@ -1979,32 +1985,16 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool IsSlotAssignmentDirty() const;
 
-#if DCHECK_IS_ON()
   unsigned& SlotAssignmentRecalcForbiddenRecursionDepth() {
     return slot_assignment_recalc_forbidden_recursion_depth_;
   }
-  bool IsSlotAssignmentRecalcForbidden() {
+  bool IsSlotAssignmentRecalcForbidden() const {
     return slot_assignment_recalc_forbidden_recursion_depth_ > 0;
   }
-#endif
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
   void AssertLayoutTreeUpdatedAfterLayout();
 #endif
-
-  unsigned& FlatTreeTraversalForbiddenRecursionDepth() {
-    return flat_tree_traversal_forbidden_recursion_depth_;
-  }
-  bool IsFlatTreeTraversalForbidden() {
-    return flat_tree_traversal_forbidden_recursion_depth_ > 0;
-  }
-
-  unsigned& SlotAssignmentRecalcDepth() {
-    return slot_assignment_recalc_depth_;
-  }
-  bool IsInSlotAssignmentRecalc() const {
-    return slot_assignment_recalc_depth_ > 0;
-  }
 
   bool IsVerticalScrollEnforced() const { return is_vertical_scroll_enforced_; }
   bool IsFocusAllowed(FocusTrigger trigger,
@@ -3187,11 +3177,7 @@ class CORE_EXPORT Document : public ContainerNode,
   std::unique_ptr<ukm::UkmRecorder> ukm_recorder_;
   const int64_t ukm_source_id_;
 
-#if DCHECK_IS_ON()
   unsigned slot_assignment_recalc_forbidden_recursion_depth_ = 0;
-#endif
-  unsigned slot_assignment_recalc_depth_ = 0;
-  unsigned flat_tree_traversal_forbidden_recursion_depth_ = 0;
 
   Member<DOMFeaturePolicy> policy_;
 

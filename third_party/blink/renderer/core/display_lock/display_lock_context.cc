@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -1170,8 +1171,8 @@ void DisplayLockContext::DetermineIfSubtreeHasTopLayerElement() {
   if (!ConnectedToView())
     return;
 
-  if (document_->IsFlatTreeTraversalForbidden() ||
-      document_->IsInSlotAssignmentRecalc()) {
+  if (SlotAssignmentRecalcInProgressScope::IsFlatTreeTraversalForbidden() ||
+      SlotAssignmentRecalcInProgressScope::IsActive()) {
     ScheduleTopLayerCheck();
     return;
   }

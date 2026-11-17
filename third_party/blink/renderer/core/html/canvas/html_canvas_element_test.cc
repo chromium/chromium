@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/core/dom/focused_element_change_observer.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/recording_test_utils.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -1426,8 +1427,8 @@ TEST_P(HTMLCanvasElementTest, SlotIntoCanvasWithoutSuggestedValueKeepsFocus) {
 TEST_P(HTMLCanvasElementTest, ReentrantSlotRecalcDuringDidRecalcAssignedNodes) {
 #if DCHECK_IS_ON()
   // Reaching this path trips a separate, pre-existing DCHECK:
-  // RecalcAssignment() holds a FlatTreeTraversalForbiddenScope while the date
-  // field dispatches focus and blur. See crbug.com/574469802.
+  // RecalcAssignment() forbids flat tree traversal while the date field
+  // dispatches focus and blur. See crbug.com/574469802.
   GTEST_SKIP() << "Blocked by a pre-existing DCHECK in Element::Focus()";
 #else
   class ReentrantRecalcObserver final
@@ -1445,7 +1446,7 @@ TEST_P(HTMLCanvasElementTest, ReentrantSlotRecalcDuringDidRecalcAssignedNodes) {
       // Records that the blur really was dispatched from inside
       // SlotAssignment::RecalcAssignment(), so this test cannot silently stop
       // covering the re-entrant path.
-      reentrant_ = shadow_root_->GetDocument().IsInSlotAssignmentRecalc();
+      reentrant_ = SlotAssignmentRecalcInProgressScope::IsActive();
 
       // Add a slot and move a light child into it so the assignment is dirty,
       // then re-enter recalc through assignedNodes(). Without the fix this

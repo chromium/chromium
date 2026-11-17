@@ -1158,7 +1158,10 @@ class CORE_EXPORT Element : public ContainerNode {
   ShadowRoot& EnsureUserAgentShadowRoot(
       SlotAssignmentMode = SlotAssignmentMode::kNamed);
 
-  // Implements manual slot assignment for user agent shadow roots.
+  // Implements manual slot assignment for user agent shadow roots. Called
+  // during slot assignment recalc, so implementations must not read the flat
+  // tree, mutate the DOM, run script, or dirty slot assignment. See the rules
+  // and "Recalc hooks" in slot_assignment.h.
   virtual void ManuallyAssignSlots() { DCHECK(false); }
 
   // Returns the Element’s ComputedStyle. If the ComputedStyle is not already
@@ -1206,6 +1209,10 @@ class CORE_EXPORT Element : public ContainerNode {
   // Called when `IsInCanvasSubtree()` changes, or when content should be
   // invalidated *as if* `IsInCanvasSubtree()` changed (e.g., when showing
   // or hiding a popover).
+  // This is reachable from slot assignment recalc (via FlatTreeParentChanged()
+  // and RemovedFromFlatTree()), so overrides must follow "Recalc hooks" in
+  // slot_assignment.h: no script, no DOM mutation, no focus change. Post a
+  // task for anything else.
   virtual void DidChangeIsInCanvasSubtree(CanvasSubtreePropagation);
 #if DCHECK_IS_ON()
   void VerifySubtreeIsInCanvas(bool value);

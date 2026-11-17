@@ -327,6 +327,8 @@ void SVGElement::ChildrenChanged(const ChildrenChange& change) {
 
 void SVGElement::DidChangeIsInCanvasSubtree(
     CanvasSubtreePropagation propagation_behavior) {
+  // Reachable from slot assignment recalc; see "Recalc hooks" in
+  // slot_assignment.h.
   Element::DidChangeIsInCanvasSubtree(propagation_behavior);
   if (SVGElementResourceClient* client = GetSVGResourceClient()) {
     client->InvalidateFilterData();

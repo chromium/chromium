@@ -163,6 +163,9 @@ bool HTMLInstallElement::IsURLAttribute(const Attribute& attr) const {
 
 void HTMLInstallElement::DidChangeIsInCanvasSubtree(
     CanvasSubtreePropagation propagation_behavior) {
+  // Reachable from slot assignment recalc; see "Recalc hooks" in
+  // slot_assignment.h.
+  // UpdateAppearance() posts the DOM update as a task.
   HTMLCapabilityElementBase::DidChangeIsInCanvasSubtree(propagation_behavior);
   UpdateAppearance();
 }

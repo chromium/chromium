@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_node_data.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 
 namespace blink {
@@ -140,6 +141,9 @@ Node* FlatTreeTraversal::TraverseSiblingsForHostChild(
     // The shadow root doesn't have any slot.
     return nullptr;
   }
+  SlotAssignmentRecalcInProgressScope::ReportViolationIf(
+      SlotAssignmentRecalcInProgressScope::IsFlatTreeTraversalForbidden(),
+      SlotAssignmentInvariant::kNoFlatTreeAccessWhileForbidden);
   shadow_root->GetSlotAssignment().RecalcAssignment();
 
   FlatTreeNodeData* flat_tree_node_data = node.GetFlatTreeNodeData();
@@ -350,7 +354,7 @@ const Element* FlatTreeTraversal::InclusiveParentElement(const Node& node) {
 
 // static
 void FlatTreeTraversal::AssertPrecondition(const Node& node) {
-  DCHECK(!node.GetDocument().IsFlatTreeTraversalForbidden());
+  DCHECK(!SlotAssignmentRecalcInProgressScope::IsFlatTreeTraversalForbidden());
   DCHECK(!node.IsShadowRoot())
       << "Shadow roots don't have layout objects. Their host has one, and "
          "their children have them, and those two are connected.";

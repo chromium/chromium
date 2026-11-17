@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -95,6 +96,8 @@ class CORE_EXPORT CharacterData : public Node {
 
   void SetDataWithoutUpdate(const String& data) {
     DCHECK(!data.IsNull());
+    SlotAssignmentRecalcInProgressScope::CheckNotActive(
+        SlotAssignmentInvariant::kNoDOMMutation);
     if (!IsParkableCharacterData()) {
       data_ = data;
       return;

@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_producer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -91,6 +92,11 @@ void ThrowStackOverflowException(
 }
 
 void ThrowScriptForbiddenException(v8::Isolate* isolate) {
+  // Script must not run during slot assignment recalc (rule R1 in
+  // slot_assignment.h). Attempting it is a violation even where script is
+  // forbidden, since the caller expected the script to run.
+  SlotAssignmentRecalcInProgressScope::CheckNotActiveIfMainThread(
+      SlotAssignmentInvariant::kNoScriptOrEventDispatch);
   V8ThrowException::ThrowError(isolate, "Script execution is forbidden.");
 }
 

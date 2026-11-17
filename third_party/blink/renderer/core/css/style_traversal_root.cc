@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/style_traversal_root.h"
+
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 
 namespace blink {
 
@@ -61,7 +63,7 @@ void StyleTraversalRoot::Update(ContainerNode* common_ancestor,
 bool StyleTraversalRoot::IsModifyingFlatTree() const {
   DCHECK(root_node_);
   return root_node_->GetDocument().GetStyleEngine().InDOMRemoval() ||
-         root_node_->GetDocument().IsInSlotAssignmentRecalc();
+         SlotAssignmentRecalcInProgressScope::IsActive();
 }
 #endif
 

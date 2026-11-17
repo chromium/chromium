@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -79,6 +80,9 @@ const HeapVector<Member<Node>>& HTMLSlotElement::AssignedNodes() const {
     CHECK(assigned_nodes_.empty());
     return assigned_nodes_;
   }
+  SlotAssignmentRecalcInProgressScope::ReportViolationIf(
+      SlotAssignmentRecalcInProgressScope::IsFlatTreeTraversalForbidden(),
+      SlotAssignmentInvariant::kNoFlatTreeAccessWhileForbidden);
   root->GetSlotAssignment().RecalcAssignment();
   return assigned_nodes_;
 }

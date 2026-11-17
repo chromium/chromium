@@ -189,6 +189,7 @@
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_recalc_forbidden_scope.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/dom/text_diff_range.h"
 #include "third_party/blink/renderer/core/dom/transform_source.h"
@@ -3352,7 +3353,8 @@ void Document::NotifyDisplayLockChangedForSVGResources(const Element& element) {
   // `element` can only be a descendant of an SVG resource target if it has a
   // <foreignObject> flat-tree ancestor.
   const SVGForeignObjectElement* enclosing_foreign_object = nullptr;
-  if (element.isConnected() && !IsFlatTreeTraversalForbidden() &&
+  if (element.isConnected() &&
+      !SlotAssignmentRecalcInProgressScope::IsFlatTreeTraversalForbidden() &&
       !IsSlotAssignmentDirty()) {
     if (svg_extensions_ && svg_extensions_->MayContainForeignObjects()) {
       for (const Node& ancestor : FlatTreeTraversal::AncestorsOf(element)) {
@@ -5991,6 +5993,12 @@ bool Document::SetFocusedElement(Element* new_focused_element,
     focus_options_ = params.options;
     return true;
   }
+
+  // Focus changes run FocusedElementChangeObservers and dispatch events, so
+  // they must not happen during slot assignment recalc (rule R3 in
+  // slot_assignment.h).
+  SlotAssignmentRecalcInProgressScope::CheckNotActive(
+      SlotAssignmentInvariant::kNoFocusChange);
 
   bool focus_change_blocked = false;
   Element* old_focused_element = focused_element_;

@@ -5,13 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SLOT_ASSIGNMENT_RECALC_FORBIDDEN_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SLOT_ASSIGNMENT_RECALC_FORBIDDEN_SCOPE_H_
 
-#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 
 namespace blink {
 
-#if DCHECK_IS_ON()
-class SlotAssignmentRecalcForbiddenScope {
+// Marks a region where the tree is unstable (in the middle of a DOM mutation,
+// during layout-tree detach, or during style, layout, or paint), so slot
+// assignment recalc must not run (rule R5 in slot_assignment.h). This is
+// checked by SlotAssignment::RecalcAssignment().
+class [[nodiscard]] SlotAssignmentRecalcForbiddenScope {
   STACK_ALLOCATED();
 
  public:
@@ -29,18 +31,6 @@ class SlotAssignmentRecalcForbiddenScope {
  private:
   unsigned& count_;
 };
-#else
-class SlotAssignmentRecalcForbiddenScope {
-  STACK_ALLOCATED();
-
- public:
-  explicit SlotAssignmentRecalcForbiddenScope(Document&) {}
-  SlotAssignmentRecalcForbiddenScope(
-      const SlotAssignmentRecalcForbiddenScope&) = delete;
-  SlotAssignmentRecalcForbiddenScope& operator=(
-      const SlotAssignmentRecalcForbiddenScope&) = delete;
-};
-#endif
 
 }  // namespace blink
 

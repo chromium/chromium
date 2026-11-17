@@ -163,6 +163,7 @@
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/user_action_element_traversal.h"
@@ -232,7 +233,6 @@
 #include "third_party/blink/renderer/core/html/html_table_rows_collection.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/menu_safe_triangle.h"
-#include "third_party/blink/renderer/core/html/nesting_level_incrementer.h"
 #include "third_party/blink/renderer/core/html/parser/fragment_parser.h"
 #include "third_party/blink/renderer/core/html/parser/html_element_stack.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
@@ -7102,10 +7102,7 @@ void Element::UpdateAncestorWithDirAuto(UpdateAncestorTraversal traversal) {
 
 ShadowRoot& Element::CreateAndAttachShadowRoot(ShadowRootMode type,
                                                SlotAssignmentMode mode) {
-#if DCHECK_IS_ON()
-  NestingLevelIncrementer slot_assignment_recalc_forbidden_scope(
-      GetDocument().SlotAssignmentRecalcForbiddenRecursionDepth());
-#endif
+  SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(GetDocument());
   EventDispatchForbiddenScope assert_no_event_dispatch;
   ScriptForbiddenScope forbid_script;
 
@@ -12527,6 +12524,8 @@ void Element::UpdateFocusgroupInShadowRootIfNeeded() {
 void Element::WillModifyAttribute(const QualifiedName& name,
                                   const AtomicString& old_value,
                                   const AtomicString& new_value) {
+  SlotAssignmentRecalcInProgressScope::CheckNotActive(
+      SlotAssignmentInvariant::kNoDOMMutation);
   if (name == html_names::kNameAttr) {
     UpdateName(old_value, new_value);
   }

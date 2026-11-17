@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -659,16 +660,15 @@ TEST_F(WebFormControlElementTest,
   web_view_helper.LocalMainFrame()->FrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
-  // Forbid flat tree traversal in the inner document.
-  inner_doc->FlatTreeTraversalForbiddenRecursionDepth()++;
+  // Forbid flat tree traversal, as during slot assignment recalc.
+  {
+    SlotAssignmentRecalcInProgressScope::ForbidFlatTreeTraversal forbid;
 
-  // The dynamic check IsInCanvasSubtree() should correctly return true,
-  // crossing the local owner boundary to the iframe even when traversal is
-  // forbidden.
-  EXPECT_TRUE(inner_input.Unwrap<HTMLInputElement>()->IsInCanvasSubtree());
-
-  // Clean up forbidden scope.
-  inner_doc->FlatTreeTraversalForbiddenRecursionDepth()--;
+    // The dynamic check IsInCanvasSubtree() should correctly return true,
+    // crossing the local owner boundary to the iframe even when traversal is
+    // forbidden.
+    EXPECT_TRUE(inner_input.Unwrap<HTMLInputElement>()->IsInCanvasSubtree());
+  }
 }
 
 TEST_F(WebFormControlElementTest,

@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/range.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/editing/editing_strategy.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
@@ -358,7 +359,7 @@ bool IsInForeignContentForSerialization(const Node& node) {
       }
     }
   }
-  if (!node.GetDocument().IsFlatTreeTraversalForbidden() &&
+  if (!SlotAssignmentRecalcInProgressScope::IsFlatTreeTraversalForbidden() &&
       !node.IsShadowRoot()) {
     for (const Node& runner : FlatTreeTraversal::InclusiveAncestorsOf(node)) {
       if (const auto* element = DynamicTo<Element>(runner)) {

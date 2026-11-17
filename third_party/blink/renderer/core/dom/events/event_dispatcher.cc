@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/events/window_event_context.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
@@ -117,6 +118,8 @@ DispatchEventResult EventDispatcher::DispatchEvent(Node& node, Event& event) {
 #if DCHECK_IS_ON()
   DCHECK(!EventDispatchForbiddenScope::IsEventDispatchForbidden());
 #endif
+  SlotAssignmentRecalcInProgressScope::CheckNotActive(
+      SlotAssignmentInvariant::kNoScriptOrEventDispatch);
   EventDispatcher dispatcher(node, event);
   return event.DispatchEvent(dispatcher);
 }

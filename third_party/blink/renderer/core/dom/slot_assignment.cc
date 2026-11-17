@@ -9,17 +9,16 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
-#include "third_party/blink/renderer/core/dom/flat_tree_traversal_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_recalc_forbidden_scope.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
-#include "third_party/blink/renderer/core/html/nesting_level_incrementer.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 
@@ -224,6 +223,10 @@ SlotAssignment::SlotAssignment(ShadowRoot& owner)
 }
 
 void SlotAssignment::SetNeedsAssignmentRecalc() {
+  // Recalc side effects must not dirty slot assignment (rule R4 in
+  // slot_assignment.h).
+  SlotAssignmentRecalcInProgressScope::CheckNotActive(
+      SlotAssignmentInvariant::kNoAssignmentDirtying);
   needs_assignment_recalc_ = true;
   if (owner_->isConnected()) {
     owner_->GetDocument().GetSlotAssignmentEngine().AddShadowRootNeedingRecalc(
@@ -235,6 +238,10 @@ void SlotAssignment::SetNeedsAssignmentRecalc() {
 void SlotAssignment::RecalcAssignment() {
   if (!needs_assignment_recalc_)
     return;
+  // Recalc must not re-enter recalc, for this or any other shadow root (rule
+  // R4 in slot_assignment.h).
+  SlotAssignmentRecalcInProgressScope::CheckNotActive(
+      SlotAssignmentInvariant::kNoReentrantRecalc);
   // DidRecalcAssignedNodes() below can run script that re-enters here, which
   // would rebuild slots_ while the outer call is iterating it. Bail out; the
   // recalc stays pending and runs on the next lifecycle update. This is a
@@ -243,14 +250,16 @@ void SlotAssignment::RecalcAssignment() {
   if (in_recalc_assignment_) {
     return;
   }
+  // Recalc must not run while the tree is unstable (rule R5 in
+  // slot_assignment.h). Until reporting is enabled, keep the existing DCHECK.
+  SlotAssignmentRecalcInProgressScope::ReportViolationIf(
+      owner_->GetDocument().IsSlotAssignmentRecalcForbidden(),
+      SlotAssignmentInvariant::kNoRecalcWhileForbidden);
+  DCHECK(!owner_->GetDocument().IsSlotAssignmentRecalcForbidden());
   base::AutoReset<bool> in_recalc(&in_recalc_assignment_, true);
   {
-    NestingLevelIncrementer slot_assignment_recalc_depth(
-        owner_->GetDocument().SlotAssignmentRecalcDepth());
+    SlotAssignmentRecalcInProgressScope recalc_scope;
 
-#if DCHECK_IS_ON()
-    DCHECK(!owner_->GetDocument().IsSlotAssignmentRecalcForbidden());
-#endif
     // To detect recursive RecalcAssignment, which shouldn't happen.
     SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(
         owner_->GetDocument());
@@ -267,8 +276,8 @@ void SlotAssignment::RecalcAssignment() {
       }
     }
 
-    FlatTreeTraversalForbiddenScope forbid_flat_tree_traversal(
-        owner_->GetDocument());
+    SlotAssignmentRecalcInProgressScope::ForbidFlatTreeTraversal
+        forbid_flat_tree_traversal;
 
     if (owner_->IsUserAgent() && owner_->IsManualSlotting()) {
       owner_->host().ManuallyAssignSlots();

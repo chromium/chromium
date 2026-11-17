@@ -699,6 +699,33 @@ Please see
 [Incremental Shadow DOM](https://docs.google.com/document/d/1R9J8CVaSub_nbaVQwwm3NjCoZye4feJ7ft7tVe5QerM/edit?usp=sharing)
 to know how assignments are recalc-ed.
 
+## Flat tree and slot assignment rules
+
+DOM mutations only mark a shadow root's slot assignment dirty. The assignment
+data (a slot's assigned nodes and flat tree children, and each slotted node's
+`FlatTreeNodeData`) is recomputed lazily, either from the document lifecycle or
+from a lazy entry point that needs it: `HTMLSlotElement::AssignedNodes()`,
+`FlatTreeTraversal`, and `Node::AssignedSlot()`.
+
+See the [`SlotAssignment`](./slot_assignment.h) class comment for the full list
+of rules (R1-R7). In short, for authors of new flat tree consumers:
+
+- If you are inside one of the slot assignment recalc hooks
+  (`Element::ManuallyAssignSlots()`), you may not read the flat tree.
+- If you are a `DidChange*` hook reachable from recalc
+  (`Element::DidChangeIsInCanvasSubtree()`, `Node::FlatTreeParentChanged()`,
+  `Node::RemovedFromFlatTree()`), you must not run script, dispatch events,
+  mutate the DOM, change focus, or dirty slot assignment. You may mark style or
+  layout-tree dirty, detach layout trees, update node flags, notify
+  accessibility, and queue work for later (e.g. a posted task).
+- Never trigger a recalc while the tree is unstable (inside a
+  `SlotAssignmentRecalcForbiddenScope`).
+- `*NoRecalc` and `*WithoutRecalc` accessors may return stale data. Use them
+  only where documented.
+
+These rules are checked by
+[`SlotAssignmentRecalcInProgressScope`](./slot_assignment_recalc_in_progress_scope.h).
+
 # FlatTreeTraversal
 
 Blink doesn't store nor maintain a flat tree data structure in the memory.

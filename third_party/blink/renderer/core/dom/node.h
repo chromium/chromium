@@ -811,6 +811,9 @@ class CORE_EXPORT Node : public EventTarget {
   ShadowRoot* ParentElementShadowRoot() const;
   bool IsChildOfShadowHost() const;
   ShadowRoot* ShadowRootOfParent() const;
+  // Does not recalc slot assignment, so may return stale data while marking
+  // style dirty during DOM mutation; see "Stale accessors" in
+  // slot_assignment.h.
   Element* FlatTreeParentForChildDirty() const;
   Element* GetStyleRecalcParent() const {
     return FlatTreeParentForChildDirty();
@@ -1117,6 +1120,7 @@ class CORE_EXPORT Node : public EventTarget {
   StaticNodeList* getDestinationInsertionPoints();
   HTMLSlotElement* AssignedSlot() const;
   HTMLSlotElement* assignedSlotForBinding();
+  // May return stale data; see "Stale accessors" in slot_assignment.h.
   HTMLSlotElement* AssignedSlotWithoutRecalc() const;
 
   bool IsFinishedParsingChildren() const {
@@ -1139,6 +1143,8 @@ class CORE_EXPORT Node : public EventTarget {
   // 1. Host children that are no longer assigned to a slot.
   // 2. Light tree children of slots which are no longer rendered as fallback
   //    content.
+  // Runs during slot assignment recalc; see "Recalc hooks" in
+  // slot_assignment.h.
   void RemovedFromFlatTree();
 
   void SetHasDuplicateAttributes() { SetFlag(kHasDuplicateAttributes); }
@@ -1212,6 +1218,8 @@ class CORE_EXPORT Node : public EventTarget {
 
   // Called when a node changes its flat tree parent, either because slot
   // assignments changed, or the node got reparented by a moveBefore().
+  // Can run during slot assignment recalc; see "Recalc hooks" in
+  // slot_assignment.h.
   void FlatTreeParentChanged();
 
   // Defined in node-inl.h.

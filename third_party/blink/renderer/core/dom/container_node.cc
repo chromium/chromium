@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_recalc_forbidden_scope.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
@@ -581,6 +582,11 @@ void ContainerNode::InsertBeforeCommon(Node& next_child, Node& new_child) {
   DCHECK(EventDispatchForbiddenScope::IsEventDispatchForbidden());
 #endif
   DCHECK(ScriptForbiddenScope::IsScriptForbidden());
+  // Every child insertion and removal goes through InsertBeforeCommon(),
+  // AppendChildCommon(), or RemoveBetween(). None may happen during slot
+  // assignment recalc (rule R2 in slot_assignment.h).
+  SlotAssignmentRecalcInProgressScope::CheckNotActive(
+      SlotAssignmentInvariant::kNoDOMMutation);
   // Use insertBefore if you need to handle reparenting.
   DCHECK(!new_child.parentNode());
   DCHECK(!new_child.HasNextSibling());
@@ -615,6 +621,9 @@ void ContainerNode::AppendChildCommon(Node& child) {
   DCHECK(EventDispatchForbiddenScope::IsEventDispatchForbidden());
 #endif
   DCHECK(ScriptForbiddenScope::IsScriptForbidden());
+  // See InsertBeforeCommon().
+  SlotAssignmentRecalcInProgressScope::CheckNotActive(
+      SlotAssignmentInvariant::kNoDOMMutation);
 
   child.SetParentNode(this);
   if (lastChild()) {
@@ -1063,6 +1072,9 @@ void ContainerNode::RemoveBetween(Node* previous_child,
                                   Node* next_child,
                                   Node& old_child) {
   EventDispatchForbiddenScope assert_no_event_dispatch;
+  // See InsertBeforeCommon().
+  SlotAssignmentRecalcInProgressScope::CheckNotActive(
+      SlotAssignmentInvariant::kNoDOMMutation);
 
   DCHECK_EQ(old_child.parentNode(), this);
 

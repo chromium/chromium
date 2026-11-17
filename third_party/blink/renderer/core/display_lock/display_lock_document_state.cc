@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
@@ -204,7 +205,7 @@ bool DisplayLockDocumentState::ActivatableDisplayLocksForced(
 void DisplayLockDocumentState::ElementAddedToTopLayer(Element* element) {
   // If flat tree traversal is forbidden, then we need to schedule an event to
   // do this work later.
-  if (document_->IsFlatTreeTraversalForbidden() ||
+  if (SlotAssignmentRecalcInProgressScope::IsFlatTreeTraversalForbidden() ||
       document_->GetSlotAssignmentEngine().HasPendingSlotAssignmentRecalc()) {
     for (auto context : display_lock_contexts_) {
       // If making every DisplayLockContext check whether its in the top layer
@@ -233,7 +234,7 @@ void DisplayLockDocumentState::ElementAddedToTopLayer(Element* element) {
 void DisplayLockDocumentState::ElementRemovedFromTopLayer(Element*) {
   // If flat tree traversal is forbidden, then we need to schedule an event to
   // do this work later.
-  if (document_->IsFlatTreeTraversalForbidden() ||
+  if (SlotAssignmentRecalcInProgressScope::IsFlatTreeTraversalForbidden() ||
       document_->GetSlotAssignmentEngine().HasPendingSlotAssignmentRecalc()) {
     for (auto context : display_lock_contexts_) {
       // If making every DisplayLockContext check whether its in the top layer

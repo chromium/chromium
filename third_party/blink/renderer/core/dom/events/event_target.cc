@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target_impl.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/observable.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/dom/subscriber.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -977,6 +978,8 @@ DispatchEventResult EventTarget::FireEventListeners(Event& event) {
 #if DCHECK_IS_ON()
   DCHECK(!EventDispatchForbiddenScope::IsEventDispatchForbidden());
 #endif
+  SlotAssignmentRecalcInProgressScope::CheckNotActiveIfMainThread(
+      SlotAssignmentInvariant::kNoScriptOrEventDispatch);
   DCHECK(event.WasInitialized());
 
   EventTargetData* d = GetEventTargetData();
