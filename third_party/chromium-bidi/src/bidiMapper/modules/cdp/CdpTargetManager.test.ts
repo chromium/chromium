@@ -20,10 +20,16 @@ import {beforeEach, describe, it} from 'node:test';
 import {assert} from 'chai';
 import type {Protocol} from 'devtools-protocol';
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
+import sinon from 'sinon';
 
-import type {CdpClient, CdpEvents} from '../../../cdp/CdpClient.js';
+import {
+  CloseError,
+  type CdpClient,
+  type CdpEvents,
+} from '../../../cdp/CdpClient.js';
 import type {CdpConnection} from '../../../cdp/CdpConnection.js';
 import {EventEmitter} from '../../../utils/EventEmitter.js';
+import {type LoggerFn, LogType} from '../../../utils/log.js';
 import type {BluetoothProcessor} from '../bluetooth/BluetoothProcessor.js';
 import {ContextConfigStorage} from '../browser/ContextConfigStorage.js';
 import {UserContextStorage} from '../browser/UserContextStorage.js';
@@ -95,6 +101,7 @@ class FakeCdpClient extends EventEmitter<CdpEvents> implements CdpClient {
   readonly sessionId: Protocol.Target.SessionID | undefined;
   frameTree: object | undefined;
   frameTreePromise: Promise<object> | undefined;
+  setAutoAttachError?: unknown;
 
   constructor(sessionId: Protocol.Target.SessionID | undefined) {
     super();
@@ -104,6 +111,12 @@ class FakeCdpClient extends EventEmitter<CdpEvents> implements CdpClient {
   sendCommand<CdpMethod extends keyof ProtocolMapping.Commands>(
     method: CdpMethod,
   ): Promise<ProtocolMapping.Commands[CdpMethod]['returnType']> {
+    if (
+      method === 'Target.setAutoAttach' &&
+      this.setAutoAttachError !== undefined
+    ) {
+      return Promise.reject(this.setAutoAttachError);
+    }
     let result: object = {};
     if (method === 'Page.getFrameTree') {
       if (this.frameTreePromise !== undefined) {
@@ -125,8 +138,8 @@ class FakeCdpClient extends EventEmitter<CdpEvents> implements CdpClient {
     );
   }
 
-  isCloseError(): boolean {
-    return false;
+  isCloseError(error: unknown): boolean {
+    return error instanceof CloseError;
   }
 
   /** Emits a CDP event as if it was received on this session. */
@@ -178,12 +191,16 @@ describe('CdpTargetManager', () => {
   let otherPageClient: FakeCdpClient;
   let browsingContextStorage: BrowsingContextStorage;
   let realmStorage: RealmStorage;
+  let debugErrorLog: sinon.SinonSpy;
 
   beforeEach(() => {
     connection = new FakeCdpConnection();
     browserClient = new FakeCdpClient(undefined);
     browsingContextStorage = new BrowsingContextStorage();
     realmStorage = new RealmStorage();
+    debugErrorLog = sinon.spy();
+    const logger: LoggerFn = (type) =>
+      type === LogType.debugError ? debugErrorLog : undefined;
     const userContextStorage = new UserContextStorage(browserClient);
     const eventManager = new EventManager(
       browsingContextStorage,
@@ -203,6 +220,7 @@ describe('CdpTargetManager', () => {
       new PreloadScriptStorage(),
       DEFAULT_BROWSER_CONTEXT_ID,
       'Fake User Agent',
+      logger,
     );
 
     // Tab with a same-process iframe and an out-of-process iframe. The OOPIF
@@ -960,6 +978,35 @@ describe('CdpTargetManager', () => {
 
       assert.strictEqual(sessionOf('POPUP_FRAME'), 'POPUP_PAGE_SESSION');
       assert.isNull(browsingContextStorage.getContext('POPUP_FRAME').parentId);
+    });
+  });
+
+  describe('tab Target.setAutoAttach errors', () => {
+    it('suppresses CloseError when tab detaches while Target.setAutoAttach is in flight', async () => {
+      connection.getCdpClient('CLOSING_TAB_SESSION').setAutoAttachError =
+        new CloseError('Tab detached');
+
+      browserClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('CLOSING_TAB_SESSION', 'CLOSING_TAB_TARGET', 'tab'),
+      );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      sinon.assert.notCalled(debugErrorLog);
+    });
+
+    it('logs unexpected Target.setAutoAttach errors via debugError', async () => {
+      const unexpectedError = new Error('CDP failure');
+      connection.getCdpClient('FAILING_TAB_SESSION').setAutoAttachError =
+        unexpectedError;
+
+      browserClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('FAILING_TAB_SESSION', 'FAILING_TAB_TARGET', 'tab'),
+      );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      sinon.assert.calledOnceWithExactly(debugErrorLog, unexpectedError);
     });
   });
 });

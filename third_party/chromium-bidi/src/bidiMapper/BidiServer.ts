@@ -44,6 +44,7 @@ import {DigitalCredentialsProcessor} from './modules/digitalCredentials/DigitalC
 import type {OutgoingMessage} from './OutgoingMessage.js';
 
 interface BidiServerEvent extends Record<string | symbol, unknown> {
+  close: void;
   message: ChromiumBidi.Command;
 }
 
@@ -61,14 +62,21 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
   #digitalCredentialsProcessor: DigitalCredentialsProcessor;
 
   #logger?: LoggerFn;
+  #isClosed = false;
 
   #handleIncomingMessage = (message: ChromiumBidi.Command) => {
+    if (this.#isClosed) {
+      return;
+    }
     void this.#commandProcessor.processCommand(message).catch((error) => {
       this.#logger?.(LogType.debugError)?.(error);
     });
   };
 
   #processOutgoingMessage = async (messageEntry: OutgoingMessage) => {
+    if (this.#isClosed) {
+      return;
+    }
     const message = messageEntry.message;
 
     if (messageEntry.googChannel !== null) {
@@ -290,11 +298,22 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     messageEntry: Promise<Result<OutgoingMessage>>,
     event: string,
   ): void {
+    if (this.#isClosed) {
+      return;
+    }
     this.#messageQueue.add(messageEntry, event);
   }
 
   close(): void {
-    this.#transport.close();
+    if (this.#isClosed) {
+      return;
+    }
+    this.#isClosed = true;
+    try {
+      this.#transport.close();
+    } finally {
+      this.emit('close', undefined);
+    }
   }
 
   async #topLevelContextsLoaded() {

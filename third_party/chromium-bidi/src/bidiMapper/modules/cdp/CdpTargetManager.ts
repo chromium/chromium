@@ -328,13 +328,17 @@ export class CdpTargetManager {
         // Auto-attach to the page target. No need in resuming tab target debugger, as it
         // should preserve the page target debugger state, and will be resumed by the page
         // target.
-        void (async () => {
-          await targetCdpClient.sendCommand('Target.setAutoAttach', {
+        void targetCdpClient
+          .sendCommand('Target.setAutoAttach', {
             autoAttach: true,
             waitForDebuggerOnStart: true,
             flatten: true,
+          })
+          .catch((error) => {
+            if (!targetCdpClient.isCloseError(error)) {
+              this.#logger?.(LogType.debugError)?.(error);
+            }
           });
-        })();
         return;
       }
       case 'page':

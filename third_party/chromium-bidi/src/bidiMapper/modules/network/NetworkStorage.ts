@@ -391,7 +391,11 @@ export class NetworkStorage {
         // The data has be gone for whatever reason.
         throw new NoSuchNetworkDataException(`Response data was disposed`);
       }
-      if (error.code === CdpErrorConstants.CONNECTION_CLOSED) {
+      if (
+        error.code === CdpErrorConstants.CONNECTION_CLOSED ||
+        // The session was already detached locally (e.g. the page was closed).
+        request.cdpClient.isCloseError(error)
+      ) {
         // The request's CDP session is gone. http://b/450771615.
         throw new NoSuchNetworkDataException(
           `Response data is disposed after the related page`,

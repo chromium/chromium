@@ -17,9 +17,11 @@
  * @license
  */
 
-import {BidiServer} from '../bidiMapper/BidiMapper.js';
+import {BidiServer, type BidiTransport} from '../bidiMapper/BidiMapper.js';
+import {CloseError, type CdpClient} from '../cdp/CdpClient.js';
 import {MapperCdpConnection} from '../cdp/CdpConnection.js';
 import {LogType} from '../utils/log.js';
+import type {Transport} from '../utils/transport.js';
 
 import {BidiParser} from './BidiParser.js';
 import {generatePage, log} from './mapperTabPage.js';
@@ -27,10 +29,16 @@ import {WindowBidiTransport, WindowCdpTransport} from './Transport.js';
 
 declare global {
   interface Window {
-    // `runMapper` function will be defined by the Mapper in the Tab, and will
-    // be evaluated via `Runtime.evaluate` by the Node runner, providing all the
-    // required parameters.
-    runMapperInstance: ((...args: any) => Promise<void>) | null;
+    // `runMapperInstance` function will be defined by the Mapper in the Tab,
+    // and will be evaluated via `Runtime.evaluate` by the Node runner or
+    // ChromeDriver, providing all the required parameters.
+    runMapperInstance:
+      | ((
+          selfTargetId: string,
+          bidiTransport?: BidiTransport,
+          cdpTransport?: Transport,
+        ) => Promise<BidiServer>)
+      | null;
 
     // `window.cdp` is exposed by `Target.exposeDevToolsProtocol` from the server side.
     // https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-exposeDevToolsProtocol
@@ -55,34 +63,90 @@ declare global {
 }
 
 generatePage();
-const mapperTabToServerTransport = new WindowBidiTransport();
-const cdpTransport = new WindowCdpTransport();
-/**
- * A CdpTransport implementation that uses the window.cdp bindings
- * injected by Target.exposeDevToolsProtocol.
- */
-const cdpConnection = new MapperCdpConnection(cdpTransport, log);
+const windowBidiTransport = new WindowBidiTransport();
+const windowCdpTransport = new WindowCdpTransport();
+let windowCdpConnection: MapperCdpConnection | null = null;
+let isWindowBidiTransportUsed = false;
+
+function getWindowCdpConnection(): MapperCdpConnection {
+  windowCdpConnection ??= new MapperCdpConnection(windowCdpTransport, log);
+  return windowCdpConnection;
+}
 
 /**
  * Launches the BiDi mapper instance.
- * @param {string} selfTargetId
- * @param options Mapper options. E.g. `acceptInsecureCerts`.
+ * @param selfTargetId Needed to filter out info related to BiDi target.
+ * @param bidiTransport Optional custom BiDi transport for additional Mapper
+ * instances; the default WindowBidiTransport can only be used once.
+ * @param cdpTransport Optional custom CDP transport for additional Mapper instances.
  */
-async function runMapperInstance(selfTargetId: string) {
+async function runMapperInstance(
+  selfTargetId: string,
+  bidiTransport: BidiTransport = windowBidiTransport,
+  cdpTransport: Transport = windowCdpTransport,
+): Promise<BidiServer> {
+  const usesWindowBidi = bidiTransport === windowBidiTransport;
+  if (usesWindowBidi) {
+    if (isWindowBidiTransportUsed) {
+      throw new Error(
+        'Default WindowBidiTransport is already in use; pass a custom bidiTransport.',
+      );
+    }
+    isWindowBidiTransportUsed = true;
+  }
+
   // eslint-disable-next-line no-console
   console.log('Launching Mapper instance with selfTargetId:', selfTargetId);
 
-  const bidiServer = await BidiServer.createAndStart(
-    mapperTabToServerTransport,
-    cdpConnection,
+  const usesWindowCdp = cdpTransport === windowCdpTransport;
+  /**
+   * Reuse a single MapperCdpConnection over `window.cdp` when using the default
+   * transport so additional mappers do not overwrite `windowCdpTransport`'s
+   * message handler; create a dedicated connection only for custom transports.
+   */
+  const cdpConnection = usesWindowCdp
+    ? getWindowCdpConnection()
+    : new MapperCdpConnection(cdpTransport, log);
+
+  let browserCdpClient: CdpClient | undefined;
+  const cleanupCdp = () => {
+    if (browserCdpClient?.sessionId !== undefined) {
+      void cdpConnection
+        .closeBrowserSession(browserCdpClient.sessionId)
+        .catch((error) => {
+          if (!(error instanceof CloseError)) {
+            log(LogType.debugError)?.(error);
+          }
+        });
+    }
+    if (!usesWindowCdp) {
+      cdpConnection.close();
+    }
+  };
+
+  let bidiServer: BidiServer;
+  try {
     /**
      * Create a Browser CDP Session per Mapper instance.
      */
-    await cdpConnection.createBrowserSession(),
-    selfTargetId,
-    new BidiParser(),
-    log,
-  );
+    browserCdpClient = await cdpConnection.createBrowserSession();
+    bidiServer = await BidiServer.createAndStart(
+      bidiTransport,
+      cdpConnection,
+      browserCdpClient,
+      selfTargetId,
+      new BidiParser(),
+      log,
+    );
+  } catch (error) {
+    if (usesWindowBidi) {
+      isWindowBidiTransportUsed = false;
+    }
+    cleanupCdp();
+    throw error;
+  }
+
+  bidiServer.once('close', cleanupCdp);
 
   log(LogType.debugInfo)?.('Mapper instance has been launched');
 
@@ -90,9 +154,17 @@ async function runMapperInstance(selfTargetId: string) {
 }
 
 /**
- * Set `window.runMapper` to a function which launches the BiDi mapper instance.
+ * Set `window.runMapperInstance` to a function which launches the BiDi mapper
+ * instance.
  * @param selfTargetId Needed to filter out info related to BiDi target.
+ * @param bidiTransport Optional custom BiDi transport for additional Mapper
+ * instances; the default WindowBidiTransport can only be used once.
+ * @param cdpTransport Optional custom CDP transport for additional Mapper instances.
  */
-window.runMapperInstance = async (selfTargetId) => {
-  await runMapperInstance(selfTargetId);
+window.runMapperInstance = async (
+  selfTargetId,
+  bidiTransport,
+  cdpTransport,
+) => {
+  return await runMapperInstance(selfTargetId, bidiTransport, cdpTransport);
 };

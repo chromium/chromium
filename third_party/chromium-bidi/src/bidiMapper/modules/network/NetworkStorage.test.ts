@@ -21,7 +21,7 @@ import sinon from 'sinon';
 
 import type {Protocol} from 'devtools-protocol';
 
-import type {CdpClient} from '../../../cdp/CdpClient.js';
+import {CloseError, type CdpClient} from '../../../cdp/CdpClient.js';
 import {
   ChromiumBidi,
   Network,
@@ -1682,6 +1682,39 @@ describe('NetworkStorage', () => {
   });
 
   describe('getCollectedData', () => {
+    it('should reject with no such network data when the request session is detached', async () => {
+      // `MapperCdpConnection` rejects commands on a detached session (e.g.
+      // after the page was closed) with `CloseError`.
+      sinon
+        .stub(cdpClient, 'sendCommand')
+        .rejects(new CloseError('Session detached'));
+      networkStorage.addDataCollector({
+        dataTypes: [Network.DataType.Response],
+        maxEncodedDataSize: 10_000,
+      });
+
+      const request = new MockCdpNetworkEvents(cdpClient);
+      request.requestWillBeSent();
+      request.responseReceived();
+      request.loadingFinished();
+
+      await networkStorage
+        .getCollectedData({
+          request: request.requestId,
+          dataType: Network.DataType.Response,
+        })
+        .then(
+          () => assert.fail('Expected getCollectedData to reject'),
+          (error: unknown) => {
+            assert.instanceOf(error, NoSuchNetworkDataException);
+            assert.strictEqual(
+              (error as NoSuchNetworkDataException).message,
+              'Response data is disposed after the related page',
+            );
+          },
+        );
+    });
+
     it('should await final response after redirect', async () => {
       const sendCommandStub = sinon
         .stub(cdpClient, 'sendCommand')

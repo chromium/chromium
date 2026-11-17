@@ -62,9 +62,11 @@ export class MapperCdpConnection implements CdpConnection {
     Protocol.Target.SessionID,
     Protocol.Target.SessionID | undefined
   >();
+  readonly #detachingBrowserSessions = new Set<Protocol.Target.SessionID>();
   readonly #commandCallbacks = new Map<number, CdpCallbacks>();
   readonly #logger?: LoggerFn;
   #nextId = 0;
+  #isClosed = false;
 
   constructor(transport: Transport, logger?: LoggerFn) {
     this.#transport = transport;
@@ -77,22 +79,53 @@ export class MapperCdpConnection implements CdpConnection {
 
   /** Closes the connection to the browser. */
   close(): void {
+    if (this.#isClosed) {
+      return;
+    }
+    this.#isClosed = true;
     this.#transport.close();
     for (const [, {reject, error}] of this.#commandCallbacks) {
       reject(error);
     }
     this.#commandCallbacks.clear();
+    for (const client of this.#sessionCdpClients.values()) {
+      client.removeAllListeners();
+    }
     this.#sessionCdpClients.clear();
     this.#parentSessionIds.clear();
+    this.#detachingBrowserSessions.clear();
   }
 
   async createBrowserSession(): Promise<MapperCdpClient> {
     const {sessionId} = await this.#mainBrowserCdpClient.sendCommand(
       'Target.attachToBrowserTarget',
     );
+    if (this.#isClosed) {
+      throw new CloseError(
+        'Browser session creation rejected because the connection has been closed.',
+      );
+    }
     // The browser target session is owned by the main browser session.
+    // Chromium emits `Target.attachedToTarget` before returning the command
+    // result, so `#onMessage` may have already created the client.
     this.#parentSessionIds.set(sessionId, undefined);
-    return this.#createCdpClient(sessionId);
+    return (
+      this.#sessionCdpClients.get(sessionId) ?? this.#createCdpClient(sessionId)
+    );
+  }
+
+  async closeBrowserSession(
+    sessionId: Protocol.Target.SessionID,
+  ): Promise<void> {
+    this.#detachingBrowserSessions.add(sessionId);
+    this.#detachSession(sessionId);
+    try {
+      await this.#mainBrowserCdpClient.sendCommand('Target.detachFromTarget', {
+        sessionId,
+      });
+    } finally {
+      this.#detachingBrowserSessions.delete(sessionId);
+    }
   }
 
   /**
@@ -113,16 +146,21 @@ export class MapperCdpConnection implements CdpConnection {
     sessionId?: Protocol.Target.SessionID,
   ): Promise<object> {
     return new Promise((resolve, reject) => {
+      const error = new CloseError(
+        `${method} ${JSON.stringify(params)} ${
+          sessionId ?? ''
+        } call rejected because the connection has been closed.`,
+      );
+      if (!this.#sessionCdpClients.has(sessionId)) {
+        reject(error);
+        return;
+      }
       const id = this.#nextId++;
       this.#commandCallbacks.set(id, {
         sessionId,
         resolve,
         reject,
-        error: new CloseError(
-          `${method} ${JSON.stringify(params)} ${
-            sessionId ?? ''
-          } call rejected because the connection has been closed.`,
-        ),
+        error,
       });
       const cdpMessage: CdpMessage<CdpMethod> = {id, method, params};
       if (sessionId) {
@@ -140,6 +178,9 @@ export class MapperCdpConnection implements CdpConnection {
   }
 
   #onMessage = (json: string) => {
+    if (this.#isClosed) {
+      return;
+    }
     const message: CdpMessage<any> = JSON.parse(json);
     this.#logger?.(MapperCdpConnection.LOGGER_PREFIX_RECV)?.(message);
 
@@ -151,6 +192,12 @@ export class MapperCdpConnection implements CdpConnection {
     // Listen for these events on every session.
     if (message.method === 'Target.attachedToTarget') {
       const {sessionId} = message.params;
+      if (!this.#sessionCdpClients.has(emittingSessionId)) {
+        this.#logger?.(LogType.debugError)?.(
+          `Ignoring Target.attachedToTarget for session ${sessionId} from unknown parent ${emittingSessionId}`,
+        );
+        return;
+      }
       // Session IDs are unique per attachment. Drop an event reusing a known
       // ID: replacing the client would cut the existing session off its
       // listeners.
@@ -167,6 +214,12 @@ export class MapperCdpConnection implements CdpConnection {
 
     if (message.method === 'Target.detachedFromTarget') {
       const {sessionId} = message.params;
+      if (
+        emittingSessionId === undefined &&
+        this.#detachingBrowserSessions.delete(sessionId)
+      ) {
+        return;
+      }
       // A session is detached by the session it was attached through. Drop
       // the event from any other session, so it cannot tear down a session it
       // does not own.
@@ -200,21 +253,37 @@ export class MapperCdpConnection implements CdpConnection {
       // But emit on that session
       if (message.method === 'Target.detachedFromTarget') {
         const {sessionId} = message.params;
-        this.#parentSessionIds.delete(sessionId);
-        const client = this.#sessionCdpClients.get(sessionId);
-        if (client) {
-          this.#sessionCdpClients.delete(sessionId);
-          client.removeAllListeners();
-        }
-        // Reject all the pending commands for the detached session.
-        for (const callback of this.#commandCallbacks.values()) {
-          if (callback.sessionId === sessionId) {
-            callback.reject(callback.error);
-          }
-        }
+        this.#detachSession(sessionId);
       }
     }
   };
+
+  #detachSession(sessionId: Protocol.Target.SessionID): void {
+    // Detach child sessions owned by this session first, as detaching a parent
+    // session in CDP (e.g. a browser or tab session) tears down its children
+    // without emitting individual `Target.detachedFromTarget` events for them.
+    for (const [childSessionId, parentSessionId] of [
+      ...this.#parentSessionIds,
+    ]) {
+      if (parentSessionId === sessionId) {
+        this.#detachSession(childSessionId);
+      }
+    }
+
+    this.#parentSessionIds.delete(sessionId);
+    const client = this.#sessionCdpClients.get(sessionId);
+    if (client) {
+      this.#sessionCdpClients.delete(sessionId);
+      client.removeAllListeners();
+    }
+    // Reject all the pending commands for the detached session.
+    for (const [id, callback] of this.#commandCallbacks.entries()) {
+      if (callback.sessionId === sessionId) {
+        this.#commandCallbacks.delete(id);
+        callback.reject(callback.error);
+      }
+    }
+  }
 
   /**
    * Creates a new CdpClient instance for the given session ID.

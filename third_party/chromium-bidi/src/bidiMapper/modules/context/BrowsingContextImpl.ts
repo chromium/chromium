@@ -66,6 +66,11 @@ interface CdpEventSubscriber {
   ): void;
 }
 
+// Shared across all BrowsingContextImpl instances (including sibling Mapper
+// instances in the same tab) so internal helper sandboxes stay hidden across
+// mappers.
+const HIDDEN_SANDBOX = uuidv4();
+
 export class BrowsingContextImpl {
   static readonly LOGGER_PREFIX: `${LogType.debug}:browsingContext` =
     `${LogType.debug}:browsingContext` as const;
@@ -75,8 +80,6 @@ export class BrowsingContextImpl {
   /** The ID of this browsing context. */
   readonly #id: BrowsingContext.BrowsingContext;
   readonly userContext: string;
-  // Used for running helper scripts.
-  readonly #hiddenSandbox = uuidv4();
   // Maps active CDP download GUIDs initiated in this context to their info from
   // `Browser.downloadWillBegin`. Required to populate `browsingContext.downloadEnd`
   // because CDP's `Browser.downloadProgress` event only provides `guid`, `state`,
@@ -139,7 +142,7 @@ export class BrowsingContextImpl {
     this.#originalOpener = originalOpener;
 
     // Register helper realm as hidden, so that it will not be reported to the user.
-    this.#realmStorage.hiddenSandboxes.add(this.#hiddenSandbox);
+    this.#realmStorage.hiddenSandboxes.add(HIDDEN_SANDBOX);
 
     this.#navigationTracker = new NavigationTracker(
       url,
@@ -400,7 +403,7 @@ export class BrowsingContextImpl {
 
   /** Returns a sandbox for internal helper scripts which is not exposed to the user.*/
   async getOrCreateHiddenSandbox(): Promise<Realm> {
-    return await this.#getOrCreateSandboxInternal(this.#hiddenSandbox);
+    return await this.#getOrCreateSandboxInternal(HIDDEN_SANDBOX);
   }
 
   /** Returns a sandbox which is exposed to user. */
@@ -939,14 +942,30 @@ export class BrowsingContextImpl {
         this.id,
       );
 
+      const handlePromptAutomatically = (accept: boolean) => {
+        void this.handleUserPrompt(accept).catch((error) => {
+          // Another Mapper instance or session teardown may have already
+          // closed the dialog or detached the session while this command was
+          // in flight.
+          if (
+            !this.#cdpTarget.cdpClient.isCloseError(error) &&
+            !(error as {message?: string})?.message?.includes(
+              'No dialog is showing',
+            )
+          ) {
+            this.#logger?.(LogType.debugError)?.(error);
+          }
+        });
+      };
+
       switch (promptHandler) {
         // Based on `unhandledPromptBehavior`, check if the prompt should be handled
         // automatically (`accept`, `dismiss`) or wait for the user to do it.
         case Session.UserPromptHandlerType.Accept:
-          void this.handleUserPrompt(true);
+          handlePromptAutomatically(true);
           break;
         case Session.UserPromptHandlerType.Dismiss:
-          void this.handleUserPrompt(false);
+          handlePromptAutomatically(false);
           break;
         case Session.UserPromptHandlerType.Ignore:
           break;
