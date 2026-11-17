@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
@@ -193,10 +194,29 @@ void SharedWorkerGlobalScope::Connect(MessagePortChannel channel) {
   DCHECK(!IsContextPaused());
   auto* port = MakeGarbageCollected<MessagePort>(*this);
   port->Entangle(std::move(channel));
-  MessageEvent* event =
-      MessageEvent::Create(MakeGarbageCollected<GCedMessagePortArray>(1, port),
-                           /*origin=*/nullptr, String(), port);
-  event->initEvent(event_type_names::kConnect, false, false);
+  MessageEvent* event;
+  if (RuntimeEnabledFeatures::
+          SharedWorkerConnectEventEmptyStringDataEnabled()) {
+    // https://html.spec.whatwg.org/multipage/workers.html#run-a-worker
+    // ... fire an event named 'connect' at worker global scope, using
+    // MessageEvent, with the data attribute initialized to the empty string,
+    // the ports attribute initialized to a new frozen array containing inside
+    // port, and the source attribute initialized to inside port.
+    event = MessageEvent::Create();
+    event->initMessageEvent(
+        event_type_names::kConnect, /*bubbles=*/false,
+        /*cancelable=*/false, /*data=*/g_empty_string,
+        /*origin=*/nullptr, /*last_event_id=*/String(), port,
+        MakeGarbageCollected<GCedMessagePortArray>(1, port));
+  } else {
+    // TODO(crbug.com/583449815): When removing the flag, also remove
+    // MessageEvent::Create(ports, origin, last_event_id, source) and its
+    // constructor, since this is the only caller of them.
+    event = MessageEvent::Create(
+        MakeGarbageCollected<GCedMessagePortArray>(1, port),
+        /*origin=*/nullptr, String(), port);
+    event->initEvent(event_type_names::kConnect, false, false);
+  }
   DispatchEvent(*event);
 }
 
