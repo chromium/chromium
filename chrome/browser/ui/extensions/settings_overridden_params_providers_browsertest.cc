@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -51,6 +52,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data_util.h"
@@ -1421,5 +1423,38 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(new_setting.has_value());
   EXPECT_EQ(TemplateURLPrepopulateData::baidu.name, new_setting.value().text);
   EXPECT_TRUE(IconsEqual(expected_baidu_icon, new_setting.value().image));
+}
+
+// Verifies that when multiple prepopulated search engines share the same
+// SearchEngineType (such as regional Yahoo variants), the dialog resolves the
+// variant matching the profile's region rather than the first entry in the
+// global list.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionControllingSearchExplicitChoiceParamsBrowserTest,
+    PrepopulatedEngineResolvesRegionalVariant) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kSearchEngineChoiceCountry, "FR");
+  ASSERT_NE(TemplateURLPrepopulateData::yahoo.name,
+            TemplateURLPrepopulateData::yahoo_fr.name);
+
+  const extensions::Extension* yahoo_extension = InstallCustomSearchExtension(
+      "YahooOverrideExtension", "yahoo_ext",
+      "https://fr.search.yahoo.com/search?p={searchTerms}",
+      /*prepopulated_id=*/std::nullopt,
+      GURL("https://example.com/custom_yahoo_favicon.ico"));
+  ASSERT_TRUE(yahoo_extension);
+
+  const ui::ImageModel expected_yahoo_icon =
+      SetUpExpectedEngineIcon(TemplateURLPrepopulateData::yahoo_fr);
+
+  std::optional<ExtensionSettingsOverriddenDialog::Params> params =
+      GetSearchOverriddenParamsSync(web_contents());
+  ASSERT_TRUE(params);
+
+  auto new_setting = params->content.new_setting;
+  ASSERT_TRUE(new_setting.has_value());
+  EXPECT_EQ(TemplateURLPrepopulateData::yahoo_fr.name,
+            new_setting.value().text);
+  EXPECT_TRUE(IconsEqual(expected_yahoo_icon, new_setting.value().image));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

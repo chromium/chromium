@@ -11,6 +11,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/resources_util.h"
+#include "chrome/browser/search_engines/template_url_prepopulate_data_resolver_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
 #include "chrome/browser/ui/extensions/search_override_stack.h"
@@ -40,10 +42,10 @@
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/image_fetcher/core/request_metadata.h"
-#include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data_util.h"
+#include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
@@ -105,7 +107,7 @@ std::u16string FormatSearchUrl(const GURL& search_url) {
 // Helper to find the matching built-in prepopulated engine for a search URL,
 // if any, by matching the URL's domain against known prepopulated engines.
 const TemplateURLPrepopulateData::PrepopulatedEngine*
-GetPrepopulatedEngineForSearchUrl(const GURL& search_url) {
+GetPrepopulatedEngineForSearchUrl(const GURL& search_url, Profile* profile) {
   if (!search_url.is_valid()) {
     return nullptr;
   }
@@ -118,17 +120,12 @@ GetPrepopulatedEngineForSearchUrl(const GURL& search_url) {
     return nullptr;
   }
 
-  // Next, locate the corresponding entry in the full list of prepopulated
-  // engines.
-  // TODO(http://crbug.com/562972276): Improve this lookup to disambiguate
-  // regional variants that share the same search engine type.
-  const auto all_engines = regional_capabilities::GetAllPrepopulatedEngines();
-  for (const auto& engine : all_engines) {
-    if (engine->type == engine_type) {
-      return engine.get();
-    }
-  }
-  return nullptr;
+  // From the engine type, find the most appropriate prepopulated entry. Use the
+  // prepopulate system for this, rather than attempting a bespoke domain-match,
+  // for consistency and maintainability.
+  return CHECK_DEREF(TemplateURLPrepopulateData::ResolverFactory::GetForProfile(
+                         profile))
+      .GetEngineFromFullList(engine_type);
 }
 
 constexpr extension_misc::ExtensionIcons kDialogIconSize =
@@ -278,7 +275,7 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
       // search URL and supply no favicon (downstream code can use a fallback
       // icon).
       if (const auto* prepopulated_engine =
-              GetPrepopulatedEngineForSearchUrl(search_url)) {
+              GetPrepopulatedEngineForSearchUrl(search_url, profile)) {
         search_info.name = std::u16string(prepopulated_engine->name);
         search_info.builtin_icon =
             GetBuiltinSearchEngineIcon(*prepopulated_engine);
@@ -738,7 +735,7 @@ GetSearchOverriddenParams(Profile* profile) {
     // if it is known by the browser. Otherwise, show the formatted search URL
     // and a generic fallback icon.
     if (const auto* prepopulated_engine =
-            GetPrepopulatedEngineForSearchUrl(search_url)) {
+            GetPrepopulatedEngineForSearchUrl(search_url, profile)) {
       new_setting.text = prepopulated_engine->name;
       if (std::optional<ui::ImageModel> builtin_icon =
               GetBuiltinSearchEngineIcon(*prepopulated_engine)) {
