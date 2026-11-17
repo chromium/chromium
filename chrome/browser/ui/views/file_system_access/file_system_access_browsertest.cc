@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
 #endif
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
-                       OpenFileWithContentSettingAllow) {
+                       OpenFileWithUserContentSettingAllowStillPrompts) {
   const base::FilePath test_file = CreateTestFile("");
   const std::string file_contents = "file contents to write";
 
@@ -500,9 +500,10 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
       url, url, ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
       CONTENT_SETTING_ALLOW);
 
-  // If a prompt shows up, deny it.
+  // If a prompt shows up, dismiss it (keeping the grant at `ASK` so a
+  // subsequent user-accepted prompt can still grant access).
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
-      ->set_auto_response_for_test(permissions::PermissionAction::DENIED);
+      ->set_auto_response_for_test(permissions::PermissionAction::DISMISSED);
 
   EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
             content::EvalJs(web_contents,
@@ -511,8 +512,36 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
                             "  self.entry = e;"
                             "  return e.name; })()"));
 
-  // Write should succeed. If a prompt shows up, it would be denied and we will
-  // get a JavaScript error.
+  // User-sourced `CONTENT_SETTING_ALLOW` on `FILE_SYSTEM_WRITE_GUARD` is
+  // downgraded to `CONTENT_SETTING_ASK` and must NOT bypass the write prompt.
+  // Because the prompt is auto-dismissed above, `createWritable()` fails with
+  // `NotAllowedError` and leaves the file untouched.
+  EXPECT_EQ(
+      "NotAllowedError",
+      content::EvalJs(
+          web_contents,
+          content::JsReplace("(async () => {"
+                             "  try {"
+                             "    const w = await self.entry.createWritable();"
+                             "    await w.write(new Blob([$1]));"
+                             "    await w.close();"
+                             "    return 'unexpected_success';"
+                             "  } catch (e) {"
+                             "    return e.name;"
+                             "  }"
+                             "})()",
+                             file_contents)));
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::string read_contents;
+    EXPECT_TRUE(base::ReadFileToString(test_file, &read_contents));
+    EXPECT_EQ("", read_contents);
+  }
+
+  // Once the user grants the prompt explicitly, writing succeeds.
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
+      ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
   EXPECT_EQ(
       static_cast<int>(file_contents.size()),
       content::EvalJs(
@@ -533,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
-                       SaveFileWithContentSettingAllow) {
+                       SaveFilePickerGrantsWriteWithoutPrompt) {
   const base::FilePath test_file = CreateTestFile("");
   const std::string file_contents = "file contents to write";
 
@@ -546,13 +575,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
 
-  // Grant write permission.
-  HostContentSettingsMap* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
-  host_content_settings_map->SetContentSettingDefaultScope(
-      url, url, ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
-      CONTENT_SETTING_ALLOW);
-
   // If a prompt shows up, deny it.
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
       ->set_auto_response_for_test(permissions::PermissionAction::DENIED);
@@ -564,8 +586,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
                             "  self.entry = e;"
                             "  return e.name; })()"));
 
-  // Write should succeed. If a prompt shows up, it would be denied and we will
-  // get a JavaScript error.
+  // The save picker grants write access implicitly, so no prompt is shown and
+  // the write succeeds. (A prompt would be auto-denied and throw.)
   EXPECT_EQ(
       static_cast<int>(file_contents.size()),
       content::EvalJs(

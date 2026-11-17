@@ -263,6 +263,7 @@ class ChromeFileSystemAccessPermissionContext
   bool IsValidObject(const base::DictValue& object) override;
   std::u16string GetObjectDisplayName(const base::DictValue& object) override;
   std::set<url::Origin> GetOriginsWithGrants() override;
+  bool CanRequestObjectPermission(const url::Origin& origin) const override;
 
   // OneTimePermissionsTrackerObserver:
   void OnAllTabsInBackgroundTimerExpired(

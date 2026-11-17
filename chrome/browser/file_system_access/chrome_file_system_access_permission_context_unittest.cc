@@ -7348,3 +7348,69 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
 }
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       UserGuardContentSettingAllowDowngradedToAsk) {
+  SetContentSettingValueForOrigin(kTestOrigin,
+                                  ContentSettingsType::FILE_SYSTEM_READ_GUARD,
+                                  CONTENT_SETTING_ALLOW);
+  SetContentSettingValueForOrigin(kTestOrigin,
+                                  ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
+                                  CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(permission_context()->CanRequestObjectPermission(kTestOrigin));
+
+  auto read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPathInfo, HandleType::kFile,
+      AccessTrigger::kLoadFromStorage);
+  EXPECT_EQ(read_grant->GetStatus(), PermissionStatus::ASK);
+
+  auto write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPathInfo, HandleType::kFile,
+      AccessTrigger::kLoadFromStorage);
+  EXPECT_EQ(write_grant->GetStatus(), PermissionStatus::ASK);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Persisted grants on `kTestOrigin` remain visible via
+  // `ObjectPermissionContextBase` even when user `WRITE_GUARD` is `ALLOW`.
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+  {
+    auto saved_grant = permission_context()->GetWritePermissionGrant(
+        kTestOrigin, kTestPathInfo2, HandleType::kFile, AccessTrigger::kSave);
+    EXPECT_EQ(saved_grant->GetStatus(), PermissionStatus::GRANTED);
+  }
+  EXPECT_THAT(permission_context()->GetGrantedPaths(kTestOrigin),
+              testing::ElementsAre(kTestPathInfo2.path));
+#endif
+
+  // Blocking `WRITE_GUARD` still disables persisted-object requests.
+  SetContentSettingValueForOrigin(kTestOrigin2,
+                                  ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
+                                  CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(permission_context()->CanRequestObjectPermission(kTestOrigin2));
+
+  // Allowlist providers (`WebUIAllowlist` and `devtools://` scheme allowlist)
+  // retain `ALLOW` and disable persisted-object requests.
+  auto* allowlist = WebUIAllowlist::GetOrCreate(browser_context());
+  allowlist->RegisterAutoGrantedPermission(
+      kChromeOrigin, ContentSettingsType::FILE_SYSTEM_READ_GUARD);
+  allowlist->RegisterAutoGrantedPermission(
+      kChromeOrigin, ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+  EXPECT_FALSE(permission_context()->CanRequestObjectPermission(kChromeOrigin));
+  auto webui_read = permission_context()->GetReadPermissionGrant(
+      kChromeOrigin, kTestPathInfo, HandleType::kFile,
+      AccessTrigger::kLoadFromStorage);
+  auto webui_write = permission_context()->GetWritePermissionGrant(
+      kChromeOrigin, kTestPathInfo, HandleType::kFile,
+      AccessTrigger::kLoadFromStorage);
+  EXPECT_EQ(webui_read->GetStatus(), PermissionStatus::GRANTED);
+  EXPECT_EQ(webui_write->GetStatus(), PermissionStatus::GRANTED);
+
+  const url::Origin kDevToolsOrigin =
+      url::Origin::Create(GURL("devtools://devtools"));
+  EXPECT_FALSE(
+      permission_context()->CanRequestObjectPermission(kDevToolsOrigin));
+  auto devtools_write = permission_context()->GetWritePermissionGrant(
+      kDevToolsOrigin, kTestPathInfo, HandleType::kFile,
+      AccessTrigger::kLoadFromStorage);
+  EXPECT_EQ(devtools_write->GetStatus(), PermissionStatus::GRANTED);
+}
