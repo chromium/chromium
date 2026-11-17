@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -2796,7 +2797,87 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 }
 
-class ContentScriptSkipServiceWorkerTest : public ContentScriptApiTest {
+// Provides a page service worker that answers every request under
+// `/sw-probe/`, the embedded test server responses for the probes that bypass
+// it (except `/sw-probe/beacon`, which tests handle themselves), and a helper
+// to load an extension with a content script.
+class ContentScriptPageServiceWorkerTest : public ContentScriptApiTest {
+ public:
+  void SetUpOnMainThread() override {
+    ContentScriptApiTest::SetUpOnMainThread();
+    // Registers the request handler that serves the worker, and the probes that
+    // make it to the network.
+    embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&HandleServiceWorkerProbeRequest));
+  }
+
+ protected:
+  // Loads an extension that injects `content_script` into every page at
+  // `document_idle`.
+  [[nodiscard]] const Extension* LoadContentScriptExtension(
+      std::string_view content_script) {
+    static constexpr char kProbeManifest[] = R"({
+      "name": "Isolated world service worker test",
+      "version": "1.0",
+      "manifest_version": 3,
+      "content_scripts": [{
+        "matches": ["*://*/*"],
+        "js": ["content_script.js"],
+        "run_at": "document_idle"
+      }]
+    })";
+    test_extension_dir_.WriteManifest(kProbeManifest);
+    test_extension_dir_.WriteFile(FILE_PATH_LITERAL("content_script.js"),
+                                  content_script);
+    return LoadExtension(test_extension_dir_.UnpackedPath());
+  }
+
+ private:
+  static std::unique_ptr<net::test_server::HttpResponse>
+  HandleServiceWorkerProbeRequest(
+      const net::test_server::HttpRequest& request) {
+    // Answers every request under `/sw-probe/` itself, so a probe can only
+    // reach the embedded test server if the worker was skipped.
+    static constexpr char kServiceWorker[] = R"(
+      self.addEventListener('install', () => self.skipWaiting());
+      self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+      self.addEventListener('fetch', e => {
+        const probe = new URL(e.request.url).pathname.split('/sw-probe/')[1];
+        if (probe === undefined) {
+          return;
+        }
+        const responses = {
+          'module.js': ['text/javascript', "export default 'INTERCEPTED';"],
+          'events': ['text/event-stream', 'data: INTERCEPTED\n\n'],
+        };
+        const [type, body] = responses[probe] ?? ['text/plain', 'INTERCEPTED'];
+        e.respondWith(new Response(body, {headers: {'Content-Type': type}}));
+      });
+    )";
+
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    if (request.relative_url == "/sw.js") {
+      response->set_content_type("text/javascript");
+      response->set_content(kServiceWorker);
+    } else if (request.relative_url == "/sw-probe/text") {
+      response->set_content("REAL_SERVER");
+    } else if (request.relative_url == "/sw-probe/module.js") {
+      response->set_content_type("text/javascript");
+      response->set_content("export default 'REAL_SERVER';");
+    } else if (request.relative_url == "/sw-probe/events") {
+      response->set_content_type("text/event-stream");
+      response->set_content("data: REAL_SERVER\n\n");
+    } else {
+      return nullptr;
+    }
+    return response;
+  }
+
+  TestExtensionDir test_extension_dir_;
+};
+
+class ContentScriptSkipServiceWorkerTest
+    : public ContentScriptPageServiceWorkerTest {
  protected:
   base::test::ScopedFeatureList feature_list_{
       blink::features::kIsolatedWorldEventSourceAndBeaconsSkipServiceWorker};
@@ -2807,25 +2888,6 @@ class ContentScriptSkipServiceWorkerTest : public ContentScriptApiTest {
 // (EventSource and sendBeacon) and https://crbug.com/371011220 (import()).
 IN_PROC_BROWSER_TEST_F(ContentScriptSkipServiceWorkerTest,
                        IsolatedWorldRequestsSkipPageServiceWorker) {
-  // Answers every request under `/sw-probe/` itself, so a probe can only reach
-  // the embedded test server if the worker was skipped.
-  static constexpr char kServiceWorker[] = R"(
-    self.addEventListener('install', () => self.skipWaiting());
-    self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
-    self.addEventListener('fetch', e => {
-      const probe = new URL(e.request.url).pathname.split('/sw-probe/')[1];
-      if (probe === undefined) {
-        return;
-      }
-      const responses = {
-        'module.js': ['text/javascript', "export default 'INTERCEPTED';"],
-        'events': ['text/event-stream', 'data: INTERCEPTED\n\n'],
-      };
-      const [type, body] = responses[probe] ?? ['text/plain', 'INTERCEPTED'];
-      e.respondWith(new Response(body, {headers: {'Content-Type': type}}));
-    });
-  )";
-
   // Registers the worker and, once it controls the page, issues one request
   // per API. `navigator.serviceWorker.ready` is unavailable in isolated
   // worlds, hence the `controllerchange` listener.
@@ -2874,45 +2936,11 @@ IN_PROC_BROWSER_TEST_F(ContentScriptSkipServiceWorkerTest,
     });
   )";
 
-  static constexpr char kProbeManifest[] = R"({
-    "name": "Isolated world service worker test",
-    "version": "1.0",
-    "manifest_version": 3,
-    "content_scripts": [{
-      "matches": ["*://*/*"],
-      "js": ["content_script.js"]
-    }]
-  })";
-
   net::test_server::ControllableHttpResponse beacon(embedded_test_server(),
                                                     "/sw-probe/beacon");
-  // Serves the worker, and the probes that make it to the network.
-  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-      [](const net::test_server::HttpRequest& request)
-          -> std::unique_ptr<net::test_server::HttpResponse> {
-        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-        if (request.relative_url == "/sw.js") {
-          response->set_content_type("text/javascript");
-          response->set_content(kServiceWorker);
-        } else if (request.relative_url == "/sw-probe/text") {
-          response->set_content("REAL_SERVER");
-        } else if (request.relative_url == "/sw-probe/module.js") {
-          response->set_content_type("text/javascript");
-          response->set_content("export default 'REAL_SERVER';");
-        } else if (request.relative_url == "/sw-probe/events") {
-          response->set_content_type("text/event-stream");
-          response->set_content("data: REAL_SERVER\n\n");
-        } else {
-          return nullptr;
-        }
-        return response;
-      }));
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  TestExtensionDir test_dir;
-  test_dir.WriteManifest(kProbeManifest);
-  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
-  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+  ASSERT_TRUE(LoadContentScriptExtension(kContentScript));
 
   ResultCatcher catcher;
   ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
