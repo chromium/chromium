@@ -31,26 +31,16 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 bool IsFloatingWorkspaceV2Enabled() {
-  auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
-  if (!active_user) {
-    return false;
-  }
-  auto* browser_context =
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user);
-  if (!browser_context) {
-    return false;
-  }
-
-  return IsFloatingWorkspaceEnabled(
-      Profile::FromBrowserContext(browser_context));
+  // TODO(crbug.com/417724348): take the user as a parameter, so that this
+  // stops asking who is active.
+  const user_manager::User* const active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  const PrefService* const prefs =
+      active_user ? active_user->GetProfilePrefs() : nullptr;
+  return prefs && IsFloatingWorkspaceEnabled(*prefs);
 }
 
-bool IsFloatingWorkspaceEnabled(const Profile* profile) {
-  const PrefService* pref_service = profile->GetPrefs();
-  if (!pref_service) {
-    return false;
-  }
-
+bool IsFloatingWorkspaceEnabled(const PrefService& prefs) {
   // TODO(crbug.com/297795546): Temporary check both FloatingWorkspaceEnabled
   // and FloatingWorkspaceV2Enabled policies. The former was originally used to
   // control V2 behavior and there are testers who might still rely on it. The
@@ -59,12 +49,11 @@ bool IsFloatingWorkspaceEnabled(const Profile* profile) {
   for (const auto& pref_name : {policy::policy_prefs::kFloatingWorkspaceEnabled,
                                 chromeos::prefs::kFloatingWorkspaceV2Enabled}) {
     const PrefService::Preference* floating_workspace_pref =
-        pref_service->FindPreference(pref_name);
+        prefs.FindPreference(pref_name);
 
     CHECK(floating_workspace_pref, base::NotFatalUntil::M161);
 
-    if (floating_workspace_pref->IsManaged() &&
-        pref_service->GetBoolean(pref_name)) {
+    if (floating_workspace_pref->IsManaged() && prefs.GetBoolean(pref_name)) {
       return true;
     }
   }

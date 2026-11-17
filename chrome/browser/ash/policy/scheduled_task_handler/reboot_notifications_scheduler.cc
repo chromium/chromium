@@ -16,14 +16,11 @@
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/browser_context.h"
 
 namespace policy {
 namespace {
@@ -358,13 +355,10 @@ bool RebootNotificationsScheduler::ShouldWaitFullRestoreInit() const {
   const session_manager::Session* active_session =
       session_manager::SessionManager::Get()->GetActiveSession();
   CHECK(active_session);
-  content::BrowserContext* browser_context =
-      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-          active_session->account_id());
-  CHECK(browser_context);
   return ash::full_restore::FullRestoreServiceFactory::
-      IsFullRestoreAvailableForProfile(
-          Profile::FromBrowserContext(browser_context));
+      IsFullRestoreAvailableForUser(
+          CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+              active_session->account_id())));
 }
 
 bool RebootNotificationsScheduler::IsPostRebootPrefSet(PrefService* prefs) {

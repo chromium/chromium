@@ -36,7 +36,7 @@ bool ShouldShowParentalControlSettings(const Profile* profile);
 bool IsExternalStorageEnabled(const Profile* profile);
 
 // Determines if app restore settings are available for `profile`.
-bool IsAppRestoreAvailableForProfile(const Profile* profile);
+bool IsAppRestoreAvailableForProfile(Profile* profile);
 
 // Determines if per-app language settings are available for `profile`.
 bool IsPerAppLanguageEnabled(const Profile* profile);

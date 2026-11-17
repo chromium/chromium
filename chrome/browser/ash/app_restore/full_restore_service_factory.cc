@@ -11,36 +11,42 @@
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash::full_restore {
 
 // static
-bool FullRestoreServiceFactory::IsFullRestoreAvailableForProfile(
-    const Profile* profile) {
+bool FullRestoreServiceFactory::IsFullRestoreAvailableForUser(
+    const user_manager::User& user) {
   if (IsRunningInForcedAppMode() || ash::demo_mode::IsDeviceInDemoMode()) {
     return false;
   }
 
-  // No service for non-regular user profile, or ephemeral user profile, system
-  // profile.
-  if (!profile || profile->IsSystemProfile() ||
-      !ProfileHelper::IsUserProfile(profile) ||
-      ProfileHelper::IsEphemeralUserProfile(profile)) {
+  // No service for an ephemeral user.
+  if (user_manager::UserManager::Get()->IsEphemeralUser(&user)) {
+    return false;
+  }
+
+  // The prefs are gone once the user's profile has been destroyed, and are not
+  // there yet before it has been created.
+  const PrefService* const prefs = user.GetProfilePrefs();
+  if (!prefs) {
     return false;
   }
 
   // Floating Workspace is an enterprise feature which restores user's desks
   // across devices. If it's enabled, it provides an alternative restore
   // behavior independent of Full Restore.
-  if (floating_workspace_util::IsFloatingWorkspaceEnabled(profile)) {
+  if (floating_workspace_util::IsFloatingWorkspaceEnabled(*prefs)) {
     return false;
   }
 
-  return profile->GetPrefs()->GetBoolean(kRestoreAppsEnabled);
+  return prefs->GetBoolean(kRestoreAppsEnabled);
 }
 
 // static
@@ -73,11 +79,14 @@ FullRestoreServiceFactory::~FullRestoreServiceFactory() = default;
 std::unique_ptr<KeyedService>
 FullRestoreServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (!IsFullRestoreAvailableForProfile(profile))
+  const user_manager::User* const user =
+      BrowserContextHelper::Get()->GetUserByBrowserContext(context);
+  if (!user || !IsFullRestoreAvailableForUser(*user)) {
     return nullptr;
+  }
 
-  return std::make_unique<FullRestoreService>(profile);
+  return std::make_unique<FullRestoreService>(
+      Profile::FromBrowserContext(context));
 }
 
 }  // namespace ash::full_restore

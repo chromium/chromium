@@ -13,12 +13,16 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace user_manager {
+class User;
+}  // namespace user_manager
+
 namespace ash::full_restore {
 
 // Singleton factory that builds and owns FullRestoreService.
 class FullRestoreServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  static bool IsFullRestoreAvailableForProfile(const Profile* profile);
+  static bool IsFullRestoreAvailableForUser(const user_manager::User& user);
 
   static FullRestoreServiceFactory* GetInstance();
 

@@ -8,14 +8,15 @@
 #include "ash/ash_export.h"
 
 class PrefRegistrySimple;
+class PrefService;
 class Profile;
 
 namespace ash::floating_workspace_util {
 
 ASH_EXPORT void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-// DEPRECATED. Please use `IsFloatingWorkspaceEnabled` which takes the `profile`
-// argument.
+// DEPRECATED. Please use `IsFloatingWorkspaceEnabled` which takes the user's
+// prefs.
 // Returns true if floating workspace is enabled. Note this should
 // only be called after primary user profile is loaded and policy
 // has initialized.
@@ -23,7 +24,7 @@ ASH_EXPORT void RegisterProfilePrefs(PrefRegistrySimple* registry);
 // and remove this.
 ASH_EXPORT bool IsFloatingWorkspaceV2Enabled();
 
-ASH_EXPORT bool IsFloatingWorkspaceEnabled(const Profile* profile);
+ASH_EXPORT bool IsFloatingWorkspaceEnabled(const PrefService& prefs);
 
 bool IsFloatingSsoEnabled(Profile* profile);
 

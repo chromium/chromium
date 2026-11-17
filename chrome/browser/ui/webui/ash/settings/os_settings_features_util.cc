@@ -15,6 +15,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
@@ -75,9 +76,12 @@ bool IsExternalStorageEnabled(const Profile* profile) {
          arc::ShouldArcAlwaysStart();
 }
 
-bool IsAppRestoreAvailableForProfile(const Profile* profile) {
-  return full_restore::FullRestoreServiceFactory::
-      IsFullRestoreAvailableForProfile(profile);
+bool IsAppRestoreAvailableForProfile(Profile* profile) {
+  const user_manager::User* const user =
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  return user &&
+         full_restore::FullRestoreServiceFactory::IsFullRestoreAvailableForUser(
+             *user);
 }
 
 bool IsPerAppLanguageEnabled(const Profile* profile) {
