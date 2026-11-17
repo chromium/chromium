@@ -57,23 +57,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_PDF)
-#include <tuple>
-#include <variant>
-
-#include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
-#include "pdf/pdf_features.h"
-
-namespace {
-struct ChromeBackForwardCacheBrowserWithEmbedPdfTestPassToString {
-  std::string operator()(
-      const ::testing::TestParamInfo<std::tuple<std::string_view, bool>>& i)
-      const {
-    return std::string(std::get<1>(i.param) ? "oopif_" : "guestview_") +
-           std::string(std::get<0>(i.param));
-  }
-};
-}  // namespace
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace {
@@ -101,18 +85,6 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
     return embedded_test_server()->GetURL(host, "/title1.html");
   }
 
-  virtual std::vector<base::test::FeatureRefAndParams>
-  GetEnabledFeaturesAndParams() const {
-    return content::GetDefaultEnabledBackForwardCacheFeaturesForTesting();
-  }
-
-  virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() const {
-    return content::GetDefaultDisabledBackForwardCacheFeaturesForTesting(
-        {// Entry to the cache can be slow during testing and cause
-         // flakiness.
-         features::kBackForwardCacheEntryTimeout});
-  }
-
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // For using WebBluetooth.
@@ -132,7 +104,11 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
 
   void SetupFeaturesAndParameters() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        GetEnabledFeaturesAndParams(), GetDisabledFeatures());
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting(
+            {// Entry to the cache can be slow during testing and cause
+             // flakiness.
+             features::kBackForwardCacheEntryTimeout}));
     vmodule_switches_.InitWithSwitches("back_forward_cache_impl=1");
   }
 
@@ -681,11 +657,12 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
                                      expected_url_a_cached_title));
 }
 
-class ChromeBackForwardCacheBrowserWithEmbedTestBase
-    : public ChromeBackForwardCacheBrowserTest {
+class ChromeBackForwardCacheBrowserWithEmbedTest
+    : public ChromeBackForwardCacheBrowserTest,
+      public ::testing::WithParamInterface<std::string_view> {
  public:
-  ChromeBackForwardCacheBrowserWithEmbedTestBase() = default;
-  ~ChromeBackForwardCacheBrowserWithEmbedTestBase() override = default;
+  ChromeBackForwardCacheBrowserWithEmbedTest() = default;
+  ~ChromeBackForwardCacheBrowserWithEmbedTest() override = default;
 
   static std::string GetSrcAttributeForTag(const std::string_view& tag) {
     return tag == "embed" ? "src" : "data";
@@ -718,10 +695,6 @@ class ChromeBackForwardCacheBrowserWithEmbedTestBase
   }
 };
 
-class ChromeBackForwardCacheBrowserWithEmbedTest
-    : public ChromeBackForwardCacheBrowserWithEmbedTestBase,
-      public ::testing::WithParamInterface<std::string_view> {};
-
 INSTANTIATE_TEST_SUITE_P(
     All,
     ChromeBackForwardCacheBrowserWithEmbedTest,
@@ -732,59 +705,16 @@ INSTANTIATE_TEST_SUITE_P(
 
 #if BUILDFLAG(ENABLE_PDF)
 class ChromeBackForwardCacheBrowserWithEmbedPdfTest
-    : public ChromeBackForwardCacheBrowserWithEmbedTestBase,
-      public ::testing::WithParamInterface<std::tuple<std::string_view, bool>> {
+    : public ChromeBackForwardCacheBrowserWithEmbedTest {
  public:
-  void SetUpOnMainThread() override {
-    ChromeBackForwardCacheBrowserWithEmbedTestBase::SetUpOnMainThread();
-
-    if (UseOopif()) {
-      factory_ = std::make_unique<pdf::TestMimeHandlerStreamManagerFactory>();
-    }
-  }
-
-  const std::string_view& html_tag() const { return std::get<0>(GetParam()); }
-
-  bool UseOopif() const { return std::get<1>(GetParam()); }
-
-  pdf::TestMimeHandlerStreamManager* GetTestMimeHandlerStreamManager(
-      content::WebContents* contents) {
-    CHECK(UseOopif());
-    return factory_->GetTestMimeHandlerStreamManager(contents);
-  }
-
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeaturesAndParams()
-      const override {
-    std::vector<base::test::FeatureRefAndParams> enabled =
-        ChromeBackForwardCacheBrowserWithEmbedTestBase::
-            GetEnabledFeaturesAndParams();
-    if (UseOopif()) {
-      enabled.push_back({chrome_pdf::features::kPdfOopif, {}});
-    }
-    return enabled;
-  }
-
-  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    std::vector<base::test::FeatureRef> disabled =
-        ChromeBackForwardCacheBrowserWithEmbedTestBase::GetDisabledFeatures();
-    if (!UseOopif()) {
-      disabled.push_back(chrome_pdf::features::kPdfOopif);
-    }
-    return disabled;
-  }
-
   void ExpectNotRestoredReason(base::Location location) {
-    // Reasons to fail caching pages embedding the PDF viewer. For OOPIF PDF
-    // viewer, caching is disabled because it's contains a plugin. For GuestView
-    // PDF viewer, the PDF viewer contains an inner WebContents. These values
-    // should be kept in sync with BackForwardCacheMetrics::NotRestoredReason.
+    // Reason to fail caching pages embedding the PDF viewer. Caching is
+    // disabled because it contains a plugin. This value should be kept in sync
+    // with BackForwardCacheMetrics::NotRestoredReason.
     static constexpr uint8_t kReasonBlocklistedFeatures = 7;
-    static constexpr uint8_t kReasonHaveInnerContents = 32;
 
     content::FetchHistogramsFromChildProcesses();
-    base::HistogramBase::Sample32 sample = base::HistogramBase::Sample32(
-        UseOopif() ? kReasonBlocklistedFeatures : kReasonHaveInnerContents);
-    base::Bucket expected_not_restored(sample, 1);
+    base::Bucket expected_not_restored(kReasonBlocklistedFeatures, 1);
 
     EXPECT_THAT(histogram_tester_->GetAllSamples(
                     "BackForwardCache.HistoryNavigationOutcome."
@@ -799,19 +729,19 @@ class ChromeBackForwardCacheBrowserWithEmbedPdfTest
         << location.ToString();
   }
 
- private:
+ protected:
   // `factory_` is necessary to create a `pdf::TestMimeHandlerStreamManager`
   // instance whenever a PDF loads.
-  std::unique_ptr<pdf::TestMimeHandlerStreamManagerFactory> factory_;
+  pdf::TestMimeHandlerStreamManagerFactory factory_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     ChromeBackForwardCacheBrowserWithEmbedPdfTest,
-    testing::Combine(
-        testing::ValuesIn(kChromeBackForwardCacheBrowserWithEmbedTestValues),
-        testing::Bool()),
-    ChromeBackForwardCacheBrowserWithEmbedPdfTestPassToString());
+    testing::ValuesIn(kChromeBackForwardCacheBrowserWithEmbedTestValues),
+    [](const testing::TestParamInfo<std::string_view>& i) {
+      return std::string(i.param);
+    });
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 // TODO(crbug.com/40285326): This fails with the field trial testing config.
@@ -846,10 +776,10 @@ class ChromeBackForwardCacheBrowserWithEmbedPdfTestNoTestingConfig
 INSTANTIATE_TEST_SUITE_P(
     All,
     ChromeBackForwardCacheBrowserWithEmbedPdfTestNoTestingConfig,
-    testing::Combine(
-        testing::ValuesIn(kChromeBackForwardCacheBrowserWithEmbedTestValues),
-        testing::Bool()),
-    ChromeBackForwardCacheBrowserWithEmbedPdfTestPassToString());
+    testing::ValuesIn(kChromeBackForwardCacheBrowserWithEmbedTestValues),
+    [](const testing::TestParamInfo<std::string_view>& i) {
+      return std::string(i.param);
+    });
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 IN_PROC_BROWSER_TEST_P(
@@ -892,22 +822,15 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     ChromeBackForwardCacheBrowserWithEmbedPdfTestNoTestingConfig,
     DoesNotCachePageWithEmbeddedPdf) {
-  const auto tag = html_tag();
+  const auto tag = GetParam();
   const auto page_with_pdf =
       base::StrCat({"/back_forward_cache/page_with_", tag, "_pdf.html"});
 
   // Navigate to A, a page with embedded PDF.
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), embedded_test_server()->GetURL("a.com", page_with_pdf)));
-  if (UseOopif()) {
-    ASSERT_TRUE(GetTestMimeHandlerStreamManager(web_contents())
-                    ->WaitUntilPdfLoadedInFirstChild());
-  } else {
-    pdf_extension_test_util::EnsurePDFHasLoadedOptions options{
-        .pdf_element = std::string(tag)};
-    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoadedWithOptions(
-        web_contents(), options));
-  }
+  ASSERT_TRUE(factory_.GetTestMimeHandlerStreamManager(web_contents())
+                  ->WaitUntilPdfLoadedInFirstChild());
   content::RenderFrameHostWrapper rfh_a(current_frame_host());
 
   // Navigate to B.
@@ -934,7 +857,7 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
                        DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded) {
-  const auto tag = html_tag();
+  const auto tag = GetParam();
 
   // Navigate to A.
   ASSERT_TRUE(content::NavigateToURL(
@@ -953,16 +876,9 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
     });
   )",
                                              tag, GetSrcAttributeForTag(tag))));
-  if (UseOopif()) {
-    // Wait for the PDF to fully load.
-    ASSERT_TRUE(GetTestMimeHandlerStreamManager(web_contents())
-                    ->WaitUntilPdfLoadedInFirstChild());
-  } else {
-    pdf_extension_test_util::EnsurePDFHasLoadedOptions options{
-        .pdf_element = std::string(tag)};
-    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoadedWithOptions(
-        web_contents(), options));
-  }
+  // Wait for the PDF to fully load.
+  ASSERT_TRUE(factory_.GetTestMimeHandlerStreamManager(web_contents())
+                  ->WaitUntilPdfLoadedInFirstChild());
 
   bool will_change_rfh =
       rfh_a->ShouldChangeRenderFrameHostOnSameSiteNavigation();
@@ -1009,7 +925,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
 #if BUILDFLAG(ENABLE_PDF)
 IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
                        DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf) {
-  const auto tag = html_tag();
+  const auto tag = GetParam();
   const auto page_with_html =
       base::StrCat({"/back_forward_cache/page_with_", tag, "_html.html"});
 
@@ -1029,16 +945,9 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
     });
   )",
                                              tag, GetSrcAttributeForTag(tag))));
-  if (UseOopif()) {
-    // Wait for the PDF to fully load.
-    ASSERT_TRUE(GetTestMimeHandlerStreamManager(web_contents())
-                    ->WaitUntilPdfLoadedInFirstChild());
-  } else {
-    pdf_extension_test_util::EnsurePDFHasLoadedOptions options{
-        .pdf_element = std::string(tag)};
-    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoadedWithOptions(
-        web_contents(), options));
-  }
+  // Wait for the PDF to fully load.
+  ASSERT_TRUE(factory_.GetTestMimeHandlerStreamManager(web_contents())
+                  ->WaitUntilPdfLoadedInFirstChild());
 
   bool will_change_rfh =
       rfh_a->ShouldChangeRenderFrameHostOnSameSiteNavigation();
@@ -1063,7 +972,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
 
 IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
                        DoesCachePageWithEmbeddedPdfMutatedIntoHtml) {
-  const auto tag = html_tag();
+  const auto tag = GetParam();
   const auto page_with_pdf =
       base::StrCat({"/back_forward_cache/page_with_", tag, "_pdf.html"});
 

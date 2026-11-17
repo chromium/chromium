@@ -37,9 +37,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "base/test/with_feature_override.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
-#include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace task_manager {
@@ -261,13 +259,9 @@ IN_PROC_BROWSER_TEST_F(SubframeTaskBrowserTest, TaskManagerHungSubframe) {
 }
 
 #if BUILDFLAG(ENABLE_PDF)
-class SubframeTaskPDFBrowserTest : public base::test::WithFeatureOverride,
-                                   public PDFExtensionTestBase {
+class SubframeTaskPDFBrowserTest : public PDFExtensionTestBase {
  public:
-  SubframeTaskPDFBrowserTest()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
-
-  bool UseOopif() const override { return GetParam(); }
+  SubframeTaskPDFBrowserTest() = default;
 
   // PDFExtensionTestBase:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
@@ -280,7 +274,7 @@ class SubframeTaskPDFBrowserTest : public base::test::WithFeatureOverride,
   }
 };
 
-IN_PROC_BROWSER_TEST_P(SubframeTaskPDFBrowserTest,
+IN_PROC_BROWSER_TEST_F(SubframeTaskPDFBrowserTest,
                        TaskManagerShowsPDFSubframeTask) {
   MockWebContentsTaskManager task_manager;
   task_manager.StartObserving();
@@ -311,7 +305,7 @@ IN_PROC_BROWSER_TEST_P(SubframeTaskPDFBrowserTest,
   EXPECT_EQ(tasks[2]->GetType(), Task::RENDERER);
 }
 
-IN_PROC_BROWSER_TEST_P(SubframeTaskPDFBrowserTest,
+IN_PROC_BROWSER_TEST_F(SubframeTaskPDFBrowserTest,
                        TaskManagerShowsIncognitoPDFSubframeTask) {
   MockWebContentsTaskManager task_manager;
   task_manager.StartObserving();
@@ -350,10 +344,6 @@ IN_PROC_BROWSER_TEST_P(SubframeTaskPDFBrowserTest,
                   server_url_without_port.spec()))));
   EXPECT_EQ(tasks[3]->GetType(), Task::RENDERER);
 }
-
-// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
-// launches.
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SubframeTaskPDFBrowserTest);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 }  // namespace task_manager

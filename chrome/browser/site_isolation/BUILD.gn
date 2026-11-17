@@ -5,7 +5,6 @@
 import("//build/config/chromeos/args.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//extensions/buildflags/buildflags.gni")
-import("//pdf/features.gni")
 
 source_set("site_isolation") {
   public = [
@@ -81,10 +80,6 @@ if (!is_android) {
       "//net:test_support",
     ]
 
-    if (enable_pdf) {
-      deps += [ "//pdf:features" ]
-    }
-
     if (enable_spellcheck) {
       sources += [ "spellcheck_per_process_browsertest.cc" ]
       deps += [
@@ -122,10 +117,6 @@ if (!is_android) {
           "//ui/base/ime/linux",
           "//ui/linux:test_support",
         ]
-      }
-
-      if (enable_pdf) {
-        deps += [ "//pdf:features" ]
       }
     }
   }

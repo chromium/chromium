@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//pdf/features.gni")
-
 source_set("back_forward_cache") {
   sources = [
     "back_forward_cache_util.cc",
@@ -59,12 +57,5 @@ if (!is_android) {
       "//third_party/blink/public/common",
       "//ui/base",
     ]
-
-    if (enable_pdf) {
-      deps += [
-        "//chrome/browser/pdf:pdf_extension_test_utils",
-        "//pdf:features",
-      ]
-    }
   }
 }

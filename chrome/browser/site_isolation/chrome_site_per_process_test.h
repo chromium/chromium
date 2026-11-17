@@ -24,8 +24,6 @@ class ChromeSitePerProcessTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override;
 
-  base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };

@@ -29,9 +29,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/guest_view/browser/guest_view_base.h"
-#include "components/guest_view/browser/guest_view_manager_delegate.h"
-#include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -51,7 +48,6 @@
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/api/extensions_api_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -67,7 +63,6 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
-#include "pdf/pdf_features.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -277,92 +272,15 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
 }
 
 #if BUILDFLAG(ENABLE_PDF)
-class ChromeSitePerProcessGuestViewPDFTest : public ChromeSitePerProcessTest {
+class ChromeSitePerProcessPDFTest : public ChromeSitePerProcessTest {
  public:
-  ChromeSitePerProcessGuestViewPDFTest() : test_guest_view_manager_(nullptr) {
-    feature_list()->Reset();
-    feature_list()->InitAndDisableFeature(chrome_pdf::features::kPdfOopif);
-  }
+  ChromeSitePerProcessPDFTest() = default;
 
-  ChromeSitePerProcessGuestViewPDFTest(
-      const ChromeSitePerProcessGuestViewPDFTest&) = delete;
-  ChromeSitePerProcessGuestViewPDFTest& operator=(
-      const ChromeSitePerProcessGuestViewPDFTest&) = delete;
-
-  ~ChromeSitePerProcessGuestViewPDFTest() override = default;
-
-  void SetUpOnMainThread() override {
-    ChromeSitePerProcessTest::SetUpOnMainThread();
-    test_guest_view_manager_ = factory_.GetOrCreateTestGuestViewManager(
-        browser()->GetProfile(), extensions::ExtensionsAPIClient::Get()
-                                     ->CreateGuestViewManagerDelegate());
-  }
-
-  void TearDownOnMainThread() override {
-    test_guest_view_manager_ = nullptr;
-    ChromeSitePerProcessTest::TearDownOnMainThread();
-  }
-
- protected:
-  guest_view::TestGuestViewManager* test_guest_view_manager() const {
-    return test_guest_view_manager_;
-  }
-
- private:
-  guest_view::TestGuestViewManagerFactory factory_;
-  raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_;
-};
-
-// This test verifies that when navigating an OOPIF to a page with <embed>-ed
-// PDF, the guest is properly created, and by removing the embedder frame, the
-// guest is properly destroyed (https://crbug.com/40486257).
-IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessGuestViewPDFTest,
-                       EmbeddedPDFInsideCrossOriginFrame) {
-  // Navigate to a page with an <iframe>.
-  GURL main_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-
-  // Initially, no guests are created.
-  EXPECT_EQ(0U, test_guest_view_manager()->num_guests_created());
-
-  // Navigate subframe to a cross-site page with an embedded PDF.
-  content::WebContents* active_web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  GURL frame_url =
-      embedded_test_server()->GetURL("b.com", "/page_with_embedded_pdf.html");
-
-  // Ensure the page finishes loading without crashing.
-  EXPECT_TRUE(NavigateIframeToURL(active_web_contents, "test", frame_url));
-
-  // Wait until the guest for PDF is created.
-  auto* guest_view = test_guest_view_manager()->WaitForSingleGuestViewCreated();
-  ASSERT_TRUE(guest_view);
-
-  auto* primary_main_frame = active_web_contents->GetPrimaryMainFrame();
-  ASSERT_NE(primary_main_frame, guest_view->GetGuestMainFrame());
-
-  // Now detach the frame and observe that the guest is destroyed.
-  EXPECT_TRUE(
-      ExecJs(primary_main_frame,
-             "document.body.removeChild(document.querySelector('iframe'));"));
-  test_guest_view_manager()->WaitForLastGuestDeleted();
-
-  EXPECT_EQ(0U, test_guest_view_manager()->GetCurrentGuestCount());
-}
-
-class ChromeSitePerProcessOopifPDFTest : public ChromeSitePerProcessTest {
- public:
-  ChromeSitePerProcessOopifPDFTest() {
-    feature_list()->Reset();
-    feature_list()->InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
-  }
-
-  ChromeSitePerProcessOopifPDFTest(const ChromeSitePerProcessOopifPDFTest&) =
+  ChromeSitePerProcessPDFTest(const ChromeSitePerProcessPDFTest&) = delete;
+  ChromeSitePerProcessPDFTest& operator=(const ChromeSitePerProcessPDFTest&) =
       delete;
-  ChromeSitePerProcessOopifPDFTest& operator=(
-      const ChromeSitePerProcessOopifPDFTest&) = delete;
 
-  ~ChromeSitePerProcessOopifPDFTest() override = default;
+  ~ChromeSitePerProcessPDFTest() override = default;
 
   // Return value could be nullptr.
   extensions::mime_handler::MimeHandlerStreamManager*
@@ -385,7 +303,7 @@ class ChromeSitePerProcessOopifPDFTest : public ChromeSitePerProcessTest {
 // This test verifies that when navigating an OOPIF to a page with <embed>-ed
 // PDF, the PDF viewer stream manager is properly created, and by removing the
 // embedder frame, the stream manager is properly destroyed.
-IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
+IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessPDFTest,
                        EmbeddedPDFInsideCrossOriginFrame) {
   // Navigate to a page with an <iframe>.
   GURL main_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
@@ -434,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
 // doesn't lead to a renderer kill. PDF documents don't access these interfaces
 // directly, but the access could still happen via DevTools.  See
 // https://crbug.com/357014503.
-IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
+IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessPDFTest,
                        AccessStorageInPDFDocument) {
   GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
@@ -483,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
 // in the context of the PDF document fails gracefully and doesn't lead to a
 // renderer kill. PDF documents don't need dedicated workers, but the creation
 // could still be attempted via DevTools. See https://crbug.com/553118313.
-IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
+IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessPDFTest,
                        DedicatedWorkersInPDFDocument) {
   GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
@@ -523,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
 // kill. PDF documents don't create blob URLs directly, but the access could
 // still happen via DevTools. See https://crbug.com/540051167 and
 // https://crbug.com/550946804.
-IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
+IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessPDFTest,
                        CreateBlobUrlInPDFDocument) {
   GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
@@ -557,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
 // BlobURLStore remote for the worklet, but in PDF processes
 // LocalFrame::GetBlobUrlStorePendingRemote returns an invalid remote to avoid
 // requesting the interface from the browser. See https://crbug.com/540051167.
-IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
+IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessPDFTest,
                        CreateAudioWorkletInPDFDocument) {
   GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));

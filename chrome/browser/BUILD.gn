@@ -5320,7 +5320,6 @@ if (!is_android) {
       "//content/test:browsertest_support",
       "//content/test:test_support",
       "//net:test_support",
-      "//pdf:features",
       "//services/network/public/cpp:ip_address_space_overrides_test_utils",
       "//storage/browser:test_support",
       "//testing/gtest",

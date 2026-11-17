@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 #include <string_view>
-#include <vector>
 
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
@@ -40,11 +39,6 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
-#if BUILDFLAG(ENABLE_PDF)
-#include "base/test/with_feature_override.h"
-#include "pdf/pdf_features.h"
-#endif
-
 namespace {
 const int kWasmPageSize = 1 << 16;
 
@@ -59,7 +53,25 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
   ChromeWebPlatformSecurityMetricsBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         http_server_(net::EmbeddedTestServer::TYPE_HTTP) {
-    features_.InitWithFeatures(GetEnabledFeatures(), GetDisabledFeatures());
+    features_.InitWithFeatures(
+        {
+            network::features::kCrossOriginOpenerPolicy,
+            // SharedArrayBuffer is needed for these tests.
+            features::kSharedArrayBuffer,
+        },
+        {
+            // Disabled because some subtests set document.domain and these
+            // feature flags prevent that:
+            blink::features::kOriginAgentClusterDefaultEnabled,
+            features::kOriginKeyedProcessesByDefault,
+            // Subsampling metrics recording makes the test observing the
+            // metrics fail almost every time. Disable subsampling.
+            blink::features::kSubSampleWindowProxyUsageMetrics,
+            // PNA metrics may not record correctly if LNA checks are enabled.
+            network::features::kLocalNetworkAccessChecks,
+            // Disabling this flag just to test that the flag is working.
+            blink::features::kRemoveCharsetAutoDetectionForISO2022JP,
+        });
   }
 
   content::WebContents* web_contents() const {
@@ -135,30 +147,6 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
 
       base::PlatformThread::Sleep(base::Milliseconds(5));
     }
-  }
-
-  virtual std::vector<base::test::FeatureRef> GetEnabledFeatures() const {
-    return {
-        network::features::kCrossOriginOpenerPolicy,
-        // SharedArrayBuffer is needed for these tests.
-        features::kSharedArrayBuffer,
-    };
-  }
-
-  virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() const {
-    return {
-        // Disabled because some subtests set document.domain and these
-        // feature flags prevent that:
-        blink::features::kOriginAgentClusterDefaultEnabled,
-        features::kOriginKeyedProcessesByDefault,
-        // Subsampling metrics recording makes the test observing the metrics
-        // fail almost every time. Disable subsampling.
-        blink::features::kSubSampleWindowProxyUsageMetrics,
-        // PNA metrics may not record correctly if LNA checks are enabled.
-        network::features::kLocalNetworkAccessChecks,
-        // Disabling this flag just to test that the flag is working.
-        blink::features::kRemoveCharsetAutoDetectionForISO2022JP,
-    };
   }
 
  protected:
@@ -2495,36 +2483,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 }
 
 #if BUILDFLAG(ENABLE_PDF)
-class ChromeWebPlatformSecurityMetricsBrowserPdfTest
-    : public base::test::WithFeatureOverride,
-      public ChromeWebPlatformSecurityMetricsBrowserTest {
- public:
-  ChromeWebPlatformSecurityMetricsBrowserPdfTest()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif),
-        ChromeWebPlatformSecurityMetricsBrowserTest() {}
-
-  bool UseOopif() const { return GetParam(); }
-
-  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
-    std::vector<base::test::FeatureRef> enabled =
-        ChromeWebPlatformSecurityMetricsBrowserTest::GetEnabledFeatures();
-    if (UseOopif()) {
-      enabled.push_back(chrome_pdf::features::kPdfOopif);
-    }
-    return enabled;
-  }
-
-  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    std::vector<base::test::FeatureRef> disabled =
-        ChromeWebPlatformSecurityMetricsBrowserTest::GetDisabledFeatures();
-    if (!UseOopif()) {
-      disabled.push_back(chrome_pdf::features::kPdfOopif);
-    }
-    return disabled;
-  }
-};
-
-IN_PROC_BROWSER_TEST_P(ChromeWebPlatformSecurityMetricsBrowserPdfTest,
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                        CrossWindowAccessToPluginDocument) {
   const char kAccessInnerFrameDocumentScript[] = R"(
     (() => {
@@ -2556,19 +2515,11 @@ IN_PROC_BROWSER_TEST_P(ChromeWebPlatformSecurityMetricsBrowserPdfTest,
   // count as a "plugin document".
   CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 0);
 
-  // For OOPIF PDF viewer, accessing the inner frame throws a `TypeError` due to
-  // shadow DOM. For GuestView PDF viewer, accessing the inner frame throws a
-  // `SecurityError`.
-  const std::string expected = UseOopif() ? "TypeError" : "SecurityError";
+  // Accessing the inner frame throws a `TypeError` due to shadow DOM.
   content::EvalJsResult actual =
       content::EvalJs(web_contents(), kAccessInnerFrameDocumentScript);
-  EXPECT_EQ(expected, actual);
+  EXPECT_EQ("TypeError", actual);
 }
-
-// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
-// launches.
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    ChromeWebPlatformSecurityMetricsBrowserPdfTest);
 #endif
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,

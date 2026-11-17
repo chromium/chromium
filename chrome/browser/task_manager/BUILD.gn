@@ -405,7 +405,6 @@ source_set("browser_tests") {
       "//components/infobars/content",
       "//components/sessions",
       "//content/test:browsertest_support",
-      "//pdf:features",
       "//services/strings",
       "//testing/gmock",
       "//testing/gtest",
