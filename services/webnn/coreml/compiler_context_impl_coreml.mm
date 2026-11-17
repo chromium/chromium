@@ -15,6 +15,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/webnn/coreml/graph_builder_coreml.h"
 #include "services/webnn/coreml/utils_coreml.h"
@@ -214,21 +215,17 @@ void CompilerContextImplCoreml::CompileOnBackgroundThread(
                   return;
                 }
 
-                base::ScopedTempDir compiled_model_dir;
-                if (!compiled_model_dir.CreateUniqueTempDirUnderPath(
-                        compiler_protected_dir)) {
-                  std::move(compile_callback)
-                      .Run(base::unexpected(mojom::Error::New(
-                          mojom::Error::Code::kUnknownError,
-                          "Failed to create unique directory under compiler "
-                          "protected path.")));
-                  return;
-                }
-
+                // Move to a non-existent destination path before adopting into
+                // `ScopedTempDir` so cross-volume `base::Move` fallback
+                // (`CopyDirectory`) does not nest an extra `model.mlmodelc`
+                // subdirectory.
                 base::FilePath dest_compiled_model_path =
-                    compiled_model_dir.GetPath().AppendASCII("model.mlmodelc");
+                    compiler_protected_dir.AppendASCII(
+                        base::UnguessableToken::Create().ToString());
+                base::ScopedTempDir compiled_model_dir;
                 if (!base::Move(raw_compiled_model_path,
-                                dest_compiled_model_path)) {
+                                dest_compiled_model_path) ||
+                    !compiled_model_dir.Set(dest_compiled_model_path)) {
                   LOG(ERROR) << "[WebNN] Failed to move compiled model from "
                              << raw_compiled_model_path << " to "
                              << dest_compiled_model_path;
@@ -266,7 +263,7 @@ void CompilerContextImplCoreml::DidCompile(
   std::unique_ptr<CompilationResult> compilation = std::move(result.value());
 
   auto compiled_graph = mojom::CompiledGraph::New(
-      compilation->compiled_model_dir.GetPath().AppendASCII("model.mlmodelc"),
+      compilation->compiled_model_dir.GetPath(),
       std::move(compilation->input_name_to_coreml_name),
       std::move(compilation->output_name_to_coreml_name));
 

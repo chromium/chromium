@@ -185,7 +185,7 @@ void FakeWebNNBrowserHostForTesting::CopyCompiledModel(
     return;
   }
   base::FilePath dest_path =
-      gpu_temp_dir.GetPath().Append(compiler_model_path.BaseName());
+      gpu_temp_dir.GetPath().AppendASCII("model.mlmodelc");
   if (!base::CopyDirectory(compiler_model_path, dest_path,
                            /*recursive=*/true)) {
     std::move(callback).Run(std::nullopt);
