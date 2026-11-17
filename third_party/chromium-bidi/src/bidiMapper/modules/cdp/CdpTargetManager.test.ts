@@ -93,6 +93,8 @@ function frameTreeForSession(
 /** Fake CDP session which records nothing and answers every command. */
 class FakeCdpClient extends EventEmitter<CdpEvents> implements CdpClient {
   readonly sessionId: Protocol.Target.SessionID | undefined;
+  frameTree: object | undefined;
+  frameTreePromise: Promise<object> | undefined;
 
   constructor(sessionId: Protocol.Target.SessionID | undefined) {
     super();
@@ -104,7 +106,17 @@ class FakeCdpClient extends EventEmitter<CdpEvents> implements CdpClient {
   ): Promise<ProtocolMapping.Commands[CdpMethod]['returnType']> {
     let result: object = {};
     if (method === 'Page.getFrameTree') {
-      result = {frameTree: frameTreeForSession(this.sessionId)};
+      if (this.frameTreePromise !== undefined) {
+        return this.frameTreePromise.then(
+          (frameTree) =>
+            ({
+              frameTree,
+            }) as ProtocolMapping.Commands[CdpMethod]['returnType'],
+        );
+      }
+      result = {
+        frameTree: this.frameTree ?? frameTreeForSession(this.sessionId),
+      };
     } else if (method === 'Browser.getWindowForTarget') {
       result = {windowId: 1, bounds: {}};
     }
@@ -141,6 +153,7 @@ function attachedToTarget(
   targetId: Protocol.Target.TargetID,
   type: string,
   url = '',
+  parentFrameId?: Protocol.Page.FrameId,
 ): object {
   return {
     sessionId,
@@ -152,6 +165,7 @@ function attachedToTarget(
       attached: true,
       canAccessOpener: false,
       browserContextId: DEFAULT_BROWSER_CONTEXT_ID,
+      ...(parentFrameId === undefined ? {} : {parentFrameId}),
     },
     waitingForDebugger: true,
   };
@@ -425,6 +439,527 @@ describe('CdpTargetManager', () => {
         browsingContextStorage.getContext(OOPIF_FRAME_ID).url,
         'http://browser-session.test/',
       );
+    });
+  });
+
+  describe('Page.getFrameTree', () => {
+    it('does not re-parent or replace a context hosted by another session', async () => {
+      const topContext = browsingContextStorage.getContext(TOP_FRAME_ID);
+      const popupClient = connection.getCdpClient('POPUP_SESSION');
+      popupClient.frameTree = {
+        frame: {id: 'POPUP_FRAME', loaderId: 'POPUP_LOADER', url: ''},
+        childFrames: [
+          {
+            frame: {
+              id: TOP_FRAME_ID,
+              parentId: 'POPUP_FRAME',
+              loaderId: 'TOP_LOADER',
+              url: 'http://top.test/',
+            },
+          },
+          {
+            frame: {
+              id: 'FOREIGN_CHILD',
+              parentId: TOP_FRAME_ID,
+              loaderId: 'FOREIGN_LOADER',
+              url: 'http://foreign.test/',
+            },
+          },
+        ],
+      };
+
+      browserClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('POPUP_TAB_SESSION', 'POPUP_TAB_TARGET', 'tab'),
+      );
+      connection
+        .getCdpClient('POPUP_TAB_SESSION')
+        .receive(
+          'Target.attachedToTarget',
+          attachedToTarget('POPUP_SESSION', 'POPUP_FRAME', 'page'),
+        );
+      await browsingContextStorage
+        .getContext('POPUP_FRAME')
+        .targetUnblockedOrThrow();
+
+      // Navigating the popup and emitting frameAttached for TOP_FRAME_ID on
+      // the popup session must leave TOP_FRAME_ID top-level on PAGE_SESSION_ID.
+      popupClient.receive('Page.frameNavigated', {
+        frame: {
+          id: 'POPUP_FRAME',
+          loaderId: 'POPUP_NAV_LOADER',
+          url: 'http://popup.test/',
+        },
+        type: 'Navigation',
+      });
+      popupClient.receive('Page.frameAttached', {
+        frameId: TOP_FRAME_ID,
+        parentFrameId: 'POPUP_FRAME',
+      });
+
+      assert.strictEqual(
+        browsingContextStorage.getContext(TOP_FRAME_ID),
+        topContext,
+      );
+      assert.isNull(topContext.parentId);
+      assert.strictEqual(sessionOf(TOP_FRAME_ID), PAGE_SESSION_ID);
+      assert.isFalse(browsingContextStorage.hasContext('FOREIGN_CHILD'));
+    });
+
+    it('does not re-parent a top-level page context', async () => {
+      const cycleClient = connection.getCdpClient('CYCLE_PAGE_SESSION');
+      cycleClient.frameTree = {
+        frame: {
+          id: 'CYCLE_TOP_FRAME',
+          parentId: 'CYCLE_CHILD_FRAME',
+          loaderId: 'CYCLE_LOADER',
+          url: '',
+        },
+        childFrames: [
+          {
+            frame: {
+              id: 'CYCLE_CHILD_FRAME',
+              parentId: 'CYCLE_TOP_FRAME',
+              loaderId: 'CYCLE_CHILD_LOADER',
+              url: 'http://child.test/',
+            },
+          },
+        ],
+      };
+
+      browserClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('CYCLE_TAB_SESSION', 'CYCLE_TAB_TARGET', 'tab'),
+      );
+      connection
+        .getCdpClient('CYCLE_TAB_SESSION')
+        .receive(
+          'Target.attachedToTarget',
+          attachedToTarget('CYCLE_PAGE_SESSION', 'CYCLE_TOP_FRAME', 'page'),
+        );
+      await browsingContextStorage
+        .getContext('CYCLE_TOP_FRAME')
+        .targetUnblockedOrThrow();
+
+      const cycleTop = browsingContextStorage.getContext('CYCLE_TOP_FRAME');
+      const cycleChild = browsingContextStorage.getContext('CYCLE_CHILD_FRAME');
+      assert.isNull(cycleTop.parentId);
+      assert.strictEqual(cycleChild.parentId, 'CYCLE_TOP_FRAME');
+      assert.strictEqual(cycleChild.top, cycleTop);
+    });
+
+    it('does not create a parent cycle between OOPIF contexts', async () => {
+      const oopifAId = 'OOPIF_A_FRAME';
+      const oopifASessionId = 'OOPIF_A_SESSION';
+      const oopifBId = 'OOPIF_B_FRAME';
+      const oopifBSessionId = 'OOPIF_B_SESSION';
+      const oopifAClient = connection.getCdpClient(oopifASessionId);
+      const oopifBClient = connection.getCdpClient(oopifBSessionId);
+      oopifAClient.frameTree = {
+        frame: {
+          id: oopifAId,
+          parentId: oopifBId,
+          loaderId: 'OOPIF_A_LOADER',
+          url: '',
+        },
+      };
+      oopifBClient.frameTree = {
+        frame: {
+          id: oopifBId,
+          parentId: oopifAId,
+          loaderId: 'OOPIF_B_LOADER',
+          url: '',
+        },
+      };
+
+      pageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget(oopifASessionId, oopifAId, 'iframe'),
+      );
+      oopifAClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget(oopifBSessionId, oopifBId, 'iframe'),
+      );
+      await browsingContextStorage
+        .getContext(oopifAId)
+        .targetUnblockedOrThrow();
+      await browsingContextStorage
+        .getContext(oopifBId)
+        .targetUnblockedOrThrow();
+
+      const oopifAContext = browsingContextStorage.getContext(oopifAId);
+      // Direct setter guard also refuses cycles if reached directly.
+      oopifAContext.parentId = oopifBId;
+      assert.isTrue(oopifAContext.isTopLevelContext());
+      assert.strictEqual(
+        browsingContextStorage.getContext(oopifBId).top,
+        oopifAContext,
+      );
+    });
+
+    it('restores nested same-process frames and OOPIF parent on reconnect', async () => {
+      const reconnectPageClient = connection.getCdpClient(
+        'RECONNECT_PAGE_SESSION',
+      );
+      reconnectPageClient.frameTree = {
+        frame: {
+          id: 'RECONNECT_TOP_FRAME',
+          loaderId: 'RECONNECT_TOP_LOADER',
+          url: 'http://reconnect.test/',
+        },
+        childFrames: [
+          {
+            frame: {
+              id: 'RECONNECT_CHILD_FRAME',
+              parentId: 'RECONNECT_TOP_FRAME',
+              loaderId: 'RECONNECT_CHILD_LOADER',
+              url: 'http://reconnect.test/child',
+            },
+            childFrames: [
+              {
+                frame: {
+                  id: 'RECONNECT_GRANDCHILD_FRAME',
+                  parentId: 'RECONNECT_CHILD_FRAME',
+                  loaderId: 'RECONNECT_GRANDCHILD_LOADER',
+                  url: 'http://reconnect.test/grandchild',
+                },
+              },
+            ],
+          },
+        ],
+      };
+
+      browserClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget(
+          'RECONNECT_TAB_SESSION',
+          'RECONNECT_TAB_TARGET',
+          'tab',
+        ),
+      );
+      connection
+        .getCdpClient('RECONNECT_TAB_SESSION')
+        .receive(
+          'Target.attachedToTarget',
+          attachedToTarget(
+            'RECONNECT_PAGE_SESSION',
+            'RECONNECT_TOP_FRAME',
+            'page',
+            'http://reconnect.test/',
+          ),
+        );
+      await browsingContextStorage
+        .getContext('RECONNECT_TOP_FRAME')
+        .targetUnblockedOrThrow();
+
+      assert.strictEqual(
+        sessionOf('RECONNECT_CHILD_FRAME'),
+        'RECONNECT_PAGE_SESSION',
+      );
+      assert.strictEqual(
+        browsingContextStorage.getContext('RECONNECT_CHILD_FRAME').parentId,
+        'RECONNECT_TOP_FRAME',
+      );
+      assert.strictEqual(
+        sessionOf('RECONNECT_GRANDCHILD_FRAME'),
+        'RECONNECT_PAGE_SESSION',
+      );
+      assert.strictEqual(
+        browsingContextStorage.getContext('RECONNECT_GRANDCHILD_FRAME')
+          .parentId,
+        'RECONNECT_CHILD_FRAME',
+      );
+
+      // Attach an existing OOPIF on the embedding page session when its parent
+      // is a nested same-process frame discovered via Page.getFrameTree.
+      const reconnectOopifClient = connection.getCdpClient(
+        'RECONNECT_OOPIF_SESSION',
+      );
+      reconnectOopifClient.frameTree = {
+        frame: {
+          id: 'RECONNECT_OOPIF_FRAME',
+          parentId: 'RECONNECT_CHILD_FRAME',
+          loaderId: 'RECONNECT_OOPIF_LOADER',
+          url: OOPIF_URL,
+        },
+      };
+      reconnectPageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget(
+          'RECONNECT_OOPIF_SESSION',
+          'RECONNECT_OOPIF_FRAME',
+          'iframe',
+          OOPIF_URL,
+        ),
+      );
+      await browsingContextStorage
+        .getContext('RECONNECT_OOPIF_FRAME')
+        .targetUnblockedOrThrow();
+
+      assert.strictEqual(
+        sessionOf('RECONNECT_OOPIF_FRAME'),
+        'RECONNECT_OOPIF_SESSION',
+      );
+      assert.strictEqual(
+        browsingContextStorage.getContext('RECONNECT_OOPIF_FRAME').parentId,
+        'RECONNECT_CHILD_FRAME',
+      );
+
+      // Attach an OOPIF carrying `targetInfo.parentFrameId`.
+      reconnectPageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget(
+          'RECONNECT_OOPIF_2_SESSION',
+          'RECONNECT_OOPIF_2_FRAME',
+          'iframe',
+          OOPIF_URL,
+          'RECONNECT_GRANDCHILD_FRAME',
+        ),
+      );
+      assert.strictEqual(
+        browsingContextStorage.getContext('RECONNECT_OOPIF_2_FRAME').parentId,
+        'RECONNECT_GRANDCHILD_FRAME',
+      );
+    });
+
+    it('ignores a parent frame not hosted by the parent session of an iframe target', async () => {
+      // Remove OTHER_TOP_FRAME_ID so that an iframe target attached on
+      // OTHER_PAGE_SESSION_ID starts with parentId === null.
+      otherPageClient.receive('Page.frameSubtreeWillBeDetached', {
+        frameId: OTHER_TOP_FRAME_ID,
+      });
+
+      const nestedOopifClient = connection.getCdpClient('NESTED_OOPIF_SESSION');
+      nestedOopifClient.frameTree = {
+        frame: {
+          id: 'NESTED_OOPIF_FRAME',
+          parentId: TOP_FRAME_ID,
+          loaderId: 'NESTED_OOPIF_LOADER',
+          url: OOPIF_URL,
+        },
+      };
+
+      otherPageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget(
+          'NESTED_OOPIF_SESSION',
+          'NESTED_OOPIF_FRAME',
+          'iframe',
+          OOPIF_URL,
+        ),
+      );
+      await browsingContextStorage
+        .getContext('NESTED_OOPIF_FRAME')
+        .targetUnblockedOrThrow();
+
+      assert.isNull(
+        browsingContextStorage.getContext('NESTED_OOPIF_FRAME').parentId,
+      );
+      assert.notInclude(
+        browsingContextStorage
+          .getContext(TOP_FRAME_ID)
+          .directChildren.map((c) => c.id),
+        'NESTED_OOPIF_FRAME',
+      );
+    });
+
+    it('waits for the embedding target to restore nested frames before setting OOPIF parent on reconnect', async () => {
+      let resolvePageFrameTree!: (frameTree: object) => void;
+      const slowPageClient = connection.getCdpClient('SLOW_PAGE_SESSION');
+      slowPageClient.frameTreePromise = new Promise((resolve) => {
+        resolvePageFrameTree = resolve;
+      });
+
+      const slowOopifClient = connection.getCdpClient('SLOW_OOPIF_SESSION');
+      slowOopifClient.frameTree = {
+        frame: {
+          id: 'SLOW_OOPIF_FRAME',
+          parentId: 'SLOW_CHILD_FRAME',
+          loaderId: 'SLOW_OOPIF_LOADER',
+          url: OOPIF_URL,
+        },
+      };
+
+      browserClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('SLOW_TAB_SESSION', 'SLOW_TAB_TARGET', 'tab'),
+      );
+      connection
+        .getCdpClient('SLOW_TAB_SESSION')
+        .receive(
+          'Target.attachedToTarget',
+          attachedToTarget(
+            'SLOW_PAGE_SESSION',
+            'SLOW_TOP_FRAME',
+            'page',
+            'http://slow.test/',
+          ),
+        );
+      slowPageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget(
+          'SLOW_OOPIF_SESSION',
+          'SLOW_OOPIF_FRAME',
+          'iframe',
+          OOPIF_URL,
+          'SLOW_CHILD_FRAME',
+        ),
+      );
+
+      // Let the OOPIF's fast `Page.getFrameTree` settle before the page replies.
+      await Promise.resolve();
+      resolvePageFrameTree({
+        frame: {
+          id: 'SLOW_TOP_FRAME',
+          loaderId: 'SLOW_TOP_LOADER',
+          url: 'http://slow.test/',
+        },
+        childFrames: [
+          {
+            frame: {
+              id: 'SLOW_CHILD_FRAME',
+              parentId: 'SLOW_TOP_FRAME',
+              loaderId: 'SLOW_CHILD_LOADER',
+              url: 'http://slow.test/child',
+            },
+          },
+        ],
+      });
+
+      await browsingContextStorage
+        .getContext('SLOW_OOPIF_FRAME')
+        .targetUnblockedOrThrow();
+      await browsingContextStorage
+        .getContext('SLOW_TOP_FRAME')
+        .targetUnblockedOrThrow();
+
+      assert.strictEqual(
+        browsingContextStorage.getContext('SLOW_OOPIF_FRAME').parentId,
+        'SLOW_CHILD_FRAME',
+      );
+      assert.notInclude(
+        browsingContextStorage.getTopLevelContexts().map((c) => c.id),
+        'SLOW_OOPIF_FRAME',
+      );
+    });
+  });
+
+  describe('Target.attachedToTarget', () => {
+    it('does not rebind an existing context from a non-owning session', () => {
+      otherPageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('FOREIGN_SESSION', CHILD_FRAME_ID, 'iframe'),
+      );
+      otherPageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('FOREIGN_PAGE_SESSION', CHILD_FRAME_ID, 'page'),
+      );
+
+      assert.strictEqual(sessionOf(CHILD_FRAME_ID), PAGE_SESSION_ID);
+      assert.strictEqual(
+        browsingContextStorage.getContext(CHILD_FRAME_ID).parentId,
+        TOP_FRAME_ID,
+      );
+
+      // The owning session can still transition the frame to an OOPIF target.
+      pageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('CHILD_OOPIF_SESSION', CHILD_FRAME_ID, 'iframe'),
+      );
+      assert.strictEqual(sessionOf(CHILD_FRAME_ID), 'CHILD_OOPIF_SESSION');
+    });
+
+    it('disposes same-process descendants of a frame that moved to its own target', () => {
+      pageClient.receive('Page.frameAttached', {
+        frameId: 'NESTED_FRAME',
+        parentFrameId: CHILD_FRAME_ID,
+      });
+      pageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('CHILD_OOPIF_SESSION', CHILD_FRAME_ID, 'iframe'),
+      );
+      connection
+        .getCdpClient('CHILD_OOPIF_SESSION')
+        .receive('Page.frameNavigated', {
+          frame: {
+            id: CHILD_FRAME_ID,
+            parentId: TOP_FRAME_ID,
+            loaderId: 'NEW_LOADER',
+            url: OOPIF_URL,
+          },
+          type: 'Navigation',
+        });
+
+      assert.isFalse(browsingContextStorage.hasContext('NESTED_FRAME'));
+    });
+
+    it('replaces a renderer-claimed context when a browser-only page target attaches', () => {
+      pageClient.receive('Page.frameAttached', {
+        frameId: 'POPUP_FRAME',
+        parentFrameId: TOP_FRAME_ID,
+      });
+      assert.strictEqual(sessionOf('POPUP_FRAME'), PAGE_SESSION_ID);
+
+      browserClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('POPUP_TAB_SESSION', 'POPUP_TAB_TARGET', 'tab'),
+      );
+      connection
+        .getCdpClient('POPUP_TAB_SESSION')
+        .receive(
+          'Target.attachedToTarget',
+          attachedToTarget('POPUP_PAGE_SESSION', 'POPUP_FRAME', 'page'),
+        );
+
+      const popupContext = browsingContextStorage.getContext('POPUP_FRAME');
+      assert.strictEqual(sessionOf('POPUP_FRAME'), 'POPUP_PAGE_SESSION');
+      assert.isNull(popupContext.parentId);
+      assert.notInclude(
+        browsingContextStorage
+          .getContext(TOP_FRAME_ID)
+          .directChildren.map((c) => c.id),
+        'POPUP_FRAME',
+      );
+    });
+
+    it('ignores forged attaches on renderer sessions without blocking browser-only attaches', () => {
+      pageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('FORGED_TAB_SESSION', 'FORGED_TAB', 'tab'),
+      );
+      pageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('FORGED_PAGE_SESSION', 'POPUP_FRAME', 'page'),
+      );
+      pageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget(
+          'FORGED_OTHER_SESSION',
+          'DEVTOOLS_TARGET',
+          'other',
+          'devtools://devtools/bundled/inspector.html',
+        ),
+      );
+      pageClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('FORGED_IFRAME_SESSION', 'POPUP_FRAME', 'iframe'),
+      );
+
+      assert.isFalse(browsingContextStorage.hasContext('DEVTOOLS_TARGET'));
+
+      browserClient.receive(
+        'Target.attachedToTarget',
+        attachedToTarget('POPUP_TAB_SESSION', 'POPUP_TAB_TARGET', 'tab'),
+      );
+      connection
+        .getCdpClient('POPUP_TAB_SESSION')
+        .receive(
+          'Target.attachedToTarget',
+          attachedToTarget('POPUP_PAGE_SESSION', 'POPUP_FRAME', 'page'),
+        );
+
+      assert.strictEqual(sessionOf('POPUP_FRAME'), 'POPUP_PAGE_SESSION');
+      assert.isNull(browsingContextStorage.getContext('POPUP_FRAME').parentId);
     });
   });
 });

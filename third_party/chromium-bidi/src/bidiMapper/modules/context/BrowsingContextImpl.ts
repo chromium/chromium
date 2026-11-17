@@ -291,12 +291,33 @@ export class BrowsingContextImpl {
       // just return,
       return;
     }
+    if (parentId === null) {
+      return;
+    }
+    const parent = this.#browsingContextStorage.findContext(parentId);
+    if (parent === undefined) {
+      this.#logger?.(LogType.debugError)?.(
+        `Parent context ${parentId} not found`,
+      );
+      return;
+    }
+    // Reject parents that are descendants of this context to prevent cycles in
+    // `top` and `allChildren`.
+    for (
+      let ancestor: BrowsingContextImpl | null = parent;
+      ancestor !== null;
+      ancestor = ancestor.parent
+    ) {
+      if (ancestor === this) {
+        this.#logger?.(LogType.debugError)?.(
+          `Parent context ${parentId} would create a cycle for ${this.id}`,
+        );
+        return;
+      }
+    }
 
     this.#parentId = parentId;
-
-    if (!this.isTopLevelContext()) {
-      this.parent!.addChild(this.id);
-    }
+    parent.addChild(this.id);
     // The top-level context is known only now: move the dialog listeners to
     // its CDP target.
     this.#initListeners();

@@ -46,7 +46,9 @@ const cdpToBidiTargetTypes = {
 export class CdpTargetManager {
   readonly #browserCdpClient: CdpClient;
   readonly #cdpConnection: CdpConnection;
-  readonly #targetKeysToBeIgnoredByAutoAttach = new Set<string>();
+  readonly #browserOnlyTargetKeys = new Set<string>();
+  readonly #rendererTargetKeys = new Set<string>();
+  readonly #tabSessionIds = new Set<Protocol.Target.SessionID>();
   readonly #selfTargetId: string;
   readonly #eventManager: EventManager;
 
@@ -80,7 +82,7 @@ export class CdpTargetManager {
   ) {
     this.#cdpConnection = cdpConnection;
     this.#browserCdpClient = browserCdpClient;
-    this.#targetKeysToBeIgnoredByAutoAttach.add(selfTargetId);
+    this.#browserOnlyTargetKeys.add(selfTargetId);
     this.#selfTargetId = selfTargetId;
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
@@ -97,6 +99,14 @@ export class CdpTargetManager {
     this.#setEventListeners(browserCdpClient);
     // Forward browser-level CDP events to BiDi.
     this.#setCdpEventListeners(browserCdpClient);
+  }
+
+  #isBrowserOnlySession(cdpClient: CdpClient): boolean {
+    return (
+      cdpClient === this.#browserCdpClient ||
+      (cdpClient.sessionId !== undefined &&
+        this.#tabSessionIds.has(cdpClient.sessionId))
+    );
   }
 
   /**
@@ -227,13 +237,14 @@ export class CdpTargetManager {
         // `tab` targets are left paused to be resumed by their child target
         // (`CdpTarget.#unblock`). When a `tab`'s child is detached instead
         // (e.g. a non-DevTools `other` target), resume the parent `tab` too.
-        ...(parentSessionCdpClient === this.#browserCdpClient
-          ? []
-          : [
+        ...(parentSessionCdpClient.sessionId !== undefined &&
+        this.#tabSessionIds.has(parentSessionCdpClient.sessionId)
+          ? [
               parentSessionCdpClient.sendCommand(
                 'Runtime.runIfWaitingForDebugger',
               ),
-            ]),
+            ]
+          : []),
       ])
         .then(() =>
           parentSessionCdpClient.sendCommand('Target.detachFromTarget', params),
@@ -241,30 +252,66 @@ export class CdpTargetManager {
         .catch((error) => this.#logger?.(LogType.debugError)?.(error));
     };
 
+    const fromBrowserOnlySession = this.#isBrowserOnlySession(
+      parentSessionCdpClient,
+    );
+
     // Do not attach to the Mapper target.
     if (this.#selfTargetId === targetInfo.targetId) {
-      void detach();
+      if (fromBrowserOnlySession) {
+        void detach();
+      }
       return;
     }
-    // Service workers are special case because they attach to the
-    // browser target and the page target (so twice per worker) during
-    // the regular auto-attach and might hang if the CDP session on
-    // the browser level is not detached. The logic to detach the
-    // right session is handled in the switch below.
+
+    // `tab` and `shared_worker` targets are only attached on the browser
+    // session, and `page`/`other` targets are only attached on a browser-only
+    // session (`browser` or `tab`). Reject renderer-emitted attaches before
+    // recording any target state.
+    if (
+      ((targetInfo.type === 'tab' || targetInfo.type === 'shared_worker') &&
+        parentSessionCdpClient !== this.#browserCdpClient) ||
+      ((targetInfo.type === 'page' || targetInfo.type === 'other') &&
+        !fromBrowserOnlySession)
+    ) {
+      this.#logger?.(LogType.debugError)?.(
+        `Ignoring ${targetInfo.type} attach for ${targetInfo.targetId} on non-browser session ${parentSessionCdpClient.sessionId}`,
+      );
+      return;
+    }
+
+    // Service workers and dedicated workers scope their key by type and parent
+    // session: service workers attach on both browser and page targets, and a
+    // worker key on a renderer session must never collide with a frame ID.
     const targetKey =
-      targetInfo.type === 'service_worker'
-        ? `${parentSessionCdpClient.sessionId}_${targetInfo.targetId}`
+      targetInfo.type === 'service_worker' || targetInfo.type === 'worker'
+        ? `${targetInfo.type}_${parentSessionCdpClient.sessionId}_${targetInfo.targetId}`
         : targetInfo.targetId;
 
-    // Mapper generally only needs one session per target. If we
-    // receive additional auto-attached sessions, that is very likely
-    // coming from custom CDP sessions.
-    if (this.#targetKeysToBeIgnoredByAutoAttach.has(targetKey)) {
-      // Forward CDP events from custom sessions before leaving them untouched.
-      this.#setCdpEventListeners(targetCdpClient);
-      return;
+    // Mapper generally only needs one session per target. Additional sessions
+    // attached on a browser-only session for an already-tracked target come
+    // from custom CDP sessions.
+    if (fromBrowserOnlySession) {
+      if (
+        this.#browserOnlyTargetKeys.has(targetKey) ||
+        (targetInfo.type === 'iframe' &&
+          this.#rendererTargetKeys.has(targetKey))
+      ) {
+        // Forward CDP events from custom sessions before leaving them untouched.
+        this.#setCdpEventListeners(targetCdpClient);
+        return;
+      }
+      this.#rendererTargetKeys.delete(targetKey);
+      this.#browserOnlyTargetKeys.add(targetKey);
+    } else {
+      if (
+        this.#browserOnlyTargetKeys.has(targetKey) ||
+        this.#rendererTargetKeys.has(targetKey)
+      ) {
+        return;
+      }
+      this.#rendererTargetKeys.add(targetKey);
     }
-    this.#targetKeysToBeIgnoredByAutoAttach.add(targetKey);
 
     const userContext =
       targetInfo.browserContextId &&
@@ -274,6 +321,7 @@ export class CdpTargetManager {
 
     switch (targetInfo.type) {
       case 'tab': {
+        this.#tabSessionIds.add(sessionId);
         // Tab targets are required only to handle page targets beneath them.
         this.#setEventListeners(targetCdpClient);
 
@@ -302,48 +350,73 @@ export class CdpTargetManager {
           return;
         }
 
+        const maybeContext = this.#browsingContextStorage.findContext(
+          targetInfo.targetId,
+        );
+        if (maybeContext !== undefined) {
+          if (targetInfo.type === 'iframe') {
+            // Only an iframe target attached through the session that hosts the
+            // frame (or its parent) can take over an existing browsing context.
+            if (
+              !fromBrowserOnlySession &&
+              maybeContext.cdpTarget.cdpClient !== parentSessionCdpClient &&
+              maybeContext.parent?.cdpTarget.cdpClient !==
+                parentSessionCdpClient
+            ) {
+              // Allow the owning session to attach the target later.
+              this.#rendererTargetKeys.delete(targetKey);
+              void detach();
+              return;
+            }
+            const cdpTarget = this.#createCdpTarget(
+              targetCdpClient,
+              parentSessionCdpClient,
+              targetInfo,
+              userContext,
+            );
+            // OOPiF.
+            maybeContext.updateCdpTarget(cdpTarget);
+            return;
+          }
+          // A `page` or `other` target is attached on a browser-only session.
+          // Replace any conflicting context created from renderer-reported data.
+          maybeContext.dispose(true);
+        }
+
         const cdpTarget = this.#createCdpTarget(
           targetCdpClient,
           parentSessionCdpClient,
           targetInfo,
           userContext,
         );
-        const maybeContext = this.#browsingContextStorage.findContext(
-          targetInfo.targetId,
+        // If attaching to existing browser instance, there could be OOPiF targets. This
+        // case is handled by the `findFrameParentId` method.
+        const parentId = this.#findFrameParentId(
+          targetInfo,
+          parentSessionCdpClient.sessionId,
         );
-        if (maybeContext && targetInfo.type === 'iframe') {
-          // OOPiF.
-          maybeContext.updateCdpTarget(cdpTarget);
-        } else {
-          // If attaching to existing browser instance, there could be OOPiF targets. This
-          // case is handled by the `findFrameParentId` method.
-          const parentId = this.#findFrameParentId(
-            targetInfo,
-            parentSessionCdpClient.sessionId,
-          );
-          // New context.
-          BrowsingContextImpl.create(
-            targetInfo.targetId,
-            parentId,
-            userContext,
-            cdpTarget,
-            this.#eventManager,
-            this.#browsingContextStorage,
-            this.#realmStorage,
-            this.#configStorage,
-            // Hack: when a new target created, CDP emits targetInfoChanged with an empty
-            // url, and navigates it to about:blank later. When the event is emitted for
-            // an existing target (reconnect), the url is already known, and navigation
-            // events will not be emitted anymore. Replacing empty url with `about:blank`
-            // allows to handle both cases in the same way.
-            // "7.3.2.1 Creating browsing contexts".
-            // https://html.spec.whatwg.org/multipage/document-sequences.html#creating-browsing-contexts
-            // TODO: check who to deal with non-null creator and its `creatorOrigin`.
-            targetInfo.url === '' ? 'about:blank' : targetInfo.url,
-            targetInfo.openerFrameId ?? targetInfo.openerId,
-            this.#logger,
-          );
-        }
+        // New context.
+        BrowsingContextImpl.create(
+          targetInfo.targetId,
+          parentId,
+          userContext,
+          cdpTarget,
+          this.#eventManager,
+          this.#browsingContextStorage,
+          this.#realmStorage,
+          this.#configStorage,
+          // Hack: when a new target created, CDP emits targetInfoChanged with an empty
+          // url, and navigates it to about:blank later. When the event is emitted for
+          // an existing target (reconnect), the url is already known, and navigation
+          // events will not be emitted anymore. Replacing empty url with `about:blank`
+          // allows to handle both cases in the same way.
+          // "7.3.2.1 Creating browsing contexts".
+          // https://html.spec.whatwg.org/multipage/document-sequences.html#creating-browsing-contexts
+          // TODO: check who to deal with non-null creator and its `creatorOrigin`.
+          targetInfo.url === '' ? 'about:blank' : targetInfo.url,
+          targetInfo.openerFrameId ?? targetInfo.openerId,
+          this.#logger,
+        );
         return;
       }
       case 'worker': {
@@ -436,18 +509,21 @@ export class CdpTargetManager {
     targetInfo: Protocol.Target.TargetInfo,
     parentSessionId: Protocol.Target.SessionID | undefined,
   ): string | null {
-    if (targetInfo.type !== 'iframe') {
+    if (
+      targetInfo.type !== 'iframe' ||
+      targetInfo.parentFrameId === undefined
+    ) {
       return null;
     }
-    const parentId = targetInfo.openerFrameId ?? targetInfo.openerId;
-    if (parentId !== undefined) {
-      return parentId;
-    }
-    if (parentSessionId !== undefined) {
-      return (
-        this.#browsingContextStorage.findContextBySession(parentSessionId)
-          ?.id ?? null
-      );
+    const parentContext = this.#browsingContextStorage.findContext(
+      targetInfo.parentFrameId,
+    );
+    // Only accept a parent frame that exists and is hosted by the attaching session.
+    if (
+      parentContext !== undefined &&
+      parentContext.cdpTarget.cdpSessionId === parentSessionId
+    ) {
+      return targetInfo.parentFrameId;
     }
     return null;
   }
@@ -484,6 +560,7 @@ export class CdpTargetManager {
       this.#defaultUserAgent,
       targetInfo.type,
       this.#logger,
+      targetInfo.parentFrameId,
     );
 
     this.#networkStorage.onCdpTargetCreated(target);
@@ -562,6 +639,7 @@ export class CdpTargetManager {
     sessionId,
     targetId,
   }: Protocol.Target.DetachedFromTargetEvent) {
+    this.#tabSessionIds.delete(sessionId);
     if (targetId) {
       this.#preloadScriptStorage.find({targetId}).map((preloadScript) => {
         preloadScript.dispose(targetId);
@@ -570,6 +648,8 @@ export class CdpTargetManager {
     const context =
       this.#browsingContextStorage.findContextBySession(sessionId);
     if (context) {
+      this.#rendererTargetKeys.delete(context.id);
+      this.#browserOnlyTargetKeys.delete(context.id);
       context.dispose(true);
       return;
     }

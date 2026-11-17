@@ -55,6 +55,7 @@ interface FetchStages {
 export class CdpTarget {
   readonly #id: Protocol.Target.TargetID;
   readonly #targetType: Protocol.Target.TargetInfo['type'];
+  readonly #parentFrameId?: Protocol.Page.FrameId;
   readonly userContext: Browser.UserContext;
   readonly #cdpClient: CdpClient;
   readonly #browserCdpClient: CdpClient;
@@ -104,6 +105,7 @@ export class CdpTarget {
     defaultUserAgent: string,
     targetType: Protocol.Target.TargetInfo['type'],
     logger?: LoggerFn,
+    parentFrameId?: Protocol.Page.FrameId,
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
       targetId,
@@ -120,6 +122,7 @@ export class CdpTarget {
       defaultUserAgent,
       targetType,
       logger,
+      parentFrameId,
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager, logger);
@@ -148,11 +151,13 @@ export class CdpTarget {
     defaultUserAgent: string,
     targetType: Protocol.Target.TargetInfo['type'],
     logger: LoggerFn | undefined,
+    parentFrameId?: Protocol.Page.FrameId,
   ) {
     this.#defaultUserAgent = defaultUserAgent;
     this.userContext = userContext;
     this.#id = targetId;
     this.#targetType = targetType;
+    this.#parentFrameId = parentFrameId;
     this.#cdpClient = cdpClient;
     this.#browserCdpClient = browserCdpClient;
     this.#parentCdpClient = parentCdpClient;
@@ -327,31 +332,95 @@ export class CdpTarget {
     });
   }
 
-  #restoreFrameTreeState(frameTree: Protocol.Page.FrameTree) {
+  async #restoreFrameTreeState(frameTree: Protocol.Page.FrameTree) {
     const frame = frameTree.frame;
-    const maybeContext = this.#browsingContextStorage.findContext(frame.id);
-    if (maybeContext !== undefined) {
-      // Restoring parent of already known browsing context. This means the target is
-      // OOPiF and the BiDi session was connected to already existing browser instance.
+    // The root of a target's frame tree must be the target's own frame.
+    if (frame.id !== this.#id) {
+      this.#logger?.(LogType.debugError)?.(
+        `Ignoring getFrameTree root ${frame.id} for target ${this.#id}`,
+      );
+      return;
+    }
+    const rootContext = this.#browsingContextStorage.findContext(frame.id);
+    // Only restore state for a root context hosted by this target.
+    if (rootContext?.cdpTarget !== this) {
+      this.#logger?.(LogType.debugError)?.(
+        `Ignoring getFrameTree for ${frame.id}: context is not hosted by target ${this.#id}`,
+      );
+      return;
+    }
+    // Restoring parent of already known browsing context. This means the target is
+    // OOPiF and the BiDi session was connected to already existing browser instance.
+    const parentFrameId = this.#parentFrameId ?? frame.parentId;
+    if (
+      this.#targetType === 'iframe' &&
+      rootContext.parentId === null &&
+      parentFrameId !== null &&
+      parentFrameId !== undefined
+    ) {
+      let parentBrowsingContext =
+        this.#browsingContextStorage.findContext(parentFrameId);
       if (
-        maybeContext.parentId === null &&
-        frame.parentId !== null &&
-        frame.parentId !== undefined
+        parentBrowsingContext === undefined &&
+        this.#parentCdpClient.sessionId !== undefined
       ) {
-        maybeContext.parentId = frame.parentId;
+        // On reconnect, the browser can attach an existing OOPIF before the
+        // embedding target finishes `Page.getFrameTree` for nested frames.
+        await this.#browsingContextStorage.findContextBySession(
+          this.#parentCdpClient.sessionId,
+        )?.cdpTarget.unblocked;
+        if (
+          this.#browsingContextStorage.findContext(frame.id) !== rootContext ||
+          rootContext.cdpTarget !== this
+        ) {
+          return;
+        }
+        parentBrowsingContext =
+          this.#browsingContextStorage.findContext(parentFrameId);
+      }
+      // Only attach to an existing parent context hosted by the embedding session.
+      if (
+        rootContext.parentId === null &&
+        parentBrowsingContext !== undefined &&
+        parentBrowsingContext.cdpTarget !== this &&
+        parentBrowsingContext.cdpTarget.cdpClient === this.#parentCdpClient
+      ) {
+        rootContext.parentId = parentFrameId;
+      } else if (
+        rootContext.parentId === null &&
+        parentBrowsingContext !== undefined
+      ) {
+        this.#logger?.(LogType.debugError)?.(
+          `Ignoring getFrameTree parent ${parentFrameId} for ${frame.id}: parent session does not host ${parentFrameId}`,
+        );
       }
     }
-    if (maybeContext === undefined && frame.parentId !== undefined) {
+    frameTree.childFrames?.map((childFrameTree) =>
+      this.#restoreChildFrameTreeState(childFrameTree, rootContext),
+    );
+  }
+
+  #restoreChildFrameTreeState(
+    frameTree: Protocol.Page.FrameTree,
+    parentBrowsingContext: BrowsingContextImpl,
+  ) {
+    const frame = frameTree.frame;
+    // A child frame entry must reference the enclosing parent in the tree.
+    if (frame.parentId !== parentBrowsingContext.id) {
+      this.#logger?.(LogType.debugError)?.(
+        `Ignoring getFrameTree child ${frame.id}: parentId ${frame.parentId} does not match enclosing frame ${parentBrowsingContext.id}`,
+      );
+      return;
+    }
+    let context = this.#browsingContextStorage.findContext(frame.id);
+    if (context === undefined) {
       // Restore not yet known nested frames. The top-level frame is created when the
       // target is attached.
-      const parentBrowsingContext = this.#browsingContextStorage.getContext(
-        frame.parentId,
-      );
-      BrowsingContextImpl.create(
+      context = BrowsingContextImpl.create(
         frame.id,
-        frame.parentId,
+        parentBrowsingContext.id,
         this.userContext,
-        parentBrowsingContext.cdpTarget,
+        this,
         this.#eventManager,
         this.#browsingContextStorage,
         this.#realmStorage,
@@ -360,9 +429,19 @@ export class CdpTarget {
         undefined,
         this.#logger,
       );
+    } else if (
+      // Never re-parent or traverse into an existing context owned by another
+      // target or attached under a different parent.
+      context.cdpTarget !== this ||
+      context.parentId !== parentBrowsingContext.id
+    ) {
+      this.#logger?.(LogType.debugError)?.(
+        `Ignoring getFrameTree child ${frame.id}: context is already bound to target ${context.cdpTarget.id} and parent ${context.parentId}`,
+      );
+      return;
     }
-    frameTree.childFrames?.map((frameTree) =>
-      this.#restoreFrameTreeState(frameTree),
+    frameTree.childFrames?.map((childFrameTree) =>
+      this.#restoreChildFrameTreeState(childFrameTree, context),
     );
   }
 
