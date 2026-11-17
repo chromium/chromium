@@ -7,6 +7,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
+#include "chrome/browser/ui/ash/input_method/announcement_view.h"
 
 namespace {
 
@@ -52,7 +53,7 @@ void LobsterLiveRegionAnnouncer::LiveRegion::OnWidgetDestroying(
 void LobsterLiveRegionAnnouncer::LiveRegion::CreateAnnouncementView() {
   // This view's lifetime is handled by DialogDelegateView which it inherits
   // from and thus will not leak here without a corresponding delete.
-  announcement_view_ = new AnnouncementView(GetParentViewFromRootWindow(),
-                                            announcement_view_name_);
+  announcement_view_ = new ui::ime::AnnouncementView(
+      GetParentViewFromRootWindow(), announcement_view_name_);
   obs_.Observe(announcement_view_->GetWidget());
 }

@@ -48,7 +48,6 @@
 
 class AccountChooserDialogView;
 class AppDialogView;
-class AnnouncementView;
 class BruschettaUninstallerView;
 class ChromeLabsBubbleView;
 class ColorPickerViewTest;
@@ -916,7 +915,6 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   // These existing cases are "grandfathered in", but there shouldn't be more.
   // See comments atop class.
   friend class ::AccountChooserDialogView;
-  friend class ::AnnouncementView;
   friend class ::AppDialogView;
   friend class ::BruschettaUninstallerView;
   friend class ::ChromeLabsBubbleView;

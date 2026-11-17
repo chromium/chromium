@@ -148,6 +148,7 @@ static_library("input_method") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/input_method:announcement_view",
     "//chrome/browser/ui/ash/keyboard",
     "//chromeos/ash/services/ime/public/cpp:structs",
     "//chromeos/ash/services/ime/public/mojom",

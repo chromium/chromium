@@ -28,6 +28,9 @@ specific_include_rules = {
   ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
     "+chrome/browser/feedback",
   ],
+  "lobster_announcer\\.cc": [
+    "+chrome/browser/ui/ash/input_method/announcement_view.h",
+  ],
   # Exceptionally allow using g_browser_process for the profile keyed service.
   # The factory DependsOn MantaServiceFactory and injects the MantaService into
   # the service via its constructor.

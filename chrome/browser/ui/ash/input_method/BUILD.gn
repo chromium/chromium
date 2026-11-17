@@ -4,12 +4,30 @@
 
 assert(is_chromeos)
 
-static_library("input_method") {
+static_library("announcement_view") {
   sources = [
     "announcement_label.cc",
     "announcement_label.h",
     "announcement_view.cc",
     "announcement_view.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//ui/accessibility:ax_base",
+    "//ui/base/metadata",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+
+  deps = [
+    "//ui/accessibility:ax_enums_mojo",
+    "//ui/base/mojom:ui_base_types",
+  ]
+}
+
+static_library("input_method") {
+  sources = [
     "assistive_delegate.h",
     "border_factory.cc",
     "border_factory.h",
@@ -44,11 +62,11 @@ static_library("input_method") {
   ]
 
   public_deps = [
+    ":announcement_view",
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/input_method",
     "//chromeos/ash/services/ime/public/cpp:structs",
-    "//ui/accessibility:ax_base",
     "//ui/base/ime:ime_types",
     "//ui/base/ime/ash",
     "//ui/chromeos/styles:cros_styles_views",
@@ -65,6 +83,7 @@ static_library("input_method") {
     "//base:i18n",
     "//chrome/app/vector_icons",
     "//components/strings:components_strings",
+    "//ui/accessibility:ax_base",
     "//ui/accessibility:ax_enums_mojo",
     "//ui/base",
     "//ui/base:types",

@@ -6,11 +6,15 @@
 #define CHROME_BROWSER_ASH_LOBSTER_LOBSTER_ANNOUNCER_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/lobster/announcement_view.h"
 #include "ui/views/widget/widget_observer.h"
+
+namespace ui::ime {
+class AnnouncementView;
+}  // namespace ui::ime
 
 // An interface used to trigger ChromeVox announcements.
 class LobsterAnnouncer {
@@ -47,7 +51,7 @@ class LobsterLiveRegionAnnouncer : public LobsterAnnouncer {
     // Holds the view used to trigger announcements with ChromeVox. This is
     // a raw_ptr due to the lifetime of the instance being handled by the
     // DialogDelegateView the class inherits from.
-    raw_ptr<AnnouncementView> announcement_view_ = nullptr;
+    raw_ptr<ui::ime::AnnouncementView> announcement_view_ = nullptr;
 
     base::ScopedObservation<views::Widget, views::WidgetObserver> obs_{this};
   };
