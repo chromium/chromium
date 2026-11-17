@@ -5,6 +5,7 @@
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 
 #include "base/check_is_test.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -530,10 +531,22 @@ TrackedElementWebUI* TrackedElementHandler::GetElement(
 void TrackedElementHandler::ReportBadMessage(
     std::string_view description,
     const tracked_element::mojom::TrackedElementIdentifierPtr& id) {
-  receiver_.ReportBadMessage(base::StringPrintf(
-      "%s Element has native id \"%s\" and secondary identifier "
-      "\"%s\"",
-      description, id->native_identifier, id->secondary_identifier));
+  LOG(ERROR) << description << " Element has native id "
+             << id->native_identifier
+             << " and secondary identifier: " << id->secondary_identifier;
+  // Do not include element IDs in the crash message; this causes issues with
+  // crash clustering. Instead store them as keys.
+  static auto* const native_identifier_key =
+      base::debug::AllocateCrashKeyString("tracked-element-native-identifier",
+                                          base::debug::CrashKeySize::Size256);
+  static auto* const secondary_identifier_key =
+      base::debug::AllocateCrashKeyString(
+          "tracked-element-secondary-identifier",
+          base::debug::CrashKeySize::Size256);
+  base::debug::SetCrashKeyString(native_identifier_key, id->native_identifier);
+  base::debug::SetCrashKeyString(secondary_identifier_key,
+                                 id->secondary_identifier);
+  receiver_.ReportBadMessage(description);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
