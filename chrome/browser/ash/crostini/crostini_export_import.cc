@@ -406,8 +406,12 @@ void CrostiniExportImport::AfterDiskImageOperation(
           base::ThreadPool::PostTask(
               FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
               base::GetDeleteFileCallback(it->second->path()));
+          RemoveNotificationController(it)->SetStatusCancelled();
+        } else {
+          // If the import completes before the cancel can happen, the disk has
+          // been replaced, which can't be undone. So report that instead.
+          RemoveNotificationController(it)->SetStatusDone();
         }
-        RemoveNotificationController(it)->SetStatusCancelled();
         break;
       }
       case Status::RUNNING:

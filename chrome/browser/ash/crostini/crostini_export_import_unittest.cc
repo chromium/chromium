@@ -1069,16 +1069,35 @@ TEST_F(CrostiniExportImportTest, TestImportDiskImageDoneBeforeCancelled) {
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(), Status::RUNNING);
 
+  std::string notification_id;
+  {
+    const message_center::Notification* notification =
+        GetNotification(custom_container_id_);
+    ASSERT_NE(notification, nullptr);
+    notification_id = notification->id();
+  }
+
   // CANCELLING:
   crostini_export_import_->CancelOperation(custom_container_id_);
   ASSERT_NE(controller, nullptr);
   EXPECT_EQ(controller->status(), Status::CANCELLING);
 
-  // DONE: Completed before cancel processed, input file must not be deleted.
+  // DONE: Completed before cancel processed, so the disk has been replaced
+  // and done is displayed instead. The input file must not be deleted.
   SendDiskImageProgress(custom_container_id_,
                         vm_tools::concierge::DISK_STATUS_CREATED, 100);
   EXPECT_EQ(GetController(custom_container_id_), nullptr);
   EXPECT_EQ(controller, nullptr);
+  // The response to the cancel request arrives now and changes nothing.
+  task_environment_.RunUntilIdle();
+  {
+    const message_center::Notification* ui_notification =
+        GetUiNotification(notification_id);
+    ASSERT_NE(ui_notification, nullptr);
+    EXPECT_FALSE(ui_notification->pinned());
+    std::string msg("Linux apps & files have been successfully replaced");
+    EXPECT_EQ(ui_notification->message(), base::UTF8ToUTF16(msg));
+  }
   base::ThreadPoolInstance::Get()->FlushForTesting();
   EXPECT_TRUE(base::PathExists(zipfile.path()));
 }

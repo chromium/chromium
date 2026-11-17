@@ -133,8 +133,8 @@ void CrostiniExportImportNotificationController::SetStatusCancelling() {
 }
 
 void CrostiniExportImportNotificationController::SetStatusDone() {
-  CHECK(status_ == Status::RUNNING || (type() == ExportImportType::IMPORT &&
-                                       status_ == Status::CANCELLING),
+  CHECK(status_ == Status::RUNNING ||
+            (!IsExport(type()) && status_ == Status::CANCELLING),
         base::NotFatalUntil::M160);
 
   status_ = Status::DONE;
