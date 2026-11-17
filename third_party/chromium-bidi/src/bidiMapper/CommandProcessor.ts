@@ -49,6 +49,7 @@ import {PermissionsProcessor} from './modules/permissions/PermissionsProcessor.j
 import type {PreloadScriptStorage} from './modules/script/PreloadScriptStorage.js';
 import type {RealmStorage} from './modules/script/RealmStorage.js';
 import {ScriptProcessor} from './modules/script/ScriptProcessor.js';
+import {AclStorage} from './modules/session/AclStorage.js';
 import type {EventManager} from './modules/session/EventManager.js';
 import {SessionProcessor} from './modules/session/SessionProcessor.js';
 import {StorageProcessor} from './modules/storage/StorageProcessor.js';
@@ -154,6 +155,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       eventManager,
       browserCdpClient,
       initConnection,
+      new AclStorage(browsingContextStorage),
     );
     this.#storageProcessor = new StorageProcessor(
       browserCdpClient,

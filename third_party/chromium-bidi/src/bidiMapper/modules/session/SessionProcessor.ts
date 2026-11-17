@@ -25,22 +25,26 @@ import {
 } from '../../../protocol/protocol.js';
 import type {MapperOptions} from '../../MapperOptions.js';
 
+import type {AclConfig, AclStorage} from './AclStorage.js';
 import type {EventManager} from './EventManager.js';
 
 export class SessionProcessor {
   #eventManager: EventManager;
   #browserCdpClient: CdpClient;
   #initConnection: (opts: MapperOptions) => Promise<void>;
+  #aclStorage: AclStorage;
   #created = false;
 
   constructor(
     eventManager: EventManager,
     browserCdpClient: CdpClient,
     initConnection: (opts: MapperOptions) => Promise<void>,
+    aclStorage: AclStorage,
   ) {
     this.#eventManager = eventManager;
     this.#browserCdpClient = browserCdpClient;
     this.#initConnection = initConnection;
+    this.#aclStorage = aclStorage;
   }
 
   status(): Session.StatusResult {
@@ -133,9 +137,18 @@ export class SessionProcessor {
     }
     this.#created = true;
 
-    const matchedCapabitlites = this.#mergeCapabilities(params.capabilities);
+    const matchedCapabilities = this.#mergeCapabilities(params.capabilities);
 
-    await this.#initConnection(matchedCapabitlites);
+    const rawAcl = matchedCapabilities['goog:acl'] as
+      AclConfig | null | undefined;
+    let acl: AclConfig | undefined;
+    if (rawAcl !== undefined) {
+      this.#aclStorage.setEnabled(true);
+      // Only `default` ACL is supported in `session.new`; `perNavigable`
+      // entries are ignored.
+      acl = this.#aclStorage.setAcl({default: rawAcl?.default});
+    }
+    await this.#initConnection(matchedCapabilities);
 
     const version =
       await this.#browserCdpClient.sendCommand('Browser.getVersion');
@@ -143,8 +156,9 @@ export class SessionProcessor {
     return {
       sessionId: 'unknown',
       capabilities: {
-        ...matchedCapabitlites,
-        acceptInsecureCerts: matchedCapabitlites.acceptInsecureCerts ?? false,
+        ...matchedCapabilities,
+        'goog:acl': acl,
+        acceptInsecureCerts: matchedCapabilities.acceptInsecureCerts ?? false,
         browserName: version.product,
         browserVersion: version.revision,
         platformName: '',
