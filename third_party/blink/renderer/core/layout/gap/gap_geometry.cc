@@ -21,7 +21,6 @@ bool GapGeometry::operator==(const GapGeometry& other) const {
   if (container_type_ != other.container_type_ ||
       inline_gap_size_ != other.inline_gap_size_ ||
       block_gap_size_ != other.block_gap_size_ ||
-      main_gaps_ != other.main_gaps_ || cross_gaps_ != other.cross_gaps_ ||
       min_gap_offset_ != other.min_gap_offset_ ||
       max_gap_offset_ != other.max_gap_offset_ ||
       spanner_main_gap_count_ != other.spanner_main_gap_count_ ||
@@ -30,7 +29,8 @@ bool GapGeometry::operator==(const GapGeometry& other) const {
       content_inline_end_ != other.content_inline_end_ ||
       content_block_start_ != other.content_block_start_ ||
       content_block_end_ != other.content_block_end_ ||
-      main_direction_ != other.main_direction_) {
+      main_direction_ != other.main_direction_ ||
+      main_gaps_ != other.main_gaps_ || cross_gaps_ != other.cross_gaps_) {
     return false;
   }
 
