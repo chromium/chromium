@@ -67,6 +67,9 @@ class WebrtcVideoEncoderVpx : public WebrtcVideoEncoder {
   void PrepareImage(const webrtc::DesktopFrame* frame,
                     webrtc::DesktopRegion* updated_region);
 
+  // Applies or disables |active_map_| on |codec_| via VP8E_SET_ACTIVEMAP.
+  void SetCodecActiveMap(bool enable);
+
   // True if the encoder is for VP9, false for VP8.
   const bool use_vp9_;
 
@@ -89,6 +92,7 @@ class WebrtcVideoEncoderVpx : public WebrtcVideoEncoder {
   // An active map is used to skip processing of unchanged macroblocks.
   VideoEncoderActiveMap active_map_data_;
   vpx_active_map_t active_map_;
+  bool codec_active_map_enabled_ = false;
   // TODO(joedow): Remove this flag after we're done with performance tuning.
   const bool use_active_map_ = true;
 

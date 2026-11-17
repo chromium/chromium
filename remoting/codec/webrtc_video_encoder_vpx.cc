@@ -246,21 +246,21 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
   PrepareImage(frame.get(), &updated_region);
 
   if (use_active_map_) {
-    if (params.clear_active_map || params.key_frame) {
-      active_map_data_.Clear();
-    }
-
     // VPX codecs do not use an active map for keyframes, but we still populate
     // |active_map_data_| with the full frame so subsequent top-off frames (with
     // clear_active_map = false) can top off the keyframe.
     if (params.key_frame) {
-      active_map_data_.Update(
-          webrtc::DesktopRegion(webrtc::DesktopRect::MakeSize(frame_size)));
+      active_map_data_.SetFull();
+      codec_active_map_enabled_ = false;
     } else {
-      active_map_data_.Update(updated_region);
-      if (vpx_codec_control(codec_.get(), VP8E_SET_ACTIVEMAP, &active_map_)) {
-        LOG(ERROR) << "Unable to apply active map";
+      if (params.clear_active_map) {
+        active_map_data_.Clear();
       }
+      active_map_data_.Update(updated_region);
+      const bool all_blocks_active =
+          active_map_data_.active_blocks() == active_map_data_.total_blocks();
+      const bool bypass_active_map = use_vp9_ && all_blocks_active;
+      SetCodecActiveMap(/*enable=*/!bypass_active_map);
     }
   }
 
@@ -372,6 +372,7 @@ void WebrtcVideoEncoderVpx::Configure(const webrtc::DesktopSize& size,
         .rows = active_map_data_.height(),
         .cols = active_map_data_.width(),
     };
+    codec_active_map_enabled_ = false;
   }
 
   // Fetch a default configuration for the desired codec.
@@ -517,6 +518,19 @@ void WebrtcVideoEncoderVpx::PrepareImage(
       UNSAFE_TODO(base::span(image_->planes[2],
                              static_cast<size_t>(image_->stride[2]) * uv_rows)),
       image_->stride[2]);
+}
+
+void WebrtcVideoEncoderVpx::SetCodecActiveMap(bool enable) {
+  if (!enable && !codec_active_map_enabled_) {
+    return;
+  }
+  active_map_.active_map = enable ? active_map_data_.data() : nullptr;
+  if (vpx_codec_control(codec_.get(), VP8E_SET_ACTIVEMAP, &active_map_)) {
+    LOG(ERROR) << (enable ? "Unable to apply active map"
+                          : "Unable to disable active map");
+  } else {
+    codec_active_map_enabled_ = enable;
+  }
 }
 
 }  // namespace remoting
