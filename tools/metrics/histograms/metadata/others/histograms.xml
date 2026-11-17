@@ -73,6 +73,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".SCTAuditing"
       summary="Signed Certificate Timestamp auditing report file"/>
   <variant name=".Secure_Preferences" summary="Secure Preferences file"/>
+  <variant name=".SqliteEncryptedVfs"
+      summary="SQLite encrypted VFS metadata file"/>
   <variant name=".StructuredMetricsPersistentProto"
       summary="Structured metrics persistent proto"/>
   <variant name=".TransportSecurityPersister"

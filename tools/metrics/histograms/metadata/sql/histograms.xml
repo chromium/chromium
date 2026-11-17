@@ -108,6 +108,34 @@ chromium-metrics-reviews@google.com.
   <variant name="Web" summary="Web"/>
 </variants>
 
+<!-- LINT.IfChange(EncryptedVfsDatabaseAction) -->
+
+<variants name="EncryptedVfsDatabaseAction">
+  <variant name="Delete"
+      summary="deletion (closing the database and removing the database,
+               journal/WAL, and key files)"/>
+  <variant name="Open"
+      summary="open (acquiring the key, registering the per-database VFS, and
+               opening the SQLite database)"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/sqlite_encrypted_vfs/sqlite_encrypted_vfs_metrics.h:EncryptedVfsDatabaseAction) -->
+
+<!-- LINT.IfChange(EncryptedVfsKeyAction) -->
+
+<variants name="EncryptedVfsKeyAction">
+  <variant name="Create"
+      summary="creation (generating, sealing, and writing a new key file)"/>
+  <variant name="Delete" summary="deletion (removing the key file)"/>
+  <variant name="Load"
+      summary="load (reading and unsealing an existing key file)"/>
+  <variant name="Reseal"
+      summary="re-seal (re-encrypting and rewriting the key file after OS key
+               rotation)"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/sqlite_encrypted_vfs/sqlite_encrypted_vfs_metrics.h:EncryptedVfsKeyAction) -->
+
 <!-- LINT.IfChange(SqlMigrationTarget) -->
 
 <variants name="SqlMigrationTarget">
@@ -291,6 +319,54 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="CheckpointType" variants="CheckpointType"/>
   <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.EncryptedVfs.Database.{Action}" enum="BooleanSuccess"
+    expires_after="2027-10-01">
+  <owner>zackhan@chromium.org</owner>
+  <owner>arichiv@chromium.org</owner>
+  <summary>
+    Records whether EncryptedDatabase succeeded in performing a database
+    {Action} operation. Recorded once per completed EncryptedDatabase::{Action}
+    call.
+  </summary>
+  <token key="Action" variants="EncryptedVfsDatabaseAction"/>
+</histogram>
+
+<histogram name="Sql.EncryptedVfs.Database.{Action}.Time" units="ms"
+    expires_after="2027-10-01">
+  <owner>zackhan@chromium.org</owner>
+  <owner>arichiv@chromium.org</owner>
+  <summary>
+    Records the end-to-end time spent by EncryptedDatabase performing a database
+    {Action} operation. Recorded once per completed EncryptedDatabase::{Action}
+    call regardless of success or failure.
+  </summary>
+  <token key="Action" variants="EncryptedVfsDatabaseAction"/>
+</histogram>
+
+<histogram name="Sql.EncryptedVfs.Key.{Action}" enum="BooleanSuccess"
+    expires_after="2027-10-01">
+  <owner>zackhan@chromium.org</owner>
+  <owner>arichiv@chromium.org</owner>
+  <summary>
+    Records whether DatabaseKeyManager succeeded in performing a key {Action}
+    operation for an encrypted SQLite database. Recorded once per completed key
+    {Action} operation.
+  </summary>
+  <token key="Action" variants="EncryptedVfsKeyAction"/>
+</histogram>
+
+<histogram name="Sql.EncryptedVfs.Key.{Action}.Time" units="ms"
+    expires_after="2027-10-01">
+  <owner>zackhan@chromium.org</owner>
+  <owner>arichiv@chromium.org</owner>
+  <summary>
+    Records the time spent by DatabaseKeyManager performing a key {Action}
+    operation on its background task runner. Recorded once per completed key
+    {Action} operation regardless of success or failure.
+  </summary>
+  <token key="Action" variants="EncryptedVfsKeyAction"/>
 </histogram>
 
 <histogram name="Sql.Migration.{SqlMigrationTarget}.BlockResult"

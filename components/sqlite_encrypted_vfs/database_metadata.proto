@@ -1,0 +1,30 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package sqlite_encrypted_vfs.proto;
+
+// Metadata for an encrypted SQLite database, serialized and sealed with
+// `os_crypt_async::Encryptor` into the sibling `<db_path>-key` file.
+message EncryptedDatabaseMetadata {
+  enum Version {
+    VERSION_UNSPECIFIED = 0;
+    VERSION_1 = 1;
+  }
+
+  // Fields are labeled `optional` rather than `required` per the Protobuf
+  // style guide ("Required Is Forever") so `DatabaseKey::Unseal()` can inspect
+  // `version` and validate required fields per version in application code
+  // without wire-level parse failures if a future schema revision changes the
+  // layout.
+
+  // Format version of this metadata and the encrypted database.
+  optional Version version = 1;
+
+  // The 32-byte data encrypting key (DEK) for the database.
+  optional bytes key = 2;
+}

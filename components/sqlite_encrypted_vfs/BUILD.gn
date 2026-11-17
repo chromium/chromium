@@ -2,20 +2,48 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
+
+if (!is_fuchsia) {
+  proto_library("database_metadata_proto") {
+    visibility = [ ":*" ]
+    sources = [ "database_metadata.proto" ]
+  }
+}
+
 component("sqlite_encrypted_vfs") {
-  public = [ "sqlite_encrypted_vfs.h" ]
+  if (!is_fuchsia) {
+    public = [
+      "database_key_manager.h",
+      "encrypted_database.h",
+    ]
 
-  sources = [
-    "sqlite_encrypted_vfs.cc",
-    "sqlite_encrypted_vfs.h",
-  ]
+    friend = [ ":unit_tests" ]
 
-  deps = [ "//third_party/sqlite" ]
+    sources = [
+      "database_key_manager.cc",
+      "database_key_manager.h",
+      "encrypted_database.cc",
+      "encrypted_database.h",
+      "sqlite_encrypted_vfs.cc",
+      "sqlite_encrypted_vfs.h",
+      "sqlite_encrypted_vfs_metrics.cc",
+      "sqlite_encrypted_vfs_metrics.h",
+    ]
 
-  public_deps = [
-    "//base",
-    "//sql",
-  ]
+    deps = [
+      ":database_metadata_proto",
+      "//components/os_crypt/async/browser",
+      "//crypto",
+      "//third_party/sqlite",
+    ]
+
+    public_deps = [
+      "//base",
+      "//components/os_crypt/async/common",
+      "//sql",
+    ]
+  }
 
   defines = [ "IS_SQLITE_ENCRYPTED_VFS_IMPL" ]
 }
@@ -23,16 +51,25 @@ component("sqlite_encrypted_vfs") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "sqlite_encrypted_vfs_unittest.cc" ]
+  if (!is_fuchsia) {
+    sources = [
+      "database_key_manager_unittest.cc",
+      "sqlite_encrypted_vfs_unittest.cc",
+    ]
 
-  deps = [
-    ":sqlite_encrypted_vfs",
-    "//base",
-    "//base/test:test_support",
-    "//sql",
-    "//sql:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/sqlite",
-  ]
+    deps = [
+      ":database_metadata_proto",
+      ":sqlite_encrypted_vfs",
+      "//base",
+      "//base/test:test_support",
+      "//components/os_crypt/async/browser:test_support",
+      "//components/os_crypt/async/common",
+      "//crypto",
+      "//sql",
+      "//sql:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/sqlite",
+    ]
+  }
 }
