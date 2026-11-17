@@ -143,6 +143,27 @@ class MEDIA_GPU_EXPORT ScopedD3D12ResourceMap {
   base::raw_span<uint8_t> data_;
 };
 
+// Keeps a buffer mapped until destruction, then zeroes its first 16 bytes
+// before unmapping it, to work around an Intel driver issue
+// (crbug.com/583539379). The GPU must no longer access the buffer when this is
+// destroyed.
+class MEDIA_GPU_EXPORT ScopedD3D12PersistentResourceMap {
+ public:
+  ScopedD3D12PersistentResourceMap();
+  ~ScopedD3D12PersistentResourceMap();
+
+  ScopedD3D12PersistentResourceMap(
+      const ScopedD3D12PersistentResourceMap& other) = delete;
+  ScopedD3D12PersistentResourceMap& operator=(
+      const ScopedD3D12PersistentResourceMap& other) = delete;
+
+  bool Map(ID3D12Resource* resource) { return map_.Map(resource); }
+  base::span<uint8_t> data() const { return map_.data(); }
+
+ private:
+  ScopedD3D12ResourceMap map_;
+};
+
 MEDIA_GPU_EXPORT ComD3D12Device CreateD3D12Device(IDXGIAdapter* adapter);
 
 // In D3D12 resource barriers, subresource id is not only being composed of mip
