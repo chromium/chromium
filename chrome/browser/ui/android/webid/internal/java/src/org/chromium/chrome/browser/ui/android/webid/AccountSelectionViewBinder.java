@@ -916,7 +916,7 @@ class AccountSelectionViewBinder {
                 || key == HeaderProperties.RP_MODE
                 || key == HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER
                 || key == HeaderProperties.SET_FOCUS_VIEW_CALLBACK
-                || key == HeaderProperties.IS_MULTIPLE_IDPS) {
+                || key == HeaderProperties.IS_SHOWING_MULTIPLE_IDPS) {
             TextView headerTitleText = view.findViewById(R.id.header_title);
             TextView headerSubtitleText = view.findViewById(R.id.header_subtitle);
             @HeaderProperties.HeaderType int headerType = model.get(HeaderProperties.TYPE);
@@ -929,7 +929,7 @@ class AccountSelectionViewBinder {
                             model.get(HeaderProperties.IFRAME_FOR_DISPLAY),
                             model.get(HeaderProperties.RP_MODE),
                             model.get(HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER),
-                            model.get(HeaderProperties.IS_MULTIPLE_IDPS));
+                            model.get(HeaderProperties.IS_SHOWING_MULTIPLE_IDPS));
             if (!subtitle.isEmpty()) {
                 headerTitleText.setPadding(
                         /* left= */ 0, /* top= */ 12, /* right= */ 0, /* bottom= */ 0);
@@ -952,7 +952,7 @@ class AccountSelectionViewBinder {
                             model.get(HeaderProperties.IDP_FOR_DISPLAY),
                             model.get(HeaderProperties.RP_CONTEXT),
                             model.get(HeaderProperties.RP_MODE),
-                            model.get(HeaderProperties.IS_MULTIPLE_IDPS));
+                            model.get(HeaderProperties.IS_SHOWING_MULTIPLE_IDPS));
             if (headerTitleText.getText() != title && setFocusViewCallback != null) {
                 setFocusViewCallback.onResult(headerView);
             }
@@ -995,16 +995,16 @@ class AccountSelectionViewBinder {
             Bitmap brandIcon = model.get(HeaderProperties.HEADER_ICON);
             // Do not crop the header icon when it is the RP icon, e.g. when there are multiple IDPs
             // in the current dialog.
-            boolean shouldCircleCrop = !model.get(HeaderProperties.IS_MULTIPLE_IDPS);
+            boolean shouldCircleCrop = !model.get(HeaderProperties.IS_SHOWING_MULTIPLE_IDPS);
             ImageView headerIconView = view.findViewById(R.id.header_icon);
             if (brandIcon == null) {
                 if (model.get(HeaderProperties.RP_MODE) == RpMode.ACTIVE
-                        && model.get(HeaderProperties.IS_MULTIPLE_IDPS_REQUEST)) {
+                        && model.get(HeaderProperties.IS_MULTI_IDP_REQUEST)) {
                     // TODO(crbug.com/575550088): Show the RP icon instead of the fallback icon in
                     // active mode with multiple IDPs.
                     @HeaderProperties.HeaderType int headerType = model.get(HeaderProperties.TYPE);
                     boolean showFallbackIcon =
-                            model.get(HeaderProperties.IS_MULTIPLE_IDPS)
+                            model.get(HeaderProperties.IS_SHOWING_MULTIPLE_IDPS)
                                     && headerType == HeaderProperties.HeaderType.SIGN_IN;
                     if (showFallbackIcon) {
                         headerIconView.setImageDrawable(
@@ -1038,7 +1038,7 @@ class AccountSelectionViewBinder {
                 headerIconView.setImageDrawable(new BitmapDrawable(resources, output));
             }
             headerIconView.setVisibility(View.VISIBLE);
-        } else if (key == HeaderProperties.IS_MULTIPLE_IDPS_REQUEST) {
+        } else if (key == HeaderProperties.IS_MULTI_IDP_REQUEST) {
             // Read when HEADER_ICON is bound.
         } else if (key == HeaderProperties.RP_BRAND_ICON) {
             // RP icon is not shown in passive mode.
@@ -1104,7 +1104,7 @@ class AccountSelectionViewBinder {
             @Nullable String idpUrl,
             @RpContext.EnumType int rpContext,
             @RpMode.EnumType int rpMode,
-            Boolean isMultipleIdps) {
+            Boolean isShowingMultipleIdps) {
         if (topLevelUrl.isEmpty()) {
             return "";
         }
@@ -1112,7 +1112,7 @@ class AccountSelectionViewBinder {
         String rpUrl = iframeUrl.isEmpty() ? topLevelUrl : iframeUrl;
         if (rpMode == RpMode.ACTIVE) {
             // If there are multiple IDPs, show the title with just the RP.
-            if (isMultipleIdps) {
+            if (isShowingMultipleIdps) {
                 return String.format(
                         resources.getString(
                                 R.string.account_selection_multi_idp_sheet_title_explicit_signin),
@@ -1167,7 +1167,7 @@ class AccountSelectionViewBinder {
         }
 
         // If there are multiple IDPs, show the title with just the RP.
-        if (isMultipleIdps) {
+        if (isShowingMultipleIdps) {
             // The title does not change depending on RP context in a dialog involving multiple
             // IDPs. Note that context is indeed shown when the dialog is transitioned to single
             // IDP, e.g. once the user selects an account.
@@ -1200,7 +1200,7 @@ class AccountSelectionViewBinder {
             String iframeUrl,
             @RpMode.EnumType int rpMode,
             Boolean isMultipleAccountChooser,
-            Boolean isMultipleIdps) {
+            Boolean isShowingMultipleIdps) {
         if (type == HeaderProperties.HeaderType.VERIFY
                 || type == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN) {
             return "";
@@ -1215,7 +1215,7 @@ class AccountSelectionViewBinder {
                     iframeUrl);
         }
         if (rpMode == RpMode.PASSIVE) return "";
-        if (isMultipleIdps) {
+        if (isShowingMultipleIdps) {
             if (type == HeaderProperties.HeaderType.LOADING) return "";
             assert type == HeaderProperties.HeaderType.SIGN_IN;
             return resources.getString(R.string.account_selection_multi_idp_sheet_subtitle);

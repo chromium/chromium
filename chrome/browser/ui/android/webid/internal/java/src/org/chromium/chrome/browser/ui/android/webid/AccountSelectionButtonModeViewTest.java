@@ -142,7 +142,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                             .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
                             .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
                             .with(HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER, true)
-                            .with(HeaderProperties.IS_MULTIPLE_IDPS, false)
+                            .with(HeaderProperties.IS_SHOWING_MULTIPLE_IDPS, false)
                             .build());
             assertEquals(View.VISIBLE, mContentView.getVisibility());
             TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
@@ -435,7 +435,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                 buildMultiIdpHeader()
                         .with(HeaderProperties.TYPE, HeaderType.REQUEST_PERMISSION_MODAL)
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
-                        .with(HeaderProperties.IS_MULTIPLE_IDPS, false)
+                        .with(HeaderProperties.IS_SHOWING_MULTIPLE_IDPS, false)
                         .with(HeaderProperties.HEADER_ICON, null)
                         .build());
         assertFalse(headerIcon.isShown());
@@ -452,8 +452,8 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
                         .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
-                        .with(HeaderProperties.IS_MULTIPLE_IDPS, false)
-                        .with(HeaderProperties.IS_MULTIPLE_IDPS_REQUEST, false)
+                        .with(HeaderProperties.IS_SHOWING_MULTIPLE_IDPS, false)
+                        .with(HeaderProperties.IS_MULTI_IDP_REQUEST, false)
                         .with(
                                 HeaderProperties.HEADER_ICON,
                                 Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888))
@@ -472,8 +472,8 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
                         .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
-                        .with(HeaderProperties.IS_MULTIPLE_IDPS, false)
-                        .with(HeaderProperties.IS_MULTIPLE_IDPS_REQUEST, false)
+                        .with(HeaderProperties.IS_SHOWING_MULTIPLE_IDPS, false)
+                        .with(HeaderProperties.IS_MULTI_IDP_REQUEST, false)
                         .with(HeaderProperties.HEADER_ICON, null)
                         .build());
         assertTrue(headerIcon.isShown());
@@ -488,8 +488,8 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                 .with(HeaderProperties.IDP_FOR_DISPLAY, null)
                 .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
                 .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
-                .with(HeaderProperties.IS_MULTIPLE_IDPS, true)
-                .with(HeaderProperties.IS_MULTIPLE_IDPS_REQUEST, true);
+                .with(HeaderProperties.IS_SHOWING_MULTIPLE_IDPS, true)
+                .with(HeaderProperties.IS_MULTI_IDP_REQUEST, true);
     }
 
     private PropertyModel buildAddAccountButton() {

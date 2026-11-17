@@ -18,8 +18,8 @@ import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HEADER_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IDP_FOR_DISPLAY;
-import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IS_MULTIPLE_IDPS;
-import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IS_MULTIPLE_IDPS_REQUEST;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IS_MULTI_IDP_REQUEST;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IS_SHOWING_MULTIPLE_IDPS;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_BRAND_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.TYPE;
 
@@ -407,11 +407,11 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
-        assertTrue(headerModel.get(IS_MULTIPLE_IDPS));
+        assertTrue(headerModel.get(IS_SHOWING_MULTIPLE_IDPS));
         assertNull(headerModel.get(IDP_FOR_DISPLAY));
         // The view binder shows a fallback icon.
         assertNull(headerModel.get(HEADER_ICON));
-        assertTrue(headerModel.get(IS_MULTIPLE_IDPS_REQUEST));
+        assertTrue(headerModel.get(IS_MULTI_IDP_REQUEST));
         verify(mMockDelegate).onAccountsDisplayed();
 
         // `mIdpData2` supports use a different account, but there is no row for it.
@@ -450,7 +450,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 /* newAccounts= */ Collections.emptyList());
 
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
-        assertTrue(mModel.get(ItemProperties.HEADER).get(IS_MULTIPLE_IDPS));
+        assertTrue(mModel.get(ItemProperties.HEADER).get(IS_SHOWING_MULTIPLE_IDPS));
         // TODO(crbug.com/581411351): `mIdpData2` has no row to use a different account until
         // there is an IDP picker.
         assertEquals(2, mSheetAccountItems.size());
@@ -478,7 +478,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         assertEquals(HeaderType.REQUEST_PERMISSION_MODAL, headerModel.get(TYPE));
-        assertFalse(headerModel.get(IS_MULTIPLE_IDPS));
+        assertFalse(headerModel.get(IS_SHOWING_MULTIPLE_IDPS));
         assertEquals(mTestEtldPlusOne1, headerModel.get(IDP_FOR_DISPLAY));
         assertNotNull(headerModel.get(HEADER_ICON));
         assertNotNull(headerModel.get(RP_BRAND_ICON));
@@ -496,7 +496,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         assertEquals(HeaderType.LOADING, headerModel.get(TYPE));
         assertEquals("", headerModel.get(IDP_FOR_DISPLAY));
-        assertTrue(headerModel.get(IS_MULTIPLE_IDPS));
+        assertTrue(headerModel.get(IS_SHOWING_MULTIPLE_IDPS));
         assertTrue(mModel.get(ItemProperties.SPINNER_ENABLED));
 
         TextView title = mContentView.findViewById(R.id.header_title);
@@ -539,7 +539,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
 
         // The single account chooser keeps the use a different account secondary button.
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
-        assertFalse(mModel.get(ItemProperties.HEADER).get(IS_MULTIPLE_IDPS));
+        assertFalse(mModel.get(ItemProperties.HEADER).get(IS_SHOWING_MULTIPLE_IDPS));
         assertEquals(1, mSheetAccountItems.size());
         assertTrue(containsItemOfType(mModel, ItemProperties.ADD_ACCOUNT_BUTTON));
         assertTrue(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));

@@ -106,7 +106,7 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTes
                             .with(HeaderProperties.IDP_FOR_DISPLAY, "should_not_show_up.com")
                             .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
                             .with(HeaderProperties.RP_MODE, RpMode.PASSIVE)
-                            .with(HeaderProperties.IS_MULTIPLE_IDPS, true)
+                            .with(HeaderProperties.IS_SHOWING_MULTIPLE_IDPS, true)
                             .with(
                                     HeaderProperties.HEADER_ICON,
                                     Bitmap.createBitmap(16, 16, Bitmap.Config.ARGB_8888))

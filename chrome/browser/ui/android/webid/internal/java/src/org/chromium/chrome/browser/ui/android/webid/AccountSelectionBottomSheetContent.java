@@ -59,7 +59,7 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateChangedSupplier =
             ObservableSuppliers.createNonNull(false);
 
-    private boolean mIsMultipleIdps;
+    private boolean mIsShowingMultipleIdps;
     // Used to disable the half state in passive mode to enable proper a11y traversal.
     private boolean mIsPassiveModeHalfHeightEnabled = true;
     private boolean mCustomAccessibilityDelegateSet;
@@ -94,8 +94,8 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
         mBackPressStateChangedSupplier.set(backPressHandler != null);
     }
 
-    public void setIsMultipleIdps(boolean isMultipleIdps) {
-        mIsMultipleIdps = isMultipleIdps;
+    public void setIsShowingMultipleIdps(boolean isShowingMultipleIdps) {
+        mIsShowingMultipleIdps = isShowingMultipleIdps;
     }
 
     public void setIsPassiveModeHalfHeightEnabled(boolean isPassiveModeHalfHeightEnabled) {
@@ -263,7 +263,7 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getFullHeightRatio() {
-        if (mRpMode == RpMode.PASSIVE && !mIsMultipleIdps) {
+        if (mRpMode == RpMode.PASSIVE && !mIsShowingMultipleIdps) {
             computeAndUpdateAccountListHeightForPassiveSingleIdp();
         }
 
@@ -294,7 +294,7 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
                 return HeightMode.DISABLED;
             }
             if (mRpMode == RpMode.PASSIVE) {
-                if (!mIsMultipleIdps || !mIsPassiveModeHalfHeightEnabled) {
+                if (!mIsShowingMultipleIdps || !mIsPassiveModeHalfHeightEnabled) {
                     return HeightMode.DISABLED;
                 }
                 return Math.min(getDesiredPassiveModeMultiIdpSheetHeightPx(), availableHeight)
@@ -305,7 +305,7 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
         }
 
         if (mRpMode == RpMode.PASSIVE) {
-            if (!mIsMultipleIdps || !mIsPassiveModeHalfHeightEnabled) {
+            if (!mIsShowingMultipleIdps || !mIsPassiveModeHalfHeightEnabled) {
                 return HeightMode.DISABLED;
             }
             return Math.min(

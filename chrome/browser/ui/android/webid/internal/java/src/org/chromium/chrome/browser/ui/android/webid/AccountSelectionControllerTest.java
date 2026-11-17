@@ -25,7 +25,7 @@ import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionPrope
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IDP_FOR_DISPLAY;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IFRAME_FOR_DISPLAY;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER;
-import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IS_MULTIPLE_IDPS;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IS_SHOWING_MULTIPLE_IDPS;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_BRAND_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_CONTEXT;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_FOR_DISPLAY;
@@ -131,7 +131,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertNotNull(headerModel.get(HEADER_ICON));
         assertEquals((Integer) mRpMode, headerModel.get(RP_MODE));
         assertFalse(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
-        assertFalse(headerModel.get(IS_MULTIPLE_IDPS));
+        assertFalse(headerModel.get(IS_SHOWING_MULTIPLE_IDPS));
         assertEquals("Incorrect item sheet count", 1, mSheetAccountItems.size());
         testAccount(
                 mSheetAccountItems.get(0).model,
@@ -156,7 +156,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertNotNull(headerModel.get(HEADER_ICON));
         assertEquals((Integer) mRpMode, headerModel.get(RP_MODE));
         assertTrue(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
-        assertFalse(headerModel.get(IS_MULTIPLE_IDPS));
+        assertFalse(headerModel.get(IS_SHOWING_MULTIPLE_IDPS));
         assertEquals("Incorrect item sheet count", 2, mSheetAccountItems.size());
         testAccount(
                 mSheetAccountItems.get(0).model,
@@ -189,7 +189,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertNotNull(headerModel.get(HEADER_ICON));
         assertEquals((Integer) mRpMode, headerModel.get(RP_MODE));
         assertFalse(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
-        assertFalse(headerModel.get(IS_MULTIPLE_IDPS));
+        assertFalse(headerModel.get(IS_SHOWING_MULTIPLE_IDPS));
         assertEquals("Incorrect item sheet count", 1, mSheetAccountItems.size());
         testAccount(
                 mSheetAccountItems.get(0).model,
@@ -939,7 +939,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertNull(headerModel.get(HEADER_ICON));
         assertEquals((Integer) mRpMode, headerModel.get(RP_MODE));
         assertTrue(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
-        assertTrue(headerModel.get(IS_MULTIPLE_IDPS));
+        assertTrue(headerModel.get(IS_SHOWING_MULTIPLE_IDPS));
         testAccount(
                 mSheetAccountItems.get(0).model,
                 mNewUserAccount,
@@ -998,7 +998,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertEquals(mTestEtldPlusOne2, headerModel.get(IDP_FOR_DISPLAY));
         assertNotNull(headerModel.get(HEADER_ICON));
         assertFalse(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
-        assertFalse(headerModel.get(IS_MULTIPLE_IDPS));
+        assertFalse(headerModel.get(IS_SHOWING_MULTIPLE_IDPS));
         // Should show continue button with the single account.
         assertEquals("Incorrect item sheet count", 1, mSheetAccountItems.size());
         testAccount(
@@ -1018,7 +1018,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertNull(headerModel.get(IDP_FOR_DISPLAY));
         assertNull(headerModel.get(HEADER_ICON));
         assertTrue(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
-        assertTrue(headerModel.get(IS_MULTIPLE_IDPS));
+        assertTrue(headerModel.get(IS_SHOWING_MULTIPLE_IDPS));
         assertEquals("Incorrect item sheet count", 4, mSheetAccountItems.size());
         testAccount(
                 mSheetAccountItems.get(0).model,
