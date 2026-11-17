@@ -24,11 +24,14 @@
 #import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/app/task_request_private.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
+#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/google_one/shared/google_one_deep_link_util.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_constants.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -264,6 +267,9 @@ BOOL ShouldFetchAppSwitcherParam(NSString* source_app_id, PrefService* prefs) {
       // a tab.
       return;
     }
+    [self notifyExternalURLOpenedWithSceneState:sceneState
+                                  openedWithURL:NO
+                          openedViaChromeScheme:YES];
   } else if (externalGURL.SchemeIsFile()) {
     GURL::Replacements replacements;
     std::string filename = externalGURL.ExtractFileName();
@@ -276,7 +282,10 @@ BOOL ShouldFetchAppSwitcherParam(NSString* source_app_id, PrefService* prefs) {
     }
     targetMode = ApplicationModeForTabOpening::NORMAL;
   } else {
-    if (!externalGURL.SchemeIsHTTPOrHTTPS()) {
+    // TODO(crbug.com/586922825): Replace the custom schemes at the top of the
+    // method, so that invalid URLs are discarded with a single early return.
+    const BOOL openedViaCustomScheme = !externalGURL.SchemeIsHTTPOrHTTPS();
+    if (openedViaCustomScheme) {
       if (externalGURL.SchemeIs(kSecureCustomScheme)) {
         GURL::Replacements replaceScheme;
         replaceScheme.SetSchemeStr(url::kHttpsScheme);
@@ -292,6 +301,9 @@ BOOL ShouldFetchAppSwitcherParam(NSString* source_app_id, PrefService* prefs) {
     if (!externalGURL.is_valid()) {
       return;
     }
+    [self notifyExternalURLOpenedWithSceneState:sceneState
+                                  openedWithURL:YES
+                          openedViaChromeScheme:openedViaCustomScheme];
     GURL googleOneURL;
     if (IsGoogleOneDeepLinkEnabled() &&
         IsGoogleOneDeepLinkURL(externalGURL, &googleOneURL)) {
@@ -320,7 +332,6 @@ BOOL ShouldFetchAppSwitcherParam(NSString* source_app_id, PrefService* prefs) {
         return;
       }
     }
-    // TODO(crbug.com/493816082): Handle Default Browser promo notifications.
   }
 
   [self openTabWithSceneState:sceneState
@@ -348,6 +359,24 @@ BOOL ShouldFetchAppSwitcherParam(NSString* source_app_id, PrefService* prefs) {
 }
 
 #pragma mark - Private
+
+// Notifies the Default Browser promo that Chrome is opened from this URL in
+// `sceneState`. `openedWithURL` is whether an http(s) URL is opened, and
+// `openedViaChromeScheme` whether one of Chrome's own schemes was used, which
+// counts as a first-party signal only for first-party caller apps.
+- (void)notifyExternalURLOpenedWithSceneState:(SceneState*)sceneState
+                                openedWithURL:(BOOL)openedWithURL
+                        openedViaChromeScheme:(BOOL)openedViaChromeScheme {
+  if (openedViaChromeScheme && IsCallerAppFirstParty(self.callerApp)) {
+    [[NonModalDefaultBrowserPromoSchedulerSceneAgent agentFromScene:sceneState]
+        logUserEnteredAppViaFirstPartyScheme];
+  }
+  if (openedWithURL) {
+    default_browser::NotifyStartWithURL(
+        feature_engagement::TrackerFactory::GetForProfile(
+            sceneState.profileState.profile));
+  }
+}
 
 // Opens `URL` in `sceneState`, in the application mode requested by the App
 // Switcher `params`. Does nothing if the scene or its profile went away.

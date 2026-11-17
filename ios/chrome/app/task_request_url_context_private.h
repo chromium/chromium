@@ -22,6 +22,10 @@ struct UrlLoadParams;
 // The URL opening context associated with this task request.
 @property(nonatomic, strong, readonly) UIOpenURLContext* URLContext;
 
+// Lazily computed caller application for `URLContext`. Must not be accessed
+// before `ChromeMain` has initialized URL scheme registries.
+@property(nonatomic, assign, readonly) MobileSessionCallerApp callerApp;
+
 // Initializes the task request with the given URL context, scene state, and
 // cold start status.
 - (instancetype)initWithURLContext:(UIOpenURLContext*)URLContext

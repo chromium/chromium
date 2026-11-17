@@ -103,14 +103,6 @@ void TriggerPostOpeningAction(id<TabOpening> tab_opener,
 
 }  // namespace
 
-@interface TaskRequestForURLContext ()
-
-// Lazily computed caller application for `_URLContext`. Must not be accessed
-// before `ChromeMain` has initialized URL scheme registries.
-@property(nonatomic, assign, readonly) MobileSessionCallerApp callerApp;
-
-@end
-
 @implementation TaskRequestForURLContext {
   std::optional<MobileSessionCallerApp> _callerApp;
 }
