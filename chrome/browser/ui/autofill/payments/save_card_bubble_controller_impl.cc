@@ -172,17 +172,22 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
   }
 
   // Don't show the bubble if it's already visible or cannot be shown.
-  if (!GetAutofillBubbleHandler()) {
-    return;
+  std::optional<autofill_metrics::SaveCardPromptOffer> not_shown_reason;
+  if (bubble_view()) {
+    not_shown_reason =
+        autofill_metrics::SaveCardPromptOffer::kNotShownAnotherPromptShowing;
+  } else if (!MaySetUpBubble()) {
+    not_shown_reason =
+        autofill_metrics::SaveCardPromptOffer::kNotShownAnotherPromptQueued;
+  } else if (!GetAutofillBubbleHandler()) {
+    not_shown_reason = autofill_metrics::SaveCardPromptOffer::
+        kNotShownBubbleHandlerUnavailable;
   }
-  if (bubble_view() || !MaySetUpBubble()) {
+  if (not_shown_reason) {
     if (options.card_save_type == payments::PaymentsAutofillClient::
                                       CardSaveType::kCardholderNameUpdateOnly) {
       autofill_metrics::LogCardholderNameUpdateFlowPromptOffer(
-          bubble_view() ? autofill_metrics::SaveCardPromptOffer::
-                              kNotShownAnotherPromptShowing
-                        : autofill_metrics::SaveCardPromptOffer::
-                              kNotShownAnotherPromptQueued);
+          *not_shown_reason);
     }
     return;
   }

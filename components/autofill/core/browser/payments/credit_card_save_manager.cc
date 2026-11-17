@@ -227,6 +227,7 @@ void LogPromptOfferMetricForCreditCardSave(
     case SaveCardPromptOffer::kNotShownAnotherPromptShowing:
     case SaveCardPromptOffer::kNotShownAnotherPromptQueued:
     case SaveCardPromptOffer::kNotShownQueuedButNeverShown:
+    case SaveCardPromptOffer::kNotShownBubbleHandlerUnavailable:
       break;
   }
 }

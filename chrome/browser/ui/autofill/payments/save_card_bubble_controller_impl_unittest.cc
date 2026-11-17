@@ -438,6 +438,8 @@ class SaveCardBubbleControllerImplTest
       prevent_features_;
 
   std::unique_ptr<TestWebContentsDelegate> web_contents_delegate_;
+  std::unique_ptr<ui::ScopedUnownedUserData<AutofillBubbleHandler>>
+      scoped_autofill_bubble_handler_;
 
  private:
   static void UploadSaveCardCallback(
@@ -455,8 +457,6 @@ class SaveCardBubbleControllerImplTest
   base::AutoReset<bool> ignore_window_activation_ =
       SaveCardBubbleControllerImpl::IgnoreWindowActivationForTesting();
   ExposeBubbleAutofillBubbleHandler test_autofill_bubble_handler_;
-  std::unique_ptr<ui::ScopedUnownedUserData<AutofillBubbleHandler>>
-      scoped_autofill_bubble_handler_;
   base::WeakPtrFactory<SaveCardBubbleControllerImplTest> weak_ptr_factory_{
       this};
 };
@@ -2456,6 +2456,26 @@ TEST_F(SaveCardBubbleControllerImplTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardholderNameUpdateFlow.PromptOffer",
       autofill_metrics::SaveCardPromptOffer::kNotShownAnotherPromptShowing, 1);
+}
+
+// Tests that the prompt offer metric logs that the bubble handler is
+// unavailable when the offer is dropped because there is no bubble handler.
+TEST_F(SaveCardBubbleControllerImplTest,
+       UploadCardholderNameUpdateOnly_NoBubbleHandler_LogsPromptOffer) {
+  scoped_autofill_bubble_handler_.reset();
+
+  base::HistogramTester histogram_tester;
+  controller()->OfferUploadSave(
+      autofill::test::GetMaskedServerCard(), LegalMessageLines(),
+      SaveCreditCardOptions()
+          .with_card_save_type(CardSaveType::kCardholderNameUpdateOnly)
+          .with_show_prompt(true),
+      base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardholderNameUpdateFlow.PromptOffer",
+      autofill_metrics::SaveCardPromptOffer::kNotShownBubbleHandlerUnavailable,
+      1);
 }
 
 // Tests that discarding a cardholder name update offer that was never shown

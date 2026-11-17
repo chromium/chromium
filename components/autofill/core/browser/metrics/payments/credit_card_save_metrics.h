@@ -133,7 +133,11 @@ enum class SaveCardPromptOffer {
   kNotShownAnotherPromptQueued = 6,
   // The prompt was queued, but discarded before it was shown.
   kNotShownQueuedButNeverShown = 7,
-  kMaxValue = kNotShownQueuedButNeverShown,
+  // The prompt was offered but not shown because the bubble handler was
+  // unavailable (e.g. in a non-tab WebContents such as a side panel or
+  // extension popup).
+  kNotShownBubbleHandlerUnavailable = 8,
+  kMaxValue = kNotShownBubbleHandlerUnavailable,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

@@ -4066,9 +4066,10 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     offers to save the cardholder name entered in a checkout form to a server
     card that has no cardholder name. Logged when the prompt is shown, when it
     is not offered because it is blocked by the strike database, or when it is
-    offered but not shown (another prompt was already showing or queued, or the
-    queued prompt was discarded before showing). Only logged for the first show;
-    not logged when the prompt is reshown from the omnibox icon.
+    offered but not shown (another prompt was already showing or queued, the
+    bubble handler was unavailable, or the queued prompt was discarded before
+    showing). Only logged for the first show; not logged when the prompt is
+    reshown from the omnibox icon.
   </summary>
 </histogram>
 

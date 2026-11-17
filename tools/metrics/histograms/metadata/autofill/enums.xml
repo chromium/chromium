@@ -4340,6 +4340,7 @@ Called by update_autofill_enums.py.-->
       label="Not shown, another prompt is queued or the prompt can't be shown
              in the tab"/>
   <int value="7" label="Not shown, queued but discarded before showing"/>
+  <int value="8" label="Not shown, bubble handler unavailable"/>
 </enum>
 
 <!-- TODO(crbug.com/430588721): Clean up use of AutofillSavePaymentMethodPromptResultEnum once refactored save card metrics have rolled out. -->
