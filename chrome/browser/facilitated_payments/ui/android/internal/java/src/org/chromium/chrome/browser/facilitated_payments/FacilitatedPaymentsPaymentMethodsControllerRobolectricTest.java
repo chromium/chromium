@@ -633,142 +633,6 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
-    public void testSingleFidoUnenrolledEwalletShowFinancialAccountsManagementSettings() {
-        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_3), List.of());
-
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                FacilitatedPaymentsPaymentMethodsMediator
-                                                .EWALLET_FOP_SELECTOR_USER_ACTION_HISTOGRAM
-                                        + "SingleUnboundEwallet",
-                                FopSelectorAction.TURN_OFF_PAYMENT_PROMPT_LINK_CLICKED)
-                        .build();
-
-        // The additional info is the third to last item of the screen items list right now.
-        int lastItemPos =
-                mFacilitatedPaymentsPaymentMethodsModel
-                                .get(SCREEN_VIEW_MODEL)
-                                .get(SCREEN_ITEMS)
-                                .size()
-                        - 3;
-        mFacilitatedPaymentsPaymentMethodsModel
-                .get(SCREEN_VIEW_MODEL)
-                .get(SCREEN_ITEMS)
-                .get(lastItemPos)
-                .model
-                .get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
-                .run();
-
-        histogramWatcher.assertExpected();
-        verify(mSettingsNavigation)
-                .startSettings(mContext, SettingsNavigation.SettingsFragment.FINANCIAL_ACCOUNTS);
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
-    public void testSingleFidoEnrolledEwalletShowFinancialAccountsManagementSettings() {
-        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_2), List.of());
-
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                FacilitatedPaymentsPaymentMethodsMediator
-                                                .EWALLET_FOP_SELECTOR_USER_ACTION_HISTOGRAM
-                                        + "SingleBoundEwallet",
-                                FopSelectorAction.TURN_OFF_PAYMENT_PROMPT_LINK_CLICKED)
-                        .build();
-
-        // The additional info is the third to last item of the screen items list right now.
-        int lastItemPos =
-                mFacilitatedPaymentsPaymentMethodsModel
-                                .get(SCREEN_VIEW_MODEL)
-                                .get(SCREEN_ITEMS)
-                                .size()
-                        - 3;
-        mFacilitatedPaymentsPaymentMethodsModel
-                .get(SCREEN_VIEW_MODEL)
-                .get(SCREEN_ITEMS)
-                .get(lastItemPos)
-                .model
-                .get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
-                .run();
-
-        histogramWatcher.assertExpected();
-        verify(mSettingsNavigation)
-                .startSettings(mContext, SettingsNavigation.SettingsFragment.FINANCIAL_ACCOUNTS);
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
-    public void testMultipleEwalletsShowFinancialAccountsManagementSettings() {
-        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_3, EWALLET_4), List.of());
-
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                FacilitatedPaymentsPaymentMethodsMediator
-                                                .EWALLET_FOP_SELECTOR_USER_ACTION_HISTOGRAM
-                                        + "MultipleEwallets",
-                                FopSelectorAction.TURN_OFF_PAYMENT_PROMPT_LINK_CLICKED)
-                        .build();
-
-        // The additional info is the second to last item of the screen items list right now.
-        int lastItemPos =
-                mFacilitatedPaymentsPaymentMethodsModel
-                                .get(SCREEN_VIEW_MODEL)
-                                .get(SCREEN_ITEMS)
-                                .size()
-                        - 2;
-        mFacilitatedPaymentsPaymentMethodsModel
-                .get(SCREEN_VIEW_MODEL)
-                .get(SCREEN_ITEMS)
-                .get(lastItemPos)
-                .model
-                .get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
-                .run();
-
-        histogramWatcher.assertExpected();
-        verify(mSettingsNavigation)
-                .startSettings(mContext, SettingsNavigation.SettingsFragment.FINANCIAL_ACCOUNTS);
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
-    public void separatePixPreferenceItem_testPixStillShowsFinancialAccountsManagementSettings() {
-        mCoordinator.showSheetForPix(List.of(BANK_ACCOUNT_1, BANK_ACCOUNT_2));
-
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                FacilitatedPaymentsPaymentMethodsMediator
-                                        .PIX_FOP_SELECTOR_USER_ACTION_HISTOGRAM,
-                                FopSelectorAction.TURN_OFF_PAYMENT_PROMPT_LINK_CLICKED)
-                        .build();
-
-        // The additional info is the second to last item of the screen items list right now.
-        int lastItemPos =
-                mFacilitatedPaymentsPaymentMethodsModel
-                                .get(SCREEN_VIEW_MODEL)
-                                .get(SCREEN_ITEMS)
-                                .size()
-                        - 2;
-        mFacilitatedPaymentsPaymentMethodsModel
-                .get(SCREEN_VIEW_MODEL)
-                .get(SCREEN_ITEMS)
-                .get(lastItemPos)
-                .model
-                .get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
-                .run();
-
-        histogramWatcher.assertExpected();
-        verify(mSettingsNavigation)
-                .startSettings(mContext, SettingsNavigation.SettingsFragment.FINANCIAL_ACCOUNTS);
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
     public void testEwalletAndA2AShowsFinancialAccountsManagementSettings() {
         mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of(PAYMENT_APP_1));
 
@@ -801,7 +665,6 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
     public void testA2AOnlyShowsFinancialAccountsManagementSettings() {
         mCoordinator.showSheetForPaymentLink(List.of(), List.of(PAYMENT_APP_1));
 
@@ -834,7 +697,6 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
     public void testEwalletOnlyShowsFinancialAccountsManagementSettings() {
         mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of());
 
@@ -867,9 +729,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
-    public void
-            separatePixPreferenceItem_testSingleFidoUnenrolledEwalletShowNonCardPaymentMethodsSettings() {
+    public void testSingleFidoUnenrolledEwalletShowNonCardPaymentMethodsSettings() {
         mCoordinator.showSheetForPaymentLink(List.of(EWALLET_3), List.of());
 
         HistogramWatcher histogramWatcher =
@@ -903,9 +763,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
-    public void
-            separatePixPreferenceItem_testSingleFidoEnrolledEwalletShowNonCardPaymentMethodsSettings() {
+    public void testSingleFidoEnrolledEwalletShowNonCardPaymentMethodsSettings() {
         mCoordinator.showSheetForPaymentLink(List.of(EWALLET_2), List.of());
 
         HistogramWatcher histogramWatcher =
@@ -939,8 +797,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
-    public void separatePixPreferenceItem_testMultipleEwalletsShowNonCardPaymentMethodsSettings() {
+    public void testMultipleEwalletsShowNonCardPaymentMethodsSettings() {
         mCoordinator.showSheetForPaymentLink(List.of(EWALLET_3, EWALLET_4), List.of());
 
         HistogramWatcher histogramWatcher =

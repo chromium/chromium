@@ -626,15 +626,10 @@ class FacilitatedPaymentsPaymentMethodsMediator implements SnackbarController {
         propertyModelBuilder.with(
                 SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
                 () -> {
-                    if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM)) {
-                        startSettings(NON_CARD_PAYMENT_METHODS);
-                        recordHistogramOnTurnOffPaymentPromptLinkNonCardPaymentMethodsClicked(
-                                getPaymentLinkFopSelectorTypesUserActionHistogram(
-                                        !ewallets.isEmpty(), !apps.isEmpty()));
-                    } else {
-                        startSettings(FINANCIAL_ACCOUNTS);
-                    }
+                    startSettings(NON_CARD_PAYMENT_METHODS);
+                    recordHistogramOnTurnOffPaymentPromptLinkNonCardPaymentMethodsClicked(
+                            getPaymentLinkFopSelectorTypesUserActionHistogram(
+                                    !ewallets.isEmpty(), !apps.isEmpty()));
                     if (!ewallets.isEmpty()) {
                         recordHistogramOnTurnOffPaymentPromptLinkClicked(
                                 getEwalletFopSelectorUserActionHistogram(ewallets));

@@ -47,7 +47,6 @@ import java.util.Set;
 @EnableFeatures({
     ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
     ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_BENEFITS_TOGGLE_TEXT,
-    ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM,
     ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS,
     ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS
 })

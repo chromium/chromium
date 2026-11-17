@@ -441,8 +441,6 @@ public abstract class ChromeFeatureList {
             "AutofillEnableScanCardOptionWhenNoCardsSaved";
     public static final String AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID =
             "AutofillEnableSecurityTouchEventFilteringAndroid";
-    public static final String AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM =
-            "AutofillEnableSeparatePixPreferenceItem";
     public static final String AUTOFILL_ENABLE_WALLET_BRANDING = "AutofillEnableWalletBranding";
     public static final String AUTOFILL_ENABLE_WALLET_BRANDING_V2 =
             "AutofillEnableWalletBrandingV2";

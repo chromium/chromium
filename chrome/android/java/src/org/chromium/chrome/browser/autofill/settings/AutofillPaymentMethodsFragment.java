@@ -218,7 +218,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                 });
         getPreferenceScreen().addPreference(autofillSwitch);
 
-        boolean hasPixAccounts = hasPixAccounts(personalDataManager);
         boolean hasEwallets = hasEwallets(personalDataManager);
         boolean showA2aToggle = personalDataManager.getFacilitatedPaymentsA2ATriggeredOncePref();
 
@@ -246,17 +245,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             nonCardPaymentMethodsPref.setOnPreferenceClickListener(
                     this::showNonCardPaymentMethodsManagementFragment);
             getPreferenceScreen().addPreference(nonCardPaymentMethodsPref);
-        }
-        if (shouldShowOtherFinanceAccounts(getProfile(), hasEwallets, hasPixAccounts)) {
-            Preference otherFinancialAccountsPref = new ChromeBasePreference(getStyledContext());
-            otherFinancialAccountsPref.setKey(PREF_FINANCIAL_ACCOUNTS_MANAGEMENT);
-            otherFinancialAccountsPref.setTitle(
-                    getFacilitatedPaymentsTitleString(getContext(), hasEwallets, hasPixAccounts));
-            otherFinancialAccountsPref.setSummary(
-                    getFacilitatedPaymentsSummaryString(getContext(), hasEwallets, hasPixAccounts));
-            otherFinancialAccountsPref.setOnPreferenceClickListener(
-                    this::showOtherFinancialAccountsFragment);
-            getPreferenceScreen().addPreference(otherFinancialAccountsPref);
         }
 
         // The ReauthenticatorBridge is always needed for reauthentication to view/edit
@@ -715,28 +703,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         dialog.show();
     }
 
-    static String getFacilitatedPaymentsTitleString(
-            Context context, boolean hasEwallets, boolean hasPixAccounts) {
-        if (hasEwallets && hasPixAccounts) {
-            return context.getString(R.string.settings_manage_ewallet_and_pix_title);
-        }
-        if (hasEwallets) {
-            return context.getString(R.string.settings_manage_ewallet_title);
-        }
-        return context.getString(R.string.settings_manage_pix_title);
-    }
-
-    private static String getFacilitatedPaymentsSummaryString(
-            Context context, boolean hasEwallets, boolean hasPixAccounts) {
-        if (hasEwallets && hasPixAccounts) {
-            return context.getString(R.string.settings_manage_ewallet_and_pix_description);
-        }
-        if (hasEwallets) {
-            return context.getString(R.string.settings_manage_ewallet_description);
-        }
-        return context.getString(R.string.settings_manage_pix_description);
-    }
-
     /** Show the page for managing other financial accounts. */
     private boolean showOtherFinancialAccountsFragment(Preference preference) {
         Bundle args = preference.getExtras();
@@ -805,29 +771,15 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     }
 
     static boolean shouldShowManagePix(PersonalDataManager manager, Profile profile) {
-        // Feature flag + hasPixAccounts + !disabledSettings
-        return ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM)
-                && manager.getMaskedBankAccounts().length != 0
+        // hasPixAccounts + !disabledSettings
+        return manager.getMaskedBankAccounts().length != 0
                 && !isPlatformAutofillEnabledForProfile(profile);
     }
 
     private static boolean shouldShowManageNonCardPayment(
             Profile profile, boolean hasEwallets, boolean showA2aToggle) {
-        // Feature flag + (hasEwallets | a2aToggle) + !disabledSettings
-        return ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM)
-                && (hasEwallets || showA2aToggle)
-                && !isPlatformAutofillEnabledForProfile(profile);
-    }
-
-    static boolean shouldShowOtherFinanceAccounts(
-            Profile profile, boolean hasEwallets, boolean hasPixAccounts) {
-        // !Feature flag + (hasEwallets | hasPixAccount) + !disabledSettings
-        return !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM)
-                && (hasEwallets || hasPixAccounts)
-                && !isPlatformAutofillEnabledForProfile(profile);
+        // (hasEwallets | a2aToggle) + !disabledSettings
+        return (hasEwallets || showA2aToggle) && !isPlatformAutofillEnabledForProfile(profile);
     }
 
     private static boolean shouldShowMandatoryReauthSwitch() {
@@ -889,7 +841,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                     String frag = AutofillPaymentMethodsFragment.class.getName();
                     PersonalDataManager personalDataManager =
                             PersonalDataManagerFactory.getForProfile(profile);
-                    boolean hasPixAccounts = hasPixAccounts(personalDataManager);
                     boolean hasEwallets = hasEwallets(personalDataManager);
                     boolean showA2aToggle =
                             personalDataManager.getFacilitatedPaymentsA2ATriggeredOncePref();
@@ -925,21 +876,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                                 R.string.settings_manage_non_card_payment_methods_title,
                                 R.string.settings_manage_non_card_payment_methods_description,
                                 NonCardPaymentMethodsManagementFragment.class.getName());
-                    }
-                    if (shouldShowOtherFinanceAccounts(profile, hasEwallets, hasPixAccounts)) {
-                        Bundle extras = new Bundle();
-                        String title =
-                                getFacilitatedPaymentsTitleString(
-                                        context, hasEwallets, hasPixAccounts);
-                        extras.putString(FinancialAccountsManagementFragment.TITLE_KEY, title);
-                        indexData.addEntryForKey(
-                                frag,
-                                PREF_FINANCIAL_ACCOUNTS_MANAGEMENT,
-                                title,
-                                getFacilitatedPaymentsSummaryString(
-                                        context, hasEwallets, hasPixAccounts),
-                                extras,
-                                FinancialAccountsManagementFragment.class.getName());
                     }
                     if (shouldShowMandatoryReauthSwitch()) {
                         indexData.addEntryForKey(

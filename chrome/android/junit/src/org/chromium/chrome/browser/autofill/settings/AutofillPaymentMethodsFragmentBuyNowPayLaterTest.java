@@ -53,7 +53,6 @@ import java.util.List;
 /** JUnit tests of the class {@link AutofillPaymentMethodsFragment: Buy Now Pay Later} */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({
-    ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM,
     ChromeFeatureList.AUTOFILL_ENABLE_WALLET_REMINDER_NOTICE,
     ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS
 })

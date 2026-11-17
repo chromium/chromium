@@ -11569,13 +11569,6 @@ const FeatureEntry kFeatureEntries[] = {
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"autofill-enable-separate-pix-preference-item",
-     flag_descriptions::kAutofillEnableSeparatePixPreferenceItemName,
-     flag_descriptions::kAutofillEnableSeparatePixPreferenceItemDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableSeparatePixPreferenceItem)},
-
     {"android-open-incognito-as-window",
      flag_descriptions::kAndroidOpenIncognitoAsWindowName,
      flag_descriptions::kAndroidOpenIncognitoAsWindowDescription, kOsAndroid,

@@ -36,10 +36,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
-import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
-import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
@@ -58,19 +56,13 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
     static final String FACILITATED_PAYMENTS_PIX_TOGGLE_UPDATED_HISTOGRAM =
             "FacilitatedPayments.SettingsPage.Pix.ToggleUpdated";
 
-    static final String FACILITATED_PAYMENTS_EWALLET_TOGGLE_UPDATED_HISTOGRAM =
-            "FacilitatedPayments.SettingsPage.Ewallet.ToggleUpdated";
-
     // Preference keys
     @VisibleForTesting static final String PREFERENCE_KEY_PIX = "pix";
-    @VisibleForTesting static final String PREFERENCE_KEY_EWALLET = "ewallet";
     @VisibleForTesting static final String PREFERENCE_KEY_PIX_BANK_ACCOUNT = "pix_bank_account:%s";
-    @VisibleForTesting static final String PREFERENCE_KEY_EWALLET_ACCOUNT = "ewallet_account:%s";
 
     static final String TITLE_KEY = "financial_accounts_management_title";
 
     private PersonalDataManager mPersonalDataManager;
-    private Ewallet @Nullable [] mEwallets;
     private BankAccount @Nullable [] mBankAccounts;
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
@@ -85,13 +77,8 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
         if (extras != null) {
             title = extras.getString(TITLE_KEY, "");
         }
-        if (TextUtils.isEmpty(title)
-                && (shouldShowEwalletPref(getProfile()) || shouldShowPixPref(getProfile()))) {
-            title =
-                    AutofillPaymentMethodsFragment.getFacilitatedPaymentsTitleString(
-                            getStyledContext(),
-                            shouldShowEwalletPref(getProfile()),
-                            shouldShowPixPref(getProfile()));
+        if (TextUtils.isEmpty(title) && shouldShowPixPref(getProfile())) {
+            title = getStyledContext().getString(R.string.settings_manage_pix_title);
         }
         mPageTitle.set(title);
 
@@ -141,27 +128,12 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
         getPreferenceScreen().removeAll();
         getPreferenceScreen().setOrderingAsAdded(true);
 
-        mEwallets = mPersonalDataManager.getEwallets();
         mBankAccounts = mPersonalDataManager.getMaskedBankAccounts();
-        if (!shouldShowEwalletPref(getProfile()) && !shouldShowPixPref(getProfile())) {
+        if (!shouldShowPixPref(getProfile())) {
             return;
         }
-        boolean isFacilitatedPaymentsEwalletEnabled =
-                mPersonalDataManager.getFacilitatedPaymentsEwalletPref();
         boolean isFacilitatedPaymentsPixEnabled =
                 mPersonalDataManager.getFacilitatedPaymentsPixPref();
-        if (shouldShowEwalletPref(getProfile())) {
-            ChromeSwitchPreference eWalletSwitch = new ChromeSwitchPreference(getStyledContext());
-            eWalletSwitch.setPersistent(false);
-            eWalletSwitch.setChecked(isFacilitatedPaymentsEwalletEnabled);
-            eWalletSwitch.setKey(PREFERENCE_KEY_EWALLET);
-            eWalletSwitch.setTitle(R.string.settings_manage_other_financial_accounts_ewallet);
-            getPreferenceScreen().addPreference(eWalletSwitch);
-            if (isFacilitatedPaymentsEwalletEnabled) {
-                addEwalletRowItems();
-            }
-            eWalletSwitch.setOnPreferenceChangeListener(this);
-        }
 
         if (shouldShowPixPref(getProfile())) {
             ChromeSwitchPreference pixSwitch = new ChromeSwitchPreference(getStyledContext());
@@ -181,13 +153,6 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
         }
     }
 
-    private static boolean shouldShowEwalletPref(Profile profile) {
-        var personalDataManager = PersonalDataManagerFactory.getForProfile(profile);
-        return !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM)
-                && personalDataManager.getEwallets().length > 0;
-    }
-
     private static boolean shouldShowPixPref(Profile profile) {
         var personalDataManager = PersonalDataManagerFactory.getForProfile(profile);
         // TODO(crbug.com/565380501): Show Pix preference only if the user has copied a Pix code
@@ -199,12 +164,6 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
     private void addPixAccountPreferences() {
         for (BankAccount bankAccount : assumeNonNull(mBankAccounts)) {
             getPreferenceScreen().addPreference(getPreferenceForBankAccount(bankAccount));
-        }
-    }
-
-    private void addEwalletRowItems() {
-        for (Ewallet eWallet : assumeNonNull(mEwallets)) {
-            getPreferenceScreen().addPreference(getEwalletRowItem(eWallet));
         }
     }
 
@@ -232,37 +191,6 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
                 });
 
         return bankAccountPref;
-    }
-
-    private Preference getEwalletRowItem(Ewallet eWallet) {
-        Preference eWalletPref = new AutofillServerDataPreference(getStyledContext());
-
-        eWalletPref.setTitle(eWallet.getEwalletName());
-        eWalletPref.setKey(
-                String.format(PREFERENCE_KEY_EWALLET_ACCOUNT, eWallet.getInstrumentId()));
-        eWalletPref.setSummary(
-                getResources()
-                        .getString(
-                                R.string.settings_ewallet_account_identifer,
-                                eWallet.getAccountDisplayName()));
-        eWalletPref.setIcon(
-                AutofillUiUtils.getCardIcon(
-                        getStyledContext(),
-                        AutofillImageFetcherFactory.getForProfile(getProfile()),
-                        eWallet.getDisplayIconUrl(),
-                        R.drawable.ic_account_balance,
-                        ImageSize.LARGE,
-                        /* showCustomIcon= */ true));
-
-        eWalletPref.setOnPreferenceClickListener(
-                preference -> {
-                    mFinancialAccountManageLinkOpenerCallback.onResult(
-                            AutofillUiUtils.getManagePaymentMethodUrlForInstrumentId(
-                                    eWallet.getInstrumentId()));
-                    return true;
-                });
-
-        return eWalletPref;
     }
 
     private String getBankAccountTypeString(@AccountType int bankAccountType) {
@@ -295,14 +223,6 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
             RecordHistogram.recordBooleanHistogram(
                     FACILITATED_PAYMENTS_PIX_TOGGLE_UPDATED_HISTOGRAM, /* sample= */ isPixEnabled);
             mPersonalDataManager.setFacilitatedPaymentsPixPref(isPixEnabled);
-            PostTask.postTask(TaskTraits.UI_DEFAULT, this::rebuildPage);
-            return true;
-        } else if (preference.getKey().equals(PREFERENCE_KEY_EWALLET)) {
-            boolean isEwalletEnabled = (boolean) newValue;
-            RecordHistogram.recordBooleanHistogram(
-                    FACILITATED_PAYMENTS_EWALLET_TOGGLE_UPDATED_HISTOGRAM,
-                    /* sample= */ isEwalletEnabled);
-            mPersonalDataManager.setFacilitatedPaymentsEwalletPref(isEwalletEnabled);
             PostTask.postTask(TaskTraits.UI_DEFAULT, this::rebuildPage);
             return true;
         }
@@ -338,14 +258,6 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
                         Context context, SettingsIndexData indexData, Profile profile) {
                     String frag = FinancialAccountsManagementFragment.class.getName();
                     Bundle extras = getExtras(context, profile);
-                    if (shouldShowEwalletPref(profile)) {
-                        indexData.addEntryForKey(
-                                frag,
-                                PREFERENCE_KEY_EWALLET,
-                                R.string.settings_manage_other_financial_accounts_ewallet,
-                                /* summaryId= */ 0,
-                                extras);
-                    }
                     // Only index the Pix preference for users who have a Pix bank account and not
                     // for users linking a Pix bank account for the first time.
                     if (AutofillPaymentMethodsFragment.hasPixAccounts(
@@ -362,16 +274,9 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
                 private static Bundle getExtras(Context context, Profile profile) {
                     Bundle extras = new Bundle();
                     var manager = PersonalDataManagerFactory.getForProfile(profile);
-                    boolean hasEwallets = AutofillPaymentMethodsFragment.hasEwallets(manager);
-                    boolean hasPixAccounts = AutofillPaymentMethodsFragment.hasPixAccounts(manager);
                     String title = null;
                     if (AutofillPaymentMethodsFragment.shouldShowManagePix(manager, profile)) {
                         title = context.getString(R.string.settings_manage_pix_title);
-                    } else if (AutofillPaymentMethodsFragment.shouldShowOtherFinanceAccounts(
-                            profile, hasEwallets, hasPixAccounts)) {
-                        title =
-                                AutofillPaymentMethodsFragment.getFacilitatedPaymentsTitleString(
-                                        context, hasEwallets, hasPixAccounts);
                     }
                     extras.putString(TITLE_KEY, title);
                     return extras;

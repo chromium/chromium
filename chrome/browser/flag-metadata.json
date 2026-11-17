@@ -1286,16 +1286,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "autofill-enable-separate-pix-preference-item",
-    "owners": [
-      "tushartushar@google.com",
-      "nicluo@google.com",
-      "siashah@google.com",
-      "payments-autofill-team@google.com"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "autofill-enable-travel-category-and-merchant-benefits-from-curinos",
     "owners": [ "ferny@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 160

@@ -261,13 +261,6 @@ const base::FeatureParam<int> kAutofillEnableResurrectingPaymentsUsersTreatment{
 BASE_FEATURE(kAutofillEnableScanCardOptionWhenNoCardsSaved,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-// When enabled, show Pix settings as a separate preference menu item instead of
-// bundling them together with the non-card payment preference menu item.
-BASE_FEATURE(kAutofillEnableSeparatePixPreferenceItem,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // When enabled, travel category and merchant benefits sourced from Curinos will
 // be shown in Autofill.
 BASE_FEATURE(kAutofillEnableTravelCategoryAndMerchantBenefitsFromCurinos,

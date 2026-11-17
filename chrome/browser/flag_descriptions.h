@@ -1193,14 +1193,6 @@ inline constexpr char
         "When enabled, the 'Scan new card' option will be offered even if the "
         "user does not have any credit cards saved in Autofill.";
 
-inline constexpr char kAutofillEnableSeparatePixPreferenceItemName[] =
-    "Enable Pix settings to be shown as a separate preference menu item.";
-inline constexpr char kAutofillEnableSeparatePixPreferenceItemDescription[] =
-    "When enabled, show Pix settings as a separate preference menu item "
-    "instead of bundling them together with the non-card payment preference "
-    "menu "
-    "item.";
-
 inline constexpr char
     kAutofillEnableTravelCategoryAndMerchantBenefitsFromCurinosName[] =
         "Enable travel category and merchant benefits from Curinos";
