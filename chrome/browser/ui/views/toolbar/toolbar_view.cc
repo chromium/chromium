@@ -1786,6 +1786,14 @@ void ToolbarView::LayoutCommon() {
       interior_margin.set_right(0);
     }
   }
+  // Let `toolbar_webview_` span the vertical interior margins, so outset focus
+  // rings and similar aren't clipped. Native children keep the margins.
+  if (toolbar_webview_) {
+    toolbar_webview_->SetProperty(
+        views::kInternalPaddingKey,
+        gfx::Insets::TLBR(interior_margin.top(), 0, interior_margin.bottom(),
+                          0));
+  }
   layout_manager_->SetInteriorMargin(interior_margin);
 
   // Extend buttons to the window edge if we're either in a maximized or

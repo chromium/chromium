@@ -168,23 +168,24 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest,
   // A point in the toolbar's empty area (beyond all children on the right)
   // should be treated as caption. When the WebUI app menu button is enabled,
   // `ToolbarView` zeroes its trailing layout margin (applying only visual
-  // spacing in CSS), so `WebUIToolbarWebView` spans to the trailing edge and
-  // `IsPositionInWindowCaption` treats `empty_area` as inside a child view.
+  // spacing in CSS), and its vertical layout margins, so `WebUIToolbarWebView`
+  // spans to the trailing edge and the full toolbar height, and
+  // `IsPositionInWindowCaption` treats all these points as inside a child view.
+  // Outside of vertical tabs mode, `WebUIToolbarWebView` has no draggable
+  // region, so doesn't treat them as caption.
+  const bool expect_caption = !features::IsWebUIAppMenuButtonEnabled();
   gfx::Point empty_area(toolbar->width() - 1, toolbar->height() / 2);
-  if (!features::IsWebUIAppMenuButtonEnabled()) {
-    EXPECT_TRUE(toolbar->IsPositionInWindowCaption(empty_area));
-  } else {
-    EXPECT_FALSE(toolbar->IsPositionInWindowCaption(empty_area));
-  }
+  EXPECT_EQ(toolbar->IsPositionInWindowCaption(empty_area), expect_caption);
 
-  // A point in the upper portion of empty area should also be caption.
+  // A point in the upper portion of empty area is treated the same as
+  // `empty_area`.
   gfx::Point upper_empty(toolbar->width() - 1, 1);
-  EXPECT_TRUE(toolbar->IsPositionInWindowCaption(upper_empty));
+  EXPECT_EQ(toolbar->IsPositionInWindowCaption(upper_empty), expect_caption);
 
-  // A point in the lower portion of empty area should also be caption
-  // (no centerline restriction).
+  // A point in the lower portion of empty area is treated the same as
+  // `empty_area` (no centerline restriction).
   gfx::Point lower_empty(toolbar->width() - 1, toolbar->height() - 1);
-  EXPECT_TRUE(toolbar->IsPositionInWindowCaption(lower_empty));
+  EXPECT_EQ(toolbar->IsPositionInWindowCaption(lower_empty), expect_caption);
 }
 
 IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest,
@@ -216,7 +217,13 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest,
   ASSERT_TRUE(toolbar);
 
   // A point directly below a button (same x, but y below the button's bottom
-  // edge) should be caption since it's not inside any child's bounds.
+  // edge). With a native forward button, it isn't inside any child's bounds,
+  // so it's caption. With a WebUI forward button, it's inside
+  // `WebUIToolbarWebView`, which spans the toolbar's full height and only
+  // treats points as caption through its draggable region, which is only
+  // enabled in vertical tabs mode, so it isn't caption.
+  // WebUIToolbarWebViewBrowserTest.IsPositionInWindowCaptionInVerticalTabStrip
+  // covers vertical tabs mode.
   ui::TrackedElement* forward = BrowserElements::From(browser())->GetElement(
       kToolbarForwardButtonElementId);
   ASSERT_TRUE(forward);
@@ -225,9 +232,9 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest,
   gfx::Point forward_center = forward_bounds.CenterPoint();
   gfx::Point below_button(forward_center.x(), toolbar->height() - 1);
 
-  // This point is below the button — should be treated as caption.
   if (!forward_bounds.Contains(below_button)) {
-    EXPECT_TRUE(toolbar->IsPositionInWindowCaption(below_button));
+    EXPECT_EQ(toolbar->IsPositionInWindowCaption(below_button),
+              !features::IsWebUIBackForwardButtonEnabled());
   }
 }
 

@@ -2139,6 +2139,15 @@ gfx::Size WebUIToolbarWebView::ComputeLayout(
 
   const int size = GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
   const int gap = GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin);
+  const gfx::Insets default_insets =
+      ::GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN);
+  // The WebUI toolbar spans the toolbar's full height, including the vertical
+  // interior margins, which ToolbarView lets it overlap through
+  // views::kInternalPaddingKey. CSS vertically centers the controls. This
+  // leaves room for things drawn just outside a control, like outset focus
+  // rings, which the viewport would clip if the WebUI toolbar were only as tall
+  // as the controls.
+  const int height = size + default_insets.height();
   int width = button_count * size;
   if (button_count > 0) {
     width += (button_count - 1) * gap;
@@ -2161,14 +2170,10 @@ gfx::Size WebUIToolbarWebView::ComputeLayout(
 
   // TODO(crbug.com/517948314): This isn't sizing the forward button correctly.
   if (features::IsWebUIBackForwardButtonEnabled()) {
-    const gfx::Insets default_insets =
-        ::GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN);
     width += GetMirrored() ? default_insets.right() : default_insets.left();
   }
 
   if (features::IsWebUIAppMenuButtonEnabled()) {
-    const gfx::Insets default_insets =
-        ::GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN);
     width += GetMirrored() ? default_insets.left() : default_insets.right();
   }
 
@@ -2302,11 +2307,11 @@ gfx::Size WebUIToolbarWebView::ComputeLayout(
       button_overflow_info->location_bar_width +=
           available_width.value() - width;
     }
-    return gfx::Size(available_width.value(), size);
+    return gfx::Size(available_width.value(), height);
   }
 
   // Otherwise, return the width of all buttons that we want to display.
-  return gfx::Size(width, size);
+  return gfx::Size(width, height);
 }
 
 void WebUIToolbarWebView::UpdateButtonOverflowState() {

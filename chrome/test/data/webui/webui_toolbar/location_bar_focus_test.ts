@@ -108,13 +108,16 @@ suite('LocationBarFocus', function() {
     // Default invisible outline
     assertEquals('solid', style.get('outline-style')?.toString());
     assertEquals('1px', style.get('outline-width')?.toString());
+    assertEquals('-1px', style.get('outline-offset')?.toString());
     assertEquals('rgba(0, 0, 0, 0)', style.get('outline-color')?.toString());
 
-    // Focus upgrades the outline to a 2px boundary.
+    // Focus upgrades the outline to a 2px boundary, 1px outside and 1px inside
+    // the location bar's bounds like Native.
     focusLocationBar();
     await microtasksFinished();
     assertEquals('solid', style.get('outline-style')?.toString());
     assertEquals('2px', style.get('outline-width')?.toString());
+    assertEquals('-1px', style.get('outline-offset')?.toString());
     assertEquals(crFocusOutlineColor, style.get('outline-color')?.toString());
 
     // If popup is open, the outline reverts.
@@ -150,6 +153,7 @@ suite('LocationBarFocus', function() {
     await microtasksFinished();
     assertEquals('solid', style.get('outline-style')?.toString());
     assertEquals('2px', style.get('outline-width')?.toString());
+    assertEquals('-1px', style.get('outline-offset')?.toString());
     assertEquals(crFocusOutlineColor, style.get('outline-color')?.toString());
   });
 

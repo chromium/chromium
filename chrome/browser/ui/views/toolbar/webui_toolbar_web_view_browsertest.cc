@@ -3288,6 +3288,15 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   }));
   EXPECT_FALSE(top_container->IsPositionInWindowCaption(
       in_top_container(reload_center)));
+
+  // The WebUI toolbar spans the toolbar's vertical interior margins, so the
+  // strips above and below the controls are part of the draggable region too.
+  ASSERT_GT(reload_top * zoom, 1);
+  ASSERT_LT(reload_bottom * zoom, web_view->height() - 1);
+  EXPECT_TRUE(top_container->IsPositionInWindowCaption(
+      in_top_container(gfx::Point(reload_center.x(), 0))));
+  EXPECT_TRUE(top_container->IsPositionInWindowCaption(
+      in_top_container(gfx::Point(reload_center.x(), web_view->height() - 1))));
 }
 
 class WebUIToolbarLocationBarBrowserTest

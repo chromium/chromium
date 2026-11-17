@@ -101,14 +101,10 @@
 }
 
 :host(#location-bar:not(.no-focus-ring)):has(> readonly-omnibox:focus-within) {
-  /* In Native C++ Views, the 2px focus ring bleeds 1px outside the bounds and
-   * 1px inside (overlapping the 1px background border, HaloInset = -1). In
-   * WebUI, bleeding outside causes clipping against the parent WebContents
-   * bounds. Thus, we must inset the entire 2px focus ring internally via
-   * outline-offset: -2px, which optically leaves the gap to trailing chips 1px
-   * tighter than Native. */
+  /* Like Native C++ Views, the 2px focus ring bleeds 1px outside the bounds and
+   * 1px inside (overlapping the 1px background border, HaloInset = -1). */
   outline: 2px solid var(--cr-focus-outline-color);
-  outline-offset: -2px;
+  outline-offset: -1px;
 }
 
 @media (forced-colors: active) {

@@ -15,9 +15,10 @@
   height: 100%;
 }
 
+/* Keep the button height from toolbar_button.css instead of stretching to the
+ * WebUI toolbar's full height, which also covers the toolbar's vertical
+ * interior margins, so the click target matches the native button's. */
 :host(#back) {
-  align-self: stretch;
-  height: auto;
   justify-content: flex-start;
   width: auto;
 }
