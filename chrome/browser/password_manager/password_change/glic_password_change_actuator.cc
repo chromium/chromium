@@ -19,7 +19,6 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/execution_engine.h"
-#include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/glic/actor/glic_actor_task_manager.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_manager.h"
 #include "chrome/browser/glic/public/glic_instance.h"
@@ -32,7 +31,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/grit/browser_resources.h"
-#include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/origin_gating/core/task_policy_config.h"
@@ -164,32 +162,26 @@ origin_gating::TaskPolicyConfig BuildPasswordChangeContainerConfig(
           optimization_guide::proto::RuleMetadata::CAPABILITY_NAVIGATE));
 }
 
-affiliations::FacetURI GetFacetURI(const GURL& url) {
-  return affiliations::FacetURI::FromPotentiallyInvalidSpec(
-      url.GetWithEmptyPath().spec());
-}
-
 }  // namespace
 
 GlicPasswordChangeActuator::GlicPasswordChangeActuator(
     password_manager::LeakedPasswordDetails leak_details,
     content::WebContents* originator)
-    : change_password_url_(std::move(leak_details.change_password_url_match)
-                               .value()
-                               .change_password_url),
-      credential_(password_manager::FromPasswordForm(
+    : credential_(password_manager::FromPasswordForm(
           std::move(leak_details.credentials))),
+      change_password_url_match_(
+          std::move(leak_details.change_password_url_match).value()),
       originator_(originator ? originator->GetWeakPtr() : nullptr) {
-  CHECK(change_password_url_.is_valid());
+  CHECK(change_password_url_match_.change_password_url.is_valid());
 }
 
 GlicPasswordChangeActuator::GlicPasswordChangeActuator(
     password_manager::StoredCredential credential,
     content::WebContents* originator)
-    : change_password_url_(credential.url),
-      credential_(std::move(credential)),
+    : credential_(std::move(credential)),
+      change_password_url_match_(credential_.url),
       originator_(originator ? originator->GetWeakPtr() : nullptr) {
-  CHECK(change_password_url_.is_valid());
+  CHECK(change_password_url_match_.change_password_url.is_valid());
 }
 
 GlicPasswordChangeActuator::~GlicPasswordChangeActuator() {
@@ -202,35 +194,7 @@ void GlicPasswordChangeActuator::Start() {
     return;
   }
 
-  if (affiliations::AffiliationService* affiliation_service =
-          GetAffiliationService()) {
-    affiliation_service->GetAffiliationsAndBranding(
-        GetFacetURI(change_password_url_),
-        base::BindOnce(&GlicPasswordChangeActuator::OnAffiliationsReceived,
-                       weak_ptr_factory_.GetWeakPtr(), change_password_url_));
-  } else {
-    OnAffiliationsReceived(change_password_url_, {}, /*success=*/false);
-  }
-}
-
-void GlicPasswordChangeActuator::OnAffiliationsReceived(
-    const GURL& target_url,
-    const affiliations::AffiliatedFacets& results,
-    bool success) {
-  if (!originator_ || !success) {
-    NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
-    return;
-  }
-
-  for (const auto& facet : results) {
-    if (facet.uri.IsValidWebFacetURI()) {
-      allowed_origins_.emplace(GURL(facet.uri.canonical_spec()));
-    }
-  }
-  GlicPasswordChangeActuator::StartActuation(target_url);
-}
-
-void GlicPasswordChangeActuator::StartActuation(const GURL& target_url) {
+  const GURL& target_url = change_password_url_match_.change_password_url;
   std::string site_domain(target_url.host());
   std::string reach_form_prompt = GetReachFormPrompt(
       site_domain, base::UTF16ToUTF8(credential_.username_value));
@@ -347,7 +311,7 @@ void GlicPasswordChangeActuator::OpenPasswordChangeTab(
 
   if (originator) {
     originator->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                            change_password_url_,
+                            change_password_url_match_.change_password_url,
                             ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                             ui::PAGE_TRANSITION_LINK),
                         /*navigation_handle_callback=*/{});
@@ -453,13 +417,20 @@ void GlicPasswordChangeActuator::OnActorTaskStateChanged(
              .GetOriginGatingChecker()
              .task_policy_config_slot()
              .has_value());
-  allowed_origins_.emplace(credential_.url);
-  allowed_origins_.emplace(change_password_url_);
+  std::set<net::SchemefulSite> allowed_origins;
+  allowed_origins.emplace(credential_.url);
+  allowed_origins.emplace(change_password_url_match_.change_password_url);
+  for (const affiliations::FacetURI& facet_uri :
+       change_password_url_match_.affiliations) {
+    if (facet_uri.IsValidWebFacetURI()) {
+      allowed_origins.emplace(GURL(facet_uri.canonical_spec()));
+    }
+  }
 
   task.GetExecutionEngine()
       .GetOriginGatingChecker()
       .task_policy_config_slot()
-      .Assign(BuildPasswordChangeContainerConfig(allowed_origins_));
+      .Assign(BuildPasswordChangeContainerConfig(allowed_origins));
 
   if (auto logger = GetLoggerIfAvailable(originator_.get())) {
     logger->LogMessage(
@@ -476,7 +447,6 @@ void GlicPasswordChangeActuator::CloseGlicSession() {
 
 void GlicPasswordChangeActuator::ResetInternalState(
     actor::ActorTask::StoppedReason stop_reason) {
-  allowed_origins_.clear();
   weak_ptr_factory_.InvalidateWeakPtrs();
   if (actuation_web_contents_) {
     actor::ActorKeyedService* actor_service =
@@ -612,13 +582,4 @@ void GlicPasswordChangeActuator::OnUpdate(
           return;
       }
   }
-}
-
-affiliations::AffiliationService*
-GlicPasswordChangeActuator::GetAffiliationService() {
-  if (originator_) {
-    return AffiliationServiceFactory::GetForProfile(
-        Profile::FromBrowserContext(originator_->GetBrowserContext()));
-  }
-  return nullptr;
 }

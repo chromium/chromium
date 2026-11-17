@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
@@ -15,16 +14,11 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/password_manager/password_change/password_change_actuator.h"
-#include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "net/base/schemeful_site.h"
-#include "url/gurl.h"
 
-namespace affiliations {
-class AffiliationService;
-}
 namespace content {
 class WebContents;
 }
@@ -96,14 +90,9 @@ class GlicPasswordChangeActuator
   void OnExperimentalTriggeringRegistered(bool success);
   void OnUpdatesReceiverDisconnected();
 
-  affiliations::AffiliationService* GetAffiliationService();
-  void OnAffiliationsReceived(const GURL& target_url,
-                              const affiliations::AffiliatedFacets& results,
-                              bool success);
-  void StartActuation(const GURL& target_url);
-
-  const GURL change_password_url_;
   const password_manager::StoredCredential credential_;
+  const affiliations::AffiliationService::ChangePasswordUrlMatch
+      change_password_url_match_;
   std::optional<password_manager::PasswordString> generated_password_;
   // Copy of the form manager of the change password form, used to save the
   // generated password as a backup and to promote it later.
@@ -123,8 +112,6 @@ class GlicPasswordChangeActuator
 
   base::ObserverList<PasswordChangeActuator::Observer, /*check_empty=*/true>
       observers_;
-
-  std::set<net::SchemefulSite> allowed_origins_;
 
   base::WeakPtrFactory<GlicPasswordChangeActuator> weak_ptr_factory_{this};
 };

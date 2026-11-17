@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/test_future.h"
@@ -25,7 +24,6 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
-#include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -40,8 +38,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/match_type.h"
-#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -188,12 +186,14 @@ password_manager::StoredCredential CreateTestCredential() {
 
 password_manager::LeakedPasswordDetails CreateTestLeakDetails(
     const GURL& target_url,
-    const GURL& credential_url = GURL(kTestUrl)) {
+    const GURL& credential_url = GURL(kTestUrl),
+    std::vector<affiliations::FacetURI> affiliations = {}) {
   return password_manager::LeakedPasswordDetails(
       /*leak_type=*/0, CreateTestForm(credential_url),
       /*in_account_store=*/false,
       affiliations::AffiliationService::ChangePasswordUrlMatch(
-          target_url.is_valid() ? target_url : credential_url));
+          target_url.is_valid() ? target_url : credential_url,
+          std::move(affiliations)));
 }
 
 }  // namespace
@@ -218,13 +218,6 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
                 &GlicPasswordChangeActuatorTest::CreateMockGlicService,
                 base::Unretained(
                     const_cast<GlicPasswordChangeActuatorTest*>(this)))},
-        TestingProfile::TestingFactory{
-            AffiliationServiceFactory::GetInstance(),
-            base::BindRepeating([](content::BrowserContext* context)
-                                    -> std::unique_ptr<KeyedService> {
-              return std::make_unique<
-                  NiceMock<affiliations::MockAffiliationService>>();
-            })},
     };
   }
 
@@ -259,9 +252,6 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
     ON_CALL(mock_web_contents_delegate_, OpenURLFromTab(web_contents(), _, _))
         .WillByDefault(Return(actuation_web_contents_.get()));
 
-    ON_CALL(mock_affiliation_service(), GetAffiliationsAndBranding)
-        .WillByDefault(base::test::RunOnceCallbackRepeatedly<1>(
-            affiliations::AffiliatedFacets(), true));
     actuator_ = std::make_unique<GlicPasswordChangeActuator>(
         CreateTestCredential(), web_contents());
     actuator_->AddObserver(&mock_observer_);
@@ -296,12 +286,16 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
 
   const origin_gating::TaskPolicyConfig& GetContainerConfig(
       const GURL& target_url = GURL(),
-      const GURL& credential_url = GURL(kTestUrl)) {
-    if (target_url.is_empty() && credential_url == GURL(kTestUrl)) {
+      const GURL& credential_url = GURL(kTestUrl),
+      std::vector<affiliations::FacetURI> affiliations = {}) {
+    if (target_url.is_empty() && credential_url == GURL(kTestUrl) &&
+        affiliations.empty()) {
       actuator_->Start();
     } else {
       custom_actuator_ = std::make_unique<GlicPasswordChangeActuator>(
-          CreateTestLeakDetails(target_url, credential_url), web_contents());
+          CreateTestLeakDetails(target_url, credential_url,
+                                std::move(affiliations)),
+          web_contents());
       custom_actuator_->Start();
     }
     actor::TaskId task_id = actor_service()->CreateTaskForTesting();
@@ -316,6 +310,9 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
     return slot.value();
   }
 
+  MockWebContentsDelegate& mock_web_contents_delegate() {
+    return mock_web_contents_delegate_;
+  }
   GlicPasswordChangeActuator* actuator() { return actuator_.get(); }
   NiceMock<MockPasswordChangeActuatorObserver>& observer() {
     return mock_observer_;
@@ -323,20 +320,6 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
   tabs::MockTabInterface& mock_actuation_tab() { return mock_actuation_tab_; }
   NiceMock<glic::MockGlicKeyedService>* mock_glic_service() {
     return mock_glic_service_;
-  }
-
-  affiliations::MockAffiliationService& mock_affiliation_service() {
-    return *static_cast<affiliations::MockAffiliationService*>(
-        AffiliationServiceFactory::GetForProfile(profile()));
-  }
-
-  void SetupAffiliations(const std::string& affiliated_realm) {
-    EXPECT_CALL(mock_affiliation_service(), GetAffiliationsAndBranding)
-        .WillOnce(base::test::RunOnceCallback<1>(
-            affiliations::AffiliatedFacets{affiliations::Facet(
-                affiliations::FacetURI::FromPotentiallyInvalidSpec(
-                    affiliated_realm))},
-            true));
   }
 
  private:
@@ -548,11 +531,14 @@ TEST_F(GlicPasswordChangeActuatorTest,
 }
 
 // Verifies that TaskPolicyConfig permits actuation and navigation on
-// affiliated web facets.
+// affiliated web facets and ignores non-web facets.
 TEST_F(GlicPasswordChangeActuatorTest, TaskPolicyConfigAllowsAffiliatedSites) {
   const std::string kAffiliatedRealm = "https://affiliated.com/";
-  SetupAffiliations(kAffiliatedRealm);
-  const auto& config = GetContainerConfig();
+  const auto& config = GetContainerConfig(
+      /*target_url=*/GURL(), /*credential_url=*/GURL(kTestUrl),
+      {affiliations::FacetURI::FromPotentiallyInvalidSpec(kAffiliatedRealm),
+       affiliations::FacetURI::FromCanonicalSpec(
+           "android://hash@com.affiliated.app")});
   const origin_gating::ClientTool kClickTool(
       optimization_guide::proto::RuleMetadata::CAPABILITY_CLICK);
 
@@ -569,66 +555,47 @@ TEST_F(GlicPasswordChangeActuatorTest, TaskPolicyConfigAllowsAffiliatedSites) {
       url::Origin::Create(GURL("https://attacker.com")), kClickTool));
 }
 
-// Verifies that when AffiliationService fails to return affiliations, the
-// observer is notified with kPasswordChangeFailed and actuation is not started.
+// Verifies that `Start()` opens the change-password URL stored in
+// `leak_details.change_password_url_match` rather than the credential URL.
 TEST_F(GlicPasswordChangeActuatorTest,
-       AffiliationFailureNotifiesPasswordChangeFailed) {
-  EXPECT_CALL(mock_affiliation_service(), GetAffiliationsAndBranding)
-      .WillOnce(base::test::RunOnceCallback<1>(
-          affiliations::AffiliatedFacets{
-              affiliations::Facet(affiliations::FacetURI::FromCanonicalSpec(
-                  "https://affiliated.com"))},
-          false));
+       StartOpensChangePasswordUrlFromLeakDetails) {
+  const GURL kChangePasswordUrl("https://fetched.example.com/settings");
+  const std::string kAffiliatedRealm = "https://affiliated.com/";
 
-  EXPECT_CALL(*mock_glic_service(),
-              InvokeWithAutoSubmit(
-                  testing::_, testing::Matcher<glic::GlicInvokeOptions>(_),
-                  testing::Matcher<glic::GlicInvokeWithAutoSubmitOptions>(_)))
-      .Times(0);
-  EXPECT_CALL(observer(),
-              OnActuationStateChanged(
-                  PasswordChangeActuator::State::kPasswordChangeFailed));
+  GlicPasswordChangeActuator leak_details_actuator(
+      CreateTestLeakDetails(kChangePasswordUrl, GURL(kTestUrl),
+                            {affiliations::FacetURI::FromPotentiallyInvalidSpec(
+                                kAffiliatedRealm)}),
+      web_contents());
 
-  actuator()->Start();
-}
-
-// Verifies that Start() requests affiliations for the target URL first and only
-// proceeds with actuation once OnAffiliationsReceived is invoked.
-TEST_F(GlicPasswordChangeActuatorTest,
-       StartRequestsAffiliationsForTargetUrlBeforeActuation) {
-  const GURL kTargetUrl("https://target-change-password.com/settings");
-  affiliations::AffiliationService::ResultCallback affiliation_callback;
   EXPECT_CALL(
-      mock_affiliation_service(),
-      GetAffiliationsAndBranding(affiliations::FacetURI::FromCanonicalSpec(
-                                     "https://target-change-password.com"),
-                                 _))
-      .WillOnce([&](const affiliations::FacetURI&,
-                    affiliations::AffiliationService::ResultCallback callback) {
-        affiliation_callback = std::move(callback);
-      });
+      mock_web_contents_delegate(),
+      OpenURLFromTab(
+          web_contents(),
+          testing::Field(&content::OpenURLParams::url, kChangePasswordUrl), _))
+      .WillOnce(Return(mock_actuation_tab().GetContents()));
 
-  auto custom_actuator = std::make_unique<GlicPasswordChangeActuator>(
-      CreateTestLeakDetails(kTargetUrl), web_contents());
+  leak_details_actuator.Start();
 
-  EXPECT_CALL(*mock_glic_service(),
-              InvokeWithAutoSubmit(
-                  testing::_, testing::Matcher<glic::GlicInvokeOptions>(_),
-                  testing::Matcher<glic::GlicInvokeWithAutoSubmitOptions>(_)))
-      .Times(0);
-  custom_actuator->Start();
-  ASSERT_TRUE(affiliation_callback);
+  actor::TaskId task_id = actor_service()->CreateTaskForTesting();
+  actor::ActorTask* task = actor_service()->GetTask(task_id);
+  ASSERT_TRUE(task);
+  actor::AddTabToTask(mock_actuation_tab(), *task);
+  actor_service()->NotifyTaskStateChanged(*task);
 
-  EXPECT_CALL(*mock_glic_service(),
-              InvokeWithAutoSubmit(
-                  testing::_, testing::Matcher<glic::GlicInvokeOptions>(_),
-                  testing::Matcher<glic::GlicInvokeWithAutoSubmitOptions>(_)))
-      .Times(1);
-  std::move(affiliation_callback)
-      .Run(affiliations::AffiliatedFacets{affiliations::Facet(
-               affiliations::FacetURI::FromCanonicalSpec(
-                   "https://affiliated.com"))},
-           true);
+  const auto& slot = task->GetExecutionEngine()
+                         .GetOriginGatingChecker()
+                         .task_policy_config_slot();
+  ASSERT_TRUE(slot.has_value());
+
+  const origin_gating::ClientTool kClickTool(
+      optimization_guide::proto::RuleMetadata::CAPABILITY_CLICK);
+  EXPECT_TRUE(slot.value().IsActuationAllowed(
+      url::Origin::Create(kChangePasswordUrl), kClickTool));
+  EXPECT_TRUE(slot.value().IsActuationAllowed(
+      url::Origin::Create(GURL(kAffiliatedRealm)), kClickTool));
+  EXPECT_FALSE(slot.value().IsActuationAllowed(
+      url::Origin::Create(GURL("https://attacker.com")), kClickTool));
 }
 
 // Tests for `GlicPasswordChangeActuator::GetOrGenerateNewPassword()`.
