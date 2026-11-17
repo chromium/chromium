@@ -59,11 +59,26 @@ source_set("edit_ui") {
   ]
 }
 
+source_set("expiration_date_formatter") {
+  sources = [
+    "scan_card_expiration_date_formatter.cc",
+    "scan_card_expiration_date_formatter.h",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  sources = [ "payments_scan_save_and_fill_edit_view_controller_unittest.mm" ]
+  sources = [
+    "payments_scan_save_and_fill_edit_view_controller_unittest.mm",
+    "scan_card_expiration_date_formatter_unittest.cc",
+  ]
   deps = [
     ":edit_ui",
+    ":expiration_date_formatter",
     "//base",
     "//base/test:test_support",
     "//components/application_locale_storage",
