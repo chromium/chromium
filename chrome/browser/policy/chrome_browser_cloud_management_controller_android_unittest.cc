@@ -18,6 +18,7 @@
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/client_certificates/core/features.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
@@ -211,6 +212,47 @@ TEST_F(ChromeBrowserCloudManagementControllerAndroidTest,
 
   EXPECT_TRUE(callback_invoked);
   EXPECT_EQ(kEnrollmentToken, enrollment_token_on_init);
+}
+
+// With `kCbcmRefreshEnrollmentTokenBeforeDeferredInit` disabled, the deferred
+// initialization keeps using the enrollment token cached before the platform
+// policies arrived.
+TEST_F(ChromeBrowserCloudManagementControllerAndroidTest,
+       DeferInitialization_DoesNotRefreshEnrollmentTokenWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kCbcmRefreshEnrollmentTokenBeforeDeferredInit);
+  constexpr char kEnrollmentToken[] = "enrollment-token";
+  PolicyMap policy_map;
+  EXPECT_CALL(mock_policy_service_, GetPolicies(_))
+      .WillRepeatedly(ReturnRef(policy_map));
+  PolicyService::ProviderUpdateObserver* captured_observer = nullptr;
+  EXPECT_CALL(mock_policy_service_, AddProviderUpdateObserver(_))
+      .WillOnce(SaveArg<0>(&captured_observer));
+
+  ChromeBrowserCloudManagementControllerAndroid delegate;
+  EXPECT_FALSE(delegate.ReadyToInit());
+  EXPECT_THAT(BrowserDMTokenStorage::Get()->RetrieveEnrollmentToken(),
+              IsEmpty());
+
+  bool callback_invoked = false;
+  std::string enrollment_token_on_init;
+  delegate.DeferInitialization(base::BindLambdaForTesting([&]() {
+    callback_invoked = true;
+    enrollment_token_on_init =
+        BrowserDMTokenStorage::Get()->RetrieveEnrollmentToken();
+  }));
+  ASSERT_NE(captured_observer, nullptr);
+
+  policy_map.Set(key::kCloudManagementEnrollmentToken, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+                 base::Value(kEnrollmentToken), nullptr);
+  storage_.SetEnrollmentToken(kEnrollmentToken);
+  captured_observer->OnProviderUpdatePropagated(
+      g_browser_process->browser_policy_connector()->GetPlatformProvider());
+
+  EXPECT_TRUE(callback_invoked);
+  EXPECT_THAT(enrollment_token_on_init, IsEmpty());
 }
 
 TEST_F(ChromeBrowserCloudManagementControllerAndroidTest,
