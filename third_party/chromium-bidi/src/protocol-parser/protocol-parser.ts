@@ -24,6 +24,7 @@ import {z, type ZodType} from 'zod';
 import type * as Protocol from '../protocol/protocol.js';
 import {InvalidArgumentException} from '../protocol/protocol.js';
 
+import * as WebDriverBidiGoog from './generated/goog.js';
 import * as WebDriverBidiAutofill from './generated/webdriver-bidi-autofill.js';
 import * as WebDriverBidiBluetooth from './generated/webdriver-bidi-bluetooth.js';
 import * as WebDriverBidiPermissions from './generated/webdriver-bidi-permissions.js';
@@ -573,46 +574,33 @@ export namespace Storage {
   // keep-sorted end
 }
 
-export namespace Cdp {
+/** @see `src/protocol/goog.cddl` */
+export namespace GoogCdp {
   // keep-sorted start block=yes
 
-  const GetSessionRequestSchema = z.object({
-    context: WebDriverBidi.BrowsingContext.BrowsingContextSchema,
-  });
-  const ResolveRealmRequestSchema = z.object({
-    realm: WebDriverBidi.Script.RealmSchema,
-  });
-  const SendCommandRequestSchema = z.object({
-    // Allowing any cdpMethod, and casting to proper type later on.
-    method: z.string(),
-    // `passthrough` allows object to have any fields.
-    // https://github.com/colinhacks/zod#passthrough
-    params: z.object({}).passthrough().optional(),
-    session: z.string().optional(),
-  });
   export function parseGetSessionRequest(
     params: unknown,
-  ): Protocol.Cdp.GetSessionParameters {
+  ): Protocol.GoogCdp.GetSessionParameters {
     return parseObject(
       params,
-      GetSessionRequestSchema,
-    ) as Protocol.Cdp.GetSessionParameters;
+      WebDriverBidiGoog.GoogCdp.GetSessionParametersSchema,
+    );
   }
   export function parseResolveRealmRequest(
     params: unknown,
-  ): Protocol.Cdp.ResolveRealmParameters {
+  ): Protocol.GoogCdp.ResolveRealmParameters {
     return parseObject(
       params,
-      ResolveRealmRequestSchema,
-    ) as Protocol.Cdp.ResolveRealmParameters;
+      WebDriverBidiGoog.GoogCdp.ResolveRealmParametersSchema,
+    );
   }
   export function parseSendCommandRequest(
     params: unknown,
-  ): Protocol.Cdp.SendCommandParameters {
+  ): Protocol.GoogCdp.SendCommandParameters {
     return parseObject(
       params,
-      SendCommandRequestSchema,
-    ) as Protocol.Cdp.SendCommandParameters;
+      WebDriverBidiGoog.GoogCdp.SendCommandParametersSchema,
+    );
   }
   // keep-sorted end
 }

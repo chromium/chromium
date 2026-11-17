@@ -23,27 +23,15 @@ Note that performance data can be sensitive to CI environment fluctuations, espe
 
 ## BiDi+
 
-**"BiDi+"** is an extension of the WebDriver BiDi protocol. In addition to [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) it has:
+**"BiDi+"** is an extension of the WebDriver BiDi protocol. The `goog:` commands
+and events are described in [`src/protocol/goog.cddl`](src/protocol/goog.cddl),
+which is the source of truth for their types. To add or change a `goog:` command
+or event, edit the CDDL and regenerate the TypeScript and Zod definitions as
+described in [Update CDDL types](#update-cddl-types).
+
+In addition to [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) it has:
 
 ### Command `goog:cdp.sendCommand`
-
-```cddl
-CdpSendCommandCommand = {
-  method: "goog:cdp.sendCommand",
-  params: CdpSendCommandParameters,
-}
-
-CdpSendCommandParameters = {
-   method: text,
-   params: any,
-   session?: text,
-}
-
-CdpSendCommandResult = {
-   result: any,
-   session: text,
-}
-```
 
 The command runs the
 described [CDP command](https://chromedevtools.github.io/devtools-protocol)
@@ -51,58 +39,15 @@ and returns the result.
 
 ### Command `goog:cdp.getSession`
 
-```cddl
-CdpGetSessionCommand = {
-   method: "goog:cdp.getSession",
-   params: CdpGetSessionParameters,
-}
-
-CdpGetSessionParameters = {
-   context: BrowsingContext,
-}
-
-CdpGetSessionResult = {
-   session: text,
-}
-```
-
 The command returns the default CDP session for the selected browsing context.
 
 ### Command `goog:cdp.resolveRealm`
 
-```cddl
-CdpResolveRealmCommand = {
-   method: "goog:cdp.resolveRealm",
-   params: CdpResolveRealmParameters,
-}
-
-CdpResolveRealmParameters = {
-   realm: Script.Realm,
-}
-
-CdpResolveRealmResult = {
-   executionContextId: text,
-}
-```
-
-The command returns resolves a BiDi realm to its CDP execution context ID.
+The command resolves a BiDi realm to its CDP execution context ID.
 
 ### Events `goog:cdp`
 
-```cddl
-CdpEventReceivedEvent = {
-   method: "goog:cdp.<CDP Event Name>",
-   params: CdpEventReceivedParameters,
-}
-
-CdpEventReceivedParameters = {
-   event: text,
-   params: any,
-   session: text,
-}
-```
-
-The event contains a CDP event.
+The event `goog:cdp.<CDP Event Name>` contains a CDP event.
 
 ### Field `goog:channel`
 
@@ -534,7 +479,14 @@ Only needed if the automated sync is paused or broken.
 Run the following steps from the `third_party/chromium-bidi` directory:
 
 1. (Optional) If you want to add a new specification, add it to the `tools/update_bidi_types.py` script.
-2. Run the `tools/update_bidi_types.py` script.
+2. Run the `tools/update_bidi_types.py` script. To only regenerate the `goog:` types from [`src/protocol/goog.cddl`](src/protocol/goog.cddl), run:
+   ```sh
+   tools/update_bidi_types.py --cddl-file src/protocol/goog.cddl \
+     --ts-file src/protocol/generated/goog.ts \
+     --zod-file src/protocol-parser/generated/goog.ts
+   ./tools/node.py node_modules/prettier/bin/prettier.cjs --write \
+     src/protocol/generated/goog.ts src/protocol-parser/generated/goog.ts
+   ```
 3. Build the project (`autoninja -C ../../out/Default third_party/chromium-bidi:default`). If a new WebDriver BiDi command was added, compilation will fail with `Switch is not exhaustive. Cases not matched ...`.
 4. Add the new BiDi command to `CommandProcessor.#processCommand` in `src/bidiMapper/CommandProcessor.ts`. For now, just have it throw an UnknownErrorException.
 

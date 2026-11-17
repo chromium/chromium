@@ -20,7 +20,7 @@ import type {
   Bluetooth,
   Browser,
   BrowsingContext,
-  Cdp,
+  GoogCdp,
   Emulation,
   Input,
   Network,
@@ -204,14 +204,14 @@ export class BidiParser implements BidiCommandParameterParser {
 
   // CDP module
   // keep-sorted start block=yes
-  parseGetSessionParams(params: unknown): Cdp.GetSessionParameters {
-    return Parser.Cdp.parseGetSessionRequest(params);
+  parseGetSessionParams(params: unknown): GoogCdp.GetSessionParameters {
+    return Parser.GoogCdp.parseGetSessionRequest(params);
   }
-  parseResolveRealmParams(params: unknown): Cdp.ResolveRealmParameters {
-    return Parser.Cdp.parseResolveRealmRequest(params);
+  parseResolveRealmParams(params: unknown): GoogCdp.ResolveRealmParameters {
+    return Parser.GoogCdp.parseResolveRealmRequest(params);
   }
-  parseSendCommandParams(params: unknown): Cdp.SendCommandParameters {
-    return Parser.Cdp.parseSendCommandRequest(params);
+  parseSendCommandParams(params: unknown): GoogCdp.SendCommandParameters {
+    return Parser.GoogCdp.parseSendCommandRequest(params);
   }
   // keep-sorted end
 

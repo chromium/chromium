@@ -24,6 +24,7 @@ wptreport*.json
 MANIFEST.json
 coverage/
 *.cddl
+!/src/protocol/goog.cddl
 *.tsbuildinfo
 **.code-workspace
 .agent/

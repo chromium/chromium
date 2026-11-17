@@ -86,6 +86,14 @@ SPECS = [
         "ts_file": "src/protocol/generated/webdriver-bidi-autofill.ts",
         "zod_file": "src/protocol-parser/generated/webdriver-bidi-autofill.ts",
     },
+    {
+        # Chromium-specific `goog:` extensions, maintained in this repository.
+        "name": "goog",
+        "local_cddl": "src/protocol/goog.cddl",
+        "cddl_name": "goog.cddl",
+        "ts_file": "src/protocol/generated/goog.ts",
+        "zod_file": "src/protocol-parser/generated/goog.ts",
+    },
 ]
 
 # Namespaces of the core WebDriver BiDi specification which can be referenced by
@@ -289,6 +297,9 @@ def main():
         gen_script = bidi_dir / "scripts" / "cddl" / "generate.js"
         for spec in SPECS:
             if spec["name"] == "webdriver-bidi":
+                continue
+            if "local_cddl" in spec:
+                cddl_files[spec["cddl_name"]] = repo_root / spec["local_cddl"]
                 continue
             spec_dir = tmpdir / spec["name"]
             print(f"Cloning {spec['name']}...")

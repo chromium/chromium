@@ -16,6 +16,7 @@
  */
 
 import type * as Cdp from './cdp.js';
+import type {GoogCommand, GoogResult} from './generated/goog.js';
 import type * as WebDriverBidiAutofill from './generated/webdriver-bidi-autofill.js';
 import type * as WebDriverBidiBluetooth from './generated/webdriver-bidi-bluetooth.js';
 import type * as WebDriverBidiSpeculation from './generated/webdriver-bidi-nav-speculation.ts';
@@ -26,7 +27,7 @@ import type * as WebDriverBidi from './generated/webdriver-bidi.js';
 
 export type EventNames =
   // keep-sorted start
-  | Cdp.EventNames
+  | CdpEvent['method']
   | `${BiDiModule}`
   | `${Bluetooth.EventNames}`
   | `${BrowsingContext.EventNames}`
@@ -139,7 +140,7 @@ type ExternalSpecEvent<T> = {
 
 export type Command = (
   | WebDriverBidi.Command
-  | Cdp.Command
+  | ExternalSpecCommand<GoogCommand>
   | ExternalSpecCommand<WebDriverBidiPermissions.PermissionsCommand>
   | ExternalSpecCommand<WebDriverBidiBluetooth.BluetoothCommand>
   | ExternalSpecCommand<WebDriverBidiUAClientHints.UserAgentClientHintsCommand>
@@ -147,8 +148,9 @@ export type Command = (
   | ExternalSpecCommand<WebDriverBidiAutofill.AutofillCommand>
 ) & {'goog:channel'?: GoogChannel};
 
-export type CommandResponse =
-  WebDriverBidi.CommandResponse | Cdp.CommandResponse;
+export type CommandResponse = WebDriverBidi.CommandResponse;
+
+export type CdpEvent = ExternalSpecEvent<Cdp.EventData>;
 
 export type BluetoothEvent =
   | ExternalSpecEvent<WebDriverBidiBluetooth.Bluetooth.RequestDevicePromptUpdated>
@@ -160,7 +162,7 @@ export type SpeculationEvent =
   ExternalSpecEvent<WebDriverBidiSpeculation.Speculation.PrefetchStatusUpdated>;
 
 export type Event =
-  WebDriverBidi.Event | Cdp.Event | BluetoothEvent | SpeculationEvent;
+  WebDriverBidi.Event | CdpEvent | BluetoothEvent | SpeculationEvent;
 
 export const EVENT_NAMES: Set<string> = new Set([
   // keep-sorted start
@@ -175,7 +177,7 @@ export const EVENT_NAMES: Set<string> = new Set([
   // keep-sorted end
 ]);
 
-export type ResultData = WebDriverBidi.ResultData | Cdp.ResultData;
+export type ResultData = WebDriverBidi.ResultData | GoogResult;
 
 export type GoogChannel = string | null;
 
@@ -184,7 +186,7 @@ export type WithGoogParams<T> = T & {
 };
 
 export type Message = (
-  WebDriverBidi.Message | Cdp.Message | BluetoothEvent | SpeculationEvent
+  WebDriverBidi.Message | CdpEvent | BluetoothEvent | SpeculationEvent
 ) & {
   'goog:channel'?: GoogChannel;
 };

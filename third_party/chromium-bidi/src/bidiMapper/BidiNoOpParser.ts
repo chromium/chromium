@@ -19,7 +19,7 @@ import type {
   Autofill,
   Browser,
   BrowsingContext,
-  Cdp,
+  GoogCdp,
   Emulation,
   Input,
   Network,
@@ -203,14 +203,14 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
 
   // CDP module
   // keep-sorted start block=yes
-  parseGetSessionParams(params: unknown): Cdp.GetSessionParameters {
-    return params as Cdp.GetSessionParameters;
+  parseGetSessionParams(params: unknown): GoogCdp.GetSessionParameters {
+    return params as GoogCdp.GetSessionParameters;
   }
-  parseResolveRealmParams(params: unknown): Cdp.ResolveRealmParameters {
-    return params as Cdp.ResolveRealmParameters;
+  parseResolveRealmParams(params: unknown): GoogCdp.ResolveRealmParameters {
+    return params as GoogCdp.ResolveRealmParameters;
   }
-  parseSendCommandParams(params: unknown): Cdp.SendCommandParameters {
-    return params as Cdp.SendCommandParameters;
+  parseSendCommandParams(params: unknown): GoogCdp.SendCommandParameters {
+    return params as GoogCdp.SendCommandParameters;
   }
   // keep-sorted end
 

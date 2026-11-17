@@ -1,0 +1,117 @@
+; Copyright 2026 Google LLC.
+;
+; Licensed under the Apache License, Version 2.0 (the "License");
+; you may not use this file except in compliance with the License.
+; You may obtain a copy of the License at
+;
+;     http://www.apache.org/licenses/LICENSE-2.0
+;
+; Unless required by applicable law or agreed to in writing, software
+; distributed under the License is distributed on an "AS IS" BASIS,
+; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+; See the License for the specific language governing permissions and
+; limitations under the License.
+
+; Chromium-specific `goog:` extensions of the WebDriver BiDi protocol (BiDi+).
+;
+; This file is the source of truth for the `goog:` commands and events. Types
+; referenced from the WebDriver BiDi specification (e.g.
+; `browsingContext.BrowsingContext`) are imported from the core generated types.
+;
+; After editing, regenerate and format the TypeScript and Zod definitions:
+;   tools/update_bidi_types.py --cddl-file src/protocol/goog.cddl \
+;     --ts-file src/protocol/generated/goog.ts \
+;     --zod-file src/protocol-parser/generated/goog.ts
+;   ./tools/node.py node_modules/prettier/bin/prettier.cjs --write \
+;     src/protocol/generated/goog.ts src/protocol-parser/generated/goog.ts
+; The full `tools/update_bidi_types.py` run regenerates them as well.
+;
+; Convention:
+; * Command `goog:<module>.<command>` is described by the group
+;   `goog_<module>.<Command>` (generated as `Goog<Module>.<Command>`), so
+;   `<module>` never shadows a core WebDriver BiDi module import.
+
+GoogCommand = (
+  goog_cdp.GetSession //
+  goog_cdp.ResolveRealm //
+  goog_cdp.SendCommand
+)
+
+GoogResult = (
+  goog_cdp.GetSessionResult /
+  goog_cdp.ResolveRealmResult /
+  goog_cdp.SendCommandResult
+)
+
+GoogEvent = (
+  goog_cdp.Event
+)
+
+; `goog:cdp` module: direct access to the Chrome DevTools Protocol.
+; https://chromedevtools.github.io/devtools-protocol
+
+goog_cdp.SessionId = text
+
+; Returns the default CDP session of the given browsing context.
+goog_cdp.GetSession = (
+  method: "goog:cdp.getSession",
+  params: goog_cdp.GetSessionParameters
+)
+
+goog_cdp.GetSessionParameters = {
+  context: browsingContext.BrowsingContext,
+}
+
+goog_cdp.GetSessionResult = {
+  ? session: goog_cdp.SessionId,
+}
+
+; Resolves a BiDi realm to its CDP execution context ID.
+goog_cdp.ResolveRealm = (
+  method: "goog:cdp.resolveRealm",
+  params: goog_cdp.ResolveRealmParameters
+)
+
+goog_cdp.ResolveRealmParameters = {
+  realm: script.Realm,
+}
+
+goog_cdp.ResolveRealmResult = {
+  executionContextId: int,
+}
+
+; Runs the given CDP command and returns its result.
+goog_cdp.SendCommand = (
+  method: "goog:cdp.sendCommand",
+  params: goog_cdp.SendCommandParameters
+)
+
+; CDDL cannot tie `method` and `params` to the CDP command types, so
+; `src/protocol/cdp.ts` narrows both with `devtools-protocol`.
+goog_cdp.SendCommandParameters = {
+  ; CDP method, e.g. `Page.navigate`.
+  method: text,
+  ? params: { * text => any },
+  ? session: goog_cdp.SessionId,
+}
+
+goog_cdp.SendCommandResult = {
+  result: any,
+  ? session: goog_cdp.SessionId,
+}
+
+; A CDP event. The `method` is `"goog:cdp." + params.event`, e.g.
+; `"goog:cdp.Page.loadEventFired"`. CDDL cannot tie `method` to `params.event`,
+; nor to the CDP event types, so `src/protocol/cdp.ts` narrows both with
+; `devtools-protocol`.
+goog_cdp.Event = (
+  method: text,
+  params: goog_cdp.EventParameters
+)
+
+goog_cdp.EventParameters = {
+  ; CDP event name, e.g. `Page.loadEventFired`.
+  event: text,
+  params: any,
+  ? session: goog_cdp.SessionId,
+}

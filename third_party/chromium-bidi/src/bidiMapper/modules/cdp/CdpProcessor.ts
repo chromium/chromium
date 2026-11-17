@@ -15,7 +15,12 @@
  * limitations under the License.
  */
 
-import {UnknownErrorException, type Cdp} from '../../../protocol/protocol.js';
+import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
+
+import {
+  UnknownErrorException,
+  type GoogCdp,
+} from '../../../protocol/protocol.js';
 import type {CdpClient, CdpConnection} from '../../BidiMapper.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
@@ -38,7 +43,7 @@ export class CdpProcessor {
     this.#browserCdpClient = browserCdpClient;
   }
 
-  getSession(params: Cdp.GetSessionParameters): Cdp.GetSessionResult {
+  getSession(params: GoogCdp.GetSessionParameters): GoogCdp.GetSessionResult {
     const context = params.context;
     const sessionId =
       this.#browsingContextStorage.getContext(context).cdpTarget.cdpSessionId;
@@ -48,7 +53,9 @@ export class CdpProcessor {
     return {session: sessionId};
   }
 
-  resolveRealm(params: Cdp.ResolveRealmParameters): Cdp.ResolveRealmResult {
+  resolveRealm(
+    params: GoogCdp.ResolveRealmParameters,
+  ): GoogCdp.ResolveRealmResult {
     const context = params.realm;
     const realm = this.#realmStorage.getRealm({realmId: context});
     if (realm === undefined) {
@@ -58,12 +65,15 @@ export class CdpProcessor {
   }
 
   async sendCommand(
-    params: Cdp.SendCommandParameters,
-  ): Promise<Cdp.SendCommandResult> {
+    params: GoogCdp.SendCommandParameters,
+  ): Promise<GoogCdp.SendCommandResult> {
     const client = params.session
       ? this.#cdpConnection.getCdpClient(params.session)
       : this.#browserCdpClient;
-    const result = await client.sendCommand(params.method, params.params);
+    const result = await client.sendCommand(
+      params.method as keyof ProtocolMapping.Commands,
+      params.params,
+    );
     return {
       result,
       session: params.session,

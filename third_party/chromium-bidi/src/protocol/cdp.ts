@@ -14,93 +14,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {Protocol} from 'devtools-protocol';
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
-import type {
-  BrowsingContext,
-  JsUint,
-  Script,
-} from './generated/webdriver-bidi.js';
+import type {GoogCdp} from './generated/goog.js';
 
-export type EventNames = Event['method'];
+// The `goog:cdp` types are generated from `goog.cddl`. The types below refine
+// them with the CDP commands and events from `devtools-protocol`.
 
-export type Message = CommandResponse | Event;
-
-export type Command = {
-  id: JsUint;
-} & CommandData;
-export type CommandData =
-  SendCommandCommand | GetSessionCommand | ResolveRealmCommand;
-
-export interface CommandResponse {
-  type: 'success';
-  id: JsUint;
-  result: ResultData;
-}
-export type ResultData =
-  SendCommandResult | GetSessionResult | ResolveRealmResult;
-
-export interface SendCommandCommand {
-  method: 'goog:cdp.sendCommand';
-  params: SendCommandParameters;
-}
-
+/**
+ * Narrows the generated `GoogCdp.SendCommandParameters`: `method` and `params`
+ * to a known CDP command from `devtools-protocol`, for typed callers such as
+ * Puppeteer. `session` is inherited.
+ */
 export interface SendCommandParameters<
   Command extends keyof ProtocolMapping.Commands =
     keyof ProtocolMapping.Commands,
-> {
+>
+  extends GoogCdp.SendCommandParameters {
   method: Command;
   params?: ProtocolMapping.Commands[Command]['paramsType'][0];
-  session?: Protocol.Target.SessionID;
 }
 
-export interface SendCommandResult {
-  result: ProtocolMapping.Commands[keyof ProtocolMapping.Commands]['returnType'];
-  session?: Protocol.Target.SessionID;
+// Narrows `GoogCdp.EventParameters` for a specific CDP `EventName`; `session`
+// is inherited.
+interface EventParametersFor<EventName extends keyof ProtocolMapping.Events>
+  extends GoogCdp.EventParameters {
+  event: EventName;
+  params: ProtocolMapping.Events[EventName][0];
 }
 
-export interface GetSessionCommand {
-  method: 'goog:cdp.getSession';
-  params: GetSessionParameters;
-}
-
-export interface GetSessionParameters {
-  context: BrowsingContext.BrowsingContext;
-}
-
-export interface GetSessionResult {
-  session?: Protocol.Target.SessionID;
-}
-
-export interface ResolveRealmCommand {
-  method: 'goog:cdp.resolveRealm';
-  params: ResolveRealmParameters;
-}
-
-export interface ResolveRealmParameters {
-  realm: Script.Realm;
-}
-
-export interface ResolveRealmResult {
-  executionContextId: Protocol.Runtime.ExecutionContextId;
-}
-
-export type Event = {
-  type: 'event';
-} & EventData;
-
-export type EventData = EventDataFor<keyof ProtocolMapping.Events>;
-
-export interface EventDataFor<EventName extends keyof ProtocolMapping.Events> {
+// Narrows `GoogCdp.Event` for a specific CDP `EventName`, as CDDL cannot refer
+// to `devtools-protocol`.
+interface EventDataFor<EventName extends keyof ProtocolMapping.Events>
+  extends GoogCdp.Event {
   method: `goog:cdp.${EventName}`;
   params: EventParametersFor<EventName>;
 }
 
-export interface EventParametersFor<
-  EventName extends keyof ProtocolMapping.Events,
-> {
-  event: EventName;
-  params: ProtocolMapping.Events[EventName][0];
-  session?: Protocol.Target.SessionID;
-}
+/**
+ * Union of all `goog:cdp.<CDP event>` event payloads across
+ * `ProtocolMapping.Events`, e.g. `goog:cdp.Page.loadEventFired`. Built by
+ * `CdpTarget` and `CdpTargetManager` from the `CdpClient` `'*'` listener, and
+ * wrapped into `ChromiumBidi.CdpEvent` (for `ChromiumBidi.Event`,
+ * `ChromiumBidi.EventNames`, `ChromiumBidi.Message`, and Puppeteer); using
+ * `GoogCdp.Event['method']` (`string`) directly would collapse
+ * `ChromiumBidi.EventNames` to `string`.
+ */
+export type EventData = EventDataFor<keyof ProtocolMapping.Events>;

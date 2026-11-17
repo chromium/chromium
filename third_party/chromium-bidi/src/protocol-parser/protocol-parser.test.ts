@@ -18,7 +18,9 @@ import {describe, it} from 'node:test';
 import {assert} from 'chai';
 import {z} from 'zod';
 
-import {parseObject} from './protocol-parser.js';
+import {InvalidArgumentException} from '../protocol/protocol.js';
+
+import {GoogCdp, parseObject} from './protocol-parser.js';
 
 describe('parseObject', () => {
   const schema = z.object({
@@ -49,6 +51,115 @@ describe('parseObject', () => {
         shrinkToPage: true,
         fromSurface: false,
       },
+    });
+  });
+});
+
+describe('GoogCdp', () => {
+  describe('parseSendCommandRequest', () => {
+    it('should parse a CDP command', () => {
+      const result: unknown = GoogCdp.parseSendCommandRequest({
+        method: 'Page.navigate',
+        params: {url: 'about:blank'},
+        session: 'session-1',
+      });
+      assert.deepEqual(result, {
+        method: 'Page.navigate',
+        params: {url: 'about:blank'},
+        session: 'session-1',
+        'goog:params': {},
+      });
+    });
+
+    it('should parse a CDP command without optional params and session', () => {
+      const result: unknown = GoogCdp.parseSendCommandRequest({
+        method: 'Page.enable',
+      });
+      assert.deepEqual(result, {
+        method: 'Page.enable',
+        'goog:params': {},
+      });
+    });
+
+    it('should throw if the method is missing', () => {
+      assert.throws(
+        () => GoogCdp.parseSendCommandRequest({params: {}}),
+        InvalidArgumentException,
+      );
+    });
+
+    it('should throw if the method is not a string', () => {
+      assert.throws(
+        () => GoogCdp.parseSendCommandRequest({method: 123}),
+        InvalidArgumentException,
+      );
+    });
+
+    it('should throw if the params are not a record', () => {
+      for (const params of [42, null, []]) {
+        assert.throws(
+          () =>
+            GoogCdp.parseSendCommandRequest({method: 'Page.enable', params}),
+          InvalidArgumentException,
+        );
+      }
+    });
+
+    it('should throw if the session is not a string', () => {
+      assert.throws(
+        () =>
+          GoogCdp.parseSendCommandRequest({
+            method: 'Page.enable',
+            session: 123,
+          }),
+        InvalidArgumentException,
+      );
+    });
+  });
+
+  describe('parseGetSessionRequest', () => {
+    it('should parse the context', () => {
+      const result: unknown = GoogCdp.parseGetSessionRequest({
+        context: 'context-1',
+      });
+      assert.deepEqual(result, {context: 'context-1', 'goog:params': {}});
+    });
+
+    it('should throw if the context is missing', () => {
+      assert.throws(
+        () => GoogCdp.parseGetSessionRequest({}),
+        InvalidArgumentException,
+      );
+    });
+
+    it('should throw if the context is not a string', () => {
+      assert.throws(
+        () => GoogCdp.parseGetSessionRequest({context: 123}),
+        InvalidArgumentException,
+      );
+    });
+  });
+
+  describe('parseResolveRealmRequest', () => {
+    it('should parse the realm', () => {
+      const result: unknown = GoogCdp.parseResolveRealmRequest({
+        realm: 'realm-1',
+      });
+      assert.deepEqual(result, {realm: 'realm-1', 'goog:params': {}});
+    });
+
+    it('should throw if the realm is missing', () => {
+      assert.throws(
+        () => GoogCdp.parseResolveRealmRequest({}),
+        InvalidArgumentException,
+      );
+    });
+
+    it('should throw if the realm is not a string', () => {
+      assert.throws(
+        () => GoogCdp.parseResolveRealmRequest({realm: 1}),
+        InvalidArgumentException,
+      );
     });
   });
 });

@@ -114,6 +114,7 @@ ts_library("protocol") {
     "protocol/ErrorResponse.ts",
     "protocol/cdp.ts",
     "protocol/chromium-bidi.ts",
+    "protocol/generated/goog.ts",
     "protocol/generated/webdriver-bidi-autofill.ts",
     "protocol/generated/webdriver-bidi-bluetooth.ts",
     "protocol/generated/webdriver-bidi-digital-credentials.ts",
@@ -130,6 +131,7 @@ ts_library("protocol") {
 ts_library("protocol_parser") {
   runs_in = "node"
   sources = [
+    "protocol-parser/generated/goog.ts",
     "protocol-parser/generated/webdriver-bidi-autofill.ts",
     "protocol-parser/generated/webdriver-bidi-bluetooth.ts",
     "protocol-parser/generated/webdriver-bidi-digital-credentials.ts",
