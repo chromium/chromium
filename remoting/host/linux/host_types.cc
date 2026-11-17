@@ -23,6 +23,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "remoting/host/linux/auto_session_host_type.h"
 #include "remoting/host/linux/custom_host_type.h"
 #include "remoting/host/linux/gdm_managed_host_type.h"
 #include "remoting/host/linux/host_type_environment.h"
@@ -189,6 +190,7 @@ HostType::GetHostTypes() {
           {GetGdmManagedHostType().name(), &GetGdmManagedHostType()},
           {GetCustomHostType().name(), &GetCustomHostType()},
           {GetX11HostType().name(), &GetX11HostType()},
+          {GetAutoSessionHostType().name(), &GetAutoSessionHostType()},
       });
   return *kHostTypes;
 }

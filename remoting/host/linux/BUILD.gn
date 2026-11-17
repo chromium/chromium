@@ -194,6 +194,8 @@ static_library("utils") {
 
 source_set("host_types") {
   sources = [
+    "auto_session_host_type.cc",
+    "auto_session_host_type.h",
     "custom_host_type.cc",
     "custom_host_type.h",
     "gdm_managed_host_type.cc",
@@ -544,6 +546,7 @@ source_set("unit_tests") {
 
   sources = [
     "audio_pipe_reader_unittest.cc",
+    "auto_session_host_type_unittest.cc",
     "certificate_watcher_unittest.cc",
     "created_session_tracker_unittest.cc",
     "custom_host_type_unittest.cc",

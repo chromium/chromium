@@ -243,6 +243,15 @@ TEST_F(HostTypeTest, GetFallbackConfigured_AnyRoutingFile_Custom) {
   }
 }
 
+TEST_F(HostTypeTest, GetFallbackConfigured_AutoSessionRoutingFile_Custom) {
+  // Without a record, any routing file means custom.
+  WriteFileWithMode(env_->GetMultiProcessConfigPath(), "{}");
+  WriteRoutingConfig(
+      R"({"sessionUser": "testuser", "createRemoteUserSessions": true})");
+
+  EXPECT_EQ(HostType::GetFallbackConfigured(*env_), custom());
+}
+
 TEST_F(HostTypeTest, GetFallbackConfigured_DanglingRoutingFileSymlink_Custom) {
   WriteFileWithMode(env_->GetMultiProcessConfigPath(), "{}");
   ASSERT_TRUE(base::CreateSymbolicLink(
