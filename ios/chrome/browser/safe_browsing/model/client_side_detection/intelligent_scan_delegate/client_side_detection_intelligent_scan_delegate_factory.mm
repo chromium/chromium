@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_intelligent_scan_delegate_factory.h"
+#import "ios/chrome/browser/safe_browsing/model/client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_factory.h"
 
 #import <memory>
 #import <utility>
@@ -14,7 +14,7 @@
 #import "components/safe_browsing/core/common/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_intelligent_scan_delegate_ios.h"
+#import "ios/chrome/browser/safe_browsing/model/client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // The service is created lazily. There is no on-device model to observe on

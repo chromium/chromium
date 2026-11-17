@@ -1,0 +1,56 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("intelligent_scan_delegate") {
+  sources = [
+    "client_side_detection_intelligent_scan_delegate_factory.h",
+    "client_side_detection_intelligent_scan_delegate_factory.mm",
+    "client_side_detection_intelligent_scan_delegate_ios.h",
+    "client_side_detection_intelligent_scan_delegate_ios.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/optimization_guide/core:core_util",
+    "//components/optimization_guide/core:features",
+    "//components/optimization_guide/core:model_execution",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs",
+    "//components/safe_browsing/core/browser/client_side_detection/intelligent_scan_delegate",
+    "//components/safe_browsing/core/common:features",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "client_side_detection_intelligent_scan_delegate_factory_unittest.mm",
+    "client_side_detection_intelligent_scan_delegate_ios_unittest.mm",
+  ]
+  deps = [
+    ":intelligent_scan_delegate",
+    "//base",
+    "//base/test:test_support",
+    "//components/optimization_guide/core:core_util",
+    "//components/optimization_guide/core:features",
+    "//components/optimization_guide/core:model_execution",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/browser/client_side_detection/intelligent_scan_delegate",
+    "//components/safe_browsing/core/common:features",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

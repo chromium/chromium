@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_intelligent_scan_delegate_factory.h"
+#import "ios/chrome/browser/safe_browsing/model/client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_factory.h"
 
 #import <memory>
 #import <utility>

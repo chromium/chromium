@@ -152,6 +152,7 @@ source_set("model") {
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/safe_browsing/model/client_side_detection",
+    "//ios/chrome/browser/safe_browsing/model/client_side_detection/intelligent_scan_delegate",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
