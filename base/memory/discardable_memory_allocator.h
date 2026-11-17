@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/base_export.h"
+#include "base/byte_size.h"
 #include "base/functional/callback.h"
 #include "base/memory/discardable_memory.h"
 
@@ -44,6 +45,8 @@ class BASE_EXPORT DiscardableMemoryAllocator {
   // and manually discarded heuristicly (via memory pressure notifications).
   virtual std::unique_ptr<DiscardableMemory> AllocateLockedDiscardableMemory(
       size_t size) = 0;
+  virtual std::unique_ptr<DiscardableMemory> AllocateLockedDiscardableMemory(
+      ByteSize size);
 
   // Allocates discardable memory the same way |AllocateLockedDiscardableMemory|
   // does. In case of failure, calls |on_no_memory| and retries once. As a
@@ -57,10 +60,14 @@ class BASE_EXPORT DiscardableMemoryAllocator {
   std::unique_ptr<DiscardableMemory>
   AllocateLockedDiscardableMemoryWithRetryOrDie(size_t size,
                                                 OnceClosure on_no_memory);
+  std::unique_ptr<DiscardableMemory>
+  AllocateLockedDiscardableMemoryWithRetryOrDie(ByteSize size,
+                                                OnceClosure on_no_memory);
 
   // Gets the total number of bytes allocated by this allocator which have not
   // been discarded.
   virtual size_t GetBytesAllocated() const = 0;
+  virtual ByteSize GetAllocatedSize() const;
 
   // Release any memory used in the implementation of discardable memory that is
   // not immediately being used.

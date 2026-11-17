@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
+#include "base/byte_size.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/memory/discardable_memory.h"
@@ -272,6 +273,13 @@ void ClientDiscardableSharedMemoryManager::OnReleaseMemory() {
 std::unique_ptr<base::DiscardableMemory>
 ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
     size_t size) {
+  return AllocateLockedDiscardableMemory(base::ByteSize(size));
+}
+
+std::unique_ptr<base::DiscardableMemory>
+ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
+    base::ByteSize byte_size) {
+  const size_t size = static_cast<size_t>(byte_size.InBytes());
   base::AutoLock lock(lock_);
 
   if (!is_purge_scheduled_) {
@@ -412,8 +420,12 @@ bool ClientDiscardableSharedMemoryManager::OnMemoryDump(
 }
 
 size_t ClientDiscardableSharedMemoryManager::GetBytesAllocated() const {
+  return static_cast<size_t>(GetAllocatedSize().InBytes());
+}
+
+base::ByteSize ClientDiscardableSharedMemoryManager::GetAllocatedSize() const {
   base::AutoLock lock(lock_);
-  return GetBytesAllocatedLocked();
+  return base::ByteSize(GetBytesAllocatedLocked());
 }
 
 size_t ClientDiscardableSharedMemoryManager::GetBytesAllocatedLocked() const {

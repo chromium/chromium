@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 
+#include "base/byte_size.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/post_delayed_memory_reduction_task.h"
@@ -55,9 +56,12 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   // Overridden from base::DiscardableMemoryAllocator:
   std::unique_ptr<base::DiscardableMemory> AllocateLockedDiscardableMemory(
       size_t size) override LOCKS_EXCLUDED(lock_);
+  std::unique_ptr<base::DiscardableMemory> AllocateLockedDiscardableMemory(
+      base::ByteSize size) override LOCKS_EXCLUDED(lock_);
 
   // Overridden from base::DiscardableMemoryAllocator:
   size_t GetBytesAllocated() const override LOCKS_EXCLUDED(lock_);
+  base::ByteSize GetAllocatedSize() const override LOCKS_EXCLUDED(lock_);
 
   // Overridden from base::DiscardableMemoryAllocator:
   // Release memory and associated resources that have been purged.
@@ -80,8 +84,11 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   void OnForegrounded();
   void OnBackgrounded();
 
+  void SetBytesAllocatedLimitForTesting(base::ByteSize limit) {
+    bytes_allocated_limit_for_testing_ = static_cast<size_t>(limit.InBytes());
+  }
   void SetBytesAllocatedLimitForTesting(size_t limit) {
-    bytes_allocated_limit_for_testing_ = limit;
+    SetBytesAllocatedLimitForTesting(base::ByteSize(limit));
   }
 
   // base::MemoryConsumer:
