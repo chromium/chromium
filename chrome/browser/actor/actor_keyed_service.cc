@@ -1222,8 +1222,8 @@ void ActorKeyedService::OnDownloadCreated(content::DownloadManager* manager,
               ? web_contents->GetPrimaryMainFrame()->GetNavigationId()
               : 0;
       ActorCriticalActionLogger::LogAgentSelfReportedAction(
-          profile_, task->source_info().id.value_or(""),
-          critical_actions::ActionType::kDownload, navigation_id, task->id());
+          profile_, *task, critical_actions::ActionType::kDownload,
+          navigation_id);
     }
   }
 }

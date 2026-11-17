@@ -25,6 +25,9 @@ class ActorKeyedServiceFake : public ActorKeyedService {
   TaskId CreateTaskForTesting();
   TaskId CreateTransientTaskForTesting();
   TaskId CreateExperimentalTriggeringTaskForTesting();
+  // Creates a default-duration task created by `source_info`, e.g. `kGlic` with
+  // a conversation id.
+  TaskId CreateTaskWithSourceInfoForTesting(const TaskSourceInfo& source_info);
   // Same as CreateExperimentalTriggeringTaskForTesting(), but with the given
   // task `title` (which may be empty).
   TaskId CreateExperimentalTriggeringTaskWithTitleForTesting(
@@ -37,7 +40,8 @@ class ActorKeyedServiceFake : public ActorKeyedService {
   TaskId CreateTaskWithDurationAndFeatureModeForTesting(
       actor::webui::mojom::TaskDuration duration,
       glic::mojom::FeatureMode feature_mode,
-      const std::string& title = "Test Task");
+      const std::string& title = "Test Task",
+      const TaskSourceInfo& source_info = TestTaskSourceInfo());
 
   TaskId CreateTaskWithDurationForTesting(
       actor::webui::mojom::TaskDuration duration);

@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/task_id.h"
+#include "components/actor/core/task_source_info.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/critical_actions/core/browser/critical_action_service.h"
 #include "components/critical_actions/core/browser/features.h"
@@ -151,6 +153,24 @@ critical_actions::ActionType EvaluateToolRequest(
 
 }  // namespace
 
+// static
+bool ActorCriticalActionLogger::IsTaskSourceSupported(
+    TaskSourceInfo::Client source) {
+  switch (source) {
+    // Only Glic critical action logging is supported for now.
+    case TaskSourceInfo::Client::kGlic:
+      return true;
+    case TaskSourceInfo::Client::kUnknown:
+    case TaskSourceInfo::Client::kTest:
+    case TaskSourceInfo::Client::kExperimentalActor:
+    case TaskSourceInfo::Client::kContextualTasks:
+    case TaskSourceInfo::Client::kTtc:
+    case TaskSourceInfo::Client::kBrowserActuator:
+      return false;
+  }
+  NOTREACHED();
+}
+
 void ActorCriticalActionLogger::MaybeLogAction(
     ActorTask& task,
     Profile* profile,
@@ -168,17 +188,15 @@ void ActorCriticalActionLogger::MaybeLogAction(
     return;
   }
 
-  LogAgentSelfReportedAction(profile, task.source_info().id.value_or(""),
-                             action_type, navigation_id, task.id(),
+  LogAgentSelfReportedAction(profile, task, action_type, navigation_id,
                              GetActionMetadata(action, action_type, result));
 }
 
 void ActorCriticalActionLogger::LogAgentSelfReportedAction(
     Profile* profile,
-    std::string conversation_id,
+    const ActorTask& task,
     critical_actions::ActionType action_type,
     int64_t navigation_id,
-    TaskId actor_task_id,
     std::string metadata) {
   if (!base::FeatureList::IsEnabled(
           critical_actions::features::kCriticalActionHistory)) {
@@ -189,13 +207,17 @@ void ActorCriticalActionLogger::LogAgentSelfReportedAction(
     return;
   }
 
+  if (!IsTaskSourceSupported(task.source_info().type)) {
+    return;
+  }
+
   critical_actions::CriticalActionService* service =
       critical_actions::CriticalActionFactory::GetForProfile(profile);
   if (!service) {
     return;
   }
 
-  LogEntry(*service, action_type, std::move(conversation_id), actor_task_id,
+  LogEntry(*service, action_type, task.source_info().id.value_or(""), task.id(),
            std::move(metadata), navigation_id);
 
   if (feature_engagement::Tracker* tracker =

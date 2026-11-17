@@ -55,11 +55,19 @@ TaskId ActorKeyedServiceFake::CreateTaskWithDurationForTesting(  // IN-TEST
       duration, glic::mojom::FeatureMode::kUnspecified);
 }
 
+TaskId ActorKeyedServiceFake::CreateTaskWithSourceInfoForTesting(
+    const TaskSourceInfo& source_info) {
+  return CreateTaskWithDurationAndFeatureModeForTesting(  // IN-TEST
+      actor::webui::mojom::TaskDuration::kDefault,
+      glic::mojom::FeatureMode::kUnspecified, "Test Task", source_info);
+}
+
 TaskId ActorKeyedServiceFake::
     CreateTaskWithDurationAndFeatureModeForTesting(  // IN-TEST
         actor::webui::mojom::TaskDuration duration,
         glic::mojom::FeatureMode feature_mode,
-        const std::string& title) {
+        const std::string& title,
+        const TaskSourceInfo& source_info) {
   std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher =
       ui::NewMockUiEventDispatcher();
   auto* mock_ui_dispatcher =
@@ -82,7 +90,7 @@ TaskId ActorKeyedServiceFake::
   task_options->duration = duration;
   task_options->feature_mode = feature_mode;
   return ActorKeyedService::CreateTaskForTesting(  // IN-TEST
-      std::move(ui_event_dispatcher), TestTaskSourceInfo(),
+      std::move(ui_event_dispatcher), source_info,
       &no_enterprise_policy_checker_, std::move(task_options),
       /*delegate=*/nullptr);
 }
