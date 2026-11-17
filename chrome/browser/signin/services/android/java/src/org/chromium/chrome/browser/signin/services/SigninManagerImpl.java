@@ -334,25 +334,6 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         // started until this one completes (see {@link isOperationInProgress()}).
         mSignInState = signInState;
 
-        if (!SigninFeatureMap.isEnabled(SigninFeatures.SKIP_CHECK_FOR_ACCOUNT_MANAGEMENT_ON_SIGNIN)
-                && !getUserAcceptedAccountManagement()) {
-            isAccountManaged(
-                    mSignInState.mCoreAccountInfo,
-                    (Boolean isAccountManaged) -> {
-                        if (isAccountManaged) {
-                            throw new IllegalStateException(
-                                    "User must accept Account Management before "
-                                            + "signing into a Managed account.");
-                        } else {
-                            signinInternalAfterCheckingManagedState();
-                        }
-                    });
-        } else {
-            signinInternalAfterCheckingManagedState();
-        }
-    }
-
-    private void signinInternalAfterCheckingManagedState() {
         // Retrieve the primary account and use it to seed and reload all accounts.
         if (!mAccountManagerFacade.getAccounts().isFulfilled()) {
             throw new IllegalStateException("Account information should be available on signin");

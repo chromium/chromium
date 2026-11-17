@@ -931,11 +931,6 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSignOutOfChrome);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kSkipCheckForAccountManagementOnSignin);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // When enabled, /ListAccounts is not sent if there are no cookies for the Gaia
 // origin, as the response would contain no accounts.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

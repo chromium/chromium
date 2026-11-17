@@ -941,16 +941,6 @@ BASE_FEATURE(kSignOutDeletesBrowsingData, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSignOutOfChrome, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-// Feature to bypass double-checking that signin callers have correctly gotten
-// the user to accept account management. This check is slow and not strictly
-// necessary, so disable it while we work on adding caching.
-// TODO(https://crbug.com/339457762): Restore the check when we implement
-// caching.
-BASE_FEATURE(kSkipCheckForAccountManagementOnSignin,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 BASE_FEATURE(kSkipListAccountsWithoutGaiaCookies,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -33,7 +33,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kForceStartupSigninPromo,
     &switches::kForceHistoryOptInScreen,
     &switches::kOpenSystemAccountSettingsDirectly,
-    &switches::kSkipCheckForAccountManagementOnSignin,
     &switches::kSyncEnableBookmarksInTransportMode,
     &switches::kMakeIdentityManagerSourceOfAccounts,
     &switches::kMakeIdentityManagerSourceOfAccountsPart2,
