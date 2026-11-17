@@ -166,16 +166,20 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
     base::optional_ref<const blink::LocalFrameToken> local_frame_token,
     const network::ResourceRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if !BUILDFLAG(IS_ANDROID)
   const bool is_webui = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kTopChromeWebUI);
   const bool bypass_throttles =
-      is_webui && features::kWebUIReloadButtonBypassLoaderThrottles.Get();
+      is_webui &&
+#if BUILDFLAG(IS_ANDROID)
+      base::FeatureList::IsEnabled(
+          features::kAndroidTopChromeWebUIBypassLoaderThrottles);
+#else
+      features::kWebUIReloadButtonBypassLoaderThrottles.Get();
+#endif
   // Resource loads for topchrome WebUIs shouldn't be throttled.
   if (bypass_throttles) {
     return {};
   }
-#endif
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
 

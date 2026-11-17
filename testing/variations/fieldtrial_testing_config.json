@@ -819,6 +819,7 @@
                     "name": "Enabled_20261110",
                     "enable_features": [
                         "AndroidNewTabButtonTabstripWebUI",
+                        "AndroidTopChromeWebUIBypassLoaderThrottles",
                         "InitialWebUI",
                         "WebUIToolbarFrameEvictionOptOut",
                         "WebUiAndroidTheming"

@@ -93,6 +93,12 @@ BASE_FEATURE(kAndroidKeepProfilePartitionDirsInCacheDir,
 BASE_FEATURE(kAndroidMultiprofileStartupData,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, renderers for Top Chrome WebUIs (e.g. the tab strip new tab
+// button) do not create URL loader throttles for their resource requests.
+// Android counterpart of kWebUIReloadButtonBypassLoaderThrottles.
+BASE_FEATURE(kAndroidTopChromeWebUIBypassLoaderThrottles,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Blocks navigations to content:// URIs served by Chrome's own
 // android:exported="false" content providers. Kill switch for
 // https://crbug.com/496190746.
