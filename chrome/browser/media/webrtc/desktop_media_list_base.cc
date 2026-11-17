@@ -205,6 +205,11 @@ void DesktopMediaListBase::UpdateSourceThumbnail(const DesktopMediaID& id,
 
   for (size_t i = 0; i < sources_.size(); ++i) {
     if (sources_[i].id == id) {
+      // Don't notify when a blocked source's thumbnail stays empty.
+      if (sources_[i].is_sharing_blocked && image.isNull() &&
+          sources_[i].thumbnail.isNull()) {
+        break;
+      }
       sources_[i].thumbnail = image;
       if (observer_)
         observer_->OnSourceThumbnailChanged(i);

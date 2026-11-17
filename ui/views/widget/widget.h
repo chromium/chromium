@@ -1536,6 +1536,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void SetAllowScreenshots(bool allow);
   bool AreScreenshotsAllowed();
 
+  // Registers `callback` to be called with the new value whenever
+  // SetAllowScreenshots() is called.
+  base::CallbackListSubscription RegisterAllowScreenshotsChangedCallback(
+      base::RepeatingCallback<void(bool)> callback);
+
 #if BUILDFLAG(IS_WIN)
   // Called to exclude this window from screen capture.
   // Note: On macOS, equivalent functionality is handled at the capturer
@@ -1761,6 +1766,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Callbacks to notify when the ShouldPaintAsActive() changes.
   PaintAsActiveCallbackList paint_as_active_callbacks_;
+
+  // Callbacks to notify when SetAllowScreenshots() is called.
+  base::RepeatingCallbackList<void(bool)> allow_screenshots_changed_callbacks_;
 
   // Lock on the parent widget when this widget is active.
   // When this widget is destroyed, the lock is automatically released.

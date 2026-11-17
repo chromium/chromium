@@ -59,6 +59,7 @@
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/media/webrtc/data_protection_tab_capture_handler.h"
+#include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
 #include "content/public/browser/render_frame_host.h"
 #endif
 
@@ -410,6 +411,16 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
             enterprise_data_protection::kEnableTabSharingProtection)) {
       return;
     }
+#if !BUILDFLAG(IS_ANDROID)
+    if (media_id.type == content::DesktopMediaID::Type::TYPE_WINDOW) {
+      if (views::Widget* window = GetWidgetFromWindowId(media_id)) {
+        window_data_protection_handlers_[media_id.window_id] =
+            std::make_unique<DataProtectionTabCaptureHandler>(
+                *window, media_id, state_change_callback_);
+      }
+      return;
+    }
+#endif
     if (media_id.type != content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
       return;
     }
@@ -432,6 +443,9 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
     if (media_id.type == content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
       data_protection_handlers_.erase(media_id.web_contents_id);
     }
+    if (media_id.type == content::DesktopMediaID::Type::TYPE_WINDOW) {
+      window_data_protection_handlers_.erase(media_id.window_id);
+    }
   }
 #endif
 
@@ -450,6 +464,9 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
   base::flat_map<content::WebContentsMediaCaptureId,
                  std::unique_ptr<DataProtectionTabCaptureHandler>>
       data_protection_handlers_;
+  base::flat_map<content::DesktopMediaID::Id,
+                 std::unique_ptr<DataProtectionTabCaptureHandler>>
+      window_data_protection_handlers_;
 #endif
 };
 

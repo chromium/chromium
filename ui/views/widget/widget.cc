@@ -2785,6 +2785,12 @@ void Widget::SetAllowScreenshots(bool allow) {
   if (native_widget_) {
     native_widget_->SetAllowScreenshots(allow);
   }
+  allow_screenshots_changed_callbacks_.Notify(allow);
+}
+
+base::CallbackListSubscription Widget::RegisterAllowScreenshotsChangedCallback(
+    base::RepeatingCallback<void(bool)> callback) {
+  return allow_screenshots_changed_callbacks_.Add(std::move(callback));
 }
 
 bool Widget::AreScreenshotsAllowed() {

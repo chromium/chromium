@@ -7,9 +7,14 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "ui/views/widget/widget.h"
+#endif
 
 DataProtectionTabCaptureHandler::DataProtectionTabCaptureHandler(
     content::WebContents* captured_contents,
@@ -30,6 +35,23 @@ DataProtectionTabCaptureHandler::DataProtectionTabCaptureHandler(
           weak_factory_.GetWeakPtr()));
   OnScreenshotAllowedUpdated(controller->screenshot_allowed());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+DataProtectionTabCaptureHandler::DataProtectionTabCaptureHandler(
+    views::Widget& captured_window,
+    const content::DesktopMediaID& media_id,
+    content::MediaStreamUI::StateChangeCallback state_change_callback)
+    : media_id_(media_id),
+      state_change_callback_(std::move(state_change_callback)) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  screenshot_allowed_subscription_ =
+      captured_window.RegisterAllowScreenshotsChangedCallback(
+          base::BindRepeating(
+              &DataProtectionTabCaptureHandler::OnScreenshotAllowedUpdated,
+              weak_factory_.GetWeakPtr()));
+  OnScreenshotAllowedUpdated(captured_window.AreScreenshotsAllowed());
+}
+#endif
 
 DataProtectionTabCaptureHandler::~DataProtectionTabCaptureHandler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

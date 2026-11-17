@@ -24,6 +24,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -849,6 +850,57 @@ TEST_F(NativeDesktopMediaListTest, NonDelegatedScopedCGWindowIDCollision) {
   // ScopedCGWindowID.
   ASSERT_GT(model_->GetSourceCount(), 0);
   EXPECT_EQ(model_->GetSource(0).id.window_id, kTargetWindowId);
+}
+
+// A window of this browser that disallows screenshots is blocked, and its
+// preview is dropped until the window allows screenshots again.
+TEST_F(NativeDesktopMediaListTest, ProtectedBrowserWindow) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->Show();
+  // This browser's windows are listed by their CGWindowID.
+  webrtc::DesktopCapturer::Source source;
+  source.id = DesktopMediaID::RegisterNativeWindow(DesktopMediaID::TYPE_WINDOW,
+                                                   widget->GetNativeWindow())
+                  .window_id;
+  source.title = "Test window";
+  ASSERT_TRUE(remote_cocoa::ScopedCGWindowID::Get(source.id));
+
+  CreateCapturerAndModel();
+  model_->SetUpdatePeriod(base::Milliseconds(20));
+  window_capturer_->SetWindowList({source});
+  EXPECT_CALL(observer_, OnSourceAdded(0));
+  EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
+      .Times(testing::AnyNumber());
+  model_->StartUpdating(&observer_);
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return model_->GetSourceCount() == 1 &&
+           !model_->GetSource(0).thumbnail.isNull();
+  }));
+  EXPECT_FALSE(model_->GetSource(0).is_sharing_blocked);
+
+  widget->SetAllowScreenshots(false);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return model_->GetSource(0).thumbnail.isNull(); }));
+  EXPECT_TRUE(model_->GetSource(0).is_sharing_blocked);
+
+  // Later refreshes don't notify about the empty preview again.
+  EXPECT_CALL(observer_, OnSourceThumbnailChanged(0)).Times(0);
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer_, OnSourceNameChanged(0))
+      .WillOnce(QuitRunLoop(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                            &run_loop));
+  source.title = "Renamed window";
+  window_capturer_->SetWindowList({source});
+  run_loop.Run();
+  testing::Mock::VerifyAndClearExpectations(&observer_);
+
+  EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
+      .Times(testing::AnyNumber());
+  widget->SetAllowScreenshots(true);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !model_->GetSource(0).thumbnail.isNull(); }));
+  EXPECT_FALSE(model_->GetSource(0).is_sharing_blocked);
 }
 #endif  // BUILDFLAG(IS_MAC)
 

@@ -13,6 +13,10 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
+namespace views {
+class Widget;
+}  // namespace views
+
 // Helper to get the list of media stream devices for desktop capture and store
 // them in |out_devices|. Registers to display notification if
 // |display_notification| is true. Returns an instance of MediaStreamUI to be
@@ -37,5 +41,14 @@ void GetDevicesForDesktopCapture(
 
 content::WebContents* GetWebContentsFromWindowIfCaptureHandleAllowed(
     gfx::NativeWindow native_window);
+
+// Returns the widget of this browser's own window targeted by the window
+// capture `media_id`, or nullptr.
+views::Widget* GetWidgetFromWindowId(const content::DesktopMediaID& media_id);
+
+// Returns true if `media_id` targets one of this browser's own windows while
+// Enterprise screenshot protection applies to it.
+bool IsWindowSharingBlockedByDataProtection(
+    const content::DesktopMediaID& media_id);
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_CAPTURE_DEVICES_UTIL_H_

@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_capture.h"
@@ -628,5 +629,25 @@ content::WebContents* GetWebContentsFromWindowIfCaptureHandleAllowed(
   return active_tab ? active_tab->GetContents() : nullptr;
 #else
   return nullptr;
+#endif
+}
+
+views::Widget* GetWidgetFromWindowId(const content::DesktopMediaID& media_id) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (media_id.type == content::DesktopMediaID::TYPE_WINDOW) {
+    return GetTopLevelWidgetFromNativeWindow(
+        content::DesktopMediaID::GetNativeWindowById(media_id));
+  }
+#endif
+  return nullptr;
+}
+
+bool IsWindowSharingBlockedByDataProtection(
+    const content::DesktopMediaID& media_id) {
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION) && !BUILDFLAG(IS_ANDROID)
+  views::Widget* widget = GetWidgetFromWindowId(media_id);
+  return widget && !widget->AreScreenshotsAllowed();
+#else
+  return false;
 #endif
 }

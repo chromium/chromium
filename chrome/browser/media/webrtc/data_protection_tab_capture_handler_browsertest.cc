@@ -10,6 +10,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
+#include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -23,10 +26,13 @@
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "media/mojo/mojom/display_media_information.mojom.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "ui/base/base_window.h"
 #include "url/gurl.h"
 
 namespace {
@@ -210,6 +216,54 @@ IN_PROC_BROWSER_TEST_F(DataProtectionTabCaptureHandlerBrowserTest,
   EXPECT_CALL(mock_callback_, Run).Times(0);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowserWindowInterface(),
                                            GetBlockedUrl()));
+}
+
+// Sharing the browser's own window must pause, and the window must be blocked
+// in the picker, while it shows a page that disallows screenshots.
+IN_PROC_BROWSER_TEST_F(DataProtectionTabCaptureHandlerBrowserTest,
+                       WindowCapturePausedWhileProtected) {
+  SetScreenshotBlockedForHost("blocked.com");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowserWindowInterface(),
+                                           GetAllowedUrl()));
+
+  // Start a window capture of this browser window, like a getDisplayMedia()
+  // window share from a tab of the same browser.
+  const content::DesktopMediaID window_media_id =
+      content::DesktopMediaID::RegisterNativeWindow(
+          content::DesktopMediaID::TYPE_WINDOW,
+          GetBrowserWindowInterface()->GetWindow()->GetNativeWindow());
+  blink::MediaStreamDevice device(
+      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+      window_media_id.ToString(), "window");
+  device.display_media_info = media::mojom::DisplayMediaInformation::New(
+      media::mojom::DisplayCaptureSurfaceType::WINDOW,
+      /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
+      /*capture_handle=*/nullptr, /*initial_zoom_level=*/100);
+  blink::mojom::StreamDevices devices;
+  devices.video_device = std::move(device);
+  std::unique_ptr<content::MediaStreamUI> ui =
+      MediaCaptureDevicesDispatcher::GetInstance()
+          ->GetMediaStreamCaptureIndicator()
+          ->RegisterMediaStream(GetActiveWebContents(), devices);
+  ui->OnStarted(base::RepeatingClosure(),
+                content::MediaStreamUI::SourceCallback(), /*label=*/"label",
+                /*screen_capture_ids=*/{window_media_id}, mock_callback_.Get());
+
+  EXPECT_CALL(mock_callback_,
+              Run(window_media_id, blink::mojom::MediaStreamStateChange::PAUSE))
+      .Times(1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowserWindowInterface(),
+                                           GetBlockedUrl()));
+  testing::Mock::VerifyAndClearExpectations(&mock_callback_);
+  EXPECT_TRUE(IsWindowSharingBlockedByDataProtection(window_media_id));
+
+  EXPECT_CALL(mock_callback_,
+              Run(window_media_id, blink::mojom::MediaStreamStateChange::PLAY))
+      .Times(1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowserWindowInterface(),
+                                           GetAllowedUrl()));
+  testing::Mock::VerifyAndClearExpectations(&mock_callback_);
+  EXPECT_FALSE(IsWindowSharingBlockedByDataProtection(window_media_id));
 }
 
 }  // namespace

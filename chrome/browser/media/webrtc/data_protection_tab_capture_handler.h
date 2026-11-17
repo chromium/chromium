@@ -20,14 +20,25 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace views {
+class Widget;
+}  // namespace views
+
 // Handles Enterprise Data Protection screenshot and tab-sharing policy updates
-// from DataProtectionNavigationController for the WebRTC MediaStream pipeline.
+// for the WebRTC MediaStream pipeline, from DataProtectionNavigationController
+// for a captured tab, or from views::Widget for a captured browser window.
 // Pauses the stream when screenshots/sharing are disallowed and resumes when
 // allowed.
 class DataProtectionTabCaptureHandler {
  public:
   DataProtectionTabCaptureHandler(
       content::WebContents* captured_contents,
+      const content::DesktopMediaID& media_id,
+      content::MediaStreamUI::StateChangeCallback state_change_callback);
+  // Pauses the capture of one of the browser's own windows while that window
+  // disallows screenshots.
+  DataProtectionTabCaptureHandler(
+      views::Widget& captured_window,
       const content::DesktopMediaID& media_id,
       content::MediaStreamUI::StateChangeCallback state_change_callback);
   DataProtectionTabCaptureHandler(const DataProtectionTabCaptureHandler&) =

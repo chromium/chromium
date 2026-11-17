@@ -21,6 +21,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -236,6 +237,10 @@ void AssignWindowIdAndUpdateThumbnail(
     ThumbnailCallback update_thumbnail_callback) {
   desktop_media_id.window_id =
       GetUpdatedWindowId(desktop_media_id, is_source_list_delegated);
+  // Never show a preview of a window that is protected from capture.
+  if (IsWindowSharingBlockedByDataProtection(desktop_media_id)) {
+    return;
+  }
   std::move(update_thumbnail_callback).Run(desktop_media_id, thumbnail);
 }
 
@@ -1013,6 +1018,8 @@ void NativeDesktopMediaList::RefreshForVizFrameSinkWindows(
 
     source_it->id.window_id =
         GetUpdatedWindowId(source_it->id, is_source_list_delegated_);
+    source_it->is_sharing_blocked =
+        IsWindowSharingBlockedByDataProtection(source_it->id);
 
     ++source_it;
   }
@@ -1044,6 +1051,11 @@ void NativeDesktopMediaList::RefreshForVizFrameSinkWindows(
   // or UpdateNativeThumbnailsFinished() are called.
   std::vector<DesktopMediaID> native_ids;
   for (const auto& source : sources) {
+    // Never capture a preview of a window that is protected from capture.
+    if (source.is_sharing_blocked) {
+      UpdateSourceThumbnail(source.id, gfx::ImageSkia());
+      continue;
+    }
 #if defined(USE_AURA)
     if (source.id.window_id > DesktopMediaID::kNullId) {
       CaptureAuraWindowThumbnail(source.id);
@@ -1053,18 +1065,18 @@ void NativeDesktopMediaList::RefreshForVizFrameSinkWindows(
     native_ids.push_back(source.id);
   }
 
-  if (!native_ids.empty()) {
+  // Post even if `native_ids` is empty, e.g. when all windows are blocked, so
+  // that UpdateNativeThumbnailsFinished() completes the refresh.
 #if defined(USE_AURA)
-    pending_native_thumbnail_capture_ = true;
+  pending_native_thumbnail_capture_ = true;
 #endif
-    // base::Unretained is safe here because we own the lifetime of both the
-    // worker and the thread and ensure that destroying the worker is the last
-    // thing the thread does before stopping.
-    thread_.task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&Worker::RefreshThumbnails,
-                                  base::Unretained(worker_.get()),
-                                  std::move(native_ids), thumbnail_size_));
-  }
+  // base::Unretained is safe here because we own the lifetime of both the
+  // worker and the thread and ensure that destroying the worker is the last
+  // thing the thread does before stopping.
+  thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&Worker::RefreshThumbnails,
+                                base::Unretained(worker_.get()),
+                                std::move(native_ids), thumbnail_size_));
 }
 
 void NativeDesktopMediaList::UpdateNativeThumbnailsFinished() {
