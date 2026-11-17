@@ -1374,16 +1374,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.DiscardableAllocationSize" units="KB"
-    expires_after="2023-03-19">
-  <owner>reveman@chromium.org</owner>
-  <owner>thiabaud@google.com</owner>
-  <summary>
-    The discardable memory allocation size in KB. Recorded each time a new
-    discardable memory instance is created.
-  </summary>
-</histogram>
-
 <histogram name="Memory.Dump.Type.{DetailLevel}" enum="MemoryDumpType"
     expires_after="2027-05-02">
   <owner>joenotcharles@google.com</owner>

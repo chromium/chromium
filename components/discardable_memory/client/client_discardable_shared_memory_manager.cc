@@ -285,13 +285,6 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
 
   DCHECK_NE(size, 0u);
 
-  auto size_in_kb = static_cast<base::HistogramBase::Sample32>(size / 1024);
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Memory.DiscardableAllocationSize",
-                              size_in_kb,  // In KiB
-                              1,
-                              4 * 1024 * 1024,  // 4 GiB
-                              50);
-
   // Round up to multiple of page size, failing if `size` is so large that this
   // would overflow.
   const base::CheckedNumeric<size_t> pages_checked =
