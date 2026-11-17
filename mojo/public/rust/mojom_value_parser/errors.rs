@@ -27,7 +27,7 @@ pub enum ParsingErrorType {
     /// Indicates that we ran out of data while parsing
     NotEnoughData {
         /// A description of what we tried to parse (a type, or padding, etc)
-        tried_to_parse: String,
+        tried_to_parse: &'static str,
         expected_size: usize,
         /// How much data was actually left
         remaining_bytes: usize,
@@ -59,7 +59,7 @@ pub enum ParsingErrorType {
     /// Indicates that the key and value arrays for a map were different lengths
     MismatchedMap { key_len: usize, value_len: usize },
     /// Indicates that the corresponding mojom feature has yet to be implemented
-    NotImplemented { feature_name: String },
+    NotImplemented { feature_name: &'static str },
     /// Indicates that we failed to retrieve a handle from the given index
     InvalidHandleIndex { idx: usize, is_interface_id: bool },
     /// Indicates that the interface ID array contained an invalid value
@@ -70,9 +70,10 @@ pub enum ParsingErrorType {
 }
 
 impl ParsingError {
+    #[cold]
     pub fn not_enough_data(
         offset: usize,
-        tried_to_parse: String,
+        tried_to_parse: &'static str,
         expected_size: usize,
         remaining_bytes: usize,
     ) -> ParsingError {
@@ -82,18 +83,22 @@ impl ParsingError {
         }
     }
 
+    #[cold]
     pub fn too_much_data(offset: usize, remaining_bytes: usize) -> ParsingError {
         ParsingError { offset, ty: ParsingErrorType::TooMuchData { remaining_bytes } }
     }
 
+    #[cold]
     pub fn invalid_pointer(offset: usize, value: u64) -> ParsingError {
         ParsingError { offset, ty: ParsingErrorType::InvalidPointer { value } }
     }
 
+    #[cold]
     pub fn invalid_size(offset: usize, value: u32) -> ParsingError {
         ParsingError { offset, ty: ParsingErrorType::InvalidSize { value } }
     }
 
+    #[cold]
     pub fn wrong_pointer(
         offset: usize,
         name: String,
@@ -106,42 +111,52 @@ impl ParsingError {
         }
     }
 
+    #[cold]
     pub fn wrong_size(offset: usize, expected_size: usize, actual_size: usize) -> ParsingError {
         ParsingError { offset, ty: ParsingErrorType::WrongSize { expected_size, actual_size } }
     }
 
+    #[cold]
     pub fn invalid_discriminant(offset: usize, value: i32) -> ParsingError {
         ParsingError { offset, ty: ParsingErrorType::InvalidDiscriminant { value } }
     }
 
+    #[cold]
     pub fn wrong_array_size(offset: usize, expected: usize, actual: usize) -> ParsingError {
         ParsingError { offset, ty: ParsingErrorType::WrongArraySize { expected, actual } }
     }
 
+    #[cold]
     pub fn non_utf8_string(offset: usize, err: std::string::FromUtf8Error) -> ParsingError {
         ParsingError { offset, ty: ParsingErrorType::NonUTF8String { err } }
     }
 
+    #[cold]
     pub fn duplicate_map_key(offset: usize, dup: crate::ast::MojomValue) -> ParsingError {
         ParsingError { offset, ty: ParsingErrorType::DuplicateMapKey { dup } }
     }
 
+    #[cold]
     pub fn mismatched_map(offset: usize, key_len: usize, value_len: usize) -> ParsingError {
         ParsingError { offset, ty: ParsingErrorType::MismatchedMap { key_len, value_len } }
     }
 
-    pub fn not_implemented(offset: usize, feature_name: String) -> ParsingError {
+    #[cold]
+    pub fn not_implemented(offset: usize, feature_name: &'static str) -> ParsingError {
         ParsingError { offset, ty: ParsingErrorType::NotImplemented { feature_name } }
     }
 
+    #[cold]
     pub fn invalid_handle_index(offset: usize, idx: usize, is_interface_id: bool) -> ParsingError {
         ParsingError { offset, ty: ParsingErrorType::InvalidHandleIndex { idx, is_interface_id } }
     }
 
+    #[cold]
     pub fn invalid_interface_id(offset: usize, idx: usize, value: u32) -> ParsingError {
         ParsingError { offset, ty: ParsingErrorType::InvalidInterfaceId { idx, value } }
     }
 
+    #[cold]
     pub fn unconvertible_value(offset: usize, err: String) -> ParsingError {
         ParsingError { offset, ty: ParsingErrorType::UnconvertibleValue { err } }
     }

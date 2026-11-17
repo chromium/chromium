@@ -100,6 +100,8 @@ fn derive_mojomparse_struct(
     // The names of the fields in the struct.
     let field_idents: Vec<&syn::Ident> =
         struct_fields.iter().map(|field| field.ident.as_ref().unwrap()).collect();
+    let field_name_strs: Vec<String> =
+        struct_fields.iter().map(|field| field.ident.as_ref().unwrap().to_string()).collect();
 
     let context_type = syn::Ident::new("__MojomContext", proc_macro2::Span::mixed_site());
 
@@ -109,8 +111,7 @@ fn derive_mojomparse_struct(
         .map(|field| {
             let ty = &field.ty;
             let wire_ty = field_wire_type(&field.attrs, ty);
-            let name = field.ident.as_ref().unwrap().to_string();
-            quote! { (#name.to_string(), <#ty as __mojom_core::MojomParse<#wire_ty, #context_type>>::mojom_type()) }
+            quote! { <#ty as __mojom_core::MojomParse<#wire_ty, #context_type>>::mojom_type() }
         })
         .collect();
 
@@ -134,9 +135,8 @@ fn derive_mojomparse_struct(
             let ty = &field.ty;
             let wire_ty = field_wire_type(&field.attrs, ty);
             let name = &field.ident;
-            let name_str = field.ident.as_ref().unwrap().to_string();
             quote! {
-                (#name_str.to_string(), <#ty as __mojom_core::MojomParse<#wire_ty, #context_type>>::into_mojom_value(#value_ident.#name, #context_ident))
+                <#ty as __mojom_core::MojomParse<#wire_ty, #context_type>>::into_mojom_value(#value_ident.#name, #context_ident)
             }
         })
         .collect();
@@ -180,20 +180,16 @@ fn derive_mojomparse_struct(
 
             impl<#context_type: __MojomRegistrar> __mojom_core::MojomParse<Self, #context_type> for #name {
                 fn mojom_type() -> __mojom_core::MojomType {
-                    let (field_names, fields) : (Vec<String>, Vec<__mojom_core::MojomType>) = vec![
-                        #(#mojom_type_fields),*
-                    ]
-                    .into_iter().unzip();
+                    let field_names = vec![#(#field_name_strs.to_string()),*];
+                    let fields = vec![#(#mojom_type_fields),*];
                     __mojom_core::MojomType::Struct { field_names, fields }
                 }
 
                 fn into_mojom_value(self, #context_ident: &#context_type) -> __mojom_core::MojomValue {
                     let #value_ident = self;
-                    let (field_names, fields) : (Vec<String>, Vec<__mojom_core::MojomValue>) = vec![
-                        #(#to_mojom_value_fields),*
-                    ]
-                    .into_iter().unzip();
-                    __mojom_core::MojomValue::Struct ( field_names, fields )
+                    let field_names = vec![#(#field_name_strs.to_string()),*];
+                    let fields = vec![#(#to_mojom_value_fields),*];
+                    __mojom_core::MojomValue::Struct(field_names, fields)
                 }
 
                 fn try_from_mojom_value(#value_ident: __mojom_core::MojomValue, #context_ident: &#context_type) -> ::anyhow::Result<Self> {
@@ -205,16 +201,14 @@ fn derive_mojomparse_struct(
                         );
                     };
 
-                    if fields.len() != #num_fields {
-                        ::anyhow::bail!(
+                    let fields: [__mojom_core::MojomValue; #num_fields] = match fields.try_into() {
+                        Ok(fields) => fields,
+                        Err(fields) => ::anyhow::bail!(
                             "Wrong number of fields to construct a value of type {} from MojomValue {:?}",
                             std::any::type_name::<#name>(),
                             __mojom_core::MojomValue::Struct(field_names, fields)
-                        )
+                        ),
                     };
-
-                    // Try to extract all the field values at once
-                    let fields: [__mojom_core::MojomValue; #num_fields] = fields.try_into().unwrap();
                     let [#(#field_idents),*] = fields;
                     return Ok(Self {
                         #(#from_mojom_value_fields),*

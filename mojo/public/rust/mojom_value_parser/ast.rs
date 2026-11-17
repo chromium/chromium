@@ -51,8 +51,9 @@ pub enum MojomType {
     // `field_names` is only for debugging; it should have the same
     // length as `fields`
     Struct { field_names: Vec<String>, fields: Vec<MojomType> },
-    // Mojom has separate sized/unsized array types; we could have two variants here, but
-    // rust's type system can't enforce that the length is correct so there's little point.
+    // Mojom has separate sized/unsized array types; we could have two variants
+    // here, but rust's type system can't enforce that the length is correct so
+    // there's little point.
     Array { element_type: Box<MojomType>, num_elements: Option<usize> },
     Map { key_type: Box<MojomType>, value_type: Box<MojomType> },
     Nullable { inner_type: Box<MojomType> },
@@ -67,9 +68,8 @@ pub type InterfaceId = NonZeroU32;
 /// Representation of a value of a MojomType. These are what get encoded/decoded
 /// into/from Mojom messages.
 ///
-/// Note: the Hash trait is used to verify that maps don't have duplicate keys;
-/// the Ord trait is used so we can store these in BTreeMaps.
-#[derive(Debug, PartialEq, PartialOrd, Ord, Eq, Hash, Default)]
+/// Note: the Ord trait is used so we can store these in BTreeMaps.
+#[derive(Debug, PartialEq, PartialOrd, Ord, Eq, Default)]
 pub enum MojomValue {
     /// This value is only produced during parsing/deparsing to serve as a
     /// default value in vectors where we take elements individually.
@@ -225,7 +225,8 @@ pub enum PackedStructuredType {
         num_elements_in_value: usize,
     },
     Array {
-        // This uses Arc instead of Box so we can cheaply clone it during (de)parsing
+        // This uses Arc instead of Box so we can cheaply clone it during
+        // (de)parsing
         element_type: Arc<MojomWireType>,
         array_type: PackedArrayType,
     },

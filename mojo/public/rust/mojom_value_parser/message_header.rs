@@ -88,33 +88,30 @@ impl MessageHeader {
         let version = parse_u32(data)?;
 
         if version == 0 {
-            return Err(ParsingError::not_implemented(
-                start_offset,
-                "Mojom V0 Headers".to_string(),
-            ));
+            return Err(ParsingError::not_implemented(start_offset, "Mojom V0 Headers"));
         }
         if version == 1 && size != 32 {
             return Err(ParsingError::not_implemented(
                 start_offset,
-                "V1 Headers must have 32 bytes".to_string(),
+                "V1 Headers must have 32 bytes",
             ));
         }
         if version == 2 && size != 48 {
             return Err(ParsingError::not_implemented(
                 start_offset,
-                "V2 Headers must have 48 bytes".to_string(),
+                "V2 Headers must have 48 bytes",
             ));
         }
         if version == 3 && size != 56 {
             return Err(ParsingError::not_implemented(
                 start_offset,
-                "V3 Headers must have 56 bytes".to_string(),
+                "V3 Headers must have 56 bytes",
             ));
         }
         if version > 3 && size < 56 {
             return Err(ParsingError::not_implemented(
                 start_offset,
-                "V4+ Headers must have at least 56 bytes".to_string(),
+                "V4+ Headers must have at least 56 bytes",
             ));
         }
 

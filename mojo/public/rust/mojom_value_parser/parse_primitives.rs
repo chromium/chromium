@@ -96,13 +96,13 @@ impl<'a> ParserData<'a> {
 
 /// Skips the next `bytes_to_parse` bytes, assuming they exist.
 pub fn parse_padding(data: &mut ParserData, bytes_to_parse: usize) -> ParsingResult<()> {
-    let mk_err = || ParsingError {
-        offset: data.bytes_parsed(),
-        ty: ParsingErrorType::NotEnoughData {
-            tried_to_parse: "padding".to_string(),
-            expected_size: bytes_to_parse,
-            remaining_bytes: data.remaining_bytes.len(),
-        },
+    let mk_err = || {
+        ParsingError::not_enough_data(
+            data.bytes_parsed(),
+            "padding",
+            bytes_to_parse,
+            data.remaining_bytes.len(),
+        )
     };
     data.remaining_bytes = data.remaining_bytes.get(bytes_to_parse..).ok_or_else(mk_err)?;
     data.bytes_parsed += bytes_to_parse;
@@ -115,13 +115,13 @@ pub fn parse_raw_bytes<'a>(
     data: &mut ParserData<'a>,
     bytes_to_parse: usize,
 ) -> ParsingResult<&'a [u8]> {
-    let mk_err = || ParsingError {
-        offset: data.bytes_parsed(),
-        ty: ParsingErrorType::NotEnoughData {
-            tried_to_parse: "raw bytes".to_string(),
-            expected_size: bytes_to_parse,
-            remaining_bytes: data.remaining_bytes.len(),
-        },
+    let mk_err = || {
+        ParsingError::not_enough_data(
+            data.bytes_parsed(),
+            "raw bytes",
+            bytes_to_parse,
+            data.remaining_bytes.len(),
+        )
     };
     let (head, tail) = data.remaining_bytes.split_at_checked(bytes_to_parse).ok_or_else(mk_err)?;
     data.remaining_bytes = tail;
@@ -138,13 +138,13 @@ pub fn parse_raw_bytes<'a>(
 macro_rules! declare_primitive_parser {
     ($target_type:ty, $size_in_bytes:literal, $name:ident) => {
         pub fn $name(data: &mut ParserData) -> ParsingResult<$target_type> {
-            let mk_err = || ParsingError {
-                offset: data.bytes_parsed(),
-                ty: ParsingErrorType::NotEnoughData {
-                    tried_to_parse: type_name::<$target_type>().to_string(),
-                    expected_size: $size_in_bytes,
-                    remaining_bytes: data.remaining_bytes.len(),
-                },
+            let mk_err = || {
+                ParsingError::not_enough_data(
+                    data.bytes_parsed(),
+                    type_name::<$target_type>(),
+                    $size_in_bytes,
+                    data.remaining_bytes.len(),
+                )
             };
             let (head, tail) =
                 data.remaining_bytes.split_first_chunk::<$size_in_bytes>().ok_or_else(mk_err)?;

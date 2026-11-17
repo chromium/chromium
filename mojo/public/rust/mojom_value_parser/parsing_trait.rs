@@ -83,40 +83,44 @@ where
     /// However, since we call this for every parse/deparse call, it caches the
     /// results of every previous call.
     fn wire_type() -> &'static MojomWireType {
-        use std::any::TypeId;
-        use std::collections::HashMap;
-        use std::sync::{LazyLock, RwLock};
+        get_or_init_wire_type(std::any::TypeId::of::<(Self, WireAs)>(), Self::mojom_type)
+    }
+}
 
-        // The cache maps rust types to their corresponding packed format, using
-        // TypeId to represent them at runtime.
-        type WireTypeCache = HashMap<TypeId, &'static MojomWireType>;
+fn get_or_init_wire_type(
+    key: std::any::TypeId,
+    mojom_type: fn() -> MojomType,
+) -> &'static MojomWireType {
+    use std::any::TypeId;
+    use std::sync::{LazyLock, RwLock};
 
-        // Sadly, we can't initialize an RwLock static directly because the
-        // initializer wouldn't be a constant expression, so have to
-        // wrap it in LazyLock.
-        static WIRE_TYPE: LazyLock<RwLock<WireTypeCache>> =
-            LazyLock::new(|| RwLock::new(WireTypeCache::new()));
+    // The cache maps rust types to their corresponding packed format, using
+    // TypeId to represent them at runtime.
+    type WireTypeCache = HashMap<TypeId, &'static MojomWireType>;
 
-        let key = TypeId::of::<(Self, WireAs)>();
+    // Sadly, we can't initialize an RwLock static directly because the
+    // initializer wouldn't be a constant expression, so have to
+    // wrap it in LazyLock.
+    static WIRE_TYPE: LazyLock<RwLock<WireTypeCache>> =
+        LazyLock::new(|| RwLock::new(WireTypeCache::new()));
 
-        // The read can only fail if a writer panicked at some point; packing
-        // never panics so we know it's safe to unwrap here.
-        // `cloned` transforms Option<&& MojomWireType> -> Option<&
-        // MojomWireType>
-        let contents: Option<&'static MojomWireType> = WIRE_TYPE.read().unwrap().get(&key).cloned();
+    // The read can only fail if a writer panicked at some point; packing
+    // never panics so we know it's safe to unwrap here.
+    // `cloned` transforms Option<&& MojomWireType> -> Option<&
+    // MojomWireType>
+    let contents: Option<&'static MojomWireType> = WIRE_TYPE.read().unwrap().get(&key).cloned();
 
-        match contents {
-            Some(wire_type_ref) => {
-                // Computed this before, return the cached result.
-                wire_type_ref
-            }
-            None => {
-                // No current entry, initialize it by packing the input type.
-                let wire_type_box = Box::new(pack_mojom_type(&Self::mojom_type()));
-                let wire_type_ref: &'static MojomWireType = Box::leak(wire_type_box);
-                WIRE_TYPE.write().unwrap().insert(key, wire_type_ref);
-                wire_type_ref
-            }
+    match contents {
+        Some(wire_type_ref) => {
+            // Computed this before, return the cached result.
+            wire_type_ref
+        }
+        None => {
+            // No current entry, initialize it by packing the input type.
+            let wire_type_box = Box::new(pack_mojom_type(&mojom_type()));
+            let wire_type_ref: &'static MojomWireType = Box::leak(wire_type_box);
+            WIRE_TYPE.write().unwrap().insert(key, wire_type_ref);
+            wire_type_ref
         }
     }
 }

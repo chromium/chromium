@@ -180,17 +180,6 @@ fn skip_to_alignment(data: &mut ParserData, alignment: usize) -> ParsingResult<(
     }
 }
 
-/// Check if the parsed keys for a map have duplicates, and error out if so.
-///
-/// This function promises not to mutate `keys` if it returns `Ok()`.
-fn check_for_duplicate_keys(offset: usize, keys: &mut [MojomValue]) -> ParsingResult<()> {
-    if let Some(dup) = keys.iter_mut().duplicates().next() {
-        return Err(ParsingError::duplicate_map_key(offset, std::mem::take(dup)));
-    } else {
-        return Ok(());
-    }
-}
-
 // Mojom structs and arrays are never nested inside each other. Instead, they
 // are represented by a pointer with an offset to the actual data which appears
 // later in the message.
@@ -257,10 +246,7 @@ pub fn parse_struct(
 
     // We're ignoring versioning for now
     if version_number != 0 {
-        return Err(ParsingError::not_implemented(
-            data.bytes_parsed() - 4,
-            "Versioning".to_string(),
-        ));
+        return Err(ParsingError::not_implemented(data.bytes_parsed() - 4, "Versioning"));
     }
 
     let (parsed_names, parsed_fields) = parse_structured_body(
@@ -446,7 +432,7 @@ fn parse_map(
     };
     let [keys, values] = parsed_fields.try_into().unwrap();
     match (keys, values) {
-        (MojomValue::Array(mut keys), MojomValue::Array(values)) => {
+        (MojomValue::Array(keys), MojomValue::Array(values)) => {
             if keys.len() != values.len() {
                 return Err(ParsingError::mismatched_map(
                     initial_bytes_parsed,
@@ -457,8 +443,13 @@ fn parse_map(
             // Map bodies are 24 bytes, and the key array immediately follows
             // them.
             let key_offset = initial_bytes_parsed + 24;
-            check_for_duplicate_keys(key_offset, &mut keys)?;
-            let map_val = keys.into_iter().zip(values).collect();
+            let mut map_val = BTreeMap::new();
+            for (k, v) in keys.into_iter().zip(values) {
+                if map_val.contains_key(&k) {
+                    return Err(ParsingError::duplicate_map_key(key_offset, k));
+                }
+                map_val.insert(k, v);
+            }
             Ok(MojomValue::Map(map_val))
         }
         elts => {
@@ -581,7 +572,8 @@ where
             }
             StructuredBodyElement::SingleValue(ordinal, mojom_wire_type) => {
                 match mojom_wire_type {
-                    // Nested structured data, record for later unless it was null.
+                    // Nested structured data, record for later unless it was
+                    // null.
                     MojomWireType::Pointer { nested_data_type, is_nullable } => {
                         let pointer_value = parse_pointer(data, *is_nullable)?;
 
@@ -626,14 +618,16 @@ where
                         let bytes_parsed_at_union_start =
                             data.bytes_parsed() - initial_bytes_parsed;
                         match parse_union(data, Some(nested_data_list), variants, *is_nullable)? {
-                            // If we have a complete value, we can just store it as usual.
+                            // If we have a complete value, we can just store it
+                            // as usual.
                             (_, Some(parsed_value)) => {
                                 ret_names[ordinal] = name.clone();
                                 ret_values[ordinal] = parsed_value;
                             }
-                            // Otherwise, the union contained a pointer, and its info was appended
-                            // to nested_data_list. We need to adjust the appended info so that it's
-                            // relative to the enclosing struct, instead of this union.
+                            // Otherwise, the union contained a pointer, and its
+                            // info was appended to nested_data_list. We need to
+                            // adjust the appended info so that it's relative to
+                            // the enclosing struct, instead of this union.
                             (tag, None) => {
                                 // We just pushed an entry, so we know it
                                 // exists.
@@ -769,7 +763,7 @@ pub fn extract_interface_ids(
         // and the provided offset was colossal.
         return Err(ParsingError::not_enough_data(
             data_slice.len(),
-            "Interface ID array".to_string(),
+            "Interface ID array",
             data_slice.len(),
             data_slice.len(),
         ));
@@ -779,7 +773,7 @@ pub fn extract_interface_ids(
         // interface_ids_ptr pointed past the end of the data slice
         ParsingError::not_enough_data(
             data_slice.len(),
-            "Interface ID array".to_string(),
+            "Interface ID array",
             offset_usize,
             data_slice.len(),
         )
