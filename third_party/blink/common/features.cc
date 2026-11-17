@@ -73,7 +73,7 @@ BASE_FEATURE(kAndroidDesktopUACPUArch, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidDesktopUAModel, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Gated prewarming of system fonts on Android to background threads.
-BASE_FEATURE(kAndroidSystemFontPrewarming, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidSystemFontPrewarming, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Opens PDFs in iframe in standalone tabs on Android.
 BASE_FEATURE(kAndroidHandlePdfInIframe, base::FEATURE_DISABLED_BY_DEFAULT);
