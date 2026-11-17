@@ -34,6 +34,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "third_party/blink/public/common/features.h"
@@ -254,6 +255,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/core/mathml/mathml_anchor_element.h"
+#include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
@@ -634,28 +636,27 @@ bool WillUpdateSizeContainerDuringLayout(const LayoutObject& layout_object) {
 }
 
 bool IsValidShadowHostName(const AtomicString& local_name) {
-  DEFINE_STATIC_LOCAL(HashSet<AtomicString>, shadow_root_tags,
-                      ({
-                          html_names::kArticleTag.LocalName(),
-                          html_names::kAsideTag.LocalName(),
-                          html_names::kBlockquoteTag.LocalName(),
-                          html_names::kBodyTag.LocalName(),
-                          html_names::kDivTag.LocalName(),
-                          html_names::kFooterTag.LocalName(),
-                          html_names::kH1Tag.LocalName(),
-                          html_names::kH2Tag.LocalName(),
-                          html_names::kH3Tag.LocalName(),
-                          html_names::kH4Tag.LocalName(),
-                          html_names::kH5Tag.LocalName(),
-                          html_names::kH6Tag.LocalName(),
-                          html_names::kHeaderTag.LocalName(),
-                          html_names::kNavTag.LocalName(),
-                          html_names::kMainTag.LocalName(),
-                          html_names::kPTag.LocalName(),
-                          html_names::kSectionTag.LocalName(),
-                          html_names::kSpanTag.LocalName(),
-                      }));
-  return shadow_root_tags.Contains(local_name);
+  static base::NoDestructor<HashSet<AtomicString>> shadow_root_tags({
+      html_names::kArticleTag.LocalName(),
+      html_names::kAsideTag.LocalName(),
+      html_names::kBlockquoteTag.LocalName(),
+      html_names::kBodyTag.LocalName(),
+      html_names::kDivTag.LocalName(),
+      html_names::kFooterTag.LocalName(),
+      html_names::kH1Tag.LocalName(),
+      html_names::kH2Tag.LocalName(),
+      html_names::kH3Tag.LocalName(),
+      html_names::kH4Tag.LocalName(),
+      html_names::kH5Tag.LocalName(),
+      html_names::kH6Tag.LocalName(),
+      html_names::kHeaderTag.LocalName(),
+      html_names::kNavTag.LocalName(),
+      html_names::kMainTag.LocalName(),
+      html_names::kPTag.LocalName(),
+      html_names::kSectionTag.LocalName(),
+      html_names::kSpanTag.LocalName(),
+  });
+  return shadow_root_tags->Contains(local_name);
 }
 
 const AtomicString& V8ShadowRootModeToString(V8ShadowRootMode::Enum mode) {
@@ -3787,8 +3788,8 @@ const AtomicString& Element::getAttributeNS(
 }
 
 const AttrNameToTrustedType& Element::GetCheckedAttributeTypes() const {
-  DEFINE_STATIC_LOCAL(AttrNameToTrustedType, attribute_map, ({}));
-  return attribute_map;
+  static base::NoDestructor<AttrNameToTrustedType> attribute_map({});
+  return *attribute_map;
 }
 
 const std::tuple<SpecificTrustedType, const AtomicString, const AtomicString>
@@ -14746,6 +14747,41 @@ void Element::DetachOverscroll() {
     CHECK(tracker);
     tracker->RemoveOverscroll(this);
   }
+}
+
+bool Element::IsPhrasingContent() const {
+  static const base::NoDestructor<HashSet<QualifiedName>>
+      phrasing_content_names({
+          html_names::kATag,        html_names::kAbbrTag,
+          html_names::kAreaTag,     html_names::kAudioTag,
+          html_names::kBTag,        html_names::kBdiTag,
+          html_names::kBdoTag,      html_names::kBrTag,
+          html_names::kButtonTag,   html_names::kCanvasTag,
+          html_names::kCiteTag,     html_names::kCodeTag,
+          html_names::kDataTag,     html_names::kDatalistTag,
+          html_names::kDelTag,      html_names::kDfnTag,
+          html_names::kEmTag,       html_names::kEmbedTag,
+          html_names::kITag,        html_names::kIFrameTag,
+          html_names::kImgTag,      html_names::kInputTag,
+          html_names::kInsTag,      html_names::kKbdTag,
+          html_names::kLabelTag,    html_names::kLinkTag,
+          html_names::kMapTag,      html_names::kMarkTag,
+          mathml_names::kMathTag,   html_names::kMetaTag,
+          html_names::kMeterTag,    html_names::kNoscriptTag,
+          html_names::kObjectTag,   html_names::kOutputTag,
+          html_names::kPictureTag,  html_names::kProgressTag,
+          html_names::kQTag,        html_names::kRubyTag,
+          html_names::kSTag,        html_names::kSampTag,
+          html_names::kScriptTag,   html_names::kSelectTag,
+          html_names::kSlotTag,     html_names::kSmallTag,
+          html_names::kSpanTag,     html_names::kStrongTag,
+          html_names::kSubTag,      html_names::kSupTag,
+          svg_names::kSVGTag,       html_names::kTemplateTag,
+          html_names::kTextareaTag, html_names::kTimeTag,
+          html_names::kUTag,        html_names::kVarTag,
+          html_names::kVideoTag,    html_names::kWbrTag,
+      });
+  return phrasing_content_names->Contains(TagQName());
 }
 
 }  // namespace blink

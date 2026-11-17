@@ -30,11 +30,11 @@
 
 #include "third_party/blink/renderer/core/dom/mutation_record.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_list.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -170,21 +170,21 @@ class MutationRecordWithNullOldValue : public MutationRecord {
 };
 
 const AtomicString& ChildListRecord::type() {
-  DEFINE_STATIC_LOCAL(AtomicString, child_list,
-                      (AtomicString::FromLiteral<"childList">()));
-  return child_list;
+  static base::NoDestructor<AtomicString> child_list(
+      AtomicString::FromLiteral<"childList">());
+  return *child_list;
 }
 
 const AtomicString& AttributesRecord::type() {
-  DEFINE_STATIC_LOCAL(AtomicString, attributes,
-                      (AtomicString::FromLiteral<"attributes">()));
-  return attributes;
+  static base::NoDestructor<AtomicString> attributes(
+      AtomicString::FromLiteral<"attributes">());
+  return *attributes;
 }
 
 const AtomicString& CharacterDataRecord::type() {
-  DEFINE_STATIC_LOCAL(AtomicString, character_data,
-                      (AtomicString::FromLiteral<"characterData">()));
-  return character_data;
+  static base::NoDestructor<AtomicString> character_data(
+      AtomicString::FromLiteral<"characterData">());
+  return *character_data;
 }
 
 }  // namespace

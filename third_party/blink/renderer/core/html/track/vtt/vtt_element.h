@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_ELEMENT_H_
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
@@ -66,13 +67,15 @@ class VTTElement final : public Element {
   void SetLanguage(AtomicString value) { language_ = value; }
 
   CORE_EXPORT static const QualifiedName& VoiceAttributeName() {
-    DEFINE_STATIC_LOCAL(QualifiedName, voice_attr, (AtomicString("voice")));
-    return voice_attr;
+    static const base::NoDestructor<QualifiedName> voice_attr(
+        AtomicString::FromLiteral<"voice">());
+    return *voice_attr;
   }
 
   CORE_EXPORT static const QualifiedName& LangAttributeName() {
-    DEFINE_STATIC_LOCAL(QualifiedName, attr, (AtomicString("lang")));
-    return attr;
+    static const base::NoDestructor<QualifiedName> attr(
+        AtomicString::FromLiteral<"lang">());
+    return *attr;
   }
 
   const TextTrack* GetTrack() const { return track_.Get(); }

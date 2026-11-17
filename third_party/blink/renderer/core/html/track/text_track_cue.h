@@ -32,6 +32,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_TEXT_TRACK_CUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_TEXT_TRACK_CUE_H_
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
@@ -46,9 +47,9 @@ class CORE_EXPORT TextTrackCue : public EventTarget {
 
  public:
   static const AtomicString& CueShadowPseudoId() {
-    DEFINE_STATIC_LOCAL(const AtomicString, cue,
-                        (AtomicString::FromLiteral<"cue">()));
-    return cue;
+    static const base::NoDestructor<AtomicString> cue(
+        AtomicString::FromLiteral<"cue">());
+    return *cue;
   }
 
   ~TextTrackCue() override = default;

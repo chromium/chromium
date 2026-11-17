@@ -70,10 +70,9 @@ Decimal TimeInputType::DefaultValueForStepUp() const {
 
 StepRange TimeInputType::CreateStepRange(
     AnyStepHandling any_step_handling) const {
-  DEFINE_STATIC_LOCAL(
-      const StepRange::StepDescription, step_description,
-      (kTimeDefaultStep, kTimeDefaultStepBase, kTimeStepScaleFactor,
-       StepRange::kScaledStepValueShouldBeInteger));
+  static const StepRange::StepDescription step_description(
+      kTimeDefaultStep, kTimeDefaultStepBase, kTimeStepScaleFactor,
+      StepRange::kScaledStepValueShouldBeInteger);
 
   return InputType::CreateReversibleStepRange(
       any_step_handling, kTimeDefaultStepBase,

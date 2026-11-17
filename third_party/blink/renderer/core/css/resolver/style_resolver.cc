@@ -34,6 +34,7 @@
 #include <ranges>
 
 #include "base/memory/stack_allocated.h"
+#include "base/no_destructor.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/web/web_print_page_description.h"
@@ -137,7 +138,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -615,68 +615,66 @@ void ApplyInertness(StyleResolverState& state) {
 }  // namespace
 
 static CSSPropertyValueSet* LeftToRightDeclaration() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<MutableCSSPropertyValueSet>, left_to_right_decl,
-      (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode)));
+  static base::NoDestructor<Persistent<MutableCSSPropertyValueSet>>
+      left_to_right_decl{
+          MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode)};
   CHECK(IsMainThread());
-  if (left_to_right_decl->IsEmpty()) {
-    left_to_right_decl->SetLonghandProperty(CSSPropertyID::kDirection,
-                                            CSSValueID::kLtr);
+  if ((*left_to_right_decl)->IsEmpty()) {
+    (*left_to_right_decl)
+        ->SetLonghandProperty(CSSPropertyID::kDirection, CSSValueID::kLtr);
   }
-  return left_to_right_decl;
+  return *left_to_right_decl;
 }
 
 static CSSPropertyValueSet* RightToLeftDeclaration() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<MutableCSSPropertyValueSet>, right_to_left_decl,
-      (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode)));
+  static base::NoDestructor<Persistent<MutableCSSPropertyValueSet>>
+      right_to_left_decl{
+          MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode)};
   CHECK(IsMainThread());
-  if (right_to_left_decl->IsEmpty()) {
-    right_to_left_decl->SetLonghandProperty(CSSPropertyID::kDirection,
-                                            CSSValueID::kRtl);
+  if ((*right_to_left_decl)->IsEmpty()) {
+    (*right_to_left_decl)
+        ->SetLonghandProperty(CSSPropertyID::kDirection, CSSValueID::kRtl);
   }
-  return right_to_left_decl;
+  return *right_to_left_decl;
 }
 
 static CSSPropertyValueSet* DocumentElementUserAgentDeclarations() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<MutableCSSPropertyValueSet>, document_element_ua_decl,
-      (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)));
+  static base::NoDestructor<Persistent<MutableCSSPropertyValueSet>>
+      document_element_ua_decl{
+          MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)};
   CHECK(IsMainThread());
-  if (document_element_ua_decl->IsEmpty()) {
-    document_element_ua_decl->SetProperty(CSSPropertyID::kColor,
-                                          *CSSInitialColorValue::Create());
+  if ((*document_element_ua_decl)->IsEmpty()) {
+    (*document_element_ua_decl)
+        ->SetProperty(CSSPropertyID::kColor, *CSSInitialColorValue::Create());
   }
-  return document_element_ua_decl;
+  return *document_element_ua_decl;
 }
 
 // The 'color' property conditionally inherits from the *used* value of its
 // parent, and we rely on an explicit value in the cascade to implement this.
 // https://drafts.csswg.org/css-color-adjust-1/#propdef-forced-color-adjust
 static CSSPropertyValueSet* ForcedColorsUserAgentDeclarations() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<MutableCSSPropertyValueSet>, decl,
-      (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)));
+  static base::NoDestructor<Persistent<MutableCSSPropertyValueSet>> decl{
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)};
   CHECK(IsMainThread());
-  if (decl->IsEmpty()) {
-    decl->SetProperty(CSSPropertyID::kColor, *CSSInheritedValue::Create());
+  if ((*decl)->IsEmpty()) {
+    (*decl)->SetProperty(CSSPropertyID::kColor, *CSSInheritedValue::Create());
   }
-  return decl;
+  return *decl;
 }
 
 // UA rule: * { overlay: none !important }
 static CSSPropertyValueSet* UniversalOverlayUserAgentDeclaration() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<MutableCSSPropertyValueSet>, decl,
-      (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)));
+  static base::NoDestructor<Persistent<MutableCSSPropertyValueSet>> decl{
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)};
   CHECK(IsMainThread());
 
-  if (decl->IsEmpty()) {
-    decl->SetProperty(CSSPropertyID::kOverlay,
-                      *CSSIdentifierValue::Create(CSSValueID::kNone),
-                      true /* important */);
+  if ((*decl)->IsEmpty()) {
+    (*decl)->SetProperty(CSSPropertyID::kOverlay,
+                         *CSSIdentifierValue::Create(CSSValueID::kNone),
+                         true /* important */);
   }
-  return decl;
+  return *decl;
 }
 
 static void CollectScopedResolversForHostedShadowTrees(

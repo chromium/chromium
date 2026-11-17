@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/html_permission_icon_element.h"
 
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -20,48 +21,41 @@ namespace {
 constexpr float kMaxIconSizeToFontSizeRatio = 1.5;
 constexpr float kMaxMarginInlineEndToFontSizeRatio = 3.0;
 
-// Helpers to get svg icon. We can use DEFINE_STATIC_LOCAL as all the icons are
-// using a single thread.
+// Helpers to get svg icon.
 const String& LocationPreciseIconSVG() {
-  DEFINE_STATIC_LOCAL(const String, svg,
-                      (UncompressResourceAsASCIIString(
-                          IDR_PERMISSION_ICON_LOCATION_PRECISE_SVG)));
-  return svg;
+  static const base::NoDestructor<String> svg{UncompressResourceAsASCIIString(
+      IDR_PERMISSION_ICON_LOCATION_PRECISE_SVG)};
+  return *svg;
 }
 
 const String& LocationIconSVG() {
-  DEFINE_STATIC_LOCAL(
-      const String, kLocationIconSVG,
-      (UncompressResourceAsASCIIString(IDR_PERMISSION_ICON_LOCATION_SVG)));
-  return kLocationIconSVG;
+  static const base::NoDestructor<String> kLocationIconSVG{
+      UncompressResourceAsASCIIString(IDR_PERMISSION_ICON_LOCATION_SVG)};
+  return *kLocationIconSVG;
 }
 
 const String& CameraIconSVG() {
-  DEFINE_STATIC_LOCAL(
-      const String, kCameraIconSVG,
-      (UncompressResourceAsASCIIString(IDR_PERMISSION_ICON_CAMERA_SVG)));
-  return kCameraIconSVG;
+  static const base::NoDestructor<String> kCameraIconSVG{
+      UncompressResourceAsASCIIString(IDR_PERMISSION_ICON_CAMERA_SVG)};
+  return *kCameraIconSVG;
 }
 
 const String& MicrophoneIconSVG() {
-  DEFINE_STATIC_LOCAL(
-      const String, kMicrophoneIconSVG,
-      (UncompressResourceAsASCIIString(IDR_PERMISSION_ICON_MICROPHONE_SVG)));
-  return kMicrophoneIconSVG;
+  static const base::NoDestructor<String> kMicrophoneIconSVG{
+      UncompressResourceAsASCIIString(IDR_PERMISSION_ICON_MICROPHONE_SVG)};
+  return *kMicrophoneIconSVG;
 }
 
 const String& InstallIconSVG() {
-  DEFINE_STATIC_LOCAL(
-      const String, kInstallIconSVG,
-      (UncompressResourceAsASCIIString(IDR_PERMISSION_ICON_INSTALL_SVG)));
-  return kInstallIconSVG;
+  static const base::NoDestructor<String> kInstallIconSVG{
+      UncompressResourceAsASCIIString(IDR_PERMISSION_ICON_INSTALL_SVG)};
+  return *kInstallIconSVG;
 }
 
 const String& LaunchIconSVG() {
-  DEFINE_STATIC_LOCAL(const String, kLaunchIconSVG,
-                      (UncompressResourceAsASCIIString(
-                          IDR_PERMISSION_ICON_INSTALL_LAUNCH_SVG)));
-  return kLaunchIconSVG;
+  static const base::NoDestructor<String> kLaunchIconSVG{
+      UncompressResourceAsASCIIString(IDR_PERMISSION_ICON_INSTALL_LAUNCH_SVG)};
+  return *kLaunchIconSVG;
 }
 
 }  // namespace

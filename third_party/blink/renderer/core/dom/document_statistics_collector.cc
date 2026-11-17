@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/document_statistics_collector.h"
 
+#include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_distillability.h"
@@ -83,24 +84,27 @@ bool MatchAttributes(const Element& element, const Vector<String>& words) {
 
 bool IsGoodForScoring(const WebDistillabilityFeatures& features,
                       const Element& element) {
-  DEFINE_STATIC_LOCAL(Vector<String>, unlikely_candidates, ());
-  if (unlikely_candidates.empty()) {
-    auto words = {
-        "banner",  "combx",      "comment", "community",  "disqus",  "extra",
-        "foot",    "header",     "menu",    "related",    "remark",  "rss",
-        "share",   "shoutbox",   "sidebar", "skyscraper", "sponsor", "ad-break",
-        "agegate", "pagination", "pager",   "popup"};
-    for (auto* word : words) {
-      unlikely_candidates.push_back(word);
-    }
-  }
-  DEFINE_STATIC_LOCAL(Vector<String>, highly_likely_candidates, ());
-  if (highly_likely_candidates.empty()) {
-    auto words = {"and", "article", "body", "column", "main", "shadow"};
-    for (auto* word : words) {
-      highly_likely_candidates.push_back(word);
-    }
-  }
+  static const base::NoDestructor<Vector<String>> unlikely_candidates({
+      String::FromLiteral<"banner">(),  String::FromLiteral<"combx">(),
+      String::FromLiteral<"comment">(), String::FromLiteral<"community">(),
+      String::FromLiteral<"disqus">(),  String::FromLiteral<"extra">(),
+      String::FromLiteral<"foot">(),    String::FromLiteral<"header">(),
+      String::FromLiteral<"menu">(),    String::FromLiteral<"related">(),
+      String::FromLiteral<"remark">(),  String::FromLiteral<"rss">(),
+      String::FromLiteral<"share">(),   String::FromLiteral<"shoutbox">(),
+      String::FromLiteral<"sidebar">(), String::FromLiteral<"skyscraper">(),
+      String::FromLiteral<"sponsor">(), String::FromLiteral<"ad-break">(),
+      String::FromLiteral<"agegate">(), String::FromLiteral<"pagination">(),
+      String::FromLiteral<"pager">(),   String::FromLiteral<"popup">(),
+  });
+  static const base::NoDestructor<Vector<String>> highly_likely_candidates({
+      String::FromLiteral<"and">(),
+      String::FromLiteral<"article">(),
+      String::FromLiteral<"body">(),
+      String::FromLiteral<"column">(),
+      String::FromLiteral<"main">(),
+      String::FromLiteral<"shadow">(),
+  });
 
   if (!IsVisible(element))
     return false;
@@ -108,9 +112,10 @@ bool IsGoodForScoring(const WebDistillabilityFeatures& features,
       features.moz_score_all_sqrt >= kMozScoreAllSqrtSaturation &&
       features.moz_score_all_linear >= kMozScoreAllLinearSaturation)
     return false;
-  if (MatchAttributes(element, unlikely_candidates) &&
-      !MatchAttributes(element, highly_likely_candidates))
+  if (MatchAttributes(element, *unlikely_candidates) &&
+      !MatchAttributes(element, *highly_likely_candidates)) {
     return false;
+  }
   return true;
 }
 
@@ -162,18 +167,18 @@ void CollectFeatures(Element& root,
 }
 
 bool HasOpenGraphArticle(const Element& head) {
-  DEFINE_STATIC_LOCAL(AtomicString, og_type,
-                      (AtomicString::FromLiteral<"og:type">()));
-  DEFINE_STATIC_LOCAL(AtomicString, property_attr,
-                      (AtomicString::FromLiteral<"property">()));
+  static base::NoDestructor<AtomicString> og_type(
+      AtomicString::FromLiteral<"og:type">());
+  static base::NoDestructor<AtomicString> property_attr(
+      AtomicString::FromLiteral<"property">());
   for (const Element* child = ElementTraversal::FirstChild(head); child;
        child = ElementTraversal::NextSibling(*child)) {
     auto* meta = DynamicTo<HTMLMetaElement>(child);
     if (!meta)
       continue;
 
-    if (meta->GetName() == og_type ||
-        meta->getAttribute(property_attr) == og_type) {
+    if (meta->GetName() == *og_type ||
+        meta->getAttribute(*property_attr) == *og_type) {
       if (EqualIgnoringAsciiCase(meta->Content(), "article")) {
         return true;
       }
@@ -221,9 +226,9 @@ WebDistillabilityFeatures DocumentStatisticsCollector::CollectStatistics(
 
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
 
-  DEFINE_STATIC_LOCAL(CustomCountHistogram, distillability_histogram,
-                      ("WebCore.DistillabilityUs", 1, 1000000, 50));
-  distillability_histogram.CountMicroseconds(elapsed_time);
+  static base::NoDestructor<CustomCountHistogram> distillability_histogram(
+      "WebCore.DistillabilityUs", 1, 1000000, 50);
+  distillability_histogram->CountMicroseconds(elapsed_time);
 
   return features;
 }

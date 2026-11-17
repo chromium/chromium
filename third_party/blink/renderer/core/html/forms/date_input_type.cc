@@ -58,10 +58,9 @@ void DateInputType::CountUsage() {
 
 StepRange DateInputType::CreateStepRange(
     AnyStepHandling any_step_handling) const {
-  DEFINE_STATIC_LOCAL(
-      const StepRange::StepDescription, step_description,
-      (kDateDefaultStep, kDateDefaultStepBase, kDateStepScaleFactor,
-       StepRange::kParsedStepValueShouldBeInteger));
+  static const StepRange::StepDescription step_description(
+      kDateDefaultStep, kDateDefaultStepBase, kDateStepScaleFactor,
+      StepRange::kParsedStepValueShouldBeInteger);
 
   return InputType::CreateStepRange(
       any_step_handling, kDateDefaultStepBase,

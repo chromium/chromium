@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_element.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -34,33 +35,39 @@ namespace blink {
 static const QualifiedName& NodeTypeToTagName(VttNodeType node_type) {
   // Use predefined AtomicStrings in html_names to reduce AtomicString
   // creation cost.
-  DEFINE_STATIC_LOCAL(QualifiedName, c_tag, (AtomicString("c")));
-  DEFINE_STATIC_LOCAL(QualifiedName, v_tag, (AtomicString("v")));
-  DEFINE_STATIC_LOCAL(QualifiedName, lang_tag,
-                      (html_names::kLangAttr.LocalName()));
-  DEFINE_STATIC_LOCAL(QualifiedName, b_tag, (html_names::kBTag.LocalName()));
-  DEFINE_STATIC_LOCAL(QualifiedName, u_tag, (html_names::kUTag.LocalName()));
-  DEFINE_STATIC_LOCAL(QualifiedName, i_tag, (html_names::kITag.LocalName()));
-  DEFINE_STATIC_LOCAL(QualifiedName, ruby_tag,
-                      (html_names::kRubyTag.LocalName()));
-  DEFINE_STATIC_LOCAL(QualifiedName, rt_tag, (html_names::kRtTag.LocalName()));
+  static const base::NoDestructor<QualifiedName> c_tag(
+      AtomicString::FromLiteral<"c">());
+  static const base::NoDestructor<QualifiedName> v_tag(
+      AtomicString::FromLiteral<"v">());
+  static const base::NoDestructor<QualifiedName> lang_tag(
+      html_names::kLangAttr.LocalName());
+  static const base::NoDestructor<QualifiedName> b_tag(
+      html_names::kBTag.LocalName());
+  static const base::NoDestructor<QualifiedName> u_tag(
+      html_names::kUTag.LocalName());
+  static const base::NoDestructor<QualifiedName> i_tag(
+      html_names::kITag.LocalName());
+  static const base::NoDestructor<QualifiedName> ruby_tag(
+      html_names::kRubyTag.LocalName());
+  static const base::NoDestructor<QualifiedName> rt_tag(
+      html_names::kRtTag.LocalName());
   switch (node_type) {
     case VttNodeType::kClass:
-      return c_tag;
+      return *c_tag;
     case VttNodeType::kItalic:
-      return i_tag;
+      return *i_tag;
     case VttNodeType::kLanguage:
-      return lang_tag;
+      return *lang_tag;
     case VttNodeType::kBold:
-      return b_tag;
+      return *b_tag;
     case VttNodeType::kUnderline:
-      return u_tag;
+      return *u_tag;
     case VttNodeType::kRuby:
-      return ruby_tag;
+      return *ruby_tag;
     case VttNodeType::kRubyText:
-      return rt_tag;
+      return *rt_tag;
     case VttNodeType::kVoice:
-      return v_tag;
+      return *v_tag;
     case VttNodeType::kNone:
     default:
       NOTREACHED();

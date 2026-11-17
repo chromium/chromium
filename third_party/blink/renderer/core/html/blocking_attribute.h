@@ -29,8 +29,7 @@ class BlockingAttribute final : public DOMTokenList {
                                const AtomicString& new_value);
 
  private:
-  HashSet<AtomicString>& SupportedTokens() const;
-
+  const HashSet<AtomicString>& SupportedTokens() const;
 
   bool ValidateTokenValue(const AtomicString&, ExceptionState&) const override;
 };

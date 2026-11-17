@@ -33,6 +33,7 @@
 #include <algorithm>
 
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -75,10 +76,9 @@ using PresentationAttributeCache =
 static PresentationAttributeCache& GetPresentationAttributeCache() {
   using PresentationAttributeCacheHolder =
       DisallowNewWrapper<PresentationAttributeCache>;
-  DEFINE_STATIC_LOCAL(
-      Persistent<PresentationAttributeCacheHolder>, cache,
-      (MakeGarbageCollected<PresentationAttributeCacheHolder>()));
-  return cache->Value();
+  static base::NoDestructor<Persistent<PresentationAttributeCacheHolder>> cache(
+      MakeGarbageCollected<PresentationAttributeCacheHolder>());
+  return (*cache)->Value();
 }
 
 static bool AttributeNameSort(const std::pair<StringImpl*, AtomicString>& p1,

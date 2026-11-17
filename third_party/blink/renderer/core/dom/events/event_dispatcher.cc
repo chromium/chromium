@@ -29,8 +29,10 @@
 
 #include <optional>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -68,6 +70,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 namespace blink {
 
@@ -139,17 +142,19 @@ void EventDispatcher::DispatchSimulatedClick(
   // before dispatchSimulatedClick() returns. This vector is here just to
   // prevent the code from running into an infinite recursion of
   // dispatchSimulatedClick().
-  DEFINE_STATIC_LOCAL(Persistent<GCedHeapHashSet<Member<Node>>>,
-                      nodes_dispatching_simulated_clicks,
-                      (MakeGarbageCollected<GCedHeapHashSet<Member<Node>>>()));
+  DCHECK(IsMainThread());
+  static base::NoDestructor<Persistent<GCedHeapHashSet<Member<Node>>>>
+      nodes_dispatching_simulated_clicks(
+          MakeGarbageCollected<GCedHeapHashSet<Member<Node>>>());
 
   if (IsDisabledFormControl(&node))
     return;
 
-  if (nodes_dispatching_simulated_clicks->Contains(&node))
+  if ((*nodes_dispatching_simulated_clicks)->Contains(&node)) {
     return;
+  }
 
-  nodes_dispatching_simulated_clicks->insert(&node);
+  (*nodes_dispatching_simulated_clicks)->insert(&node);
 
   Element* element = DynamicTo<Element>(node);
   bool prevent_mouse_events = false;
@@ -192,7 +197,7 @@ void EventDispatcher::DispatchSimulatedClick(
                                              underlying_event, creation_scope))
       .Dispatch();
 
-  nodes_dispatching_simulated_clicks->erase(&node);
+  (*nodes_dispatching_simulated_clicks)->erase(&node);
 }
 
 void EventDispatcher::DispatchSimulatedEnterEvent(

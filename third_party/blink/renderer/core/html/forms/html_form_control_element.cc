@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_form_related_change_type.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -275,15 +276,19 @@ bool HTMLFormControlElement::MatchesToolSubmitActivePseudoClass() const {
 }
 
 bool HTMLFormControlElement::IsAutocompleteEmailUrlOrPassword() const {
-  DEFINE_STATIC_LOCAL(HashSet<AtomicString>, values,
-                      ({AtomicString("username"), AtomicString("new-password"),
-                        AtomicString("current-password"), AtomicString("url"),
-                        AtomicString("email"), AtomicString("impp")}));
+  static const base::NoDestructor<HashSet<AtomicString>> values({
+      AtomicString::FromLiteral<"username">(),
+      AtomicString::FromLiteral<"new-password">(),
+      AtomicString::FromLiteral<"current-password">(),
+      AtomicString::FromLiteral<"url">(),
+      AtomicString::FromLiteral<"email">(),
+      AtomicString::FromLiteral<"impp">(),
+  });
   const AtomicString& autocomplete =
       FastGetAttribute(html_names::kAutocompleteAttr);
   if (autocomplete.IsNull())
     return false;
-  return values.Contains(autocomplete.ToAsciiLower());
+  return values->Contains(autocomplete.ToAsciiLower());
 }
 
 const AtomicString& HTMLFormControlElement::autocapitalize() const {

@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -113,11 +114,11 @@ FormControlType HTMLSelectElement::FormControlType() const {
 }
 
 const AtomicString& HTMLSelectElement::FormControlTypeAsString() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, select_multiple,
-                      (AtomicString::FromLiteral<"select-multiple">()));
-  DEFINE_STATIC_LOCAL(const AtomicString, select_one,
-                      (AtomicString::FromLiteral<"select-one">()));
-  return is_multiple_ ? select_multiple : select_one;
+  static const base::NoDestructor<AtomicString> select_multiple(
+      AtomicString::FromLiteral<"select-multiple">());
+  static const base::NoDestructor<AtomicString> select_one(
+      AtomicString::FromLiteral<"select-one">());
+  return is_multiple_ ? *select_multiple : *select_one;
 }
 
 bool HTMLSelectElement::HasPlaceholderLabelOption() const {

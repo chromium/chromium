@@ -23,6 +23,7 @@
 
 #include <ranges>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/css/css_grouping_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
@@ -46,10 +47,10 @@ using SelectorTextCache = HeapHashMap<WeakMember<const CSSStyleRule>, String>;
 
 static SelectorTextCache& GetSelectorTextCache() {
   using SelectorTextCacheHolder = DisallowNewWrapper<SelectorTextCache>;
-  DEFINE_STATIC_LOCAL(Persistent<SelectorTextCacheHolder>, cache,
-                      (MakeGarbageCollected<SelectorTextCacheHolder>()));
+  static base::NoDestructor<Persistent<SelectorTextCacheHolder>> cache(
+      MakeGarbageCollected<SelectorTextCacheHolder>());
   CHECK(IsMainThread());
-  return cache->Value();
+  return (*cache)->Value();
 }
 
 CSSStyleRule::CSSStyleRule(StyleRule* style_rule,

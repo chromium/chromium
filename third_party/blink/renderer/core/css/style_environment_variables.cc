@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/style_environment_variables.h"
 
 #include "base/check.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
@@ -63,10 +64,10 @@ StyleEnvironmentVariables::StyleEnvironmentVariables() : parent_(nullptr) {
 
 // static
 StyleEnvironmentVariables& StyleEnvironmentVariables::GetRootInstance() {
-  DEFINE_STATIC_LOCAL(Persistent<StyleEnvironmentVariables>, instance,
-                      (MakeGarbageCollected<StyleEnvironmentVariables>()));
+  static base::NoDestructor<Persistent<StyleEnvironmentVariables>> instance(
+      MakeGarbageCollected<StyleEnvironmentVariables>());
   CHECK(IsMainThread());
-  return *instance;
+  return **instance;
 }
 
 // static

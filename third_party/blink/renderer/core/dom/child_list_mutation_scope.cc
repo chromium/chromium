@@ -30,12 +30,14 @@
 
 #include "third_party/blink/renderer/core/dom/child_list_mutation_scope.h"
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_interest_group.h"
 #include "third_party/blink/renderer/core/dom/mutation_record.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -47,10 +49,11 @@ typedef HeapHashMap<Member<Node>, Member<ChildListMutationAccumulator>>
     AccumulatorMap;
 
 static AccumulatorMap& GetAccumulatorMap() {
+  DCHECK(IsMainThread());
   using AccumulatorMapHolder = DisallowNewWrapper<AccumulatorMap>;
-  DEFINE_STATIC_LOCAL(Persistent<AccumulatorMapHolder>, holder,
-                      (MakeGarbageCollected<AccumulatorMapHolder>()));
-  return holder->Value();
+  static base::NoDestructor<Persistent<AccumulatorMapHolder>> holder(
+      MakeGarbageCollected<AccumulatorMapHolder>());
+  return (*holder)->Value();
 }
 
 ChildListMutationAccumulator::ChildListMutationAccumulator(

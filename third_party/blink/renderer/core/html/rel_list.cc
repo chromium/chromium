@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/rel_list.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -25,43 +26,39 @@ RelList::RelList(Element* element)
 RelList::RelList(Element* element, const QualifiedName& attr)
     : DOMTokenList(*element, attr) {}
 
-static HashSet<AtomicString>& SupportedTokensLink() {
+static const HashSet<AtomicString>& SupportedTokensLink() {
   // "monetization" is gated in ValidateTokenValue() instead, because this set
   // is built once per process. See https://crbug.com/1031476
-  // clang-format off
-  DEFINE_STATIC_LOCAL(HashSet<AtomicString>, tokens,
-                      ({
-                          AtomicString("preload"),
-                          AtomicString("preconnect"),
-                          AtomicString("dns-prefetch"),
-                          AtomicString("stylesheet"),
-                          AtomicString("icon"),
-                          AtomicString("alternate"),
-                          AtomicString("prefetch"),
-                          AtomicString("prerender"),
-                          AtomicString("next"),
-                          AtomicString("manifest"),
-                          AtomicString("apple-touch-icon"),
-                          AtomicString("apple-touch-icon-precomposed"),
-                          AtomicString("canonical"),
-                          AtomicString("modulepreload"),
-                          AtomicString("allowed-alt-sxg"),
-                          AtomicString("compression-dictionary"),
-                      }));
-  // clang-format on
+  static const base::NoDestructor<HashSet<AtomicString>> tokens({
+      AtomicString::FromLiteral<"preload">(),
+      AtomicString::FromLiteral<"preconnect">(),
+      AtomicString::FromLiteral<"dns-prefetch">(),
+      AtomicString::FromLiteral<"stylesheet">(),
+      AtomicString::FromLiteral<"icon">(),
+      AtomicString::FromLiteral<"alternate">(),
+      AtomicString::FromLiteral<"prefetch">(),
+      AtomicString::FromLiteral<"prerender">(),
+      AtomicString::FromLiteral<"next">(),
+      AtomicString::FromLiteral<"manifest">(),
+      AtomicString::FromLiteral<"apple-touch-icon">(),
+      AtomicString::FromLiteral<"apple-touch-icon-precomposed">(),
+      AtomicString::FromLiteral<"canonical">(),
+      AtomicString::FromLiteral<"modulepreload">(),
+      AtomicString::FromLiteral<"allowed-alt-sxg">(),
+      AtomicString::FromLiteral<"compression-dictionary">(),
+  });
 
-  return tokens;
+  return *tokens;
 }
 
-static HashSet<AtomicString>& SupportedTokensAnchorAndAreaAndForm() {
-  DEFINE_STATIC_LOCAL(HashSet<AtomicString>, tokens,
-                      ({
-                          AtomicString("noreferrer"),
-                          AtomicString("noopener"),
-                          AtomicString("opener"),
-                      }));
+static const HashSet<AtomicString>& SupportedTokensAnchorAndAreaAndForm() {
+  static const base::NoDestructor<HashSet<AtomicString>> tokens({
+      AtomicString::FromLiteral<"noreferrer">(),
+      AtomicString::FromLiteral<"noopener">(),
+      AtomicString::FromLiteral<"opener">(),
+  });
 
-  return tokens;
+  return *tokens;
 }
 
 bool RelList::ValidateTokenValue(const AtomicString& token_value,

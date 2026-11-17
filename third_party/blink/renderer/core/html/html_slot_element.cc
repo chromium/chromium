@@ -32,6 +32,8 @@
 
 #include <ranges>
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_assigned_nodes_options.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -49,11 +51,12 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
 namespace {
-constexpr size_t kLCSTableSizeLimit = 16;
+constexpr wtf_size_t kLCSTableSizeLimit = 16;
 }
 
 HTMLSlotElement::HTMLSlotElement(Document& document)
@@ -561,9 +564,9 @@ void HTMLSlotElement::NotifySlottedNodesOfFlatTreeChangeByDynamicProgramming(
   using BacktrackTable =
       Vector<LCSArray<Backtrack, kLCSTableSizeLimit>, kLCSTableSizeLimit>;
 
-  DEFINE_STATIC_LOCAL(LCSTable*, lcs_table, (new LCSTable(kLCSTableSizeLimit)));
-  DEFINE_STATIC_LOCAL(BacktrackTable*, backtrack_table,
-                      (new BacktrackTable(kLCSTableSizeLimit)));
+  DCHECK(IsMainThread());
+  static base::NoDestructor<LCSTable> lcs_table(kLCSTableSizeLimit);
+  static base::NoDestructor<BacktrackTable> backtrack_table(kLCSTableSizeLimit);
 
   FillLongestCommonSubsequenceDynamicProgrammingTable(
       old_slotted, new_slotted, *lcs_table, *backtrack_table);

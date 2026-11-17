@@ -67,8 +67,8 @@ StepRange::StepRange(const Decimal& step_base,
 Decimal StepRange::AcceptableError() const {
   // FIXME: We should use DBL_MANT_DIG instead of FLT_MANT_DIG regarding to
   // HTML5 specification.
-  DEFINE_STATIC_LOCAL(const Decimal, two_power_of_float_mantissa_bits,
-                      (Decimal::kPositive, 0, UINT64_C(1) << FLT_MANT_DIG));
+  static const Decimal two_power_of_float_mantissa_bits(
+      Decimal::kPositive, 0, UINT64_C(1) << FLT_MANT_DIG);
   return step_description_.step_value_should_be == kStepValueShouldBeReal
              ? step_ / two_power_of_float_mantissa_bits
              : Decimal(0);
@@ -76,8 +76,7 @@ Decimal StepRange::AcceptableError() const {
 
 Decimal StepRange::AlignValueForStep(const Decimal& current_value,
                                      const Decimal& new_value) const {
-  DEFINE_STATIC_LOCAL(const Decimal, ten_power_of21,
-                      (Decimal::kPositive, 21, 1));
+  static const Decimal ten_power_of21(Decimal::kPositive, 21, 1);
   if (new_value >= ten_power_of21)
     return new_value;
 
@@ -161,8 +160,8 @@ bool StepRange::StepMismatch(const Decimal& value_for_check) const {
   // Decimal's fractional part size is DBL_MAN_DIG-bit. If the current value
   // is greater than step*2^DBL_MANT_DIG, the following computation for
   // remainder makes no sense.
-  DEFINE_STATIC_LOCAL(const Decimal, two_power_of_double_mantissa_bits,
-                      (Decimal::kPositive, 0, UINT64_C(1) << DBL_MANT_DIG));
+  static const Decimal two_power_of_double_mantissa_bits(
+      Decimal::kPositive, 0, UINT64_C(1) << DBL_MANT_DIG);
   if (value / two_power_of_double_mantissa_bits > step_)
     return false;
   // The computation follows HTML5 4.10.7.2.10 `The step attribute' :

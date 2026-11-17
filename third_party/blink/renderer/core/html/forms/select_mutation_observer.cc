@@ -20,8 +20,6 @@
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
-#include "third_party/blink/renderer/core/mathml_names.h"
-#include "third_party/blink/renderer/core/svg_names.h"
 
 namespace blink {
 
@@ -362,37 +360,6 @@ bool SelectMutationObserver::IsWhitespaceOrEmpty(const Node& node) {
 // Phrasing content that isn't Interactive content. <datalist>, <object>
 // elements are excluded as well.
 bool SelectMutationObserver::IsAllowedPhrasingContent(const Node& node) {
-  DEFINE_STATIC_LOCAL(HashSet<QualifiedName>, phrasing_content_names,
-                      ({
-                          html_names::kATag,        html_names::kAbbrTag,
-                          html_names::kAreaTag,     html_names::kAudioTag,
-                          html_names::kBTag,        html_names::kBdiTag,
-                          html_names::kBdoTag,      html_names::kBrTag,
-                          html_names::kButtonTag,   html_names::kCanvasTag,
-                          html_names::kCiteTag,     html_names::kCodeTag,
-                          html_names::kDataTag,     html_names::kDatalistTag,
-                          html_names::kDelTag,      html_names::kDfnTag,
-                          html_names::kEmTag,       html_names::kEmbedTag,
-                          html_names::kITag,        html_names::kIFrameTag,
-                          html_names::kImgTag,      html_names::kInputTag,
-                          html_names::kInsTag,      html_names::kKbdTag,
-                          html_names::kLabelTag,    html_names::kLinkTag,
-                          html_names::kMapTag,      html_names::kMarkTag,
-                          mathml_names::kMathTag,   html_names::kMetaTag,
-                          html_names::kMeterTag,    html_names::kNoscriptTag,
-                          html_names::kObjectTag,   html_names::kOutputTag,
-                          html_names::kPictureTag,  html_names::kProgressTag,
-                          html_names::kQTag,        html_names::kRubyTag,
-                          html_names::kSTag,        html_names::kSampTag,
-                          html_names::kScriptTag,   html_names::kSelectTag,
-                          html_names::kSlotTag,     html_names::kSmallTag,
-                          html_names::kSpanTag,     html_names::kStrongTag,
-                          html_names::kSubTag,      html_names::kSupTag,
-                          svg_names::kSVGTag,       html_names::kTemplateTag,
-                          html_names::kTextareaTag, html_names::kTimeTag,
-                          html_names::kUTag,        html_names::kVarTag,
-                          html_names::kVideoTag,    html_names::kWbrTag,
-                      }));
   if (node.IsTextNode()) {
     return true;
   }
@@ -400,7 +367,7 @@ bool SelectMutationObserver::IsAllowedPhrasingContent(const Node& node) {
     return false;
   }
   if (const auto* element = DynamicTo<Element>(node)) {
-    if (phrasing_content_names.Contains(element->TagQName())) {
+    if (element->IsPhrasingContent()) {
       if (auto* html_element = DynamicTo<HTMLElement>(element)) {
         return !html_element->IsInteractiveContent();
       }

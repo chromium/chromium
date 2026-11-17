@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "base/memory/values_equivalent.h"
+#include "base/no_destructor.h"
 #include "base/numerics/clamped_math.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
@@ -101,7 +102,6 @@
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/text/quotes_data.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
@@ -480,9 +480,9 @@ const CSSValue* AnimationDelay::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* AnimationDelay::InitialValue() const {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<const CSSValue>>,
-                                  thread_specific_value, ());
-  Persistent<const CSSValue>& value = *thread_specific_value;
+  static base::NoDestructor<ThreadSpecific<Persistent<const CSSValue>>>
+      thread_specific_value;
+  Persistent<const CSSValue>& value = **thread_specific_value;
   if (!value) [[unlikely]] {
     value = ComputedStyleUtils::ValueForAnimationDelay(
         CSSTimingData::InitialDelayStart());
@@ -581,9 +581,9 @@ const CSSValue* AnimationIterationCount::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* AnimationIterationCount::InitialValue() const {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<const CSSValue>>,
-                                  thread_specific_value, ());
-  Persistent<const CSSValue>& value = *thread_specific_value;
+  static base::NoDestructor<ThreadSpecific<Persistent<const CSSValue>>>
+      thread_specific_value;
+  Persistent<const CSSValue>& value = **thread_specific_value;
   if (!value) [[unlikely]] {
     value = CSSNumericLiteralValue::Create(
         CSSAnimationData::InitialIterationCount(),
@@ -1399,10 +1399,10 @@ const CSSValue* BackgroundRepeat::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* BackgroundRepeat::InitialValue() const {
-  DEFINE_STATIC_LOCAL(const Persistent<CSSValue>, value,
-                      (MakeGarbageCollected<CSSRepeatStyleValue>(
-                          CSSIdentifierValue::Create(CSSValueID::kRepeat))));
-  return value;
+  static const base::NoDestructor<Persistent<CSSValue>> value(
+      MakeGarbageCollected<CSSRepeatStyleValue>(
+          CSSIdentifierValue::Create(CSSValueID::kRepeat)));
+  return *value;
 }
 
 const CSSValue* BaselineSource::CSSValueFromComputedStyleInternal(
@@ -1633,10 +1633,9 @@ const CSSValue* BorderImageOutset::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* BorderImageOutset::InitialValue() const {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<Persistent<const CSSQuadValue>>, thread_specific_value,
-      ());
-  Persistent<const CSSQuadValue>& value = *thread_specific_value;
+  static base::NoDestructor<ThreadSpecific<Persistent<const CSSQuadValue>>>
+      thread_specific_value;
+  Persistent<const CSSQuadValue>& value = **thread_specific_value;
   if (!value) [[unlikely]] {
     value = MakeGarbageCollected<CSSQuadValue>(
         CSSNumericLiteralValue::Create(0,
@@ -1663,10 +1662,9 @@ const CSSValue* BorderImageRepeat::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* BorderImageRepeat::InitialValue() const {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<Persistent<const CSSValuePair>>, thread_specific_value,
-      ());
-  Persistent<const CSSValuePair>& value = *thread_specific_value;
+  static base::NoDestructor<ThreadSpecific<Persistent<const CSSValuePair>>>
+      thread_specific_value;
+  Persistent<const CSSValuePair>& value = **thread_specific_value;
   if (!value) [[unlikely]] {
     value = MakeGarbageCollected<CSSValuePair>(
         CSSIdentifierValue::Create(CSSValueID::kStretch),
@@ -1695,11 +1693,11 @@ const CSSValue* BorderImageSlice::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* BorderImageSlice::InitialValue() const {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<Persistent<const cssvalue::CSSBorderImageSliceValue>>,
-      thread_specific_value, ());
+  static base::NoDestructor<
+      ThreadSpecific<Persistent<const cssvalue::CSSBorderImageSliceValue>>>
+      thread_specific_value;
   Persistent<const cssvalue::CSSBorderImageSliceValue>& value =
-      *thread_specific_value;
+      **thread_specific_value;
   if (!value) [[unlikely]] {
     value = MakeGarbageCollected<cssvalue::CSSBorderImageSliceValue>(
         MakeGarbageCollected<CSSQuadValue>(
@@ -1751,10 +1749,9 @@ const CSSValue* BorderImageWidth::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* BorderImageWidth::InitialValue() const {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<Persistent<const CSSQuadValue>>, thread_specific_value,
-      ());
-  Persistent<const CSSQuadValue>& value = *thread_specific_value;
+  static base::NoDestructor<ThreadSpecific<Persistent<const CSSQuadValue>>>
+      thread_specific_value;
+  Persistent<const CSSQuadValue>& value = **thread_specific_value;
   if (!value) [[unlikely]] {
     value = MakeGarbageCollected<CSSQuadValue>(
         CSSNumericLiteralValue::Create(1,
@@ -10860,9 +10857,9 @@ const CSSValue* TransitionDelay::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* TransitionDelay::InitialValue() const {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<const CSSValue>>,
-                                  thread_specific_value, ());
-  Persistent<const CSSValue>& value = *thread_specific_value;
+  static base::NoDestructor<ThreadSpecific<Persistent<const CSSValue>>>
+      thread_specific_value;
+  Persistent<const CSSValue>& value = **thread_specific_value;
   if (!value) [[unlikely]] {
     value = ComputedStyleUtils::ValueForAnimationDelay(
         CSSTimingData::InitialDelayStart());
@@ -10894,9 +10891,9 @@ const CSSValue* TransitionDuration::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* TransitionDuration::InitialValue() const {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<const CSSValue>>,
-                                  thread_specific_value, ());
-  Persistent<const CSSValue>& value = *thread_specific_value;
+  static base::NoDestructor<ThreadSpecific<Persistent<const CSSValue>>>
+      thread_specific_value;
+  Persistent<const CSSValue>& value = **thread_specific_value;
   if (!value) [[unlikely]] {
     value = CSSNumericLiteralValue::Create(
         CSSTransitionData::InitialDuration().value(),
@@ -11952,10 +11949,10 @@ const CSSValue* MaskRepeat::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* MaskRepeat::InitialValue() const {
-  DEFINE_STATIC_LOCAL(const Persistent<CSSValue>, value,
-                      (MakeGarbageCollected<CSSRepeatStyleValue>(
-                          CSSIdentifierValue::Create(CSSValueID::kRepeat))));
-  return value;
+  static const base::NoDestructor<Persistent<CSSValue>> value(
+      MakeGarbageCollected<CSSRepeatStyleValue>(
+          CSSIdentifierValue::Create(CSSValueID::kRepeat)));
+  return *value;
 }
 
 const CSSValue* MaskSize::CSSValueFromComputedStyleInternal(

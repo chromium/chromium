@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/chooser_only_temporal_input_type_view.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -96,13 +97,12 @@ bool ChooserOnlyTemporalInputTypeView::IsPickerVisible() const {
 }
 
 void ChooserOnlyTemporalInputTypeView::CreateShadowSubtree() {
-  DEFINE_STATIC_LOCAL(
-      AtomicString, value_container_pseudo,
-      (AtomicString::FromLiteral<"-webkit-date-and-time-value">()));
+  static base::NoDestructor<AtomicString> value_container_pseudo(
+      AtomicString::FromLiteral<"-webkit-date-and-time-value">());
 
   auto* value_container =
       MakeGarbageCollected<HTMLDivElement>(GetElement().GetDocument());
-  value_container->SetShadowPseudoId(value_container_pseudo);
+  value_container->SetShadowPseudoId(*value_container_pseudo);
   GetElement().UserAgentShadowRoot()->AppendChild(value_container);
   UpdateView();
 }

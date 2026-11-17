@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
@@ -62,13 +63,14 @@ void HTMLObjectElement::Trace(Visitor* visitor) const {
 
 const AttrNameToTrustedType& HTMLObjectElement::GetCheckedAttributeTypes()
     const {
-  DEFINE_STATIC_LOCAL(
-      AttrNameToTrustedType, attribute_map,
-      ({{"data", std::pair{SpecificTrustedType::kScriptURL,
-                           trusted_types_names::kHTMLObjectElement}},
-        {"codebase", std::pair{SpecificTrustedType::kScriptURL,
-                               trusted_types_names::kHTMLObjectElement}}}));
-  return attribute_map;
+  static const base::NoDestructor<AttrNameToTrustedType> attribute_map(
+      {{AtomicString::FromLiteral<"data">(),
+        std::pair{SpecificTrustedType::kScriptURL,
+                  trusted_types_names::kHTMLObjectElement}},
+       {AtomicString::FromLiteral<"codebase">(),
+        std::pair{SpecificTrustedType::kScriptURL,
+                  trusted_types_names::kHTMLObjectElement}}});
+  return *attribute_map;
 }
 
 LayoutEmbeddedContent* HTMLObjectElement::ExistingLayoutEmbeddedContent()

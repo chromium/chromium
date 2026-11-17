@@ -24,7 +24,9 @@
 
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 
+#include "base/check.h"
 #include "base/memory/values_equivalent.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
 #include "third_party/blink/renderer/core/css/computed_style_css_value_mapping.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -54,6 +56,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -71,8 +74,9 @@ void LogUnimplementedPropertyID(const CSSProperty& property) {
       property.PropertyID() == CSSPropertyID::kVariable) {
     return;
   }
-  DEFINE_STATIC_LOCAL(HashSet<CSSPropertyID>, property_id_set, ());
-  if (!property_id_set.insert(property.PropertyID()).is_new_entry) {
+  DCHECK(IsMainThread());
+  static base::NoDestructor<HashSet<CSSPropertyID>> property_id_set;
+  if (!property_id_set->insert(property.PropertyID()).is_new_entry) {
     return;
   }
 
@@ -102,12 +106,14 @@ void UseCountIfAnimationDurationZero(Document& document,
 const Vector<const CSSProperty*>&
 CSSComputedStyleDeclaration::ComputableProperties(
     const ExecutionContext* execution_context) {
-  DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties, ());
-  if (properties.empty()) {
-    CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
-        execution_context, kCSSComputableProperties, properties);
-  }
-  return properties;
+  static const base::NoDestructor<Vector<const CSSProperty*>> properties(
+      [execution_context] {
+        Vector<const CSSProperty*> result;
+        CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
+            execution_context, kCSSComputableProperties, result);
+        return result;
+      }());
+  return *properties;
 }
 
 CSSComputedStyleDeclaration::CSSComputedStyleDeclaration(

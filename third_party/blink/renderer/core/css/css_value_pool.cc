@@ -25,15 +25,17 @@
 
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 namespace blink {
 
 CSSValuePool& CssValuePool() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<CSSValuePool>>,
-                                  thread_specific_pool, ());
-  Persistent<CSSValuePool>& pool_handle = *thread_specific_pool;
+  static base::NoDestructor<ThreadSpecific<Persistent<CSSValuePool>>>
+      thread_specific_pool;
+  Persistent<CSSValuePool>& pool_handle = **thread_specific_pool;
   if (!pool_handle) {
     pool_handle = MakeGarbageCollected<CSSValuePool>();
     LEAK_SANITIZER_IGNORE_OBJECT(&pool_handle);

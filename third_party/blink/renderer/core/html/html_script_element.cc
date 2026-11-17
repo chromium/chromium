@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlscriptelement_svgscriptelement.h"
@@ -66,11 +67,11 @@ HTMLScriptElement::HTMLScriptElement(Document& document,
 
 const AttrNameToTrustedType& HTMLScriptElement::GetCheckedAttributeTypes()
     const {
-  DEFINE_STATIC_LOCAL(AttrNameToTrustedType, attribute_map,
-                      ({{trusted_types_names::kSrc,
-                         std::pair{SpecificTrustedType::kScriptURL,
-                                   trusted_types_names::kHTMLScriptElement}}}));
-  return attribute_map;
+  static base::NoDestructor<AttrNameToTrustedType> attribute_map(
+      {{trusted_types_names::kSrc,
+        std::pair{SpecificTrustedType::kScriptURL,
+                  trusted_types_names::kHTMLScriptElement}}});
+  return *attribute_map;
 }
 
 bool HTMLScriptElement::IsURLAttribute(const Attribute& attribute) const {

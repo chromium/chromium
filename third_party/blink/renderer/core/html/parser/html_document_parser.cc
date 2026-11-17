@@ -31,6 +31,7 @@
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -143,12 +144,11 @@ NonMainThread* GetPreloadScannerThread() {
   // The preload scanner relies on parsing CSS, which requires creating garbage
   // collected objects. This means the thread the scanning runs on must be GC
   // enabled.
-  DEFINE_STATIC_LOCAL(
-      std::unique_ptr<NonMainThread>, preload_scanner_thread,
-      (NonMainThread::CreateThread(
+  static base::NoDestructor<std::unique_ptr<NonMainThread>>
+      preload_scanner_thread(NonMainThread::CreateThread(
           ThreadCreationParams(ThreadType::kPreloadScannerThread)
-              .SetSupportsGC(true))));
-  return preload_scanner_thread.get();
+              .SetSupportsGC(true)));
+  return preload_scanner_thread->get();
 }
 
 PreloadProcessingMode GetPreloadProcessingMode() {

@@ -71,10 +71,10 @@ void DateTimeLocalInputType::SetValueAsDate(
 
 StepRange DateTimeLocalInputType::CreateStepRange(
     AnyStepHandling any_step_handling) const {
-  DEFINE_STATIC_LOCAL(const StepRange::StepDescription, step_description,
-                      (kDateTimeLocalDefaultStep, kDateTimeLocalDefaultStepBase,
-                       kDateTimeLocalStepScaleFactor,
-                       StepRange::kScaledStepValueShouldBeInteger));
+  static const StepRange::StepDescription step_description(
+      kDateTimeLocalDefaultStep, kDateTimeLocalDefaultStepBase,
+      kDateTimeLocalStepScaleFactor,
+      StepRange::kScaledStepValueShouldBeInteger);
 
   return InputType::CreateStepRange(
       any_step_handling, kDateTimeLocalDefaultStepBase,

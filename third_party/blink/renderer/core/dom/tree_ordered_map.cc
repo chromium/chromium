@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/dom/tree_ordered_map.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
@@ -156,12 +157,12 @@ const HeapVector<Member<Element>>& TreeOrderedMap::GetAllElementsById(
     const TreeScope& scope) const {
   DCHECK(key);
   using Holder = DisallowNewWrapper<HeapVector<Member<Element>>>;
-  DEFINE_STATIC_LOCAL(Persistent<Holder>, empty_holder,
-                      (MakeGarbageCollected<Holder>()));
+  static base::NoDestructor<Persistent<Holder>> empty_holder(
+      MakeGarbageCollected<Holder>());
 
   Map::iterator it = map_.find(key);
   if (it == map_.end())
-    return empty_holder->Value();
+    return (*empty_holder)->Value();
 
   Member<MapEntry>& entry = it->value;
   DCHECK(entry->count);

@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_region.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -258,11 +259,11 @@ void VTTRegion::ParseSettingValue(RegionSetting setting, VTTScanner& input) {
 }
 
 const AtomicString& VTTRegion::TextTrackCueContainerScrollingClass() {
-  DEFINE_STATIC_LOCAL(const AtomicString,
-                      track_region_cue_container_scrolling_class,
-                      (AtomicString::FromLiteral<"scrolling">()));
+  static const base::NoDestructor<AtomicString>
+      track_region_cue_container_scrolling_class(
+          AtomicString::FromLiteral<"scrolling">());
 
-  return track_region_cue_container_scrolling_class;
+  return *track_region_cue_container_scrolling_class;
 }
 
 HTMLDivElement* VTTRegion::GetDisplayTree(Document& document) {

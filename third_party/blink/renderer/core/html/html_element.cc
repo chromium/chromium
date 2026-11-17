@@ -31,6 +31,7 @@
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
@@ -162,7 +163,6 @@
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -3709,12 +3709,12 @@ CommandEventType HTMLElement::GetCommandEventType(
 }
 
 const AtomicString& HTMLElement::autocapitalize() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, kCharacters,
-                      (AtomicString::FromLiteral<"characters">()));
-  DEFINE_STATIC_LOCAL(const AtomicString, kWords,
-                      (AtomicString::FromLiteral<"words">()));
-  DEFINE_STATIC_LOCAL(const AtomicString, kSentences,
-                      (AtomicString::FromLiteral<"sentences">()));
+  static const base::NoDestructor<AtomicString> kCharacters(
+      AtomicString::FromLiteral<"characters">());
+  static const base::NoDestructor<AtomicString> kWords(
+      AtomicString::FromLiteral<"words">());
+  static const base::NoDestructor<AtomicString> kSentences(
+      AtomicString::FromLiteral<"sentences">());
 
   const AtomicString& value = FastGetAttribute(html_names::kAutocapitalizeAttr);
   if (value.empty())
@@ -3724,14 +3724,14 @@ const AtomicString& HTMLElement::autocapitalize() const {
       EqualIgnoringAsciiCase(value, keywords::kOff)) {
     return keywords::kNone;
   }
-  if (EqualIgnoringAsciiCase(value, kCharacters)) {
-    return kCharacters;
+  if (EqualIgnoringAsciiCase(value, *kCharacters)) {
+    return *kCharacters;
   }
-  if (EqualIgnoringAsciiCase(value, kWords)) {
-    return kWords;
+  if (EqualIgnoringAsciiCase(value, *kWords)) {
+    return *kWords;
   }
   // "sentences", "on", or an invalid value
-  return kSentences;
+  return *kSentences;
 }
 
 void HTMLElement::setAutocapitalize(const AtomicString& value) {
@@ -3910,16 +3910,16 @@ void HTMLElement::setTranslate(bool enable) {
 // default).
 // http://www.whatwg.org/specs/web-apps/current-work/multipage/common-dom-interfaces.html#limited-to-only-known-values
 static inline const AtomicString& ToValidDirValue(const AtomicString& value) {
-  DEFINE_STATIC_LOCAL(const AtomicString, ltr_value,
-                      (AtomicString::FromLiteral<"ltr">()));
-  DEFINE_STATIC_LOCAL(const AtomicString, rtl_value,
-                      (AtomicString::FromLiteral<"rtl">()));
+  static const base::NoDestructor<AtomicString> ltr_value(
+      AtomicString::FromLiteral<"ltr">());
+  static const base::NoDestructor<AtomicString> rtl_value(
+      AtomicString::FromLiteral<"rtl">());
 
-  if (EqualIgnoringAsciiCase(value, ltr_value)) {
-    return ltr_value;
+  if (EqualIgnoringAsciiCase(value, *ltr_value)) {
+    return *ltr_value;
   }
-  if (EqualIgnoringAsciiCase(value, rtl_value)) {
-    return rtl_value;
+  if (EqualIgnoringAsciiCase(value, *rtl_value)) {
+    return *rtl_value;
   }
   if (EqualIgnoringAsciiCase(value, keywords::kAuto)) {
     return keywords::kAuto;

@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_output_element.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -51,9 +52,9 @@ FormControlType HTMLOutputElement::FormControlType() const {
 }
 
 const AtomicString& HTMLOutputElement::FormControlTypeAsString() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, output,
-                      (AtomicString::FromLiteral<"output">()));
-  return output;
+  static const base::NoDestructor<AtomicString> output(
+      AtomicString::FromLiteral<"output">());
+  return *output;
 }
 
 bool HTMLOutputElement::IsDisabledFormControl() const {

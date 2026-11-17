@@ -178,9 +178,8 @@ String NumberInputType::NormalizeFullWidthNumberChars(const String& input) {
 
 StepRange NumberInputType::CreateStepRange(
     AnyStepHandling any_step_handling) const {
-  DEFINE_STATIC_LOCAL(
-      const StepRange::StepDescription, step_description,
-      (kNumberDefaultStep, kNumberDefaultStepBase, kNumberStepScaleFactor));
+  static const StepRange::StepDescription step_description(
+      kNumberDefaultStep, kNumberDefaultStepBase, kNumberStepScaleFactor);
   const Decimal double_max =
       Decimal::FromDouble(std::numeric_limits<double>::max());
   return InputType::CreateStepRange(any_step_handling, kNumberDefaultStepBase,

@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 
+#include "base/no_destructor.h"
 #include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/cpp/connection_allowlist_parser.h"
@@ -133,11 +134,11 @@ HTMLIFrameElement::~HTMLIFrameElement() = default;
 
 const AttrNameToTrustedType& HTMLIFrameElement::GetCheckedAttributeTypes()
     const {
-  DEFINE_STATIC_LOCAL(
-      AttrNameToTrustedType, attribute_map,
-      ({{"srcdoc", std::pair{SpecificTrustedType::kHTML,
-                             trusted_types_names::kHTMLIFrameElement}}}));
-  return attribute_map;
+  static const base::NoDestructor<AttrNameToTrustedType> attribute_map(
+      {{AtomicString::FromLiteral<"srcdoc">(),
+        std::pair{SpecificTrustedType::kHTML,
+                  trusted_types_names::kHTMLIFrameElement}}});
+  return *attribute_map;
 }
 
 void HTMLIFrameElement::SetCollapsed(bool collapse) {

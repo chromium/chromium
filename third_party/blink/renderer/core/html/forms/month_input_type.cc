@@ -83,10 +83,9 @@ Decimal MonthInputType::DefaultValueForStepUp() const {
 
 StepRange MonthInputType::CreateStepRange(
     AnyStepHandling any_step_handling) const {
-  DEFINE_STATIC_LOCAL(
-      const StepRange::StepDescription, step_description,
-      (kMonthDefaultStep, kMonthDefaultStepBase, kMonthStepScaleFactor,
-       StepRange::kParsedStepValueShouldBeInteger));
+  static const StepRange::StepDescription step_description(
+      kMonthDefaultStep, kMonthDefaultStepBase, kMonthStepScaleFactor,
+      StepRange::kParsedStepValueShouldBeInteger);
 
   return InputType::CreateStepRange(
       any_step_handling, Decimal::FromDouble(kMonthDefaultStepBase),

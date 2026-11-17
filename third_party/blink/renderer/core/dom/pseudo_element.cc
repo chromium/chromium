@@ -28,6 +28,7 @@
 
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
@@ -166,133 +167,135 @@ PseudoElement* PseudoElement::Create(Element* parent,
 const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
   switch (pseudo_id) {
     case kPseudoIdAfter: {
-      DEFINE_STATIC_LOCAL(QualifiedName, after, (AtomicString("::after")));
-      return after;
+      static const base::NoDestructor<QualifiedName> after(
+          AtomicString::FromLiteral<"::after">());
+      return *after;
     }
     case kPseudoIdBefore: {
-      DEFINE_STATIC_LOCAL(QualifiedName, before, (AtomicString("::before")));
-      return before;
+      static const base::NoDestructor<QualifiedName> before(
+          AtomicString::FromLiteral<"::before">());
+      return *before;
     }
     case kPseudoIdCheckMark: {
-      DEFINE_STATIC_LOCAL(QualifiedName, check, (AtomicString("::checkmark")));
-      return check;
+      static const base::NoDestructor<QualifiedName> check(
+          AtomicString::FromLiteral<"::checkmark">());
+      return *check;
     }
     case kPseudoIdPickerIcon: {
-      DEFINE_STATIC_LOCAL(QualifiedName, picker_icon,
-                          (AtomicString("::picker-icon")));
-      return picker_icon;
+      static const base::NoDestructor<QualifiedName> picker_icon(
+          AtomicString::FromLiteral<"::picker-icon">());
+      return *picker_icon;
     }
     case kPseudoIdExpandIcon: {
-      DEFINE_STATIC_LOCAL(QualifiedName, expand_icon,
-                          (AtomicString("::expand-icon")));
-      return expand_icon;
+      static const base::NoDestructor<QualifiedName> expand_icon(
+          AtomicString::FromLiteral<"::expand-icon">());
+      return *expand_icon;
     }
     case kPseudoIdInterestButton: {
-      DEFINE_STATIC_LOCAL(QualifiedName, interest_button,
-                          (AtomicString("::interest-button")));
-      return interest_button;
+      static const base::NoDestructor<QualifiedName> interest_button(
+          AtomicString::FromLiteral<"::interest-button">());
+      return *interest_button;
     }
     case kPseudoIdBackdrop: {
-      DEFINE_STATIC_LOCAL(QualifiedName, backdrop,
-                          (AtomicString("::backdrop")));
-      return backdrop;
+      static const base::NoDestructor<QualifiedName> backdrop(
+          AtomicString::FromLiteral<"::backdrop">());
+      return *backdrop;
     }
     case kPseudoIdColumn: {
-      DEFINE_STATIC_LOCAL(QualifiedName, first_letter,
-                          (AtomicString("::column")));
-      return first_letter;
+      static const base::NoDestructor<QualifiedName> first_letter(
+          AtomicString::FromLiteral<"::column">());
+      return *first_letter;
     }
     case kPseudoIdFirstLetter: {
-      DEFINE_STATIC_LOCAL(QualifiedName, first_letter,
-                          (AtomicString("::first-letter")));
-      return first_letter;
+      static const base::NoDestructor<QualifiedName> first_letter(
+          AtomicString::FromLiteral<"::first-letter">());
+      return *first_letter;
     }
     case kPseudoIdMarker: {
-      DEFINE_STATIC_LOCAL(QualifiedName, marker, (AtomicString("::marker")));
-      return marker;
+      static const base::NoDestructor<QualifiedName> marker(
+          AtomicString::FromLiteral<"::marker">());
+      return *marker;
     }
     case kPseudoIdOverscrollAreaParent: {
-      DEFINE_STATIC_LOCAL(QualifiedName, overscroll_area_parent,
-                          (AtomicString("::internal-overscroll-area-parent")));
-      return overscroll_area_parent;
+      static const base::NoDestructor<QualifiedName> overscroll_area_parent(
+          AtomicString::FromLiteral<"::internal-overscroll-area-parent">());
+      return *overscroll_area_parent;
     }
     case kPseudoIdScrollMarkerGroup: {
-      DEFINE_STATIC_LOCAL(QualifiedName, scroll_marker_group,
-                          (AtomicString("::scroll-marker-group")));
-      return scroll_marker_group;
+      static const base::NoDestructor<QualifiedName> scroll_marker_group(
+          AtomicString::FromLiteral<"::scroll-marker-group">());
+      return *scroll_marker_group;
     }
     case kPseudoIdScrollButton: {
-      DEFINE_STATIC_LOCAL(QualifiedName, scroll_button,
-                          (AtomicString("::scroll-button")));
-      return scroll_button;
+      static const base::NoDestructor<QualifiedName> scroll_button(
+          AtomicString::FromLiteral<"::scroll-button">());
+      return *scroll_button;
     }
     case kPseudoIdScrollButtonBlockStart: {
-      DEFINE_STATIC_LOCAL(QualifiedName, scroll_button_block_start,
-                          (AtomicString("::scroll-button(block-start)")));
-      return scroll_button_block_start;
+      static const base::NoDestructor<QualifiedName> scroll_button_block_start(
+          AtomicString::FromLiteral<"::scroll-button(block-start)">());
+      return *scroll_button_block_start;
     }
     case kPseudoIdScrollButtonInlineStart: {
-      DEFINE_STATIC_LOCAL(QualifiedName, scroll_button_inline_start,
-                          (AtomicString("::scroll-button(inline-start)")));
-      return scroll_button_inline_start;
+      static const base::NoDestructor<QualifiedName> scroll_button_inline_start(
+          AtomicString::FromLiteral<"::scroll-button(inline-start)">());
+      return *scroll_button_inline_start;
     }
     case kPseudoIdScrollButtonInlineEnd: {
-      DEFINE_STATIC_LOCAL(QualifiedName, scroll_button_inline_end,
-                          (AtomicString("::scroll-button(inline-end)")));
-      return scroll_button_inline_end;
+      static const base::NoDestructor<QualifiedName> scroll_button_inline_end(
+          AtomicString::FromLiteral<"::scroll-button(inline-end)">());
+      return *scroll_button_inline_end;
     }
     case kPseudoIdScrollButtonBlockEnd: {
-      DEFINE_STATIC_LOCAL(QualifiedName, scroll_button_block_end,
-                          (AtomicString("::scroll-button(block-end)")));
-      return scroll_button_block_end;
+      static const base::NoDestructor<QualifiedName> scroll_button_block_end(
+          AtomicString::FromLiteral<"::scroll-button(block-end)">());
+      return *scroll_button_block_end;
     }
     case kPseudoIdScrollMarker: {
-      DEFINE_STATIC_LOCAL(QualifiedName, scroll_marker,
-                          (AtomicString("::scroll-marker")));
-      return scroll_marker;
+      static const base::NoDestructor<QualifiedName> scroll_marker(
+          AtomicString::FromLiteral<"::scroll-marker">());
+      return *scroll_marker;
     }
     case kPseudoIdViewTransition: {
-      DEFINE_STATIC_LOCAL(QualifiedName, transition,
-                          (AtomicString("::view-transition")));
-      return transition;
+      static const base::NoDestructor<QualifiedName> transition(
+          AtomicString::FromLiteral<"::view-transition">());
+      return *transition;
     }
     case kPseudoIdViewTransitionGroup: {
       // TODO(khushalsagar) : Update these tag names to include the additional
       // ID.
-      DEFINE_STATIC_LOCAL(QualifiedName, transition_container,
-                          (AtomicString("::view-transition-group")));
-      return transition_container;
+      static const base::NoDestructor<QualifiedName> transition_container(
+          AtomicString::FromLiteral<"::view-transition-group">());
+      return *transition_container;
     }
     case kPseudoIdViewTransitionGroupChildren: {
-      DEFINE_STATIC_LOCAL(QualifiedName, transition_nested_groups,
-                          (AtomicString("::view-transition-group-children")));
-      return transition_nested_groups;
+      static const base::NoDestructor<QualifiedName> transition_nested_groups(
+          AtomicString::FromLiteral<"::view-transition-group-children">());
+      return *transition_nested_groups;
     }
     case kPseudoIdViewTransitionImagePair: {
-      DEFINE_STATIC_LOCAL(QualifiedName, transition_image_wrapper,
-                          (AtomicString("::view-transition-image-pair")));
-      return transition_image_wrapper;
+      static const base::NoDestructor<QualifiedName> transition_image_wrapper(
+          AtomicString::FromLiteral<"::view-transition-image-pair">());
+      return *transition_image_wrapper;
     }
     case kPseudoIdViewTransitionNew: {
-      DEFINE_STATIC_LOCAL(QualifiedName, transition_incoming_image,
-                          (AtomicString("::view-transition-new")));
-      return transition_incoming_image;
+      static const base::NoDestructor<QualifiedName> transition_incoming_image(
+          AtomicString::FromLiteral<"::view-transition-new">());
+      return *transition_incoming_image;
     }
     case kPseudoIdViewTransitionOld: {
-      DEFINE_STATIC_LOCAL(QualifiedName, transition_outgoing_image,
-                          (AtomicString("::view-transition-old")));
-      return transition_outgoing_image;
+      static const base::NoDestructor<QualifiedName> transition_outgoing_image(
+          AtomicString::FromLiteral<"::view-transition-old">());
+      return *transition_outgoing_image;
     }
     case kPseudoIdSkeleton: {
-      DEFINE_STATIC_LOCAL(QualifiedName, skeleton,
-                          (AtomicString("::skeleton")));
-      return skeleton;
+      static const base::NoDestructor<QualifiedName> skeleton(
+          AtomicString::FromLiteral<"::skeleton">());
+      return *skeleton;
     }
     default:
       NOTREACHED();
   }
-  DEFINE_STATIC_LOCAL(QualifiedName, name, (AtomicString("::unknown")));
-  return name;
 }
 
 AtomicString PseudoElement::PseudoElementNameForEvents(Element* element) {

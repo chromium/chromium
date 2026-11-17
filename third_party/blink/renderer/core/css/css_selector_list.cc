@@ -30,19 +30,19 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 namespace blink {
 
 CSSSelectorList* CSSSelectorList::Empty() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<CSSSelectorList>>,
-                                  empty_list, ());
-  Persistent<CSSSelectorList>& persistent = *empty_list;
+  static base::NoDestructor<ThreadSpecific<Persistent<CSSSelectorList>>>
+      empty_list;
+  Persistent<CSSSelectorList>& persistent = **empty_list;
   if (!persistent) [[unlikely]] {
     persistent =
         MakeGarbageCollected<CSSSelectorList>(base::PassKey<CSSSelectorList>());

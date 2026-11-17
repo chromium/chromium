@@ -22,6 +22,7 @@
 
 #include <memory>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/css/counters_attachment_context.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
@@ -314,20 +315,20 @@ bool ProcessingInstruction::CheckStyleSheet(String& href, String& charset) {
 
   ProcessAttributesIfNeeded();
 
-  DEFINE_STATIC_LOCAL(AtomicString, kType,
-                      (AtomicString::FromLiteral<"type">()));
-  DEFINE_STATIC_LOCAL(AtomicString, kHref,
-                      (AtomicString::FromLiteral<"href">()));
-  DEFINE_STATIC_LOCAL(AtomicString, kCharset,
-                      (AtomicString::FromLiteral<"charset">()));
-  DEFINE_STATIC_LOCAL(AtomicString, kAlternate,
-                      (AtomicString::FromLiteral<"alternate">()));
-  DEFINE_STATIC_LOCAL(AtomicString, kTitle,
-                      (AtomicString::FromLiteral<"title">()));
-  DEFINE_STATIC_LOCAL(AtomicString, kMedia,
-                      (AtomicString::FromLiteral<"media">()));
+  static base::NoDestructor<AtomicString> kType(
+      AtomicString::FromLiteral<"type">());
+  static base::NoDestructor<AtomicString> kHref(
+      AtomicString::FromLiteral<"href">());
+  static base::NoDestructor<AtomicString> kCharset(
+      AtomicString::FromLiteral<"charset">());
+  static base::NoDestructor<AtomicString> kAlternate(
+      AtomicString::FromLiteral<"alternate">());
+  static base::NoDestructor<AtomicString> kTitle(
+      AtomicString::FromLiteral<"title">());
+  static base::NoDestructor<AtomicString> kMedia(
+      AtomicString::FromLiteral<"media">());
 
-  AtomicString type = GetAttributeValue(kType, g_empty_atom);
+  AtomicString type = GetAttributeValue(*kType, g_empty_atom);
 
   is_css_ = type.empty() || type == "text/css";
   is_xsl_ = (type == "text/xml" || type == "text/xsl" ||
@@ -345,7 +346,7 @@ bool ProcessingInstruction::CheckStyleSheet(String& href, String& charset) {
     return false;
   }
 
-  href = GetAttributeValue(kHref, g_empty_atom);
+  href = GetAttributeValue(*kHref, g_empty_atom);
 
   // Disallow "external" XSLT stylesheets in SVG documents in image contexts.
   if (is_xsl_ && SVGImage::IsInSVGImage(this) && !IsLocalSheet(href)) {
@@ -372,10 +373,10 @@ bool ProcessingInstruction::CheckStyleSheet(String& href, String& charset) {
     }
   }
 
-  charset = GetAttributeValue(kCharset, g_empty_atom);
-  alternate_ = GetAttributeValue(kAlternate, g_empty_atom) == "yes";
-  title_ = GetAttributeValue(kTitle, g_empty_atom);
-  media_ = GetAttributeValue(kMedia, g_empty_atom);
+  charset = GetAttributeValue(*kCharset, g_empty_atom);
+  alternate_ = GetAttributeValue(*kAlternate, g_empty_atom) == "yes";
+  title_ = GetAttributeValue(*kTitle, g_empty_atom);
+  media_ = GetAttributeValue(*kMedia, g_empty_atom);
 
   return !alternate_ || !title_.empty();
 }

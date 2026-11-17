@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -228,10 +229,10 @@ void RecordTotalCounts(const MediaVideoVisibilityTracker::Metrics& counts) {
 }
 
 const Vector<AtomicString>& FullscreenEventTypes() {
-  DEFINE_STATIC_LOCAL(const Vector<AtomicString>, fullscreen_change_event_types,
-                      ({event_type_names::kWebkitfullscreenchange,
-                        event_type_names::kFullscreenchange}));
-  return fullscreen_change_event_types;
+  static const base::NoDestructor<Vector<AtomicString>>
+      fullscreen_change_event_types({event_type_names::kWebkitfullscreenchange,
+                                     event_type_names::kFullscreenchange});
+  return *fullscreen_change_event_types;
 }
 
 // Returns true if `target` has `listener` event listener registered.

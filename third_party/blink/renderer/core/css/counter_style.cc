@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/counter_style.h"
 
 #include "base/auto_reset.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
@@ -590,13 +591,12 @@ String EthiopicNumericAlgorithm(unsigned value) {
 
 // static
 CounterStyle& CounterStyle::GetDecimal() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<CounterStyle>, decimal,
-      (CounterStyleMap::GetUACounterStyleMap()->FindCounterStyleAcrossScopes(
-          keywords::kDecimal)));
+  static base::NoDestructor<Persistent<CounterStyle>> decimal(
+      CounterStyleMap::GetUACounterStyleMap()->FindCounterStyleAcrossScopes(
+          keywords::kDecimal));
   CHECK(IsMainThread());
-  CHECK(decimal);
-  return *decimal;
+  CHECK(*decimal);
+  return **decimal;
 }
 
 // static

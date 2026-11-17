@@ -6,6 +6,7 @@
 #include <optional>
 #include <tuple>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -37,10 +38,9 @@ namespace blink {
 namespace {
 
 const Vector<char>& TestImage() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const Vector<char>, test_image,
-                                  (*test::ReadFromFile(test::CoreTestDataPath(
-                                      "notifications/500x500.png"))));
-  return test_image;
+  static const base::NoDestructor<Vector<char>> test_image(
+      *test::ReadFromFile(test::CoreTestDataPath("notifications/500x500.png")));
+  return *test_image;
 }
 
 class LazyLoadImagesSimTest : public SimTest {

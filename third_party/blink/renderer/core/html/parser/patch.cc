@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/parser/patch.h"
 
 #include "base/memory/stack_allocated.h"
+#include "base/no_destructor.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -94,31 +95,31 @@ Patch* Patch::Prepare(ContainerNode* scope,
       scope = scope->GetDocument().documentElement();
     }
 
-    DEFINE_STATIC_LOCAL(AtomicString, kNamePseudoAttr,
-                        (AtomicString::FromLiteral<"name">()));
-    DEFINE_STATIC_LOCAL(AtomicString, kMarkerTarget,
-                        (AtomicString::FromLiteral<"marker">()));
-    DEFINE_STATIC_LOCAL(AtomicString, kStartTarget,
-                        (AtomicString::FromLiteral<"start">()));
-    DEFINE_STATIC_LOCAL(AtomicString, kEndTarget,
-                        (AtomicString::FromLiteral<"end">()));
+    static base::NoDestructor<AtomicString> kNamePseudoAttr(
+        AtomicString::FromLiteral<"name">());
+    static base::NoDestructor<AtomicString> kMarkerTarget(
+        AtomicString::FromLiteral<"marker">());
+    static base::NoDestructor<AtomicString> kStartTarget(
+        AtomicString::FromLiteral<"start">());
+    static base::NoDestructor<AtomicString> kEndTarget(
+        AtomicString::FromLiteral<"end">());
 
     for (Node& descendant : NodeTraversal::DescendantsOf(*scope)) {
       auto* processing_instruction =
           DynamicTo<ProcessingInstruction>(descendant);
       if (!processing_instruction ||
           (processing_instruction->GetAttributeValue(
-               kNamePseudoAttr, g_empty_atom) != marker_name)) {
+               *kNamePseudoAttr, g_empty_atom) != marker_name)) {
         continue;
       }
-      if (processing_instruction->target() == kMarkerTarget) {
+      if (processing_instruction->target() == *kMarkerTarget) {
         parent = processing_instruction->parentNode();
         start_marker = processing_instruction;
         end_marker = processing_instruction;
         break;
       }
 
-      if (processing_instruction->target() != kStartTarget) {
+      if (processing_instruction->target() != *kStartTarget) {
         continue;
       }
 
@@ -130,9 +131,9 @@ Patch* Patch::Prepare(ContainerNode* scope,
            node = node->nextSibling()) {
         if (ProcessingInstruction* next_processing_instruction =
                 DynamicTo<ProcessingInstruction>(*node)) {
-          if (next_processing_instruction->target() == kStartTarget) {
+          if (next_processing_instruction->target() == *kStartTarget) {
             marker_depth++;
-          } else if (next_processing_instruction->target() == kEndTarget) {
+          } else if (next_processing_instruction->target() == *kEndTarget) {
             if (marker_depth == 0) {
               parent = pi_parent;
               start_marker = processing_instruction;

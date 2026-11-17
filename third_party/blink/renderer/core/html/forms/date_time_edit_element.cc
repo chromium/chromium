@@ -27,6 +27,7 @@
 
 #include <algorithm>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
@@ -442,13 +443,12 @@ bool DateTimeEditBuilder::ShouldYearFieldDisabled() const {
 }
 
 void DateTimeEditBuilder::VisitLiteral(const String& text) {
-  DEFINE_STATIC_LOCAL(
-      AtomicString, text_pseudo_id,
-      (AtomicString::FromLiteral<"-webkit-datetime-edit-text">()));
+  static base::NoDestructor<AtomicString> text_pseudo_id(
+      AtomicString::FromLiteral<"-webkit-datetime-edit-text">());
   DCHECK_GT(text.length(), 0u);
   auto* element =
       MakeGarbageCollected<HTMLDivElement>(EditElement().GetDocument());
-  element->SetShadowPseudoId(text_pseudo_id);
+  element->SetShadowPseudoId(*text_pseudo_id);
   element->SetInlineStyleProperty(CSSPropertyID::kUnicodeBidi,
                                   CSSValueID::kNormal);
   if (parameters_.locale->IsRtl() && text.length()) {
@@ -731,12 +731,11 @@ void DateTimeEditElement::GetLayout(const LayoutParameters& layout_parameters,
   // TODO(tkent): We assume this function never dispatches events. However this
   // can dispatch 'blur' event in Node::removeChild().
 
-  DEFINE_STATIC_LOCAL(
-      AtomicString, fields_wrapper_pseudo_id,
-      (AtomicString::FromLiteral<"-webkit-datetime-edit-fields-wrapper">()));
+  static base::NoDestructor<AtomicString> fields_wrapper_pseudo_id(
+      AtomicString::FromLiteral<"-webkit-datetime-edit-fields-wrapper">());
   if (!HasChildren()) {
     auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-    element->SetShadowPseudoId(fields_wrapper_pseudo_id);
+    element->SetShadowPseudoId(*fields_wrapper_pseudo_id);
     element->SetInlineStyleProperty(CSSPropertyID::kUnicodeBidi,
                                     CSSValueID::kNormal);
     AppendChild(element);

@@ -32,6 +32,8 @@
 
 #include <algorithm>
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -45,10 +47,10 @@
 #include "third_party/blink/renderer/core/page/scrolling/sync_scroll_attempt_heuristic.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -120,10 +122,11 @@ CSSPropertyID ParseCSSPropertyID(const ExecutionContext* execution_context,
 // Also, certain prefixes such as 'css-' are stripped.
 CSSPropertyID CssPropertyInfo(const ExecutionContext* execution_context,
                               const AtomicString& name) {
+  DCHECK(IsMainThread());
   typedef HashMap<String, CSSPropertyID> CSSPropertyIDMap;
-  DEFINE_STATIC_LOCAL(CSSPropertyIDMap, map, ());
-  CSSPropertyIDMap::iterator iter = map.find(name);
-  if (iter != map.end()) {
+  static base::NoDestructor<CSSPropertyIDMap> map;
+  CSSPropertyIDMap::iterator iter = map->find(name);
+  if (iter != map->end()) {
     return iter->value;
   }
 
@@ -138,7 +141,7 @@ CSSPropertyID CssPropertyInfo(const ExecutionContext* execution_context,
   // different ExecutionContexts are provided with different origin trial
   // settings.
   if (kKnownExposedProperties.Has(unresolved_property)) {
-    map.insert(name, unresolved_property);
+    map->insert(name, unresolved_property);
   }
   DCHECK(!IsValidCSSPropertyID(unresolved_property) ||
          CSSProperty::Get(ResolveCSSPropertyID(unresolved_property))
@@ -260,29 +263,28 @@ NamedPropertyDeleterResult CSSStyleDeclaration::AnonymousNamedDeleter(
 void CSSStyleDeclaration::NamedPropertyEnumerator(Vector<String>& names,
                                                   ExceptionState&) {
   typedef Vector<String, kNumCSSProperties - 1> PreAllocatedPropertyVector;
-  DEFINE_STATIC_LOCAL(PreAllocatedPropertyVector, property_names, ());
-
   const ExecutionContext* execution_context = GetExecutionContext();
-
-  if (property_names.empty()) {
-    for (CSSPropertyID property_id : CSSPropertyIDList()) {
-      const CSSProperty& property_class =
-          CSSProperty::Get(ResolveCSSPropertyID(property_id));
-      if (property_class.IsWebExposed(execution_context)) {
-        property_names.push_back(property_class.GetJSPropertyName().ToString());
-      }
-    }
-    for (CSSPropertyID property_id : kCSSPropertyAliasList) {
-      const CSSUnresolvedProperty& property_class =
-          *GetPropertyInternal(property_id);
-      if (property_class.IsWebExposed(execution_context)) {
-        property_names.push_back(property_class.GetJSPropertyName().ToString());
-      }
-    }
-    std::sort(property_names.begin(), property_names.end(),
-              CodeUnitCompareLessThan);
-  }
-  names = property_names;
+  static const base::NoDestructor<PreAllocatedPropertyVector> property_names(
+      [execution_context] {
+        PreAllocatedPropertyVector result;
+        for (CSSPropertyID property_id : CSSPropertyIDList()) {
+          const CSSProperty& property_class =
+              CSSProperty::Get(ResolveCSSPropertyID(property_id));
+          if (property_class.IsWebExposed(execution_context)) {
+            result.push_back(property_class.GetJSPropertyName().ToString());
+          }
+        }
+        for (CSSPropertyID property_id : kCSSPropertyAliasList) {
+          const CSSUnresolvedProperty& property_class =
+              *GetPropertyInternal(property_id);
+          if (property_class.IsWebExposed(execution_context)) {
+            result.push_back(property_class.GetJSPropertyName().ToString());
+          }
+        }
+        std::sort(result.begin(), result.end(), CodeUnitCompareLessThan);
+        return result;
+      }());
+  names = *property_names;
 }
 
 bool CSSStyleDeclaration::NamedPropertyQuery(const AtomicString& name,

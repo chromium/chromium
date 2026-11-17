@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_file_formdata_usvstring.h"
@@ -422,9 +423,9 @@ const FrozenArray<ElementBehavior>& ElementInternals::behaviors() const {
   DCHECK(RuntimeEnabledFeatures::ElementInternalsBehaviorsEnabled());
 
   if (!behaviors_) {
-    DEFINE_STATIC_LOCAL(Persistent<FrozenArray<ElementBehavior>>, empty,
-                        (MakeGarbageCollected<FrozenArray<ElementBehavior>>()));
-    return *empty;
+    static base::NoDestructor<Persistent<FrozenArray<ElementBehavior>>> empty(
+        MakeGarbageCollected<FrozenArray<ElementBehavior>>());
+    return **empty;
   }
   return *behaviors_;
 }

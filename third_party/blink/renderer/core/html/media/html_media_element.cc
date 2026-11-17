@@ -32,11 +32,13 @@
 #include <variant>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/synchronization/lock.h"
@@ -129,6 +131,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/display/screen_info.h"
 
@@ -230,10 +233,11 @@ String UrlForLoggingMedia(const KURL& url) {
 }
 
 DocumentElementSetMap& DocumentToElementSetMap() {
+  DCHECK(IsMainThread());
   using DocumentElementSetMapHolder = DisallowNewWrapper<DocumentElementSetMap>;
-  DEFINE_STATIC_LOCAL(Persistent<DocumentElementSetMapHolder>, holder,
-                      (MakeGarbageCollected<DocumentElementSetMapHolder>()));
-  return holder->Value();
+  static base::NoDestructor<Persistent<DocumentElementSetMapHolder>> holder(
+      MakeGarbageCollected<DocumentElementSetMapHolder>());
+  return (*holder)->Value();
 }
 
 void AddElementToDocumentMap(HTMLMediaElement* element, Document* document) {

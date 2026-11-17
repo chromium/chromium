@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 
 #include "base/command_line.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
@@ -74,21 +75,19 @@ String MaybeRemoveCSSImportant(String string) {
 }  // namespace
 
 CSSDefaultStyleSheets& CSSDefaultStyleSheets::Instance() {
-  DEFINE_STATIC_LOCAL(Persistent<CSSDefaultStyleSheets>,
-                      css_default_style_sheets,
-                      (MakeGarbageCollected<CSSDefaultStyleSheets>()));
+  static base::NoDestructor<Persistent<CSSDefaultStyleSheets>>
+      css_default_style_sheets(MakeGarbageCollected<CSSDefaultStyleSheets>());
   CHECK(IsMainThread());
-  return *css_default_style_sheets;
+  return **css_default_style_sheets;
 }
 
 static const MediaQueryEvaluator& ForcedColorsEval() {
   // We use "ua-forced-colors" here instead of "forced-colors" to indicate that
   // this is a UA hack for the "forced-colors" media query.
-  DEFINE_STATIC_LOCAL(
-      Persistent<MediaQueryEvaluator>, forced_colors_eval,
-      (MakeGarbageCollected<MediaQueryEvaluator>("ua-forced-colors")));
+  static base::NoDestructor<Persistent<MediaQueryEvaluator>> forced_colors_eval(
+      MakeGarbageCollected<MediaQueryEvaluator>("ua-forced-colors"));
   CHECK(IsMainThread());
-  return *forced_colors_eval;
+  return **forced_colors_eval;
 }
 
 // static
@@ -111,10 +110,10 @@ StyleSheetContents* CSSDefaultStyleSheets::ParseUASheet(const String& str) {
 
 // static
 const MediaQueryEvaluator& CSSDefaultStyleSheets::ScreenEval() {
-  DEFINE_STATIC_LOCAL(const Persistent<MediaQueryEvaluator>, static_screen_eval,
-                      (MakeGarbageCollected<MediaQueryEvaluator>("screen")));
+  static const base::NoDestructor<Persistent<MediaQueryEvaluator>>
+      static_screen_eval(MakeGarbageCollected<MediaQueryEvaluator>("screen"));
   CHECK(IsMainThread());
-  return *static_screen_eval;
+  return **static_screen_eval;
 }
 
 CSSDefaultStyleSheets::CSSDefaultStyleSheets()

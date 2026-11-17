@@ -32,6 +32,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/no_destructor.h"
 #include "base/substring_set_matcher/substring_set_matcher.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
@@ -392,9 +393,9 @@ struct CumulativeRulePerfData {
 using SelectorStatisticsRuleMap =
     HashMap<CumulativeRulePerfKey, CumulativeRulePerfData>;
 SelectorStatisticsRuleMap& GetSelectorStatisticsRuleMap() {
-  DEFINE_STATIC_LOCAL(SelectorStatisticsRuleMap, rule_map, {});
+  static base::NoDestructor<SelectorStatisticsRuleMap> rule_map;
   CHECK(IsMainThread());
-  return rule_map;
+  return *rule_map;
 }
 
 void AggregateRulePerfData(

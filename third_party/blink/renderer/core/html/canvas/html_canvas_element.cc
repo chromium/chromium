@@ -487,11 +487,10 @@ void HTMLCanvasElement::SetSize(gfx::Size new_size) {
 HTMLCanvasElement::ContextFactoryVector&
 HTMLCanvasElement::RenderingContextFactories() {
   DCHECK(IsMainThread());
-  DEFINE_STATIC_LOCAL(
-      ContextFactoryVector, context_factories,
-      (static_cast<int>(CanvasRenderingContext::CanvasRenderingAPI::kMaxValue) +
-       1));
-  return context_factories;
+  static base::NoDestructor<ContextFactoryVector> context_factories(
+      static_cast<int>(CanvasRenderingContext::CanvasRenderingAPI::kMaxValue) +
+      1);
+  return *context_factories;
 }
 
 CanvasRenderingContextFactory* HTMLCanvasElement::GetRenderingContextFactory(

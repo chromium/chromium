@@ -148,9 +148,8 @@ bool RangeInputType::SupportsRequired() const {
 
 StepRange RangeInputType::CreateStepRange(
     AnyStepHandling any_step_handling) const {
-  DEFINE_STATIC_LOCAL(
-      const StepRange::StepDescription, step_description,
-      (kRangeDefaultStep, kRangeDefaultStepBase, kRangeStepScaleFactor));
+  static const StepRange::StepDescription step_description(
+      kRangeDefaultStep, kRangeDefaultStepBase, kRangeStepScaleFactor);
 
   const Decimal step_base = FindStepBase(kRangeDefaultStepBase);
   const Decimal minimum =

@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_selection_mode.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -778,18 +779,18 @@ unsigned TextControlElement::selectionEnd() const {
 
 static const AtomicString& DirectionString(
     TextFieldSelectionDirection direction) {
-  DEFINE_STATIC_LOCAL(const AtomicString, forward,
-                      (AtomicString::FromLiteral<"forward">()));
-  DEFINE_STATIC_LOCAL(const AtomicString, backward,
-                      (AtomicString::FromLiteral<"backward">()));
+  static const base::NoDestructor<AtomicString> forward(
+      AtomicString::FromLiteral<"forward">());
+  static const base::NoDestructor<AtomicString> backward(
+      AtomicString::FromLiteral<"backward">());
 
   switch (direction) {
     case kSelectionHasNoDirection:
       return keywords::kNone;
     case kSelectionHasForwardDirection:
-      return forward;
+      return *forward;
     case kSelectionHasBackwardDirection:
-      return backward;
+      return *backward;
   }
 
   NOTREACHED();

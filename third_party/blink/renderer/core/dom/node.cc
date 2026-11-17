@@ -29,6 +29,8 @@
 #include <algorithm>
 #include <ranges>
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_root_node_options.h"
@@ -166,6 +168,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 #if DUMP_NODE_STATISTICS
 #include "third_party/blink/renderer/core/dom/named_node_map.h"
@@ -204,9 +207,10 @@ static_assert(sizeof(Node) <= sizeof(NotSmallerThanNode),
 #if DUMP_NODE_STATISTICS
 using WeakNodeSet = GCedHeapHashSet<WeakMember<Node>>;
 static WeakNodeSet& LiveNodeSet() {
-  DEFINE_STATIC_LOCAL(Persistent<WeakNodeSet>, set,
-                      (MakeGarbageCollected<WeakNodeSet>()));
-  return *set;
+  DCHECK(IsMainThread());
+  static base::NoDestructor<Persistent<WeakNodeSet>> set(
+      MakeGarbageCollected<WeakNodeSet>());
+  return **set;
 }
 
 void Node::DumpStatistics() {

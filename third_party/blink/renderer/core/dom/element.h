@@ -1780,6 +1780,10 @@ class CORE_EXPORT Element : public ContainerNode {
   // https://html.spec.whatwg.org/C/#reset-the-insertion-mode-appropriately
   virtual bool HasNonInBodyInsertionMode() const { return false; }
 
+  // 3.2.5.2.5 Phrasing content
+  // https://html.spec.whatwg.org/multipage/dom.html#phrasing-content
+  bool IsPhrasingContent() const;
+
   bool CanContainRangeEndPoint() const override { return true; }
 
   // Used for disabled form elements; if true, prevents mouse events from being

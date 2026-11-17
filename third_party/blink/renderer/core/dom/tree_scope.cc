@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
@@ -134,12 +135,12 @@ Element* TreeScope::getElementById(const AtomicString& element_id) const {
 const HeapVector<Member<Element>>& TreeScope::GetAllElementsById(
     const AtomicString& element_id) const {
   using Holder = DisallowNewWrapper<HeapVector<Member<Element>>>;
-  DEFINE_STATIC_LOCAL(Persistent<Holder>, empty_holder,
-                      (MakeGarbageCollected<Holder>()));
+  static base::NoDestructor<Persistent<Holder>> empty_holder(
+      MakeGarbageCollected<Holder>());
   if (element_id.empty())
-    return empty_holder->Value();
+    return (*empty_holder)->Value();
   if (!elements_by_id_)
-    return empty_holder->Value();
+    return (*empty_holder)->Value();
   return elements_by_id_->GetAllElementsById(element_id, *this);
 }
 

@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/core/html/html_embed_element.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
@@ -51,11 +52,11 @@ HTMLEmbedElement::HTMLEmbedElement(Document& document,
 
 const AttrNameToTrustedType& HTMLEmbedElement::GetCheckedAttributeTypes()
     const {
-  DEFINE_STATIC_LOCAL(
-      AttrNameToTrustedType, attribute_map,
-      ({{"src", std::pair{SpecificTrustedType::kScriptURL,
-                          trusted_types_names::kHTMLEmbedElement}}}));
-  return attribute_map;
+  static const base::NoDestructor<AttrNameToTrustedType> attribute_map(
+      {{AtomicString::FromLiteral<"src">(),
+        std::pair{SpecificTrustedType::kScriptURL,
+                  trusted_types_names::kHTMLEmbedElement}}});
+  return *attribute_map;
 }
 
 static inline LayoutEmbeddedContent* FindPartLayoutObject(const Node* n) {

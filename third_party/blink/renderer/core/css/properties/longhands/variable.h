@@ -9,6 +9,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_LONGHANDS_VARIABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_LONGHANDS_VARIABLE_H_
 
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/properties/longhand.h"
@@ -25,9 +26,9 @@ class CORE_EXPORT Variable : public Longhand {
   CSSPropertyName GetCSSPropertyName() const override { NOTREACHED(); }
   StringView GetPropertyName() const override { return "variable"; }
   const AtomicString& GetPropertyNameAtomicString() const override {
-    DEFINE_STATIC_LOCAL(const AtomicString, name,
-                        (AtomicString::FromLiteral<"variable">()));
-    return name;
+    static const base::NoDestructor<AtomicString> name(
+        AtomicString::FromLiteral<"variable">());
+    return *name;
   }
 
   static bool IsStaticInstance(const CSSProperty&);

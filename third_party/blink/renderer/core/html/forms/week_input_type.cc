@@ -54,10 +54,9 @@ void WeekInputType::CountUsage() {
 
 StepRange WeekInputType::CreateStepRange(
     AnyStepHandling any_step_handling) const {
-  DEFINE_STATIC_LOCAL(
-      const StepRange::StepDescription, step_description,
-      (kWeekDefaultStep, kWeekDefaultStepBase, kWeekStepScaleFactor,
-       StepRange::kParsedStepValueShouldBeInteger));
+  static const StepRange::StepDescription step_description(
+      kWeekDefaultStep, kWeekDefaultStepBase, kWeekStepScaleFactor,
+      StepRange::kParsedStepValueShouldBeInteger);
 
   return InputType::CreateStepRange(
       any_step_handling, kWeekDefaultStepBase,

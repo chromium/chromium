@@ -8,6 +8,7 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -117,16 +118,15 @@ class WeakIdentifierMap final
   WeakIdentifierMap<T, ##__VA_ARGS__>::Instance(); \
   extern template class WeakIdentifierMap<T, ##__VA_ARGS__>
 
-#define DEFINE_WEAK_IDENTIFIER_MAP(T, ...)                              \
-  template class WeakIdentifierMap<T, ##__VA_ARGS__>;                   \
-  template <>                                                           \
-  WeakIdentifierMap<T, ##__VA_ARGS__>&                                  \
-  WeakIdentifierMap<T, ##__VA_ARGS__>::Instance() {                     \
-    using RefType = WeakIdentifierMap<T, ##__VA_ARGS__>;                \
-    DEFINE_STATIC_LOCAL(                                                \
-        Persistent<RefType>, map_instance,                              \
-        (MakeGarbageCollected<WeakIdentifierMap<T, ##__VA_ARGS__>>())); \
-    return *map_instance;                                               \
+#define DEFINE_WEAK_IDENTIFIER_MAP(T, ...)                            \
+  template class WeakIdentifierMap<T, ##__VA_ARGS__>;                 \
+  template <>                                                         \
+  WeakIdentifierMap<T, ##__VA_ARGS__>&                                \
+  WeakIdentifierMap<T, ##__VA_ARGS__>::Instance() {                   \
+    using RefType = WeakIdentifierMap<T, ##__VA_ARGS__>;              \
+    static base::NoDestructor<Persistent<RefType>> map_instance(      \
+        MakeGarbageCollected<WeakIdentifierMap<T, ##__VA_ARGS__>>()); \
+    return **map_instance;                                            \
   }
 
 }  // namespace blink

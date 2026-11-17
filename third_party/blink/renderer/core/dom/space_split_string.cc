@@ -20,10 +20,12 @@
 
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -180,9 +182,9 @@ AtomicString SpaceSplitString::SerializeToString() const {
 // static
 SpaceSplitString::DataMap& SpaceSplitString::SharedDataMap() {
   using DataMapHolder = DisallowNewWrapper<DataMap>;
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<DataMapHolder>>,
-                                  static_map_holder, {});
-  Persistent<DataMapHolder>& map = *static_map_holder;
+  static base::NoDestructor<ThreadSpecific<Persistent<DataMapHolder>>>
+      static_map_holder;
+  Persistent<DataMapHolder>& map = **static_map_holder;
   if (!map) [[unlikely]] {
     map = MakeGarbageCollected<DataMapHolder>();
     LEAK_SANITIZER_IGNORE_OBJECT(&map);

@@ -32,6 +32,7 @@
 #include <new>
 
 #include "base/containers/span.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_view_util.h"
 #include "style_rule.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
@@ -51,7 +52,6 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 #if DCHECK_IS_ON()
@@ -146,23 +146,23 @@ CSSSelector::CSSSelector(MatchType match_type,
 // static
 const AtomicString& CSSSelector::NameForInlineSelectorListPseudo(
     PseudoType pseudo_type) {
-  DEFINE_STATIC_LOCAL(const AtomicString, is_atom,
-                      (AtomicString::FromLiteral<"is">()));
-  DEFINE_STATIC_LOCAL(const AtomicString, where_atom,
-                      (AtomicString::FromLiteral<"where">()));
-  DEFINE_STATIC_LOCAL(const AtomicString, not_atom,
-                      (AtomicString::FromLiteral<"not">()));
-  DEFINE_STATIC_LOCAL(const AtomicString, has_atom,
-                      (AtomicString::FromLiteral<"has">()));
+  static const base::NoDestructor<AtomicString> is_atom(
+      AtomicString::FromLiteral<"is">());
+  static const base::NoDestructor<AtomicString> where_atom(
+      AtomicString::FromLiteral<"where">());
+  static const base::NoDestructor<AtomicString> not_atom(
+      AtomicString::FromLiteral<"not">());
+  static const base::NoDestructor<AtomicString> has_atom(
+      AtomicString::FromLiteral<"has">());
   switch (pseudo_type) {
     case kPseudoIs:
-      return is_atom;
+      return *is_atom;
     case kPseudoWhere:
-      return where_atom;
+      return *where_atom;
     case kPseudoNot:
-      return not_atom;
+      return *not_atom;
     case kPseudoHas:
-      return has_atom;
+      return *has_atom;
     default:
       NOTREACHED();
   }

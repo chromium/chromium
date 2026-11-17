@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/multiple_fields_temporal_input_type_view.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -567,9 +568,9 @@ void MultipleFieldsTemporalInputTypeView::UpdateView() {
 
   input_type_->SetupLayoutParameters(layout_parameters, date);
 
-  DEFINE_STATIC_LOCAL(AtomicString, datetimeformat_attr,
-                      (AtomicString::FromLiteral<"datetimeformat">()));
-  edit->setAttribute(datetimeformat_attr,
+  static base::NoDestructor<AtomicString> datetimeformat_attr(
+      AtomicString::FromLiteral<"datetimeformat">());
+  edit->setAttribute(*datetimeformat_attr,
                      AtomicString(layout_parameters.date_time_format),
                      ASSERT_NO_EXCEPTION);
   const AtomicString pattern = edit->FastGetAttribute(html_names::kPatternAttr);

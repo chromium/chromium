@@ -4,10 +4,13 @@
 
 #include "third_party/blink/renderer/core/html/custom/custom_element_construction_stack.h"
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -27,11 +30,12 @@ using WindowMap =
 using WindowMapHolder = DisallowNewWrapper<WindowMap>;
 
 Persistent<WindowMapHolder>& GetWindowMapHolder() {
+  DCHECK(IsMainThread());
   // This map is created only when upgrading custom elements and cleared when it
   // finishes, so it never leaks. This is because construction stacks are
   // populated only during custom element upgrading.
-  DEFINE_STATIC_LOCAL(Persistent<WindowMapHolder>, holder, ());
-  return holder;
+  static base::NoDestructor<Persistent<WindowMapHolder>> holder;
+  return *holder;
 }
 
 WindowMap& EnsureWindowMap() {

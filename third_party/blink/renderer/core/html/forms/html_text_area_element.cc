@@ -29,6 +29,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
@@ -77,7 +78,6 @@
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -178,9 +178,9 @@ FormControlType HTMLTextAreaElement::FormControlType() const {
 }
 
 const AtomicString& HTMLTextAreaElement::FormControlTypeAsString() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, textarea,
-                      (AtomicString::FromLiteral<"textarea">()));
-  return textarea;
+  static const base::NoDestructor<AtomicString> textarea(
+      AtomicString::FromLiteral<"textarea">());
+  return *textarea;
 }
 
 FormControlState HTMLTextAreaElement::SaveFormControlState() const {

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -20,6 +22,7 @@
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -38,8 +41,9 @@ CustomElementDefinition* CustomElement::DefinitionForElement(
 }
 
 Vector<AtomicString>& CustomElement::EmbedderCustomElementNames() {
-  DEFINE_STATIC_LOCAL(Vector<AtomicString>, names, ());
-  return names;
+  DCHECK(IsMainThread());
+  static base::NoDestructor<Vector<AtomicString>> names;
+  return *names;
 }
 
 void CustomElement::AddEmbedderCustomElementName(const AtomicString& name) {
@@ -71,18 +75,18 @@ bool CustomElement::IsHyphenatedSpecElementName(const AtomicString& name) {
   // using the name because that is required by the HTML spec which we *do*
   // implement. Don't remove names from this list without removing them from the
   // HTML spec first.
-  DEFINE_STATIC_LOCAL(HashSet<AtomicString>, hyphenated_spec_element_names,
-                      ({
-                          AtomicString("annotation-xml"),
-                          AtomicString("color-profile"),
-                          AtomicString("font-face"),
-                          AtomicString("font-face-src"),
-                          AtomicString("font-face-uri"),
-                          AtomicString("font-face-format"),
-                          AtomicString("font-face-name"),
-                          AtomicString("missing-glyph"),
-                      }));
-  return hyphenated_spec_element_names.Contains(name);
+  static const base::NoDestructor<HashSet<AtomicString>>
+      hyphenated_spec_element_names({
+          AtomicString::FromLiteral<"annotation-xml">(),
+          AtomicString::FromLiteral<"color-profile">(),
+          AtomicString::FromLiteral<"font-face">(),
+          AtomicString::FromLiteral<"font-face-src">(),
+          AtomicString::FromLiteral<"font-face-uri">(),
+          AtomicString::FromLiteral<"font-face-format">(),
+          AtomicString::FromLiteral<"font-face-name">(),
+          AtomicString::FromLiteral<"missing-glyph">(),
+      });
+  return hyphenated_spec_element_names->Contains(name);
 }
 
 bool CustomElement::ShouldCreateCustomElement(const AtomicString& name) {

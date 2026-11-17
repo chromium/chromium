@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/no_destructor.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,10 +19,9 @@ namespace blink {
 
 namespace {
 const Vector<char>& TestImage() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      const Vector<char>, test_image,
-      (*test::ReadFromFile(test::CoreTestDataPath("white-1x1.png"))));
-  return test_image;
+  static const base::NoDestructor<Vector<char>> test_image(
+      *test::ReadFromFile(test::CoreTestDataPath("white-1x1.png")));
+  return *test_image;
 }
 }  // namespace
 

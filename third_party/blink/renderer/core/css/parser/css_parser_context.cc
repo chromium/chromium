@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 namespace blink {
@@ -175,15 +177,15 @@ bool CSSParserContext::operator==(const CSSParserContext& other) const {
 // const reference to avoid confusion.
 const CSSParserContext* StrictCSSParserContext(
     SecureContextMode secure_context_mode) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<CSSParserContext>>,
-                                  strict_context_pool, ());
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<CSSParserContext>>,
-                                  secure_strict_context_pool, ());
+  static base::NoDestructor<ThreadSpecific<Persistent<CSSParserContext>>>
+      strict_context_pool;
+  static base::NoDestructor<ThreadSpecific<Persistent<CSSParserContext>>>
+      secure_strict_context_pool;
 
   Persistent<CSSParserContext>& context =
       secure_context_mode == SecureContextMode::kSecureContext
-          ? *secure_strict_context_pool
-          : *strict_context_pool;
+          ? **secure_strict_context_pool
+          : **strict_context_pool;
   if (!context) {
     context = MakeGarbageCollected<CSSParserContext>(kHTMLStandardMode,
                                                      secure_context_mode);

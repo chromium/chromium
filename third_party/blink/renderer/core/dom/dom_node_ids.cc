@@ -4,12 +4,15 @@
 
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/dom/node-inl.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -26,10 +29,11 @@ DOMNodeId NextId() {
 }
 
 GCedHeapHashMap<DOMNodeId, WeakMember<Node>>& IdToNodeMap() {
+  DCHECK(IsMainThread());
   using RefType = GCedHeapHashMap<DOMNodeId, WeakMember<Node>>;
-  DEFINE_STATIC_LOCAL(Persistent<RefType>, map_instance,
-                      (MakeGarbageCollected<RefType>()));
-  return *map_instance;
+  static base::NoDestructor<Persistent<RefType>> map_instance(
+      MakeGarbageCollected<RefType>());
+  return **map_instance;
 }
 
 }  // namespace

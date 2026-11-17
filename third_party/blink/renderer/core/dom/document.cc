@@ -36,10 +36,12 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -421,7 +423,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
@@ -429,6 +430,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf16.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace blink {
@@ -448,10 +450,11 @@ class IntrinsicSizeResizeObserverDelegate : public ResizeObserver::Delegate {
 using WeakDocumentSet = blink::HeapHashSet<blink::WeakMember<blink::Document>>;
 
 WeakDocumentSet& LiveDocumentSet() {
+  DCHECK(IsMainThread());
   using WeakDocumentSetHolder = blink::DisallowNewWrapper<WeakDocumentSet>;
-  DEFINE_STATIC_LOCAL(blink::Persistent<WeakDocumentSetHolder>, holder,
-                      (blink::MakeGarbageCollected<WeakDocumentSetHolder>()));
-  return holder->Value();
+  static base::NoDestructor<Persistent<WeakDocumentSetHolder>> holder(
+      MakeGarbageCollected<WeakDocumentSetHolder>());
+  return (*holder)->Value();
 }
 #endif
 
@@ -528,15 +531,15 @@ bool HasSelectInNameAttribute(Element& element) {
 }
 
 bool IsRoleCombobox(Element& element) {
-  DEFINE_STATIC_LOCAL(const AtomicString, combobox,
-                      (AtomicString::FromLiteral<"combobox">()));
-  return element.getAttribute(html_names::kRoleAttr) == combobox;
+  static const base::NoDestructor<AtomicString> combobox(
+      AtomicString::FromLiteral<"combobox">());
+  return element.getAttribute(html_names::kRoleAttr) == *combobox;
 }
 
 bool IsAriaHasPopupListbox(Element& element) {
-  DEFINE_STATIC_LOCAL(const AtomicString, listbox,
-                      (AtomicString::FromLiteral<"listbox">()));
-  return element.getAttribute(html_names::kAriaHaspopupAttr) == listbox;
+  static const base::NoDestructor<AtomicString> listbox(
+      AtomicString::FromLiteral<"listbox">());
+  return element.getAttribute(html_names::kAriaHaspopupAttr) == *listbox;
 }
 
 // This function is a heuristic to detect synthetic selects.
@@ -6832,8 +6835,9 @@ void Document::DispatchMediaQueryListEvents() {
 }
 
 Document::EventFactorySet& Document::EventFactories() {
-  DEFINE_STATIC_LOCAL(EventFactorySet, event_factory, ());
-  return event_factory;
+  DCHECK(IsMainThread());
+  static base::NoDestructor<EventFactorySet> event_factory;
+  return *event_factory;
 }
 
 void Document::RegisterEventFactory(

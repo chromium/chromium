@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 
 #include "base/byte_size.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
@@ -74,27 +75,26 @@ void RecordAccessibilityUKMForCanvasElement(
   DCHECK(IsMainThread());
   DCHECK(canvas_element);
 
-  DEFINE_STATIC_LOCAL(const Vector<AtomicString>, keyboard_event_types,
-                      ({event_type_names::kKeydown, event_type_names::kKeypress,
-                        event_type_names::kKeyup}));
+  static const base::NoDestructor<Vector<AtomicString>> keyboard_event_types(
+      {event_type_names::kKeydown, event_type_names::kKeypress,
+       event_type_names::kKeyup});
   // Include modern pointer and touch events in addition to legacy mouse
   // events, as interactive canvas applications frequently bind to pointer
   // or touch handlers instead of mouse handlers.
-  DEFINE_STATIC_LOCAL(
-      const Vector<AtomicString>, interactive_event_types,
-      ({event_type_names::kClick, event_type_names::kMousedown,
-        event_type_names::kMouseup, event_type_names::kMousemove,
-        event_type_names::kMouseover, event_type_names::kMouseout,
-        event_type_names::kPointerdown, event_type_names::kPointerup,
-        event_type_names::kPointermove, event_type_names::kPointercancel,
-        event_type_names::kPointerover, event_type_names::kPointerout,
-        event_type_names::kTouchstart, event_type_names::kTouchmove,
-        event_type_names::kTouchend, event_type_names::kTouchcancel}));
+  static const base::NoDestructor<Vector<AtomicString>> interactive_event_types(
+      {event_type_names::kClick, event_type_names::kMousedown,
+       event_type_names::kMouseup, event_type_names::kMousemove,
+       event_type_names::kMouseover, event_type_names::kMouseout,
+       event_type_names::kPointerdown, event_type_names::kPointerup,
+       event_type_names::kPointermove, event_type_names::kPointercancel,
+       event_type_names::kPointerover, event_type_names::kPointerout,
+       event_type_names::kTouchstart, event_type_names::kTouchmove,
+       event_type_names::kTouchend, event_type_names::kTouchcancel});
 
   bool has_keyboard_listener =
-      canvas_element->HasAnyEventListeners(keyboard_event_types);
+      canvas_element->HasAnyEventListeners(*keyboard_event_types);
   bool has_mouse_listener =
-      canvas_element->HasAnyEventListeners(interactive_event_types);
+      canvas_element->HasAnyEventListeners(*interactive_event_types);
 
   const auto& ukm_params = canvas_element->GetUkmParameters();
   auto ukm_builder = ukm::builders::Accessibility_Canvas(ukm_params.source_id);
@@ -622,9 +622,8 @@ void CanvasRenderingContext::RenderTaskEnded() {
 
 CanvasPerformanceMonitor&
 CanvasRenderingContext::GetCanvasPerformanceMonitor() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<CanvasPerformanceMonitor>,
-                                  monitor, ());
-  return *monitor;
+  static base::NoDestructor<ThreadSpecific<CanvasPerformanceMonitor>> monitor;
+  return **monitor;
 }
 
 }  // namespace blink

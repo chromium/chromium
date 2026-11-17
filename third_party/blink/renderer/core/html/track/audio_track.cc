@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/track/audio_track.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 
 namespace blink {
@@ -37,39 +38,39 @@ void AudioTrack::setEnabled(bool enabled, ChangeSource source) {
 }
 
 const AtomicString& AudioTrack::AlternativeKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, keyword,
-                      (AtomicString::FromLiteral<"alternative">()));
-  return keyword;
+  static const base::NoDestructor<AtomicString> keyword(
+      AtomicString::FromLiteral<"alternative">());
+  return *keyword;
 }
 
 const AtomicString& AudioTrack::DescriptionsKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, keyword,
-                      (AtomicString::FromLiteral<"descriptions">()));
-  return keyword;
+  static const base::NoDestructor<AtomicString> keyword(
+      AtomicString::FromLiteral<"descriptions">());
+  return *keyword;
 }
 
 const AtomicString& AudioTrack::MainKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, keyword,
-                      (AtomicString::FromLiteral<"main">()));
-  return keyword;
+  static const base::NoDestructor<AtomicString> keyword(
+      AtomicString::FromLiteral<"main">());
+  return *keyword;
 }
 
 const AtomicString& AudioTrack::MainDescriptionsKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, keyword,
-                      (AtomicString::FromLiteral<"main-desc">()));
-  return keyword;
+  static const base::NoDestructor<AtomicString> keyword(
+      AtomicString::FromLiteral<"main-desc">());
+  return *keyword;
 }
 
 const AtomicString& AudioTrack::TranslationKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, keyword,
-                      (AtomicString::FromLiteral<"translation">()));
-  return keyword;
+  static const base::NoDestructor<AtomicString> keyword(
+      AtomicString::FromLiteral<"translation">());
+  return *keyword;
 }
 
 const AtomicString& AudioTrack::CommentaryKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, keyword,
-                      (AtomicString::FromLiteral<"commentary">()));
-  return keyword;
+  static const base::NoDestructor<AtomicString> keyword(
+      AtomicString::FromLiteral<"commentary">());
+  return *keyword;
 }
 
 bool AudioTrack::IsValidKindKeyword(const String& kind) {

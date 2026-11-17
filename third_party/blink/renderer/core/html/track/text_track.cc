@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/track/cue_timeline.h"
@@ -44,33 +45,33 @@ namespace blink {
 static const int kInvalidTrackIndex = -1;
 
 const AtomicString& TextTrack::SubtitlesKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, subtitles,
-                      (AtomicString::FromLiteral<"subtitles">()));
-  return subtitles;
+  static const base::NoDestructor<AtomicString> subtitles(
+      AtomicString::FromLiteral<"subtitles">());
+  return *subtitles;
 }
 
 const AtomicString& TextTrack::CaptionsKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, captions,
-                      (AtomicString::FromLiteral<"captions">()));
-  return captions;
+  static const base::NoDestructor<AtomicString> captions(
+      AtomicString::FromLiteral<"captions">());
+  return *captions;
 }
 
 const AtomicString& TextTrack::DescriptionsKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, descriptions,
-                      (AtomicString::FromLiteral<"descriptions">()));
-  return descriptions;
+  static const base::NoDestructor<AtomicString> descriptions(
+      AtomicString::FromLiteral<"descriptions">());
+  return *descriptions;
 }
 
 const AtomicString& TextTrack::ChaptersKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, chapters,
-                      (AtomicString::FromLiteral<"chapters">()));
-  return chapters;
+  static const base::NoDestructor<AtomicString> chapters(
+      AtomicString::FromLiteral<"chapters">());
+  return *chapters;
 }
 
 const AtomicString& TextTrack::MetadataKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, metadata,
-                      (AtomicString::FromLiteral<"metadata">()));
-  return metadata;
+  static const base::NoDestructor<AtomicString> metadata(
+      AtomicString::FromLiteral<"metadata">());
+  return *metadata;
 }
 
 TextTrack::TextTrack(const V8TextTrackKind& kind,
