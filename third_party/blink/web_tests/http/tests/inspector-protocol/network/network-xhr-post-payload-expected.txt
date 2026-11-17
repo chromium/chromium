@@ -1,0 +1,10 @@
+Tests XHR network resource payload is not corrupted by transcoding.
+http://127.0.0.1:8000/inspector-protocol/network/resources/post-echo.pl?foo
+queryString: foo
+hasPostData: true
+request.postData === payload: true
+request.postData: ‚Foo‛
+request.postDataEntries: [{"bytes":"4oCaRm9v4oCb"}]
+getRequestPostData === payload: true
+getRequestPostData: ‚Foo‛
+
