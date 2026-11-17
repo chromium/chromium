@@ -29,6 +29,10 @@ BASE_DECLARE_FEATURE(kOmitParametersInReadyToPay);
 // payment app when the connection is lost unexpectedly.
 BASE_DECLARE_FEATURE(kReconnectOnLostConnectionToUpdatePaymentDetailsService);
 
+// If enabled, browser bound keys for Secure Payment Confirmation can be stored
+// in a Trusted Execution Environment (TEE) on devices without StrongBox.
+BASE_DECLARE_FEATURE(kSecurePaymentConfirmationBbksAllowTeeStorage);
+
 // If enabled, then Clank displays an alert dialog with the content of the
 // IS_READY_TO_PAY intent, whenever Clank fires this intent.
 BASE_DECLARE_FEATURE(kShowReadyToPayDebugInfo);

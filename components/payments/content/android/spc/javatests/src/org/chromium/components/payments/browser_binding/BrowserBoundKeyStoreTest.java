@@ -4,15 +4,19 @@
 
 package org.chromium.components.payments.browser_binding;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.security.keystore.KeyInfo;
+import android.security.keystore.KeyProperties;
 
 import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
@@ -22,11 +26,15 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.PublicKeyCredentialParameters;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
+import org.chromium.components.payments.PaymentFeatureList;
 
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.Signature;
 import java.security.interfaces.ECPublicKey;
@@ -36,18 +44,25 @@ import java.util.List;
 @RunWith(BaseJUnit4ClassRunner.class)
 @MediumTest
 @Batch(Batch.UNIT_TESTS)
+@EnableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_BBKS_ALLOW_TEE_STORAGE)
 public class BrowserBoundKeyStoreTest {
-    private static Boolean sIsStrongBoxAvailable;
-
     private static boolean isStrongBoxAvailable() {
-        if (sIsStrongBoxAvailable == null) {
-            sIsStrongBoxAvailable =
-                    InstrumentationRegistry.getInstrumentation()
-                            .getTargetContext()
-                            .getPackageManager()
-                            .hasSystemFeature(PackageManager.FEATURE_STRONGBOX_KEYSTORE);
-        }
-        return sIsStrongBoxAvailable;
+        return InstrumentationRegistry.getInstrumentation()
+                .getTargetContext()
+                .getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_STRONGBOX_KEYSTORE);
+    }
+
+    private static boolean isHardwareKeyStoreAvailable() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                && InstrumentationRegistry.getInstrumentation()
+                        .getTargetContext()
+                        .getPackageManager()
+                        .hasSystemFeature(PackageManager.FEATURE_HARDWARE_KEYSTORE);
+    }
+
+    private static boolean isHardwareBackedKeyAvailable() {
+        return isStrongBoxAvailable() || isHardwareKeyStoreAvailable();
     }
 
     private static final List<PublicKeyCredentialParameters> ALLOWED_ALGORITHMS =
@@ -67,31 +82,80 @@ public class BrowserBoundKeyStoreTest {
 
     @After
     public void removeBbk() {
-        if (isStrongBoxAvailable()) {
-            BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
-            browserBoundKeyStore.deleteBrowserBoundKey(BBK_ID);
-        }
+        BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
+        browserBoundKeyStore.deleteBrowserBoundKey(BBK_ID);
     }
 
     @Test
     @RequiresApi(Build.VERSION_CODES.P)
-    public void testCreatesNewEcKey() {
-        assumeTrue(isStrongBoxAvailable());
+    public void testCreatesNewEcKey() throws Exception {
+        assumeTrue(isHardwareBackedKeyAvailable());
+        BrowserBoundKeyStore.setAllowSoftwareKeysForTesting(true);
         BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
 
         BrowserBoundKey bbk =
                 browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
                         BBK_ID, ALLOWED_ALGORITHMS);
 
+        assertNotNull(bbk);
         KeyPair keyPair = bbk.getKeyPairForTesting();
-
         assertTrue(keyPair.getPublic() instanceof ECPublicKey);
+
+        KeyFactory keyFactory =
+                KeyFactory.getInstance(
+                        keyPair.getPrivate().getAlgorithm(),
+                        BrowserBoundKeyStore.ANDROID_KEY_STORE);
+        KeyInfo keyInfo = keyFactory.getKeySpec(keyPair.getPrivate(), KeyInfo.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (isStrongBoxAvailable()) {
+                assertEquals(KeyProperties.SECURITY_LEVEL_STRONGBOX, keyInfo.getSecurityLevel());
+            } else {
+                // Non-StrongBox bots in the test fleet are emulators with software-backed keystores
+                // (allowed via setAllowSoftwareKeysForTesting(true)).
+                assertEquals(KeyProperties.SECURITY_LEVEL_SOFTWARE, keyInfo.getSecurityLevel());
+            }
+        } else {
+            assertTrue(keyInfo.isInsideSecureHardware());
+        }
+    }
+
+    @Test
+    @RequiresApi(Build.VERSION_CODES.S)
+    public void testDoesNotCreateSoftwareKeyWhenTeeKeystoreIsNotHardwareBacked() {
+        assumeFalse(isStrongBoxAvailable());
+        assumeTrue(isHardwareKeyStoreAvailable());
+        BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
+
+        BrowserBoundKey bbk =
+                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
+                        BBK_ID, ALLOWED_ALGORITHMS);
+
+        assertNull(bbk);
+        // Allow software keys so that a leftover software key would be found.
+        BrowserBoundKeyStore.setAllowSoftwareKeysForTesting(true);
+        assertNull(
+                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
+                        BBK_ID, Arrays.asList()));
+    }
+
+    @Test
+    @RequiresApi(Build.VERSION_CODES.P)
+    public void testDoesNotCreateKeyWithUnsupportedAlgorithm() throws Exception {
+        assumeTrue(isHardwareBackedKeyAvailable());
+        BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
+        BrowserBoundKey bbk =
+                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
+                        BBK_ID,
+                        Arrays.asList(createCredentialParameters(/* algorithmIdentifier= */ 0)));
+
+        assertNull(bbk);
     }
 
     @Test
     @RequiresApi(Build.VERSION_CODES.P)
     public void testFindsExistingKey() throws Exception {
-        assumeTrue(isStrongBoxAvailable());
+        assumeTrue(isHardwareBackedKeyAvailable());
+        BrowserBoundKeyStore.setAllowSoftwareKeysForTesting(true);
         BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
         byte[] clientData = new byte[] {0x01, 0x02, 0x03, 0x04};
         BrowserBoundKey bbk1 =
@@ -113,21 +177,49 @@ public class BrowserBoundKeyStoreTest {
 
     @Test
     @RequiresApi(Build.VERSION_CODES.P)
-    public void testDoesCreateKeyWithUnsupportedAlgorithm() throws Exception {
-        assumeTrue(isStrongBoxAvailable());
+    public void testIgnoresAndRestoresExistingTeeKeyWhenTeeStorageToggled() {
+        assumeFalse(isStrongBoxAvailable());
+        assumeTrue(isHardwareKeyStoreAvailable());
+        BrowserBoundKeyStore.setAllowSoftwareKeysForTesting(true);
         BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
-        BrowserBoundKey bbk =
-                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
-                        BBK_ID,
-                        Arrays.asList(createCredentialParameters(/* algorithmIdentifier= */ 0)));
 
-        assertNull(bbk);
+        FeatureOverrides.disable(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_BBKS_ALLOW_TEE_STORAGE);
+        assertNull(
+                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
+                        BBK_ID, ALLOWED_ALGORITHMS));
+
+        FeatureOverrides.enable(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_BBKS_ALLOW_TEE_STORAGE);
+        BrowserBoundKey teeBbk =
+                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
+                        BBK_ID, ALLOWED_ALGORITHMS);
+        assertNotNull(teeBbk);
+
+        FeatureOverrides.disable(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_BBKS_ALLOW_TEE_STORAGE);
+        assertNull(
+                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
+                        BBK_ID, Arrays.asList()));
+        assertNull(
+                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
+                        BBK_ID, ALLOWED_ALGORITHMS));
+
+        FeatureOverrides.enable(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_BBKS_ALLOW_TEE_STORAGE);
+        BrowserBoundKey restoredBbk =
+                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
+                        BBK_ID, Arrays.asList());
+
+        assertNotNull(restoredBbk);
+        assertArrayEquals(teeBbk.getPublicKeyAsCoseKey(), restoredBbk.getPublicKeyAsCoseKey());
     }
 
     @Test
     @RequiresApi(Build.VERSION_CODES.P)
     public void testDeletesAKey() throws Exception {
-        assumeTrue(isStrongBoxAvailable());
+        assumeTrue(isHardwareBackedKeyAvailable());
+        BrowserBoundKeyStore.setAllowSoftwareKeysForTesting(true);
         BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
         BrowserBoundKey bbk =
                 browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
@@ -145,7 +237,25 @@ public class BrowserBoundKeyStoreTest {
     }
 
     @Test
-    public void testDetectsStrongBoxSupport() {
-        assertEquals(isStrongBoxAvailable(), BrowserBoundKeyStore.getDeviceSupportsHardwareKeys());
+    @RequiresApi(Build.VERSION_CODES.P)
+    public void testDeletesExistingTeeKeyWhenTeeStorageDisabled() {
+        assumeFalse(isStrongBoxAvailable());
+        assumeTrue(isHardwareKeyStoreAvailable());
+        BrowserBoundKeyStore.setAllowSoftwareKeysForTesting(true);
+        BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
+        BrowserBoundKey teeBbk =
+                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
+                        BBK_ID, ALLOWED_ALGORITHMS);
+        assertNotNull(teeBbk);
+        FeatureOverrides.disable(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_BBKS_ALLOW_TEE_STORAGE);
+
+        browserBoundKeyStore.deleteBrowserBoundKey(BBK_ID);
+
+        FeatureOverrides.enable(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_BBKS_ALLOW_TEE_STORAGE);
+        assertNull(
+                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
+                        BBK_ID, Arrays.asList()));
     }
 }
