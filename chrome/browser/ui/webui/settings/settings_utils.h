@@ -32,6 +32,10 @@ bool IsGuest(const Profile* profile);
 // keys instead.
 bool IsSecurityKeysSubpageEnabled();
 
+// Returns whether Settings shows the universal opt-out controls on the
+// Third-party cookies page to `profile`.
+bool ShouldShowUniversalOptOutSettings(Profile* profile);
+
 // Invoke UI for network proxy settings.
 void ShowNetworkProxySettings(content::WebContents* web_contents);
 

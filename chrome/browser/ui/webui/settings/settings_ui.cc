@@ -97,10 +97,10 @@
 #include "chrome/browser/ui/webui/settings/settings_security_key_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_startup_pages_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_telemetry_handler.h"
+#include "chrome/browser/ui/webui/settings/settings_utils.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/site_settings_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/browser/universal_optout/universal_optout_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -147,9 +147,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "components/sync/base/features.h"
-#include "components/universal_optout/features.h"
-#include "components/universal_optout/prefs.h"
-#include "components/universal_optout/universal_optout_service.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -749,18 +746,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "webuiRefresh2026",
       features::IsWebuiRefresh2026Enabled() ? "webui-refresh-2026" : "");
 
-  universal_optout::UniversalOptOutService* universal_optout_service =
-      universal_optout::UniversalOptOutServiceFactory::GetForProfile(profile);
   html_source->AddBoolean(
       "showUniversalOptOutSettings",
-      base::FeatureList::IsEnabled(
-          universal_optout::features::kUniversalOptOut) &&
-          base::FeatureList::IsEnabled(
-              universal_optout::features::kUniversalOptOutSettings) &&
-          (profile->GetPrefs()->GetBoolean(
-               universal_optout::prefs::kUniversalOptOutEnabled) ||
-           (universal_optout_service &&
-            universal_optout_service->IsEligible())));
+      settings_utils::ShouldShowUniversalOptOutSettings(profile));
 
   ui::TrackedElementHandlerDocumentSingleton::Register(
       this, std::vector<ui::ElementIdentifier>{

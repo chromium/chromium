@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/metrics/critical_user_journeys/features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,6 +14,11 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/browser/universal_optout/universal_optout_service_factory.h"
+#include "components/prefs/pref_service.h"
+#include "components/universal_optout/features.h"
+#include "components/universal_optout/prefs.h"
+#include "components/universal_optout/universal_optout_service.h"
 #include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -24,7 +30,6 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/feature_list.h"
 #include "device/fido/public/features.h"
 #include "device/fido/win/webauthn_api.h"
 #endif
@@ -52,6 +57,23 @@ bool IsSecurityKeysSubpageEnabled() {
   }
 #endif
   return true;
+}
+
+bool ShouldShowUniversalOptOutSettings(Profile* profile) {
+  CHECK(profile);
+  if (!base::FeatureList::IsEnabled(
+          universal_optout::features::kUniversalOptOut) ||
+      !base::FeatureList::IsEnabled(
+          universal_optout::features::kUniversalOptOutSettings)) {
+    return false;
+  }
+  if (profile->GetPrefs()->GetBoolean(
+          universal_optout::prefs::kUniversalOptOutEnabled)) {
+    return true;
+  }
+  const universal_optout::UniversalOptOutService* service =
+      universal_optout::UniversalOptOutServiceFactory::GetForProfile(profile);
+  return service && service->IsEligible();
 }
 
 bool FixupAndValidateStartupPage(const std::string& url_string,

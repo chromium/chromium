@@ -4,8 +4,22 @@
 
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
 
+#include <memory>
+#include <string>
+
+#include "base/files/file_path.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/universal_optout/universal_optout_service_factory.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/startup_visibility.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/prefs/pref_service.h"
+#include "components/universal_optout/features.h"
+#include "components/universal_optout/prefs.h"
+#include "components/variations/service/test_variations_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -17,7 +31,6 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/test/scoped_feature_list.h"
 #include "device/fido/public/features.h"
 #include "device/fido/win/fake_webauthn_api.h"
 #include "device/fido/win/webauthn_api.h"
@@ -91,6 +104,91 @@ TEST(SettingsUtilsTest, IsSecurityKeysSubpageEnabled) {
   EXPECT_TRUE(IsSecurityKeysSubpageEnabled());
 }
 #endif
+
+// A profile that already turned the opt-out on keeps seeing its controls.
+// Without a VariationsService there is no UniversalOptOutService, so the
+// profile isn't eligible and only the pref can show them.
+TEST(SettingsUtilsTest, ShouldShowUniversalOptOutSettings) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {universal_optout::features::kUniversalOptOut,
+       universal_optout::features::kUniversalOptOutSettings},
+      {});
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ASSERT_FALSE(profile.GetPrefs()->GetBoolean(
+      universal_optout::prefs::kUniversalOptOutEnabled));
+  ASSERT_EQ(
+      nullptr,
+      universal_optout::UniversalOptOutServiceFactory::GetForProfile(&profile));
+  EXPECT_FALSE(ShouldShowUniversalOptOutSettings(&profile));
+
+  profile.GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEnabled, true);
+  EXPECT_TRUE(ShouldShowUniversalOptOutSettings(&profile));
+}
+
+TEST(SettingsUtilsTest, ShouldShowUniversalOptOutSettingsForEligibleProfile) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {universal_optout::features::kUniversalOptOut,
+       universal_optout::features::kUniversalOptOutSettings},
+      {});
+  content::BrowserTaskEnvironment task_environment;
+  // The profile only gets a UniversalOptOutService when the browser process
+  // has a VariationsService.
+  TestingBrowserProcess* browser_process = TestingBrowserProcess::GetGlobal();
+  metrics::TestEnabledStateProvider enabled_state_provider(/*consent=*/false,
+                                                           /*enabled=*/false);
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager =
+      metrics::MetricsStateManager::Create(
+          browser_process->local_state(), &enabled_state_provider,
+          /*backup_registry_key=*/std::wstring(),
+          /*user_data_dir=*/base::FilePath(),
+          metrics::StartupVisibility::kUnknown);
+  variations::TestVariationsService variations_service(
+      browser_process->local_state(), metrics_state_manager.get());
+  browser_process->SetVariationsService(&variations_service);
+
+  TestingProfile profile;
+  EXPECT_NE(
+      nullptr,
+      universal_optout::UniversalOptOutServiceFactory::GetForProfile(&profile));
+  EXPECT_FALSE(ShouldShowUniversalOptOutSettings(&profile));
+
+  profile.GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEligible, true);
+  EXPECT_TRUE(ShouldShowUniversalOptOutSettings(&profile));
+
+  // The browser process outlives `variations_service`.
+  browser_process->SetVariationsService(nullptr);
+}
+
+TEST(SettingsUtilsTest, ShouldShowUniversalOptOutSettingsWithoutFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {universal_optout::features::kUniversalOptOut},
+      {universal_optout::features::kUniversalOptOutSettings});
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  profile.GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEnabled, true);
+
+  EXPECT_FALSE(ShouldShowUniversalOptOutSettings(&profile));
+}
+
+TEST(SettingsUtilsTest, ShouldShowUniversalOptOutSettingsWithoutOptOutFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {universal_optout::features::kUniversalOptOutSettings},
+      {universal_optout::features::kUniversalOptOut});
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  profile.GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEnabled, true);
+
+  EXPECT_FALSE(ShouldShowUniversalOptOutSettings(&profile));
+}
 
 TEST(SettingsUtilsTest, FixupAndValidateStartupPage) {
   EXPECT_FALSE(FixupAndValidateStartupPage(std::string(), nullptr));
