@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -125,6 +126,9 @@ public class BlankCTATabInitialStateRule implements TestRule {
     }
 
     private void resetState() {
+        // Must run before the reset, which waits on tab interactability and the BROWSING layout.
+        ThreadUtils.runOnUiThreadBlocking(this::resetDialogsAndKeyboardOnUiThread);
+        ChromeActivityTestRule.ensureActivityFocused(getActivity());
         if (shouldPerformFastReset()) {
             resetTabStateFast();
         } else {
@@ -162,7 +166,6 @@ public class BlankCTATabInitialStateRule implements TestRule {
     private void resetTabStateFast() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    resetDialogsAndKeyboardOnUiThread();
                     IncognitoTabHostUtils.closeAllIncognitoTabs();
                     // Close all but the first regular tab as these tests expect to start with a
                     // single tab.
@@ -204,7 +207,6 @@ public class BlankCTATabInitialStateRule implements TestRule {
         Tab createdTab =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            resetDialogsAndKeyboardOnUiThread();
                             // We have to avoid closing all tabs and triggering CTA's self-finish
                             // logic when all tabs are closed.
                             Tab newTab =

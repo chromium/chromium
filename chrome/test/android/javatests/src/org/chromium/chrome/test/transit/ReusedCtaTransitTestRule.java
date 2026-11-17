@@ -20,6 +20,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 /**
@@ -70,6 +71,7 @@ public class ReusedCtaTransitTestRule<HostStationT extends Station<? extends Chr
             sActivity = mActivityTestRule.getActivity();
         } else {
             mActivityTestRule.setActivity(sActivity);
+            ChromeActivityTestRule.ensureActivityFocused(sActivity);
         }
         return station;
     }

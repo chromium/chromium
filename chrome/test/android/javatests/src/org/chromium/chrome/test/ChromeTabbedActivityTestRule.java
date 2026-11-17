@@ -165,6 +165,7 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
             super.waitForActivityCompletelyLoaded();
         } else {
             Assert.assertTrue(waitForDeferredStartup());
+            ensureActivityFocused(getActivity());
         }
     }
 

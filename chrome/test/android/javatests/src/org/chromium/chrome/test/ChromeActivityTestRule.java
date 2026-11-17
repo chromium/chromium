@@ -11,6 +11,10 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.IBinder;
+import android.view.View;
+import android.view.Window;
+import android.view.inspector.WindowInspector;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -23,6 +27,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Holder;
 import org.chromium.base.Log;
@@ -41,6 +46,7 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -74,6 +80,7 @@ import org.chromium.url.GURL;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -313,6 +320,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
 
         assertNotNull(tab);
         assertNotNull(tab.getView());
+        ensureActivityFocused(activity);
     }
 
     public boolean waitForDeferredStartup() {
@@ -320,28 +328,101 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     }
 
     /**
-     * On Android Desktop emulators, the ChromeLauncherActivity trampoline task's
-     * DesktopTasksTransitionHandler transition can abort after ChromeLauncherActivity finishes,
-     * returning focus to QuickstepLauncher and stopping ChromeTabbedActivity. Moves the task back
-     * to the front if it is not resumed.
+     * On desktop and in multi-window, another task can be on top of or hold focus over the test
+     * activity (e.g. the ChromeLauncherActivity trampoline transition aborting and returning focus
+     * to the launcher). Moves {@code activity}'s task to the front if it is not {@link
+     * ActivityState#RESUMED}, or if {@code requireWindowFocus} is true and neither {@code activity}
+     * nor one of its owned subwindows holds window focus.
      *
-     * @return true if the activity is currently RESUMED, false otherwise.
+     * @return true if the requested state is satisfied (or recovery does not apply), false
+     *     otherwise.
      */
-    private static boolean ensureActivityResumedOnDesktop(@Nullable ChromeActivity activity) {
-        if (!DeviceInfo.isDesktop() || activity == null) return true;
+    private static boolean checkAndMoveTaskToFrontOnUiThread(
+            @Nullable ChromeActivity activity, boolean requireWindowFocus) {
+        ThreadUtils.assertOnUiThread();
+        if (activity == null
+                || activity.isInPictureInPictureMode()
+                || (!DeviceInfo.isDesktop() // nocheck
+                        && !MultiWindowUtils.getInstance().isInMultiWindowMode(activity))) {
+            return true;
+        }
         if (activity.isFinishing() || activity.isDestroyed()) return false;
-        @ActivityState int state = ApplicationStatus.getStateForActivity(activity);
-        if (state != ActivityState.RESUMED) {
+        boolean isSatisfied =
+                ApplicationStatus.getStateForActivity(activity) == ActivityState.RESUMED
+                        && (!requireWindowFocus
+                                || isActivityOrSubwindowFocusedOnUiThread(activity));
+        if (!isSatisfied) {
             ApiCompatibilityUtils.moveTaskToFront(activity, activity.getTaskId(), /* flags= */ 0);
             return false;
         }
         return true;
     }
 
+    private static boolean isActivityOrSubwindowFocusedOnUiThread(ChromeActivity activity) {
+        ThreadUtils.assertOnUiThread();
+        if (ApplicationStatus.getStateForActivity(activity) != ActivityState.RESUMED) {
+            return false;
+        }
+        if (activity.hasWindowFocus()) {
+            return true;
+        }
+        Window window = activity.getWindow();
+        View decorView = window != null ? window.getDecorView() : null;
+        IBinder activityToken = decorView != null ? decorView.getWindowToken() : null;
+        for (View rootView : WindowInspector.getGlobalWindowViews()) {
+            if (rootView.hasWindowFocus()
+                    && (ContextUtils.isSameActivity(rootView.getContext(), activity)
+                            || (activityToken != null
+                                    && rootView.getApplicationWindowToken() == activityToken))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Moves {@code activity}'s task to the front if neither it nor an owned subwindow has window
+     * focus, then polls briefly for focus. Logs instead of throwing on timeout, since an OS
+     * permission dialog may legitimately hold focus.
+     *
+     * @return whether the activity or an owned subwindow has window focus (or recovery does not
+     *     apply).
+     */
+    public static boolean ensureActivityFocused(@Nullable ChromeActivity activity) {
+        ThreadUtils.assertOnBackgroundThread();
+        if (activity == null) return false;
+
+        if (ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        checkAndMoveTaskToFrontOnUiThread(
+                                activity, /* requireWindowFocus= */ true))) {
+            return true;
+        }
+
+        AtomicBoolean isFocused = new AtomicBoolean();
+        try {
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        if (activity.isFinishing() || activity.isDestroyed()) return true;
+                        if (activity.isInPictureInPictureMode()
+                                || isActivityOrSubwindowFocusedOnUiThread(activity)) {
+                            isFocused.set(true);
+                            return true;
+                        }
+                        return false;
+                    },
+                    CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL,
+                    CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        } catch (CriteriaHelper.TimeoutException e) {
+            Log.w(TAG, "Timed out waiting for activity to regain window focus.", e);
+        }
+        return isFocused.get();
+    }
+
     public static boolean waitForDeferredStartup(ChromeActivity activity) {
         CriteriaHelper.pollUiThread(
                 () ->
-                        ensureActivityResumedOnDesktop(activity)
+                        checkAndMoveTaskToFrontOnUiThread(activity, /* requireWindowFocus= */ false)
                                 && activity.deferredStartupPostedForTesting(),
                 DEFERRED_STARTUP_TIMEOUT_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
@@ -641,7 +722,8 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         final Coordinates coord = Coordinates.createFor(getWebContents());
         CriteriaHelper.pollUiThread(
                 () -> {
-                    if (!ensureActivityResumedOnDesktop(getActivity())) {
+                    if (!checkAndMoveTaskToFrontOnUiThread(
+                            getActivity(), /* requireWindowFocus= */ false)) {
                         return false;
                     }
                     return coord.frameInfoUpdated();
