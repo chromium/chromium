@@ -8,10 +8,7 @@
 #include <string_view>
 #include <utility>
 
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -83,19 +80,12 @@ std::pair<CookieSameSite, CookieSameSiteString> StringToCookieSameSite(
   } else if (base::EqualsCaseInsensitiveASCII(same_site, kSameSiteStrict)) {
     return {CookieSameSite::STRICT_MODE, CookieSameSiteString::kStrict};
   } else if (base::EqualsCaseInsensitiveASCII(same_site, kSameSiteExtended)) {
-    // Extended isn't supported anymore -- we just parse it for UMA stats.
+    // Extended isn't supported anymore, so it is treated as unspecified.
     return {CookieSameSite::UNSPECIFIED, CookieSameSiteString::kExtended};
   } else if (same_site == "") {
     return {CookieSameSite::UNSPECIFIED, CookieSameSiteString::kEmptyString};
   }
   return {CookieSameSite::UNSPECIFIED, CookieSameSiteString::kUnrecognized};
-}
-
-void RecordCookieSameSiteAttributeValueHistogram(CookieSameSiteString value) {
-  if (base::ShouldRecordSubsampledMetric(kHistogramSampleProbability)) {
-    UMA_HISTOGRAM_ENUMERATION("Cookie.SameSiteAttributeValue.Subsampled",
-                              value);
-  }
 }
 
 CookiePort ReducePortRangeForCookieHistogram(const int port) {

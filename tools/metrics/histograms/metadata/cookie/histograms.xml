@@ -814,19 +814,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.SameSiteAttributeValue.Subsampled"
-    enum="CookieSameSiteString" expires_after="2025-07-27">
-  <owner>miketaylr@chromium.org</owner>
-  <owner>src/net/cookies/OWNERS</owner>
-  <summary>
-    The value of the cookie's SameSite attribute, if any. This is logged once
-    per created cookie, upon parsing of the SameSite attribute from a string.
-
-    Subsampled to 1/1000. See kHistogramSampleProbability in
-    net/cookies/cookie_constants.h for details.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.SameSiteNoneSizeBytes.Subsampled" units="bytes"
     expires_after="2027-05-09">
   <owner>dylancutler@google.com</owner>

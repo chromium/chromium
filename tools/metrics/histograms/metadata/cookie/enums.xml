@@ -102,16 +102,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="SameSite=Strict"/>
 </enum>
 
-<enum name="CookieSameSiteString">
-  <int value="0" label="No SameSite attribute is present."/>
-  <int value="1" label="SameSite attribute is specified but has no value."/>
-  <int value="2" label="SameSite attribute value is unrecognized."/>
-  <int value="3" label="Lax"/>
-  <int value="4" label="Strict"/>
-  <int value="5" label="None"/>
-  <int value="6" label="Extended"/>
-</enum>
-
 <enum name="CookieSentToSamePort">
   <int value="0" label="Cookie source port was unspecified."/>
   <int value="1" label="Cookie source port was invalid."/>

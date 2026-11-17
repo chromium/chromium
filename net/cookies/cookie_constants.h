@@ -84,7 +84,8 @@ enum class CookieEffectiveSameSite {
   COUNT
 };
 
-// Used for histograms only. Do not renumber. Keep in sync with enums.xml.
+// The string form of a SameSite attribute value, as parsed by
+// StringToCookieSameSite().
 enum class CookieSameSiteString {
   // No SameSite attribute is present.
   kUnspecified = 0,
@@ -336,9 +337,6 @@ NET_EXPORT std::string CookieSameSiteToString(CookieSameSite same_site);
 // indicate what type of string was parsed as the SameSite attribute value.
 NET_EXPORT std::pair<CookieSameSite, CookieSameSiteString>
 StringToCookieSameSite(std::string_view same_site);
-
-NET_EXPORT void RecordCookieSameSiteAttributeValueHistogram(
-    CookieSameSiteString value);
 
 // This function reduces the 65535 available TCP port values down to a <100
 // potentially interesting values that cookies could be set by or sent to. This

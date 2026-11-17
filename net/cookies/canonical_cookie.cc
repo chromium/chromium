@@ -436,7 +436,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   if (!status->IsInclude())
     return nullptr;
 
-  auto [samesite, samesite_string] = parsed_cookie.SameSite();
+  CookieSameSite samesite = parsed_cookie.SameSite().first;
 
   // The next two sections set the source_scheme_ and source_port_. Normally
   // these are taken directly from the url's scheme and port but if the url
@@ -503,8 +503,6 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
         net::CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE);
     return nullptr;
   }
-
-  RecordCookieSameSiteAttributeValueHistogram(samesite_string);
 
   // Record histograms about nameless cookies if the cookie was created
   // successfully.

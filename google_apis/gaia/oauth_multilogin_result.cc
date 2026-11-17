@@ -235,13 +235,9 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
       cookie_domain = cookie_host;
     }
     net::CookieSameSite samesite_mode = net::CookieSameSite::UNSPECIFIED;
-    net::CookieSameSiteString samesite_string =
-        net::CookieSameSiteString::kUnspecified;
     if (same_site) {
-      std::tie(samesite_mode, samesite_string) =
-          net::StringToCookieSameSite(*same_site);
+      samesite_mode = net::StringToCookieSameSite(*same_site).first;
     }
-    net::RecordCookieSameSiteAttributeValueHistogram(samesite_string);
     // TODO(crbug.com/40160040) Consider using CreateSanitizedCookie instead.
     std::unique_ptr<net::CanonicalCookie> new_cookie =
         net::CanonicalCookie::FromStorage(
