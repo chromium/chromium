@@ -818,6 +818,26 @@ FilterSuggestionsByPrioritization(
   return prioritized_suggestions;
 }
 
+// Preserves the pre-`flat_map` invocation order when
+// `kAutofillOptimizeSuggestionGeneration` is disabled so the control group
+// still launches asynchronous generators (`kAutocomplete`, `kOneTimePassword`)
+// before synchronous `kAddress` and `kCreditCard` generation.
+constexpr auto kLegacySuggestionGeneratorOrder = std::to_array<FillingProduct>({
+    FillingProduct::kNone,
+    FillingProduct::kAutofillAi,
+    FillingProduct::kIban,
+    FillingProduct::kMerchantPromoCode,
+    FillingProduct::kAutocomplete,
+    FillingProduct::kLoyaltyCard,
+    FillingProduct::kCompose,
+    FillingProduct::kIdentityCredential,
+    FillingProduct::kPasskey,
+    FillingProduct::kPassword,
+    FillingProduct::kOneTimePassword,
+    FillingProduct::kAddress,
+    FillingProduct::kCreditCard,
+});
+
 // Launch asynchronous generators first so their background work runs in
 // parallel while synchronous generators execute, followed by synchronous
 // generators in priority order so higher-priority results can skip
@@ -837,6 +857,9 @@ constexpr auto kSuggestionGeneratorLaunchOrder = std::to_array<FillingProduct>({
     FillingProduct::kPassword,
     FillingProduct::kNone,
 });
+
+static_assert(FillingProductSet(kLegacySuggestionGeneratorOrder) ==
+              FillingProductSet(kSuggestionGeneratorLaunchOrder));
 
 std::unique_ptr<OtpManager> CreateOtpManager(
     BrowserAutofillManager& owner,
@@ -1340,13 +1363,23 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 
   if (!base::FeatureList::IsEnabled(
           features::kAutofillOptimizeSuggestionGeneration)) {
+    CHECK(std::ranges::all_of(suggestion_generators_, [](const auto& pair) {
+      return FillingProductSet(kLegacySuggestionGeneratorOrder)
+          .contains(pair.first);
+    }));
     auto barrier_callback =
         base::BarrierCallback<SuggestionGenerator::ReturnedSuggestions>(
             suggestion_generators_.size(), std::move(on_suggestions_generated));
-    for (const auto& [product, suggestion_generator] : suggestion_generators_) {
-      suggestion_generator->GenerateSuggestions(form, field, form_structure,
-                                                autofill_field, client(),
-                                                barrier_callback);
+    for (FillingProduct product : kLegacySuggestionGeneratorOrder) {
+      if (!generation_weak_self) {
+        return;
+      }
+      if (SuggestionGenerator* suggestion_generator =
+              base::FindPtrOrNull(suggestion_generators_, product)) {
+        suggestion_generator->GenerateSuggestions(form, field, form_structure,
+                                                  autofill_field, client(),
+                                                  barrier_callback);
+      }
     }
     return;
   }
