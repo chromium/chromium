@@ -3415,6 +3415,97 @@ TEST_F(AILanguageModelThinkingModeTest, FeatureParamsSetBudgets) {
   }
 }
 
+TEST_F(AILanguageModelThinkingModeTest, ManifestThinkingPresets) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kAIPromptAPIThinkingMode,
+      {{"thinking_effort_low_tokens", "3"},
+       {"thinking_effort_medium_tokens", "6"},
+       {"thinking_effort_high_tokens", "11"}});
+
+  // Configure custom thinking presets in manifest metadata:
+  // * LOW sets an explicit budget (overrides the feature param default).
+  // * MEDIUM leaves `token_budget` unset (falls back to the feature param
+  //   default).
+  // * HIGH is omitted (falls back to the feature param default).
+  SetSolutionConfig([&]() {
+    auto solution = CreateSolution();
+    solution.mutable_feature()->mutable_input_config()->set_max_context_tokens(
+        4096);
+    solution.mutable_feature()->mutable_output_config()->set_max_output_tokens(
+        4096);
+    optimization_guide::proto::PromptApiMetadata metadata;
+
+    auto* preset_low = metadata.add_thinking_presets();
+    preset_low->set_effort(
+        optimization_guide::proto::PROMPT_API_THINKING_EFFORT_LOW);
+    preset_low->set_token_budget(128);
+
+    auto* preset_medium = metadata.add_thinking_presets();
+    preset_medium->set_effort(
+        optimization_guide::proto::PROMPT_API_THINKING_EFFORT_MEDIUM);
+
+    *solution.mutable_feature()->mutable_feature_metadata() =
+        optimization_guide::AnyWrapProto(metadata);
+    return solution;
+  }());
+
+  static constexpr std::pair<ThinkingEffort, const char*> kTestCases[] = {
+      {ThinkingEffort::kLow, "Thinking (budget=128)"},
+      {ThinkingEffort::kMedium, "Thinking (budget=6)"},
+      {ThinkingEffort::kHigh, "Thinking (budget=11)"}};
+  for (const auto& [effort, expected_thought] : kTestCases) {
+    SCOPED_TRACE(testing::Message() << effort);
+    auto session =
+        CreateSession(MakeThinkingOptions(effort, /*include_thoughts=*/true));
+    EXPECT_THAT(PromptAndGetThoughts(*session), ElementsAre(expected_thought));
+  }
+
+  // Non positive preset budgets turn thinking off, and large preset budgets are
+  // clamped to reserve answer tokens.
+  SetSolutionConfig([&]() {
+    auto solution = CreateSolution();
+    solution.mutable_feature()->mutable_input_config()->set_max_context_tokens(
+        4096);
+    solution.mutable_feature()->mutable_output_config()->set_max_output_tokens(
+        1024);
+    optimization_guide::proto::PromptApiMetadata metadata;
+
+    auto* preset_low = metadata.add_thinking_presets();
+    preset_low->set_effort(
+        optimization_guide::proto::PROMPT_API_THINKING_EFFORT_LOW);
+    preset_low->set_token_budget(0);
+
+    auto* preset_medium = metadata.add_thinking_presets();
+    preset_medium->set_effort(
+        optimization_guide::proto::PROMPT_API_THINKING_EFFORT_MEDIUM);
+    preset_medium->set_token_budget(-5);
+
+    auto* preset_high = metadata.add_thinking_presets();
+    preset_high->set_effort(
+        optimization_guide::proto::PROMPT_API_THINKING_EFFORT_HIGH);
+    preset_high->set_token_budget(8192);
+
+    *solution.mutable_feature()->mutable_feature_metadata() =
+        optimization_guide::AnyWrapProto(metadata);
+    return solution;
+  }());
+
+  for (ThinkingEffort effort :
+       {ThinkingEffort::kLow, ThinkingEffort::kMedium}) {
+    SCOPED_TRACE(testing::Message() << effort);
+    auto session =
+        CreateSession(MakeThinkingOptions(effort, /*include_thoughts=*/true));
+    EXPECT_THAT(PromptAndGetThoughts(*session), testing::IsEmpty());
+  }
+  {
+    auto session = CreateSession(
+        MakeThinkingOptions(ThinkingEffort::kHigh, /*include_thoughts=*/true));
+    EXPECT_THAT(PromptAndGetThoughts(*session),
+                ElementsAre("Thinking (budget=768)"));
+  }
+}
+
 TEST_F(AILanguageModelThinkingModeTest, NonPositiveBudgetTurnsThinkingOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(

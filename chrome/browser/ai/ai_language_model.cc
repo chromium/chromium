@@ -32,6 +32,7 @@
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/ai/features.h"
 #include "components/on_device_ai/ai_utils.h"
+#include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_telemetry_logger.h"
@@ -205,15 +206,31 @@ on_device_model::mojom::InputPtr ConvertToInput(
   return input;
 }
 
-// Returns the thinking token budget for `effort`, clamped to leave answer
-// tokens in `available_tokens`. Returns 0 if thinking is off.
+optimization_guide::proto::PromptApiThinkingEffort ToProtoThinkingEffort(
+    blink::mojom::AILanguageModelThinkingEffort effort) {
+  switch (effort) {
+    case blink::mojom::AILanguageModelThinkingEffort::kNone:
+      NOTREACHED();
+    case blink::mojom::AILanguageModelThinkingEffort::kLow:
+      return optimization_guide::proto::PROMPT_API_THINKING_EFFORT_LOW;
+    case blink::mojom::AILanguageModelThinkingEffort::kMedium:
+      return optimization_guide::proto::PROMPT_API_THINKING_EFFORT_MEDIUM;
+    case blink::mojom::AILanguageModelThinkingEffort::kHigh:
+      return optimization_guide::proto::PROMPT_API_THINKING_EFFORT_HIGH;
+  }
+  NOTREACHED();
+}
+
+// Returns the thinking token budget for `effort` from `model_client`'s manifest
+// metadata (falling back to feature parameter defaults), clamped to leave
+// answer tokens in `available_tokens`. Returns 0 if thinking is off.
 //
 // The defaults are tuned on Gemma 4 E2B, at 1, 2 and 4 times its 512 token
 // sliding attention window.
-// TODO(crbug.com/546151578): Read `thinking_presets` from `PromptApiMetadata`.
 uint32_t ResolveThinkingBudget(
     blink::mojom::AILanguageModelThinkingEffort effort,
-    uint32_t available_tokens) {
+    uint32_t available_tokens,
+    const optimization_guide::ModelClient* model_client) {
   static constexpr uint32_t kReservedAnswerTokens = 256;
   // Keep `const` (not `constexpr`): `kAIPromptAPIThinkingMode` is `dllimport`
   // on Windows component builds, so its address is not a constant expression.
@@ -239,6 +256,36 @@ uint32_t ResolveThinkingBudget(
     case blink::mojom::AILanguageModelThinkingEffort::kHigh:
       budget = kThinkingEffortHighTokens.Get();
       break;
+  }
+
+  if (model_client) {
+    std::optional<const optimization_guide::proto::Any> metadata =
+        model_client->GetFeatureMetadata();
+    if (!metadata.has_value() || metadata->type_url().empty()) {
+      VLOG(1) << "Manifest metadata missing when resolving thinking preset.";
+    } else {
+      PromptApiMetadata parsed_metadata =
+          AILanguageModel::ParseMetadata(metadata.value());
+      const optimization_guide::proto::PromptApiThinkingEffort proto_effort =
+          ToProtoThinkingEffort(effort);
+      bool preset_found = false;
+      for (const auto& preset : parsed_metadata.thinking_presets()) {
+        if (preset.effort() == proto_effort) {
+          preset_found = true;
+          if (preset.has_token_budget()) {
+            budget = preset.token_budget();
+          } else {
+            VLOG(1) << "Thinking preset missing token_budget in manifest "
+                       "metadata.";
+          }
+          break;
+        }
+      }
+      if (!preset_found) {
+        VLOG(1) << "Manifest metadata missing thinking preset for effort: "
+                << effort;
+      }
+    }
   }
 
   // Keep room for the answer: `kReservedAnswerTokens`, or half of
@@ -361,7 +408,7 @@ class AILanguageModel::PromptState
   void AppendAndMaybeGenerate(
       mojo::PendingRemote<on_device_model::mojom::Session> session,
       uint32_t available_context_tokens,
-      std::optional<uint32_t> configured_max_output_tokens,
+      const optimization_guide::ModelClient* model_client,
       base::OnceClosure callback) {
     telemetry_logger_->StartTelemetryTimer();
     callback_ = std::move(callback);
@@ -371,11 +418,12 @@ class AILanguageModel::PromptState
         features::kAILanguageModelOverrideConfigurationOutputBuffer.Get();
     // Clamp max_output_tokens_ to the remaining available context and any
     // config-specific maximum per-response limit.
-    if (configured_max_output_tokens.has_value()) {
-      CHECK_GT(configured_max_output_tokens.value(), 0u,
-               base::NotFatalUntil::M161);
+    if (model_client) {
+      uint32_t configured_max_output_tokens =
+          model_client->token_limits().max_output_tokens;
+      CHECK_GT(configured_max_output_tokens, 0u, base::NotFatalUntil::M161);
       max_output_tokens_ =
-          std::min(max_output_tokens_, configured_max_output_tokens.value());
+          std::min(max_output_tokens_, configured_max_output_tokens);
     }
     session_.Bind(std::move(session));
     session_.set_disconnect_with_reason_handler(
@@ -399,7 +447,7 @@ class AILanguageModel::PromptState
     if (mode_ == Mode::kAppendAndGenerate) {
       const uint32_t thinking_token_budget = ResolveThinkingBudget(
           thinking_effort_,
-          std::min(available_context_tokens, max_output_tokens_));
+          std::min(available_context_tokens, max_output_tokens_), model_client);
       auto generate_options = on_device_model::mojom::GenerateOptions::New();
       generate_options->constraint = std::move(constraint_);
       generate_options->max_output_tokens = max_output_tokens_;
@@ -1211,13 +1259,9 @@ void AILanguageModel::PromptGetInputSizeComplete(
   // the previous state if a prompt is cancelled.
   mojo::PendingRemote<on_device_model::mojom::Session> session;
   current_session_->Clone(session.InitWithNewPipeAndPassReceiver());
-  std::optional<uint32_t> configured_max_output_tokens =
-      model_client_
-          ? std::make_optional(model_client_->token_limits().max_output_tokens)
-          : std::nullopt;
   prompt_state_->AppendAndMaybeGenerate(
       std::move(session), context_->GetAvailableTokens() - *token_count,
-      configured_max_output_tokens, std::move(on_complete));
+      model_client_.get(), std::move(on_complete));
 }
 
 void AILanguageModel::OnPromptOutputComplete() {
