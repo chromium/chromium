@@ -886,6 +886,14 @@ BASE_FEATURE(kReauthSkipIdentifierPageFollowup,
 BASE_FEATURE(kRecordChromeLastSigninTime, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+BASE_FEATURE(kReplaceManageProfileWithDialog,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsManageProfileDialogEnabled() {
+  return base::FeatureList::IsEnabled(kReplaceManageProfileWithDialog);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kRestrictDeviceManagementServiceOAuthScope,
              base::FEATURE_ENABLED_BY_DEFAULT);

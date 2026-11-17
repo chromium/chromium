@@ -865,6 +865,18 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kRecordChromeLastSigninTime);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Replaces the chrome://settings/manageProfile page with the profile
+// customization dialog in the entry points outside of Settings. Do not check
+// this feature directly, use `IsManageProfileDialogEnabled()`.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kReplaceManageProfileWithDialog);
+// Returns whether the profile customization dialog replaces the
+// chrome://settings/manageProfile page.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+bool IsManageProfileDialogEnabled();
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 #if !BUILDFLAG(IS_ANDROID)
 // Kill switch for Device Management Service OAuth scope.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
