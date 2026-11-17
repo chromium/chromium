@@ -95,11 +95,6 @@ static void JNI_SecureDnsBridge_SetMode(int32_t mode) {
       SecureDnsConfig::ModeToString(static_cast<net::SecureDnsMode>(mode)));
 }
 
-static bool JNI_SecureDnsBridge_IsModeManaged() {
-  PrefService* local_state = g_browser_process->local_state();
-  return local_state->IsManagedPreference(prefs::kDnsOverHttpsMode);
-}
-
 static ScopedJavaLocalRef<jobjectArray> JNI_SecureDnsBridge_GetProviders(
     JNIEnv* env) {
   net::DohProviderEntry::List providers = GetFilteredProviders();
@@ -114,11 +109,6 @@ static ScopedJavaLocalRef<jobjectArray> JNI_SecureDnsBridge_GetProviders(
                 base::UTF8ToUTF16(entry->privacy_policy)};
       });
   return base::android::ToJavaArrayOfStringArray(env, ret);
-}
-
-static std::string JNI_SecureDnsBridge_GetConfig() {
-  PrefService* local_state = g_browser_process->local_state();
-  return local_state->GetString(prefs::kDnsOverHttpsTemplates);
 }
 
 static bool JNI_SecureDnsBridge_SetConfig(const std::string& config) {
