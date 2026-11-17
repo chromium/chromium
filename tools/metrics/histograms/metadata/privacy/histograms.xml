@@ -580,19 +580,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
-<histogram name="PrivacySandbox.ProtectedAudience.JoiningTopFrameDisplayed"
-    enum="BooleanShown" expires_after="2025-01-05">
-  <owner>sauski@google.com</owner>
-  <owner>behamilton@chromium.org</owner>
-  <summary>
-    Records whether the joining site (including host fallback) for a Protected
-    Audience interest group was successfully displayed. True if it was, false if
-    the interest group was not displayed because no site or host could be
-    determined. Recorded on a per interest group data key basis when the user
-    opens the Protected Audience settings page.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>
