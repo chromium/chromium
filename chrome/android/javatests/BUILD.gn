@@ -531,6 +531,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser") {
     "//chrome/browser/actor/android:java",
     "//chrome/browser/settings:settings_in_tab_java",
     "//chrome/browser/ui/android/bars_common:java",
+    "//chrome/browser/ui/vertical_tabs:java",
     "//device/gamepad:java",
   ]
 }

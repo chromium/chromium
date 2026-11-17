@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -409,6 +410,16 @@ public class KeyboardShortcutsTest {
                         /* id= */ eq(R.id.open_tab_strip_context_menu), /* fromMenu= */ eq(false));
     }
 
+    @Test
+    @SmallTest
+    public void testToggleVerticalTabsCollapse() {
+        keyDown(KeyEvent.KEYCODE_L, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON, true);
+        verify(mMenuOrKeyboardActionController, times(1))
+                .onMenuOrKeyboardAction(
+                        /* id= */ eq(R.id.toggle_vertical_tabs_collapse),
+                        /* fromMenu= */ eq(false));
+    }
+
     /** Test that pressing F10 triggers focus on the app menu button view. */
     @Test
     @SmallTest
@@ -568,6 +579,31 @@ public class KeyboardShortcutsTest {
 
     @Test
     @SmallTest
+    public void testToggleVerticalTabsCollapseShortcutInGroup_VerticalTabsEnabled() {
+        VerticalTabUtils.setIsVerticalTabsEligibleForTesting(true);
+        VerticalTabUtils.setVerticalTabsEnabled(true);
+        try {
+            assertTrue(
+                    "Toggle vertical tabs shortcut should be in the group when vertical tabs are"
+                            + " enabled",
+                    isToggleVerticalTabsCollapseShortcutListed());
+        } finally {
+            VerticalTabUtils.resetSharedPrefsForTesting();
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testToggleVerticalTabsCollapseShortcutInGroup_VerticalTabsNotEligible() {
+        VerticalTabUtils.setIsVerticalTabsEligibleForTesting(false);
+        assertFalse(
+                "Toggle vertical tabs shortcut should NOT be in the group when vertical tabs are"
+                        + " not eligible",
+                isToggleVerticalTabsCollapseShortcutListed());
+    }
+
+    @Test
+    @SmallTest
     public void testDevTools() {
         assertTrue(
                 keyDown(
@@ -650,5 +686,19 @@ public class KeyboardShortcutsTest {
                 /* fullscreenManager= */ null,
                 mMenuOrKeyboardActionController,
                 ApplicationProvider.getApplicationContext());
+    }
+
+    private boolean isToggleVerticalTabsCollapseShortcutListed() {
+        String label =
+                ApplicationProvider.getApplicationContext()
+                        .getString(R.string.keyboard_shortcut_toggle_vertical_tabs_collapse);
+        List<KeyboardShortcutGroup> groups =
+                KeyboardShortcuts.createShortcutGroup(ApplicationProvider.getApplicationContext());
+        for (KeyboardShortcutGroup group : groups) {
+            for (KeyboardShortcutInfo item : group.getItems()) {
+                if (item.getLabel().equals(label)) return true;
+            }
+        }
+        return false;
     }
 }
