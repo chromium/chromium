@@ -2357,10 +2357,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DocumentDownload.ConflictResolution"
-    enum="DocumentDownloadConflictResolution" expires_after="2026-12-28">
+    enum="DocumentDownloadConflictResolution" expires_after="2027-05-02">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     Whether there was already a download in progress when starting a document
     download and how it was resolved.
@@ -2371,7 +2371,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2027-05-02">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>The final state of the document download.</summary>
 </histogram>
 
@@ -2379,23 +2379,23 @@ chromium-metrics-reviews@google.com.
     expires_after="2027-05-02">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>The mime type of a document downloaded from Preview.</summary>
 </histogram>
 
 <histogram name="IOS.DocumentDownload.SizeInMB" units="MB"
-    expires_after="2026-12-28">
+    expires_after="2027-05-02">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>The size of a document downloaded from Preview (in MB).</summary>
 </histogram>
 
 <histogram name="IOS.DocumentDownload.StateAtNavigation"
-    enum="DocumentDownloadState" expires_after="2026-12-28">
+    enum="DocumentDownloadState" expires_after="2027-05-02">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>
     The state of the download when the user navigates out of the document.
   </summary>
