@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Vyberte oprávnění pro <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Uložit kód IBAN?</translation>
 <translation id="1113869188872983271">&amp;Vrátit změnu uspořádání zpět</translation>
-<translation id="111897705806685148">Použít přístupový klíč z jiného zařízení</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter můžete spravovat, jaké informace z Chromu se ukládají do vašeho účtu Google</translation>
 <translation id="1121990216147052230">Vytvoř mi seznam úkolů</translation>
 <translation id="1123753900084781868">Okamžité titulky teď nejsou k dispozici</translation>
@@ -1304,6 +1303,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3196374699162453920">Kód rezervace</translation>
 <translation id="3196902089458890316">Vždy sdílet relevantní karty pro lepší odpovědi?</translation>
 <translation id="3197136577151645743">Může zjišťovat, kdy aktivně používáte toto zařízení</translation>
+<translation id="3201749168732432347">Nabídky a věrnostní karty</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter můžete v nastavení Chromu spravovat, jaké informace synchronizujete</translation>
 <translation id="3203025201812691413">Adresa URL nesmí být prázdná</translation>
 <translation id="320323717674993345">Zrušit platbu</translation>
@@ -2306,6 +2306,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4850886885716139402">Zobrazit</translation>
 <translation id="4854853140771946034">Rychle vytvořit novou poznámku v aplikaci Google Keep</translation>
 <translation id="4855395119669662878">Váš administrátor začne nahrávat vaše soubory do služby <ph name="CLOUD_PROVIDER" /> v <ph name="DATE_TIME" />. Nechte zařízení připojené, dokud nebude nahrávání souboru dokončeno. Během nahrávání budete moci číst pouze místní soubory.</translation>
+<translation id="4856655096879441213">Uložte si své údaje do služby <ph name="GOOGLE_WALLET_TITLE" />, ať můžete ve službách Google pracovat rychleji, například rychleji vyplňovat formuláře. <ph name="HOW_INFO_IS_USED_LINK" /> můžete ovládat v nastavení soukromých karet pro účet <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Ověřování kódu…</translation>
 <translation id="4860260582253463350">Pokud chcete pokračovat na YouTube, musíme se ujistit, že jste to vy. Získáte nastavení, která váš rodič nebo zákonný zástupce nastavil ve službě Family Link.</translation>
 <translation id="4861514638281352187">Bezpečné přidání nápravného čísla</translation>
@@ -2842,7 +2843,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5718326209176373202">Přidat textové anotace</translation>
 <translation id="5718601519531438273">Zahrnuje informace, jako jsou pasy a řidičské průkazy</translation>
 <translation id="5720705177508910913">Aktuální uživatel</translation>
-<translation id="5721147290164931316">Naskenováním se přihlásíte pomocí telefonu</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} a ještě 1}few{{website_1}, {website_2} a ještě {more_count}}many{{website_1}, {website_2} a ještě {more_count}}other{{website_1}, {website_2} a ještě {more_count}}}</translation>
 <translation id="5722778418591961221">Naplánuj mi domácí cvičební rutinu, která mi pomůže dosáhnout mých cílů</translation>
 <translation id="572328651809341494">Nedávno použité karty</translation>

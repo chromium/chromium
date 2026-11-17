@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Не вдалося ввійти. Спробуйте пізніше.</translation>
 <translation id="2975761176769946178">Потрібно вказати URL-адресу</translation>
 <translation id="297667759942911166">Працюйте разом у групах вкладок</translation>
+<translation id="2986080119218811913">Назад до <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Щоб використовувати Gemini у Chrome, увійдіть у Chrome за допомогою облікового запису Google</translation>
 <translation id="2987670534697681860">Підтвердьте свою особу, щоб отримати доступ до всіх паролів на цьому пристрої.</translation>
 <translation id="2989523299700148168">Нещодавно відвідані</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620">Обліковим записом користувача <ph name="NAME" /> (<ph name="EMAIL" />) керує ваша організація.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Колір групи вкладок: <ph name="COLOR" /></translation>
+<translation id="500126251490468002">У Google Менеджері паролів немає пароля для цього сайту. Поверніться на сторінку <ph name="ACTOR_NAME" />, щоб увійти в обліковий запис, або додайте пароль у Google Менеджер паролів.</translation>
 <translation id="5005498671520578047">Копіювати пароль</translation>
 <translation id="5007392906805964215">Переглянути</translation>
 <translation id="5009127379503001909">Шукати далі</translation>

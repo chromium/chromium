@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Camera</translation>
 <translation id="162175252992296058">Tiếng Bồ Đào Nha bằng bàn phím quốc tế Hoa Kỳ</translation>
 <translation id="1629521517399325891">Không có chứng chỉ người dùng để xác thực mạng.</translation>
+<translation id="1639239467298939599">Đang tải</translation>
 <translation id="1641780993263690097">Tiếng Trung (bính âm)</translation>
 <translation id="164969095109328410">Thiết bị Chrome</translation>
 <translation id="1661207570040737402">Bạn đã dùng hết bộ nhớ dùng chung trên Google Workspace.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">Tính năng đồng bộ hoá tệp đã tắt</translation>
 <translation id="2820957248982571256">Đang quét...</translation>
 <translation id="2830077785865012357">Tiếng Trung (chú âm)</translation>
+<translation id="2838379631617906747">Đang cài đặt</translation>
 <translation id="2843806747483486897">Thay đổi ứng dụng mặc định...</translation>
 <translation id="2873951654529031587">Thùng rác</translation>
 <translation id="2887314858867008269">Bàn phím Colemak tiêu chuẩn Hoa Kỳ</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Cổng</translation>
 <translation id="8656407365183407932">Hệ thống buộc phải xoá các tệp ngoại tuyến của bạn</translation>
 <translation id="8656768832129462377">Không kiểm tra</translation>
+<translation id="8662978096466608964">Chrome không thể đặt hình nền.</translation>
 <translation id="8688591111840995413">Mật khẩu không chính xác</translation>
 <translation id="8698464937041809063">Bản vẽ Google</translation>
 <translation id="8698877009525468705">Tệp này được bảo mật và phải tuân thủ các hạn chế theo chính sách dành cho quản trị viên.</translation>

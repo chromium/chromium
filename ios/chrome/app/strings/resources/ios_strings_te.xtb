@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">సైన్ ఇన్ చేయడం విఫలమైంది. దయచేసి తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2975761176769946178">URL అవసరం.</translation>
 <translation id="297667759942911166">ట్యాబ్ గ్రూప్‌లలో సహకరించండి</translation>
+<translation id="2986080119218811913"><ph name="ACTOR_NAME" />‌కు తిరిగి వెళ్లండి</translation>
 <translation id="298696743524648170">Chromeలో Geminiని ఉపయోగించడానికి, మీ Google ఖాతాతో Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="2987670534697681860">ఈ డివైజ్‌లోని మీ పాస్‌వర్డ్‌లన్నింటినీ యాక్సెస్ చేయడానికి మీ ఐడెంటిటీని వెరిఫై చేయండి.</translation>
 <translation id="2989523299700148168">ఇటీవల సందర్శించినవి</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతోంది.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">ట్యాబ్ గ్రూప్ రంగు <ph name="COLOR" /></translation>
+<translation id="500126251490468002">ఈ సైట్ కోసం Google Password Managerలో పాస్‌వర్డ్ లేదు. సైన్ ఇన్ చేయడానికి <ph name="ACTOR_NAME" />‌కు తిరిగి వెళ్లండి, లేదా Google Password Managerకు పాస్‌వర్డ్‌ను జోడించండి.</translation>
 <translation id="5005498671520578047">పాస్‌వర్డ్ కాపీచేయడం</translation>
 <translation id="5007392906805964215">రివ్యూ చేయండి</translation>
 <translation id="5009127379503001909">బ్రౌజ్ చేస్తూ ఉండండి</translation>

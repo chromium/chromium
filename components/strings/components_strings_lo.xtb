@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">ເລືອກການອະນຸຍາດສຳລັບ <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">ບັນທຶກ IBAN ບໍ?</translation>
 <translation id="1113869188872983271">ປ່ຽນ​ກັບ​ຄືນຄໍາສັ່ງຈັດລໍາດັບຄືນ</translation>
-<translation id="111897705806685148">ໃຊ້ກະແຈຜ່ານຈາກອຸປະກອນອື່ນ</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຕາມດ້ວຍ Enter ເພື່ອຈັດການຂໍ້ມູນ Chrome ທີ່ທ່ານບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="1121990216147052230">ສ້າງລາຍການທີ່ຕ້ອງເຮັດໃຫ້ຂ້ອຍ</translation>
 <translation id="1123753900084781868">ຄຳບັນຍາຍສົດບໍ່ສາມາດໃຊ້ໄດ້ໃນຕອນນີ້</translation>
@@ -2848,7 +2847,6 @@
 <translation id="5718326209176373202">ເພີ່ມຄຳອະທິບາຍປະກອບຂໍ້ຄວາມ</translation>
 <translation id="5718601519531438273">ຮວມທັງຂໍ້ມູນຕ່າງໆ ເຊັ່ນ: ໜັງສືຜ່ານແດນ ແລະ ໃບອະນຸຍາດຂັບຂີ່</translation>
 <translation id="5720705177508910913">ຜູ້​ໃຊ້​ປະ​ຈຸ​ບັນ</translation>
-<translation id="5721147290164931316">ສະແກນເພື່ອເຂົ້າສູ່ລະບົບດ້ວຍໂທລະສັບຂອງທ່ານ</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ແລະ ອີກ 1 ເວັບໄຊ}other{{website_1}, {website_2} ແລະ ອີກ {more_count} ເວັບໄຊ}}</translation>
 <translation id="5722778418591961221">ວາງແຜນສິ່ງທີ່ເຮັດປະຈຳໃນການອອກກຳລັງກາຍຢູ່ເຮືອນທີ່ຊ່ວຍໃຫ້ຂ້ອຍບັນລຸເປົ້າໝາຍຂອງຂ້ອຍ</translation>
 <translation id="572328651809341494">ແຖບບໍ່ດົນມານີ້</translation>

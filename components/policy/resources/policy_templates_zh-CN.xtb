@@ -4853,9 +4853,6 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 
       此政策已被弃用，请改用 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />。</translation>
 <translation id="4088589230932595924">强制使用隐身模式</translation>
-<translation id="4089849819635523136">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> 来指定关键字或快捷方式，以用于在地址栏中触发针对此提供商的搜索。
-
-      如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />，则意味着没有任何可用于查找此搜索服务提供商的关键字。</translation>
 <translation id="4090088362777472639">Ansible Playbook 的 SHA-256 哈希值。</translation>
 <translation id="4091040199847925434">禁止为帮助改进安全浏览功能而报告系统信息和网页内容</translation>
 <translation id="4093058072421210667">不允许使用内嵌图片功能。</translation>

@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Vælg tilladelse til <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Vil du gemme IBAN?</translation>
 <translation id="1113869188872983271">&amp;Fortryd omarrangering</translation>
-<translation id="111897705806685148">Brug en adgangsnøgle fra en anden enhed</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten efterfulgt af Enter for at administrere, hvilke Chrome-oplysninger du gemmer på din Google-konto</translation>
 <translation id="1121990216147052230">Lav en huskeliste til mig</translation>
 <translation id="1123753900084781868">Livetekstning er ikke tilgængelig lige nu</translation>
@@ -1307,6 +1306,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3196374699162453920">Reservationskode</translation>
 <translation id="3196902089458890316">Vil du altid dele relevante faner for at få bedre svar?</translation>
 <translation id="3197136577151645743">Websitet kan anmode om tilladelse til at blive underrettet, når du aktivt bruger din enhed</translation>
+<translation id="3201749168732432347">Tilbud og loyalitetskort</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for at administrere, hvilke oplysninger der skal synkroniseres, i Chrome-indstillingerne</translation>
 <translation id="3203025201812691413">Webadressen skal angives</translation>
 <translation id="320323717674993345">Annuller betaling</translation>
@@ -2847,7 +2847,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5718326209176373202">Tilføj tekstannoteringer</translation>
 <translation id="5718601519531438273">Dette omfatter oplysninger såsom pas og kørekort</translation>
 <translation id="5720705177508910913">Aktuel bruger</translation>
-<translation id="5721147290164931316">Scan for at logge ind med din telefon</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} og 1 mere}one{{website_1}, {website_2} og {more_count} mere}other{{website_1}, {website_2} og {more_count} mere}}</translation>
 <translation id="5722778418591961221">Planlæg en træningsrutine til hjemmet, der hjælper mig med at nå mine mål</translation>
 <translation id="572328651809341494">Seneste faner</translation>

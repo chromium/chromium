@@ -83,6 +83,7 @@ Pethau i'w hystyried:
 <translation id="2574249610672786438">I weld eich tabiau o ble bynnag rydych yn defnyddio Chrome, mewngofnodwch ar eich holl ddyfeisiau</translation>
 <translation id="2576431527583832481">Gwnaeth Chrome wella! Mae fersiwn newydd ar gael.</translation>
 <translation id="257708665678654955">Ydych chi am i Google Chrome gynnig cyfieithu tudalennau <ph name="LANGUAGE_NAME" /> o'r wefan hon y tro nesaf?</translation>
+<translation id="260980777626165320">Agor dolenni allanol yn Chrome yn ddiofyn.</translation>
 <translation id="2668242166988961773">Chwilio â llais yn Chrome.</translation>
 <translation id="2703746758996815929">I gael awgrymiadau defnyddiol Chrome, trowch hysbysiadau ymlaen yn eich gosodiadau iOS.</translation>
 <translation id="2728851697704606655">Cyfieithu gyda Google Lens</translation>
@@ -111,6 +112,7 @@ Ni ellir cadw nodau tudalen newydd yn eich cyfrif nes i chi ddileu rhai. Os bydd
 <translation id="314782365035065913">Cael mynediad at Chrome yn gyflymach o'ch doc sgrîn hafan</translation>
 <translation id="3167189358072330585">Nid yw'ch cyfrif yn gweithio ar Google Chrome. Cysylltwch â'ch gweinyddwr parth neu defnyddiwch Gyfrif Google rheolaidd i fewngofnodi.</translation>
 <translation id="322254490661677575">I ddefnyddio a chadw data Chrome yn eich Cyfrif Google, rhowch eich cyfrinymadrodd.</translation>
+<translation id="3253082773078342494">Agor dolenni yn uniongyrchol yn Chrome.</translation>
 <translation id="3303503998967553377">Defnyddio gweithredoedd Chrome ar iOS</translation>
 <translation id="3348862487678490430">Ychwanegu eitem rhestr ddarllen at Chrome</translation>
 <translation id="3350281376951945723">Agor dolenni yn gyflymach pan fyddwch yn gosod Chrome fel eich porwr diofyn</translation>
@@ -160,6 +162,7 @@ Ni ellir cadw nodau tudalen newydd yn eich cyfrif nes i chi ddileu rhai. Os bydd
 <translation id="4693084815234024320">Rydych yn y modd Anhysbys Chrome</translation>
 <translation id="4713740144985377441">Dychwelwch i Chrome i uwchlwytho eich ffeil</translation>
 <translation id="4724297637870447613">Gallwch ddefnyddio Chrome ymhobman</translation>
+<translation id="4733290155432110050">Neidio'n syth i Chrome</translation>
 <translation id="4738647308035481133">Tudalen Google Chrome</translation>
 <translation id="4742795653798179840">Wedi dileu data Chrome</translation>
 <translation id="4761869838909035636">Rhedeg Gwiriad Diogelwch Chrome</translation>
@@ -267,6 +270,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="7038674195294813388">Agorwch y gosodiadau Apiau Diofyn yn iOS, yna tapiwch ar "Browser App" a dewiswch Chrome.</translation>
 <translation id="7056826488869329999">Yn Agor a Rhedeg Gwiriad Diogelwch yn Chrome.</translation>
 <translation id="7061455974939528301">Pwyswch a daliwch yr eicon Chrome a chliciwch ar 'Golygu'r sgrîn hafan'</translation>
+<translation id="7067302528015227615">Gosodwch Chrome fel porwr diofyn i wneud trosiadau ap yn gyflymach ac yn haws.</translation>
 <translation id="7095110968493193530">I Reolwr Cyfrineiriau Google ar gyfer <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Cadwch Chrome yn gyfoes</translation>
 <translation id="7135936755418321901">I rannu eich lleoliad â gwefannau, tapiwch ar Gosodiadau i adael i Chrome ddefnyddio eich lleoliad.</translation>
@@ -278,6 +282,7 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="7200524487407690471">Mae Chrome yn cynnal Gwiriad Diogelwch yn awtomatig bob dydd i'ch cadw'n ddiogel rhag toriadau data, gwefannau anniogel a rhagor. Gallwch ddysgu rhagor am Wiriad Diogelwch yn y Gosodiadau.</translation>
 <translation id="7214019116829172458">Agor tab Anhysbys Chrome</translation>
 <translation id="722167379782941918">Mae Chrome yn argymell gwell amddiffyniad</translation>
+<translation id="722921700949937243">Sicrhewch fod pob dolen bob amser yn agor yn Chrome.</translation>
 <translation id="723787869754590019">Defnyddiwch Chrome ar gyfer Awtolenwi</translation>
 <translation id="7261678641327190792">Ni all Chrome wirio'ch cyfrineiriau</translation>
 <translation id="7272091023280308138">Agor dolenni yn uniongyrchol yn Chrome y tro nesaf heb gopïo cyfeiriadau URL yn gyntaf.</translation>

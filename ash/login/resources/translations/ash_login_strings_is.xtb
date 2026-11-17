@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Strjúktu upp til að færa síðuna niður</translation>
 <translation id="2501278716633472235">Fara til baka</translation>
 <translation id="252418934079508528">Setja upp <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Undirbýr tækið...</translation>
 <translation id="2538084450874617176">Hver er að nota <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> gat ekki tengst <ph name="NETWORK_ID" />. Veldu annað net eða reyndu aftur.</translation>
 <translation id="2565214867520763227">Kveikja á skjálesara</translation>
@@ -630,6 +631,7 @@
 <translation id="7666531788977935712">Kveikt á hnappi til að halda áfram</translation>
 <translation id="7671139479636735732">Hægrismelltu til að sjá hugmyndirnar þínar auðveldlega fyrir þér</translation>
 <translation id="770831926727930011">Staðbundin gögn eru varin með gamla aðgangsorðinu þínu. Sláðu inn gamla aðgangsorðið þitt til að endurheimta staðbundin gögn.</translation>
+<translation id="7717014941119698257">Sækir: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Krafist fyrir uppfærslu: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Parar við „<ph name="DEVICE_NAME" />“...</translation>
 <translation id="7746045113967198252">Stækkaðu eða minnkaðu atriði á skjánum, þar á meðal texta. Þú getur einnig fundið þetta síðar í „Stillingar &gt; Tæki &gt; Skjáir“.</translation>

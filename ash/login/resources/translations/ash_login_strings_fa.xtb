@@ -146,6 +146,7 @@
 <translation id="248676429071089168">برای رفتن به‌پایین صفحه، تند به‌بالا بکشید</translation>
 <translation id="2501278716633472235">برگشتن</translation>
 <translation id="252418934079508528">نصب <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">درحال آماده کردن دستگاه…</translation>
 <translation id="2538084450874617176">چه کسی از این <ph name="DEVICE_TYPE" /> استفاده می‌کند؟</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> نتوانست به <ph name="NETWORK_ID" /> متصل شود. لطفاً یک شبکه دیگر را انتخاب کرده یا دوباره امتحان کنید.</translation>
 <translation id="2565214867520763227">روشن کردن صفحه‌خوان</translation>
@@ -628,6 +629,7 @@
 <translation id="7666531788977935712">دکمه ادامه فعال شد</translation>
 <translation id="7671139479636735732">برای دیداری‌سازی آسان از ایده‌هایتان، کلیک‌راست کنید</translation>
 <translation id="770831926727930011">داده‌های محلی با گذرواژه قدیمی‌تان محافظت می‌شود. برای بازیابی داده‌های محلی، گذرواژه قدیمی‌تان را وارد کنید.</translation>
+<translation id="7717014941119698257">بارگیری: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">فضای لازم برای به‌روزرسانی: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">درحال جفت کردن با «<ph name="DEVICE_NAME" />» …</translation>
 <translation id="7746045113967198252">موارد روی صفحه‌نمایش (ازجمله نوشتار) را بزرگ‌تر یا کوچک‌تر می‌کند. می‌توانید این تنظیم را بعداً در «تنظیمات &gt; دستگاه &gt; نمایش» پیدا کنید.</translation>

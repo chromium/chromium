@@ -146,6 +146,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="248676429071089168">Прекарайте пръст нагоре, за да преместите страницата надолу</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="252418934079508528">Инсталиране на <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Устройството се подготвя...</translation>
 <translation id="2538084450874617176">Кой използва това устройство <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> не успя да се свърже с: <ph name="NETWORK_ID" />. Моля, изберете друга мрежа или опитайте отново.</translation>
 <translation id="2565214867520763227">Включете екранния четец</translation>
@@ -631,6 +632,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7666531788977935712">Бутонът „Напред“ е активиран</translation>
 <translation id="7671139479636735732">Кликнете с десния бутон, за да визуализирате лесно идеите си</translation>
 <translation id="770831926727930011">Локалните ви данни са защитени със старата ви парола. Въведете я, за да ги възстановите.</translation>
+<translation id="7717014941119698257">Изтегля се: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Необходимо място за актуализацията: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Сдвоява се с(ъс) „<ph name="DEVICE_NAME" />“...</translation>
 <translation id="7746045113967198252">Уголемете или смалете елементите на екрана, включително текста. Можете също да намерите функцията впоследствие в „Настройки &gt; Устройство &gt; Дисплеи“.</translation>

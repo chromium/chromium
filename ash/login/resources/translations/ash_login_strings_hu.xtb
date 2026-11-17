@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Az oldal lefelé mozgatásához csúsztasson felfelé</translation>
 <translation id="2501278716633472235">Visszalépés</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> telepítése</translation>
+<translation id="2532146950330687938">Az eszköz előkészítése…</translation>
 <translation id="2538084450874617176">Ki használja a következő eszközt: <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190">A <ph name="PRODUCT_NAME" /> nem tudott kapcsolódni a következőhöz: <ph name="NETWORK_ID" />. Válasszon másik hálózatot és próbálja újra.</translation>
 <translation id="2565214867520763227">Képernyőolvasó bekapcsolása</translation>
@@ -631,6 +632,7 @@ működését. Ha úgy véli, hogy nem kellene proxyszervert használnia,
 <translation id="7666531788977935712">Folytatás gomb engedélyezve</translation>
 <translation id="7671139479636735732">A jobb egérgombra kattintással egyszerűen vizualizálhatja az ötleteit</translation>
 <translation id="770831926727930011">A helyi adatait a régi jelszava védi. A helyi adatok helyreállításához adja meg régi jelszavát.</translation>
+<translation id="7717014941119698257">Letöltés: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">A frissítéshez szükséges tárhely: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Párosítás a következővel: <ph name="DEVICE_NAME" />…</translation>
 <translation id="7746045113967198252">Nagyíthatja vagy kicsinyítheti a képernyőn megjelenő elemeket (például a szöveget). Ezt később a Beállítások &gt; Eszköz &gt; Megjelenítés menüpontban is megtalálja.</translation>

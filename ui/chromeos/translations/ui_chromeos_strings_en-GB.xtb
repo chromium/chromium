@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Camera</translation>
 <translation id="162175252992296058">Portuguese with US International keyboard</translation>
 <translation id="1629521517399325891">User certificate is not available for network authentication.</translation>
+<translation id="1639239467298939599">Loading</translation>
 <translation id="1641780993263690097">Chinese Pinyin</translation>
 <translation id="164969095109328410">Chrome device</translation>
 <translation id="1661207570040737402">You’ve used all of your shared drive Google Workspace storage.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">File sync turned off</translation>
 <translation id="2820957248982571256">Scanning...</translation>
 <translation id="2830077785865012357">Chinese Zhuyin</translation>
+<translation id="2838379631617906747">Installing</translation>
 <translation id="2843806747483486897">Change default...</translation>
 <translation id="2873951654529031587">Bin</translation>
 <translation id="2887314858867008269">US Colemak</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
 <translation id="8656407365183407932">Your offline files had to be removed</translation>
 <translation id="8656768832129462377">Do not check</translation>
+<translation id="8662978096466608964">Chrome cannot set wallpaper.</translation>
 <translation id="8688591111840995413">Bad password</translation>
 <translation id="8698464937041809063">Google drawing</translation>
 <translation id="8698877009525468705">This file is confidential and subject to restrictions by administrator policy.</translation>

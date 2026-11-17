@@ -147,6 +147,7 @@
 <translation id="248676429071089168">위로 스와이프하여 페이지 아래로 이동</translation>
 <translation id="2501278716633472235">뒤로 이동</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> 설치</translation>
+<translation id="2532146950330687938">기기 준비 중…</translation>
 <translation id="2538084450874617176">이 <ph name="DEVICE_TYPE" /> 기기는 누가 사용하시나요?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" />에서 <ph name="NETWORK_ID" />에 연결할 수 없습니다. 다른 네트워크를 선택하거나 다시 시도하세요.</translation>
 <translation id="2565214867520763227">스크린 리더 사용 설정</translation>
@@ -633,6 +634,7 @@
 <translation id="7666531788977935712">계속 버튼 사용 설정됨</translation>
 <translation id="7671139479636735732">아이디어를 쉽게 시각화하려면 마우스 오른쪽 버튼으로 클릭하세요.</translation>
 <translation id="770831926727930011">로컬 데이터는 이전 비밀번호로 보호됩니다. 로컬 데이터를 복구하려면 이전 비밀번호를 입력하세요</translation>
+<translation id="7717014941119698257">다운로드: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">업데이트에 필요한 저장용량: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">‘<ph name="DEVICE_NAME" />’ 페어링 중...</translation>
 <translation id="7746045113967198252">텍스트 등 화면에 표시되는 항목을 더 크게 또는 작게 표시합니다. 추후에 설정 &gt; 기기 &gt; 디스플레이에서도 설정할 수 있습니다.</translation>

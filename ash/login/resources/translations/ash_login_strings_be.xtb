@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Калі прагортваць уверх, старонка будзе перамяшчацца ўніз</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="252418934079508528">Усталяваць <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Прылада падрыхтоўваецца...</translation>
 <translation id="2538084450874617176">Хто выкарыстоўвае прыладу <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190">Браўзеру <ph name="PRODUCT_NAME" /> не ўдалося падключыцца да сеткі <ph name="NETWORK_ID" />. Выберыце іншую сетку і паўтарыце спробу.</translation>
 <translation id="2565214867520763227">Уключыце праграму чытання з экрана</translation>
@@ -628,6 +629,7 @@
 <translation id="7666531788977935712">Кнопка "Працягнуць" уключана</translation>
 <translation id="7671139479636735732">Націсніце правай кнопкай мышы, каб з лёгкасцю візуалізаваць свае ідэі</translation>
 <translation id="770831926727930011">Вашы лакальныя даныя абаронены старым паролем. Увядзіце ваш стары пароль, каб аднавіць лакальныя даныя.</translation>
+<translation id="7717014941119698257">Ідзе спампоўка: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Для пераносу неабходна <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Ідзе спалучэнне з прыладай "<ph name="DEVICE_NAME" />"...</translation>
 <translation id="7746045113967198252">Зрабіце элементы на экране, у тым ліку тэкст, большымі або меншымі. Вы таксама можаце знайсці гэта пазней у меню "Налады &gt; Прылада &gt; Дысплэі".</translation>

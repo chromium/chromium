@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Превуците нагоре да бисте померили страницу надоле</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="252418934079508528">Инсталирајте <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Уређај се припрема...</translation>
 <translation id="2538084450874617176">Ко користи <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> није успео да се повеже са мрежом <ph name="NETWORK_ID" />. Изаберите другу мрежу или покушајте поново.</translation>
 <translation id="2565214867520763227">Укључите читач екрана</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">Дугме Настави је омогућено</translation>
 <translation id="7671139479636735732">Кликните десним тастером да бисте лако визуелизовали идеје</translation>
 <translation id="770831926727930011">Локални подаци су заштићени старом лозинком. Унесите стару лозинку да бисте вратили локалне податке.</translation>
+<translation id="7717014941119698257">Преузимање: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">За ажурирање је потребно: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Упарује се са „<ph name="DEVICE_NAME" />“ ...</translation>
 <translation id="7746045113967198252">Умањите или увећајте ставке на екрану, укључујући текст. Ово можете да пронађете и касније у одељку Подешавања &gt; Уређај &gt; Екрани.</translation>

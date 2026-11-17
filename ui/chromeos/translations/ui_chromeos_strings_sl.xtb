@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">portugalščina z mednarodno tipkovnico za angleščino (Združene države)</translation>
 <translation id="1629521517399325891">Uporabniško potrdilo ni na voljo za preverjanje pristnosti omrežja.</translation>
+<translation id="1639239467298939599">Nalaganje</translation>
 <translation id="1641780993263690097">kitajščina (pinjin)</translation>
 <translation id="164969095109328410">Naprava Chrome</translation>
 <translation id="1661207570040737402">Porabili ste ves deljeni prostor za shranjevanje v Googlu Drive za Google Workspace.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">Sinhronizacija datotek je izklopljena</translation>
 <translation id="2820957248982571256">Iskanje ...</translation>
 <translation id="2830077785865012357">kitajščina (žujin)</translation>
+<translation id="2838379631617906747">Nameščanje</translation>
 <translation id="2843806747483486897">Spremeni privzeto dejanje ...</translation>
 <translation id="2873951654529031587">Smetnjak</translation>
 <translation id="2887314858867008269">angleščina (Colemak – ZDA)</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – vrata</translation>
 <translation id="8656407365183407932">Datoteke brez povezave je bilo treba odstraniti</translation>
 <translation id="8656768832129462377">Ne preverjaj</translation>
+<translation id="8662978096466608964">Chrome ne more nastaviti slike ozadja.</translation>
 <translation id="8688591111840995413">Napačno geslo</translation>
 <translation id="8698464937041809063">Googlova risba</translation>
 <translation id="8698877009525468705">Ta datoteka je zaupna in zanjo veljajo omejitve pravilnika skrbnika.</translation>

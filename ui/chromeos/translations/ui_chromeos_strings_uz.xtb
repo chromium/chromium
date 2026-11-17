@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">Portugal va AQSH klaviaturasi (xalqaro)</translation>
 <translation id="1629521517399325891">Tarmoq autentifikatsiyasi uchun foydalanuvchi sertifikati mavjud emas</translation>
+<translation id="1639239467298939599">Yuklanmoqda</translation>
 <translation id="1641780993263690097">Xitoy (Pinyin)</translation>
 <translation id="164969095109328410">Chrome qurilmasi</translation>
 <translation id="1661207570040737402">Umumiy disk va Google Workspace xotirasida joy qolmadi.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">Fayllar sinxronlanishi oʻchirildi</translation>
 <translation id="2820957248982571256">Tekshirilmoqda...</translation>
 <translation id="2830077785865012357">Xitoy (Chjuin)</translation>
+<translation id="2838379631617906747">O‘rnatilmoqda</translation>
 <translation id="2843806747483486897">Standartni o‘zgartirish...</translation>
 <translation id="2873951654529031587">Chiqitdon</translation>
 <translation id="2887314858867008269">AQSH Colemak</translation>
@@ -1019,6 +1021,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
 <translation id="8656407365183407932">Oflayn fayllar olib tashlandi</translation>
 <translation id="8656768832129462377">Tekshirilmasin</translation>
+<translation id="8662978096466608964">Chrome bu rasmni orqa fonga o‘rnata olmadi.</translation>
 <translation id="8688591111840995413">Parol noto‘g‘ri</translation>
 <translation id="8698464937041809063">Google-chizmasi</translation>
 <translation id="8698877009525468705">Bu maxfiy fayl va administrator siyosati tomonidan taqiqlanishi mumkin.</translation>

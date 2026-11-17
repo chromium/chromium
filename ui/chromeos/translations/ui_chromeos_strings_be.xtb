@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="162175252992296058">Партугальская з міжнароднай клавіятурай ЗША</translation>
 <translation id="1629521517399325891">Гэты сертыфікат карыстальніка нельга выкарыстаць для аўтэнтыфікацыі сеткі.</translation>
+<translation id="1639239467298939599">Ідзе загрузка</translation>
 <translation id="1641780993263690097">Кітайская (піньінь)</translation>
 <translation id="164969095109328410">Прылада Chrome</translation>
 <translation id="1661207570040737402">Вы выкарысталі ўвесь даступны вам аб’ём сховішча абагуленага дыска Google Workspace.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">Сінхранізацыя файлаў выключана</translation>
 <translation id="2820957248982571256">Ідзе пошук...</translation>
 <translation id="2830077785865012357">Кітайская (чжуінь)</translation>
+<translation id="2838379631617906747">Ідзе ўсталяванне</translation>
 <translation id="2843806747483486897">Змяніць стандартнае дзеянне...</translation>
 <translation id="2873951654529031587">Сметніца</translation>
 <translation id="2887314858867008269">ЗША (Colemak)</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – порт</translation>
 <translation id="8656407365183407932">Пазасеткавыя файлы былі выдалены</translation>
 <translation id="8656768832129462377">Не правяраць</translation>
+<translation id="8662978096466608964">Не ўдалося ўсталяваць шпалеры ў Chrome.</translation>
 <translation id="8688591111840995413">Няправільны пароль</translation>
 <translation id="8698464937041809063">Рысунак Google</translation>
 <translation id="8698877009525468705">Гэты файл з’яўляецца канфідэнцыяльным, і на яго распаўсюджваюцца абмежаванні зададзенай адміністратарам палітыкі.</translation>

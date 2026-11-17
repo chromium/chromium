@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Kies toestemming vir <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Stoor IBAN?</translation>
 <translation id="1113869188872983271">Ontdoen herrangskikking</translation>
-<translation id="111897705806685148">Gebruik toegangsleutel van ’n ander toestel</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om te bestuur watter Chrome-inligting jy in jou Google-rekening stoor</translation>
 <translation id="1121990216147052230">Maak vir my ’n doenlys</translation>
 <translation id="1123753900084781868">Intydse Onderskrifte is nie nou onmiddellik beskikbaar nie</translation>
@@ -2848,7 +2847,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5718326209176373202">Voeg teksaantekeninge by</translation>
 <translation id="5718601519531438273">Sluit inligting soos paspoorte en rybewyse in</translation>
 <translation id="5720705177508910913">Huidige gebruiker</translation>
-<translation id="5721147290164931316">Skandeer om met jou foon aan te meld</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} en nog 1}other{{website_1}, {website_2} en nog {more_count}}}</translation>
 <translation id="5722778418591961221">Beplan ’n fiksheidroetine by die huis wat my help om my doelwitte te bereik</translation>
 <translation id="572328651809341494">Onlangse oortjies</translation>

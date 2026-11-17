@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Nuk mund të identifikohej. Provo përsëri.</translation>
 <translation id="2975761176769946178">Kërkohet një URL</translation>
 <translation id="297667759942911166">Bashkëpuno në grupet e skedave</translation>
+<translation id="2986080119218811913">Kthehu në <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Për të përdorur Gemini në Chrome, identifikohu në Chrome me "Llogarinë tënde të Google"</translation>
 <translation id="2987670534697681860">Verifiko që je ti për të pasur qasje te të gjitha fjalëkalimet e tua në këtë pajisje.</translation>
 <translation id="2989523299700148168">Vizituar së fundi</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, menaxhohet nga organizata jote.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Ngjyra e grupit të skedave: <ph name="COLOR" /></translation>
+<translation id="500126251490468002">"Menaxheri i fjalëkalimeve i Google" nuk ka një fjalëkalim për këtë sajt. Kthehu prapa në <ph name="ACTOR_NAME" /> për t'u identifikuar ose shto një fjalëkalim te "Menaxheri i fjalëkalimeve i Google".</translation>
 <translation id="5005498671520578047">Kopjo fjalëkalimin</translation>
 <translation id="5007392906805964215">Rishiko</translation>
 <translation id="5009127379503001909">Vazhdo të shfletosh</translation>

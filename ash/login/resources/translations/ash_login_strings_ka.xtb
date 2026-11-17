@@ -146,6 +146,7 @@
 <translation id="248676429071089168">ზემოთ გადაფურცვლა გვერდის ჩამოსაწევად</translation>
 <translation id="2501278716633472235">უკან დაბრუნება</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" />-ის ინსტალაცია</translation>
+<translation id="2532146950330687938">მიმდინარეობს მოწყობილობის მომზადება...</translation>
 <translation id="2538084450874617176">ვინ გამოიყენებს ამ <ph name="DEVICE_TYPE" />-ს?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> ვერ დაუკავშირდა <ph name="NETWORK_ID" />-ს. გთხოვთ, აირჩიოთ სხვა ქსელი ან ხელახლა სცადოთ.</translation>
 <translation id="2565214867520763227">ჩართეთ ეკრანის წამკითხველი</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">გაგრძელების ღილაკი გააქტიურებულია</translation>
 <translation id="7671139479636735732">იდეების ვიზუალიზაციისთვის გამოიყენეთ მარჯვენა დაწკაპუნება</translation>
 <translation id="770831926727930011">ადგილობრივი მონაცემები დაცულია თქვენი ძველი პაროლის მეშვეობით. მათ აღსადგენად შეიყვანეთ თქვენი ძველი პაროლი.</translation>
+<translation id="7717014941119698257">ჩამოტვირთვა: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">განახლებისთვის საჭიროა: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">მიმდინარეობს „<ph name="DEVICE_NAME" />“-თან დაწყვილება...</translation>
 <translation id="7746045113967198252">გაზარდეთ ან შეამცირეთ თქვენს ეკრანზე არსებული ერთეულების (მათ შორის, ტექსტის) ზომა. ამ პარამეტრის მოგვიანებით პოვნა შეგიძლიათ აქ: პარამეტრები &gt; მოწყობილობები &gt; ეკრანები.</translation>

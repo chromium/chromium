@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> के लिए अनुमति चुनें</translation>
 <translation id="1113000785583998331">क्या आपको IBAN सेव करना है?</translation>
 <translation id="1113869188872983271">&amp;पुन: क्रमित करना वापस लाएं</translation>
-<translation id="111897705806685148">किसी दूसरे डिवाइस की पासकी इस्तेमाल करें</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, यह मैनेज करें कि आपके Google खाते में, Chrome के इस्तेमाल से जुड़ी कौनसी जानकारी सेव की जाएगी. इसके लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="1121990216147052230">मेरे लिए कामों की एक सूची बनाओ</translation>
 <translation id="1123753900084781868">अभी लाइव कैप्शन की सुविधा उपलब्ध नहीं है</translation>
@@ -2848,7 +2847,6 @@
 <translation id="5718326209176373202">टेक्स्ट एनोटेशन जोड़ें</translation>
 <translation id="5718601519531438273">इसमें पासपोर्ट और ड्राइविंग लाइसेंस जैसी जानकारी शामिल होती है</translation>
 <translation id="5720705177508910913">मौजूदा उपयोगकर्ता</translation>
-<translation id="5721147290164931316">अपने फ़ोन का इस्तेमाल करके साइन इन करने के लिए स्कैन करें</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2}, और 1 वेबसाइट}one{{website_1}, {website_2}, और {more_count} वेबसाइट}other{{website_1}, {website_2}, और {more_count} वेबसाइटें}}</translation>
 <translation id="5722778418591961221">घर पर की जाने वाली कसरतों का एक प्लान बनाओ, ताकि मैं अपने लक्ष्य पा सकूं</translation>
 <translation id="572328651809341494">हाल ही के टैब</translation>

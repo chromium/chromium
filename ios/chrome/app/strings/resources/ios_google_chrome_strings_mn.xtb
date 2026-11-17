@@ -83,6 +83,7 @@
 <translation id="2574249610672786438">Chrome-г хаанаас ч ашигласан бай табуудаа харахын тулд бүх төхөөрөмж дээрээ нэвтэрнэ үү</translation>
 <translation id="2576431527583832481">Chrome-ийн шинэ хувилбар саяхан гарлаа.</translation>
 <translation id="257708665678654955">Та Google Chrome-г дараагийн удаа энэ сайтаас <ph name="LANGUAGE_NAME" /> хуудсыг орчуулахыг зөвшөөрөх үү?</translation>
+<translation id="260980777626165320">Өгөгдмөлөөр гадаад холбоосыг Chrome-д нээнэ үү.</translation>
 <translation id="2668242166988961773">Chrome-д дуу хоолойгоор хайгаарай.</translation>
 <translation id="2703746758996815929">Chrome-н хэрэгтэй зөвлөгөөнүүдийг авахын тулд iOS тохиргоондоо мэдэгдлүүдийг асаана уу.</translation>
 <translation id="2728851697704606655">Google Lens-р орчуулах</translation>
@@ -111,6 +112,7 @@
 <translation id="314782365035065913">Үндсэн нүүрнийхээ суурилуулагчаас Chrome-д илүү хурдан хандана уу</translation>
 <translation id="3167189358072330585">Таны бүртгэл Google Chrome-д ажиллахгүй байна. Нэвтрэхийн тулд та домайн админтайгаа холбогдох, эсвэл Google Бүртгэлийн энгийн хувилбарыг ашиглаарай.</translation>
 <translation id="322254490661677575">Google Бүртгэлдээ Chrome-н өгөгдлийг ашиглах болон хадгалахын тулд нэвтрэх үгээ оруулна уу.</translation>
+<translation id="3253082773078342494">Холбоосыг шууд Chrome-д нээнэ үү.</translation>
 <translation id="3303503998967553377">iOS дээр Chrome-н үйлдлүүдийг ашиглах</translation>
 <translation id="3348862487678490430">Унших жагсаалтын зүйлийг Chrome-д нэмэх</translation>
 <translation id="3350281376951945723">Та Chrome-г өгөгдмөлөөр тохируулахдаа холбооснуудыг илүү хурдан нээгээрэй</translation>
@@ -160,6 +162,7 @@
 <translation id="4693084815234024320">Та Chrome-н Нууцлалтай горимд байна</translation>
 <translation id="4713740144985377441">Файлаа байршуулахын тулд Chrome руу буцна уу</translation>
 <translation id="4724297637870447613">Chrome-г хүссэн газраасаа ашиглаарай</translation>
+<translation id="4733290155432110050">Chrome руу шууд очих</translation>
 <translation id="4738647308035481133">Google Chrome-н хуудас</translation>
 <translation id="4742795653798179840">Chrome-н өгөгдлийг устгалаа</translation>
 <translation id="4761869838909035636">Chrome-н Аюулгүй байдлын шалгалтыг ажиллуулах</translation>
@@ -267,6 +270,7 @@
 <translation id="7038674195294813388">iOS-с Өгөгдмөл аппын тохиргоог нээгээд, "Хөтчийн апп" дээр товшиж, Chrome-г сонгоно уу.</translation>
 <translation id="7056826488869329999">Chrome-д Аюулгүй байдлын шалгалтыг нээж, явуулна.</translation>
 <translation id="7061455974939528301">Chrome-н дүрс тэмдгийг удаан дараад, "Үндсэн нүүрийг засах"-ыг товшино уу</translation>
+<translation id="7067302528015227615">Аппын шилжилтийг илүү хурдан, хялбар болгохын тулд Chrome-г өгөгдмөл болгон тохируулаарай.</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" />-н Google Password Manager-т</translation>
 <translation id="7124339256045485976">Chrome-г хамгийн шинэ байлгаарай</translation>
 <translation id="7135936755418321901">Вебсайттай байршлаа хуваалцахын тулд Тохиргоо гэсэн дээр товшиж Chrome-д байршлыг тань ашиглахыг зөвшөөрнө үү.</translation>
@@ -278,6 +282,7 @@
 <translation id="7200524487407690471">Таныг өгөгдлийн зөрчил, аюултай вебсайт болон бусад зүйлээс аюулгүй байлгахын тулд Chrome өдөр бүр Аюулгүй байдлын шалгалтыг автоматаар явуулна. Та Тохиргоонд Аюулгүй байдлын шалгалтын талаар илүү ихийг олох боломжтой.</translation>
 <translation id="7214019116829172458">Chrome-н нууцлалтай табыг нээх</translation>
 <translation id="722167379782941918">Chrome сайжруулсан хамгаалалтыг зөвлөж байна</translation>
+<translation id="722921700949937243">Бүх холбоосыг үргэлж Chrome-д нээхийг баталгаажуулна уу.</translation>
 <translation id="723787869754590019">Chrome-г Автоматаар бөглөх хэсэгт ашиглах</translation>
 <translation id="7261678641327190792">Chrome таны нууц үгнүүдийг шалгах боломжгүй байна</translation>
 <translation id="7272091023280308138">Дараагийн удаа URL-г эхлээд хуулахгүйгээр холбоосыг Chrome-д шууд нээгээрэй.</translation>

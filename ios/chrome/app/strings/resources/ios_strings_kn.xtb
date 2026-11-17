@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">ಸೈನ್ ಇನ್ ವಿಫಲವಾಗಿದೆ. ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2975761176769946178">URL ಅಗತ್ಯವಿದೆ</translation>
 <translation id="297667759942911166">ಟ್ಯಾಬ್ ಗುಂಪುಗಳಲ್ಲಿ ಕೊಲಾಬೊರೇಟ್ ಮಾಡಿ</translation>
+<translation id="2986080119218811913"><ph name="ACTOR_NAME" /> ಗೆ ಹಿಂತಿರುಗಿ</translation>
 <translation id="298696743524648170">Chrome ನಲ್ಲಿ Gemini ಅನ್ನು ಬಳಸಲು, ನಿಮ್ಮ Google ಖಾತೆಯೊಂದಿಗೆ Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="2987670534697681860">ಈ ಸಾಧನದಲ್ಲಿ ನಿಮ್ಮ ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಇದು ನೀವೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ.</translation>
 <translation id="2989523299700148168">ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿದವು</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516"><ph name="COLOR" /> ಟ್ಯಾಬ್ ಗುಂಪಿನ ಬಣ್ಣ</translation>
+<translation id="500126251490468002">ಈ ಸೈಟ್‌ಗೆ Google Password Manager ನಲ್ಲಿ ಯಾವುದೇ ಪಾಸ್‌ವರ್ಡ್ ಇಲ್ಲ. ಸೈನ್ ಇನ್ ಮಾಡಲು <ph name="ACTOR_NAME" /> ಗೆ ಹಿಂತಿರುಗಿ ಅಥವಾ Google Password Manager ಗೆ ಪಾಸ್‌ವರ್ಡ್ ಸೇರಿಸಿ.</translation>
 <translation id="5005498671520578047">ಪಾಸ್‌ವರ್ಡ್ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="5007392906805964215">ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="5009127379503001909">ಬ್ರೌಸ್ ಮಾಡುತ್ತಿರಿ</translation>

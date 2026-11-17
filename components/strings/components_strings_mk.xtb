@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Изберете дозвола за <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Да се зачува IBAN?</translation>
 <translation id="1113869188872983271">&amp;Врати преуредување</translation>
-<translation id="111897705806685148">Користете криптографски клуч од друг уред</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, па Enter за да управувате со податоците од Chrome што ги зачувувате во вашата сметка на Google</translation>
 <translation id="1121990216147052230">Состави ми список со задачи</translation>
 <translation id="1123753900084781868">„Автоматски титлови“ не е достапна во моментов</translation>
@@ -1307,6 +1306,7 @@
 <translation id="3196374699162453920">Код на резервација</translation>
 <translation id="3196902089458890316">Секогаш да се споделуваат релевантните картички за подобри одговори?</translation>
 <translation id="3197136577151645743">Може да прашува за да знае кога активно го користите уредов</translation>
+<translation id="3201749168732432347">Понуди и картички за лојалност</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, па Enter за да управувате со податоците коишто се синхронизираат во поставките за Chrome</translation>
 <translation id="3203025201812691413">URL-адресата не може да биде празна</translation>
 <translation id="320323717674993345">Откажи го плаќањето</translation>
@@ -2310,6 +2310,7 @@
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="4854853140771946034">Набрзина создајте нова белешка во Google Keep</translation>
 <translation id="4855395119669662878">Администраторот ќе започне да ги прикачува вашите датотеки во <ph name="CLOUD_PROVIDER" /> во <ph name="DATE_TIME" />. Уредот нека остане поврзан додека да заврши прикачувањето на датотеката. Додека трае прикачувањето, ќе може само да читате локални датотеки.</translation>
+<translation id="4856655096879441213">Зачувајте ги вашите податоци во <ph name="GOOGLE_WALLET_TITLE" /> и завршувајте ги работите побрзо, како пополнувањето формулари во производите на Google. Може да контролирате <ph name="HOW_INFO_IS_USED_LINK" /> во вашите поставки за приватни пропусници за <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Се потврдува кодот…</translation>
 <translation id="4860260582253463350">За да продолжиш на YouTube, мора да потврдиме дека ова си навистина ти. Ќе ги добиеш поставките што ги поставил твојот родител или старател во Family Link.</translation>
 <translation id="4861514638281352187">Додајте број за ревизија безбедно</translation>
@@ -2846,7 +2847,6 @@
 <translation id="5718326209176373202">Додајте текстуални прибелешки</translation>
 <translation id="5718601519531438273">Опфаќа податоци како пасоши и возачки дозволи</translation>
 <translation id="5720705177508910913">Тековен корисник</translation>
-<translation id="5721147290164931316">Скенирајте за да се најавите со телефонот</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} и уште 1}one{{website_1}, {website_2} и уште {more_count}}other{{website_1}, {website_2} и уште {more_count}}}</translation>
 <translation id="5722778418591961221">Испланирај рутина за фитнес во домашни услови што ќе ми помогне да ги остварам моите цели</translation>
 <translation id="572328651809341494">Неодамнешни картички</translation>

@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Wybierz uprawnienia dla: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Zapisać numer IBAN?</translation>
 <translation id="1113869188872983271">&amp;Cofnij zmianę kolejności</translation>
-<translation id="111897705806685148">Użyj klucza dostępu z innego urządzenia</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, aby zarządzać informacjami z Chrome, które zapisujesz na koncie Google, naciśnij Tab, a potem Enter</translation>
 <translation id="1121990216147052230">Zrób dla mnie listę zadań do wykonania</translation>
 <translation id="1123753900084781868">Napisy na żywo nie są teraz dostępne</translation>
@@ -1307,6 +1306,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3196374699162453920">Kod rezerwacji</translation>
 <translation id="3196902089458890316">Czy chcesz zawsze udostępniać odpowiednie karty, aby otrzymywać lepsze odpowiedzi?</translation>
 <translation id="3197136577151645743">Może prosić o pozwolenie na sprawdzanie, kiedy używasz urządzenia</translation>
+<translation id="3201749168732432347">Oferty i karty lojalnościowe</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zarządzać w ustawieniach Chrome informacjami, które mają być synchronizowane, naciśnij Tab, a potem Enter</translation>
 <translation id="3203025201812691413">URL nie może być pusty</translation>
 <translation id="320323717674993345">Anuluj płatność</translation>
@@ -2847,7 +2847,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5718326209176373202">Dodaj adnotacje tekstowe</translation>
 <translation id="5718601519531438273">Obejmuje informacje takie jak paszporty i prawa jazdy</translation>
 <translation id="5720705177508910913">Bieżący użytkownik</translation>
-<translation id="5721147290164931316">Zeskanuj, aby zalogować się za pomocą telefonu</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} i jeszcze 1}few{{website_1}, {website_2} i jeszcze {more_count}}many{{website_1}, {website_2} i jeszcze {more_count}}other{{website_1}, {website_2} i jeszcze {more_count}}}</translation>
 <translation id="5722778418591961221">Zaplanuj domowy trening, który pomoże mi osiągnąć cele</translation>
 <translation id="572328651809341494">Ostatnie karty</translation>

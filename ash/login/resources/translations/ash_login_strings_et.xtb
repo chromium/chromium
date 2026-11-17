@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Lehe allapoole liigutamiseks pühkige üles</translation>
 <translation id="2501278716633472235">Mine tagasi</translation>
 <translation id="252418934079508528">Installi <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Seadme ettevalmistamine …</translation>
 <translation id="2538084450874617176">Kes kasutab seadet <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> ei suutnud ühenduda võrku <ph name="NETWORK_ID" />. Valige muu võrk või proovige uuesti.</translation>
 <translation id="2565214867520763227">Lülitage ekraanilugeja sisse</translation>
@@ -628,6 +629,7 @@
 <translation id="7666531788977935712">Nupp Jätka on lubatud</translation>
 <translation id="7671139479636735732">Paremklõpsake, et hõlpsalt oma ideid visualiseerida</translation>
 <translation id="770831926727930011">Kohalikke andmeid kaitseb teie vana parool. Kohalike andmete taastamiseks sisestage oma vana parool.</translation>
+<translation id="7717014941119698257">Allalaadimine: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Värskendamiseks vajalik: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Sidumine seadmega „<ph name="DEVICE_NAME" />” …</translation>
 <translation id="7746045113967198252">Muutke ekraanil olevaid üksusi, sh teksti, suuremaks või väiksemaks. Selle leiate ka hiljem jaotisest Seaded &gt; Seade &gt; Ekraanid.</translation>

@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Stryg opad for at gå ned på siden</translation>
 <translation id="2501278716633472235">Gå tilbage</translation>
 <translation id="252418934079508528">Installer <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Enheden gøres klar…</translation>
 <translation id="2538084450874617176">Hvem bruger denne <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> kunne ikke oprette forbindelse til <ph name="NETWORK_ID" />. Vælg et andet netværk, eller prøv igen.</translation>
 <translation id="2565214867520763227">Slå skærmlæseren til</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">Knappen Fortsæt er aktiveret</translation>
 <translation id="7671139479636735732">Højreklik for nemt at visualisere dine idéer</translation>
 <translation id="770831926727930011">Dine lokale data er beskyttet af din gamle adgangskode. Angiv din gamle adgangskode for at gendanne lokale data.</translation>
+<translation id="7717014941119698257">Downloader: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Opdateringen kræver: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Parrer med "<ph name="DEVICE_NAME" />"...</translation>
 <translation id="7746045113967198252">Gør elementer på skærmen, bl.a. tekst, større eller mindre. Du kan ændre dette senere ved at gå til Indstillinger &gt; Enhed &gt; Skærme.</translation>

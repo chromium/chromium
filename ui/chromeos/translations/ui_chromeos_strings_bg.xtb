@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="162175252992296058">Португалски с американската международна клавиатура</translation>
 <translation id="1629521517399325891">Потребителският сертификат не може да се използва за удостоверяване в мрежа.</translation>
+<translation id="1639239467298939599">Зарежда се</translation>
 <translation id="1641780993263690097">Китайски (пинин)</translation>
 <translation id="164969095109328410">Устройство с Chrome</translation>
 <translation id="1661207570040737402">Използвахте цялото хранилище за споделения си диск в Google Workspace.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">Синхронизирането на файловете е изключено</translation>
 <translation id="2820957248982571256">Сканира се...</translation>
 <translation id="2830077785865012357">Китайски (джуин)</translation>
+<translation id="2838379631617906747">Инсталира се</translation>
 <translation id="2843806747483486897">Промяна на действието по подразбиране...</translation>
 <translation id="2873951654529031587">Кошче</translation>
 <translation id="2887314858867008269">американска (Коулмак) клавиатура</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Порт</translation>
 <translation id="8656407365183407932">Офлайн файловете ви трябваше да бъдат премахнати</translation>
 <translation id="8656768832129462377">Без проверка</translation>
+<translation id="8662978096466608964">Chrome не може да зададе тапета.</translation>
 <translation id="8688591111840995413">Неправилна парола</translation>
 <translation id="8698464937041809063">Рисунка в Google</translation>
 <translation id="8698877009525468705">Този файл е поверителен и е предмет на ограничения, наложени чрез администраторски правила.</translation>

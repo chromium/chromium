@@ -146,6 +146,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="248676429071089168">Balayez l'écran vers le haut pour déplacer la page vers le bas</translation>
 <translation id="2501278716633472235">Retour</translation>
 <translation id="252418934079508528">Installer <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Préparation de l'appareil en cours…</translation>
 <translation id="2538084450874617176">Qui utilise cet appareil <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> n'est pas parvenu à se connecter à <ph name="NETWORK_ID" />. Veuillez sélectionner un autre réseau ou réessayer.</translation>
 <translation id="2565214867520763227">Activer le lecteur d'écran</translation>
@@ -630,6 +631,7 @@ serveur mandataire, modifiez vos <ph name="LINK_START" />paramètres du mandatai
 <translation id="7666531788977935712">Bouton Continuer activé</translation>
 <translation id="7671139479636735732">Faites un clic droit pour visualiser facilement vos idées</translation>
 <translation id="770831926727930011">Vos données locales sont protégées par votre ancien mot de passe. Entrez votre ancien mot de passe pour récupérer les données locales.</translation>
+<translation id="7717014941119698257">Téléchargement : <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Espace nécessaire pour la mise à jour : <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Association avec « <ph name="DEVICE_NAME" /> » en cours…</translation>
 <translation id="7746045113967198252">Créez des éléments sur votre écran, y compris du texte, plus grand ou plus petit. Vous pouvez également les trouver plus tard dans Paramètres &gt; Appareil &gt; Affichages.</translation>

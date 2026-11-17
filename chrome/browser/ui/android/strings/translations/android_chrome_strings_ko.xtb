@@ -530,6 +530,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />도움 받기<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">가격 추적</translation>
 <translation id="3037517125981011456">Chrome에 로그인하기 위한 메시지를 표시합니다.</translation>
+<translation id="3038505649933066250">날짜별로 필터링하기</translation>
 <translation id="3044436568790455247">'기기 선택'이 전체 높이로 열렸습니다.</translation>
 <translation id="3057938290530993634">다음에 쉽게 액세스할 수 있도록 자주 방문하는 웹사이트를 고정하려면 길게 탭하세요.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{북마크 <ph name="BOOKMARKS_COUNT_ONE" />개}other{북마크 <ph name="BOOKMARKS_COUNT_MANY" />개}}</translation>
@@ -917,6 +918,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4585793705637313973">페이지 수정</translation>
 <translation id="4587589328781138893">사이트</translation>
 <translation id="4587590257937792551">Chrome에 편의성을 위해 만들어진 새로운 하단 툴바가 추가되었습니다. 언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 다시 전환할 수 있습니다.</translation>
+<translation id="4592634244097223647">Google에 이 이미지에 관해 질문하기</translation>
 <translation id="4594952190837476234">이 오프라인 페이지는 <ph name="CREATION_TIME" />에 생성되었으며 온라인 버전과 다를 수 있습니다.</translation>
 <translation id="4595237294768457124">새 탭 페이지를 엽니다.</translation>
 <translation id="4595276580892809760">갤러리에서 이미지 첨부</translation>

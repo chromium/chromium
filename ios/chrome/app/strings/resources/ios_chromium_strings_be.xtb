@@ -58,6 +58,7 @@
 <translation id="2027881372245801507">Выключэнне прапаноў не ўплывае на апрацоўку загалоўкаў старонак і URL-адрасоў у Chromium для іншых функцый. Кіраваць доступам да гэтых даных можна ў <ph name="BEGIN_LINK" />наладах сінхранізацыі<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Увайдзіце на сайт і ў Chromium, каб карыстацца паролямі і іншым змесцівам на ўсіх сваіх прыладах</translation>
 <translation id="2042889939382983733">Праглядзець гісторыю Chromium</translation>
+<translation id="2054352566231434723">Адкрывайце знешнія спасылкі стандартна ў Chromium.</translation>
 <translation id="2059365270911640413">Завяршыце наладжванне Chromium</translation>
 <translation id="2168108852149185974">Некаторыя дадатковыя кампаненты выклікаюць збой у браўзеры Chromium. Выдаліце іх:</translation>
 <translation id="2168593389981132306">Зрабіце браўзер Chromium лепей</translation>
@@ -85,6 +86,7 @@
 <translation id="2485774047568879945">Зрабіце Chromium стандартным браўзерам, і зможаце з лёгкасцю абагульваць і адкрываць спасылкі</translation>
 <translation id="2512597191798760956">Націсніце і ўтрымлівайце значок Chromium, а потым выберыце пункт "Змяніць галоўны экран"</translation>
 <translation id="2517624234762908348">Сінхранізацыя даных Chromium</translation>
+<translation id="2519012503779379646">Зрабіце Chromium стандартным браўзерам, каб пераходзіць паміж праграмамі хутчэй і прасцей.</translation>
 <translation id="2592940277904433508">Працягнуць работу ў Chromium</translation>
 <translation id="2601766165676560303">Тэма Chromium для iPhone і iPad</translation>
 <translation id="2607609479243848905">Калі вы забылі фразу-пароль або хочаце змяніць гэту наладу, <ph name="BEGIN_LINK" />выдаліце даныя Chromium з уліковага запісу<ph name="END_LINK" />.</translation>
@@ -189,6 +191,7 @@
 <translation id="4985291216379576555">Няма падключэння да сеткі. Браўзеру Chromium не ўдаецца праверыць наяўнасць абнаўленняў</translation>
 <translation id="4996471330284142407">Паспявайце больш дзякуючы простаму, абароненаму і яшчэ хутчэйшаму браўзеру Chromium.</translation>
 <translation id="4999538639245140991">Даныя Chromium будуць выдалены з гэтай прылады, паколькі вы выходзіце з уліковага запісу, якім кіруе <ph name="SIGNOUT_MANAGED_DOMAIN" />. Вашы даныя застануцца ва Уліковым запісе Google.</translation>
+<translation id="5004986813285860899">Пераходзьце адразу ў Chromium</translation>
 <translation id="5042011327527167688">Націсніце View with Google Maps on Chromium ("Праглядзець на Google Картах у Chromium").</translation>
 <translation id="5044871537677053278">Chromium выяўляе адрасы і выкарыстоўвае Google Карты, каб пракладаць маршруты і паказваць інфармацыю пра мясцовыя аб’екты.</translation>
 <translation id="5048140766121299007">У раздзеле "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" уключыце пераключальнік для Chromium</translation>
@@ -202,6 +205,7 @@
 <translation id="5224391634244552924">Няма захаваных пароляў. Chromium можа правяраць толькі захаваныя паролі.</translation>
 <translation id="5259423875997548710">Дазваляе выканаць візуальны пошук у Chromium.</translation>
 <translation id="5284913972719948193">Імпартуйце ў Chromium вашы даныя і выкарыстоўвайце свае паролі, гісторыю, закладкі і звесткі аб крэдытных картках</translation>
+<translation id="5299421317003704533">Адкрывайце спасылкі адразу ў Chromium.</translation>
 <translation id="5308226104666789935">Браўзеру Chromium не ўдаецца праверыць наяўнасць абнаўленняў</translation>
 <translation id="5311557153294205270">Дадае ўведзеныя URL-адрасы ў закладкі ў Chromium.</translation>
 <translation id="5383251701169024761">Для зручнага аўтазапаўнення захаваных пароляў у іншых праграмах выкарыстоўвайце Chromium</translation>
@@ -357,6 +361,7 @@
 <translation id="8602103377623855616">Старонка Chromium</translation>
 <translation id="865600487977764604">Абараняе вас у браўзеры Chromium і можа выкарыстоўвацца для паляпшэння бяспекі ў іншых праграмах Google, калі вы ўвайшлі ва ўліковы запіс.</translation>
 <translation id="8663480472502753423">Падтрымка актуальнага стану Chromium</translation>
+<translation id="8671588626059602995">Заўсёды адкрывайце любыя спасылкі ў Chromium.</translation>
 <translation id="8685813584220679697">Выканайце ўваход на сайт і ў Chromium.</translation>
 <translation id="8697693743327341604">Калі вы прымаеце або ігнаруеце прапанову, Chromium будзе адаптавацца і паказваць больш рэлевантныя прапановы ў будучыні.</translation>
 <translation id="869832267508702259">Зрабіце Chromium стандартным браўзерам і атрымлівайце аналіз ад Gemini на любой старонцы</translation>

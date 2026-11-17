@@ -27,6 +27,7 @@
 <translation id="1062138828266376352">तुमचा पिन बदलला नाही. तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />) कुठे सेव्ह करायची आहे ते निवडा</translation>
 <translation id="1063300264396686489">इतर डिव्हाइसवरून टॅब गट आपोआप उघडा</translation>
+<translation id="1064922761238321287">इथे लिंक उघडा</translation>
 <translation id="1072476005125066234">तुमच्या स्वारस्यांवर आधारित पुनरावलोकने</translation>
 <translation id="1072679792409426431">तुमच्या अ‍ॅडमिनिस्ट्रेटरने बंद केले</translation>
 <translation id="1074827084851510304">तुमचे {password_count} पासवर्ड आणि तुम्ही साइन-इन माहिती कधीही सेव्ह न करण्याचे निवडलेल्या साइट आणि ॲप्सची सूची हटवणार आहात. एखाद्या साइट आणि ॲप्ससाठी तुम्ही तयार केलेले कोणतेही खाते हटवले जाणार नाही.</translation>
@@ -383,6 +384,7 @@
 <translation id="2089180529062519164">मायक्रोफोन सुरू करा</translation>
 <translation id="2096239473850415494">डाउनलोड करता आली नाही</translation>
 <translation id="2096716221239095980">सर्व डेटा हटवा</translation>
+<translation id="2097502812000646256">तुम्ही या साइटमधून बाहेर पडल्यावर <ph name="SITE_DOMAIN" /> शी संबंधित परवानग्या बंद यावर रीसेट केल्या जातील</translation>
 <translation id="2102396546234652240">साइटना तुमचा मायक्रोफोन वापरण्याची अनुमती देऊ नका</translation>
 <translation id="2104436223719117661">ट्रेंडिंग शोध</translation>
 <translation id="21133533946938348">टॅब पिन करा</translation>
@@ -653,6 +655,7 @@
 <translation id="2969979262385602596">साइन इन करण्यात अयशस्वी. कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="2975761176769946178">URL आवश्यक आहे</translation>
 <translation id="297667759942911166">टॅब गटांमध्ये सहयोग करा</translation>
+<translation id="2986080119218811913"><ph name="ACTOR_NAME" /> वर परत या</translation>
 <translation id="298696743524648170">Chrome मधील Gemini वापरण्यासाठी, तुमचे Google खाते वापरून Chrome मध्ये साइन इन करा</translation>
 <translation id="2987670534697681860">या डिव्हाइसवर तुमचे सर्व पासवर्ड ॲक्सेस करण्यासाठी हे तुम्हीच असल्याची पडताळणी करा.</translation>
 <translation id="2989523299700148168">अलीकडे भेट दिलेले</translation>
@@ -821,6 +824,7 @@
 <translation id="3533436815740441613">नवीन टॅब</translation>
 <translation id="3534738261102690620">Gemini ला विचारा</translation>
 <translation id="3540141921715814660">बुकमार्क मध्ये जोडा</translation>
+<translation id="3543157674386493176">तुम्ही या साइटला भेट देता, तेव्हा <ph name="SITE_DOMAIN" /> ला तुमचा मायक्रोफोन वापरण्याची अनुमती आहे</translation>
 <translation id="3546122170015471515">Google.com वर Maps पूर्वावलोकने</translation>
 <translation id="3547356470684043247">परीक्षणांद्वारे तुमचे निर्णय अधिक माहितीपूर्ण पद्धतीने घेण्यात मदत व्हावी, यासाठी उत्पादने, सेवा किंवा अनुभवासंबंधित ग्राहक मूल्यमापने वाचा</translation>
 <translation id="3547933853190131743">AI मोड वापरून शोधा</translation>
@@ -1254,6 +1258,7 @@
 <translation id="4884937942297374058">वर्धित संरक्षण बंद आहे</translation>
 <translation id="4887391901725877182">क्लोझ्ड कॅप्शन</translation>
 <translation id="488785315393301722">तपशील दर्शवा</translation>
+<translation id="488838826386625696">तुमचे प्राधान्य दिलेले लिंक गंतव्यस्थान</translation>
 <translation id="4889521386764567563">सध्याची प्रोफाइल</translation>
 <translation id="4893713555726946316">पेजमध्ये शोधा हे लपवा</translation>
 <translation id="4894963374040315706">हे तुम्हाला तुमचा आवाज वापरून शोधू देते</translation>
@@ -1290,6 +1295,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, तुमच्या संस्थेने व्यवस्थापित केला आहे.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">टॅब गटाचा रंग <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Google Password Manager कडे या साइटसाठी पासवर्ड नाही. साइन इन करण्यासाठी <ph name="ACTOR_NAME" /> वर परत जा किंवा Google Password Manager मध्ये पासवर्ड जोडा.</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करा</translation>
 <translation id="5007392906805964215">पुनरावलोकन करा</translation>
 <translation id="5009127379503001909">ब्राउझ करत रहा</translation>
@@ -1299,6 +1305,7 @@
 <translation id="5020732097997376541">"Lens आयकन" वर टॅप करा</translation>
 <translation id="5021500396464456616">ही लिंक पाठवणाऱ्या व्यक्तीशी संपर्क साधा</translation>
 <translation id="503173149952522259">हा टॅब पिन करण्यासाठी प्रेस करून धरून ठेवा</translation>
+<translation id="5032446794387264213"><ph name="SITE_DOMAIN" /> ला तुमचा मायक्रोफोन अ‍ॅक्सेस करण्याची अनुमती नाही</translation>
 <translation id="5039804452771397117">परवानगी द्या</translation>
 <translation id="5050042263972837708">गट नाव</translation>
 <translation id="5050810143224996149">पासवर्ड शेअर करा</translation>
@@ -1799,6 +1806,7 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6538776393003671043">तुम्ही पुढील वेळी ते वापराल, तेव्हा Chrome त्याला Google Wallet मध्ये सेव्ह करण्यास सुचवेल</translation>
 <translation id="6543899060872618437">तुमच्या सर्व डिव्हाइसवर ऑटोफिल वापरून आणखी जलद चेक आउट करा</translation>
+<translation id="6545387723662397265">इथे लिंक आपोआप उघडा.</translation>
 <translation id="6550675742724504774">पर्याय</translation>
 <translation id="6550891580932862748">धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून तुमचे संरक्षण करत नाही. तुमच्या इतर Google उत्पादनांमधील सुरक्षित ब्राउझिंग सेटिंग्जवर परिणाम होणार नाही.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -2000,8 +2008,10 @@
 <translation id="7149893636342594995">शेवटच्या 72 तासांमधील</translation>
 <translation id="7151361008641622036">{count,plural, =1{तुम्ही १ टॅब संगतवार लावला आहे}other{तुम्ही # टॅब संगतवार लावले आहेत}}</translation>
 <translation id="7154417656353909837">पत्ते काढून टाका</translation>
+<translation id="715826717368497238">एकत्र, आणखी उत्तम</translation>
 <translation id="7161230316646448869">सर्व डिव्हाइसवर तुमचे बुकमार्क, इतिहास आणि बरेच काही सिंक करा</translation>
 <translation id="7165323152084385463">VIN</translation>
+<translation id="7171738306460065883">तुम्ही या साइटला भेट देता, तेव्हा <ph name="SITE_DOMAIN" /> ला तुमचा कॅमेरा वापरण्याची अनुमती आहे</translation>
 <translation id="7173114856073700355">सेटिंग्ज उघडा</translation>
 <translation id="7173721738069475737">{count,plural, =1{बुकमार्क सेव्ह केला आहे}other{{count} बुकमार्क सेव्ह केले आहेत}}</translation>
 <translation id="7176183551031110427">झूम आउट करा</translation>
@@ -2195,6 +2205,7 @@
 <translation id="7758789811447313947">व्हायलेट थीम</translation>
 <translation id="7759809451544302770">पर्यायी</translation>
 <translation id="7765158879357617694">हलवा</translation>
+<translation id="7767218770008406619">जलद क्रॉस-अ‍ॅप ब्राउझिंग</translation>
 <translation id="7768507955883790804">तुम्ही साइटना भेट देता तेव्‍हा त्‍या आपोआप हे सेटिंग फॉलो करतात</translation>
 <translation id="7772032839648071052">सांकेतिक पासफ्रेझ निश्चित करा</translation>
 <translation id="7772948288262733182">तुमचे पुन्हा स्वागत आहे</translation>
@@ -2561,6 +2572,7 @@
 <translation id="882557203579758546">पेजमध्ये शोधा…</translation>
 <translation id="8829809207373502270">ही पासकी आता काम करत नाही. ती <ph name="WEBSITE" /> वरून हटवली गेली आणि लवकरच इथून हटवली जाईल. <ph name="BEGIN_LINK" />पासकीविषयी<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">सर्व इनॅक्टिव्ह टॅब बंद करा</translation>
+<translation id="8834584302364387913"><ph name="SITE_DOMAIN" /> ला तुमचा कॅमेरा अ‍ॅक्सेस करण्याची अनुमती नाही</translation>
 <translation id="8837654851594567190">प्रकाशकानुसार क्रमाने लावा</translation>
 <translation id="884351711508006491">तुमची माहिती तुमच्या डिव्हाइसवर सेव्ह केली जाते.</translation>
 <translation id="8844136307393039959">तुम्ही ट्रॅक केलेल्या उत्पादनाची किंमत कमी झाली आहे</translation>

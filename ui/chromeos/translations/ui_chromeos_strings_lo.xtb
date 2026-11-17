@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
 <translation id="162175252992296058">ພາສາປໍຕຸຍກິສທີ່ໃຊ້ແປ້ນພິມສະຫະລັດແບບສາກົນ</translation>
 <translation id="1629521517399325891">ບໍ່ສາມາດໃຊ້ໃບຮັບຮອງຜູ້ໃຊ້ສຳລັບການພິສູດຢືນຢັນເຄືອຂ່າຍໄດ້.</translation>
+<translation id="1639239467298939599">ກໍາລັງໂຫຼດ</translation>
 <translation id="1641780993263690097">ພາສາຈີນພິນອິນ</translation>
 <translation id="164969095109328410">ອຸປະກອນ Chrome</translation>
 <translation id="1661207570040737402">ທ່ານໃຊ້ບ່ອນຈັດເກັບຂໍ້ມູນ Google Workspace ໃນໄດຣຟ໌ທີ່ແບ່ງປັນຂອງທ່ານໝົດແລ້ວ.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">ການຊິ້ງໄຟລ໌ປິດຢູ່</translation>
 <translation id="2820957248982571256">ກຳລັງສະແກນ…</translation>
 <translation id="2830077785865012357">ພາສາຈີນຊູອິນ</translation>
+<translation id="2838379631617906747">ກໍາລັງ​ຕິດ​ຕັ້ງ...</translation>
 <translation id="2843806747483486897">ປ່ຽນມາດຕະຖານ...</translation>
 <translation id="2873951654529031587">ຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="2887314858867008269">Colemak ແບບສະຫະລັດອາເມລິກາ</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ຜອດ</translation>
 <translation id="8656407365183407932">ຕ້ອງລຶບໄຟລ໌ອອບລາຍຂອງທ່ານອອກ</translation>
 <translation id="8656768832129462377">ຢ່າກວດເບິ່ງ</translation>
+<translation id="8662978096466608964">Chrome ບໍ່​ສາ​ມາດ​ຕັ້ງພາບພື້ນຫຼັງໜ້າຈໍໄດ້.</translation>
 <translation id="8688591111840995413">ລະ​ຫັດ​ຜ່ານ​ທີ່​ບໍ່​ດີ</translation>
 <translation id="8698464937041809063">ການແຕ້ມຮູບ Google</translation>
 <translation id="8698877009525468705">ໄຟລ໌ນີ້ເປັນຄວາມລັບ ແລະ ຢູ່ພາຍໃຕ້ຂໍ້ຈຳກັດຕາມນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບ.</translation>

@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Videocamera</translation>
 <translation id="162175252992296058">Portoghese con tastiera internazionale USA</translation>
 <translation id="1629521517399325891">Il certificato utente non è disponibile per l'autenticazione della rete.</translation>
+<translation id="1639239467298939599">Caricamento</translation>
 <translation id="1641780993263690097">Cinese pinyin</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
 <translation id="1661207570040737402">Hai esaurito il tuo spazio di archiviazione Google Workspace su Drive condiviso.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">Sincronizzazione dei file non attiva</translation>
 <translation id="2820957248982571256">Scansione…</translation>
 <translation id="2830077785865012357">Cinese Zhuyin</translation>
+<translation id="2838379631617906747">Installazione</translation>
 <translation id="2843806747483486897">Cambia predefinita...</translation>
 <translation id="2873951654529031587">Cestino</translation>
 <translation id="2887314858867008269">Inglese (Stati Uniti) - Colemak</translation>
@@ -1018,6 +1020,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Porta</translation>
 <translation id="8656407365183407932">È stato necessario rimuovere i file offline</translation>
 <translation id="8656768832129462377">Non verificare</translation>
+<translation id="8662978096466608964">Chrome non può impostare lo sfondo.</translation>
 <translation id="8688591111840995413">Password non valida</translation>
 <translation id="8698464937041809063">Disegno Google</translation>
 <translation id="8698877009525468705">Questo file è riservato e soggetto a limitazioni stabilite dalla policy dell'amministratore.</translation>

@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Ezin izan da hasi saioa. Saiatu berriro geroago.</translation>
 <translation id="2975761176769946178">URL bat behar da</translation>
 <translation id="297667759942911166">Jardun elkarlanean fitxa taldeetan</translation>
+<translation id="2986080119218811913">Itzuli <ph name="ACTOR_NAME" /> karpetara</translation>
 <translation id="298696743524648170">Chrome-ko Gemini erabiltzeko, hasi saioa Chrome-n Google-ko kontuarekin</translation>
 <translation id="2987670534697681860">Egiaztatu zeu zarela pasahitz guztiak gailu honetan atzitzeko.</translation>
 <translation id="2989523299700148168">Erabilitako azkenak</translation>
@@ -672,7 +673,7 @@
 <translation id="3038136505713492417">Egiaztatu zeu zarela sarbide-gakoak gailu honetan erabiltzeko</translation>
 <translation id="3039671569659952257">Ezabatu karpeta</translation>
 <translation id="3041835740069544003">Orain, inprimakien ulermen adimentsuagoari esker, Chrome-k inprimaki gehiago hauteman eta bete ditzake. Horretarako, orrien edukia eta URLak hodeiko eremu pribatu batean prozesa daitezke. Kudeatu ezarpenetan.</translation>
-<translation id="3042118633250374317">Bere zerbitzuak emateko, Google, haren erabiltzaileak eta orokorrean jendea babesteko, eta bere zerbitzuak garatu eta hobetzeko (gizakiak diren berrikusleen laguntzarekin) erabiltzen du Google-k zure historia. Ez sartu berrikusi edo erabiltzea nahi ez duzun edukirik.</translation>
+<translation id="3042118633250374317">Bere zerbitzuak emateko, bere burua, bere erabiltzaileak eta orokorrean jendea babesteko, eta bere zerbitzuak garatu eta hobetzeko (gizakiak diren berrikusleen laguntzarekin) erabiltzen du Google-k zure historia. Ez sartu berrikustea edo erabiltzea nahi ez duzun edukirik.</translation>
 <translation id="3050988301648974170">Ireki Pasahitz-egiaztapena</translation>
 <translation id="3053332585453689122">Bisitatzen dituzun URLak eta orrien edukiaren, deskargen, luzapenen jardueren eta sistemaren informazioaren lagin txiki bat bidaltzen dizkio Google-ren Arakatze segurua eginbideari, kaltegarriak diren egiaztatzeko.</translation>
 <translation id="3055102495753300780">Informazioaren biltegiratzea</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" /> (<ph name="EMAIL" />), erakundeak kudeatzen du.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Fitxa talderako kolore <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Google-ren Pasahitz-kudeatzailea zerbitzuak ez dauka pasahitzik webgune honetarako. Itzuli <ph name="ACTOR_NAME" /> zerbitzura saioa hasteko, edo gehitu pasahitz bat Google-ren Pasahitz-kudeatzailea zerbitzuan.</translation>
 <translation id="5005498671520578047">Kopiatu pasahitza</translation>
 <translation id="5007392906805964215">Berrikusi</translation>
 <translation id="5009127379503001909">Jarraitu arakatzen</translation>

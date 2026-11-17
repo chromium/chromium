@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Login mislykkedes. Prøv igen senere.</translation>
 <translation id="2975761176769946178">En webadresse er påkrævet</translation>
 <translation id="297667759942911166">Samarbejd i fanegrupper</translation>
+<translation id="2986080119218811913">Tilbage til <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Hvis du vil bruge Gemini i Chrome, skal du logge ind i Chrome med din Google-konto</translation>
 <translation id="2987670534697681860">Verificer din identitet for at få adgang til alle dine adgangskoder på denne enhed.</translation>
 <translation id="2989523299700148168">Besøgt for nylig</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, som administreres af din organisation.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Fanegruppens farve <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Google Adgangskodeadministrator har ikke en adgangskode til dette website. Gå tilbage til <ph name="ACTOR_NAME" /> for at logge ind, eller føj en adgangskode til Google Adgangskodeadministrator.</translation>
 <translation id="5005498671520578047">Kopiér adgangskode</translation>
 <translation id="5007392906805964215">Gennemgå</translation>
 <translation id="5009127379503001909">Fortsæt med at browse</translation>

@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Desliza el dedo hacia arriba para bajar la página</translation>
 <translation id="2501278716633472235">Ir atrás</translation>
 <translation id="252418934079508528">Instalar <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Preparando el dispositivo…</translation>
 <translation id="2538084450874617176">¿Quién está usando este dispositivo <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> no se pudo conectar a <ph name="NETWORK_ID" />. Selecciona otra red o inténtalo de nuevo.</translation>
 <translation id="2565214867520763227">Activar el lector de pantalla</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">Se habilitó el botón Continuar</translation>
 <translation id="7671139479636735732">Haz clic con el botón derecho para visualizar tus ideas fácilmente</translation>
 <translation id="770831926727930011">Los datos locales están protegidos por tu contraseña anterior. Ingresa tu contraseña anterior para recuperar los datos locales.</translation>
+<translation id="7717014941119698257">Descargando: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Espacio necesario para la actualización: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Vinculando con "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="7746045113967198252">Aumenta o reduce el tamaño de los elementos que se muestran en la pantalla, incluido el texto. También puedes encontrar esta opción más tarde en Configuración &gt; Dispositivo &gt; Pantallas.</translation>

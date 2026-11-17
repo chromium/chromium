@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Velja heimild fyrir <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Vista IBAN-númer?</translation>
 <translation id="1113869188872983271">Aft&amp;urkalla nýja röðun</translation>
-<translation id="111897705806685148">Nota aðgangslykil úr öðru tæki</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að stjórna því hvaða Chrome-upplýsingar þú vistar á Google-reikningnum þínum</translation>
 <translation id="1121990216147052230">Búðu til verkefnalista fyrir mig</translation>
 <translation id="1123753900084781868">Skjátextar í rauntíma eru ekki tiltækir núna</translation>
@@ -1307,6 +1306,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3196374699162453920">Bókunarkóði</translation>
 <translation id="3196902089458890316">Viltu alltaf deila viðeigandi flipum til að fá betri svör?</translation>
 <translation id="3197136577151645743">Getur beðið um að fá að vita hvenær þú ert að nota tækið</translation>
+<translation id="3201749168732432347">Tilboð og tryggðarkort</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo „Enter“ til að opna stillingar Chrome og stjórna því hvaða upplýsingar þú samstillir</translation>
 <translation id="3203025201812691413">Vefslóðin má ekki vera tóm</translation>
 <translation id="320323717674993345">Hætta við greiðslu</translation>
@@ -2847,7 +2847,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5718326209176373202">Bæta textaskýringum við</translation>
 <translation id="5718601519531438273">Inniheldur upplýsingar á borð við vegabréf og ökuskírteini</translation>
 <translation id="5720705177508910913">Núverandi notandi</translation>
-<translation id="5721147290164931316">Skannaðu til að skrá inn með símanum</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} og eitt í viðbót}one{{website_1}, {website_2} og {more_count} í viðbót}other{{website_1}, {website_2} og {more_count} í viðbót}}</translation>
 <translation id="5722778418591961221">Skipuleggðu heimaæfingarútínu sem gerir mér kleift að ná markmiðum mínum</translation>
 <translation id="572328651809341494">Nýlegir flipar</translation>

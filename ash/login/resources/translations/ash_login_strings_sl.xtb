@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Povlecite navzgor, če želite premakniti stran navzdol</translation>
 <translation id="2501278716633472235">Nazaj</translation>
 <translation id="252418934079508528">Namestite <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Pripravljanje naprave …</translation>
 <translation id="2538084450874617176">Kdo uporablja to napravo <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> ni uspel vzpostaviti povezave z omrežjem <ph name="NETWORK_ID" />. Izberite drugo omrežje ali poskusite znova.</translation>
 <translation id="2565214867520763227">Vklop bralnika zaslona</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">Gumb za nadaljevanje je omogočen</translation>
 <translation id="7671139479636735732">S klikom desnega gumba preprosto vizualizirajte svoje zamisli</translation>
 <translation id="770831926727930011">Lokalni podatki so zaščiteni s starim geslom. Če želite obnoviti lokalne podatke, vnesite staro geslo.</translation>
+<translation id="7717014941119698257">Prenos: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Potrebno za posodobitev: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Seznanjanje z napravo »<ph name="DEVICE_NAME" />« …</translation>
 <translation id="7746045113967198252">Povečajte ali pomanjšajte elemente na zaslonu, vključno z besedilom. To lahko najdete pozneje tudi v »Nastavitve &gt; Naprava &gt; Zasloni«.</translation>

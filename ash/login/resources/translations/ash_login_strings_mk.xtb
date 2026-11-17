@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Повлечете нагоре за да ја преместите страницата надолу</translation>
 <translation id="2501278716633472235">Врати се</translation>
 <translation id="252418934079508528">Инсталирајте <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Уредот се подготвува…</translation>
 <translation id="2538084450874617176">Кој го користи овој <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> не може да се поврзе на <ph name="NETWORK_ID" />. Изберете друга мрежа или обидете се повторно.</translation>
 <translation id="2565214867520763227">Вклучување читач на екран</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">Копчето „Продолжи“ е овозможено</translation>
 <translation id="7671139479636735732">Кликнете со десното копче за да ги визуализирате вашите идеи</translation>
 <translation id="770831926727930011">Вашите локални податоци се заштитени со вашата стара лозинка. Внесете ја старата лозинка за враќање на локалните податоци.</translation>
+<translation id="7717014941119698257">Преземање: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Потребно за ажурирање: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Се спарува со „<ph name="DEVICE_NAME" />“…</translation>
 <translation id="7746045113967198252">Зголемете или намалете ги ставките на екранот, што опфаќа и текст. Ова може да го најдете и подоцна во „Поставки &gt; Уред &gt; Екрани“.</translation>

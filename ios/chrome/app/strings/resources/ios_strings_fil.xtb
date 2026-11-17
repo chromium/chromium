@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Hindi nakapag-sign in. Pakisubukang muli mamaya.</translation>
 <translation id="2975761176769946178">Kinakailangan ng URL</translation>
 <translation id="297667759942911166">Makipag-collaborate sa mga grupo ng tab</translation>
+<translation id="2986080119218811913">Bumalik sa <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Para magamit ang Gemini sa Chrome, mag-sign in sa Chrome gamit ang iyong Google Account</translation>
 <translation id="2987670534697681860">I-verify na ikaw ito para ma-access ang lahat ng iyong password sa device na ito.</translation>
 <translation id="2989523299700148168">Mga kamakailang binisita</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, pinapamahalaan ng iyong organisasyon.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Kulay <ph name="COLOR" /> na grupo ng tab</translation>
+<translation id="500126251490468002">Walang password ang Google Password Manager para sa site na ito. Bumalik sa <ph name="ACTOR_NAME" /> para mag-sign in, o magdagdag ng password sa Google Password Manager.</translation>
 <translation id="5005498671520578047">Kopyahin password</translation>
 <translation id="5007392906805964215">Suriin</translation>
 <translation id="5009127379503001909">Magpatuloy sa pag-browse</translation>

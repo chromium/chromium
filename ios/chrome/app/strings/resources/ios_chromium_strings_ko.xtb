@@ -58,6 +58,7 @@
 <translation id="2027881372245801507">추천을 사용 중지해도 다른 기능을 위해 Chromium에서 페이지 제목과 URL을 처리하는 방식을 제어하는 데에는 영향을 미치지 않습니다. <ph name="BEGIN_LINK" />동기화 설정<ph name="END_LINK" />에서 이 데이터에 대한 액세스를 관리할 수 있습니다.</translation>
 <translation id="2036929290919363111">모든 기기에서 비밀번호 등을 사용하려면 이 사이트 및 Chromium에 로그인하세요</translation>
 <translation id="2042889939382983733">Chromium 방문 기록 보기</translation>
+<translation id="2054352566231434723">기본적으로 Chromium에서 외부 링크를 엽니다.</translation>
 <translation id="2059365270911640413">Chromium 설정 완료</translation>
 <translation id="2168108852149185974">일부 부가기능이 Chromium의 비정상 종료를 유발합니다. 다음을 제거하세요.</translation>
 <translation id="2168593389981132306">Chromium 개선에 참여</translation>
@@ -85,6 +86,7 @@
 <translation id="2485774047568879945">Chromium을 기본 브라우저로 설정하여 링크를 간편하게 공유하고 열 수 있습니다</translation>
 <translation id="2512597191798760956">Chromium 아이콘을 길게 누른 후 '홈 화면 편집' 클릭</translation>
 <translation id="2517624234762908348">Chromium 데이터 동기화</translation>
+<translation id="2519012503779379646">더 빠르고 쉽게 앱이 전환되도록 Chromium을 기본 브라우저로 설정합니다.</translation>
 <translation id="2592940277904433508">Chromium 계속 사용</translation>
 <translation id="2601766165676560303">iPhone 및 iPad용 Chromium 테마</translation>
 <translation id="2607609479243848905">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정의 Chromium 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
@@ -189,6 +191,7 @@ Chromium 환경을 개선하는 데 데이터를 사용하는 설정을 더 보�
 <translation id="4985291216379576555">오프라인 상태이므로 Chromium에서 업데이트를 확인할 수 없습니다.</translation>
 <translation id="4996471330284142407">간소하고 안전하며 그 어느 때보다 빠른 속도의 Chromium을 더욱 다양하게 활용하세요</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" />에서 관리하는 계정에서 로그아웃하면 Chromium 데이터가 기기에서 삭제되나 Google 계정에는 그대로 유지됩니다.</translation>
+<translation id="5004986813285860899">Chromium으로 바로 이동</translation>
 <translation id="5042011327527167688">'Chromium에서 Google 지도로 보기'를 탭합니다.</translation>
 <translation id="5044871537677053278">Chromium에서는 주소를 감지하고 Google 지도를 사용하여 경로 및 지역 정보를 제공합니다.</translation>
 <translation id="5048140766121299007">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" 설정에서 'Chromium'을 사용 설정하세요</translation>
@@ -202,6 +205,7 @@ Chromium 환경을 개선하는 데 데이터를 사용하는 설정을 더 보�
 <translation id="5224391634244552924">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Chromium에서 확인할 수 있습니다.</translation>
 <translation id="5259423875997548710">Chromium에서 시각적 검색을 수행합니다.</translation>
 <translation id="5284913972719948193">Chromium에서 비밀번호, 방문 기록, 북마크, 신용카드를 사용하려면 데이터를 가져오세요</translation>
+<translation id="5299421317003704533">Chromium에서 바로 링크를 엽니다.</translation>
 <translation id="5308226104666789935">Chromium에서 업데이트를 확인할 수 없습니다.</translation>
 <translation id="5311557153294205270">Chromium의 북마크에 입력한 URL을 추가합니다.</translation>
 <translation id="5383251701169024761">저장된 비밀번호를 다른 앱에서 손쉽게 사용하려면 Chromium 자동 완성을 선택하세요.</translation>
@@ -357,6 +361,7 @@ Chromium 환경을 개선하는 데 데이터를 사용하는 설정을 더 보�
 <translation id="8602103377623855616">Chromium 페이지</translation>
 <translation id="865600487977764604">로그인 상태일 때 Chromium에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 강화하는 데 사용될 수 있습니다.</translation>
 <translation id="8663480472502753423">Chromium을 최신 상태로 유지합니다.</translation>
+<translation id="8671588626059602995">모든 링크가 항상 Chromium에서 열리는지 확인합니다.</translation>
 <translation id="8685813584220679697">이 사이트 및 Chromium에 로그인하세요.</translation>
 <translation id="8697693743327341604">추천을 선택하거나 무시하면 Chromium에서 향후 더 관련성 높은 추천이 표시되도록 조정합니다.</translation>
 <translation id="869832267508702259">Chromium을 기본 브라우저로 설정하여 어디서나 Gemini 인사이트를 확인하세요</translation>

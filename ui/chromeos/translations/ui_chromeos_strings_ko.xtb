@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">카메라</translation>
 <translation id="162175252992296058">포르투갈어(미국 국제 키보드)</translation>
 <translation id="1629521517399325891">사용자 인증서를 네트워크 인증에 사용할 수 없습니다.</translation>
+<translation id="1639239467298939599">로드 중</translation>
 <translation id="1641780993263690097">중국어(병음)</translation>
 <translation id="164969095109328410">Chrome 기기</translation>
 <translation id="1661207570040737402">공유 드라이브의 Google Workspace 스토리지를 모두 사용했습니다.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">파일 동기화 사용 중지됨</translation>
 <translation id="2820957248982571256">검색 중...</translation>
 <translation id="2830077785865012357">중국어(주음부호)</translation>
+<translation id="2838379631617906747">설치 중</translation>
 <translation id="2843806747483486897">기본값 변경...</translation>
 <translation id="2873951654529031587">휴지통</translation>
 <translation id="2887314858867008269">영어(미국) 콜맥</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - 포트</translation>
 <translation id="8656407365183407932">오프라인 파일이 삭제됨</translation>
 <translation id="8656768832129462377">확인 안함</translation>
+<translation id="8662978096466608964">Chrome에서 배경화면을 설정할 수 없습니다.</translation>
 <translation id="8688591111840995413">비밀번호가 잘못됨</translation>
 <translation id="8698464937041809063">Google 드로잉</translation>
 <translation id="8698877009525468705">이 파일은 기밀이며 관리자 정책의 제한사항이 적용됩니다.</translation>

@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> 권한을 선택합니다</translation>
 <translation id="1113000785583998331">IBAN을 저장하시겠습니까?</translation>
 <translation id="1113869188872983271">재정렬 실행 취소(&amp;U)</translation>
-<translation id="111897705806685148">다른 기기의 패스키 사용</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab과 Enter를 차례로 눌러 Google 계정에 저장할 Chrome 정보 관리</translation>
 <translation id="1121990216147052230">할 일 목록 만들어 줘</translation>
 <translation id="1123753900084781868">현재 실시간 자막을 사용할 수 없습니다.</translation>
@@ -2848,7 +2847,6 @@
 <translation id="5718326209176373202">텍스트 주석 추가</translation>
 <translation id="5718601519531438273">여권, 운전면허증 등의 정보가 포함됩니다.</translation>
 <translation id="5720705177508910913">현재 사용자</translation>
-<translation id="5721147290164931316">스캔하여 휴대전화로 로그인</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} 외 1개}other{{website_1}, {website_2} 외 {more_count}개}}</translation>
 <translation id="5722778418591961221">목표를 달성하는 데 도움이 되는 홈 피트니스 루틴을 계획해 줘.</translation>
 <translation id="572328651809341494">최근 탭</translation>

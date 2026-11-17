@@ -146,6 +146,7 @@
 <translation id="248676429071089168">पेज खाली हलवण्यासाठी वर स्वाइप करा</translation>
 <translation id="2501278716633472235">परत जा</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> हे इंस्टॉल करा</translation>
+<translation id="2532146950330687938">डिव्हाइस तयार केले जात आहे...</translation>
 <translation id="2538084450874617176">हे <ph name="DEVICE_TYPE" /> कोण वापरत आहे?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> <ph name="NETWORK_ID" /> शी कनेक्ट करण्यात अक्षम आहे. कृपया दुसरे नेटवर्क निवडा किंवा पुन्हा प्रयत्न करा. </translation>
 <translation id="2565214867520763227">स्क्रीन रीडर सुरू करा</translation>
@@ -630,6 +631,7 @@
 <translation id="7666531788977935712">पुढे सुरू ठेवा बटण सुरू केले आहे</translation>
 <translation id="7671139479636735732">तुमच्या कल्पना सहज व्हिजुअलायझ करण्यासाठी राइट-क्लिक करा</translation>
 <translation id="770831926727930011">तुमचा स्थानिक डेटा तुमच्या जुन्या पासवर्डने संरक्षित केलेला आहे. स्थानिक डेटा रिकव्‍हर करण्यासाठी तुमचा जुना पासवर्ड एंटर करा.</translation>
+<translation id="7717014941119698257">डाउनलोड करत आहे: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">अपडेटसाठी आवश्यक: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" सोबत पेअर करत आहे...</translation>
 <translation id="7746045113967198252">मजकुराच्या समावेशासह तुमच्या स्क्रीनवरील आयटम आणखी मोठे किंवा आणखी लहान करा. तुम्ही हे नंतर सेटिंग्ज &gt; डिव्हाइस &gt; डिस्प्ले मध्येदेखील पाहू शकता.</translation>

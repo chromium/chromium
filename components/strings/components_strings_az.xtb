@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> üçün icazə seçin</translation>
 <translation id="1113000785583998331">IBAN yadda saxlanılsın?</translation>
 <translation id="1113869188872983271">&amp;Yerbəyer etməyi ləğv edin</translation>
-<translation id="111897705806685148">Başqa cihazın giriş açarından istifadə edin</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab, sonra Enter düyməsinə basaraq Google Hesabında yadda saxladığınız Chrome məlumatlarını idarə edin</translation>
 <translation id="1121990216147052230">Mənim üçün görüləcək işlər siyahısı yarat</translation>
 <translation id="1123753900084781868">Canlı Altyazı hazırda əlçatan deyil</translation>
@@ -1305,6 +1304,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3196374699162453920">Rezervasiya kodu</translation>
 <translation id="3196902089458890316">Daha yaxşı cavablar üçün müvafiq tablar həmişə paylaşılsın?</translation>
 <translation id="3197136577151645743">Saytlar bu cihazdan nə vaxt aktiv istifadə etdiyinizi öyrənmək üçün icazə istəyə bilər</translation>
+<translation id="3201749168732432347">Təkliflər və loyallıq kartları</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında sinxronlaşdırdığınız məlumatları idarə etmək üçün Tab, sonra Enter düyməsinə basın</translation>
 <translation id="3203025201812691413">URL boş ola bilməz</translation>
 <translation id="320323717674993345">Ödənişi ləğv edin</translation>
@@ -2843,7 +2843,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5718326209176373202">Mətn annotasiyaları əlavə edin</translation>
 <translation id="5718601519531438273">Pasportlar və sürücülük vəsiqələri kimi məlumatlar daxildir</translation>
 <translation id="5720705177508910913">Cari istifadəçi</translation>
-<translation id="5721147290164931316">Telefonunuzla daxil olmaq üçün skan edin</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} və digər 1 veb-sayt}other{{website_1}, {website_2} və digər {more_count} icazə}}</translation>
 <translation id="5722778418591961221">Hədəflərimə çatmağa kömək edən evdə fitnes rejimi planlaşdır</translation>
 <translation id="572328651809341494">Son panellər</translation>

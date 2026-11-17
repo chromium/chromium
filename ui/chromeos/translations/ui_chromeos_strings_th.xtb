@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
 <translation id="162175252992296058">โปรตุเกสด้วยแป้นพิมพ์สหรัฐฯ แบบสากล</translation>
 <translation id="1629521517399325891">ใช้ใบรับรองของผู้ใช้กับการตรวจสอบสิทธิ์เครือข่ายไม่ได้</translation>
+<translation id="1639239467298939599">กำลังโหลด</translation>
 <translation id="1641780993263690097">พินอินภาษาจีน</translation>
 <translation id="164969095109328410">อุปกรณ์ Chrome</translation>
 <translation id="1661207570040737402">คุณใช้พื้นที่เก็บข้อมูลใน Google Workspace ของไดรฟ์ที่แชร์หมดแล้ว</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">การซิงค์ไฟล์ปิดอยู่</translation>
 <translation id="2820957248982571256">กำลังสแกน...</translation>
 <translation id="2830077785865012357">จีน (Zhuyin)</translation>
+<translation id="2838379631617906747">การติดตั้ง</translation>
 <translation id="2843806747483486897">เปลี่ยนค่าเริ่มต้น...</translation>
 <translation id="2873951654529031587">ถังขยะ</translation>
 <translation id="2887314858867008269">Colemak แบบสหรัฐอเมริกา</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - พอร์ต</translation>
 <translation id="8656407365183407932">ต้องนําไฟล์ออฟไลน์ออก</translation>
 <translation id="8656768832129462377">ไม่ต้องตรวจสอบ</translation>
+<translation id="8662978096466608964">Chrome ไม่สามารถตั้งวอลเปเปอร์</translation>
 <translation id="8688591111840995413">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="8698464937041809063">ภาพวาดของ Google</translation>
 <translation id="8698877009525468705">ไฟล์นี้เป็นความลับและอยู่ภายใต้ข้อจำกัดตามนโยบายของผู้ดูแลระบบ</translation>

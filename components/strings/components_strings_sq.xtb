@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Përzgjidh autorizimin për <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Të ruhet numri IBAN?</translation>
 <translation id="1113869188872983271">&amp;Zhbëj rirenditjen</translation>
-<translation id="111897705806685148">Përdor çelësin e kalimit nga një pajisje tjetër</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab" dhe më pas "Enter" për të menaxhuar se çfarë informacionesh të Chrome ruhen në "Llogarinë tënde të Google"</translation>
 <translation id="1121990216147052230">Më bëj një listë të gjërave për të bërë</translation>
 <translation id="1123753900084781868">"Titrat në çast" nuk ofrohen për momentin</translation>
@@ -1307,6 +1306,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3196374699162453920">Kodi i rezervimit</translation>
 <translation id="3196902089458890316">Të ndahen gjithmonë skedat përkatëse për përgjigje më të mira?</translation>
 <translation id="3197136577151645743">Mund të kërkojë të dijë kur e përdor pajisjen tënde në mënyrë aktive</translation>
+<translation id="3201749168732432347">Ofertat dhe kartat e besnikërisë</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar se çfarë informacionesh sinkronizon ti te cilësimet e Chrome</translation>
 <translation id="3203025201812691413">URL-ja nuk mund të jetë bosh</translation>
 <translation id="320323717674993345">Anulo pagesën</translation>
@@ -2310,6 +2310,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4850886885716139402">Pamja</translation>
 <translation id="4854853140771946034">Krijo shpejt një shënim të ri në Google Keep</translation>
 <translation id="4855395119669662878">Administratori yt do të fillojë ngarkimin e skedarëve të tu në <ph name="CLOUD_PROVIDER" /> më <ph name="DATE_TIME" />. Mbaje pajisjen të lidhur derisa ngarkimi i skedarit të përfundojë. Gjatë ngarkimit, do të mund të lexosh vetëm skedarët lokalë.</translation>
+<translation id="4856655096879441213">Ruaj informacionet e tua te "<ph name="GOOGLE_WALLET_TITLE" />" dhe bëji gjërat më shpejt, si p.sh. plotësimin e formularëve nëpër produktet e Google. Mund të kontrollosh <ph name="HOW_INFO_IS_USED_LINK" /> te cilësimet e dokumentit dixhital me të dhëna personale për <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Po verifikon kodin...</translation>
 <translation id="4860260582253463350">Për të vazhduar në YouTube, duhet të sigurohemi që je ti. Do të marrësh cilësimet që prindi ose kujdestari yt ka konfiguruar në Family Link.</translation>
 <translation id="4861514638281352187">Shto numrin e kompensimit në mënyrë të sigurt</translation>
@@ -2846,7 +2847,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5718326209176373202">Shto shënime me tekst</translation>
 <translation id="5718601519531438273">Përfshin informacione si pasaportat dhe lejet e drejtimit</translation>
 <translation id="5720705177508910913">Përdoruesi aktual</translation>
-<translation id="5721147290164931316">Skano për t'u identifikuar me telefonin tënd</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} dhe 1 tjetër}other{{website_1}, {website_2} dhe {more_count} të tjera}}</translation>
 <translation id="5722778418591961221">Planifiko një rutinë fitnesi në shtëpi që më ndihmon të arrij objektivat e mi</translation>
 <translation id="572328651809341494">Skedat e fundit</translation>

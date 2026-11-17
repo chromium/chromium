@@ -145,6 +145,7 @@
 <translation id="248676429071089168">Sayfayı aşağı taşımak için yukarı kaydırın</translation>
 <translation id="2501278716633472235">Geri dön</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> işletim sistemini yükle</translation>
+<translation id="2532146950330687938">Cihaz hazırlanıyor...</translation>
 <translation id="2538084450874617176">Bu <ph name="DEVICE_TYPE" /> cihazını kimler kullanacak?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" />, <ph name="NETWORK_ID" /> ağına bağlanamadı. Lütfen başka bir ağ seçin veya tekrar deneyin.</translation>
 <translation id="2565214867520763227">Ekran okuyucuyu açın</translation>
@@ -622,6 +623,7 @@
 <translation id="7666531788977935712">Devam düğmesi etkinleştirildi</translation>
 <translation id="7671139479636735732">Fikirlerinizi kolayca görselleştirmek için sağ tıklayın</translation>
 <translation id="770831926727930011">Yerel verileriniz eski şifrenizle korunuyor. Yerel verileri kurtarmak için eski şifrenizi girin.</translation>
+<translation id="7717014941119698257">İndiriliyor: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Güncelleme için gereken: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" ile eşleniyor...</translation>
 <translation id="7746045113967198252">Metin de dahil olmak üzere ekranınızdaki öğeleri büyütün veya küçültün. Bu ayarlara daha sonra Ayarlar &gt; Cihaz &gt; Ekranlar bölümünden de ulaşabilirsiniz.</translation>

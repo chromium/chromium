@@ -146,6 +146,7 @@
 <translation id="248676429071089168">التمرير سريعًا للأعلى لتحريك الصفحة للأسفل</translation>
 <translation id="2501278716633472235">الرجوع</translation>
 <translation id="252418934079508528">تثبيت نظام التشغيل <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">جارٍ تحضير الجهاز…</translation>
 <translation id="2538084450874617176">مَن يستخدم <ph name="DEVICE_TYPE" />؟</translation>
 <translation id="2553340429761841190">تعذر على <ph name="PRODUCT_NAME" /> الاتصال بـ <ph name="NETWORK_ID" />. يُرجى اختيار شبكة أخرى أو إعادة المحاولة.</translation>
 <translation id="2565214867520763227">تفعيل قارئ الشاشة</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">تم تفعيل زر "متابعة".</translation>
 <translation id="7671139479636735732">يمكنك النقر بزر الماوس الأيمن لتحويل أفكارك إلى صور بسهولة</translation>
 <translation id="770831926727930011">البيانات المخزَّنة على جهازك محمية باستخدام كلمة المرور القديمة. يجب إدخال هذه الكلمة لاسترداد تلك البيانات.</translation>
+<translation id="7717014941119698257">تنزيل: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">المساحة اللازمة لإجراء التحديث: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">جارٍ الإقران مع "<ph name="DEVICE_NAME" />" ...</translation>
 <translation id="7746045113967198252">تتيح لك هذه الميزة تكبير حجم العناصر المعروضة على شاشتك أو تصغيرها، بما في ذلك النصوص. يمكنك أيضًا العثور على هذه الميزة لاحقًا في الإعدادات &gt; الجهاز &gt; الشاشات.</translation>

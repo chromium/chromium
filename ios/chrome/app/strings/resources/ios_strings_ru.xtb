@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Не удалось войти в аккаунт. Повторите попытку.</translation>
 <translation id="2975761176769946178">Необходимо указать URL.</translation>
 <translation id="297667759942911166">Совместная работа в группах вкладок</translation>
+<translation id="2986080119218811913">Вернуться на страницу "<ph name="ACTOR_NAME" />"</translation>
 <translation id="298696743524648170">Чтобы использовать Gemini в Chrome, войдите в браузер с аккаунтом Google.</translation>
 <translation id="2987670534697681860">Чтобы получить доступ ко всем паролям на этом устройстве, подтвердите личность.</translation>
 <translation id="2989523299700148168">Недавние</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />. Аккаунтом управляет ваша организация.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Цвет группы вкладок: <ph name="COLOR" /></translation>
+<translation id="500126251490468002">В Google Менеджере паролей нет пароля для этого сайта. Вернитесь на страницу "<ph name="ACTOR_NAME" />", чтобы войти, или добавьте пароль в Google Менеджер паролей.</translation>
 <translation id="5005498671520578047">Копировать пароль</translation>
 <translation id="5007392906805964215">Посмотреть</translation>
 <translation id="5009127379503001909">Продолжить работу</translation>

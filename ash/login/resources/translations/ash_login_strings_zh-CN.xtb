@@ -146,6 +146,7 @@
 <translation id="248676429071089168">向上滑动手指可使页面向下移动</translation>
 <translation id="2501278716633472235">返回</translation>
 <translation id="252418934079508528">安装 <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">正在准备设备…</translation>
 <translation id="2538084450874617176">谁在使用此 <ph name="DEVICE_TYPE" />？</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" />无法连接到<ph name="NETWORK_ID" />。请选择其他网络或重试。</translation>
 <translation id="2565214867520763227">开启屏幕阅读器</translation>
@@ -628,6 +629,7 @@
 <translation id="7666531788977935712">已启用“继续”按钮</translation>
 <translation id="7671139479636735732">右键点击即可轻松直观呈现您的想法</translation>
 <translation id="770831926727930011">您的本地数据受旧密码保护。请输入您的旧密码以恢复本地数据。</translation>
+<translation id="7717014941119698257">正在下载：<ph name="STATUS" /></translation>
 <translation id="7722040605881499779">要更新，所需空间为：<ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">正在与“<ph name="DEVICE_NAME" />”配对…</translation>
 <translation id="7746045113967198252">放大或缩小屏幕上的内容（包括文字）。日后还可在“设置”&gt;“设备”&gt;“显示”下找到此设置。</translation>

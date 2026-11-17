@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">Portugisisk med amerikansk internationalt tastatur</translation>
 <translation id="1629521517399325891">Brugercertifikatet kan ikke anvendes til netværksgodkendelse.</translation>
+<translation id="1639239467298939599">Indlæser</translation>
 <translation id="1641780993263690097">Kinesisk pinyin</translation>
 <translation id="164969095109328410">Chrome-enhed</translation>
 <translation id="1661207570040737402">Du har brugt al din Google Workspace-lagerplads for fællesdrevet.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">Filsynkronisering er deaktiveret</translation>
 <translation id="2820957248982571256">Scanner…</translation>
 <translation id="2830077785865012357">Kinesisk zhuyin</translation>
+<translation id="2838379631617906747">Installerer</translation>
 <translation id="2843806747483486897">Skift standardindstillinger...</translation>
 <translation id="2873951654529031587">Papirkurv</translation>
 <translation id="2887314858867008269">Amerikansk Colemak</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
 <translation id="8656407365183407932">Det var nødvendigt at fjerne dine offlinefiler</translation>
 <translation id="8656768832129462377">Undlad at kontrollere</translation>
+<translation id="8662978096466608964">Chrome kan ikke indstille baggrunden.</translation>
 <translation id="8688591111840995413">Forkert adgangskode</translation>
 <translation id="8698464937041809063">Google-tegning</translation>
 <translation id="8698877009525468705">Denne fil er fortrolig og underlagt begrænsninger i henhold til administratorpolitikken.</translation>

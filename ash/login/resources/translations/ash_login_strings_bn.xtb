@@ -146,6 +146,7 @@
 <translation id="248676429071089168">পৃষ্ঠা নিচের দিকে নামাতে উপরের দিকে সোয়াইপ করুন</translation>
 <translation id="2501278716633472235">ফিরে যান</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> ইনস্টল করুন</translation>
+<translation id="2532146950330687938">ডিভাইস রেডি করা হচ্ছে...</translation>
 <translation id="2538084450874617176">এই <ph name="DEVICE_TYPE" /> কে ব্যবহার করছেন?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" />, <ph name="NETWORK_ID" /> এর সাথে সংযোগ স্থাপনে অক্ষম ছিল৷ দয়া করে অন্য একটি নেটওয়ার্ক বেছে নিন বা আবার চেষ্টা করুন৷</translation>
 <translation id="2565214867520763227">স্ক্রিন রিডার চালু করুন</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">'এগিয়ে যান' বোতাম চালু করা হয়েছে</translation>
 <translation id="7671139479636735732">আপনার ধারনা সহজে কল্পনা করতে ডানদিকের বোতামে ক্লিক করুন</translation>
 <translation id="770831926727930011">আপনার স্থানীয় ডেটা পুরনো পাসওয়ার্ড দ্বারা সুরক্ষিত। স্থানীয় ডেটা আগের অবস্থায় ফেরানোর জন্য পুরনো পাসওয়ার্ড লিখুন।</translation>
+<translation id="7717014941119698257">ডাউনলোড হচ্ছে: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">আপডেটের জন্য প্রয়োজন: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />"-এর সাথে পেয়ার করা হয়েছে ...</translation>
 <translation id="7746045113967198252">টেক্সট সহ বিভিন্ন আইটেম আপনার স্ক্রিনে বড় অথবা ছোট করুন। এছাড়াও, আপনি পরে এটিকে 'সেটিংস &gt; ডিভাইস &gt; ডিসপ্লে' বিকল্পে খুঁজে পাবেন।</translation>

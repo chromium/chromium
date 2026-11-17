@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Myndavél</translation>
 <translation id="162175252992296058">Portúgalska með bandarísku alþjóðlegu lyklaborði</translation>
 <translation id="1629521517399325891">Notandavottorð er ekki í boði fyrir netauðkenningu.</translation>
+<translation id="1639239467298939599">Hleður</translation>
 <translation id="1641780993263690097">Kínverska Pinyin</translation>
 <translation id="164969095109328410">Chrome tæki</translation>
 <translation id="1661207570040737402">Þú hefur fyllt geymslurýmið þitt á samnýttu drifi Google Workspace.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">Slökkt á samstillingu skráa</translation>
 <translation id="2820957248982571256">Leitar...</translation>
 <translation id="2830077785865012357">Kínverska Zhuyin</translation>
+<translation id="2838379631617906747">Setur upp</translation>
 <translation id="2843806747483486897">Breyta sjálfgefinni aðgerð...</translation>
 <translation id="2873951654529031587">Rusl</translation>
 <translation id="2887314858867008269">Bandarískt Colemak</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – gátt</translation>
 <translation id="8656407365183407932">Fjarlægja þurfti skrárnar þínar sem eru ekki á netinu</translation>
 <translation id="8656768832129462377">Ekki athuga</translation>
+<translation id="8662978096466608964">Chrome getur ekki valið veggfóður.</translation>
 <translation id="8688591111840995413">Rangt aðgangsorð</translation>
 <translation id="8698464937041809063">Google teikning</translation>
 <translation id="8698877009525468705">Skráin inniheldur trúnaðarmál og er háð takmörkunum stjórnandareglu.</translation>

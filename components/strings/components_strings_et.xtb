@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Valige luba üksuse <ph name="PERMISSION_NAME" /> jaoks</translation>
 <translation id="1113000785583998331">Kas salvestada IBAN?</translation>
 <translation id="1113869188872983271">&amp;Võta korrastamine tagasi</translation>
-<translation id="111897705806685148">Kasuta teisest seadmest pärit pääsuvõtit</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage tabulaatorit ja seejärel sisestusklahvi, et hallata, millist Chrome’i teavet oma Google’i kontole salvestate</translation>
 <translation id="1121990216147052230">Koosta mulle ülesannete loend</translation>
 <translation id="1123753900084781868">Reaalajas subtiitrid ei ole praegu saadaval</translation>
@@ -1307,6 +1306,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3196374699162453920">Broneeringu kood</translation>
 <translation id="3196902089458890316">Kas jagada paremate vastuste saamiseks alati asjakohaseid vahelehti?</translation>
 <translation id="3197136577151645743">Saab küsida luba selle teadmiseks, millal seadet aktiivselt kasutate</translation>
+<translation id="3201749168732432347">Pakkumised ja kliendikaardid</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage Chrome'i seadetes sünkroonitava teabe haldamiseks tabulaatorit ja seejärel sisestusklahvi</translation>
 <translation id="3203025201812691413">URL ei tohi olla tühi</translation>
 <translation id="320323717674993345">Tühista makse</translation>
@@ -2310,6 +2310,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4850886885716139402">Kuva</translation>
 <translation id="4854853140771946034">Rakenduses Google Keep kiirelt uue märkuse loomine</translation>
 <translation id="4855395119669662878">Administraator alustab teie failide üleslaadimist teenusesse <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" />. Säilitage seadme ühendus failide üleslaadimise lõpuni. Üleslaadimise ajal saate avada ainult kohalikke faile.</translation>
+<translation id="4856655096879441213">Salvestage oma teave teenuses <ph name="GOOGLE_WALLET_TITLE" />, et Google’i teenustes kiiremini tegutseda, näiteks vorme täita. Seda, <ph name="HOW_INFO_IS_USED_LINK" />, saate hallata konto <ph name="ACCOUNT" /> privaatse pääsme seadetes.</translation>
 <translation id="485902285759009870">Koodi kinnitamine …</translation>
 <translation id="4860260582253463350">YouTube'i avamiseks peame veenduma, et see oled tõepoolest sina. Kasutad seadeid, mille sinu vanem või eestkostja Family Linkis seadistas.</translation>
 <translation id="4861514638281352187">Hüvitisnumbri turvaliselt lisamine</translation>
@@ -2846,7 +2847,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5718326209176373202">Tekstmärkmete lisamine</translation>
 <translation id="5718601519531438273">Hõlmab sellist teavet nagu passid ja juhiload.</translation>
 <translation id="5720705177508910913">Praegune kasutaja</translation>
-<translation id="5721147290164931316">Skannige, et oma telefoniga sisse logida</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ja veel üks}other{{website_1}, {website_2} ja veel {more_count}}}</translation>
 <translation id="5722778418591961221">Koosta kodune treeningkava, mis aitab mul oma eesmärke saavutada</translation>
 <translation id="572328651809341494">Hiljutised vahelehed</translation>

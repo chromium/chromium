@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />-д зөвшөөрөл сонгох</translation>
 <translation id="1113000785583998331">Олон улсын банк акаунтны дугаарыг хадгалах уу?</translation>
 <translation id="1113869188872983271">&amp; Дахин эрэмбэлэх үйлдлийг буцаах</translation>
-<translation id="111897705806685148">Өөр төхөөрөмжөөс нэвтрэх түлхүүр ашиглах</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Бүртгэлдээ Chrome-н ямар мэдээллийг хадгалахаа удирдахын тулд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="1121990216147052230">Надад хийх зүйлсийн жагсаалт гаргаж өгнө үү</translation>
 <translation id="1123753900084781868">Шууд тайлбар яг одоо боломжгүй байна</translation>
@@ -2849,7 +2848,6 @@
 <translation id="5718326209176373202">Текстэн тэмдэглэгээ нэмэх</translation>
 <translation id="5718601519531438273">Паспорт, жолооны үнэмлэх зэрэг мэдээлэл багтана</translation>
 <translation id="5720705177508910913">Одоогийн хэрэглэгч</translation>
-<translation id="5721147290164931316">Утсаараа нэвтрэхийн тулд скан хийгээрэй</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} болон өөр 1}other{{website_1}, {website_2} болон өөр {more_count}}}</translation>
 <translation id="5722778418591961221">Зорилгодоо хүрэхэд минь туслах гэрийн дасгалын төлөвлөгөө гаргаж өгнө үү</translation>
 <translation id="572328651809341494">Саяхан нээсэн табууд</translation>

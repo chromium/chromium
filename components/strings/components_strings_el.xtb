@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Επιλέξτε άδεια για <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Αποθήκευση IBAN;</translation>
 <translation id="1113869188872983271">&amp;Αναίρεση αναδιάταξης</translation>
-<translation id="111897705806685148">Χρήση κλειδιού πρόσβασης από άλλη συσκευή</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και μετά Enter, για να διαχειριστείτε τις πληροφορίες του Chrome που αποθηκεύετε στον Λογαριασμό σας Google</translation>
 <translation id="1121990216147052230">Φτιάξε μια λίστα με τις εκκρεμότητές μου</translation>
 <translation id="1123753900084781868">Οι Ζωντανοί υπότιτλοι δεν είναι διαθέσιμοι αυτήν τη στιγμή.</translation>
@@ -1307,6 +1306,7 @@
 <translation id="3196374699162453920">Κωδικός κράτησης</translation>
 <translation id="3196902089458890316">Να γίνεται πάντα κοινή χρήση των σχετικών καρτελών για καλύτερες απαντήσεις;</translation>
 <translation id="3197136577151645743">Μπορεί να ζητά να γνωρίζει πότε χρησιμοποιείτε ενεργά αυτήν τη συσκευή.</translation>
+<translation id="3201749168732432347">Προσφορές και κάρτες επιβράβευσης αφοσιωμένων πελατών</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και μετά Enter για να διαχειριστείτε τις πληροφορίες που συγχρονίζετε από τις ρυθμίσεις Chrome</translation>
 <translation id="3203025201812691413">Το URL δεν μπορεί να είναι κενό</translation>
 <translation id="320323717674993345">Ακύρωση πληρωμής</translation>
@@ -2848,7 +2848,6 @@
 <translation id="5718326209176373202">Προσθήκη σχολιασμών κειμένου</translation>
 <translation id="5718601519531438273">Περιλαμβάνει πληροφορίες, όπως διαβατήρια και διπλώματα οδήγησης</translation>
 <translation id="5720705177508910913">Τρέχων χρήστης</translation>
-<translation id="5721147290164931316">Σάρωση για σύνδεση με το τηλέφωνό σας</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} και 1 ακόμα}other{{website_1}, {website_2} και {more_count} ακόμα}}</translation>
 <translation id="5722778418591961221">Σχεδίασε μια ρουτίνα άσκησης φυσικής κατάστασης για το σπίτι, που θα με βοηθήσει να πετύχω τους στόχους μου</translation>
 <translation id="572328651809341494">Πρόσφατες καρτέλες</translation>

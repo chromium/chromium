@@ -146,6 +146,7 @@
 <translation id="248676429071089168">पेज को नीचे ले जाने के लिए, ऊपर की ओर स्वाइप करें</translation>
 <translation id="2501278716633472235">वापस जाएं</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> को इंस्टॉल करें</translation>
+<translation id="2532146950330687938">डिवाइस तैयार किया जा रहा है...</translation>
 <translation id="2538084450874617176"><ph name="DEVICE_TYPE" /> को कौन इस्तेमाल कर रहा है?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" />, <ph name="NETWORK_ID" /> से कनेक्‍ट करने में असमर्थ था. कृपया कोई अन्‍य नेटवर्क चुनें या फिर से प्रयास करें.</translation>
 <translation id="2565214867520763227">स्क्रीन रीडर चालू करें</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">'जारी रखें' बटन को चालू किया गया</translation>
 <translation id="7671139479636735732">अपने आइडिया को इमेज में बदलने के लिए, राइट क्लिक करें</translation>
 <translation id="770831926727930011">आपके पुराने पासवर्ड का इस्तेमाल करके, लोकल डेटा को सुरक्षित रखा गया है. लोकल डेटा वापस पाने के लिए, अपना पुराना पासवर्ड डालें.</translation>
+<translation id="7717014941119698257">डाउनलोड हो रहा है: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">अपडेट करना ज़रूरी है: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" से जोड़ा जा रहा है ...</translation>
 <translation id="7746045113967198252">टेक्स्ट के साथ-साथ आपकी स्क्रीन पर मौजूद आइटम को बड़ा या छोटा करता है. इसे बाद में, सेटिंग &gt; डिवाइस &gt; डिसप्ले पर भी देखा जा सकता है.</translation>

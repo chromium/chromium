@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Pilih izin untuk <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Simpan IBAN?</translation>
 <translation id="1113869188872983271">&amp;Urungkan pengaturan ulang</translation>
-<translation id="111897705806685148">Gunakan Kunci Sandi dari Perangkat Lain</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola info Chrome yang Anda simpan di Akun Google Anda</translation>
 <translation id="1121990216147052230">Buatkan daftar tugas</translation>
 <translation id="1123753900084781868">Teks Otomatis tidak tersedia untuk saat ini</translation>
@@ -1308,6 +1307,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3196374699162453920">Kode pemesanan</translation>
 <translation id="3196902089458890316">Selalu bagikan tab yang relevan untuk mendapatkan respons yang lebih baik?</translation>
 <translation id="3197136577151645743">Dapat meminta untuk mengetahui saat Anda aktif menggunakan perangkat ini</translation>
+<translation id="3201749168732432347">Penawaran dan kartu loyalitas</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola info apa saja yang Anda sinkronkan di setelan Chrome</translation>
 <translation id="3203025201812691413">URL harus diisi</translation>
 <translation id="320323717674993345">Batalkan Pembayaran</translation>
@@ -2310,6 +2310,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="4854853140771946034">Buat catatan baru di Google Keep dengan cepat</translation>
 <translation id="4855395119669662878">Administrator akan mulai mengupload file Anda ke <ph name="CLOUD_PROVIDER" /> pada <ph name="DATE_TIME" />. Tetap hubungkan perangkat Anda hingga proses upload file selesai. Selama proses upload, Anda hanya dapat membaca file lokal.</translation>
+<translation id="4856655096879441213">Simpan info Anda di <ph name="GOOGLE_WALLET_TITLE" /> dan selesaikan berbagai aktivitas lebih cepat, seperti mengisi formulir di berbagai produk Google. Anda dapat mengontrol <ph name="HOW_INFO_IS_USED_LINK" /> di setelan kartu pribadi Anda untuk <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Memverifikasi kode ...</translation>
 <translation id="4860260582253463350">Untuk melanjutkan ke YouTube, kami perlu memastikan bahwa ini memang dirimu. Kamu akan mendapatkan setelan yang disiapkan orang tua atau walimu di Family Link.</translation>
 <translation id="4861514638281352187">Tambahkan redress number dengan aman</translation>
@@ -2846,7 +2847,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5718326209176373202">Tambahkan anotasi teks</translation>
 <translation id="5718601519531438273">Termasuk informasi seperti paspor dan surat izin mengemudi</translation>
 <translation id="5720705177508910913">Pengguna saat ini</translation>
-<translation id="5721147290164931316">Pindai untuk Login dengan Ponsel Anda</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2}, dan 1 lainnya}other{{website_1}, {website_2}, dan {more_count} lainnya}}</translation>
 <translation id="5722778418591961221">Buatkan rencana rutinitas olahraga di rumah untuk membantu saya mencapai target</translation>
 <translation id="572328651809341494">Tab terbaru</translation>

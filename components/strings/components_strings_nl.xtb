@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Rechten selecteren voor <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">IBAN opslaan?</translation>
 <translation id="1113869188872983271">&amp;Volgorde wijzigen ongedaan maken</translation>
-<translation id="111897705806685148">Toegangssleutel van een ander apparaat gebruiken</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om te beheren welke Chrome-informatie je opslaat in je Google-account</translation>
 <translation id="1121990216147052230">Maak een takenlijst voor me</translation>
 <translation id="1123753900084781868">Live ondertiteling is momenteel niet beschikbaar</translation>
@@ -1304,6 +1303,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3196374699162453920">Boekingscode</translation>
 <translation id="3196902089458890316">Altijd relevante tabbladen delen voor betere reacties?</translation>
 <translation id="3197136577151645743">Kan vragen of deze site mag weten wanneer je dit apparaat actief gebruikt</translation>
+<translation id="3201749168732432347">Aanbiedingen en klantenkaarten</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om de informatie die je synchroniseert te beheren in de Chrome-instellingen</translation>
 <translation id="3203025201812691413">De URL mag niet leeg zijn</translation>
 <translation id="320323717674993345">Betaling annuleren</translation>
@@ -2841,7 +2841,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5718326209176373202">Tekstannotaties toevoegen</translation>
 <translation id="5718601519531438273">Bevat informatie zoals paspoorten en rijbewijzen</translation>
 <translation id="5720705177508910913">Huidige gebruiker</translation>
-<translation id="5721147290164931316">Scan om in te loggen met je telefoon</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} en nog 1}other{{website_1}, {website_2} en nog {more_count}}}</translation>
 <translation id="5722778418591961221">Plan een fitnessroutine voor thuis waarmee ik mijn doelen kan bereiken</translation>
 <translation id="572328651809341494">Recente tabbladen</translation>

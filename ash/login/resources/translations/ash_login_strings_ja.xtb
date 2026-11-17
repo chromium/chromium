@@ -146,6 +146,7 @@
 <translation id="248676429071089168">上にスワイプすると、ページ下部に移動します</translation>
 <translation id="2501278716633472235">戻る</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> をインストール</translation>
+<translation id="2532146950330687938">デバイスを準備しています...</translation>
 <translation id="2538084450874617176">この <ph name="DEVICE_TYPE" /> はどなたが使用しますか？</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> は <ph name="NETWORK_ID" /> に接続できませんでした。別のネットワークを選択するか、もう一度お試しください。</translation>
 <translation id="2565214867520763227">スクリーン リーダーをオンにする</translation>
@@ -630,6 +631,7 @@
 <translation id="7666531788977935712">続行ボタンは有効です</translation>
 <translation id="7671139479636735732">右クリックでアイデアを簡単に視覚化</translation>
 <translation id="770831926727930011">ローカルデータは以前のパスワードで保護されています。以前のパスワードを入力するとローカルデータを復元できます。</translation>
+<translation id="7717014941119698257">ダウンロード: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">更新に必要な空き容量: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">「<ph name="DEVICE_NAME" />」とペア設定しています…</translation>
 <translation id="7746045113967198252">画面上の項目（テキストなど）のサイズを変更します。この操作は [設定] &gt; [デバイス] &gt; [ディスプレイ] でも行うことができます。</translation>

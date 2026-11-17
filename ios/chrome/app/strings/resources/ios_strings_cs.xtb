@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Přihlášení se nezdařilo. Zkuste to znovu později.</translation>
 <translation id="2975761176769946178">Adresa URL je povinná</translation>
 <translation id="297667759942911166">Spolupracujte ve skupinách karet</translation>
+<translation id="2986080119218811913">Zpět do aplikace <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Pokud chcete používat Gemini v Chromu, přihlaste se do Chromu pomocí svého účtu Google</translation>
 <translation id="2987670534697681860">Pokud na tomhle zařízení chcete mít přístup ke všem svým heslům, ověřte svou totožnost.</translation>
 <translation id="2989523299700148168">Nedávno navštívené</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, spravováno vaší organizací.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Barva skupiny karet: <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Správce hesel Google nemá pro tento web žádné heslo. Vraťte se na web <ph name="ACTOR_NAME" /> a přihlaste se nebo přidejte heslo do Správce hesel Google.</translation>
 <translation id="5005498671520578047">Kopírování hesla</translation>
 <translation id="5007392906805964215">Zkontrolovat</translation>
 <translation id="5009127379503001909">Pokračovat v procházení</translation>

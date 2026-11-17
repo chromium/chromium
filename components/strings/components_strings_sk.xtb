@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Vyberte povolenie pre <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Chcete uložiť IBAN?</translation>
 <translation id="1113869188872983271">&amp;Vrátiť späť zmenu poradia</translation>
-<translation id="111897705806685148">Použiť prístupový kľúč z iného zariadenia</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, stlačením klávesov Tab a potom Enter spravujte, ktoré informácie z Chromu sa ukladajú vo vašom účte Google</translation>
 <translation id="1121990216147052230">Vytvor mi zoznam úloh</translation>
 <translation id="1123753900084781868">Živý prepis momentálne nie je k dispozícii</translation>
@@ -1304,6 +1303,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="3196374699162453920">Kód rezervácie</translation>
 <translation id="3196902089458890316">Chcete vždy zdieľať relevantné karty, aby ste dostávali lepšie odpovede?</translation>
 <translation id="3197136577151645743">Môže žiadať o povolenie zistiť, kedy aktívne používate toto zariadenie</translation>
+<translation id="3201749168732432347">Ponuky a vernostné karty</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter môžete v nastaveniach Chromu spravovať, aké údaje sa synchronizujú</translation>
 <translation id="3203025201812691413">Webová adresa nemôže byť prázdna</translation>
 <translation id="320323717674993345">Zrušiť platbu</translation>
@@ -2843,7 +2843,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="5718326209176373202">Pridať textové poznámky</translation>
 <translation id="5718601519531438273">Zahŕňa informácie, ako sú pasy a vodičské preukazy</translation>
 <translation id="5720705177508910913">Aktuálny používateľ</translation>
-<translation id="5721147290164931316">Naskenujte a prihláste sa telefónom</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} a 1 ďalší web}few{{website_1}, {website_2} a {more_count} ďalšie weby}many{{website_1}, {website_2}, and {more_count} more}other{{website_1}, {website_2} a {more_count} ďalších webov}}</translation>
 <translation id="5722778418591961221">Naplánuj mi domáce cvičenie, ktoré mi pomôže dosiahnuť moje ciele</translation>
 <translation id="572328651809341494">Nedávne karty</translation>

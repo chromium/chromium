@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="162175252992296058">葡萄牙文搭配美式國際鍵盤</translation>
 <translation id="1629521517399325891">使用者憑證不適用於網路驗證。</translation>
+<translation id="1639239467298939599">載入中</translation>
 <translation id="1641780993263690097">中文 (拼音)</translation>
 <translation id="164969095109328410">Chrome 裝置</translation>
 <translation id="1661207570040737402">Google Workspace 共用雲端硬碟儲存空間已用盡。</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">檔案同步處理功能已關閉</translation>
 <translation id="2820957248982571256">掃描中...</translation>
 <translation id="2830077785865012357">中文 (注音)</translation>
+<translation id="2838379631617906747">安裝中</translation>
 <translation id="2843806747483486897">變更預設值...</translation>
 <translation id="2873951654529031587">垃圾桶</translation>
 <translation id="2887314858867008269">Colemak 美式配置</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - 連接埠</translation>
 <translation id="8656407365183407932">必須移除離線檔案</translation>
 <translation id="8656768832129462377">不檢查</translation>
+<translation id="8662978096466608964">Chrome 無法設定桌布。</translation>
 <translation id="8688591111840995413">密碼錯誤</translation>
 <translation id="8698464937041809063">Google 繪圖</translation>
 <translation id="8698877009525468705">這是機密檔案，因此受到管理員政策限制。</translation>

@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">No s'ha pogut iniciar la sessió. Torneu-ho a provar més tard.</translation>
 <translation id="2975761176769946178">Has d'introduir un URL</translation>
 <translation id="297667759942911166">Col·labora en grups de pestanyes</translation>
+<translation id="2986080119218811913">Torna a <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Per utilitzar Gemini a Chrome, inicia la sessió a Chrome amb el teu Compte de Google</translation>
 <translation id="2987670534697681860">Verifica la teva identitat per accedir a totes les teves contrasenyes en aquest dispositiu.</translation>
 <translation id="2989523299700148168">Visitats últimament</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, gestionat per la teva organització.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Grup de pestanyes de color <ph name="COLOR" /></translation>
+<translation id="500126251490468002">El gestor de contrasenyes de Google no té cap contrasenya per a aquest lloc web. Torna a <ph name="ACTOR_NAME" /> per iniciar la sessió o afegeix una contrasenya al gestor de contrasenyes de Google.</translation>
 <translation id="5005498671520578047">Copia la contrasenya</translation>
 <translation id="5007392906805964215">Revisa</translation>
 <translation id="5009127379503001909">Continua navegant</translation>

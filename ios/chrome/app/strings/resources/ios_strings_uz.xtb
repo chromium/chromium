@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Hisobga kirib bo‘lmadi. Keyinroq qayta urinib ko‘ring.</translation>
 <translation id="2975761176769946178">URL manzilini kiriting</translation>
 <translation id="297667759942911166">Varaqlar guruhida birga ishlash</translation>
+<translation id="2986080119218811913"><ph name="ACTOR_NAME" /> sahifasiga qaytish</translation>
 <translation id="298696743524648170">Chrome ichida Gemini imkoniyatlaridan foydalanish uchun Google hisobingiz orqali Chrome'ga kiring</translation>
 <translation id="2987670534697681860">Bu qurilmada barcha parollardan foydalanish uchun shaxsingizni tasdiqlang.</translation>
 <translation id="2989523299700148168">Oxirgi ishlatilganlar</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> hisobi tashkilot boshqaruvida.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Varaqlar guruhi rangi: <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Google Parollar menejerida ushbu sayt uchun parol saqlanmagan. Hisobga kirish uchun <ph name="ACTOR_NAME" /> sahifasiga qayting yoki Google Parollar menejeriga yangi parol qoʻshing.</translation>
 <translation id="5005498671520578047">Parolni nusxalash</translation>
 <translation id="5007392906805964215">Tekshirish</translation>
 <translation id="5009127379503001909">Tanishishda davom etish</translation>

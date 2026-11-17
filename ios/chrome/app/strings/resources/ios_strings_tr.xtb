@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Oturum açılamadı. Daha sonra tekrar deneyin.</translation>
 <translation id="2975761176769946178">URL girilmesi zorunludur</translation>
 <translation id="297667759942911166">Sekme gruplarında ortak çalışma yapın</translation>
+<translation id="2986080119218811913"><ph name="ACTOR_NAME" /> uygulamasına geri dön</translation>
 <translation id="298696743524648170">Chrome'da Gemini'ı kullanmak için Chrome'da Google Hesabınızla oturum açın</translation>
 <translation id="2987670534697681860">Bu cihazda tüm şifrelerinize erişebilmek için kimliğinizi doğrulayın.</translation>
 <translation id="2989523299700148168">Son ziyaret edilenler</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, kuruluşunuz tarafından yönetiliyor.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Sekme grubu rengi <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Google Şifre Yöneticisi'nde bu site için şifre yok. Oturum açmak için <ph name="ACTOR_NAME" /> sitesine geri dönün veya Google Şifre Yöneticisi'ne şifre ekleyin.</translation>
 <translation id="5005498671520578047">Şifreyi kopyalayın</translation>
 <translation id="5007392906805964215">İncele</translation>
 <translation id="5009127379503001909">Göz atmaya devam et</translation>

@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Selecione uma permissão para <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Salvar IBAN?</translation>
 <translation id="1113869188872983271">&amp;Desfazer reordenar</translation>
-<translation id="111897705806685148">Usar a chave de acesso de outro dispositivo</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pressione "Tab" e "Enter" para gerenciar quais informações do Chrome você salva na sua Conta do Google</translation>
 <translation id="1121990216147052230">Crie uma lista de tarefas para mim</translation>
 <translation id="1123753900084781868">A legenda instantânea não está disponível no momento</translation>
@@ -1307,6 +1306,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3196374699162453920">Código da reserva</translation>
 <translation id="3196902089458890316">Sempre compartilhar guias relevantes para receber respostas melhores?</translation>
 <translation id="3197136577151645743">Pode pedir para saber quando você está usando o dispositivo ativamente</translation>
+<translation id="3201749168732432347">Ofertas e cartões fidelidade</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e "Enter" para gerenciar quais informações são sincronizadas nas configurações do Chrome</translation>
 <translation id="3203025201812691413">O URL não pode ficar em branco</translation>
 <translation id="320323717674993345">Cancelar pagamento</translation>
@@ -2310,6 +2310,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4854853140771946034">Criar rapidamente uma nova nota no Google Keep</translation>
 <translation id="4855395119669662878">O administrador vai começar a fazer upload dos seus arquivos para o <ph name="CLOUD_PROVIDER" /> em <ph name="DATE_TIME" />. Mantenha o dispositivo conectado até que o upload do arquivo seja concluído. Durante o upload, só será possível ler arquivos locais.</translation>
+<translation id="4856655096879441213">Salve suas informações na <ph name="GOOGLE_WALLET_TITLE" /> e agilize ações como o preenchimento de formulários em produtos do Google. Você pode controlar <ph name="HOW_INFO_IS_USED_LINK" /> nas configurações de cartão pessoal de <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Confirmando código...</translation>
 <translation id="4860260582253463350">Para continuar no YouTube, precisamos confirmar sua identidade. Vamos usar as configurações que seu familiar ou responsável definiu no Family Link.</translation>
 <translation id="4861514638281352187">Adicionar número de retificação com segurança</translation>
@@ -2846,7 +2847,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5718326209176373202">Adicionar anotações de texto</translation>
 <translation id="5718601519531438273">Inclui informações como passaportes e carteiras de habilitação</translation>
 <translation id="5720705177508910913">Usuário atual</translation>
-<translation id="5721147290164931316">Aponte a câmera para fazer login com o celular</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} e mais 1}one{{website_1}, {website_2} e mais {more_count}}other{{website_1}, {website_2} e mais {more_count}}}</translation>
 <translation id="5722778418591961221">Planeje uma rotina de exercícios em casa que me ajude a atingir meus objetivos</translation>
 <translation id="572328651809341494">Guias recentes</translation>

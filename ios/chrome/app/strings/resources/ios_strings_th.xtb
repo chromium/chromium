@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">ไม่สามารถลงชื่อเข้าใช้ได้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="2975761176769946178">ต้องระบุ URL</translation>
 <translation id="297667759942911166">ทำงานร่วมกันในกลุ่มแท็บ</translation>
+<translation id="2986080119218811913">กลับไปที่ <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">หากต้องการใช้ Gemini ใน Chrome ให้ลงชื่อเข้าใช้ Chrome ด้วยบัญชี Google</translation>
 <translation id="2987670534697681860">โปรดยืนยันว่าเป็นคุณเพื่อเข้าถึงรหัสผ่านทั้งหมดในอุปกรณ์นี้</translation>
 <translation id="2989523299700148168">เข้าชมล่าสุด</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> จัดการโดยองค์กร</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" /> <ph name="AI_TIER" /></translation>
 <translation id="4992255726304765516">สีของกลุ่มแท็บ <ph name="COLOR" /></translation>
+<translation id="500126251490468002">เครื่องมือจัดการรหัสผ่านบน Google ไม่มีรหัสผ่านสำหรับเว็บไซต์นี้ กลับไปที่ <ph name="ACTOR_NAME" /> เพื่อลงชื่อเข้าใช้ หรือเพิ่มรหัสผ่านไปยังเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="5005498671520578047">คัดลอกรหัสผ่าน</translation>
 <translation id="5007392906805964215">ดู</translation>
 <translation id="5009127379503001909">ท่องเว็บต่อ</translation>

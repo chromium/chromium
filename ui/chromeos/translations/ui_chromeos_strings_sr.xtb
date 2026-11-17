@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="162175252992296058">португалски са америчком интернационалном тастатуром</translation>
 <translation id="1629521517399325891">Кориснички сертификат није доступан за потврду идентитета мреже.</translation>
+<translation id="1639239467298939599">Учитава се</translation>
 <translation id="1641780993263690097">кинески пинјин</translation>
 <translation id="164969095109328410">Chrome уређај</translation>
 <translation id="1661207570040737402">Искористили сте сав Google Workspace меморијски простор на дељеном диску.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">Синхронизација фајлова је искључена</translation>
 <translation id="2820957248982571256">Скенира се...</translation>
 <translation id="2830077785865012357">кинески жујин</translation>
+<translation id="2838379631617906747">Инсталира се</translation>
 <translation id="2843806747483486897">Промени подразумевано...</translation>
 <translation id="2873951654529031587">Отпад</translation>
 <translation id="2887314858867008269">америчка Colemak</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – порт</translation>
 <translation id="8656407365183407932">Офлајн фајлови су морали да се уклоне</translation>
 <translation id="8656768832129462377">Не проверавај</translation>
+<translation id="8662978096466608964">Chrome не може да подеси позадину.</translation>
 <translation id="8688591111840995413">Погрешна лозинка</translation>
 <translation id="8698464937041809063">Google цртеж</translation>
 <translation id="8698877009525468705">Овај фајл је поверљив и подлеже ограничењима смерница администратора.</translation>

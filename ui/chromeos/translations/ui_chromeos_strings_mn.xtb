@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Камер</translation>
 <translation id="162175252992296058">АНУ-ын олон улсын гартай португал</translation>
 <translation id="1629521517399325891">Сүлжээний баталгаажуулалтад хэрэглэгчийн сертификат боломжгүй байна.</translation>
+<translation id="1639239467298939599">Ачаалж байна</translation>
 <translation id="1641780993263690097">Хятад пиньинь</translation>
 <translation id="164969095109328410">Chrome төхөөрөмж</translation>
 <translation id="1661207570040737402">Та Google Workspace-н дундын драйвын хадгалах сангаа бүгдийг нь ашигласан байна.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">Файлын синкийг унтраасан</translation>
 <translation id="2820957248982571256">Шалгаж байна...</translation>
 <translation id="2830077785865012357">Хятад жуинь</translation>
+<translation id="2838379631617906747">Суулгаж байна</translation>
 <translation id="2843806747483486897">Анхдагч тохиргоог өөрчлөх ...</translation>
 <translation id="2873951654529031587">Хогийн сав</translation>
 <translation id="2887314858867008269">АНУ-ын Colemak</translation>
@@ -1017,6 +1019,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Порт</translation>
 <translation id="8656407365183407932">Таны офлайн файлуудыг хасах шаардлагатай байсан</translation>
 <translation id="8656768832129462377">Шалгах хэрэггүй</translation>
+<translation id="8662978096466608964">Chrome нь дэлгэцийн зургийг тохируулж чадахгүй байна.</translation>
 <translation id="8688591111840995413">Муу нууц үг</translation>
 <translation id="8698464937041809063">Google-ийн зураг</translation>
 <translation id="8698877009525468705">Энэхүү файл нь нууцлалтай ба администраторын бодлогын дагуу хязгаарлалттай.</translation>

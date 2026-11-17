@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Chagua ruhusa ya <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Ungependa kuhifadhi IBAN?</translation>
 <translation id="1113869188872983271">Tendua kupanga upya</translation>
-<translation id="111897705806685148">Tumia Ufunguo wa Siri kutoka kwenye Kifaa Kingine</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza ‘Tab’ kisha ‘Enter’ ili udhibiti maelezo ya Chrome unayohifadhi katika Akaunti yako ya Google</translation>
 <translation id="1121990216147052230">Nitayarishie orodha ya mambo ya kufanya</translation>
 <translation id="1123753900084781868">Kipengele cha Manukuu Papo Hapo hakipatikani wakati huu</translation>
@@ -1307,6 +1306,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="3196374699162453920">Msimbo wa kuweka nafasi</translation>
 <translation id="3196902089458890316">Ungependa kuruhusu vichupo husika vifikiwe kila wakati ili upate majibu bora zaidi?</translation>
 <translation id="3197136577151645743">Inaweza kuomba ruhusa ya kujua wakati unatumia kifaa hiki</translation>
+<translation id="3201749168732432347">Ofa na kadi za kutuza uaminifu</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza 'Tab' kisha 'Enter' ili udhibiti maelezo unayosawazisha katika mipangilio ya Chrome</translation>
 <translation id="3203025201812691413">Sharti URL ijazwe</translation>
 <translation id="320323717674993345">Ghairi Malipo</translation>
@@ -2310,6 +2310,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="4850886885716139402">Mwonekano</translation>
 <translation id="4854853140771946034">Unda dokezo jipya katika Google Keep kwa haraka</translation>
 <translation id="4855395119669662878">Msimamizi wako ataanza kupakia faili zako kwenye <ph name="CLOUD_PROVIDER" /> mnamo <ph name="DATE_TIME" />. Hakikisha kifaa chako kimeunganishwa hadi mchakato wa kupakia faili yako ukamilike. Mchakato wa upakiaji unapoendelea, utaweza tu kusoma faili zilizo kwenye kifaa.</translation>
+<translation id="4856655096879441213">Hifadhi taarifa zako katika <ph name="GOOGLE_WALLET_TITLE" /> ili ukamilishe mambo kwa haraka, kama vile kujaza fomu kwenye bidhaa mbalimbali za Google. Unaweza kudhibiti <ph name="HOW_INFO_IS_USED_LINK" /> katika mipangilio yako ya pasi ya faragha ya <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Inathibitisha namba...</translation>
 <translation id="4860260582253463350">Ili uendelee kwenye YouTube, tunahitaji kuhakikisha kuwa ni wewe. Utapata mipangilio ambayo mzazi au mlezi wako aliweka katika Family Link.</translation>
 <translation id="4861514638281352187">Weka namba ya usahihishaji kwa njia salama</translation>
@@ -2846,7 +2847,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="5718326209176373202">Weka vidokezo vya maandishi</translation>
 <translation id="5718601519531438273">Inajumuisha maelezo kama vile pasipoti na leseni za udereva</translation>
 <translation id="5720705177508910913">Mtumiaji wa sasa</translation>
-<translation id="5721147290164931316">Changanua ili Uingie katika Akaunti ukitumia Simu Yako</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} na nyingine 1}other{{website_1}, {website_2} na nyingine {more_count}}}</translation>
 <translation id="5722778418591961221">Panga ratiba ya mazoezi ya mwili ya nyumbani itakayonisaidia kufikia malengo yangu</translation>
 <translation id="572328651809341494">Vichupo vya hivi punde</translation>

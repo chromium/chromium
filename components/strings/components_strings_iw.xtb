@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">צריך לבחור את ההרשאה של <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">‏לשמור את מספר ה-IBAN?</translation>
 <translation id="1113869188872983271">&amp;ביטול של שינוי סדר</translation>
-<translation id="111897705806685148">שימוש במפתח גישה ממכשיר אחר</translation>
 <translation id="1119009590493440389">‏‫<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. כדי לקבוע איזה מידע מ-Chrome יישמר בחשבון Google, צריך ללחוץ על Tab ואז על Enter</translation>
 <translation id="1121990216147052230">תיצור לי רשימת משימות</translation>
 <translation id="1123753900084781868">הכתוביות המיידיות לא זמינות עכשיו.</translation>
@@ -1305,6 +1304,7 @@
 <translation id="3196374699162453920">קוד הזמנה</translation>
 <translation id="3196902089458890316">תמיד לשתף את הכרטיסיות הרלוונטיות? זה יעזור לך לקבל תשובות טובות יותר.</translation>
 <translation id="3197136577151645743">האתר יכול לבקש הרשאה לשאול מתי את/ה משתמש/ת בפועל במכשיר</translation>
+<translation id="3201749168732432347">מבצעים וכרטיסי מועדון לקוחות</translation>
 <translation id="3202497928925179914">‏<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לקבוע איזה מידע יסונכרן בהגדרות Chrome</translation>
 <translation id="3203025201812691413">‏כתובת ה-URL לא יכולה להיות ריקה</translation>
 <translation id="320323717674993345">ביטול תשלום</translation>
@@ -2312,6 +2312,7 @@ Del</translation>
 <translation id="4850886885716139402">הצגה</translation>
 <translation id="4854853140771946034">‏יצירת הערה חדשה ב-Google Keep במהירות</translation>
 <translation id="4855395119669662878">האדמין יתחיל להעלות את הקבצים שלך אל <ph name="CLOUD_PROVIDER" /> ב-<ph name="DATE_TIME" />. צריך להשאיר את המכשיר מחובר עד שההעלאה של הקובץ תסתיים. במהלך ההעלאה, תהיה לך אפשרות לקרוא רק קבצים מקומיים.</translation>
+<translation id="4856655096879441213">‏כדי לבצע פעולות במהירות רבה יותר, כמו מילוי טפסים בכל מוצרי Google, צריך לשמור את הפרטים ב-<ph name="GOOGLE_WALLET_TITLE" />. בהגדרות של הכרטיס הפרטי בחשבון <ph name="ACCOUNT" /> אפשר לשלוט ב<ph name="HOW_INFO_IS_USED_LINK" />.</translation>
 <translation id="485902285759009870">הקוד בתהליך אימות…</translation>
 <translation id="4860260582253463350">‏כדי להמשיך אל YouTube, אנחנו צריכים לאמת את זהותך. ב-Family Link אפשר לראות את ההגדרות שההורים או האפוטרופוסים הגדירו.</translation>
 <translation id="4861514638281352187">‏הוספת מספר Redress באופן מאובטח</translation>
@@ -2849,7 +2850,6 @@ Del</translation>
 <translation id="5718326209176373202">הוספת הערות לטקסט</translation>
 <translation id="5718601519531438273">כולל מידע כמו דרכונים ורישיונות נהיגה</translation>
 <translation id="5720705177508910913">משתמש נוכחי:</translation>
-<translation id="5721147290164931316">כדי להיכנס לחשבון באמצעות הטלפון, צריך לסרוק את הקוד</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{‫{website_1},‏ {website_2} ועוד אתר אחד}one{‫{website_1},‏ {website_2} ועוד {more_count} אתרים}other{‫{website_1},‏ {website_2} ועוד {more_count} אתרים}}</translation>
 <translation id="5722778418591961221">תתכנן לי שגרת כושר ביתית שתעזור לי להשיג את היעדים שלי</translation>
 <translation id="572328651809341494">כרטיסיות אחרונות</translation>

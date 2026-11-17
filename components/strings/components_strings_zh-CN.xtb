@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">选择对<ph name="PERMISSION_NAME" />的权限</translation>
 <translation id="1113000785583998331">保存 IBAN？</translation>
 <translation id="1113869188872983271">撤消顺序调整(&amp;U)</translation>
-<translation id="111897705806685148">使用另一部设备中的通行密钥</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键，即可管理要将哪些 Chrome 信息保存到 Google 账号中</translation>
 <translation id="1121990216147052230">为我列一个待办事项清单</translation>
 <translation id="1123753900084781868">暂时无法使用实时字幕功能</translation>
@@ -1305,6 +1304,7 @@
 <translation id="3196374699162453920">预订代码</translation>
 <translation id="3196902089458890316">要始终分享相关标签页，以便获得更优质的回答吗？</translation>
 <translation id="3197136577151645743">可以询问您何时在使用此设备</translation>
+<translation id="3201749168732432347">优惠和会员卡</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中管理您要同步的信息</translation>
 <translation id="3203025201812691413">网址不能为空</translation>
 <translation id="320323717674993345">取消付款</translation>
@@ -2306,6 +2306,7 @@
 <translation id="4850886885716139402">查看</translation>
 <translation id="4854853140771946034">在 Google Keep 中快速创建新记事</translation>
 <translation id="4855395119669662878">您的管理员将于 <ph name="DATE_TIME" />开始将文件上传到<ph name="CLOUD_PROVIDER" />。在文件上传完成之前，请让设备保持连接状态。在上传期间，您将只能读取本地文件。</translation>
+<translation id="4856655096879441213">在 <ph name="GOOGLE_WALLET_TITLE" />中保存信息可以提升效率，例如在不同 Google 产品中快速填写表单。您可以在 <ph name="ACCOUNT" /> 的私人凭证设置中控制<ph name="HOW_INFO_IS_USED_LINK" />。</translation>
 <translation id="485902285759009870">正在核对动态密码…</translation>
 <translation id="4860260582253463350">若要继续访问 YouTube，我们需要确认你的身份。系统将会沿用家长或监护人在 Family Link 中的设置。</translation>
 <translation id="4861514638281352187">安全地添加身份纠正识别号</translation>
@@ -2842,7 +2843,6 @@
 <translation id="5718326209176373202">添加文字注释</translation>
 <translation id="5718601519531438273">包括护照和驾照等信息</translation>
 <translation id="5720705177508910913">当前用户</translation>
-<translation id="5721147290164931316">扫描即可使用手机登录</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}、{website_2}}=3{{website_1}、{website_2} 和另外 1 个}other{{website_1}、{website_2} 和另外 {more_count} 个}}</translation>
 <translation id="5722778418591961221">制定一个居家健身计划，帮我达成目标</translation>
 <translation id="572328651809341494">最近访问的标签页</translation>

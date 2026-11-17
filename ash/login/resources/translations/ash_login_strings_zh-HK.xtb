@@ -146,6 +146,7 @@
 <translation id="248676429071089168">向上滑動即可將頁面向下移動</translation>
 <translation id="2501278716633472235">返回</translation>
 <translation id="252418934079508528">安裝 <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">正在準備裝置…</translation>
 <translation id="2538084450874617176">誰在使用此 <ph name="DEVICE_TYPE" />？</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> 無法連線至<ph name="NETWORK_ID" />，請選取其他網絡，或再試一次。</translation>
 <translation id="2565214867520763227">開啟螢幕閱讀器</translation>
@@ -628,6 +629,7 @@
 <translation id="7666531788977935712">啟用咗繼續按鈕</translation>
 <translation id="7671139479636735732">按一下右鍵即可輕鬆將概念視覺化</translation>
 <translation id="770831926727930011">本機資料受舊密碼保護。請輸入舊密碼以復原本機資料。</translation>
+<translation id="7717014941119698257">正在下載：<ph name="STATUS" /></translation>
 <translation id="7722040605881499779">更新所需的空間：<ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">正在與「<ph name="DEVICE_NAME" />」配對…</translation>
 <translation id="7746045113967198252">放大或縮小畫面上的項目，包括文字。您亦可稍後前往「設定」&gt; [裝置] &gt; [顯示] 調整此設定。</translation>

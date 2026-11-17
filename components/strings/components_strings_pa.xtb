@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> ਲਈ ਇਜਾਜ਼ਤ ਚੁਣੋ</translation>
 <translation id="1113000785583998331">ਕੀ IBAN ਨੂੰ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1113869188872983271">&amp;ਦੁਬਾਰਾ ਕ੍ਰਮ ਦੇਣ ਨੂੰ ਅਨਡੂ ਕਰੋ</translation>
-<translation id="111897705806685148">ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ ਤੋਂ ਪਾਸਕੀ ਵਰਤੋ</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾਓ, ਫਿਰ ਇਹ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Enter ਦਬਾਓ ਕਿ ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਕਿਹੜੀ Chrome ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰਦੇ ਹੋ</translation>
 <translation id="1121990216147052230">ਮੇਰੇ ਲਈ ਕਰਨਯੋਗ ਕੰਮਾਂ ਦੀ ਸੂਚੀ ਬਣਾਓ</translation>
 <translation id="1123753900084781868">ਲਾਈਵ ਸੁਰਖੀਆਂ ਫ਼ਿਲਹਾਲ ਉਪਲਬਧ ਨਹੀਂ ਹਨ</translation>
@@ -1305,6 +1304,7 @@
 <translation id="3196374699162453920">ਬੁਕਿੰਗ CODE</translation>
 <translation id="3196902089458890316">ਕੀ ਬਿਹਤਰ ਜਵਾਬਾਂ ਲਈ ਢੁਕਵੀਆਂ ਟੈਬਾਂ ਨੂੰ ਹਮੇਸ਼ਾਂ ਸਾਂਝਾ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3197136577151645743">ਸਾਈਟ ਤੁਹਾਡੇ ਵੱਲੋਂ ਇਸ ਡੀਵਾਈਸ ਦੀ ਸਰਗਰਮੀ ਨਾਲ ਕੀਤੀ ਜਾ ਰਹੀ ਵਰਤੋਂ ਬਾਰੇ ਜਾਣਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
+<translation id="3201749168732432347">ਪੇਸ਼ਕਸ਼ਾਂ ਅਤੇ ਵਫ਼ਾਦਾਰੀ ਕਾਰਡ</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾਓ, ਫਿਰ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਤੁਸੀਂ ਜਿਹੜੀ ਜਾਣਕਾਰੀ ਦਾ ਸਿੰਕ ਕਰਦੇ ਹੋ, ਇਸਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="3203025201812691413">URL ਨੂੰ ਖਾਲੀ ਨਹੀਂ ਛੱਡਿਆ ਜਾ ਸਕਦਾ</translation>
 <translation id="320323717674993345">ਭੁਗਤਾਨ ਰੱਦ ਕਰੋ</translation>
@@ -2307,6 +2307,7 @@
 <translation id="4850886885716139402">ਦੇਖੋ</translation>
 <translation id="4854853140771946034">Google Keep ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਨਵਾਂ ਨੋਟ-ਕਥਨ ਬਣਾਓ</translation>
 <translation id="4855395119669662878">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ <ph name="DATE_TIME" /> ਵਜੇ <ph name="CLOUD_PROVIDER" /> 'ਤੇ ਅੱਪਲੋਡ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰ ਦੇਵੇਗਾ। ਤੁਹਾਡੀ ਫ਼ਾਈਲ ਅੱਪਲੋਡ ਹੋਣ ਦੀ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਹੋਣ ਤੱਕ ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਕਨੈਕਟ ਕਰ ਕੇ ਰੱਖੋ। ਅੱਪਲੋਡ ਦੀ ਪ੍ਰਕਿਰਿਆ ਦੇ ਦੌਰਾਨ, ਤੁਸੀਂ ਸਿਰਫ਼ ਸਥਾਨਕ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪੜ੍ਹ ਸਕੋਗੇ।</translation>
+<translation id="4856655096879441213"><ph name="GOOGLE_WALLET_TITLE" /> ਵਿੱਚ ਆਪਣੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ Google ਉਤਪਾਦਾਂ ਵਿੱਚ ਫ਼ਾਰਮ ਭਰਨ ਵਰਗੇ ਕੰਮ ਤੇਜ਼ੀ ਨਾਲ ਕਰੋ। ਤੁਸੀਂ <ph name="ACCOUNT" /> ਲਈ ਆਪਣੀਆਂ ਪ੍ਰਾਈਵੇਟ ਪਾਸ ਸੈਟਿੰਗਾਂ ਵਿੱਚ <ph name="HOW_INFO_IS_USED_LINK" /> ਨੂੰ ਕੰਟਰੋਲ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="485902285759009870">ਕੋਡ ਦੀ ਪੁਸ਼ਟੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="4860260582253463350">YouTube 'ਤੇ ਜਾਰੀ ਰੱਖਣ ਲਈ, ਸਾਨੂੰ ਤੁਹਾਡੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ। ਤੁਹਾਨੂੰ ਉਹ ਸੈਟਿੰਗਾਂ ਪ੍ਰਾਪਤ ਹੋਣਗੀਆਂ, ਜਿਨ੍ਹਾਂ ਦਾ ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਜਾਂ ਸਰਪ੍ਰਸਤ ਨੇ Family Link ਵਿੱਚ ਸੈੱਟਅੱਪ ਕੀਤਾ ਹੋਇਆ ਹੈ।</translation>
 <translation id="4861514638281352187">ਰਿਡਰੈੱਸ ਨੰਬਰ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -2843,7 +2844,6 @@
 <translation id="5718326209176373202">ਲਿਖਤ ਐਨੋਟੇਸ਼ਨਾਂ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="5718601519531438273">ਇਸ ਵਿੱਚ ਪਾਸਪੋਰਟ ਅਤੇ ਡਰਾਈਵਿੰਗ ਲਾਇਸੰਸ ਵਰਗੀ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਹੈ</translation>
 <translation id="5720705177508910913">ਮੌਜੂਦਾ ਵਰਤੋਂਕਾਰ</translation>
-<translation id="5721147290164931316">ਆਪਣੇ ਫ਼ੋਨ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਸਕੈਨ ਕਰੋ</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ਅਤੇ 1 ਹੋਰ}one{{website_1}, {website_2} ਅਤੇ {more_count} ਹੋਰ}other{{website_1}, {website_2} ਅਤੇ {more_count} ਹੋਰ}}</translation>
 <translation id="5722778418591961221">ਘਰ ਵਿੱਚ ਫਿੱਟਨੈੱਸ ਸੰਬੰਧੀ ਅਜਿਹੇ ਨਿਯਮਬੱਧ ਕੰਮ ਬਣਾਉਣ ਦੀ ਯੋਜਨਾ ਬਣਾਓ, ਜੋ ਮੇਰੇ ਟੀਚਿਆਂ ਨੂੰ ਪੂਰਾ ਕਰਨ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੇ</translation>
 <translation id="572328651809341494">ਹਾਲੀਆ ਟੈਬਸ</translation>

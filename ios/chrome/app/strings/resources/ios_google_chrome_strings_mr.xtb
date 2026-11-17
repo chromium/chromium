@@ -83,6 +83,7 @@
 <translation id="2574249610672786438">तुम्ही जेथून Chrome वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, तुमच्या सर्व डिव्हाइसवर साइन इन करा</translation>
 <translation id="2576431527583832481">Chrome आता आणखी सर्वोत्तम झाले आहे! नवीन आवृत्ती उपलब्ध आहे.</translation>
 <translation id="257708665678654955">पुढील वेळी Google Chrome ने या साइटवरील <ph name="LANGUAGE_NAME" /> पेजचे भाषांतर करण्याची ऑफर द्यावी असे तुम्हाला वाटते?</translation>
+<translation id="260980777626165320">बाय डीफॉल्ट Chrome मध्ये बाह्य लिंक उघडा.</translation>
 <translation id="2668242166988961773">Chrome मध्ये आवाज वापरून शोधा.</translation>
 <translation id="2703746758996815929">Chrome बद्दल उपयुक्त टिपा मिळवण्यासाठी, तुमच्या iOS सेटिंग्जमध्ये सूचना सुरू करा.</translation>
 <translation id="2728851697704606655">Google Lens वापरून भाषांतर करा</translation>
@@ -111,6 +112,7 @@
 <translation id="314782365035065913">तुमच्या होम स्क्रीन डॉकवरून Chrome आणखी जलद ॲक्सेस करा</translation>
 <translation id="3167189358072330585">तुमचे खाते Google Chrome वर काम करत नाही. कृपया तुमच्या डोमेन ॲडमिनिस्ट्रेटरशी संपर्क साधा किंवा साइन इन करण्यासाठी एक नियमित Google खाते वापरा.</translation>
 <translation id="322254490661677575">तुमच्या Google खाते मधील Chrome डेटा वापरण्यासाठी आणि तो सेव्ह करण्यासाठी, तुमची पासफ्रेझ वापरा.</translation>
+<translation id="3253082773078342494">थेट Chrome मध्ये लिंक उघडा.</translation>
 <translation id="3303503998967553377">iOS वर Chrome ॲक्शन्स वापरा</translation>
 <translation id="3348862487678490430">Chrome मध्ये वाचन सूची आयटम जोडा</translation>
 <translation id="3350281376951945723">तुम्ही Chrome ला डीफॉल्ट म्हणून सेट करता, तेव्हा लिंक अधिक जलद उघडा</translation>
@@ -160,6 +162,7 @@
 <translation id="4693084815234024320">तुम्ही Chrome गुप्त मोडमध्ये आहात</translation>
 <translation id="4713740144985377441">तुमची फाइल अपलोड करण्यासाठी Chrome वर परत या</translation>
 <translation id="4724297637870447613">सर्व ठिकाणी Chrome वापरा</translation>
+<translation id="4733290155432110050">थेट Chrome वर जा</translation>
 <translation id="4738647308035481133">Google Chrome पेज</translation>
 <translation id="4742795653798179840">Chrome डेटा हटवला</translation>
 <translation id="4761869838909035636">Chrome सुरक्षितता तपासणी रन करा</translation>
@@ -267,6 +270,7 @@
 <translation id="7038674195294813388">iOS मध्ये डीफॉल्ट अ‍ॅप्स सेटिंग्ज उघडा, त्यानंतर "ब्राउझर अ‍ॅप" वर टॅप करा आणि Chrome निवडा.</translation>
 <translation id="7056826488869329999">Chrome मध्ये सुरक्षितता तपासणी उघडते आणि रन करते.</translation>
 <translation id="7061455974939528301">Chrome आयकन प्रेस करून धरून ठेवा आणि "होम स्क्रीन संपादित करा" यावर क्लिक करा</translation>
+<translation id="7067302528015227615">अ‍ॅप ट्रांझिशन आणखी जलद आणि सोपी करण्यासाठी Chrome डीफॉल्ट म्हणून सेट करा.</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" /> साठी Google Password Manager</translation>
 <translation id="7124339256045485976">Chrome अप टू डेट ठेवा</translation>
 <translation id="7135936755418321901">वेबसाइटसोबत तुमचे स्थान शेअर करण्यासाठी, Chrome ला तुमचे स्थान वापरू देण्याकरिता सेटिंग्ज वर टॅप करा.</translation>
@@ -278,6 +282,7 @@
 <translation id="7200524487407690471">डेटा भंग, असुरक्षित वेबसाइट आणि आणखी बऱ्याच गोष्टींपासून तुमचे संरक्षण करण्यासाठी Chrome आपोआप सुरक्षितता तपासणी दररोज रन करते. तुम्हाला सेटिंग्ज मध्ये सुरक्षितता तपासणी बद्दल आणखी माहिती मिळू शकते.</translation>
 <translation id="7214019116829172458">Chrome गुप्त टॅब उघडा</translation>
 <translation id="722167379782941918">Chrome वर्धित संरक्षणाची शिफारस करते</translation>
+<translation id="722921700949937243">सर्व लिंक नेहमी Chrome मध्ये उघडत असल्याची खात्री करा.</translation>
 <translation id="723787869754590019">ऑटोफिल साठी Chrome वापरा</translation>
 <translation id="7261678641327190792">Chrome तुमचे पासवर्ड तपासू शकत नाही</translation>
 <translation id="7272091023280308138">पुढच्या वेळी URLs कॉपी न करता थेट Chrome मध्ये लिंक उघडा.</translation>

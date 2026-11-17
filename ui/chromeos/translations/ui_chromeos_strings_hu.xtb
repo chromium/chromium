@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">portugál, amerikai nemzetközi billentyűzettel</translation>
 <translation id="1629521517399325891">Nem áll rendelkezésre felhasználói tanúsítvány a hálózati hitelesítéshez.</translation>
+<translation id="1639239467298939599">Betöltés</translation>
 <translation id="1641780993263690097">kínai pinjin</translation>
 <translation id="164969095109328410">Chrome-eszköz</translation>
 <translation id="1661207570040737402">Felhasználta a megosztott meghajtó Google Workspace-tárhelyét.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">Fájlszinkronizálás kikapcsolva</translation>
 <translation id="2820957248982571256">Keresés…</translation>
 <translation id="2830077785865012357">kínai zujin</translation>
+<translation id="2838379631617906747">Telepítés</translation>
 <translation id="2843806747483486897">Alapértelmezés módosítása...</translation>
 <translation id="2873951654529031587">Kuka</translation>
 <translation id="2887314858867008269">USA Colemak</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
 <translation id="8656407365183407932">Az offline fájlokat el kellett távolítani</translation>
 <translation id="8656768832129462377">Ne ellenőrizze</translation>
+<translation id="8662978096466608964">A Chrome nem tud háttérképet beállítani.</translation>
 <translation id="8688591111840995413">Helytelen jelszó</translation>
 <translation id="8698464937041809063">Google-rajz</translation>
 <translation id="8698877009525468705">Ez a fájl bizalmas, és a rendszergazdai házirend által meghatározott korlátozások vonatkoznak rá.</translation>

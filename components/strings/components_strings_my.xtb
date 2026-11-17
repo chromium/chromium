@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> အတွက် ခွင့်ပြုချက်များ ရွေးပါ</translation>
 <translation id="1113000785583998331">အိုင်ဘီအေအန် (IBAN) သိမ်းမလား။</translation>
 <translation id="1113869188872983271">&amp;ပြန်စီစဉ်ကို ပြန်လုပ်ရန်</translation>
-<translation id="111897705806685148">အခြားစက်မှ လျှို့ဝှက်ကီးသုံးရန်</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ သင်၏ Google Account တွင် သိမ်းသော Chrome အချက်အလက်ကို စီမံရန်အတွက် ‘တဘ်’ ကို နှိပ်ပြီးနောက် Enter ခလုတ်နှိပ်ပါ</translation>
 <translation id="1121990216147052230">လုပ်စရာစာရင်း ပြုလုပ်ပေးပါ</translation>
 <translation id="1123753900084781868">'တိုက်ရိုက်စာတန်း' ကို ယခုမရနိုင်ပါ</translation>
@@ -1309,6 +1308,7 @@
 <translation id="3196374699162453920">ကြိုတင်စာရင်းသွင်းခြင်း ကုဒ်</translation>
 <translation id="3196902089458890316">ပိုကောင်းသော တုံ့ပြန်မှုရရန် သက်ဆိုင်သည့်တဘ်များကို အမြဲမျှဝေမလား</translation>
 <translation id="3197136577151645743">သင့်ကိရိယာသုံးနေချိန်ကို သိရန် ခွင့်တောင်းနိုင်သည်</translation>
+<translation id="3201749168732432347">ကမ်းလှမ်းချက်နှင့် ဖောက်သည်ကတ်များ</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များတွင် သင်စင့်ခ်လုပ်သော အချက်အလက်များကို စီမံရန် ‘တဘ်ခလုတ်’ နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="3203025201812691413">URL သည် အလွတ်ဖြစ်၍မရပါ</translation>
 <translation id="320323717674993345">ငွေပေးချေမှုကို ပယ်ဖျက်ရန်</translation>
@@ -2311,6 +2311,7 @@
 <translation id="4850886885716139402">မြင်ကွင်း</translation>
 <translation id="4854853140771946034">Google Keep တွင် မှတ်စုအသစ် အမြန်ပြုလုပ်ရန်</translation>
 <translation id="4855395119669662878"><ph name="DATE_TIME" /> တွင် သင်၏ကြီးကြပ်သူသည် သင့်ဖိုင်များကို <ph name="CLOUD_PROVIDER" /> သို့ စတင်အပ်လုဒ်လုပ်ပါမည်။ သင်၏ ဖိုင်ကို အပ်လုဒ်လုပ်ပြီးသည်အထိ စက်ကို ချိတ်ဆက်ထားပါ။ အပ်လုဒ်လုပ်နေစဉ် စက်တွင်းဖိုင်များကိုသာ ဖတ်နိုင်ပါမည်။</translation>
+<translation id="4856655096879441213">Google ထုတ်ကုန်များတွင် ဖောင်ဖြည့်ခြင်းကဲ့သို့သော ကိစ္စများအမြန်ပြီးမြောက်ရန် သင့်အချက်အလက်ကို <ph name="GOOGLE_WALLET_TITLE" /> တွင် သိမ်းနိုင်သည်။ <ph name="ACCOUNT" /> အတွက် <ph name="HOW_INFO_IS_USED_LINK" /> ကို သင်၏ သီးသန့်အချက်အလက် ကတ် ဆက်တင်များ၌ ထိန်းချုပ်နိုင်သည်။</translation>
 <translation id="485902285759009870">ကုဒ်ကို စိစစ်နေသည်...</translation>
 <translation id="4860260582253463350">YouTube သို့ ရှေ့ဆက်ရန် သင်ဖြစ်ကြောင်း အတည်ပြုရပါမည်။ Family Link တွင် သင့်မိဘ (သို့) အုပ်ထိန်းသူက သတ်မှတ်ပေးထားသော ဆက်တင်များကို ရရှိပါမည်။</translation>
 <translation id="4861514638281352187">Redress number ကို လုံခြုံစွာထည့်ခြင်း</translation>
@@ -2847,7 +2848,6 @@
 <translation id="5718326209176373202">စာသား မှတ်ချက်များ ထည့်ရန်</translation>
 <translation id="5718601519531438273">နိုင်ငံကူးလက်မှတ်နှင့် ယာဉ်မောင်းလိုင်စင်ကဲ့သို့သော အချက်အလက်များ ပါဝင်သည်</translation>
 <translation id="5720705177508910913">လက်ရှိ အသုံးပြုသူ</translation>
-<translation id="5721147290164931316">သင့်ဖုန်းဖြင့် လက်မှတ်ထိုးဝင်ရန် စကင်ဖတ်ပါ</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}၊ {website_2}}=3{{website_1}၊ {website_2} နှင့် နောက်ထပ် ၁ ခု}other{{website_1}၊ {website_2} နှင့် နောက်ထပ် {more_count} ခု}}</translation>
 <translation id="5722778418591961221">ရည်မှန်းချက်တွေ ပြည့်မီစေမယ့် အိမ်တွင်းကြံ့ခိုင်ရေး အစီအစဉ်တစ်ခု ဆွဲပေးပါ</translation>
 <translation id="572328651809341494">မကြာမီက တဲဘ်များ</translation>

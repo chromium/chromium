@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">സൈൻ ഇൻ ചെയ്യുന്നത് പരാജയപ്പെട്ടു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2975761176769946178">URL ആവശ്യമാണ്</translation>
 <translation id="297667759942911166">ടാബ് ഗ്രൂപ്പുകളിൽ സഹകരിക്കൂ</translation>
+<translation id="2986080119218811913"><ph name="ACTOR_NAME" /> എന്നതിലേക്ക് മടങ്ങുക</translation>
 <translation id="298696743524648170">Chrome-ലെ Gemini ഉപയോഗിക്കാൻ, നിങ്ങളുടെ Google Account ഉപയോഗിച്ച് Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="2987670534697681860">ഈ ഉപകരണത്തിലെ എല്ലാ പാസ്‌വേഡുകളും ആക്‌സസ് ചെയ്യാൻ, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക.</translation>
 <translation id="2989523299700148168">അടുത്തിടെ സന്ദർശിച്ചവ</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">ടാബ് ഗ്രൂപ്പ് നിറം <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Google Password Manager-ൽ ഈ സൈറ്റിനുള്ള പാസ്‌വേഡ് ഇല്ല. സൈൻ ഇൻ ചെയ്യാൻ <ph name="ACTOR_NAME" /> എന്നതിലേക്ക് മടങ്ങുക, അല്ലെങ്കിൽ Google Password Manager-ലേക്ക് ഒരു പാസ്‌വേഡ് ചേർക്കുക.</translation>
 <translation id="5005498671520578047">പാസ്‌വേഡ് പകർത്തുക</translation>
 <translation id="5007392906805964215">അവലോകനം ചെയ്യുക</translation>
 <translation id="5009127379503001909">ബ്രൗസ് ചെയ്യുന്നത് തുടരൂ</translation>

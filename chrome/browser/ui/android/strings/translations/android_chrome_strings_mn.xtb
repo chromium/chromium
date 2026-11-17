@@ -530,6 +530,7 @@
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Тусламж авах<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Үнийг хянаж байна</translation>
 <translation id="3037517125981011456">Chrome-д нэвтрэх сануулгыг харуулна</translation>
+<translation id="3038505649933066250">Огноогоор шүүх</translation>
 <translation id="3044436568790455247">"Төхөөрөмж сонгох" цонхыг бүтэн өндрөөр нээсэн.</translation>
 <translation id="3057938290530993634">Дараагийн удаа хялбар хандахын тулд хамгийн их зочилсон вебсайтууд дээр товшоод удаан дарж бэхэлнэ үү</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> хавчуурга}other{<ph name="BOOKMARKS_COUNT_MANY" /> хавчуурга}}</translation>
@@ -917,6 +918,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4585793705637313973">Хуудас засах</translation>
 <translation id="4587589328781138893">Сайт</translation>
 <translation id="4587590257937792551">Chrome-д дөхөм хэрэглээнд зориулан бүтээсэн шинэ хэрэгслийн доод мөр бий. Та хүссэн үедээ <ph name="BEGIN_LINK" />тохиргооноос<ph name="END_LINK" /> буцаж сэлгэх боломжтой.</translation>
+<translation id="4592634244097223647">Google-с энэ зургийн тухай асуу</translation>
 <translation id="4594952190837476234">Энэ офлайн хуудсыг <ph name="CREATION_TIME" />-с харуулж байгаа бөгөөд онлайн хувилбараас өөр байж болзошгүй.</translation>
 <translation id="4595237294768457124">Шинэ таб хуудсыг нээх</translation>
 <translation id="4595276580892809760">Зургийн цомгоос зураг хавсаргах</translation>

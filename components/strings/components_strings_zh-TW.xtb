@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">選取<ph name="PERMISSION_NAME" />權限設定</translation>
 <translation id="1113000785583998331">要儲存 IBAN 嗎？</translation>
 <translation id="1113869188872983271">復原重新排序(&amp;U)</translation>
-<translation id="111897705806685148">使用其他裝置的密碼金鑰</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />；依序按下 Tab 鍵和 Enter 鍵，即可管理要儲存到 Google 帳戶的 Chrome 資訊</translation>
 <translation id="1121990216147052230">幫我建立待辦事項清單</translation>
 <translation id="1123753900084781868">目前無法使用即時字幕功能</translation>
@@ -1305,6 +1304,7 @@
 <translation id="3196374699162453920">訂位代號</translation>
 <translation id="3196902089458890316">是否要一律分享相關分頁，以取得更實用的回覆？</translation>
 <translation id="3197136577151645743">可以要求偵測你使用這部裝置的時間</translation>
+<translation id="3201749168732432347">優惠和會員卡</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中管理要同步處理哪些資訊</translation>
 <translation id="3203025201812691413">網址不得留空</translation>
 <translation id="320323717674993345">取消付款</translation>
@@ -2308,6 +2308,7 @@
 <translation id="4850886885716139402">檢視</translation>
 <translation id="4854853140771946034">在 Google Keep 中快速建立新記事</translation>
 <translation id="4855395119669662878">系統管理員會在 <ph name="DATE_TIME" /> 開始將你的檔案上傳至 <ph name="CLOUD_PROVIDER" />。上傳完成前，請勿中斷裝置連線。上傳期間，你只能讀取本機檔案。</translation>
+<translation id="4856655096879441213">將資訊儲存在 <ph name="GOOGLE_WALLET_TITLE" />，處理事務更有效率，例如在 Google 產品中輕鬆填寫表單。你可以在 <ph name="ACCOUNT" /> 的私人憑證設定中控管<ph name="HOW_INFO_IS_USED_LINK" />。</translation>
 <translation id="485902285759009870">正在驗證動態密碼...</translation>
 <translation id="4860260582253463350">如要繼續使用 YouTube，我們必須先確認你的身分。你將會根據家長或監護人在 Family Link 中的設定，取得可用功能。</translation>
 <translation id="4861514638281352187">安全新增救濟號碼</translation>
@@ -2844,7 +2845,6 @@
 <translation id="5718326209176373202">新增文字註解</translation>
 <translation id="5718601519531438273">包含護照和駕照等資訊</translation>
 <translation id="5720705177508910913">目前使用者</translation>
-<translation id="5721147290164931316">掃描即可使用手機登入</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}、{website_2}}=3{{website_1}、{website_2} 和另外 1 個}other{{website_1}、{website_2} 和另外 {more_count} 個}}</translation>
 <translation id="5722778418591961221">規劃居家健身計畫，協助我達成目標</translation>
 <translation id="572328651809341494">最近關閉的分頁</translation>

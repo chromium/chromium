@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Selecionar autorização para <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Guardar IBAN?</translation>
 <translation id="1113869188872983271">&amp;Anular reordenação</translation>
-<translation id="111897705806685148">Usar chave de acesso de outro dispositivo</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para gerir as informações do Chrome que guarda na sua Conta Google</translation>
 <translation id="1121990216147052230">Cria uma lista de tarefas</translation>
 <translation id="1123753900084781868">As Legendas instantâneas não estão disponíveis neste momento.</translation>
@@ -2848,7 +2847,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5718326209176373202">Adicionar anotações de texto</translation>
 <translation id="5718601519531438273">Inclui informações como passaportes e cartas de condução</translation>
 <translation id="5720705177508910913">Utilizador atual</translation>
-<translation id="5721147290164931316">Leia o código para iniciar sessão com o telemóvel</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} e mais 1}other{{website_1}, {website_2} e mais {more_count}}}</translation>
 <translation id="5722778418591961221">Planeia uma rotina de fitness em casa que me ajude a alcançar os meus objetivos</translation>
 <translation id="572328651809341494">Separadores recentes</translation>
@@ -4165,6 +4163,7 @@ Detalhes adicionais:
 <translation id="7916162853251942238">Base flexo</translation>
 <translation id="7916802424606434188">Abrir a janela <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> separadores) numa nova janela</translation>
 <translation id="791698251820376781">A sua organização não lhe permite iniciar sessão</translation>
+<translation id="7918936720558783139">A sua oferta guardada vai estar disponível no pagamento através do preenchimento automático. <ph name="BEGIN_LINK" />Faça a gestão das ofertas<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">Guarde bilhetes, eventos e outras informações das páginas que vê, e não apenas formulários que preenche. Em seguida, aceda rapidamente aos seus passes, como bilhetes para eventos e cartões de fidelidade. As informações guardadas podem ser apresentadas nos seus dispositivos e nos produtos Google.</translation>
 <translation id="7930282586031445870">Ecrã dos Termos de Utilização do método Comprar agora e pagar depois fechado.</translation>
 <translation id="7932035970207573919">Morada do trabalho, <ph name="ADDRESS" /></translation>

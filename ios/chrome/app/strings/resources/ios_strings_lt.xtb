@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Nepavyko prisijungti. Bandykite dar kartą vėliau.</translation>
 <translation id="2975761176769946178">Būtina nurodyti URL</translation>
 <translation id="297667759942911166">Bendradarbiavimas skirtukų grupėse</translation>
+<translation id="2986080119218811913">Atgal į puslapį „<ph name="ACTOR_NAME" />“</translation>
 <translation id="298696743524648170">Jei norite naudoti „Gemini“ naršyklėje „Chrome“, prisijunkite prie „Chrome“ naudodami „Google“ paskyrą</translation>
 <translation id="2987670534697681860">Patvirtinkite savo tapatybę, kad galėtumėte pasiekti visus slaptažodžius šiame įrenginyje.</translation>
 <translation id="2989523299700148168">Neseniai lankyta</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, valdo jūsų organizacija.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Skirtukų grupės spalva <ph name="COLOR" /></translation>
+<translation id="500126251490468002">„Google“ slaptažodžių tvarkyklėje nėra šios svetainės slaptažodžio. Grįžkite į „<ph name="ACTOR_NAME" />“ ir prisijunkite arba pridėkite slaptažodį prie „Google“ slaptažodžių tvarkyklės.</translation>
 <translation id="5005498671520578047">Kopijuoti slaptažodį</translation>
 <translation id="5007392906805964215">Peržiūrėti</translation>
 <translation id="5009127379503001909">Naršyti toliau</translation>

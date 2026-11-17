@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Berechtigung für <ph name="PERMISSION_NAME" /> auswählen</translation>
 <translation id="1113000785583998331">IBAN speichern?</translation>
 <translation id="1113869188872983271">&amp;Neu anordnen rückgängig machen</translation>
-<translation id="111897705806685148">Passkey von einem anderen Gerät verwenden</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um festzulegen, welche Chrome-Daten in deinem Google-Konto gespeichert werden sollen</translation>
 <translation id="1121990216147052230">Erstelle eine To-do-Liste für mich</translation>
 <translation id="1123753900084781868">Die Funktion „Automatische Untertitel“ ist derzeit nicht verfügbar</translation>
@@ -2842,7 +2841,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5718326209176373202">Anmerkungen hinzufügen</translation>
 <translation id="5718601519531438273">Dazu gehören Informationen aus Reisepässen und Führerscheinen</translation>
 <translation id="5720705177508910913">Aktueller Nutzer</translation>
-<translation id="5721147290164931316">Zum Anmelden mit dem Smartphone scannen</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} und 1 weitere}other{{website_1}, {website_2} und {more_count} weitere}}</translation>
 <translation id="5722778418591961221">Erstelle einen Trainingsplan für zu Hause, mit dem ich meine Ziele erreichen kann</translation>
 <translation id="572328651809341494">Zuletzt geöffnete Tabs</translation>

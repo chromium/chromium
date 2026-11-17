@@ -58,6 +58,7 @@
 <translation id="2027881372245801507">सूचना बंद केल्याने Chromium च्या पेजची शीर्षके आणि इतर वैशिष्ट्यांसाठी URLs वर प्रक्रिया करणे नियंत्रित होत नाही. तुम्ही तुमच्या <ph name="BEGIN_LINK" />सिंक सेटिंग्ज<ph name="END_LINK" /> मध्ये या डेटाचा अ‍ॅक्सेस व्यवस्थापित करू शकता.</translation>
 <translation id="2036929290919363111">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बऱ्याच गोष्टी मिळवण्यासाठी या साइटवर व Chromium मध्ये साइन इन करा</translation>
 <translation id="2042889939382983733">तुमचा Chromium इतिहास पहा</translation>
+<translation id="2054352566231434723">बाय डीफॉल्ट Chromium मध्ये बाह्य लिंक उघडा.</translation>
 <translation id="2059365270911640413">Chromium सेट करणे पूर्ण करा</translation>
 <translation id="2168108852149185974">Chromium क्रॅश होण्याचे कारण काही ॲड-ऑन आहेत. कृपया ती अनइंस्टॉल करा:</translation>
 <translation id="2168593389981132306">Chromium मध्ये सुधारणा करा</translation>
@@ -85,6 +86,7 @@
 <translation id="2485774047568879945">लिंक सहज शेअर करण्यासाठी आणि उघडण्यासाठी Chromium ला तुमचा डीफॉल्ट ब्राउझर म्हणून सेट करा</translation>
 <translation id="2512597191798760956">Chromium आयकन प्रेस करून धरून ठेवा आणि "होम स्क्रीन संपादित करा" यावर क्लिक करा</translation>
 <translation id="2517624234762908348">तुमचा Chromium डेटा सिंक करा</translation>
+<translation id="2519012503779379646">अ‍ॅप ट्रांझिशन आणखी जलद आणि सोपी करण्यासाठी Chromium डीफॉल्ट म्हणून सेट करा.</translation>
 <translation id="2592940277904433508">Chromium वापरणे पुढे सुरू ठेवा</translation>
 <translation id="2601766165676560303">iPhone आणि iPad साठी Chromium थीम</translation>
 <translation id="2607609479243848905">तुम्ही तुमचा पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलायचे असल्यास, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chromium डेटा हटवणे<ph name="END_LINK" /> हे करा.</translation>
@@ -189,6 +191,7 @@
 <translation id="4985291216379576555">ऑफलाइन, Chromium अपडेट तपासू शकत नाही</translation>
 <translation id="4996471330284142407">सोपे, सुरक्षित आणि पूर्वीपेक्षा अधिक जलद Chromium वापरून आणखी बरेच काही करा.</translation>
 <translation id="4999538639245140991">तुम्ही <ph name="SIGNOUT_MANAGED_DOMAIN" /> द्वारे व्यवस्थापित केलेल्या खात्यातून साइन आउट केले आहे, तुमचा Chromium डेटा या डिव्हाइसवरून हटवला जाईल. तुमचा डेटा तुमच्या Google खाते मध्ये असेल.</translation>
+<translation id="5004986813285860899">थेट Chromium वर जा</translation>
 <translation id="5042011327527167688">“Chromium वर Google Maps सह पहा” वर टॅप करा.</translation>
 <translation id="5044871537677053278">Chromium पत्ते डिटेक्ट करते आणि तुम्हाला दिशानिर्देश व स्थानिक माहिती देण्यासाठी Google Maps वापरते.</translation>
 <translation id="5048140766121299007">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" सेटिंग्जमधून, "Chromium" सुरू करा टॉगल करा</translation>
@@ -202,6 +205,7 @@
 <translation id="5224391634244552924">सेव्ह केलेले पासवर्ड नाहीत. तुम्ही तुमचे पासवर्ड सेव्ह केल्यावर Chromium ते तपासू शकते.</translation>
 <translation id="5259423875997548710">Chromium मध्ये व्हिज्युअल शोधा.</translation>
 <translation id="5284913972719948193">Chromium वर तुमचे पासवर्ड, इतिहास, बुकमार्क आणि क्रेडिट कार्ड वापरण्यासाठी तुमचा डेटा इंपोर्ट करा</translation>
+<translation id="5299421317003704533">थेट Chromium मध्ये लिंक उघडा.</translation>
 <translation id="5308226104666789935">Chromium अपडेट तपासू शकत नाही</translation>
 <translation id="5311557153294205270">Chromium मधील तुमच्या बुकमार्कमध्ये इनपुट केलेल्या URLs जोडते.</translation>
 <translation id="5383251701169024761">तुमचे सेव्ह केलेले पासवर्ड इतर ॲप्समध्ये सहजपणे मिळवण्याकरिता, ऑटोफिलसाठी Chromium निवडा.</translation>
@@ -357,6 +361,7 @@
 <translation id="8602103377623855616">Chromium पेज</translation>
 <translation id="865600487977764604">तुम्ही साइन इन केलेले असते, तेव्हा तुम्हाला Chromium वर सुरक्षित ठेवतो आणि इतर Google अ‍ॅप्सवरील तुमच्या सुरक्षेमध्ये सुधारणा करण्यासाठी वापरला जाऊ शकतो.</translation>
 <translation id="8663480472502753423">Chromium अप टू डेट ठेवा</translation>
+<translation id="8671588626059602995">सर्व लिंक नेहमी Chromium मध्ये उघडत असल्याची खात्री करा.</translation>
 <translation id="8685813584220679697">ही साइट आणि Chromium मध्ये साइन इन करा.</translation>
 <translation id="8697693743327341604">तुम्ही सूचना निवडल्यास किंवा त्याकडे दुर्लक्ष केल्यास, भविष्यात तुम्हाला आणखी सुसंबद्ध सूचना दाखवण्यात मदत करण्यासाठी Chromium जुळवून घेईल.</translation>
 <translation id="869832267508702259">तुम्ही कुठेही ब्राउझ करत असताना Gemini इनसाइट मिळवण्यासाठी Chromium ला तुमचे डीफॉल्ट बनवा</translation>

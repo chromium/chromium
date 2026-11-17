@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="162175252992296058">португалски со американска меѓународна тастатура</translation>
 <translation id="1629521517399325891">Не е достапен кориснички сертификат за мрежна проверка.</translation>
+<translation id="1639239467298939599">Се вчитува</translation>
 <translation id="1641780993263690097">кинески пинјин</translation>
 <translation id="164969095109328410">Уред со Chrome</translation>
 <translation id="1661207570040737402">Го искористивте целиот ваш капацитет во споделениот простор на Google Workspace.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">Синхронизацијата на датотеките е исклучена</translation>
 <translation id="2820957248982571256">Се скенира…</translation>
 <translation id="2830077785865012357">кинески џујин</translation>
+<translation id="2838379631617906747">Се инсталира</translation>
 <translation id="2843806747483486897">Промени зададени вредности…</translation>
 <translation id="2873951654529031587">Корпа</translation>
 <translation id="2887314858867008269">американска Colemak</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Порта</translation>
 <translation id="8656407365183407932">Мораше да се отстранат вашите офлајн датотеки</translation>
 <translation id="8656768832129462377">Не проверувај</translation>
+<translation id="8662978096466608964">Chrome не може да постави тапет.</translation>
 <translation id="8688591111840995413">Погрешна лозинка</translation>
 <translation id="8698464937041809063">Google-цртеж</translation>
 <translation id="8698877009525468705">Датотекава е доверлива и подлежи на ограничувања според правилата на администраторот.</translation>

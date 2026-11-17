@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Изаберите дозволу: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Желите да сачувате IBAN?</translation>
 <translation id="1113869188872983271">&amp;Опозови промену редоследа</translation>
-<translation id="111897705806685148">Користи приступни кључ са другог уређаја</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали тиме које Chrome информације чувате на Google налогу</translation>
 <translation id="1121990216147052230">Направи ми листу задатака</translation>
 <translation id="1123753900084781868">Титл уживо тренутно није доступан</translation>
@@ -2848,7 +2847,6 @@
 <translation id="5718326209176373202">Додај текстуалне напомене</translation>
 <translation id="5718601519531438273">Обухвата информације као што су пасоши и возачке дозволе</translation>
 <translation id="5720705177508910913">Тренутни корисник</translation>
-<translation id="5721147290164931316">Скенирајте да бисте се пријавили помоћу телефона</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} и још 1}one{{website_1}, {website_2} и још {more_count}}few{{website_1}, {website_2} и још {more_count}}other{{website_1}, {website_2} и још {more_count}}}</translation>
 <translation id="5722778418591961221">Испланирај фитнес рутину код куће која ће ми помоћи да остварим циљеве</translation>
 <translation id="572328651809341494">Недавно коришћене картице</translation>

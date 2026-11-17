@@ -130,6 +130,7 @@
 <translation id="248676429071089168">Przesuń palcem w górę, aby przesunąć stronę w dół</translation>
 <translation id="2501278716633472235">Wróć</translation>
 <translation id="252418934079508528">Zainstaluj aplikację <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Przygotowuję urządzenie…</translation>
 <translation id="2538084450874617176">Kto używa tego urządzenia <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> nie może nawiązać połączenia z siecią <ph name="NETWORK_ID" />. Wybierz inną sieć lub spróbuj ponownie.</translation>
 <translation id="2565214867520763227">Włącz czytnik ekranu</translation>
@@ -601,6 +602,7 @@
 <translation id="7666531788977935712">Przycisk Dalej jest włączony</translation>
 <translation id="7671139479636735732">Kliknij prawym przyciskiem, aby łatwo wizualizować pomysły</translation>
 <translation id="770831926727930011">Dane lokalne są chronione starym hasłem. Wpisz je, aby odzyskać te dane.</translation>
+<translation id="7717014941119698257">Pobieram: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Aktualizacja potrzebuje <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Paruję z urządzeniem „<ph name="DEVICE_NAME" />”…</translation>
 <translation id="7746045113967198252">Powiększ lub pomniejsz elementy na ekranie, w tym tekst. Możesz to zrobić później, wybierając Ustawienia &gt; Urządzenie &gt; Wyświetlacze.</translation>

@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Při přejetí prstem nahoru posunout stránku dolů</translation>
 <translation id="2501278716633472235">Zpět</translation>
 <translation id="252418934079508528">Nainstalovat systém <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Příprava zařízení…</translation>
 <translation id="2538084450874617176">Kdo toto zařízení <ph name="DEVICE_TYPE" /> používá?</translation>
 <translation id="2553340429761841190">Systému <ph name="PRODUCT_NAME" /> se nepodařilo připojit k síti <ph name="NETWORK_ID" />. Vyberte jinou síť nebo to zkuste znovu.</translation>
 <translation id="2565214867520763227">Zapnutí čtečky obrazovky</translation>
@@ -628,6 +629,7 @@
 <translation id="7666531788977935712">Tlačítko Pokračovat je aktivováno</translation>
 <translation id="7671139479636735732">Kliknutím pravým tlačítkem myši snadno vizualizujete své nápady</translation>
 <translation id="770831926727930011">Místní data jsou chráněna starým heslem. K obnovení místních dat zadejte své staré heslo.</translation>
+<translation id="7717014941119698257">Stahování: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Místo potřebné pro aktualizaci: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Párování se zařízením <ph name="DEVICE_NAME" />…</translation>
 <translation id="7746045113967198252">Zvětšit nebo zmenšit položky na obrazovce (včetně textu). Tuto možnost můžete také najít později v Nastavení &gt; Zařízení &gt; Obrazovky.</translation>

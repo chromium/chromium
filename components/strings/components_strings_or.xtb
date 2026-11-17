@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />ପାଇଁ ଅନୁମତି ଚୟନ କରନ୍ତୁ</translation>
 <translation id="1113000785583998331">IBAN ସେଭ କରିବେ?</translation>
 <translation id="1113869188872983271">&amp;ପୁନଃକ୍ରମକୁ ପୂର୍ବବତ୍‌ କରନ୍ତୁ</translation>
-<translation id="111897705806685148">ଅନ୍ୟ ଏକ ଡିଭାଇସରୁ ପାସକୀ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଆପଣ କେଉଁ Chrome ସୂଚନା ସେଭ କରନ୍ତି ତାହା ପରିଚାଳନା କରିବାକୁ ଟାବ ତା'ପରେ ଏଣ୍ଟର ଦବାନ୍ତୁ</translation>
 <translation id="1121990216147052230">ମୋ ପାଇଁ ଏକ ଟୁ-ଡୁ ତାଲିକା ତିଆରି କରନ୍ତୁ</translation>
 <translation id="1123753900084781868">ବର୍ତ୍ତମାନ ଲାଇଭ୍ କ୍ୟାପସନ୍ ଉପଲବ୍ଧ ନାହିଁ</translation>
@@ -1305,6 +1304,7 @@
 <translation id="3196374699162453920">ବୁକିଂ କୋଡ</translation>
 <translation id="3196902089458890316">ଉତ୍ତମ ଉତ୍ତର ପାଇଁ ସର୍ବଦା ପ୍ରାସଙ୍ଗିକ ଟାବଗୁଡ଼ିକୁ ସେୟାର କରିବେ?</translation>
 <translation id="3197136577151645743">ଆପଣ କେତେବେଳେ ଏହି ଡିଭାଇସକୁ ସକ୍ରିୟ ଭାବେ ବ୍ୟବହାର କରୁଛନ୍ତି ତାହା ଜାଣିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
+<translation id="3201749168732432347">ଅଫର ଏବଂ ଲୟାଲ୍ଟି କାର୍ଡ</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ସେଟିଂସରେ ଆପଣ କେଉଁ ସୂଚନା ସିଙ୍କ୍ କରନ୍ତି ତାହା ପରିଚାଳନା କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="3203025201812691413">URL ଖାଲି ରହିପାରିବ ନାହିଁ</translation>
 <translation id="320323717674993345">ପେମେଣ୍ଟ ବାତିଲ୍ କରନ୍ତୁ</translation>
@@ -2307,6 +2307,7 @@
 <translation id="4850886885716139402">ଦେଖନ୍ତୁ</translation>
 <translation id="4854853140771946034">Google Keepରେ ଶୀଘ୍ର ଏକ ନୂଆ ନୋଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="4855395119669662878">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="DATE_TIME" />ରେ ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ <ph name="CLOUD_PROVIDER" />ରେ ଅପଲୋଡ କରିବା ଆରମ୍ଭ କରିବେ। ଆପଣଙ୍କ ଫାଇଲର ଅପଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ ନହେବା ପର୍ଯ୍ଯନ୍ତ ଆପଣଙ୍କ ଡିଭାଇସକୁ କନେକ୍ଟ କରି ରଖନ୍ତୁ। ଅପଲୋଡ ପ୍ରକ୍ରିୟା ସମୟରେ, ଆପଣ କେବଳ ସ୍ଥାନୀୟ ଫାଇଲଗୁଡ଼ିକୁ ପଢ଼ିବା ପାଇଁ ସକ୍ଷମ ହେବେ।</translation>
+<translation id="4856655096879441213"><ph name="GOOGLE_WALLET_TITLE" />ରେ ଆପଣଙ୍କ ସୂଚନା ସେଭ କରି ସମଗ୍ର Google ପ୍ରଡକ୍ଟରେ ଫର୍ମଗୁଡ଼ିକୁ ପୂରଣ କରିବା ପରି କାର୍ଯ୍ୟଗୁଡ଼ିକ ଶୀଘ୍ର କରନ୍ତୁ। ଆପଣ <ph name="ACCOUNT" /> ପାଇଁ ଆପଣଙ୍କ ପ୍ରାଇଭେଟ ପାସ ସେଟିଂସରେ <ph name="HOW_INFO_IS_USED_LINK" />କୁ ନିୟନ୍ତ୍ରଣ କରିପାରିବେ।</translation>
 <translation id="485902285759009870">କୋଡ ଯାଞ୍ଚ କରାଯାଉଛି...</translation>
 <translation id="4860260582253463350">YouTubeରେ ଜାରି ରଖିବାକୁ ଏହା ତୁମେ ଅଟ ବୋଲି ଆମକୁ ସୁନିଶ୍ଚିତ କରିବା ଆବଶ୍ୟକ। ତୁମେ Family Linkରେ ତୁମ ବାପାମା କିମ୍ବା ଅଭିଭାବକ ସେଟ ଅପ କରିଥିବା ସେଟିଂସ ପାଇବ।</translation>
 <translation id="4861514638281352187">ରିଡ୍ରେସ ନମ୍ବରକୁ ସିକ୍ୟୁର ଭାବେ ଯୋଗ କରନ୍ତୁ</translation>
@@ -2843,7 +2844,6 @@
 <translation id="5718326209176373202">ଟେକ୍ସଟ ଏନୋଟେସନ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5718601519531438273">ପାସପୋର୍ଟ ଏବଂ ଡ୍ରାଇଭିଂ ଲାଇସେନ୍ସ ପରି ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ</translation>
 <translation id="5720705177508910913">ବର୍ତ୍ତମାନର ୟୁଜର</translation>
-<translation id="5721147290164931316">ଆପଣଙ୍କ ଫୋନ ମାଧ୍ୟମରେ ସାଇନ ଇନ କରିବାକୁ ସ୍କାନ କରନ୍ତୁ</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ଓ 1 ଅଧିକ}other{{website_1}, {website_2} ଓ {more_count} ଅଧିକ}}</translation>
 <translation id="5722778418591961221">ମୋର ଲକ୍ଷ୍ୟ ପୂରଣ କରିବାରେ ମୋତେ ସାହାଯ୍ୟ କରୁଥିବା ଏକ ହୋମ ଫିଟନେସ ରୁଟିନର ପ୍ଲାନ କର</translation>
 <translation id="572328651809341494">ନିକଟର ଟାବ୍‌ଗୁଡ଼ିକ</translation>

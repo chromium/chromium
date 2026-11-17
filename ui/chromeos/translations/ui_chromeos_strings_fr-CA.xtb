@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="162175252992296058">Portugais avec clavier international américain</translation>
 <translation id="1629521517399325891">Le certificat utilisateur n'est pas accessible pour l'authentification réseau.</translation>
+<translation id="1639239467298939599">Chargement en cours</translation>
 <translation id="1641780993263690097">Pinyin chinois</translation>
 <translation id="164969095109328410">Appareil Google Chrome</translation>
 <translation id="1661207570040737402">Vous avez utilisé tout l'espace de stockage Google Workspace de votre espace de stockage Disque partagé.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">Synchronisation des fichiers désactivée</translation>
 <translation id="2820957248982571256">Recherche en cours…</translation>
 <translation id="2830077785865012357">Chinois (Zhuyin)</translation>
+<translation id="2838379631617906747">Installation en cours…</translation>
 <translation id="2843806747483486897">Changer l'action par défaut…</translation>
 <translation id="2873951654529031587">Corbeille</translation>
 <translation id="2887314858867008269">Colemak américain</translation>
@@ -1021,6 +1023,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Port</translation>
 <translation id="8656407365183407932">Vos fichiers hors ligne ont dû être retirés</translation>
 <translation id="8656768832129462377">Ne pas vérifier</translation>
+<translation id="8662978096466608964">Chrome ne peut pas utiliser ce fichier comme fond d'écran.</translation>
 <translation id="8688591111840995413">Mot de passe incorrect</translation>
 <translation id="8698464937041809063">Dessin Google</translation>
 <translation id="8698877009525468705">Ce fichier est confidentiel et soumis à des restrictions aux termes de la politique de l'administrateur.</translation>

@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> માટે પરવાનગી પસંદ કરો</translation>
 <translation id="1113000785583998331">IBAN સાચવીએ?</translation>
 <translation id="1113869188872983271">&amp;પુનઃક્રમાંકિત કરવું પૂર્વવત્ કરો</translation>
-<translation id="111897705806685148">અન્ય ડિવાઇસમાંથી પાસકીનો ઉપયોગ કરો</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, તમે તમારા Google એકાઉન્ટમાં Chromeની કઈ માહિતી સાચવો છો તે મેનેજ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="1121990216147052230">મારા માટે કરવાના કાર્યોની સૂચિ બનાવો</translation>
 <translation id="1123753900084781868">આ સમયે લાઇવ કૅપ્શનની સુવિધા ઉપલબ્ધ નથી</translation>
@@ -1307,6 +1306,7 @@
 <translation id="3196374699162453920">બુકિંગ કોડ</translation>
 <translation id="3196902089458890316">બહેતર જવાબો માટે હંમેશાં સંબંધિત ટૅબ શેર કરીએ?</translation>
 <translation id="3197136577151645743">તમે સક્રિયપણે તમારા ડિવાઇસનો ઉપયોગ ક્યારે કરો છો, તે જાણકારી મેળવવા માટે પૂછી શકે છે</translation>
+<translation id="3201749168732432347">ઑફરો અને લૉયલ્ટિ કાર્ડ</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ટૅબ દબાવો અને પછી Chrome સેટિંગમાં તમે જે માહિતી સિંક કરવા ઇચ્છતા હો, તે મેનેજ કરવા માટે Enter કી દબાવો</translation>
 <translation id="3203025201812691413">URL ખાલી ન હોઈ શકે</translation>
 <translation id="320323717674993345">ચુકવણી રદ કરો</translation>
@@ -2310,6 +2310,7 @@
 <translation id="4850886885716139402">જુઓ</translation>
 <translation id="4854853140771946034">Google Keepમાં ઝડપથી કોઈ નવી નોંધ બનાવો</translation>
 <translation id="4855395119669662878">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા <ph name="DATE_TIME" /> સમયે <ph name="CLOUD_PROVIDER" />માં તમારી ફાઇલો અપલોડ કરવાની પ્રક્રિયા શરૂ કરવામાં આવશે. તમારી ફાઇલને અપલોડ કરવાની પ્રક્રિયા પૂર્ણ થાય નહીં, ત્યાં સુધી તમારું ડિવાઇસ કનેક્ટેડ રાખો. અપલોડ કરવાની પ્રક્રિયા દરમિયાન તમે માત્ર સ્થાનિક ફાઇલો જ જોઈ શકશો.</translation>
+<translation id="4856655096879441213"><ph name="GOOGLE_WALLET_TITLE" />માં તમારી માહિતી સાચવો અને Googleની તમામ પ્રોડક્ટ પર ફોર્મ ભરવા જેવી બાબતો વધુ ઝડપથી કરો. તમે <ph name="ACCOUNT" /> માટે તમારા ખાનગી પાસના સેટિંગમાં <ph name="HOW_INFO_IS_USED_LINK" />ને નિયંત્રિત કરી શકો છો.</translation>
 <translation id="485902285759009870">કોડ ચકાસી રહ્યાં છીએ...</translation>
 <translation id="4860260582253463350">YouTube પર ચાલુ રાખવા માટે, અમારે ખાતરી કરવી જરૂરી છે કે તે તમે જ છો. તમારા માતાપિતા અથવા વાલીએ Family Linkમાં સેટઅપ કરેલા સેટિંગ તમને મળશે.</translation>
 <translation id="4861514638281352187">નિવારણ નંબર સુરક્ષિત રીતે ઉમેરો</translation>
@@ -2846,7 +2847,6 @@
 <translation id="5718326209176373202">ટેક્સ્ટ સંબંધિત ટીકાટિપ્પણીઓ ઉમેરો</translation>
 <translation id="5718601519531438273">આમાં પાસપોર્ટ અને ડ્રાઇવિંગ લાઇસન્સ જેવી માહિતી શામેલ છે</translation>
 <translation id="5720705177508910913">વર્તમાન વપરાશકર્તા</translation>
-<translation id="5721147290164931316">તમારા ફોન વડે સાઇન ઇન કરવા માટે સ્કૅન કરો</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} અને વધુ 1}one{{website_1}, {website_2} અને વધુ {more_count}}other{{website_1}, {website_2} અને વધુ {more_count}}}</translation>
 <translation id="5722778418591961221">ઘરમાં ફિટનેસ મેળવવા માટેનું એવું રૂટિન પ્લાન કરો, જે મને મારા લક્ષ્યો પૂરા કરવામાં મદદ કરે</translation>
 <translation id="572328651809341494">તાજેતરના ટેબ્સ</translation>

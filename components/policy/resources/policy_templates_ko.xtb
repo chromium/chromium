@@ -1835,6 +1835,14 @@ AI 기록 검색은 사용자가 방문 기록을 검색하고 페이지 제목�
 정책을 1로 설정하면 탭 그룹을 공유할 수 없음을 나타냅니다.</translation>
 <translation id="2116169546538119304"> 이 정책은 지원 중단되었으므로 로그인 비밀번호를 다시 사용하려면 Kerberos 정책을 구성해 주세요.</translation>
 <translation id="2117990069872855599">아바타 이미지를 다운로드할 수 있는 URL입니다.</translation>
+<translation id="2121809456184087198">관리자가 데이터 손실 방지(DLP) 규칙에 따라 적용된 워터마크의 모양을 맞춤설정할 수 있습니다. 여기에는 채우기/윤곽선 불투명도 설정, 글꼴 크기 정의, 타임스탬프 시간대 설정이 포함됩니다. 현재 iOS에서는 타임스탬프 시간대가 지원되지 않습니다.
+정책 또는 일부 값을 설정하지 않으면 Chrome에서 기본 워터마크 동작을 사용합니다.
+데스크톱의 기본값은 채우기 불투명도 4, 윤곽선 불투명도 6, 글꼴 크기 24입니다. iOS의 기본값은 채우기 불투명도 10, 윤곽선 불투명도 15, 글꼴 크기 16입니다. 모든 플랫폼에서 타임스탬프 시간대는 기본적으로 'user_device'(사용자의 로컬 기기 시간대)로 설정됩니다.
+
+'채우기 불투명도'는 0(완전 투명)에서 100(완전 불투명) 사이의 백분율입니다.
+'윤곽선 불투명도'는 0(완전 투명)에서 100(완전 불투명) 사이의 백분율입니다.
+'글꼴 크기'는 포인트 단위로 지정됩니다.
+'타임스탬프 시간대'는 워터마크 타임스탬프(Chrome 152 이상에서 지원)의 형식을 지정하는 데 사용되는 IANA 시간대 식별자(예: 'America/Toronto')를 지정합니다. 식별자는 IANA 시간대 데이터베이스( https://www.iana.org/time-zones )의 이름을 따릅니다. 현재 iOS에서는 지원되지 않습니다.</translation>
 <translation id="2124881675920287921">이 정책은 M82에서 지원이 중단되었으며 M85에서 삭제되었습니다. 대신 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />를 사용하세요. <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" />를 사용 중지하는 것은 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />를 사용 중지하는 것과 동일합니다. <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" />를 사용 설정하거나 이 설정을 설정하지 않으면 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />를 설정하지 않는 것과 같습니다.
 
       정책을 False로 설정하면 사용자가 일부 시스템 정보 및 페이지 콘텐츠를 Google 서버로 전송하도록 선택할 수 없게 됩니다. True로 설정하거나 설정하지 않으면 사용자는 위험한 앱 및 사이트를 감지하기 위해 일부 시스템 정보와 페이지 콘텐츠를 세이프 브라우징으로 전송할 수 있습니다.
@@ -2797,6 +2805,7 @@ Chrome에서 퍼스트 파티 세트 관련 통합을 지원하는지 제어합�
 <translation id="2672012807430078509">SMB 마운트용 인증 프로토콜로 NTLM을 사용할지 여부를 제어합니다.</translation>
 <translation id="2673363037046384711">최종 사용자가 고효율 모드를 사용 또는 사용 중지할 수 있음</translation>
 <translation id="2673968385134502798">게임</translation>
+<translation id="2675678512339436287">워터마크 타임스탬프(Chrome 152 이상에서 지원되며 iOS에서는 아직 지원되지 않음)의 형식을 지정하는 데 사용되는 IANA 시간대 식별자(예: 'America/Toronto')입니다. 기본값은 'user_device'입니다.</translation>
 <translation id="2678503605767349615">기기 수준 필수 클라이언트 인증서</translation>
 <translation id="268025561734472010">이 정책은 Google Developer Program과 <ph name="CHROME_DEVTOOLS_NAME" />의 통합을 제어합니다. 사용자의 Google Developer Program 프로필이 <ph name="CHROME_DEVTOOLS_NAME" />에 표시되며 사용자는 <ph name="CHROME_DEVTOOLS_NAME" /> 내에서 특정 작업을 수행하면 배지를 받습니다.
 
@@ -4967,9 +4976,6 @@ URL이 <ph name="AUTOMATIC_DOWNLOADS_ALLOWED_FOR_URLS_POLICY_NAME" /> 및 <ph na
 
       이 정책은 지원 중단되었으므로 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 정책을 대신 사용하시기 바랍니다.</translation>
 <translation id="4088589230932595924">시크릿 모드를 강제로 사용함</translation>
-<translation id="4089849819635523136"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />가 사용 설정되어 있으면 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />을(를) 설정할 경우 이 공급자의 검색을 트리거하기 위해 주소 표시줄에서 사용되는 키워드 또는 단축키를 지정합니다.
-
-      <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />를 설정하지 않으면 어떤 키워드도 검색 공급자를 활성화하지 않습니다.</translation>
 <translation id="4090088362777472639">Ansible 플레이북의 SHA-256 해시입니다.</translation>
 <translation id="4091040199847925434">세이프 브라우징 개선에 사용되는 시스템 정보 및 페이지 콘텐츠 보고 사용 안함</translation>
 <translation id="4093058072421210667">인라인 이미지를 허용하지 않습니다.</translation>

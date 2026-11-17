@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="162175252992296058">Португальский, американская международная раскладка</translation>
 <translation id="1629521517399325891">Сертификат пользователя нельзя использовать для аутентификации сети.</translation>
+<translation id="1639239467298939599">Загрузка…</translation>
 <translation id="1641780993263690097">Китайский, пиньинь</translation>
 <translation id="164969095109328410">Устройство Chrome</translation>
 <translation id="1661207570040737402">Закончилось место на общем диске Google Workspace.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">Синхронизация файлов отключена</translation>
 <translation id="2820957248982571256">Поиск…</translation>
 <translation id="2830077785865012357">Китайский, чжуинь</translation>
+<translation id="2838379631617906747">Установка...</translation>
 <translation id="2843806747483486897">Изменить настройки по умолчанию…</translation>
 <translation id="2873951654529031587">Корзина</translation>
 <translation id="2887314858867008269">США (Colemak)</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – порт</translation>
 <translation id="8656407365183407932">Доступ к файлам в офлайн-режиме закрыт</translation>
 <translation id="8656768832129462377">Не проверять</translation>
+<translation id="8662978096466608964">Chrome не может установить выбранное изображение в качестве обоев рабочего стола.</translation>
 <translation id="8688591111840995413">Неверный пароль</translation>
 <translation id="8698464937041809063">Рисунок Google</translation>
 <translation id="8698877009525468705">Это конфиденциальный файл, и администратор ограничил его использование</translation>

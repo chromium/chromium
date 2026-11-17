@@ -5073,9 +5073,6 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
 
       Esta política dejó de estar disponible; usa <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="4088589230932595924">Modo incógnito forzado</translation>
-<translation id="4089849819635523136">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> especificará la palabra clave o el atajo que se utilizará en la barra de direcciones para activar la búsqueda de este proveedor.
-
-      Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />, no se activará el proveedor de búsqueda con ninguna palabra clave.</translation>
 <translation id="4090088362777472639">El hash SHA-256 del playbook de Ansible.</translation>
 <translation id="4091040199847925434">Inhabilitar los informes de información del sistema y el contenido de la página que se usan para ayudar a mejorar la Navegación segura</translation>
 <translation id="4093058072421210667">No permitir la función Inline Image.</translation>

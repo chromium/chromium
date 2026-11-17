@@ -530,6 +530,7 @@
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />მიიღეთ დახმარება<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">ფასისთვის თვალის მიდევნება</translation>
 <translation id="3037517125981011456">გამოაჩენს Chrome-ში შესვლის მოთხოვნებს</translation>
+<translation id="3038505649933066250">თარიღით გაფილტვრა</translation>
 <translation id="3044436568790455247">„მოწყობილობის არჩევა“ გახსნილია სრულ სიმაღლეზე.</translation>
 <translation id="3057938290530993634">ხანგრძლივად შეეხეთ თქვენი ყველაზე ხშირად მონახულებული ვებსაიტების ჩასამაგრებლად, რათა შემდეგ ჯერზე მარტივად მიიღოთ მათზე წვდომა</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> სანიშნე}other{<ph name="BOOKMARKS_COUNT_MANY" /> სანიშნე}}</translation>
@@ -917,6 +918,7 @@
 <translation id="4585793705637313973">გვერდის რედაქტირება</translation>
 <translation id="4587589328781138893">საიტები</translation>
 <translation id="4587590257937792551">Chrome-ს აქვს ახალი ქვედა ხელსაწყოთა ზოლი, რომელიც შექმნილია კომფორტის მიზნით. ნებისმიერ დროს შეგიძლიათ უკან გადართვა <ph name="BEGIN_LINK" />პარამეტრებიდან<ph name="END_LINK" />.</translation>
+<translation id="4592634244097223647">Google-ისთვის ამ სურათის შესახებ შეკითხვა</translation>
 <translation id="4594952190837476234">ეს ხაზგარეშე გვერდი თარიღდება <ph name="CREATION_TIME" />-ით და შეიძლება განსხვავდებოდეს ონლაინ-ვერსიისგან.</translation>
 <translation id="4595237294768457124">გახსენით ახალი ჩანართის გვერდი</translation>
 <translation id="4595276580892809760">სურათების მიმაგრება გალერეიდან</translation>

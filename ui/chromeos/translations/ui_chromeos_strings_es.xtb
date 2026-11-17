@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="162175252992296058">Portugués con teclado de EE. UU. internacional</translation>
 <translation id="1629521517399325891">El certificado de usuario no está disponible para la autenticación de redes.</translation>
+<translation id="1639239467298939599">Cargando</translation>
 <translation id="1641780993263690097">Chino (pinyin)</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
 <translation id="1661207570040737402">Has usado todo el espacio de almacenamiento de tu unidad compartida de Google Workspace.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">Sincronización de archivos desactivada</translation>
 <translation id="2820957248982571256">Buscando...</translation>
 <translation id="2830077785865012357">Chino (zhuyin)</translation>
+<translation id="2838379631617906747">Instalando</translation>
 <translation id="2843806747483486897">Cambiar acción predeterminada...</translation>
 <translation id="2873951654529031587">Papelera</translation>
 <translation id="2887314858867008269">Estados Unidos (Colemak)</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> (puerto)</translation>
 <translation id="8656407365183407932">Se han tenido que eliminar tus archivos sin conexión</translation>
 <translation id="8656768832129462377">No comprobar</translation>
+<translation id="8662978096466608964">Chrome no puede establecer el fondo de pantalla.</translation>
 <translation id="8688591111840995413">Contraseña incorrecta</translation>
 <translation id="8698464937041809063">Dibujo de Google</translation>
 <translation id="8698877009525468705">Este archivo es confidencial y está sujeto a restricciones según la política del administrador.</translation>

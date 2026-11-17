@@ -146,6 +146,7 @@
 <translation id="248676429071089168">पेज सारेर तल लैजान माथितिर स्वाइप गर्नुहोस्</translation>
 <translation id="2501278716633472235">पछाडि जानुहोस्</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> इन्स्टल गर्नुहोस्</translation>
+<translation id="2532146950330687938">डिभाइस सेटअप गरिँदै छ...</translation>
 <translation id="2538084450874617176">यो <ph name="DEVICE_TYPE" /> कसले चलाउँदै हुनुहुन्छ?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> <ph name="NETWORK_ID" /> मा जडान हुन असक्षम थियो । कृपया अर्को नेटवर्क चयन गर्नुहोस् वा पुन: प्रयास गर्नुहोस्।</translation>
 <translation id="2565214867520763227">स्क्रिन रिडर अन गर्नुहोस्</translation>
@@ -630,6 +631,7 @@
 <translation id="7666531788977935712">"जारी राख्नुहोस्" बटन अन गरिएको छ</translation>
 <translation id="7671139479636735732">आफ्ना आइडियाहरू सजिलै भिजुअलाइज गर्न राइट क्लिक गर्नुहोस्</translation>
 <translation id="770831926727930011">तपाईंको पुरानो पासवर्डमार्फत तपाईंको लोकल डेटा सुरक्षित गरिएको छ। लोकल डेटा रिकभर गर्न आफ्नो पुरानो पासवर्ड हाल्नुहोस्।</translation>
+<translation id="7717014941119698257">डाउनलोड गरिँदै छ: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">अद्यावधिकका लागि आवश्यक खाली ठाउँ: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" सँग जोडा बनाउँदै ...</translation>
 <translation id="7746045113967198252">तपाईंको स्क्रिनमा देखाइने टेक्स्टलगायतका सामग्रीहरू अझ ठुलो वा सानो बनाउनुहोस्। तपाईं पछि "सेटिङ &gt; डिभाइस &gt; डिस्प्ले" मा गई यो सेटिङ मिलाउन सक्नुहुन्छ।</translation>

@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Избиране на разрешението за <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Да се запази ли IBAN?</translation>
 <translation id="1113869188872983271">&amp;Отмяна на пренареждането</translation>
-<translation id="111897705806685148">Използване на ключ за достъп от друго устройство</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате каква информация от Chrome да се запазва в профила ви в Google</translation>
 <translation id="1121990216147052230">Създай ми списък със задачи</translation>
 <translation id="1123753900084781868">Понастоящем функцията „Надписи на живо“ не е налице</translation>
@@ -2848,7 +2847,6 @@
 <translation id="5718326209176373202">Добавяне на текстови пояснения</translation>
 <translation id="5718601519531438273">Включва различна информация, като например паспорти и шофьорски книжки</translation>
 <translation id="5720705177508910913">Текущият потребител</translation>
-<translation id="5721147290164931316">Сканирайте, за да влезете в профила си чрез телефона си</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} и още 1}other{{website_1}, {website_2} и още {more_count}}}</translation>
 <translation id="5722778418591961221">Планирай домашна фитнес програма, която да ми помогне да постигна целите си</translation>
 <translation id="572328651809341494">Скорошни раздели</translation>

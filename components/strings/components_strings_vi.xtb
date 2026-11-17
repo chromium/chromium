@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Chọn quyền cho <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Lưu IBAN?</translation>
 <translation id="1113869188872983271">&amp;Hoàn tác sắp xếp lại</translation>
-<translation id="111897705806685148">Sử dụng khoá truy cập từ một thiết bị khác</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn phím Enter để quản lý thông tin Chrome bạn lưu trong Tài khoản Google</translation>
 <translation id="1121990216147052230">Lập cho tôi một danh sách việc cần làm</translation>
 <translation id="1123753900084781868">Tính năng Phụ đề trực tiếp hiện không hoạt động</translation>
@@ -1307,6 +1306,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3196374699162453920">Mã đặt chỗ</translation>
 <translation id="3196902089458890316">Luôn chia sẻ các thẻ có liên quan để nhận được câu trả lời phù hợp hơn?</translation>
 <translation id="3197136577151645743">Trang web có thể yêu cầu được biết khi bạn đang dùng thiết bị này</translation>
+<translation id="3201749168732432347">Ưu đãi và thẻ khách hàng thân thiết</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn Tab, sau đó nhấn Enter để quản lý loại thông tin bạn đồng bộ hóa trong phần Cài đặt của Chrome</translation>
 <translation id="3203025201812691413">Không được để trống URL</translation>
 <translation id="320323717674993345">Hủy thanh toán</translation>
@@ -2310,6 +2310,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4850886885716139402">Xem</translation>
 <translation id="4854853140771946034">Tạo nhanh một ghi chú mới trong Google Keep</translation>
 <translation id="4855395119669662878">Quản trị viên của bạn sẽ bắt đầu tải các tệp của bạn lên <ph name="CLOUD_PROVIDER" /> vào <ph name="DATE_TIME" />. Hãy duy trì kết nối thiết bị cho đến khi quá trình tải tệp lên hoàn tất. Trong quá trình tải lên, bạn sẽ chỉ có thể đọc các tệp trên máy.</translation>
+<translation id="4856655096879441213">Lưu thông tin của bạn vào <ph name="GOOGLE_WALLET_TITLE" /> để hoàn thành công việc nhanh hơn, chẳng hạn như điền vào biểu mẫu trên các sản phẩm của Google. Bạn có thể kiểm soát <ph name="HOW_INFO_IS_USED_LINK" /> trong phần cài đặt thẻ và vé riêng tư cho <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Đang xác minh mã...</translation>
 <translation id="4860260582253463350">Để giúp bạn truy cập YouTube, chúng tôi cần xác minh danh tính của bạn. Bạn sẽ sử dụng các chế độ cài đặt mà cha mẹ hoặc người giám hộ thiết lập trong Family Link.</translation>
 <translation id="4861514638281352187">Thêm mã số Redress Number một cách an toàn</translation>
@@ -2846,7 +2847,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5718326209176373202">Thêm chú thích văn bản</translation>
 <translation id="5718601519531438273">Bao gồm thông tin như hộ chiếu và giấy phép lái xe</translation>
 <translation id="5720705177508910913">Người dùng hiện tại</translation>
-<translation id="5721147290164931316">Quét để đăng nhập bằng điện thoại</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} và 1 trang web khác}other{{website_1}, {website_2} và {more_count} trang web khác}}</translation>
 <translation id="5722778418591961221">Lên kế hoạch tập thể dục tại nhà để giúp tôi đạt được mục tiêu</translation>
 <translation id="572328651809341494">Thẻ gần đây</translation>

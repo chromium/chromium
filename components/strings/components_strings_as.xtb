@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />ৰ বাবে অনুমতি বাছনি কৰক</translation>
 <translation id="1113000785583998331">IBAN ছেভ কৰিবনে?</translation>
 <translation id="1113869188872983271">পুনঃক্ৰম কৰাটো &amp;আনডু কৰক</translation>
-<translation id="111897705806685148">অন্য এটা ডিভাইচৰ পৰা পাছকী ব্যৱহাৰ কৰক</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপুনি আপোনাৰ Google একাউণ্টত Chromeৰ কি তথ্য ছেভ কৰে সেয়া পৰিচালনা কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="1121990216147052230">মোৰ বাবে এখন কৰণীয় কাৰ্যৰ সূচী বনাওক</translation>
 <translation id="1123753900084781868">এই মুহূৰ্তত লাইভ কেপশ্বন উপলব্ধ নহয়</translation>
@@ -1305,6 +1304,7 @@
 <translation id="3196374699162453920">বুকিঙৰ ক’ড</translation>
 <translation id="3196902089458890316">উন্নত সঁহাৰিৰ বাবে সদায় প্ৰাসংগিক টেবসমূহ শ্বেয়াৰ কৰিব নেকি?</translation>
 <translation id="3197136577151645743">আপুনি এই ডিভাইচটো কেতিয়া সক্ৰিয়ভাৱে ব্যৱহাৰ কৰি থাকে সেয়া জানিবলৈ বিচাৰিব পাৰে</translation>
+<translation id="3201749168732432347">অফাৰ আৰু লয়েল্টী কাৰ্ড</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপুনি Chromeৰ ছেটিঙত কি তথ্য ছিংক কৰিব সেয়া পৰিচালনা কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="3203025201812691413">URL খালী থাকিব নোৱাৰে</translation>
 <translation id="320323717674993345">পৰিশোধ বাতিল কৰক</translation>
@@ -2306,6 +2306,7 @@
 <translation id="4850886885716139402">চাওক</translation>
 <translation id="4854853140771946034">Google Keepত ক্ষিপ্ৰভাৱে এটা নতুন টোকা সৃষ্টি কৰক</translation>
 <translation id="4855395119669662878">আপোনাৰ প্ৰশাসকে <ph name="DATE_TIME" />ত আপোনাৰ ফাইল <ph name="CLOUD_PROVIDER" />ত আপল’ড কৰা আৰম্ভ কৰিব। আপোনাৰ ফাইল আপল’ড কৰা সম্পূৰ্ণ নোহোৱালৈকে আপোনাৰ ডিভাইচ সংযুক্ত কৰি ৰাখক। আপল’ড চলি থকাৰ সময়ত আপুনি কেৱল স্থানীয় ফাইলহে পঢ়িব পাৰিব।</translation>
+<translation id="4856655096879441213"><ph name="GOOGLE_WALLET_TITLE" />ত আপোনাৰ তথ্য ছেভ কৰক আৰু Googleৰ সমগ্ৰ প্ৰ’ডাক্টত ফৰ্ম পূৰ কৰাৰ দৰে কামবোৰ দ্ৰুততাৰে কৰক। আপুনি <ph name="ACCOUNT" />ৰ বাবে আপোনাৰ ব্যক্তিগত পাছৰ ছেটিঙত <ph name="HOW_INFO_IS_USED_LINK" /> নিয়ন্ত্ৰণ কৰিব পাৰে।</translation>
 <translation id="485902285759009870">ক’ডটো সত্যাপন কৰি থকা হৈছে...</translation>
 <translation id="4860260582253463350">YouTubeলৈ অব্যাহত ৰাখিবলৈ, আমি আপোনাৰ পৰিচয়টো নিশ্চিত কৰিব লাগিব। আপুনি আপোনাৰ অভিভাৱক বা বৈধ অভিভাৱকে Family Linkত ছেট আপ কৰা ছেটিং পাব।</translation>
 <translation id="4861514638281352187">সুৰক্ষিতভাৱে ৰিড্ৰেছ নম্বৰ যোগ দিয়ক</translation>
@@ -2842,7 +2843,6 @@
 <translation id="5718326209176373202">পাঠৰ এন’টেশ্বন যোগ দিয়ক</translation>
 <translation id="5718601519531438273">পাছপ’ৰ্ট আৰু চালকৰ অনুজ্ঞাপত্ৰৰ দৰে তথ্য অন্তৰ্ভুক্ত কৰে</translation>
 <translation id="5720705177508910913">বর্তমানৰ ব্যৱহাৰকাৰী</translation>
-<translation id="5721147290164931316">আপোনাৰ ফ’নৰ জৰিয়তে ছাইন ইন কৰিবলৈ স্কেন কৰক</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} আৰু ১ টা}one{{website_1}, {website_2} আৰু {more_count} টা}other{{website_1}, {website_2} আৰু {more_count} টা}}</translation>
 <translation id="5722778418591961221">মোৰ লক্ষ্যত উপনীত হোৱাত সহায় কৰা ঘৰত কৰিব পৰা শৰীৰচৰ্চাৰ ৰুটিনৰ পৰিকল্পনা কৰক</translation>
 <translation id="572328651809341494">শেহতীয়াকৈ বন্ধ কৰা টেব</translation>

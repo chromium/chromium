@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Velg tillatelse for <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Vil du lagre IBAN-nummeret?</translation>
 <translation id="1113869188872983271">&amp;Angre omorganiseringen</translation>
-<translation id="111897705806685148">Bruk passnøkkel fra en annen enhet</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere hvilken Chrome-informasjon du lagrer i Google-kontoen din</translation>
 <translation id="1121990216147052230">Lag en gjøremålsliste til meg</translation>
 <translation id="1123753900084781868">Direkteteksting er ikke tilgjengelig akkurat nå</translation>
@@ -1307,6 +1306,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3196374699162453920">Bestillingskode</translation>
 <translation id="3196902089458890316">Vil du alltid dele relevante faner for å få bedre svar?</translation>
 <translation id="3197136577151645743">Kan be om å få vite når du bruker denne enheten aktivt</translation>
+<translation id="3201749168732432347">Tilbud og stamkundekort</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere hvilken informasjon du synkroniserer, i Chrome-innstillingene</translation>
 <translation id="3203025201812691413">Nettadressen kan ikke være tom</translation>
 <translation id="320323717674993345">Avbryt betalingen</translation>
@@ -2310,6 +2310,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4850886885716139402">Visning</translation>
 <translation id="4854853140771946034">Opprett et nytt notat i Google Keep raskt</translation>
 <translation id="4855395119669662878">Administratoren din begynner å laste opp filene dine til <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" />. Hold enheten tilkoblet frem til filene er lastet opp. Under opplastingen kan du bare lese lokale filer.</translation>
+<translation id="4856655096879441213">Lagre informasjonen din i <ph name="GOOGLE_WALLET_TITLE" /> for å få ting gjort raskere, for eksempel å fylle ut skjemaer i ulike Google-produkter. Du kan kontrollere <ph name="HOW_INFO_IS_USED_LINK" />, i innstillingene for private kort for <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Bekrefter koden …</translation>
 <translation id="4860260582253463350">Før du kan gå videre til YouTube, må vi være sikre på at det er deg. Du får innstillingene som forelderen eller den foresatte har konfigurert i Family Link.</translation>
 <translation id="4861514638281352187">Legg til Redress Number på en sikker måte</translation>
@@ -2846,7 +2847,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5718326209176373202">Legg til tekstmerknader</translation>
 <translation id="5718601519531438273">Inkluderer informasjon som pass og førerkort</translation>
 <translation id="5720705177508910913">Gjeldende bruker</translation>
-<translation id="5721147290164931316">Skann for å logge på med telefonen</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1} og {website_2}}=3{{website_1}, {website_2} og 1 til}other{{website_1}, {website_2} og {more_count} til}}</translation>
 <translation id="5722778418591961221">Lag en treningsrutine for hjemmet som hjelper meg med å nå målene mine</translation>
 <translation id="572328651809341494">Nylige faner</translation>

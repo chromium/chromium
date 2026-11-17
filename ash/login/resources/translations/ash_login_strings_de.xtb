@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Nach oben wischen, um die Seite nach unten zu verschieben</translation>
 <translation id="2501278716633472235">Zurück</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> installieren</translation>
+<translation id="2532146950330687938">Gerät wird vorbereitet…</translation>
 <translation id="2538084450874617176"><ph name="DEVICE_TYPE" /> – wer verwendet dieses Gerät?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> konnte keine Verbindung zu <ph name="NETWORK_ID" /> herstellen. Wähle ein anderes Netzwerk oder versuche es noch einmal.</translation>
 <translation id="2565214867520763227">Screenreader aktivieren</translation>
@@ -628,6 +629,7 @@
 <translation id="7666531788977935712">Button „Weiter“ aktiviert</translation>
 <translation id="7671139479636735732">Rechtsklicken, um deine Ideen ganz einfach zu visualisieren</translation>
 <translation id="770831926727930011">Deine lokalen Daten sind durch dein altes Passwort geschützt. Gib dein altes Passwort ein, um die lokalen Daten wiederherzustellen.</translation>
+<translation id="7717014941119698257">Download wird ausgeführt: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Für Update benötigt: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Wird mit "<ph name="DEVICE_NAME" />" gekoppelt…</translation>
 <translation id="7746045113967198252">Du kannst Elemente auf dem Bildschirm vergrößern oder verkleinern, einschließlich Text. Du findest diese Option auch in den Einstellungen unter „Gerät“ &gt; „Displays“.</translation>

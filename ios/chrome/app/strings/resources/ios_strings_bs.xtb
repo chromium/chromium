@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Prijava nije uspjela. Pokušajte ponovo kasnije.</translation>
 <translation id="2975761176769946178">URL je obavezan</translation>
 <translation id="297667759942911166">Sarađujte u grupama kartica</translation>
+<translation id="2986080119218811913">Nazad u aplikaciju <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Da koristite Gemini u Chromeu, prijavite se u Chrome putem Google računa</translation>
 <translation id="2987670534697681860">Potvrdite identitet da pristupate svim svojim lozinkama na ovom uređaju.</translation>
 <translation id="2989523299700148168">Nedavno posjećeno</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />. Ovim upravlja vaša organizacija.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Boja grupe kartica: <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Google Upravitelj lozinki nema lozinku za ovu web lokaciju. Vratite se u aplikaciju <ph name="ACTOR_NAME" /> da se prijavite ili dodajte lozinku u Google Upravitelj lozinki.</translation>
 <translation id="5005498671520578047">Kopiranje lozinke</translation>
 <translation id="5007392906805964215">Pregled</translation>
 <translation id="5009127379503001909">Nastavite pregledati</translation>

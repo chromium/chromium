@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Кире албай калдңз. Бир аздн кийн аракт кылп көрңз.</translation>
 <translation id="2975761176769946178">URL талап кылынат</translation>
 <translation id="297667759942911166">Өтмөктөр тобунда кызматташуу</translation>
+<translation id="2986080119218811913">Төмөнкүгө кайтуу: <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Chrome'догу Gemini'ды колдонуу үчүн Chrome'го Google аккаунтуңуз менен кириңиз</translation>
 <translation id="2987670534697681860">Бул түзмөктөгү бардык сырсөздөрүңүздү алуу үчүн сиз экениңизди ырастаңыз.</translation>
 <translation id="2989523299700148168">Жакында колдонулгандар</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> аккаунтун уюмуңуз тескейт.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Өтмөктөр тобунун түсү: <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Сырсөздөрдү башкаргычта бул сайт үчүн сырсөз жок. Кирүү үчүн <ph name="ACTOR_NAME" /> кызматына кайтып же Сырсөздөрдү башкаргычка сырсөз кошуңуз.</translation>
 <translation id="5005498671520578047">Сырсөздү көчүрүү</translation>
 <translation id="5007392906805964215">Карап көрүү</translation>
 <translation id="5009127379503001909">Карай берүү</translation>

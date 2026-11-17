@@ -146,6 +146,7 @@
 <translation id="248676429071089168">পৃষ্ঠাটো তললৈ নিবলৈ ওপৰলৈ ছোৱাইপ কৰক</translation>
 <translation id="2501278716633472235">উভতি যাওক</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> ইনষ্টল কৰক</translation>
+<translation id="2532146950330687938">ডিভাইচটো সাজু কৰি থকা হৈছে...</translation>
 <translation id="2538084450874617176">এই <ph name="DEVICE_TYPE" />টো কোনে ব্যৱহাৰ কৰি আছে?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" />এ <ph name="NETWORK_ID" />ৰ সৈতে সংযোগ কৰিব নোৱাৰিলে। অনুগ্ৰহ কৰি অন্য কোনো নেটৱৰ্ক বাছনি কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2565214867520763227">স্ক্ৰীন ৰীডাৰ অন কৰক</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">অব্যাহত ৰাখক বুটামটো সক্ষম কৰা আছে</translation>
 <translation id="7671139479636735732">আপোনাৰ ধাৰণাসমূহ সহজে ভিজুৱেলাইজ কৰিবলৈ ৰাইট-ক্লিক কৰক</translation>
 <translation id="770831926727930011">আপোনাৰ পুৰণি পাছৱৰ্ডটোৱে আপোনাৰ স্থানীয় ডেটা সুৰক্ষিত কৰে। স্থানীয় ডেটা পুনৰুদ্ধাৰ কৰিবলৈ আপোনাৰ পুৰণি পাছৱৰ্ডটো দিয়ক।</translation>
+<translation id="7717014941119698257">ডাউনল’ড কৰি থকা হৈছে: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">আপডে’টৰ বাবে প্ৰয়োজনীয় খালী ঠাই: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />"ৰ সৈতে পেয়াৰ কৰি থকা হৈছে …</translation>
 <translation id="7746045113967198252">পাঠকে ধৰি আপোনাৰ স্ক্ৰীনত থকা বস্তুবোৰ সৰু অথবা ডাঙৰ কৰক। আপুনি ছেটিং &gt; ডিভাইচ &gt; ডিছপ্লে’ত এইটো পাছতো বিচাৰি পাব পাৰে।</translation>

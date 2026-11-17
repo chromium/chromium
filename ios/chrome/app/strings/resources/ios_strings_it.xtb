@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Impossibile accedere. Riprova più tardi.</translation>
 <translation id="2975761176769946178">È necessario specificare un URL</translation>
 <translation id="297667759942911166">Collabora a gruppi di schede</translation>
+<translation id="2986080119218811913">Torna a <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Per usare Gemini in Chrome, accedi a Chrome con il tuo Account Google</translation>
 <translation id="2987670534697681860">Verifica la tua identità per accedere a tutte le tue password su questo dispositivo.</translation>
 <translation id="2989523299700148168">Visitati di recente</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, gestito dalla tua organizzazione.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Colore del gruppo di schede: <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Gestore delle password di Google non ha una password per questo sito. Torna a <ph name="ACTOR_NAME" /> per accedere o aggiungi una password a Gestore delle password di Google.</translation>
 <translation id="5005498671520578047">Copia password</translation>
 <translation id="5007392906805964215">Visualizza</translation>
 <translation id="5009127379503001909">Continua a navigare</translation>

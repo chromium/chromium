@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">भित्र जान असफल भयो। कृपया पछि पुन: प्रयास गर्नुहोस्।</translation>
 <translation id="2975761176769946178">URL हालिएको छैन</translation>
 <translation id="297667759942911166">ट्याब समूहहरूमा सहकार्य गर्नुहोस्</translation>
+<translation id="2986080119218811913"><ph name="ACTOR_NAME" /> मा फर्कनुहोस्</translation>
 <translation id="298696743524648170">Chrome मा उपलब्ध Gemini प्रयोग गर्न आफ्नो Google खाता प्रयोग गरी Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="2987670534697681860">यो डिभाइसमा भएका आफ्ना सबै पासवर्डहरू एक्सेस गर्न आफ्नो पहिचान पुष्टि गर्नुहोस्।</translation>
 <translation id="2989523299700148168">भर्खरै हेरिएका</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />। यो खाता तपाईंको सङ्गठनले व्यवस्थापन गर्छ।</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />। <ph name="AI_TIER" />।</translation>
 <translation id="4992255726304765516">ट्याब समूहको रङ: <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Google पासवर्ड म्यानेजरमा यो साइटको पासवर्ड सेभ गरिएको छैन। साइन इन गर्न <ph name="ACTOR_NAME" /> मा फर्कनुहोस् वा Google पासवर्ड म्यानेजरमा पासवर्ड हाल्नुहोस्।</translation>
 <translation id="5005498671520578047">पासवर्ड कपी गर्नुहोस्</translation>
 <translation id="5007392906805964215">समीक्षा गर्नुहोस्</translation>
 <translation id="5009127379503001909">ब्राउज गरिराख्नुहोस्</translation>

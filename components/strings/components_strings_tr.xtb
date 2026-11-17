@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> için izin seçin</translation>
 <translation id="1113000785583998331">IBAN kaydedilsin mi?</translation>
 <translation id="1113869188872983271">Sıralama değişikliğini &amp;geri al</translation>
-<translation id="111897705806685148">Başka Bir Cihazdaki Geçiş Anahtarını Kullan</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Hesabınıza hangi Chrome bilgilerini kaydettiğinizi yönetmek için Sekme'ye, ardından Enter tuşuna basın</translation>
 <translation id="1121990216147052230">Benim için yapılacaklar listesi oluştur</translation>
 <translation id="1123753900084781868">Canlı Altyazı şu anda kullanılamıyor</translation>
@@ -1307,6 +1306,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3196374699162453920">Rezervasyon kodu</translation>
 <translation id="3196902089458890316">Daha iyi yanıtlar almak için alakalı sekmeler her zaman paylaşılsın mı?</translation>
 <translation id="3197136577151645743">Bu cihazı etkin olarak kullandığınızda bilgilendirilmek isteyebilir</translation>
+<translation id="3201749168732432347">Teklifler ve bağlılık kartları</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında hangi bilgileri senkronize ettiğinizi yönetmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="3203025201812691413">URL boş olamaz</translation>
 <translation id="320323717674993345">Ödemeyi iptal et</translation>
@@ -2310,6 +2310,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4850886885716139402">Görüntüle</translation>
 <translation id="4854853140771946034">Google Keep'te hızlıca yeni bir not oluşturun</translation>
 <translation id="4855395119669662878">Yöneticiniz, dosyalarınızı <ph name="CLOUD_PROVIDER" /> hedefine <ph name="DATE_TIME" /> itibarıyla yüklemeye başlayacak. Dosya yükleme işlemi tamamlanana kadar cihazınızın bağlantısını kesmeyin. Yükleme sırasında yerel dosyaları yalnızca okuyabilirsiniz.</translation>
+<translation id="4856655096879441213">Google ürünlerinde form doldurma gibi işlemleri daha hızlı yapmak için bilgilerinizi <ph name="GOOGLE_WALLET_TITLE" />'a kaydedin. <ph name="ACCOUNT" /> hesabınızdaki kişisel kart ayarlarınızda <ph name="HOW_INFO_IS_USED_LINK" /> kontrol edebilirsiniz.</translation>
 <translation id="485902285759009870">Kod doğrulanıyor...</translation>
 <translation id="4860260582253463350">YouTube'a devam edebilmeniz için kimliğinizi doğrulamamız gerekiyor. Anne veya babanızın ya da velinizin Family Link'te belirlediği ayarları kullanırsınız.</translation>
 <translation id="4861514638281352187">Redress no'yu güvenli şekilde ekleyin</translation>
@@ -2846,7 +2847,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5718326209176373202">Metin notları ekleyin</translation>
 <translation id="5718601519531438273">Pasaport ve sürücü belgesi gibi bilgiler içerir.</translation>
 <translation id="5720705177508910913">Geçerli kullanıcı</translation>
-<translation id="5721147290164931316">Telefonunuzla Oturum Açmak İçin Tarayın</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ve 1 diğer site}other{{website_1}, {website_2} ve {more_count} tane daha}}</translation>
 <translation id="5722778418591961221">Hedeflerime ulaşmama yardımcı olacak bir evde fitness rutini planla</translation>
 <translation id="572328651809341494">Son sekmeler</translation>

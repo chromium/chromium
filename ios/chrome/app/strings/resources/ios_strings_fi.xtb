@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Kirjautuminen epäonnistui. Yritä myöhemmin uudelleen.</translation>
 <translation id="2975761176769946178">URL-osoite vaaditaan</translation>
 <translation id="297667759942911166">Tee yhteistyötä välilehtiryhmissä</translation>
+<translation id="2986080119218811913">Avaa <ph name="ACTOR_NAME" /> uudelleen</translation>
 <translation id="298696743524648170">Jos haluat käyttää Gemini in Chromea, kirjaudu Chromeen Google-tilillä</translation>
 <translation id="2987670534697681860">Vahvista henkilöllisyytesi, niin saat pääsyn kaikkiin salasanoihisi tällä laitteella.</translation>
 <translation id="2989523299700148168">Viimeksi käytetyt</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, organisaatiosi hallinnoima.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Välilehtiryhmän väri on <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Google Salasanoissa ei ole salasanaa tälle sivustolle. Palaa takaisin osoitteeseen <ph name="ACTOR_NAME" /> kirjautuaksesi sisään tai lisää salasana Google Salasanoihin.</translation>
 <translation id="5005498671520578047">Kopioi salasana</translation>
 <translation id="5007392906805964215">Tarkista</translation>
 <translation id="5009127379503001909">Jatka selaamista</translation>

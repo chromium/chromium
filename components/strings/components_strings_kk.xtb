@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> үшін рұқсатты таңдаңыз</translation>
 <translation id="1113000785583998331">IBAN нөмірін сақтау керек пе?</translation>
 <translation id="1113869188872983271">&amp;Қайта ретке келтіру әрекетін болдырмау</translation>
-<translation id="111897705806685148">Басқа құрылғыдағы кіру кілтін пайдалану</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Google аккаунтыңызда сақталатын Chrome ақпаратын басқару үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="1121990216147052230">Маған тапсырмалар тізімін жасап бер</translation>
 <translation id="1123753900084781868">Автоматты субтитр функциясы қазір қолжетімді емес.</translation>
@@ -1306,6 +1305,7 @@
 <translation id="3196374699162453920">Брондау коды</translation>
 <translation id="3196902089458890316">Жақсырақ жауаптар алу үшін әрдайым сәйкес қойындыларды бөлісу керек пе?</translation>
 <translation id="3197136577151645743">Осы құрылғыны қашан белсенді пайдаланатыныңыз туралы білу үшін сұрай алады</translation>
+<translation id="3201749168732432347">Ұсыныстар және тұрақты клиент карталары</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome параметрлеріне кіріп, синхрондалатын ақпаратты басқару үшін Tab, сосын Enter пернелерін басыңыз.</translation>
 <translation id="3203025201812691413">URL бос болмауы керек</translation>
 <translation id="320323717674993345">Төлемнен бас тарту</translation>
@@ -2309,6 +2309,7 @@
 <translation id="4850886885716139402">Көрініс</translation>
 <translation id="4854853140771946034">Google Keep-те жылдам жаңа ескертпе жасау</translation>
 <translation id="4855395119669662878">Әкімшіңіз файлдарыңызды <ph name="CLOUD_PROVIDER" /> қызметіне жүктеп салуды <ph name="DATE_TIME" /> уақытында бастайды. Файл жүктеп салынғанша құрылғыны қосулы күйінде қалдырыңыз. Жүктеп салу кезінде жергілікті файлдарды тек оқи аласыз.</translation>
+<translation id="4856655096879441213">Ақпаратыңызды <ph name="GOOGLE_WALLET_TITLE" /> қызметіне сақтау арқылы үлгілерді толтыру секілді Google өнімдеріндегі әрекеттерді жылдам орындай аласыз. <ph name="HOW_INFO_IS_USED_LINK" /> деректерін <ph name="ACCOUNT" /> аккаунтының жеке құжат параметрлерінде басқара аласыз.</translation>
 <translation id="485902285759009870">Код тексерілуде…</translation>
 <translation id="4860260582253463350">YouTube-ке өтуіңіз үшін, алдымен жеке басыңызды растаңыз. Ата-анаңыз немесе қамқоршыңыз орнатқан параметрлерді Family Link-тен аласыз.</translation>
 <translation id="4861514638281352187">Redress Control Number нөмірін қауіпсіз түрде қосу</translation>
@@ -2845,7 +2846,6 @@
 <translation id="5718326209176373202">Мәтіндік аннотациялар қосу</translation>
 <translation id="5718601519531438273">Паспорттар мен жүргізуші куәліктері сияқты ақпаратты қамтиды.</translation>
 <translation id="5720705177508910913">Ағымдағы пайдаланушы</translation>
-<translation id="5721147290164931316">Телефонмен кіру үшін сканерлеңіз</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} және тағы 1 веб-сайт}other{{website_1}, {website_2} және тағы {more_count} веб-сайт}}</translation>
 <translation id="5722778418591961221">Мақсаттарыма жетуге көмектесетін үйдегі фитнес режимін жоспарла</translation>
 <translation id="572328651809341494">Соңғы қойындылар</translation>

@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="162175252992296058">葡萄牙语美式国际键盘</translation>
 <translation id="1629521517399325891">用户证书不适用于网络身份验证。</translation>
+<translation id="1639239467298939599">正在加载</translation>
 <translation id="1641780993263690097">中文拼音</translation>
 <translation id="164969095109328410">Chrome设备</translation>
 <translation id="1661207570040737402">您的 Google Workspace 共享云端硬盘存储空间已用尽。</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">已关闭文件同步</translation>
 <translation id="2820957248982571256">正在扫描…</translation>
 <translation id="2830077785865012357">中文注音</translation>
+<translation id="2838379631617906747">正在安装</translation>
 <translation id="2843806747483486897">更改默认设置...</translation>
 <translation id="2873951654529031587">回收站</translation>
 <translation id="2887314858867008269">美式 Colemak</translation>
@@ -1014,6 +1016,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - 端口</translation>
 <translation id="8656407365183407932">您必须移除一些离线文件</translation>
 <translation id="8656768832129462377">不检查</translation>
+<translation id="8662978096466608964">Chrome 无法设置壁纸。</translation>
 <translation id="8688591111840995413">密码错误</translation>
 <translation id="8698464937041809063">Google 绘图</translation>
 <translation id="8698877009525468705">此文件属于机密信息，受管理员政策的限制。</translation>

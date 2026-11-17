@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Siirry alaspäin sivulla pyyhkäisemällä ylöspäin</translation>
 <translation id="2501278716633472235">Takaisin</translation>
 <translation id="252418934079508528">Asenna <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Valmistellaan laitetta…</translation>
 <translation id="2538084450874617176">Kuka käyttää tätä laitetta: <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> ei voinut yhdistää verkkoon <ph name="NETWORK_ID" />. Valitse toinen verkko tai yritä uudelleen.</translation>
 <translation id="2565214867520763227">Laita näytönlukuohjelma päälle</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">Jatka-painike on käytössä</translation>
 <translation id="7671139479636735732">Visualisoi ideasi helposti klikkaamalla kakkospainikkeella</translation>
 <translation id="770831926727930011">Paikallinen data on suojattu vanhalla salasanallasi. Lisää vanha salasana, jos haluat palauttaa paikallisen datan.</translation>
+<translation id="7717014941119698257">Ladataan: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Päivitykseen tarvitaan <ph name="NECESSARY_SPACE" />.</translation>
 <translation id="7737115349420013392"><ph name="DEVICE_NAME" /> lisätään laitepariksi…</translation>
 <translation id="7746045113967198252">Suurentaa tai pienentää näytöllä olevia kohteita, esimerkiksi tekstiä. Löydät asetuksen myös myöhemmin valitsemalla Asetukset &gt; Laite &gt; Näytöt.</translation>

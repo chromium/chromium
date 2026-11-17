@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Хуудсыг доош зөөхийн тулд дээш шударна уу</translation>
 <translation id="2501278716633472235">Буцаах</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" />-г суулгах</translation>
+<translation id="2532146950330687938">Төхөөрөмжийг бэлдэж байна...</translation>
 <translation id="2538084450874617176">Хэн <ph name="DEVICE_TYPE" />-г ашиглаж байгаа вэ?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> нь <ph name="NETWORK_ID" />  руу холбогдож чадсангүй. Өөр сүлжээ сонгох эсвэл дахин оролдож үзнэ үү.</translation>
 <translation id="2565214867520763227">Дэлгэц уншигчийг асаах</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">Үргэлжлүүлэх товчлуурыг идэвхжүүлсэн</translation>
 <translation id="7671139479636735732">Санаагаа хялбархан дүрсжүүлэхийн тулд баруун талыг товшино уу</translation>
 <translation id="770831926727930011">Таны дотоод өгөгдлийг таны хуучин нууц үгээр хамгаалдаг. Дотоод өгөгдлөө сэргээхийн тулд хуучин нууц үгээ оруулна уу.</translation>
+<translation id="7717014941119698257"><ph name="STATUS" />-ыг татаж авч байна:</translation>
 <translation id="7722040605881499779">Шинэчлэхэд шаардлагатай: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />"-тай хослуулж байна ...</translation>
 <translation id="7746045113967198252">Текстийг оруулаад дэлгэцийнхээ зүйлсийг томруулж эсвэл жижгэрүүлээрэй. Та мөн үүнийг дараа нь Тохиргоо &gt; Төхөөрөмж &gt; Дэлгэцүүдээс олох боломжтой.</translation>

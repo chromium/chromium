@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Câmera</translation>
 <translation id="162175252992296058">Português com teclado internacional dos EUA</translation>
 <translation id="1629521517399325891">O certificado do usuário não está disponível para a autenticação da rede.</translation>
+<translation id="1639239467298939599">Carregando</translation>
 <translation id="1641780993263690097">Chinês (pinyin)</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
 <translation id="1661207570040737402">Você usou todo o armazenamento no drive compartilhado do Google Workspace.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">Sincronização de arquivos desativada</translation>
 <translation id="2820957248982571256">Verificando...</translation>
 <translation id="2830077785865012357">Chinês (zhuyin)</translation>
+<translation id="2838379631617906747">Instalando</translation>
 <translation id="2843806747483486897">Alterar padrão...</translation>
 <translation id="2873951654529031587">Lixeira</translation>
 <translation id="2887314858867008269">Colemak EUA</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Porta</translation>
 <translation id="8656407365183407932">Seus arquivos off-line precisaram ser removidos</translation>
 <translation id="8656768832129462377">Não verificar</translation>
+<translation id="8662978096466608964">O Google Chrome não pode definir o plano de fundo.</translation>
 <translation id="8688591111840995413">Senha incorreta</translation>
 <translation id="8698464937041809063">Desenhos Google</translation>
 <translation id="8698877009525468705">Esse arquivo é confidencial e está sujeito a restrições pela política do administrador.</translation>

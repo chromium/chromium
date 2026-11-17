@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">無法登入，請稍後再試。</translation>
 <translation id="2975761176769946178">必須輸入網址</translation>
 <translation id="297667759942911166">在分頁群組中協作</translation>
+<translation id="2986080119218811913">返回 <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">如要使用 Chrome 內建 Gemini，請登入 Google 帳戶</translation>
 <translation id="2987670534697681860">請先通過身分驗證，才能在這部裝置上存取所有密碼。</translation>
 <translation id="2989523299700148168">最近造訪過</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />，<ph name="EMAIL" />，該帳戶由貴機構管理。</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />，<ph name="EMAIL" />，<ph name="AI_TIER" />。</translation>
 <translation id="4992255726304765516">分頁群組顏色：<ph name="COLOR" /></translation>
+<translation id="500126251490468002">Google 密碼管理工具沒有這個網站的密碼。請返回 <ph name="ACTOR_NAME" /> 登入，或將密碼新增至 Google 密碼管理工具。</translation>
 <translation id="5005498671520578047">複製密碼</translation>
 <translation id="5007392906805964215">查看</translation>
 <translation id="5009127379503001909">繼續瀏覽</translation>

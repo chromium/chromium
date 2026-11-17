@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">உள்நுழைவு தோல்வி. பிறகு மீண்டும் முயற்சிக்கவும்.</translation>
 <translation id="2975761176769946178">URL தேவை</translation>
 <translation id="297667759942911166">பக்கக் குழுக்களில் கூட்டுப்பணி செய்யுங்கள்</translation>
+<translation id="2986080119218811913"><ph name="ACTOR_NAME" />க்கு மீண்டும் செல்</translation>
 <translation id="298696743524648170">Chromeமில் Geminiயைப் பயன்படுத்த, உங்கள் Google கணக்கு மூலம் Chromeமில் உள்நுழையவும்</translation>
 <translation id="2987670534697681860">இந்தச் சாதனத்தில் உள்ள எல்லாக் கடவுச்சொற்களையும் அணுக இது நீங்கள்தான் என்பதை உறுதிப்படுத்துங்கள்.</translation>
 <translation id="2989523299700148168">சமீபத்தில் பார்த்தவை</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> கணக்கு உங்கள் நிறுவனத்தால் நிர்வகிக்கப்படுகிறது.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">பக்கக் குழுவின் வண்ணம்: <ph name="COLOR" /></translation>
+<translation id="500126251490468002">இந்தத் தளத்திற்கான கடவுச்சொல் Google Password Managerரில் இல்லை. உள்நுழைய <ph name="ACTOR_NAME" />க்குத் திரும்பவும் அல்லது Google Password Managerரில் கடவுச்சொல்லைச் சேர்க்கவும்.</translation>
 <translation id="5005498671520578047">கடவுச்சொல்லை நகலெடு</translation>
 <translation id="5007392906805964215">சரிபார்</translation>
 <translation id="5009127379503001909">தொடர்ந்து பிரவுசிங் செய்யுங்கள்</translation>

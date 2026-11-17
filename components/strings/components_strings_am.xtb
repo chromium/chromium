@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">ለ<ph name="PERMISSION_NAME" /> ፈቃድ አቀናብር</translation>
 <translation id="1113000785583998331">አይቢኤኤን ይቀመጥ?</translation>
 <translation id="1113869188872983271">&amp;እንደገና ደርድርን ቀልብስ</translation>
-<translation id="111897705806685148">የይለፍ ቁልፍን ከሌላ መሣሪያ ይጠቀሙ</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ Google መለያዎ ውስጥ ምን የChrome መረጃ እንደሚያስቀምጡ ለማስተዳደር ትርን ከዚያም አስገባን ይጫኑ</translation>
 <translation id="1121990216147052230">የሚደረጉ ነገሮች ዝርዝር አዘጋጅልኝ</translation>
 <translation id="1123753900084781868">የቀጥታ መግለጫ ጽሁፍ አሁን ላይ አይገኝም</translation>
@@ -1306,6 +1305,7 @@
 <translation id="3196374699162453920">የቦታ ማስያዣ ኮድ</translation>
 <translation id="3196902089458890316">ለተሻሉ ምላሾች ሁልጊዜ አግባብነት ያላቸው ትሮች ይጋሩ?</translation>
 <translation id="3197136577151645743">ይህን መሣሪያ በንቃት ሲጠቀሙ ለማወቅ መጠየቅ ይችላል</translation>
+<translation id="3201749168732432347">ቅናሾች እና የታማኝነት ካርዶች</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በChrome ቅንብሮች ውስጥ ምን መረጃ እንደሚያሰምሩ ለማቀናበር ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="3203025201812691413">ዩአርኤል ባዶ ሊሆን አይችልም</translation>
 <translation id="320323717674993345">ክፍያን ሰርዝ</translation>
@@ -2309,6 +2309,7 @@
 <translation id="4850886885716139402">አሳይ</translation>
 <translation id="4854853140771946034">በGoogle Keep ውስጥ አዲስ ማስታወሻ በፍጥነት ፍጠር</translation>
 <translation id="4855395119669662878">አስተዳዳሪዎ የእርስዎን ፋይሎች ወደ <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" /> ላይ መስቀል ይጀምራሉ። የፋይልዎ ሰቀላ እስኪጠናቅቅ ድረስ መሣሪያዎን እንደተገናኘ ያቆዩ። በሰቀላው ወቅት ማንበብ የሚችሉት አካባቢያዊ ፋይሎችን ብቻ ነው።</translation>
+<translation id="4856655096879441213">መረጃዎን <ph name="GOOGLE_WALLET_TITLE" /> ውስጥ ያስቀምጡ እና በመላው የGoogle ምርቶች ላይ እንደ ቅጾችን መሙላት ያሉ ነገሮችን በፍጥነት ያከናውኑ። ለ<ph name="ACCOUNT" /> የግል ማለፊያ ቅንብሮችዎ ውስጥ <ph name="HOW_INFO_IS_USED_LINK" />ን መቆጣጠር ይችላሉ።</translation>
 <translation id="485902285759009870">ኮድ በማረጋገጥ ላይ...</translation>
 <translation id="4860260582253463350">YouTube ላይ ለመቀጠል እርስዎ መሆንዎትን ማረጋገጥ አለብን። Family Link ውስጥ የእርስዎ ወላጅ ወይም አሳዳጊ ያዋቀሩትን ቅንብሮች ያገኛሉ።</translation>
 <translation id="4861514638281352187">የማስተካከያ ቁጥርን ደኅንነቱ በተጠበቀ ሁኔታ ያክሉ</translation>
@@ -2845,7 +2846,6 @@
 <translation id="5718326209176373202">የጽሑፍ ማብራሪያዎችን ያክሉ</translation>
 <translation id="5718601519531438273">እንደ ፓስፖርቶች እና የመንጃ ፈቃዶች ያሉ መረጃዎችን ያካትታል</translation>
 <translation id="5720705177508910913">የአሁኑ ተጠቃሚ</translation>
-<translation id="5721147290164931316">በስልክዎ ለመግባት ይቃኙ</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}፣ {website_2}}=3{{website_1}፣ {website_2} እና 1 ተጨማሪ}one{{website_1}፣ {website_2} እና {more_count} ተጨማሪ}other{{website_1}፣ {website_2} እና {more_count} ተጨማሪ}}</translation>
 <translation id="5722778418591961221">ግቦቼን እንዳሳካ የሚያግዘኝን የቤት የአካል ብቃት የዕለት ተዕለት ተግባር ዕቅድ አውጣ</translation>
 <translation id="572328651809341494">የቅርብ ጊዜ ትሮች</translation>

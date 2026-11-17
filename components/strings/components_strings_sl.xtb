@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Izbira dovoljenja za: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Želite shraniti številko IBAN?</translation>
 <translation id="1113869188872983271">&amp;Razveljavi razvrstitev</translation>
-<translation id="111897705806685148">Uporabi ključ za dostop iz druge naprave</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite upravljati, katere podatke v Chromu shranjujete v računu Google</translation>
 <translation id="1121990216147052230">Ustvari mi seznam opravil</translation>
 <translation id="1123753900084781868">Samodejni podnapisi trenutno niso na voljo</translation>
@@ -1307,6 +1306,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3196374699162453920">Koda rezervacije</translation>
 <translation id="3196902089458890316">Želite vedno deliti ustrezne zavihke za boljše odgovore?</translation>
 <translation id="3197136577151645743">Lahko zahteva, da izve, kdaj aktivno uporabljate napravo.</translation>
+<translation id="3201749168732432347">Ponudbe in kartice zvestobe</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite upravljati, kateri podatki se sinhronizirajo v Chromovih nastavitvah.</translation>
 <translation id="3203025201812691413">Polje za URL ne sme biti prazno</translation>
 <translation id="320323717674993345">Prekliči plačilo</translation>
@@ -2847,7 +2847,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5718326209176373202">Dodaj besedilne pripise</translation>
 <translation id="5718601519531438273">Vključuje podatke, kot so potni listi in vozniška dovoljenja</translation>
 <translation id="5720705177508910913">Trenutni uporabnik</translation>
-<translation id="5721147290164931316">Optično preberite za prijavo s telefonom</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} in še 1}one{{website_1}, {website_2} in še {more_count}}two{{website_1}, {website_2} in še {more_count}}few{{website_1}, {website_2} in še {more_count}}other{{website_1}, {website_2} in še {more_count}}}</translation>
 <translation id="5722778418591961221">Načrtuj rutino vadbe doma, ki mi bo pomagala doseči cilje</translation>
 <translation id="572328651809341494">Nedavni zavihki</translation>

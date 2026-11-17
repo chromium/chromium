@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Nem sikerült bejelentkezni. Kérjük, próbálja újra később.</translation>
 <translation id="2975761176769946178">Egy URL-cím megadása kötelező</translation>
 <translation id="297667759942911166">Együttműködés lapcsoportokban</translation>
+<translation id="2986080119218811913">Vissza ide: <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">A Gemini a Chrome-ban használatához jelentkezzen be a Chrome-ba Google-fiókjával</translation>
 <translation id="2987670534697681860">Igazolja személyazonosságát, hogy hozzáférhessen az összes jelszavához ezen az eszközön.</translation>
 <translation id="2989523299700148168">Legutóbb látogatott</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, az Ön szervezete kezeli.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Lapcsoport színe: <ph name="COLOR" /></translation>
+<translation id="500126251490468002">A Google Jelszókezelő nem rendelkezik jelszóval ehhez a webhelyhez. A bejelentkezéshez lépjen vissza a(z) <ph name="ACTOR_NAME" /> eszközre, vagy adjon hozzá jelszót a Google Jelszókezelőhöz.</translation>
 <translation id="5005498671520578047">Jelszó másolása</translation>
 <translation id="5007392906805964215">Áttekintés</translation>
 <translation id="5009127379503001909">Böngészés folytatása</translation>

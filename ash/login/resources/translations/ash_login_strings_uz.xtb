@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Sahifani pastga varaqlash uchun tepaga suring</translation>
 <translation id="2501278716633472235">Ortga qaytish</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> ilovasini oʻrnating</translation>
+<translation id="2532146950330687938">Qurilma tayyorlanmoqda...</translation>
 <translation id="2538084450874617176"><ph name="DEVICE_TYPE" /> qurilmasini kim ishlatadi?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> brauzeri <ph name="NETWORK_ID" /> tarmog‘iga ulana olmadi. Boshqa tarmoqni tanlang yoki qayta urinib ko‘ring.</translation>
 <translation id="2565214867520763227">Skrin-riderni yoqish</translation>
@@ -628,6 +629,7 @@
 <translation id="7666531788977935712">Davom etish tugmasi yoqildi</translation>
 <translation id="7671139479636735732">Gʻoyalar asosida rasm yaratish uchun oʻng klikni bosing</translation>
 <translation id="770831926727930011">Qurilmadagi axborot eski parolingiz bilan himoyalangan. Ularni tiklash uchun eski parolingizni kiriting.</translation>
+<translation id="7717014941119698257">Yuklab olinmoqda: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Zarur joy: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">“<ph name="DEVICE_NAME" />” bilan ulanmoqda...</translation>
 <translation id="7746045113967198252">Ekrandagi elementlarni, jumladan matnni kattaroq yoki kichikroq qiling. Buni keyinroq Sozlamalar &gt; Qurilma &gt; Displeylar orqali moslash mumkin.</translation>

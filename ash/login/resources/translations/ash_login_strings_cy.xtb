@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Sweipiwch i fyny i symud y dudalen i lawr</translation>
 <translation id="2501278716633472235">Mynd yn ôl</translation>
 <translation id="252418934079508528">Gosod <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Wrthi'n paratoi'r ddyfais...</translation>
 <translation id="2538084450874617176">Pwy sy'n defnyddio'r <ph name="DEVICE_TYPE" /> hwn?</translation>
 <translation id="2553340429761841190">Gwnaeth <ph name="PRODUCT_NAME" /> fethu â chysylltu â <ph name="NETWORK_ID" />. Dewiswch rwydwaith arall neu rhowch gynnig arall arni.</translation>
 <translation id="2565214867520763227">Troi'r darllenydd sgrîn ymlaen</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">Galluogwyd botwm parhau</translation>
 <translation id="7671139479636735732">De-gliciwch i ddelweddu'ch syniadau'n hawdd</translation>
 <translation id="770831926727930011">Mae eich data lleol yn cael eu gwarchod gan eich hen gyfrinair. Rhowch eich hen gyfrinair i adfer data lleol.</translation>
+<translation id="7717014941119698257">Wrthi'n lawrlwytho: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Roedd angen diweddaru: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Wrthi'n paru â "<ph name="DEVICE_NAME" />" ...</translation>
 <translation id="7746045113967198252">Gwneud eitemau ar eich sgrîn, gan gynnwys testun, yn fwy neu'n llai. Gallwch hefyd ddod o hyd i hwn yn nes ymlaen yn y Gosodiadau &gt; Dyfais &gt; Arddangos.</translation>

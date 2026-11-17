@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Pasatu hatza gorantz orria beherantz mugitzeko</translation>
 <translation id="2501278716633472235">Egin atzera</translation>
 <translation id="252418934079508528">Instalatu <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Gailua prestatzen…</translation>
 <translation id="2538084450874617176">Nor ari da <ph name="DEVICE_TYPE" /> erabiltzen?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> programak ezin izan da konektatu <ph name="NETWORK_ID" /> sarera. Hautatu beste sare bat edo saiatu berriro.</translation>
 <translation id="2565214867520763227">Aktibatu pantaila-irakurgailua</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">Aurrera egiteko botoia gaituta</translation>
 <translation id="7671139479636735732">Egin klik eskuineko botoiarekin ideiak erraz irudikatzeko</translation>
 <translation id="770831926727930011">Aurreko pasahitzaren bidez daude babestuta gailuko datuak. Haiek berreskuratzeko, idatzi aurreko pasahitza.</translation>
+<translation id="7717014941119698257">Deskargatzen: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Eguneratzeko behar dena: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" gailuarekin parekatzen…</translation>
 <translation id="7746045113967198252">Handitu edo txikitu pantailako elementuak, testua barne. Ezarpenak &gt; Gailua &gt; Pantailak atalean ere aurki dezakezu aukera hau.</translation>

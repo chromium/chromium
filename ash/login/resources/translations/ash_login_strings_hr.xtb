@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Prijeđite prstom prema gore za pomicanje stranice prema dolje</translation>
 <translation id="2501278716633472235">Natrag</translation>
 <translation id="252418934079508528">Instalirajte <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Pripremanje uređaja...</translation>
 <translation id="2538084450874617176">Tko upotrebljava ovaj <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> nije se mogao povezati s mrežom <ph name="NETWORK_ID" />. Odaberite drugu mrežu ili pokušajte ponovno.</translation>
 <translation id="2565214867520763227">Uključite čitač zaslona</translation>
@@ -628,6 +629,7 @@
 <translation id="7666531788977935712">Omogućen je gumb Nastavi</translation>
 <translation id="7671139479636735732">Kliknite desnom tipkom da biste jednostavno vizualizirali svoje ideje</translation>
 <translation id="770831926727930011">Lokalni podaci zaštićeni su vašom starom zaporkom. Unesite staru zaporku da biste oporavili lokalne podatke.</translation>
+<translation id="7717014941119698257">Preuzimanje: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Potrebno za ažuriranje: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Uparivanje s uređajem "<ph name="DEVICE_NAME" />" ...</translation>
 <translation id="7746045113967198252">Stavke na zaslonu, uključujući tekst, možete povećati ili smanjiti. To možete pronaći i poslije u odjeljku Postavke &gt; Uređaj &gt; Zasloni.</translation>

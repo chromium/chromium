@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="162175252992296058">ポルトガル語（US インターナショナル）キーボード</translation>
 <translation id="1629521517399325891">ユーザー証明書はネットワーク認証に使用できません。</translation>
+<translation id="1639239467298939599">読み込んでいます</translation>
 <translation id="1641780993263690097">中国語（ピンイン）</translation>
 <translation id="164969095109328410">Chrome デバイス</translation>
 <translation id="1661207570040737402">共有ドライブの Google Workspace ストレージの空き容量がなくなりました。</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">ファイルの同期がオフになっています</translation>
 <translation id="2820957248982571256">スキャンしています…</translation>
 <translation id="2830077785865012357">中国語（注音）</translation>
+<translation id="2838379631617906747">インストール中</translation>
 <translation id="2843806747483486897">デフォルトを変更...</translation>
 <translation id="2873951654529031587">ゴミ箱</translation>
 <translation id="2887314858867008269">US Colemak 配列</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ポート</translation>
 <translation id="8656407365183407932">オフライン ファイルを削除する必要があります</translation>
 <translation id="8656768832129462377">確認しない</translation>
+<translation id="8662978096466608964">壁紙は設定できません。</translation>
 <translation id="8688591111840995413">不正なパスワード</translation>
 <translation id="8698464937041809063">Google 図形描画</translation>
 <translation id="8698877009525468705">このファイルは機密情報であり、管理者ポリシーによる制限が適用されます。</translation>

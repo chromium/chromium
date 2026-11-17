@@ -146,6 +146,7 @@
 <translation id="248676429071089168">ਪੰਨੇ ਨੂੰ ਹੇਠਾਂ ਲਿਜਾਉਣ ਲਈ ਉੱਪਰ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="2501278716633472235">ਪਿੱਛੇ ਜਾਓ</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> ਸਥਾਪਤ ਕਰੋ</translation>
+<translation id="2532146950330687938">ਡੀਵਾਈਸ ਨੂੰ ਤਿਆਰ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="2538084450874617176">ਇਸ <ph name="DEVICE_TYPE" /> ਨੂੰ ਕੌਣ ਵਰਤ ਰਿਹਾ ਹੈ?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" />, <ph name="NETWORK_ID" /> ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਦੂਜਾ ਨੈੱਟਵਰਕ ਚੁਣੋ ਜਾਂ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="2565214867520763227">ਸਕ੍ਰੀਨ ਰੀਡਰ ਚਾਲੂ ਕਰੋ</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">'ਜਾਰੀ ਰੱਖੋ' ਬਟਨ ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7671139479636735732">ਆਪਣੇ ਵਿਚਾਰਾਂ ਦੀ ਆਸਾਨੀ ਨਾਲ ਕਲਪਨਾ ਕਰਨ ਲਈ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="770831926727930011">ਤੁਹਾਡਾ ਸਥਾਨਕ ਡਾਟਾ ਤੁਹਾਡੇ ਪੁਰਾਣੇ ਪਾਸਵਰਡ ਨਾਲ ਸੁਰੱਖਿਅਤ ਹੈ। ਸਥਾਨਕ ਡਾਟਾ ਮੁੜ-ਹਾਸਲ ਕਰਨ ਲਈ ਆਪਣਾ ਪੁਰਾਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ।</translation>
+<translation id="7717014941119698257">ਡਾਊਨਲੋਡ ਕਰ ਰਿਹਾ ਹੈ: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">ਅੱਪਡੇਟ ਲਈ ਲੋੜੀਂਦੀ ਸਟੋਰੇਜ: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" ਨਾਲ ਜੋੜਾਬੱਧ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ ...</translation>
 <translation id="7746045113967198252">ਲਿਖਤ ਸਮੇਤ, ਆਪਣੀ ਸਕ੍ਰੀਨ 'ਤੇ ਮੌਜੂਦ ਆਈਟਮਾਂ ਨੂੰ ਵੱਡਾ ਜਾਂ ਛੋਟਾ ਕਰੋ। ਤੁਸੀਂ ਇਸਨੂੰ ਬਾਅਦ ਵਿੱਚ ਸੈਟਿੰਗਾਂ &gt; ਡੀਵਾਈਸ &gt; ਡਿਸਪਲੇ ਵਿੱਚ ਵੀ ਲੱਭ ਸਕਦੇ ਹੋ।</translation>

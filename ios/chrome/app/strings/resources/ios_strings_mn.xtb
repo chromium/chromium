@@ -27,6 +27,7 @@
 <translation id="1062138828266376352">Таны ПИН-г өөрчлөөгүй. Интернэт холболтоо шалгаад, дахин оролдоно уу</translation>
 <translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)-г хаана хадгалахыг сонгоно уу</translation>
 <translation id="1063300264396686489">Бусад төхөөрөмжөөс табын бүлгийг автоматаар нээх</translation>
+<translation id="1064922761238321287">Холбоосыг энд нээгээрэй</translation>
 <translation id="1072476005125066234">Таны сонирхолд тулгуурласан шүүмж</translation>
 <translation id="1072679792409426431">Танай администратор идэвхгүй болгосон</translation>
 <translation id="1074827084851510304">Та {password_count} нууц үг болон нэвтрэх мэдээлэл хэзээ ч хадгалахгүй байхаар сонгосон сайт, аппын жагсаалтыг устгах гэж байна. Таны сайт, аппад зориулж үүсгэсэн аливаа бүртгэлийг устгахгүй.</translation>
@@ -383,6 +384,7 @@
 <translation id="2089180529062519164">Микрофоныг асаах</translation>
 <translation id="2096239473850415494">Татаж чадсангүй</translation>
 <translation id="2096716221239095980">Бүх өгөгдлийг устгах</translation>
+<translation id="2097502812000646256">Таныг энэ сайтаас гарах үед <ph name="SITE_DOMAIN" />-н зөвшөөрлийг унтраасан болгож шинэчилнэ</translation>
 <translation id="2102396546234652240">Сайтуудад таны микрофоныг ашиглахыг бүү зөвшөөр</translation>
 <translation id="2104436223719117661">Тренд болж буй хайлтууд</translation>
 <translation id="21133533946938348">Цонхыг урд талд гаргах</translation>
@@ -822,6 +824,7 @@
 <translation id="3533436815740441613">Шинэ таб</translation>
 <translation id="3534738261102690620">Gemini-с асуух</translation>
 <translation id="3540141921715814660">Хавчуургaд нэмэх</translation>
+<translation id="3543157674386493176">Таныг энэ сайтад зочлох бүрд <ph name="SITE_DOMAIN" /> таны микрофоныг ашиглах зөвшөөрөлтэй байна</translation>
 <translation id="3546122170015471515">Google.com дээрх Газрын зургийг урьдчилан үзэх хувилбар</translation>
 <translation id="3547356470684043247">Шүүмжийн тусламжтайгаар мэдээлэлтэй шийдвэр гаргахдаа нэмэр болгох үүднээс харилцагчийн бүтээгдэхүүн, үйлчилгээ, хэрэглээнд өгсөн үнэлгээг уншаарай</translation>
 <translation id="3547933853190131743">ХОУ-ы горимоор хайх</translation>
@@ -1255,6 +1258,7 @@
 <translation id="4884937942297374058">Сайжруулсан хамгаалалт унтраалттай байна</translation>
 <translation id="4887391901725877182">Хаалттай тайлбар үүсгэх</translation>
 <translation id="488785315393301722">Дэлгэрэнгүй мэдээллийг харуул</translation>
+<translation id="488838826386625696">Таны илүүд үзсэн холбоосны очих газар</translation>
 <translation id="4889521386764567563">Одоогийн профайл</translation>
 <translation id="4893713555726946316">Хуудаснаас олохыг нуух</translation>
 <translation id="4894963374040315706">Энэ нь танд дуу хоолойгоо ашиглан хайх боломжийг олгоно</translation>
@@ -1301,6 +1305,7 @@
 <translation id="5020732097997376541">"Lens-н дүрс тэмдэг" дээр товшино уу</translation>
 <translation id="5021500396464456616">Энэ холбоосыг илгээсэн хүнтэй холбогдоно уу</translation>
 <translation id="503173149952522259">Энэ табыг бэхлэхийн тулд удаан дарна уу</translation>
+<translation id="5032446794387264213"><ph name="SITE_DOMAIN" /> таны микрофонд хандах зөвшөөрөлгүй байна</translation>
 <translation id="5039804452771397117">Зөвшөөрөх</translation>
 <translation id="5050042263972837708">Бүлгийн нэр</translation>
 <translation id="5050810143224996149">Нууц үг хуваалцах</translation>
@@ -1800,6 +1805,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6538776393003671043">Chrome таныг дараагийн удаа үүнийг ашиглахад Google Wallet-д хадгалахыг санал болгоно</translation>
 <translation id="6543899060872618437">Төхөөрөмжүүд дээрээ автоматаар бөглөх хэсгийг ашиглан илүү хурдан тооцоо хийгээрэй</translation>
+<translation id="6545387723662397265">Холбоосыг энд автоматаар нээнэ үү.</translation>
 <translation id="6550675742724504774">Сонголтууд</translation>
 <translation id="6550891580932862748">Таныг аюултай вебсайт, татаж авсан файл болон өргөтгөлүүдээс хамгаалахгүй. Google-н бусад бүтээгдэхүүн дэх таны Аюулгүй хөтчийн тохиргоонд нөлөөлөхгүй.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -2001,8 +2007,10 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7149893636342594995">Сүүлийн 24 цаг</translation>
 <translation id="7151361008641622036">{count,plural, =1{Та 1 таб цэгцэлсэн}other{Та # таб цэгцэлсэн}}</translation>
 <translation id="7154417656353909837">Хаягийг хасах</translation>
+<translation id="715826717368497238">Better together</translation>
 <translation id="7161230316646448869">Хавчуурга, түүх болон бусад зүйлээ бүх төхөөрөмжид синк хийгээрэй</translation>
 <translation id="7165323152084385463">VIN</translation>
+<translation id="7171738306460065883">Таныг энэ сайтад зочлох бүрд <ph name="SITE_DOMAIN" /> таны камерыг ашиглах зөвшөөрөлтэй байна</translation>
 <translation id="7173114856073700355">Тохиргоог нээх</translation>
 <translation id="7173721738069475737">{count,plural, =1{Хавчуургыг хадгалсан}other{{count} хавчуургыг хадгалсан}}</translation>
 <translation id="7176183551031110427">Жижгэрүүлэх</translation>
@@ -2196,6 +2204,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7758789811447313947">Хөх ягаан загвар</translation>
 <translation id="7759809451544302770">Сонголтын</translation>
 <translation id="7765158879357617694">Зөөх</translation>
+<translation id="7767218770008406619">Апп хооронд илүү хурдан үзээрэй</translation>
 <translation id="7768507955883790804">Таныг сайт руу зочлоход энэ тохиргоог сайт автоматаар дагана</translation>
 <translation id="7772032839648071052">Нэвтрэх үгүүдийг баталгаажуул</translation>
 <translation id="7772948288262733182">Эргээд тавтай морилно уу</translation>
@@ -2562,6 +2571,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="882557203579758546">Хуудаснаас олох…</translation>
 <translation id="8829809207373502270">Энэ нэвтрэх түлхүүр ажиллахаа больсон. Уг нэвтрэх түлхүүрийг <ph name="WEBSITE" />-с устгасан ба удахгүй эндээс устгана. <ph name="BEGIN_LINK" />Нэвтрэх түлхүүр<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Бүх идэвхгүй табыг хаах</translation>
+<translation id="8834584302364387913"><ph name="SITE_DOMAIN" /> таны камерт хандах зөвшөөрөлгүй байна</translation>
 <translation id="8837654851594567190">Нийтлэгчээр эрэмбэлэх</translation>
 <translation id="884351711508006491">Таны мэдээллийг төхөөрөмжид тань хадгалсан.</translation>
 <translation id="8844136307393039959">Таны хянасан бүтээгдэхүүний үнэ буурлаа</translation>

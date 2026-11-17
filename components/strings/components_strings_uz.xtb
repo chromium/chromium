@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> ruxsatini tanlang</translation>
 <translation id="1113000785583998331">IBAN raqami saqlansinmi?</translation>
 <translation id="1113869188872983271">&amp;Qayta tartiblashni qaytarish</translation>
-<translation id="111897705806685148">Boshqa qurilmada kirish kalitini ishlating</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google hisobingizga saqlangan Chrome maʼlumotlarini boshqarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="1121990216147052230">Menga vazifalar roʻyxatini tuzib ber</translation>
 <translation id="1123753900084781868">Jonli izoh hozirda mavjud emas</translation>
@@ -1304,6 +1303,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3196374699162453920">Buyurtma kodi</translation>
 <translation id="3196902089458890316">Aniqroq javoblar olish uchun tegishli varaqlar doim ulashilsinmi?</translation>
 <translation id="3197136577151645743">Qurilmadan foydalanishga oid axborotlarni soʻrashi mumkin</translation>
+<translation id="3201749168732432347">Takliflar va sodiq mijoz kartalari</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome sozlamalari orqali sinxronlanadigan maʼlumotlarni boshqarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="3203025201812691413">URL boʻsh boʻlmaydi</translation>
 <translation id="320323717674993345">To‘lovni bekor qilish</translation>
@@ -2305,6 +2305,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4850886885716139402">Ko‘rish</translation>
 <translation id="4854853140771946034">Google Keepda yangi qaydni tez yaratish</translation>
 <translation id="4855395119669662878">Administrator <ph name="DATE_TIME" /> da fayllarni <ph name="CLOUD_PROVIDER" /> xizmatiga yuklaydi. Fayllarni yuklash yakunlanmaguncha qurlima aloqada qolsin. Yuklash vaqtida qurilmadagi fayllarni faqat oʻqish mumkin.</translation>
+<translation id="4856655096879441213"><ph name="GOOGLE_WALLET_TITLE" /> orqali maʼlumotlaringizni saqlang va Google mahsulotlarida shakllarni toʻldirish kabi vazifalarni tezroq bajaring. <ph name="ACCOUNT" /> uchun shaxsiy karta sozlamalarida <ph name="HOW_INFO_IS_USED_LINK" />ni boshqarishingiz mumkin.</translation>
 <translation id="485902285759009870">Kod tasdiqlanmoqda...</translation>
 <translation id="4860260582253463350">YouTubeda davom ettirish uchun shaxsingizni tasdiqlang Ota-onangiz yoki vasiyingiz Family Link orqali belgilagan sozlamalar amal qiladi.</translation>
 <translation id="4861514638281352187">Redress raqamini xavfsiz kiriting</translation>
@@ -2841,7 +2842,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5718326209176373202">Matnli izohlar qoʻshish</translation>
 <translation id="5718601519531438273">Pasport hamda haydovchilik guvohnomalari kabi axborotlar ham kiradi</translation>
 <translation id="5720705177508910913">Joriy foydalanuvchi</translation>
-<translation id="5721147290164931316">Telefon orqali kirish uchun skanerlang</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} va yana 1 ta}other{{website_1}, {website_2} va yana {more_count} ta}}</translation>
 <translation id="5722778418591961221">Maqsadlarimga erishishim uchun uy sharoitida fitnes mashgʻulotlari rejasini tuzib ber</translation>
 <translation id="572328651809341494">Oxirgi varaqlar</translation>

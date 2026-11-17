@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Dewiswch ganiatâd ar gyfer <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Cadw IBAN?</translation>
 <translation id="1113869188872983271">&amp;Ailwneud aildrefnu</translation>
-<translation id="111897705806685148">Defnyddio Cod Pas o Ddyfais Arall</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i reoli pa wybodaeth Chrome rydych yn ei chadw yn eich Cyfrif Google</translation>
 <translation id="1121990216147052230">Gwneud restr o bethau i'w gwneud i mi</translation>
 <translation id="1123753900084781868">Nid yw Capsiynau Byw ar gael ar hyn o bryd</translation>
@@ -2848,7 +2847,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5718326209176373202">Ychwanegu anodiadau testun</translation>
 <translation id="5718601519531438273">Yn cynnwys gwybodaeth megis pasbortau a thrwyddedau gyrru</translation>
 <translation id="5720705177508910913">Defnyddiwr presennol</translation>
-<translation id="5721147290164931316">Sganiwch i Fewngofnodi gyda'ch Ffôn</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2}, ac 1 arall}zero{{website_1}, {website_2}, a {more_count} eraill}many{{website_1}, {website_2}, a {more_count} arall}other{{website_1}, {website_2}, a {more_count} arall}}</translation>
 <translation id="5722778418591961221">Cynllunio trefn ffitrwydd cartref sy'n fy helpu i gyrraedd fy nodau</translation>
 <translation id="572328651809341494">Tabiau diweddar</translation>
@@ -4165,6 +4163,7 @@ Manylion ychwanegol:
 <translation id="7916162853251942238">Sylfaen Flexo</translation>
 <translation id="7916802424606434188">Agor Ffenestr <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> tab) mewn ffenestr newydd</translation>
 <translation id="791698251820376781">Nid yw eich sefydliad yn caniatáu i chi fewngofnodi</translation>
+<translation id="7918936720558783139">Bydd eich cynnig sydd wedi'i gadw ar gael wrth dalu gan ddefnyddio awtolenwi. <ph name="BEGIN_LINK" />Rheoli cynigion<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">Cadwch docynnau, digwyddiadau a gwybodaeth arall o dudalennau rydych yn eu gweld - nid yn unig ffurflenni rydych yn eu llenwi. Yna cyrchwch eich tocynnau yn gyflym, megis tocynnau digwyddiad a chardiau teyrngarwch. Gall eich gwybodaeth sydd wedi'i chadw ymddangos ar eich dyfeisiau ac ar draws cynhyrchion Google.</translation>
 <translation id="7930282586031445870">Mae sgrîn telerau gwasanaeth Prynu-Nawr-Talu-Yn-Ddiweddarach wedi'i chau.</translation>
 <translation id="7932035970207573919">Cyfeiriad gwaith, <ph name="ADDRESS" /></translation>

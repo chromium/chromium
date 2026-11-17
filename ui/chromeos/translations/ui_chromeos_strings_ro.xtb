@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Cameră</translation>
 <translation id="162175252992296058">Portugheză cu tastatură S.U.A. internațională</translation>
 <translation id="1629521517399325891">Certificatul de utilizator nu este disponibil pentru autentificarea în rețea.</translation>
+<translation id="1639239467298939599">Se încarcă</translation>
 <translation id="1641780993263690097">Chineză Pinyin</translation>
 <translation id="164969095109328410">Dispozitiv Chrome</translation>
 <translation id="1661207570040737402">Ai folosit tot spațiul de stocare Drive în comun din Google Workspace.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">Sincronizarea fișierelor este dezactivată</translation>
 <translation id="2820957248982571256">Se scanează...</translation>
 <translation id="2830077785865012357">Chineză Zhuyin</translation>
+<translation id="2838379631617906747">Se instalează</translation>
 <translation id="2843806747483486897">Schimbați valoarea prestabilită...</translation>
 <translation id="2873951654529031587">Coș de gunoi</translation>
 <translation id="2887314858867008269">SUA Colemak</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
 <translation id="8656407365183407932">Fișierele offline trebuiau eliminate</translation>
 <translation id="8656768832129462377">Nu verifica</translation>
+<translation id="8662978096466608964">Chrome nu poate seta imaginea de fundal.</translation>
 <translation id="8688591111840995413">Parolă greșită</translation>
 <translation id="8698464937041809063">Desen Google</translation>
 <translation id="8698877009525468705">Fișierul este confidențial și se supune restricțiilor impuse de politica implementată de administrator.</translation>

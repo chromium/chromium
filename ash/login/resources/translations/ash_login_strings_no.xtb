@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Sveip opp for å flytte siden ned</translation>
 <translation id="2501278716633472235">Gå tilbake</translation>
 <translation id="252418934079508528">Installer <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Klargjør enheten …</translation>
 <translation id="2538084450874617176">Hvem bruker denne <ph name="DEVICE_TYPE" />-enheten?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> kan ikke koble til <ph name="NETWORK_ID" />. Velg et annet nettverk eller prøv på nytt senere.</translation>
 <translation id="2565214867520763227">Slå på skjermleseren</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">Fortsett-knappen er aktivert</translation>
 <translation id="7671139479636735732">Høyreklikk for å visualisere ideene dine enkelt</translation>
 <translation id="770831926727930011">Lokale data er beskyttet av det gamle passordet ditt. Skriv inn det gamle passordet ditt for å gjenopprette lokale data.</translation>
+<translation id="7717014941119698257">Laster ned: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Trengs for å oppdatere: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Sammenkobler med «<ph name="DEVICE_NAME" />» …</translation>
 <translation id="7746045113967198252">Gjør elementer på skjermen, inkludert tekst, større eller mindre. Du kan også finne dette senere i Innstillinger &gt; Enhet &gt; Skjermer.</translation>

@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Falha durante o login. Tente novamente mais tarde.</translation>
 <translation id="2975761176769946178">É obrigatório informar um URL</translation>
 <translation id="297667759942911166">Colaborar em grupos de guias</translation>
+<translation id="2986080119218811913">Voltar para <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Para usar o Gemini no Chrome, faça login no navegador com sua Conta do Google</translation>
 <translation id="2987670534697681860">Confirme sua identidade para ter acesso a todas as suas senhas neste dispositivo</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, gerenciado pela sua organização.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Cor do grupo de guias <ph name="COLOR" /></translation>
+<translation id="500126251490468002">O Gerenciador de Senhas do Google não tem uma senha para este site. Retorne ao <ph name="ACTOR_NAME" /> para fazer login ou adicione uma senha ao Gerenciador de Senhas do Google.</translation>
 <translation id="5005498671520578047">Copiar senha</translation>
 <translation id="5007392906805964215">Revisar</translation>
 <translation id="5009127379503001909">Continuar navegando</translation>

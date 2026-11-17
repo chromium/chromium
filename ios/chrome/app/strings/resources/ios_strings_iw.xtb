@@ -652,6 +652,7 @@
 <translation id="2969979262385602596">לא ניתן היה להיכנס לחשבון. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="2975761176769946178">‏נדרשת כתובת URL</translation>
 <translation id="297667759942911166">שיתוף פעולה בקבוצות של כרטיסיות</translation>
+<translation id="2986080119218811913">חזרה אל <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">‏כדי להשתמש ב-Gemini ב-Chrome, צריך להיכנס ל-Chrome באמצעות חשבון Google</translation>
 <translation id="2987670534697681860">כדי לגשת לכל הסיסמאות במכשיר הזה, צריך לאמת את הזהות שלך.</translation>
 <translation id="2989523299700148168">מנועי חיפוש שהשתמשת בהם לאחרונה</translation>
@@ -1212,6 +1213,7 @@
 <translation id="479628432297359449">לעצור את ההורדה?</translation>
 <translation id="4796496140132859135">קבוצת כרטיסיות. מצב מכווץ.</translation>
 <translation id="4800912004582762296">לוחץ</translation>
+<translation id="4800930308997591052">‏כדאי לעבור לחשבון <ph name="EMAIL" /> – זה יאפשר לך לשתף כרטיסיות בצורה חלקה בין המכשירים ולקבל את הסיסמאות, הסימניות ונתונים נוספים מהחשבון שלך ב-Google.</translation>
 <translation id="4802185666270672526">הסתרה של 'בקשת אתר שמותאם למחשב'</translation>
 <translation id="4803185665210547709">מנוהל על-ידי הארגון שלך.
 <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
@@ -1288,6 +1290,7 @@
 <translation id="499122600724363620">‫<ph name="NAME" />, <ph name="EMAIL" />, חשבון שמנוהל על-ידי הארגון שלך.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />,‏ <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">הצבע של קבוצת הכרטיסיות <ph name="COLOR" /></translation>
+<translation id="500126251490468002">‏במנהל הסיסמאות של Google אין סיסמה שמורה לאתר הזה. כדי להיכנס לחשבון, עליך לחזור אל <ph name="ACTOR_NAME" /> או להוסיף סיסמה למנהל הסיסמאות של Google.</translation>
 <translation id="5005498671520578047">העתקת הסיסמה</translation>
 <translation id="5007392906805964215">עיון</translation>
 <translation id="5009127379503001909">המשך חיפוש</translation>
@@ -2146,6 +2149,7 @@
 <translation id="7618220760967055820">בחירת הכפתור שיופיע בסרגל הכלים</translation>
 <translation id="7620522820075868385">ביטול</translation>
 <translation id="762078666799342162">אפשר לראות את ההורדות הקודמות בתיקיית <ph name="BEGIN_LINK" />הקבצים<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">אפשר להמשיך מהנקודה שבה הפסקת במחשב</translation>
 <translation id="7638584964844754484">ביטוי סיסמה שגוי</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{סיסמאות שנחשפו}=1{סיסמה אחת ({COUNT}) שנחשפה}one{‫{COUNT} סיסמאות שנחשפו}two{‫{COUNT} סיסמאות שנחשפו}other{‫{COUNT} סיסמאות שנחשפו}}</translation>
 <translation id="7640669552036055091">‏כרטיסיות מ-Android</translation>

@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">ছাইন ইন কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি কিছু সময়ৰ পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2975761176769946178">এটা URLৰ প্ৰয়োজন</translation>
 <translation id="297667759942911166">টেবৰ গোটসমূহত সহযোগিতা কৰক</translation>
+<translation id="2986080119218811913"><ph name="ACTOR_NAME" />লৈ উভতি যাওক</translation>
 <translation id="298696743524648170">Chromeত Gemini ব্যৱহাৰ কৰিবলৈ, আপোনাৰ Google একাউণ্টৰ জৰিয়তে Chromeত ছাইন ইন কৰক</translation>
 <translation id="2987670534697681860">এই ডিভাইচটোত আপোনাৰ আটাইবোৰ পাছৱৰ্ড এক্সেছ কৰিবলৈ এয়া আপুনিয়েই বুলি সত্যাপন কৰক।</translation>
 <translation id="2989523299700148168">শেহতীয়াকৈ চোৱা</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, আপোনাৰ প্ৰতিষ্ঠানে পৰিচালনা কৰে।</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />। <ph name="AI_TIER" />।</translation>
 <translation id="4992255726304765516">টেবৰ গোটৰ ৰং <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Google Password Managerৰ ওচৰত এই ছাইটটোৰ বাবে কোনো পাছৱৰ্ড নাই। ছাইন ইন কৰিবলৈ <ph name="ACTOR_NAME" />লৈ উভতি যাওক বা Google Password Managerত এটা পাছৱৰ্ড যোগ দিয়ক।</translation>
 <translation id="5005498671520578047">পাছৱর্ডটোৰ প্ৰতিলিপি কৰক</translation>
 <translation id="5007392906805964215">পৰ্যালোচনা কৰক</translation>
 <translation id="5009127379503001909">ব্ৰাউজ কৰি থাকক</translation>
@@ -1483,6 +1485,7 @@
 <translation id="5612225021788368236">ডিফ’ল্ট ব্ৰাউজাৰৰ প্ৰ’ম’ বন্ধ কৰক</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />আপোনাৰ ফাইলটো বাছনি কৰক<ph name="END_BOLD" />ত টিপক</translation>
 <translation id="5613297089029360427">শেহতীয়া অনুসৰি সজাওক</translation>
+<translation id="561349411957324076">সম্পূৰ্ণ হৈছে</translation>
 <translation id="5614553682702429503">পাছৱৰ্ড ছেভ কৰিবনে?</translation>
 <translation id="5617769621178348890">Files এপত খোলক</translation>
 <translation id="5619871095170816857">এই কাৰ্ডখনে যোৱা ২৪ ঘণ্টাৰ ভিতৰত আপোনাৰ সমগ্ৰ ছিংক কৰা ডিভাইচসমূহত আপুনি অন্তিমবাৰ ব্যৱহাৰ কৰা খোল খাই থকা টেবটো দেখুৱায়।</translation>

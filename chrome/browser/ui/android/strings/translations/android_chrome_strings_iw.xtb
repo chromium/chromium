@@ -129,6 +129,7 @@
 <translation id="1460751212339734034">חוסכים זמן, מקלידים פחות</translation>
 <translation id="146522654774760805">סיסמאות ומילוי אוטומטי</translation>
 <translation id="1466383950273130737">‏בחירת השפה ב-Chrome</translation>
+<translation id="1473344277210704336">‏‫Gemini וכל מה שחשוב לך בסרגל הכלים התחתון החדש</translation>
 <translation id="1477626028522505441">הורדת <ph name="FILE_NAME" /> נכשלה עקב בעיות בשרת.</translation>
 <translation id="147982357559798527">השתנתה</translation>
 <translation id="1480287803138246127">‏יכול להיות שחלק מההיסטוריה שלך לא תוצג כאן. צריך לפתוח את ההיסטוריה המלאה ב-Chrome כדי לראות את כולה.</translation>
@@ -905,6 +906,7 @@
 <translation id="4537987892902330164">החיבור של <ph name="NAME_OR_EMAIL" /> עדיין פעיל.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{כרטיסייה אחת (<ph name="TAB_COUNT_ONE" />)}one{<ph name="TAB_COUNT_MANY" /> כרטיסיות, <ph name="TAB_COUNT_INCOGNITO" /> כרטיסיות של מצב אנונימי}two{<ph name="TAB_COUNT_MANY" /> כרטיסיות, <ph name="TAB_COUNT_INCOGNITO" /> כרטיסיות של מצב אנונימי}other{<ph name="TAB_COUNT_MANY" /> כרטיסיות, <ph name="TAB_COUNT_INCOGNITO" /> כרטיסיות של מצב אנונימי}}</translation>
 <translation id="4558311620361989323">קיצורי דרך בדפי אינטרנט</translation>
+<translation id="4558547432122102499">‫<ph name="USER_NAME" />,‏ <ph name="EMAIL" />. מינוי של <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="4572422548854449519">כניסה אל חשבון מנוהל</translation>
 <translation id="4577115723294378384">מיון בסדר אלפביתי עולה</translation>
 <translation id="4578289292431526768">קדימה, נתחיל</translation>
@@ -912,6 +914,8 @@
 <translation id="4585751637295612750">אפשר לפתוח כרטיסייה חדשה כדי להוסיף אותה לשאלה</translation>
 <translation id="4585793705637313973">עריכת הדף</translation>
 <translation id="4587589328781138893">אתרים</translation>
+<translation id="4587590257937792551">‏ל-Chrome יש סרגל כלים תחתון חדש ונוח יותר. תמיד אפשר לחזור לגרסה הקודמת דרך <ph name="BEGIN_LINK" />ההגדרות<ph name="END_LINK" />.</translation>
+<translation id="4592634244097223647">‏אפשר לשאול את Google על התמונה הזו</translation>
 <translation id="4594952190837476234">הדף האופליין הזה נוצר ב-<ph name="CREATION_TIME" /> ויכול להיות שהגרסה המקוונת שלו שונה.</translation>
 <translation id="4595237294768457124">פותחים את הדף "כרטיסייה חדשה"</translation>
 <translation id="4595276580892809760">צירוף תמונות מהגלריה</translation>
@@ -1093,6 +1097,7 @@
 <translation id="5257142004843671642">שינוי הגודל של חלונית הצד</translation>
 <translation id="5264813352784073502">24 השעות האחרונות</translation>
 <translation id="5267572070504076962">כדאי להפעיל את הגלישה הבטוחה ולקבל הגנה מפני אתרים מסוכנים</translation>
+<translation id="526760395289305534">הרחבה או כיווץ של הכרטיסיות האנכיות</translation>
 <translation id="5273031377282080577">ההגדרה הזו מנוהלת על ידי האדמין.</translation>
 <translation id="5284295735376057059">מאפייני המסמך</translation>
 <translation id="5286907366254680517">זוהתה</translation>
@@ -1447,6 +1452,7 @@
 <translation id="6633067410344541938">ביטול הנעילה של המצב הפרטי</translation>
 <translation id="6636623428211296678">אפשר לעיין למטה בהגדרות נוספות או לסיים עכשיו.</translation>
 <translation id="6637100877383020115">‏כדי לעזור בשיפור האפליקציה, Chrome ישלח נתוני שימוש וקריסות אל Google. <ph name="BEGIN_UMA_LINK" />ניהול<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">כל מה שחשוב לך, ישירות בסרגל הכלים התחתון. תמיד אפשר לחזור לגרסה הקודמת דרך <ph name="BEGIN_LINK" />ההגדרות<ph name="END_LINK" />.</translation>
 <translation id="6642299196749785472">צירוף כרטיסיות</translation>
 <translation id="6647441008198474441">‏כתובות URL שבהן ביקרת יישלחו אל Google כדי לחזות את האתרים הבאים שאליהם תתבצע כניסה על ידך</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוסף}one{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוספים}two{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוספים}other{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוספים}}</translation>
@@ -1642,6 +1648,7 @@
 <translation id="7298319215489933099">‫<ph name="TAB_TITLE" />, כרטיסייה שנבחרה והוצמדה, והתוכן בה משותף</translation>
 <translation id="7311244614769792472">לא נמצאו תוצאות</translation>
 <translation id="7314734791127433392">לא ניתן לבדוק את הסיסמאות</translation>
+<translation id="7324177883197548771">‏ל-Chrome יש עיצוב חדש ונוח יותר. תמיד אפשר לחזור לגרסה הקודמת דרך <ph name="BEGIN_LINK" />ההגדרות<ph name="END_LINK" />.</translation>
 <translation id="7324354302972299151">‏שליחה של בקשת Do Not Track</translation>
 <translation id="7333041109965360609">ביטלת את ההרשמה לקבלת התראות</translation>
 <translation id="7335766481146072567">לוחצים על המשך</translation>
@@ -1744,6 +1751,7 @@
 <translation id="7697383401610880082">נקודת אחיזה לגרירה</translation>
 <translation id="7698359219371678927">יצירת הודעת אימייל ב-<ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">הגיליון התחתון של הפעילות האחרונה נפתח בגובה מלא</translation>
+<translation id="7706590516064393665">‫<ph name="USER_NAME_OR_EMAIL" />. מינוי של <ph name="SUBSCRIPTION_NAME" />.</translation>
 <translation id="7707922173985738739">שימוש בחבילת הגלישה</translation>
 <translation id="7708994397325774423">קבלת כל הסיסמאות</translation>
 <translation id="7714077993070342304">‏פתיחת תפריט Chrome</translation>

@@ -146,6 +146,7 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="248676429071089168">Pasa o dedo cara arriba para mover a páxina cara abaixo</translation>
 <translation id="2501278716633472235">Ir atrás</translation>
 <translation id="252418934079508528">Instalar <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Preparando o dispositivo...</translation>
 <translation id="2538084450874617176">Quen está usando este <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> non se puido conectar con <ph name="NETWORK_ID" />. Selecciona outra rede ou téntao de novo.</translation>
 <translation id="2565214867520763227">Activa o lector de pantalla</translation>
@@ -630,6 +631,7 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="7666531788977935712">O botón Continuar está activado</translation>
 <translation id="7671139479636735732">Fai clic co botón dereito para visualizar facilmente as túas ideas</translation>
 <translation id="770831926727930011">Os datos locais están protexidos co contrasinal antigo. Introduce ese contrasinal para recuperalos.</translation>
+<translation id="7717014941119698257">Descargando: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Espazo necesario para a actualización: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Vinculando co dispositivo (<ph name="DEVICE_NAME" />)...</translation>
 <translation id="7746045113967198252">Reduce ou amplía os elementos da pantalla, como o texto. Tamén podes atopar esta opción de configuración en Configuración &gt; Dispositivo &gt; Pantallas.</translation>

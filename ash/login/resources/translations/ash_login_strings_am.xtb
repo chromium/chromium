@@ -146,6 +146,7 @@
 <translation id="248676429071089168">ገጹን ወደታች ለማንቀሳቀስ ወደላይ ያሸብልሉ</translation>
 <translation id="2501278716633472235">ወደ ኋላ ተመለስ</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" />ን ይጫኑ</translation>
+<translation id="2532146950330687938">መሣሪያውን በማዘጋጀት ላይ...</translation>
 <translation id="2538084450874617176">ይህንን <ph name="DEVICE_TYPE" /> የሚጠቀመው ማነው?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> ከ<ph name="NETWORK_ID" /> ጋር ሊገናኝ አልቻለም። እባክዎ ሌላ አውታረ መረብ ይሞክሩ ወይም እንደገና ይሞክሩ።</translation>
 <translation id="2565214867520763227">ማያ ገጽ አንባቢን ያብሩ</translation>
@@ -630,6 +631,7 @@
 <translation id="7666531788977935712">የቀጥል አዝራር ነቅቷል</translation>
 <translation id="7671139479636735732">ሐሳቦችዎን በቀላል በምስል ለመስራት የቀኝ ጠቅታ ያድርጉ</translation>
 <translation id="770831926727930011">አካባቢያዊ ውሂብ በእርስዎ የቀድሞ የይለፍ ቃል የተጠበቀ ነው። አካባቢያዊ ውሂብን መልሰው ለማግኘት የቀድሞ የይለፍ ቃልዎን ያስገቡ።</translation>
+<translation id="7717014941119698257">በማውረድ ላይ፦ <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">ለማዘመን የሚያስፈልገው፦ <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">ከ«<ph name="DEVICE_NAME" />» ጋር በማጣመር ላይ ...</translation>
 <translation id="7746045113967198252">ጽሑፍን ጨምሮ በማያ ገጽዎ ላይ ያሉ ንጥሎችን ይበልጥ ትልቅ ወይም ትንሽ ያድርጉ። እንዲሁም ይህን ቆይተው ቅንብሮች &gt; መሣሪያ &gt; ማሳያዎች ውስጥ ማግኘት ይችላሉ።</translation>

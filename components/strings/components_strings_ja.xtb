@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> の権限を選択します</translation>
 <translation id="1113000785583998331">IBAN を保存しますか？</translation>
 <translation id="1113869188872983271">順序変更の取り消し（&amp;U）</translation>
-<translation id="111897705806685148">別のデバイスのパスキーを使用</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google アカウントに保存する Chrome の情報を管理できます</translation>
 <translation id="1121990216147052230">ToDo リストを作成して</translation>
 <translation id="1123753900084781868">自動字幕起こしは現在ご利用いただけません</translation>
@@ -1307,6 +1306,7 @@
 <translation id="3196374699162453920">予約コード</translation>
 <translation id="3196902089458890316">関連タブを常に共有して、関連性の高い回答を取得できるようにしますか？</translation>
 <translation id="3197136577151645743">このデバイスのアクティブ状態の検出を要求できる</translation>
+<translation id="3201749168732432347">特典とポイントカード</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押して、Chrome の設定で同期する情報を管理します</translation>
 <translation id="3203025201812691413">URL を空白にすることはできません</translation>
 <translation id="320323717674993345">支払いをキャンセル</translation>
@@ -2847,7 +2847,6 @@
 <translation id="5718326209176373202">テキスト アノテーションを追加</translation>
 <translation id="5718601519531438273">パスポートや運転免許証などの情報が含まれます</translation>
 <translation id="5720705177508910913">現在のユーザー</translation>
-<translation id="5721147290164931316">スキャンしてスマートフォンでログイン</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}、{website_2}}=3{{website_1}、{website_2}、他 1 個}other{{website_1}、{website_2}、他 {more_count} 個}}</translation>
 <translation id="5722778418591961221">目標達成に向けた自宅でのフィットネス ルーティンを計画して</translation>
 <translation id="572328651809341494">最近使ったタブ</translation>

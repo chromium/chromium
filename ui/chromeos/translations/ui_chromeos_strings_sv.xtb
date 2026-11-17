@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">portugisiska med internationellt tangentbord för USA</translation>
 <translation id="1629521517399325891">Användarcertifikatet är inte tillgängligt för nätverksautentisering.</translation>
+<translation id="1639239467298939599">Profilen läses in</translation>
 <translation id="1641780993263690097">kinesiska (pinyin)</translation>
 <translation id="164969095109328410">Chrome-enhet</translation>
 <translation id="1661207570040737402">Du har använt allt ditt lagringsutrymme på den delade Google Workspace-enheten.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">Filsynkronisering har inaktiverats</translation>
 <translation id="2820957248982571256">Söker …</translation>
 <translation id="2830077785865012357">kinesiska (zhuyin)</translation>
+<translation id="2838379631617906747">Installerar</translation>
 <translation id="2843806747483486897">Ändra standard ...</translation>
 <translation id="2873951654529031587">Papperskorgen</translation>
 <translation id="2887314858867008269">Amerikanskt (Colemak)</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Port</translation>
 <translation id="8656407365183407932">Dina offlinefiler togs bort</translation>
 <translation id="8656768832129462377">Kontrollera inte</translation>
+<translation id="8662978096466608964">Bakgrundsbilden kan inte anges i Chrome.</translation>
 <translation id="8688591111840995413">Felaktigt lösenord</translation>
 <translation id="8698464937041809063">Google-teckning</translation>
 <translation id="8698877009525468705">Den här filen är konfidentiell och omfattas av begränsningar enligt en administratörspolicy.</translation>

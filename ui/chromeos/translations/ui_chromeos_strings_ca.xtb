@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="162175252992296058">Portuguès amb teclat internacional dels EUA</translation>
 <translation id="1629521517399325891">El certificat de l'usuari no està disponible per a l'autenticació de xarxa.</translation>
+<translation id="1639239467298939599">S'està carregant</translation>
 <translation id="1641780993263690097">Xinès (pinyin)</translation>
 <translation id="164969095109328410">Dispositiu Chrome</translation>
 <translation id="1661207570040737402">Has fet servir tot el teu espai d'emmagatzematge a la unitat compartida de Google Workspace.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">La sincronització de fitxers està desactivada</translation>
 <translation id="2820957248982571256">S'està cercant...</translation>
 <translation id="2830077785865012357">Xinès (zhuyin)</translation>
+<translation id="2838379631617906747">S'està instal·lant</translation>
 <translation id="2843806747483486897">Canvia els valors predeterminats...</translation>
 <translation id="2873951654529031587">Paperera</translation>
 <translation id="2887314858867008269">Colemak nord-americà</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>
 <translation id="8656407365183407932">Els fitxers sense connexió s'han hagut de suprimir</translation>
 <translation id="8656768832129462377">No comprovis</translation>
+<translation id="8662978096466608964">Chrome no pot establir un fons de pantalla.</translation>
 <translation id="8688591111840995413">Contrasenya incorrecta</translation>
 <translation id="8698464937041809063">Dibuix de Google</translation>
 <translation id="8698877009525468705">Aquest fitxer és confidencial i està subjecte a restriccions en funció de la política de l'administrador.</translation>

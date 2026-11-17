@@ -4890,9 +4890,6 @@ URL ทางลัดต้องไม่ซ้ำกัน
 
       นโยบายนี้เลิกใช้งานไปแล้ว โปรดใช้ <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> แทน</translation>
 <translation id="4088589230932595924">บังคับใช้โหมดไม่ระบุตัวตน</translation>
-<translation id="4089849819635523136">หาก <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> เปิดอยู่ การตั้งค่า <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> จะระบุคีย์เวิร์ดหรือทางลัดที่ใช้ในแถบที่อยู่เพื่อทริกเกอร์การค้นหาสำหรับผู้ให้บริการรายนี้
-
-      หากไม่ตั้งค่า <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> จะไม่มีคีย์เวิร์ดใดเลยที่เปิดใช้งานผู้ให้บริการค้นหาดังกล่าว</translation>
 <translation id="4090088362777472639">แฮช SHA-256 ของ Ansible Playbook</translation>
 <translation id="4091040199847925434">ปิดใช้การรายงานข้อมูลระบบและเนื้อหาของหน้าซึ่งใช้เพื่อช่วยปรับปรุง Google Safe Browsing</translation>
 <translation id="4093058072421210667">ไม่อนุญาตให้ใช้รูปภาพในบรรทัด</translation>

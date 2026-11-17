@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Vuốt lên để di chuyển xuống phía dưới của trang</translation>
 <translation id="2501278716633472235">Quay lại</translation>
 <translation id="252418934079508528">Cài đặt <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Đang chuẩn bị thiết bị...</translation>
 <translation id="2538084450874617176">Ai sẽ dùng <ph name="DEVICE_TYPE" /> này?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> không thể kết nối đến <ph name="NETWORK_ID" />. Vui lòng chọn một mạng khác hoặc thử lại.</translation>
 <translation id="2565214867520763227">Bật trình đọc màn hình</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">Nút Tiếp tục đã được kích hoạt</translation>
 <translation id="7671139479636735732">Nhấp chuột phải để dễ dàng trực quan hoá ý tưởng của bạn</translation>
 <translation id="770831926727930011">Dữ liệu cục bộ được bảo vệ bằng mật khẩu cũ của bạn. Nhập mật khẩu cũ để khôi phục dữ liệu cục bộ.</translation>
+<translation id="7717014941119698257">Đang tải xuống: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Cần được cập nhật: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Đang ghép nối với "<ph name="DEVICE_NAME" />"...</translation>
 <translation id="7746045113967198252">Thu nhỏ hoặc phóng to các mục trên màn hình, bao gồm cả văn bản. Bạn cũng có thể tìm tuỳ chọn này sau trong phần Cài đặt &gt; Thiết bị &gt; Màn hình.</translation>

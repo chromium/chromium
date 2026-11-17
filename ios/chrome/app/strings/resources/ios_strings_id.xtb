@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Gagal masuk. Coba lagi nanti.</translation>
 <translation id="2975761176769946178">URL wajib diisi</translation>
 <translation id="297667759942911166">Berkolaborasi dalam grup tab</translation>
+<translation id="2986080119218811913">Kembali ke <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Untuk menggunakan Gemini di Chrome, login ke Chrome dengan Akun Google Anda</translation>
 <translation id="2987670534697681860">Verifikasi diri Anda untuk mengakses semua sandi di perangkat ini.</translation>
 <translation id="2989523299700148168">Baru saja dikunjungi</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, dikelola oleh organisasi Anda.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Warna grup tab <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Pengelola Sandi Google tidak memiliki sandi untuk situs ini. Kembali ke <ph name="ACTOR_NAME" /> untuk login, atau tambahkan sandi ke Pengelola Sandi Google.</translation>
 <translation id="5005498671520578047">Salin sandi</translation>
 <translation id="5007392906805964215">Tinjau</translation>
 <translation id="5009127379503001909">Terus jelajahi</translation>

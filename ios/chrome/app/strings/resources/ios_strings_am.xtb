@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">በመለያ መግባት አልተሳካም። እባክዎ ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="2975761176769946178">ዩአርኤል ያስፈልጋል</translation>
 <translation id="297667759942911166">የትር ቡድኖች ውስጥ ይተባበሩ</translation>
+<translation id="2986080119218811913">ወደ <ph name="ACTOR_NAME" /> ተመለስ</translation>
 <translation id="298696743524648170">Gemini በChrome ውስጥ ለመጠቀም፣ በGoogle መለያዎ ወደ Chrome ይግቡ</translation>
 <translation id="2987670534697681860">ሁሉንም የይለፍ ቃላትዎን በዚህ መሣሪያ ላይ ለመድረስ እርስዎ መሆንዎን ያረጋግጡ።</translation>
 <translation id="2989523299700148168">በቅርብ ጊዜ የተጎበኙ</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />፣ <ph name="EMAIL" />፣ በድርጅትዎ የሚተዳደር።</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />፣ <ph name="EMAIL" />። <ph name="AI_TIER" />።</translation>
 <translation id="4992255726304765516">የትር ቡድን ቀለም <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Google የይለፍ ቃል አስተዳዳሪ ለዚህ ጣቢያ የይለፍ ቃል የለውም። በመለያ ለመግባት ወደ <ph name="ACTOR_NAME" /> ይመለሱ ወይም ወደ Google የይለፍ ቃል አስተዳዳሪ የይለፍ ቃል ያክሉ።</translation>
 <translation id="5005498671520578047">የይለፍ ቃል ቅዳ</translation>
 <translation id="5007392906805964215">ገምግም</translation>
 <translation id="5009127379503001909">ማሰስ ይቀጥሉ</translation>

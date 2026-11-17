@@ -146,6 +146,7 @@
 <translation id="248676429071089168">ປັດຂຶ້ນເພື່ອເລື່ອນໜ້າລົງ</translation>
 <translation id="2501278716633472235">ກັບ​ຄືນ​ໄປ</translation>
 <translation id="252418934079508528">ຕິດຕັ້ງ <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">ກຳລັງກຽມອຸປະກອນໃຫ້ພ້ອມ...</translation>
 <translation id="2538084450874617176">ໃຜກຳລັງໃຊ້ <ph name="DEVICE_TYPE" /> ນີ້?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບ <ph name="NETWORK_ID" /> ໄດ້. ກະລຸນາເລືອກເຄືອຂ່າຍອື່ນ ຫຼືລອງໃໝ່ອີກ.</translation>
 <translation id="2565214867520763227">ເປີດໂປຣແກຣມອ່ານໜ້າຈໍ</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">ເປີດການນຳໃຊ້ປຸ່ມສືບຕໍ່ແລ້ວ</translation>
 <translation id="7671139479636735732">ຄລິກຂວາເພື່ອໃຫ້ເຫັນພາບແນວຄິດຂອງທ່ານຢ່າງງ່າຍດາຍ</translation>
 <translation id="770831926727930011">ຂໍ້ມູນໃນເຄື່ອງຂອງທ່ານແມ່ນໄດ້ຮັບການປົກປ້ອງດ້ວຍລະຫັດຜ່ານເກົ່າຂອງທ່ານ. ໃຫ້ລະບຸລະຫັດຜ່ານເກົ່າຂອງທ່ານເພື່ອກູ້ຂໍ້ມູນໃນເຄື່ອງຄືນມາ.</translation>
+<translation id="7717014941119698257">ກໍາລັງດາວ​​ໂຫລດ​: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">ຈຳເປັນຕ້ອງມີເພື່ອອັບເດດ: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">ກຳລັງຈັບຄູ່ກັບ "<ph name="DEVICE_NAME" />" ...</translation>
 <translation id="7746045113967198252">ເຮັດໃຫ້ລາຍການຕ່າງໆຢູ່ໜ້າຈໍຂອງທ່ານຮວມທັງຂໍ້ຄວາມ, ໃຫຍ່ຂຶ້ນ ຫຼື ນ້ອຍລົງ. ທ່ານຍັງສາມາດຊອກຫາສິ່ງນີ້ໃນພາຍຫຼັງໃນການຕັ້ງຄ່າ &gt; ອຸປະກອນ &gt; ຈໍສະແດງຜົນ.</translation>

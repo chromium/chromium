@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Seleccionar permiso para <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Queres gardar o IBAN?</translation>
 <translation id="1113869188872983271">&amp;Desfacer o cambio de orde</translation>
-<translation id="111897705806685148">Usar clave de acceso doutro dispositivo</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, preme Tabulador e, a continuación, Introducir para xestionar a información de Chrome que gardas na túa Conta de Google</translation>
 <translation id="1121990216147052230">Crea unha lista de tarefas pendentes</translation>
 <translation id="1123753900084781868">A función Subtítulos instantáneos non está dispoñible nestes intres</translation>
@@ -2848,7 +2847,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5718326209176373202">Engadir anotacións de texto</translation>
 <translation id="5718601519531438273">Inclúe información como pasaportes e permisos de conducir</translation>
 <translation id="5720705177508910913">Usuario actual</translation>
-<translation id="5721147290164931316">Escanea o código para iniciar sesión co teléfono</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1} e {website_2}}=3{{website_1}, {website_2} e 1 sitio máis}other{{website_1}, {website_2} e {more_count} sitios máis}}</translation>
 <translation id="5722778418591961221">Planifica unha rutina de exercicios na casa que me axude a acadar os meus obxectivos</translation>
 <translation id="572328651809341494">Pestanas recentes</translation>

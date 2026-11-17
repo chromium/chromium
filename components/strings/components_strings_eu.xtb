@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Hautatu honetarako baimena: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">IBANa gorde nahi duzu?</translation>
 <translation id="1113869188872983271">&amp;Desegin berrantolatzea</translation>
-<translation id="111897705806685148">Erabili beste gailu bateko sarbide-kodea</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Sakatu tabuladorea eta, ondoren, sakatu "Sartu" Google-ko kontuan Chrome-ko zein informazio gordetzen duzun kudeatzeko.</translation>
 <translation id="1121990216147052230">Egin egitekoen zerrenda bat niretzat</translation>
 <translation id="1123753900084781868">Istanteko azpitituluak ez daude erabilgarri</translation>
@@ -1304,6 +1303,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3196374699162453920">Erreserba-kodea</translation>
 <translation id="3196902089458890316">Erantzun hobeak lortzeko, fitxa egokiak partekatu nahi dituzu beti?</translation>
 <translation id="3197136577151645743">Gailu hau noiz erabiltzen ari zaren jakitea eska dezake</translation>
+<translation id="3201749168732432347">Eskaintzak eta fideltasun-txartelak</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, sakatu tabuladorea eta, ondoren, sakatu Sartu Chrome-ren ezarpenetara joan, eta sinkronizatzen den informazioa kudeatzeko</translation>
 <translation id="3203025201812691413">URLa ezin da hutsik egon</translation>
 <translation id="320323717674993345">Utzi bertan behera ordainketa</translation>
@@ -2306,6 +2306,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4850886885716139402">Ikusi</translation>
 <translation id="4854853140771946034">Sortu bizkor ohar bat Google Keep-en</translation>
 <translation id="4855395119669662878">Administratzailea ordu honetan hasiko da fitxategiak <ph name="CLOUD_PROVIDER" /> zerbitzura kargatzen: <ph name="DATE_TIME" />. Mantendu gailua konektatuta fitxategien karga osatu arte. Kargatu bitartean, gailuko fitxategiak irakurtzeko soilik izango dituzu erabilgarri.</translation>
+<translation id="4856655096879441213">Gorde informazioa <ph name="GOOGLE_WALLET_TITLE" /> zerbitzuan gauzak bizkorrago egiteko, hala nola Google-ren zerbitzuetan inprimakiak betetzeko. <ph name="ACCOUNT" /> kontuko txartel pribatuen ezarpenetan kontrola dezakezu <ph name="HOW_INFO_IS_USED_LINK" />.</translation>
 <translation id="485902285759009870">Kodea egiaztatzen…</translation>
 <translation id="4860260582253463350">YouTube-ra joateko, zeu zarela egiaztatu behar dugu. Zure gurasoak edo tutoreak Family Link-en konfiguratu dizkizun ezarpenak edukiko dituzu.</translation>
 <translation id="4861514638281352187">Gehitu zuzenketa-zenbakia modu seguruan</translation>
@@ -2842,7 +2843,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5718326209176373202">Gehitu testuzko oharpenak</translation>
 <translation id="5718601519531438273">Pasaporteak, gidabaimenak eta antzeko dokumentuak sartzen dira</translation>
 <translation id="5720705177508910913">Oraingo erabiltzailea</translation>
-<translation id="5721147290164931316">Eskaneatu telefonoarekin saioa hasteko</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1} eta {website_2}}=3{{website_1}, {website_2} eta beste bat}other{{website_1}, {website_2} eta beste {more_count}}}</translation>
 <translation id="5722778418591961221">Antolatu etxean egiteko fitness-errutina bat, nire helburuak lortzen laguntzeko</translation>
 <translation id="572328651809341494">Azkenaldiko fitxak</translation>

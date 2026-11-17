@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Izaberite dozvolu: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Želite da sačuvate IBAN?</translation>
 <translation id="1113869188872983271">&amp;Opozovi promenu redosleda</translation>
-<translation id="111897705806685148">Koristi pristupni ključ sa drugog uređaja</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste upravljali time koje Chrome informacije čuvate na Google nalogu</translation>
 <translation id="1121990216147052230">Napravi mi listu zadataka</translation>
 <translation id="1123753900084781868">Titl uživo trenutno nije dostupan</translation>
@@ -2848,7 +2847,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5718326209176373202">Dodaj tekstualne napomene</translation>
 <translation id="5718601519531438273">Obuhvata informacije kao što su pasoši i vozačke dozvole</translation>
 <translation id="5720705177508910913">Trenutni korisnik</translation>
-<translation id="5721147290164931316">Skenirajte da biste se prijavili pomoću telefona</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} i još 1}one{{website_1}, {website_2} i još {more_count}}few{{website_1}, {website_2} i još {more_count}}other{{website_1}, {website_2} i još {more_count}}}</translation>
 <translation id="5722778418591961221">Isplaniraj fitnes rutinu kod kuće koja će mi pomoći da ostvarim ciljeve</translation>
 <translation id="572328651809341494">Nedavno korišćene kartice</translation>

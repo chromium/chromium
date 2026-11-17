@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Velciet augšup, lai pārvietotu lapu uz leju</translation>
 <translation id="2501278716633472235">Doties atpakaļ</translation>
 <translation id="252418934079508528">Instalēt <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Notiek ierīces sagatavošana…</translation>
 <translation id="2538084450874617176">Kas lietos šo ierīci (<ph name="DEVICE_TYPE" />)?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> nevarēja pievienoties tīklam <ph name="NETWORK_ID" />. Lūdzu, izvēlieties citu tīklu vai mēģiniet vēlreiz.</translation>
 <translation id="2565214867520763227">Ekrāna lasītāja ieslēgšana</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">Poga “Turpināt” ir iespējota</translation>
 <translation id="7671139479636735732">Noklikšķiniet ar peles labo pogu, lai ērti vizualizētu savas idejas.</translation>
 <translation id="770831926727930011">Jūsu lokālos datus aizsargā iepriekšējā parole. Ievadiet iepriekšējo paroli, lai atkoptu lokālos datus.</translation>
+<translation id="7717014941119698257">Notiek lejupielāde: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Atjauninājumam nepieciešamā vieta: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Notiek savienošana pārī ar ierīci <ph name="DEVICE_NAME" />...</translation>
 <translation id="7746045113967198252">Palieliniet vai samaziniet ekrānā redzamos vienumus, tostarp tekstu. Šo iespēju varēsiet arī vēlāk atrast sadaļā Iestatījumi &gt; Ierīce &gt; Displeji.</translation>

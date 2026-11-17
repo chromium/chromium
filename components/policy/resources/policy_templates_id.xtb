@@ -5084,9 +5084,6 @@ Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, li
 
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="4088589230932595924">Mode samaran dipaksakan</translation>
-<translation id="4089849819635523136">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> akan menentukan kata kunci atau pintasan yang digunakan di kolom URL untuk memicu penelusuran bagi penyedia ini.
-
-      Jika <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> tidak disetel, tidak ada kata kunci untuk mengaktifkan penyedia penelusuran.</translation>
 <translation id="4090088362777472639">Hash SHA-256 gambar playbook Ansible.</translation>
 <translation id="4091040199847925434">Nonaktifkan pelaporan informasi sistem dan konten halaman yang digunakan untuk membantu meningkatkan Safe Browsing</translation>
 <translation id="4093058072421210667">Jangan izinkan Gambar Inline.</translation>

@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">مجوز <ph name="PERMISSION_NAME" /> را انتخاب کنید</translation>
 <translation id="1113000785583998331">‏‫IBAN ذخیره شود؟</translation>
 <translation id="1113869188872983271">&amp;واگرد تغییر ترتیب</translation>
-<translation id="111897705806685148">استفاده از گذرکلید از دستگاهی دیگر</translation>
 <translation id="1119009590493440389">‏‫<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای مدیریت اطلاعات Chrome که در «حساب Google» ذخیره می‌کنید، کلید «جهش» و سپس Enter را فشار دهید</translation>
 <translation id="1121990216147052230">فهرست کارها برایم بسازید</translation>
 <translation id="1123753900084781868">درحال‌حاضر «زیرنویس زنده ناشنوایان» دردسترس نیست</translation>
@@ -1308,6 +1307,7 @@
 <translation id="3196374699162453920">کد رزرو</translation>
 <translation id="3196902089458890316">همیشه زبانه‌های مرتبط برای دریافت پاسخ‌های بهتر هم‌رسانی شوند؟</translation>
 <translation id="3197136577151645743">می‌تواند درخواست کند که استفاده فعال شما از دستگاه به او اطلاع داده شود</translation>
+<translation id="3201749168732432347">پیشنهاد‌های ویژه و کارت‌های وفاداری</translation>
 <translation id="3202497928925179914">‏<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />، کلید «جهش» و سپس «ورود» را فشار دهید تا اطلاعاتی را که همگام‌سازی می‌کنید در تنظیمات Chrome مدیریت کنید</translation>
 <translation id="3203025201812691413">نشانی وب نباید خالی باشد</translation>
 <translation id="320323717674993345">لغو پرداخت</translation>
@@ -2311,6 +2311,7 @@
 <translation id="4850886885716139402">نما</translation>
 <translation id="4854853140771946034">‏ایجاد سریع یادداشت جدید در Google Keep</translation>
 <translation id="4855395119669662878">‏سرپرستتان بارگذاری فایل‌ها در <ph name="CLOUD_PROVIDER" /> را در ‎<ph name="DATE_TIME" /> شروع خواهد کرد. تا زمانی‌که بارگذاری فایل کامل نشده است، اتصال دستگاه را قطع نکنید. درطول فرایند بارگذاری، فقط می‌توانید فایل‌های محلی را بخوانید.</translation>
+<translation id="4856655096879441213">‏اطلاعاتتان را در <ph name="GOOGLE_WALLET_TITLE" /> ذخیره کنید تا کارهایی مانند پر کردن فرم‌ها در محصولات Google را سریع‌تر انجام دهید. می‌توانید <ph name="HOW_INFO_IS_USED_LINK" /> را در تنظیمات مجوز شخصی برای <ph name="ACCOUNT" /> کنترل کنید.</translation>
 <translation id="485902285759009870">درحال تأیید کد…</translation>
 <translation id="4860260582253463350">‏برای رفتن به YouTube باید مطمئن شویم این فرد واقعاً شما هستید. تنظیماتی را که ولی یا سرپرستتان در Family Link تنظیم کرده است دریافت خواهید کرد.</translation>
 <translation id="4861514638281352187">افزودن امن «شناسه جبران خطای تطبیق»</translation>
@@ -2847,7 +2848,6 @@
 <translation id="5718326209176373202">اضافه کردن گزارمان‌های نوشتاری</translation>
 <translation id="5718601519531438273">شامل اطلاعاتی مانند گذرنامه و گواهینامه رانندگی می‌شود</translation>
 <translation id="5720705177508910913">کاربر کنونی</translation>
-<translation id="5721147290164931316">برای ورود به سیستم ازطریق تلفن همراه خود کد را اسکن کنید</translation>
 <translation id="5721367770070844253">{count,plural, =1{‫{website_1}}=2{‫{website_1}،‏ {website_2}}=3{‫{website_1}،‏ {website_2}، و ۱ وب‌سایت دیگر}one{‫{website_1}،‏ {website_2}، و {more_count} وب‌سایت دیگر}other{‫{website_1}،‏ {website_2}، و {more_count} وب‌سایت دیگر}}</translation>
 <translation id="5722778418591961221">روال تناسب اندام خانگی‌ای برنامه‌ریزی کن که به من کمک کند به اهدافم برسم</translation>
 <translation id="572328651809341494">زبانه‌های اخیر</translation>

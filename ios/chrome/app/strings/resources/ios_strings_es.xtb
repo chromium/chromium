@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Error al iniciar sesión. Inténtalo más tarde.</translation>
 <translation id="2975761176769946178">Debes introducir una URL</translation>
 <translation id="297667759942911166">Colabora en grupos de pestañas</translation>
+<translation id="2986080119218811913">Volver a <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Para usar Gemini en Chrome, inicia sesión en Chrome con tu cuenta de Google</translation>
 <translation id="2987670534697681860">Verifica que eres tú para acceder a todas tus contraseñas en este dispositivo.</translation>
 <translation id="2989523299700148168">Visitados recientemente</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" /> (<ph name="EMAIL" />), gestionado por tu organización.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Color del grupo de pestañas: <ph name="COLOR" /></translation>
+<translation id="500126251490468002">El Gestor de contraseñas de Google no tiene una contraseña para este sitio. Vuelve a <ph name="ACTOR_NAME" /> para iniciar sesión o añade una contraseña al Gestor de contraseñas de Google.</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
 <translation id="5007392906805964215">Ver</translation>
 <translation id="5009127379503001909">Seguir explorando</translation>

@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />: выберите разрешение</translation>
 <translation id="1113000785583998331">Сохранить код IBAN?</translation>
 <translation id="1113869188872983271">&amp;Отменить изменение порядка</translation>
-<translation id="111897705806685148">Использовать ключ доступа с другого устройства</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы указать, какую информацию Chrome можно сохранять в вашем аккаунте Google.</translation>
 <translation id="1121990216147052230">Составь список дел</translation>
 <translation id="1123753900084781868">Автоматические субтитры сейчас недоступны.</translation>
@@ -1306,6 +1305,7 @@
 <translation id="3196374699162453920">Код бронирования</translation>
 <translation id="3196902089458890316">Делиться подходящими вкладками, чтобы получать более точные ответы?</translation>
 <translation id="3197136577151645743">Разрешено запрашивать информацию об использовании устройства</translation>
+<translation id="3201749168732432347">Предложения и карты постоянного клиента</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем – Ввод, чтобы открыть настройки Chrome и указать, какая информация должна синхронизироваться.</translation>
 <translation id="3203025201812691413">Нужно указать URL.</translation>
 <translation id="320323717674993345">Отменить оплату</translation>
@@ -2309,6 +2309,7 @@
 <translation id="4850886885716139402">Смотреть</translation>
 <translation id="4854853140771946034">Быстро создать заметку в Google Keep</translation>
 <translation id="4855395119669662878">Администратор начнет загрузку файлов в сервис <ph name="CLOUD_PROVIDER" /> в <ph name="DATE_TIME" />. Не отключайте устройство, пока загрузка не завершится. Во время нее вы можете только читать локальные файлы.</translation>
+<translation id="4856655096879441213">Сохраните свои данные в <ph name="GOOGLE_WALLET_TITLE" />, чтобы ускорить процессы, например быстрее заполнять формы в продуктах Google. Управлять тем, <ph name="HOW_INFO_IS_USED_LINK" />, можно в настройках частной карты для аккаунта <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Проверка кода…</translation>
 <translation id="4860260582253463350">Прежде чем перейти на YouTube, подтверди, что это действительно ты. Будут выбраны параметры, заданные твоим родителем или законным представителем в Family Link.</translation>
 <translation id="4861514638281352187">Безопасно добавьте Redress Number</translation>
@@ -2845,7 +2846,6 @@
 <translation id="5718326209176373202">Добавить заметки к тексту</translation>
 <translation id="5718601519531438273">Сюда входят сведения о паспортах и водительских удостоверениях</translation>
 <translation id="5720705177508910913">Текущий пользователь</translation>
-<translation id="5721147290164931316">Отсканируйте QR-код, чтобы войти с помощью телефона</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} и ещё 1}one{{website_1}, {website_2} и ещё {more_count}}few{{website_1}, {website_2} и ещё {more_count}}many{{website_1}, {website_2} и ещё {more_count}}other{{website_1}, {website_2} и ещё {more_count}}}</translation>
 <translation id="5722778418591961221">Разработай план домашних тренировок, который поможет мне достичь поставленных целей.</translation>
 <translation id="572328651809341494">Недавние вкладки</translation>

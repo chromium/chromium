@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">سائن ان کرنے میں ناکام ہوگیا۔ براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="2975761176769946178">‏ایک URL درکار ہے</translation>
 <translation id="297667759942911166">ٹیب گروپس میں تعاون کریں</translation>
+<translation id="2986080119218811913">‫<ph name="ACTOR_NAME" /> پر واپس جائیں</translation>
 <translation id="298696743524648170">‏‫Chrome میں Gemini استعمال کرنے کے لیے، اپنے Google اکاؤنٹ سے Chrome میں سائن ان کریں</translation>
 <translation id="2987670534697681860">تصدیق کریں کہ اس آلہ پر اپنے تمام پاس ورڈز تک رسائی آپ ہی ہیں۔</translation>
 <translation id="2989523299700148168">حال ہی میں ملاحظہ کردہ</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />، <ph name="EMAIL" />، آپ کی تنظیم کے زیر انتظام ہے۔</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />، <ph name="EMAIL" />۔ <ph name="AI_TIER" />۔</translation>
 <translation id="4992255726304765516">ٹیب گروپ کا رنگ <ph name="COLOR" /></translation>
+<translation id="500126251490468002">‏‫Google پاس ورڈ مینیجر کے پاس اس سائٹ کے لیے پاس ورڈ نہیں ہے۔ سائن ان کرنے کے لیے <ph name="ACTOR_NAME" /> پر واپس جائیں یا Google پاس ورڈ مینیجر میں پاس ورڈ شامل کریں۔</translation>
 <translation id="5005498671520578047">پاس ورڈ کاپی کریں</translation>
 <translation id="5007392906805964215">جائزہ لیں</translation>
 <translation id="5009127379503001909">براؤز کرنا جاری رکھیں</translation>

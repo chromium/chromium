@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />: pasirinkite leidimą</translation>
 <translation id="1113000785583998331">Išsaugoti IBAN?</translation>
 <translation id="1113869188872983271">&amp;Anuliuoti pertvarkymą</translation>
-<translation id="111897705806685148">Prieigos rakto iš kito įrenginio naudojimas</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada „Enter“, jei norite tvarkyti, kokią „Chrome“ informaciją išsaugote „Google“ paskyroje</translation>
 <translation id="1121990216147052230">Sukurk man užduočių sąrašą</translation>
 <translation id="1123753900084781868">Subtitrų realiuoju laiku funkcija dabar nepasiekiama</translation>
@@ -1308,6 +1307,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3196374699162453920">Užsakymo kodas</translation>
 <translation id="3196902089458890316">Visada bendrinti atitinkamus skirtukus, kad gautumėte geresnių atsakymų?</translation>
 <translation id="3197136577151645743">Gali būti prašoma leisti sužinoti, kada aktyviai naudojate įrenginį</translation>
+<translation id="3201749168732432347">Pasiūlymai ir lojalumo kortelės</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada „Enter“, jei norite tvarkyti sinchronizuojamą informaciją „Chrome“ nustatymuose</translation>
 <translation id="3203025201812691413">URL laukas negali būti tuščias</translation>
 <translation id="320323717674993345">Atšaukti mokėjimą</translation>
@@ -2311,6 +2311,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4850886885716139402">Žiūrėti</translation>
 <translation id="4854853140771946034">Greitai sukurkite naują „Google Keep“ užrašą</translation>
 <translation id="4855395119669662878">Administratorius pradės įkelti failus į „<ph name="CLOUD_PROVIDER" />“ <ph name="DATE_TIME" />. Laikykite įrenginį prijungtą, kol bus baigtas failų įkėlimas. Įkeliant vietinius failus galima tik skaityti.</translation>
+<translation id="4856655096879441213">Išsaugokite informaciją „<ph name="GOOGLE_WALLET_TITLE" />“ ir sparčiau atlikite užduotis, pvz., užpildykite formas „Google“ produktuose. Galite valdyti, <ph name="HOW_INFO_IS_USED_LINK" />, <ph name="ACCOUNT" /> privačių kortelių nustatymuose.</translation>
 <translation id="485902285759009870">Patvirtinamas kodas...</translation>
 <translation id="4860260582253463350">Kad galėtumėte toliau naudoti „YouTube“, turime įsitikinti, kad tai jūs. Gausite nustatymus, kuriuos vienas iš tėvų ar globėjų nustatė programoje „Family Link“.</translation>
 <translation id="4861514638281352187">Saugiai pridėkite skundo numerį</translation>
@@ -2847,7 +2848,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5718326209176373202">Pridėti teksto komentarų</translation>
 <translation id="5718601519531438273">Apima tokią informaciją kaip pasai ir vairuotojų pažymėjimai</translation>
 <translation id="5720705177508910913">Dabartinis naudotojas</translation>
-<translation id="5721147290164931316">Nuskaitykite, kad prisijungtumėte telefonu</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ir dar 1}one{{website_1}, {website_2} ir dar {more_count}}few{{website_1}, {website_2} ir dar {more_count}}many{{website_1}, {website_2} ir dar {more_count}}other{{website_1}, {website_2} ir dar {more_count}}}</translation>
 <translation id="5722778418591961221">Sukurk namų treniruočių planą, kuris padėtų man pasiekti tikslus</translation>
 <translation id="572328651809341494">Naujausi skirtukai</translation>

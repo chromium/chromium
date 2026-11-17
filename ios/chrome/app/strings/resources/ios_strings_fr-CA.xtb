@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Échec de connexion. Veuillez réessayer plus tard.</translation>
 <translation id="2975761176769946178">Veuillez entrer une URL</translation>
 <translation id="297667759942911166">Collaborer dans des groupes d'onglets</translation>
+<translation id="2986080119218811913">Retour à <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Pour utiliser Gemini dans Chrome, connectez-vous à Chrome avec votre compte Google</translation>
 <translation id="2987670534697681860">Confirmez qu'il s'agit bien de vous pour accéder à tous vos mots de passe sur cet appareil.</translation>
 <translation id="2989523299700148168">Visites récentes</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, géré par votre organisation.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Couleur du groupe d'onglets : <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Le gestionnaire de mots de passe Google n'a pas de mot de passe pour ce site. Revenez à <ph name="ACTOR_NAME" /> pour vous connecter ou ajoutez un mot de passe au gestionnaire de mots de passe Google.</translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
 <translation id="5007392906805964215">Examiner</translation>
 <translation id="5009127379503001909">Continuer à naviguer</translation>

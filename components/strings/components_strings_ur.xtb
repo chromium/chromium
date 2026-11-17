@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> کے لیے اجازت منتخب کریں</translation>
 <translation id="1113000785583998331">‏‫IBAN کو محفوظ کریں؟</translation>
 <translation id="1113869188872983271">دوبارہ ترتیب &amp;کالعدم کریں</translation>
-<translation id="111897705806685148">کسی اور آلے سے پاس کی استعمال کریں</translation>
 <translation id="1119009590493440389">‏‫<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />، آپ اپنے Google اکاؤنٹ میں Chrome کی کن معلومات کو محفوظ کرتے ہیں اس کا نظم کرنے کے لیے ٹیب پھر Enter کلید دبائیں</translation>
 <translation id="1121990216147052230">میرے لیے 'کرنے کے کاموں' کی ایک فہرست بنائیں</translation>
 <translation id="1123753900084781868">لائیو کیپشن ابھی دستیاب نہیں ہے</translation>
@@ -1308,6 +1307,7 @@
 <translation id="3196374699162453920">بکنگ کوڈ</translation>
 <translation id="3196902089458890316">بہتر ریسپانسز کے لیے ہمیشہ متعلقہ ٹیبز کا اشتراک کریں؟</translation>
 <translation id="3197136577151645743">آپ اپنے آلے کا فعال طور پر استعمال کب کر رہے ہیں یہ جاننے کیلئے سائٹ پوچھ سکتی ہے</translation>
+<translation id="3201749168732432347">پیشکشیں اور لائلٹی کارڈز</translation>
 <translation id="3202497928925179914">‏<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />، آپ Chrome کی ترتیبات میں کن معلومات کو مطابقت پذیر بناتے ہیں ان کا نظم کرنے کے لئے ٹیب پھر اینٹر دبائیں</translation>
 <translation id="3203025201812691413">‏URL خالی نہیں ہو سکتا ہے</translation>
 <translation id="320323717674993345">ادائیگی منسوخ کریں</translation>
@@ -2311,6 +2311,7 @@
 <translation id="4850886885716139402">دیکھیں</translation>
 <translation id="4854853140771946034">‏Google Keep میں تیزی سے ایک نیا نوٹ تخلیق کریں</translation>
 <translation id="4855395119669662878">آپ کا منتظم آپ کی فائلز کو <ph name="CLOUD_PROVIDER" /> میں <ph name="DATE_TIME" /> بجے اپ لوڈ کرنا شروع کر دے گا۔ اپنے آلے کو اس وقت تک منسلک رکھیں جب تک آپ کی فائل اپ لوڈ مکمل نہ ہو جائے۔ اپ لوڈ کے دوران، آپ صرف مقامی فائلز پڑھ سکیں گے۔</translation>
+<translation id="4856655096879441213">‏اپنی معلومات کو <ph name="GOOGLE_WALLET_TITLE" /> میں محفوظ کریں اور Google پروڈکٹس پر فارمز پُر کرنے جیسے کام تیزی سے کریں۔ آپ <ph name="ACCOUNT" /> کے لیے اپنی پرائیویٹ پاس کی ترتیبات میں <ph name="HOW_INFO_IS_USED_LINK" /> کو کنٹرول کر سکتے ہیں۔</translation>
 <translation id="485902285759009870">کوڈ کی توثیق ہو رہی ہے...</translation>
 <translation id="4860260582253463350">‏‫YouTube پر جاری رکھنے کے لیے، ہمیں اس بات کو یقینی بنانا ہوگا کہ یہ آپ ہی ہیں۔ آپ کو وہ ترتیبات ملیں گی جن کا آپ کے والدین یا سرپرست نے Family Link میں سیٹ اپ کیا ہے۔</translation>
 <translation id="4861514638281352187">‏‫Redress نمبر کو محفوظ طریقے سے شامل کریں</translation>
@@ -2847,7 +2848,6 @@
 <translation id="5718326209176373202">ٹیکسٹ تشریحات شامل کریں</translation>
 <translation id="5718601519531438273">پاسپورٹس اور ڈرائیونگ لائسنسز جیسی معلومات شامل ہیں</translation>
 <translation id="5720705177508910913">حالیہ صارف</translation>
-<translation id="5721147290164931316">اپنے فون سے سائن ان کرنے کے لیے اسکین کریں</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}، {website_2}}=3{{website_1}، {website_2} اور 1 مزید}other{{website_1}، {website_2} اور {more_count} مزید}}</translation>
 <translation id="5722778418591961221">گھر میں تندرستی کی ایک ایسی روٹین پلان کریں جو میرے اہداف کو پورا کرنے میں میری مدد کرے</translation>
 <translation id="572328651809341494">حالیہ ٹیبز</translation>

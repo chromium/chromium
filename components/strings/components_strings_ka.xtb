@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">აირჩიეთ ნებართვა: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">გსურთ IBAN-ის შენახვა?</translation>
 <translation id="1113869188872983271">გადალაგების &amp;მოქმედების გაუქმება</translation>
-<translation id="111897705806685148">წვდომის გასაღების გამოყენება სხვა მოწყობილობიდან</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, დააჭირეთ Tab-ს, შემდეგ — Enter-ს, რათა მართოთ, თუ რა ინფორმაციას შეინახავთ Chrome-იდან თქვენს Google ანგარიშში</translation>
 <translation id="1121990216147052230">შემიქმენი დავალებების სია</translation>
 <translation id="1123753900084781868">ავტოსუბტიტრები ამჟამად მიუწვდომელია</translation>
@@ -2311,6 +2310,7 @@
 <translation id="4850886885716139402">გადახედვა</translation>
 <translation id="4854853140771946034">Google Keep-ში ახალი ჩანიშვნის სწრაფად შექმნა</translation>
 <translation id="4855395119669662878">თქვენი ადმინისტრატორის მიერ <ph name="CLOUD_PROVIDER" />-ზე ფაილების ატვირთვის პროცესის დაწყების დროა <ph name="DATE_TIME" />. განახლების დასრულებამდე დაკავშირებული გქონდეთ თქვენი მოწყობილობა. ატვირთვის პროცესში მხოლოდ ადგილობრივი ფაილების წაკითხვის საშუალება გექნებათ.</translation>
+<translation id="4856655096879441213">შეინახეთ თქვენი ინფორმაცია <ph name="GOOGLE_WALLET_TITLE" />ში და უფრო სწრაფად შეასრულეთ ამოცანები, მაგალითად, შეავსეთ ფორმები Google პროდუქტებში. თქვენ შეგიძლიათ, მართოთ, <ph name="HOW_INFO_IS_USED_LINK" />, თქვენი პირადი საშვის პარამეტრებში <ph name="ACCOUNT" />-ისთვის.</translation>
 <translation id="485902285759009870">მიმდინარეობს კოდის დადასტურება...</translation>
 <translation id="4860260582253463350">YouTube-ზე გადასვლამდე უნდა დავრწმუნდეთ თქვენს ვინაობაში. თქვენ მიიღებთ პარამეტრებს, რომლებიც თქვენმა მშობელმა ან მეურვემ დააყენა Family Link-ში.</translation>
 <translation id="4861514638281352187">Redress Number-ის უსაფრთხოდ დამატება</translation>
@@ -2847,7 +2847,6 @@
 <translation id="5718326209176373202">ტექსტური ანოტაციების დამატება</translation>
 <translation id="5718601519531438273">შეიცავს ისეთ ინფორმაციას, როგორიცაა პასპორტები და მართვის მოწმობები</translation>
 <translation id="5720705177508910913">მიმდინარე მომხმარებელი</translation>
-<translation id="5721147290164931316">დაასკანირეთ თქვენი ტელეფონით შესასვლელად</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} და 1 სხვა}other{{website_1}, {website_2} და {more_count} სხვა}}</translation>
 <translation id="5722778418591961221">დაგეგმე სახლის ფიტნეს რუტინა, რომელიც დამეხმარება მიზნების მიღწევაში</translation>
 <translation id="572328651809341494">ბოლო ჩანართები</translation>

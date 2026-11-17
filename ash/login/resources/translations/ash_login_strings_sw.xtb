@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Telezesha kidole juu ili usogeze ukurasa chini</translation>
 <translation id="2501278716633472235">Rudi nyuma</translation>
 <translation id="252418934079508528">Sakinisha <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Unatayarisha kifaa...</translation>
 <translation id="2538084450874617176">Ni nani anayetumia <ph name="DEVICE_TYPE" /> hii?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> haikuweza kuunganisha kwenye <ph name="NETWORK_ID" />. Tafadhali chagua mtandao mwingine au ujaribu tena.</translation>
 <translation id="2565214867520763227">Washa kisoma skrini</translation>
@@ -631,6 +632,7 @@ mbadala inafanya kazi. Ikiwa huamini kuwa unastahili kutumia
 <translation id="7666531788977935712">Kitufe cha "endelea" kimewashwa</translation>
 <translation id="7671139479636735732">Bofya kulia ili uonyeshe mawazo yako kwa urahisi</translation>
 <translation id="770831926727930011">Data yako iliyo kwenye kifaa inalindwa kwa kutumia nenosiri lako la awali. Weka nenosiri lako la awali ili urejeshe data iliyo kwenye kifaa.</translation>
+<translation id="7717014941119698257">Inapakua: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Nafasi inayohitajika ili kusasisha: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Inaoanisha na "<ph name="DEVICE_NAME" />" ...</translation>
 <translation id="7746045113967198252">Ongeza au upunguze ukubwa wa vipengee vilivyo kwenye skrini yako, ikiwa ni pamoja na maandishi. Unaweza kuona mipangilio hii baadaye kwenye Mipangilio &gt; Kifaa &gt; Skrini.</translation>

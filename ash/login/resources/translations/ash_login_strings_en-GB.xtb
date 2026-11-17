@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Swipe up to move the page down</translation>
 <translation id="2501278716633472235">Go back</translation>
 <translation id="252418934079508528">Install <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Getting the device ready…</translation>
 <translation id="2538084450874617176">Who's using this <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> was unable to connect to <ph name="NETWORK_ID" />. Please select another network or try again.</translation>
 <translation id="2565214867520763227">Turn on screen reader</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">Continue button enabled</translation>
 <translation id="7671139479636735732">Right-click to easily visualise your ideas</translation>
 <translation id="770831926727930011">Your local data is protected by your old password. Enter your old password to recover local data.</translation>
+<translation id="7717014941119698257">Downloading: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Needed to update: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Pairing with "<ph name="DEVICE_NAME" />" ...</translation>
 <translation id="7746045113967198252">Make items on your screen, including text, larger or smaller. You can also find this later in Settings &gt; Device &gt; Displays.</translation>

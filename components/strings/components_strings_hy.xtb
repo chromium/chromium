@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />՝ ընտրեք թույլտվություն</translation>
 <translation id="1113000785583998331">Պահե՞լ IBAN-ը</translation>
 <translation id="1113869188872983271">&amp;Հետարկել վերադասավորումը</translation>
-<translation id="111897705806685148">Օգտագործել մեկ այլ սարքի մուտքի բանալի</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Սեղմեք Tab, ապա՝ Enter, որպեսզի ընտրեք, թե Chrome-ի ինչ տվյալներ պահել ձեր Google հաշվում</translation>
 <translation id="1121990216147052230">Կազմիր ինձ համար անելիքների ցուցակ</translation>
 <translation id="1123753900084781868">Կենդանի ենթագրերն այս պահին հասանելի չեն</translation>
@@ -1307,6 +1306,7 @@
 <translation id="3196374699162453920">Ամրագրման կոդ</translation>
 <translation id="3196902089458890316">Միշտ կիսվե՞լ համապատասխան ներդիրներով՝ ավելի լավ պատասխաններ ստանալու համար</translation>
 <translation id="3197136577151645743">Կարող է հայցել թույլտվություն՝ տեղեկանալու, երբ դուք ակտիվորեն օգտագործում եք ձեր սարքը</translation>
+<translation id="3201749168732432347">Առաջարկներ և մշտական հաճախորդի քարտեր</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Համաժամացվող տեղեկությունները Chrome-ի կարգավորումներում կառավարելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="3203025201812691413">URL-ը չի կարող դատարկ լինել</translation>
 <translation id="320323717674993345">Չեղարկել վճարումը</translation>
@@ -2846,7 +2846,6 @@
 <translation id="5718326209176373202">Ավելացնել տեքստային ծանոթագրություններ</translation>
 <translation id="5718601519531438273">Ներառում է այնպիսի տեղեկություններ, ինչպիսիք են անձնագրերը և վարորդական վկայականները</translation>
 <translation id="5720705177508910913">ընթացիկ օգտատիրոջը</translation>
-<translation id="5721147290164931316">Սկանավորեք՝ ձեր հեռախոսի միջոցով մուտք գործելու համար</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ու ևս 1 կայք}one{{website_1}, {website_2} ու ևս {more_count} կայք}other{{website_1}, {website_2} ու ևս {more_count} կայք}}</translation>
 <translation id="5722778418591961221">Կազմիր տանը ֆիթնեսի պարապմունքի ծրագիր, որը կօգնի ինձ հասնել իմ նպատակներին</translation>
 <translation id="572328651809341494">Վերջերս բացված ներդիրներ</translation>

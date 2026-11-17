@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Odaberite dopuštenje: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Želite li spremiti IBAN?</translation>
 <translation id="1113869188872983271">&amp;Poništi promjenu rasporeda</translation>
-<translation id="111897705806685148">Upotrijebi pristupni ključ s drugog uređaja</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste upravljali time koje podatke iz Chromea spremate na svoj Google račun</translation>
 <translation id="1121990216147052230">Izradi mi popis obaveza</translation>
 <translation id="1123753900084781868">Automatski titlovi trenutačno nisu dostupni</translation>
@@ -1307,6 +1306,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="3196374699162453920">Kôd rezervacije</translation>
 <translation id="3196902089458890316">Želite li uvijek dijeliti relevantne kartice da biste dobili bolje odgovore?</translation>
 <translation id="3197136577151645743">Može tražiti dopuštenje da zna kad aktivno koristite ovaj uređaj</translation>
+<translation id="3201749168732432347">Ponude i kartice vjernosti</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste u postavkama Chromea upravljali time koji će se podaci sinkronizirati</translation>
 <translation id="3203025201812691413">URL ne može biti prazan</translation>
 <translation id="320323717674993345">Otkaži plaćanje</translation>
@@ -2309,6 +2309,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="4850886885716139402">Prikaz</translation>
 <translation id="4854853140771946034">Brzo izradite novu bilješku u Google Keepu</translation>
 <translation id="4855395119669662878">Administrator će početi prenositi vaše datoteke na uslugu <ph name="CLOUD_PROVIDER" /> u <ph name="DATE_TIME" />. Neka uređaj ostane povezan dok se prijenos datoteka ne dovrši. Tijekom prijenosa moći ćete čitati samo lokalne datoteke.</translation>
+<translation id="4856655096879441213">Spremite svoje podatke u <ph name="GOOGLE_WALLET_TITLE" /> da biste brže obavljali zadatke kao što je ispunjavanje obrazaca u Googleovim proizvodima. Možete odrediti <ph name="HOW_INFO_IS_USED_LINK" /> u postavkama privatne propusnice za račun <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Potvrđivanje koda...</translation>
 <translation id="4860260582253463350">Trebamo potvrditi da si to ti da možeš nastaviti do YouTubea. Prikazat će se postavke koje je u Family Linku postavio tvoj roditelj ili skrbnik.</translation>
 <translation id="4861514638281352187">Sigurno dodajte identifikacijskog broja prigovora o zamjeni identiteta</translation>
@@ -2845,7 +2846,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5718326209176373202">Dodajte tekstne napomene</translation>
 <translation id="5718601519531438273">Uključuje podatke kao što su putovnice i vozačke dozvole</translation>
 <translation id="5720705177508910913">Trenutačni korisnik:</translation>
-<translation id="5721147290164931316">Skenirajte za prijavu telefonom</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} i još 1}one{{website_1}, {website_2} i još {more_count}}few{{website_1}, {website_2} i još {more_count}}other{{website_1}, {website_2} i još {more_count}}}</translation>
 <translation id="5722778418591961221">Osmisli kućnu rutinu vježbanja koja mi pomaže ostvariti moje ciljeve</translation>
 <translation id="572328651809341494">Nedavne kartice</translation>

@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">เลือกสิทธิ์สำหรับ<ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">บันทึก IBAN ไหม</translation>
 <translation id="1113869188872983271">&amp;เลิกทำการจัดลำดับใหม่</translation>
-<translation id="111897705806685148">ใช้พาสคีย์จากอุปกรณ์อื่น</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการข้อมูล Chrome ที่คุณบันทึกไว้ในบัญชี Google</translation>
 <translation id="1121990216147052230">สร้างรายการสิ่งที่ต้องทำให้ฉันหน่อย</translation>
 <translation id="1123753900084781868">ใช้คำบรรยายสดไม่ได้ในขณะนี้</translation>
@@ -1307,6 +1306,7 @@
 <translation id="3196374699162453920">รหัสการจอง</translation>
 <translation id="3196902089458890316">แชร์แท็บที่เกี่ยวข้องอยู่เสมอเพื่อให้ได้คำตอบที่ดียิ่งขึ้นไหม</translation>
 <translation id="3197136577151645743">สามารถขอทราบเวลาที่คุณใช้งานอุปกรณ์อยู่ได้</translation>
+<translation id="3201749168732432347">ข้อเสนอและบัตรสะสมคะแนน</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการข้อมูลที่คุณซิงค์ในการตั้งค่า Chrome</translation>
 <translation id="3203025201812691413">ต้องระบุ URL</translation>
 <translation id="320323717674993345">ยกเลิกการชำระเงิน</translation>
@@ -2309,6 +2309,7 @@
 <translation id="4850886885716139402">ดู</translation>
 <translation id="4854853140771946034">สร้างโน้ตใหม่ใน Google Keep อย่างรวดเร็ว</translation>
 <translation id="4855395119669662878">ผู้ดูแลระบบจะเริ่มอัปโหลดไฟล์ของคุณไปยัง <ph name="CLOUD_PROVIDER" /> ในวันที่ <ph name="DATE_TIME" /> โปรดเชื่อมต่ออุปกรณ์ไว้จนกว่าการอัปโหลดไฟล์จะเสร็จสมบูรณ์ ในระหว่างการอัปโหลด คุณจะสามารถอ่านไฟล์ในเครื่องได้เท่านั้น</translation>
+<translation id="4856655096879441213">บันทึกข้อมูลใน <ph name="GOOGLE_WALLET_TITLE" /> เพื่อทำสิ่งต่างๆ ให้เสร็จเร็วขึ้น เช่น การกรอกแบบฟอร์มในผลิตภัณฑ์ต่างๆ ของ Google คุณควบคุม<ph name="HOW_INFO_IS_USED_LINK" />ได้ในการตั้งค่าบัตรส่วนตัวสำหรับ <ph name="ACCOUNT" /></translation>
 <translation id="485902285759009870">กำลังยืนยันรหัส...</translation>
 <translation id="4860260582253463350">เราต้องตรวจสอบว่าเป็นคุณจริงๆ เพื่อดำเนินการต่อบน YouTube คุณจะได้รับการตั้งค่าที่พ่อแม่หรือผู้ปกครองตั้งไว้ใน Family Link</translation>
 <translation id="4861514638281352187">เพิ่มหมายเลข Redress อย่างปลอดภัย</translation>
@@ -2845,7 +2846,6 @@
 <translation id="5718326209176373202">ใส่คำอธิบายประกอบข้อความ</translation>
 <translation id="5718601519531438273">รวมถึงข้อมูล เช่น หนังสือเดินทางและใบขับขี่</translation>
 <translation id="5720705177508910913">ผู้ใช้ปัจจุบัน</translation>
-<translation id="5721147290164931316">สแกนเพื่อลงชื่อเข้าใช้ด้วยโทรศัพท์</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} และอีก 1 เว็บไซต์}other{{website_1} {website_2} และอีก {more_count} เว็บไซต์}}</translation>
 <translation id="5722778418591961221">วางแผนกิจวัตรการออกกำลังกายที่บ้านที่ช่วยให้ฉันบรรลุเป้าหมาย</translation>
 <translation id="572328651809341494">แท็บล่าสุด</translation>

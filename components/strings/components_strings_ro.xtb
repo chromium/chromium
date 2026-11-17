@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Selectează permisiunea pentru <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Salvezi codul IBAN?</translation>
 <translation id="1113869188872983271">&amp;Anulați reordonarea</translation>
-<translation id="111897705806685148">Folosește o cheie de acces de pe alt dispozitiv</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona informațiile din Chrome pe care le salvezi în Contul Google</translation>
 <translation id="1121990216147052230">Creează o listă de activități</translation>
 <translation id="1123753900084781868">Funcția Subtitrări live nu este disponibilă în acest moment</translation>
@@ -1307,6 +1306,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3196374699162453920">Codul rezervării</translation>
 <translation id="3196902089458890316">Permiți întotdeauna accesul la filele relevante pentru răspunsuri mai bune?</translation>
 <translation id="3197136577151645743">Poate solicita permisiunea de a afla când folosești activ dispozitivul</translation>
+<translation id="3201749168732432347">Oferte și carduri de fidelitate</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona informațiile de sincronizat din setările Chrome</translation>
 <translation id="3203025201812691413">Adresa URL trebuie completată</translation>
 <translation id="320323717674993345">Anulează plata</translation>
@@ -2310,6 +2310,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4850886885716139402">Afișează</translation>
 <translation id="4854853140771946034">Creează rapid o notă în Google Keep</translation>
 <translation id="4855395119669662878">Administratorul va începe să-ți încarce fișierele în <ph name="CLOUD_PROVIDER" /> la <ph name="DATE_TIME" />. Păstrează dispozitivul conectat până la finalizarea încărcării fișierului. În timpul încărcării, vei putea doar să citești fișierele locale.</translation>
+<translation id="4856655096879441213">Salvează informațiile în <ph name="GOOGLE_WALLET_TITLE" /> și lucrează mai productiv; de exemplu, completează formulare în produsele Google. Poți să gestionezi <ph name="HOW_INFO_IS_USED_LINK" /> în setările pentru acte private pentru <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Codul se verifică...</translation>
 <translation id="4860260582253463350">Pentru a continua pe YouTube, trebuie să ne asigurăm că ești tu. Vei primi setările pe care părintele sau tutorele tău le-a configurat în Family Link.</translation>
 <translation id="4861514638281352187">Adaugă în siguranță numărul de remediere</translation>
@@ -2846,7 +2847,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5718326209176373202">Adaugă adnotări pentru text</translation>
 <translation id="5718601519531438273">Include informații precum pașapoartele și permisele de conducere</translation>
 <translation id="5720705177508910913">Utilizator curent</translation>
-<translation id="5721147290164931316">Scanează pentru a te conecta cu telefonul</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} și încă unul}few{{website_1}, {website_2} și încă {more_count}}other{{website_1}, {website_2} și încă {more_count}}}</translation>
 <translation id="5722778418591961221">Planifică o rutină de fitness pentru acasă care să mă ajute să-mi ating obiectivele</translation>
 <translation id="572328651809341494">File recente</translation>

@@ -5071,9 +5071,6 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
 
       Esta política foi descontinuada. Use a <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="4088589230932595924">Modo de navegação anônima forçado</translation>
-<translation id="4089849819635523136">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> especificará a palavra-chave ou o atalho utilizados na barra de endereço para acionar a pesquisa desse provedor.
-
-      Se a <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> não for definida, nenhuma palavra-chave ativará o provedor de pesquisa.</translation>
 <translation id="4090088362777472639">Hash SHA-256 do playbook Ansible.</translation>
 <translation id="4091040199847925434">Desativar relatórios de informações do sistema e conteúdo da página que são usados para ajudar a melhorar a Navegação segura</translation>
 <translation id="4093058072421210667">Não permitir imagem inline.</translation>

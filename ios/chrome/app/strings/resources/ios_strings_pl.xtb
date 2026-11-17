@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Nie udało się zalogować. Spróbuj ponownie później.</translation>
 <translation id="2975761176769946178">Podanie URL-a jest wymagane</translation>
 <translation id="297667759942911166">Współpraca w grupach kart</translation>
+<translation id="2986080119218811913">Wróć do aplikacji <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Aby korzystać z Gemini w Chrome, zaloguj się w Chrome za pomocą konta Google</translation>
 <translation id="2987670534697681860">Aby mieć dostęp do wszystkich haseł na tym urządzeniu, potwierdź swoją tożsamość.</translation>
 <translation id="2989523299700148168">Ostatnio odwiedzone</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, konto zarządzane przez Twoją organizację.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Kolor grupy kart: <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Menedżer haseł Google nie ma hasła do tej witryny. Wróć do aplikacji <ph name="ACTOR_NAME" />, aby się zalogować, lub dodaj hasło do Menedżera haseł Google.</translation>
 <translation id="5005498671520578047">Skopiuj hasło</translation>
 <translation id="5007392906805964215">Sprawdź</translation>
 <translation id="5009127379503001909">Przeglądaj dalej</translation>

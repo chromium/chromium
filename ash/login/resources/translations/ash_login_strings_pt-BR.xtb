@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Deslize para cima para mover a página para baixo</translation>
 <translation id="2501278716633472235">Voltar</translation>
 <translation id="252418934079508528">Instalar o <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Preparando o dispositivo…</translation>
 <translation id="2538084450874617176">Quem está usando este <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> não pôde se conectar a <ph name="NETWORK_ID" />. Selecione outra rede ou tente novamente.</translation>
 <translation id="2565214867520763227">Ativar o leitor de tela</translation>
@@ -631,6 +632,7 @@ servidor proxy está funcionando. Se achar que não deve usar um
 <translation id="7666531788977935712">Botão "Continuar" ativado</translation>
 <translation id="7671139479636735732">Clique com o botão direito do mouse para visualizar suas ideias com facilidade</translation>
 <translation id="770831926727930011">Seus dados locais estão protegidos pela senha antiga. Digite essa senha para recuperá-los.</translation>
+<translation id="7717014941119698257">Fazendo download <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Atualização necessária: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Pareando com "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="7746045113967198252">Aumente ou diminua os itens na tela, incluindo o texto. Essa opção também está disponível em "Configurações" &gt; "Dispositivo" &gt; "Telas".</translation>

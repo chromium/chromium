@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Սահեցրեք վերև՝ էջի ներքև անցնելու համար</translation>
 <translation id="2501278716633472235">Վերադառնալ</translation>
 <translation id="252418934079508528">Տեղադրել <ph name="DEVICE_OS" />-ը</translation>
+<translation id="2532146950330687938">Սարքը շուտով պատրաստ կլինի...</translation>
 <translation id="2538084450874617176">Ո՞վ է օգտագործում <ph name="DEVICE_TYPE" /> սարքը</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" />-ը չկարողացավ կապակցվել <ph name="NETWORK_ID" />-ին: Ընտրեք մեկ այլ ցանց և նորից փորձեք:</translation>
 <translation id="2565214867520763227">Միացրեք էկրանի ընթերցիչը</translation>
@@ -628,6 +629,7 @@
 <translation id="7666531788977935712">«Շարունակել» կոճակը միացված է</translation>
 <translation id="7671139479636735732">Սեղմեք մկնիկի աջ կոճակը՝ ձեր գաղափարները վիզուալիզացնելու համար</translation>
 <translation id="770831926727930011">Սարքի տվյալները պաշտպանված են ձեր հին գաղտնաբառով։ Մուտքագրեք ձեր հին գաղտնաբառը՝ սարքի տվյալները վերականգնելու համար։</translation>
+<translation id="7717014941119698257">Ներբեռնում` <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Թարմացման համար հարկավոր է <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Զուգակցում «<ph name="DEVICE_NAME" />» սարքի հետ...</translation>
 <translation id="7746045113967198252">Մեծացրեք կամ փոքրացրեք էկրանի տարրերի (այդ թվում՝ տեքստի) չափսը։ Այս պարամետրը հետագայում նաև կարող եք գտնել՝ անցնելով Կարգավորումներ &gt; Սարք &gt; Էկրաններ։</translation>

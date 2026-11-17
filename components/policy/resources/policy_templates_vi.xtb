@@ -4951,9 +4951,6 @@ Nếu bạn không đặt hoặc để trống chính sách này thì sẽ khôn
 
       Chính sách này không còn dùng nữa, vui lòng sử dụng <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="4088589230932595924">Bắt buộc chế độ ẩn danh</translation>
-<translation id="4089849819635523136">Nếu bạn bật <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, thì thao tác đặt <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> sẽ chỉ định từ khóa hoặc phím tắt dùng trong thanh địa chỉ để kích hoạt quá trình tìm kiếm bằng nhà cung cấp này.
-
-      Nếu bạn không đặt <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />, thì sẽ không có từ khóa kích hoạt nhà cung cấp dịch vụ tìm kiếm này.</translation>
 <translation id="4090088362777472639">Hàm băm SHA-256 của cẩm nang Ansible.</translation>
 <translation id="4091040199847925434">Tắt tính năng báo cáo thông tin hệ thống và nội dung trang dùng để giúp cải thiện tính năng Duyệt web an toàn</translation>
 <translation id="4093058072421210667">Không cho phép tính năng Inline Image.</translation>

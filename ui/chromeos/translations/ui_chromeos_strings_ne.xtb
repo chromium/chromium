@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">क्यामेरा</translation>
 <translation id="162175252992296058">सं. रा. अमेरिकी अन्तर्राष्ट्रिय ढाँचाको पोर्तुगाली किबोर्ड</translation>
 <translation id="1629521517399325891">नेटवर्क प्रमाणित गर्नका लागि प्रयोगकर्ताको प्रमाणपत्र उपलब्ध छैन।</translation>
+<translation id="1639239467298939599">लोड गर्दै</translation>
 <translation id="1641780993263690097">चिनियाँ पिनयिन</translation>
 <translation id="164969095109328410">Chrome यन्त्र</translation>
 <translation id="1661207570040737402">तपाईंले आफ्नो Google Workspace को साझा ड्राइभमा भएको भण्डारण पूरै प्रयोग गरिसक्नुभएको छ।</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">फाइल सिंक गर्ने सुविधा अफ गरिएको छ</translation>
 <translation id="2820957248982571256">स्क्यान गर्दै...</translation>
 <translation id="2830077785865012357">चिनियाँ झुयिन</translation>
+<translation id="2838379631617906747">स्थापना गर्दै...</translation>
 <translation id="2843806747483486897">डिफल्ट परिवर्तन गर्नुहोस्...</translation>
 <translation id="2873951654529031587">ट्र्यास</translation>
 <translation id="2887314858867008269">अमेरिकी कोलमाक</translation>
@@ -1019,6 +1021,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - पोर्ट</translation>
 <translation id="8656407365183407932">तपाईंका अफलाइन फाइलहरू हटाइएका छन्</translation>
 <translation id="8656768832129462377">जाँच नगर्नुहोस्</translation>
+<translation id="8662978096466608964">Chrome ले वालपेपर सेट गर्न सक्दैन।</translation>
 <translation id="8688591111840995413">खराब पासवर्ड</translation>
 <translation id="8698464937041809063">Google ड्रइङ</translation>
 <translation id="8698877009525468705">यो गोप्य फाइल हो र एड्मिनले तोकेको नीतिअनुसार यसमाथि प्रतिबन्ध लगाइन सक्छ।</translation>

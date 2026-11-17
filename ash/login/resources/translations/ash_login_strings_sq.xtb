@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Rrëshqit shpejt lart për ta zhvendosur faqen poshtë</translation>
 <translation id="2501278716633472235">Kthehu prapa</translation>
 <translation id="252418934079508528">Instalo <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">Pajisja po përgatitet...</translation>
 <translation id="2538084450874617176">Kush po e përdor këtë pajisje <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> ishte e pamundur të lidhej me <ph name="NETWORK_ID" />. Përzgjidh një rrjet tjetër ose provo sërish.</translation>
 <translation id="2565214867520763227">Aktivizo lexuesin e ekranit</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">Butoni "Vazhdo" është aktivizuar</translation>
 <translation id="7671139479636735732">Kliko me butonin djathtas për të vizualizuar me lehtësi idetë e tua</translation>
 <translation id="770831926727930011">Të dhënat e tua lokale janë të mbrojtura nga fjalëkalimi yt i vjetër. Fut fjalëkalimin e vjetër për të rikuperuar të dhënat lokale.</translation>
+<translation id="7717014941119698257">Po shkarkon: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Nevojitet për përditësimin: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Po çiftohet me "<ph name="DEVICE_NAME" />" ...</translation>
 <translation id="7746045113967198252">Bëji artikujt në ekran më të vegjël ose më të mëdhenj, duke përfshirë edhe tekstin Këtë mund ta gjesh po ashtu më vonë te Cilësimet &gt; Pajisja &gt; Ekranet.</translation>

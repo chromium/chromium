@@ -78,6 +78,7 @@
 <translation id="1620510694547887537">कैमरा</translation>
 <translation id="162175252992296058">यूएस इंटरनैशनल कीबोर्ड के साथ पॉर्चुगीज़</translation>
 <translation id="1629521517399325891">नेटवर्क की पुष्टि करने के लिए, उपयोगकर्ता प्रमाणपत्र उपलब्ध नहीं है.</translation>
+<translation id="1639239467298939599">लोड हो रही है</translation>
 <translation id="1641780993263690097">चाइनीज़ पिनयिन</translation>
 <translation id="164969095109328410">Chrome डिवाइस</translation>
 <translation id="1661207570040737402">आपने Google Workspace के साथ शेयर की गई अपनी ड्राइव के स्टोरेज का इस्तेमाल कर लिया है.</translation>
@@ -240,6 +241,7 @@
 <translation id="2819519502129272135">फ़ाइल सिंक करने की सुविधा बंद है</translation>
 <translation id="2820957248982571256">स्कैन हो रहा है...</translation>
 <translation id="2830077785865012357">चाइनीज़ ज़ूयिन</translation>
+<translation id="2838379631617906747">इंस्‍टॉल कर रहा है</translation>
 <translation id="2843806747483486897">डिफ़ॉल्ट बदलें...</translation>
 <translation id="2873951654529031587">ट्रैश</translation>
 <translation id="2887314858867008269">यूएस कोलमैक</translation>
@@ -1017,6 +1019,7 @@
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - पोर्ट</translation>
 <translation id="8656407365183407932">आपकी ऑफ़लाइन फ़ाइलों को हटा दिया गया</translation>
 <translation id="8656768832129462377">जाँच न करें</translation>
+<translation id="8662978096466608964">Chrome वॉलपेपर सेट नहीं कर सकता.</translation>
 <translation id="8688591111840995413">खराब पासवर्ड</translation>
 <translation id="8698464937041809063">Google ड्रॉइंग</translation>
 <translation id="8698877009525468705">यह फ़ाइल गोपनीय है और एडमिन की नीति के तहत, इस पर पाबंदियां लगाई गई हैं.</translation>

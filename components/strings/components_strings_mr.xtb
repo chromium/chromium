@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> ची परवानगी निवडा</translation>
 <translation id="1113000785583998331">IBAN सेव्ह करायचा आहे का?</translation>
 <translation id="1113869188872983271">&amp;पुनर्क्रमित करा पूर्ववत करा</translation>
-<translation id="111897705806685148">दुसऱ्या डिव्हाइसमधील पासकी वापरा</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुम्ही तुमच्या Google खाते मध्ये कोणती Chrome माहिती सेव्ह करता हे व्यवस्थापित करण्यासाठी टॅब प्रेस करा आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="1121990216147052230">माझ्यासाठी कामांची सूची तयार कर</translation>
 <translation id="1123753900084781868">आता लाइव्ह कॅप्शन उपलब्ध नाही</translation>
@@ -1307,6 +1306,7 @@
 <translation id="3196374699162453920">बुकिंग कोड</translation>
 <translation id="3196902089458890316">आणखी चांगल्या प्रतिसादांसाठी नेहमी सुसंबद्ध टॅब शेअर करायचे का?</translation>
 <translation id="3197136577151645743">तुम्ही हे डिव्हाइस सक्रियपणे कधी वापरता त्याबद्दल जाणून घेण्याची विनंती करू शकते</translation>
+<translation id="3201749168732432347">ऑफर आणि लॉयल्‍टी कार्ड</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये तुम्ही कोणती माहिती सिंक करता ते व्यवस्थापित करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="3203025201812691413">URL रिकामी असू शकत नाही</translation>
 <translation id="320323717674993345">पेमेंट रद्द करा</translation>
@@ -2846,7 +2846,6 @@
 <translation id="5718326209176373202">मजकूर भाष्ये जोडा</translation>
 <translation id="5718601519531438273">पासपोर्ट आणि ड्रायव्हरचा परवाना यांसारख्या माहितीचा समावेश आहे</translation>
 <translation id="5720705177508910913">वर्तमान वापरकर्ता</translation>
-<translation id="5721147290164931316">तुमचा फोन वापरून साइन इन करण्यासाठी स्कॅन करा</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} आणि आणखी १}other{{website_1}, {website_2} आणि आणखी {more_count}}}</translation>
 <translation id="5722778418591961221">माझी ध्येये साध्य करण्यात मदत होईल असा घरच्या घरी व्यायामाचा एक दिनक्रम तयार करा</translation>
 <translation id="572328651809341494">अलीकडील टॅब</translation>
@@ -4165,6 +4164,7 @@
 <translation id="7916162853251942238">फ्लेक्सो बेस</translation>
 <translation id="7916802424606434188">नवीन विंडोमध्ये विंडो <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> टॅब) उघडा</translation>
 <translation id="791698251820376781">तुमची संस्था तुम्हाला साइन इन करण्याची अनुमती देत नाही</translation>
+<translation id="7918936720558783139">ऑटोफिल वापरून चेकआउट करताना तुमची सेव्ह केलेली ऑफर उपलब्ध असेल. <ph name="BEGIN_LINK" />ऑफर व्यवस्थापित करा<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">तुम्ही पाहत असलेल्या पेजवरील तिकिटे, इव्हेंट आणि इतर माहिती सेव्ह करा — फक्त तुम्ही भरत असलेले फॉर्म नव्हे. त्यानंतर इव्हेंटची तिकिटे आणि लॉयल्टी कार्ड यांसारखे तुमचे पास झटपट अ‍ॅक्सेस करा. तुमची सेव्ह केलेली माहिती तुमच्या डिव्हाइसवर आणि सर्व Google उत्पादनांमध्ये दिसू शकते.</translation>
 <translation id="7930282586031445870">आता विकत घ्या, नंतर पैसे द्या यासंबंधित सेवा अटींची स्क्रीन बंद केली आहे.</translation>
 <translation id="7932035970207573919">ऑफिसचा पत्ता, <ph name="ADDRESS" /></translation>

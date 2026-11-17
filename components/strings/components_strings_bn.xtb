@@ -71,7 +71,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> এর জন্য অনুমতি বেছে নিন</translation>
 <translation id="1113000785583998331">IBAN সেভ করতে চান?</translation>
 <translation id="1113869188872983271">&amp;পুনর্বিন্যাসকে পূর্বাবস্থায় ফেরান</translation>
-<translation id="111897705806685148">অন্য ডিভাইস থেকে পাসকী ব্যবহার করুন</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Google অ্যাকাউন্টে Chrome-এর কোন কোন তথ্য সেভ করবেন তা ম্যানেজ করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="1121990216147052230">একটি টু-ডু লিস্ট তৈরি করে দাও</translation>
 <translation id="1123753900084781868">'লাইভ ক্যাপশন' ফিচারের সুবিধা এখনই পাওয়া যাবে না</translation>
@@ -2312,6 +2311,7 @@
 <translation id="4850886885716139402">দেখুন</translation>
 <translation id="4854853140771946034">Google Keep-এ চটপট নতুন নোট তৈরি করুন</translation>
 <translation id="4855395119669662878">আপনার অ্যাডমিনিস্ট্রেটর <ph name="DATE_TIME" />-এ আপনার ফাইল <ph name="CLOUD_PROVIDER" />-এ আপলোড করা শুরু করবেন। ফাইল আপলোড করার প্রসেস শেষ না হওয়া পর্যন্ত আপনার ডিভাইস কানেক্টেড রাখুন। আপলোড প্রসেস চলাকালীন, আপনি শুধু লোকাল ফাইল দেখতে পারবেন।</translation>
+<translation id="4856655096879441213">আপনার তথ্য <ph name="GOOGLE_WALLET_TITLE" />-এ সেভ করুন এবং Google প্রোডাক্ট জুড়ে ফর্ম পূরণ করার মতো কাজগুলি আরও দ্রুত সেরে ফেলুন। আপনি <ph name="ACCOUNT" />-এর জন্য আপনার ব্যক্তিগত পাস সেটিংসে <ph name="HOW_INFO_IS_USED_LINK" /> নিয়ন্ত্রণ করতে পারবেন।</translation>
 <translation id="485902285759009870">কোড যাচাই করা হচ্ছে…</translation>
 <translation id="4860260582253463350">YouTube-এ চালিয়ে যেতে, আমাদের নিশ্চিত করতে হবে যে তুমিই এটি ব্যবহার করছ কিনা। তোমার মা-বাবা অথবা অভিভাবক Family Link-এ যে সেটিংস সেট-আপ করেছেন, তোমার জন্য সেগুলিই প্রযোজ্য হবে।</translation>
 <translation id="4861514638281352187">নিরাপদে রিড্রেস নম্বর যোগ করুন</translation>
@@ -2848,7 +2848,6 @@
 <translation id="5718326209176373202">টেক্সট অ্যানোটেশন যোগ করুন</translation>
 <translation id="5718601519531438273">পাসপোর্ট ও ড্রাইভিং লাইসেন্সের মতো তথ্য অন্তর্ভুক্ত থাকে</translation>
 <translation id="5720705177508910913">বর্তমান ব্যবহারকারী</translation>
-<translation id="5721147290164931316">ফোন দিয়ে সাইন-ইন করার জন্য স্ক্যান করুন</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} ও আরও ১টি}one{{website_1}, {website_2} ও আরও {more_count}টি}other{{website_1}, {website_2} ও আরও {more_count}টি}}</translation>
 <translation id="5722778418591961221">আমার লক্ষ্য পূরণে সাহায্য করার জন্য বাড়িতেই করা যায় এমন একটি ফিটনেস রুটিন তৈরি করো</translation>
 <translation id="572328651809341494">সাম্প্রতিক ট্যাবগুলি</translation>

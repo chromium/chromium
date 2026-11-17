@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Select permission for <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Save IBAN?</translation>
 <translation id="1113869188872983271">&amp;Undo reorder</translation>
-<translation id="111897705806685148">Use Passkey from another device</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to manage what Chrome info you save in your Google Account</translation>
 <translation id="1121990216147052230">Make me a to-do list</translation>
 <translation id="1123753900084781868">Live Caption is not available at the moment</translation>
@@ -1307,6 +1306,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3196374699162453920">Booking code</translation>
 <translation id="3196902089458890316">Always share relevant tabs for better responses?</translation>
 <translation id="3197136577151645743">Can ask to know when you're actively using this device</translation>
+<translation id="3201749168732432347">Offers and loyalty cards</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to manage what info you sync in Chrome settings</translation>
 <translation id="3203025201812691413">URL can't be empty</translation>
 <translation id="320323717674993345">Cancel payment</translation>
@@ -2310,6 +2310,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4850886885716139402">View</translation>
 <translation id="4854853140771946034">Create a new note in Google Keep quickly</translation>
 <translation id="4855395119669662878">Your administrator will start uploading your files to <ph name="CLOUD_PROVIDER" /> at <ph name="DATE_TIME" />. Keep your device connected until your file upload is complete. During the upload, you will only be able to read local files.</translation>
+<translation id="4856655096879441213">Save your info in <ph name="GOOGLE_WALLET_TITLE" /> and get things done faster, like filling forms across Google products. You can control <ph name="HOW_INFO_IS_USED_LINK" /> in your private pass settings for <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Verifying code…</translation>
 <translation id="4860260582253463350">To continue to YouTube, we need to make sure that it's you. You'll get the settings that your parent or guardian set up in Family Link.</translation>
 <translation id="4861514638281352187">Add redress number securely</translation>
@@ -2846,7 +2847,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5718326209176373202">Add text annotations</translation>
 <translation id="5718601519531438273">Includes information such as passports and driving licences</translation>
 <translation id="5720705177508910913">Current user</translation>
-<translation id="5721147290164931316">Scan to sign in with your phone</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} and 1 more}other{{website_1}, {website_2} and {more_count} more}}</translation>
 <translation id="5722778418591961221">Plan a home fitness routine that helps me meet my goals</translation>
 <translation id="572328651809341494">Recent tabs</translation>

@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Pumili ng pahintulot para sa <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">I-save ang IBAN?</translation>
 <translation id="1113869188872983271">&amp;I-undo ang pagbabago sa ayos</translation>
-<translation id="111897705806685148">Gumamit ng Passkey mula sa Ibang Device</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para pamahalaan kung anong impormasyon sa Chrome ang ise-save mo sa iyong Google Account</translation>
 <translation id="1121990216147052230">Gawan ako ng listahan ng gagawin</translation>
 <translation id="1123753900084781868">Hindi available sa ngayon ang Instant Caption</translation>
@@ -1307,6 +1306,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3196374699162453920">Booking code</translation>
 <translation id="3196902089458890316">Palaging i-share ang mga nauugnay na tab para sa mas mahuhusay na sagot?</translation>
 <translation id="3197136577151645743">Puwedeng hilinging malaman kung aktibo mong ginagamit ang device na ito</translation>
+<translation id="3201749168732432347">Mga alok at loyalty card</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab pagkatapos ay ang Enter para pamahalaan kung anong impormasyon ang isi-sync mo sa mga setting ng Chrome</translation>
 <translation id="3203025201812691413">Hindi puwedeng walang laman ang URL</translation>
 <translation id="320323717674993345">Kanselahin ang Pagbabayad</translation>
@@ -2310,6 +2310,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4850886885716139402">View</translation>
 <translation id="4854853140771946034">Gumawa ng bagong tala sa Google Keep nang mabilis</translation>
 <translation id="4855395119669662878">Sisimulan ng iyong administrator ang pag-upload ng mga file mo sa <ph name="CLOUD_PROVIDER" /> sa <ph name="DATE_TIME" />. Panatilihing nakakonekta ang iyong device hanggang sa matapos ang pag-upload ng file mo. Mare-read mo lang ang mga lokal na file habang nag-a-upload.</translation>
+<translation id="4856655096879441213">I-save ang iyong impormasyon sa <ph name="GOOGLE_WALLET_TITLE" /> at mas mabilis na tapusin ang mga bagay, tulad ng pagsagot ng mga form sa mga produkto ng Google. Puwede mong kontrolin <ph name="HOW_INFO_IS_USED_LINK" /> sa iyong mga setting ng pribadong pass para sa <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Vine-verify ang code...</translation>
 <translation id="4860260582253463350">Para magpatuloy sa YouTube, kailangan naming tiyakin na ikaw ito. Makukuha mo ang mga setting na na-set up ng iyong magulang o tagapag-alaga sa Family Link.</translation>
 <translation id="4861514638281352187">Secure na magdagdag ng redress number</translation>
@@ -2846,7 +2847,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5718326209176373202">Magdagdag ng mga anotasyon ng text</translation>
 <translation id="5718601519531438273">May kasamang impormasyon gaya ng mga passport at lisensya sa pagmamaneho</translation>
 <translation id="5720705177508910913">Kasalukuyang user</translation>
-<translation id="5721147290164931316">I-scan para Mag-sign in gamit ang Iyong Telepono</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2}, at 1 pa}one{{website_1}, {website_2}, at {more_count} pa}other{{website_1}, {website_2}, at {more_count} pa}}</translation>
 <translation id="5722778418591961221">Magplano ng routine sa home fitness na makakatulong sa aking maabot ang mga layunin ko</translation>
 <translation id="572328651809341494">Mga kamakailang tab</translation>

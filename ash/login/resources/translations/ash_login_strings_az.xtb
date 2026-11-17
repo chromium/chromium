@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Səhifəni aşağı köçürmək üçün yuxarı sürüşdürün</translation>
 <translation id="2501278716633472235">Geri qayıdın</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> quraşdırın</translation>
+<translation id="2532146950330687938">Cihaz hazırlanır...</translation>
 <translation id="2538084450874617176">Bu <ph name="DEVICE_TYPE" /> cihazını kim istifadə edir?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> <ph name="NETWORK_ID" /> şəbəkəsinə qoşula bilmədi. Lütfən, başqa şəbəkə seçin və ya yenidən cəhd edin</translation>
 <translation id="2565214867520763227">Ekran oxuyucusunu aktiv edin</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">"Davam edin" düyməsi aktivdir</translation>
 <translation id="7671139479636735732">İdeyalarınızı asanlıqla vizuallaşdırmaq üçün sağ düymə ilə toxunun</translation>
 <translation id="770831926727930011">Lokal data köhnə parol ilə qorunur. Lokal datanı bərpa etmək üçün köhnə parolu daxil edin.</translation>
+<translation id="7717014941119698257">Endirmə: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Güncəlləmə lazımdır: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" ilə birləşdirilir ...</translation>
 <translation id="7746045113967198252">Mətn daxil olmaqla ekrandakı elementləri böyüdün, yaxud kiçildin. Bunu Ayarlar &gt; Cihaz &gt; Displeylər bölməsində də tapa bilərsiniz.</translation>

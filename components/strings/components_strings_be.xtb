@@ -71,7 +71,6 @@
 <translation id="1110994991967754504">Выберыце дазвол для <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Захаваць нумар IBAN?</translation>
 <translation id="1113869188872983271">&amp;Адрабіць змяненне парадку</translation>
-<translation id="111897705806685148">Выкарыстаць ключ доступу з іншай прылады</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб выбраць, якія даныя Chrome будуць захоўвацца ва Уліковым запісе Google, націсніце Tab, затым Увод.</translation>
 <translation id="1121990216147052230">Складзі спіс задач для мяне</translation>
 <translation id="1123753900084781868">Імгненныя субцітры зараз недаступныя</translation>
@@ -1308,6 +1307,7 @@
 <translation id="3196374699162453920">Код браніравання</translation>
 <translation id="3196902089458890316">Заўсёды абагульваць адпаведныя ўкладкі, каб атрымліваць больш рэлевантныя адказы?</translation>
 <translation id="3197136577151645743">Сайт можа атрымліваць інфармацыю пра тое, калі вы карыстаецеся гэтай прыладай</translation>
+<translation id="3201749168732432347">Прапановы і карткі лаяльнасці</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб задаць у наладах Chrome, якая іменна інфармацыя будзе сінхранізавацца, націсніце Tab, затым Enter</translation>
 <translation id="3203025201812691413">Укажыце URL-адрас</translation>
 <translation id="320323717674993345">Скасаваць плацеж</translation>
@@ -2310,6 +2310,7 @@
 <translation id="4850886885716139402">Праглядзець</translation>
 <translation id="4854853140771946034">Хутка стварыць новую нататку ў Google Keep</translation>
 <translation id="4855395119669662878">Адміністратар пачне запампоўванне вашых файлаў у <ph name="CLOUD_PROVIDER" /> <ph name="DATE_TIME" />. Да заканчэння гэтай аперацыі прылада павінна быць падключана да інтэрнэту. Падчас запампоўвання вы зможаце праглядаць лакальныя файлы толькі ў рэжыме чытання.</translation>
+<translation id="4856655096879441213">Выкарыстоўвайце <ph name="GOOGLE_WALLET_TITLE" /> для захавання сваіх звестак. Гэта паскорыць працу ў розных прадуктах Google, напрыклад запаўненне форм. Кіраваць тым, <ph name="HOW_INFO_IS_USED_LINK" />, можна ў наладах прыватных картак для ўліковага запісу <ph name="ACCOUNT" />.</translation>
 <translation id="485902285759009870">Ідзе спраўджанне кода…</translation>
 <translation id="4860260582253463350">Каб адкрыць YouTube, мы павінны ўпэўніцца, што гэта ты. Ты будзеш карыстацца параметрамі, якія адзін з бацькоў або законны прадстаўнік наладзіў у Family Link.</translation>
 <translation id="4861514638281352187">Бяспечнае дадаванне нумара перагляду</translation>
@@ -2845,7 +2846,6 @@
 <translation id="5718326209176373202">Дадаць тэкставыя анатацыі</translation>
 <translation id="5718601519531438273">Уключае такую інфармацыю, як даныя пашпартоў і вадзіцельскіх пасведчанняў</translation>
 <translation id="5720705177508910913">Бягучы карыстальнік</translation>
-<translation id="5721147290164931316">Адсканіруйце QR-код, каб увайсці ва ўліковы запіс на тэлефоне</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} і яшчэ 1}one{{website_1}, {website_2} і яшчэ {more_count}}few{{website_1}, {website_2} і яшчэ {more_count}}many{{website_1}, {website_2} і яшчэ {more_count}}other{{website_1}, {website_2} і яшчэ {more_count}}}</translation>
 <translation id="5722778418591961221">Складзі план дамашніх трэніровак, які дапаможа мне дасягнуць пастаўленых мэт</translation>
 <translation id="572328651809341494">Нядаўнія ўкладкі</translation>

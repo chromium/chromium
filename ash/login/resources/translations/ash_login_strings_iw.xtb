@@ -146,6 +146,7 @@
 <translation id="248676429071089168">החלקה למעלה להזזת הדף למטה</translation>
 <translation id="2501278716633472235">חזרה</translation>
 <translation id="252418934079508528">להתקנת <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">המכשיר בתהליך הגדרה…</translation>
 <translation id="2538084450874617176">מי משתמש/ת במכשיר <ph name="DEVICE_TYPE" /> הזה?</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> לא הצליח להתחבר אל <ph name="NETWORK_ID" />. יש לבחור רשת אחרת או לנסות שוב.</translation>
 <translation id="2565214867520763227">הפעלת קורא המסך</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">הכפתור 'המשך' מופעל</translation>
 <translation id="7671139479636735732">אפשר ללחוץ לחיצה ימנית כדי להמחיש את הרעיונות שלך בקלות</translation>
 <translation id="770831926727930011">הנתונים המקומיים מוגנים באמצעות הסיסמה הישנה שלך. עליך להזין את הסיסמה הישנה כדי לשחזר את הנתונים המקומיים.</translation>
+<translation id="7717014941119698257">הורדה: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">השטח שנדרש כדי לעדכן: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">מתבצעת התאמה עם "<ph name="DEVICE_NAME" />" ...</translation>
 <translation id="7746045113967198252">הגדלה או הקטנה של פריטים במסך, כולל טקסט. ניתן גם להגיע לאפשרות הזו מאוחר יותר דרך 'הגדרות' &gt; 'מכשיר' &gt; 'מסכים'.</translation>

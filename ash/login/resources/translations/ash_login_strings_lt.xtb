@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Perbraukite aukštyn, kad perkeltumėte puslapį žemyn</translation>
 <translation id="2501278716633472235">Grįžti</translation>
 <translation id="252418934079508528">Įdiekite „<ph name="DEVICE_OS" />“</translation>
+<translation id="2532146950330687938">Ruošiamas įrenginys...</translation>
 <translation id="2538084450874617176">Kas naudoja šį „<ph name="DEVICE_TYPE" />“?</translation>
 <translation id="2553340429761841190">„<ph name="PRODUCT_NAME" />“ nepavyko prisijungti prie <ph name="NETWORK_ID" />. Pasirinkite kitą tinklą arba bandykite dar kartą.</translation>
 <translation id="2565214867520763227">Ekrano skaitytuvo įjungimas</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">Mygtukas „Tęsti“ įgalintas</translation>
 <translation id="7671139479636735732">Spustelėkite dešiniuoju klavišu, kad galėtumėte lengvai vizualizuoti idėjas</translation>
 <translation id="770831926727930011">Vietiniai duomenys saugomi naudojant senąjį slaptažodį. Įveskite senąjį slaptažodį, kad atkurtumėte vietinius duomenis.</translation>
+<translation id="7717014941119698257">Atsisiunčiama: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Kad būtų galima atnaujinti, reikia laisvos vietos: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">Susiejama su „<ph name="DEVICE_NAME" />“…</translation>
 <translation id="7746045113967198252">Rodyti elementus ekrane, įskaitant tekstą (didesnį ar mažesnį). Be to, vėliau galėsite tai rasti skiltyje „Nustatymai“ &gt; „Įrenginys“ &gt; „Ekranai“.</translation>

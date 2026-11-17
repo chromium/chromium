@@ -146,6 +146,7 @@
 <translation id="248676429071089168">Deslize rapidamente para cima para mover a página para baixo</translation>
 <translation id="2501278716633472235">Voltar</translation>
 <translation id="252418934079508528">Instalar <ph name="DEVICE_OS" /></translation>
+<translation id="2532146950330687938">A preparar o dispositivo…</translation>
 <translation id="2538084450874617176">Quem está a utilizar este <ph name="DEVICE_TYPE" />?</translation>
 <translation id="2553340429761841190">O <ph name="PRODUCT_NAME" /> não conseguiu estabelecer ligação a <ph name="NETWORK_ID" />. Selecione outra rede ou tente novamente.</translation>
 <translation id="2565214867520763227">Ative o leitor de ecrã</translation>
@@ -566,7 +567,7 @@
 <translation id="6998793565256476099">Inscrever dispositivo para videoconferência</translation>
 <translation id="7025082428878635038">Apresentamos uma nova forma de navegar com gestos</translation>
 <translation id="7034692021407794547">Um administrador com os privilégios Gestão de faturação tem primeiro de aceitar os Termos de Utilização do hardware Google Meet na secção hardware Google Meet da consola do administrador.</translation>
-<translation id="7039951224110875196">Criar uma Conta Google para uma criança</translation>
+<translation id="7039951224110875196">Criar Conta Google para uma criança</translation>
 <translation id="7065223852455347715">Este dispositivo está bloqueado num modo que impede a inscrição empresarial. Se quer inscrever o dispositivo, tem primeiro de efetuar a recuperação do dispositivo.</translation>
 <translation id="7066572364168923329">Escolha a configuração do seu dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="7077829361966535409">Ocorreu uma falha ao carregar a página de início de sessão utilizando as definições de proxy atuais. <ph name="GAIA_RELOAD_LINK_START" />Tente iniciar sessão novamente<ph name="GAIA_RELOAD_LINK_END" /> ou utilize <ph name="PROXY_SETTINGS_LINK_START" />definições de proxy<ph name="PROXY_SETTINGS_LINK_END" /> diferentes.</translation>
@@ -631,6 +632,7 @@
 <translation id="7666531788977935712">Botão Continuar ativado</translation>
 <translation id="7671139479636735732">Clique com o botão direito do rato para visualizar facilmente as suas ideias</translation>
 <translation id="770831926727930011">Os dados locais estão protegidos pela sua palavra-passe antiga. Introduza a palavra-passe antiga para recuperar os dados locais.</translation>
+<translation id="7717014941119698257">A transferir: <ph name="STATUS" /></translation>
 <translation id="7722040605881499779">Necessário para atualizar: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7737115349420013392">A sincronizar com o dispositivo "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="7746045113967198252">Aumente ou diminua o tamanho dos itens no ecrã, incluindo texto. Também pode encontrar estas opções mais tarde em Definições &gt; Dispositivo &gt; Ecrãs.</translation>

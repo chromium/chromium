@@ -27,6 +27,7 @@
 <translation id="1062138828266376352">PIN-код не зменены. Праверце падключэнне да інтэрнэту і паўтарыце спробу.</translation>
 <translation id="1063070031224282617">Выберыце, куды захаваць файл <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="1063300264396686489">Аўтаматычна адкрываць групы ўкладак з іншых прылад</translation>
+<translation id="1064922761238321287">Адкрывайце спасылкі ў гэтым браўзеры</translation>
 <translation id="1072476005125066234">Водгукі на аснове вашых інтарэсаў</translation>
 <translation id="1072679792409426431">Адключана адміністратарам</translation>
 <translation id="1074827084851510304">Вы збіраецеся выдаліць некаторыя паролі ({password_count}), а таксама спіс сайтаў і праграм, для якіх, згодна з наладамі, не захоўваюцца даныя для ўваходу. Уліковыя запісы, якія вы стварылі для сайтаў ці праграм, не будуць выдалены.</translation>
@@ -383,6 +384,7 @@
 <translation id="2089180529062519164">Уключыце мікрафон</translation>
 <translation id="2096239473850415494">Не ўдалося спампаваць</translation>
 <translation id="2096716221239095980">Выдаліць усе даныя</translation>
+<translation id="2097502812000646256">Пасля пераходу з сайта <ph name="SITE_DOMAIN" /> яго дазволы будуць скінуты</translation>
 <translation id="2102396546234652240">Не дазваляць сайтам выкарыстоўваць мікрафон</translation>
 <translation id="2104436223719117661">Папулярныя пошукавыя запыты</translation>
 <translation id="21133533946938348">Замацаваць укладку</translation>
@@ -653,6 +655,7 @@
 <translation id="2969979262385602596">Не ўдалося ўвайсці. Паўтарыце спробу пазней.</translation>
 <translation id="2975761176769946178">Неабходна ўказаць URL-адрас</translation>
 <translation id="297667759942911166">Сумесна працаваць з групамі ўкладак</translation>
+<translation id="2986080119218811913">Назад у праграму "<ph name="ACTOR_NAME" />"</translation>
 <translation id="298696743524648170">Каб выкарыстоўваць Gemini ў Chrome, увайдзіце ў Chrome праз свой Уліковы запіс Google</translation>
 <translation id="2987670534697681860">Каб атрымаць доступ да ўсіх сваіх пароляў на гэтай прыладзе, вам трэба спраўдзіць сваю асобу.</translation>
 <translation id="2989523299700148168">Нядаўнія</translation>
@@ -821,6 +824,7 @@
 <translation id="3533436815740441613">Новая ўкладка</translation>
 <translation id="3534738261102690620">Спытаць Gemini</translation>
 <translation id="3540141921715814660">Дадаць у закладкі</translation>
+<translation id="3543157674386493176">У сайта <ph name="SITE_DOMAIN" /> ёсць дазвол выкарыстоўваць мікрафон падчас кожнага наведвання</translation>
 <translation id="3546122170015471515">Перадпрагляд карт на Google.com</translation>
 <translation id="3547356470684043247">Чытайце, як кліенты ацэньваюць прадукты, паслугі і якія ў іх уражанні, каб больш абгрунтавана складаць свае водгукі.</translation>
 <translation id="3547933853190131743">Пошук у рэжыме AI</translation>
@@ -1254,6 +1258,7 @@
 <translation id="4884937942297374058">Палепшаная абарона выключана</translation>
 <translation id="4887391901725877182">Субцітры</translation>
 <translation id="488785315393301722">Паказаць падрабязнасці</translation>
+<translation id="488838826386625696">Найбольш зручны для вас браўзер для адкрыцця спасылак</translation>
 <translation id="4889521386764567563">Бягучы профіль</translation>
 <translation id="4893713555726946316">Схаваць пункт "Пошук на старонцы"</translation>
 <translation id="4894963374040315706">Гэта дае магчымасць выконваць пошук пры дапамозе голасу</translation>
@@ -1290,6 +1295,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, пад кіраваннем вашай арганізацыі.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />: <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Колер групы ўкладак <ph name="COLOR" /></translation>
+<translation id="500126251490468002">У Менеджары пароляў Google няма пароля для гэтага сайта. Вярніцеся ў праграму "<ph name="ACTOR_NAME" />", каб увайсці, або дадайце пароль у Менеджар пароляў Google.</translation>
 <translation id="5005498671520578047">Капіраваць пароль</translation>
 <translation id="5007392906805964215">Праглядзець</translation>
 <translation id="5009127379503001909">Працягнуць прагляд</translation>
@@ -1299,6 +1305,7 @@
 <translation id="5020732097997376541">Націсніце на значок функцыі "Аб’ектыў"</translation>
 <translation id="5021500396464456616">Звяжыцеся з карыстальнікам, які адправіў спасылку</translation>
 <translation id="503173149952522259">Націсніце і ўтрымлівайце, каб замацаваць гэту ўкладку</translation>
+<translation id="5032446794387264213">У сайта <ph name="SITE_DOMAIN" /> няма доступу да мікрафона</translation>
 <translation id="5039804452771397117">Дазволіць</translation>
 <translation id="5050042263972837708">Назва групы</translation>
 <translation id="5050810143224996149">Абагульванне пароля</translation>
@@ -1483,6 +1490,7 @@
 <translation id="5612225021788368236">Закрыць параду па выбары стандартнага браўзера</translation>
 <translation id="561269594905823128">Націсніце <ph name="BEGIN_BOLD" />Выбраць файл<ph name="END_BOLD" />.</translation>
 <translation id="5613297089029360427">Сартаваць па апошняй даце</translation>
+<translation id="561349411957324076">Завершана</translation>
 <translation id="5614553682702429503">Захаваць пароль?</translation>
 <translation id="5617769621178348890">Адкрыць у праграме "Файлы"</translation>
 <translation id="5619871095170816857">На гэтай картцы паказваецца апошняя ўкладка, якую вы адкрывалі на любой са сваіх сінхранізаваных прылад за апошнія 24 гадзіны.</translation>
@@ -1797,6 +1805,7 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6538776393003671043">Chrome прапануе захаваць гэтыя звесткі ў Google Кашальку пры наступным выкарыстанні</translation>
 <translation id="6543899060872618437">Аплачвайце куплі хутчэй дзякуючы аўтазапаўненню на ўсіх прыладах</translation>
+<translation id="6545387723662397265">Спасылкі будуць адкрывацца ў гэтым браўзеры аўтаматычна.</translation>
 <translation id="6550675742724504774">Параметры</translation>
 <translation id="6550891580932862748">Не абараняе ад небяспечных вэб-сайтаў, спамповак і пашырэнняў. Гэты рэжым не паўплывае на налады Бяспечнага прагляду ў іншых прадуктах Google.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -1998,8 +2007,10 @@
 <translation id="7149893636342594995">За апошнія 24 гадзіны</translation>
 <translation id="7151361008641622036">{count,plural, =1{Вы ўпарадкавалі 1 укладку}one{Вы ўпарадкавалі # укладку}few{Вы ўпарадкавалі # укладкі}many{Вы ўпарадкавалі # укладак}other{Вы ўпарадкавалі # укладкі}}</translation>
 <translation id="7154417656353909837">Выдаліць адрасы</translation>
+<translation id="715826717368497238">Better Together</translation>
 <translation id="7161230316646448869">Сінхранізуйце закладкі, гісторыю і іншыя даныя на ўсіх прыладах</translation>
 <translation id="7165323152084385463">Нумар VIN</translation>
+<translation id="7171738306460065883">У сайта <ph name="SITE_DOMAIN" /> ёсць дазвол выкарыстоўваць камеру падчас кожнага наведвання</translation>
 <translation id="7173114856073700355">Адкрыць Налады</translation>
 <translation id="7173721738069475737">{count,plural, =1{Закладка захавана}one{{count} закладка захавана}few{{count} закладкі захавана}many{{count} закладак захавана}other{{count} закладкі захавана}}</translation>
 <translation id="7176183551031110427">Паменшыць маштаб</translation>
@@ -2193,6 +2204,7 @@
 <translation id="7758789811447313947">Фіялетавая тэма</translation>
 <translation id="7759809451544302770">Неабавязкова</translation>
 <translation id="7765158879357617694">Перамясціць</translation>
+<translation id="7767218770008406619">Больш хуткі прагляд у розных праграмах</translation>
 <translation id="7768507955883790804">Пры наведванні сайтаў яны будуць аўтаматычна ўлічваць гэту наладу</translation>
 <translation id="7772032839648071052">Пацвердзіце фразу-пароль</translation>
 <translation id="7772948288262733182">З вяртаннем!</translation>
@@ -2559,6 +2571,7 @@
 <translation id="882557203579758546">Пошук на старонцы…</translation>
 <translation id="8829809207373502270">Гэты ключ доступу больш не працуе. Ён быў выдалены з вэб-сайта "<ph name="WEBSITE" />" і неўзабаве будзе выдалены адсюль. <ph name="BEGIN_LINK" />Пра ключы доступу<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Закрыць усе неактыўныя</translation>
+<translation id="8834584302364387913">У сайта <ph name="SITE_DOMAIN" /> няма доступу да камеры</translation>
 <translation id="8837654851594567190">Сартаваць па выдаўцу</translation>
 <translation id="884351711508006491">Ваша інфармацыя захоўваецца на прыладзе.</translation>
 <translation id="8844136307393039959">Зніжэнне цаны на тавар, які вы адсочваеце</translation>

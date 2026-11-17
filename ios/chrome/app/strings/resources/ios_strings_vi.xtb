@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Không đăng nhập được. Vui lòng thử lại sau.</translation>
 <translation id="2975761176769946178">Cần nhập URL</translation>
 <translation id="297667759942911166">Cộng tác trong nhóm thẻ</translation>
+<translation id="2986080119218811913">Quay lại <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Để sử dụng Gemini trong Chrome, hãy đăng nhập vào Chrome bằng Tài khoản Google của bạn</translation>
 <translation id="2987670534697681860">Xác minh danh tính của bạn để truy cập vào tất cả mật khẩu trên thiết bị này.</translation>
 <translation id="2989523299700148168">Đã truy cập gần đây</translation>
@@ -1290,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, do tổ chức của bạn quản lý.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Màu của nhóm thẻ <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Trình quản lý mật khẩu của Google không có mật khẩu cho trang web này. Quay lại <ph name="ACTOR_NAME" /> để đăng nhập hoặc thêm mật khẩu vào Trình quản lý mật khẩu của Google.</translation>
 <translation id="5005498671520578047">Sao chép mật khẩu</translation>
 <translation id="5007392906805964215">Xem</translation>
 <translation id="5009127379503001909">Tiếp tục duyệt xem</translation>

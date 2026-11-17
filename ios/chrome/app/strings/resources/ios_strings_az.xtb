@@ -27,6 +27,7 @@
 <translation id="1062138828266376352">PIN dəyişdirilmədi. İnternet bağlantısını yoxlayın və yenidən cəhd edin</translation>
 <translation id="1063070031224282617">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />) faylını harada yadda saxlayacağınızı seçin</translation>
 <translation id="1063300264396686489">Digər cihazlardan tab qruplarını avtomatik açın</translation>
+<translation id="1064922761238321287">Keçidləri burada açın</translation>
 <translation id="1072476005125066234">Maraqlarınıza əsasən rəylər</translation>
 <translation id="1072679792409426431">Administratorunuz tərəfindən deaktiv edilib</translation>
 <translation id="1074827084851510304">{password_count} parolu və girişi yadda saxlamamağı seçdiyiniz sayt və tətbiqlərin siyahısını silmək üzrəsiniz. Sayt və tətbiqlər üçün yaratdığınız hər hansı hesab silinməyəcək.</translation>
@@ -383,6 +384,7 @@
 <translation id="2089180529062519164">Mikrofonu aktiv edin</translation>
 <translation id="2096239473850415494">Endirilmədi</translation>
 <translation id="2096716221239095980">Bütün datanı silin</translation>
+<translation id="2097502812000646256">Bu saytdan çıxdığınız zaman <ph name="SITE_DOMAIN" /> icazələri sıfırlanaraq deaktiv olacaq</translation>
 <translation id="2102396546234652240">Saytlara mikrofonunuzdan istifadə etmək icazəsi verməyin</translation>
 <translation id="2104436223719117661">Populyar axtarışlar</translation>
 <translation id="21133533946938348">Tabı sancın</translation>
@@ -653,6 +655,7 @@
 <translation id="2969979262385602596">Hesaba girmək olmur. Sonra cəhd edin.</translation>
 <translation id="2975761176769946178">Keçid tələb olunur</translation>
 <translation id="297667759942911166">Tab qruplarında əməkdaşlıq edin</translation>
+<translation id="2986080119218811913"><ph name="ACTOR_NAME" /> cihazına qayıdın</translation>
 <translation id="298696743524648170">Chrome-da Gemini-dan istifadə etmək üçün Google Hesabınızla Chrome-a daxil olun</translation>
 <translation id="2987670534697681860">Bu cihazda bütün parollarınıza daxil olmaq üçün kimliyinizi doğrulayın</translation>
 <translation id="2989523299700148168">Son ziyarət</translation>
@@ -821,6 +824,7 @@
 <translation id="3533436815740441613">Yeni Tab</translation>
 <translation id="3534738261102690620">Gemini-dan soruşun</translation>
 <translation id="3540141921715814660">Əlfəcinlərə əlavə edin</translation>
+<translation id="3543157674386493176">Bu sayta daxil olduğunuz zaman <ph name="SITE_DOMAIN" /> mikrofonunuzdan istifadə edə bilər</translation>
 <translation id="3546122170015471515">Google.com-da Xəritə Önizləmələri</translation>
 <translation id="3547356470684043247">Rəy əsasında qərar vermək üçün məhsul, xidmət və ya təcrübələrlə bağlı müştəri dəyərləndirmələrini oxuyun</translation>
 <translation id="3547933853190131743">Sİ rejimi ilə axtarın</translation>
@@ -1254,6 +1258,7 @@
 <translation id="4884937942297374058">Təkmil qoruma deaktivdir</translation>
 <translation id="4887391901725877182">Subtitrlər</translation>
 <translation id="488785315393301722">Detalları göstər</translation>
+<translation id="488838826386625696">Tərcih etdiyiniz keçid təyinatı</translation>
 <translation id="4889521386764567563">Cari profil</translation>
 <translation id="4893713555726946316">"Səhifədə axtarın" seçimini gizlədin</translation>
 <translation id="4894963374040315706">Səsinizi istifadə edərək axtarış etməyə icazə verir</translation>
@@ -1290,6 +1295,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, təşkilatınız tərəfindən idarə olunur.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Tab qrupu rəngi <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Google Parol Menecerində bu sayt üçün parol yoxdur. Daxil olmaq üçün <ph name="ACTOR_NAME" /> cihazına qayıdın və ya Google Parol Menecerinə parol əlavə edin.</translation>
 <translation id="5005498671520578047">Parolu kopyalayın</translation>
 <translation id="5007392906805964215">Nəzərdən keçirin</translation>
 <translation id="5009127379503001909">Axtarışa davam edin</translation>
@@ -1299,6 +1305,7 @@
 <translation id="5020732097997376541">"Linza ikonasına" toxunun</translation>
 <translation id="5021500396464456616">Bu keçidi göndərən şəxslə əlaqə saxlayın</translation>
 <translation id="503173149952522259">Bu tabı bərkitmək üçün basıb saxlayın</translation>
+<translation id="5032446794387264213"><ph name="SITE_DOMAIN" /> saytının mikrofonunuza daxil olmasına icazə verilmir</translation>
 <translation id="5039804452771397117">İcazə verin</translation>
 <translation id="5050042263972837708">Qrup adı</translation>
 <translation id="5050810143224996149">Parolu paylaşın</translation>
@@ -1798,6 +1805,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6538776393003671043">Növbəti dəfə istifadə etdiyiniz zaman Chrome onu Google Pulqabıda yadda saxlamağı təklif edəcək</translation>
 <translation id="6543899060872618437">Cihazlarınızda avtodoldurma ilə daha sürətli ödəniş edin</translation>
+<translation id="6545387723662397265">Keçidləri burada avtomatik açın.</translation>
 <translation id="6550675742724504774">Seçimlər</translation>
 <translation id="6550891580932862748">Təhlükəli veb-sayt, endirmə və artırmalardan qorumur. Digər Google məhsullarında Təhlükəsiz baxış ayarlarına təsir etmir.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -1999,8 +2007,10 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="7149893636342594995">Son 24 saat</translation>
 <translation id="7151361008641622036">{count,plural, =1{1 tabı nizamladınız}other{# tabı nizamladınız}}</translation>
 <translation id="7154417656353909837">Ünvanları silin</translation>
+<translation id="715826717368497238">Birlikdə daha yaxşı</translation>
 <translation id="7161230316646448869">Əlfəcin, tarixçə və s. məlumatları bütün cihazlarda sinxronlaşdırın</translation>
 <translation id="7165323152084385463">Avtomobilin identifikasiya nömrəsi</translation>
+<translation id="7171738306460065883">Bu sayta daxil olduğunuz zaman <ph name="SITE_DOMAIN" /> kameranızdan istifadə edə bilər</translation>
 <translation id="7173114856073700355">Ayarları Açın</translation>
 <translation id="7173721738069475737">{count,plural, =1{Əlfəcin yadda saxlandı}other{{count} əlfəcin yadda saxlandı}}</translation>
 <translation id="7176183551031110427">Uzaqlaşdırın</translation>
@@ -2194,6 +2204,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="7758789811447313947">Bənövşəyi tema</translation>
 <translation id="7759809451544302770">İstəyə görə</translation>
 <translation id="7765158879357617694">Daşıyın</translation>
+<translation id="7767218770008406619">Tətbiqlərarası daha sürətli baxış</translation>
 <translation id="7768507955883790804">Saytları ziyarət etdikdə onlar avtomatik bu ayarı izləyir</translation>
 <translation id="7772032839648071052">Parolu təsdiq edin</translation>
 <translation id="7772948288262733182">Xoş gəlmisiniz</translation>
@@ -2560,6 +2571,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="882557203579758546">Səhifədə tapın…</translation>
 <translation id="8829809207373502270">Bu giriş açarı artıq işləmir. O, <ph name="WEBSITE" /> veb-saytından silinib və qısa müddətdən sonra buradan silinəcək. <ph name="BEGIN_LINK" />Giriş açarı haqqında<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Deaktiv tabları bağlayın</translation>
+<translation id="8834584302364387913"><ph name="SITE_DOMAIN" /> saytının kameranıza daxil olmasına icazə verilmir</translation>
 <translation id="8837654851594567190">Naşir üzrə çeşidləyin</translation>
 <translation id="884351711508006491">Məlumatınız cihazda yadda saxlanılır.</translation>
 <translation id="8844136307393039959">İzlədiyiniz məhsulun qiyməti düşüb</translation>
