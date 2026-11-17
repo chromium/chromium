@@ -41,8 +41,9 @@ DeclarativePerformanceObserver::DeclarativePerformanceObserver(
       navigation_handle->GetDeclarativePerformanceObserverPolicy();
   CHECK(policy);
   reporting_endpoint_ = *policy->reporting_endpoint;
-  enabled_types_ = base::flat_set<network::mojom::PerformanceEntryType>(
-      policy->entry_types.begin(), policy->entry_types.end());
+  for (network::mojom::PerformanceEntryType type : policy->entry_types) {
+    enabled_types_.Put(type);
+  }
   if (policy->include_user_timing) {
     include_user_timing_ =
         base::flat_set<std::string>(policy->include_user_timing->begin(),
@@ -64,8 +65,7 @@ DeclarativePerformanceObserver::DeclarativePerformanceObserver(
       rfh->GetLifecycleState() == RenderFrameHost::LifecycleState::kActive &&
       web_contents && web_contents->GetVisibility() == Visibility::VISIBLE;
 
-  if (enabled_types_.contains(
-          network::mojom::PerformanceEntryType::kNavigation)) {
+  if (enabled_types_.Has(network::mojom::PerformanceEntryType::kNavigation)) {
     base::DictValue entry;
     entry.Set("name", committed_url_.spec());
     entry.Set("entryType", "navigation");
@@ -104,7 +104,7 @@ DeclarativePerformanceObserver::DeclarativePerformanceObserver(
     AddEntryToBuffer(std::move(entry));
   }
 
-  if (enabled_types_.contains(
+  if (enabled_types_.Has(
           network::mojom::PerformanceEntryType::kVisibilityState)) {
     base::DictValue entry;
     entry.Set("name", started_in_foreground_ ? "visible" : "hidden");
@@ -164,8 +164,7 @@ void DeclarativePerformanceObserver::OnDidFinishNavigation(
   // when this restored document eventually enters BFCache or is closed.
   is_session_ended_ = false;
 
-  if (enabled_types_.contains(
-          network::mojom::PerformanceEntryType::kNavigation)) {
+  if (enabled_types_.Has(network::mojom::PerformanceEntryType::kNavigation)) {
     base::DictValue nav_entry;
     nav_entry.Set("name", committed_url_.spec());
     nav_entry.Set("entryType", "navigation");
@@ -174,7 +173,7 @@ void DeclarativePerformanceObserver::OnDidFinishNavigation(
     AddEntryToBuffer(std::move(nav_entry));
   }
 
-  if (enabled_types_.contains(
+  if (enabled_types_.Has(
           network::mojom::PerformanceEntryType::kVisibilityState)) {
     base::DictValue visibility_entry;
     visibility_entry.Set("name", "visible");
@@ -224,7 +223,7 @@ void DeclarativePerformanceObserver::OnVisibilityChanged(
   if (is_session_ended_) {
     return;
   }
-  if (enabled_types_.contains(
+  if (enabled_types_.Has(
           network::mojom::PerformanceEntryType::kVisibilityState)) {
     base::DictValue entry;
     entry.Set("name", visibility == Visibility::HIDDEN ? "hidden" : "visible");
@@ -297,10 +296,9 @@ void DeclarativePerformanceObserver::AppendSessionEndEntry() {
   }
   is_session_ended_ = true;
 
-  if (enabled_types_.contains(
+  if (enabled_types_.Has(
           network::mojom::PerformanceEntryType::kVisibilityState) ||
-      enabled_types_.contains(
-          network::mojom::PerformanceEntryType::kNavigation)) {
+      enabled_types_.Has(network::mojom::PerformanceEntryType::kNavigation)) {
     base::DictValue entry;
     entry.Set("name", "session-end-event");
     entry.Set("entryType", "session-end");
@@ -370,8 +368,7 @@ void DeclarativePerformanceObserver::DidObservePerformanceEntries(
     switch (entry->which()) {
       case blink::mojom::DeclarativePerformanceEntry::Tag::kMark: {
         auto& mark = *entry->get_mark();
-        if (!enabled_types_.contains(
-                network::mojom::PerformanceEntryType::kMark)) {
+        if (!enabled_types_.Has(network::mojom::PerformanceEntryType::kMark)) {
           continue;
         }
         if (include_user_timing_ &&
@@ -393,8 +390,8 @@ void DeclarativePerformanceObserver::DidObservePerformanceEntries(
       }
       case blink::mojom::DeclarativePerformanceEntry::Tag::kLcp: {
         auto& lcp = entry->get_lcp();
-        if (!enabled_types_.contains(network::mojom::PerformanceEntryType::
-                                         kLargestContentfulPaint)) {
+        if (!enabled_types_.Has(network::mojom::PerformanceEntryType::
+                                    kLargestContentfulPaint)) {
           continue;
         }
 

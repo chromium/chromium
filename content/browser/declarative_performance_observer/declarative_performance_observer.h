@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -97,7 +98,7 @@ class CONTENT_EXPORT DeclarativePerformanceObserver
   void OnEarlyFailureReportsTaken(base::ListValue reports);
 
   std::string reporting_endpoint_;
-  base::flat_set<network::mojom::PerformanceEntryType> enabled_types_;
+  base::EnumSet<network::mojom::PerformanceEntryType> enabled_types_;
   std::optional<base::flat_set<std::string>> include_user_timing_;
 
   static constexpr size_t kMaxDocumentBufferBytes = 640 * 1024;
