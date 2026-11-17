@@ -340,32 +340,9 @@ class ContextualTasksSidePanelPermissionDashboardInteractiveUiTest
         /*enabled_features=*/{kContextualTasks,
                               kContextualTasksForceEntryPointEligibility,
                               kContextualTasksEphemeralBrandedEntryPoint,
-                              kContextualTasksRearchitecture,
                               kContextualTasksSidePanelRearchitecture},
-        /*disabled_features=*/{kContextualTasksSidePanelTabState});
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContextualTasksSidePanelCoordinatorInteractiveUiTest::SetUpCommandLine(
-        command_line);
-    command_line->AppendSwitch(
-        views::switches::kDisableInputEventActivationProtectionForTesting);
-  }
-
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* context) override {
-    ContextualTasksSidePanelCoordinatorInteractiveUiTest::
-        SetUpBrowserContextKeyedServices(context);
-    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating([](content::BrowserContext* context)
-                                         -> std::unique_ptr<KeyedService> {
-          Profile* profile = Profile::FromBrowserContext(context);
-          return std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
-              CHECK_DEREF(profile->GetPrefs()),
-              /*template_url_service=*/nullptr,
-              /*url_loader_factory=*/nullptr,
-              IdentityManagerFactory::GetForProfile(profile));
-        }));
+        /*disabled_features=*/{kContextualTasksRearchitecture,
+                               kContextualTasksSidePanelTabState});
   }
 };
 
@@ -530,8 +507,49 @@ IN_PROC_BROWSER_TEST_F(
                   l10n_util::GetStringUTF16(IDS_CAMERA_IN_USE)));
 }
 
+// Enables `kContextualTasksRearchitecture` so the side panel `WebContents` can
+// navigate directly to an AIM URL (`udm=50`) as the top-level document when
+// testing permission chips and Page Info Site Settings navigation.
+class ContextualTasksSidePanelPermissionDashboardRearchitectureInteractiveUiTest
+    : public ContextualTasksSidePanelPermissionDashboardInteractiveUiTest {
+ public:
+  ContextualTasksSidePanelPermissionDashboardRearchitectureInteractiveUiTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kContextualTasks,
+                              kContextualTasksForceEntryPointEligibility,
+                              kContextualTasksEphemeralBrandedEntryPoint,
+                              kContextualTasksRearchitecture,
+                              kContextualTasksSidePanelRearchitecture},
+        /*disabled_features=*/{kContextualTasksSidePanelTabState});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContextualTasksSidePanelPermissionDashboardInteractiveUiTest::
+        SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        views::switches::kDisableInputEventActivationProtectionForTesting);
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    ContextualTasksSidePanelPermissionDashboardInteractiveUiTest::
+        SetUpBrowserContextKeyedServices(context);
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          Profile* profile = Profile::FromBrowserContext(context);
+          return std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+              CHECK_DEREF(profile->GetPrefs()),
+              /*template_url_service=*/nullptr,
+              /*url_loader_factory=*/nullptr,
+              IdentityManagerFactory::GetForProfile(profile));
+        }));
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(
-    ContextualTasksSidePanelPermissionDashboardInteractiveUiTest,
+    ContextualTasksSidePanelPermissionDashboardRearchitectureInteractiveUiTest,
     IndicatorChipOpensSiteSettingsInNewTab) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kToolbarWebContentsId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentWebContentsId);
@@ -630,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    ContextualTasksSidePanelPermissionDashboardInteractiveUiTest,
+    ContextualTasksSidePanelPermissionDashboardRearchitectureInteractiveUiTest,
     ConfirmationChipOpensSiteSettingsInNewTab) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kToolbarWebContentsId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentWebContentsId);
