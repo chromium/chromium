@@ -7,6 +7,8 @@
 #import <AppKit/AppKit.h>
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "components/remote_cocoa/app_shim/mouse_capture.h"
+#include "components/remote_cocoa/app_shim/window_move_loop.h"
 #include "ui/base/base_window.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -73,6 +75,11 @@ bool ShouldTreatCurrentEventAsDraggableOnMac() {
   }
   return [event type] == NSEventTypeLeftMouseDown &&
          ([event modifierFlags] & NSEventModifierFlagControl) == 0;
+}
+
+bool CanStartWindowMoveLoopOnMac() {
+  return !remote_cocoa::CocoaWindowMoveLoop::IsActive() &&
+         !remote_cocoa::CocoaMouseCapture::GetGlobalCaptureWindow();
 }
 
 }  // namespace omnibox_everywhere
