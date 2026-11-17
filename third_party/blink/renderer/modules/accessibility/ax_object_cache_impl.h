@@ -312,8 +312,6 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
     bool was_in_cached_attribute_values_update_;
   };
 
-  const Element* RootAXEditableElement(const Node*) override;
-
   // Called when aspects of the style (e.g. color, alignment) change.
   void StyleChanged(const LayoutObject*,
                     bool visibility_or_inertness_changed) override;
@@ -1167,7 +1165,6 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   AXID AssociateAXID(AXObject*, AXID use_axid = 0);
 
   void TextChanged(Node*);
-  bool NodeIsTextControl(const Node*);
   AXObject* NearestExistingAncestor(Node*);
 
   Settings* GetSettings();

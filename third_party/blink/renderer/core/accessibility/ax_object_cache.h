@@ -110,8 +110,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void RemoveAXObjectsInLayoutSubtree(LayoutObject*) = 0;
   virtual void RemovePopup(Document*) = 0;
 
-  virtual const Element* RootAXEditableElement(const Node*) = 0;
-
   // Called when aspects of the style (e.g. color, alignment) change.
   virtual void StyleChanged(const LayoutObject*,
                             bool visibility_or_inertness_changed = false) = 0;

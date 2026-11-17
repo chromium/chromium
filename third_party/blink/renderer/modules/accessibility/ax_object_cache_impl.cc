@@ -53,7 +53,6 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
-#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/events/event_util.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -5420,28 +5419,6 @@ void AXObjectCacheImpl::InlineTextBoxesUpdated(LayoutObject* layout_object) {
 
 Settings* AXObjectCacheImpl::GetSettings() {
   return document_->GetSettings();
-}
-
-const Element* AXObjectCacheImpl::RootAXEditableElement(const Node* node) {
-  const Element* result = RootEditableElement(*node);
-  const auto* element = DynamicTo<Element>(node);
-  if (!element)
-    element = node->parentElement();
-
-  for (; element; element = element->parentElement()) {
-    if (NodeIsTextControl(element))
-      result = element;
-  }
-
-  return result;
-}
-
-bool AXObjectCacheImpl::NodeIsTextControl(const Node* node) {
-  if (!node)
-    return false;
-
-  const AXObject* ax_object = Get(const_cast<Node*>(node));
-  return ax_object && ax_object->IsTextField();
 }
 
 WebLocalFrameClient* AXObjectCacheImpl::GetWebLocalFrameClient() const {
