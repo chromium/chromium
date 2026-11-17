@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/byte_size.h"
 #include "base/memory/discardable_memory.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -121,7 +122,8 @@ TEST(WebProcessMemoryDumpTest, IntegrationTest) {
   // Check that createDiscardableMemoryAllocatorDump() works.
   base::TestDiscardableMemoryAllocator discardable_memory_allocator;
   auto discardable_memory =
-      discardable_memory_allocator.AllocateLockedDiscardableMemory(1024);
+      discardable_memory_allocator.AllocateLockedDiscardableMemory(
+          base::KiB(1));
   wpmd1->CreateDiscardableMemoryAllocatorDump("1/discardable",
                                               discardable_memory.get());
   discardable_memory->Unlock();
