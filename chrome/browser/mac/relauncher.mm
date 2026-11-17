@@ -16,6 +16,7 @@
 #include <unistd.h>
 
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -122,10 +123,10 @@ bool RelaunchAppAtPathWithHelper(
   // "argument"; RelauncherMain is expecting it and will handle it specifically.
   relaunch_args.push_back(app_bundle.value());
   for (size_t i = 1; i < args.size(); ++i) {
+    const std::string& arg = args[i];
     // Strip any PSN arguments, as they apply to a specific process.
-    if (args[i].compare(0, strlen(kPSNArg), kPSNArg) != 0 &&
-        args[i].compare(0, strlen(kAltPSNArg), kAltPSNArg) != 0) {
-      relaunch_args.push_back(args[i]);
+    if (!arg.starts_with(kPSNArg) && !arg.starts_with(kAltPSNArg)) {
+      relaunch_args.push_back(arg);
     }
   }
 
@@ -304,9 +305,9 @@ int RelauncherMain(content::MainFunctionParams main_parameters) {
         base::StringPrintf("--%s=", switches::kRelauncherProcessDMGDevice);
     // Discard the first two arguments (executable name and relauncher type).
     std::ignore = args.take_first(2u);
-    for (const std::string arg : args) {
+    for (std::string_view arg : args) {
       // Strip any -psn_ arguments, as they apply to a specific process.
-      if (arg.compare(0, strlen(kPSNArg), kPSNArg) == 0) {
+      if (arg.starts_with(kPSNArg)) {
         continue;
       }
 
@@ -315,8 +316,7 @@ int RelauncherMain(content::MainFunctionParams main_parameters) {
           in_relaunch_args = true;
         } else if (arg == kRelauncherBackgroundArg) {
           activate = false;
-        } else if (arg.compare(0, relauncher_dmg_device_arg.size(),
-                               relauncher_dmg_device_arg) == 0) {
+        } else if (arg.starts_with(relauncher_dmg_device_arg)) {
           dmg_bsd_device_name.assign(
               arg.substr(relauncher_dmg_device_arg.size()));
         }
@@ -329,7 +329,7 @@ int RelauncherMain(content::MainFunctionParams main_parameters) {
           relaunch_executable.assign(arg);
           seen_relaunch_executable = true;
         } else {
-          relaunch_args.push_back(arg);
+          relaunch_args.emplace_back(arg);
         }
       }
     }
