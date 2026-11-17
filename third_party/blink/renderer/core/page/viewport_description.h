@@ -40,8 +40,6 @@
 
 namespace blink {
 
-class LocalFrame;
-
 // Representation of a viewport dimension.
 class ViewportLength {
  public:
@@ -101,21 +99,6 @@ struct CORE_EXPORT ViewportDescription {
 
   ui::mojom::blink::VirtualKeyboardMode virtual_keyboard_mode =
       ui::mojom::blink::VirtualKeyboardMode::kUnset;
-
-  // Enums used to record the kind of viewport in the Viewport.MetaTagType
-  // histogram. These must match the enums in histograms.xml and existing
-  // entries must not be changed.
-  enum class ViewportUMAType : int {
-    kNoViewportTag = 0,
-    kDeviceWidth = 1,
-    kConstantWidth = 2,
-    kMetaWidthOther = 3,
-    kMetaHandheldFriendly = 4,
-    kMetaMobileOptimized = 5,
-    kXhtmlMobileProfile = 6,
-
-    kMaxValue = kXhtmlMobileProfile,
-  };
 
   constexpr static float kValueAuto = -1.;
   constexpr static float kValueDeviceDPI = -6.;
@@ -181,11 +164,6 @@ struct CORE_EXPORT ViewportDescription {
   }
   bool IsMetaViewportType() const { return type == kViewportMeta; }
   bool IsSpecifiedByAuthor() const { return type != kUserAgentStyleSheet; }
-
-  // Reports UMA stat on whether the page is considered mobile or desktop and
-  // what kind of mobile it is. Applies only to Android, must only be called
-  // once per page load.
-  void ReportMobilePageStats(const LocalFrame*) const;
 
  private:
   static float ResolveViewportLength(const ViewportLength&,

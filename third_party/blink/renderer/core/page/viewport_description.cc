@@ -29,15 +29,9 @@
 
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 
-#include "base/metrics/histogram_macros.h"
-#include "build/build_config.h"
-#include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/frame/visual_viewport.h"
-#include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include <algorithm>
+
+#include "base/notreached.h"
 
 namespace blink {
 
@@ -52,11 +46,6 @@ static const float& CompareIgnoringAuto(const float& value1,
     return value1;
 
   return compare(value1, value2);
-}
-
-static void RecordViewportTypeMetric(
-    ViewportDescription::ViewportUMAType type) {
-  UMA_HISTOGRAM_ENUMERATION("Viewport.MetaTagType", type);
 }
 
 float ViewportDescription::ResolveViewportLength(
@@ -234,45 +223,6 @@ PageScaleConstraints ViewportDescription::Resolve(
   result.layout_size.set_width(result_width);
   result.layout_size.set_height(result_height);
   return result;
-}
-
-void ViewportDescription::ReportMobilePageStats(
-    const LocalFrame* main_frame) const {
-  if (!main_frame || !main_frame->GetPage() || !main_frame->View() ||
-      !main_frame->GetDocument())
-    return;
-
-  if (!main_frame->GetSettings() ||
-      !main_frame->GetSettings()->GetViewportEnabled())
-    return;
-
-  // Avoid chrome:// pages like the new-tab page (on Android new tab is
-  // non-http).
-  if (!main_frame->GetDocument()->Url().ProtocolIsInHttpFamily()) {
-    return;
-  }
-
-  if (!IsSpecifiedByAuthor()) {
-    RecordViewportTypeMetric(main_frame->GetDocument()->IsMobileDocument()
-                                 ? ViewportUMAType::kXhtmlMobileProfile
-                                 : ViewportUMAType::kNoViewportTag);
-    return;
-  }
-
-  if (IsMetaViewportType()) {
-    if (max_width.IsFixed()) {
-      RecordViewportTypeMetric(ViewportUMAType::kConstantWidth);
-    } else if (max_width.IsDeviceWidth() || max_width.IsExtendToZoom()) {
-      RecordViewportTypeMetric(ViewportUMAType::kDeviceWidth);
-    } else {
-      // Overflow bucket for cases we may be unaware of.
-      RecordViewportTypeMetric(ViewportUMAType::kMetaWidthOther);
-    }
-  } else if (type == ViewportDescription::kHandheldFriendlyMeta) {
-    RecordViewportTypeMetric(ViewportUMAType::kMetaHandheldFriendly);
-  } else if (type == ViewportDescription::kMobileOptimizedMeta) {
-    RecordViewportTypeMetric(ViewportUMAType::kMetaMobileOptimized);
-  }
 }
 
 }  // namespace blink

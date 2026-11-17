@@ -28,7 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -3059,93 +3058,6 @@ TEST_F(ViewportTest, viewport5) {
   EXPECT_NEAR(0.25f, constraints.minimum_scale, 0.01f);
   EXPECT_NEAR(5.0f, constraints.maximum_scale, 0.01f);
   EXPECT_TRUE(page->GetViewportDescription().user_zoom);
-}
-
-class ViewportHistogramsTest : public SimTest {
- public:
-  ViewportHistogramsTest() = default;
-
-  void SetUp() override {
-    SimTest::SetUp();
-
-    WebView().GetSettings()->SetViewportEnabled(true);
-    WebView().GetSettings()->SetViewportMetaEnabled(true);
-    WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 600));
-  }
-
-  void UseMetaTag(const String& metaTag) {
-    String responseText =
-        String("<!DOCTYPE html>") + metaTag +
-        String("<style> body { width: 2000px; height: 2000px; } </style>");
-    RunTest(responseText);
-  }
-
-  void UseDocType(const String& docType) {
-    String responseText =
-        docType +
-        String("<style> body { width: 2000px; height: 2000px; } </style>");
-    RunTest(responseText);
-  }
-
-  void ExpectType(ViewportDescription::ViewportUMAType type) {
-    histogram_tester_.ExpectUniqueSample("Viewport.MetaTagType",
-                                         static_cast<int>(type), 1);
-  }
-
-  void ExpectTotalCount(const std::string& histogram, int count) {
-    histogram_tester_.ExpectTotalCount(histogram, 0);
-  }
-
- private:
-  void RunTest(const String& responseText) {
-    SimRequest request("https://example.com/test.html", "text/html");
-    LoadURL("https://example.com/test.html");
-    request.Complete(responseText);
-
-    // Pump the task queue so the meta tag gets processed.
-    blink::test::RunPendingTasks();
-  }
-
-  base::HistogramTester histogram_tester_;
-};
-
-TEST_F(ViewportHistogramsTest, NoOpOnWhenViewportDisabled) {
-  WebView().GetSettings()->SetViewportEnabled(false);
-  UseMetaTag("<meta name='viewport' content='width=device-width'>");
-
-  ExpectTotalCount("Viewport.MetaTagType", 0);
-}
-
-TEST_F(ViewportHistogramsTest, TypeNone) {
-  UseMetaTag("");
-  ExpectType(ViewportDescription::ViewportUMAType::kNoViewportTag);
-}
-
-TEST_F(ViewportHistogramsTest, TypeDeviceWidth) {
-  UseMetaTag("<meta name='viewport' content='width=device-width'>");
-  ExpectType(ViewportDescription::ViewportUMAType::kDeviceWidth);
-}
-
-TEST_F(ViewportHistogramsTest, TypeConstant) {
-  UseMetaTag("<meta name='viewport' content='width=800'>");
-  ExpectType(ViewportDescription::ViewportUMAType::kConstantWidth);
-}
-
-TEST_F(ViewportHistogramsTest, TypeHandheldFriendlyMeta) {
-  UseMetaTag("<meta name='HandheldFriendly' content='true'/> ");
-  ExpectType(ViewportDescription::ViewportUMAType::kMetaHandheldFriendly);
-}
-
-TEST_F(ViewportHistogramsTest, TypeMobileOptimizedMeta) {
-  UseMetaTag("<meta name='MobileOptimized' content='320'/> ");
-  ExpectType(ViewportDescription::ViewportUMAType::kMetaMobileOptimized);
-}
-
-TEST_F(ViewportHistogramsTest, TypeXhtml) {
-  UseDocType(
-      "<!DOCTYPE html PUBLIC '-//WAPFORUM//DTD XHTML Mobile 1.1//EN' "
-      "'http://www.openmobilealliance.org/tech/DTD/xhtml-mobile11.dtd'");
-  ExpectType(ViewportDescription::ViewportUMAType::kXhtmlMobileProfile);
 }
 
 class ViewportMetaSimTest : public SimTest {

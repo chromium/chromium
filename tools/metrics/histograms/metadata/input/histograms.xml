@@ -2394,21 +2394,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<!--
-These viewport metrics are in input/ since they're related to pinch-zoom, which
-is owned by the Blink input team.
--->
-
-<histogram name="Viewport.MetaTagType" enum="MetaTagTypeEnum"
-    expires_after="2025-03-23">
-  <owner>bokan@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    The viewport meta tag type seen on each page load. Only recorded on Android.
-    Recorded when the page finishes loading.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>

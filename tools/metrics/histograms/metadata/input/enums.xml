@@ -684,16 +684,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="3" label="Installed"/>
 </enum>
 
-<enum name="MetaTagTypeEnum">
-  <int value="0" label="No viewport tag"/>
-  <int value="1" label="Viewport meta with device width"/>
-  <int value="2" label="Viewport meta with constant width"/>
-  <int value="3" label="Viewport meta other"/>
-  <int value="4" label="HandheldFriendly meta"/>
-  <int value="5" label="MobileOptimized meta"/>
-  <int value="6" label="XHTML-MP document type"/>
-</enum>
-
 <enum name="PhysicalKeyboardShortcut">
   <int value="0" label="zoom-in"/>
   <int value="1" label="zoom-out"/>

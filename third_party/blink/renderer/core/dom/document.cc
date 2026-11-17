@@ -4542,10 +4542,6 @@ bool Document::CheckCompletedInternal() {
 
   // No need to repeat if we've already notified this load as finished.
   if (!Loader()->SentDidFinishLoad()) {
-    if (GetFrame()->IsOutermostMainFrame()) {
-      GetViewportData().GetViewportDescription().ReportMobilePageStats(
-          GetFrame());
-    }
     Loader()->SetSentDidFinishLoad();
     GetFrame()->Client()->DispatchDidFinishLoad();
     // RenderFrameObservers may execute script, which could detach this frame.
