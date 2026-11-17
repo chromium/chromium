@@ -56,12 +56,6 @@ NSString* const kTestHtml = @"<html><body></body></html>";
 NSString* const kObfuscatedGaiaIdKey = @"obfuscatedGaiaId";
 NSString* const kContainerIdKey = @"containerId";
 
-// Builds a `sync_tab_context::FakeTabContextSyncService` for `profile`.
-std::unique_ptr<KeyedService> BuildFakeTabContextSyncService(
-    ProfileIOS* profile) {
-  return std::make_unique<sync_tab_context::FakeTabContextSyncService>();
-}
-
 }  // namespace
 
 class TabContextDecryptionTokenJavaScriptFeatureTest
@@ -93,7 +87,8 @@ class TabContextDecryptionTokenJavaScriptFeatureTest
                                     BuildIdentityManagerForTests)},
         TestProfileIOS::TestingFactory{
             TabContextSyncServiceFactory::GetInstance(),
-            base::BindRepeating(&BuildFakeTabContextSyncService)},
+            base::BindRepeating(&std::make_unique<
+                                sync_tab_context::FakeTabContextSyncService>)},
     };
   }
 

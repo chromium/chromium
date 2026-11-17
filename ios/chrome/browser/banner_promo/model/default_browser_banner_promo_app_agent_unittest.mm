@@ -29,12 +29,6 @@
 
 namespace {
 
-// Creates the Feature Engagement Mock Tracker.
-std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    ProfileIOS* profile) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
-}
-
 const int kSessionImpressionLimit = 5;
 
 }  // namespace
@@ -75,7 +69,8 @@ class DefaultBrowserBannerPromoAppAgentTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&BuildFeatureEngagementMockTracker));
+        base::BindRepeating(
+            &std::make_unique<feature_engagement::test::MockTracker>));
 
     profile_ = std::move(builder).Build();
 

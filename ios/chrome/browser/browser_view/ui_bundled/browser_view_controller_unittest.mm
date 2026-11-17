@@ -157,10 +157,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return commerce::MockShoppingService::Build();
-            }));
+        base::BindRepeating(&commerce::MockShoppingService::Build));
     test_profile_builder.AddTestingFactory(
         IOSChromeTabRestoreServiceFactory::GetInstance(),
         IOSChromeTabRestoreServiceFactory::GetDefaultFactory());

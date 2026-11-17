@@ -34,17 +34,6 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 
-namespace {
-
-// Builds the `EnterpriseProxyService` that `EnterpriseProxyErrorService`
-// requires.
-std::unique_ptr<KeyedService> BuildMockEnterpriseProxyService(ProfileIOS*) {
-  return std::make_unique<
-      testing::NiceMock<enterprise_net::MockEnterpriseProxyService>>();
-}
-
-}  // namespace
-
 // Test fixture for AttachTabHelpers.
 class TabHelperUtilTest : public PlatformTest,
                           public testing::WithParamInterface<TabHelperFilter> {
@@ -95,8 +84,10 @@ class TabHelperUtilTest : public PlatformTest,
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    builder.AddTestingFactory(EnterpriseProxyServiceFactoryIOS::GetInstance(),
-                              base::BindOnce(&BuildMockEnterpriseProxyService));
+    builder.AddTestingFactory(
+        EnterpriseProxyServiceFactoryIOS::GetInstance(),
+        base::BindOnce(&std::make_unique<testing::NiceMock<
+                           enterprise_net::MockEnterpriseProxyService>>));
     builder.AddTestingFactory(
         EnterpriseProxyErrorServiceFactoryIOS::GetInstance(),
         EnterpriseProxyErrorServiceFactoryIOS::GetDefaultFactory());

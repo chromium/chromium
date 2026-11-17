@@ -14,16 +14,6 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
-namespace {
-
-// Creates a MockTabGroupSyncService.
-std::unique_ptr<KeyedService> CreateMockSyncService(ProfileIOS* profile) {
-  return std::make_unique<
-      ::testing::NiceMock<tab_groups::MockTabGroupSyncService>>();
-}
-
-}  // namespace
-
 // Test fixture for the share kit service factory.
 class ShareKitServiceFactoryTest : public PlatformTest {
  protected:
@@ -38,7 +28,9 @@ class ShareKitServiceFactoryTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateMockSyncService));
+        base::BindRepeating(
+            &std::make_unique<
+                ::testing::NiceMock<tab_groups::MockTabGroupSyncService>>));
     profile_ = std::move(builder).Build();
   }
 

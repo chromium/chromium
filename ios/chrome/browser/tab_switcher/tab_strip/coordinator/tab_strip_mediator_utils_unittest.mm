@@ -27,12 +27,6 @@
 
 namespace {
 
-// Creates a MockTabGroupSyncService.
-std::unique_ptr<KeyedService> CreateMockSyncService(ProfileIOS* profile) {
-  return std::make_unique<
-      testing::NiceMock<tab_groups::MockTabGroupSyncService>>();
-}
-
 // Creates a WebState for test purposes.
 std::unique_ptr<web::WebState> CreateWebState() {
   auto web_state =
@@ -51,7 +45,9 @@ class TabStripMediatorUtilsTest : public PlatformTest {
     TestProfileIOS::Builder profile_builder;
     profile_builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateMockSyncService));
+        base::BindRepeating(
+            &std::make_unique<
+                testing::NiceMock<tab_groups::MockTabGroupSyncService>>));
     profile_builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());

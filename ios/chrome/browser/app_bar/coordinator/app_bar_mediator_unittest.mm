@@ -227,10 +227,7 @@ class AppBarMediatorTest : public PlatformTest,
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
         GeminiServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<FakeGeminiService>();
-            }));
+        base::BindRepeating(&std::make_unique<FakeGeminiService>));
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());

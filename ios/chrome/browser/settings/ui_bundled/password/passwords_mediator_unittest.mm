@@ -60,12 +60,6 @@ password_manager::StoredCredential CreateStoredCredential() {
   return cred;
 }
 
-// Create the Feature Engagement Mock Tracker.
-std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    ProfileIOS* profile) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
-}
-
 }  // namespace
 
 @interface FakePasswordsConsumer : NSObject <PasswordsConsumer> {
@@ -149,13 +143,12 @@ class PasswordsMediatorTest : public BlockCleanupTest {
             &password_manager::BuildPasswordStore<TestPasswordStore>));
     builder.AddTestingFactory(
         IOSChromeAffiliationServiceFactory::GetInstance(),
-        base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-          return std::make_unique<affiliations::FakeAffiliationService>();
-        }));
-
+        base::BindOnce(
+            &std::make_unique<affiliations::FakeAffiliationService>));
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&BuildFeatureEngagementMockTracker));
+        base::BindRepeating(
+            &std::make_unique<feature_engagement::test::MockTracker>));
     profile_ = std::move(builder).Build();
 
     store_ =

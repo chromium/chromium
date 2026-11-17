@@ -90,13 +90,6 @@
 
 @end
 
-namespace {
-std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    ProfileIOS* profile) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
-}
-}  // namespace
-
 class NonModalSignInPromoMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
@@ -119,7 +112,8 @@ class NonModalSignInPromoMediatorTest : public PlatformTest {
 
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&BuildFeatureEngagementMockTracker));
+        base::BindRepeating(
+            &std::make_unique<feature_engagement::test::MockTracker>));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     authentication_service_ =
         AuthenticationServiceFactory::GetForProfile(profile_);

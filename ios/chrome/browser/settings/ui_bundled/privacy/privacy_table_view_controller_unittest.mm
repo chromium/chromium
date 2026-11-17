@@ -69,11 +69,6 @@ BOOL DeviceSupportsAuthentication() {
                               error:nil];
 }
 
-std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    ProfileIOS* profile) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
-}
-
 class PrivacyTableViewControllerTest
     : public LegacyChromeTableViewControllerTest,
       public testing::WithParamInterface<std::tuple<IncognitoModePrefs, bool>> {
@@ -88,13 +83,11 @@ class PrivacyTableViewControllerTest
                               base::BindRepeating(&CreateTestSyncService));
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindOnce(&BuildFeatureEngagementMockTracker));
+        base::BindOnce(
+            &std::make_unique<feature_engagement::test::MockTracker>));
     builder.AddTestingFactory(
         ExtensionServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<FakeExtensionService>();
-            }));
+        base::BindRepeating(&std::make_unique<FakeExtensionService>));
     profile_ = std::move(builder).Build();
 
     test_sync_service()->SetSignedOut();

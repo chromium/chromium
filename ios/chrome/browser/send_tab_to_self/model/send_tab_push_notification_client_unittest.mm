@@ -55,10 +55,7 @@ class SendTabPushNotificationClientTest : public PlatformTest {
     builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),
         base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<
-                  send_tab_to_self::StubSendTabToSelfSyncService>();
-            }));
+            &std::make_unique<send_tab_to_self::StubSendTabToSelfSyncService>));
 
     ProfileIOS* profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));

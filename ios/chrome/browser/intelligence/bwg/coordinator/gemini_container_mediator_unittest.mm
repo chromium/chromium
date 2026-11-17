@@ -357,7 +357,8 @@ class GeminiContainerMediatorTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindOnce(&GeminiContainerMediatorTest::CreateMockTracker));
+        base::BindOnce(
+            &std::make_unique<feature_engagement::test::MockTracker>));
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
@@ -407,10 +408,6 @@ class GeminiContainerMediatorTest : public PlatformTest {
     [mediator_ disconnect];
     scene_state_ = nil;
     PlatformTest::TearDown();
-  }
-
-  static std::unique_ptr<KeyedService> CreateMockTracker(ProfileIOS* context) {
-    return std::make_unique<feature_engagement::test::MockTracker>();
   }
 
   web::FakeWebState* AppendActiveWebState() {

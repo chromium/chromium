@@ -85,11 +85,6 @@ struct MockPasswordCheckManagerObserver
               (override));
 };
 
-std::unique_ptr<KeyedService> MakeMockPasswordCheckManagerObserver(
-    ProfileIOS* profile) {
-  return std::make_unique<MockBulkLeakCheckService>();
-}
-
 password_manager::StoredCredential MakeSavedPassword(
     std::string_view signon_realm,
     std::u16string_view username,
@@ -123,16 +118,15 @@ class IOSChromePasswordCheckManagerTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeBulkLeakCheckServiceFactory::GetInstance(),
-        base::BindRepeating(&MakeMockPasswordCheckManagerObserver));
+        base::BindRepeating(&std::make_unique<MockBulkLeakCheckService>));
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindOnce(
             &password_manager::BuildPasswordStore<TestPasswordStore>));
     builder.AddTestingFactory(
         IOSChromeAffiliationServiceFactory::GetInstance(),
-        base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-          return std::make_unique<affiliations::FakeAffiliationService>();
-        }));
+        base::BindOnce(
+            &std::make_unique<affiliations::FakeAffiliationService>));
 
     profile_ = std::move(builder).Build();
     bulk_leak_check_service_ = static_cast<MockBulkLeakCheckService*>(

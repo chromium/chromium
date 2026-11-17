@@ -68,10 +68,6 @@ using MockSessionSyncService = sync_sessions::MockSessionSyncService;
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildMockSessionSyncService(ProfileIOS* profile) {
-  return std::make_unique<testing::NiceMock<MockSessionSyncService>>();
-}
-
 class GlobalIdMapperMock : public syncer::GlobalIdMapper {
  public:
   GlobalIdMapperMock() {}
@@ -112,7 +108,8 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
 
     builder.AddTestingFactory(
         SessionSyncServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildMockSessionSyncService));
+        base::BindRepeating(
+            &std::make_unique<testing::NiceMock<MockSessionSyncService>>));
     builder.AddTestingFactory(
         IOSChromeTabRestoreServiceFactory::GetInstance(),
         IOSChromeTabRestoreServiceFactory::GetDefaultFactory());

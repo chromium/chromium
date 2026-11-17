@@ -34,7 +34,8 @@ class GeminiGatewayManagerTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindOnce(&GeminiGatewayManagerTest::CreateMockTracker));
+        base::BindOnce(
+            &std::make_unique<feature_engagement::test::MockTracker>));
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
@@ -45,10 +46,6 @@ class GeminiGatewayManagerTest : public PlatformTest {
     mock_gemini_handler_ = OCMProtocolMock(@protocol(GeminiCommands));
     [dispatcher startDispatchingToTarget:mock_gemini_handler_
                              forProtocol:@protocol(GeminiCommands)];
-  }
-
-  static std::unique_ptr<KeyedService> CreateMockTracker(ProfileIOS* context) {
-    return std::make_unique<feature_engagement::test::MockTracker>();
   }
 
   web::WebTaskEnvironment task_environment_;

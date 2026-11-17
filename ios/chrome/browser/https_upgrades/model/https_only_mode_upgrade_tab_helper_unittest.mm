@@ -62,11 +62,6 @@ enum class HttpsUpgradesTestType {
 };
 }
 
-std::unique_ptr<KeyedService> BuildFakeHttpsUpgradeService(
-    ProfileIOS* profile) {
-  return std::make_unique<FakeHttpsUpgradeService>();
-}
-
 class HttpsOnlyModeUpgradeTabHelperTest
     : public testing::TestWithParam<HttpsUpgradesTestType> {
  protected:
@@ -74,7 +69,7 @@ class HttpsOnlyModeUpgradeTabHelperTest
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         HttpsUpgradeServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildFakeHttpsUpgradeService));
+        base::BindRepeating(&std::make_unique<FakeHttpsUpgradeService>));
 
     profile_ = std::move(builder).Build();
     web_state_.SetBrowserState(profile_.get());

@@ -138,9 +138,8 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
             &password_manager::BuildPasswordStore<TestPasswordStore>));
     builder.AddTestingFactory(
         IOSChromeAffiliationServiceFactory::GetInstance(),
-        base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-          return std::make_unique<affiliations::FakeAffiliationService>();
-        }));
+        base::BindOnce(
+            &std::make_unique<affiliations::FakeAffiliationService>));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
     profile_ = std::move(builder).Build();

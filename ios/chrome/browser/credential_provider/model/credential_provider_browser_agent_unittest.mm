@@ -37,9 +37,7 @@ class CredentialProviderBrowserAgentTest : public PlatformTest {
                                 BuildIdentityManagerForTests));
     test_profile_builder.AddTestingFactory(
         IOSPasskeyModelFactory::GetInstance(),
-        base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-          return std::make_unique<webauthn::TestPasskeyModel>();
-        }));
+        base::BindOnce(&std::make_unique<webauthn::TestPasskeyModel>));
 
     profile_ = std::move(test_profile_builder).Build();
     signin::MakePrimaryAccountAvailable(

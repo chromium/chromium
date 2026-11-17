@@ -175,10 +175,6 @@ class FakeEnterpriseProxyService
   scoped_refptr<net::HttpResponseHeaders> last_response_headers_;
 };
 
-std::unique_ptr<KeyedService> BuildFakeEnterpriseProxyService(ProfileIOS*) {
-  return std::make_unique<FakeEnterpriseProxyService>();
-}
-
 // Builds a proxy protection space, defaulting to the HTTPS proxy shape that
 // enterprise Provisioning Domain gateways produce. No realm is passed because
 // Foundation discards the realm of a proxy protection space; the realm reaches
@@ -214,8 +210,9 @@ class ProxyServiceControllerTest : public PlatformTest {
         {});
 
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(EnterpriseProxyServiceFactoryIOS::GetInstance(),
-                              base::BindOnce(&BuildFakeEnterpriseProxyService));
+    builder.AddTestingFactory(
+        EnterpriseProxyServiceFactoryIOS::GetInstance(),
+        base::BindOnce(&std::make_unique<FakeEnterpriseProxyService>));
     builder.AddTestingFactory(
         EnterpriseProxyErrorServiceFactoryIOS::GetInstance(),
         EnterpriseProxyErrorServiceFactoryIOS::GetDefaultFactory());
@@ -361,10 +358,8 @@ TEST_F(ProxyServiceControllerTest, FactoryCreatesControllerForProfile) {
   builder.AddTestingFactory(
       EnterpriseProxyServiceFactoryIOS::GetInstance(),
       base::BindRepeating(
-          [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-            return std::make_unique<
-                NiceMock<enterprise_net::MockEnterpriseProxyService>>();
-          }));
+          &std::make_unique<
+              NiceMock<enterprise_net::MockEnterpriseProxyService>>));
   builder.AddTestingFactory(
       EnterpriseProxyErrorServiceFactoryIOS::GetInstance(),
       EnterpriseProxyErrorServiceFactoryIOS::GetDefaultFactory());

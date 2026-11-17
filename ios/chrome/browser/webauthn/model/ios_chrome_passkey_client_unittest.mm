@@ -100,11 +100,6 @@ using ::testing::Return;
 constexpr int32_t kDeviceAuthorizationKeyVersion = 1;
 constexpr std::string_view kDeviceAuthorizationKey = "device_authorization_key";
 
-std::unique_ptr<KeyedService> BuildMockDeviceAuthorizationService(
-    ProfileIOS* profile) {
-  return std::make_unique<webauthn::MockDeviceAuthorizationService>();
-}
-
 class IOSChromePasskeyClientTest : public PlatformTest {
  public:
   IOSChromePasskeyClientTest() {
@@ -117,7 +112,8 @@ class IOSChromePasskeyClientTest : public PlatformTest {
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
         IOSDeviceAuthorizationServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildMockDeviceAuthorizationService));
+        base::BindRepeating(
+            &std::make_unique<webauthn::MockDeviceAuthorizationService>));
     profile_ = std::move(builder).Build();
 
     fake_web_state_.SetBrowserState(profile_.get());

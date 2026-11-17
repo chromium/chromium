@@ -63,10 +63,10 @@ class AddPasswordCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(
         IOSPasswordRequirementsServiceFactory::GetInstance(),
         base::BindOnce(
-            [](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<
-                  password_manager::PasswordRequirementsService>(nil);
-            }));
+            &std::make_unique<
+                password_manager::PasswordRequirementsService,
+                std::unique_ptr<autofill::PasswordRequirementsSpecFetcher>>,
+            nullptr));
 
     builder.AddTestingFactory(ReauthenticationServiceFactory::GetInstance(),
                               base::BindOnce(&CreateFakeReauthService));

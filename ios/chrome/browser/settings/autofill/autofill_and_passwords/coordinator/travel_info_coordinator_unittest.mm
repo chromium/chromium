@@ -51,17 +51,12 @@ class TravelInfoCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(
         IOSWalletPassAccessManagerFactory::GetInstance(),
         base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<
-                  testing::NiceMock<autofill::MockWalletPassAccessManager>>();
-            }));
+            &std::make_unique<
+                testing::NiceMock<autofill::MockWalletPassAccessManager>>));
     builder.AddTestingFactory(
         IOSAccountSettingServiceFactory::GetInstance(),
-        base::BindRepeating([](ProfileIOS* profile)
-                                -> std::unique_ptr<KeyedService> {
-          return std::make_unique<
-              testing::NiceMock<account_settings::MockAccountSettingService>>();
-        }));
+        base::BindRepeating(&std::make_unique<testing::NiceMock<
+                                account_settings::MockAccountSettingService>>));
 
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());

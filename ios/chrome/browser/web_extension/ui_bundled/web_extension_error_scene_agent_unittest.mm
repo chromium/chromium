@@ -33,18 +33,15 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildFakeExtensionService(ProfileIOS* profile) {
-  return std::make_unique<FakeExtensionService>();
-}
-
 class WebExtensionErrorSceneAgentTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
 
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(ExtensionServiceFactory::GetInstance(),
-                              base::BindOnce(&BuildFakeExtensionService));
+    builder.AddTestingFactory(
+        ExtensionServiceFactory::GetInstance(),
+        base::BindOnce(&std::make_unique<FakeExtensionService>));
     profile_ = std::move(builder).Build();
 
     fake_startup_information_ = [[FakeStartupInformation alloc] init];

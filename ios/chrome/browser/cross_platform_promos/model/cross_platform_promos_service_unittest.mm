@@ -60,9 +60,7 @@ class CrossPlatformPromosServiceTest : public PlatformTest {
 
     builder.AddTestingFactory(
         DeviceInfoSyncServiceFactory::GetInstance(),
-        base::BindOnce(
-            &CrossPlatformPromosServiceTest::CreateFakeDeviceInfoSyncService,
-            base::Unretained(this)));
+        base::BindOnce(&std::make_unique<syncer::FakeDeviceInfoSyncService>));
 
     profile_ = std::move(builder).Build();
     prefs_ = profile_->GetPrefs();
@@ -87,12 +85,6 @@ class CrossPlatformPromosServiceTest : public PlatformTest {
     service_ = std::make_unique<CrossPlatformPromosService>(profile_.get());
 
     StubPrepareToPresentModal();
-  }
-
-  // Factory function to create the FakeDeviceInfoSyncService.
-  std::unique_ptr<KeyedService> CreateFakeDeviceInfoSyncService(
-      ProfileIOS* context) {
-    return std::make_unique<syncer::FakeDeviceInfoSyncService>();
   }
 
   // Simulate that the app was foregrounded.

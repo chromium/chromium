@@ -26,10 +26,7 @@ class SendTabToSelfTabHelperTest : public PlatformTest {
     test_profile_builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),
         base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<
-                  send_tab_to_self::StubSendTabToSelfSyncService>();
-            }));
+            &std::make_unique<send_tab_to_self::StubSendTabToSelfSyncService>));
     profile_ = std::move(test_profile_builder).Build();
     web_state_.SetBrowserState(profile_.get());
 

@@ -151,9 +151,8 @@ class CredentialImporterTest : public PlatformTest {
                        password_manager::IsAccountStore(true)));
     builder.AddTestingFactory(
         IOSChromeAffiliationServiceFactory::GetInstance(),
-        base::BindRepeating([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-          return std::make_unique<affiliations::FakeAffiliationService>();
-        }));
+        base::BindRepeating(
+            &std::make_unique<affiliations::FakeAffiliationService>));
     profile_ = std::move(builder).Build();
 
     account_store_ = base::WrapRefCounted(static_cast<TestPasswordStore*>(

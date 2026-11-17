@@ -42,23 +42,17 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-namespace {
-
-std::unique_ptr<KeyedService> CreateMockTracker(ProfileIOS* context) {
-  return std::make_unique<
-      testing::NiceMock<feature_engagement::test::MockTracker>>();
-}
-
-}  // namespace
-
 // Tests for the Home Customization coordinator.
 class HomeCustomizationCoordinatorUnitTest : public PlatformTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(syncer::kSyncThemesIos);
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(feature_engagement::TrackerFactory::GetInstance(),
-                              base::BindOnce(&CreateMockTracker));
+    builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindOnce(
+            &std::make_unique<
+                testing::NiceMock<feature_engagement::test::MockTracker>>));
     builder.AddTestingFactory(TipsManagerIOSFactory::GetInstance(),
                               TipsManagerIOSFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();

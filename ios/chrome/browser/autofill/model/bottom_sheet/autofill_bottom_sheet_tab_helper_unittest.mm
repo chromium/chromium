@@ -382,11 +382,8 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
             }));
     builder.AddTestingFactory(
         IOSPersonalContextFirstRunServiceFactory::GetInstance(),
-        base::BindOnce(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<
-                  personal_context::TestPersonalContextFirstRunService>();
-            }));
+        base::BindOnce(&std::make_unique<
+                       personal_context::TestPersonalContextFirstRunService>));
     builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
                               ios::HistoryServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),

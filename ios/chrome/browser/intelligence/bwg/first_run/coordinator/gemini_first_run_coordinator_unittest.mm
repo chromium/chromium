@@ -53,10 +53,6 @@ namespace {
 
 constexpr char kGeminiLiveFREOutcomeHistogram[] = "IOS.Gemini.Live.FREOutcome";
 
-std::unique_ptr<KeyedService> CreateTestTracker(ProfileIOS* context) {
-  return std::make_unique<
-      testing::NiceMock<feature_engagement::test::MockTracker>>();
-}
 }  // namespace
 
 class GeminiFirstRunCoordinatorTest : public PlatformTest {
@@ -68,8 +64,11 @@ class GeminiFirstRunCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    builder.AddTestingFactory(feature_engagement::TrackerFactory::GetInstance(),
-                              base::BindOnce(&CreateTestTracker));
+    builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindOnce(
+            &std::make_unique<
+                testing::NiceMock<feature_engagement::test::MockTracker>>));
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());

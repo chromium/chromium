@@ -68,10 +68,7 @@ class GeminiAvailabilityTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         GeminiServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<FakeGeminiService>();
-            }));
+        base::BindRepeating(&std::make_unique<FakeGeminiService>));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     fake_gemini_service_ = static_cast<FakeGeminiService*>(
         GeminiServiceFactory::GetForProfile(profile_));

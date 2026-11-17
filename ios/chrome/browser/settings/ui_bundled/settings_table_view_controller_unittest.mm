@@ -79,11 +79,6 @@ using web::WebTaskEnvironment;
 - (void)didTapDefaultBrowserPromoCardCloseButton:(UIButton*)sender;
 @end
 
-std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    ProfileIOS* profile) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
-}
-
 class SettingsTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  public:
@@ -96,7 +91,8 @@ class SettingsTableViewControllerTest
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindOnce(&BuildFeatureEngagementMockTracker));
+        base::BindOnce(
+            &std::make_unique<feature_engagement::test::MockTracker>));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
     builder.AddTestingFactory(
@@ -113,10 +109,7 @@ class SettingsTableViewControllerTest
                        password_manager::TestPasswordStore>));
     builder.AddTestingFactory(
         ExtensionServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<FakeExtensionService>();
-            }));
+        base::BindRepeating(&std::make_unique<FakeExtensionService>));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     // Prepare mocks for PushNotificationClient dependency

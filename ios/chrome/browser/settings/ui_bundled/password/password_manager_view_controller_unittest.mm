@@ -95,14 +95,11 @@ class PasswordManagerViewControllerTest
             &password_manager::BuildPasswordStore<TestPasswordStore>));
     builder.AddTestingFactory(
         IOSChromeBulkLeakCheckServiceFactory::GetInstance(),
-        base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-          return std::make_unique<MockBulkLeakCheckService>();
-        }));
+        base::BindOnce(&std::make_unique<MockBulkLeakCheckService>));
     builder.AddTestingFactory(
         IOSChromeAffiliationServiceFactory::GetInstance(),
-        base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-          return std::make_unique<affiliations::FakeAffiliationService>();
-        }));
+        base::BindOnce(
+            &std::make_unique<affiliations::FakeAffiliationService>));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
 

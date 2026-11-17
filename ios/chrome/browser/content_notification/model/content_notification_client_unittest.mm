@@ -61,11 +61,6 @@ class FakeContentNotificationService : public ContentNotificationService {
       ContentNotificationNAUConfiguration* configuration) override {}
 };
 
-std::unique_ptr<KeyedService> CreateFakeContentNotificationService(
-    ProfileIOS* profile) {
-  return std::make_unique<FakeContentNotificationService>();
-}
-
 }  // namespace
 
 class ContentNotificationClientTest : public PlatformTest {
@@ -74,7 +69,7 @@ class ContentNotificationClientTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         ContentNotificationServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateFakeContentNotificationService));
+        base::BindRepeating(&std::make_unique<FakeContentNotificationService>));
     ProfileIOS* profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
     BrowserList* list = BrowserListFactory::GetForProfile(profile);

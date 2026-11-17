@@ -74,10 +74,7 @@ class ExplainWithGeminiMediatorTest : public PlatformTest {
                               base::BindRepeating(&CreateTestSyncService));
     builder.AddTestingFactory(
         GeminiServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<FakeGeminiService>();
-            }));
+        base::BindRepeating(&std::make_unique<FakeGeminiService>));
 
     browser_state_ = std::move(builder).Build();
     auth_service_ =

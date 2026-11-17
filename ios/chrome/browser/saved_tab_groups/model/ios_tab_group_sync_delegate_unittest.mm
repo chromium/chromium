@@ -64,10 +64,6 @@ namespace tab_groups {
 
 namespace {
 
-std::unique_ptr<KeyedService> CreateMockSyncService(ProfileIOS* profile) {
-  return std::make_unique<::testing::NiceMock<MockTabGroupSyncService>>();
-}
-
 // Updates the association of the local tab id.
 void FakeUpdateLocalTabId(web::WebState* web_state,
                           SavedTabGroupTab& saved_tab,
@@ -82,8 +78,10 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
  public:
   IOSTabGroupSyncDelegateTest() {
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(TabGroupSyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncService));
+    builder.AddTestingFactory(
+        TabGroupSyncServiceFactory::GetInstance(),
+        base::BindRepeating(
+            &std::make_unique<::testing::NiceMock<MockTabGroupSyncService>>));
     builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());

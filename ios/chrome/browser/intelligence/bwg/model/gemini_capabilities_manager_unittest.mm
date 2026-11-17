@@ -52,10 +52,7 @@ class GeminiCapabilitiesManagerTest : public PlatformTest {
                               base::BindRepeating(&CreateTestSyncService));
     builder.AddTestingFactory(
         GeminiServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<FakeGeminiService>();
-            }));
+        base::BindRepeating(&std::make_unique<FakeGeminiService>));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_);

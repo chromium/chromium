@@ -51,11 +51,6 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    ProfileIOS* profile) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
-}
-
 void ExpectNextShowTimeInRange(base::Time next_show_time) {
   base::Time lo = base::Time::Now() - base::Days(13);
   base::Time hi = base::Time::Now();
@@ -78,7 +73,8 @@ class SigninUtilsTest : public PlatformTest {
                               base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&BuildFeatureEngagementMockTracker));
+        base::BindRepeating(
+            &std::make_unique<feature_engagement::test::MockTracker>));
     feature_list_.InitAndDisableFeature(
         switches::kFullscreenSignInPromoUseDate);
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));

@@ -31,11 +31,6 @@
 
 namespace {
 
-// Builds a `TestFaviconLoader`.
-std::unique_ptr<KeyedService> BuildTestFaviconLoader(ProfileIOS* profile) {
-  return std::make_unique<TestFaviconLoader>();
-}
-
 // The identifier where the snapshots are saved.
 const char kIdentifier[] = "Identifier";
 
@@ -50,8 +45,9 @@ class InactiveTabsMediatorTest : public PlatformTest {
  public:
   InactiveTabsMediatorTest() {
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(IOSChromeFaviconLoaderFactory::GetInstance(),
-                              base::BindOnce(&BuildTestFaviconLoader));
+    builder.AddTestingFactory(
+        IOSChromeFaviconLoaderFactory::GetInstance(),
+        base::BindOnce(&std::make_unique<TestFaviconLoader>));
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     SnapshotBrowserAgent::CreateForBrowser(browser_.get());

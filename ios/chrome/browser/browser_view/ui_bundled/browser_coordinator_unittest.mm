@@ -136,19 +136,13 @@ class BrowserCoordinatorTest : public PlatformTest {
             GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<commerce::MockShoppingService>();
-            }));
+        base::BindRepeating(&std::make_unique<commerce::MockShoppingService>));
     test_profile_builder.AddTestingFactory(
         TipsManagerIOSFactory::GetInstance(),
         TipsManagerIOSFactory::GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<syncer::MockSyncService>();
-            }));
+        base::BindRepeating(&std::make_unique<syncer::MockSyncService>));
     test_profile_builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
         tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());

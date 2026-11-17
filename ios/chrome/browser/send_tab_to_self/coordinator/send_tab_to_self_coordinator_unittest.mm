@@ -69,10 +69,7 @@ class SendTabToSelfCoordinatorTest : public PlatformTest {
     test_profile_builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),
         base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<
-                  send_tab_to_self::StubSendTabToSelfSyncService>();
-            }));
+            &std::make_unique<send_tab_to_self::StubSendTabToSelfSyncService>));
 
     profile_ =
         profile_manager_.AddProfileWithBuilder(std::move(test_profile_builder));

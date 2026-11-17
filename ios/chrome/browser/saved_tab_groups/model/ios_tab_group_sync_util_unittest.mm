@@ -42,11 +42,6 @@ namespace utils {
 
 namespace {
 
-// Creates a MockTabGroupSyncService.
-std::unique_ptr<KeyedService> CreateMockSyncService(ProfileIOS* profile) {
-  return std::make_unique<::testing::NiceMock<MockTabGroupSyncService>>();
-}
-
 // Returns the tab ID for the web state at `index` in `browser`.
 web::WebStateID GetTabIDForWebStateAt(int index, Browser* browser) {
   web::WebState* web_state = browser->GetWebStateList()->GetWebStateAt(index);
@@ -61,7 +56,8 @@ class TabGroupSyncUtilTest : public PlatformTest {
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(
         TabGroupSyncServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateMockSyncService));
+        base::BindRepeating(
+            &std::make_unique<::testing::NiceMock<MockTabGroupSyncService>>));
     test_profile_builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());

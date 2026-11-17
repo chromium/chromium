@@ -127,10 +127,7 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
                               ios::BookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return commerce::MockShoppingService::Build();
-            }));
+        base::BindRepeating(&commerce::MockShoppingService::Build));
     TestProfileIOS* test_profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
 

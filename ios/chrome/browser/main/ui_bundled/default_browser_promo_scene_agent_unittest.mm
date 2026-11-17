@@ -55,21 +55,6 @@ using testing::AnyNumber;
 using testing::Mock;
 using testing::NiceMock;
 
-namespace {
-
-// Factory returning a mock feature engagement tracker.
-std::unique_ptr<KeyedService> BuildMockFeatureEngagementTracker(
-    ProfileIOS* profile) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
-}
-
-// Factory returning a mock PromosManager.
-std::unique_ptr<KeyedService> BuildMockPromosManager(ProfileIOS* profile) {
-  return std::make_unique<NiceMock<MockPromosManager>>();
-}
-
-}  // namespace
-
 class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
  public:
   DefaultBrowserPromoSceneAgentTest() : PlatformTest() {}
@@ -92,9 +77,11 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
                               base::BindRepeating(&CreateTestSyncService));
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&BuildMockFeatureEngagementTracker));
-    builder.AddTestingFactory(PromosManagerFactory::GetInstance(),
-                              base::BindOnce(&BuildMockPromosManager));
+        base::BindRepeating(
+            &std::make_unique<feature_engagement::test::MockTracker>));
+    builder.AddTestingFactory(
+        PromosManagerFactory::GetInstance(),
+        base::BindOnce(&std::make_unique<NiceMock<MockPromosManager>>));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     promos_manager_ = static_cast<NiceMock<MockPromosManager>*>(

@@ -64,27 +64,6 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
-namespace {
-
-// Factory returning a test `AccountPreviewDataService`.
-std::unique_ptr<KeyedService> BuildTestAccountPreviewDataService(
-    ProfileIOS* profile) {
-  return std::make_unique<signin::TestAccountPreviewDataService>();
-}
-
-// Factory returning a mock `feature_engagement::Tracker`.
-std::unique_ptr<KeyedService> BuildMockTracker(ProfileIOS* profile) {
-  return std::make_unique<
-      testing::NiceMock<feature_engagement::test::MockTracker>>();
-}
-
-// Factory returning a mock `PromosManager`.
-std::unique_ptr<KeyedService> BuildMockPromosManager(ProfileIOS* profile) {
-  return std::make_unique<MockPromosManager>();
-}
-
-}  // namespace
-
 class AccountSwitchingPromoSceneAgentTest : public PlatformTest {
  public:
   // Marks `identity` as known not to be subject to parental controls.
@@ -139,11 +118,16 @@ class AccountSwitchingPromoSceneAgentTest : public PlatformTest {
                               base::BindRepeating(&CreateTestSyncService));
     builder.AddTestingFactory(
         AccountPreviewDataServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildTestAccountPreviewDataService));
-    builder.AddTestingFactory(feature_engagement::TrackerFactory::GetInstance(),
-                              base::BindRepeating(&BuildMockTracker));
-    builder.AddTestingFactory(PromosManagerFactory::GetInstance(),
-                              base::BindRepeating(&BuildMockPromosManager));
+        base::BindRepeating(
+            &std::make_unique<signin::TestAccountPreviewDataService>));
+    builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindRepeating(
+            &std::make_unique<
+                testing::NiceMock<feature_engagement::test::MockTracker>>));
+    builder.AddTestingFactory(
+        PromosManagerFactory::GetInstance(),
+        base::BindRepeating(&std::make_unique<MockPromosManager>));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_];

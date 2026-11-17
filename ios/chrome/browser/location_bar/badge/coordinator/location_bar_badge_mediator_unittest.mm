@@ -136,13 +136,6 @@ class FakeContextualPanelTabHelper : public ContextualPanelTabHelper {
   std::vector<std::unique_ptr<ContextualPanelItemConfiguration>> configs_;
 };
 
-namespace {
-std::unique_ptr<KeyedService> CreateTestTracker(ProfileIOS* context) {
-  return std::make_unique<
-      testing::NiceMock<feature_engagement::test::MockTracker>>();
-}
-}  // namespace
-
 @interface LocationBarBadgeMediator (Testing)
 - (void)webState:(web::WebState*)webState
     didStartNavigation:(web::NavigationContext*)navigationContext;
@@ -160,8 +153,11 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
 
     // Set up test factories.
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(feature_engagement::TrackerFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestTracker));
+    builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindRepeating(
+            &std::make_unique<
+                testing::NiceMock<feature_engagement::test::MockTracker>>));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());

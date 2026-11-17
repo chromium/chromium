@@ -34,11 +34,6 @@ class FakeBackendPromoService : public BackendPromoService {
   int notify_count_ = 0;
 };
 
-std::unique_ptr<KeyedService> CreateFakeBackendPromoService(
-    ProfileIOS* profile) {
-  return std::make_unique<FakeBackendPromoService>();
-}
-
 }  // namespace
 
 class BackendPromoProfileAgentTest : public PlatformTest {
@@ -49,7 +44,7 @@ class BackendPromoProfileAgentTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         BackendPromoServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateFakeBackendPromoService));
+        base::BindRepeating(&std::make_unique<FakeBackendPromoService>));
     profile_ = std::move(builder).Build();
 
     profile_state_ = [[ProfileState alloc] initWithAppState:nil];

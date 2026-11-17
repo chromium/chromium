@@ -60,11 +60,6 @@ NSError* CreateTestUrlError(NSErrorDomain domain, NSInteger code) {
                          }];
 }
 
-std::unique_ptr<KeyedService> BuildMockEnterpriseProxyService(ProfileIOS*) {
-  return std::make_unique<
-      testing::NiceMock<enterprise_net::MockEnterpriseProxyService>>();
-}
-
 }  // namespace
 
 // Fixture with the enterprise proxy services that the Secure Gateway
@@ -78,8 +73,10 @@ class EnterpriseProxyErrorPageUtilTest : public PlatformTest {
         {});
 
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(EnterpriseProxyServiceFactoryIOS::GetInstance(),
-                              base::BindOnce(&BuildMockEnterpriseProxyService));
+    builder.AddTestingFactory(
+        EnterpriseProxyServiceFactoryIOS::GetInstance(),
+        base::BindOnce(&std::make_unique<testing::NiceMock<
+                           enterprise_net::MockEnterpriseProxyService>>));
     builder.AddTestingFactory(
         EnterpriseProxyErrorServiceFactoryIOS::GetInstance(),
         EnterpriseProxyErrorServiceFactoryIOS::GetDefaultFactory());

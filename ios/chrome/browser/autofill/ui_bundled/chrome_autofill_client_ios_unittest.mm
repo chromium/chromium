@@ -119,14 +119,11 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
                               ios::WebDataServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         IOSChromeAffiliationServiceFactory::GetInstance(),
-        base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-          return std::make_unique<affiliations::FakeAffiliationService>();
-        }));
+        base::BindOnce(
+            &std::make_unique<affiliations::FakeAffiliationService>));
     builder.AddTestingFactory(
         GeminiServiceFactory::GetInstance(),
-        base::BindRepeating([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-          return std::make_unique<FakeGeminiService>();
-        }));
+        base::BindRepeating(&std::make_unique<FakeGeminiService>));
     builder.AddTestingFactory(
         IOSPersonalContextEligibilityServiceFactory::GetInstance(),
         base::BindRepeating([](ProfileIOS*) -> std::unique_ptr<KeyedService> {

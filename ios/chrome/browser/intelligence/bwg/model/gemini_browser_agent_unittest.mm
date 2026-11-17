@@ -105,11 +105,6 @@ NSString* const kAutoSubmitPrompt = @"Explain this page";
 // UMA histogram key for Gemini Live dormant reasons.
 constexpr char kLiveDormantReasonHistogram[] = "IOS.Gemini.Live.DormantReason";
 
-std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    ProfileIOS* profile) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
-}
-
 // Test web state that allows intercepting TakeSnapshot calls.
 class TestWebState : public web::FakeWebState {
  public:
@@ -164,7 +159,8 @@ class GeminiBrowserAgentTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetDefaultFactory());
     profile_builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&BuildFeatureEngagementMockTracker));
+        base::BindRepeating(
+            &std::make_unique<feature_engagement::test::MockTracker>));
     profile_builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::

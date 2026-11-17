@@ -146,9 +146,7 @@ class PasswordSettingsMediatorTest : public PlatformTest,
             &password_manager::BuildPasswordStore<TestPasswordStore>));
     builder.AddTestingFactory(
         IOSPasskeyModelFactory::GetInstance(),
-        base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-          return std::make_unique<webauthn::TestPasskeyModel>();
-        }));
+        base::BindOnce(&std::make_unique<webauthn::TestPasskeyModel>));
     profile_ = std::move(builder).Build();
 
     passkey_model_ = static_cast<webauthn::TestPasskeyModel*>(

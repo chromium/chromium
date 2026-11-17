@@ -131,10 +131,7 @@ class NewTabPageMediatorTest : public PlatformTest {
             }));
     test_profile_builder.AddTestingFactory(
         ImageFetcherServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<MockImageFetcherService>();
-            }));
+        base::BindRepeating(&std::make_unique<MockImageFetcherService>));
     test_profile_builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
         base::BindRepeating(

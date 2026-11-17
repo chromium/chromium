@@ -72,11 +72,6 @@ namespace {
 constexpr char kPriceTrackingPromoCounterPref[] =
     "ephemeral_pref_counter.price_tracking_promo_counter";
 
-std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    ProfileIOS* profile) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
-}
-
 }  // namespace
 
 @interface ContentSuggestionsCoordinator (Testing) <
@@ -114,16 +109,14 @@ class ContentSuggestionsCoordinatorTest : public PlatformTest {
         ReadingListModelTestingFactoryWithFakeStorage({}));
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&BuildFeatureEngagementMockTracker));
+        base::BindRepeating(
+            &std::make_unique<feature_engagement::test::MockTracker>));
     builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return commerce::MockShoppingService::Build();
-            }));
+        base::BindRepeating(&commerce::MockShoppingService::Build));
     builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
                               ios::BookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),

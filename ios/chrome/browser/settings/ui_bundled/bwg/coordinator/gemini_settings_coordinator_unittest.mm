@@ -34,10 +34,7 @@ class GeminiSettingsCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<syncer::MockSyncService>();
-            }));
+        base::BindRepeating(&std::make_unique<syncer::MockSyncService>));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     browser_ = std::make_unique<TestBrowser>(profile_);
     scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));

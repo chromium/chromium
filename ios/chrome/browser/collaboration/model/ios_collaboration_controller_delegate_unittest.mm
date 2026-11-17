@@ -69,11 +69,6 @@ std::unique_ptr<KeyedService> BuildTestShareKitService(ProfileIOS* profile) {
                                                nullptr, tab_group_service);
 }
 
-std::unique_ptr<KeyedService> BuildFakeTabGroupSyncService(
-    ProfileIOS* profile) {
-  return std::make_unique<tab_groups::FakeTabGroupSyncService>();
-}
-
 std::unique_ptr<KeyedService> BuildMockCollaborationService(
     ProfileIOS* profile) {
   ServiceStatus collaboration_status;
@@ -84,10 +79,6 @@ std::unique_ptr<KeyedService> BuildMockCollaborationService(
   ON_CALL(*mock_collaboration_service.get(), GetServiceStatus())
       .WillByDefault(Return(collaboration_status));
   return std::move(mock_collaboration_service);
-}
-
-std::unique_ptr<KeyedService> BuildTestFaviconLoader(ProfileIOS* profile) {
-  return std::make_unique<TestFaviconLoader>();
 }
 
 }  // namespace
@@ -116,13 +107,14 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
         base::BindRepeating(&BuildMockCollaborationService));
     test_profile_builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildFakeTabGroupSyncService));
+        base::BindRepeating(
+            &std::make_unique<tab_groups::FakeTabGroupSyncService>));
     test_profile_builder.AddTestingFactory(
         ShareKitServiceFactory::GetInstance(),
         base::BindRepeating(&BuildTestShareKitService));
     test_profile_builder.AddTestingFactory(
         IOSChromeFaviconLoaderFactory::GetInstance(),
-        base::BindRepeating(&BuildTestFaviconLoader));
+        base::BindRepeating(&std::make_unique<TestFaviconLoader>));
 
     profile_ =
         profile_manager_.AddProfileWithBuilder(std::move(test_profile_builder));

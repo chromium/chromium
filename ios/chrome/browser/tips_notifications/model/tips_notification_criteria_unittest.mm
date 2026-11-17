@@ -44,17 +44,8 @@
 #import "testing/platform_test.h"
 #import "ui/base/device_form_factor.h"
 
-namespace {
-
 using ::testing::Return;
 
-// Creates the Feature Engagement Mock Tracker.
-std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    ProfileIOS* profile) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
-}
-
-}  // namespace
 class TipsNotificationCriteriaTest : public PlatformTest {
  protected:
   TipsNotificationCriteriaTest() {
@@ -64,7 +55,8 @@ class TipsNotificationCriteriaTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&BuildFeatureEngagementMockTracker));
+        base::BindRepeating(
+            &std::make_unique<feature_engagement::test::MockTracker>));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(

@@ -43,11 +43,6 @@ namespace {
 const base::TimeDelta kTestSessionDuration = base::Seconds(5);
 const base::TimeDelta kTestResponseLatency = base::Milliseconds(500);
 NSString* const kTestServerID = @"server_id";
-
-std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    ProfileIOS* profile) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
-}
 }  // namespace
 
 class GeminiSessionHandlerTest : public PlatformTest {
@@ -65,7 +60,8 @@ class GeminiSessionHandlerTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&BuildFeatureEngagementMockTracker));
+        base::BindRepeating(
+            &std::make_unique<feature_engagement::test::MockTracker>));
     profile_ = std::move(builder).Build();
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
         feature_engagement::TrackerFactory::GetForProfile(profile_.get()));

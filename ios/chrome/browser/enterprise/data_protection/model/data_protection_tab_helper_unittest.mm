@@ -150,12 +150,6 @@ class TestDataProtectionTabHelperObserver
   bool state_changed_called_ = false;
 };
 
-std::unique_ptr<KeyedService> CreateDataProtectionUrlLookupService(
-    ProfileIOS* profile) {
-  return std::make_unique<
-      enterprise_data_protection::DataProtectionUrlLookupService>();
-}
-
 }  // namespace
 
 class DataProtectionTabHelperTest : public PlatformTest {
@@ -170,12 +164,12 @@ class DataProtectionTabHelperTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &DataProtectionTabHelperTest::CreateFakeRealTimeUrlLookupService,
-            base::Unretained(this)));
+        base::BindRepeating(&std::make_unique<FakeRealTimeUrlLookupService>));
     builder.AddTestingFactory(
         DataProtectionUrlLookupServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateDataProtectionUrlLookupService));
+        base::BindRepeating(
+            &std::make_unique<
+                enterprise_data_protection::DataProtectionUrlLookupService>));
     builder.SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
     profile_ = std::move(builder).Build();
@@ -205,11 +199,6 @@ class DataProtectionTabHelperTest : public PlatformTest {
   ~DataProtectionTabHelperTest() override {
     tab_helper()->RemoveObserver(&observer_);
     policy::BrowserDMTokenStorage::SetForTesting(nullptr);
-  }
-
-  std::unique_ptr<KeyedService> CreateFakeRealTimeUrlLookupService(
-      ProfileIOS* profile) {
-    return std::make_unique<FakeRealTimeUrlLookupService>();
   }
 
   DataProtectionTabHelper* tab_helper() {

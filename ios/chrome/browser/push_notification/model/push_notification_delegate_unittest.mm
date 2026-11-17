@@ -109,9 +109,8 @@ class PushNotificationDelegateTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeAffiliationServiceFactory::GetInstance(),
-        base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-          return std::make_unique<affiliations::FakeAffiliationService>();
-        }));
+        base::BindOnce(
+            &std::make_unique<affiliations::FakeAffiliationService>));
     builder.AddTestingFactory(
         IOSChromePasswordCheckManagerFactory::GetInstance(),
         IOSChromePasswordCheckManagerFactory::GetDefaultFactory());

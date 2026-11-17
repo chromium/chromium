@@ -41,15 +41,6 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
 
-namespace {
-
-std::unique_ptr<KeyedService> CreateTestTracker(ProfileIOS* context) {
-  return std::make_unique<
-      testing::NiceMock<feature_engagement::test::MockTracker>>();
-}
-
-}  // namespace
-
 class GeminiFirstRunMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
@@ -60,17 +51,17 @@ class GeminiFirstRunMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    builder.AddTestingFactory(feature_engagement::TrackerFactory::GetInstance(),
-                              base::BindOnce(&CreateTestTracker));
+    builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindOnce(
+            &std::make_unique<
+                testing::NiceMock<feature_engagement::test::MockTracker>>));
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         GeminiServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<FakeGeminiService>();
-            }));
+        base::BindRepeating(&std::make_unique<FakeGeminiService>));
 
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());

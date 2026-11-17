@@ -54,11 +54,6 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    ProfileIOS* profile) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
-}
-
 class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
  protected:
   NonModalDefaultBrowserPromoSchedulerSceneAgentTest() {}
@@ -67,7 +62,8 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&BuildFeatureEngagementMockTracker));
+        base::BindRepeating(
+            &std::make_unique<feature_engagement::test::MockTracker>));
     profile_ = std::move(builder).Build();
 
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(

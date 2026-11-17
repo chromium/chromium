@@ -230,11 +230,6 @@ class FakePageClassificationService : public PageClassificationService {
   PageClassificationResult canned_result_;
 };
 
-std::unique_ptr<KeyedService> BuildFakePageClassificationService(
-    ProfileIOS* profile) {
-  return std::make_unique<FakePageClassificationService>();
-}
-
 class TestOptimizationGuideService : public FakeOptimizationGuideService {
  public:
   using FakeOptimizationGuideService::FakeOptimizationGuideService;
@@ -390,7 +385,7 @@ class ContextualCueingTabHelperTest : public PlatformTest {
         base::BindRepeating(&BuildTestPageClassificationService));
     builder.AddTestingFactory(
         PageClassificationServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildFakePageClassificationService));
+        base::BindRepeating(&std::make_unique<FakePageClassificationService>));
     builder.AddTestingFactory(
         ContextualCueingCapTrackerServiceFactory::GetInstance(),
         ContextualCueingCapTrackerServiceFactory::GetDefaultFactory());

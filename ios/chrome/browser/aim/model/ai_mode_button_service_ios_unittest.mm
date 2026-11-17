@@ -76,19 +76,6 @@ class MockImageFetcherService : public image_fetcher::ImageFetcherService {
   NiceMock<image_fetcher::MockImageFetcher> mock_image_fetcher_;
 };
 
-std::unique_ptr<KeyedService> CreateMockFaviconLoader(ProfileIOS* profile) {
-  return std::make_unique<NiceMock<MockFaviconLoader>>();
-}
-
-std::unique_ptr<KeyedService> CreateMockFaviconService(ProfileIOS* profile) {
-  return std::make_unique<NiceMock<favicon::MockFaviconService>>();
-}
-
-std::unique_ptr<KeyedService> CreateMockImageFetcherService(
-    ProfileIOS* profile) {
-  return std::make_unique<NiceMock<MockImageFetcherService>>();
-}
-
 class AIModeButtonServiceIOSTest : public PlatformTest {
  protected:
   AIModeButtonServiceIOSTest() {
@@ -100,13 +87,17 @@ class AIModeButtonServiceIOSTest : public PlatformTest {
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
         base::BindRepeating(
             &MockIOSChromeAimEligibilityService::CreateTestingProfileService));
-    builder.AddTestingFactory(IOSChromeFaviconLoaderFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockFaviconLoader));
-    builder.AddTestingFactory(ios::FaviconServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockFaviconService));
+    builder.AddTestingFactory(
+        IOSChromeFaviconLoaderFactory::GetInstance(),
+        base::BindRepeating(&std::make_unique<NiceMock<MockFaviconLoader>>));
+    builder.AddTestingFactory(
+        ios::FaviconServiceFactory::GetInstance(),
+        base::BindRepeating(
+            &std::make_unique<NiceMock<favicon::MockFaviconService>>));
     builder.AddTestingFactory(
         ImageFetcherServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateMockImageFetcherService));
+        base::BindRepeating(
+            &std::make_unique<NiceMock<MockImageFetcherService>>));
     profile_ = std::move(builder).Build();
 
     template_url_service_ =

@@ -103,11 +103,6 @@ using variations::VariationsIdsProvider;
 
 namespace {
 
-std::unique_ptr<KeyedService> CreateTestTracker(ProfileIOS* context) {
-  return std::make_unique<
-      testing::NiceMock<feature_engagement::test::MockTracker>>();
-}
-
 class LocationBarCoordinatorTest : public PlatformTest {
  protected:
   LocationBarCoordinatorTest() {}
@@ -119,7 +114,9 @@ class LocationBarCoordinatorTest : public PlatformTest {
 
     test_profile_builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&CreateTestTracker));
+        base::BindRepeating(
+            &std::make_unique<
+                testing::NiceMock<feature_engagement::test::MockTracker>>));
     test_profile_builder.AddTestingFactory(
         GeminiServiceFactory::GetInstance(),
         base::BindRepeating([](ProfileIOS*) -> std::unique_ptr<KeyedService> {

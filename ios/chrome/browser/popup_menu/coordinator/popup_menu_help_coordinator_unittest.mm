@@ -29,11 +29,6 @@
 #import "third_party/ocmock/gtest_support.h"
 
 namespace {
-// Create the Feature Engagement Mock Tracker.
-std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    ProfileIOS* profile) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
-}
 
 class PopupMenuHelpCoordinatorTest : public PlatformTest {
  public:
@@ -48,7 +43,8 @@ class PopupMenuHelpCoordinatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&BuildFeatureEngagementMockTracker));
+        base::BindRepeating(
+            &std::make_unique<feature_engagement::test::MockTracker>));
 
     profile_ = std::move(builder).Build();
 

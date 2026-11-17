@@ -21,13 +21,6 @@
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-namespace {
-std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    ProfileIOS* profile) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
-}
-}  // namespace
-
 namespace ai {
 
 class ZeroStateSuggestionsServiceTest : public PlatformTest {
@@ -42,7 +35,8 @@ class ZeroStateSuggestionsServiceTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&BuildFeatureEngagementMockTracker));
+        base::BindRepeating(
+            &std::make_unique<feature_engagement::test::MockTracker>));
     profile_ = std::move(builder).Build();
 
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(

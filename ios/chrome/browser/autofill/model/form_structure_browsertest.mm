@@ -216,9 +216,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
                      password_manager::MockPasswordStoreInterface>));
   builder.AddTestingFactory(
       IOSUserEventServiceFactory::GetInstance(),
-      base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-        return std::make_unique<syncer::FakeUserEventService>();
-      }));
+      base::BindOnce(&std::make_unique<syncer::FakeUserEventService>));
   profile_ = std::move(builder).Build();
 
   web::WebState::CreateParams params(profile_.get());

@@ -298,10 +298,7 @@ class MagicStackRankingModelTest : public PlatformTest {
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return commerce::MockShoppingService::Build();
-            }));
+        base::BindRepeating(&commerce::MockShoppingService::Build));
     builder.AddTestingFactory(TipsManagerIOSFactory::GetInstance(),
                               TipsManagerIOSFactory::GetDefaultFactory());
 

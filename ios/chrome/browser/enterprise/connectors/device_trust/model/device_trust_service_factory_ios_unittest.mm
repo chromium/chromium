@@ -26,18 +26,16 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildMockSignalsAggregator(ProfileIOS*) {
-  return std::make_unique<device_signals::MockSignalsAggregator>();
-}
-
 class DeviceTrustServiceFactoryIOSTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
 
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(IOSSignalsAggregatorFactory::GetInstance(),
-                              base::BindOnce(&BuildMockSignalsAggregator));
+    builder.AddTestingFactory(
+        IOSSignalsAggregatorFactory::GetInstance(),
+        base::BindOnce(
+            &std::make_unique<device_signals::MockSignalsAggregator>));
     builder.AddTestingFactory(
         DeviceTrustServiceFactoryIOS::GetInstance(),
         DeviceTrustServiceFactoryIOS::GetDefaultFactory());

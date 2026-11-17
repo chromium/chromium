@@ -65,12 +65,6 @@ class FakeProfileSessionDurationsService
   int session_ended_count_ = 0;
 };
 
-// Create a fake IOSProfileSessionDurationsService.
-std::unique_ptr<KeyedService> CreateFakeProfileSessionDurationsService(
-    ProfileIOS* profile) {
-  return std::make_unique<FakeProfileSessionDurationsService>();
-}
-
 // Create a test Feature Engagement Tracker.
 std::unique_ptr<KeyedService> BuildFeatureEngagementTestTracker(
     ProfileIOS* profile) {
@@ -88,7 +82,7 @@ class SessionMetricsProfileAgentTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSProfileSessionDurationsServiceFactory::GetInstance(),
-        base::BindOnce(&CreateFakeProfileSessionDurationsService));
+        base::BindOnce(&std::make_unique<FakeProfileSessionDurationsService>));
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindRepeating(&BuildFeatureEngagementTestTracker));

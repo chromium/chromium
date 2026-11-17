@@ -53,11 +53,6 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> CreateTestTracker(ProfileIOS* context) {
-  return std::make_unique<
-      testing::NiceMock<feature_engagement::test::MockTracker>>();
-}
-
 class GeminiEntryFlowCoordinatorTest : public PlatformTest {
  public:
   GeminiEntryFlowCoordinatorTest() {
@@ -73,17 +68,17 @@ class GeminiEntryFlowCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    builder.AddTestingFactory(feature_engagement::TrackerFactory::GetInstance(),
-                              base::BindOnce(&CreateTestTracker));
+    builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindOnce(
+            &std::make_unique<
+                testing::NiceMock<feature_engagement::test::MockTracker>>));
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         GeminiServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<FakeGeminiService>();
-            }));
+        base::BindRepeating(&std::make_unique<FakeGeminiService>));
 
     scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));

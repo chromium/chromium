@@ -51,11 +51,6 @@ std::unique_ptr<KeyedService> BuildSafeBrowsingClient(ProfileIOS* profile) {
   return std::make_unique<FakeSafeBrowsingClient>(profile->GetPrefs());
 }
 
-std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    ProfileIOS* profile) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
-}
-
 }  // namespace
 
 ReaderModeTest::ReaderModeTest()
@@ -73,7 +68,8 @@ void ReaderModeTest::SetUp() {
                             base::BindOnce(&BuildSafeBrowsingClient));
   builder.AddTestingFactory(
       feature_engagement::TrackerFactory::GetInstance(),
-      base::BindRepeating(&BuildFeatureEngagementMockTracker));
+      base::BindRepeating(
+          &std::make_unique<feature_engagement::test::MockTracker>));
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                             base::BindRepeating(&CreateTestSyncService));
   profile_ = std::move(builder).Build();

@@ -74,10 +74,9 @@ class DeviceTrustJavaScriptFeatureTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         DeviceTrustServiceFactoryIOS::GetInstance(),
-        base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-          return std::make_unique<testing::NiceMock<
-              enterprise_connectors::test::MockDeviceTrustService>>();
-        }));
+        base::BindOnce(
+            &std::make_unique<testing::NiceMock<
+                enterprise_connectors::test::MockDeviceTrustService>>));
     profile_ = std::move(builder).Build();
     web::test::OverrideJavaScriptFeatures(
         profile_.get(), {DeviceTrustJavaScriptFeature::GetInstance()});

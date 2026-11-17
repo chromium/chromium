@@ -37,14 +37,6 @@
 
 namespace {
 
-// Creates a nice mock of TabGroupSyncService. It's "nice" since these tests
-// don't really care what is called on the service, they just need to pass it
-// down to the coordinator's mediator.
-std::unique_ptr<KeyedService> CreateMockSyncService(ProfileIOS* profile) {
-  return std::make_unique<
-      ::testing::NiceMock<tab_groups::MockTabGroupSyncService>>();
-}
-
 // Creates a test ShareKitService.
 std::unique_ptr<KeyedService> BuildTestShareKitService(ProfileIOS* profile) {
   data_sharing::DataSharingService* data_sharing_service =
@@ -107,7 +99,9 @@ class TabGroupsPanelCoordinatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateMockSyncService));
+        base::BindRepeating(
+            &std::make_unique<
+                ::testing::NiceMock<tab_groups::MockTabGroupSyncService>>));
     builder.AddTestingFactory(ShareKitServiceFactory::GetInstance(),
                               base::BindOnce(&BuildTestShareKitService));
     profile_ = std::move(builder).Build();

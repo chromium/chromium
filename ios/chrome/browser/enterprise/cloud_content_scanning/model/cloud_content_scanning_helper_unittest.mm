@@ -92,11 +92,6 @@ class FakeBinaryUploadService : public BinaryUploadService {
   base::WeakPtrFactory<FakeBinaryUploadService> weak_ptr_factory_{this};
 };
 
-std::unique_ptr<KeyedService> BuildFakeBinaryUploadService(
-    ProfileIOS* profile) {
-  return std::make_unique<FakeBinaryUploadService>();
-}
-
 // Unit tests for CloudContentScanningHelper testing:
 // 1. Starting the cloud content scanning process and preparing scanning
 // resources correctly.
@@ -109,7 +104,7 @@ class CloudContentScanningHelperTest : public PlatformTest {
     TestProfileIOS::Builder profile_builder;
     profile_builder.AddTestingFactory(
         IOSCloudBinaryUploadServiceFactory::GetInstance(),
-        base::BindOnce(&BuildFakeBinaryUploadService));
+        base::BindOnce(&std::make_unique<FakeBinaryUploadService>));
     profile_ = std::move(profile_builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 

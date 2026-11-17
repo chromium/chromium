@@ -53,10 +53,6 @@ namespace {
 
 const char kTestURL[] = "https://chromium.org";
 
-std::unique_ptr<KeyedService> CreateMockSyncService(ProfileIOS* profile) {
-  return std::make_unique<MockTabGroupSyncService>();
-}
-
 // Returns the sync tab group prediction for the given `saved_group`.
 auto SyncTabGroupPrediction(SavedTabGroup saved_group) {
   return AllOf(
@@ -87,8 +83,9 @@ class TabGroupLocalUpdateObserverTest : public PlatformTest {
  public:
   TabGroupLocalUpdateObserverTest() {
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(TabGroupSyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncService));
+    builder.AddTestingFactory(
+        TabGroupSyncServiceFactory::GetInstance(),
+        base::BindRepeating(&std::make_unique<MockTabGroupSyncService>));
     builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());

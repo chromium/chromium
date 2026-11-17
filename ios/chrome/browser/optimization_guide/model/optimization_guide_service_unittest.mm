@@ -115,14 +115,11 @@ class OptimizationGuideServiceTest : public PlatformTest {
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
+    // Register a TestingFactory creating a FakeTabGroupSyncService as the real
+    // implementation registers some optimization types.
     builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
-        base::BindOnce(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              // Creates a FakeTabGroupSyncService, as the real implementation
-              // registers some optimization types.
-              return std::make_unique<tab_groups::FakeTabGroupSyncService>();
-            }));
+        base::BindOnce(&std::make_unique<tab_groups::FakeTabGroupSyncService>));
     builder.SetPrefService(std::move(testing_prefs));
     profile_ = std::move(builder).Build();
     optimization_guide_service_ =

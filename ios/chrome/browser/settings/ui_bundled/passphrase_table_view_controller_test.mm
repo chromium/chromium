@@ -51,10 +51,6 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
   return prefs;
 }
 
-std::unique_ptr<KeyedService> CreateNiceMockSyncService(ProfileIOS* profile) {
-  return std::make_unique<NiceMock<syncer::MockSyncService>>();
-}
-
 }  // anonymous namespace
 
 PassphraseTableViewControllerTest::PassphraseTableViewControllerTest()
@@ -74,8 +70,10 @@ void PassphraseTableViewControllerTest::SetUp() {
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
                             AuthenticationServiceFactory::GetDefaultFactory());
-  builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                            base::BindRepeating(&CreateNiceMockSyncService));
+  builder.AddTestingFactory(
+      SyncServiceFactory::GetInstance(),
+      base::BindRepeating(
+          &std::make_unique<NiceMock<syncer::MockSyncService>>));
   RegisterTestingFactories(builder);
   builder.SetPrefService(CreatePrefService());
   profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));

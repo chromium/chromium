@@ -132,10 +132,6 @@ constexpr char kEnterpriseProxyUrl[] = "https://proxy.example.com/";
 // enterprise proxy error.
 constexpr NSInteger kEnterpriseProxyErrorCode = 1;
 
-std::unique_ptr<KeyedService> BuildMockEnterpriseProxyService(ProfileIOS*) {
-  return std::make_unique<
-      testing::NiceMock<enterprise_net::MockEnterpriseProxyService>>();
-}
 }  // namespace
 
 class ChromeWebClientTest : public PlatformTest {
@@ -661,8 +657,10 @@ class ChromeWebClientEnterpriseProxyTest : public PlatformTest {
         {});
 
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(EnterpriseProxyServiceFactoryIOS::GetInstance(),
-                              base::BindOnce(&BuildMockEnterpriseProxyService));
+    builder.AddTestingFactory(
+        EnterpriseProxyServiceFactoryIOS::GetInstance(),
+        base::BindOnce(&std::make_unique<testing::NiceMock<
+                           enterprise_net::MockEnterpriseProxyService>>));
     builder.AddTestingFactory(
         EnterpriseProxyErrorServiceFactoryIOS::GetInstance(),
         EnterpriseProxyErrorServiceFactoryIOS::GetDefaultFactory());

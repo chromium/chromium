@@ -29,10 +29,7 @@ TEST_F(SendTabToSelfUtilTest, OmniboxIPHEligibility) {
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       SendTabToSelfSyncServiceFactory::GetInstance(),
-      base::BindRepeating(
-          [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-            return std::make_unique<StubSendTabToSelfSyncService>();
-          }));
+      base::BindRepeating(&std::make_unique<StubSendTabToSelfSyncService>));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   auto* service = static_cast<StubSendTabToSelfSyncService*>(
       SendTabToSelfSyncServiceFactory::GetForProfile(profile.get()));

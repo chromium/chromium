@@ -70,9 +70,8 @@ class PasswordCheckupCoordinatorTest
                        password_manager::TestPasswordStore>));
     builder.AddTestingFactory(
         IOSChromeAffiliationServiceFactory::GetInstance(),
-        base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-          return std::make_unique<affiliations::FakeAffiliationService>();
-        }));
+        base::BindOnce(
+            &std::make_unique<affiliations::FakeAffiliationService>));
     // Add authentication service.
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),

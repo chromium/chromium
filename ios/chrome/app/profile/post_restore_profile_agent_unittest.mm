@@ -37,11 +37,6 @@ namespace {
 
 const char kFakePreRestoreAccountEmail[] = "person@example.org";
 
-// Creates a mock PromosManager.
-std::unique_ptr<KeyedService> CreateMockPromosManager(ProfileIOS* profile) {
-  return std::make_unique<NiceMock<MockPromosManager>>();
-}
-
 }  // namespace
 
 // Tests the PostRestoreProfileAgent.
@@ -54,8 +49,9 @@ class PostRestoreProfileAgentTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    builder.AddTestingFactory(PromosManagerFactory::GetInstance(),
-                              base::BindOnce(&CreateMockPromosManager));
+    builder.AddTestingFactory(
+        PromosManagerFactory::GetInstance(),
+        base::BindOnce(&std::make_unique<NiceMock<MockPromosManager>>));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     promos_manager_ = static_cast<NiceMock<MockPromosManager>*>(
