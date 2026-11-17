@@ -28,7 +28,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.settings.search.BaseSearchIndexProvider;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 
@@ -44,7 +43,6 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
     public static final String PREF_SITE_TITLE = "site_title";
     public static final String PREF_CLEAR_DATA = "clear_data";
     public static final String PREF_USAGE = "site_usage";
-    public static final String PREF_RELATED_SITES = "related_sites";
     public static final String PREF_SITES_IN_GROUP = "sites_in_group";
     public static final String PREF_RESET_GROUP = "reset_group_button";
 
@@ -99,7 +97,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                     getActivity().getString(R.string.domain_settings_title, domainAndRegistry));
             WebsitePermissionsFetcher fetcher =
                     new WebsitePermissionsFetcher(getSiteSettingsDelegate());
-            fetcher.fetchPreferencesForCategoryAndPopulateRwsInfo(
+            fetcher.fetchPreferencesForCategory(
                     SiteSettingsCategory.createFromType(
                             getSiteSettingsDelegate().getBrowserContextHandle(),
                             SiteSettingsCategory.Type.ALL_SITES),
@@ -140,7 +138,6 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
 
         setUpClearDataPreference(siteGroup);
         setUpResetGroupPreference(siteGroup);
-        setUpRelatedSitesPreferences(siteGroup);
         updateSitesInGroup(siteGroup);
     }
 
@@ -323,46 +320,6 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
             preference.setEnabled(false);
         }
         preference.setOnPreferenceClickListener(this);
-    }
-
-    private void setUpRelatedSitesPreferences(WebsiteGroup siteGroup) {
-        PreferenceCategory relatedSitesSection = findPreference(PREF_RELATED_SITES);
-        TextMessagePreference relatedSitesText = new TextMessagePreference(getContext(), null);
-        var rwsInfo = siteGroup.getRwsInfo();
-        boolean shouldRelatedSitesPrefBeVisible =
-                getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
-                        && rwsInfo != null;
-        relatedSitesText.setVisible(shouldRelatedSitesPrefBeVisible);
-        relatedSitesSection.setVisible(shouldRelatedSitesPrefBeVisible);
-
-        if (shouldRelatedSitesPrefBeVisible) {
-            assumeNonNull(rwsInfo);
-            relatedSitesText.setManagedPreferenceDelegate(
-                    new ForwardingManagedPreferenceDelegate(
-                            getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
-                        @Override
-                        public boolean isPreferenceControlledByPolicy(Preference preference) {
-                            for (var site : siteGroup.getWebsites()) {
-                                if (getSiteSettingsDelegate()
-                                        .isPartOfManagedRelatedWebsiteSet(
-                                                site.getAddress().getOrigin())) {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        }
-                    });
-
-            relatedSitesText.setTitle(
-                    getContext()
-                            .getResources()
-                            .getQuantityString(
-                                    R.plurals.allsites_rws_summary,
-                                    rwsInfo.getMembersCount(),
-                                    Integer.toString(rwsInfo.getMembersCount()),
-                                    rwsInfo.getOwner()));
-            relatedSitesSection.addPreference(relatedSitesText);
-        }
     }
 
     private void updateSitesInGroup(WebsiteGroup siteGroup) {

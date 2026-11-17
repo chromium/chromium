@@ -310,7 +310,7 @@ public class SiteSettingsCookiesTest {
         Assert.assertTrue("Button should be checked.", cookieToggle.getButton(state).isChecked());
     }
 
-    private void verifyFpsCookieSubpageIsLaunchedWithParams(
+    private void verifyCookieSubpageIsLaunchedWithParams(
             final SettingsActivity settingsActivity,
             @CookieControlsMode int expectedCookieControlMode) {
         ThreadUtils.runOnUiThreadBlocking(
@@ -369,20 +369,20 @@ public class SiteSettingsCookiesTest {
                 "\"Foo=Bar\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
     }
 
-    /** Clicks on cookies radio buttons and verify the right FPS subpage is launched. */
+    /** Clicks on cookies radio buttons and verify the right cookie subpage is launched. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287320
-    public void testCookiesFpsSubpageIsLaunched() throws Exception {
+    public void testCookiesSubpageIsLaunched() throws Exception {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
                         SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
         waitForCookieToggleToBeBound(settingsActivity);
 
-        verifyFpsCookieSubpageIsLaunchedWithParams(
+        verifyCookieSubpageIsLaunchedWithParams(
                 settingsActivity, CookieControlsMode.BLOCK_THIRD_PARTY);
-        verifyFpsCookieSubpageIsLaunchedWithParams(
+        verifyCookieSubpageIsLaunchedWithParams(
                 settingsActivity, CookieControlsMode.INCOGNITO_ONLY);
     }
 
@@ -964,32 +964,7 @@ public class SiteSettingsCookiesTest {
     @SmallTest
     @Feature({"Preferences"})
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287320
-    public void testExpectedCookieButtonsCheckedWhenFpsUiEnabled() {
-        SettingsActivity settingsActivity =
-                SiteSettingsTestUtils.startSiteSettingsCategory(
-                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
-        waitForCookieToggleToBeBound(settingsActivity);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SingleCategorySettings preferences =
-                            (SingleCategorySettings) settingsActivity.getMainFragment();
-                    CookieSettingsPreference cookieToggle =
-                            preferences.findPreference(SingleCategorySettings.COOKIE_TOGGLE);
-
-                    clickButtonAndVerifyItsChecked(cookieToggle, CookieControlsMode.INCOGNITO_ONLY);
-                    clickButtonAndVerifyItsChecked(
-                            cookieToggle, CookieControlsMode.BLOCK_THIRD_PARTY);
-                });
-
-        settingsActivity.finish();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287320
-    public void testExpectedCookieButtonsCheckedWhenFpsUiAndPrivacySandboxSettings4Enabled() {
+    public void testExpectedCookieButtonsChecked() {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
                         SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);

@@ -43,7 +43,6 @@ import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.settings.search.BaseSearchIndexProvider;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.content_settings.ContentSetting;
@@ -113,8 +112,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     public static final String PREF_SITE_HEADING = "site_heading";
     public static final String PREF_SITE_TITLE = "site_title";
     public static final String PREF_USAGE = "site_usage";
-    public static final String PREF_RELATED_SITES_HEADER = "related_sites_header";
-    public static final String PREF_RELATED_SITES = "related_sites";
     public static final String PREF_PERMISSIONS_HEADER = "site_permissions";
     public static final String PREF_OS_PERMISSIONS_WARNING = "os_permissions_warning";
     public static final String PREF_OS_PERMISSIONS_WARNING_EXTRA = "os_permissions_warning_extra";
@@ -228,13 +225,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     // A list of preferences keys that will be hidden on this page if this boolean below is true
     private boolean mHideNonPermissionPreferences;
     private static final String[] NON_PERMISSION_PREFERENCES = {
-        PREF_SITE_HEADING,
-        PREF_SITE_TITLE,
-        PREF_USAGE,
-        PREF_RELATED_SITES_HEADER,
-        PREF_RELATED_SITES,
-        PREF_PERMISSIONS_HEADER,
-        PREF_CLEAR_DATA,
+        PREF_SITE_HEADING, PREF_SITE_TITLE, PREF_USAGE, PREF_PERMISSIONS_HEADER, PREF_CLEAR_DATA,
     };
 
     /** The permission type to be highlighted on this page, if any. */
@@ -379,7 +370,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             }
             WebsitePermissionsFetcher fetcher =
                     new WebsitePermissionsFetcher(getSiteSettingsDelegate());
-            fetcher.fetchPreferencesForCategoryAndPopulateRwsInfo(
+            fetcher.fetchPreferencesForCategory(
                     SiteSettingsCategory.createFromType(
                             getSiteSettingsDelegate().getBrowserContextHandle(),
                             SiteSettingsCategory.Type.ALL_SITES),
@@ -521,7 +512,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             WebsiteAddress address, Collection<Website> websites) {
         String origin = address.getOrigin();
         String host = assumeNonNull(Uri.parse(origin).getHost());
-        String domainAndRegistry = assumeNonNull(address.getDomainAndRegistry());
         Website merged = new Website(address, null);
         // This loop looks expensive, but the amount of data is likely to be relatively small
         // because most sites have very few permissions.
@@ -567,11 +557,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 if (origin.equals(sharedDictionaryInfo.getOrigin())) {
                     merged.addSharedDictionaryInfo(sharedDictionaryInfo);
                 }
-            }
-            if (merged.getRwsCookieInfo() == null
-                    && other.getRwsCookieInfo() != null
-                    && domainAndRegistry.equals(other.getAddress().getDomainAndRegistry())) {
-                merged.setRwsCookieInfo(other.getRwsCookieInfo());
             }
             if (merged.getFileEditingInfo() == null
                     && other.getFileEditingInfo() != null
@@ -649,7 +634,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         setupResetSitePreference();
         setUpClearDataPreference();
         setUpOsWarningPreferences(categoryWithWarning);
-        setUpRelatedSitesPreferences();
 
         setUpAdsInformationalBanner();
 
@@ -1237,36 +1221,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             } else if (osWarningExtra.getTitle() == null) {
                 preferenceScreen.removePreference(osWarningExtra);
             }
-        }
-    }
-
-    private void setUpRelatedSitesPreferences() {
-        PreferenceCategory relatedSitesSection = findPreference(PREF_RELATED_SITES_HEADER);
-        TextMessagePreference relatedSitesText = new TextMessagePreference(getContext(), null);
-        var rwsInfo = assumeNonNull(mSite).getRwsCookieInfo();
-        boolean shouldRelatedSitesPrefBeVisible =
-                getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
-                        && rwsInfo != null;
-        relatedSitesSection.setVisible(shouldRelatedSitesPrefBeVisible);
-        relatedSitesText.setVisible(shouldRelatedSitesPrefBeVisible);
-
-        if (shouldRelatedSitesPrefBeVisible) {
-            assumeNonNull(rwsInfo);
-            boolean isPartOfManagedRelatedWebsiteSite =
-                    getSiteSettingsDelegate()
-                            .isPartOfManagedRelatedWebsiteSet(
-                                    assumeNonNull(mSite).getAddress().getOrigin());
-            relatedSitesText.setManagedPreferenceDelegate(
-                    makeManagedPreferenceDelegate(isPartOfManagedRelatedWebsiteSite, false));
-            relatedSitesText.setTitle(
-                    getContext()
-                            .getResources()
-                            .getQuantityString(
-                                    R.plurals.allsites_rws_summary,
-                                    rwsInfo.getMembersCount(),
-                                    Integer.toString(rwsInfo.getMembersCount()),
-                                    rwsInfo.getOwner()));
-            relatedSitesSection.addPreference(relatedSitesText);
         }
     }
 

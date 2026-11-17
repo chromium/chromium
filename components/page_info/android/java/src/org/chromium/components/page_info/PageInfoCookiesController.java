@@ -45,7 +45,6 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
     private @Nullable Website mWebsite;
     private final boolean mIsSiteSettingsAvailable;
     private @Nullable Integer mDaysUntilExpirationForTesting;
-    private @Nullable Collection<Website> mRwsInfoForTesting;
 
     public PageInfoCookiesController(
             PageInfoMainController mainController,
@@ -95,18 +94,14 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
                         /* disableCookieDeletion= */ isDeletionDisabled(),
                         /* hostName= */ mMainController.getURL().getHost(),
                         /* daysUntilExpirationForTesting= */ mDaysUntilExpirationForTesting);
-        mSubPage.setParams(params, delegate);
+        mSubPage.setParams(params);
         mSubPage.updateState(mControlsState, mEnforcement, mExpiration);
 
         SiteSettingsCategory storageCategory =
                 SiteSettingsCategory.createFromType(
                         mMainController.getBrowserContext(), SiteSettingsCategory.Type.USE_STORAGE);
         new WebsitePermissionsFetcher(delegate.getSiteSettingsDelegate())
-                .fetchPreferencesForCategoryAndPopulateRwsInfo(
-                        storageCategory, this::onStorageFetched);
-        if (mRwsInfoForTesting != null) {
-            onStorageFetched(mRwsInfoForTesting);
-        }
+                .fetchPreferencesForCategory(storageCategory, this::onStorageFetched);
 
         return view;
     }
@@ -121,12 +116,6 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
                         address, result);
         if (mSubPage != null) {
             mSubPage.setStorageUsage(mWebsite.getTotalUsage());
-
-            boolean isRwsInfoShown =
-                    mSubPage.maybeShowRwsInfo(
-                            mWebsite.getRwsCookieInfo(), mWebsite.getAddress().getOrigin());
-            RecordHistogram.recordBooleanHistogram(
-                    "Security.PageInfo.Cookies.HasFPSInfo", isRwsInfoShown);
         }
     }
 
@@ -222,10 +211,6 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
 
     public void setControlsStateForTesting(@CookieControlsState int controlsState) {
         mControlsState = controlsState;
-    }
-
-    public void setRwsInfoForTesting(Collection<Website> rwsInfoForTesting) {
-        mRwsInfoForTesting = rwsInfoForTesting;
     }
 
     void destroy() {

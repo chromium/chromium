@@ -136,28 +136,6 @@ public class WebsiteGroupTest {
 
     @Test
     @SmallTest
-    public void testRwsInfo() {
-        var rwsInfo =
-                new RwsCookieInfo(
-                        "google.com",
-                        Arrays.asList(
-                                new Website(WebsiteAddress.create("maps.google.com"), null),
-                                new Website(WebsiteAddress.create("mail.google.com"), null),
-                                new Website(WebsiteAddress.create("docs.google.com"), null)));
-        Website origin1 = new Website(WebsiteAddress.create("maps.google.com"), null);
-        Website origin2 = new Website(WebsiteAddress.create("mail.google.com"), null);
-        Website origin3 = new Website(WebsiteAddress.create("docs.google.com"), null);
-        origin2.setRwsCookieInfo(rwsInfo);
-        WebsiteGroup group =
-                new WebsiteGroup(
-                        origin2.getAddress().getDomainAndRegistry(),
-                        Arrays.asList(origin1, origin2, origin3));
-
-        Assert.assertEquals(rwsInfo, group.getRwsInfo());
-    }
-
-    @Test
-    @SmallTest
     public void testCookieDeletionDisabled() {
         String origin1 = "https://google.com";
         String origin2 = "http://maps.google.com";

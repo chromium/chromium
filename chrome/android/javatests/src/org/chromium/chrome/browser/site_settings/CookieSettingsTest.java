@@ -30,11 +30,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -50,7 +47,6 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.RELATED_WEBSITE_SETS_UI})
 public class CookieSettingsTest {
     private static final int RENDER_TEST_REVISION = 4;
 
@@ -111,7 +107,7 @@ public class CookieSettingsTest {
 
     @Test
     @SmallTest
-    public void shouldDisplayBlockDescriptionAndRwsToggleWhenAuxButtonClicked() throws IOException {
+    public void shouldDisplayBlockDescriptionWhenAuxButtonClicked() throws IOException {
         onView(withId(R.id.block_third_party_with_aux)).perform(click());
         onView(
                         allOf(
@@ -125,10 +121,6 @@ public class CookieSettingsTest {
         onView(withText(R.string.settings_cookies_block_third_party_settings_block_bullet_two))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.settings_cookies_block_third_party_settings_block_bullet_three))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.website_settings_category_cookie_rws_toggle_title))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.website_settings_category_cookie_rws_toggle_description))
                 .check(matches(isDisplayed()));
     }
 
@@ -151,23 +143,6 @@ public class CookieSettingsTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    public void renderBlockDescriptionAndRwsToggleWhenAuxButtonClicked() throws IOException {
-        onView(withId(R.id.block_third_party_with_aux)).perform(click());
-        onView(
-                        allOf(
-                                withId(R.id.expand_arrow),
-                                isDescendantOfA(withId(R.id.block_third_party_with_aux))))
-                .perform(click());
-
-        mRenderTestRule.render(
-                getRootView(R.string.website_settings_category_cookie_block_third_party_subtitle),
-                "settings_cookie_rws_subpage_block");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    @DisableFeatures({ChromeFeatureList.RELATED_WEBSITE_SETS_UI})
     public void renderBlockDescriptionWhenAuxButtonClicked() throws IOException {
         onView(withId(R.id.block_third_party_with_aux)).perform(click());
         onView(

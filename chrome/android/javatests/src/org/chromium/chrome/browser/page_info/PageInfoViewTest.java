@@ -93,8 +93,6 @@ import org.chromium.chrome.browser.history.HistoryContentManager;
 import org.chromium.chrome.browser.history.StubbedHistoryProvider;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.privacy_sandbox.FakePrivacySandboxBridge;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingSuspiciousSiteDialogBridge;
 import org.chromium.chrome.browser.tab.Tab;
@@ -103,9 +101,6 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
-import org.chromium.components.browser_ui.site_settings.RwsCookieInfo;
-import org.chromium.components.browser_ui.site_settings.Website;
-import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
@@ -119,7 +114,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.page_info.PageInfoContainer;
 import org.chromium.components.page_info.PageInfoController;
-import org.chromium.components.page_info.PageInfoCookiesController;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -221,8 +215,6 @@ public class PageInfoViewTest {
             return parameters;
         }
     }
-
-    private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -367,38 +359,6 @@ public class PageInfoViewTest {
             RecyclerViewTestUtils.waitForView(recyclerView, 0);
             RecyclerViewTestUtils.waitForFrameCommitted(recyclerView);
         }
-    }
-
-    private RwsCookieInfo getRwsCookieInfo(String url) {
-        Website rwsOwnerWebsite =
-                new Website(
-                        WebsiteAddress.create(
-                                mTestServerRule.getServer().getURLWithHostName(url, "/")),
-                        null);
-        Website rwsMemberWebsite =
-                new Website(
-                        WebsiteAddress.create(
-                                mTestServerRule
-                                        .getServer()
-                                        .getURLWithHostName(("prefix." + url), "/")),
-                        null);
-        RwsCookieInfo rwsInfo =
-                new RwsCookieInfo(
-                        rwsOwnerWebsite.getAddress().getDomainAndRegistry(),
-                        List.of(rwsOwnerWebsite, rwsMemberWebsite));
-        rwsOwnerWebsite.setRwsCookieInfo(rwsInfo);
-        rwsMemberWebsite.setRwsCookieInfo(rwsInfo);
-        return rwsInfo;
-    }
-
-    private PageInfoCookiesController getCookiesController() {
-        PageInfoController controller = PageInfoController.getLastPageInfoController();
-        assertNotNull(controller);
-        return controller.getCookiesController();
-    }
-
-    private void setRwsInfo(String url) {
-        getCookiesController().setRwsInfoForTesting(getRwsCookieInfo(url).getMembers());
     }
 
     private void setThirdPartyCookieBlocking(@CookieControlsMode int value) {
@@ -562,9 +522,6 @@ public class PageInfoViewTest {
         // Choose a fixed, "random" port to create stable screenshots.
         mTestServerRule.setServerPort(424242);
         mTestServerRule.setServerUsesHttps(true);
-
-        mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
-        PrivacySandboxBridgeJni.setInstanceForTesting(mFakePrivacySandboxBridge);
     }
 
     @After
@@ -976,33 +933,6 @@ public class PageInfoViewTest {
         onView(withText("Location"))
                 .check(matches(hasSibling(withText("Allowed this time • Precise"))));
         onView(withText("Camera")).check(matches(hasSibling(withText("Allowed"))));
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    public void showRwsButtonWhenRwsEnabled() throws IOException {
-        String hostName = "example.com";
-        String url = mTestServerRule.getServer().getURLWithHostName(hostName, "/");
-        loadUrlAndOpenPageInfo(url);
-        setRwsInfo(hostName);
-        onView(withId(R.id.page_info_cookies_row)).perform(click());
-        waitForView(withText(R.string.cookie_info_rws_title), ViewElement.allowDisabledOption());
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage_RwsEnabled");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    public void showRwsButtonWhenRwsEnabledAndCurrentSetManaged() throws IOException {
-        mFakePrivacySandboxBridge.setIsRwsManaged(true);
-        String hostName = "example.com";
-        String url = mTestServerRule.getServer().getURLWithHostName(hostName, "/");
-        loadUrlAndOpenPageInfo(url);
-        setRwsInfo(hostName);
-        onView(withId(R.id.page_info_cookies_row)).perform(click());
-        waitForView(withText(R.string.cookie_info_rws_title), ViewElement.allowDisabledOption());
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage_RwsEnabledAndManaged");
     }
 
     /** Tests the cookies page of the PageInfo UI with the Cookie Controls UI enabled. */

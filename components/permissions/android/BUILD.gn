@@ -95,7 +95,6 @@ android_resources("java_resources") {
     "res/drawable/smartphone_24px.xml",
     "res/drawable/sync_24px.xml",
     "res/drawable/sync_disabled_24px.xml",
-    "res/drawable/tenancy.xml",
     "res/drawable/tv_24px.xml",
     "res/drawable/tv_off_24px.xml",
     "res/drawable/usb_off_24px.xml",

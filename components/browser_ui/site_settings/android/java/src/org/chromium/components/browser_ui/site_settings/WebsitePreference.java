@@ -136,18 +136,6 @@ class WebsitePreference extends ChromeImageViewPreference {
     }
 
     protected @Nullable String buildSummary() {
-        if (mSiteSettingsDelegate.isRelatedWebsiteSetsDataAccessEnabled()
-                && mSite.getRwsCookieInfo() != null) {
-            var rwsInfo = mSite.getRwsCookieInfo();
-            return getContext()
-                    .getResources()
-                    .getQuantityString(
-                            R.plurals.allsites_rws_list_summary,
-                            rwsInfo.getMembersCount(),
-                            Integer.toString(rwsInfo.getMembersCount()),
-                            rwsInfo.getOwner());
-        }
-
         if (hasSubPage()) {
             int numberSites =
                     assumeNonNull(

@@ -142,29 +142,6 @@ public interface SiteSettingsDelegate {
     /** Revoke the specified file system access grant. */
     void revokeFileSystemAccessGrant(String origin, String file);
 
-    /** Returns true if Related Website Sets data access is enabled. */
-    boolean isRelatedWebsiteSetsDataAccessEnabled();
-
-    /** Returns true if Related Website Sets data access is managed. */
-    boolean isRelatedWebsiteSetsDataAccessManaged();
-
-    /**
-     * @param origin to check.
-     * @return true if the origin is part of the managed RelatedWebsiteSet.
-     */
-    boolean isPartOfManagedRelatedWebsiteSet(String origin);
-
-    /** Enables/disables Related Website Sets data access. */
-    void setRelatedWebsiteSetsDataAccessEnabled(boolean enabled);
-
-    /**
-     * Gets the Related Website Sets owner hostname given a RWS member origin.
-     *
-     * @param memberOrigin RWS member origin.
-     * @return A string containing the owner hostname, null if it doesn't exist.
-     */
-    @Nullable String getRelatedWebsiteSetOwner(String memberOrigin);
-
     /**
      * Returns whether the current implementation of the delegate is able to launch the Clear
      * Browsing Data dialog in Settings.
@@ -189,9 +166,6 @@ public interface SiteSettingsDelegate {
 
     /** Returns whether the unused site permission autorevocation is enabled. */
     boolean isPermissionAutorevocationEnabled();
-
-    /** Returns whether the related website sets UI is enabled. */
-    boolean isRelatedWebsiteSetsUiEnabled();
 
     /** Enable/Disable unused site permission autorevocation. */
     void setPermissionAutorevocationEnabled(boolean isEnabled);

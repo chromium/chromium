@@ -146,7 +146,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
         }
         WebsitePermissionsFetcher fetcher =
                 new WebsitePermissionsFetcher(getSiteSettingsDelegate(), false);
-        fetcher.fetchPreferencesForCategoryAndPopulateRwsInfo(mCategory, new ResultsPopulator());
+        fetcher.fetchPreferencesForCategory(mCategory, new ResultsPopulator());
     }
 
     @Override

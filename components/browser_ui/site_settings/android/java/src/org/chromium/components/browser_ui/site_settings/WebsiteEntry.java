@@ -5,7 +5,6 @@
 package org.chromium.components.browser_ui.site_settings;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
 
@@ -36,23 +35,6 @@ public interface WebsiteEntry extends Serializable {
      *     search query.
      */
     boolean matches(String search);
-
-    /**
-     * @return whether the {@link WebsiteEntry} is a part of RWS (related website sets).
-     */
-    boolean isPartOfRws();
-
-    /**
-     * @return the owner of the RWS and null if the {@link WebsiteEntry} is not part of the RWS
-     *     (related website sets).
-     */
-    @Nullable String getRwsOwner();
-
-    /**
-     * @return the size of the RWS and 0 if the {@link WebsiteEntry} is not part of the RWS (related
-     *     website sets).
-     */
-    int getRwsSize();
 
     /**
      * Some Google-affiliated domains are not allowed to delete cookies for supervised accounts. If

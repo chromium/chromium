@@ -11,7 +11,6 @@ import static org.chromium.components.browser_ui.site_settings.WebsitePreference
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.StorageInfoClearedCallback;
@@ -50,7 +49,6 @@ public final class Website implements WebsiteEntry {
             new HashMap<>();
 
     private @Nullable LocalStorageInfo mLocalStorageInfo;
-    private @Nullable RwsCookieInfo mRwsCookieInfo;
     private @Nullable CookiesInfo mCookiesInfo;
     private @Nullable FileEditingInfo mFileEditingInfo;
     private double mZoomFactor;
@@ -452,14 +450,6 @@ public final class Website implements WebsiteEntry {
         return mLocalStorageInfo;
     }
 
-    public @Nullable RwsCookieInfo getRwsCookieInfo() {
-        return mRwsCookieInfo;
-    }
-
-    public void setRwsCookieInfo(RwsCookieInfo rwsCookieInfo) {
-        mRwsCookieInfo = rwsCookieInfo;
-    }
-
     public void addStorageInfo(StorageInfo info) {
         mStorageInfo.add(info);
     }
@@ -606,25 +596,6 @@ public final class Website implements WebsiteEntry {
     @Override
     public boolean matches(String search) {
         return getTitle().contains(search);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    @EnsuresNonNullIf({"mRwsCookieInfo"})
-    public boolean isPartOfRws() {
-        return mRwsCookieInfo != null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public @Nullable String getRwsOwner() {
-        return isPartOfRws() ? mRwsCookieInfo.getOwner() : null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int getRwsSize() {
-        return isPartOfRws() ? mRwsCookieInfo.getMembersCount() : 0;
     }
 
     @Override

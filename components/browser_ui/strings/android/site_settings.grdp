@@ -266,9 +266,6 @@
   <message name="IDS_WEBSITE_SETTINGS_USAGE_CATEGORY" desc="The headline above the usage stats (how much storage the site is using) on the website details page.">
     Usage
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_RELATED_SITES" desc="The headline above the related sites (Related Website Sets) on the website details page.">
-    Related sites
-  </message>
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_CATEGORY" desc="The headline above all the permissions on the website details page.">
     Permissions
   </message>
@@ -693,36 +690,11 @@
   <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_ADD_ALLOW_EXCEPTION_DESCRIPTION" desc="The description of a dialog box. Dialog to add a third-party cookie exception to allow a site">
     Allow a site to use third-party cookies
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_RADIO_SUB_LABEL_RWS_DISABLED" desc="This string appears as a sub label beneath the 'Block third-party cookies' label. It summarizes the result of choosing this option. A site you visit may rely on cookies for certain functionality, such as remembering your language preferences or maintaining a shopping cart. If the user chooses this option, some sites they visit may not work as designed.">
-    Features on some sites may not work
-  </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_SUBTITLE" desc="Text used as subtitle for the block third-party cookies subpage option in settings">
     Block third-party cookies:
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_ALLOW_THIRD_PARTY_SUBTITLE" desc="" translateable="false">
     Allow third-party cookies:
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_RWS_TOGGLE_TITLE" desc="Related Website Sets toggle title in the cookie site settings subpage.">
-    Allow related sites to see your activity in the group
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_RWS_TOGGLE_DESCRIPTION" desc="Related Website Sets toggle description in the cookie site settings subpage.">
-     A company can define a group of sites that can use cookies to share your activity in the group. This is off in Incognito.
-  </message>
-  <message name="IDS_ALLSITES_RWS_SUMMARY" desc="Related Website Sets cookie info, shown as site summary in the all sites settings page.">
-    {COUNT, plural,
-      =1 {<ph name="RWS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> site in <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group of sites that can see your activity in the group}
-      other {<ph name="RWS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> sites in <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group of sites that can see your activity in the group}}
-  </message>
-  <message name="IDS_ALLSITES_RWS_LIST_SUMMARY" desc="Related Website Sets cookie info, shown as site summary in the all sites list settings page.">
-    {COUNT, plural,
-      =1 {Cookies allowed for <ph name="RWS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph> site}
-      other {Cookies allowed for <ph name="RWS_MEMBERS_COUNT">%1$s<ex>9</ex></ph> <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph> sites}}
-  </message>
-  <message name="IDS_COOKIE_INFO_RWS_TITLE" desc="Related Website Sets title in the cookies info page.">
-      Related sites
-   </message>
-  <message name="IDS_COOKIE_INFO_RWS_SUMMARY" desc="Related Website Sets summary in the cookies info page.">
-    This site is in a group that can see your activity. The group is defined by <ph name="RWS_OWNER">%1$s<ex>google.com</ex></ph>
   </message>
 
   <!-- Desktop Site -->

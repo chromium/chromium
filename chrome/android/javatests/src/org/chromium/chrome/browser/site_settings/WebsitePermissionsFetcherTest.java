@@ -10,8 +10,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
 
-import static java.util.Map.entry;
-
 import android.util.Pair;
 
 import androidx.test.filters.SmallTest;
@@ -300,20 +298,6 @@ public class WebsitePermissionsFetcherTest {
         "http://www.battle.net/",
         "http://www.archive.org/",
     };
-
-    private static final Map<String, String> RWS_MEMBER_TO_OWNER_MAP =
-            Map.ofEntries(
-                    entry("https://google.de", "google.com"),
-                    entry("https://youtube.com", "google.com"),
-                    entry("https://google.ch", "google.com"),
-                    entry("https://google.it", "google.com"),
-                    entry("https://wikipedia.org", "wikipedia.org"),
-                    entry("https://chromium.org", "chromium.org"),
-                    entry("https://googlesource.org", "chromium.org"),
-                    entry("https://verizon.com", "verizon.com"),
-                    entry("https://verizonconnect.com", "verizon.com"),
-                    entry("https://aol.com", "verizon.com"),
-                    entry("https://vodafone.de", "vodafone.com"));
 
     private static final List<Integer> EMBEDDED_CONTENT_SETTINGS =
             Arrays.asList(ContentSettingsType.STORAGE_ACCESS);
@@ -1420,102 +1404,6 @@ public class WebsitePermissionsFetcherTest {
                         assertEquals(fakeObjectInfo, objectInfos.get(0));
                     });
         }
-    }
-
-    @Test
-    @SmallTest
-    public void testGetRelatedWebsiteSetsOwnersAndMergeInfoIntoWebsites() {
-        for (var entry : RWS_MEMBER_TO_OWNER_MAP.entrySet()) {
-            Mockito.doReturn(entry.getValue())
-                    .when(mSiteSettingsDelegate)
-                    .getRelatedWebsiteSetOwner(entry.getKey());
-        }
-
-        Mockito.doReturn(true).when(mSiteSettingsDelegate).isRelatedWebsiteSetsDataAccessEnabled();
-
-        var fetcher =
-                new WebsitePermissionsFetcher(
-                        mSiteSettingsDelegate, /* fetchSiteImportantInfo= */ false);
-        FakeWebsitePreferenceBridge websitePreferenceBridge = new FakeWebsitePreferenceBridge();
-        fetcher.setWebsitePreferenceBridgeForTesting(websitePreferenceBridge);
-
-        String googleDeOrigin = "https://google.de";
-        String googleItOrigin = "https://google.it";
-        String googleChOrigin = "https://google.ch";
-        String youtubeOrigin = "https://youtube.com";
-        String verizonConnectOrigin = "https://verizonconnect.com";
-
-        String aolOrigin = "https://aol.com";
-        String noInRwsOrigin = "https://unknow.ch";
-
-        Website expectedYoutubeWebsite =
-                new Website(WebsiteAddress.create(youtubeOrigin), WebsiteAddress.create(null));
-        Website expectedVerizonConnectWebsite =
-                new Website(
-                        WebsiteAddress.create(verizonConnectOrigin), WebsiteAddress.create(null));
-        Website expectedNoInRwsWebsite =
-                new Website(WebsiteAddress.create(noInRwsOrigin), WebsiteAddress.create(null));
-
-        // Use a list of origins and create content settings exceptions.
-        List<String> origins =
-                Arrays.asList(
-                        googleDeOrigin,
-                        googleItOrigin,
-                        googleChOrigin,
-                        youtubeOrigin,
-                        verizonConnectOrigin,
-                        aolOrigin,
-                        noInRwsOrigin);
-        // Adding content exceptions will generate websites data.
-        for (String origin : origins) {
-            websitePreferenceBridge.addContentSettingException(
-                    new ContentSettingException(
-                            ContentSettingsType.COOKIES,
-                            origin,
-                            ContentSetting.ALLOW,
-                            ProviderType.PREF_PROVIDER,
-                            /* isEmbargoed= */ false));
-        }
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    fetcher.fetchPreferencesForCategoryAndPopulateRwsInfo(
-                            SiteSettingsCategory.createFromType(
-                                    UNUSED_BROWSER_CONTEXT_HANDLE,
-                                    SiteSettingsCategory.Type.ALL_SITES),
-                            (sites) -> {
-                                // Verify the number of sites is the same of the origins with
-                                // exceptions.
-                                assertEquals(origins.size(), sites.size());
-
-                                ArrayList<Website> siteArray = new ArrayList<>(sites);
-                                for (Website site : siteArray) {
-                                    // Verify youtube.com has google.com as RWS owner which has 4
-                                    // members within the group of sites with data.
-                                    if (site.compareByAddressTo(expectedYoutubeWebsite) == 0) {
-                                        Assert.assertNotNull(site.getRwsCookieInfo());
-                                        assertEquals(
-                                                "google.com", site.getRwsCookieInfo().getOwner());
-                                        assertEquals(4, site.getRwsCookieInfo().getMembersCount());
-                                    }
-                                    // Verify verizonconnect.com has verizon.com as RWS owner which
-                                    // has 2 members within the group of sites with data.
-                                    if (site.compareByAddressTo(expectedVerizonConnectWebsite)
-                                            == 0) {
-                                        Assert.assertNotNull(site.getRwsCookieInfo());
-                                        assertEquals(
-                                                "verizon.com", site.getRwsCookieInfo().getOwner());
-                                        assertEquals(2, site.getRwsCookieInfo().getMembersCount());
-                                    }
-
-                                    // Verify a website with data which is not in a RWS has no RWS
-                                    // data set.
-                                    if (site.compareByAddressTo(expectedNoInRwsWebsite) == 0) {
-                                        assertEquals(null, site.getRwsCookieInfo());
-                                    }
-                                }
-                            });
-                });
     }
 
     @Test

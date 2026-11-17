@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.RadioGroup;
@@ -48,8 +47,6 @@ public class CookieSettingsPreference extends ContainedRadioButtonGroupPreferenc
 
         // Whether third-party blocking is enforced.
         public boolean cookieControlsModeEnforced;
-        // Whether Related Website Sets are enabled.
-        public boolean isRelatedWebsiteSetsDataAccessEnabled;
     }
 
     // Keeps the params that are applied to the UI if the params are set before the UI is ready.
@@ -76,7 +73,6 @@ public class CookieSettingsPreference extends ContainedRadioButtonGroupPreferenc
     public void setState(Params state) {
         mParams = state;
         if (mRadioGroup != null) {
-            setBlockThirdPartyCookieDescription(mParams);
             configureRadioButtons(mParams);
         }
         notifyChanged();
@@ -114,9 +110,6 @@ public class CookieSettingsPreference extends ContainedRadioButtonGroupPreferenc
             return;
         }
 
-        if (mParams != null) {
-            setBlockThirdPartyCookieDescription(mParams);
-        }
         callChangeListener(state);
     }
 
@@ -143,23 +136,8 @@ public class CookieSettingsPreference extends ContainedRadioButtonGroupPreferenc
                         assertNonNull(holder.findViewById(R.id.managed_disclaimer_text));
 
         if (mParams != null) {
-            setBlockThirdPartyCookieDescription(mParams);
             configureRadioButtons(mParams);
         }
-    }
-
-    private Resources getResources() {
-        return getContext().getResources();
-    }
-
-    private void setBlockThirdPartyCookieDescription(Params params) {
-        final int blockSublabelId =
-                params.isRelatedWebsiteSetsDataAccessEnabled
-                        ? R.string
-                                .settings_cookies_block_third_party_settings_block_sublabel_rws_enabled
-                        : R.string
-                                .website_settings_third_party_cookies_page_block_radio_sub_label_rws_disabled;
-        mBlockThirdPartyButton.setDescriptionText(getResources().getString(blockSublabelId));
     }
 
     public void setCookiesDetailsRequestedListener(OnCookiesDetailsRequested listener) {

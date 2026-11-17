@@ -4,7 +4,6 @@
 package org.chromium.components.page_info;
 
 import static org.chromium.build.NullUtil.assertNonNull;
-import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -22,7 +21,6 @@ import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -30,7 +28,6 @@ import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.settings.search.BaseSearchIndexProvider;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.ForwardingManagedPreferenceDelegate;
-import org.chromium.components.browser_ui.site_settings.RwsCookieInfo;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsState;
@@ -43,13 +40,11 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private static final String COOKIE_SUMMARY_PREFERENCE = "cookie_summary";
     private static final String COOKIE_SWITCH_PREFERENCE = "cookie_switch";
     private static final String COOKIE_IN_USE_PREFERENCE = "cookie_in_use";
-    private static final String RWS_IN_USE_PREFERENCE = "rws_in_use";
     private static final String TPC_TITLE = "tpc_title";
     private static final String TPC_SUMMARY = "tpc_summary";
 
     private ChromeSwitchPreference mCookieSwitch;
     private ChromeImageViewPreference mCookieInUse;
-    private ChromeBasePreference mRwsInUse;
     private TextMessagePreference mThirdPartyCookiesTitle;
     private TextMessagePreference mThirdPartyCookiesSummary;
     private TextMessagePreference mCookieSummary;
@@ -95,15 +90,11 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         // Remove this Preference if it is restored without SiteSettingsDelegate.
         if (!hasSiteSettingsDelegate()) {
             getParentFragmentManager().beginTransaction().remove(this).commit();
-            // Appease NullAway.
-            assumeNonNull(mRwsInUse);
             return;
         }
         SettingsUtils.addPreferencesFromResource(this, R.xml.page_info_cookie_preference);
         mCookieSwitch = assertNonNull(findPreference(COOKIE_SWITCH_PREFERENCE));
         mCookieInUse = assertNonNull(findPreference(COOKIE_IN_USE_PREFERENCE));
-        mRwsInUse = assertNonNull(findPreference(RWS_IN_USE_PREFERENCE));
-        mRwsInUse.setVisible(false);
         mCookieSummary = assertNonNull(findPreference(COOKIE_SUMMARY_PREFERENCE));
         mThirdPartyCookiesTitle = assertNonNull(findPreference(TPC_TITLE));
         mThirdPartyCookiesSummary = assertNonNull(findPreference(TPC_SUMMARY));
@@ -124,12 +115,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         }
     }
 
-    /**
-     * @param delegate {@link PageInfoControllerDelegate} for showing filtered RWS (Related Website
-     *     Sets) in settings.
-     */
     @Initializer
-    public void setParams(PageInfoCookiesViewParams params, PageInfoControllerDelegate delegate) {
+    public void setParams(PageInfoCookiesViewParams params) {
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
         mDaysUntilExpirationForTesting = params.daysUntilExpirationForTesting;
         mDeleteDisabled = params.disableCookieDeletion;
@@ -314,39 +301,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                 !mDeleteDisabled && mDataUsed
                         ? R.color.default_icon_color_accent1_tint_list
                         : R.color.default_icon_color_disabled);
-    }
-
-    /**
-     * Returns a boolean indicating if the RWS info has been shown or not.
-     *
-     * @param rwsInfo Related Website Sets info to show.
-     * @param currentOrigin PageInfo current origin.
-     * @return a boolean indicating if the RWS info has been shown or not.
-     */
-    public boolean maybeShowRwsInfo(@Nullable RwsCookieInfo rwsInfo, String currentOrigin) {
-        if (rwsInfo == null) {
-            return false;
-        }
-
-        assert getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
-                : "RWS access should be enabled to show info.";
-
-        mRwsInUse.setVisible(true);
-        mRwsInUse.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.tenancy));
-        mRwsInUse.setTitle(R.string.cookie_info_rws_title);
-        mRwsInUse.setSummary(
-                String.format(getString(R.string.cookie_info_rws_summary), rwsInfo.getOwner()));
-        mRwsInUse.setManagedPreferenceDelegate(
-                new ForwardingManagedPreferenceDelegate(
-                        getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
-                    @Override
-                    public boolean isPreferenceControlledByPolicy(Preference preference) {
-                        return getSiteSettingsDelegate()
-                                .isPartOfManagedRelatedWebsiteSet(currentOrigin);
-                    }
-                });
-
-        return true;
     }
 
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =

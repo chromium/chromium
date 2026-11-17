@@ -16,11 +16,6 @@ found in the LICENSE file.
         android:key="cookie_in_use"
         app:allowDividerBelow="true" />
 
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:key="rws_in_use"
-        app:allowDividerAbove="true"
-        app:allowDividerBelow="true" />
-
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="tpc_title"
         android:layout="@layout/page_info_title"

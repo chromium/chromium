@@ -45,9 +45,6 @@ found in the LICENSE file.
         android:negativeButtonText="@string/cancel"
         android:widgetLayout="@layout/clear_storage" />
     <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
-        android:key="related_sites_header"
-        android:title="@string/website_settings_related_sites" />
-    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="site_permissions"
         android:title="@string/website_settings_permissions_category" />
     <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory

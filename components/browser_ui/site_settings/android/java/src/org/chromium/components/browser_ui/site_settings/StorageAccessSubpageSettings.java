@@ -83,7 +83,7 @@ public class StorageAccessSubpageSettings extends BaseSiteSettingsFragment
         // Show the origin as the title straight away, so the page is not blank while fetching.
         mPageTitle.set(siteAddress.getTitle());
         new WebsitePermissionsFetcher(getSiteSettingsDelegate())
-                .fetchPreferencesForCategoryAndPopulateRwsInfo(
+                .fetchPreferencesForCategory(
                         SiteSettingsCategory.createFromType(
                                 getSiteSettingsDelegate().getBrowserContextHandle(),
                                 SiteSettingsCategory.Type.STORAGE_ACCESS),

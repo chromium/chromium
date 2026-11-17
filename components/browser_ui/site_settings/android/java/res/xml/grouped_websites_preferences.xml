@@ -23,9 +23,6 @@ found in the LICENSE file.
         android:negativeButtonText="@string/cancel"
         android:widgetLayout="@layout/clear_storage" />
     <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
-        android:key="related_sites"
-        android:title="@string/website_settings_related_sites" />
-    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:key="sites_in_group" />
     <org.chromium.components.browser_ui.settings.ButtonPreference
         android:key="reset_group_button"

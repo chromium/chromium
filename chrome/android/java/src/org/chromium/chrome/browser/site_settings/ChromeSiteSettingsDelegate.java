@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.FaviconLoader;
@@ -74,7 +73,6 @@ import java.util.Set;
 public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     private final Context mContext;
     private final Profile mProfile;
-    private final PrivacySandboxBridge mPrivacySandboxBridge;
     private @Nullable ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private @Nullable SnackbarManager mSnackbarManager;
     private @Nullable LargeIconBridge mLargeIconBridge;
@@ -82,7 +80,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     public ChromeSiteSettingsDelegate(Context context, Profile profile) {
         mContext = context;
         mProfile = profile;
-        mPrivacySandboxBridge = new PrivacySandboxBridge(profile);
     }
 
     @Override
@@ -321,31 +318,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public boolean isRelatedWebsiteSetsDataAccessEnabled() {
-        return mPrivacySandboxBridge.isRelatedWebsiteSetsDataAccessEnabled();
-    }
-
-    @Override
-    public boolean isRelatedWebsiteSetsDataAccessManaged() {
-        return mPrivacySandboxBridge.isRelatedWebsiteSetsDataAccessManaged();
-    }
-
-    @Override
-    public boolean isPartOfManagedRelatedWebsiteSet(String origin) {
-        return mPrivacySandboxBridge.isPartOfManagedRelatedWebsiteSet(origin);
-    }
-
-    @Override
-    public void setRelatedWebsiteSetsDataAccessEnabled(boolean enabled) {
-        mPrivacySandboxBridge.setRelatedWebsiteSetsDataAccessEnabled(enabled);
-    }
-
-    @Override
-    public @Nullable String getRelatedWebsiteSetOwner(String memberOrigin) {
-        return mPrivacySandboxBridge.getRelatedWebsiteSetOwner(memberOrigin);
-    }
-
-    @Override
     public boolean canLaunchClearBrowsingDataDialog() {
         return true;
     }
@@ -379,11 +351,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Override
     public boolean isPermissionAutorevocationEnabled() {
         return UserPrefs.get(mProfile).getBoolean(Pref.UNUSED_SITE_PERMISSIONS_REVOCATION_ENABLED);
-    }
-
-    @Override
-    public boolean isRelatedWebsiteSetsUiEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_WEBSITE_SETS_UI);
     }
 
     @Override

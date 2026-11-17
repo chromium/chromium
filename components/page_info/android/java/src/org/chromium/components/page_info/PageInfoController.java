@@ -569,11 +569,6 @@ public class PageInfoController
     }
 
     @VisibleForTesting
-    public @Nullable PageInfoCookiesController getCookiesController() {
-        return mCookiesController;
-    }
-
-    @VisibleForTesting
     public boolean isDialogShowing() {
         return mDialog != null;
     }

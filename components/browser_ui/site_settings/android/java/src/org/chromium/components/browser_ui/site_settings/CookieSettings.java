@@ -5,13 +5,11 @@
 package org.chromium.components.browser_ui.site_settings;
 
 import static org.chromium.build.NullUtil.assertNonNull;
-import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import androidx.preference.Preference;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -20,22 +18,15 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
-import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.settings.search.BaseSearchIndexProvider;
 import org.chromium.components.content_settings.CookieControlsMode;
-import org.chromium.components.prefs.PrefService;
-import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** A CookieSettingsPreference subpage. */
 @NullMarked
-public class CookieSettings extends BaseSiteSettingsFragment
-        implements EmbeddableSettingsPage, Preference.OnPreferenceChangeListener {
-    public static final String ALLOW_RWS_COOKIE_PREFERENCE = "allow_rws";
+public class CookieSettings extends BaseSiteSettingsFragment implements EmbeddableSettingsPage {
     public static final String SUBTITLE = "subtitle";
     public static final String BULLET_ONE = "bullet_one";
     public static final String BULLET_TWO = "bullet_two";
@@ -44,7 +35,6 @@ public class CookieSettings extends BaseSiteSettingsFragment
     public static final String EXTRA_COOKIE_PAGE_STATE = "cookie_page_state";
 
     // UI Elements.
-    private ChromeSwitchPreference mAllowRwsPreference;
     private TextMessagePreference mSubtitle;
     private TextMessagePreference mBulletOne;
     private TextMessagePreference mBulletTwo;
@@ -63,15 +53,10 @@ public class CookieSettings extends BaseSiteSettingsFragment
         mBulletOne = (TextMessagePreference) assertNonNull(findPreference(BULLET_ONE));
         mBulletTwo = (TextMessagePreference) assertNonNull(findPreference(BULLET_TWO));
         mBulletThree = (TextMessagePreference) assertNonNull(findPreference(BULLET_THREE));
-        mAllowRwsPreference =
-                (ChromeSwitchPreference) assertNonNull(findPreference(ALLOW_RWS_COOKIE_PREFERENCE));
 
         @CookieControlsMode
         int pageState = getArguments().getInt(CookieSettings.EXTRA_COOKIE_PAGE_STATE);
         if (pageState == CookieControlsMode.BLOCK_THIRD_PARTY) {
-            setupAllowRwsPreference();
-            mAllowRwsPreference.setVisible(
-                    getSiteSettingsDelegate().isRelatedWebsiteSetsUiEnabled());
             mSubtitle.setTitle(
                     R.string.website_settings_category_cookie_block_third_party_subtitle);
             int bulletOneId = R.string.settings_cookies_block_third_party_settings_block_bullet_one;
@@ -97,7 +82,6 @@ public class CookieSettings extends BaseSiteSettingsFragment
             mBulletTwo.setSummary(getContext().getString(bulletTwoId));
             mBulletTwo.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.web_24));
             mBulletThree.setSummary(getContext().getString(bulletThreeId));
-            mAllowRwsPreference.setVisible(false);
         } else {
             assert false
                     : "Unexpected cookies subpage state: "
@@ -124,55 +108,6 @@ public class CookieSettings extends BaseSiteSettingsFragment
     @Override
     public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
-    }
-
-    private void setupAllowRwsPreference() {
-        var managedPreferenceDelegate =
-                new RwsCookieSettingsManagedPreferenceDelegate(
-                        getSiteSettingsDelegate().getManagedPreferenceDelegate());
-        mAllowRwsPreference.setManagedPreferenceDelegate(managedPreferenceDelegate);
-        mAllowRwsPreference.setChecked(
-                getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled());
-
-        if (!isBlockThirdPartyCookieSelected()) {
-            mAllowRwsPreference.setEnabled(false);
-        }
-        mAllowRwsPreference.setOnPreferenceChangeListener(this);
-    }
-
-    private boolean isBlockThirdPartyCookieSelected() {
-        BrowserContextHandle context = getSiteSettingsDelegate().getBrowserContextHandle();
-        PrefService prefService = UserPrefs.get(context);
-        return prefService.getInteger(COOKIE_CONTROLS_MODE) == CookieControlsMode.BLOCK_THIRD_PARTY;
-    }
-
-    @Override
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
-        String key = preference.getKey();
-        if (ALLOW_RWS_COOKIE_PREFERENCE.equals(key)) {
-            getSiteSettingsDelegate().setRelatedWebsiteSetsDataAccessEnabled((boolean) newValue);
-        } else {
-            assert false : "Should not be reached";
-        }
-        return true;
-    }
-
-    private class RwsCookieSettingsManagedPreferenceDelegate
-            extends ForwardingManagedPreferenceDelegate {
-        RwsCookieSettingsManagedPreferenceDelegate(ManagedPreferenceDelegate base) {
-            super(base);
-        }
-
-        @Override
-        public boolean isPreferenceControlledByPolicy(Preference preference) {
-            String key = preference.getKey();
-            if (ALLOW_RWS_COOKIE_PREFERENCE.equals(key)) {
-                return getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessManaged();
-            } else {
-                assert false : "Should not be reached";
-            }
-            return false;
-        }
     }
 
     @Override

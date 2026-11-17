@@ -1514,8 +1514,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         CookieSettingsPreference.Params params = new CookieSettingsPreference.Params();
         params.cookieControlsMode = getCookieControlsMode();
         params.cookieControlsModeEnforced = mCategory.isManaged();
-        params.isRelatedWebsiteSetsDataAccessEnabled =
-                getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled();
         cookieToggle.setState(params);
     }
 

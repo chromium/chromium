@@ -4,9 +4,7 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
-import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
@@ -29,8 +27,6 @@ public class WebsiteGroup implements WebsiteEntry {
     private final long mTotalUsage;
     // Total number of cookies associated with the websites.
     private final int mCookiesCount;
-    // Related Website Sets info relative to the eTLD+1.
-    private @Nullable RwsCookieInfo mRwsInfo;
 
     /**
      * Groups the websites by eTLD+1.
@@ -90,11 +86,6 @@ public class WebsiteGroup implements WebsiteEntry {
         long totalUsage = 0;
         for (Website website : websites) {
             totalUsage += website.getTotalUsage();
-            // If there's more than 1 website with RWS info in the group it's fine to override it
-            // since websites are grouped by eTLD+1, and RWS info are at eTLD+1 level as well.
-            if (website.getRwsCookieInfo() != null) {
-                mRwsInfo = website.getRwsCookieInfo();
-            }
         }
         mTotalUsage = totalUsage;
 
@@ -141,25 +132,6 @@ public class WebsiteGroup implements WebsiteEntry {
         return false;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    @EnsuresNonNullIf({"mRwsInfo"})
-    public boolean isPartOfRws() {
-        return mRwsInfo != null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public @Nullable String getRwsOwner() {
-        return isPartOfRws() ? mRwsInfo.getOwner() : null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int getRwsSize() {
-        return isPartOfRws() ? mRwsInfo.getMembersCount() : 0;
-    }
-
     /**
      * Some Google-affiliated domains are not allowed to delete cookies for supervised accounts.
      *
@@ -175,10 +147,6 @@ public class WebsiteGroup implements WebsiteEntry {
             }
         }
         return true;
-    }
-
-    public @Nullable RwsCookieInfo getRwsInfo() {
-        return mRwsInfo;
     }
 
     @Override
