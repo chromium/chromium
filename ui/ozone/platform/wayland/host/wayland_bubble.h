@@ -5,7 +5,10 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_BUBBLE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_BUBBLE_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
@@ -36,8 +39,7 @@ class WaylandBubble final : public WaylandWindow {
   // WaylandWindow overrides:
   void UpdateWindowScale(bool update_bounds) override;
   void OnSequencePoint(int64_t seq) override;
-  // TODO(crbug.com/329145822): this needs to apply the offset that is requested
-  // by SetBoundsInDIP.
+  void OnFrameCommitted(int64_t seq) override;
   void AckConfigure(uint32_t serial) override {}
   base::WeakPtr<WaylandWindow> AsWeakPtr() override;
   bool IsActive() const override;
@@ -53,9 +55,28 @@ class WaylandBubble final : public WaylandWindow {
   // Creates (if necessary) and shows a subsurface window in the parent.
   void AddToParentAsSubsurface();
 
-  void SetSubsurfacePosition();
+  // Sends the position of `latched_state()` relative to the parent if it
+  // differs from the last position sent. If `sync_with_frame` is true, the
+  // frame being played back is about to be committed: the subsurface is
+  // switched to synchronized mode so that the new position and that frame are
+  // applied together by the parent commit in OnFrameCommitted(). Otherwise,
+  // the parent is committed right away.
+  void UpdateSubsurfacePosition(bool sync_with_frame);
+
+  // Commits the parent to apply a position sent by
+  // UpdateSubsurfacePosition(/*sync_with_frame=*/true), and switches the
+  // subsurface back to desynchronized mode.
+  void CommitPendingSubsurfacePosition();
 
   wl::Object<wl_subsurface> subsurface_;
+
+  // The last position sent with wl_subsurface.set_position, in the parent's
+  // Wayland DIP coordinates.
+  std::optional<gfx::Point> subsurface_position_;
+
+  // Whether `subsurface_` is in synchronized mode until the parent commits
+  // a position sent along with a frame.
+  bool position_pending_parent_commit_ = false;
 
   // Copied from Widget::InitParams::activatable, indicates whether this bubble
   // take activation from the parent window.

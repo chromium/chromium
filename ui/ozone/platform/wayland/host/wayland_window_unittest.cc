@@ -7516,6 +7516,218 @@ TEST_P(WaylandWindowTest,
   });
 }
 
+// Verifies that a WaylandBubble that is moved and resized at the same time (as
+// e.g. auto-resizing extension popups anchored at their right edge are) applies
+// the new subsurface position together with the frame of the new size, rather
+// than right away, so that the bubble doesn't jump. See crbug.com/397721334.
+TEST_P(WaylandWindowTest, WaylandBubblePositionAppliedWithResizedFrame) {
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> bubble_delegate(
+      connection_.get());
+  auto wayland_bubble = CreateWaylandWindowWithParams(
+      PlatformWindowType::kBubble, gfx::Rect(100, 10, 50, 50), &bubble_delegate,
+      window_->GetWidget());
+  ASSERT_TRUE(wayland_bubble);
+  const uint32_t parent_surface_id = window_->root_surface()->get_surface_id();
+  const uint32_t bubble_surface_id =
+      wayland_bubble->root_surface()->get_surface_id();
+  const gfx::Point parent_origin = window_->GetBoundsInDIP().origin();
+
+  // Initialize `buffer_manager_gpu_` once; calling `CreateTestShmBuffer()`
+  // repeatedly rebinds the mojo interface and triggers `OnChannelDestroyed()`
+  // empty-frame commits on every open window.
+  ASSERT_TRUE(
+      CreateTestShmBuffer(gfx::Size(1, 1), wayland_bubble->root_surface()));
+  auto create_shm_buffer = [&](const gfx::Size& size, WaylandSurface* surface) {
+    const uint32_t buffer_id = ++buffer_id_gen_;
+    buffer_manager_gpu_->CreateShmBasedBuffer(
+        MakeFD(), size.width() * size.height() * 4, size, buffer_id);
+    WaylandBufferHandle* handle = nullptr;
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      handle = connection_->buffer_manager_host()->EnsureBufferHandle(
+          surface, buffer_id);
+      return handle != nullptr;
+    }));
+    return handle;
+  };
+
+  auto commit_frame = [&](const gfx::Size& size, int64_t viz_seq) {
+    auto* buffer = create_shm_buffer(size, wayland_bubble->root_surface());
+    ASSERT_TRUE(buffer);
+    std::vector<wl::WaylandOverlayConfig> overlays;
+    wl::WaylandOverlayConfig root_config;
+    root_config.z_order = INT32_MIN;
+    root_config.buffer_id = buffer->id();
+    root_config.bounds_rect = gfx::RectF(gfx::SizeF(size));
+    root_config.damage_region = gfx::Rect(size);
+    overlays.push_back(std::move(root_config));
+    wayland_bubble->CommitOverlays(++frame_id_gen_, gfx::FrameData(viz_seq),
+                                   overlays);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return wayland_bubble->root_surface()->buffer_id() == buffer->id();
+    }));
+    PostToServerAndWait(
+        [bubble_surface_id](wl::TestWaylandServerThread* server) {
+          server->GetObject<wl::MockSurface>(bubble_surface_id)
+              ->SendFrameCallback();
+        });
+    WaylandTestBase::SyncDisplay();
+  };
+  auto expect_position = [&](const gfx::Point& position) {
+    const gfx::Point position_in_parent =
+        position - parent_origin.OffsetFromOrigin();
+    PostToServerAndWait([bubble_surface_id, position_in_parent](
+                            wl::TestWaylandServerThread* server) {
+      auto* bubble_surface =
+          server->GetObject<wl::MockSurface>(bubble_surface_id);
+      ASSERT_TRUE(bubble_surface);
+      ASSERT_TRUE(bubble_surface->sub_surface());
+      EXPECT_EQ(bubble_surface->sub_surface()->position(),
+                gfx::PointF(position_in_parent));
+      EXPECT_FALSE(bubble_surface->sub_surface()->sync());
+    });
+  };
+
+  commit_frame(gfx::Size(50, 50), /*viz_seq=*/-1);
+  expect_position({100, 10});
+
+  // Moving without resizing needs no new frame, so the position is applied
+  // right away.
+  wayland_bubble->SetBoundsInDIP(gfx::Rect(90, 10, 50, 50));
+  connection_->Flush();
+  expect_position({90, 10});
+
+  // Resizing without moving must neither send set_position nor commit the
+  // parent.
+  PostToServerAndWait([parent_surface_id,
+                       bubble_surface_id](wl::TestWaylandServerThread* server) {
+    auto* parent_surface =
+        server->GetObject<wl::MockSurface>(parent_surface_id);
+    auto* bubble_surface =
+        server->GetObject<wl::MockSurface>(bubble_surface_id);
+    ASSERT_TRUE(parent_surface);
+    ASSERT_TRUE(bubble_surface);
+    ASSERT_TRUE(bubble_surface->sub_surface());
+    EXPECT_CALL(*bubble_surface->sub_surface(), SetPosition(_, _)).Times(0);
+    EXPECT_CALL(*parent_surface, Commit()).Times(0);
+  });
+  wayland_bubble->SetBoundsInDIP(gfx::Rect(90, 10, 50, 60));
+  const int64_t size_only_viz_seq = bubble_delegate.viz_seq();
+  connection_->Flush();
+  commit_frame(gfx::Size(50, 60), size_only_viz_seq);
+  PostToServerAndWait([parent_surface_id,
+                       bubble_surface_id](wl::TestWaylandServerThread* server) {
+    auto* parent_surface =
+        server->GetObject<wl::MockSurface>(parent_surface_id);
+    auto* bubble_surface =
+        server->GetObject<wl::MockSurface>(bubble_surface_id);
+    ASSERT_TRUE(parent_surface);
+    ASSERT_TRUE(bubble_surface);
+    testing::Mock::VerifyAndClearExpectations(parent_surface);
+    testing::Mock::VerifyAndClearExpectations(bubble_surface->sub_surface());
+  });
+  expect_position({90, 10});
+
+  // Growing to the left keeps the old position until the resized frame is
+  // played back.
+  wayland_bubble->SetBoundsInDIP(gfx::Rect(60, 10, 80, 70));
+  const int64_t resize_viz_seq = bubble_delegate.viz_seq();
+  connection_->Flush();
+  expect_position({90, 10});
+
+  // The new position, buffer attach, bubble commit, and parent commit must all
+  // occur in order while the subsurface is synchronized, before switching back
+  // to desynchronized mode.
+  PostToServerAndWait([parent_surface_id,
+                       bubble_surface_id](wl::TestWaylandServerThread* server) {
+    auto* parent_surface =
+        server->GetObject<wl::MockSurface>(parent_surface_id);
+    auto* bubble_surface =
+        server->GetObject<wl::MockSurface>(bubble_surface_id);
+    ASSERT_TRUE(parent_surface);
+    ASSERT_TRUE(bubble_surface);
+    auto* sub_surface = bubble_surface->sub_surface();
+    ASSERT_TRUE(sub_surface);
+    testing::InSequence seq;
+    EXPECT_CALL(*sub_surface, SetPosition(_, _)).WillOnce([sub_surface]() {
+      EXPECT_TRUE(sub_surface->sync());
+    });
+    EXPECT_CALL(*bubble_surface, Attach(_, _, _)).WillOnce([sub_surface]() {
+      EXPECT_TRUE(sub_surface->sync());
+    });
+    EXPECT_CALL(*bubble_surface, Commit()).WillOnce([sub_surface]() {
+      EXPECT_TRUE(sub_surface->sync());
+    });
+    EXPECT_CALL(*parent_surface, Commit()).WillOnce([sub_surface]() {
+      EXPECT_TRUE(sub_surface->sync());
+    });
+  });
+  commit_frame(gfx::Size(80, 70), resize_viz_seq);
+  PostToServerAndWait([parent_surface_id,
+                       bubble_surface_id](wl::TestWaylandServerThread* server) {
+    auto* parent_surface =
+        server->GetObject<wl::MockSurface>(parent_surface_id);
+    auto* bubble_surface =
+        server->GetObject<wl::MockSurface>(bubble_surface_id);
+    ASSERT_TRUE(parent_surface);
+    ASSERT_TRUE(bubble_surface);
+    testing::Mock::VerifyAndClearExpectations(parent_surface);
+    testing::Mock::VerifyAndClearExpectations(bubble_surface);
+    testing::Mock::VerifyAndClearExpectations(bubble_surface->sub_surface());
+  });
+  expect_position({60, 10});
+
+  // When a bubble's parent has not been configured yet, a pending frame is
+  // discarded without latching state or leaving the subsurface synchronized.
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> unconfigured_delegate(
+      connection_.get());
+  PlatformWindowInitProperties parent_props(gfx::Rect(0, 0, 200, 200));
+  parent_props.type = PlatformWindowType::kWindow;
+  auto unconfigured_parent = unconfigured_delegate.CreateWaylandWindow(
+      connection_.get(), std::move(parent_props));
+  ASSERT_TRUE(unconfigured_parent);
+  unconfigured_parent->Show(false);
+  ASSERT_FALSE(unconfigured_parent->IsSurfaceConfigured());
+
+  testing::NiceMock<MockWaylandPlatformWindowDelegate>
+      unconfigured_bubble_delegate(connection_.get());
+  auto unconfigured_bubble = CreateWaylandWindowWithParams(
+      PlatformWindowType::kBubble, gfx::Rect(40, 10, 50, 50),
+      &unconfigured_bubble_delegate, unconfigured_parent->GetWidget());
+  ASSERT_TRUE(unconfigured_bubble);
+  ASSERT_FALSE(unconfigured_bubble->IsSurfaceConfigured());
+  const uint32_t unconfigured_bubble_surface_id =
+      unconfigured_bubble->root_surface()->get_surface_id();
+
+  unconfigured_bubble->SetBoundsInDIP(gfx::Rect(20, 10, 80, 50));
+  const int64_t unconfigured_viz_seq = unconfigured_bubble_delegate.viz_seq();
+  {
+    auto* buffer = create_shm_buffer(gfx::Size(80, 50),
+                                     unconfigured_bubble->root_surface());
+    ASSERT_TRUE(buffer);
+    std::vector<wl::WaylandOverlayConfig> overlays;
+    wl::WaylandOverlayConfig root_config;
+    root_config.z_order = INT32_MIN;
+    root_config.buffer_id = buffer->id();
+    root_config.bounds_rect = gfx::RectF(80, 50);
+    root_config.damage_region = gfx::Rect(80, 50);
+    overlays.push_back(std::move(root_config));
+    unconfigured_bubble->CommitOverlays(
+        ++frame_id_gen_, gfx::FrameData(unconfigured_viz_seq), overlays);
+    WaylandTestBase::SyncDisplay();
+  }
+  EXPECT_EQ(unconfigured_bubble->latched_state().bounds_dip,
+            gfx::Rect(40, 10, 50, 50));
+  PostToServerAndWait([unconfigured_bubble_surface_id](
+                          wl::TestWaylandServerThread* server) {
+    auto* bubble_surface =
+        server->GetObject<wl::MockSurface>(unconfigured_bubble_surface_id);
+    ASSERT_TRUE(bubble_surface);
+    ASSERT_TRUE(bubble_surface->sub_surface());
+    EXPECT_EQ(bubble_surface->sub_surface()->position(), gfx::PointF(40, 10));
+    EXPECT_FALSE(bubble_surface->sub_surface()->sync());
+  });
+}
+
 TEST_P(WaylandWindowTest, WaylandBubbleDirectDestroyGpuCrashAndNestedParent) {
   testing::NiceMock<MockWaylandPlatformWindowDelegate> bubble_delegate(
       connection_.get());

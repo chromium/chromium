@@ -62,6 +62,8 @@ void WaylandBubble::Hide() {
   }
 
   wl::Object<wl_subsurface> subsurface = std::move(subsurface_);
+  subsurface_position_.reset();
+  position_pending_parent_commit_ = false;
   if (parent_window()) {
     subsurface = parent_window()->RemoveChildSubsurface(GetWidget(), nullptr,
                                                         std::move(subsurface));
@@ -86,17 +88,18 @@ void WaylandBubble::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
   // The toplevel parent and bubble are submitted in separate compositor frames.
   // There is currently no guarantee that the 2 compositor frames arrive
   // together atomically.
-  auto old_bounds_dip = GetBoundsInDIP();
   auto weak_this = AsWeakPtr();
   WaylandWindow::SetBoundsInDIP(bounds_dip);
   if (!weak_this) {
     return;
   }
 
-  // TODO(crbug.com/329145822): Don't apply position immediately here, wait for
-  // ackconfigure, otherwise it might jitter if offset changes.
-  if (subsurface_ && old_bounds_dip != bounds_dip) {
-    SetSubsurfacePosition();
+  // A size change is latched once a frame of the new size is played back, at
+  // which point OnSequencePoint() sends the new position along with that frame.
+  // Changes that need no new frame (e.g. only the origin changes) are latched
+  // immediately, so send their position now.
+  if (subsurface_) {
+    UpdateSubsurfacePosition(/*sync_with_frame=*/false);
   }
 }
 
@@ -136,17 +139,30 @@ void WaylandBubble::UpdateWindowScale(bool update_bounds) {
     return;
   }
   if (subsurface_) {
-    SetSubsurfacePosition();
+    UpdateSubsurfacePosition(/*sync_with_frame=*/false);
   }
 }
 
 void WaylandBubble::OnSequencePoint(int64_t seq) {
-  if (!subsurface_) {
+  if (!IsSurfaceConfigured()) {
     return;
   }
 
+  auto weak_this = AsWeakPtr();
   ProcessSequencePoint(seq);
+  if (!weak_this) {
+    return;
+  }
   MaybeApplyLatestStateRequest(/*force=*/false);
+  if (!weak_this || !IsSurfaceConfigured()) {
+    return;
+  }
+  UpdateSubsurfacePosition(/*sync_with_frame=*/true);
+}
+
+void WaylandBubble::OnFrameCommitted(int64_t seq) {
+  WaylandWindow::OnFrameCommitted(seq);
+  CommitPendingSubsurfacePosition();
 }
 
 base::WeakPtr<WaylandWindow> WaylandBubble::AsWeakPtr() {
@@ -179,7 +195,9 @@ void WaylandBubble::AddToParentAsSubsurface() {
       root_surface()->CreateSubsurface(parent_window()->root_surface());
   CHECK(subsurface_, base::NotFatalUntil::M163);
 
-  SetSubsurfacePosition();
+  subsurface_position_.reset();
+  position_pending_parent_commit_ = false;
+  UpdateSubsurfacePosition(/*sync_with_frame=*/false);
 
   // The associaded widget of this platform_window has a ui::Compositor and
   // receives BeginFrames separately from its parent widget. When this window
@@ -199,17 +217,62 @@ void WaylandBubble::AddToParentAsSubsurface() {
   connection()->window_manager()->NotifyWindowConfigured(this);
 }
 
-void WaylandBubble::SetSubsurfacePosition() {
-  // bounds_dip here are in Chromium UI coordinates space (i.e ui_scale'd), as
-  // they have just been provided by upper UI layers. Since they are going to be
-  // used to issue Wayland requests, they must be reverse-transformed to Wayland
-  // DIP coordinates space.
-  const auto bounds_in_parent = gfx::ScaleToEnclosingRectIgnoringError(
-      wl::TranslateWindowBoundsToParentDIP(this, parent_window()),
-      applied_state().ui_scale);
-  wl_subsurface_set_position(subsurface_.get(), bounds_in_parent.x(),
-                             bounds_in_parent.y());
-  parent_window()->root_surface()->Commit();
+void WaylandBubble::UpdateSubsurfacePosition(bool sync_with_frame) {
+  CHECK(subsurface_);
+  if (!parent_window() || !parent_window()->root_surface()) {
+    position_pending_parent_commit_ = false;
+    return;
+  }
+  // bounds_dip here are in Chromium UI coordinates space (i.e ui_scale'd).
+  // Since they are going to be used to issue Wayland requests, they must be
+  // reverse-transformed to Wayland DIP coordinates space. Use the latched
+  // state, which matches the frame the compositor shows (or is about to).
+  const auto& state = latched_state();
+  const gfx::Point position =
+      gfx::ScaleToEnclosingRectIgnoringError(
+          wl::TranslateBoundsToParentCoordinates(
+              state.bounds_dip, parent_window()->GetBoundsInDIP()),
+          state.ui_scale)
+          .origin();
+  if (position == subsurface_position_) {
+    return;
+  }
+  subsurface_position_ = position;
+
+  // wl_subsurface.set_position is applied on the next parent commit. In
+  // desynchronized mode, the bubble's own commits apply immediately, so the
+  // new position and the frame with the new bounds would show up separately,
+  // making the bubble jump for a frame. Synchronized mode caches the bubble's
+  // next commit so the parent commit applies both. If PlayBackFrame() discards
+  // this frame before committing, `subsurface_` stays synchronized until
+  // OnFrameCommitted(), UpdateSubsurfacePosition(false), or Hide() runs.
+  if (sync_with_frame && !position_pending_parent_commit_) {
+    wl_subsurface_set_sync(subsurface_.get());
+    position_pending_parent_commit_ = true;
+  }
+  wl_subsurface_set_position(subsurface_.get(), position.x(), position.y());
+  if (!sync_with_frame) {
+    if (position_pending_parent_commit_) {
+      CommitPendingSubsurfacePosition();
+    } else {
+      parent_window()->root_surface()->Commit();
+    }
+  }
+}
+
+void WaylandBubble::CommitPendingSubsurfacePosition() {
+  if (!position_pending_parent_commit_) {
+    return;
+  }
+  position_pending_parent_commit_ = false;
+  if (!parent_window() || !parent_window()->root_surface()) {
+    return;
+  }
+  parent_window()->root_surface()->Commit(/*flush=*/false);
+  // Any state cached in synchronized mode is applied immediately when
+  // switching back to desynchronized mode.
+  wl_subsurface_set_desync(subsurface_.get());
+  connection()->Flush();
 }
 
 bool WaylandBubble::OnInitialize(PlatformWindowInitProperties properties,
