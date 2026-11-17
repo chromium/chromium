@@ -3259,6 +3259,7 @@ test("content_unittests") {
       "../app/locale_posix_unittest.cc",
       "../browser/child_thread_type_switcher_linux_unittest.cc",
       "../child/sandboxed_process_thread_type_handler_unittest.cc",
+      "../common/zygote/zygote_communication_linux_unittest.cc",
     ]
   }
 
@@ -3531,6 +3532,7 @@ test("content_unittests") {
     deps += [
       "//components/crash/content/browser/error_reporting",
       "//content/app:locale",
+      "//content/common:sandbox_support_linux",
       "//sandbox/linux:sandbox_services",
       "//sandbox/linux:sandbox_services_headers",
     ]

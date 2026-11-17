@@ -117,7 +117,12 @@ pid_t ZygoteCommunication::ForkRequest(
 
   base::Pickle pickle;
   int raw_socks[2];
-  PCHECK(0 == socketpair(AF_UNIX, SOCK_SEQPACKET, 0, raw_socks));
+  if (socketpair(AF_UNIX, SOCK_SEQPACKET, 0, raw_socks) != 0) {
+    // This can fail with EMFILE when the browser has run out of file
+    // descriptors. Fail this launch rather than crashing the browser.
+    PLOG(ERROR) << "socketpair";
+    return base::kNullProcessHandle;
+  }
   base::ScopedFD my_sock(raw_socks[0]);
   base::ScopedFD peer_sock(raw_socks[1]);
   CHECK(base::UnixDomainSocket::EnableReceiveProcessId(my_sock.get()));
