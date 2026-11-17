@@ -70,7 +70,6 @@ static_library("cloud_upload") {
     "//ash/strings",
     "//ash/webui/common:trusted_types_util",
     "//base:i18n",
-    "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/arc/fileapi",

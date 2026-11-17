@@ -69,8 +69,8 @@ source_set("request_file_system_dialog") {
   ]
 
   deps = [
+    "//ash/strings",
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/browser/ui/dialogs:browser_dialogs",
     "//content/public/browser",
     "//ui/base",

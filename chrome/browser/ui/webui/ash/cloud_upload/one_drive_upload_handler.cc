@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
-#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"

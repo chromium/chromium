@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/office_web_app_resources.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"

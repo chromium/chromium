@@ -22,7 +22,7 @@ source_set("notifications") {
   ]
 
   deps = [
-    "//chrome/app:generated_resources",
+    "//ash/strings",
     "//chrome/browser/ui/views:layout_provider",
     "//ui/events",
     "//ui/gfx",

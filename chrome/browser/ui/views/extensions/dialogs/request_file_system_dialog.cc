@@ -6,9 +6,9 @@
 
 #include <cstdlib>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
-#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"

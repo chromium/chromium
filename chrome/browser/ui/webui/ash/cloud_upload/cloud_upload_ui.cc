@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/cloud_upload_resources.h"
 #include "chrome/grit/cloud_upload_resources_map.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/url_data_source.h"

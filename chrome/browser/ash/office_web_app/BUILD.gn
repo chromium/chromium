@@ -11,7 +11,7 @@ source_set("office_web_app") {
   ]
 
   deps = [
-    "//chrome/app:generated_resources_grit",
+    "//ash/strings",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/resources:office_web_app_resources",
     "//chrome/browser/web_applications",
