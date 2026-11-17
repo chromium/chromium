@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check_deref.h"
 #include "base/containers/extend.h"
 #include "base/functional/bind.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/multi_capture_notification_details_view.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/webapps/common/web_app_id.h"

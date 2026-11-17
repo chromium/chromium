@@ -2117,57 +2117,11 @@ are declared in tools/grit/grit_args.gni.
         The server may be unreachable. Try again later.
       </message>
 
-      <message name="IDS_DOWNLOAD_NOTIFICATION_LABEL_OPEN_WHEN_COMPLETE"
-               desc="Download notifications: Label for 'Open when download is complete' action button on notification">
-        Open when done
-      </message>
-      <message name="IDS_DOWNLOAD_NOTIFICATION_LABEL_OPEN"
-               desc="Download notifications: Label for 'Open download' action button on notification">
-        Open
-      </message>
       <!-- Download Shelf Items -->
       <message name="IDS_DOWNLOAD_STATUS_STARTING"
                desc="When starting a download, let the user know we're starting the download.">
         Starting...
       </message>
-      <if expr="is_chromeos">
-        <message name="IDS_DOWNLOAD_STATUS_IN_PROGRESS_TITLE"
-                 desc="The title of a download notification: the current download status is in progress.">
-                 Downloading <ph name="FILE_NAME">$1<ex>somedocument.pdf</ex></ph>
-        </message>
-        <message name="IDS_DOWNLOAD_STATUS_PAUSED_TITLE"
-                 desc="The title of a download notification: the current download status is in progress.">
-                 Paused <ph name="FILE_NAME">$1<ex>somedocument.pdf</ex></ph>
-        </message>
-        <message name="IDS_DOWNLOAD_STATUS_DOWNLOAD_FAILED_TITLE"
-                 desc="The title of a download notification: the current download status is failed.">
-                 <ph name="FILE_NAME">$1<ex>somedocument.pdf</ex></ph> download unsuccessful
-        </message>
-        <message name="IDS_DOWNLOAD_STATUS_COMPLETE_TITLE"
-                 desc="The title of a download notification: the current download status is finished successufully.">
-                 Download complete
-        </message>
-        <message name="IDS_DOWNLOAD_STATUS_SCAN_TITLE"
-                 desc="The title of a download notification: the current download is being scanned.">
-                 Scanning <ph name="FILE_NAME">$1<ex>somedocument.pdf</ex></ph>
-        </message>
-        <message name="IDS_DOWNLOAD_NOTIFICATION_STATUS_COMPLETED"
-                 desc="Size and units downloaded, and the origin domain.">
-          <ph name="DOWNLOAD_RECEIVED">$1<ex>154 MB</ex></ph> from <ph name="DOWNLOAD_DOMAIN">$2<ex>example.com</ex></ph>
-        </message>
-        <message name="IDS_DOWNLOAD_NOTIFICATION_STATUS_SHORT"
-                 desc="Size and units downloaded, and the origin domain. ">
-          <ph name="DOWNLOAD_RECEIVED">$1<ex>154 MB</ex></ph> from <ph name="DOWNLOAD_DOMAIN">$2<ex>example.com</ex></ph>
-        </message>
-        <message name="IDS_DOWNLOAD_NOTIFICATION_DISPLAY_SOURCE"
-                 desc="The name of the notification source, which is download manager here. Shown in the notification header.">
-          Download manager
-        </message>
-        <message name="IDS_DOWNLOAD_NOTIFICATION_LABEL_OPEN_AND_EDIT"
-                 desc="Download notifications: Label for action button on notification to open a file that can be edited, e.g. a PDF file that can be annotated.">
-          Open and edit
-        </message>
-      </if>
       <message name="IDS_DOWNLOAD_STATUS_IN_PROGRESS"
                desc="Size and units downloaded, time remaining.">
         <ph name="DOWNLOAD_RECEIVED">$1<ex>54/154 MB</ex></ph>, <ph name="TIME_LEFT">$2<ex>5s</ex></ph>
@@ -2183,9 +2137,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_DOWNLOAD_STATUS_OPEN_WHEN_COMPLETE"
          desc="Status that the file download will be opened when the download completes.">
         Opening when complete
-      </message>
-      <message name="IDS_DOWNLOAD_STATUS_IN_PROGRESS_SHORT" desc="Short status text that appears on unknown-sized downloads in progress.">
-        In progress
       </message>
       <message name="IDS_DOWNLOAD_STATUS_CANCELLED" desc="Text that appears under the downloaded files that have been canceled.">
         Canceled
@@ -2228,10 +2179,6 @@ are declared in tools/grit/grit_args.gni.
          desc="Message shown to the user to validate the download when the download content is classified as uncommon by safebrowsing. This variant is shown when the user is enrolled in the Advanced Protection program.">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> was blocked by Advanced Protection.
       </message>
-      <message name="IDS_PROMPT_DEEP_SCANNING_APP_DOWNLOAD"
-        desc="Message shown in the download shelf when a download is being scanned for an Advanced Protection user">
-        <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> is being scanned.
-      </message>
       <message name="IDS_PROMPT_DOWNLOAD_BLOCKED_TOO_LARGE"
         desc="Message shown in the download shelf when a download is blocked for being too large">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> is too big for a security check. You can open files up to 50 MB.
@@ -2255,10 +2202,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_PROMPT_DOWNLOAD_BLOCKED_SCAN_FAILED"
         desc="Message shown in the download shelf when the deep scan of the file fails and the admin has chosen to block the file">
         Scan failed. This file is blocked by your administrator
-      </message>
-      <message name="IDS_PROMPT_DOWNLOAD_DEEP_SCANNED_OPENED_DANGEROUS"
-        desc="Message shown in the download shelf when a download is finished being scanned, and issues were found">
-        This file is dangerous
       </message>
       <message name="IDS_PROMPT_DOWNLOAD_INSECURE_WARNING"
         desc="Message shown in the download shelf when a download is insecure, and Chrome needs to show a warning.">
@@ -2348,27 +2291,6 @@ are declared in tools/grit/grit_args.gni.
         Couldn't verify your email
       </message>
 
-      <if expr="is_chromeos">
-        <message name="IDS_PROMPT_BLOCKED_INSECURE_DOWNLOAD_TITLE"
-                 desc="In the download notification, a title of the message shown on a download blocked for being insecure.">
-          Insecure download blocked
-        </message>
-      </if>
-
-      <if expr="is_chromeos">
-        <message name="IDS_PROMPT_BLOCKED_MALICIOUS_DOWNLOAD_TITLE"
-                 desc="In the download notification, a title of message shown for blocked download">
-          Dangerous download blocked
-        </message>
-      </if>
-
-      <if expr="is_chromeos">
-        <message name="IDS_PROMPT_SEND_TO_SAFEBROWSING_DOWNLOAD_TITLE"
-                 desc="In the download notification, a title of message shown indicating that the file may be malicious and Safe Browsing recommends sending the file to Google">
-          Scan file before opening?
-        </message>
-      </if>
-
       <message name="IDS_CONFIRM_KEEP_DANGEROUS_DOWNLOAD_TITLE"
                desc="Title for the confirmation dialog asking whether the user really meant to keep a dangerous download">
         Confirm download
@@ -2396,10 +2318,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_OPEN_DOWNLOAD_NOW"
                desc="Text shown to open a download now.">
         Open now
-      </message>
-      <message name="IDS_SCAN_DOWNLOAD"
-               desc="Text shown to upload a file for deep scanning.">
-        Send
       </message>
       <message name="IDS_REVIEW_DOWNLOAD" desc="Text shown when a download has triggered an enterprise warning or block, on the button to open the dialog containing the enterprise administrator's message explaining the violation.">
         Review
@@ -2634,12 +2552,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_PROMPT_DOWNLOAD_INSECURE_BLOCKED_ACCESSIBLE_ALERT"
                 desc="The title of a download notification indicating that the download was delivered insecurely. This message is for screen reader users">
         <ph name="FILE_NAME">$1<ex>file.exe</ex></ph> can't be downloaded securely.
-      </message>
-
-      <!-- Download Notification Labels -->
-      <message name="IDS_DOWNLOAD_NOTIFICATION_COPY_TO_CLIPBOARD"
-               desc="In the download notification, the text of 'Copy to clipboard' button, which is to copy the file content (eg. an image for image files) to the clipboard">
-        Copy to clipboard
       </message>
 
       <!-- Download Context Menu Items -->
@@ -15640,58 +15552,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
       </if>
 
-      <!-- Media Galleries. -->
-      <if expr="not is_android">
-        <message name="IDS_MEDIA_GALLERIES_DIALOG_HEADER" desc="Header for media gallery permissions dialog.">
-          Media-File Permissions for "<ph name="EXTENSION">$1<ex>Photo Editor</ex></ph>"
-        </message>
-        <message name="IDS_MEDIA_GALLERIES_DIALOG_SUBTEXT_READ_WRITE" desc="Explanatory text for the media gallery access permission. Indicates that the specified (by name) extension has read and write access to the listed folders.">
-          "<ph name="EXTENSION">$1<ex>PhotoEditor</ex></ph>" can read and write images, video, and sound files in the checked locations.
-        </message>
-        <message name="IDS_MEDIA_GALLERIES_DIALOG_SUBTEXT_READ_DELETE" desc="Explanatory text for the media gallery access permission. Indicates that the specified (by name) extension has read and delete access to the listed folders.">
-          "<ph name="EXTENSION">$1<ex>PhotoEditor</ex></ph>" can read and delete images, video, and sound files in the checked locations.
-        </message>
-        <message name="IDS_MEDIA_GALLERIES_DIALOG_SUBTEXT_READ_ONLY" desc="Explanatory text for the media gallery access permission. Indicates that the specified (by name) extension has read-only access to the listed folders.">
-          "<ph name="EXTENSION">$1<ex>PhotoEditor</ex></ph>" can read images, video, and sound files in the checked locations.
-        </message>
-        <message name="IDS_MEDIA_GALLERIES_PERMISSION_SUGGESTIONS" desc="Header in media gallery permission dialog for locations that the app does not have permission for.">
-          Suggestions
-        </message>
-        <message name="IDS_MEDIA_GALLERIES_LAST_ATTACHED" desc="Explanatory text indicating to the user when a particular location was last attached, i.e. a removable device that isn't plugged in. The date presented will be a day in a localized format providing year, month, and day.">
-          last attached on <ph name="DATE">$1<ex>1/22/11</ex></ph>
-        </message>
-        <if expr="use_titlecase">
-          <message name="IDS_MEDIA_GALLERIES_DIALOG_ADD_GALLERY" desc="In title case: Button for adding a new gallery by choosing a folder.">
-            Add Location...
-          </message>
-          <message name="IDS_MEDIA_GALLERIES_DIALOG_CONFIRM" desc="In title case: The text for the accept button on the media galleries configuration dialog.">
-            Apply
-          </message>
-        </if>
-        <if expr="not use_titlecase">
-          <message name="IDS_MEDIA_GALLERIES_DIALOG_ADD_GALLERY" desc="In sentence case: Button for adding a new gallery by choosing a folder."
-                   meaning="In sentence case: Button for adding a new gallery by choosing a folder.">
-            Add location...
-          </message>
-          <message name="IDS_MEDIA_GALLERIES_DIALOG_CONFIRM" desc="In sentence case: The text for the accept button on the media galleries configuration dialog."
-                   meaning="In sentence case: The text for the accept button on the media galleries configuration dialog.">
-            Apply
-          </message>
-        </if>
-        <message name="IDS_MEDIA_GALLERIES_DIALOG_ADD_GALLERY_TITLE" desc="The title of the folder selection dialog for adding a new media gallery.">
-          Add Media Gallery by Directory
-        </message>
-        <message name="IDS_MEDIA_GALLERIES_DIALOG_DEVICE_ATTACHED" desc="Label text to indicate a removable storage device is attached.">
-          attached
-        </message>
-        <message name="IDS_MEDIA_GALLERIES_DIALOG_DEVICE_NOT_ATTACHED" desc="Label text to indicate a removable storage device is not attached.">
-          not attached
-        </message>
-        <message name="IDS_MEDIA_GALLERIES_DIALOG_DELETE" desc="Text label of the menu item which removes selected media gallery access for all apps.">
-          Permanently remove access for all apps
-        </message>
-      </if>
-
       <!-- App List. -->
 
       <!-- Translated apps strings -->
@@ -18673,61 +18533,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_ACCESSED_SMART_CARD_READER_BODY" desc="The body of the info bubble shown when site has an active connection to a smart card reader.">
         This site is controlling smart card readers connected to your device and potentially smart cards available to them
-      </message>
-    </if>
-
-    <!-- Multi Capture -->
-    <if expr="is_chromeos">
-      <message name="IDS_MULTI_CAPTURE_MAY_CAPTURE_ALL_NOTIFY_NOTIFICATION_MESSAGE" desc="String notifying that the screens may be captured for apps where all of them will show a capture indication.">
-      {NUM_APPS, plural, offset:2
-          =1 {Your administrator can record your screen with <ph name="APP0_NAME">{APP0_NAME}</ph>. You will be notified when the recording starts.}
-          =2 {Your administrator can record your screen with <ph name="APP0_NAME">{APP0_NAME}</ph> and <ph name="APP1_NAME">{APP1_NAME}</ph>. You will be notified when the recording starts.}
-          =3 {Your administrator can record your screen with <ph name="APP0_NAME">{APP0_NAME}</ph>, <ph name="APP1_NAME">{APP1_NAME}</ph> and 1 other app. You will be notified when the recording starts.}
-          other {Your administrator can record your screen with <ph name="APP0_NAME">{APP0_NAME}</ph>, <ph name="APP1_NAME">{APP1_NAME}</ph> and # other apps. You will be notified when the recording starts.}
-        }
-      </message>
-      <message name="IDS_MULTI_CAPTURE_MAY_CAPTURE_NONE_NOTIFY_NOTIFICATION_MESSAGE" desc="String notifying that the screens may be captured for apps where none of them will show a capture indication.">
-      {NUM_APPS, plural, offset:2
-          =1 {Your administrator can record your screen with <ph name="APP0_NAME">{APP0_NAME}</ph>. You will not be notified when the recording starts.}
-          =2 {Your administrator can record your screen with <ph name="APP0_NAME">{APP0_NAME}</ph> and <ph name="APP1_NAME">{APP1_NAME}</ph>. You will not be notified when the recording starts.}
-          =3 {Your administrator can record your screen with <ph name="APP0_NAME">{APP0_NAME}</ph>, <ph name="APP1_NAME">{APP1_NAME}</ph> and 1 other app. You will not be notified when the recording starts.}
-          other {Your administrator can record your screen with <ph name="APP0_NAME">{APP0_NAME}</ph>, <ph name="APP1_NAME">{APP1_NAME}</ph> and # other apps. You will not be notified when the recording starts.}
-        }
-      </message>
-      <message name="IDS_MULTI_CAPTURE_MAY_CAPTURE_SOME_NOTIFY_NOTIFICATION_MESSAGE" desc="String notifying that the screens may be captured for apps where none of them will show a capture indication.">
-      {NUM_APPS, plural, offset:2
-          =1 {Your administrator can record your screen with <ph name="APP0_NAME">{APP0_NAME}</ph>.}
-          =2 {Your administrator can record your screen with <ph name="APP0_NAME">{APP0_NAME}</ph> and <ph name="APP1_NAME">{APP1_NAME}</ph>.}
-          =3 {Your administrator can record your screen with <ph name="APP0_NAME">{APP0_NAME}</ph>, <ph name="APP1_NAME">{APP1_NAME}</ph> and 1 other app.}
-          other {Your administrator can record your screen with <ph name="APP0_NAME">{APP0_NAME}</ph>, <ph name="APP1_NAME">{APP1_NAME}</ph> and # other apps.}
-        }
-      </message>
-      <message name="IDS_MULTI_CAPTURE_ACTIVE_CAPTURE_NOTIFICATION_MESSAGE" desc="String notifying that the screens are captured by a specific app.">
-        Your administrator is recording your screen with <ph name="APP0_NAME">{APP_NAME}</ph>.
-      </message>
-      <message name="IDS_MULTI_CAPTURE_DETAILS_DIALOG_HEADING" desc="Heading for the multi capture details view.">
-        Your administrator can record your screen
-      </message>
-      <message name="IDS_MULTI_CAPTURE_DETAILS_DIALOG_NO_APP_ON_ALLOWLIST_MESSAGE" desc="Message for the multi capture details view where no app is on the allowlist that enables an app not to show a notification.">
-        These apps will be used to record your screen:
-      </message>
-      <message name="IDS_MULTI_CAPTURE_DETAILS_DIALOG_SOME_APPS_ON_ALLOWLIST_FIRST_MESSAGE" desc="First message for the multi capture details view where some apps are allowlisted.">
-        You will be notified when these apps are used to record your screen:
-      </message>
-      <message name="IDS_MULTI_CAPTURE_DETAILS_DIALOG_SOME_APPS_ON_ALLOWLIST_SECOND_MESSAGE" desc="First message for the multi capture details view where some apps are allowlisted.">
-        You will not be notified when these apps are used to record your screen:
-      </message>
-      <message name="IDS_MULTI_CAPTURE_DETAILS_DIALOG_NO_APP_ON_ALLOWLIST_FOOTER_MESSAGE" desc="Footer for the multi capture details view where no app is on the allowlist that enables an app not to show a notification.">
-        You will be notified when the recording starts.
-      </message>
-      <message name="IDS_MULTI_CAPTURE_DETAILS_DIALOG_ALL_APPS_ON_ALLOWLIST_FOOTER_MESSAGE" desc="Footer for the multi capture details view where all apps is on the notification bypass allowlist.">
-        You will not be notified when the recording starts.
-      </message>
-      <message name="IDS_MULTI_CAPTURE_DETAILS_DIALOG_CLOSE_BUTTON_TEXT" desc="Close button text for the multi capture details view.">
-        Got it
-      </message>
-      <message name="IDS_MULTI_CAPTURE_NOTIFICATION_BUTTON_TEXT" desc="Text for the notification button to reach the details view.">
-        Details
       </message>
     </if>
 

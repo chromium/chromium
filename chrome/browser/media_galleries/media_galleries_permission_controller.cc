@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media_galleries/media_galleries_permission_controller.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/base_paths.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/common/apps/platform_apps/media_galleries_permission.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/storage_monitor/storage_info.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "content/public/browser/web_contents.h"

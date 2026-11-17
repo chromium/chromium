@@ -344,6 +344,7 @@ source_set("webrtc") {
     deps += [
       "//ash",
       "//ash/public/cpp",
+      "//ash/strings",
       "//chrome/browser/ash/arc/screen_capture",
       "//chrome/browser/ash/notifications",
       "//chrome/browser/ash/policy/handlers",

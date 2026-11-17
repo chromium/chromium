@@ -12,6 +12,7 @@
 #include <string_view>
 #include <utility>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/base_paths_posix.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -30,7 +31,6 @@
 #include "chrome/common/apps/platform_apps/media_galleries_permission.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/crx_file/id_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"

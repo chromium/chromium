@@ -335,6 +335,7 @@ source_set("impl") {
 
     deps += [
       "//ash/public/cpp",
+      "//ash/strings",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/ash/drive",
       "//chrome/browser/ash/file_manager",
@@ -560,6 +561,7 @@ source_set("unit_tests") {
   if (is_chromeos) {
     sources += [ "notification/download_item_notification_unittest.cc" ]
     deps += [
+      "//ash/strings",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/ash/policy/dlp",
@@ -616,7 +618,10 @@ if (!is_android) {
 
     if (is_chromeos) {
       sources += [ "notification/download_notification_browsertest.cc" ]
-      deps += [ "//chromeos/dbus/dlp" ]
+      deps += [
+        "//ash/strings",
+        "//chromeos/dbus/dlp",
+      ]
     }
 
     if (!is_chromeos && !is_android) {

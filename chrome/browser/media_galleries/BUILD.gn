@@ -53,7 +53,7 @@ source_set("impl") {
 
   deps = [
     ":media_galleries",
-    "//chrome/app:generated_resources",
+    "//ash/strings",
     "//chrome/browser:browser_process",
     "//chrome/browser/media_galleries/fileapi",
     "//chrome/browser/media_galleries/fileapi:impl",
@@ -106,6 +106,7 @@ source_set("unit_tests") {
     ":impl",
     ":media_galleries",
     ":test_support",
+    "//ash/strings",
     "//base/test:test_support",
     "//chrome/browser/ash/login/users",
     "//chrome/browser/extensions",

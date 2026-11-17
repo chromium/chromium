@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"

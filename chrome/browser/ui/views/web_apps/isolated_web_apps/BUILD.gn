@@ -95,7 +95,7 @@ if (is_chromeos) {
       "//ui/views",
     ]
     deps = [
-      "//chrome/app:generated_resources",
+      "//ash/strings",
       "//chrome/app/vector_icons",
       "//components/vector_icons",
       "//ui/base",

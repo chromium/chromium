@@ -70,6 +70,7 @@ source_set("api") {
     ]
 
     deps += [
+      "//ash/strings",
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/login/demo_mode",
       "//chrome/browser/ash/remote_apps",

@@ -1,0 +1,11 @@
+specific_include_rules = {
+  "download_item_notification\\.cc": [
+    "+ash/strings/grit/ash_strings.h",
+  ],
+  "download_item_notification_unittest\\.cc": [
+    "+ash/strings/grit/ash_strings.h",
+  ],
+  "download_notification_browsertest\\.cc": [
+    "+ash/strings/grit/ash_strings.h",
+  ],
+}

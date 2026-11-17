@@ -11,6 +11,7 @@
 
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"

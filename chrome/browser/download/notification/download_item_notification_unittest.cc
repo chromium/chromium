@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/notification_test_util.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"

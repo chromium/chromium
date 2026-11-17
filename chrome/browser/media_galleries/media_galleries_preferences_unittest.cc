@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -29,7 +30,6 @@
 #include "chrome/common/apps/platform_apps/media_galleries_permission.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/prefs/scoped_user_pref_update.h"

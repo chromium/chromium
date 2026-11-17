@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
@@ -39,7 +40,6 @@
 #include "chrome/common/apps/platform_apps/api/media_galleries.h"
 #include "chrome/common/apps/platform_apps/media_galleries_permission.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/media_gallery_util/safe_media_metadata_parser.h"
 #include "components/storage_monitor/storage_info.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
