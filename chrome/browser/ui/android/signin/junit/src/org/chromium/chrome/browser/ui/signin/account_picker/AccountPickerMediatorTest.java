@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
+import static org.junit.Assume.assumeTrue;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 
 import org.junit.After;
@@ -22,18 +24,24 @@ import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.FakeProfileAttributesStorage;
+import org.chromium.chrome.browser.profiles.ProfileAttributesStorage;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.AddAccountRowProperties;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.ExistingAccountRowProperties;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager.RefreshTokensLoadingState;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Tests the class {@link AccountPickerMediator}.
@@ -60,6 +68,8 @@ public class AccountPickerMediatorTest {
     @Mock private AccountPickerCoordinator.Listener mListenerMock;
 
     private final MVCListAdapter.ModelList mModelList = new MVCListAdapter.ModelList();
+    private final FakeProfileAttributesStorage mProfileAttributesStorage =
+            new FakeProfileAttributesStorage();
     private final boolean mIsIdentityManagerSourceOfAccounts;
 
     private AccountPickerMediator mMediator;
@@ -73,6 +83,7 @@ public class AccountPickerMediatorTest {
         FeatureOverrides.overrideFlag(
                 SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
                 mIsIdentityManagerSourceOfAccounts);
+        ProfileAttributesStorage.setInstanceForTesting(mProfileAttributesStorage);
     }
 
     @After
@@ -86,12 +97,7 @@ public class AccountPickerMediatorTest {
     public void testModelPopulation() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
-        mMediator =
-                new AccountPickerMediator(
-                        RuntimeEnvironment.getApplication(),
-                        mModelList,
-                        mListenerMock,
-                        mAccountManagerTestRule.getIdentityManager());
+        mMediator = createMediator();
         // ACCOUNT1, ACCOUNT2, ADD_ACCOUNT.
         Assert.assertEquals(3, mModelList.size());
         checkItemForExistingAccountRow(0, TestAccounts.ACCOUNT1);
@@ -102,12 +108,7 @@ public class AccountPickerMediatorTest {
     @Test
     public void testProfileDataUpdateWhenAccountPickerIsShownFromSettings() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        mMediator =
-                new AccountPickerMediator(
-                        RuntimeEnvironment.getApplication(),
-                        mModelList,
-                        mListenerMock,
-                        mAccountManagerTestRule.getIdentityManager());
+        mMediator = createMediator();
         var accountWithDifferentName =
                 new AccountInfo.Builder(TestAccounts.ACCOUNT1)
                         .fullName("Different Test1 Full")
@@ -118,6 +119,94 @@ public class AccountPickerMediatorTest {
         Assert.assertEquals(2, mModelList.size());
         checkItemForExistingAccountRow(0, accountWithDifferentName);
         checkItemForAddAccountRow(1);
+    }
+
+    @Test
+    public void testListIsUpdatedWhenRefreshTokensAreLoaded() {
+        assumeTrue(mIsIdentityManagerSourceOfAccounts);
+        mAccountManagerTestRule
+                .getIdentityManager()
+                .setRefreshTokensLoadingState(RefreshTokensLoadingState.IN_PROGRESS);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mMediator = createMediator();
+        // ADD_ACCOUNT.
+        Assert.assertEquals(1, mModelList.size());
+        checkItemForAddAccountRow(0);
+
+        mAccountManagerTestRule
+                .getIdentityManager()
+                .setRefreshTokensLoadingState(RefreshTokensLoadingState.SUCCEEDED);
+        clearInvocations(mListenerMock);
+
+        // ACCOUNT1, ADD_ACCOUNT.
+        Assert.assertEquals(2, mModelList.size());
+        checkItemForExistingAccountRow(0, TestAccounts.ACCOUNT1);
+        checkItemForAddAccountRow(1);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testAccountsOfOtherProfilesAreHidden() {
+        assumeTrue(mIsIdentityManagerSourceOfAccounts);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        mProfileAttributesStorage.setPrimaryAccountIds(List.of(TestAccounts.ACCOUNT2.getId()));
+
+        mMediator = createMediator();
+
+        // ACCOUNT1, ADD_ACCOUNT.
+        Assert.assertEquals(2, mModelList.size());
+        checkItemForExistingAccountRow(0, TestAccounts.ACCOUNT1);
+        checkItemForAddAccountRow(1);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testOnlyAddAccountRowWhenAllAccountsAreHidden() {
+        assumeTrue(mIsIdentityManagerSourceOfAccounts);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mProfileAttributesStorage.setPrimaryAccountIds(List.of(TestAccounts.ACCOUNT1.getId()));
+
+        mMediator = createMediator();
+
+        // ADD_ACCOUNT.
+        Assert.assertEquals(1, mModelList.size());
+        checkItemForAddAccountRow(0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testListIsUpdatedWhenOtherProfileSignsInAndOut() {
+        assumeTrue(mIsIdentityManagerSourceOfAccounts);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        mMediator = createMediator();
+        // ACCOUNT1, ACCOUNT2, ADD_ACCOUNT.
+        Assert.assertEquals(3, mModelList.size());
+
+        mProfileAttributesStorage.setPrimaryAccountIds(List.of(TestAccounts.ACCOUNT1.getId()));
+
+        // ACCOUNT2, ADD_ACCOUNT.
+        Assert.assertEquals(2, mModelList.size());
+        checkItemForExistingAccountRow(0, TestAccounts.ACCOUNT2);
+        checkItemForAddAccountRow(1);
+
+        mProfileAttributesStorage.setPrimaryAccountIds(List.of());
+        clearInvocations(mListenerMock);
+
+        // ACCOUNT1, ACCOUNT2, ADD_ACCOUNT.
+        Assert.assertEquals(3, mModelList.size());
+        checkItemForExistingAccountRow(0, TestAccounts.ACCOUNT1);
+        checkItemForExistingAccountRow(1, TestAccounts.ACCOUNT2);
+        checkItemForAddAccountRow(2);
+    }
+
+    private AccountPickerMediator createMediator() {
+        return new AccountPickerMediator(
+                RuntimeEnvironment.getApplication(),
+                mModelList,
+                mListenerMock,
+                mAccountManagerTestRule.getIdentityManager());
     }
 
     private void checkItemForExistingAccountRow(int position, AccountInfo coreAccountInfo) {

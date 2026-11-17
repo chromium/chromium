@@ -341,6 +341,27 @@ public class ProfileDataCache
     }
 
     /**
+     * Returns the accounts of {@link #getAccounts()} that have a refresh token. Unlike {@link
+     * IdentityManager#getExtendedAccountInfoForAccountsWithRefreshToken()}, the list is filtered,
+     * i.e. it excludes the primary accounts of other profiles. Returns an empty list if the {@link
+     * #getAccounts()} Promise isn't fulfilled yet.
+     */
+    public List<AccountInfo> getFilteredAccountInfoIfFulfilledOrEmpty() {
+        if (!mAccountsPromise.isFulfilled()) return List.of();
+        Map<CoreAccountId, AccountInfo> accountsWithRefreshToken = new HashMap<>();
+        for (AccountInfo account :
+                mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken()) {
+            accountsWithRefreshToken.put(account.getId(), account);
+        }
+        List<AccountInfo> accounts = new ArrayList<>();
+        for (DisplayableProfileData profileData : mAccountsPromise.getResult()) {
+            AccountInfo account = accountsWithRefreshToken.get(profileData.getAccountId());
+            if (account != null) accounts.add(account);
+        }
+        return accounts;
+    }
+
+    /**
      * Returns cached {@link DisplayableProfileData} for the given account ID.
      *
      * <p>Method is synchronous and does not trigger any account info fetches. First it checks if

@@ -1496,6 +1496,30 @@ public class ProfileDataCacheUnitTest {
         verify(mObserverMock).onAccountsUpdated(accounts);
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testGetFilteredAccountInfoIfFulfilledOrEmpty() {
+        Assume.assumeTrue(mIsIdentityManagerSourceOfAccounts);
+        FakeIdentityManager identityManager = mAccountManagerTestRule.getIdentityManager();
+        identityManager.setRefreshTokensLoadingState(RefreshTokensLoadingState.IN_PROGRESS);
+        var profileDataCache =
+                ProfileDataCache.createWithDefaultImageSize(
+                        RuntimeEnvironment.getApplication().getApplicationContext(),
+                        identityManager);
+        profileDataCache.addObserver(mObserverMock);
+        Assert.assertTrue(profileDataCache.getFilteredAccountInfoIfFulfilledOrEmpty().isEmpty());
+
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        mProfileAttributesStorage.setPrimaryAccountIds(List.of(TestAccounts.ACCOUNT2.getId()));
+        identityManager.setRefreshTokensLoadingState(RefreshTokensLoadingState.SUCCEEDED);
+
+        Assert.assertEquals(
+                List.of(TestAccounts.ACCOUNT1),
+                profileDataCache.getFilteredAccountInfoIfFulfilledOrEmpty());
+        verify(mObserverMock).onAccountsUpdated(any());
+    }
+
     private void assertAccounts(List<AccountInfo> expectedAccounts) {
         var accounts = mProfileDataCache.getAccounts().getResult();
         Assert.assertEquals(expectedAccounts.size(), accounts.size());

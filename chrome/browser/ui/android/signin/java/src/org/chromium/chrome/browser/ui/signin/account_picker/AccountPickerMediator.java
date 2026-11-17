@@ -37,7 +37,6 @@ class AccountPickerMediator implements ProfileDataCache.Observer {
     private final MVCListAdapter.ModelList mListModel;
     private final AccountPickerCoordinator.Listener mAccountPickerListener;
     private final ProfileDataCache mProfileDataCache;
-    private final IdentityManager mIdentityManager;
 
     @MainThread
     AccountPickerMediator(
@@ -47,7 +46,6 @@ class AccountPickerMediator implements ProfileDataCache.Observer {
             IdentityManager identityManager) {
         mListModel = listModel;
         mAccountPickerListener = listener;
-        mIdentityManager = identityManager;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSize(context, identityManager);
         mProfileDataCache.addObserver(this);
         updateAccounts(getAccounts());
@@ -86,7 +84,7 @@ class AccountPickerMediator implements ProfileDataCache.Observer {
 
     private List<AccountInfo> getAccounts() {
         if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {
-            return mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken();
+            return mProfileDataCache.getFilteredAccountInfoIfFulfilledOrEmpty();
         }
         return AccountUtils.getAccountsIfFulfilledOrEmpty(
                 AccountManagerFacadeProvider.getInstance().getAccounts());
