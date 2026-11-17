@@ -18,7 +18,6 @@ source_set("geic_enabling") {
 
   deps = [
     ":guest_url",
-    ":url_allowlist",
     "//base",
     "//chrome/browser/glic",
     "//chrome/browser/glic/public:features",
@@ -32,7 +31,6 @@ source_set("geic_enabling") {
     "//components/prefs",
     "//components/variations/service",
     "//content/public/browser",
-    "//net",
     "//url",
   ]
 }
@@ -62,12 +60,15 @@ source_set("guest_url") {
     "geic_guest_url.h",
   ]
 
+  public_deps = [
+    "//base",
+    "//url",
+  ]
+
   deps = [
     ":url_allowlist",
-    "//base",
     "//net",
     "//third_party/re2",
-    "//url",
   ]
 }
 

@@ -182,168 +182,18 @@ TEST_F(GeicEnablingTest, CommandLineSwitchOverridesGuestUrl) {
             GURL("https://business.gemini.google/cli-panel"));
 }
 
-TEST_F(GeicEnablingTest, AcceptsAllowedHosts) {
+TEST_F(GeicEnablingTest, SwitchAcceptsAnyHttpOrHttpsUrlWithAllowAnyGuestUrl) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kGeic);
 
-  EXPECT_FALSE(ResolvePolicyUrl("https://business.gemini.google/").is_empty());
-  EXPECT_FALSE(
-      ResolvePolicyUrl("https://enterprise.gemini.google.com/").is_empty());
-  EXPECT_FALSE(
-      ResolvePolicyUrl("https://enterprise.gemini.cloud.google/").is_empty());
-  EXPECT_FALSE(ResolvePolicyUrl("https://enterprise.gemini.cloud.google.com/")
-                   .is_empty());
-  EXPECT_FALSE(ResolvePolicyUrl("https://gemini.cloud.google/").is_empty());
-  EXPECT_FALSE(
-      ResolvePolicyUrl("https://vertexaisearch.cloud.google/").is_empty());
-  EXPECT_FALSE(
-      ResolvePolicyUrl("https://vertexaisearch.cloud.google.com/").is_empty());
-  EXPECT_FALSE(
-      ResolvePolicyUrl("https://vertexaisearch.gemini-us.google/").is_empty());
-  EXPECT_FALSE(ResolvePolicyUrl("https://ucs-widget.corp.google.com/side-panel")
-                   .is_empty());
-}
-
-TEST_F(GeicEnablingTest, PolicyRejectsPreProductionHosts) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGeic);
-
-  EXPECT_TRUE(
-      ResolvePolicyUrl("https://ucs-app-autopush.corp.google.com/side-panel")
-          .is_empty());
-  EXPECT_TRUE(
-      ResolvePolicyUrl("https://business-staging.gemini.google/side-panel")
-          .is_empty());
-}
-
-TEST_F(GeicEnablingTest, FinchAcceptsPreProductionHosts) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kGeic,
-      {{"geic-guest-url",
-        "https://ucs-app-autopush.corp.google.com/side-panel"}});
-
-  EXPECT_EQ(ResolveGeicGuestUrl(profile()),
-            GURL("https://ucs-app-autopush.corp.google.com/side-panel"));
-}
-
-TEST_F(GeicEnablingTest, FinchRejectsDisallowedPreProductionUrls) {
-  const char* const kDisallowed[] = {
-      // Not matching a product-prefixed pattern.
-      "https://foo.corp.google.com/side-panel",
-      "https://a.business-staging.gemini.google/side-panel",
-      // Not HTTPS.
-      "http://business-staging.gemini.google/side-panel",
-      // Embedded credentials.
-      "https://user:pass@business-staging.gemini.google/side-panel",
-  };
-  for (const char* url : kDisallowed) {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(features::kGeic,
-                                                    {{"geic-guest-url", url}});
-    EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty()) << url;
-  }
-}
-
-TEST_F(GeicEnablingTest, SwitchAcceptsPreProductionHosts) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGeic);
-
-  EXPECT_EQ(
-      ResolveSwitchUrl("https://business-staging.gemini.google/side-panel"),
-      GURL("https://business-staging.gemini.google/side-panel"));
-}
-
-TEST_F(GeicEnablingTest, RejectsEmbeddedCredentials) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGeic);
-
-  EXPECT_TRUE(
-      ResolvePolicyUrl("https://user:pass@business.gemini.google/side-panel")
-          .is_empty());
-  EXPECT_TRUE(ResolvePolicyUrl("https://user@business.gemini.google/side-panel")
-                  .is_empty());
-  EXPECT_TRUE(
-      ResolvePolicyUrl("https://:pass@business.gemini.google/side-panel")
-          .is_empty());
-
-  EXPECT_TRUE(
-      ResolveSwitchUrl("https://user:pass@business.gemini.google/side-panel")
-          .is_empty());
-  EXPECT_TRUE(ResolveSwitchUrl("https://user@business.gemini.google/side-panel")
-                  .is_empty());
-  EXPECT_TRUE(
-      ResolveSwitchUrl("https://:pass@business.gemini.google/side-panel")
-          .is_empty());
-
-  // Clear the higher-priority sources so that Finch is actually consulted.
-  scoped_command_line_.GetProcessCommandLine()->RemoveSwitch(
-      kGeicGuestURLSwitch);
-  SetPolicyUrl("");
-  base::test::ScopedFeatureList feature_list2;
-  feature_list2.InitAndEnableFeatureWithParameters(
-      features::kGeic,
-      {{"geic-guest-url",
-        "https://user:pass@business.gemini.google/side-panel"}});
-  EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
-}
-
-TEST_F(GeicEnablingTest, RejectsDisallowedHosts) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGeic);
-
-  EXPECT_TRUE(ResolvePolicyUrl("https://gemini.google.com/").is_empty());
-  EXPECT_TRUE(ResolvePolicyUrl("").is_empty());
-  EXPECT_TRUE(ResolvePolicyUrl("not a url").is_empty());
-  EXPECT_TRUE(ResolvePolicyUrl("https://evil.com/").is_empty());
-  EXPECT_TRUE(
-      ResolvePolicyUrl("https://cloud.google.com.evil.com/").is_empty());
-  EXPECT_TRUE(ResolvePolicyUrl("https://vertexaisearch.cloud.google.evil.com/")
-                  .is_empty());
-  EXPECT_TRUE(ResolvePolicyUrl("https://notcloud.google/").is_empty());
-  EXPECT_TRUE(ResolvePolicyUrl("https://notgemini.google.com/").is_empty());
-  EXPECT_TRUE(ResolvePolicyUrl("http://business.gemini.google/").is_empty());
-
-  EXPECT_TRUE(
-      ResolvePolicyUrl("https://console.cloud.google.com/home").is_empty());
-  EXPECT_TRUE(ResolvePolicyUrl("https://storage.cloud.google/").is_empty());
-  EXPECT_TRUE(ResolvePolicyUrl("https://foo.corp.google.com/").is_empty());
-  EXPECT_TRUE(
-      ResolvePolicyUrl("https://sub.business.gemini.google/").is_empty());
-  EXPECT_TRUE(ResolvePolicyUrl("https://sub.gemini.google.com/").is_empty());
-  EXPECT_TRUE(ResolvePolicyUrl("https://gemini.google/").is_empty());
-}
-
-TEST_F(GeicEnablingTest, SwitchAcceptsAllowlistedHosts) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGeic);
-
-  EXPECT_FALSE(
-      ResolveSwitchUrl("https://business.gemini.google/side-panel").is_empty());
-
-  EXPECT_TRUE(
-      ResolveSwitchUrl("http://business.gemini.google/side-panel").is_empty());
-  EXPECT_TRUE(ResolveSwitchUrl("http://localhost:8080/side-panel").is_empty());
-  EXPECT_TRUE(ResolveSwitchUrl("http://127.0.0.1:8080/side-panel").is_empty());
-  EXPECT_TRUE(ResolveSwitchUrl("https://localhost:8443/side-panel").is_empty());
-  EXPECT_TRUE(
-      ResolveSwitchUrl("https://localhost.corp.google.com:10443/side-panel")
-          .is_empty());
-  EXPECT_TRUE(
-      ResolveSwitchUrl("https://custom-dev-host.internal:8443/side-panel")
-          .is_empty());
-
-  // `--glic-dev` does not relax switch URL validation.
+  // `--glic-dev` does not relax `--geic-guest-url` validation; only
+  // `--geic-allow-any-guest-url` does.
   scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
       ::switches::kGlicDev);
   EXPECT_TRUE(
       ResolveSwitchUrl("https://custom-dev-host.internal:8443/side-panel")
           .is_empty());
-}
 
-TEST_F(GeicEnablingTest, SwitchAcceptsAnyHttpOrHttpsUrlWithAllowAnyGuestUrl) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGeic);
   scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
       kGeicAllowAnyGuestURLSwitch);
 
@@ -370,9 +220,6 @@ TEST_F(GeicEnablingTest, SwitchAcceptsAnyHttpOrHttpsUrlWithAllowAnyGuestUrl) {
 }
 
 TEST_F(GeicEnablingTest, PolicyAndFinchRejectNonAllowlistedHosts) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGeic);
-
   // `--glic-dev` and `--geic-allow-any-guest-url` must not relax policy or
   // Finch URL validation.
   scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
@@ -380,98 +227,13 @@ TEST_F(GeicEnablingTest, PolicyAndFinchRejectNonAllowlistedHosts) {
   scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
       kGeicAllowAnyGuestURLSwitch);
 
-  EXPECT_TRUE(ResolvePolicyUrl("http://localhost:8080/side-panel").is_empty());
-  EXPECT_TRUE(ResolvePolicyUrl("https://localhost:8443/side-panel").is_empty());
-  EXPECT_TRUE(
-      ResolvePolicyUrl("https://localhost.corp.google.com:10443/side-panel")
-          .is_empty());
-
-  SetPolicyUrl("");
-  base::test::ScopedFeatureList feature_list2;
-  feature_list2.InitAndEnableFeatureWithParameters(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
       features::kGeic,
       {{"geic-guest-url",
         "https://localhost.corp.google.com:10443/side-panel"}});
   EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
-}
-
-TEST_F(GeicEnablingTest, RejectsDisallowedFinchGuestUrlHost) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kGeic,
-        {{"enabled", "true"},
-         {"geic-guest-url",
-          "https://custom-host.corp.google.com/side-panel"}}}},
-      {});
-  EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
-  EXPECT_TRUE(ResolvePolicyUrl("https://custom-host.corp.google.com/side-panel")
-                  .is_empty());
-}
-
-TEST_F(GeicEnablingTest, CanonicalizesHomeCidPath) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGeic);
-
-  EXPECT_EQ(GURL("https://business.gemini.google/side-panel?configId=abc123"),
-            ResolvePolicyUrl("https://business.gemini.google/home/cid/abc123"));
-  EXPECT_EQ(
-      GURL("https://business.gemini.google/side-panel?configId=abc123"),
-      ResolvePolicyUrl("https://business.gemini.google/home/cid/abc123/"));
-  EXPECT_EQ(
-      GURL("https://business.gemini.google/side-panel?foo=bar&configId=abc"),
-      ResolvePolicyUrl("https://business.gemini.google/home/cid/abc?foo=bar"));
-  EXPECT_EQ(GURL("https://business.gemini.google/side-panel?configId=abc"),
-            ResolvePolicyUrl(
-                "https://business.gemini.google/home/cid/abc?configId=other"));
-  EXPECT_EQ(
-      GURL(
-          "https://business.gemini.google/side-panel?configId=abc%26foo%3Dbar"),
-      ResolvePolicyUrl("https://business.gemini.google/home/cid/abc&foo=bar"));
-  EXPECT_EQ(
-      GURL("https://business.gemini.google/side-panel?configId=abc#section"),
-      ResolvePolicyUrl("https://business.gemini.google/home/cid/abc#section"));
-
-  // Regional location segments (/<location>/home/cid/<configId>)
-  EXPECT_EQ(
-      GURL("https://vertexaisearch.cloud.google/side-panel?configId=abc123&"
-           "location=us"),
-      ResolvePolicyUrl(
-          "https://vertexaisearch.cloud.google/us/home/cid/abc123"));
-  EXPECT_EQ(
-      GURL("https://vertexaisearch.cloud.google/side-panel?configId=abc123&"
-           "location=eu"),
-      ResolvePolicyUrl(
-          "https://vertexaisearch.cloud.google/eu/home/cid/abc123/"));
-  EXPECT_EQ(GURL("https://vertexaisearch.cloud.google/side-panel?foo=bar&"
-                 "configId=abc&location=eu"),
-            ResolvePolicyUrl(
-                "https://vertexaisearch.cloud.google/eu/home/cid/abc?foo=bar"));
-  EXPECT_EQ(GURL("https://vertexaisearch.cloud.google/side-panel?configId=abc&"
-                 "location=eu#section"),
-            ResolvePolicyUrl(
-                "https://vertexaisearch.cloud.google/eu/home/cid/abc#section"));
-}
-
-TEST_F(GeicEnablingTest, LeavesNonHomeCidPathsAlone) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGeic);
-
-  EXPECT_EQ(GURL("https://business.gemini.google/side-panel?configId=abc"),
-            ResolvePolicyUrl(
-                "https://business.gemini.google/side-panel?configId=abc"));
-  EXPECT_EQ(GURL("https://business.gemini.google/home/cid/"),
-            ResolvePolicyUrl("https://business.gemini.google/home/cid/"));
-  EXPECT_EQ(GURL("https://business.gemini.google/home/other/abc"),
-            ResolvePolicyUrl("https://business.gemini.google/home/other/abc"));
-  EXPECT_EQ(
-      GURL("https://vertexaisearch.cloud.google/us/home/cid/"),
-      ResolvePolicyUrl("https://vertexaisearch.cloud.google/us/home/cid/"));
-  EXPECT_EQ(GURL("https://vertexaisearch.cloud.google/us/home/other/abc"),
-            ResolvePolicyUrl(
-                "https://vertexaisearch.cloud.google/us/home/other/abc"));
-  EXPECT_EQ(
-      GURL("https://vertexaisearch.cloud.google/a/b/home/cid/abc"),
-      ResolvePolicyUrl("https://vertexaisearch.cloud.google/a/b/home/cid/abc"));
+  EXPECT_TRUE(ResolvePolicyUrl("http://localhost:8080/side-panel").is_empty());
 }
 
 TEST_F(GeicEnablingTest, ResolveGeicGuestUrlPrecedence) {
@@ -513,6 +275,16 @@ TEST_F(GeicEnablingTest, DisallowedCandidateDoesNotFallThrough) {
 
   // An unparsable switch value doesn't fall through either.
   SetSwitchUrl("not a url");
+  EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
+
+  // A disallowed policy URL does not fall through to a valid Finch URL.
+  scoped_command_line_.GetProcessCommandLine()->RemoveSwitch(
+      kGeicGuestURLSwitch);
+  base::test::ScopedFeatureList valid_finch;
+  valid_finch.InitAndEnableFeatureWithParameters(
+      features::kGeic, {{"geic-guest-url",
+                         "https://business-staging.gemini.google/side-panel"}});
+  SetPolicyUrl("https://business-staging.gemini.google/side-panel");
   EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
 }
 
@@ -785,83 +557,6 @@ TEST_F(GeicEnablingTest, GetGeicSkillsUrl) {
   scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
       ::switches::kGlicGuestURL, "");
   EXPECT_TRUE(GetGeicSkillsUrl(profile()).is_empty());
-}
-
-TEST_F(GeicEnablingTest, UnwrapsAndCanonicalizesWorkforceAuthPortalUrls) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGeic);
-
-  EXPECT_EQ(
-      ResolvePolicyUrl(
-          "https://auth.cloud.google/signin/locations/global/workforcePools/"
-          "my-pool-1/providers/my-idp?continueUrl=https%3A%2F%2F"
-          "vertexaisearch.cloud.google%2Fhome%2Fcid%2F12345"),
-      GURL("https://vertexaisearch.cloud.google/side-panel?configId=12345&"
-           "idp=locations%2Fglobal%2FworkforcePools%2Fmy-pool-1%2Fproviders%2F"
-           "my-idp"));
-
-  EXPECT_EQ(
-      ResolvePolicyUrl(
-          "https://auth.cloud.google/signin/locations/global/workforcePools/"
-          "my-pool-1/providers/my-idp?continueUrl=https%3A%2F%2F"
-          "vertexaisearch.cloud.google%2Fus%2Fhome%2Fcid%2F12345"),
-      GURL("https://vertexaisearch.cloud.google/side-panel?configId=12345&"
-           "location=us&idp=locations%2Fglobal%2FworkforcePools%2Fmy-pool-1%2F"
-           "providers%2Fmy-idp"));
-
-  EXPECT_EQ(ResolvePolicyUrl(
-                "https://auth.cloud.google/signin/?continueUrl=https%3A%2F%2F"
-                "vertexaisearch.cloud.google%2Fhome%2Fcid%2F12345%3Fidp%3D"
-                "stale-idp"),
-            GURL("https://vertexaisearch.cloud.google/side-panel?"
-                 "configId=12345"));
-
-  EXPECT_EQ(
-      ResolvePolicyUrl(
-          "https://auth.business.gemini.google/signin/locations/global/"
-          "workforcePools/biz-pool/providers/biz-idp/?continueUrl=https%3A%2F"
-          "%2Fbusiness.gemini.google%2Fhome%2Fcid%2F12345"),
-      GURL("https://business.gemini.google/side-panel?configId=12345&"
-           "idp=locations%2Fglobal%2FworkforcePools%2Fbiz-pool%2Fproviders%2F"
-           "biz-idp"));
-
-  EXPECT_EQ(
-      ResolvePolicyUrl(
-          "https://auth.gemini-us.google/signin/locations/global/"
-          "workforcePools/il5-pool/providers/il5-idp?continueUrl=https%3A%2F%2F"
-          "vertexaisearch.gemini-us.google%2Fhome%2Fcid%2F12345"),
-      GURL("https://vertexaisearch.gemini-us.google/side-panel?configId=12345&"
-           "idp=locations%2Fglobal%2FworkforcePools%2Fil5-pool%2Fproviders%2F"
-           "il5-idp"));
-
-  EXPECT_EQ(
-      ResolvePolicyUrl(
-          "https://auth.cloud.google/signin/locations/global/workforcePools/"
-          "my-pool-1/providers/new-idp?continueUrl=https%3A%2F%2F"
-          "vertexaisearch.cloud.google%2Fside-panel%3FconfigId%3D123%26"
-          "idp%3Dold-idp"),
-      GURL("https://vertexaisearch.cloud.google/side-panel?configId=123&"
-           "idp=locations%2Fglobal%2FworkforcePools%2Fmy-pool-1%2Fproviders%2F"
-           "new-idp"));
-}
-
-TEST_F(GeicEnablingTest, PreProductionWorkforceAuthPortalUrls) {
-  const std::string kPreProdWrapper =
-      "https://auth-autopush.corp.cloud.google/signin/locations/global/"
-      "workforcePools/my-pool-1/providers/my-idp?continueUrl=https%3A%2F%2F"
-      "ucs-app-autopush.corp.cloud.google%2Fhome%2Fcid%2F12345";
-  const GURL kExpectedResolved(
-      "https://ucs-app-autopush.corp.cloud.google/side-panel?configId=12345&"
-      "idp=locations%2Fglobal%2FworkforcePools%2Fmy-pool-1%2Fproviders%2F"
-      "my-idp");
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kGeic, {{"geic-guest-url", kPreProdWrapper}});
-
-  EXPECT_EQ(ResolveGeicGuestUrl(profile()), kExpectedResolved);
-  EXPECT_TRUE(ResolvePolicyUrl(kPreProdWrapper).is_empty());
-  EXPECT_EQ(ResolveSwitchUrl(kPreProdWrapper), kExpectedResolved);
 }
 }  // namespace
 }  // namespace geic
