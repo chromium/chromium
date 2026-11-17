@@ -627,15 +627,6 @@ const char kRefreshHeuristicBreakageException[] =
     "fingerprinting_protection_filter.refresh_heuristic_breakage_exception_"
     "sites";
 
-const char kFpfRulesetContent[] =
-    "fingerprinting_protection_filter.ruleset_version.content";
-
-const char kFpfRulesetFormat[] =
-    "fingerprinting_protection_filter.ruleset_version.format";
-
-const char kFpfRulesetChecksum[] =
-    "fingerprinting_protection_filter.ruleset_version.checksum";
-
 // Deprecated 12/2025.
 const char kPrivacyBudgetGeneration[] = "privacy_budget.generation";
 const char kPrivacyBudgetSeenSurfaces[] = "privacy_budget.seen";
@@ -1229,11 +1220,6 @@ inline constexpr char kSuggestedContentEnabled[] =
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-  // Deprecated 11/2025.
-  registry->RegisterStringPref(kFpfRulesetContent, std::string());
-  registry->RegisterIntegerPref(kFpfRulesetFormat, 0);
-  registry->RegisterUint64Pref(kFpfRulesetChecksum, 0);
-
   // Deprecated 12/2025.
   registry->RegisterIntegerPref(kPrivacyBudgetGeneration, 0);
   registry->RegisterStringPref(kPrivacyBudgetSeenSurfaces, std::string());
@@ -2700,16 +2686,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
-
-  // Added 10/2025
-#if !BUILDFLAG(IS_ANDROID)
-  local_state->ClearPref(prefs::kDefaultBrowserFirstShownTime);
-#endif
-
-  // Added 11/2025
-  local_state->ClearPref(kFpfRulesetContent);
-  local_state->ClearPref(kFpfRulesetFormat);
-  local_state->ClearPref(kFpfRulesetChecksum);
 
   // Added 12/2025
   local_state->ClearPref(kPrivacyBudgetGeneration);

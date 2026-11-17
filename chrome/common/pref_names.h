@@ -644,10 +644,6 @@ inline constexpr char kDefaultBrowserLastDeclinedTime[] =
 inline constexpr char kDefaultBrowserDeclinedCount[] =
     "browser.default_browser_declined_count";
 
-// base::Time containing first time the default browser app menu chip was shown.
-inline constexpr char kDefaultBrowserFirstShownTime[] =
-    "browser.default_browser_app_menu_first_shown_time";
-
 // Policy setting whether default browser check should be disabled and default
 // browser registration should take place.
 inline constexpr char kDefaultBrowserSettingEnabled[] =
