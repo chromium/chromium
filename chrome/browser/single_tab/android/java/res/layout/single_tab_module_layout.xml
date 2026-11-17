@@ -90,10 +90,10 @@ found in the LICENSE file.
                   android:gravity="center_horizontal"
                   android:importantForAccessibility="no"
                   android:scaleType="matrix"
-                  app:cornerRadiusBottomEnd="@dimen/single_tab_thumbnail_radius"
-                  app:cornerRadiusBottomStart="@dimen/single_tab_thumbnail_radius"
-                  app:cornerRadiusTopEnd="@dimen/single_tab_thumbnail_radius"
-                  app:cornerRadiusTopStart="@dimen/single_tab_thumbnail_radius" />
+                  app:cornerRadiusBottomEnd="@dimen/home_module_image_corner_radius"
+                  app:cornerRadiusBottomStart="@dimen/home_module_image_corner_radius"
+                  app:cornerRadiusTopEnd="@dimen/home_module_image_corner_radius"
+                  app:cornerRadiusTopStart="@dimen/home_module_image_corner_radius" />
 
               <ImageView
                   android:id="@+id/tab_favicon_view"

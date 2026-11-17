@@ -47,7 +47,7 @@ android_resources("java_resources") {
     "java/res/layout/single_tab_module_layout.xml",
     "java/res/values/dimens.xml",
   ]
-  deps = []
+  deps = [ "//chrome/browser/magic_stack/android:java_resources" ]
 }
 
 robolectric_library("junit") {
