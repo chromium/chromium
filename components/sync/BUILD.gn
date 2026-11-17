@@ -54,8 +54,6 @@ static_library("test_support") {
     "test/fake_data_type_sync_bridge.h",
     "test/fake_device_statistics_request.cc",
     "test/fake_device_statistics_request.h",
-    "test/fake_gcm_driver_sync_invalidation_sender.cc",
-    "test/fake_gcm_driver_sync_invalidation_sender.h",
     "test/fake_server.cc",
     "test/fake_server.h",
     "test/fake_server_http_post_provider.cc",
@@ -64,6 +62,8 @@ static_library("test_support") {
     "test/fake_server_network_resources.h",
     "test/fake_server_nigori_helper.cc",
     "test/fake_server_nigori_helper.h",
+    "test/fake_server_sync_invalidation_sender.cc",
+    "test/fake_server_sync_invalidation_sender.h",
     "test/fake_server_verifier.cc",
     "test/fake_server_verifier.h",
     "test/fake_sync_change_processor.cc",
@@ -74,8 +74,6 @@ static_library("test_support") {
     "test/fake_sync_engine.h",
     "test/fake_sync_engine_factory.cc",
     "test/fake_sync_engine_factory.h",
-    "test/fake_sync_invalidation_sender.cc",
-    "test/fake_sync_invalidation_sender.h",
     "test/fake_sync_manager.cc",
     "test/fake_sync_manager.h",
     "test/fake_sync_scheduler.cc",
@@ -149,7 +147,6 @@ static_library("test_support") {
     ":sync",
     "//base",
     "//components/gcm_driver",
-    "//components/gcm_driver:test_support",
     "//components/sync/invalidations",
     "//components/sync_preferences:test_support",
     "//components/trusted_vault:test_support",
@@ -164,6 +161,7 @@ static_library("test_support") {
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser",
+    "//components/gcm_driver:test_support",
     "//components/gcm_driver/instance_id:test_support",
     "//components/os_crypt/browser:test_support",
     "//components/pref_registry",
@@ -183,13 +181,6 @@ static_library("test_support") {
     "//ui/gfx",
     "//url",
   ]
-
-  if (!is_android) {
-    sources += [
-      "test/fake_gcm_server_sync_invalidation_sender.cc",
-      "test/fake_gcm_server_sync_invalidation_sender.h",
-    ]
-  }
 }
 
 source_set("unit_tests") {

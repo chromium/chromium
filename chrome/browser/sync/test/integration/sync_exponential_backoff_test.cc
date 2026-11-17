@@ -45,14 +45,6 @@ class SyncExponentialBackoffTest
     SyncTest::SetUp();
   }
 
-  void SetUpOnMainThread() override {
-    SyncTest::SetUpOnMainThread();
-    // On ChromeOS, `SetTestNotificationsOnly(true)` prevents
-    // `ash::NetworkChangeManagerClient` from updating the initial
-    // `CONNECTION_NONE` state on startup.
-    EnableNetwork();
-  }
-
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
   }

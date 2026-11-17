@@ -48,10 +48,10 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_impl.h"
 #import "components/sync/test/entity_builder_factory.h"
-#import "components/sync/test/fake_gcm_driver_sync_invalidation_sender.h"
 #import "components/sync/test/fake_server.h"
 #import "components/sync/test/fake_server_network_resources.h"
 #import "components/sync/test/fake_server_nigori_helper.h"
+#import "components/sync/test/fake_server_sync_invalidation_sender.h"
 #import "components/sync/test/fake_server_verifier.h"
 #import "components/sync/test/nigori_test_utils.h"
 #import "components/sync/test/sessions_hierarchy.h"
@@ -109,9 +109,9 @@ class FakeSyncServerContext : public ProfileManagerObserverIOS {
   explicit FakeSyncServerContext(const base::FilePath& base_path)
       : server_(std::make_unique<fake_server::FakeServer>(base_path)),
         invalidation_sender_(
-            std::make_unique<
-                fake_server::FakeGCMDriverSyncInvalidationSender>()) {
-    invalidation_sender_->Start(server_.get(), base_path);
+            std::make_unique<fake_server::FakeServerSyncInvalidationSender>(
+                server_.get(),
+                base_path)) {
     // Ensure the active scene's initial profile has finished loading before
     // attaching the observer and overriding sync network.
     CHECK(chrome_test_util::GetOriginalProfile());
@@ -170,9 +170,7 @@ class FakeSyncServerContext : public ProfileManagerObserverIOS {
 
  private:
   std::unique_ptr<fake_server::FakeServer> server_;
-  // TODO(crbug.com/582626795): Adopt `FakeGCMServerSyncInvalidationSender` on
-  // iOS as well.
-  std::unique_ptr<fake_server::FakeGCMDriverSyncInvalidationSender>
+  std::unique_ptr<fake_server::FakeServerSyncInvalidationSender>
       invalidation_sender_;
   base::ScopedObservation<ProfileManagerIOS, ProfileManagerObserverIOS>
       profile_manager_observation_{this};
