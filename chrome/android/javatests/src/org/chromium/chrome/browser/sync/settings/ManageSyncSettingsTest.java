@@ -1412,7 +1412,8 @@ public class ManageSyncSettingsTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
+    @RequiresRestart("Sets custom passphrase Nigori on FakeServer without decrypting")
     public void testFirstTextViewInPassphraseDialogNotReceivingFocus() {
         mSyncTestRule.getFakeServerHelper().setCustomPassphraseNigori("passphrase");
 
@@ -1442,6 +1443,7 @@ public class ManageSyncSettingsTest {
 
     @Test
     @LargeTest
+    @RequiresRestart("Sets custom passphrase Nigori on FakeServer without decrypting")
     public void testWrongPassphraseShowsIncorrectPassphraseError() throws Exception {
         mSyncTestRule.getFakeServerHelper().setCustomPassphraseNigori("passphrase");
 
