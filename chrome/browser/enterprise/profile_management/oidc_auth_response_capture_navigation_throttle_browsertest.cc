@@ -59,15 +59,13 @@ scoped_refptr<net::HttpResponseHeaders> BuildExampleResponseHeader(
   registration_payload.set_subject(subject_id);
   registration_payload.set_encrypted_user_information(encoded_user_info);
   std::string payload_string;
-  std::string encoded_payload;
   registration_payload.SerializeToString(&payload_string);
-  base::Base64UrlEncode(payload_string,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_payload);
   std::string raw_response_headers =
       "HTTP/1.1 200 OK\r\n"
       "X-Profile-Registration-Payload:" +
-      encoded_payload + "\r\n";
+      base::Base64UrlEncode(payload_string,
+                            base::Base64UrlEncodePolicy::OMIT_PADDING) +
+      "\r\n";
   return base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(raw_response_headers));
 }

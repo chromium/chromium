@@ -399,11 +399,8 @@ class LensOverlayQueryControllerTest : public testing::Test {
   std::string GetEncodedRequestId(lens::LensOverlayRequestId request_id) {
     std::string serialized_proto;
     EXPECT_TRUE(request_id.SerializeToString(&serialized_proto));
-    std::string encoded_proto;
-    base::Base64UrlEncode(serialized_proto,
-                          base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &encoded_proto);
-    return encoded_proto;
+    return base::Base64UrlEncode(serialized_proto,
+                                 base::Base64UrlEncodePolicy::OMIT_PADDING);
   }
 
   void InitFeaturesWithClusterInfoOptimization() {

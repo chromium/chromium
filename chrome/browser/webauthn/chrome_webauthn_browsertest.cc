@@ -175,13 +175,11 @@ static constexpr char kGetAssertionWithHints[] = R"((() => {
 
 std::string GetSignalUnknownCredentialScript(
     base::span<const uint8_t> credential_id) {
-  std::string b64_credential_id;
-  base::Base64UrlEncode(credential_id,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &b64_credential_id);
-  return base::ReplaceStringPlaceholders(kSignalUnknownCredentialId,
-                                         {b64_credential_id},
-                                         /*offsets=*/nullptr);
+  return base::ReplaceStringPlaceholders(
+      kSignalUnknownCredentialId,
+      {base::Base64UrlEncode(credential_id,
+                             base::Base64UrlEncodePolicy::OMIT_PADDING)},
+      /*offsets=*/nullptr);
 }
 
 std::string GetSignalAllAcceptedCredentials(
@@ -194,15 +192,13 @@ std::string GetSignalAllAcceptedCredentials(
     userId: "$2",
   }).then(c => 'webauthn: OK', e => 'error ' + e);
   )";
-  std::string b64_credential_id, b64_user_id;
-  base::Base64UrlEncode(credential_id,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &b64_credential_id);
-  base::Base64UrlEncode(user_id, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &b64_user_id);
-  return base::ReplaceStringPlaceholders(kSignalAllAcceptedCredentials,
-                                         {b64_credential_id, b64_user_id},
-                                         /*offsets=*/nullptr);
+  return base::ReplaceStringPlaceholders(
+      kSignalAllAcceptedCredentials,
+      {base::Base64UrlEncode(credential_id,
+                             base::Base64UrlEncodePolicy::OMIT_PADDING),
+       base::Base64UrlEncode(user_id,
+                             base::Base64UrlEncodePolicy::OMIT_PADDING)},
+      /*offsets=*/nullptr);
 }
 
 sync_pb::WebauthnCredentialSpecifics CreateWebAuthnCredentialSpecifics(

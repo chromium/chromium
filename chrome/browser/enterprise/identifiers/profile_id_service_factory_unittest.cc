@@ -84,17 +84,15 @@ class ProfileIdServiceFactoryTest : public testing::Test,
 
  protected:
   std::string GetTestProfileId(const Profile* profile) {
-    std::string encoded_string;
     std::string device_id = kFakeDeviceID;
 #if BUILDFLAG(IS_WIN)
     device_id += base::WideToUTF8(
         base::win::WmiComputerSystemInfo::Get().serial_number());
 #endif  // (BUILDFLAG(IS_WIN)
-    base::Base64UrlEncode(
+    return base::Base64UrlEncode(
         base::SHA1HashString(profile->GetPrefs()->GetString(kProfileGUIDPref) +
                              device_id),
-        base::Base64UrlEncodePolicy::OMIT_PADDING, &encoded_string);
-    return encoded_string;
+        base::Base64UrlEncodePolicy::OMIT_PADDING);
   }
 
   void SetProfileIdService(Profile* profile) {

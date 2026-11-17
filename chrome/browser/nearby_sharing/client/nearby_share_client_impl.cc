@@ -80,10 +80,9 @@ ListPublicCertificatesRequestToQueryParameters(
   }
   for (const std::string& id : request.secret_ids()) {
     // NOTE: One Platform requires that byte fields be URL-safe base64 encoded.
-    std::string encoded_id;
-    base::Base64UrlEncode(id, base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &encoded_id);
-    query_parameters.emplace_back(kSecretIds, encoded_id);
+    query_parameters.emplace_back(
+        kSecretIds, base::Base64UrlEncode(
+                        id, base::Base64UrlEncodePolicy::INCLUDE_PADDING));
   }
   return query_parameters;
 }

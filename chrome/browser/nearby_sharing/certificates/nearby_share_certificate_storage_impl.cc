@@ -98,11 +98,8 @@ const base::FilePath::CharType kPublicCertificateDatabaseName[] =
     FILE_PATH_LITERAL("NearbySharePublicCertificateDatabase");
 
 std::string EncodeString(const std::string& unencoded_string) {
-  std::string encoded_string;
-  base::Base64UrlEncode(unencoded_string,
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &encoded_string);
-  return encoded_string;
+  return base::Base64UrlEncode(unencoded_string,
+                               base::Base64UrlEncodePolicy::INCLUDE_PADDING);
 }
 
 std::optional<std::string> DecodeString(const std::string& encoded_string) {

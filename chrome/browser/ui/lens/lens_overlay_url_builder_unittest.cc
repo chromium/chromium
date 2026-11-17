@@ -73,11 +73,8 @@ class LensOverlayUrlBuilderTest : public testing::Test {
   std::string EncodeRequestId(lens::LensOverlayRequestId* request_id) {
     std::string serialized_request_id;
     EXPECT_TRUE(request_id->SerializeToString(&serialized_request_id));
-    std::string encoded_request_id;
-    base::Base64UrlEncode(serialized_request_id,
-                          base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &encoded_request_id);
-    return encoded_request_id;
+    return base::Base64UrlEncode(serialized_request_id,
+                                 base::Base64UrlEncodePolicy::OMIT_PADDING);
   }
 
   // Checks that the query submission time and client upload duration params are
@@ -445,10 +442,8 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithNoTextQuery) {
 
   std::string serialized_request_id;
   CHECK(request_id.get()->SerializeToString(&serialized_request_id));
-  std::string encoded_request_id;
-  base::Base64UrlEncode(serialized_request_id,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_request_id);
+  std::string encoded_request_id = base::Base64UrlEncode(
+      serialized_request_id, base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   std::string expected_url = base::StringPrintf(
       "%s?source=chrome.cr.menu&cs=0&gsc=2&hl=%s&q=&lns_mode=un&"
@@ -484,10 +479,8 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithAdditionalParams) {
 
   std::string serialized_request_id;
   CHECK(request_id.get()->SerializeToString(&serialized_request_id));
-  std::string encoded_request_id;
-  base::Base64UrlEncode(serialized_request_id,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_request_id);
+  std::string encoded_request_id = base::Base64UrlEncode(
+      serialized_request_id, base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   std::string expected_url = base::StringPrintf(
       "%s?source=chrome.cr.menu&param=value&cs=0&gsc=2&hl=%s&q=&lns_"
@@ -527,10 +520,8 @@ TEST_F(LensOverlayUrlBuilderTest, BuildMultimodalSearchURLWithVideoContext) {
 
   std::string serialized_request_id;
   CHECK(request_id.get()->SerializeToString(&serialized_request_id));
-  std::string encoded_request_id;
-  base::Base64UrlEncode(serialized_request_id,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_request_id);
+  std::string encoded_request_id = base::Base64UrlEncode(
+      serialized_request_id, base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   std::string expected_url = base::StringPrintf(
       "%s?source=chrome.cr.menu&cs=0&gsc=2&hl=%s&q=%s&lns_"
@@ -566,10 +557,8 @@ TEST_F(LensOverlayUrlBuilderTest,
 
   std::string serialized_request_id;
   CHECK(request_id.get()->SerializeToString(&serialized_request_id));
-  std::string encoded_request_id;
-  base::Base64UrlEncode(serialized_request_id,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_request_id);
+  std::string encoded_request_id = base::Base64UrlEncode(
+      serialized_request_id, base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   std::string expected_url = base::StringPrintf(
       "%s?source=chrome.cr.menu&cs=0&gsc=2&hl=%s&q=&lns_"
@@ -624,10 +613,8 @@ TEST_F(LensOverlayUrlBuilderTest,
 
   std::string serialized_request_id;
   CHECK(request_id.get()->SerializeToString(&serialized_request_id));
-  std::string encoded_request_id;
-  base::Base64UrlEncode(serialized_request_id,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_request_id);
+  std::string encoded_request_id = base::Base64UrlEncode(
+      serialized_request_id, base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   std::string expected_url = base::StringPrintf(
       "%s?source=chrome.cr.menu&cs=0&gsc=2&hl=%s&q=%s&lns_"

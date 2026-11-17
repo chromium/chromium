@@ -44,10 +44,8 @@ std::string DetermineDeviceID() {
     return std::string();
   }
 
-  std::string device_id;
-  base::Base64UrlEncode(base::SHA1HashString(trimmed_machine_id),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING, &device_id);
-  return device_id;
+  return base::Base64UrlEncode(base::SHA1HashString(trimmed_machine_id),
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 // Reads a token from the given file. Returns the empty string if the file could

@@ -70,10 +70,8 @@ api::enterprise_reporting_private::PresenceValue ConvertPresenceValue(
 }
 
 std::string EncodeHash(const std::string& byte_string) {
-  std::string encoded_string;
-  base::Base64UrlEncode(byte_string, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_string);
-  return encoded_string;
+  return base::Base64UrlEncode(byte_string,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 std::vector<std::string> EncodeHashes(

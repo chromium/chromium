@@ -286,12 +286,8 @@ std::string GetBase64UrlVariations(Profile* profile) {
   std::string variations_decoded;
   base::Base64Decode(variations_base64, &variations_decoded);
 
-  std::string variations_base64url;
-  base::Base64UrlEncode(variations_decoded,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &variations_base64url);
-
-  return variations_base64url;
+  return base::Base64UrlEncode(variations_decoded,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 BASE_FEATURE(kDropMismatchedSelections, base::FEATURE_ENABLED_BY_DEFAULT);

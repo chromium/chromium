@@ -96,13 +96,11 @@ TEST_F(BrowserDMTokenStorageMacTest, SaveDMToken) {
   ASSERT_TRUE(base::PathService::Get(base::DIR_APP_DATA, &app_data_dir_path));
   base::FilePath dm_token_dir_path = app_data_dir_path.Append(kDmTokenBaseDir);
 
-  std::string filename;
   auto hash_array = crypto::obsolete::Sha1::HashForTesting(
       base::as_byte_span(storage_delegate.InitClientId()));
-  base::Base64UrlEncode(hash_array, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &filename);
-
-  base::FilePath dm_token_file_path = dm_token_dir_path.Append(filename);
+  base::FilePath dm_token_file_path =
+      dm_token_dir_path.Append(base::Base64UrlEncode(
+          hash_array, base::Base64UrlEncodePolicy::OMIT_PADDING));
 
   std::string dm_token;
   ASSERT_TRUE(base::ReadFileToString(dm_token_file_path, &dm_token));
@@ -123,13 +121,12 @@ TEST_F(BrowserDMTokenStorageMacTest, DeleteDMToken) {
   base::FilePath dm_token_dir_path = app_data_dir_path.Append(kDmTokenBaseDir);
   ASSERT_TRUE(base::CreateDirectory(dm_token_dir_path));
 
-  std::string filename;
   BrowserDMTokenStorageMac storage_delegate;
   auto hash_array = crypto::obsolete::Sha1::HashForTesting(
       base::as_byte_span(storage_delegate.InitClientId()));
-  base::Base64UrlEncode(hash_array, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &filename);
-  base::FilePath dm_token_file_path = dm_token_dir_path.Append(filename);
+  base::FilePath dm_token_file_path =
+      dm_token_dir_path.Append(base::Base64UrlEncode(
+          hash_array, base::Base64UrlEncodePolicy::OMIT_PADDING));
   ASSERT_TRUE(base::WriteFile(base::FilePath(dm_token_file_path), kDMToken));
   ASSERT_TRUE(base::PathExists(dm_token_file_path));
 
@@ -162,12 +159,11 @@ TEST_F(BrowserDMTokenStorageMacTest, DeleteEmptyDMToken) {
   base::FilePath app_data_dir_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_APP_DATA, &app_data_dir_path));
   base::FilePath dm_token_dir_path = app_data_dir_path.Append(kDmTokenBaseDir);
-  std::string filename;
   auto hash_array = crypto::obsolete::Sha1::HashForTesting(
       base::as_byte_span(storage_delegate.InitClientId()));
-  base::Base64UrlEncode(hash_array, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &filename);
-  base::FilePath dm_token_file_path = dm_token_dir_path.Append(filename);
+  base::FilePath dm_token_file_path =
+      dm_token_dir_path.Append(base::Base64UrlEncode(
+          hash_array, base::Base64UrlEncodePolicy::OMIT_PADDING));
 
   ASSERT_FALSE(base::PathExists(dm_token_file_path));
 

@@ -122,18 +122,12 @@ const char* kIncognitoWarningPattern =
     "websites.";
 
 std::string GetTestApplicationServerKey(bool base64_url_encoded = false) {
-  std::string application_server_key;
-
   if (base64_url_encoded) {
-    base::Base64UrlEncode(reinterpret_cast<const char*>(kApplicationServerKey),
-                          base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &application_server_key);
-  } else {
-    application_server_key = std::string(std::begin(kApplicationServerKey),
-                                         std::end(kApplicationServerKey));
+    return base::Base64UrlEncode(kApplicationServerKey,
+                                 base::Base64UrlEncodePolicy::OMIT_PADDING);
   }
-
-  return application_server_key;
+  return std::string(std::begin(kApplicationServerKey),
+                     std::end(kApplicationServerKey));
 }
 
 // Kinds of stored subscriptions with a legacy (non-InstanceID) app_id.

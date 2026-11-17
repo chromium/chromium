@@ -75,11 +75,8 @@ const char kEncryptedMetadataBytes4[] = "encryptedmetadatabytes4";
 const char kMetadataEncryptionKeyTag4[] = "metadataencryptionkeytag4";
 
 std::string EncodeString(const std::string& unencoded_string) {
-  std::string encoded_string;
-  base::Base64UrlEncode(unencoded_string,
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &encoded_string);
-  return encoded_string;
+  return base::Base64UrlEncode(unencoded_string,
+                               base::Base64UrlEncodePolicy::INCLUDE_PADDING);
 }
 
 nearby::sharing::proto::PublicCertificate CreatePublicCertificate(

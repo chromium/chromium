@@ -15,10 +15,8 @@
 
 namespace {
 std::string Encode(const std::string& str) {
-  std::string encoded_string;
-  base::Base64UrlEncode(str, base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &encoded_string);
-  return encoded_string;
+  return base::Base64UrlEncode(str,
+                               base::Base64UrlEncodePolicy::INCLUDE_PADDING);
 }
 
 std::string TruncateString(std::string_view str) {

@@ -221,17 +221,12 @@ std::vector<std::string> GetCpuAbiList(const arc::ArcFeatures& arc_features) {
 
 std::string CompressAndEncodeProtoMessageOnBlockingThread(
     device_configuration::DeviceConfigurationProto device_config) {
-  std::string encoded_device_configuration_proto;
-
   std::string serialized_proto;
   device_config.SerializeToString(&serialized_proto);
   std::string compressed_proto;
   compression::GzipCompress(serialized_proto, &compressed_proto);
-  base::Base64UrlEncode(compressed_proto,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_device_configuration_proto);
-
-  return encoded_device_configuration_proto;
+  return base::Base64UrlEncode(compressed_proto,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 void RecordUmaDownloadTime(base::TimeDelta download_time) {

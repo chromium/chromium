@@ -150,11 +150,8 @@ GURL AppendUrlParamsFromMap(
 std::string CompressAndEncode(const std::string& serialized_proto) {
   std::string compressed_proto;
   compression::GzipCompress(serialized_proto, &compressed_proto);
-  std::string stickiness_signal_value;
-  base::Base64UrlEncode(compressed_proto,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &stickiness_signal_value);
-  return stickiness_signal_value;
+  return base::Base64UrlEncode(compressed_proto,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 std::string GetURLRefWithoutTextFragment(const GURL& url) {
@@ -324,12 +321,10 @@ GURL BuildLensSearchURL(
 
   std::string serialized_request_id;
   CHECK(request_id.get()->SerializeToString(&serialized_request_id));
-  std::string encoded_request_id;
-  base::Base64UrlEncode(serialized_request_id,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_request_id);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
-      url_with_query_params, kRequestIdParameterKey, encoded_request_id);
+      url_with_query_params, kRequestIdParameterKey,
+      base::Base64UrlEncode(serialized_request_id,
+                            base::Base64UrlEncodePolicy::OMIT_PADDING));
   url_with_query_params =
       AppendQuerySubmissionTimeAndClientUploadDurationParamToURL(
           url_with_query_params, query_start_time);

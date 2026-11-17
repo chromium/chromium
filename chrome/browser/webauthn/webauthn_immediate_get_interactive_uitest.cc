@@ -274,9 +274,6 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebAuthnImmediateGetWithBootstrappedEnclaveTest,
 
   // Add a second passkey with a different credential ID.
   auto cred_id2 = base::RandBytesAsVector(16);
-  std::string cred_id2_base64;
-  base::Base64UrlEncode(cred_id2, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &cred_id2_base64);
   AddPasskey(kUser2, cred_id2);
 
   ASSERT_EQ(
@@ -293,7 +290,10 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebAuthnImmediateGetWithBootstrappedEnclaveTest,
       SelectPasskeyInCombinedSelectorSheet(kUser2),
       PressButton(views::DialogClientView::kOkButtonElementId),
       WaitForElementVisible(kTabId, kSuccess),
-      WaitForElementWithText(kTabId, kMessage, cred_id2_base64));
+      WaitForElementWithText(
+          kTabId, kMessage,
+          base::Base64UrlEncode(cred_id2,
+                                base::Base64UrlEncodePolicy::OMIT_PADDING)));
 }
 
 IN_PROC_BROWSER_TEST_F(MAYBE_WebAuthnImmediateGetWithBootstrappedEnclaveTest,

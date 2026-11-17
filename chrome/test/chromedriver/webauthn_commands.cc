@@ -78,7 +78,7 @@ base::DictValue MapParams(
   if (!base::Base64Decode(str, &temp)) {
     return Status(kInvalidArgument, kDevToolsDidNotReturnExpectedValue);
   }
-  base::Base64UrlEncode(temp, base::Base64UrlEncodePolicy::OMIT_PADDING, &str);
+  str = base::Base64UrlEncode(temp, base::Base64UrlEncodePolicy::OMIT_PADDING);
   return Status(kOk);
 }
 

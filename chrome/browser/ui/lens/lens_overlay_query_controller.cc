@@ -2332,11 +2332,8 @@ std::string LensOverlayQueryController::EncodeVisualSearchInteractionLogData(
   parent_query_sent_ = true;
   std::string serialized_proto;
   CHECK(interaction_data.SerializeToString(&serialized_proto));
-  std::string encoded_proto;
-  base::Base64UrlEncode(serialized_proto,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_proto);
-  return encoded_proto;
+  return base::Base64UrlEncode(serialized_proto,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 lens::LensOverlayServerRequest
