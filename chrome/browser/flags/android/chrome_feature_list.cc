@@ -83,6 +83,7 @@
 #include "components/tab_groups/features.h"
 #include "components/themes/cross_device/features.h"
 #include "components/touch_to_search/core/browser/contextual_search_field_trial.h"
+#include "components/trusted_vault/features.h"
 #include "components/ttc/features.h"
 #include "components/universal_optout/features.h"
 #include "components/visited_url_ranking/public/features.h"
@@ -638,6 +639,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &tab_groups::kUpdateTabGroupColors,
     &tab_groups::kUseAlternateHistorySyncIllustration,
     &themes::kCrossDeviceThemeTracker,
+    &trusted_vault::kTrustedVaultRefreshStalePreEnrollmentKey,
     &ttc::kTtc,
     &ttc::kTtcFre,
     &universal_optout::features::kUniversalOptOut,

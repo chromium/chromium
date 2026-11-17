@@ -916,6 +916,8 @@ public abstract class ChromeFeatureList {
     public static final String TOOLBAR_TABLET_RESIZE_REFACTOR = "ToolbarTabletResizeRefactor";
     public static final String TOUCH_TO_SEARCH_CALLOUT = "TouchToSearchCallout";
     public static final String TRIM_MEMORY_BACKGROUND_IS_SEVERE = "TrimMemoryBackgroundIsSevere";
+    public static final String TRUSTED_VAULT_REFRESH_STALE_PRE_ENROLLMENT_KEY =
+            "TrustedVaultRefreshStalePreEnrollmentKey";
     public static final String TRUSTED_WEB_ACTIVITY_CONTACTS_DELEGATION =
             "TrustedWebActivityContactsDelegation";
     public static final String TTC = "Ttc";
@@ -1922,6 +1924,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TOOLBAR_SCROLL_ABLATION, false);
     public static final MutableFlagWithSafeDefault sTrimMemoryBackgroundIsSevere =
             newMutableFlagWithSafeDefault(TRIM_MEMORY_BACKGROUND_IS_SEVERE, false);
+    public static final MutableFlagWithSafeDefault sTrustedVaultRefreshStalePreEnrollmentKey =
+            newMutableFlagWithSafeDefault(TRUSTED_VAULT_REFRESH_STALE_PRE_ENROLLMENT_KEY, true);
     public static final MutableFlagWithSafeDefault sUndoableTabClosureRework =
             newMutableFlagWithSafeDefault(UNDOABLE_TAB_CLOSURE_REWORK, false);
     // Only takes effect while sUserEducationFramework is also enabled.

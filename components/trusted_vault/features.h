@@ -13,6 +13,10 @@ namespace trusted_vault {
 
 BASE_DECLARE_FEATURE(kTrustedVaultSharedRecoveryFactorsAndEncryption);
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kTrustedVaultRefreshStalePreEnrollmentKey);
+#endif
+
 }  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_FEATURES_H_
