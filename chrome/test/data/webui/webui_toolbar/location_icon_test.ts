@@ -212,8 +212,22 @@ suite('LocationIconTest', function() {
     assertTrue(container.hasAttribute('disable-hover-highlight'));
     assertTrue(container.hasAttribute('disable-pressed-highlight'));
     assertEquals(-1, container.$.button.tabIndex);
-    container.dispatchEvent(new PointerEvent('pointerdown'));
-    assertEquals(0, toolbarUiHandler.getCallCount('onLhsChipMousePressed'));
+    // Like native Views, every press is still reported (e.g. for middle-click
+    // paste-and-go), but the click is blocked.
+    container.dispatchEvent(new PointerEvent('pointerdown', {button: 0}));
+    container.dispatchEvent(new PointerEvent('pointerup'));
+    container.dispatchEvent(new PointerEvent('pointerdown', {button: 2}));
+    container.dispatchEvent(new PointerEvent('pointerup'));
+    container.dispatchEvent(
+        new PointerEvent('pointerdown', {button: 1, buttons: 4}));
+    container.dispatchEvent(new PointerEvent('pointerup'));
+    assertDeepEquals(
+        [
+          {identifier: LhsChipIdentifier.kLocationIcon, isMiddleClick: false},
+          {identifier: LhsChipIdentifier.kLocationIcon, isMiddleClick: false},
+          {identifier: LhsChipIdentifier.kLocationIcon, isMiddleClick: true},
+        ],
+        toolbarUiHandler.getArgs('onLhsChipMousePressed'));
 
     container.click();
     assertEquals(0, toolbarUiHandler.getCallCount('onLhsChipClicked'));
@@ -436,7 +450,7 @@ suite('LocationIconTest', function() {
 
   // Like native Views, which closes the omnibox suggestions popup on a drag of
   // the icon even when there is nothing to drag, the browser is notified of
-  // the drag. A press alone is not reported, since it does nothing.
+  // the drag.
   test('Dragging an unclickable icon notifies the browser', async function() {
     await setClickable(false);
     const container = locationIcon.$.button;
@@ -445,7 +459,6 @@ suite('LocationIconTest', function() {
         'pointerdown', {pointerId: 1, button: 0, clientX: 0, clientY: 0}));
     container.dispatchEvent(new PointerEvent(
         'pointermove', {pointerId: 1, clientX: 20, clientY: 0}));
-    assertEquals(0, toolbarUiHandler.getCallCount('onLhsChipMousePressed'));
     assertEquals(1, toolbarUiHandler.getCallCount('onLhsChipDrag'));
   });
 

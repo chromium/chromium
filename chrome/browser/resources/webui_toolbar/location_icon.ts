@@ -228,19 +228,11 @@ export class LocationIconElement extends LocationIconElementBase {
       return;
     }
 
-    // An unclickable icon ignores presses, but still reports drags, like
-    // native Views, which closes the omnibox suggestions popup on a drag of
-    // the icon even when there is nothing to drag.
-    if (!this.clickable) {
-      if (e.button === 0) {
-        this.isDragging_ = false;
-        this.startDragTracking_(e);
-      }
-      return;
-    }
-
     // Only handle primary (left), auxiliary (middle), and secondary (right)
-    // clicks.
+    // clicks. Like native LocationIconView::OnMousePressed(), report every
+    // press even while unclickable (editing, empty omnibox, Super G), so
+    // middle-click paste-and-go and drags (which close the omnibox popup) still
+    // work. onClick_() blocks the click, like native IsTriggerableEvent().
     if (![0, 1, 2].includes(e.button)) {
       return;
     }
