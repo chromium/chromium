@@ -4050,10 +4050,11 @@ AutotestPrivateGetAppWindowListFunction::Run() {
           views::Widget::GetWidgetForNativeWindow(window);
       // All widgets for app windows in chromeos should have a frame. Non app
       // windows may not have a frame and frame mode will be NONE.
-      CHECK(!no_frame_header_widget ||
-                no_frame_header_widget->GetNativeWindow()->GetType() !=
-                    aura::client::WINDOW_TYPE_NORMAL,
-            base::NotFatalUntil::M160);
+      // TODO(b/585323198): CHECK-exclusion: Restore to CHECK once frameless
+      // PiP and Live Caption window handling is fixed.
+      DCHECK(!no_frame_header_widget ||
+             no_frame_header_widget->GetNativeWindow()->GetType() !=
+                 aura::client::WINDOW_TYPE_NORMAL);
       window_info.frame_mode = api::autotest_private::FrameMode::kNone;
       window_info.is_frame_visible = false;
     }
