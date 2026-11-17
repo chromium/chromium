@@ -513,3 +513,164 @@ TEST_F(CobrowseTabHelperTest,
   // bug.
   EXPECT_EQ(agent()->GetCobrowseContext(), valid_query_context);
 }
+
+// Tests that a cross-document navigation closes the assistant and terminates
+// the session when `kEphemeralBottomSheet` is enabled.
+TEST_F(CobrowseTabHelperTest,
+       CloseAssistantOnCrossDocumentNavigationWhenEphemeral) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEphemeralBottomSheet);
+
+  web::FakeWebState* web_state =
+      CreateAndInsertWebState(GURL("https://www.example.com"));
+  web_state->WasShown();
+  agent()->SetSessionActive(true);
+  CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL("https://www.example.com/next"));
+  context.SetIsSameDocument(false);
+
+  OCMExpect([mock_scene_commands_handler() closeAssistant]);
+
+  tab_helper->DidStartNavigation(web_state, &context);
+
+  [mock_scene_commands_handler() verify];
+  EXPECT_FALSE(agent()->IsSessionActive());
+}
+
+// Tests that a reload closes the assistant and terminates the session when
+// `kEphemeralBottomSheet` is enabled.
+TEST_F(CobrowseTabHelperTest, CloseAssistantOnReloadWhenEphemeral) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEphemeralBottomSheet);
+
+  web::FakeWebState* web_state =
+      CreateAndInsertWebState(GURL("https://www.example.com"));
+  web_state->WasShown();
+  agent()->SetSessionActive(true);
+  CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL("https://www.example.com"));
+  context.SetPageTransition(ui::PAGE_TRANSITION_RELOAD);
+  context.SetIsSameDocument(false);
+
+  OCMExpect([mock_scene_commands_handler() closeAssistant]);
+
+  tab_helper->DidStartNavigation(web_state, &context);
+
+  [mock_scene_commands_handler() verify];
+  EXPECT_FALSE(agent()->IsSessionActive());
+}
+
+// Tests that same-document navigations (such as anchor jumps, `pushState`, and
+// `replaceState`) do not close the assistant when `kEphemeralBottomSheet` is
+// enabled.
+TEST_F(CobrowseTabHelperTest,
+       NoCloseAssistantOnSameDocumentNavigationWhenEphemeral) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEphemeralBottomSheet);
+
+  web::FakeWebState* web_state =
+      CreateAndInsertWebState(GURL("https://www.example.com"));
+  web_state->WasShown();
+  agent()->SetSessionActive(true);
+  CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
+
+  [[mock_scene_commands_handler() reject] closeAssistant];
+
+  // Simulate `pushState` / anchor navigation (`PAGE_TRANSITION_LINK`).
+  web::FakeNavigationContext push_state_context;
+  push_state_context.SetUrl(GURL("https://www.example.com?pushed"));
+  push_state_context.SetPageTransition(ui::PAGE_TRANSITION_LINK);
+  push_state_context.SetIsSameDocument(true);
+  tab_helper->DidStartNavigation(web_state, &push_state_context);
+  EXPECT_TRUE(agent()->IsSessionActive());
+
+  // Simulate `replaceState` (`PAGE_TRANSITION_CLIENT_REDIRECT`).
+  web::FakeNavigationContext replace_state_context;
+  replace_state_context.SetUrl(GURL("https://www.example.com?replaced"));
+  replace_state_context.SetPageTransition(ui::PAGE_TRANSITION_CLIENT_REDIRECT);
+  replace_state_context.SetIsSameDocument(true);
+  tab_helper->DidStartNavigation(web_state, &replace_state_context);
+  EXPECT_TRUE(agent()->IsSessionActive());
+
+  [mock_scene_commands_handler() verify];
+}
+
+// Tests that a same-document back/forward navigation to an entry whose stored
+// transition is `PAGE_TRANSITION_RELOAD` combined with
+// `PAGE_TRANSITION_FORWARD_BACK` does not close the assistant when
+// `kEphemeralBottomSheet` is enabled.
+TEST_F(CobrowseTabHelperTest,
+       NoCloseAssistantOnSameDocumentBackForwardReloadWhenEphemeral) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEphemeralBottomSheet);
+
+  web::FakeWebState* web_state =
+      CreateAndInsertWebState(GURL("https://www.example.com#section"));
+  web_state->WasShown();
+  agent()->SetSessionActive(true);
+  CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL("https://www.example.com"));
+  context.SetPageTransition(ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_RELOAD | ui::PAGE_TRANSITION_FORWARD_BACK));
+  context.SetIsSameDocument(true);
+
+  [[mock_scene_commands_handler() reject] closeAssistant];
+
+  tab_helper->DidStartNavigation(web_state, &context);
+
+  [mock_scene_commands_handler() verify];
+  EXPECT_TRUE(agent()->IsSessionActive());
+}
+
+// Tests that a cross-document client redirect does not close the assistant when
+// `kEphemeralBottomSheet` is enabled.
+TEST_F(CobrowseTabHelperTest, NoCloseAssistantOnClientRedirectWhenEphemeral) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEphemeralBottomSheet);
+
+  web::FakeWebState* web_state =
+      CreateAndInsertWebState(GURL("https://www.example.com"));
+  web_state->WasShown();
+  agent()->SetSessionActive(true);
+  CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL("https://www.example.com/redirected"));
+  context.SetPageTransition(ui::PAGE_TRANSITION_CLIENT_REDIRECT);
+  context.SetIsSameDocument(false);
+
+  [[mock_scene_commands_handler() reject] closeAssistant];
+
+  tab_helper->DidStartNavigation(web_state, &context);
+
+  [mock_scene_commands_handler() verify];
+  EXPECT_TRUE(agent()->IsSessionActive());
+}
+
+// Tests that a cross-document navigation does not close the assistant when
+// `kEphemeralBottomSheet` is disabled.
+TEST_F(CobrowseTabHelperTest,
+       NoCloseAssistantOnNavigationWhenEphemeralDisabled) {
+  web::FakeWebState* web_state =
+      CreateAndInsertWebState(GURL("https://www.example.com"));
+  web_state->WasShown();
+  agent()->SetSessionActive(true);
+  CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL("https://www.example.com/next"));
+  context.SetIsSameDocument(false);
+
+  [[mock_scene_commands_handler() reject] closeAssistant];
+
+  tab_helper->DidStartNavigation(web_state, &context);
+
+  [mock_scene_commands_handler() verify];
+  EXPECT_TRUE(agent()->IsSessionActive());
+}

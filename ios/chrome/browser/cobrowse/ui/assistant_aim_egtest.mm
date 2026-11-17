@@ -356,6 +356,19 @@ void RemoveSharedTab(NSString* title) {
     config.features_enabled.push_back(kEnableCobrowseOnAimSrpTap);
   }
 
+  if ([self
+          isRunningTest:@selector(testEphemeralAssistantClosesOnNavigation)] ||
+      [self isRunningTest:@selector(testEphemeralAssistantClosesOnReload)] ||
+      [self isRunningTest:
+                @selector(
+                    testEphemeralAssistantStaysOpenOnSameDocumentNavigation)] ||
+      [self isRunningTest:@selector(
+                              testEphemeralAssistantStaysOpenOnPushState)] ||
+      [self isRunningTest:@selector(
+                              testEphemeralAssistantStaysOpenOnReplaceState)]) {
+    config.features_enabled.push_back(kEphemeralBottomSheet);
+  }
+
   // Enable omnibox debugging flags.
   config.additional_args.push_back("-EnableOmniboxDebugging");
   config.additional_args.push_back("YES");
@@ -1824,6 +1837,75 @@ void RemoveSharedTab(NSString* title) {
   // chrome://version was not attached).
   VerifySharedTabs(@[], @[ kPonyPageTitle ],
                    /*dismissAfterVerification=*/YES);
+}
+
+// Tests that navigating to a new webpage closes the assistant when
+// `kEphemeralBottomSheet` is enabled.
+- (void)testEphemeralAssistantClosesOnNavigation {
+  OpenCoBrowse(_defaultURL);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPonyPagePath)];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:CloseButton()];
+}
+
+// Tests that reloading the webpage closes the assistant when
+// `kEphemeralBottomSheet` is enabled.
+- (void)testEphemeralAssistantClosesOnReload {
+  OpenCoBrowse(_defaultURL);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+
+  [ChromeEarlGrey reload];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:CloseButton()];
+}
+
+// Tests that a same-document navigation (e.g., an anchor jump) keeps the
+// assistant open when `kEphemeralBottomSheet` is enabled.
+- (void)testEphemeralAssistantStaysOpenOnSameDocumentNavigation {
+  OpenCoBrowse(_defaultURL);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+
+  [ChromeEarlGrey
+      evaluateJavaScriptForSideEffect:@"window.location.hash = 'section1';"];
+  [ChromeEarlGrey
+      waitForWebStateVisibleURL:self.testServer->GetURL("/echo#section1")];
+
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that a `history.pushState` same-document navigation keeps the assistant
+// open when `kEphemeralBottomSheet` is enabled.
+- (void)testEphemeralAssistantStaysOpenOnPushState {
+  OpenCoBrowse(_defaultURL);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:
+                      @"history.pushState({}, '', '/echo?pushed');"];
+  [ChromeEarlGrey
+      waitForWebStateVisibleURL:self.testServer->GetURL("/echo?pushed")];
+
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that a `history.replaceState` same-document navigation keeps the
+// assistant open when `kEphemeralBottomSheet` is enabled.
+- (void)testEphemeralAssistantStaysOpenOnReplaceState {
+  OpenCoBrowse(_defaultURL);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:
+                      @"history.replaceState({}, '', '/echo?replaced');"];
+  [ChromeEarlGrey
+      waitForWebStateVisibleURL:self.testServer->GetURL("/echo?replaced")];
+
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

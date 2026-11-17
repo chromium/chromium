@@ -42,6 +42,9 @@ class CobrowseTabHelper : public web::WebStateObserver,
 
     // Sets the context directly.
     virtual void SetCobrowseContext(CobrowseContext* context) = 0;
+
+    // Terminates the cobrowse session and hides the assistant.
+    virtual void TerminateSession() = 0;
   };
 
   CobrowseTabHelper(const CobrowseTabHelper&) = delete;

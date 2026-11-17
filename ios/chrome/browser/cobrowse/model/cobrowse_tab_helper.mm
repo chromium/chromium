@@ -86,17 +86,30 @@ void CobrowseTabHelper::DidStartNavigation(
     return;
   }
 
-  // Do not trigger the assistant on reloads.
-  if (ui::PageTransitionCoreTypeIs(navigation_context->GetPageTransition(),
-                                   ui::PAGE_TRANSITION_RELOAD)) {
-    return;
-  }
-
   const GURL& url = navigation_context->GetUrl();
 
   // Do not hide or trigger the assistant for temporary about:blank or invalid
   // URL navigations while loading.
   if (!url.is_valid() || url.IsAboutBlank()) {
+    return;
+  }
+
+  if (IsEphemeralBottomSheetEnabled() && delegate_->IsSessionActive()) {
+    // Keep the assistant open across same-document navigations (e.g., anchor
+    // jumps or `pushState`/`replaceState` updates on infinite-scroll pages) and
+    // automatic redirects (e.g., a result page that client-redirects right
+    // after the session opens) to avoid closing the sheet prematurely.
+    if (!navigation_context->IsSameDocument() &&
+        !ui::PageTransitionIsRedirect(
+            navigation_context->GetPageTransition())) {
+      delegate_->TerminateSession();
+    }
+    return;
+  }
+
+  // Do not trigger the assistant on reloads.
+  if (ui::PageTransitionCoreTypeIs(navigation_context->GetPageTransition(),
+                                   ui::PAGE_TRANSITION_RELOAD)) {
     return;
   }
 

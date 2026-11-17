@@ -35,9 +35,6 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
   // Returns the current Cobrowse context.
   CobrowseContext* GetCobrowseContext();
 
-  // Terminates the cobrowse session and hides the assistant.
-  void TerminateSession();
-
   // CobrowseTabHelper::Delegate:
   bool CanShowAssistantForWebState(web::WebState* web_state) override;
   void ConfigureAssistantContextForWebState(web::WebState* web_state) override;
@@ -46,6 +43,7 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
   bool ShouldHideAssistantForWebState(web::WebState* web_state) override;
   void SetCobrowseContext(CobrowseContext* context) override;
   bool IsWebStateActive(web::WebState* web_state) override;
+  void TerminateSession() override;
 
   // TabsDependencyInstaller:
   void OnWebStateInserted(web::WebState* web_state) override;
