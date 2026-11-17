@@ -11,6 +11,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/unguessable_token.h"
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_shared_tab.h"
+#import "ios/chrome/browser/composebox/menu/ui/composebox_menu_list_cell.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
@@ -175,11 +176,11 @@ TEST_F(ComposeboxMenuSharedTabsViewControllerTest,
   ASSERT_TRUE(collection_view);
   [collection_view layoutIfNeeded];
 
-  UICollectionViewListCell* short_cell =
-      base::apple::ObjCCast<UICollectionViewListCell>([collection_view
+  ComposeboxMenuListCell* short_cell =
+      base::apple::ObjCCast<ComposeboxMenuListCell>([collection_view
           cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]]);
-  UICollectionViewListCell* long_cell =
-      base::apple::ObjCCast<UICollectionViewListCell>([collection_view
+  ComposeboxMenuListCell* long_cell =
+      base::apple::ObjCCast<ComposeboxMenuListCell>([collection_view
           cellForItemAtIndexPath:[NSIndexPath indexPathForItem:1 inSection:0]]);
   ASSERT_TRUE(short_cell);
   ASSERT_TRUE(long_cell);
@@ -259,8 +260,8 @@ TEST_F(ComposeboxMenuSharedTabsViewControllerTest,
   ASSERT_TRUE(collection_view);
   [collection_view layoutIfNeeded];
 
-  UICollectionViewListCell* first_cell =
-      base::apple::ObjCCast<UICollectionViewListCell>([collection_view
+  ComposeboxMenuListCell* first_cell =
+      base::apple::ObjCCast<ComposeboxMenuListCell>([collection_view
           cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]]);
   ASSERT_TRUE(first_cell);
   EXPECT_TRUE(chrome_test_util::FindLabelWithText(first_cell, @"First Tab"));
@@ -276,8 +277,8 @@ TEST_F(ComposeboxMenuSharedTabsViewControllerTest,
   EXPECT_TRUE(handled);
   EXPECT_EQ([collection_view numberOfItemsInSection:0], 1);
   [collection_view layoutIfNeeded];
-  UICollectionViewListCell* remaining_cell =
-      base::apple::ObjCCast<UICollectionViewListCell>([collection_view
+  ComposeboxMenuListCell* remaining_cell =
+      base::apple::ObjCCast<ComposeboxMenuListCell>([collection_view
           cellForItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]]);
   ASSERT_TRUE(remaining_cell);
   EXPECT_TRUE(
