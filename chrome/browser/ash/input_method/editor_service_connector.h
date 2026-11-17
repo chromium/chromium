@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SERVICE_CONNECTOR_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SERVICE_CONNECTOR_H_
 
+#include "base/auto_reset.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class ApplicationLocaleStorage;
@@ -20,6 +23,17 @@ class EditorContext;
 
 class EditorServiceConnector {
  public:
+  // Connects `receiver` to an Orca service.
+  using LaunchCallback = base::RepeatingCallback<void(
+      mojo::PendingReceiver<orca::mojom::OrcaService> receiver)>;
+
+  // Overrides how the Orca service is launched, until the returned object is
+  // destroyed. Unit tests cannot launch the service process, so they use this
+  // to provide an in-process service instead. `callback` must outlive the
+  // returned object.
+  [[nodiscard]] static base::AutoReset<LaunchCallback*>
+  SetLaunchOverrideForTesting(LaunchCallback* callback);
+
   // `application_locale_storage` must not be null and must outlive `this`.
   EditorServiceConnector(
       const ApplicationLocaleStorage* application_locale_storage,

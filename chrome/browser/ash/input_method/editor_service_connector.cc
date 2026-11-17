@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ash/input_method/editor_service_connector.h"
 
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/auto_reset.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/input_method/editor_config_factory.h"
 #include "chrome/browser/ash/input_method/editor_context.h"
@@ -15,20 +18,45 @@
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "content/public/browser/service_process_host.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ash::input_method {
+
+namespace {
+
+EditorServiceConnector::LaunchCallback* g_launch_override_for_testing = nullptr;
+
+void LaunchOrcaService(
+    mojo::PendingReceiver<orca::mojom::OrcaService> receiver) {
+  if (g_launch_override_for_testing) {
+    CHECK_IS_TEST();
+    g_launch_override_for_testing->Run(std::move(receiver));
+    return;
+  }
+
+  content::ServiceProcessHost::Launch(std::move(receiver),
+                                      content::ServiceProcessHost::Options()
+                                          // replace with IDS strings
+                                          .WithDisplayName("EditorService")
+                                          .Pass());
+}
+
+}  // namespace
+
+// static
+base::AutoReset<EditorServiceConnector::LaunchCallback*>
+EditorServiceConnector::SetLaunchOverrideForTesting(LaunchCallback* callback) {
+  return base::AutoReset<LaunchCallback*>(&g_launch_override_for_testing,
+                                          callback);
+}
 
 EditorServiceConnector::EditorServiceConnector(
     const ApplicationLocaleStorage* application_locale_storage,
     EditorContext* context)
     : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       context_(context) {
-  content::ServiceProcessHost::Launch(
-      remote_orca_service_connector_.BindNewPipeAndPassReceiver(),
-      content::ServiceProcessHost::Options()
-          // replace with IDS strings
-          .WithDisplayName("EditorService")
-          .Pass());
+  LaunchOrcaService(
+      remote_orca_service_connector_.BindNewPipeAndPassReceiver());
   remote_orca_service_connector_.reset_on_disconnect();
 }
 
