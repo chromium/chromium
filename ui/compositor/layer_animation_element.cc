@@ -760,7 +760,9 @@ void LayerAnimationElement::Abort(LayerAnimationDelegate* delegate) {
 
 void LayerAnimationElement::RequestEffectiveStart(
     LayerAnimationDelegate* delegate) {
-  CHECK(requested_start_time_ != base::TimeTicks(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/586133358): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(requested_start_time_ != base::TimeTicks());
   effective_start_time_ = requested_start_time_;
 }
 
