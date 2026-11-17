@@ -31,6 +31,10 @@ COMPONENT_EXPORT(UI_BASE_X) void UngrabPointer();
 // delivered to this client regardless of which window the pointer is over.
 COMPONENT_EXPORT(UI_BASE_X) bool HasActivePointerGrab();
 
+// Returns the window of the active pointer grab established via GrabPointer(),
+// or x11::Window::None if there is none.
+COMPONENT_EXPORT(UI_BASE_X) x11::Window GetActivePointerGrabWindow();
+
 }  // namespace ui
 
 #endif  // UI_BASE_X_X11_POINTER_GRAB_H_

@@ -243,6 +243,16 @@ x11::Window GetWindowForEvent(const x11::Event& xev) {
   return x11::Window::None;
 }
 
+// Returns true if a drag or move loop holds the active pointer grab.
+bool IsPointerGrabbedByMoveLoop() {
+  // Move loops grab the pointer on their own input window, which is not an
+  // X11Window.
+  const x11::Window grab_window = ui::GetActivePointerGrabWindow();
+  return grab_window != x11::Window::None &&
+         !X11WindowManager::GetInstance()->GetWindow(
+             static_cast<gfx::AcceleratedWidget>(grab_window));
+}
+
 }  // namespace
 
 X11Window::X11Window(PlatformWindowDelegate* platform_window_delegate)
@@ -675,6 +685,13 @@ void X11Window::SetCapture() {
   }
   X11WindowManager::GetInstance()->GrabEvents(this);
 
+  // A drag or move loop routes all events through itself while it runs, so
+  // capture needs no pointer grab then. Replacing the loop's grab would stop it
+  // from receiving the button release that ends it.
+  if (IsPointerGrabbedByMoveLoop()) {
+    return;
+  }
+
   // If the pointer is already in |xwindow_|, we will not get a crossing event
   // with a mode of NotifyGrab, so we must record the grab state manually.
   has_pointer_grab_ |=
@@ -686,7 +703,9 @@ void X11Window::ReleaseCapture() {
     return;
   }
 
-  UngrabPointer();
+  if (!IsPointerGrabbedByMoveLoop()) {
+    UngrabPointer();
+  }
   has_pointer_grab_ = false;
 
   X11WindowManager::GetInstance()->UngrabEvents(this);
@@ -2630,8 +2649,10 @@ void X11Window::OnWindowMapped() {
     should_maximize_after_map_ = false;
   }
   if (should_grab_pointer_after_map_) {
-    has_pointer_grab_ |=
-        (ui::GrabPointer(xwindow_, true, nullptr) == x11::GrabStatus::Success);
+    if (!IsPointerGrabbedByMoveLoop()) {
+      has_pointer_grab_ |= (ui::GrabPointer(xwindow_, true, nullptr) ==
+                            x11::GrabStatus::Success);
+    }
     should_grab_pointer_after_map_ = false;
   }
 }

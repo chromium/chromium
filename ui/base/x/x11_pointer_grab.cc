@@ -138,4 +138,8 @@ bool HasActivePointerGrab() {
   return g_grab_window != x11::Window::None;
 }
 
+x11::Window GetActivePointerGrabWindow() {
+  return g_grab_window;
+}
+
 }  // namespace ui

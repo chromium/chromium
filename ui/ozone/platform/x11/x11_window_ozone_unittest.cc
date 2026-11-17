@@ -14,6 +14,7 @@
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/x/x11_pointer_grab.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen_base.h"
@@ -550,6 +551,74 @@ TEST_F(X11WindowOzoneTouchTest, MoveLoopWithoutPointerGrabKeepsActiveTouches) {
 
   EXPECT_TRUE(received_touches_.empty());
   window_->ReleaseCapture();
+}
+
+// Setting and releasing capture on a window while a drag or move loop holds the
+// pointer grab must leave the loop's grab in place.
+TEST_F(X11WindowOzoneTest, CaptureKeepsMoveLoopPointerGrab) {
+  testing::NiceMock<MockPlatformWindowDelegate> delegate;
+  gfx::AcceleratedWidget widget;
+  EXPECT_CALL(delegate, OnClosed()).Times(1);
+  auto window = CreatePlatformWindow(&delegate, gfx::Rect(0, 0, 100, 100),
+                                     &widget, nullptr);
+
+  // Stand in for the input window of a move loop.
+  auto* connection = x11::Connection::Get();
+  const auto loop_window = connection->GenerateId<x11::Window>();
+  connection->CreateWindow(x11::CreateWindowRequest{
+      .wid = loop_window,
+      .parent = connection->default_root(),
+      .x = -100,
+      .y = -100,
+      .width = 10,
+      .height = 10,
+      .c_class = x11::WindowClass::InputOnly,
+      .override_redirect = x11::Bool32(true),
+  });
+  connection->MapWindow(loop_window);
+  connection->Sync();
+  if (GrabPointer(loop_window, false, nullptr) != x11::GrabStatus::Success) {
+    connection->DestroyWindow({loop_window});
+    GTEST_SKIP() << "Another client holds the pointer grab.";
+  }
+
+  window->SetCapture();
+  EXPECT_TRUE(window->HasCapture());
+  EXPECT_EQ(loop_window, GetActivePointerGrabWindow());
+
+  window->ReleaseCapture();
+  EXPECT_FALSE(window->HasCapture());
+  EXPECT_EQ(loop_window, GetActivePointerGrabWindow());
+
+  // The X server must still report the grab: another client can't grab the
+  // pointer.
+  connection->Sync();
+  x11::Connection other_connection;
+  const auto other_window = other_connection.GenerateId<x11::Window>();
+  other_connection.CreateWindow(x11::CreateWindowRequest{
+      .wid = other_window,
+      .parent = other_connection.default_root(),
+      .width = 10,
+      .height = 10,
+      .c_class = x11::WindowClass::InputOnly,
+      .override_redirect = x11::Bool32(true),
+  });
+  other_connection.MapWindow(other_window);
+  auto reply = other_connection
+                   .GrabPointer(x11::GrabPointerRequest{
+                       .grab_window = other_window,
+                       .pointer_mode = x11::GrabMode::Async,
+                       .keyboard_mode = x11::GrabMode::Async,
+                       .time = x11::Time::CurrentTime,
+                   })
+                   .Sync();
+  ASSERT_TRUE(reply);
+  EXPECT_EQ(x11::GrabStatus::AlreadyGrabbed, reply->status);
+  other_connection.UngrabPointer();
+  other_connection.Sync();
+
+  UngrabPointer();
+  connection->DestroyWindow({loop_window});
 }
 
 }  // namespace ui
