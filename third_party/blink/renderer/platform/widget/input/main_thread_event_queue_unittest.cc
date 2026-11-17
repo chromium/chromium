@@ -1937,6 +1937,14 @@ TEST_F(MainThreadEventQueueTest, PointerRawUpdateEvents) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_FALSE(needs_main_frame_);
+  // At this point, `handled_tasks_` has accumulated 3 dispatched events:
+  // `kMouseMove`, `kPointerRawUpdate` and `kMouseMove`.
+  ASSERT_EQ(3u, handled_tasks_.size());
+  EXPECT_EQ(WebInputEvent::Type::kPointerRawUpdate,
+            handled_tasks_.at(1)->TaskAsEvent()->Event().GetType());
+  ASSERT_EQ(1u, handled_tasks_.at(1)->TaskAsEvent()->CoalescedEventSize());
+  EXPECT_EQ(WebInputEvent::Type::kPointerRawUpdate,
+            handled_tasks_.at(1)->TaskAsEvent()->CoalescedEvent(0).GetType());
 
   queue_->SetHasPointerRawUpdateEventHandlers(false);
   SyntheticWebTouchEvent touch_move;
@@ -1954,6 +1962,14 @@ TEST_F(MainThreadEventQueueTest, PointerRawUpdateEvents) {
   RunPendingTasksWithSimulatedRaf();
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_FALSE(needs_main_frame_);
+  // At this point, `handled_tasks_` has accumulated 3 more dispatched events:
+  // `kTouchMove`, `kPointerRawUpdate` and `kTouchMove`.
+  ASSERT_EQ(6u, handled_tasks_.size());
+  EXPECT_EQ(WebInputEvent::Type::kPointerRawUpdate,
+            handled_tasks_.at(4)->TaskAsEvent()->Event().GetType());
+  ASSERT_EQ(1u, handled_tasks_.at(4)->TaskAsEvent()->CoalescedEventSize());
+  EXPECT_EQ(WebInputEvent::Type::kPointerRawUpdate,
+            handled_tasks_.at(4)->TaskAsEvent()->CoalescedEvent(0).GetType());
 }
 
 TEST_F(MainThreadEventQueueTest, UnbufferedDispatchMouseEvent) {

@@ -3347,7 +3347,6 @@ crbug.com/431040246 [ Mac14 ] external/wpt/html/semantics/interactive-elements/t
 crbug.com/431029571 [ Mac14 ] external/wpt/html/semantics/links/downloading-resources/header-origin-no-referrer.html [ Timeout ]
 crbug.com/431034519 [ Mac14 ] external/wpt/mediacapture-record/MediaRecorder-stop.html?mimeType=video/webm;codecs=vp8,opus [ Timeout ]
 crbug.com/431039949 [ Mac14 ] external/wpt/picture-in-picture/disable-picture-in-picture.html [ Timeout ]
-crbug.com/431040247 external/wpt/pointerevents/pointerevent_pointerrawupdate_coalesced_events_attributes.https.html?touch [ Timeout ]
 crbug.com/431033202 [ Mac14 ] external/wpt/screen-capture/getdisplaymedia.https.html [ Skip Timeout ]
 crbug.com/431038530 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-no-storage-access.sub.https.window.html [ Crash ]
 crbug.com/431040244 [ Mac14 ] external/wpt/webrtc-identity/idlharness.https.window.html [ Skip Timeout ]

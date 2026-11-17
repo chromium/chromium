@@ -571,11 +571,11 @@ void MainThreadEventQueue::HandleEvent(
       for (unsigned i = 0; i < touch_event.touches_length; ++i) {
         const WebTouchPoint& touch_point = touch_event.touches[i];
         if (touch_point.state == WebTouchPoint::State::kStateMoved) {
+          auto raw_pointer_event =
+              std::make_unique<WebPointerEvent>(touch_event, touch_point);
+          raw_pointer_event->SetType(WebInputEvent::Type::kPointerRawUpdate);
           auto raw_event = std::make_unique<WebCoalescedInputEvent>(
-              std::make_unique<WebPointerEvent>(touch_event, touch_point),
-              event->latency_info());
-          raw_event->EventPointer()->SetType(
-              WebInputEvent::Type::kPointerRawUpdate);
+              std::move(raw_pointer_event), event->latency_info());
           QueueEvent(QueuedWebInputEvent::CreateForRawEvent(
               std::move(raw_event), attribution, metrics.get()));
         }
