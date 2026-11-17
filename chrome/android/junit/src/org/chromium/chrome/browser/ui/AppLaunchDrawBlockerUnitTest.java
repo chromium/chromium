@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.SystemClock;
 import android.view.View;
@@ -42,6 +43,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
@@ -53,7 +55,6 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
 import org.chromium.components.search_engines.TemplateUrlService;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -70,7 +71,7 @@ public class AppLaunchDrawBlockerUnitTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private Supplier<Boolean> mShouldIgnoreIntentSupplier;
     @Mock private Supplier<Boolean> mIsTabletSupplier;
-    @Mock private Supplier<Boolean> mIsRecreatingSupplier;
+    @Mock private Supplier<Boolean> mIsFromRecreationSupplier;
     @Mock private Supplier<Boolean> mShouldBlockDrawForTabLayoutSupplier;
 
     private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
@@ -92,6 +93,8 @@ public class AppLaunchDrawBlockerUnitTest {
     private final Supplier<Intent> mIntentSupplier = () -> mIntent;
     private InflationObserver mInflationObserver;
     private StartStopWithNativeObserver mStartStopWithNativeObserver;
+    private ConfigurationChangedObserver mConfigurationChangedObserver;
+    private boolean mWillBeRecreated;
     private AppLaunchDrawBlocker mAppLaunchDrawBlocker;
 
     @Before
@@ -112,7 +115,7 @@ public class AppLaunchDrawBlockerUnitTest {
 
         when(mShouldIgnoreIntentSupplier.get()).thenReturn(false);
         when(mIsTabletSupplier.get()).thenReturn(false);
-        when(mIsRecreatingSupplier.get()).thenReturn(false);
+        when(mIsFromRecreationSupplier.get()).thenReturn(false);
         when(mShouldBlockDrawForTabLayoutSupplier.get()).thenReturn(false);
         when(mIncognitoRestoreAppLaunchDrawBlockerFactoryMock.create(
                         eq(mIntentSupplier),
@@ -127,7 +130,8 @@ public class AppLaunchDrawBlockerUnitTest {
                         mIntentSupplier,
                         mShouldIgnoreIntentSupplier,
                         mIsTabletSupplier,
-                        mIsRecreatingSupplier,
+                        mIsFromRecreationSupplier,
+                        () -> mWillBeRecreated,
                         mProfileSupplier,
                         mIncognitoRestoreAppLaunchDrawBlockerFactoryMock,
                         mShouldBlockDrawForTabLayoutSupplier);
@@ -382,7 +386,7 @@ public class AppLaunchDrawBlockerUnitTest {
                 .writeInt(
                         ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
                         ActiveTabState.OTHER);
-        when(mIsRecreatingSupplier.get()).thenReturn(true);
+        when(mIsFromRecreationSupplier.get()).thenReturn(true);
         mInflationObserver.onPostInflationStartup();
         verify(mViewTreeObserver, times(1))
                 .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
@@ -402,7 +406,7 @@ public class AppLaunchDrawBlockerUnitTest {
                 .writeInt(
                         ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
                         ActiveTabState.OTHER);
-        when(mIsRecreatingSupplier.get()).thenReturn(true);
+        when(mIsFromRecreationSupplier.get()).thenReturn(true);
         mInflationObserver.onPostInflationStartup();
         verify(mViewTreeObserver, times(1))
                 .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
@@ -426,7 +430,7 @@ public class AppLaunchDrawBlockerUnitTest {
                 .writeInt(
                         ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
                         ActiveTabState.OTHER);
-        when(mIsRecreatingSupplier.get()).thenReturn(true);
+        when(mIsFromRecreationSupplier.get()).thenReturn(true);
         mInflationObserver.onPostInflationStartup();
         verify(mViewTreeObserver, times(1))
                 .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
@@ -444,7 +448,7 @@ public class AppLaunchDrawBlockerUnitTest {
                 .writeInt(
                         ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
                         ActiveTabState.OTHER);
-        when(mIsRecreatingSupplier.get()).thenReturn(true);
+        when(mIsFromRecreationSupplier.get()).thenReturn(true);
         mInflationObserver.onPostInflationStartup();
         verify(mViewTreeObserver, times(1))
                 .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
@@ -501,21 +505,105 @@ public class AppLaunchDrawBlockerUnitTest {
         histogramWatcher.assertExpected();
     }
 
-    private void validateConstructorAndCaptureObservers() {
-        verify(mActivityLifecycleDispatcher, times(2)).register(mLifecycleArgumentCaptor.capture());
-        List<LifecycleObserver> observerList = mLifecycleArgumentCaptor.getAllValues();
+    @Test
+    public void testConfigurationChanged_willBeRecreated_blocksDrawUntilDestroy() {
+        mWillBeRecreated = true;
 
-        if (observerList.get(0) instanceof InflationObserver) {
-            mInflationObserver = (InflationObserver) observerList.get(0);
-            mStartStopWithNativeObserver = (StartStopWithNativeObserver) observerList.get(1);
-        } else {
-            mStartStopWithNativeObserver = (StartStopWithNativeObserver) observerList.get(0);
-            mInflationObserver = (InflationObserver) observerList.get(1);
+        mConfigurationChangedObserver.onConfigurationChanged(new Configuration());
+
+        verify(mViewTreeObserver).addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
+        assertFalse(
+                "Draw is not blocked.", mOnPreDrawListenerArgumentCaptor.getValue().onPreDraw());
+
+        mAppLaunchDrawBlocker.destroy();
+
+        verify(mViewTreeObserver)
+                .removeOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.getValue());
+        assertTrue(
+                "Draw is still blocked.", mOnPreDrawListenerArgumentCaptor.getValue().onPreDraw());
+    }
+
+    @Test
+    public void testConfigurationChanged_willNotBeRecreated_doesNotBlockDraw() {
+        mWillBeRecreated = false;
+
+        mConfigurationChangedObserver.onConfigurationChanged(new Configuration());
+
+        verify(mViewTreeObserver, never()).addOnPreDrawListener(any());
+    }
+
+    @Test
+    public void testConfigurationChanged_willBeRecreated_ignoresActiveTabAvailableForRecreation() {
+        mWillBeRecreated = true;
+        mConfigurationChangedObserver.onConfigurationChanged(new Configuration());
+        verify(mViewTreeObserver).addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
+        OnPreDrawListener listener = mOnPreDrawListenerArgumentCaptor.getValue();
+
+        // E.g. initializeState() or createInitialTab() still running after recreate().
+        mAppLaunchDrawBlocker.onActiveTabAvailableForRecreation();
+
+        assertFalse("Draw should stay blocked until destroy().", listener.onPreDraw());
+    }
+
+    @Test
+    public void testConfigurationChanged_willBeRecreated_fallbackTimeout() {
+        mWillBeRecreated = true;
+        mConfigurationChangedObserver.onConfigurationChanged(new Configuration());
+        verify(mViewTreeObserver).addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
+        OnPreDrawListener listener = mOnPreDrawListenerArgumentCaptor.getValue();
+        assertFalse("Draw should be blocked.", listener.onPreDraw());
+
+        ShadowLooper.idleMainLooper(
+                AppLaunchDrawBlocker.RECREATION_DRAW_BLOCK_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+
+        assertTrue("Draw should be unblocked after the fallback timeout.", listener.onPreDraw());
+    }
+
+    @Test
+    public void testConfigurationChanged_recreatedActivityRecreatesAgain_staysBlocked() {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
+                        ActiveTabState.OTHER);
+        when(mIsFromRecreationSupplier.get()).thenReturn(true);
+        mInflationObserver.onPostInflationStartup();
+
+        // A second config change arrives before the first swap.
+        mWillBeRecreated = true;
+        mConfigurationChangedObserver.onConfigurationChanged(new Configuration());
+        verify(mViewTreeObserver, times(2))
+                .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
+        OnPreDrawListener recreationListener =
+                mOnPreDrawListenerArgumentCaptor.getAllValues().get(0);
+        OnPreDrawListener pendingRecreationListener =
+                mOnPreDrawListenerArgumentCaptor.getAllValues().get(1);
+
+        // The pending didSwapBuffers callback from the first recreation.
+        mAppLaunchDrawBlocker.onActiveTabAvailableForRecreation();
+
+        assertTrue("Recreation block should be lifted.", recreationListener.onPreDraw());
+        assertFalse(
+                "Pending recreation block should stay until destroy().",
+                pendingRecreationListener.onPreDraw());
+    }
+
+    private void validateConstructorAndCaptureObservers() {
+        verify(mActivityLifecycleDispatcher, times(3)).register(mLifecycleArgumentCaptor.capture());
+        for (LifecycleObserver observer : mLifecycleArgumentCaptor.getAllValues()) {
+            if (observer instanceof InflationObserver inflationObserver) {
+                mInflationObserver = inflationObserver;
+            } else if (observer instanceof StartStopWithNativeObserver startStopObserver) {
+                mStartStopWithNativeObserver = startStopObserver;
+            } else if (observer instanceof ConfigurationChangedObserver configObserver) {
+                mConfigurationChangedObserver = configObserver;
+            }
         }
 
         assertNotNull("Did not register an InflationObserver", mInflationObserver);
         assertNotNull(
                 "Did not register a StartStopWithNativeObserver", mStartStopWithNativeObserver);
+        assertNotNull(
+                "Did not register a ConfigurationChangedObserver", mConfigurationChangedObserver);
     }
 
     private void setSearchEngineHasLogo(boolean hasLogo) {

@@ -783,6 +783,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         this::shouldIgnoreIntent,
                         this::isTablet,
                         this::isFromRecreating,
+                        () -> mIsRecreating,
                         mTabModelProfileSupplier,
                         new IncognitoRestoreAppLaunchDrawBlockerFactory(
                                 this::getSavedInstanceState,
