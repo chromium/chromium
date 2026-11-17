@@ -98,6 +98,8 @@
 #include "ui/events/blink/blink_features.h"
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image.h"
@@ -793,20 +795,30 @@ class RenderWidgetHostTest : public testing::Test {
   }
 
   input::NativeWebKeyboardEvent CreateNativeWebKeyboardEvent(
-      WebInputEvent::Type type) {
-    return input::NativeWebKeyboardEvent(type, /*modifiers=*/0,
-                                         GetNextSimulatedEventTime());
+      WebInputEvent::Type type,
+      ui::KeyboardCode windows_key_code = ui::VKEY_UNKNOWN) {
+    input::NativeWebKeyboardEvent event(type, /*modifiers=*/0,
+                                        GetNextSimulatedEventTime());
+    event.windows_key_code = windows_key_code;
+    event.dom_code =
+        static_cast<int>(ui::UsLayoutKeyboardCodeToDomCode(windows_key_code));
+    return event;
   }
 
-  void SimulateKeyboardEvent(WebInputEvent::Type type) {
-    host_->ForwardKeyboardEvent(CreateNativeWebKeyboardEvent(type));
+  void SimulateKeyboardEvent(
+      WebInputEvent::Type type,
+      ui::KeyboardCode windows_key_code = ui::VKEY_UNKNOWN) {
+    host_->ForwardKeyboardEvent(
+        CreateNativeWebKeyboardEvent(type, windows_key_code));
   }
 
-  void SimulateKeyboardEventWithCommands(WebInputEvent::Type type) {
+  void SimulateKeyboardEventWithCommands(
+      WebInputEvent::Type type,
+      ui::KeyboardCode windows_key_code = ui::VKEY_UNKNOWN) {
     std::vector<blink::mojom::EditCommandPtr> edit_commands;
     edit_commands.push_back(blink::mojom::EditCommand::New("name", "value"));
-    host_->ForwardKeyboardEventWithCommands(CreateNativeWebKeyboardEvent(type),
-                                            ui::LatencyInfo(),
+    auto event = CreateNativeWebKeyboardEvent(type, windows_key_code);
+    host_->ForwardKeyboardEventWithCommands(event, ui::LatencyInfo(),
                                             std::move(edit_commands), nullptr);
   }
 
@@ -1807,13 +1819,120 @@ TEST_F(RenderWidgetHostTest, SendEditCommandsBeforeKeyEvent) {
       blink::mojom::InputEventResultState::kConsumed);
 }
 
+class RenderWidgetHostKeyboardSuppressionTest
+    : public RenderWidgetHostTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  bool ForwardKeyEvent(WebInputEvent::Type type, ui::KeyboardCode key_code) {
+    host_->mock_input_router()->sent_keyboard_event_ = false;
+    SimulateKeyboardEvent(type, key_code);
+    return host_->mock_input_router()->sent_keyboard_event_;
+  }
+};
+
+// Regression coverage for crbug.com/577459425: handling Esc to exit Pointer
+// Lock must not suppress releases of other held keys, before or after Esc is
+// released. Verifies both delegate and keypress-listener handling, suppression
+// of Esc's Char/KeyUp events, and normal event delivery after the next keydown.
+TEST_P(RenderWidgetHostKeyboardSuppressionTest,
+       DoesNotSuppressKeyUpForOtherHeldKeys) {
+  host_->SetupForInputRouterTest();
+  host_->AddKeyPressEventCallback(base::BindRepeating(
+      &RenderWidgetHostTest::KeyPressEventCallback, base::Unretained(this)));
+
+  EXPECT_TRUE(ForwardKeyEvent(WebInputEvent::Type::kRawKeyDown, ui::VKEY_A));
+  EXPECT_TRUE(ForwardKeyEvent(WebInputEvent::Type::kRawKeyDown, ui::VKEY_B));
+
+  // Exercise suppression by either a keypress listener or the delegate.
+  handle_key_press_event_ = GetParam();
+  delegate_->set_prehandle_keyboard_event(!GetParam());
+  EXPECT_FALSE(
+      ForwardKeyEvent(WebInputEvent::Type::kRawKeyDown, ui::VKEY_ESCAPE));
+  handle_key_press_event_ = false;
+  delegate_->set_prehandle_keyboard_event(false);
+
+  // Releasing other held keys must work both before and after releasing Esc.
+  EXPECT_TRUE(ForwardKeyEvent(WebInputEvent::Type::kKeyUp, ui::VKEY_A));
+  EXPECT_FALSE(ForwardKeyEvent(WebInputEvent::Type::kChar, ui::VKEY_ESCAPE));
+  EXPECT_FALSE(ForwardKeyEvent(WebInputEvent::Type::kKeyUp, ui::VKEY_ESCAPE));
+  EXPECT_TRUE(ForwardKeyEvent(WebInputEvent::Type::kKeyUp, ui::VKEY_B));
+  EXPECT_TRUE(ForwardKeyEvent(WebInputEvent::Type::kRawKeyDown, ui::VKEY_C));
+  EXPECT_TRUE(ForwardKeyEvent(WebInputEvent::Type::kChar, ui::VKEY_C));
+  EXPECT_TRUE(ForwardKeyEvent(WebInputEvent::Type::kKeyUp, ui::VKEY_C));
+}
+
+// Handled keys remain suppressed until released, even when other handled or
+// unhandled keydowns intervene. Character suppression follows the last keydown.
+TEST_P(RenderWidgetHostKeyboardSuppressionTest,
+       SuppressesOverlappingHandledKeys) {
+  host_->SetupForInputRouterTest();
+  host_->AddKeyPressEventCallback(base::BindRepeating(
+      &RenderWidgetHostTest::KeyPressEventCallback, base::Unretained(this)));
+
+  EXPECT_TRUE(ForwardKeyEvent(WebInputEvent::Type::kRawKeyDown, ui::VKEY_A));
+  handle_key_press_event_ = GetParam();
+  delegate_->set_prehandle_keyboard_event(!GetParam());
+  EXPECT_FALSE(
+      ForwardKeyEvent(WebInputEvent::Type::kRawKeyDown, ui::VKEY_ESCAPE));
+  EXPECT_FALSE(ForwardKeyEvent(WebInputEvent::Type::kRawKeyDown, ui::VKEY_B));
+  EXPECT_FALSE(ForwardKeyEvent(WebInputEvent::Type::kRawKeyDown, ui::VKEY_B));
+  handle_key_press_event_ = false;
+  delegate_->set_prehandle_keyboard_event(false);
+
+  EXPECT_FALSE(ForwardKeyEvent(WebInputEvent::Type::kChar, ui::VKEY_B));
+  EXPECT_TRUE(ForwardKeyEvent(WebInputEvent::Type::kRawKeyDown, ui::VKEY_C));
+  EXPECT_TRUE(ForwardKeyEvent(WebInputEvent::Type::kChar, ui::VKEY_C));
+  EXPECT_FALSE(ForwardKeyEvent(WebInputEvent::Type::kKeyUp, ui::VKEY_B));
+  EXPECT_FALSE(ForwardKeyEvent(WebInputEvent::Type::kKeyUp, ui::VKEY_ESCAPE));
+  EXPECT_TRUE(ForwardKeyEvent(WebInputEvent::Type::kKeyUp, ui::VKEY_A));
+  EXPECT_TRUE(ForwardKeyEvent(WebInputEvent::Type::kKeyUp, ui::VKEY_C));
+
+  EXPECT_TRUE(ForwardKeyEvent(WebInputEvent::Type::kRawKeyDown, ui::VKEY_B));
+  EXPECT_TRUE(ForwardKeyEvent(WebInputEvent::Type::kKeyUp, ui::VKEY_B));
+}
+
+// Match releases by physical key, even if a layout change alters the VKEY.
+TEST_P(RenderWidgetHostKeyboardSuppressionTest,
+       SuppressesKeyUpAfterLayoutChange) {
+  host_->SetupForInputRouterTest();
+  host_->AddKeyPressEventCallback(base::BindRepeating(
+      &RenderWidgetHostTest::KeyPressEventCallback, base::Unretained(this)));
+  EXPECT_TRUE(ForwardKeyEvent(WebInputEvent::Type::kRawKeyDown, ui::VKEY_Q));
+  handle_key_press_event_ = GetParam();
+  delegate_->set_prehandle_keyboard_event(!GetParam());
+  EXPECT_FALSE(ForwardKeyEvent(WebInputEvent::Type::kRawKeyDown, ui::VKEY_A));
+  handle_key_press_event_ = false;
+  delegate_->set_prehandle_keyboard_event(false);
+
+  auto other_key =
+      CreateNativeWebKeyboardEvent(WebInputEvent::Type::kKeyUp, ui::VKEY_A);
+  other_key.dom_code = static_cast<int>(ui::DomCode::US_Q);
+  host_->ForwardKeyboardEvent(other_key);
+  EXPECT_TRUE(host_->mock_input_router()->sent_keyboard_event_);
+  host_->mock_input_router()->sent_keyboard_event_ = false;
+
+  auto event =
+      CreateNativeWebKeyboardEvent(WebInputEvent::Type::kKeyUp, ui::VKEY_Q);
+  event.dom_code = static_cast<int>(ui::DomCode::US_A);
+  host_->ForwardKeyboardEvent(event);
+  EXPECT_FALSE(host_->mock_input_router()->sent_keyboard_event_);
+
+  SimulateKeyboardEvent(WebInputEvent::Type::kRawKeyDown, ui::VKEY_Q);
+  EXPECT_TRUE(host_->mock_input_router()->sent_keyboard_event_);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         RenderWidgetHostKeyboardSuppressionTest,
+                         testing::Bool());
+
 TEST_F(RenderWidgetHostTest, PreHandleRawKeyDownEvent) {
   // Simulate the situation that the browser handled the key down event during
   // pre-handle phrase.
   delegate_->set_prehandle_keyboard_event(true);
 
   // Simulate a keyboard event.
-  SimulateKeyboardEventWithCommands(WebInputEvent::Type::kRawKeyDown);
+  SimulateKeyboardEventWithCommands(WebInputEvent::Type::kRawKeyDown,
+                                    ui::VKEY_ESCAPE);
 
   EXPECT_TRUE(delegate_->prehandle_keyboard_event_called());
   EXPECT_EQ(WebInputEvent::Type::kRawKeyDown,
@@ -1835,19 +1954,11 @@ TEST_F(RenderWidgetHostTest, PreHandleRawKeyDownEvent) {
       host_->mock_render_input_router()->GetAndResetDispatchedMessages();
   EXPECT_EQ(0u, dispatched_events.size());
 
-  // Forward the KeyUp event.
-  SimulateKeyboardEvent(WebInputEvent::Type::kKeyUp);
-
-  // Make sure the KeyUp event is suppressed.
-  dispatched_events =
-      host_->mock_render_input_router()->GetAndResetDispatchedMessages();
-  EXPECT_EQ(0u, dispatched_events.size());
-
-  // Forward the Esc RawKeyDown event.
+  // Forward the Esc KeyUp event with edit commands.
   std::vector<blink::mojom::EditCommandPtr> edit_commands;
   edit_commands.push_back(blink::mojom::EditCommand::New("name", "value"));
-  auto event = CreateNativeWebKeyboardEvent(WebInputEvent::Type::kKeyUp);
-  event.windows_key_code = ui::VKEY_ESCAPE;
+  auto event = CreateNativeWebKeyboardEvent(WebInputEvent::Type::kKeyUp,
+                                            ui::VKEY_ESCAPE);
   host_->ForwardKeyboardEventWithCommands(event, ui::LatencyInfo(),
                                           std::move(edit_commands), nullptr);
 
