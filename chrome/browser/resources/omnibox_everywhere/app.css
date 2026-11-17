@@ -11,6 +11,8 @@
   --color-searchbox-background: var(--color-new-tab-page-background);
   --loomnibox-content-width: 680px;
   --most-visited-container-inset: 0px;
+  --voice-search-dialog-height: min(
+      304px, calc(160px + (var(--transcript-lines, 1) - 1) * 24px));
   display: block;
   position: relative;
   transition: opacity 150ms ease;
@@ -91,7 +93,7 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
    * to not be cut off by outer view container.
    */
   height: calc(100% - 48px);
-  min-height: var(--voice_search_minimum_height, 128px);
+  min-height: var(--voice_search_minimum_height, 160px);
   /* Shrinks each horizontal side by 24px to match dialog
    * anchor's sizing.
    */
@@ -127,7 +129,7 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
   bottom: auto;
   box-shadow: 0 4px 20px 2px rgba(0, 0, 0, 0.25);
   font-family: inherit;
-  height: 128px;
+  height: var(--voice-search-dialog-height, 160px);
   inset-inline-start: anchor(start);
   margin: 0;
   overflow: hidden;
@@ -135,6 +137,7 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
   position: absolute;
   position-anchor: --dialog-anchor;
   top: anchor(top);
+  transition: height 200ms ease-in-out;
   width: anchor-size(width);
   z-index: 1000;
 }
@@ -150,15 +153,29 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
   width: 100%;
 }
 
+#voiceSearchGIcon {
+  background-image: url(//resources/cr_components/searchbox/icons/google_g_gradient.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 18px 18px;
+  height: 24px;
+  inset-inline-start: 8px;
+  padding: 4px;
+  pointer-events: none;
+  position: absolute;
+  top: 8px;
+  width: 24px;
+  z-index: 5;
+}
+
 /* TODO(b/540973063): Consolidate shared voice search styles across NTP and
  * Omnibox Everywhere. */
 #voiceSearch {
-  --composebox-cancel-button-top: 10px;
-  --composebox-voice-search-top-padding: 9px;
-  --voice-bottom-actions-bottom: 12px;
-  --voice-bottom-actions-inset-inline-end: 12px;
-  --voice-search-minimum-height: 128px;
+  --composebox-voice-search-input-padding-inline-start: 42px;
+  --composebox-voice-search-input-padding-top: 12px;
   height: 100%;
+  inset: 0;
+  position: absolute;
   width: 100%;
 }
 
@@ -180,8 +197,13 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
 }
 
 #voiceSearchGlow::part(full-container-overlay) {
+  bottom: 63px;
+  height: 48px;
+  inset-inline: 0;
   min-block-size: 0;
+  padding: 0;
   position: absolute;
+  top: auto;
 }
 
 #mostVisitedContainer {
@@ -325,11 +347,11 @@ cr-most-visited:not([hide-title]) {
 }
 
 :host([show-voice-search-overlay_]) {
-  min-height: 128px;
+  min-height: var(--voice-search-dialog-height, 160px);
 }
 
 :host([show-voice-search-overlay_].has-permission-prompt) {
-  min-height: var(--voice_search_minimum_height, 128px);
+  min-height: var(--voice_search_minimum_height, 160px);
 }
 
 :host([show-voice-search-overlay_]) #content {

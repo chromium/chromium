@@ -230,6 +230,7 @@ export class ComposeboxVoiceSearchElement extends
       },
       transcriptLines: {
         type: Number,
+        notify: true,
         reflect: true,
         attribute: 'transcript-lines',
       },
