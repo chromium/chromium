@@ -434,9 +434,6 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             return false;
         }
 
-        int currentTabId = getTabId(fromViewHolder);
-        int destinationTabId = getTabId(toViewHolder);
-
         TabModel tabModel = mCurrentTabModelSupplier.get();
         if (tabModel == null) return false;
 
@@ -449,6 +446,9 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         Token destGroupId = getTabGroupId(toViewHolder);
         boolean isDestGroupHeader =
                 toViewHolder.getItemViewType() == TabProperties.UiType.TAB_GROUP;
+
+        int currentTabId = isGroupHeader ? Tab.INVALID_TAB_ID : getTabId(fromViewHolder);
+        int destinationTabId = isDestGroupHeader ? Tab.INVALID_TAB_ID : getTabId(toViewHolder);
 
         int distance =
                 toViewHolder.getBindingAdapterPosition()

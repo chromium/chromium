@@ -402,10 +402,10 @@ public class NestedTabReorderUtilsUnitTest {
     }
 
     @Test
-    public void testReorderItem_GroupHeaderWithoutTabId_ResolvesFromGroup() {
-        // Group header using ALL_KEYS_TAB_GROUP_GRID without TAB_ID
+    public void testReorderItem_GroupHeaderWithoutTabId_UngroupsChild() {
         PropertyModel headerModel =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, Tab.INVALID_TAB_ID)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, GROUP_ID)
                         .build();
         PropertyModel childModel1 =
@@ -417,12 +417,63 @@ public class NestedTabReorderUtilsUnitTest {
         mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, headerModel));
         mModelList.add(new ListItem(TabProperties.UiType.TAB, childModel1));
 
-        // Child 1 moving up onto the header (which lacks TAB_ID) should resolve representative tab
-        // ID and ungroup
+        // Child 1 moving up onto the header (which lacks TAB_ID) should ungroup.
         assertTrue(
                 NestedTabReorderUtils.reorderItem(
                         mTabModel, mModelList, /* fromIndex= */ 1, /* toIndex= */ 0));
         verify(mTabUngrouper).ungroupTabs(List.of(mTab1), /* trailing= */ false, false);
+    }
+
+    @Test
+    public void testReorderItem_StandaloneOntoHeaderWithInvalidTabId_MergesIntoGroup() {
+        PropertyModel headerModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, Tab.INVALID_TAB_ID)
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, GROUP_ID)
+                        .build();
+        PropertyModel standaloneModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, TAB_ID_3)
+                        .build();
+
+        mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, headerModel));
+        mModelList.add(new ListItem(TabProperties.UiType.TAB, standaloneModel));
+
+        assertTrue(
+                NestedTabReorderUtils.reorderItem(
+                        mTabModel, mModelList, /* fromIndex= */ 1, /* toIndex= */ 0));
+        verify(mTabModel)
+                .mergeListOfTabsToGroup(
+                        List.of(mTab3),
+                        mTab1,
+                        /* indexInGroup= */ 0,
+                        TabGroupMergeNotificationType.NOTIFY_ALWAYS);
+    }
+
+    @Test
+    public void testReorderItem_GroupHeaderWithoutTabId_StaysBelowPinnedTabs() {
+        // Groups are never pinned, so a moved group stays at or after the first non-pinned index.
+        PropertyModel standaloneModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, TAB_ID_3)
+                        .build();
+        PropertyModel headerModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, Tab.INVALID_TAB_ID)
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, GROUP_ID)
+                        .build();
+
+        mModelList.add(new ListItem(TabProperties.UiType.TAB, standaloneModel));
+        mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, headerModel));
+
+        when(mTab3.getIsPinned()).thenReturn(true);
+        when(mTabModel.indexOf(mTab3)).thenReturn(0);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(1);
+
+        assertTrue(
+                NestedTabReorderUtils.reorderItem(
+                        mTabModel, mModelList, /* fromIndex= */ 1, /* toIndex= */ 0));
+        verify(mTabModel).moveGroupToIndex(GROUP_ID, 1);
     }
 
     @Test

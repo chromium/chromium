@@ -1917,6 +1917,28 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     }
 
     @Test
+    public void testOnMove_GroupHeaderWithoutTabId_StaysBelowPinnedTabs() {
+        // Groups are never pinned, so a moved group stays at or after the first non-pinned index.
+        Token groupId = new Token(1L, 2L);
+        mPropertyModel.set(TabProperties.TAB_ID, Tab.INVALID_TAB_ID);
+        mPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
+        setItemViewType(mViewHolder, TabProperties.UiType.TAB_GROUP);
+        mTargetPropertyModel.set(TabProperties.TAB_ID, 1);
+        mTargetPropertyModel.set(TabProperties.TAB_GROUP_ID, null);
+        mTargetPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, null);
+        setItemViewType(mTargetViewHolder, TabProperties.UiType.TAB);
+        when(mTabModel.getTabById(1)).thenReturn(mTab1);
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(1);
+        setBindingAdapterPosition(mTargetViewHolder, 0);
+        setBindingAdapterPosition(mViewHolder, 1);
+
+        assertTrue(mCallback.onMove(mRecyclerView, mViewHolder, mTargetViewHolder));
+
+        verify(mTabModel).moveGroupToIndex(groupId, 1);
+    }
+
+    @Test
     public void testDragDropResult_Grouped() {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(

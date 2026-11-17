@@ -158,7 +158,7 @@ public class NestedTabReorderUtils {
 
         if (destinationIndex == TabModel.INVALID_TAB_INDEX) return TabModel.INVALID_TAB_INDEX;
 
-        return adjustIndexBasedOnPinning(tabModel, currentTabId, destinationIndex);
+        return adjustIndexBasedOnPinning(tabModel, currentTabId, destinationIndex, isGroup);
     }
 
     /**
@@ -224,11 +224,12 @@ public class NestedTabReorderUtils {
         Token destGroupId = getTabGroupId(toModel);
         boolean isDestGroupHeader = isTabGroupHeader(toItem);
 
-        int currentTabId = resolveTabId(tabModel, fromModel, isGroupHeader, currentGroupId);
-        if (currentTabId == Tab.INVALID_TAB_ID) return false;
-
-        int destinationTabId = resolveTabId(tabModel, toModel, isDestGroupHeader, destGroupId);
-        if (destinationTabId == Tab.INVALID_TAB_ID) return false;
+        if (!canReorder(fromModel, isGroupHeader, currentGroupId)
+                || !canReorder(toModel, isDestGroupHeader, destGroupId)) {
+            return false;
+        }
+        int currentTabId = isGroupHeader ? Tab.INVALID_TAB_ID : getTabId(fromModel);
+        int destinationTabId = isDestGroupHeader ? Tab.INVALID_TAB_ID : getTabId(toModel);
 
         int distance = toIndex - fromIndex;
 
@@ -406,31 +407,22 @@ public class NestedTabReorderUtils {
                 : Tab.INVALID_TAB_ID;
     }
 
-    /**
-     * Resolves the tab ID for the given model, falling back to the first tab in the group only for
-     * group headers whose tab ID is not set.
-     */
-    private static int resolveTabId(
-            TabModel tabModel,
-            PropertyModel model,
-            boolean isGroupHeader,
-            @Nullable Token groupId) {
-        int tabId = getTabId(model);
-        if (isGroupHeader) {
-            if (groupId == null) return Tab.INVALID_TAB_ID;
-            if (tabId == Tab.INVALID_TAB_ID) {
-                List<Tab> tabs = tabModel.getTabsInGroup(groupId);
-                return tabs.isEmpty() ? Tab.INVALID_TAB_ID : tabs.get(0).getId();
-            }
-        }
-        return tabId;
+    /** Returns whether the row can be reordered: headers need a group ID, tabs need a tab ID. */
+    private static boolean canReorder(
+            PropertyModel model, boolean isGroupHeader, @Nullable Token groupId) {
+        return isGroupHeader ? groupId != null : getTabId(model) != Tab.INVALID_TAB_ID;
     }
 
-    /** Adjusts the destination index to respect pinned tab boundaries. */
-    private static int adjustIndexBasedOnPinning(TabModel tabModel, int fromTabId, int newIndex) {
+    /**
+     * Adjusts the destination index to respect pinned tab boundaries. Groups are never pinned, so
+     * they always stay at or after the first non-pinned index.
+     */
+    private static int adjustIndexBasedOnPinning(
+            TabModel tabModel, int fromTabId, int newIndex, boolean isGroup) {
+        int firstNonPinnedIndex = tabModel.findFirstNonPinnedTabIndex();
+        if (isGroup) return Math.max(newIndex, firstNonPinnedIndex);
         Tab fromTab = tabModel.getTabById(fromTabId);
         if (fromTab != null) {
-            int firstNonPinnedIndex = tabModel.findFirstNonPinnedTabIndex();
             if (fromTab.getIsPinned()) {
                 newIndex = Math.min(newIndex, firstNonPinnedIndex - 1);
             } else {
