@@ -5,13 +5,12 @@
 import("//build/config/chrome_build.gni")
 
 config("zstd_internal_config") {
-  if (!is_debug) {
-    # Build code using -O3.
-    configs = [
-      "//build/config/compiler:no_chromium_code",
-      "//build/config/compiler:optimize_speed",
-    ]
-  }
+  # Since we never debug zstd, always build code using -O3 (even in debug
+  # builds).
+  configs = [
+    "//build/config/compiler:no_chromium_code",
+    "//build/config/compiler:optimize_speed",
+  ]
 }
 
 config("zstd_hide_symbols") {
