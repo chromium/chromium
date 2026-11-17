@@ -243,6 +243,10 @@ TEST_F(NewTabPageUITest, GetLoadTimeData_ExpandedLhsUrlParameters) {
   std::string cs_value;
   EXPECT_FALSE(net::GetValueForKeyInQuery(url, "cs", &cs_value));
 
+  std::string atvm_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "atvm", &atvm_value));
+  EXPECT_EQ("3", atvm_value);
+
   std::string csui_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(url, "csui", &csui_value));
   EXPECT_EQ("3", csui_value);
@@ -266,21 +270,12 @@ TEST_F(NewTabPageUITest, GetLoadTimeData_LhsRailConfig) {
   ON_CALL(*mock_aim_service, IsAimEligible())
       .WillByDefault(testing::Return(true));
 
-  // 1. In non-hybrid mode (default), when GetLhsRailConfig() returns nullptr,
-  // lhsRailConfig is not set, while enableThreadsRail remains enabled on
-  // branded builds.
+  // 1. When GetLhsRailConfig() returns nullptr, lhsRailConfig is not set.
   ON_CALL(*mock_aim_service, GetLhsRailConfig())
       .WillByDefault(testing::Return(nullptr));
   base::DictValue load_time_data_empty = ntp::BuildLoadTimeData(
       &profile(), /*session_allows_drag_and_drop=*/false);
   EXPECT_EQ(load_time_data_empty.FindDict("lhsRailConfig"), nullptr);
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(
-      load_time_data_empty.FindBool("enableThreadsRail").value_or(false));
-#else
-  EXPECT_FALSE(
-      load_time_data_empty.FindBool("enableThreadsRail").value_or(true));
-#endif
 
   // 2. When GetLhsRailConfig() returns a populated config, lhsRailConfig is
   // serialized with items (including resolved targetUrl for valid relative
@@ -382,12 +377,9 @@ TEST_F(NewTabPageUITest, GetLoadTimeData_LhsRailConfig) {
   EXPECT_EQ(load_time_data_ineligible.FindDict("lhsRailConfig"), nullptr);
 }
 
-TEST_F(NewTabPageUITest,
-       GetLoadTimeData_HybridThreadsRailRequiresLhsRailConfig) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpThreadsRail,
-      {{ntp_features::kNtpThreadsRailHybridParam.name, "true"}});
+TEST_F(NewTabPageUITest, GetLoadTimeData_ThreadsRailRequiresLhsRailConfig) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      ntp_features::kNtpThreadsRail};
   TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
       &profile(),
       base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
@@ -399,8 +391,7 @@ TEST_F(NewTabPageUITest,
   ON_CALL(*mock_aim_service, IsAimEligible())
       .WillByDefault(testing::Return(true));
 
-  // 1. In hybrid mode, enableThreadsRail is false when GetLhsRailConfig()
-  // returns nullptr.
+  // 1. enableThreadsRail is false when GetLhsRailConfig() returns nullptr.
   ON_CALL(*mock_aim_service, GetLhsRailConfig())
       .WillByDefault(testing::Return(nullptr));
   base::DictValue load_time_data_null_config = ntp::BuildLoadTimeData(

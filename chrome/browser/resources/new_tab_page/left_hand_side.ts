@@ -67,17 +67,13 @@ export interface NtpLhsThemePalette {
   railBackground?: string;
 }
 
-// The primary view of the LHS. In hybrid mode, #folded and #expanded stay
-// rendered once the iframe is ready so that they can cross-fade (see
-// left_hand_side.css), so more than one view may be painted during a
-// transition.
+// The primary view of the LHS. #folded and #expanded stay rendered once the
+// iframe is ready so that they can cross-fade (see left_hand_side.css), so
+// more than one view may be painted during a transition.
 export enum LhsView {
-  // Nothing is visible. Used in full-iframe mode until the iframe is ready.
-  NONE = 'none',
-  // The folded threads rail. Used in hybrid mode only.
+  // The folded threads rail.
   FOLDED = 'folded',
-  // The ghost loader shown while the expanded iframe loads. Used in hybrid
-  // mode only.
+  // The ghost loader shown while the expanded iframe loads.
   GHOST_LOADER = 'ghostLoader',
   // The expanded LHS iframe.
   EXPANDED = 'expanded',
@@ -98,10 +94,6 @@ export class LeftHandSideElement extends CrLitElement {
 
   static override get properties() {
     return {
-      enableThreadsRailHybrid_: {
-        type: Boolean,
-        reflect: true,
-      },
       expandedLhsUrl_: {type: String},
       expandedWidth_: {type: Number},
       hasPreloaded_: {type: Boolean},
@@ -123,8 +115,6 @@ export class LeftHandSideElement extends CrLitElement {
   }
 
   accessor isDark: boolean|undefined = undefined;
-  protected accessor enableThreadsRailHybrid_: boolean =
-      loadTimeData.getBoolean('enableThreadsRailHybrid');
   protected accessor expandedLhsUrl_: string =
       loadTimeData.getString('expandedLhsUrl');
   protected accessor expandedWidth_: number = DEFAULT_EXPANDED_LHS_WIDTH_PX;
@@ -137,16 +127,14 @@ export class LeftHandSideElement extends CrLitElement {
       100;
   // The primary view, reflected as the `view_` attribute so that
   // left_hand_side.css can style each view. Derived in willUpdate().
-  protected accessor view_: LhsView = LhsView.NONE;
+  protected accessor view_: LhsView = LhsView.FOLDED;
   // Accessible name of the ghost loader. Together with aria-busy, it keeps the
   // LHS region in the a11y tree as busy while the expanded iframe loads,
   // instead of the region silently going missing.
   protected readonly ghostLoaderLabel_: string =
       loadTimeData.getString('aimThreadsHistoryLabel');
   private eventTracker_: EventTracker = new EventTracker();
-  private iframeResizeObserver_: ResizeObserver|null = null;
-  private lastIframeWidth_: number = 0;
-  // Width of the folded rail in hybrid mode, measured once it has rendered.
+  // Width of the folded rail, measured once it has rendered.
   private collapsedWidth_: number = 0;
   private preloadTimerId_: number|null = null;
 
@@ -164,8 +152,6 @@ export class LeftHandSideElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
-    this.iframeResizeObserver_?.disconnect();
-    this.iframeResizeObserver_ = null;
     this.cancelPreloadTimer_();
   }
 
@@ -176,20 +162,17 @@ export class LeftHandSideElement extends CrLitElement {
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
-    if (this.enableThreadsRailHybrid_) {
-      const folded = this.shadowRoot.querySelector<HTMLElement>('#folded');
-      this.collapsedWidth_ = folded ? folded.offsetWidth : 0;
-    }
+    const folded = this.shadowRoot.querySelector<HTMLElement>('#folded');
+    this.collapsedWidth_ = folded ? folded.offsetWidth : 0;
   }
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
-    if (this.enableThreadsRailHybrid_ &&
-        (changedPrivateProperties.has('isExpanded_') ||
-         changedPrivateProperties.has('expandedWidth_') ||
-         changedPrivateProperties.has('collapsedWidth_'))) {
+    if (changedPrivateProperties.has('isExpanded_') ||
+        changedPrivateProperties.has('expandedWidth_') ||
+        changedPrivateProperties.has('collapsedWidth_')) {
       this.setHostWidth_(
           this.isExpanded_ ? this.expandedWidth_ : this.collapsedWidth_);
     }
@@ -200,13 +183,10 @@ export class LeftHandSideElement extends CrLitElement {
   // views, including hiding the folded rail while the ghost loader replaces
   // it, are handled in left_hand_side.css.
   protected getVisibleView_(): LhsView {
-    if (this.enableThreadsRailHybrid_) {
-      if (!this.isExpanded_) {
-        return LhsView.FOLDED;
-      }
-      return this.isExpandedReady_ ? LhsView.EXPANDED : LhsView.GHOST_LOADER;
+    if (!this.isExpanded_) {
+      return LhsView.FOLDED;
     }
-    return this.isExpandedReady_ ? LhsView.EXPANDED : LhsView.NONE;
+    return this.isExpandedReady_ ? LhsView.EXPANDED : LhsView.GHOST_LOADER;
   }
 
   private setHostWidth_(width: number) {
@@ -214,48 +194,12 @@ export class LeftHandSideElement extends CrLitElement {
         '--cr-left-hand-side-width', `${Math.round(width)}px`);
   }
 
-  // In full-iframe mode the embedded page owns the rail width and reports it
-  // through `frame-sizing: content-width`. That width lands in one step, so the
-  // NTP layout would jump while the rail animates. Mirror the iframe width onto
-  // the host, which transitions it, so the rest of the NTP slides in sync.
-  private observeIframeWidth_(iframe: HTMLIFrameElement) {
-    if (this.iframeResizeObserver_) {
-      return;
-    }
-    this.iframeResizeObserver_ = new ResizeObserver(entries => {
-      this.onIframeResize_(entries[entries.length - 1]!);
-    });
-    this.iframeResizeObserver_.observe(iframe);
-  }
-
-  private onIframeResize_(entry: ResizeObserverEntry) {
-    const width = Math.round(entry.contentRect.width);
-    // The iframe is 0px wide until it is ready. Leave the host width alone so
-    // the first non-zero width is applied without a transition. The observer
-    // also fires for height-only resizes (e.g. when the browser window is
-    // resized); ignore those so the expanded state inferred below is not
-    // flipped by a width that did not change.
-    if (width <= 0 || width === this.lastIframeWidth_) {
-      return;
-    }
-    if (this.lastIframeWidth_ > 0) {
-      // The embedded page owns the expanded state in full-iframe mode. Infer
-      // it from the direction of the resize to pick the matching transition.
-      this.isExpanded_ = width > this.lastIframeWidth_;
-    }
-    this.lastIframeWidth_ = width;
-    this.setHostWidth_(width);
-  }
-
-  // Returns the expanded LHS iframe, or null while it is not in the DOM or not
-  // yet upgraded. In hybrid mode it is only stamped once the folded rail is
-  // hovered, focused, or expanded (see getHtml()), so that the embedded page is
-  // not loaded until the user interacts with the rail. In full-iframe mode it
-  // is stamped right away, but <ntp-iframe> is defined in the lazily loaded
-  // bundle, so until lazy_load.js runs it is a plain HTMLElement without
-  // IframeElement's methods (e.g. postMessage()).
+  // Returns the expanded LHS iframe, or null while it is not in the DOM. It is
+  // only stamped once the folded rail is hovered, focused, or expanded (see
+  // getHtml()), so that the embedded page is not loaded until the user
+  // interacts with the rail.
   private getExpandedIframe_(): IframeElement|null {
-    return this.shadowRoot.querySelector<IframeElement>('#expanded:defined');
+    return this.shadowRoot.querySelector<IframeElement>('#expanded');
   }
 
   protected onFoldedPointerenter_() {
@@ -347,9 +291,6 @@ export class LeftHandSideElement extends CrLitElement {
             data.width :
             DEFAULT_EXPANDED_LHS_WIDTH_PX;
         this.isExpandedReady_ = true;
-        if (!this.enableThreadsRailHybrid_) {
-          this.observeIframeWidth_(iframe);
-        }
         break;
       }
       case NtpLhsMessageType.NTP_LHS_CLOSE: {
@@ -381,8 +322,8 @@ export class LeftHandSideElement extends CrLitElement {
   private postThemeColors_ = () => {
     const expanded = this.getExpandedIframe_();
     if (!expanded) {
-      // Nothing to post to before the iframe is stamped and upgraded. The
-      // embedded page asks for the theme with NTP_LHS_READY once it is loaded.
+      // Nothing to post to before the expanded iframe is stamped. The embedded
+      // page asks for the theme with NTP_LHS_READY once it is loaded.
       return;
     }
     const computedStyle = getComputedStyle(this);
