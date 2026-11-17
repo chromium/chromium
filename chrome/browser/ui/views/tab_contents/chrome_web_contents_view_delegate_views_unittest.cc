@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
+#include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "components/prefs/pref_service.h"
 #include "components/renderer_context_menu/context_menu_delegate.h"
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
@@ -15,13 +21,123 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_view_delegate.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/focus/focus_manager.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #endif
+
+namespace {
+
+// Lets tests keep the widget inactive after `RequestFocus()`.
+class TestFocusableView : public views::View {
+  METADATA_HEADER(TestFocusableView, views::View)
+
+ public:
+  TestFocusableView() { SetFocusBehavior(FocusBehavior::ALWAYS); }
+
+  void set_suppress_activation_on_focus(bool suppress) {
+    suppress_activation_on_focus_ = suppress;
+  }
+
+  // views::View:
+  void RequestFocus() override {
+    if (GetWidget() && !GetWidget()->IsActive()) {
+      GetWidget()->GetFocusManager()->SetStoredFocusView(this);
+      if (!suppress_activation_on_focus_) {
+        GetWidget()->Activate();
+      }
+      return;
+    }
+    views::View::RequestFocus();
+  }
+
+ private:
+  bool suppress_activation_on_focus_ = false;
+};
+
+BEGIN_METADATA(TestFocusableView)
+END_METADATA
+
+// Simulates `BrowserView::OnWidgetActivationChanged()` calling `RestoreFocus()`
+// when `restore_focus_on_activation_` is set.
+class ActivationRestoreFocusObserver : public views::WidgetObserver {
+ public:
+  ActivationRestoreFocusObserver(views::Widget* widget,
+                                 ChromeWebContentsViewFocusHelper* focus_helper)
+      : focus_helper_(focus_helper) {
+    observation_.Observe(widget);
+  }
+
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
+    if (active && restore_focus_on_activation_) {
+      restore_focus_on_activation_ = false;
+      activation_restore_result_ = focus_helper_->RestoreFocus();
+    }
+  }
+
+  bool activation_restore_result() const { return activation_restore_result_; }
+
+ private:
+  raw_ptr<ChromeWebContentsViewFocusHelper> focus_helper_;
+  bool restore_focus_on_activation_ = true;
+  bool activation_restore_result_ = false;
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
+};
+
+class ChromeWebContentsViewFocusHelperTest : public ChromeViewsTestBase {
+ public:
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+    profile_ = std::make_unique<TestingProfile>();
+    web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
+    ChromeWebContentsViewFocusHelper::CreateForWebContents(web_contents_);
+
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    auto* container = widget_->SetContentsView(std::make_unique<views::View>());
+    web_view_ = container->AddChildView(
+        std::make_unique<views::WebView>(profile_.get()));
+    web_view_->SetWebContents(web_contents_);
+    focusable_view_ =
+        container->AddChildView(std::make_unique<TestFocusableView>());
+    widget_->Show();
+  }
+
+  void TearDown() override {
+    web_view_->SetWebContents(nullptr);
+    web_view_ = nullptr;
+    focusable_view_ = nullptr;
+    widget_.reset();
+    web_contents_factory_.DestroyWebContents(web_contents_.ExtractAsDangling());
+    profile_.reset();
+    ChromeViewsTestBase::TearDown();
+  }
+
+ protected:
+  ChromeWebContentsViewFocusHelper* focus_helper() {
+    return ChromeWebContentsViewFocusHelper::FromWebContents(web_contents_);
+  }
+
+  std::unique_ptr<TestingProfile> profile_;
+  content::TestWebContentsFactory web_contents_factory_;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  std::unique_ptr<views::Widget> widget_;
+  raw_ptr<views::WebView> web_view_ = nullptr;
+  raw_ptr<TestFocusableView> focusable_view_ = nullptr;
+};
+
+}  // namespace
 
 typedef ChromeRenderViewHostTestHarness ChromeWebContentsViewDelegateViewsTest;
 
@@ -222,3 +338,63 @@ TEST_F(ChromeWebContentsViewDelegateViewsClipboardTest,
 }
 
 }  // namespace
+
+TEST_F(ChromeWebContentsViewFocusHelperTest,
+       StoreAndRestoreFocusWhenWidgetActive) {
+  ASSERT_TRUE(widget_->IsActive());
+  focusable_view_->RequestFocus();
+  ASSERT_TRUE(focusable_view_->HasFocus());
+
+  focus_helper()->StoreFocus();
+  widget_->GetFocusManager()->ClearFocus();
+  ASSERT_FALSE(focusable_view_->HasFocus());
+  EXPECT_EQ(focus_helper()->GetStoredFocus(), focusable_view_);
+
+  EXPECT_TRUE(focus_helper()->RestoreFocus());
+  EXPECT_TRUE(focusable_view_->HasFocus());
+  EXPECT_EQ(focus_helper()->GetStoredFocus(), nullptr);
+  EXPECT_FALSE(focus_helper()->RestoreFocus());
+}
+
+TEST_F(ChromeWebContentsViewFocusHelperTest, RestoreFocusWhenWidgetInactive) {
+  focusable_view_->RequestFocus();
+  focus_helper()->StoreFocus();
+
+  std::unique_ptr<views::Widget> other_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  other_widget->Show();
+  ASSERT_FALSE(widget_->IsActive());
+
+  ActivationRestoreFocusObserver observer(widget_.get(), focus_helper());
+  EXPECT_TRUE(focus_helper()->RestoreFocus());
+
+  EXPECT_TRUE(observer.activation_restore_result());
+  EXPECT_TRUE(widget_->IsActive());
+  EXPECT_TRUE(focusable_view_->HasFocus());
+  EXPECT_EQ(focus_helper()->GetStoredFocus(), nullptr);
+}
+
+TEST_F(ChromeWebContentsViewFocusHelperTest,
+       DeferredRestoreFocusWhenWidgetRemainsInactive) {
+  focusable_view_->RequestFocus();
+  focus_helper()->StoreFocus();
+
+  std::unique_ptr<views::Widget> other_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  other_widget->Show();
+  ASSERT_FALSE(widget_->IsActive());
+
+  focusable_view_->set_suppress_activation_on_focus(true);
+  EXPECT_TRUE(focus_helper()->RestoreFocus());
+  ASSERT_FALSE(widget_->IsActive());
+  EXPECT_EQ(focus_helper()->GetStoredFocus(), focusable_view_);
+
+  focusable_view_->set_suppress_activation_on_focus(false);
+  ActivationRestoreFocusObserver observer(widget_.get(), focus_helper());
+  widget_->Activate();
+
+  EXPECT_TRUE(observer.activation_restore_result());
+  EXPECT_TRUE(widget_->IsActive());
+  EXPECT_TRUE(focusable_view_->HasFocus());
+  EXPECT_EQ(focus_helper()->GetStoredFocus(), nullptr);
+}

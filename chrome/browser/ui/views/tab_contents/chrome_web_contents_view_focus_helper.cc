@@ -121,12 +121,22 @@ void ChromeWebContentsViewFocusHelper::StoreFocus() {
 
 bool ChromeWebContentsViewFocusHelper::RestoreFocus() {
   views::View* view_to_focus = GetStoredFocus();
-  last_focused_view_tracker_.SetView(nullptr);
-  if (view_to_focus) {
-    view_to_focus->RequestFocus();
-    return true;
+  if (!view_to_focus) {
+    last_focused_view_tracker_.SetView(nullptr);
+    return false;
   }
-  return false;
+
+  // Only clear the view once it has focus. If the browser window is inactive,
+  // `RequestFocus()` only requests activation, and `BrowserView` calls
+  // `RestoreFocus()` again once the window is active.
+  view_to_focus->RequestFocus();
+  views::View* stored_view = last_focused_view_tracker_.view();
+  views::FocusManager* focus_manager = GetFocusManager();
+  if (stored_view && focus_manager &&
+      stored_view->Contains(focus_manager->GetFocusedView())) {
+    last_focused_view_tracker_.SetView(nullptr);
+  }
+  return true;
 }
 
 void ChromeWebContentsViewFocusHelper::ResetStoredFocus() {

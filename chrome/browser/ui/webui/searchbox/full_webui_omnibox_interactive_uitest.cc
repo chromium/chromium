@@ -1435,7 +1435,8 @@ class FullWebUIOmniboxInteractiveTest
     : public FullWebUIOmniboxInteractiveTestBase,
       public testing::WithParamInterface<bool> {
  public:
-  FullWebUIOmniboxInteractiveTest() {
+  explicit FullWebUIOmniboxInteractiveTest(
+      std::optional<bool> enable_desktop_widget = std::nullopt) {
     std::vector<base::test::FeatureRef> enabled_features = {
         omnibox::internal::kWebUIOmniboxFullPopup};
     std::vector<base::test::FeatureRef> disabled_features = {
@@ -1451,6 +1452,10 @@ class FullWebUIOmniboxInteractiveTest
     } else {
       disabled_features.push_back(features::kWebUIToolbar);
       disabled_features.push_back(features::kWebUILocationBar);
+    }
+    if (enable_desktop_widget.has_value()) {
+      (*enable_desktop_widget ? enabled_features : disabled_features)
+          .push_back(features::kOmniboxPopupDesktopWidget);
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -1955,6 +1960,47 @@ class FullWebUIOmniboxInteractiveTest
   auto CheckFindBarFocused() {
     return CheckResult([this]() { return GetFindBar()->HasFocus(); }, true,
                        "CheckFindBarFocused");
+  }
+
+  // Verifies that switching tabs gives focus back to the find bar in one tab
+  // and to the omnibox in the other, as
+  // `FindBarViewsUiTest.FocusRestoreOnTabSwitch` does for the Views omnibox.
+  void RunFindBarFocusRestoreOnTabSwitchTest() {
+    base::AutoReset<bool> disable_animations =
+        FindBarHost::SetEnableAnimationsForTesting(false);
+    auto show_find_bar_and_search = [this](std::u16string text) {
+      return Steps(Do([this]() { FindBarController::From(browser())->Show(); }),
+                   PollUntil(
+                       [this]() {
+                         return GetFindBar()->IsFindBarVisible() &&
+                                GetFindBar()->HasFocus();
+                       },
+                       "WaitForFindBarFocused"),
+                   EnterText(FindBarView::kTextField, std::move(text)));
+    };
+
+    RunTestSequence(
+        // Open tab A (index 1) and search for "a".
+        WaitForBrowserActive(),
+        AddInstrumentedTab(kTab1, GURL("chrome://version/")),
+        WaitForWebContentsReady(kTab1), WaitForPopupTransitionLockout(),
+        show_find_bar_and_search(u"a"),
+        // Open tab B (index 2), search for "b", then focus its omnibox.
+        AddInstrumentedTab(kTab2, GURL("chrome://version/")),
+        WaitForWebContentsReady(kTab2), WaitForPopupTransitionLockout(),
+        show_find_bar_and_search(u"b"),
+        SendKeyPress(kBrowserViewElementId, ui::VKEY_L,
+                     ui::EF_PLATFORM_ACCELERATOR),
+        WaitForPopupActive(),
+        // Select tab A. Its find bar gets focus back, and keeps it.
+        SwitchTab(kTabStripElementId, 1), WaitForPopupDismissed(),
+        WaitForBrowserWidgetActive(),
+        PollUntil([this]() { return GetFindBar()->HasFocus(); },
+                  "WaitForFindBarFocusedInTabA"),
+        WaitForPopupTransitionLockout(), CheckFindBarFocused(),
+        // Select tab B. Its omnibox gets focus back, and keeps it.
+        SwitchTab(kTabStripElementId, 2), WaitForPopupActive(),
+        WaitForPopupTransitionLockout(), WaitForPopupActive());
   }
 
   // Waits until the active tab's find session searches for `text` and has
@@ -7575,47 +7621,45 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       CheckFindBarFocused(), CheckUserInputInProgress(true));
 }
 
-// Verifies that switching tabs gives focus back to the find bar in one tab and
-// to the omnibox in the other, as `FindBarViewsUiTest.FocusRestoreOnTabSwitch`
-// does for the Views omnibox.
-IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
-                       FindBarFocusRestoreOnTabSwitch) {
-  base::AutoReset<bool> disable_animations =
-      FindBarHost::SetEnableAnimationsForTesting(false);
-  auto show_find_bar_and_search = [this](std::u16string text) {
-    return Steps(Do([this]() { FindBarController::From(browser())->Show(); }),
-                 PollUntil(
-                     [this]() {
-                       return GetFindBar()->IsFindBarVisible() &&
-                              GetFindBar()->HasFocus();
-                     },
-                     "WaitForFindBarFocused"),
-                 EnterText(FindBarView::kTextField, std::move(text)));
-  };
+class FullWebUIOmniboxDesktopWidgetEnabledInteractiveTest
+    : public FullWebUIOmniboxInteractiveTest {
+ public:
+  FullWebUIOmniboxDesktopWidgetEnabledInteractiveTest()
+      : FullWebUIOmniboxInteractiveTest(/*enable_desktop_widget=*/true) {}
+};
 
-  RunTestSequence(
-      // Open tab A (index 1) and search for "a".
-      WaitForBrowserActive(),
-      AddInstrumentedTab(kTab1, GURL("chrome://version/")),
-      WaitForWebContentsReady(kTab1), WaitForPopupTransitionLockout(),
-      show_find_bar_and_search(u"a"),
-      // Open tab B (index 2), search for "b", then focus its omnibox.
-      AddInstrumentedTab(kTab2, GURL("chrome://version/")),
-      WaitForWebContentsReady(kTab2), WaitForPopupTransitionLockout(),
-      show_find_bar_and_search(u"b"),
-      SendKeyPress(kBrowserViewElementId, ui::VKEY_L,
-                   ui::EF_PLATFORM_ACCELERATOR),
-      WaitForPopupActive(),
-      // Select tab A. Its find bar gets focus back, and keeps it.
-      SwitchTab(kTabStripElementId, 1), WaitForPopupDismissed(),
-      WaitForBrowserWidgetActive(),
-      PollUntil([this]() { return GetFindBar()->HasFocus(); },
-                "WaitForFindBarFocusedInTabA"),
-      WaitForPopupTransitionLockout(), CheckFindBarFocused(),
-      // Select tab B. Its omnibox gets focus back, and keeps it.
-      SwitchTab(kTabStripElementId, 2), WaitForPopupActive(),
-      WaitForPopupTransitionLockout(), WaitForPopupActive());
+class FullWebUIOmniboxDesktopWidgetDisabledInteractiveTest
+    : public FullWebUIOmniboxInteractiveTest {
+ public:
+  FullWebUIOmniboxDesktopWidgetDisabledInteractiveTest()
+      : FullWebUIOmniboxInteractiveTest(/*enable_desktop_widget=*/false) {}
+};
+
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxDesktopWidgetEnabledInteractiveTest,
+                       FindBarFocusRestoreOnTabSwitch) {
+  RunFindBarFocusRestoreOnTabSwitchTest();
 }
+
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxDesktopWidgetDisabledInteractiveTest,
+                       FindBarFocusRestoreOnTabSwitch) {
+  RunFindBarFocusRestoreOnTabSwitchTest();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FullWebUIOmniboxDesktopWidgetEnabledInteractiveTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WebUIToolbarEnabled"
+                                             : "WebUIToolbarDisabled";
+                         });
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FullWebUIOmniboxDesktopWidgetDisabledInteractiveTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WebUIToolbarEnabled"
+                                             : "WebUIToolbarDisabled";
+                         });
 
 #if defined(USE_AURA)
 // Verifies that right-clicking the page while the omnibox is focused on the New

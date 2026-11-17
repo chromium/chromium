@@ -78,10 +78,12 @@ source_set("unit_tests") {
     ":tab_contents",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//chrome/test/views",
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/base/clipboard:clipboard_test_support",
     "//ui/views",
+    "//ui/views/controls/webview",
   ]
 
   if (is_chromeos) {
