@@ -8,12 +8,14 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/discardable_memory_allocator.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -1428,14 +1430,18 @@ TEST_F(SoftwareImageDecodeCacheTest, GetDecodedImageForDrawScaleWithGainmap) {
 class DirtyDiscardableMemoryAllocator
     : public base::TestDiscardableMemoryAllocator {
  public:
+  using base::TestDiscardableMemoryAllocator::AllocateLockedDiscardableMemory;
+
   std::unique_ptr<base::DiscardableMemory> AllocateLockedDiscardableMemory(
-      size_t size) override {
+      base::ByteSize size) override {
     auto memory =
         base::TestDiscardableMemoryAllocator::AllocateLockedDiscardableMemory(
             size);
     // SAFETY: `memory` was just allocated with `size` bytes.
-    UNSAFE_BUFFERS(
-        std::ranges::fill(base::span(memory->data_as<uint8_t>(), size), 0xABu));
+    UNSAFE_BUFFERS(std::ranges::fill(
+        base::span(memory->data_as<uint8_t>(),
+                   base::checked_cast<size_t>(size.InBytes())),
+        0xABu));
     return memory;
   }
 };

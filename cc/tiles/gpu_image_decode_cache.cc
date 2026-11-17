@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
@@ -2001,8 +2002,9 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
       auto* allocator = base::DiscardableMemoryAllocator::GetInstance();
       std::unique_ptr<base::DiscardableMemory> backing_memory =
           allocator->AllocateLockedDiscardableMemoryWithRetryOrDie(
-              info.size, base::BindOnce(&GpuImageDecodeCache::ClearCache,
-                                        base::Unretained(this)));
+              base::ByteSize(info.size),
+              base::BindOnce(&GpuImageDecodeCache::ClearCache,
+                             base::Unretained(this)));
 
       // Do the decode.
       if (info.yuva.has_value()) {

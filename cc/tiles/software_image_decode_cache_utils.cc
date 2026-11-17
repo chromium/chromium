@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
@@ -83,15 +84,14 @@ void AllocateDiscardableSkImage(
       SkImageInfo::ByteSizeOverflowed(gainmap_info_size)) {
     return;
   }
-  const base::CheckedNumeric<size_t> size_checked =
-      base::CheckAdd(info_size, gainmap_info_size);
-  if (!size_checked.IsValid()) {
+  size_t size = 0;
+  if (!base::CheckAdd(info_size, gainmap_info_size).AssignIfValid(&size)) {
     return;
   }
 
   memory = base::DiscardableMemoryAllocator::GetInstance()
                ->AllocateLockedDiscardableMemoryWithRetryOrDie(
-                   size_checked.ValueOrDie(), std::move(on_no_memory));
+                   base::ByteSize(size), std::move(on_no_memory));
   if (!memory->data()) {
     return;
   }
@@ -99,8 +99,8 @@ void AllocateDiscardableSkImage(
   // interface. Fixing it is tracked in https://crbug.com/40586428. This use is
   // safe because we are using the same size parameter here as in the allocation
   // a few lines earlier.
-  UNSAFE_BUFFERS(base::span<uint8_t> memory_as_span(memory->data_as<uint8_t>(),
-                                                    size_checked.ValueOrDie()));
+  UNSAFE_BUFFERS(
+      base::span<uint8_t> memory_as_span(memory->data_as<uint8_t>(), size));
   auto gainmap_image_span =
       memory_as_span.subspan(info_size, gainmap_info_size);
 
