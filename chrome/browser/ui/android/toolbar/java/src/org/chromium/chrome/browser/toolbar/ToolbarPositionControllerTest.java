@@ -1359,6 +1359,28 @@ public class ToolbarPositionControllerTest {
 
         // The bitmap still holds the padding, so it has to be recaptured along with the layout.
         verify(mControlContainer).doSynchronousLayout(true);
+
+        // 3. The container was already laid out at its unpadded height at TOP while controls
+        // were locked, leaving only the captured bitmap at the padded height.
+        mControlContainerHeightSupplier.set(TOOLBAR_HEIGHT + mHairlineHeight);
+        doReturn(TOOLBAR_HEIGHT + mHairlineHeight + topInset)
+                .when(mControlContainer)
+                .getToolbarCaptureHeight();
+        clearInvocations(mControlContainer);
+
+        mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ false);
+
+        verify(mControlContainer).doSynchronousLayout(true);
+
+        // 4. Once the capture height also matches the unpadded height, no recapture is needed.
+        doReturn(TOOLBAR_HEIGHT + mHairlineHeight)
+                .when(mControlContainer)
+                .getToolbarCaptureHeight();
+        clearInvocations(mControlContainer);
+
+        mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ false);
+
+        verify(mControlContainer, never()).doSynchronousLayout(anyBoolean());
     }
 
     @Test

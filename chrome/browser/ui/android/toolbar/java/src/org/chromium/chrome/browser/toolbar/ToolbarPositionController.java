@@ -984,11 +984,13 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         // During toolbar swiping, it is possible that the toolbar's layout has been forced to
         // update before its position is moved to the bottom. In this case, skips calling
         // doSynchronousLayoutAndCapture() again.
-        if (isLayoutChanged || mControlContainerHeight > laidOutHeight) {
-            // Also recapture when only the height is stale: the last bitmap still contains the
-            // edge-to-edge top padding, and the compositor keeps drawing it above the bottom
-            // toolbar until something else invalidates the toolbar, which may never happen on a
-            // static page.
+        if (isLayoutChanged
+                || mControlContainerHeight > laidOutHeight
+                || mControlContainer.getToolbarCaptureHeight() > laidOutHeight) {
+            // Also recapture when only the height or the last capture is stale: the last bitmap
+            // still contains the edge-to-edge top padding, and the compositor keeps drawing it
+            // above the bottom toolbar until something else invalidates the toolbar, which may
+            // never happen on a static page or when browser controls are locked.
             mControlContainer.doSynchronousLayout(/* forceCaptureAfterLayout= */ true);
         }
     }

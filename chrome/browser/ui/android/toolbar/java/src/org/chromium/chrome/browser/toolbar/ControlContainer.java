@@ -54,6 +54,12 @@ public interface ControlContainer extends TabStripTransitionDelegate {
     int getToolbarHairlineHeight();
 
     /**
+     * Returns the height of the captured toolbar screenshot, which may include the tab strip on
+     * large form factors or edge-to-edge top padding before a recapture.
+     */
+    int getToolbarCaptureHeight();
+
+    /**
      * @param handler The swipe handler to be notified of swipe events on this container.
      */
     void setSwipeHandler(SwipeHandler handler);
