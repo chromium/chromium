@@ -14,6 +14,8 @@
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -23,7 +25,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
-#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -34,15 +35,15 @@ namespace {
 // Wait for a NativeWindow to receive window focus.
 bool FocusWidgetAndWait(content::WebContents* contents) {
   gfx::NativeWindow native_window = contents->GetTopLevelNativeWindow();
-  views::Widget* widget =
-      views::Widget::GetWidgetForNativeWindow(native_window);
-  if (!widget) {
+  auto* browser_view =
+      BrowserView::GetBrowserViewForNativeWindow(native_window);
+  if (!browser_view) {
     return false;
   }
 
-  return base::test::RunUntil([widget]() {
-    widget->Activate();
-    return widget->IsActive();
+  return base::test::RunUntil([browser_view]() {
+    browser_view->browser_widget()->Activate();
+    return browser_view->browser_widget()->IsActive();
   });
 }
 
@@ -146,7 +147,7 @@ IN_PROC_BROWSER_TEST_P(DisplayMediaAccessHandlerInteractiveUITest,
   // Focus the correct WebContents.
   auto* focus_web_contents =
       focus_opener ? opener_web_contents : pip_web_contents;
-  ASSERT_TRUE(FocusWidgetAndWait(focus_web_contents));
+  FocusWidgetAndWait(focus_web_contents);
 
   // Request media from the correct navigator.
   auto* request_web_contents =
@@ -214,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerInteractiveUITest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // Re-focus the pip window.
-  ASSERT_TRUE(FocusWidgetAndWait(pip_web_contents));
+  FocusWidgetAndWait(pip_web_contents);
 
   // Request media from the opener. This should be allowed despite the fact that
   // it's in the background since it will show up in the pip window.

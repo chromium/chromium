@@ -43,7 +43,8 @@
 #include "url/origin.h"
 
 #if defined(TOOLKIT_VIEWS)
-#include "ui/views/widget/widget.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #endif  // defined(TOOLKIT_VIEWS)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -542,9 +543,9 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
     // proxy for "the user's last interaction", but it's good enough.
     if (gfx::NativeWindow native_window =
             child_web_contents->GetTopLevelNativeWindow()) {
-      if (views::Widget* widget =
-              views::Widget::GetWidgetForNativeWindow(native_window)) {
-        if (widget->IsActive()) {
+      if (auto* browser_view =
+              BrowserView::GetBrowserViewForNativeWindow(native_window)) {
+        if (browser_view->GetWidget()->IsActive()) {
           ui_web_contents = child_web_contents;
         }
       }
