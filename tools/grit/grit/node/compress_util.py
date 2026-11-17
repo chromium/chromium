@@ -16,8 +16,8 @@ _executor = None
 def ParallelCompression():
   """Makes CompressMaybeAsync() return futures for the enclosed scope.
 
-  Compression runs in subprocesses (brotli) or in zlib (gzip), both of which
-  release the GIL, so threads give true parallelism.
+  Compression runs in subprocesses (brotli, zstd) or in zlib (gzip), all of
+  which release the GIL, so threads give true parallelism.
   """
   global _executor
   assert _executor is None

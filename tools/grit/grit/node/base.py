@@ -16,6 +16,7 @@ from grit import exception
 from grit import util
 from grit.node import brotli_util
 from grit.node import compress_util
+from grit.node import zstd_util
 import grit.format.gzip_string
 
 
@@ -707,6 +708,14 @@ class Node:
     if compress == 'brotli':
       return compress_util.CompressMaybeAsync(
         _BrotliCompressWithHeader, data, prefix=prefix
+      )
+
+    zstd_level = zstd_util.ParseCompressLevel(compress)
+    if zstd_level is not None:
+      # zstd frames start with a magic number and contain the uncompressed
+      # size, so no extra header is required.
+      return compress_util.CompressMaybeAsync(
+        zstd_util.ZstdCompress, data, zstd_level, prefix=prefix
       )
 
     if compress == 'false' or compress == 'default':

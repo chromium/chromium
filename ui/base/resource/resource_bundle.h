@@ -344,6 +344,10 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // also returned if the resource is not found.
   bool IsBrotli(int resource_id) const;
 
+  // Whether the |resource_id| is compressed (gzip, brotli, or zstd) in this
+  // bundle. False is also returned if the resource is not found.
+  bool IsCompressed(int resource_id) const;
+
   // Loads the raw bytes of a data resource nearest the scale factor
   // |scale_factor| into |bytes|. If the resource is compressed, decompress
   // before returning. Use ResourceHandle::kScaleFactorNone for scale

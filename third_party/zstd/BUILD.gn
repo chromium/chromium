@@ -180,3 +180,43 @@ source_set("compress") {
     ":headers",
   ]
 }
+
+if (current_toolchain == host_toolchain) {
+  # The zstd command-line tool, used by build scripts (e.g. grit). Benchmark,
+  # dictionary-training, and tracing support is omitted.
+  executable("zstd") {
+    sources = [
+      "src/programs/fileio.c",
+      "src/programs/fileio_asyncio.c",
+      "src/programs/timefn.c",
+      "src/programs/util.c",
+      "src/programs/zstdcli.c",
+    ]
+    defines = [
+      "ZSTD_NOBENCH",
+      "ZSTD_NODICT",
+      "ZSTD_NOTRACE",
+    ]
+    configs -= [
+      "//build/config/compiler:chromium_code",
+      "//build/config/compiler:default_optimization",
+    ]
+    configs += [ ":zstd_internal_config" ]
+    if (is_win && is_clang) {
+      # programs/platform.h defines _CRT_NONSTDC_NO_WARNINGS, which Chromium's
+      # build also defines.
+      cflags = [ "-Wno-macro-redefined" ]
+    }
+
+    # Always build release since this is a build tool.
+    if (is_debug) {
+      configs -= [ "//build/config:debug" ]
+      configs += [ "//build/config:release" ]
+    }
+    deps = [
+      ":compress",
+      ":decompress",
+      "//build/win:default_exe_manifest",
+    ]
+  }
+}

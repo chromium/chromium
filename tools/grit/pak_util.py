@@ -21,6 +21,12 @@ import tempfile
 from grit import constants
 from grit.format import data_pack
 
+try:
+  # Available in Python 3.14+.
+  from compression import zstd as _zstd
+except ImportError:
+  _zstd = None
+
 _GZIP_HEADER = b'\x1f\x8b'
 
 
@@ -50,7 +56,23 @@ def _RepackMain(args):
         shutil.copyfileobj(temp_outfile, outgz)
 
 
-def _MaybeDecompress(payload, brotli_path=None):
+def _ZstdDecompress(payload, zstd_path=None):
+  if zstd_path is None and _zstd:
+    return _zstd.decompress(payload)
+  try:
+    result = subprocess.run(
+      [zstd_path or 'zstd', '--decompress', '--stdout'],
+      input=payload,
+      stdout=subprocess.PIPE,
+      check=True,
+    )
+    return result.stdout
+  except (OSError, subprocess.CalledProcessError) as e:
+    sys.stderr.write(str(e) + '\n')
+    sys.exit(1)
+
+
+def _MaybeDecompress(payload, brotli_path=None, zstd_path=None):
   if payload.startswith(_GZIP_HEADER):
     return gzip.decompress(payload)
   if payload.startswith(constants.BROTLI_CONST):
@@ -70,6 +92,8 @@ def _MaybeDecompress(payload, brotli_path=None):
     except subprocess.CalledProcessError as e:
       sys.stderr.write(str(e) + '\n')
       sys.exit(1)
+  if payload.startswith(constants.ZSTD_MAGIC):
+    return _ZstdDecompress(payload, zstd_path)
   return payload
 
 
@@ -84,7 +108,7 @@ def _ExtractMain(args):
     path = os.path.join(args.output_dir, filename)
     with open(path, 'wb') as f:
       if not args.raw:
-        payload = _MaybeDecompress(payload, args.brotli)
+        payload = _MaybeDecompress(payload, args.brotli, args.zstd)
       f.write(payload)
 
 
@@ -229,6 +253,12 @@ def main():
     help='Path to brotli executable. Needed only to '
     'decompress brotli-compressed entries. For a '
     'chromium checkout, find in your output directory',
+  )
+  sub_parser.add_argument(
+    '--zstd',
+    help='Path to zstd executable. Needed only to '
+    'decompress zstd-compressed entries when not using Python 3.14+. '
+    'For a chromium checkout, find in your output directory',
   )
   sub_parser.add_argument(
     '-t',

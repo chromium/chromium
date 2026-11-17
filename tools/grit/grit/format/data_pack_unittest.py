@@ -20,6 +20,7 @@ from grit import grd_reader
 from grit import util
 from grit.format import data_pack
 from grit.node import brotli_util
+from grit.node import mock_zstd
 
 
 class FormatDataPackUnittest(unittest.TestCase):
@@ -274,6 +275,49 @@ class FormatDataPackUnittest(unittest.TestCase):
     self.assertEqual(b'LOTTIE', values[id_map['ID_LOTTIE']][:6])
     self.assertEqual(constants.BROTLI_CONST, values[id_map['ID_LOTTIE']][6:8])
     self.assertEqual(mock_output, values[id_map['ID_LOTTIE']][14:])
+
+  def testFormatInternalZstd(self):
+    xml = '''<?xml version="1.0" encoding="UTF-8"?>
+      <grit latest_public_release="2" source_lang_id="en-US"
+            current_release="3" base_dir=".">
+        <outputs>
+          <output filename="contents.pak" type="data_pack" />
+        </outputs>
+        <release seq="3">
+          <includes>
+            <include name="ID_TEXT" file="test_text.txt" type="BINDATA"
+                     compress="zstd" />
+            <include name="ID_HTML" file="test_html.html" type="BINDATA"
+                     compress="zstd19" />
+          </includes>
+          <structures>
+            <structure name="ID_LOTTIE" file="test_json.json" type="lottie"
+                       compress="zstd" />
+          </structures>
+        </release>
+      </grit>'''
+    test_data_root = util.PathFromRoot('grit/testdata')
+    grd = grd_reader.Parse(io.StringIO(xml), test_data_root)
+    grd.SetOutputLanguage('en')
+    grd.RunGatherers()
+    grd.InitializeIds()
+
+    with mock_zstd.SetUp():
+      values = data_pack._FormatInternal(grd, 'en', constants.GENDER_OTHER)
+
+    id_map = grd.GetIdMap()
+    self.assertEqual(
+      values,
+      {
+        id_map['ID_TEXT']: mock_zstd.ExpectedOutputForFile('test_text.txt'),
+        id_map['ID_HTML']: mock_zstd.ExpectedOutputForFile(
+          'test_html.html', b'-19'
+        ),
+        id_map['ID_LOTTIE']: (
+          b'LOTTIE' + mock_zstd.ExpectedOutputForFile('test_json.json')
+        ),
+      },
+    )
 
 
 if __name__ == '__main__':

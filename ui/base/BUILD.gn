@@ -512,6 +512,7 @@ component("base") {
     "//third_party/modp_b64",
     "//third_party/zlib",
     "//third_party/zlib/google:compression_utils",
+    "//third_party/zstd:decompress",
     "//ui/base:data_exchange",
     "//ui/base/clipboard:clipboard_types",
     "//ui/base/dragdrop/mojom",

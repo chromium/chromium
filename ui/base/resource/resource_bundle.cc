@@ -45,6 +45,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/zlib/google/compression_utils.h"
+#include "third_party/zstd/src/lib/zstd.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/data_pack.h"
@@ -174,6 +175,34 @@ bool BrotliDecompress(std::string_view input, OutputBufferType output) {
          BROTLI_DECODER_RESULT_SUCCESS;
 }
 
+// Helper function for determining whether a resource is zstd compressed.
+bool HasZstdHeader(std::string_view data) {
+  // Every zstd frame starts with this magic number (little-endian).
+  return data.starts_with(std::string_view("\x28\xb5\x2f\xfd", 4));
+}
+
+bool IsCompressedData(std::string_view data) {
+  return net::GZipHeader::HasGZipHeader(base::as_byte_span(data)) ||
+         HasBrotliHeader(data) || HasZstdHeader(data);
+}
+
+// Decompresses data in |input| using zstd, storing the result in |output|,
+// which is resized as necessary. Returns true for success. Requires that the
+// frame header contains the decompressed size, which grit always includes.
+bool ZstdDecompress(std::string_view input, OutputBufferType output) {
+  uint64_t decompress_size =
+      ZSTD_getFrameContentSize(input.data(), input.size());
+  if (decompress_size == ZSTD_CONTENTSIZE_UNKNOWN ||
+      decompress_size == ZSTD_CONTENTSIZE_ERROR) {
+    return false;
+  }
+  base::span<uint8_t> dest =
+      GetBufferForWriting(output, base::checked_cast<size_t>(decompress_size));
+  size_t result =
+      ZSTD_decompress(dest.data(), dest.size(), input.data(), input.size());
+  return !ZSTD_isError(result) && result == dest.size();
+}
+
 // Helper function for decompressing resource.
 void DecompressIfNeeded(std::string_view data, OutputBufferType output) {
   if (!data.empty() &&
@@ -188,6 +217,12 @@ void DecompressIfNeeded(std::string_view data, OutputBufferType output) {
     TRACE_EVENT0("ui", "DecompressIfNeeded::BrotliDecompress");
     bool success = BrotliDecompress(data, output);
     CHECK(success, base::NotFatalUntil::M163);
+  } else if (HasZstdHeader(data)) {
+    // Assumes that resources starting with the zstd magic number were
+    // compressed by grit (which always stores the decompressed size).
+    TRACE_EVENT0("ui", "DecompressIfNeeded::ZstdDecompress");
+    bool success = ZstdDecompress(data, output);
+    CHECK(success);
   } else {
     base::span<uint8_t> dest = GetBufferForWriting(output, data.size());
     std::ranges::copy(data, dest.data());
@@ -768,8 +803,7 @@ ResourceBundle::LoadDataResourceBytesForScale(
   if (data.empty())
     return nullptr;
 
-  if (net::GZipHeader::HasGZipHeader(base::as_byte_span(data)) ||
-      HasBrotliHeader(data)) {
+  if (IsCompressedData(data)) {
     auto bytes_string = base::MakeRefCounted<base::RefCountedString>();
     DecompressIfNeeded(data, &bytes_string->as_string());
     return bytes_string;
@@ -888,6 +922,10 @@ bool ResourceBundle::IsBrotli(int resource_id) const {
   return HasBrotliHeader(raw_data);
 }
 
+bool ResourceBundle::IsCompressed(int resource_id) const {
+  return IsCompressedData(GetRawDataResource(resource_id));
+}
+
 std::u16string ResourceBundle::GetLocalizedString(int resource_id) {
   {
     base::AutoLock lock_scope(*locale_resources_data_lock_);
@@ -895,7 +933,7 @@ std::u16string ResourceBundle::GetLocalizedString(int resource_id) {
     // has already been queried.
     can_override_locale_string_resources_ = false;
   }
-  DCHECK(!IsGzipped(resource_id) && !IsBrotli(resource_id))
+  DCHECK(!IsCompressed(resource_id))
       << "Compressed string encountered, perhaps use "
          "ResourceBundle::LoadLocalizedResourceString instead";
   return GetLocalizedStringImpl(resource_id);

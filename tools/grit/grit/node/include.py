@@ -54,7 +54,8 @@ class IncludeNode(base.Node):
     preprocess:            Takes the same code path as flattenhtml, but it
                            disables any  processing/inlining outside of <if>
                            and <include>.
-    compress:              The format to compress the data with, e.g. 'gzip'
+    compress:              The format to compress the data with, e.g. 'gzip',
+                           'brotli', 'zstd', 'zstd19' (zstd with level 19),
                            or 'false' if data should not be compressed.
     skip_in_resource_map:  If true, do not add to the resource map.
     """

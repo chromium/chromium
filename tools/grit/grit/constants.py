@@ -21,6 +21,9 @@ PSEUDOLOCALES = [PSEUDOLOCALE_LONG_STRINGS, PSEUDOLOCALE_RTL]
 # ui/base/resource/resource_bundle.h for decompression usage.
 BROTLI_CONST = b'\x1e\x9b'
 
+# Magic number at the start of every zstd frame.
+ZSTD_MAGIC = b'\x28\xb5\x2f\xfd'
+
 
 # Gender-related constants.
 GENDER_OTHER = 'OTHER'

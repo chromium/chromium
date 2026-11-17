@@ -324,7 +324,7 @@ TEST_F(ResourceBundleTest, IsGzipped) {
   ASSERT_FALSE(resource_bundle->IsGzipped(200));
 }
 
-TEST_F(ResourceBundleTest, IsBrotli) {
+TEST_F(ResourceBundleTest, IsBrotliAndIsCompressed) {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   base::FilePath data_path =
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("sample.pak"));
@@ -339,8 +339,17 @@ TEST_F(ResourceBundleTest, IsBrotli) {
   ASSERT_TRUE(resource_bundle->IsBrotli(6));
   ASSERT_FALSE(resource_bundle->IsGzipped(6));
   ASSERT_FALSE(resource_bundle->IsBrotli(8));
+  ASSERT_FALSE(resource_bundle->IsBrotli(9));
+  ASSERT_FALSE(resource_bundle->IsGzipped(9));
   // Ask for non-existent resource ID.
   ASSERT_FALSE(resource_bundle->IsBrotli(200));
+
+  ASSERT_FALSE(resource_bundle->IsCompressed(1));
+  ASSERT_FALSE(resource_bundle->IsCompressed(4));
+  ASSERT_TRUE(resource_bundle->IsCompressed(6));
+  ASSERT_TRUE(resource_bundle->IsCompressed(8));
+  ASSERT_TRUE(resource_bundle->IsCompressed(9));
+  ASSERT_FALSE(resource_bundle->IsCompressed(200));
 }
 
 TEST_F(ResourceBundleTest, DelegateGetLocalizedString) {
@@ -555,6 +564,7 @@ TEST_F(ResourceBundleImageTest, LoadLocalizedResourceString) {
 
   EXPECT_EQ("this is id 6", resource_bundle->LoadLocalizedResourceString(6));
   EXPECT_EQ("this is id 8", resource_bundle->LoadLocalizedResourceString(8));
+  EXPECT_EQ("this is id 9", resource_bundle->LoadLocalizedResourceString(9));
 }
 
 TEST_F(ResourceBundleImageTest, LoadDataResourceString) {
@@ -571,6 +581,13 @@ TEST_F(ResourceBundleImageTest, LoadDataResourceString) {
 
   // Resource ID 8 is Gzip compressed, expect it to be uncompressed.
   EXPECT_EQ("this is id 8", resource_bundle->LoadDataResourceString(8));
+
+  // Resource ID 9 is zstd compressed, expect it to be uncompressed.
+  EXPECT_EQ("this is id 9", resource_bundle->LoadDataResourceString(9));
+  scoped_refptr<base::RefCountedMemory> bytes =
+      resource_bundle->LoadDataResourceBytes(9);
+  ASSERT_TRUE(bytes);
+  EXPECT_EQ("this is id 9", base::as_string_view(*bytes));
 
   // Resource ID 4 is plain text (not compressed), expect to return as-is.
   EXPECT_EQ("this is id 4", resource_bundle->LoadDataResourceString(4));

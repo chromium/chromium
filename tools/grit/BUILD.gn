@@ -85,4 +85,11 @@ if (is_mac && is_asan) {
 
     public_deps = [ "//third_party/brotli:brotli($host_toolchain)" ]
   }
+
+  create_bundle("zstd_mac_asan_workaround") {
+    bundle_root_dir = "$target_out_dir/$target_name"
+    bundle_executable_dir = bundle_root_dir
+
+    public_deps = [ "//third_party/zstd:zstd($host_toolchain)" ]
+  }
 }

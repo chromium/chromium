@@ -274,6 +274,22 @@ template("grit") {
       ]
     }
 
+    # Add zstd executable if using zstd.
+    if (defined(invoker.use_zstd) && invoker.use_zstd) {
+      _zstd_target = "//third_party/zstd:zstd($host_toolchain)"
+      _zstd_executable = get_label_info(_zstd_target, "root_out_dir") + "/" +
+                         get_label_info(_zstd_target, "name")
+      if (host_os == "win") {
+        _zstd_executable += ".exe"
+      }
+
+      inputs += [ _zstd_executable ]
+      args += [
+        "--zstd",
+        rebase_path(_zstd_executable, root_build_dir),
+      ]
+    }
+
     _resource_ids = grit_resource_id_file
     if (defined(invoker.resource_ids)) {
       _resource_ids = invoker.resource_ids
@@ -353,6 +369,13 @@ template("grit") {
         deps += [ "//tools/grit:brotli_mac_asan_workaround" ]
       } else {
         deps += [ "//third_party/brotli:brotli($host_toolchain)" ]
+      }
+    }
+    if (defined(invoker.use_zstd) && invoker.use_zstd) {
+      if (is_mac && is_asan) {
+        deps += [ "//tools/grit:zstd_mac_asan_workaround" ]
+      } else {
+        deps += [ "//third_party/zstd:zstd($host_toolchain)" ]
       }
     }
     if (defined(invoker.deps)) {

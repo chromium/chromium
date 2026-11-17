@@ -21,6 +21,7 @@ import struct
 from grit import constants
 from grit import util
 from grit.node import brotli_util
+from grit.node import mock_zstd
 from grit.node import structure
 from grit.format import rc
 
@@ -196,6 +197,46 @@ class StructureUnittest(unittest.TestCase):
     self.assertEqual(actual_size, uncompress_size)
 
     self.assertEqual(b'This has been mock compressed!', compressed[8:])
+
+  def _CompressZstdWithMock(self, compress=None, filename='test_text.txt'):
+    test_data_root = util.PathFromRoot('grit/testdata')
+    compress_attr = '' if compress is None else 'compress="%s"' % compress
+    root = util.ParseGrdForUnittest(
+      '''
+        <structures>
+          <structure name="TEST_TXT" file="%s"
+                   %s type="chrome_html" />
+        </structures>'''
+      % (filename, compress_attr),
+      base_dir=test_data_root,
+    )
+    (node,) = root.GetChildrenOfType(structure.StructureNode)
+    node.RunPreSubstitutionGatherer()
+
+    with mock_zstd.SetUp():
+      return node.GetDataPackValue(
+        lang='en', gender=constants.DEFAULT_GENDER, encoding=util.BINARY
+      )
+
+  def testCompressZstd(self):
+    self.assertEqual(
+      mock_zstd.ExpectedOutputForFile('test_text.txt', b'-15'),
+      self._CompressZstdWithMock('zstd'),
+    )
+    self.assertEqual(
+      mock_zstd.ExpectedOutputForFile('test_text.txt', b'-19'),
+      self._CompressZstdWithMock('zstd19'),
+    )
+    self.assertEqual(
+      mock_zstd.ExpectedOutputForFile('test_text.txt', b'--ultra -22'),
+      self._CompressZstdWithMock('zstd22'),
+    )
+    self.assertEqual(
+      mock_zstd.ExpectedOutputForFile('test_text.txt', b'--fast=2'),
+      self._CompressZstdWithMock('zstd-2'),
+    )
+    with self.assertRaises(Exception):
+      self._CompressZstdWithMock('zstdx')
 
   def testNotCompressed(self):
     test_data_root = util.PathFromRoot('grit/testdata')

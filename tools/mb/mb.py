@@ -1737,6 +1737,7 @@ class MetaBuildWrapper:
             'blink_test_plugin.plugin/',
             'corb_test_plugin.plugin/',
             'obj/tools/grit/brotli_mac_asan_workaround/',
+            'obj/tools/grit/zstd_mac_asan_workaround/',
             'ppapi_tests.plugin/',
             'quarantine_enabled_app.app/',
             'registration_test_app_bundle.app/',

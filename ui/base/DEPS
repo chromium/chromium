@@ -10,6 +10,7 @@ include_rules = [
   "+third_party/re2",
   "+third_party/skia",
   "+third_party/zlib",
+  "+third_party/zstd/src/lib/zstd.h",
   "+ui/base/ui_base_jni_headers",
   "+ui/color",
   "+ui/display",

@@ -36,6 +36,7 @@
 //tools/grit/grit/node/node_io.py
 //tools/grit/grit/node/structure.py
 //tools/grit/grit/node/variant.py
+//tools/grit/grit/node/zstd_util.py
 //tools/grit/grit/pseudo.py
 //tools/grit/grit/pseudolocales.py
 //tools/grit/grit/tclib.py
