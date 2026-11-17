@@ -209,7 +209,9 @@ void BackForwardMenuModel::ActivatedAt(size_t index) {
 }
 
 void BackForwardMenuModel::ActivatedAt(size_t index, int event_flags) {
-  CHECK(!IsSeparator(index), base::NotFatalUntil::M162);
+  // TODO(crbug.com/586448594): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!IsSeparator(index));
 
   std::optional<MenuSection> section = GetSectionForIndex(index);
   if (!section.has_value()) {
