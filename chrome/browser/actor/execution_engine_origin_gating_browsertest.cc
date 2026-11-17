@@ -32,6 +32,7 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/core/filters/hints_component_util.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -40,6 +41,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -450,6 +452,23 @@ class ExecutionEngineOriginGatingBrowserTestBase
     task_id_ = TaskId(result.value());
   }
 
+  using PerformActionsResultFuture = base::test::TestFuture<
+      base::expected<mojo_base::ProtoWrapper,
+                     glic::mojom::PerformActionsErrorReason>>;
+
+  void StartPerformActions(const optimization_guide::proto::Actions& actions,
+                           PerformActionsResultFuture& future) {
+    std::string serialized;
+    ASSERT_TRUE(actions.SerializeToString(&serialized));
+    std::vector<uint8_t> actions_bytes(serialized.begin(), serialized.end());
+    ASSERT_TRUE(GetGlicInstanceImpl());
+    auto* session = GetGlicInstanceImpl()
+                        ->GetActorTaskManager()
+                        ->GetClientSessionForTesting();
+    ASSERT_TRUE(session);
+    session->PerformActions(actions_bytes, future.GetCallback());
+  }
+
  protected:
   base::ScopedTempDir temp_dir_;
 
@@ -590,6 +609,162 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   test_ukm_recorder()->ExpectEntryMetric(
       ukm_entries[0], "EngineState", /*expected_value=*/
       static_cast<int64_t>(ExecutionEngine::State::kToolInvoke));
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
+                       PendingMainFrameNavigationStoppedOnTaskJoin) {
+  const GURL start_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
+  const GURL cross_origin_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+  // Pre-existing navigations lack ActorNavigationThrottle, so even same-origin
+  // pending navigations must be stopped before they can redirect cross-origin.
+  const GURL same_origin_redirect_url = embedded_https_test_server().GetURL(
+      "example.com",
+      base::StrCat({"/server-redirect?", cross_origin_url.spec()}));
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+
+  content::TestNavigationManager nav_manager(web_contents(),
+                                             same_origin_redirect_url);
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("location.href = $1;", same_origin_redirect_url)));
+  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+
+  OpenGlicAndCreateTask();
+  EXPECT_TRUE(web_contents()->HasUncommittedNavigationInPrimaryMainFrame());
+
+  ClickTarget("#clickable", mojom::ActionResultCode::kOk);
+
+  EXPECT_FALSE(web_contents()->HasUncommittedNavigationInPrimaryMainFrame());
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  EXPECT_FALSE(nav_manager.was_committed());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), start_url);
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
+                       PendingMainFrameNavigationNotStoppedOnTaskResume) {
+  base::HistogramTester histogram_tester;
+  const GURL start_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
+  const GURL cross_origin_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+  ClickTarget("#clickable", mojom::ActionResultCode::kOk);
+
+  actor_task().Pause(/*from_actor=*/false);
+  EXPECT_TRUE(actor_task().IsUnderUserControl());
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, true)));
+
+  content::TestNavigationManager cross_origin_nav(web_contents(),
+                                                  cross_origin_url);
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("location.href = $1;", cross_origin_url)));
+  ASSERT_TRUE(cross_origin_nav.WaitForRequestStart());
+  EXPECT_TRUE(web_contents()->HasUncommittedNavigationInPrimaryMainFrame());
+
+  actor_task().Resume();
+
+  EXPECT_TRUE(web_contents()->HasUncommittedNavigationInPrimaryMainFrame());
+  ASSERT_TRUE(cross_origin_nav.WaitForNavigationFinished());
+  EXPECT_TRUE(cross_origin_nav.was_committed());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), cross_origin_url);
+
+  RunTestSequence(VerifyNavigationConfirmationRequest(
+      base::test::ParseJsonDict(content::JsReplace(
+          R"({"navigationOrigin": $1, "taskId": $2})",
+          url::Origin::Create(cross_origin_url), actor_task().id().value()))));
+
+  histogram_tester.ExpectUniqueSample(
+      "Actor.NavigationGating.PermissionGranted", true, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
+                       PendingSubframeNavigationNotStoppedOnTaskJoin) {
+  const GURL start_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/toctou_frame_swap.html");
+  const GURL subframe_target_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+
+  content::TestNavigationManager subframe_nav_manager(web_contents(),
+                                                      subframe_target_url);
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("document.getElementById('victim').src = $1;",
+                         subframe_target_url)));
+  ASSERT_TRUE(subframe_nav_manager.WaitForRequestStart());
+  EXPECT_FALSE(web_contents()->HasUncommittedNavigationInPrimaryMainFrame());
+
+  OpenGlicAndCreateTask();
+
+  base::test::TestFuture<mojom::ActionResultPtr> add_tab_future;
+  actor_task().AddTab(active_tab()->GetHandle(),
+                      /*stop_task_on_detach=*/false,
+                      add_tab_future.GetCallback());
+  ExpectOkResult(add_tab_future);
+  EXPECT_TRUE(actor_task().HasTab(active_tab()->GetHandle()));
+  EXPECT_NE(subframe_nav_manager.GetNavigationHandle(), nullptr);
+
+  ASSERT_TRUE(subframe_nav_manager.WaitForNavigationFinished());
+  EXPECT_TRUE(subframe_nav_manager.was_committed());
+
+  base::test::TestFuture<ActorKeyedService::TabObservationResult> obs_future;
+  actor_keyed_service().RequestTabObservation(
+      *active_tab(), actor_task().id(), std::nullopt, obs_future.GetCallback());
+  ASSERT_TRUE(obs_future.Get().has_value());
+  ClickTarget("#decoy", mojom::ActionResultCode::kOk);
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
+                       PendingMainFrameNavigationStoppedOnWaitObserveTab) {
+  const GURL start_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/page_with_clickable_element.html");
+  const GURL sensitive_url = embedded_https_test_server().GetURL(
+      "sensitive.example.com", "/actor/blank.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+
+  content::TestNavigationManager nav_manager(web_contents(), sensitive_url);
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("location.href = $1;", sensitive_url)));
+  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+
+  OpenGlicAndCreateTask();
+  ASSERT_TRUE(web_contents()->HasUncommittedNavigationInPrimaryMainFrame());
+
+  PerformActionsResultFuture result_future;
+  StartPerformActions(MakeWait(base::Milliseconds(0), active_tab()->GetHandle(),
+                               actor_task().id()),
+                      result_future);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !actor_task().GetLastActedActorSurfaces().empty(); }));
+  EXPECT_FALSE(web_contents()->HasUncommittedNavigationInPrimaryMainFrame());
+
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  ASSERT_TRUE(result_future.Get().has_value());
+  std::optional<optimization_guide::proto::ActionsResult> actions_result =
+      result_future.Get()
+          .value()
+          .As<optimization_guide::proto::ActionsResult>();
+  ASSERT_TRUE(actions_result.has_value());
+
+  EXPECT_FALSE(nav_manager.was_committed());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), start_url);
+  EXPECT_EQ(actions_result->action_result(),
+            static_cast<int32_t>(mojom::ActionResultCode::kOk));
+  ASSERT_EQ(actions_result->tabs_size(), 1);
+  EXPECT_EQ(
+      actions_result->tabs(0).annotated_page_content().main_frame_data().url(),
+      start_url.spec());
 }
 
 class ExecutionEngineOriginGatingBFCacheBrowserTest
