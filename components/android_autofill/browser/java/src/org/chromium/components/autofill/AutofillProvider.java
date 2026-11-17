@@ -604,6 +604,10 @@ public class AutofillProvider {
                 return;
             }
 
+            // The WebView may have moved to another Activity since the session started, e.g.
+            // when the app recreates its Activity and keeps the WebView.
+            if (!causedByValueChange) maybeRefetchAutofillManager();
+
             // Notify focus changed.
             if (prev != null) {
                 notifyVirtualViewExited(mContainerView, prev.fieldIndex);
@@ -684,6 +688,8 @@ public class AutofillProvider {
         if (mAutofillManager == null) return;
         Context context = getContext();
         if (!mAutofillManager.canRefetch(context)) return;
+        // Check the feature only when a refetch is possible, so that only the affected WebViews
+        // are enrolled in the experiment.
         if (!AndroidAutofillFeatures.ANDROID_AUTOFILL_REFETCH_MANAGER_IF_DISABLED.isEnabled()) {
             return;
         }

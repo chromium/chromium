@@ -6,6 +6,7 @@ package org.chromium.components.autofill;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.graphics.Rect;
@@ -66,7 +67,8 @@ public class AutofillManagerWrapper {
     private static boolean sIsLoggable;
     private String mPackageName = "";
     private @Nullable AutofillManager mAutofillManager;
-    private boolean mHasActivityContext;
+    // The Activity behind the Context that mAutofillManager was fetched from, if any.
+    private @Nullable WeakReference<Activity> mActivityRef;
     private boolean mIsAutofillInputUiShowing;
     private @Nullable AutofillInputUiMonitor mMonitor;
     private boolean mDestroyed;
@@ -112,7 +114,8 @@ public class AutofillManagerWrapper {
         updateLogStat();
         if (isLoggable()) log("constructor");
 
-        mHasActivityContext = ContextUtils.activityFromContext(context) != null;
+        Activity activity = ContextUtils.activityFromContext(context);
+        mActivityRef = activity != null ? new WeakReference<>(activity) : null;
         mAutofillManager = retrieveAutofillManager(context);
         if (mAutofillManager == null) {
             if (isLoggable()) log("disabled");
@@ -158,21 +161,25 @@ public class AutofillManagerWrapper {
     }
 
     /**
-     * Returns whether this wrapper was created without an {@link android.app.Activity} context, is
-     * currently disabled, and {@code context} now wraps an {@link android.app.Activity}.
+     * Returns whether the {@link AutofillManager} should be fetched again from {@code context}:
+     * either this wrapper was created without an {@link Activity}, is disabled, and {@code context}
+     * now wraps one (e.g. after {@link
+     * android.content.MutableContextWrapper#setBaseContext(Context)}), or {@code context} now wraps
+     * a different {@link Activity} than the one the manager was last fetched from (e.g. after the
+     * app recreated its Activity and moved a retained WebView to the new one). In the latter case
+     * the old manager may still look enabled, but the framework ignores its events once its
+     * Activity is gone.
      */
     public boolean canRefetch(@Nullable Context context) {
-        return !mDestroyed
-                && !mHasActivityContext
-                && ContextUtils.activityFromContext(context) != null
-                && !isEnabled(mAutofillManager);
+        if (mDestroyed) return false;
+        Activity activity = ContextUtils.activityFromContext(context);
+        if (activity == null) return false;
+        return mActivityRef == null ? !isEnabled(mAutofillManager) : activity != mActivityRef.get();
     }
 
     /**
-     * Fetches the {@link AutofillManager} from {@code context} once it wraps an {@link
-     * android.app.Activity}, e.g. after {@link
-     * android.content.MutableContextWrapper#setBaseContext(Context)}. Runs at most once per wrapper
-     * instance.
+     * Fetches the {@link AutofillManager} from {@code context} again if {@link
+     * #canRefetch(Context)}. Runs at most once per {@link Activity}.
      *
      * <p>Does not register {@link AutofillInputUiMonitor} on the new {@link AutofillManager}, since
      * an {@link AutofillManager} supports only one callback and the app may have registered its
@@ -186,10 +193,16 @@ public class AutofillManagerWrapper {
      */
     public boolean refetch(@Nullable Context context) {
         if (!canRefetch(context)) return false;
-        mHasActivityContext = true;
+        Activity activity = ContextUtils.activityFromContext(context);
+        if (activity == null) return false;
+        @Nullable Activity previousActivity = mActivityRef != null ? mActivityRef.get() : null;
+        mActivityRef = new WeakReference<>(activity);
         @Nullable AutofillManager autofillManager = retrieveAutofillManager(context);
         if (autofillManager == null || autofillManager == mAutofillManager) return false;
         if (isLoggable()) log("refetch: replacing AutofillManager after moving to an Activity");
+        // When an Activity is recreated, the new Activity's AutofillManager restores the old one's
+        // session, so only cancel the session if the previous Activity is still alive.
+        if (previousActivity != null && !previousActivity.isDestroyed()) cancel();
         resetMonitoring();
         mAutofillManager = autofillManager;
         updateAutofillServiceInfo();

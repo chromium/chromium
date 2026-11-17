@@ -65,10 +65,13 @@ BASE_FEATURE(kAndroidAutofillSuppressOffscreenDatalist,
 BASE_FEATURE(kAndroidAutofillIncludeSelectOptionValues,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, AutofillProvider fetches the AutofillManager from its context
-// again when the current one is disabled. This lets autofill work in WebViews
-// that were created with a context that has no Activity behind it and later
-// moved to an Activity, e.g. with MutableContextWrapper.setBaseContext().
+// If enabled, `AutofillProvider` fetches the `AutofillManager` from its context
+// again when the current one is disabled, or when the context now wraps a
+// different `Activity` than the one the current `AutofillManager` came from.
+// This lets autofill work in WebViews that were created with a context that
+// has no `Activity` behind it and later moved to an `Activity`, or that apps
+// retain across `Activity` recreation, e.g. with
+// `MutableContextWrapper.setBaseContext()`.
 BASE_FEATURE(kAndroidAutofillRefetchManagerIfDisabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
