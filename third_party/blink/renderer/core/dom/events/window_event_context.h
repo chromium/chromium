@@ -36,6 +36,7 @@ class EventTarget;
 class Event;
 class LocalDOMWindow;
 class NodeEventContext;
+class PointerEventContext;
 class TouchEventContext;
 
 class WindowEventContext : public GarbageCollected<WindowEventContext> {
@@ -47,6 +48,7 @@ class WindowEventContext : public GarbageCollected<WindowEventContext> {
   LocalDOMWindow* Window() const;
   EventTarget* Target() const;
   EventTarget* RelatedTarget() const;
+  PointerEventContext* GetPointerEventContext() const;
   bool HandleLocalEvents(Event&);
 
   void Trace(Visitor*) const;
@@ -56,6 +58,7 @@ class WindowEventContext : public GarbageCollected<WindowEventContext> {
   Member<EventTarget> target_;
   Member<EventTarget> related_target_;
   Member<TouchEventContext> touch_event_context_;
+  Member<PointerEventContext> pointer_event_context_;
 };
 
 inline LocalDOMWindow* WindowEventContext::Window() const {
@@ -68,6 +71,10 @@ inline EventTarget* WindowEventContext::Target() const {
 
 inline EventTarget* WindowEventContext::RelatedTarget() const {
   return related_target_.Get();
+}
+
+inline PointerEventContext* WindowEventContext::GetPointerEventContext() const {
+  return pointer_event_context_.Get();
 }
 
 }  // namespace blink
