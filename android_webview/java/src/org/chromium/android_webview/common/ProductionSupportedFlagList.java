@@ -1599,6 +1599,10 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_LIMIT_CROSS_ORIGIN_NON_ACTIVATED_PAINT_HOLDING,
                 "When enabled, WebView disallows cross-origin paint holding without user"
                         + " activation."),
+        Flag.baseFeature(
+                "AlwaysUse64BitCrashHandlerIfAvailable",
+                "When enabled, 32-bit browser processes launch a 64-bit Crashpad handler for"
+                        + " client processes if a 64-bit handler is available."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

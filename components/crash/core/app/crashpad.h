@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -282,6 +283,8 @@ void StartProcessingPendingReports();
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kAlwaysUse64BitCrashHandlerIfAvailable);
+
 // If a CrashReporterClient has enabled sanitization, this function specifies
 // regions of memory which are allowed to be collected by Crashpad.
 void AllowMemoryRange(void* begin, size_t size);

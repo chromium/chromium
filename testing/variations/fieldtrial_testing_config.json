@@ -447,6 +447,22 @@
             ]
         }
     ],
+    "AlwaysUse64BitCrashHandlerIfAvailable": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AlwaysUse64BitCrashHandlerIfAvailable"
+                    ]
+                }
+            ]
+        }
+    ],
     "AmbientAutofillNonSPII": [
         {
             "platforms": [
