@@ -1260,12 +1260,6 @@ void LogDelayReasonForFastShutdown(
       "BrowserRenderProcessHost.FastShutdownIfPossible.DelayReason", reason);
 }
 
-void LogDelayReasonForCleanup(
-    const RenderProcessHostImpl::DelayShutdownReason& reason) {
-  UMA_HISTOGRAM_ENUMERATION("BrowserRenderProcessHost.Cleanup.DelayReason",
-                            reason);
-}
-
 #if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 RenderProcessHostImpl::VideoDecoderFactoryCreationCB&
 GetVideoDecoderFactoryCreationCB() {
@@ -4550,7 +4544,6 @@ void RenderProcessHostImpl::Cleanup() {
   base::UmaHistogramBoolean("BrowserRenderProcessHost.Cleanup.Total", true);
   // Keep the one renderer thread around forever in single process mode.
   if (run_renderer_in_process()) {
-    LogDelayReasonForCleanup(DelayShutdownReason::kSingleProcess);
     return;
   }
 
@@ -4564,7 +4557,6 @@ void RenderProcessHostImpl::Cleanup() {
                 "RenderProcessHostImpl::Cleanup : within_process_died_observer",
                 ChromeTrackEvent::kRenderProcessHost, *this);
     delayed_cleanup_needed_ = true;
-    LogDelayReasonForCleanup(DelayShutdownReason::kObserver);
     return;
   }
   delayed_cleanup_needed_ = false;
@@ -4593,7 +4585,6 @@ void RenderProcessHostImpl::Cleanup() {
               ctx.event<ChromeTrackEvent>()->set_render_process_host_cleanup();
           proto->set_listener_count(listeners_.size());
         });
-    LogDelayReasonForCleanup(DelayShutdownReason::kListener);
     return;
   }
   if (keep_alive_ref_count_ > 0) {
@@ -4606,7 +4597,6 @@ void RenderProcessHostImpl::Cleanup() {
               ctx.event<ChromeTrackEvent>()->set_render_process_host_cleanup();
           proto->set_keep_alive_ref_count(keep_alive_ref_count_);
         });
-    LogDelayReasonForCleanup(DelayShutdownReason::kFetchKeepAlive);
     return;
   }
   if (shutdown_delay_ref_count_ > 0) {
@@ -4618,7 +4608,6 @@ void RenderProcessHostImpl::Cleanup() {
               ctx.event<ChromeTrackEvent>()->set_render_process_host_cleanup();
           proto->set_shutdown_delay_ref_count(shutdown_delay_ref_count_);
         });
-    LogDelayReasonForCleanup(DelayShutdownReason::kShutdownDelay);
     return;
   }
   if (worker_ref_count_ > 0) {
@@ -4630,7 +4619,6 @@ void RenderProcessHostImpl::Cleanup() {
               ctx.event<ChromeTrackEvent>()->set_render_process_host_cleanup();
           proto->set_worker_ref_count(worker_ref_count_);
         });
-    LogDelayReasonForCleanup(DelayShutdownReason::kWorker);
     return;
   }
   if (pending_reuse_ref_count_ > 0) {
@@ -4642,7 +4630,6 @@ void RenderProcessHostImpl::Cleanup() {
               ctx.event<ChromeTrackEvent>()->set_render_process_host_cleanup();
           proto->set_pending_reuse_ref_count(pending_reuse_ref_count_);
         });
-    LogDelayReasonForCleanup(DelayShutdownReason::kPendingReuse);
     return;
   }
   if (navigation_state_keepalive_count_ > 0) {
@@ -4656,11 +4643,8 @@ void RenderProcessHostImpl::Cleanup() {
           proto->set_navigation_state_keepalive_count(
               navigation_state_keepalive_count_);
         });
-    LogDelayReasonForCleanup(DelayShutdownReason::kNavigationStateKeepAlive);
     return;
   }
-
-  LogDelayReasonForCleanup(DelayShutdownReason::kNoDelay);
 
   // If there are listeners but they do not include any live RenderFrameHosts
   // (and there aren't other reasons to keep the process around), then it is
