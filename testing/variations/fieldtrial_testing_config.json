@@ -9900,7 +9900,7 @@
             ]
         }
     ],
-    "GlicPdfSummarizeSingleCta": [
+    "GlicPdfSummarizeButton": [
         {
             "platforms": [
                 "linux",
@@ -9910,7 +9910,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_SingleCta",
+                    "name": "Enabled",
                     "params": {
                         "arm": "3"
                     },
