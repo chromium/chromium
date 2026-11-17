@@ -31,6 +31,8 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.ProfileAttributesStorage;
 import org.chromium.chrome.browser.subscription_eligibility.AiSubscriptionTierNames;
 import org.chromium.chrome.browser.subscription_eligibility.SubscriptionEligibilityService;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
@@ -50,10 +52,12 @@ import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Fetches and caches Google Account profile images and full names for the accounts on the device.
@@ -79,7 +83,9 @@ public class ProfileDataCache
          * Notifies that an account's profile data has been updated.
          *
          * <p>Note: This may be called for the primary account before the full account list is
-         * loaded, i.e. before the {@link ProfileDataCache#getAccounts()} Promise is fulfilled.
+         * loaded, i.e. before the {@link ProfileDataCache#getAccounts()} Promise is fulfilled. It
+         * may also be called for accounts that aren't in {@link ProfileDataCache#getAccounts()},
+         * such as the primary accounts of other profiles.
          *
          * @param profileData The profile data that has been updated.
          */
@@ -100,6 +106,29 @@ public class ProfileDataCache
     private final Drawable mPlaceholderImage;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final Map<CoreAccountId, DisplayableProfileData> mAccountsCache = new LinkedHashMap<>();
+    private final ProfileAttributesStorage.Observer mProfileAttributesStorageObserver =
+            new ProfileAttributesStorage.Observer() {
+                @Override
+                public void onProfileAdded(String profilePath) {
+                    refreshProfileVisibleAccounts();
+                }
+
+                @Override
+                public void onProfileWasRemoved(String profilePath) {
+                    refreshProfileVisibleAccounts();
+                }
+
+                @Override
+                public void onProfileAuthInfoChanged(String profilePath) {
+                    refreshProfileVisibleAccounts();
+                }
+
+                @Override
+                public void onProfileIsOmittedChanged(String profilePath) {
+                    refreshProfileVisibleAccounts();
+                }
+            };
+    private @Nullable ProfileAttributesStorage mObservedProfileAttributesStorage;
     private Promise<List<DisplayableProfileData>> mAccountsPromise = new Promise<>();
     private final boolean mAiTierRingEnabled;
     private final @Nullable SubscriptionEligibilityService mSubscriptionEligibilityService;
@@ -296,6 +325,10 @@ public class ProfileDataCache
      * <p>Accounts data are populated from {@link IdentityManager}. To observe changes to accounts,
      * implement {@link Observer#onAccountsUpdated}.
      *
+     * <p>With MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS and multi-profile enabled, the list excludes
+     * the primary accounts of other profiles, except this profile's primary account. {@link
+     * #getById} still returns them.
+     *
      * <p>Note: {@link #getById} may return cached profile data for an already-known account (such
      * as the primary account) before this Promise is fulfilled. Once fulfilled, the returned
      * Promise holds a snapshot of the accounts at the time of the call.
@@ -317,7 +350,9 @@ public class ProfileDataCache
      * this means data for this account is not available.
      *
      * <p>Note: This method may succeed for an already-known account (such as the primary account)
-     * even before the {@link #getAccounts()} Promise is fulfilled.
+     * even before the {@link #getAccounts()} Promise is fulfilled. It may also return data for
+     * accounts that aren't in {@link #getAccounts()}, such as the primary accounts of other
+     * profiles.
      *
      * @param accountId The account ID for which to get the profile data.
      * @throws IllegalArgumentException if the account is not found.
@@ -395,6 +430,10 @@ public class ProfileDataCache
 
         if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {
             mIdentityManager.addObserver(assumeNonNull(mIdentityManagerAccountsChangeObserver));
+            if (ChromeFeatureList.sAndroidMultiprofile.isEnabled()) {
+                mObservedProfileAttributesStorage = ProfileAttributesStorage.get();
+                mObservedProfileAttributesStorage.addObserver(mProfileAttributesStorageObserver);
+            }
         } else {
             mAccountManagerFacade.addObserver(assumeNonNull(mAccountManagerAccountsChangeObserver));
         }
@@ -409,9 +448,13 @@ public class ProfileDataCache
         // The error isn't observed without observers, so it may have changed. This is checked after
         // adding the observer, so that the observer is notified of the change.
         refreshIdentityError();
-        if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
-                && !mAccountsPromise.isFulfilled()) {
-            updateCache();
+        if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {
+            if (!mAccountsPromise.isFulfilled()) {
+                updateCache();
+            } else {
+                // Other profiles aren't observed without observers, so they may have changed.
+                refreshProfileVisibleAccounts();
+            }
         }
     }
 
@@ -433,6 +476,11 @@ public class ProfileDataCache
                     SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {
                 mIdentityManager.removeObserver(
                         assumeNonNull(mIdentityManagerAccountsChangeObserver));
+                if (mObservedProfileAttributesStorage != null) {
+                    mObservedProfileAttributesStorage.removeObserver(
+                            mProfileAttributesStorageObserver);
+                    mObservedProfileAttributesStorage = null;
+                }
             } else {
                 mAccountManagerFacade.removeObserver(
                         assumeNonNull(mAccountManagerAccountsChangeObserver));
@@ -463,8 +511,13 @@ public class ProfileDataCache
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
         // AI tier rings are only displayed for the primary account. We must update the cache
         // when the primary account changes so that the ring is applied (or removed) accordingly.
-        if (!mAiTierRingEnabled) return;
-        updateCache();
+        if (mAiTierRingEnabled) {
+            updateCache();
+            return;
+        }
+        if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {
+            refreshProfileVisibleAccounts();
+        }
     }
 
     /** Implements {@link IdentityManager.Observer}. */
@@ -521,8 +574,8 @@ public class ProfileDataCache
     /**
      * Updates the cached profile data of a single account and notifies the observers about it.
      * onAccountsUpdated() is only called if MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS flag is
-     * enabled and the {@link #getAccounts()} Promise is fulfilled. onProfileDataUpdated() is always
-     * called.
+     * enabled, the {@link #getAccounts()} Promise is fulfilled and the account is visible.
+     * onProfileDataUpdated() is always called.
      *
      * <p>TODO(crbug.com/571803558): updateCache() and addToCache() methods have similar logic and
      * should be unified after the MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS flag cleanup.
@@ -533,10 +586,10 @@ public class ProfileDataCache
         }
         var profileData = toDisplayableProfileData(accountInfo);
         mAccountsCache.put(accountInfo.getId(), profileData);
-        refreshAccountsPromiseIfFulfilled();
-        if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
-                && mAccountsPromise.isFulfilled()) {
-            fireOnAccountsUpdated(mAccountsPromise.getResult());
+        if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {
+            refreshProfileVisibleAccounts();
+        } else {
+            refreshAccountsPromiseIfFulfilled();
         }
         fireOnProfileDataUpdated(profileData);
     }
@@ -554,8 +607,7 @@ public class ProfileDataCache
         assert mAccountsPromise.isFulfilled();
         var profileData = toDisplayableProfileData(accountInfo);
         mAccountsCache.put(accountInfo.getId(), profileData);
-        mAccountsPromise = Promise.fulfilled(new ArrayList<>(mAccountsCache.values()));
-        fireOnAccountsUpdated(mAccountsPromise.getResult());
+        refreshProfileVisibleAccounts();
         fireOnProfileDataUpdated(profileData);
     }
 
@@ -576,13 +628,14 @@ public class ProfileDataCache
         mAccountsCache.clear();
         mAccountsCache.putAll(displayableAccounts);
         List<DisplayableProfileData> allAccounts = new ArrayList<>(mAccountsCache.values());
+        List<DisplayableProfileData> visibleAccounts = getProfileVisibleAccounts();
         if (!mAccountsPromise.isFulfilled()) {
-            mAccountsPromise.fulfill(allAccounts);
+            mAccountsPromise.fulfill(visibleAccounts);
         } else {
-            mAccountsPromise = Promise.fulfilled(allAccounts);
+            mAccountsPromise = Promise.fulfilled(visibleAccounts);
         }
 
-        fireOnAccountsUpdated(allAccounts);
+        fireOnAccountsUpdated(visibleAccounts);
         // TODO(crbug.com/485130949): Remove that callback after implementation of
         // onAccountsUpdated() in all UIs. (Blocked by crbug.com/480239119)
         fireOnProfileDataUpdated(allAccounts);
@@ -594,8 +647,44 @@ public class ProfileDataCache
      */
     private void refreshAccountsPromiseIfFulfilled() {
         if (mAccountsPromise.isFulfilled()) {
-            mAccountsPromise = Promise.fulfilled(new ArrayList<>(mAccountsCache.values()));
+            mAccountsPromise = Promise.fulfilled(getProfileVisibleAccounts());
         }
+    }
+
+    /**
+     * Updates the accounts Promise with the accounts visible to this profile and notifies the
+     * observers if they changed.
+     */
+    private void refreshProfileVisibleAccounts() {
+        if (!mAccountsPromise.isFulfilled()) return;
+        List<DisplayableProfileData> visibleAccounts = getProfileVisibleAccounts();
+        // DisplayableProfileData doesn't override equals(), so updated profile data (a new object)
+        // makes the lists differ and notifies the observers.
+        if (visibleAccounts.equals(mAccountsPromise.getResult())) return;
+        mAccountsPromise = Promise.fulfilled(visibleAccounts);
+        fireOnAccountsUpdated(visibleAccounts);
+    }
+
+    /** Returns the accounts visible to this profile, without other profiles' primary accounts. */
+    private List<DisplayableProfileData> getProfileVisibleAccounts() {
+        if (!SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
+                || !ChromeFeatureList.sAndroidMultiprofile.isEnabled()) {
+            return new ArrayList<>(mAccountsCache.values());
+        }
+        // This includes the profile's own primary account, which is never hidden.
+        Set<CoreAccountId> hiddenAccountIds =
+                new HashSet<>(ProfileAttributesStorage.get().getPrimaryAccountIdsForAllProfiles());
+        AccountInfo primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo();
+        if (primaryAccountInfo != null) {
+            hiddenAccountIds.remove(primaryAccountInfo.getId());
+        }
+        List<DisplayableProfileData> visibleAccounts = new ArrayList<>();
+        for (Map.Entry<CoreAccountId, DisplayableProfileData> entry : mAccountsCache.entrySet()) {
+            if (!hiddenAccountIds.contains(entry.getKey())) {
+                visibleAccounts.add(entry.getValue());
+            }
+        }
+        return visibleAccounts;
     }
 
     private DisplayableProfileData toDisplayableProfileData(AccountInfo accountInfo) {

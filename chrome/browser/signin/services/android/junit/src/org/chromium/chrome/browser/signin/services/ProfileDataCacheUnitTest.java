@@ -14,9 +14,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,6 +37,11 @@ import org.robolectric.RuntimeEnvironment;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.FakeProfileAttributesStorage;
+import org.chromium.chrome.browser.profiles.ProfileAttributesStorage;
 import org.chromium.chrome.browser.subscription_eligibility.AiSubscriptionTierNames;
 import org.chromium.chrome.browser.subscription_eligibility.AiSubscriptionTierNamesJni;
 import org.chromium.chrome.browser.subscription_eligibility.SubscriptionEligibilityService;
@@ -87,6 +95,8 @@ public class ProfileDataCacheUnitTest {
     @Mock private AiSubscriptionTierNames.Natives mTierNamesJniMock;
 
     private ProfileDataCache mProfileDataCache;
+    private final FakeProfileAttributesStorage mProfileAttributesStorage =
+            new FakeProfileAttributesStorage();
 
     @Parameter(0)
     public boolean mIsIdentityManagerSourceOfAccounts;
@@ -96,6 +106,7 @@ public class ProfileDataCacheUnitTest {
         FeatureOverrides.overrideFlag(
                 SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
                 mIsIdentityManagerSourceOfAccounts);
+        ProfileAttributesStorage.setInstanceForTesting(mProfileAttributesStorage);
         AiSubscriptionTierNamesJni.setInstanceForTesting(mTierNamesJniMock);
         // Like the real names, without server overrides: every subscription tier is shown.
         lenient()
@@ -1383,6 +1394,114 @@ public class ProfileDataCacheUnitTest {
                                 RuntimeEnvironment.getApplication().getApplicationContext(),
                                 mAccountManagerTestRule.getIdentityManager())
                         .getAiTierRingPadding());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testAccountsOfOtherProfilesAreHidden() {
+        Assume.assumeTrue(mIsIdentityManagerSourceOfAccounts);
+        mProfileAttributesStorage.setPrimaryAccountIds(List.of(TestAccounts.ACCOUNT2.getId()));
+        mProfileDataCache.addObserver(mObserverMock);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        assertAccounts(List.of(TestAccounts.ACCOUNT1));
+        clearInvocations(mObserverMock);
+
+        // The hidden account still has profile data, but its updates don't change the list.
+        mAccountManagerTestRule.addAccount(
+                new AccountInfo.Builder(TestAccounts.ACCOUNT2).fullName("New Name").build());
+
+        var hiddenProfileData = mProfileDataCache.getById(TestAccounts.ACCOUNT2.getId());
+        Assert.assertEquals("New Name", hiddenProfileData.getFullName());
+        verify(mObserverMock).onProfileDataUpdated(hiddenProfileData);
+        verify(mObserverMock, never()).onAccountsUpdated(any());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testAccountsOfOtherProfilesAreNotHiddenWithoutMultiprofile() {
+        Assume.assumeTrue(mIsIdentityManagerSourceOfAccounts);
+        mProfileAttributesStorage.setPrimaryAccountIds(List.of(TestAccounts.ACCOUNT2.getId()));
+        mProfileDataCache.addObserver(mObserverMock);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        assertAccounts(List.of(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2));
+        clearInvocations(mObserverMock);
+
+        mProfileAttributesStorage.setPrimaryAccountIds(List.of(TestAccounts.ACCOUNT1.getId()));
+
+        assertAccounts(List.of(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2));
+        verify(mObserverMock, never()).onAccountsUpdated(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testOwnPrimaryAccountIsNotHidden() {
+        Assume.assumeTrue(mIsIdentityManagerSourceOfAccounts);
+        // The storage has this profile's primary account too, possibly before the IdentityManager.
+        mProfileAttributesStorage.setPrimaryAccountIds(List.of(TestAccounts.ACCOUNT1.getId()));
+        mProfileDataCache.addObserver(mObserverMock);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        assertAccounts(List.of(TestAccounts.ACCOUNT2));
+        clearInvocations(mObserverMock);
+
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
+
+        assertAccounts(List.of(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2));
+        verify(mObserverMock).onAccountsUpdated(mProfileDataCache.getAccounts().getResult());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testOtherProfileSigninAndSignoutUpdatesAccounts() {
+        Assume.assumeTrue(mIsIdentityManagerSourceOfAccounts);
+        mProfileDataCache.addObserver(mObserverMock);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        clearInvocations(mObserverMock);
+
+        mProfileAttributesStorage.setPrimaryAccountIds(List.of(TestAccounts.ACCOUNT2.getId()));
+
+        assertAccounts(List.of(TestAccounts.ACCOUNT1));
+        verify(mObserverMock).onAccountsUpdated(mProfileDataCache.getAccounts().getResult());
+
+        // A change while the cache has no observers is picked up when an observer is added.
+        mProfileDataCache.removeObserver(mObserverMock);
+        mProfileAttributesStorage.setPrimaryAccountIds(List.of());
+        clearInvocations(mObserverMock);
+        mProfileDataCache.addObserver(mObserverMock);
+
+        assertAccounts(List.of(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2));
+        verify(mObserverMock).onAccountsUpdated(mProfileDataCache.getAccounts().getResult());
+    }
+
+    @Test
+    public void testAvatarUpdateOfVisibleAccountNotifiesObservers() {
+        Assume.assumeTrue(mIsIdentityManagerSourceOfAccounts);
+        mProfileDataCache.addObserver(mObserverMock);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        Drawable oldImage = mProfileDataCache.getAccounts().getResult().get(0).getImage();
+        clearInvocations(mObserverMock);
+
+        mAccountManagerTestRule.addAccount(
+                new AccountInfo.Builder(TestAccounts.ACCOUNT1)
+                        .accountImage(Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888))
+                        .build());
+
+        var accounts = mProfileDataCache.getAccounts().getResult();
+        Drawable newImage = mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()).getImage();
+        Assert.assertNotSame(oldImage, newImage);
+        Assert.assertSame(newImage, accounts.get(0).getImage());
+        verify(mObserverMock).onAccountsUpdated(accounts);
+    }
+
+    private void assertAccounts(List<AccountInfo> expectedAccounts) {
+        var accounts = mProfileDataCache.getAccounts().getResult();
+        Assert.assertEquals(expectedAccounts.size(), accounts.size());
+        for (int i = 0; i < expectedAccounts.size(); i++) {
+            Assert.assertEquals(expectedAccounts.get(i).getId(), accounts.get(i).getAccountId());
+        }
     }
 
     private ProfileDataCache createWithAiTierRing() {
