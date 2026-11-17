@@ -22,6 +22,15 @@ RecordedAction::RecordedAction(RecordedAction&&) noexcept = default;
 RecordedAction& RecordedAction::operator=(RecordedAction&&) noexcept = default;
 RecordedAction::~RecordedAction() = default;
 
+RecordedTranscript::RecordedTranscript(std::string text,
+                                       base::TimeDelta timestamp)
+    : text(std::move(text)), timestamp(timestamp) {}
+
+RecordedTranscript::RecordedTranscript(RecordedTranscript&&) noexcept = default;
+RecordedTranscript& RecordedTranscript::operator=(
+    RecordedTranscript&&) noexcept = default;
+RecordedTranscript::~RecordedTranscript() = default;
+
 RecordingArtifacts::RecordingArtifacts() = default;
 RecordingArtifacts::RecordingArtifacts(RecordingArtifacts&&) noexcept = default;
 RecordingArtifacts& RecordingArtifacts::operator=(

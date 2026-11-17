@@ -16,7 +16,7 @@ namespace {
 
 using ::browser::context_hub::mojom::SkillRecordingActionType;
 
-TEST(RecordingArtifactsTest, StoresRecordedActionsAndScreenshots) {
+TEST(RecordingArtifactsTest, StoresRecordingArtifacts) {
   RecordingArtifacts artifacts;
   EXPECT_TRUE(artifacts.actions.empty());
 
@@ -43,6 +43,13 @@ TEST(RecordingArtifactsTest, StoresRecordedActionsAndScreenshots) {
   EXPECT_EQ(artifacts.actions[1].timestamp, base::Milliseconds(350));
   EXPECT_TRUE(artifacts.actions[1].current_url.is_empty());
   EXPECT_TRUE(artifacts.actions[1].screenshot_jpeg_bytes.empty());
+
+  EXPECT_TRUE(artifacts.transcripts.empty());
+  artifacts.transcripts.emplace_back("First click the button",
+                                     base::Milliseconds(200));
+  ASSERT_EQ(artifacts.transcripts.size(), 1u);
+  EXPECT_EQ(artifacts.transcripts[0].text, "First click the button");
+  EXPECT_EQ(artifacts.transcripts[0].timestamp, base::Milliseconds(200));
 }
 
 }  // namespace

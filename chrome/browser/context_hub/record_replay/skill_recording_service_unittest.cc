@@ -595,22 +595,77 @@ TEST_F(SkillRecordingServiceTest, ForwardsTranscriptUpdatesToObservers) {
                                         base::Milliseconds(100),
                                         /*is_final=*/true);
   EXPECT_EQ(observer.update_count(), 0);
+  EXPECT_TRUE(service_.artifacts().transcripts.empty());
 
   service_.StartRecording();
-  service_.OnTranscriptUpdateForTesting("hello world", base::Milliseconds(250),
-                                        /*is_final=*/true);
+
+  // Partial transcripts are forwarded to observers but not stored in
+  // `artifacts().transcripts`.
+  service_.OnTranscriptUpdateForTesting("hello", base::Milliseconds(100),
+                                        /*is_final=*/false);
   EXPECT_EQ(observer.update_count(), 1);
-  EXPECT_EQ(observer.last_text(), "hello world");
+  EXPECT_EQ(observer.last_text(), "hello");
+  EXPECT_EQ(observer.last_timestamp(), base::Milliseconds(100));
+  EXPECT_FALSE(observer.last_is_final());
+  EXPECT_TRUE(service_.artifacts().transcripts.empty());
+
+  // Whitespace-only finalized transcripts are ignored when storing in
+  // `artifacts().transcripts`.
+  service_.OnTranscriptUpdateForTesting("   \t\n  ", base::Milliseconds(200),
+                                        /*is_final=*/true);
+  EXPECT_EQ(observer.update_count(), 2);
+  EXPECT_TRUE(service_.artifacts().transcripts.empty());
+
+  // Finalized transcripts are trimmed and stored in `artifacts().transcripts`,
+  // and forwarded to observers.
+  service_.OnTranscriptUpdateForTesting("  hello world \n",
+                                        base::Milliseconds(250),
+                                        /*is_final=*/true);
+  EXPECT_EQ(observer.update_count(), 3);
+  EXPECT_EQ(observer.last_text(), "  hello world \n");
   EXPECT_EQ(observer.last_timestamp(), base::Milliseconds(250));
   EXPECT_TRUE(observer.last_is_final());
+  ASSERT_EQ(service_.artifacts().transcripts.size(), 1u);
+  EXPECT_EQ(service_.artifacts().transcripts[0].text, "hello world");
+  EXPECT_EQ(service_.artifacts().transcripts[0].timestamp,
+            base::Milliseconds(250));
 
   service_.RemoveObserver(&observer);
   service_.OnTranscriptUpdateForTesting("ignored after remove",
-                                        base::Milliseconds(500),
+                                        base::Milliseconds(400),
                                         /*is_final=*/false);
-  EXPECT_EQ(observer.update_count(), 1);
+  EXPECT_EQ(observer.update_count(), 3);
 
   service_.StopRecording();
+
+  service_.OnTranscriptUpdateForTesting("ignored after stop",
+                                        base::Milliseconds(500),
+                                        /*is_final=*/true);
+  EXPECT_EQ(observer.update_count(), 3);
+  EXPECT_EQ(service_.artifacts().transcripts.size(), 1u);
+
+  // Starting a new recording session clears transcripts from the previous
+  // session.
+  service_.StartRecording();
+  EXPECT_TRUE(service_.artifacts().transcripts.empty());
+  service_.StopRecording();
+}
+
+TEST_F(SkillRecordingServiceTest, CapsRecordedTranscriptsAtMaxLimit) {
+  service_.StartRecording();
+  for (size_t i = 0; i < RecordingArtifacts::kMaxRecordedTranscripts; ++i) {
+    service_.OnTranscriptUpdateForTesting("Segment", base::Milliseconds(100),
+                                          /*is_final=*/true);
+  }
+  service_.OnTranscriptUpdateForTesting("Overflow segment",
+                                        base::Milliseconds(200),
+                                        /*is_final=*/true);
+
+  service_.StopRecording();
+  const RecordingArtifacts& result = service_.artifacts();
+  ASSERT_EQ(result.transcripts.size(),
+            RecordingArtifacts::kMaxRecordedTranscripts);
+  EXPECT_EQ(result.transcripts.back().text, "Segment");
 }
 
 }  // namespace

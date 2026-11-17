@@ -9,12 +9,13 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_view_util.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/context_hub/record_replay/recording_artifacts.h"
 #include "chrome/browser/context_hub/record_replay/skill_audio_capturer.h"
@@ -85,7 +86,7 @@ void SkillRecordingService::StartRecording() {
   if (is_recording()) {
     return;
   }
-  artifacts_.actions.clear();
+  artifacts_ = RecordingArtifacts();
   start_time_ = base::TimeTicks::Now();
 
   if (ProfileBrowserCollection* collection =
@@ -174,7 +175,7 @@ SkillRecordingService::BindScreenshotCapturedCallbackForTesting(
 
 void SkillRecordingService::Shutdown() {
   StopRecording();
-  artifacts_.actions.clear();
+  artifacts_ = RecordingArtifacts();
   audio_capturer_.reset();
 }
 
@@ -242,6 +243,14 @@ void SkillRecordingService::OnTranscriptUpdate(const std::string& text,
                                                bool is_final) {
   if (!is_recording()) {
     return;
+  }
+  if (is_final && artifacts_.transcripts.size() <
+                      RecordingArtifacts::kMaxRecordedTranscripts) {
+    std::string_view trimmed_text =
+        base::TrimWhitespaceASCII(text, base::TRIM_ALL);
+    if (!trimmed_text.empty()) {
+      artifacts_.transcripts.emplace_back(std::string(trimmed_text), timestamp);
+    }
   }
   for (Observer& obs : observers_) {
     obs.OnTranscriptUpdate(text, timestamp, is_final);

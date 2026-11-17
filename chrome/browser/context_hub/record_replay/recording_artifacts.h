@@ -41,11 +41,31 @@ struct RecordedAction {
   std::string screenshot_jpeg_bytes;
 };
 
+// Represents a finalized voice transcript segment captured during a skill
+// recording session.
+struct RecordedTranscript {
+  RecordedTranscript(std::string text, base::TimeDelta timestamp);
+  RecordedTranscript(const RecordedTranscript&) = delete;
+  RecordedTranscript& operator=(const RecordedTranscript&) = delete;
+  RecordedTranscript(RecordedTranscript&&) noexcept;
+  RecordedTranscript& operator=(RecordedTranscript&&) noexcept;
+  ~RecordedTranscript();
+
+  // Transcribed text of the voice segment.
+  std::string text;
+  // Time elapsed since the start of the recording session when the voice
+  // segment began.
+  base::TimeDelta timestamp;
+};
+
 // Standardized in-memory output of a skill recording session used by downstream
 // consumers (e.g., WebUI display, MES skill generation).
 struct RecordingArtifacts {
   // Maximum number of user actions retained in a single recording session.
   static constexpr size_t kMaxRecordedActions = 1000;
+  // Maximum number of finalized voice transcript segments retained in a single
+  // recording session.
+  static constexpr size_t kMaxRecordedTranscripts = 1000;
 
   RecordingArtifacts();
   RecordingArtifacts(const RecordingArtifacts&) = delete;
@@ -56,6 +76,8 @@ struct RecordingArtifacts {
 
   // Recorded user actions in chronological order.
   std::vector<RecordedAction> actions;
+  // Recorded finalized voice transcript segments in chronological order.
+  std::vector<RecordedTranscript> transcripts;
 };
 
 }  // namespace context_hub
