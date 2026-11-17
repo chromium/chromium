@@ -11,6 +11,7 @@
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
+#include "base/containers/enum_set.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
@@ -254,16 +255,16 @@ bool IsAXSetter(SEL selector) {
 
 void CollectAncestorRoles(
     const ui::AXNode& node,
-    std::map<ui::AXNodeID, std::set<ax::mojom::Role>>& out_ancestor_roles) {
+    std::map<ui::AXNodeID, base::EnumSet<ax::mojom::Role>>&
+        out_ancestor_roles) {
   if (out_ancestor_roles.contains(node.id()))
     return;
   out_ancestor_roles[node.id()] = {node.GetRole()};
   if (!node.GetParent())
     return;
   CollectAncestorRoles(*node.GetParent(), out_ancestor_roles);
-  out_ancestor_roles[node.id()].insert(
-      out_ancestor_roles[node.GetParent()->id()].begin(),
-      out_ancestor_roles[node.GetParent()->id()].end());
+  out_ancestor_roles[node.id()].PutAll(
+      out_ancestor_roles[node.GetParent()->id()]);
 }
 
 }  // namespace
@@ -1144,7 +1145,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 - (void)addTextAnnotationsIn:(const AXRange*)axRange
                           to:(NSMutableAttributedString*)attributedString {
   int anchorStartOffset = 0;
-  std::map<ui::AXNodeID, std::set<ax::mojom::Role>> ancestor_roles;
+  std::map<ui::AXNodeID, base::EnumSet<ax::mojom::Role>> ancestor_roles;
 
   [attributedString beginEditing];
   for (const AXRange& leafTextRange : *axRange) {
@@ -1259,26 +1260,24 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     CollectAncestorRoles(*anchor, ancestor_roles);
 
     // Add annotation information
-    if (ancestor_roles[anchor->id()].contains(ax::mojom::Role::kMark)) {
+    if (ancestor_roles[anchor->id()].Has(ax::mojom::Role::kMark)) {
       [attributedString addAttribute:CFToNSPtrCast(kAXHighlightStringAttribute)
                                value:@YES
                                range:leafRange];
     }
-    if (ancestor_roles[anchor->id()].contains(ax::mojom::Role::kSuggestion)) {
+    if (ancestor_roles[anchor->id()].Has(ax::mojom::Role::kSuggestion)) {
       [attributedString
           addAttribute:CFToNSPtrCast(kAXIsSuggestionStringAttribute)
                  value:@YES
                  range:leafRange];
     }
-    if (ancestor_roles[anchor->id()].contains(
-            ax::mojom::Role::kContentDeletion)) {
+    if (ancestor_roles[anchor->id()].Has(ax::mojom::Role::kContentDeletion)) {
       [attributedString
           addAttribute:CFToNSPtrCast(kAXIsSuggestedDeletionStringAttribute)
                  value:@YES
                  range:leafRange];
     }
-    if (ancestor_roles[anchor->id()].contains(
-            ax::mojom::Role::kContentInsertion)) {
+    if (ancestor_roles[anchor->id()].Has(ax::mojom::Role::kContentInsertion)) {
       [attributedString
           addAttribute:CFToNSPtrCast(kAXIsSuggestedInsertionStringAttribute)
                  value:@YES

@@ -37,6 +37,7 @@
 #include <queue>
 
 #include "base/auto_reset.h"
+#include "base/containers/enum_set.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
@@ -1652,46 +1653,41 @@ String AXNodeObject::GetCSSContentText(const Element* element) {
 // sectionfooter.
 // This function only handles the complementary, banner, and contentInfo roles,
 // which belong to the landmark roles set.
-static const HashSet<ax::mojom::blink::Role>&
+static base::EnumSet<ax::mojom::blink::Role>
 GetLandmarkIsNotAllowedAncestorRoles(ax::mojom::blink::Role landmark) {
-  // clang-format off
-  // https://html.spec.whatwg.org/multipage/dom.html#sectioning-content-2
-  // The aside element should not assume the complementary role when nested
-  // within the following sectioning content elements.
-  static const base::NoDestructor<HashSet<ax::mojom::blink::Role>> complementary_is_not_allowed_roles({
-        ax::mojom::blink::Role::kArticle,
-        ax::mojom::blink::Role::kComplementary,
-        ax::mojom::blink::Role::kNavigation,
-        ax::mojom::blink::Role::kSection
-      });
-      // https://w3c.github.io/html-aam/#el-header-ancestorbody
-      // The header and footer elements should not assume the banner and
-      // contentInfo roles, respectively, when nested within any of the
-      // sectioning content elements or the main element.
-  static const base::NoDestructor<HashSet<ax::mojom::blink::Role>> landmark_is_not_allowed_roles({
-        ax::mojom::blink::Role::kArticle,
-        ax::mojom::blink::Role::kComplementary,
-        ax::mojom::blink::Role::kMain,
-        ax::mojom::blink::Role::kNavigation,
-        ax::mojom::blink::Role::kSection
-      });
-  // clang-format on
-
   if (landmark == ax::mojom::blink::Role::kComplementary) {
-    return *complementary_is_not_allowed_roles;
+    // https://html.spec.whatwg.org/multipage/dom.html#sectioning-content-2
+    // The aside element should not assume the complementary role when nested
+    // within the following sectioning content elements.
+    constexpr base::EnumSet<ax::mojom::blink::Role>
+        kComplementaryIsNotAllowedRoles = {
+            ax::mojom::blink::Role::kArticle,
+            ax::mojom::blink::Role::kComplementary,
+            ax::mojom::blink::Role::kNavigation,
+            ax::mojom::blink::Role::kSection};
+    return kComplementaryIsNotAllowedRoles;
   }
-  return *landmark_is_not_allowed_roles;
+  // https://w3c.github.io/html-aam/#el-header-ancestorbody
+  // The header and footer elements should not assume the banner and
+  // contentInfo roles, respectively, when nested within any of the
+  // sectioning content elements or the main element.
+  constexpr base::EnumSet<ax::mojom::blink::Role> kLandmarkIsNotAllowedRoles = {
+      ax::mojom::blink::Role::kArticle, ax::mojom::blink::Role::kComplementary,
+      ax::mojom::blink::Role::kMain, ax::mojom::blink::Role::kNavigation,
+      ax::mojom::blink::Role::kSection};
+  return kLandmarkIsNotAllowedRoles;
 }
 
 bool AXNodeObject::IsDescendantOfLandmarkDisallowedElement() const {
   if (!GetNode())
     return false;
 
-  const auto& role_names = GetLandmarkIsNotAllowedAncestorRoles(RoleValue());
+  const base::EnumSet<ax::mojom::blink::Role> role_names =
+      GetLandmarkIsNotAllowedAncestorRoles(RoleValue());
 
   for (AXObject* parent = ParentObjectUnignored(); parent;
        parent = parent->ParentObjectUnignored()) {
-    if (role_names.Contains(parent->RoleValue())) {
+    if (role_names.Has(parent->RoleValue())) {
       return true;
     }
   }

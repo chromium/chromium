@@ -4,11 +4,10 @@
 
 #include "ui/accessibility/ax_node_data.h"
 
-#include <set>
 #include <string>
-#include <unordered_set>
 #include <utility>
 
+#include "base/containers/enum_set.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -180,7 +179,7 @@ TEST(AXNodeDataTest, IsClickable) {
   }
 
   // Test for iterating through all roles and validate if a role is clickable.
-  std::set<ax::mojom::Role> roles_expected_is_clickable = {
+  constexpr base::EnumSet<ax::mojom::Role> roles_expected_is_clickable = {
       ax::mojom::Role::kButton,
       ax::mojom::Role::kCheckBox,
       ax::mojom::Role::kColorWell,
@@ -226,7 +225,7 @@ TEST(AXNodeDataTest, IsClickable) {
                  << ", Actual: isClickable=" << is_clickable
                  << ", Expected: isClickable=" << !is_clickable);
 
-    EXPECT_EQ(roles_expected_is_clickable.contains(data.role), is_clickable);
+    EXPECT_EQ(roles_expected_is_clickable.Has(data.role), is_clickable);
   }
 }
 
@@ -357,14 +356,15 @@ TEST(AXNodeDataTest, SupportsExpandCollapse) {
   // collapse.
   AXNodeData data;
 
-  std::unordered_set<ax::mojom::Role> roles_expected_supports_expand_collapse =
-      {ax::mojom::Role::kComboBoxGrouping,
-       ax::mojom::Role::kComboBoxMenuButton,
-       ax::mojom::Role::kComboBoxSelect,
-       ax::mojom::Role::kDisclosureTriangle,
-       ax::mojom::Role::kDisclosureTriangleGrouped,
-       ax::mojom::Role::kTextFieldWithComboBox,
-       ax::mojom::Role::kTreeItem};
+  constexpr base::EnumSet<ax::mojom::Role>
+      roles_expected_supports_expand_collapse = {
+          ax::mojom::Role::kComboBoxGrouping,
+          ax::mojom::Role::kComboBoxMenuButton,
+          ax::mojom::Role::kComboBoxSelect,
+          ax::mojom::Role::kDisclosureTriangle,
+          ax::mojom::Role::kDisclosureTriangleGrouped,
+          ax::mojom::Role::kTextFieldWithComboBox,
+          ax::mojom::Role::kTreeItem};
 
   for (int role_idx = static_cast<int>(ax::mojom::Role::kMinValue);
        role_idx <= static_cast<int>(ax::mojom::Role::kMaxValue); role_idx++) {
@@ -377,11 +377,11 @@ TEST(AXNodeDataTest, SupportsExpandCollapse) {
                                     << ", Expected: supportsExpandCollapse="
                                     << !supports_expand_collapse);
 
-    if (roles_expected_supports_expand_collapse.find(data.role) !=
-        roles_expected_supports_expand_collapse.end())
+    if (roles_expected_supports_expand_collapse.Has(data.role)) {
       EXPECT_TRUE(supports_expand_collapse);
-    else
+    } else {
       EXPECT_FALSE(supports_expand_collapse);
+    }
   }
 }
 
