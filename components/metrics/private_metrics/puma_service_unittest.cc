@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/metrics/metrics_hashes.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -38,7 +39,6 @@ class PumaServiceTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(GetEnabledFeatures(), {});
 
-    PumaService::RegisterPrefs(prefs_.registry());
     PrivateMetricsReportingService::RegisterPrefs(prefs_.registry());
 
     client_.set_country_id_holder(
@@ -64,6 +64,10 @@ class PumaServiceTest : public testing::Test {
   TestMetricsServiceClient client_;
   TestingPrefServiceSimple prefs_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  // Isolates histograms between tests, as PUMA reports are built from global
+  // histogram deltas. Must be created before `histogram_tester_`.
+  std::unique_ptr<base::StatisticsRecorder> statistics_recorder_ =
+      base::StatisticsRecorder::CreateTemporaryForTesting();
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<PumaService> puma_service_;
@@ -153,38 +157,6 @@ TEST_P(PumaServiceRcTest, RcRecordCoarseSystemProfile) {
             country_codes::CountryId("BE").Serialize());
 }
 
-TEST_F(PumaServiceTest, RcClientId_IsNullWhenPumaRcIsDisabled) {
-  EXPECT_FALSE(puma_service_->GetPumaRcClientId().has_value());
-}
-
-TEST_P(PumaServiceRcTest, RcClientId_IsNonNull) {
-  EXPECT_TRUE(puma_service_->GetPumaRcClientId().has_value());
-}
-
-TEST_P(PumaServiceRcTest, RcClientId_SameWhenExecutedMultipleTimes) {
-  std::optional<uint64_t> client_id_1 = puma_service_->GetPumaRcClientId();
-  std::optional<uint64_t> client_id_2 = puma_service_->GetPumaRcClientId();
-
-  EXPECT_TRUE(client_id_1.has_value());
-  EXPECT_EQ(client_id_1, client_id_2);
-}
-
-TEST_P(PumaServiceRcTest, RcClientId_UpdatesPref) {
-  EXPECT_EQ(prefs_.GetUint64(prefs::kPumaRcClientId), 0u);
-
-  std::optional<uint64_t> client_id_1 = puma_service_->GetPumaRcClientId();
-  uint64_t pref_value_1 = prefs_.GetUint64(prefs::kPumaRcClientId);
-
-  EXPECT_NE(pref_value_1, 0u);
-  EXPECT_EQ(client_id_1, pref_value_1);
-
-  std::optional<uint64_t> client_id_2 = puma_service_->GetPumaRcClientId();
-  uint64_t pref_value_2 = prefs_.GetUint64(prefs::kPumaRcClientId);
-
-  EXPECT_EQ(client_id_2, pref_value_2);
-  EXPECT_EQ(pref_value_1, pref_value_2);
-}
-
 TEST_P(PumaServiceRcTest, RcBuildReport_DoesNotCreateReportWithoutEvents) {
   auto report = puma_service_->BuildPrivateMetricRcReport();
   EXPECT_FALSE(report.has_value());
@@ -228,9 +200,6 @@ TEST_P(PumaServiceRcTest, RcBuildReport_PayloadProperlyFilled) {
   auto report = puma_service_->BuildPrivateMetricRcReport();
 
   EXPECT_TRUE(report.has_value());
-
-  EXPECT_TRUE(report->has_client_id());
-  EXPECT_NE(report->client_id(), 0u);
 
   EXPECT_TRUE(report->has_rc_profile());
 

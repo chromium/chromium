@@ -7,12 +7,10 @@
 #include <optional>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/rand_util.h"
 #include "base/version.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/private_metrics/lom_recorder.h"
 #include "components/metrics/private_metrics/private_metrics_features.h"
-#include "components/metrics/private_metrics/private_metrics_pref_names.h"
 #include "components/metrics/private_metrics/puma_histogram_encoder.h"
 #include "components/metrics/private_metrics/puma_histogram_functions.h"
 #include "components/regional_capabilities/access/country_access_reason.h"
@@ -152,32 +150,6 @@ bool PumaService::IsPumaEnabled() {
   return base::FeatureList::IsEnabled(kPrivateMetricsPuma);
 }
 
-// static
-void PumaService::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterUint64Pref(prefs::kPumaRcClientId, 0u);
-  // PrivateMetricsReportingService prefs are registered already by DWA.
-}
-
-std::optional<uint64_t> PumaService::GetPumaRcClientId() {
-  if (!base::FeatureList::IsEnabled(kPrivateMetricsPumaRc)) {
-    // This is a failsafe mechanism that prevents reporting IDs in case the
-    // feature is disabled.
-    return std::nullopt;
-  }
-
-  uint64_t client_id = local_state_->GetUint64(prefs::kPumaRcClientId);
-
-  // Generate the ID in case it's not available.
-  if (client_id == 0u) {
-    while (client_id == 0u) {
-      client_id = base::RandUint64();
-    }
-    local_state_->SetUint64(prefs::kPumaRcClientId, client_id);
-  }
-
-  return client_id;
-}
-
 void PumaService::RotateLog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!reporting_service_.unsent_log_store()->has_unsent_logs()) {
@@ -251,14 +223,6 @@ PumaService::BuildPrivateMetricRcReport() {
     return std::nullopt;
   }
 
-  std::optional<uint64_t> client_id = GetPumaRcClientId();
-  if (!client_id.has_value()) {
-    base::UmaHistogramEnumeration(
-        kHistogramPumaReportBuildingOutcomeRc,
-        PumaService::ReportBuildingOutcome::kNotBuiltNoClientId);
-    return std::nullopt;
-  }
-  report.set_client_id(client_id.value());
   RecordRcProfile(report.mutable_rc_profile());
 
   base::UmaHistogramEnumeration(kHistogramPumaReportBuildingOutcomeRc,

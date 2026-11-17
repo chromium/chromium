@@ -1217,6 +1217,9 @@ inline constexpr char kSuggestedContentEnabled[] =
     "settings.suggested_content_enabled";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Deprecated 11/2026.
+inline constexpr char kPumaRcClientId[] = "private_metrics.puma.client_id.rc";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1309,6 +1312,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 10/2026.
   registry->RegisterStringPref(kMinimumAllowedChromeVersion, std::string());
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Deprecated 11/2026.
+  registry->RegisterUint64Pref(kPumaRcClientId, 0u);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -2792,6 +2798,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 10/2026.
   local_state->ClearPref(kMinimumAllowedChromeVersion);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Added 11/2026.
+  local_state->ClearPref(kPumaRcClientId);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

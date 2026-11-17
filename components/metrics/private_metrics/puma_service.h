@@ -74,8 +74,6 @@ class PumaService {
   // Returns true if the PUMA feature is enabled, false otherwise.
   static bool IsPumaEnabled();
 
-  static void RegisterPrefs(PrefRegistrySimple* registry);
-
   regional_capabilities::CountryIdHolder GetCountryIdHolderForTesting();
 
  private:
@@ -89,27 +87,14 @@ class PumaService {
                            RcBuildReport_DoesNotCreateReportWithoutEvents);
   FRIEND_TEST_ALL_PREFIXES(PumaServiceRcTest,
                            RcBuildReport_PayloadProperlyFilled);
-  FRIEND_TEST_ALL_PREFIXES(PumaServiceRcTest, RcClientId_IsNonNull);
-  FRIEND_TEST_ALL_PREFIXES(PumaServiceRcTest,
-                           RcClientId_SameWhenExecutedMultipleTimes);
-  FRIEND_TEST_ALL_PREFIXES(PumaServiceRcTest, RcClientId_UpdatesPref);
   FRIEND_TEST_ALL_PREFIXES(PumaServiceRcTest, RcRecordCoarseSystemProfile);
   FRIEND_TEST_ALL_PREFIXES(
       PumaServiceTest,
       RcBuildReport_DoesNotCreateReportWithFeatureDisabled);
-  FRIEND_TEST_ALL_PREFIXES(PumaServiceTest,
-                           RcClientId_IsNullWhenPumaRcIsDisabled);
   FRIEND_TEST_ALL_PREFIXES(PumaServiceWithLomFeatureTest,
                            BuildReportWithLomFeature);
   FRIEND_TEST_ALL_PREFIXES(PumaServiceWithLomFeatureTest,
                            BuildReportWithLomFeatureAndProfile);
-
-  // Gets or generates client ID for PUMA for Regional Capabilities.
-  //
-  // This client ID is persistent and not joinable with any other client ID.
-  // `std::nullopt` is returned when the feature is disabled, and IDs should not
-  // be collected.
-  std::optional<uint64_t> GetPumaRcClientId();
 
   // Records coarse system profile for PUMA for Regional Capabilities.
   void RecordRcProfile(::private_metrics::RcCoarseSystemProfile* rc_profile);
