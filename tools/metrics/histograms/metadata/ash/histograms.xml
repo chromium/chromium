@@ -1469,18 +1469,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Ash.Calendar.TimeToSeeTodaysEventDots" units="ms"
-    expires_after="2025-09-02">
-  <owner>newcomer@google.com</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    Measures the time from open of CalendarView, to CalendarDateCellView
-    representing today receives events. Recorded once per lifetime of
-    CalendarViewController (once per show), when todays CalendarDateCellView
-    receives event data.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Calendar.TimeToSeeTodaysEventDotsForMultiCalendar"
     units="ms" expires_after="2025-11-02">
   <owner>newcomer@google.com</owner>
@@ -7198,15 +7186,6 @@ chromium-metrics-reviews@google.com.
     Recorded for both SeaPen VC Background and Wallpaper.
   </summary>
   <token key="TemplateName" variants="SeaPenTemplateName"/>
-</histogram>
-
-<histogram name="Ash.Search.DriveFileSuggestDataValidation.Status"
-    enum="DriveFileSuggestDataValidationStatus" expires_after="2023-08-12">
-  <owner>andrewxu@chromium.org</owner>
-  <summary>
-    The outcome of drive file suggestion data validation. Recorded once per
-    validation.
-  </summary>
 </histogram>
 
 <histogram
