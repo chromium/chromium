@@ -672,6 +672,26 @@ TEST_F(SaveCardBottomSheetMediatorTest,
   [mediator_ didTapSave];
 }
 
+// Tests that Save receives month "03" and year "29" from "03/29".
+TEST_F(SaveCardBottomSheetMediatorTest,
+       OnUpdatedAndAcceptedForSaveAndFill_ZeroPaddedMonth) {
+  EXPECT_CALL(
+      *model_,
+      OnUpdatedAndAcceptedForSaveAndFill(testing::AllOf(
+          testing::Field(
+              &autofill::payments::PaymentsAutofillClient::
+                  UserProvidedCardSaveAndFillDetails::expiration_date_month,
+              u"03"),
+          testing::Field(
+              &autofill::payments::PaymentsAutofillClient::
+                  UserProvidedCardSaveAndFillDetails::expiration_date_year,
+              u"29"))));
+
+  [mediator_ didUpdateValue:@"03/29"
+                   forField:AutofillCreditCardUIType::kExpMonth];
+  [mediator_ didTapSave];
+}
+
 TEST_F(SaveCardBottomSheetMediatorTest, UpdateSaveButtonStatus) {
   FakeSaveCardBottomSheetConsumer* consumer =
       [[FakeSaveCardBottomSheetConsumer alloc] init];

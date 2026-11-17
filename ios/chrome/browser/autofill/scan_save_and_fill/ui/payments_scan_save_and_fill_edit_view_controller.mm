@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/numerics/safe_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/timer/elapsed_timer.h"
@@ -17,6 +18,7 @@
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
+#import "ios/chrome/browser/autofill/scan_save_and_fill/ui/scan_card_expiration_date_formatter.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_mutator.h"
@@ -100,6 +102,7 @@ void StyleButtonForConfirmation(UIButtonConfiguration* config) {
 
 @interface PaymentsScanSaveAndFillEditViewController () <
     TableViewTextEditItemDelegate,
+    UITextFieldDelegate,
     UITextViewDelegate>
 @end
 
@@ -560,6 +563,45 @@ void StyleButtonForConfirmation(UIButtonConfiguration* config) {
   return NO;
 }
 
+#pragma mark - UITextFieldDelegate
+
+// Only for `_expirationDateItem`; see `-loadItemsAndApplySnapshot`.
+- (BOOL)textField:(UITextField*)textField
+    shouldChangeCharactersInRange:(NSRange)range
+                replacementString:(NSString*)string {
+  // Reformatting mid-composition would commit the IME's marked text early.
+  if (textField.markedTextRange) {
+    return YES;
+  }
+
+  // Undo can replay a range from before reformatting.
+  if (NSMaxRange(range) > textField.text.length) {
+    return NO;
+  }
+
+  // `NSString` and `std::u16string` are both UTF-16, so offsets map 1:1.
+  ScanCardExpirationDateEditResult result = FormatScanCardExpirationDateEdit(
+      base::SysNSStringToUTF16(textField.text), range.location, range.length,
+      base::SysNSStringToUTF16(string));
+  NSString* formattedText = base::SysUTF16ToNSString(result.text);
+  textField.text = formattedText;
+  // Setting `text` from code does not send `UIControlEventEditingChanged`, so
+  // update the item directly; this notifies `-tableViewItemDidChange:`, which
+  // pushes the value to the mutator.
+  [_expirationDateItem updateTextFieldValue:formattedText];
+
+  // Validation reconfigures the cell, which resets the caret, so set it last.
+  UITextPosition* caret =
+      [textField positionFromPosition:textField.beginningOfDocument
+                               offset:base::checked_cast<NSInteger>(
+                                          result.cursor_position)];
+  if (caret) {
+    textField.selectedTextRange = [textField textRangeFromPosition:caret
+                                                        toPosition:caret];
+  }
+  return NO;
+}
+
 #pragma mark - UITextViewDelegate
 
 - (UIAction*)textView:(UITextView*)textView
@@ -755,6 +797,8 @@ void StyleButtonForConfirmation(UIButtonConfiguration* config) {
 - (void)loadItemsAndApplySnapshot {
   _cardNumberItem = [self cardNumberItem];
   _expirationDateItem = [self expirationDateItem];
+  // Pads the month and inserts "/" as the user types or pastes.
+  _expirationDateItem.textFieldDelegate = self;
   _cardholderNameItem = [self cardholderNameItem];
   _cardCVCItem = [self cardCVCItem];
   _nicknameItem = [self nicknameItem];
