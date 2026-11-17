@@ -663,7 +663,7 @@ void MessageService::OpenPort(RenderProcessHost* process,
   if (!IsValidSourceContext(*process, source)) {
     return;
   }
-  OpenPortImpl(port_id, process->GetDeprecatedID(), source);
+  OpenPortImpl(port_id, process->GetID(), source);
 }
 
 void MessageService::ClosePort(RenderProcessHost* process,
@@ -685,8 +685,8 @@ void MessageService::ClosePort(RenderProcessHost* process,
                                       : IPC::mojom::kRoutingIdNone;
   int worker_thread_id =
       port_context.worker ? port_context.worker->thread_id : kMainThreadId;
-  ClosePortImpl(port_id, process->GetDeprecatedID(), routing_id,
-                worker_thread_id, force_close, std::string());
+  ClosePortImpl(port_id, process->GetID(), routing_id, worker_thread_id,
+                force_close, std::string());
 }
 
 void MessageService::NotifyResponsePending(RenderProcessHost* process,

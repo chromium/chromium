@@ -6,8 +6,8 @@
 #define EXTENSIONS_BROWSER_API_MESSAGING_CHANNEL_ENDPOINT_H_
 
 #include "base/memory/raw_ptr.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/service_worker/worker_id.h"
-
 #include "extensions/common/api/messaging/port_context.h"
 
 namespace content {
@@ -25,13 +25,15 @@ class ChannelEndpoint {
  public:
   // An endpoint for a renderer PortContext.
   ChannelEndpoint(content::BrowserContext* browser_context,
-                  int render_process_id,
+                  content::ChildProcessId render_process_id,
                   const PortContext& port_context);
   // An endpoint for a native message host.
-  ChannelEndpoint(content::BrowserContext* browser_context);
+  explicit ChannelEndpoint(content::BrowserContext* browser_context);
 
   content::BrowserContext* browser_context() const { return browser_context_; }
-  int render_process_id() const { return render_process_id_; }
+  content::ChildProcessId render_process_id() const {
+    return render_process_id_;
+  }
   const PortContext& port_context() const { return port_context_; }
 
   bool is_for_service_worker() const;
@@ -52,7 +54,7 @@ class ChannelEndpoint {
 
  private:
   const raw_ptr<content::BrowserContext> browser_context_;
-  const int render_process_id_;
+  const content::ChildProcessId render_process_id_;
   const PortContext port_context_;
 };
 

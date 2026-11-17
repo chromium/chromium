@@ -18,6 +18,7 @@
 #include "base/types/pass_key.h"
 #include "base/uuid.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/api/messaging/message_port.h"
 #include "extensions/browser/message_tracker.h"
 #include "extensions/browser/service_worker/worker_id.h"
@@ -96,7 +97,7 @@ class ExtensionMessagePort : public MessagePort {
                          const std::string& channel_name,
                          std::optional<base::DictValue> source_tab,
                          const ExtensionApiFrameIdMap::FrameData& source_frame,
-                         int guest_process_id,
+                         content::ChildProcessId guest_process_id,
                          int guest_render_frame_routing_id,
                          const MessagingEndpoint& source_endpoint,
                          const std::string& target_extension_id,
@@ -108,8 +109,11 @@ class ExtensionMessagePort : public MessagePort {
   void DispatchOnMessage(Message message) override;
   void IncrementLazyKeepaliveCount(Activity::Type activity_type) override;
   void DecrementLazyKeepaliveCount(Activity::Type activity_type) override;
-  void OpenPort(int process_id, const PortContext& port_context) override;
-  void ClosePort(int process_id, int routing_id, int worker_thread_id) override;
+  void OpenPort(content::ChildProcessId process_id,
+                const PortContext& port_context) override;
+  void ClosePort(content::ChildProcessId process_id,
+                 int routing_id,
+                 int worker_thread_id) override;
   void NotifyResponsePending() override;
 
  private:
@@ -135,7 +139,8 @@ class ExtensionMessagePort : public MessagePort {
   // Methods to register/unregister a Service Worker endpoint for this port.
   void RegisterWorker(const WorkerId& worker_id);
   bool UnregisterWorker(const WorkerId& worker_id);
-  void UnregisterWorker(int render_process_id, int worker_thread_id);
+  void UnregisterWorker(content::ChildProcessId render_process_id,
+                        int worker_thread_id);
 
   // Immediately close the port and its associated channel.
   void CloseChannel(std::optional<std::string> error_message = std::nullopt);

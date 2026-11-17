@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_context.h"
 
@@ -33,7 +34,7 @@ void MessagePort::DispatchOnConnect(
     const std::string& channel_name,
     std::optional<base::DictValue> source_tab,
     const ExtensionApiFrameIdMap::FrameData& source_frame,
-    int guest_process_id,
+    content::ChildProcessId guest_process_id,
     int guest_render_frame_routing_id,
     const MessagingEndpoint& source_endpoint,
     const std::string& target_extension_id,
@@ -43,9 +44,10 @@ void MessagePort::DispatchOnConnect(
 
 void MessagePort::DispatchOnDisconnect(const std::string& error_message) {}
 
-void MessagePort::OpenPort(int process_id, const PortContext& port_context) {}
+void MessagePort::OpenPort(content::ChildProcessId process_id,
+                           const PortContext& port_context) {}
 
-void MessagePort::ClosePort(int process_id,
+void MessagePort::ClosePort(content::ChildProcessId process_id,
                             int routing_id,
                             int worker_thread_id) {}
 
@@ -110,7 +112,7 @@ void MessagePort::ResponsePending() {
 
 void MessagePort::AddReceiver(
     mojo::PendingAssociatedReceiver<mojom::MessagePortHost> receiver,
-    int render_process_id,
+    content::ChildProcessId render_process_id,
     const PortContext& port_context) {
   receivers_.Add(this, std::move(receiver),
                  std::make_pair(render_process_id, port_context));

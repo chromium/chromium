@@ -393,7 +393,7 @@ class MessageServiceTest : public ExtensionsTest {
   ChannelEndpoint MakeFrameEndpoint(content::WebContents* web_contents) {
     content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
     return ChannelEndpoint(web_contents->GetBrowserContext(),
-                           rfh->GetProcess()->GetDeprecatedID(),
+                           rfh->GetProcess()->GetID(),
                            PortContext::ForFrame(rfh->GetRoutingID()));
   }
 
@@ -791,8 +791,7 @@ TEST_F(MessageServiceTest, DispatchOnConnectMovesSourceTabDictionary) {
   messaging_delegate().set_tab_info(std::move(source_tab));
 
   content::RenderFrameHost* opener_rfh = opener_contents->GetPrimaryMainFrame();
-  ChannelEndpoint source(browser_context(),
-                         opener_rfh->GetProcess()->GetDeprecatedID(),
+  ChannelEndpoint source(browser_context(), opener_rfh->GetProcess()->GetID(),
                          PortContext::ForFrame(opener_rfh->GetRoutingID()));
 
   RecordingOpenerPort::State* opener_state = CreateOpenerState();

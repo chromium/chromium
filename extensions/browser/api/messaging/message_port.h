@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/activity.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/common/api/messaging/port_id.h"
@@ -46,7 +47,7 @@ class MessagePort
     // well. If `error_message` is non-empty the sender will treat the port
     // closing as an error with that message.
     virtual void ClosePort(const PortId& port_id,
-                           int process_id,
+                           content::ChildProcessId process_id,
                            const PortContext& port_context,
                            bool close_channel,
                            const std::string& error_message) = 0;
@@ -89,7 +90,7 @@ class MessagePort
       const std::string& channel_name,
       std::optional<base::DictValue> source_tab,
       const ExtensionApiFrameIdMap::FrameData& source_frame,
-      int guest_process_id,
+      content::ChildProcessId guest_process_id,
       int guest_render_frame_routing_id,
       const MessagingEndpoint& source_endpoint,
       const std::string& target_extension_id,
@@ -105,10 +106,13 @@ class MessagePort
   virtual void DispatchOnMessage(Message message) = 0;
 
   // Marks the port as opened by the specific frame or service worker.
-  virtual void OpenPort(int process_id, const PortContext& port_context);
+  virtual void OpenPort(content::ChildProcessId process_id,
+                        const PortContext& port_context);
 
   // Closes the port for the given frame or service worker.
-  virtual void ClosePort(int process_id, int routing_id, int worker_thread_id);
+  virtual void ClosePort(content::ChildProcessId process_id,
+                         int routing_id,
+                         int worker_thread_id);
 
   // MessagePorts that target extensions will need to adjust their keepalive
   // counts for their lazy background page.
@@ -133,7 +137,7 @@ class MessagePort
 
   void AddReceiver(
       mojo::PendingAssociatedReceiver<mojom::MessagePortHost> receiver,
-      int render_process_id,
+      content::ChildProcessId render_process_id,
       const PortContext& port_context);
 
  protected:
@@ -156,7 +160,7 @@ class MessagePort
   bool is_for_onetime_channel_ = false;
 
   mojo::AssociatedReceiverSet<mojom::MessagePortHost,
-                              std::pair<int, PortContext>>
+                              std::pair<content::ChildProcessId, PortContext>>
       receivers_;
 };
 

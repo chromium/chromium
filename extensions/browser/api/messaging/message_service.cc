@@ -27,7 +27,6 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/child_process_host.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -36,6 +35,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/extension_message_port.h"
@@ -448,7 +448,7 @@ class MessageServiceFactory
         absl::Overload{
             [&](const WorkerId& worker) {
               return ChannelEndpoint(
-                  context, worker.render_process_id.GetUnsafeValue(),
+                  context, worker.render_process_id,
                   PortContext::ForWorker(
                       worker.thread_id, worker.version_id,
                       worker.render_process_id.GetUnsafeValue(),
@@ -456,7 +456,7 @@ class MessageServiceFactory
             },
             [&](const content::RenderFrameHost* render_frame_host) {
               return ChannelEndpoint(
-                  context, render_frame_host->GetProcess()->GetDeprecatedID(),
+                  context, render_frame_host->GetProcess()->GetID(),
                   PortContext::ForFrame(render_frame_host->GetRoutingID()));
             }},
         source);
@@ -506,8 +506,8 @@ void MessageService::OpenChannelToExtension(
          source_endpoint.type == MessagingEndpoint::Type::kNativeApp);
   DCHECK_EQ(source_endpoint.native_app_name.has_value(),
             source_endpoint.type == MessagingEndpoint::Type::kNativeApp);
-  int source_process_id = source.render_process_id();
-  DCHECK_EQ(source_process_id == content::ChildProcessHost::kInvalidUniqueID,
+  content::ChildProcessId source_process_id = source.render_process_id();
+  DCHECK_EQ(source_process_id.is_null(),
             source_endpoint.type == MessagingEndpoint::Type::kNativeApp);
   content::RenderFrameHost* source_render_frame_host =
       source.is_for_render_frame() ? source.GetRenderFrameHost() : nullptr;
@@ -1070,7 +1070,7 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
   channel->receiver = std::move(params->receiver);
   AddChannel(std::move(channel_ptr), params->receiver_port_id);
 
-  int guest_process_id = content::ChildProcessHost::kInvalidUniqueID;
+  content::ChildProcessId guest_process_id;
   int guest_render_frame_routing_id = IPC::mojom::kRoutingIdNone;
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   if (params->include_guest_process_info &&
@@ -1145,7 +1145,7 @@ void MessageService::AddChannel(std::unique_ptr<MessageChannel> channel,
 }
 
 void MessageService::OpenPortImpl(const PortId& port_id,
-                                  int process_id,
+                                  content::ChildProcessId process_id,
                                   const PortContext& port_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!port_id.is_opener);
@@ -1160,12 +1160,12 @@ void MessageService::OpenPortImpl(const PortId& port_id,
 void MessageService::CloseChannel(const PortId& port_id,
                                   const std::string& error_message) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ClosePortImpl(port_id, content::ChildProcessHost::kInvalidUniqueID,
-                IPC::mojom::kRoutingIdNone, kMainThreadId, true, error_message);
+  ClosePortImpl(port_id, content::ChildProcessId(), IPC::mojom::kRoutingIdNone,
+                kMainThreadId, true, error_message);
 }
 
 void MessageService::ClosePort(const PortId& port_id,
-                               int process_id,
+                               content::ChildProcessId process_id,
                                const PortContext& port_context,
                                bool close_channel,
                                const std::string& error_message) {
@@ -1178,7 +1178,7 @@ void MessageService::ClosePort(const PortId& port_id,
 }
 
 void MessageService::ClosePortImpl(const PortId& port_id,
-                                   int process_id,
+                                   content::ChildProcessId process_id,
                                    int routing_id,
                                    int worker_thread_id,
                                    bool close_channel,

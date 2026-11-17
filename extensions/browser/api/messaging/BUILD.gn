@@ -28,6 +28,7 @@ source_set("messaging") {
     ":native_messaging",
     "//base",
     "//content/public/browser",
+    "//content/public/common",
     "//extensions/browser:browser_sources",
     "//extensions/common",
     "//extensions/common:mojom",
@@ -37,7 +38,6 @@ source_set("messaging") {
 
   deps = [
     "//components/back_forward_cache",
-    "//content/public/common",
     "//extensions/browser/api:extensions_api_client",
     "//extensions/common:common_constants",
     "//extensions/common:mojom_shared",

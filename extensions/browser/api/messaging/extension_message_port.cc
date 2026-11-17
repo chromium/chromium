@@ -26,6 +26,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_features.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/extension_host.h"
@@ -504,7 +505,7 @@ void ExtensionMessagePort::DispatchOnConnect(
     const std::string& channel_name,
     std::optional<base::DictValue> source_tab,
     const ExtensionApiFrameIdMap::FrameData& source_frame,
-    int guest_process_id,
+    content::ChildProcessId guest_process_id,
     int guest_render_frame_routing_id,
     const MessagingEndpoint& source_endpoint,
     const std::string& target_extension_id,
@@ -527,7 +528,7 @@ void ExtensionMessagePort::DispatchOnConnect(
   info->source_endpoint = source_endpoint;
   info->source_url = source_url;
   info->source_origin = std::move(source_origin);
-  info->guest_process_id = guest_process_id;
+  info->guest_process_id = guest_process_id.GetUnsafeValue();
   info->guest_render_frame_routing_id = guest_render_frame_routing_id;
 
   pending_open_channel_tracking_ids_ = std::move(open_channel_tracking_ids);
@@ -576,7 +577,7 @@ void ExtensionMessagePort::DispatchOnConnect(
         &ExtensionMessagePort::Prune, base::Unretained(this), port_context,
         open_channel_dispatch_for_frame_tracking_id));
     AddReceiver(message_port_host.InitWithNewEndpointAndPassReceiver(),
-                frame->GetProcess()->GetDeprecatedID(), port_context);
+                frame->GetProcess()->GetID(), port_context);
 
     pending_contexts_to_respond_.insert(port_context);
 
@@ -621,7 +622,7 @@ void ExtensionMessagePort::DispatchOnConnect(
           &ExtensionMessagePort::Prune, base::Unretained(this), port_context,
           open_channel_dispatch_for_worker_tracking_id));
       AddReceiver(message_port_host.InitWithNewEndpointAndPassReceiver(),
-                  worker.render_process_id.GetUnsafeValue(), port_context);
+                  worker.render_process_id, port_context);
 
       pending_contexts_to_respond_.insert(port_context);
 
@@ -769,7 +770,7 @@ void ExtensionMessagePort::NotifyResponsePending() {
   asynchronous_reply_pending_ = true;
 }
 
-void ExtensionMessagePort::OpenPort(int process_id,
+void ExtensionMessagePort::OpenPort(content::ChildProcessId process_id,
                                     const PortContext& port_context) {
   DCHECK((port_context.is_for_render_frame() &&
           port_context.frame->routing_id != IPC::mojom::kRoutingIdNone) ||
@@ -780,7 +781,7 @@ void ExtensionMessagePort::OpenPort(int process_id,
   port_was_created_ = true;
 }
 
-void ExtensionMessagePort::ClosePort(int process_id,
+void ExtensionMessagePort::ClosePort(content::ChildProcessId process_id,
                                      int routing_id,
                                      int worker_thread_id) {
   const bool is_for_service_worker = worker_thread_id != kMainThreadId;
@@ -890,15 +891,16 @@ bool ExtensionMessagePort::UnregisterWorker(const WorkerId& worker_id) {
   return false;
 }
 
-void ExtensionMessagePort::UnregisterWorker(int render_process_id,
-                                            int worker_thread_id) {
+void ExtensionMessagePort::UnregisterWorker(
+    content::ChildProcessId render_process_id,
+    int worker_thread_id) {
   DCHECK_NE(kMainThreadId, worker_thread_id);
 
   // Note: We iterate through *each* workers belonging to this port to find the
   // worker we are interested in. Since there will only be a handful of such
   // workers, this is OK.
   for (auto iter = service_workers_.begin(); iter != service_workers_.end();) {
-    if (iter->first.render_process_id.GetUnsafeValue() == render_process_id &&
+    if (iter->first.render_process_id == render_process_id &&
         iter->first.thread_id == worker_thread_id) {
       service_workers_.erase(iter);
       break;
