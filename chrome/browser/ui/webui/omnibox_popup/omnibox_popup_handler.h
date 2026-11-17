@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_OMNIBOX_POPUP_OMNIBOX_POPUP_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_OMNIBOX_POPUP_OMNIBOX_POPUP_HANDLER_H_
 
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -18,6 +20,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/gfx/range/range.h"
+
+class GURL;
 
 namespace content {
 class WebContents;
@@ -136,6 +140,11 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler,
   bool can_redo() const { return can_redo_; }
 
  private:
+  // Returns the URL for `OmniboxInputState.drag_url`: the one to drag when all
+  // of the unedited `permanent_display_text` is dragged out of the omnibox, or
+  // an empty URL if there is none or the page may not drag it.
+  GURL GetDragUrl(const std::string& permanent_display_text) const;
+
   mojo::Receiver<omnibox_popup::mojom::PageHandler> receiver_;
   mojo::Remote<omnibox_popup::mojom::Page> page_;
   base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
