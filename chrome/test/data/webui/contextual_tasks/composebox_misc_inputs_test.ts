@@ -22,7 +22,7 @@ import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {FAKE_TOKEN_STRING, fixtureUrl, getSubmitContainer, setupTestHandler} from './contextual_tasks_test_utils.js';
+import {disableAnimationsRecursively, FAKE_TOKEN_STRING, fixtureUrl, getSubmitContainer, setupTestHandler} from './contextual_tasks_test_utils.js';
 import {ADD_FILE_CONTEXT_FN, ADD_TAB_CONTEXT_FN} from './test_searchbox_utils.js';
 
 async function dispatchDragAndDropEvent(dropZone: Element, files: File[]) {
@@ -69,25 +69,6 @@ function createDragEvent(type: string, files: File[]): DragEvent {
     value: mockDataTransfer,
   });
   return event;
-}
-
-function disableAnimationsRecursively(element: Element) {
-  const noAnimation = document.createElement('style');
-  noAnimation.textContent = `
-    :host, * {
-    transition: none !important;
-    animation: none !important;
-    transition-duration: 0s !important;
-    animation-duration: 0s !important;
-    }
-  `;
-
-  if (element.shadowRoot) {
-    element.shadowRoot.appendChild(noAnimation);
-
-    const children = element.shadowRoot.querySelectorAll('*');
-    children.forEach(child => disableAnimationsRecursively(child));
-  }
 }
 
 suite('ContextualTasksComposeboxMiscInputsTest', () => {

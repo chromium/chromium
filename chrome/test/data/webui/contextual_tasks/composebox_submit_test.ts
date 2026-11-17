@@ -25,7 +25,7 @@ import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertStyle, createCtComposeboxApp, deleteLastFile, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, fixtureUrl, getInputValue, getSubmitButton, getSubmitContainer, installMock, setupTestHandler, simulateUserInput} from './contextual_tasks_test_utils.js';
+import {assertStyle, createCtComposeboxApp, deleteLastFile, disableAnimationsRecursively, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, fixtureUrl, getInputValue, getSubmitButton, getSubmitContainer, installMock, setupTestHandler, simulateUserInput} from './contextual_tasks_test_utils.js';
 import type {CtComposeboxAppParts} from './contextual_tasks_test_utils.js';
 import type {TestContextualTasksPageHandler} from './test_contextual_tasks_browser_proxy.js';
 import {ADD_TAB_CONTEXT_FN, setupAutocompleteResults, uploadFileAndVerify} from './test_searchbox_utils.js';
@@ -36,25 +36,6 @@ function pressEnter(element: HTMLElement) {
     bubbles: true,
     composed: true,
   }));
-}
-
-function disableAnimationsRecursively(element: Element) {
-  const noAnimation = document.createElement('style');
-  noAnimation.textContent = `
-    :host, * {
-    transition: none !important;
-    animation: none !important;
-    transition-duration: 0s !important;
-    animation-duration: 0s !important;
-    }
-  `;
-
-  if (element.shadowRoot) {
-    element.shadowRoot.appendChild(noAnimation);
-
-    const children = element.shadowRoot.querySelectorAll('*');
-    children.forEach(child => disableAnimationsRecursively(child));
-  }
 }
 
 suite('ContextualTasksComposeboxSubmitTest', () => {
