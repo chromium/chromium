@@ -7,16 +7,14 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TracesAppElement} from './app.js';
 
 export function getHtml(this: TracesAppElement) {
-  // clang-format off
   return html`
-  <cr-tabs .tabNames="${this.tabNames_}" .selected="${this.selected_}"
-      @selected-changed="${this.onSelectedChanged_}">
-  </cr-tabs>
+<cr-tabs .tabNames="${this.tabNames_}" .selected="${this.selected_}"
+    @selected-changed="${this.onSelectedChanged_}">
+</cr-tabs>
 
-  <cr-page-selector .selected="${this.selected_.toString()}">
-    <trace-report-list></trace-report-list>
-    <tracing-scenarios-config></tracing-scenarios-config>
-    <trace-recorder></trace-recorder>
-  </cr-page-selector>`;
-  // clang-format on
+<cr-page-selector .selected="${this.selected_.toString()}">
+  <trace-report-list></trace-report-list>
+  <tracing-scenarios-config></tracing-scenarios-config>
+  <trace-recorder></trace-recorder>
+</cr-page-selector>`;
 }

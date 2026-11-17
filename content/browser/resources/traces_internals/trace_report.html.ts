@@ -9,7 +9,6 @@ import {getTokenAsUuidString} from './trace_util.js';
 import {ReportUploadState} from './traces_internals.mojom-webui.js';
 
 export function getHtml(this: TraceReportElement) {
-  // clang-format off
   return html`
 ${this.isHeader ? html`
   <div class="info">Trace ID</div>
@@ -37,7 +36,8 @@ ${this.isHeader ? html`
       </button>
     </div>
     <div>
-      <button class="clickable-field copiable" title="${this.trace.uploadRuleName}"
+      <button class="clickable-field copiable"
+          title="${this.trace.uploadRuleName}"
           @click="${this.onCopyUploadRuleClick_}">
         ${this.trace.uploadRuleName}
       </button>
@@ -49,20 +49,19 @@ ${this.isHeader ? html`
     </div>
     <div class="value">${this.getTraceSize_(this.trace)}</div>
     <div class="upload-state-card ${this.getStateCssClass_(this.trace)}"
-      title="${this.getStateText_(this.trace)}">
+        title="${this.getStateText_(this.trace)}">
       ${this.getStateText_(this.trace)}
     </div>
     <div class="actions-container">
-    <cr-icon-button class="action-button" title="Upload Trace"
+      <cr-icon-button class="action-button" title="Upload Trace"
           iron-icon="trace-report-icons:cloud_upload"
           ?hidden="${!this.uploadStateEqual_(
-            this.trace, ReportUploadState.kNotUploaded)}"
+              this.trace, ReportUploadState.kNotUploaded)}"
           ?disabled="${this.isManualUploadDisabled_(this.trace)}"
           @click="${this.onUploadTraceClick_}">
       </cr-icon-button>
-      <cr-icon-button class="action-button download"
-          iron-icon="cr:download" title="${
-            this.getDownloadTooltip_(this.trace)}"
+      <cr-icon-button class="action-button download" iron-icon="cr:download"
+          title="${this.getDownloadTooltip_(this.trace)}"
           @click="${this.onDownloadTraceClick_}"
           ?disabled="${this.isDownloadDisabled_(this.trace)}">
       </cr-icon-button>
@@ -73,5 +72,4 @@ ${this.isHeader ? html`
     </div>
   ` : nothing}
 `}`;
-  // clang-format on
 }

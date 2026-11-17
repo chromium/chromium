@@ -8,31 +8,33 @@ import type {TraceReportListElement} from './trace_report_list.js';
 import type {ClientTraceReport} from './traces_internals.mojom-webui.js';
 
 export function getHtml(this: TraceReportListElement) {
-  // clang-format off
   return html`
-  <div class="header">
-    <h1>Traces
-      <span class="trace-counter" ?hidden="${!this.hasTraces_()}">
-        ${this.traces_.length}
-      </span>
-    </h1>
-    <div class="utility-bar">
-      <cr-button class="tonal-button"
-          @click="${this.onRefreshTracesClick_}">
-        <cr-icon icon="cr:sync" slot="prefix-icon"></cr-icon>
-        Refresh
-      </cr-button>
+<div class="header">
+  <h1>
+    Traces
+    <span class="trace-counter" ?hidden="${!this.hasTraces_()}">
+      ${this.traces_.length}
+    </span>
+  </h1>
+  <div class="utility-bar">
+    <cr-button class="tonal-button" @click="${this.onRefreshTracesClick_}">
+      <cr-icon icon="cr:sync" slot="prefix-icon"></cr-icon>
+      Refresh
+    </cr-button>
     ${this.hasTraces_() ? html`
       <cr-button class="tonal-button" ?disabled="${!this.hasTraces_()}"
           @click="${this.onDeleteAllTracesClick_}">
         <cr-icon icon="cr:delete" slot="prefix-icon"></cr-icon>
         Delete All Traces
-      </cr-button>` : nothing}
-    </div>
+      </cr-button>
+    ` : nothing}
   </div>
-  ${this.isLoading_ ? html`
-  <div class="loading-spinner"><div class="spinner"></div></div>` :
-  html`
+</div>
+${this.isLoading_ ? html`
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+  </div>
+` : html`
   <div class="report-list-container">
     ${!this.hasTraces_() ? html`
       <div class="empty-message">
@@ -42,26 +44,24 @@ export function getHtml(this: TraceReportListElement) {
     ` : html`
       <trace-report .isHeader="${true}"></trace-report>
       ${this.traces_.map((traceReport: ClientTraceReport) => html`
-        <trace-report
-            .trace="${traceReport}"
-            @show-toast="${this.onShowToast_}"
+        <trace-report .trace="${traceReport}" @show-toast="${this.onShowToast_}"
             @refresh-traces-request="${this.onRefreshTracesRequest_}">
         </trace-report>
       `)}
     `}
-  </div>`}
-  <cr-toast id="toast" duration="5000" ?hidden="${!this.notification_}">
-    <div id="notification-card">
-      <div class="icon-container ${this.getNotificationStyling_()}">
-        <cr-icon icon="${this.getNotificationIcon_()}"></cr-icon>
-      </div>
-      <div class="notification-message">
-        <h4 class="notification-type ${this.getNotificationStyling_()}">
-          ${this.getNotificationType_()}
-        </h4>
-        <span class="notification-label">${this.getNotificationLabel_()}</span>
-      </div>
+  </div>
+`}
+<cr-toast id="toast" duration="5000" ?hidden="${!this.notification_}">
+  <div id="notification-card">
+    <div class="icon-container ${this.getNotificationStyling_()}">
+      <cr-icon icon="${this.getNotificationIcon_()}"></cr-icon>
     </div>
-  </cr-toast>`;
-  // clang-format on
+    <div class="notification-message">
+      <h4 class="notification-type ${this.getNotificationStyling_()}">
+        ${this.getNotificationType_()}
+      </h4>
+      <span class="notification-label">${this.getNotificationLabel_()}</span>
+    </div>
+  </div>
+</cr-toast>`;
 }
