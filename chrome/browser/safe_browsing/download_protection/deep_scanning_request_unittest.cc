@@ -4137,7 +4137,7 @@ TEST_P(DeepScanningRequestAllFeaturesEnabledTest, PopulatesRequest) {
                 ->last_request()
                 .request_data()
                 .digest(),
-            // Hex-encoding of 'hash'
+            // SHA-256 of "download contents"
             "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C");
   EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
                 ->last_request()
@@ -4149,6 +4149,49 @@ TEST_P(DeepScanningRequestAllFeaturesEnabledTest, PopulatesRequest) {
                 .request_data()
                 .tab_url(),
             GURL("https://example.com"));
+}
+
+TEST_P(DeepScanningRequestAllFeaturesEnabledTest,
+       ReusesPrecomputedMetadataDigest) {
+  base::test::ScopedFeatureList async_hash_feature(
+      enterprise_connectors::kContentHashInFileUploadFinalCall);
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
+      kScanForDlpAndMalware);
+  net::ScopedOverrideGetMimeTypeForTesting override_mime_type(
+      "application/octet-stream");
+
+  // Set a metadata hash distinct from the SHA-256 of the on-disk bytes
+  // ("download contents") to verify that single-file scans reuse the metadata
+  // digest instead of re-reading and hashing from disk.
+  download_hash_ = std::string(crypto::hash::kSha256Size, '\xAB');
+  const std::string expected_hex_digest = base::HexEncode(download_hash_);
+
+  {
+    base::RunLoop run_loop;
+    DeepScanningRequest request(
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        DownloadCheckResult::SAFE,
+        base::BindRepeating(
+            [](base::RepeatingClosure closure, DownloadCheckResult result) {
+              if (result != DownloadCheckResult::ASYNC_SCANNING) {
+                closure.Run();
+              }
+            },
+            run_loop.QuitClosure()),
+        &download_protection_service_, settings().value(),
+        /*password=*/std::nullopt);
+
+    request.Start();
+    run_loop.Run();
+
+    EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
+                  ->last_request()
+                  .request_data()
+                  .digest(),
+              expected_hex_digest);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

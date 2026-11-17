@@ -679,6 +679,8 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
 
   EXPECT_EQ(last_request().reason(),
             enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
+  EXPECT_EQ(last_request().request_data().digest(),
+            "339C8FFDAE735C4F1846D0E6FF07FBD85CAEE6D96045AAEF5B30F3220836643C");
 
   WaitForDownloadToFinish();
 
@@ -976,6 +978,8 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, FailedScanFailsOpen) {
 
   EXPECT_EQ(last_request().reason(),
             enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
+  EXPECT_EQ(last_request().request_data().digest(),
+            "339C8FFDAE735C4F1846D0E6FF07FBD85CAEE6D96045AAEF5B30F3220836643C");
 
   WaitForDownloadToFinish();
 
@@ -1027,6 +1031,8 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
 
   EXPECT_EQ(last_request().reason(),
             enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
+  EXPECT_EQ(last_request().request_data().digest(),
+            "339C8FFDAE735C4F1846D0E6FF07FBD85CAEE6D96045AAEF5B30F3220836643C");
 
   WaitForDownloadToFinish();
 
@@ -1078,6 +1084,8 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
 
   EXPECT_EQ(last_request().reason(),
             enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
+  EXPECT_EQ(last_request().request_data().digest(),
+            "339C8FFDAE735C4F1846D0E6FF07FBD85CAEE6D96045AAEF5B30F3220836643C");
 
   WaitForDownloadToFinish();
 
@@ -1418,6 +1426,8 @@ IN_PROC_BROWSER_TEST_P(AllowlistedUrlDeepScanningBrowserTest,
 
   EXPECT_EQ(last_request().reason(),
             enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
+  EXPECT_EQ(last_request().request_data().digest(),
+            "339C8FFDAE735C4F1846D0E6FF07FBD85CAEE6D96045AAEF5B30F3220836643C");
 
   WaitForDownloadToFinish();
 
@@ -1526,6 +1536,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Allowed) {
 
   EXPECT_EQ(last_request().reason(),
             enterprise_connectors::ContentAnalysisRequest::SAVE_AS_DOWNLOAD);
+  EXPECT_EQ(last_request().request_data().digest(),
+            "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD");
 
   // The response should not trigger a security event.
   enterprise_connectors::test::EventReportValidator validator(client());
@@ -2151,6 +2163,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, AllowedWrite) {
 
   EXPECT_EQ(last_request().reason(),
             enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
+  EXPECT_EQ(last_request().request_data().digest(),
+            "6AE8A75555209FD6C44157C0AED8016E763FF435A19CF186F76863140143FF72");
 
   ASSERT_TRUE(content::ExecJs(web_contents, "window.fsaPromise"));
 

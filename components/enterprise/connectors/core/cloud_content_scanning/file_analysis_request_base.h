@@ -8,6 +8,7 @@
 #include <atomic>
 
 #include "base/functional/callback_helpers.h"
+#include "base/sequence_checker.h"
 #include "base/task/post_job.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"

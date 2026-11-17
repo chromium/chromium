@@ -4,7 +4,9 @@
 
 #include "components/enterprise/connectors/core/cloud_content_scanning/file_analysis_request_base.h"
 
+#include <cstdint>
 #include <optional>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
@@ -12,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -25,6 +28,7 @@
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
+#include "crypto/hash.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -534,10 +538,16 @@ TEST_F(FileAnalysisRequestBaseTest, ObfuscatedFile) {
   ASSERT_TRUE(obfuscation_result.has_value());
   ASSERT_TRUE(base::WriteFile(file_path, obfuscation_result.value()));
 
+  std::optional<crypto::hash::Hasher> hasher = obfuscator.GetUnobfuscatedHash();
+  ASSERT_TRUE(hasher.has_value());
+  std::vector<uint8_t> hash_bytes(crypto::hash::kSha256Size);
+  hasher->Finish(hash_bytes);
+  std::string unobfuscated_hash = base::HexEncode(hash_bytes);
   auto obfuscated_request = MakeRequest(file_path, file_path.BaseName(),
                                         /*delay_opening_file=*/false,
                                         /*mime_type=*/"",
                                         /*is_obfuscated=*/true);
+  obfuscated_request->set_digest(unobfuscated_hash);
   base::test::TestFuture<ScanRequestUploadResult, BinaryUploadRequest::Data>
       future;
   obfuscated_request->GetRequestData(future.GetCallback());
@@ -545,9 +555,120 @@ TEST_F(FileAnalysisRequestBaseTest, ObfuscatedFile) {
 
   EXPECT_EQ(result, ScanRequestUploadResult::kSuccess);
 
-  // Check if size has been updated to use the calculated unobfuscated content
-  // size.
+  // Check if size and hash match the unobfuscated content rather than the
+  // obfuscated bytes on disk.
   EXPECT_EQ(data.size, original_contents.size());
+  EXPECT_EQ(data.hash, unobfuscated_hash);
+  EXPECT_EQ(obfuscated_request->digest(), unobfuscated_hash);
+}
+
+TEST_F(FileAnalysisRequestBaseTest, ReusesPrecomputedDigest) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{enterprise_connectors::kContentHashInFileUploadFinalCall, {}},
+       {enterprise_connectors::kEnableNewUploadSizeLimit,
+        {{"max_file_size_mb", "51"}}}},
+      {});
+
+  constexpr char kPrecomputedDigest[] =
+      "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  // Normal file: pre-set digest is preserved without hashing on-disk bytes.
+  {
+    std::string file_contents = "Normal file contents";
+    base::FilePath file_path = temp_dir.GetPath().AppendASCII("normal.doc");
+    ASSERT_TRUE(base::WriteFile(file_path, file_contents));
+
+    auto request = MakeRequest(file_path, file_path.BaseName(),
+                               /*delay_opening_file=*/false);
+    request->set_digest(kPrecomputedDigest);
+
+    base::test::TestFuture<ScanRequestUploadResult, BinaryUploadRequest::Data>
+        future;
+    request->GetRequestData(future.GetCallback());
+    auto [result, data] = future.Take();
+
+    EXPECT_EQ(result, ScanRequestUploadResult::kSuccess);
+    EXPECT_EQ(data.size, file_contents.size());
+    EXPECT_EQ(data.hash, kPrecomputedDigest);
+    EXPECT_EQ(request->digest(), kPrecomputedDigest);
+  }
+
+  // Large file (> `max_file_size_bytes`): pre-set digest is preserved rather
+  // than cleared, even when the hash isn't forced to be computed synchronously.
+  base::FilePath large_path = temp_dir.GetPath().AppendASCII("large.doc");
+  constexpr uint64_t kLargeSize = 51ull * 1024 * 1024 + 1;
+  {
+    base::File file(large_path,
+                    base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(file.IsValid());
+#if BUILDFLAG(IS_WIN)
+    DWORD bytes_returned = 0;
+    ASSERT_TRUE(::DeviceIoControl(file.GetPlatformFile(), FSCTL_SET_SPARSE,
+                                  nullptr, 0, nullptr, 0, &bytes_returned,
+                                  nullptr));
+#endif
+    ASSERT_TRUE(file.SetLength(kLargeSize));
+  }
+
+  {
+    auto request =
+        MakeRequest(large_path, large_path.BaseName(),
+                    /*delay_opening_file=*/false,
+                    /*mime_type=*/"application/msword", /*is_obfuscated=*/false,
+                    /*force_sync_hash_computation=*/false);
+    request->set_digest(kPrecomputedDigest);
+
+    base::test::TestFuture<ScanRequestUploadResult, BinaryUploadRequest::Data>
+        future;
+    request->GetRequestData(future.GetCallback());
+    auto [result, data] = future.Take();
+
+    EXPECT_EQ(result, ScanRequestUploadResult::kFileTooLarge);
+    EXPECT_EQ(data.size, kLargeSize);
+    EXPECT_EQ(data.hash, kPrecomputedDigest);
+    EXPECT_EQ(request->digest(), kPrecomputedDigest);
+  }
+
+  // Missing and empty files still clear the digest to empty string.
+  {
+    base::FilePath missing_path = temp_dir.GetPath().AppendASCII("missing.doc");
+    auto request = MakeRequest(missing_path, missing_path.BaseName(),
+                               /*delay_opening_file=*/false);
+    request->set_digest(kPrecomputedDigest);
+
+    base::test::TestFuture<ScanRequestUploadResult, BinaryUploadRequest::Data>
+        future;
+    request->GetRequestData(future.GetCallback());
+    auto [result, data] = future.Take();
+
+    EXPECT_EQ(result, ScanRequestUploadResult::kUnknown);
+    EXPECT_EQ(data.size, 0u);
+    EXPECT_TRUE(data.hash.empty());
+    EXPECT_TRUE(request->digest().empty());
+  }
+
+  {
+    base::FilePath empty_path = temp_dir.GetPath().AppendASCII("empty.doc");
+    base::File file(empty_path,
+                    base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    auto request = MakeRequest(empty_path, empty_path.BaseName(),
+                               /*delay_opening_file=*/false);
+    request->set_digest(kPrecomputedDigest);
+
+    base::test::TestFuture<ScanRequestUploadResult, BinaryUploadRequest::Data>
+        future;
+    request->GetRequestData(future.GetCallback());
+    auto [result, data] = future.Take();
+
+    EXPECT_EQ(result, ScanRequestUploadResult::kSuccess);
+    EXPECT_EQ(data.size, 0u);
+    EXPECT_TRUE(data.hash.empty());
+    EXPECT_TRUE(request->digest().empty());
+  }
 }
 
 TEST_F(FileAnalysisRequestBaseTest, FileHashComputesAsyncWhenEnabled) {
@@ -704,6 +825,39 @@ TEST_F(FileAnalysisRequestBaseVirtualFileTest, LargeFileNoHashAndFileTooLarge) {
   EXPECT_EQ(result, ScanRequestUploadResult::kFileTooLarge);
   EXPECT_EQ(data.size, kLargeFileSize);
   EXPECT_TRUE(data.hash.empty());
+  EXPECT_EQ(data.mime_type, "application/pdf");
+}
+
+TEST_F(FileAnalysisRequestBaseVirtualFileTest,
+       LargeFilePreservesPrecomputedDigest) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  constexpr uint64_t kLargeFileSize = 3ull * 1024 * 1024 * 1024;  // 3GB
+  constexpr char kPrecomputedDigest[] =
+      "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("large.pdf");
+  {
+    base::File file(file_path,
+                    base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(file.SetLength(kLargeFileSize));
+  }
+
+  auto request = MakeRequest(file_path, file_path.BaseName(),
+                             /*delay_opening_file=*/false, "", false,
+                             /*force_sync_hash_computation=*/false);
+  request->set_digest(kPrecomputedDigest);
+
+  base::test::TestFuture<ScanRequestUploadResult, BinaryUploadRequest::Data>
+      future;
+  request->GetRequestData(future.GetCallback());
+
+  auto [result, data] = future.Take();
+
+  EXPECT_EQ(result, ScanRequestUploadResult::kFileTooLarge);
+  EXPECT_EQ(data.size, kLargeFileSize);
+  EXPECT_EQ(data.hash, kPrecomputedDigest);
+  EXPECT_EQ(request->digest(), kPrecomputedDigest);
   EXPECT_EQ(data.mime_type, "application/pdf");
 }
 

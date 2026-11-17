@@ -374,6 +374,7 @@ if (enterprise_cloud_content_analysis || is_android) {
       "//components/file_access:test_support",
       "//components/prefs",
       "//components/prefs:test_support",
+      "//crypto",
       "//net",
       "//net/traffic_annotation:test_support",
       "//services/network:test_support",

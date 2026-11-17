@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/post_job.h"
@@ -226,6 +227,7 @@ GetFileDataBlocking(
     bool detect_mime_type,
     bool is_obfuscated,
     bool force_sync_hash_computation,
+    std::string precomputed_hash,
     const std::atomic<bool>* is_cancelled,
     base::OnceCallback<std::string()>& output_compute_hash_callback) {
   DCHECK(!path.empty());
@@ -281,7 +283,7 @@ GetFileDataBlocking(
   }
 
   if (ShouldCheckVirtualFile(path) && file_data.size > max_file_size_bytes) {
-    file_data.hash = "";
+    file_data.hash = std::move(precomputed_hash);
     return {ScanRequestUploadResult::kFileTooLarge, std::move(file_data)};
   }
 
@@ -296,14 +298,16 @@ GetFileDataBlocking(
     }
   }
 
-  // When forced, or if the feature is not enabled, or the file is not large
-  // enough, compute the hash now and add to file data.
-  if (force_sync_hash_computation ||
-      !base::FeatureList::IsEnabled(
-          enterprise_connectors::kContentHashInFileUploadFinalCall) ||
-      file_data.size <= max_file_size_bytes) {
-    // TODO(crbug.com/367257039): Pass along hash of unobfuscated file for
-    // enterprise scans
+  // Reuse a precomputed hash (e.g. from single-file downloads) instead of
+  // re-reading and hashing the file from disk. Otherwise, when forced, if the
+  // feature is not enabled, or if the file is not large enough, compute the
+  // hash synchronously and add to file data.
+  if (!precomputed_hash.empty()) {
+    file_data.hash = std::move(precomputed_hash);
+  } else if (force_sync_hash_computation ||
+             !base::FeatureList::IsEnabled(
+                 enterprise_connectors::kContentHashInFileUploadFinalCall) ||
+             file_data.size <= max_file_size_bytes) {
     file_data.hash = ComputeHashBlocking(
         std::move(file), std::move(scoped_file_access), is_cancelled);
     if (file_data.hash.empty()) {
@@ -409,8 +413,8 @@ void FileAnalysisRequestBase::OpenFile(const std::atomic<bool>* is_cancelled) {
   std::pair<enterprise_connectors::ScanRequestUploadResult, Data> file_data =
       GetFileDataBlocking(path_, std::move(scoped_file_access_),
                           cached_data_.mime_type.empty(), is_obfuscated_,
-                          force_sync_hash_computation_, is_cancelled,
-                          compute_hash_callback);
+                          force_sync_hash_computation_, std::string(),
+                          is_cancelled, compute_hash_callback);
 
   if (compute_hash_callback) {
     register_on_got_hash_callback_ = base::BindPostTask(
@@ -548,6 +552,7 @@ void FileAnalysisRequestBase::RunCallback() {
 
 void FileAnalysisRequestBase::GetData(
     file_access::ScopedFileAccess file_access) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   scoped_file_access_ =
       std::make_unique<file_access::ScopedFileAccess>(std::move(file_access));
   base::OnceCallback<std::string()> unused_hash_callback;
@@ -556,7 +561,7 @@ void FileAnalysisRequestBase::GetData(
       base::BindOnce(&GetFileDataBlocking, path_,
                      std::move(scoped_file_access_),
                      cached_data_.mime_type.empty(), is_obfuscated_,
-                     force_sync_hash_computation_, nullptr,
+                     force_sync_hash_computation_, digest(), nullptr,
                      base::OwnedRef(std::move(unused_hash_callback))),
       base::BindOnce(&FileAnalysisRequestBase::OnGotFileData,
                      weakptr_factory_.GetWeakPtr()));
