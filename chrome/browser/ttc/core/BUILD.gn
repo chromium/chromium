@@ -223,6 +223,9 @@ source_set("impl") {
     ]
   } else {
     sources += [
+      "hotl/hotl_sound_player.cc",
+      "hotl/hotl_sound_player.h",
+      "hotl/hotl_sound_player_internal.h",
       "overlay_controller.cc",
       "overlay_controller.h",
       "session_view_impl.cc",
@@ -246,10 +249,14 @@ source_set("impl") {
       "//ui/views",
     ]
     if (is_mac) {
+      sources += [ "hotl/hotl_sound_player_mac.mm" ]
       deps += [ "//chrome/browser/ui:fullscreen_util_mac" ]
-    }
-    if (is_chromeos) {
+      frameworks = [ "AppKit.framework" ]
+    } else if (is_win) {
+      sources += [ "hotl/hotl_sound_player_win.cc" ]
+    } else if (is_chromeos) {
       sources += [
+        "hotl/hotl_sound_player_chromeos.cc",
         "mic_privacy_indicator_chromeos.cc",
         "mic_privacy_indicator_chromeos.h",
       ]
@@ -257,11 +264,15 @@ source_set("impl") {
         "//ash",
         "//ash/constants",
         "//chrome/app:generated_resources",
+        "//chrome/browser/ash/accessibility",
+        "//chromeos/ash/components/audio",
         "//components/session_manager:base",
         "//components/session_manager/core",
         "//components/user_manager",
         "//ui/base",
       ]
+    } else {
+      sources += [ "hotl/hotl_sound_player_linux.cc" ]
     }
   }
 }
@@ -362,7 +373,10 @@ source_set("unit_tests") {
       "//components/tabs:public",
     ]
   } else {
-    sources += [ "session_view_impl_unittest.cc" ]
+    sources += [
+      "hotl/hotl_sound_player_unittest.cc",
+      "session_view_impl_unittest.cc",
+    ]
     deps += [ "//chrome/browser/ui/toasts/api:toasts" ]
     if (is_chromeos) {
       deps += [
