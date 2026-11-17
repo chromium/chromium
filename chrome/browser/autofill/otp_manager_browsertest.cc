@@ -265,11 +265,8 @@ IN_PROC_BROWSER_TEST_P(OtpManagerWithWebOtpApiBrowserTest,
                        content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
                        /*world_id=*/1));
     // As the WebOTP is asynchronous, wait until the use has been propagated.
-    ASSERT_TRUE(base::test::RunUntil([&] {
-      AutofillManager* manager =
-          autofill_client().GetAutofillManagerForPrimaryMainFrame();
-      return manager && manager->driver().DocumentUsedWebOtp();
-    }));
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return autofill_manager().driver().DocumentUsedWebOtp(); }));
     // From this point on, Autofill should not suggest OTPs anymore.
   }
 

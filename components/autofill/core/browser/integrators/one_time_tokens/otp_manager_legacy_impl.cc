@@ -329,9 +329,7 @@ void OtpManagerLegacyImpl::MaybeShowOtpSuggestionsForSms(
 }
 
 bool OtpManagerLegacyImpl::IsOtpDeliveryBlocked() {
-  AutofillManager* manager =
-      owner_->client().GetAutofillManagerForPrimaryMainFrame();
-  return manager && manager->driver().DocumentUsedWebOtp();
+  return owner_->driver().DocumentUsedWebOtp();
 }
 
 }  // namespace autofill

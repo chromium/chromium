@@ -823,9 +823,7 @@ const AutofillField* OtpManagerImpl::GetTargetOtpField() const {
 }
 
 bool OtpManagerImpl::IsOtpDeliveryBlocked() {
-  AutofillManager* manager =
-      owner_->client().GetAutofillManagerForPrimaryMainFrame();
-  return manager && manager->driver().DocumentUsedWebOtp();
+  return owner_->driver().DocumentUsedWebOtp();
 }
 
 bool OtpManagerImpl::IsOtpFieldDetected() const {
