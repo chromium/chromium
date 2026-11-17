@@ -90,10 +90,6 @@ enum class PopupMenuIPHSessionType {
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* overflowMenuBubblePresenter;
 
-// The layout guide installed in the base view controller on which to anchor the
-// potential IPH bubble.
-@property(nonatomic, strong) UILayoutGuide* layoutGuide;
-
 // The tracker for feature engagement. May return null after the coordinator has
 // been stopped (thus the returned value must be checked for null).
 @property(nonatomic, readonly)
@@ -145,11 +141,6 @@ enum class PopupMenuIPHSessionType {
   SceneState* sceneState = self.browser->GetSceneState();
   [sceneState addObserver:self];
 
-  LayoutGuideCenter* layoutGuideCenter =
-      LayoutGuideCenterForBrowser(self.browser);
-  self.layoutGuide = [layoutGuideCenter makeLayoutGuideNamed:kToolsMenuGuide];
-  [self.baseViewController.view addLayoutGuide:self.layoutGuide];
-
   // TODO(crbug.com/380450091): SceneState does not notify observer that it
   // reached an activation level when calling -addObserver:. This means that
   // if the scene is already in SceneActivationLevelForegroundActive level
@@ -170,11 +161,6 @@ enum class PopupMenuIPHSessionType {
 
   SceneState* sceneState = self.browser->GetSceneState();
   [sceneState removeObserver:self];
-
-  if (self.layoutGuide) {
-    [self.baseViewController.view removeLayoutGuide:self.layoutGuide];
-    self.layoutGuide = nil;
-  }
 }
 
 - (void)prepareToShowIPHInOverflowMenu {
@@ -611,7 +597,12 @@ enum class PopupMenuIPHSessionType {
 
   UIViewController* baseViewController = self.baseViewController;
   UIView* baseView = baseViewController.view;
-  CGRect anchorFrame = self.layoutGuide.layoutFrame;
+  CGRect anchorFrame = [self toolsMenuFrameInBaseView];
+  // The tools menu button isn't on screen, so there is nothing to anchor to.
+  if (CGRectIsEmpty(anchorFrame)) {
+    _activeIPHSessionType = PopupMenuIPHSessionType::kNone;
+    return;
+  }
 
   BubbleAlignment alignment = [self isToolsMenuAtLeading]
                                   ? BubbleAlignmentTopOrLeading
@@ -632,11 +623,7 @@ enum class PopupMenuIPHSessionType {
 
   CGFloat anchorPointY =
       isAtBottom ? CGRectGetMinY(anchorFrame) : CGRectGetMaxY(anchorFrame);
-
-  CGPoint anchorPointInOwningView =
-      CGPointMake(CGRectGetMidX(anchorFrame), anchorPointY);
-  CGPoint anchorPoint = [baseView convertPoint:anchorPointInOwningView
-                                      fromView:self.layoutGuide.owningView];
+  CGPoint anchorPoint = CGPointMake(CGRectGetMidX(anchorFrame), anchorPointY);
 
   CGFloat alignmentOffset = bubble_util::BubbleDefaultAlignmentOffset();
   CGFloat maxAnchorX = CGRectGetWidth(baseView.bounds) - alignmentOffset - 1.0;
@@ -1072,11 +1059,18 @@ enum class PopupMenuIPHSessionType {
   return IsSplitToolbarMode(self.baseViewController);
 }
 
+// Returns the frame of the tools menu button in the base view's coordinates.
+- (CGRect)toolsMenuFrameInBaseView {
+  return [LayoutGuideCenterForBrowser(self.browser)
+      frameOfReferencedViewUnderName:kToolsMenuGuide
+                     convertedToView:self.baseViewController.view];
+}
+
 // Returns whether the tools menu button is displayed at the leading edge of the
 // screen
 - (BOOL)isToolsMenuAtLeading {
   if (IsChromeNextIaEnabled()) {
-    return CGRectGetMidX(self.layoutGuide.layoutFrame) <
+    return CGRectGetMidX([self toolsMenuFrameInBaseView]) <
            CGRectGetWidth(self.baseViewController.view.bounds) / 2.0;
   }
   return NO;
@@ -1098,16 +1092,16 @@ enum class PopupMenuIPHSessionType {
 
   UIViewController* baseViewController = self.baseViewController;
   UIView* baseView = baseViewController.view;
-  CGRect anchorFrame = self.layoutGuide.layoutFrame;
+  CGRect anchorFrame = [self toolsMenuFrameInBaseView];
+  // The tools menu button isn't on screen, so there is nothing to anchor to.
+  if (CGRectIsEmpty(anchorFrame)) {
+    return;
+  }
 
   BOOL isAtBottom = [self isToolsMenuAtBottom];
   CGFloat anchorPointY =
       isAtBottom ? CGRectGetMinY(anchorFrame) : CGRectGetMaxY(anchorFrame);
-
-  CGPoint anchorPointInOwningView =
-      CGPointMake(CGRectGetMidX(anchorFrame), anchorPointY);
-  CGPoint anchorPoint = [baseView convertPoint:anchorPointInOwningView
-                                      fromView:self.layoutGuide.owningView];
+  CGPoint anchorPoint = CGPointMake(CGRectGetMidX(anchorFrame), anchorPointY);
 
   // Cap `anchorPoint.x` to prevent the bubble from overflowing the screen.
   // The `-1.0` accounts for subpixel rounding in

@@ -69,6 +69,19 @@ public class LayoutGuideCenter: NSObject {
     return parent?.referencedView(under: name)
   }
 
+  /// Returns the frame of the view referenced under `name` in `view`'s
+  /// coordinates, or `.zero` if no view is referenced or either view isn't in a
+  /// window.
+  ///
+  /// Use this instead of a layout guide when the frame is only needed once,
+  /// to avoid installing a guide that is updated whenever the referenced view
+  /// moves.
+  @objc(frameOfReferencedViewUnderName:convertedToView:)
+  public func frameOfReferencedView(under name: String, convertedTo view: UIView) -> CGRect {
+    guard let referenceView = referencedView(under: name) else { return .zero }
+    return frame(of: referenceView, in: view) ?? .zero
+  }
+
   /// Creates a new layout guide tracking the view referenced under a specific `name`.
   ///
   /// If the referenced view doesn't exist or isn't yet part of the view hierarchy, it is still
@@ -97,21 +110,26 @@ public class LayoutGuideCenter: NSObject {
 
   /// Updates all available guides for the given `name`.
   private func updateGuides(named name: String) {
-    // Early return if there is no reference window.
     guard let referenceView = referencedView(under: name) else { return }
-    guard let referenceWindow = referenceView.window else { return }
     // Early return if there are no layout guides.
     guard let layoutGuidesForName = layoutGuides[name] else { return }
 
     for layoutGuide in layoutGuidesForName.allObjects {
-      // Skip if there is no owning window.
-      guard let owningView = layoutGuide.owningView else { continue }
-      guard let owningWindow = owningView.window else { continue }
-
-      let frameInReferenceWindow = referenceView.convert(referenceView.bounds, to: nil)
-      let frameInOwningWindow = referenceWindow.convert(frameInReferenceWindow, to: owningWindow)
-      let frameInOwningView = owningView.convert(frameInOwningWindow, from: nil)
+      guard let owningView = layoutGuide.owningView,
+        let frameInOwningView = frame(of: referenceView, in: owningView)
+      else { continue }
       layoutGuide.constrainedFrame = frameInOwningView
     }
+  }
+
+  /// Returns the frame of `referenceView` in `view`'s coordinates, or `nil` if
+  /// either view isn't in a window. The views may be in different windows.
+  private func frame(of referenceView: UIView, in view: UIView) -> CGRect? {
+    guard let referenceWindow = referenceView.window, let window = view.window else {
+      return nil
+    }
+    let frameInReferenceWindow = referenceView.convert(referenceView.bounds, to: nil)
+    let frameInWindow = referenceWindow.convert(frameInReferenceWindow, to: window)
+    return view.convert(frameInWindow, from: nil)
   }
 }
