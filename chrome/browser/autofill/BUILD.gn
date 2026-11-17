@@ -81,6 +81,7 @@ static_library("autofill") {
   ]
   deps = [
     "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/account_settings",
     "//chrome/browser/affiliations",
     "//chrome/browser/history",
@@ -95,6 +96,7 @@ static_library("autofill") {
     "//chrome/browser/webdata_services",
     "//chrome/common:constants",
     "//components/account_settings",
+    "//components/application_locale_storage",
     "//components/image_fetcher/core",
     "//components/personal_context/core",
     "//components/prefs",

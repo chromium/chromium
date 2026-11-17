@@ -9,7 +9,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/autofill/validation_rules_storage_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #include "third_party/libaddressinput/chromium/chrome_storage_impl.h"
@@ -38,7 +40,9 @@ AddressNormalizerFactory::AddressNormalizerFactory()
                             ->GetSharedURLLoaderFactory()
                       : nullptr)),
           ValidationRulesStorageFactory::CreateStorage(),
-          g_browser_process->GetApplicationLocale()) {}
+          g_browser_process->GetFeatures()
+              ->application_locale_storage()
+              ->GetTag()) {}
 
 AddressNormalizerFactory::~AddressNormalizerFactory() = default;
 

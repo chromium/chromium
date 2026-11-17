@@ -36,12 +36,10 @@ AddressNormalizer* AddressNormalizerFactory::GetInstance() {
 }
 
 AddressNormalizerFactory::AddressNormalizerFactory()
-    : address_normalizer_(GetAddressInputSource(),
-                          GetAddressInputStorage(),
-                          std::string(GetApplicationContext()
-                                          ->GetApplicationLocaleStorage()
-                                          ->GetTag()
-                                          .tag_string())) {}
+    : address_normalizer_(
+          GetAddressInputSource(),
+          GetAddressInputStorage(),
+          GetApplicationContext()->GetApplicationLocaleStorage()->GetTag()) {}
 
 AddressNormalizerFactory::~AddressNormalizerFactory() {}
 

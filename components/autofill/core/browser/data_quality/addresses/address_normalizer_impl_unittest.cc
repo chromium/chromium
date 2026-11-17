@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
@@ -59,7 +60,9 @@ class TestAddressNormalizer : public AddressNormalizerImpl {
  public:
   TestAddressNormalizer(std::unique_ptr<::i18n::addressinput::Source> source,
                         std::unique_ptr<::i18n::addressinput::Storage> storage)
-      : AddressNormalizerImpl(std::move(source), std::move(storage), "en-US") {}
+      : AddressNormalizerImpl(std::move(source),
+                              std::move(storage),
+                              base::i18n::GetKnownLanguageTag("en-US")) {}
 
   TestAddressNormalizer(const TestAddressNormalizer&) = delete;
   TestAddressNormalizer& operator=(const TestAddressNormalizer&) = delete;

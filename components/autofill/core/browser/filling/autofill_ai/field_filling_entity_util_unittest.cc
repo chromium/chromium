@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/i18n/language_tag.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -824,7 +825,8 @@ class GetFillValueForEntityStateTest : public GetFillValueForEntityTest {
     normalizer_ = std::make_unique<AddressNormalizerImpl>(
         std::unique_ptr<Source>(
             new TestdataSource(true, file_path.AsUTF8Unsafe())),
-        std::unique_ptr<Storage>(new NullStorage), "en-US");
+        std::unique_ptr<Storage>(new NullStorage),
+        base::i18n::GetKnownLanguageTag("en-US"));
 
     test::PopulateAlternativeStateNameMapForTesting(
         "US", "California",

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/buildflag.h"
@@ -34,7 +35,7 @@ class AddressNormalizerImpl : public AddressNormalizer {
  public:
   AddressNormalizerImpl(std::unique_ptr<::i18n::addressinput::Source> source,
                         std::unique_ptr<::i18n::addressinput::Storage> storage,
-                        const std::string& app_locale);
+                        const base::i18n::LanguageTag& app_locale);
 
   AddressNormalizerImpl(const AddressNormalizerImpl&) = delete;
   AddressNormalizerImpl& operator=(const AddressNormalizerImpl&) = delete;
@@ -81,7 +82,7 @@ class AddressNormalizerImpl : public AddressNormalizer {
 
   // The address validator used to normalize addresses.
   std::unique_ptr<AddressValidator> address_validator_;
-  const std::string app_locale_;
+  const base::i18n::LanguageTag app_locale_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Java-side version of the AddressNormalizer.

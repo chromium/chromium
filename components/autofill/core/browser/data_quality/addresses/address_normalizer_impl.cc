@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -54,13 +55,14 @@ using DeleteOnTaskRunnerStorageUniquePtr =
     std::unique_ptr<Storage, base::OnTaskRunnerDeleter>;
 
 bool NormalizeProfileWithValidator(AutofillProfile* profile,
-                                   const std::string& app_locale,
+                                   const base::i18n::LanguageTag& app_locale,
                                    AddressValidator* address_validator) {
   DCHECK(address_validator);
 
   // Create the AddressData from the profile.
   ::i18n::addressinput::AddressData address_data =
-      *i18n::CreateAddressDataFromAutofillProfile(*profile, app_locale);
+      *i18n::CreateAddressDataFromAutofillProfile(*profile,
+                                                  app_locale.tag_string());
 
   // Normalize the address.
   if (!address_validator->NormalizeAddress(&address_data)) {
@@ -80,9 +82,10 @@ bool NormalizeProfileWithValidator(AutofillProfile* profile,
 // phone number if formatting was not possible (or already optimal).
 void FormatPhoneNumberToE164(AutofillProfile* profile,
                              const std::string& region_code,
-                             const std::string& app_locale) {
+                             const base::i18n::LanguageTag& app_locale) {
   const std::string formatted_number = i18n::FormatPhoneForResponse(
-      base::UTF16ToUTF8(profile->GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale)),
+      base::UTF16ToUTF8(
+          profile->GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale.tag_string())),
       region_code);
 
   profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
@@ -118,7 +121,7 @@ void OnAddressNormalized(jni_zero::ScopedJavaGlobalRef<jobject> jdelegate,
 class AddressNormalizerImpl::NormalizationRequest {
  public:
   NormalizationRequest(const AutofillProfile& profile,
-                       const std::string& app_locale,
+                       const base::i18n::LanguageTag& app_locale,
                        int timeout_seconds,
                        AddressNormalizer::NormalizationCallback callback)
       : profile_(profile),
@@ -150,8 +153,8 @@ class AddressNormalizerImpl::NormalizationRequest {
     // The phone number formatting doesn't require the rules to have been
     // successfully loaded. Therefore it is done for every request regardless of
     // |success|.
-    const std::string region_code =
-        data_util::GetCountryCodeWithFallback(profile_, app_locale_);
+    const std::string region_code = data_util::GetCountryCodeWithFallback(
+        profile_, app_locale_.tag_string());
     FormatPhoneNumberToE164(&profile_, region_code, app_locale_);
 
     if (!success) {
@@ -170,16 +173,17 @@ class AddressNormalizerImpl::NormalizationRequest {
 
  private:
   AutofillProfile profile_;
-  const std::string app_locale_;
+  const base::i18n::LanguageTag app_locale_;
   AddressNormalizer::NormalizationCallback callback_;
 
   bool has_responded_ = false;
   base::WeakPtrFactory<NormalizationRequest> weak_ptr_factory_{this};
 };
 
-AddressNormalizerImpl::AddressNormalizerImpl(std::unique_ptr<Source> source,
-                                             std::unique_ptr<Storage> storage,
-                                             const std::string& app_locale)
+AddressNormalizerImpl::AddressNormalizerImpl(
+    std::unique_ptr<Source> source,
+    std::unique_ptr<Storage> storage,
+    const base::i18n::LanguageTag& app_locale)
     : app_locale_(app_locale) {
   // |address_validator_| is created in the background. Once initialized, it
   // will run any pending normalization.
@@ -231,7 +235,7 @@ void AddressNormalizerImpl::NormalizeAddressAsync(
   // If the rules are already loaded for |region_code| and the validator is
   // initialized, the |request| will callback synchronously.
   const std::string region_code =
-      data_util::GetCountryCodeWithFallback(profile, app_locale_);
+      data_util::GetCountryCodeWithFallback(profile, app_locale_.tag_string());
   if (address_validator_ && AreRulesLoadedForRegion(region_code)) {
     request->OnRulesLoaded(/*success=*/true, address_validator_.get());
     return;
@@ -252,7 +256,7 @@ bool AddressNormalizerImpl::NormalizeAddressSync(AutofillProfile* profile) {
   // Phone number is always formatted, regardless of whether the address rules
   // are loaded for |region_code|.
   const std::string region_code =
-      data_util::GetCountryCodeWithFallback(*profile, app_locale_);
+      data_util::GetCountryCodeWithFallback(*profile, app_locale_.tag_string());
   FormatPhoneNumberToE164(profile, region_code, app_locale_);
   if (!address_validator_) {
     // Can't normalize the address synchronously. Add an empty
@@ -292,7 +296,7 @@ void AddressNormalizerImpl::StartAddressNormalization(
     const jni_zero::JavaRef<jobject>& jdelegate) {
   // TODO(crbug.com/40282123): Check if existing profile needs to be passed.
   AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
-      jprofile, /*existing_profile=*/nullptr, app_locale_);
+      jprofile, /*existing_profile=*/nullptr, app_locale_.tag_string());
 
   // Start the normalization.
   NormalizeAddressAsync(
