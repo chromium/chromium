@@ -177,7 +177,9 @@ void ResourceBundle::LoadCommonResources() {
   bool success =
       LoadFromApkOrFile("assets/chrome_100_percent.pak", &disk_path,
                         &g_chrome_100_percent_fd, &g_chrome_100_percent_region);
-  CHECK(success, base::NotFatalUntil::M163);
+  // TODO(crbug.com/586004162): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(success);
 
   AddDataPackFromFileRegion(base::File(g_chrome_100_percent_fd),
                             g_chrome_100_percent_region, k100Percent);
