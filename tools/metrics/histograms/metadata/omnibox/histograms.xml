@@ -3435,8 +3435,16 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>skym@chromium.org</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
-    Records all of the AI tool modes that are shown as options when the popup
-    appears. The tool id comes from the server driven config.
+    Records each AI tool mode option present in the Fusebox attachments popup
+    (including the client-added AI Mode entry on mobile and each visible tool
+    from the server-driven config). As of M159, also includes tools placed in
+    the pinned section of the popup.
+
+    Emitted on Android once per configured tool button each time the attachments
+    popup is opened (including tools inside the collapsible accordion even while
+    collapsed). Not emitted when the popup is closed, when the accordion is
+    expanded or collapsed while the popup is open, when the server-driven
+    InputState is unavailable, or on iOS.
   </summary>
 </histogram>
 

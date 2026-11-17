@@ -389,14 +389,8 @@ public class FuseboxMetrics {
                     notifyAttachmentButtonShown(buttonType);
                 }
             }
-            List<PopupButtonData> toolButtons =
-                    model.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
-            if (toolButtons != null) {
-                for (PopupButtonData buttonData : toolButtons) {
-                    assert buttonData.type == PopupButtonType.TOOL;
-                    notifyToolButtonShown(buttonData.protoId);
-                }
-            }
+            notifyToolButtonsShown(model.get(FuseboxProperties.POPUP_PINNED_TOOL_BUTTON_DATA_LIST));
+            notifyToolButtonsShown(model.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST));
             List<PopupButtonData> popupButtons =
                     model.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
             if (popupButtons != null) {
@@ -430,9 +424,15 @@ public class FuseboxMetrics {
         mAttachmentButtonsUsedInSession[attachmentType] = true;
     }
 
-    private static void notifyToolButtonShown(@ToolMode int toolMode) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Omnibox.MobileFusebox.ToolButtonShown", toolMode, TOOL_MODE_HISTOGRAM_BOUND);
+    private static void notifyToolButtonsShown(@Nullable List<PopupButtonData> toolButtons) {
+        if (toolButtons == null) return;
+        for (PopupButtonData buttonData : toolButtons) {
+            assert buttonData.type == PopupButtonType.TOOL;
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Omnibox.MobileFusebox.ToolButtonShown",
+                    buttonData.protoId,
+                    TOOL_MODE_HISTOGRAM_BOUND);
+        }
     }
 
     static void notifyToolButtonSelected(@ToolMode int toolMode) {
