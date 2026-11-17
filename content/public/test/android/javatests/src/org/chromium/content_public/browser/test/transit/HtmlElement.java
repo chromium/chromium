@@ -4,6 +4,8 @@
 
 package org.chromium.content_public.browser.test.transit;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Rect;
 
 import org.chromium.base.test.transit.Condition;
@@ -12,6 +14,7 @@ import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.transit.TripBuilder;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.transit.HtmlConditions.DisplayedCondition;
@@ -25,18 +28,20 @@ import java.util.function.Supplier;
  * A Public Transit {@link Element} representing an HTML DOM element to be searched for in the given
  * {@link WebContents}.
  */
+@NullMarked
 public class HtmlElement extends Element<Rect> {
     protected final HtmlElementSpec mHtmlElementSpec;
-    protected final Supplier<WebContents> mWebContentsSupplier;
+    protected final Supplier<@Nullable WebContents> mWebContentsSupplier;
     protected final Options mOptions;
 
-    public HtmlElement(HtmlElementSpec htmlElementSpec, Supplier<WebContents> webContentsSupplier) {
+    public HtmlElement(
+            HtmlElementSpec htmlElementSpec, Supplier<@Nullable WebContents> webContentsSupplier) {
         this(htmlElementSpec, webContentsSupplier, Options.DEFAULT);
     }
 
     public HtmlElement(
             HtmlElementSpec htmlElementSpec,
-            Supplier<WebContents> webContentsSupplier,
+            Supplier<@Nullable WebContents> webContentsSupplier,
             Options options) {
         super(htmlElementSpec.getId());
         mHtmlElementSpec = htmlElementSpec;
@@ -51,14 +56,13 @@ public class HtmlElement extends Element<Rect> {
 
     @Override
     public @Nullable ConditionWithResult<Rect> createEnterCondition() {
-        return new DisplayedCondition(
-                mWebContentsSupplier, mHtmlElementSpec.getHtmlId(), mOptions.mInViewport);
+        return new DisplayedCondition(mWebContentsSupplier, mHtmlElementSpec, mOptions.mInViewport);
     }
 
     @Override
     public Condition createExitCondition() {
         return new NotDisplayedCondition(
-                mWebContentsSupplier, mHtmlElementSpec.getHtmlId(), mOptions.mInViewport);
+                mWebContentsSupplier, mHtmlElementSpec, mOptions.mInViewport);
     }
 
     /** Returns a trigger to click the HTML element to trigger a Transition. */
@@ -67,7 +71,9 @@ public class HtmlElement extends Element<Rect> {
     public Transition.Trigger getClickTrigger() {
         return () -> {
             try {
-                DOMUtils.clickNode(mWebContentsSupplier.get(), mHtmlElementSpec.getHtmlId());
+                DOMUtils.clickNodeByJs(
+                        assumeNonNull(mWebContentsSupplier.get()),
+                        mHtmlElementSpec.getSelectorJs());
             } catch (TimeoutException e) {
                 throw TravelException.newTravelException(
                         "Timed out trying to click DOM element", e);
@@ -79,7 +85,10 @@ public class HtmlElement extends Element<Rect> {
     public Transition.Trigger getLongPressTrigger() {
         return () -> {
             try {
-                DOMUtils.longPressNode(mWebContentsSupplier.get(), mHtmlElementSpec.getHtmlId());
+                WebContents webContents = assumeNonNull(mWebContentsSupplier.get());
+                String selectorJs = mHtmlElementSpec.getSelectorJs();
+                DOMUtils.scrollNodeIntoViewByJs(webContents, selectorJs);
+                DOMUtils.longPressNodeByJs(webContents, selectorJs);
             } catch (TimeoutException e) {
                 throw TravelException.newTravelException(
                         "Timed out trying to long press DOM element", e);

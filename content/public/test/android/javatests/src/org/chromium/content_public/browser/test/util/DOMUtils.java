@@ -21,6 +21,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.ImeAdapter;
@@ -246,10 +247,25 @@ public class DOMUtils {
     public static Rect getNodeClientRect(final WebContents webContents, String nodeId)
             throws TimeoutException {
         String elementGetterJs = "document.getElementById('" + nodeId + "')";
+        Rect clientRect = getNodeClientRectByJsOrNull(webContents, elementGetterJs);
+        Assert.assertNotNull(
+                "Failed to retrieve client rect for element: " + elementGetterJs, clientRect);
+        return clientRect;
+    }
 
+    /**
+     * Returns the client rect for a node by the javascript to get the node, or null if the node
+     * isn't found.
+     *
+     * @param webContents The WebContents in which the node lives.
+     * @param jsCode The javascript to get the node.
+     * @return The client rect for the node, or null if the node isn't found.
+     */
+    public static @Nullable Rect getNodeClientRectByJsOrNull(
+            final WebContents webContents, String jsCode) throws TimeoutException {
         StringBuilder sb = new StringBuilder();
         sb.append("(function() {");
-        sb.append("  var node = " + elementGetterJs + ";");
+        sb.append("  var node = " + jsCode + ";");
         sb.append("  if (!node) return null;");
         sb.append("  var r = node.getBoundingClientRect();");
         sb.append(
@@ -259,10 +275,9 @@ public class DOMUtils {
 
         String jsonText =
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(webContents, sb.toString());
-
-        Assert.assertFalse(
-                "Failed to retrieve client rect for element: " + elementGetterJs,
-                jsonText.trim().equalsIgnoreCase("null"));
+        if (jsonText.trim().equalsIgnoreCase("null")) {
+            return null;
+        }
         int[] r = readJsonIntArray(jsonText, 4);
 
         return new Rect(r[0], r[1], r[2], r[3]);
@@ -781,12 +796,28 @@ public class DOMUtils {
 
     /**
      * Returns the rect boundaries for a node by the javascript to get the node.
+     *
      * @param webContents The WebContents in which the node lives.
      * @param jsCode The javascript to get the node.
      * @return The rect boundaries for the node.
      */
     private static Rect getNodeBoundsByJs(final WebContents webContents, String jsCode)
             throws TimeoutException {
+        Rect bounds = getNodeBoundsByJsOrNull(webContents, jsCode);
+        Assert.assertNotNull("Failed to retrieve bounds for element: " + jsCode, bounds);
+        return bounds;
+    }
+
+    /**
+     * Returns the rect boundaries for a node by the javascript to get the node, or null if the node
+     * isn't found.
+     *
+     * @param webContents The WebContents in which the node lives.
+     * @param jsCode The javascript to get the node.
+     * @return The rect boundaries for the node, or null if the node isn't found.
+     */
+    public static @Nullable Rect getNodeBoundsByJsOrNull(
+            final WebContents webContents, String jsCode) throws TimeoutException {
         StringBuilder sb = new StringBuilder();
         sb.append("(function() {");
         sb.append("  var node = " + jsCode + ";");
@@ -804,10 +835,9 @@ public class DOMUtils {
 
         String jsonText =
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(webContents, sb.toString());
-
-        Assert.assertFalse(
-                "Failed to retrieve bounds for element: " + jsCode,
-                jsonText.trim().equalsIgnoreCase("null"));
+        if (jsonText.trim().equalsIgnoreCase("null")) {
+            return null;
+        }
 
         int[] bounds = readJsonIntArray(jsonText, 4);
         return new Rect(bounds[0], bounds[1], bounds[0] + bounds[2], bounds[1] + bounds[3]);

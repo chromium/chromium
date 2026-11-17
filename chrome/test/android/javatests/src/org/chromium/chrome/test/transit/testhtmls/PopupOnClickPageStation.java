@@ -26,11 +26,11 @@ public class PopupOnClickPageStation extends WebPageStation {
         super(config);
 
         linkToPopup =
-                declareElement(new HtmlElement(new HtmlElementSpec("link"), webContentsElement));
+                declareElement(new HtmlElement(new HtmlElementSpec("#link"), webContentsElement));
         linkToPopupWithBounds =
                 declareElement(
                         new HtmlElement(
-                                new HtmlElementSpec("link_with_bounds"), webContentsElement));
+                                new HtmlElementSpec("#link_with_bounds"), webContentsElement));
     }
 
     /** Load popup_on_click.html in current tab. */

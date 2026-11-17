@@ -175,7 +175,7 @@ public class PopupLauncherPageStation extends WebPageStation {
     }
 
     private HtmlElement getElementById(String id) {
-        return declareElement(new HtmlElement(new HtmlElementSpec(id), webContentsElement));
+        return declareElement(new HtmlElement(new HtmlElementSpec("#" + id), webContentsElement));
     }
 
     private void assertPopupWindowExists() throws Exception {

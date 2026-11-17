@@ -26,8 +26,8 @@ import org.chromium.content_public.browser.test.transit.HtmlElementSpec;
 public class TopBottomLinksPageStation extends WebPageStation {
     private static final String PATH =
             "/chrome/test/data/android/edge_to_edge/top-bottom-links.html";
-    private static final HtmlElementSpec TOP_LINK = new HtmlElementSpec("top_link");
-    private static final HtmlElementSpec BOTTOM_LINK = new HtmlElementSpec("bottom_link");
+    private static final HtmlElementSpec TOP_LINK = new HtmlElementSpec("#top_link");
+    private static final HtmlElementSpec BOTTOM_LINK = new HtmlElementSpec("#bottom_link");
 
     protected TopBottomLinksPageStation(Config config) {
         super(config);

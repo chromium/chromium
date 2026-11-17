@@ -4,6 +4,8 @@
 
 package org.chromium.content_public.browser.test.transit;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Rect;
 
 import org.chromium.base.ThreadUtils;
@@ -12,6 +14,8 @@ import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.InstrumentationThreadCondition;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -20,39 +24,39 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
 /** {@link Condition}s related to HTML DOM Elements. */
+@NullMarked
 public class HtmlConditions {
     /**
-     * Fulfilled when a single DOM Element with the given id exists and has non-zero bounds in a
-     * WebContents that isn't hidden or destroyed.
+     * Fulfilled when the first DOM Element matching the given {@link HtmlElementSpec} exists and
+     * has non-zero bounds in a WebContents that isn't hidden or destroyed.
      *
      * <p>If {@code inViewport} is true, the DOM Element also needs to intersect the viewport.
      */
     public static class DisplayedCondition extends ConditionWithResult<Rect> {
-        private final String mHtmlId;
-        private final Supplier<WebContents> mWebContentsSupplier;
+        private final HtmlElementSpec mSpec;
+        private final Supplier<@Nullable WebContents> mWebContentsSupplier;
         private final boolean mInViewport;
 
         public DisplayedCondition(
-                Supplier<WebContents> webContentsSupplier, String htmlId, boolean inViewport) {
+                Supplier<@Nullable WebContents> webContentsSupplier,
+                HtmlElementSpec spec,
+                boolean inViewport) {
             super(/* isRunOnUiThread= */ false);
             mWebContentsSupplier = dependOnSupplier(webContentsSupplier, "WebContents");
-            mHtmlId = htmlId;
+            mSpec = spec;
             mInViewport = inViewport;
         }
 
         @Override
         protected ConditionStatusWithResult<Rect> resolveWithSuppliers() throws Exception {
-            WebContents webContents = mWebContentsSupplier.get();
+            WebContents webContents = assumeNonNull(mWebContentsSupplier.get());
             if (isDestroyedOrHidden(webContents)) {
                 return notFulfilled("WebContents destroyed or hidden").withoutResult();
             }
 
-            Rect bounds;
-            try {
-                bounds = DOMUtils.getNodeBounds(webContents, mHtmlId);
-            } catch (AssertionError e) {
-                // HTML elements might not exist yet, but will be created.
-                return notFulfilled("getNodeBounds() threw assertion").withoutResult();
+            Rect bounds = DOMUtils.getNodeBoundsByJsOrNull(webContents, mSpec.getSelectorJs());
+            if (bounds == null) {
+                return notFulfilled("Element not found").withoutResult();
             }
 
             if (bounds.isEmpty()) {
@@ -63,11 +67,10 @@ public class HtmlConditions {
                 return fulfilled("Bounds: %s", bounds.toShortString()).withResult(bounds);
             }
 
-            Rect nodeClientRect;
-            try {
-                nodeClientRect = DOMUtils.getNodeClientRect(webContents, mHtmlId);
-            } catch (AssertionError e) {
-                return error("getNodeClientRect() threw: " + e).withoutResult();
+            Rect nodeClientRect =
+                    DOMUtils.getNodeClientRectByJsOrNull(webContents, mSpec.getSelectorJs());
+            if (nodeClientRect == null) {
+                return notFulfilled("Element not found").withoutResult();
             }
 
             Rect viewport;
@@ -95,38 +98,40 @@ public class HtmlConditions {
         @Override
         public String buildDescription() {
             return String.format(
-                    "DOM element with id=\"%s\" is displayed%s",
-                    mHtmlId, mInViewport ? " in the viewport" : "");
+                    "DOM element with %s is displayed%s",
+                    mSpec.getDescription(), mInViewport ? " in the viewport" : "");
         }
     }
 
     /**
-     * Fulfilled when no DOM Elements with the given id exist with non-zero bounds, or when the
-     * WebContents is null, destroyed or hidden.
+     * Fulfilled when the first DOM Element matching the given {@link HtmlElementSpec} doesn't exist
+     * or has zero bounds, or when the WebContents is null, destroyed or hidden.
      *
      * <p>If {@code inViewport} is true, also fulfilled when the DOM Element doesn't intersect the
      * viewport.
      */
     public static class NotDisplayedCondition extends InstrumentationThreadCondition {
-        private final String mHtmlId;
-        private final Supplier<WebContents> mWebContentsSupplier;
+        private final HtmlElementSpec mSpec;
+        private final Supplier<@Nullable WebContents> mWebContentsSupplier;
         private final boolean mInViewport;
 
         public NotDisplayedCondition(
-                Supplier<WebContents> webContentsSupplier, String htmlId, boolean inViewport) {
+                Supplier<@Nullable WebContents> webContentsSupplier,
+                HtmlElementSpec spec,
+                boolean inViewport) {
             super();
             // Do not depend on purpose since if WebContents are not available, this Condition is
             // considered fulfilled.
             mWebContentsSupplier = webContentsSupplier;
-            mHtmlId = htmlId;
+            mSpec = spec;
             mInViewport = inViewport;
         }
 
         @Override
         public String buildDescription() {
             return String.format(
-                    "No DOM element with id=\"%s\" is displayed%s",
-                    mHtmlId, mInViewport ? " in the viewport" : "");
+                    "No DOM element with %s is displayed%s",
+                    mSpec.getDescription(), mInViewport ? " in the viewport" : "");
         }
 
         @Override
@@ -140,11 +145,9 @@ public class HtmlConditions {
                 return fulfilled("WebContents destroyed or hidden");
             }
 
-            Rect bounds;
-            try {
-                bounds = DOMUtils.getNodeBounds(webContents, mHtmlId);
-            } catch (AssertionError e) {
-                return fulfilled("getNodeBounds() threw assertion, object likely gone");
+            Rect bounds = DOMUtils.getNodeBoundsByJsOrNull(webContents, mSpec.getSelectorJs());
+            if (bounds == null) {
+                return fulfilled("Element not found");
             }
 
             if (bounds.isEmpty()) {
@@ -155,11 +158,10 @@ public class HtmlConditions {
                 return notFulfilled("Bounds: %s", bounds.toShortString());
             }
 
-            Rect nodeClientRect;
-            try {
-                nodeClientRect = DOMUtils.getNodeClientRect(webContents, mHtmlId);
-            } catch (AssertionError e) {
-                return fulfilled("getNodeClientRect() threw assertion, object likely gone");
+            Rect nodeClientRect =
+                    DOMUtils.getNodeClientRectByJsOrNull(webContents, mSpec.getSelectorJs());
+            if (nodeClientRect == null) {
+                return fulfilled("Element not found");
             }
 
             Rect viewport;
