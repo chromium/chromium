@@ -131,7 +131,7 @@ ResolvedFrameData::ResolvedFrameData(DisplayResourceProvider* resource_provider,
       surface_id_(surface->surface_id()),
       surface_(surface),
       previous_frame_index_(previous_frame_index),
-      prev_root_pass_id_(prev_root_pass_id) {
+      root_pass_id_(prev_root_pass_id) {
   DCHECK(resource_provider_);
   DCHECK(surface_);
 
@@ -177,7 +177,7 @@ void ResolvedFrameData::UpdateForAggregation(
     UpdateActiveFrame(render_pass_id_generator);
   } else if (is_valid()) {
     // The same active CompositorFrame as last aggregation.
-    ReuseActiveFrame();
+    ReuseActiveFrame(render_pass_id_generator);
   }
 }
 
@@ -232,16 +232,16 @@ void ResolvedFrameData::UpdateActiveFrame(
 
     AggregatedRenderPassId& remapped_id = aggregated_id_map_[render_pass->id];
     if (remapped_id.is_null()) {
-      if (is_root && !prev_root_pass_id_.is_null()) {
-        remapped_id = prev_root_pass_id_;
+      if (is_root && !root_pass_id_.is_null()) {
+        remapped_id = root_pass_id_;
       } else {
         remapped_id = render_pass_id_generator.GenerateNextId();
       }
-    } else if (!is_root && remapped_id == prev_root_pass_id_) {
+    } else if (!is_root && remapped_id == root_pass_id_) {
       // The CompositorRenderPassId from last frames root render pass was reused
-      // for a non-root render pass this frame. Keep using `prev_root_pass_id_`
-      // for the root, to avoid unnecessary backing reallocations, and assign a
-      // new id to this render pass.
+      // for a non-root render pass this frame. Keep using `root_pass_id_` for
+      // the root, to avoid unnecessary backing reallocations, and assign a new
+      // id to this render pass.
       remapped_id = render_pass_id_generator.GenerateNextId();
     }
     fixed.remapped_id = remapped_id;
@@ -308,7 +308,7 @@ void ResolvedFrameData::UpdateActiveFrame(
 
   // Clear id mappings that weren't used in this frame.
   base::EraseIf(aggregated_id_map_, [this](auto& entry) {
-    return render_pass_id_map_.find(entry.first) == render_pass_id_map_.end();
+    return !render_pass_id_map_.contains(entry.first);
   });
 
   valid_ = true;
@@ -612,6 +612,18 @@ const ResolvedPassData& ResolvedFrameData::GetRootRenderPassData() const {
   return resolved_passes_.back();
 }
 
+AggregatedRenderPassId ResolvedFrameData::TakeRootRenderPassId() {
+  DCHECK(valid_);
+  if (used_in_aggregation_) {
+    return AggregatedRenderPassId();
+  }
+
+  root_pass_id_ = AggregatedRenderPassId();
+  auto& root_pass = GetRootRenderPassData();
+  aggregated_id_map_.erase(root_pass.render_pass_id());
+  return std::exchange(root_pass.fixed_.remapped_id, AggregatedRenderPassId());
+}
+
 FrameDamageType ResolvedFrameData::GetFrameDamageType() const {
   DCHECK(valid_);
   DCHECK(used_in_aggregation_);
@@ -645,7 +657,8 @@ const gfx::Rect& ResolvedFrameData::GetOutputRect() const {
   return resolved_passes_.back().render_pass().output_rect;
 }
 
-void ResolvedFrameData::ReuseActiveFrame() {
+void ResolvedFrameData::ReuseActiveFrame(
+    AggregatedRenderPassId::Generator& render_pass_id_generator) {
   const CompositorRenderPassList& render_pass_list =
       surface_->GetActiveFrame().render_pass_list;
 
@@ -657,6 +670,16 @@ void ResolvedFrameData::ReuseActiveFrame() {
     const auto& render_pass = render_pass_list[i];
     CHECK_EQ(resolved_pass.render_pass_id(), render_pass->id);
     resolved_pass.SetCompositorRenderPass(render_pass.get());
+
+    if (resolved_pass.fixed_.remapped_id.is_null()) {
+      // The root render pass ID might have been assigned to a newer resolved
+      // frame from the same frame sink. Normally the old resolved frame won't
+      // be used again, but it was so a new ID must be assigned.
+      resolved_pass.fixed_.remapped_id =
+          render_pass_id_generator.GenerateNextId();
+      aggregated_id_map_[resolved_pass.render_pass_id()] =
+          resolved_pass.fixed_.remapped_id;
+    }
   }
 
   // OffsetTag containing rects are the same as last frame.

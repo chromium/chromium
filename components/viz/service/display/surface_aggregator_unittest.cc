@@ -8928,6 +8928,78 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   testing::Mock::VerifyAndClearExpectations(&aggregated_damage_callback);
 }
 
+// Verifies that when an old surface and a new surface from the same FrameSinkId
+// are both aggregated in the same frame, the new surface takes the root render
+// pass ID from the old surface and the old surface gets a distinct ID so
+// neither pass is treated as a duplicate.
+TEST_F(SurfaceAggregatorValidSurfaceTest,
+       OldAndNewSurfaceSameFrameSinkAggregatedTogether) {
+  TestSurfaceIdAllocator child_surface_id_allocator(
+      child_sink_->frame_sink_id());
+
+  SurfaceId child_surface_id1 = child_surface_id_allocator.Get();
+  child_sink_->SubmitCompositorFrame(
+      child_surface_id1.local_surface_id(),
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
+                  .AddSolidColorQuad(gfx::Rect(5, 5), SkColors::kGreen))
+          .Build());
+
+  // First aggregation resolves `child_surface_id1`.
+  root_sink_->SubmitCompositorFrame(
+      root_surface_id_.local_surface_id(),
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
+                  .AddSurfaceQuad(gfx::Rect(kSurfaceSize),
+                                  SurfaceRange(std::nullopt, child_surface_id1),
+                                  {.allow_merge = false}))
+          .Build());
+  auto frame1 = AggregateFrame(root_surface_id_);
+  ASSERT_EQ(2u, frame1.render_pass_list.size());
+  const AggregatedRenderPassId original_child_pass_id =
+      frame1.render_pass_list[0]->id;
+
+  // Submit a frame to a new surface `child_surface_id2` on the same frame sink
+  // with a CopyOutputRequest.
+  child_surface_id_allocator.Increment();
+  SurfaceId child_surface_id2 = child_surface_id_allocator.Get();
+  child_sink_->SubmitCompositorFrame(
+      child_surface_id2.local_surface_id(),
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
+                  .AddStubCopyOutputRequest()
+                  .AddSolidColorQuad(gfx::Rect(5, 5), SkColors::kBlue))
+          .Build());
+
+  // Aggregate a root frame that embeds both `child_surface_id1` (unmerged) and
+  // `child_surface_id2` (which has a CopyOutputRequest).
+  root_sink_->SubmitCompositorFrame(
+      root_surface_id_.local_surface_id(),
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
+                  .AddSurfaceQuad(gfx::Rect(kSurfaceSize),
+                                  SurfaceRange(std::nullopt, child_surface_id1),
+                                  {.allow_merge = false})
+                  .AddSurfaceQuad(gfx::Rect(kSurfaceSize),
+                                  SurfaceRange(std::nullopt, child_surface_id2),
+                                  {.allow_merge = true}))
+          .Build());
+  auto frame2 = AggregateFrame(root_surface_id_);
+
+  // Both child surfaces and the root surface should have distinct passes, with
+  // `child_surface_id2` reusing `original_child_pass_id` and retaining its
+  // CopyOutputRequest.
+  ASSERT_EQ(3u, frame2.render_pass_list.size());
+  EXPECT_NE(frame2.render_pass_list[0]->id, original_child_pass_id);
+  EXPECT_TRUE(frame2.render_pass_list[0]->copy_requests.empty());
+  EXPECT_EQ(frame2.render_pass_list[1]->id, original_child_pass_id);
+  EXPECT_EQ(1u, frame2.render_pass_list[1]->copy_requests.size());
+}
+
 // Verifies that if a CompositorFrame contains a render pass id cycle then the
 // frame is rejected as invalid.
 TEST_F(SurfaceAggregatorValidSurfaceTest,
