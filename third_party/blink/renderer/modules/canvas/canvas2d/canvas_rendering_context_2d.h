@@ -207,9 +207,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void FinalizeFrame(FlushReason) override;
 
-  CanvasRenderingContextHost* GetCanvasRenderingContextHost() const override;
-  ExecutionContext* GetTopExecutionContext() const override;
-
   bool IsPaintable() const final;
   bool IsHibernating() const final;
 

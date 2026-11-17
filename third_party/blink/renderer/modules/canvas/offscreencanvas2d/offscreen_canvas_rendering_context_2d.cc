@@ -312,15 +312,6 @@ OffscreenCanvasRenderingContext2D::GetResourceForPushFrame(
   return resource;
 }
 
-CanvasRenderingContextHost*
-OffscreenCanvasRenderingContext2D::GetCanvasRenderingContextHost() const {
-  return Host();
-}
-ExecutionContext* OffscreenCanvasRenderingContext2D::GetTopExecutionContext()
-    const {
-  return Host()->GetTopExecutionContext();
-}
-
 ImageBitmap* OffscreenCanvasRenderingContext2D::TransferToImageBitmap(
     ScriptState* script_state,
     ExceptionState& exception_state) {

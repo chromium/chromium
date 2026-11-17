@@ -792,15 +792,6 @@ void CanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
   }
 }
 
-CanvasRenderingContextHost*
-CanvasRenderingContext2D::GetCanvasRenderingContextHost() const {
-  return Host();
-}
-
-ExecutionContext* CanvasRenderingContext2D::GetTopExecutionContext() const {
-  return Host()->GetTopExecutionContext();
-}
-
 bool CanvasRenderingContext2D::IsPaintable() const {
   return canvas() && BaseRenderingContext2D::IsPaintable();
 }

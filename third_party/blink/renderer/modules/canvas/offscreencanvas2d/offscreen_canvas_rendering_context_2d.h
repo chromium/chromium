@@ -105,9 +105,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   scoped_refptr<ExportedCanvasResource> GetResourceForPushFrame(
       bool& should_call_push_frame) override;
 
-  CanvasRenderingContextHost* GetCanvasRenderingContextHost() const override;
-  ExecutionContext* GetTopExecutionContext() const override;
-
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override;
 
  protected:

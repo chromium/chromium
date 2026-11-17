@@ -155,8 +155,8 @@ class TestRenderingContext2D final
     return GetState().GetFilterForOffscreenCanvas({}, this);
   }
 
-  ExecutionContext* GetTopExecutionContext() const override {
-    return execution_context_.Get();
+  CanvasRenderingContextHost* GetCanvasRenderingContextHost() const override {
+    return nullptr;
   }
 
   void SetContextLost(LostContextMode context_lost_mode) {

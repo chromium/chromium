@@ -2848,4 +2848,13 @@ bool BaseRenderingContext2D::OriginClean() const {
   return Host() ? Host()->OriginClean() : true;
 }
 
+CanvasRenderingContextHost*
+BaseRenderingContext2D::GetCanvasRenderingContextHost() const {
+  return Host();
+}
+
+ExecutionContext* BaseRenderingContext2D::GetTopExecutionContext() const {
+  return Host()->GetTopExecutionContext();
+}
+
 }  // namespace blink
