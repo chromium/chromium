@@ -456,6 +456,7 @@ ci.builder(
                 enable_rts_filtering = True,
             ),
             "chrome_wpt_tests": targets.mixin(
+                enable_rts_filtering = True,
                 swarming = targets.swarming(
                     # This suite's isolate has ~90k small WPT files, which leads
                     # to ~3min of CAS setup & teardown disk I/O overhead on
