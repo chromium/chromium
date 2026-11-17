@@ -612,7 +612,9 @@ void HidChooserContext::GetDevices(
 
 const device::mojom::HidDeviceInfo* HidChooserContext::GetDeviceInfo(
     const std::string& guid) {
-  CHECK(is_initialized_, base::NotFatalUntil::M161);
+  // TODO(crbug.com/585692111): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(is_initialized_);
   auto it = devices_.find(guid);
   return it == devices_.end() ? nullptr : it->second.get();
 }
