@@ -62,8 +62,9 @@ std::optional<size_t> OffsetFromUTF8Offset(std::string_view text,
     return std::nullopt;
 
   std::u16string converted;
-  if (!base::UTF8ToUTF16(text.data(), offset, &converted))
+  if (!base::UTF8ToUTF16(text.substr(0, offset), &converted)) {
     return std::nullopt;
+  }
 
   return converted.size();
 }

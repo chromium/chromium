@@ -1317,7 +1317,7 @@ std::u16string ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
     msg.assign(utf16_span.begin(), utf16_span.end());
   } else if (encoding == ResourceHandle::UTF8) {
     // Best-effort conversion.
-    base::UTF8ToUTF16(data->data(), data->size(), &msg);
+    std::ignore = base::UTF8ToUTF16(*data, &msg);
   }
   return MaybeMangleLocalizedString(msg);
 }
