@@ -308,8 +308,6 @@ TEST_F(FeedNetworkTest, SendQueryRequestSendsValidRequest) {
             "Bearer access_token");
   histogram().ExpectBucketCount(
       "ContentSuggestions.Feed.Network.ResponseStatus.FeedQuery", 200, 1);
-  histogram().ExpectBucketCount(
-      "ContentSuggestions.Feed.Network.FeedQueryRequestSize", 165, 1);
 }
 
 // These tests need ClearPrimaryAccount() which isn't supported by ChromeOS.

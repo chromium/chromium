@@ -17,7 +17,6 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -61,21 +60,6 @@ namespace {
 constexpr char kApplicationXProtobuf[] = "application/x-protobuf";
 constexpr base::TimeDelta kNetworkTimeout = base::Seconds(30);
 constexpr char kDiscoverHost[] = "https://discover-pa.googleapis.com/";
-
-int EstimateFeedQueryRequestSize(const network::ResourceRequest& request) {
-  int total_size = 14 +  // GET <path> HTTP/1.1
-                   request.url.path().size() + request.url.query().size();
-  for (const net::HttpRequestHeaders::HeaderKeyValuePair& header :
-       request.headers.GetHeaderVector()) {
-    total_size += header.key.size() + header.value.size() + 2;
-  }
-  for (const net::HttpRequestHeaders::HeaderKeyValuePair& header :
-       request.cors_exempt_headers.GetHeaderVector()) {
-    total_size += header.key.size() + header.value.size() + 2;
-  }
-
-  return total_size;
-}
 
 GURL GetFeedQueryURL(feedwire::FeedQuery::RequestReason reason) {
   // Add URLs for Bling when it is supported.
@@ -193,7 +177,6 @@ class FeedNetworkImpl::NetworkFetch {
                const std::string& api_key,
                const AccountInfo& account_info,
                net::HttpRequestHeaders headers,
-               bool is_feed_query,
                bool allow_bless_auth)
       : url_(url),
         request_method_(request_method),
@@ -205,7 +188,6 @@ class FeedNetworkImpl::NetworkFetch {
         entire_send_start_ticks_(base::TimeTicks::Now()),
         account_info_(account_info),
         headers_(std::move(headers)),
-        is_feed_query_(is_feed_query),
         allow_bless_auth_(allow_bless_auth) {}
   ~NetworkFetch() = default;
   NetworkFetch(const NetworkFetch&) = delete;
@@ -366,12 +348,6 @@ class FeedNetworkImpl::NetworkFetch {
     DVLOG(1) << "Feed Request url=" << url;
     DVLOG(1) << "Feed Request headers=" << resource_request->headers.ToString();
 
-    if (is_feed_query_) {
-      base::UmaHistogramCustomCounts(
-          "ContentSuggestions.Feed.Network.FeedQueryRequestSize",
-          EstimateFeedQueryRequestSize(*resource_request), 1000, 50000, 50);
-    }
-
     auto simple_loader = network::SimpleURLLoader::Create(
         std::move(resource_request), traffic_annotation);
     simple_loader->SetAllowHttpErrorResults(true);
@@ -527,7 +503,6 @@ class FeedNetworkImpl::NetworkFetch {
   // Should be set right before the article fetch, and after the token fetch if
   // there is one.
   base::TimeTicks loader_only_start_ticks_;
-  bool is_feed_query_ = false;
   bool allow_bless_auth_ = false;
   base::WeakPtrFactory<NetworkFetch> weak_ptr_factory_{this};
 };
@@ -598,7 +573,6 @@ void FeedNetworkImpl::SendQueryRequest(
   Send(url, "GET", /*request_body=*/{},
        /*allow_bless_auth=*/host_overridden, account_info,
        net::HttpRequestHeaders(),
-       /*is_feed_query=*/true,
        base::BindOnce(&ParseAndForwardQueryResponse, request_type,
                       std::move(callback)));
 }
@@ -613,7 +587,6 @@ void FeedNetworkImpl::Send(const GURL& url,
                            bool allow_bless_auth,
                            const AccountInfo& account_info,
                            net::HttpRequestHeaders headers,
-                           bool is_feed_query,
                            base::OnceCallback<void(RawResponse)> callback) {
   TRACE_EVENT_BEGIN("android.ui.jank", "FeedNetwork",
                     perfetto::NamedTrack::FromPointer("FeedNetwork", this),
@@ -621,7 +594,7 @@ void FeedNetworkImpl::Send(const GURL& url,
   auto fetch = std::make_unique<NetworkFetch>(
       url, request_method, std::move(request_body), delegate_,
       identity_manager_, loader_factory_.get(), api_key_, account_info,
-      std::move(headers), is_feed_query, allow_bless_auth);
+      std::move(headers), allow_bless_auth);
   NetworkFetch* fetch_unowned = fetch.get();
   pending_requests_.emplace(std::move(fetch));
 
@@ -652,7 +625,7 @@ void FeedNetworkImpl::SendDiscoverApiRequest(
 
   Send(url, method, std::move(request_body),
        /*allow_bless_auth=*/false, account_info, std::move(headers),
-       /*is_feed_query=*/false, std::move(callback));
+       std::move(callback));
 }
 
 void FeedNetworkImpl::SendAsyncDataRequest(
@@ -665,7 +638,7 @@ void FeedNetworkImpl::SendAsyncDataRequest(
   GURL request_url = GetOverriddenUrl(url);
   Send(request_url, request_method, std::move(request_body),
        /*allow_bless_auth=*/false, account_info, request_headers,
-       /*is_feed_query=*/false, std::move(callback));
+       std::move(callback));
 }
 
 void FeedNetworkImpl::SendComplete(
