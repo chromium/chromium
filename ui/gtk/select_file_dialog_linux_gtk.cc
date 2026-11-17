@@ -381,6 +381,19 @@ void SelectFileDialogLinuxGtk::ResetForTesting() {
 }
 
 // static
+int SelectFileDialogLinuxGtk::GetFilterCountForTesting(GtkWidget* dialog) {
+  GtkFileChooser* chooser = GTK_FILE_CHOOSER(dialog);
+  if (GtkCheckVersion(4)) {
+    auto filters = TakeGObject(gtk_file_chooser_get_filters(chooser));
+    return g_list_model_get_n_items(filters);
+  }
+  GSList* filters = gtk_file_chooser_list_filters(chooser);
+  int count = g_slist_length(filters);
+  g_slist_free(filters);
+  return count;
+}
+
+// static
 void SelectFileDialogLinuxGtk::DispatchKeyEventForTesting(ui::KeyEvent* event) {
   ActivationKeyTracker::GetInstance()->OnKeyEvent(event);
 }
@@ -700,14 +713,14 @@ GtkWidget* SelectFileDialogLinuxGtk::CreateSelectFolderDialog(
     GtkFileChooserSetCurrentFolder(chooser, default_path);
   else if (!last_opened_path()->empty())
     GtkFileChooserSetCurrentFolder(chooser, *last_opened_path());
-  GtkFileFilter* only_folders = gtk_file_filter_new();
-  gtk_file_filter_set_name(
-      only_folders,
-      l10n_util::GetStringUTF8(IDS_SELECT_FOLDER_DIALOG_TITLE).c_str());
+  // Set the filter as the current filter without adding it to the list of
+  // user-selectable filters. Adding it would show a filter drop-down with a
+  // single "Select Folder" entry, which is confusing.
+  auto only_folders = TakeGObject(gtk_file_filter_new());
   gtk_file_filter_add_mime_type(only_folders, "application/x-directory");
   gtk_file_filter_add_mime_type(only_folders, "inode/directory");
   gtk_file_filter_add_mime_type(only_folders, "text/directory");
-  gtk_file_chooser_add_filter(chooser, only_folders);
+  gtk_file_chooser_set_filter(chooser, only_folders);
   gtk_file_chooser_set_select_multiple(chooser, FALSE);
   return dialog;
 }

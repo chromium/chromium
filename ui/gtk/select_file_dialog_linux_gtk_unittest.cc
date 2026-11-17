@@ -260,4 +260,23 @@ TEST_F(SelectFileDialogLinuxGtkTest, PlatformMapsDialog) {
   EXPECT_TRUE(IsVisible(widget));
 }
 
+// Tests that folder selection dialogs restrict the view to folders without
+// showing a filter drop-down that has a single "Select Folder" entry.
+TEST_F(SelectFileDialogLinuxGtkTest, SelectFolderHasNoUserSelectableFilters) {
+  dialog_->SelectFile(ui::SelectFileDialog::SELECT_FOLDER, u"Select Folder",
+                      base::FilePath(), nullptr, 0,
+                      base::FilePath::StringType(), nullptr);
+
+  GtkWidget* widget = GetDialogWidget();
+  ASSERT_TRUE(widget);
+
+  EXPECT_EQ(SelectFileDialogLinuxGtk::GetFilterCountForTesting(widget), 0);
+
+  // The view must still be restricted to folders.
+  GObject* filter = nullptr;
+  g_object_get(widget, "filter", &filter, nullptr);
+  ASSERT_TRUE(filter);
+  g_object_unref(filter);
+}
+
 }  // namespace gtk

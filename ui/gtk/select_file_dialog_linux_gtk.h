@@ -37,6 +37,8 @@ class COMPONENT_EXPORT(GTK) SelectFileDialogLinuxGtk
   static void ResetForTesting();
   static void DispatchKeyEventForTesting(ui::KeyEvent* event);
   static void DispatchCancelModeForTesting();
+  // Returns the number of user-selectable filters in `dialog`.
+  static int GetFilterCountForTesting(GtkWidget* dialog);
 
  protected:
   ~SelectFileDialogLinuxGtk() override;
