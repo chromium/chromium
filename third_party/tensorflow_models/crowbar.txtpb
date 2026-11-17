@@ -1,0 +1,15 @@
+upstream {
+  commit: "5bad7493ed8a56ad67bbadad80194d7206efac86"
+  artifacts {
+    git {
+      repository: "https://github.com/tensorflow/models"
+      commit: "5bad7493ed8a56ad67bbadad80194d7206efac86"
+    }
+  }
+}
+stages {
+  input {
+    patch { copybara {} }
+  }
+  publish { git {} }
+}

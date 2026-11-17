@@ -1,0 +1,28 @@
+load("//crowbar", "crowbar_workflow")
+
+crowbar_workflow(
+    origin_files = glob([
+        "LICENSE",
+        "research/seq_flow_lite/tf_ops/projection_normalizer_util.cc",
+        "research/seq_flow_lite/tf_ops/projection_normalizer_util.h",
+        "research/seq_flow_lite/tf_ops/projection_util.cc",
+        "research/seq_flow_lite/tf_ops/projection_util.h",
+        "research/seq_flow_lite/tf_ops/skipgram_finder.cc",
+        "research/seq_flow_lite/tf_ops/skipgram_finder.h",
+        "research/seq_flow_lite/tflite_ops/denylist.cc",
+        "research/seq_flow_lite/tflite_ops/denylist.h",
+        "research/seq_flow_lite/tflite_ops/denylist_skipgram.cc",
+        "research/seq_flow_lite/tflite_ops/denylist_skipgram.h",
+        "research/seq_flow_lite/tflite_ops/quantization_util.h",
+        "research/seq_flow_lite/tflite_ops/sequence_string_projection.cc",
+        "research/seq_flow_lite/tflite_ops/sequence_string_projection.h",
+        "research/seq_flow_lite/tflite_ops/tflite_qrnn_pooling.cc",
+        "research/seq_flow_lite/tflite_ops/tflite_qrnn_pooling.h",
+    ]),
+    transformations = [
+        patch.apply(patches = [
+            "patches/0001-add-int8-quantization-support-to-seq_flow_lite-ops.patch",
+            "patches/0002-Add-int8-quantization-support-to-the-denylist-op.patch",
+        ]),
+    ],
+)

@@ -7,10 +7,10 @@ Subject: [PATCH] Add int8 quantization support to the denylist op
  .../seq_flow_lite/tflite_ops/denylist.cc      | 58 ++++++++++++-------
  1 file changed, 36 insertions(+), 22 deletions(-)
 
-diff --git a/third_party/tensorflow_models/src/research/seq_flow_lite/tflite_ops/denylist.cc b/third_party/tensorflow_models/src/research/seq_flow_lite/tflite_ops/denylist.cc
+diff --git a/src/research/seq_flow_lite/tflite_ops/denylist.cc b/src/research/seq_flow_lite/tflite_ops/denylist.cc
 index 99671a6bb947e..97f58fdf7c9e4 100644
---- a/third_party/tensorflow_models/src/research/seq_flow_lite/tflite_ops/denylist.cc
-+++ b/third_party/tensorflow_models/src/research/seq_flow_lite/tflite_ops/denylist.cc
+--- a/src/research/seq_flow_lite/tflite_ops/denylist.cc
++++ b/src/research/seq_flow_lite/tflite_ops/denylist.cc
 @@ -14,6 +14,8 @@ limitations under the License.
  ==============================================================================*/
  #include "tflite_ops/denylist.h"  // seq_flow_lite

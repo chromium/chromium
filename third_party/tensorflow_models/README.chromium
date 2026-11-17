@@ -17,7 +17,7 @@ implementations of state-of-the-art (SOTA) models and modeling solutions for
 TensorFlow users.
 
 Important: Only a small selection of the upstream files are actually committed
-here. See update.sh in this directory.
+here. See copy.bara.sky in this directory.
 
 Note:
 There are two shim directories, "libutf" and "icu4c", used to redirect
@@ -25,7 +25,8 @@ includes for those directories to their Chromium versions which have slightly
 different names than those used here.
 
 Update Process/Notes:
-The owners update this repository as needed, using the `update.sh` script. If
+The owners update this repository as needed, using Crowbar (crowbar.txtpb and
+copy.bara.sky in this directory). If
 you need to roll this library sooner, please reach out to one of the owners so
 all the dependencies and necessary validation tests can be run.
 

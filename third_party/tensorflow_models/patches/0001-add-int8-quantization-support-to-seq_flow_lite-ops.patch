@@ -8,10 +8,10 @@ Subject: [PATCH] add int8 quantization support to seq_flow_lite ops
  .../tflite_ops/tflite_qrnn_pooling.cc         | 99 +++++++++++++++----
  2 files changed, 107 insertions(+), 24 deletions(-)
 
-diff --git a/third_party/tensorflow_models/src/research/seq_flow_lite/tflite_ops/sequence_string_projection.cc b/third_party/tensorflow_models/src/research/seq_flow_lite/tflite_ops/sequence_string_projection.cc
+diff --git a/src/research/seq_flow_lite/tflite_ops/sequence_string_projection.cc b/src/research/seq_flow_lite/tflite_ops/sequence_string_projection.cc
 index f53cf650f16f8..22f4c609e86c9 100644
---- a/third_party/tensorflow_models/src/research/seq_flow_lite/tflite_ops/sequence_string_projection.cc
-+++ b/third_party/tensorflow_models/src/research/seq_flow_lite/tflite_ops/sequence_string_projection.cc
+--- a/src/research/seq_flow_lite/tflite_ops/sequence_string_projection.cc
++++ b/src/research/seq_flow_lite/tflite_ops/sequence_string_projection.cc
 @@ -28,8 +28,8 @@ limitations under the License.
  #include "flatbuffers/flexbuffers.h"  // flatbuffer
  #include "tensorflow/lite/string_util.h"
@@ -78,10 +78,10 @@ index f53cf650f16f8..22f4c609e86c9 100644
      return kTfLiteError;
    }
  
-diff --git a/third_party/tensorflow_models/src/research/seq_flow_lite/tflite_ops/tflite_qrnn_pooling.cc b/third_party/tensorflow_models/src/research/seq_flow_lite/tflite_ops/tflite_qrnn_pooling.cc
+diff --git a/src/research/seq_flow_lite/tflite_ops/tflite_qrnn_pooling.cc b/src/research/seq_flow_lite/tflite_ops/tflite_qrnn_pooling.cc
 index 6641234c53d4b..205e8a619e5c2 100644
---- a/third_party/tensorflow_models/src/research/seq_flow_lite/tflite_ops/tflite_qrnn_pooling.cc
-+++ b/third_party/tensorflow_models/src/research/seq_flow_lite/tflite_ops/tflite_qrnn_pooling.cc
+--- a/src/research/seq_flow_lite/tflite_ops/tflite_qrnn_pooling.cc
++++ b/src/research/seq_flow_lite/tflite_ops/tflite_qrnn_pooling.cc
 @@ -22,7 +22,9 @@ namespace custom {
  
  namespace {
