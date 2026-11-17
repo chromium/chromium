@@ -134,7 +134,7 @@ def continuous_fuzz_coverage_builder(
 
     # TODO(crbug.com/449026537): Remove elevated timeout once performance improves.
     kwargs.setdefault("execution_timeout", 48 * time.hour)
-    kwargs.setdefault("notifies", ["chrome-fuzzing-core"])
+    kwargs.setdefault("notifies", ["chrome-fuzzing-core", "chrome-fuzzing-infra"])
     kwargs.setdefault("triggered_by", ["chromium-gitiles-trigger"])
     kwargs.setdefault("triggering_policy", scheduler.greedy_batching(
         max_concurrent_invocations = 1,
