@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/simple_thread.h"
 #include "base/time/time.h"

@@ -146,11 +146,6 @@ DiscardableSharedMemoryHeap::Grow(
 
 void DiscardableSharedMemoryHeap::MergeIntoFreeLists(
     std::unique_ptr<Span> span) {
-  MergeIntoFreeListsClean(std::move(span));
-}
-
-void DiscardableSharedMemoryHeap::MergeIntoFreeListsClean(
-    std::unique_ptr<Span> span) {
   DCHECK(span->shared_memory_);
 
   // First add length of |span| to |num_free_blocks_|.

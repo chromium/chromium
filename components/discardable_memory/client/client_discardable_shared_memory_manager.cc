@@ -393,7 +393,7 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
         leftover->first_block() * base::GetPageSize(),
         leftover->num_blocks() * base::GetPageSize());
     leftover->set_is_locked(false);
-    heap_->MergeIntoFreeListsClean(std::move(leftover));
+    heap_->MergeIntoFreeLists(std::move(leftover));
   }
 
   MemoryUsageChanged(heap_->GetSize(), heap_->GetFreelistSize());
