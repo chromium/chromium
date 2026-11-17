@@ -4,6 +4,7 @@
 
 #include "chrome/browser/pwc/privileged_web_contents.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -17,7 +18,9 @@
 #include "components/back_forward_cache/disabled_reason_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -114,6 +117,27 @@ IN_PROC_BROWSER_TEST_F(PrivilegedWebContentsBrowserTest,
 
   ASSERT_TRUE(content::HistoryGoBack(web_contents));
   EXPECT_EQ(allowed, web_contents->GetLastCommittedURL());
+}
+
+// Creating a PrivilegedWebContents must not claim and discard an existing warm
+// spare renderer for its initial unassigned RenderFrameHost.
+IN_PROC_BROWSER_TEST_F(PrivilegedWebContentsBrowserTest,
+                       CreateDoesNotStealWarmSpareRenderer) {
+  auto& spare_manager = content::SpareRenderProcessHostManager::Get();
+  spare_manager.CleanupSparesForTesting();
+  content::SpareRenderProcessHostStartedObserver spare_observer;
+  content::RenderProcessHost* spare =
+      spare_manager.WarmupSpare(browser()->GetProfile());
+  ASSERT_TRUE(spare);
+  if (!spare->IsReady()) {
+    ASSERT_EQ(spare, spare_observer.WaitForSpareRenderProcessStarted());
+  }
+  const content::ChildProcessId spare_id = spare->GetID();
+  ASSERT_TRUE(std::ranges::contains(spare_manager.GetSpareIds(), spare_id));
+
+  const GURL allowed = https_server_.GetURL("a.test", "/allowed.html");
+  std::unique_ptr<PrivilegedWebContents> privileged = MakePrivileged(allowed);
+  EXPECT_TRUE(std::ranges::contains(spare_manager.GetSpareIds(), spare_id));
 }
 
 }  // namespace

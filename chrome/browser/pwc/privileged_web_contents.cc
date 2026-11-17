@@ -202,6 +202,8 @@ PrivilegedWebContents::PrivilegedWebContents(
   // profile's default partition so the component shares the live cookie jar.
   content::WebContents::CreateParams params(browser_context);
   params.initially_hidden = options.initially_hidden;
+  params.desired_renderer_state =
+      content::WebContents::CreateParams::kNoRendererProcess;
   content::WebContents::PrivilegedParams privileged_params;
   privileged_params.feature_id = policy_.content_feature_id();
   privileged_params.disallow_service_worker_control =

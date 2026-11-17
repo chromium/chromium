@@ -4559,7 +4559,13 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
   if (!site_instance) {
     site_instance = SiteInstanceImpl::Create(params.browser_context);
   }
-  if (params.desired_renderer_state == CreateParams::kNoRendererProcess) {
+  // When `params.site_instance` is null, `SiteInstanceImpl::Create` creates an
+  // unassigned `Mode::kNone` `SiteInstance` that will always be replaced on the
+  // first navigation of a privileged `WebContents`. Preventing spare
+  // association stops `InitRoot` from claiming and immediately discarding a
+  // warm generic spare renderer as unprivileged.
+  if (params.desired_renderer_state == CreateParams::kNoRendererProcess ||
+      (privileged_params_.has_value() && !site_instance->IsPrivileged())) {
     site_instance->PreventAssociationWithSpareProcess();
   }
 
