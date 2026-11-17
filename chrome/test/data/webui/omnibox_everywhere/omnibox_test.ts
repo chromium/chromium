@@ -21,7 +21,7 @@ import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'c
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {FreStage, SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {MenuSourceType} from 'chrome://resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
@@ -1085,20 +1085,58 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     assertFalse(omnibox.showContextEntrypoint);
   });
 
+  async function createOmniboxWithProfilePicker() {
+    loadTimeData.overrideValues({omniboxEverywhereProfilePickerEnabled: true});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    omnibox = document.createElement('omnibox-everywhere-omnibox');
+    document.body.appendChild(omnibox);
+    await microtasksFinished();
+  }
+
+  async function showDropdownWithVirtualFocus(matches: AutocompleteMatch[]) {
+    omnibox.virtualFocusEnabled = true;
+    omnibox.dropdownIsVisible = true;
+    omnibox.activeQueryId = 0;
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: 0,
+          input: 'query',
+          matches,
+        }));
+    await microtasksFinished();
+  }
+
+  function dispatchKeyOnInput(init: KeyboardEventInit): KeyboardEvent {
+    const keyEvent = new KeyboardEvent('keydown', {
+      ...init,
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    });
+    omnibox.$.input.inputElement.dispatchEvent(keyEvent);
+    return keyEvent;
+  }
+
+  async function dispatchTab(shiftKey: boolean = false) {
+    const tabEvent = dispatchKeyOnInput({key: 'Tab', shiftKey});
+    await microtasksFinished();
+    assertTrue(tabEvent.defaultPrevented);
+  }
+
   test(
       'Tab and Shift+Tab navigate across AIM, contextual entrypoint (+), ' +
-          'voice search, lens search, and back to input when dropdown is ' +
-          'visible',
+          'voice search, lens search, profile, and back to input when ' +
+          'dropdown is visible',
       async () => {
-        omnibox.virtualFocusEnabled = true;
-        omnibox.dropdownIsVisible = true;
-        const match =
-            createSearchMatchForTesting({allowedToBeDefaultMatch: true});
-        const result = createAutocompleteResultForTesting({matches: [match]});
-        omnibox.activeQueryId = 0;
-        testProxy.page.autocompleteResultChanged(result);
-        await microtasksFinished();
+        await createOmniboxWithProfilePicker();
+        const profileContainer = omnibox.$.profileIcon.$.profileContainer;
+        assertEquals(0, profileContainer.tabIndex);
+        await showDropdownWithVirtualFocus(
+            [createSearchMatchForTesting({allowedToBeDefaultMatch: true})]);
 
+        // Like the other input row buttons, the profile button leaves the
+        // native Tab order while virtual focus handles Tab.
+        assertEquals(-1, profileContainer.tabIndex);
         assertEquals(0, omnibox.selection.line);
         assertEquals(SelectionLineState.kNormal, omnibox.selection.state);
 
@@ -1109,19 +1147,9 @@ suite('OmniboxEverywhereOmniboxTest', () => {
             '.searchbox-icon-button-container.voice')!;
         const lensContainer = omnibox.shadowRoot.querySelector<HTMLElement>(
             '.searchbox-icon-button-container.lens')!;
-
-        const dispatchTab = async (shiftKey: boolean = false) => {
-          const tabEvent = new KeyboardEvent('keydown', {
-            key: 'Tab',
-            shiftKey,
-            bubbles: true,
-            composed: true,
-            cancelable: true,
-          });
-          omnibox.$.input.inputElement.dispatchEvent(tabEvent);
-          await microtasksFinished();
-          assertTrue(tabEvent.defaultPrevented);
-        };
+        const profileIcon = omnibox.$.profileIcon;
+        const profileRing = () =>
+            window.getComputedStyle(profileIcon.$.profileContainer).boxShadow;
 
         // Tab 1 -> AIM button.
         await dispatchTab();
@@ -1154,28 +1182,48 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         assertFalse(entrypoint.hasVirtualFocus);
         assertFalse(voiceContainer.hasAttribute('has-virtual-focus'));
         assertTrue(lensContainer.hasAttribute('has-virtual-focus'));
+        assertFalse(profileIcon.hasAttribute('has-virtual-focus'));
 
-        // Tab 5 -> Wraps back to default match / search input (line 0).
+        // Tab 5 -> Profile button, which renders last.
+        await dispatchTab();
+        assertEquals(
+            SelectionLineState.kFocusedButtonProfile, omnibox.selection.state);
+        assertTrue(profileIcon.hasAttribute('has-virtual-focus'));
+        assertNotEquals('none', profileRing());
+        assertFalse(lensContainer.hasAttribute('has-virtual-focus'));
+        assertEquals(
+            'Chrome profile Test Profile test@example.com',
+            omnibox.$.input.$.selectionAnnouncement.textContent);
+
+        // Tab 6 -> Wraps back to default match / search input (line 0).
         await dispatchTab();
         assertEquals(0, omnibox.selection.line);
         assertEquals(SelectionLineState.kNormal, omnibox.selection.state);
-        assertFalse(lensContainer.hasAttribute('has-virtual-focus'));
+        assertFalse(profileIcon.hasAttribute('has-virtual-focus'));
+        assertEquals('none', profileRing());
 
-        // Shift+Tab 1 -> Back to Lens search button.
+        // Shift+Tab 1 -> Back to Profile button.
+        await dispatchTab(/*shiftKey=*/ true);
+        assertEquals(
+            SelectionLineState.kFocusedButtonProfile, omnibox.selection.state);
+        assertTrue(profileIcon.hasAttribute('has-virtual-focus'));
+
+        // Shift+Tab 2 -> Back to Lens search button.
         await dispatchTab(/*shiftKey=*/ true);
         assertEquals(
             SelectionLineState.kFocusedButtonLensSearch,
             omnibox.selection.state);
         assertTrue(lensContainer.hasAttribute('has-virtual-focus'));
+        assertFalse(profileIcon.hasAttribute('has-virtual-focus'));
 
-        // Shift+Tab 2 -> Back to Voice search (Mic) button.
+        // Shift+Tab 3 -> Back to Voice search (Mic) button.
         await dispatchTab(/*shiftKey=*/ true);
         assertEquals(
             SelectionLineState.kFocusedButtonVoiceSearch,
             omnibox.selection.state);
         assertTrue(voiceContainer.hasAttribute('has-virtual-focus'));
 
-        // Shift+Tab 3 -> Back to Contextual entrypoint (+) button.
+        // Shift+Tab 4 -> Back to Contextual entrypoint (+) button.
         await dispatchTab(/*shiftKey=*/ true);
         assertEquals(
             SelectionLineState.kFocusedButtonContextEntrypoint,
@@ -1187,17 +1235,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       'Enter on virtually focused contextual entrypoint triggers ' +
           'showContextActionMenu',
       async () => {
-        omnibox.virtualFocusEnabled = true;
-        omnibox.dropdownIsVisible = true;
-        const match = createSearchMatchForTesting();
-        omnibox.activeQueryId = 0;
-        testProxy.page.autocompleteResultChanged(
-            createAutocompleteResultForTesting({
-              queryId: 0,
-              input: 'query',
-              matches: [match],
-            }));
-        await microtasksFinished();
+        await showDropdownWithVirtualFocus([createSearchMatchForTesting()]);
 
         omnibox.setSelection({
           line: -1,
@@ -1206,13 +1244,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         });
         await microtasksFinished();
 
-        const enterEvent = new KeyboardEvent('keydown', {
-          key: 'Enter',
-          bubbles: true,
-          composed: true,
-          cancelable: true,
-        });
-        omnibox.$.input.inputElement.dispatchEvent(enterEvent);
+        const enterEvent = dispatchKeyOnInput({key: 'Enter'});
         await microtasksFinished();
 
         assertTrue(enterEvent.defaultPrevented);
@@ -1294,17 +1326,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
   test(
       'Enter on virtually focused voice and lens buttons activates them',
       async () => {
-        omnibox.virtualFocusEnabled = true;
-        omnibox.dropdownIsVisible = true;
-        const match = createSearchMatchForTesting();
-        omnibox.activeQueryId = 0;
-        testProxy.page.autocompleteResultChanged(
-            createAutocompleteResultForTesting({
-              queryId: 0,
-              input: 'query',
-              matches: [match],
-            }));
-        await microtasksFinished();
+        await showDropdownWithVirtualFocus([createSearchMatchForTesting()]);
 
         let voiceSearchDispatched = false;
         omnibox.addEventListener('open-voice-search', () => {
@@ -1318,13 +1340,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         });
         await microtasksFinished();
 
-        const enterVoiceEvent = new KeyboardEvent('keydown', {
-          key: 'Enter',
-          bubbles: true,
-          composed: true,
-          cancelable: true,
-        });
-        omnibox.$.input.inputElement.dispatchEvent(enterVoiceEvent);
+        const enterVoiceEvent = dispatchKeyOnInput({key: 'Enter'});
         await microtasksFinished();
 
         assertTrue(enterVoiceEvent.defaultPrevented);
@@ -1337,17 +1353,129 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         });
         await microtasksFinished();
 
-        const enterLensEvent = new KeyboardEvent('keydown', {
-          key: 'Enter',
-          bubbles: true,
-          composed: true,
-          cancelable: true,
-        });
-        omnibox.$.input.inputElement.dispatchEvent(enterLensEvent);
+        const enterLensEvent = dispatchKeyOnInput({key: 'Enter'});
         await microtasksFinished();
 
         assertTrue(enterLensEvent.defaultPrevented);
         assertEquals(1, testProxy.handler.getCallCount('showScreenshotMenu'));
+      });
+
+  test(
+      'profile button is the last available selection, only with the ' +
+          'profile picker',
+      async () => {
+        const defaultMatch =
+            createSearchMatchForTesting({allowedToBeDefaultMatch: true});
+        const match = createSearchMatchForTesting();
+        const getStates = (matches: AutocompleteMatch[]) =>
+            omnibox
+                .getAvailableSelections(
+                    createAutocompleteResultForTesting({matches}))
+                .map(s => [s.line, s.state]);
+
+        // Omitted when the profile picker is disabled.
+        assertFalse(getStates([defaultMatch])
+                        .some(
+                            ([, state]) => state ===
+                                SelectionLineState.kFocusedButtonProfile));
+
+        // Appended after Lens, matching the button's render order.
+        await createOmniboxWithProfilePicker();
+        assertDeepEquals(
+            [
+              [0, SelectionLineState.kNormal],
+              [0, SelectionLineState.kFocusedButtonAim],
+              [1, SelectionLineState.kNormal],
+              [-1, SelectionLineState.kFocusedButtonContextEntrypoint],
+              [-1, SelectionLineState.kFocusedButtonVoiceSearch],
+              [-1, SelectionLineState.kFocusedButtonLensSearch],
+              [-1, SelectionLineState.kFocusedButtonProfile],
+            ],
+            getStates([defaultMatch, match]));
+      });
+
+  test(
+      'Enter on virtually focused profile button opens menu and restores ' +
+          'input focus on close',
+      async () => {
+        await createOmniboxWithProfilePicker();
+        const profileIcon = omnibox.$.profileIcon;
+        const closeMenu = async () => {
+          const closed = eventToPromise('close', profileIcon);
+          profileIcon.$.profileMenu.close();
+          await closed;
+        };
+
+        // While collapsed, closing the menu leaves focus on the profile button.
+        omnibox.virtualFocusEnabled = true;
+        profileIcon.$.profileContainer.focus();
+        profileIcon.$.profileContainer.click();
+        await microtasksFinished();
+        await closeMenu();
+        assertEquals(profileIcon.$.profileContainer, getDeepActiveElement());
+
+        // While expanded, closing a clicked menu returns focus to the input
+        // without announcing the profile button.
+        await showDropdownWithVirtualFocus(
+            [createSearchMatchForTesting({allowedToBeDefaultMatch: true})]);
+        profileIcon.$.profileContainer.focus();
+        profileIcon.$.profileContainer.click();
+        await microtasksFinished();
+        await closeMenu();
+        assertEquals(omnibox.$.input.inputElement, getDeepActiveElement());
+        assertEquals('', omnibox.$.input.$.selectionAnnouncement.textContent);
+
+        // Enter on the virtually focused profile button opens the menu without
+        // navigating, and closing it restores input focus and re-narrates.
+        omnibox.setSelection({
+          line: -1,
+          state: SelectionLineState.kFocusedButtonProfile,
+          actionIndex: 0,
+        });
+        await microtasksFinished();
+        const enterEvent = dispatchKeyOnInput({key: 'Enter'});
+        await microtasksFinished();
+        assertTrue(enterEvent.defaultPrevented);
+        assertTrue(profileIcon.$.profileMenu.open);
+        assertEquals(
+            0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+
+        await closeMenu();
+        assertEquals(omnibox.$.input.inputElement, getDeepActiveElement());
+        assertEquals(
+            'Chrome profile Test Profile test@example.com',
+            omnibox.$.input.$.selectionAnnouncement.textContent);
+
+        // Closing while inactive (persistent mode keeps the window visible)
+        // leaves focus and narration untouched.
+        omnibox.$.input.$.selectionAnnouncement.textContent = '';
+        dispatchKeyOnInput({key: 'Enter'});
+        await microtasksFinished();
+        assertTrue(profileIcon.$.profileMenu.open);
+        omnibox.isActive = false;
+        await closeMenu();
+        assertEquals(profileIcon.$.profileContainer, getDeepActiveElement());
+        assertEquals('', omnibox.$.input.$.selectionAnnouncement.textContent);
+        omnibox.isActive = true;
+        await microtasksFinished();
+
+        // Space also opens the menu. Closing via `visibilitychange` while
+        // hidden leaves focus and narration untouched.
+        const spaceEvent = dispatchKeyOnInput({key: ' '});
+        await microtasksFinished();
+        assertTrue(spaceEvent.defaultPrevented);
+        assertTrue(profileIcon.$.profileMenu.open);
+        const closed = eventToPromise('close', profileIcon);
+        Object.defineProperty(
+            document, 'hidden', {value: true, configurable: true});
+        try {
+          document.dispatchEvent(new Event('visibilitychange'));
+          await closed;
+          assertEquals(profileIcon.$.profileContainer, getDeepActiveElement());
+          assertEquals('', omnibox.$.input.$.selectionAnnouncement.textContent);
+        } finally {
+          Reflect.deleteProperty(document, 'hidden');
+        }
       });
 
   test(
@@ -4510,6 +4638,10 @@ suite('OmniboxEverywhereProfileIconTest', () => {
         assertEquals(
             'Chrome profile\nTest Profile\ntest@example.com',
             container.getAttribute('title'));
+
+        container.click();
+        await microtasksFinished();
+        assertFalse(profileIcon.$.profileMenu.open);
       });
 
   test('profile icon is clickable when profile picker is enabled', async () => {

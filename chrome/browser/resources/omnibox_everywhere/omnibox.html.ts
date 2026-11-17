@@ -133,7 +133,11 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
   </div>
   <!-- Keep last so Tab reaches it after the action buttons, which render
            before it in the 1-line pill. -->
-  <omnibox-everywhere-profile-icon id="profileIcon">
+  <omnibox-everywhere-profile-icon id="profileIcon"
+      .hasVirtualFocus="${this.isProfileVirtualFocused_()}"
+      .removeFromTabOrder="${
+          this.virtualFocusEnabled && this.dropdownIsVisible}"
+      @close="${this.onProfileMenuClose_}">
   </omnibox-everywhere-profile-icon>
 </div>`;
 }

@@ -678,6 +678,11 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
       state: SelectionLineState.kFocusedButtonContextualChip,
       actionIndex: 0,
     }));
+    assertFalse(selectionIsNativelySupported({
+      line: -1,
+      state: SelectionLineState.kFocusedButtonProfile,
+      actionIndex: 0,
+    }));
   });
 
   test('instant keyword match selection', () => {
