@@ -187,6 +187,7 @@ class MockSharedWorkerClient : public blink::mojom::SharedWorkerClient {
   // Resets the receiver, allowing the caller to simulate losing the connection
   // with the client.
   void ResetReceiver();
+  bool IsDisconnected() const { return is_disconnected_; }
 
   void SetOnReportExceptionCallback(base::OnceClosure callback);
 
@@ -201,6 +202,8 @@ class MockSharedWorkerClient : public blink::mojom::SharedWorkerClient {
   void OnReportException(
       blink::mojom::SharedWorkerExceptionDetailsPtr details) override;
 
+  void OnDisconnect();
+
   mojo::Receiver<blink::mojom::SharedWorkerClient> receiver_{this};
   bool on_created_received_ = false;
   bool on_connected_received_ = false;
@@ -210,6 +213,7 @@ class MockSharedWorkerClient : public blink::mojom::SharedWorkerClient {
       blink::mojom::WebFeature();
   bool on_script_load_failed_ = false;
   bool on_report_exception_received_ = false;
+  bool is_disconnected_ = false;
   blink::mojom::SharedWorkerExceptionDetailsPtr received_details_;
   base::OnceClosure on_report_exception_callback_;
 };
