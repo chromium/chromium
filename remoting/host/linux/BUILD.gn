@@ -202,6 +202,8 @@ source_set("host_types") {
     "host_type_environment.h",
     "host_types.cc",
     "host_types.h",
+    "unit_session_host_type.cc",
+    "unit_session_host_type.h",
   ]
   public_deps = [ "//base" ]
   deps = [
@@ -569,6 +571,7 @@ source_set("unit_tests") {
     "test_util.cc",
     "test_util.h",
     "unicode_to_keysym_unittest.cc",
+    "unit_session_host_type_unittest.cc",
     "user_desktop_session_backend_unittest.cc",
     "user_session_eligibility_unittest.cc",
     "x11_character_injector_unittest.cc",

@@ -28,6 +28,7 @@
 #include "remoting/host/linux/host_type_environment.h"
 #include "remoting/host/linux/secure_file_reader.h"
 #include "remoting/host/linux/session_routing_config.h"
+#include "remoting/host/linux/unit_session_host_type.h"
 
 namespace remoting {
 namespace {
@@ -100,9 +101,10 @@ bool StopMultiProcessUnit(HostTypeEnvironment& env) {
 
 // Base class of the single-process host type, whose host unit is
 // `chrome-remote-desktop@<user>.service`. It has no other state. Its
-// SetUpState() stops and disables the multi-process host unit if it is
-// enabled or active, e.g. after the multi-process host was stopped without
-// its stop hook, since both host units can't be used at the same time.
+// SetUpState() stops and disables the multi-process host unit and the session
+// units of all users if they are enabled or active, e.g. after the
+// multi-process host was stopped without its stop hook, since they can't be
+// used at the same time as the single-process host.
 class SingleProcessHostType : public HostType {
  public:
   ~SingleProcessHostType() override;
@@ -150,11 +152,21 @@ bool SingleProcessHostType::StopHostUnit(const HostTypeContext& context) const {
 }
 
 bool SingleProcessHostType::SetUpState(const HostTypeContext& context) const {
-  return StopMultiProcessUnit(*context.env);
+  return StopMultiProcessUnit(*context.env) &&
+         UnitSessionHostType::StopAllSessionUnits(*context.env);
 }
 
 const SingleProcessHostType& GetSingleProcessHostType() {
   static const base::NoDestructor<SingleProcessHostType> instance;
+  return *instance;
+}
+
+const HostType& GetX11HostType() {
+  static const base::NoDestructor<UnitSessionHostType> instance(
+      "x11",
+      "Multi-process host. Chrome Remote Desktop starts an X11 desktop "
+      "session for the user, and keeps it running.",
+      "chrome-remote-desktop-x11-session@");
   return *instance;
 }
 
@@ -176,6 +188,7 @@ HostType::GetHostTypes() {
           {GetSingleProcessHostType().name(), &GetSingleProcessHostType()},
           {GetGdmManagedHostType().name(), &GetGdmManagedHostType()},
           {GetCustomHostType().name(), &GetCustomHostType()},
+          {GetX11HostType().name(), &GetX11HostType()},
       });
   return *kHostTypes;
 }
@@ -430,7 +443,8 @@ bool MultiProcessHostType::StopHostUnit(const HostTypeContext& context) const {
 bool MultiProcessHostType::SetUpState(const HostTypeContext& context) const {
   // All users' units are stopped, so that the local user isn't needed, e.g.
   // after a single-process host was set up for a different user.
-  return StopAllSingleProcessUnits(*context.env);
+  return StopAllSingleProcessUnits(*context.env) &&
+         UnitSessionHostType::StopAllSessionUnits(*context.env);
 }
 
 bool MultiProcessHostType::CleanUpState(const HostTypeContext& context) const {

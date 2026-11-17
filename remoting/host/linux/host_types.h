@@ -194,11 +194,12 @@ class MultiProcessHostType : public HostType {
   // HostType implementation.
   bool StartHostUnit(const HostTypeContext& context) const final;
 
-  // Stops and disables any leftover single-process units of all users.
-  // Subclasses that override SetUpState() should call this first.
+  // Stops and disables any leftover single-process and session units of all
+  // users. Subclasses that override SetUpState() should call this first.
   bool SetUpState(const HostTypeContext& context) const override;
 
-  // Deletes the session routing config file.
+  // Deletes the session routing config file. Subclasses that manage session
+  // units are responsible for stopping them.
   bool CleanUpState(const HostTypeContext& context) const override;
 };
 
