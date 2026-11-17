@@ -1751,17 +1751,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.MainFrameSchemeOTR2" enum="NavigationScheme"
-    expires_after="2024-12-15">
-  <owner>elawrence@chromium.org</owner>
-  <owner>estark@chromium.org</owner>
-  <summary>
-    The scheme of the URL for each main-frame navigation while in incognito.
-    This is only recorded for finished navigations and not attempts. Warning:
-    this histogram was expired from 2021-06-01 through M97; data may be missing.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.OnBeforeUnloadOverheadTime" units="ms"
     expires_after="2027-04-18">
   <owner>clamy@chromium.org</owner>

@@ -27,7 +27,6 @@ const char kMainFrameSchemeDifferentPage[] =
 // non-unique (e.g. http://site.test):
 const char kMainFrameSchemeDifferentPageNonUniqueHostname[] =
     "Navigation.MainFrameSchemeDifferentPage2NonUniqueHostname";
-const char kMainFrameSchemeOTR[] = "Navigation.MainFrameSchemeOTR2";
 const char kMainFrameSchemeDifferentPageOTR[] =
     "Navigation.MainFrameSchemeDifferentPageOTR2";
 const char kMainFrameHasRTLDomain[] = "Navigation.MainFrameHasRTLDomain2";
@@ -100,7 +99,6 @@ void RecordPrimaryMainFrameNavigation(
                             url_formatter::IDNToUnicode(url.GetHost())));
 
   if (is_off_the_record) {
-    UMA_HISTOGRAM_ENUMERATION(kMainFrameSchemeOTR, scheme, Scheme::COUNT);
     if (!is_same_document) {
       UMA_HISTOGRAM_ENUMERATION(kMainFrameSchemeDifferentPageOTR, scheme,
                                 Scheme::COUNT);

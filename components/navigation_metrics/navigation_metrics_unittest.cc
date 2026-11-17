@@ -29,7 +29,6 @@ TEST(NavigationMetrics, MainFrameSchemeDifferentDocument) {
   test.ExpectTotalCount(kMainFrameSchemeDifferentPage, 1);
   test.ExpectUniqueSample(kMainFrameSchemeDifferentPage, 1 /* http */, 1);
   test.ExpectTotalCount(kMainFrameSchemeDifferentPageNonUniqueHostname, 0);
-  test.ExpectTotalCount(kMainFrameSchemeOTR, 0);
   test.ExpectTotalCount(kMainFrameSchemeDifferentPageOTR, 0);
   test.ExpectTotalCount(kMainFrameProfileType, 1);
   test.ExpectUniqueSample(kMainFrameProfileType,
@@ -53,7 +52,6 @@ TEST(NavigationMetrics, MainFrameSchemeDifferentDocument_NonUniqueHostname) {
   test.ExpectTotalCount(kMainFrameSchemeDifferentPageNonUniqueHostname, 1);
   test.ExpectUniqueSample(kMainFrameSchemeDifferentPageNonUniqueHostname,
                           1 /* http */, 1);
-  test.ExpectTotalCount(kMainFrameSchemeOTR, 0);
   test.ExpectTotalCount(kMainFrameSchemeDifferentPageOTR, 0);
   test.ExpectTotalCount(kMainFrameProfileType, 1);
   test.ExpectUniqueSample(kMainFrameProfileType,
@@ -74,7 +72,6 @@ TEST(NavigationMetrics, MainFrameSchemeSameDocument) {
   test.ExpectUniqueSample(kMainFrameScheme, 1 /* http */, 1);
   test.ExpectTotalCount(kMainFrameSchemeDifferentPage, 0);
   test.ExpectTotalCount(kMainFrameSchemeDifferentPageNonUniqueHostname, 0);
-  test.ExpectTotalCount(kMainFrameSchemeOTR, 0);
   test.ExpectTotalCount(kMainFrameSchemeDifferentPageOTR, 0);
   test.ExpectTotalCount(kMainFrameProfileType, 1);
   test.ExpectUniqueSample(kMainFrameProfileType,
@@ -94,8 +91,6 @@ TEST(NavigationMetrics, MainFrameSchemeDifferentDocumentOTR) {
   test.ExpectTotalCount(kMainFrameSchemeDifferentPage, 1);
   test.ExpectUniqueSample(kMainFrameSchemeDifferentPage, 1 /* http */, 1);
   test.ExpectTotalCount(kMainFrameSchemeDifferentPageNonUniqueHostname, 0);
-  test.ExpectTotalCount(kMainFrameSchemeOTR, 1);
-  test.ExpectUniqueSample(kMainFrameSchemeOTR, 1 /* http */, 1);
   test.ExpectTotalCount(kMainFrameSchemeDifferentPageOTR, 1);
   test.ExpectUniqueSample(kMainFrameSchemeDifferentPageOTR, 1 /* http */, 1);
   test.ExpectTotalCount(kMainFrameProfileType, 1);
@@ -117,8 +112,6 @@ TEST(NavigationMetrics, MainFrameSchemeSameDocumentOTR) {
   test.ExpectUniqueSample(kMainFrameScheme, 1 /* http */, 1);
   test.ExpectTotalCount(kMainFrameSchemeDifferentPage, 0);
   test.ExpectTotalCount(kMainFrameSchemeDifferentPageNonUniqueHostname, 0);
-  test.ExpectTotalCount(kMainFrameSchemeOTR, 1);
-  test.ExpectUniqueSample(kMainFrameSchemeOTR, 1 /* http */, 1);
   test.ExpectTotalCount(kMainFrameSchemeDifferentPageOTR, 0);
   test.ExpectTotalCount(kMainFrameProfileType, 1);
   test.ExpectUniqueSample(kMainFrameProfileType,
