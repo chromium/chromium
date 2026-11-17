@@ -16,9 +16,11 @@ import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger;
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.Event;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.ui.signin.ConfirmManagedSyncDataDialogCoordinator;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SigninFunnelEvent;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.annotation.Retention;
@@ -89,6 +91,7 @@ final class FreManagementNoticeDialogHelper {
             SigninManager signinManager,
             SigninFlowTimestampsLogger signinFlowLogger,
             @SigninAccessPoint int accessPoint,
+            boolean isSigninForced,
             @Nullable SignInCallback callback,
             Context context,
             ModalDialogManager modalDialogManager,
@@ -109,7 +112,10 @@ final class FreManagementNoticeDialogHelper {
                         }
                     };
             recordFREEvent(FRESigninEvents.SIGNING_IN_UNMANAGED);
-            signinManager.signin(coreAccountInfo, accessPoint, wrappedCallback);
+            signinManager.signin(
+                    coreAccountInfo,
+                    getSigninAccessPoint(accessPoint, isSigninForced),
+                    wrappedCallback);
             return;
         }
         recordFREEvent(FRESigninEvents.CHECKING_MANAGED_STATUS);
@@ -122,11 +128,24 @@ final class FreManagementNoticeDialogHelper {
                             signinManager,
                             signinFlowLogger,
                             accessPoint,
+                            isSigninForced,
                             callback,
                             context,
                             modalDialogManager,
                             host);
                 });
+    }
+
+    /**
+     * Returns the access point to pass to {@link SigninManager#signin}. Forced sign-in is recorded
+     * as {@link SigninAccessPoint#FORCED_SIGNIN} in `Signin.SignIn.Completed`, while funnel metrics
+     * keep the original access point.
+     *
+     * <p>TODO(crbug.com/586803472): Stop overriding the access point to FORCED_SIGNIN in FRE.
+     */
+    private static @SigninAccessPoint int getSigninAccessPoint(
+            @SigninAccessPoint int accessPoint, boolean isSigninForced) {
+        return isSigninForced ? SigninAccessPoint.FORCED_SIGNIN : accessPoint;
     }
 
     private static void onIsAccountManaged(
@@ -135,10 +154,13 @@ final class FreManagementNoticeDialogHelper {
             SigninManager signinManager,
             SigninFlowTimestampsLogger signinFlowLogger,
             @SigninAccessPoint int accessPoint,
+            boolean isSigninForced,
             @Nullable SignInCallback callback,
             Context context,
             ModalDialogManager modalDialogManager,
             FullscreenSigninCoordinator.Delegate host) {
+        final @SigninAccessPoint int signinAccessPoint =
+                getSigninAccessPoint(accessPoint, isSigninForced);
         signinFlowLogger.recordTimestamp(Event.MANAGEMENT_STATUS_LOADED);
         if (!isAccountManaged) {
             SignInCallback wrappedCallback =
@@ -156,7 +178,7 @@ final class FreManagementNoticeDialogHelper {
                         }
                     };
             recordFREEvent(FRESigninEvents.SIGNING_IN_UNMANAGED);
-            signinManager.signin(coreAccountInfo, accessPoint, wrappedCallback);
+            signinManager.signin(coreAccountInfo, signinAccessPoint, wrappedCallback);
             return;
         }
 
@@ -183,14 +205,18 @@ final class FreManagementNoticeDialogHelper {
                 new ConfirmManagedSyncDataDialogCoordinator.Listener() {
                     @Override
                     public void onConfirm() {
+                        SigninMetricsUtils.logSigninFunnelEvent(
+                                accessPoint, SigninFunnelEvent.MANAGEMENT_NOTICE_ACCEPTED);
                         signinFlowLogger.onManagementNoticeAccepted();
                         signinManager.setUserAcceptedAccountManagement(true);
                         recordFREEvent(FRESigninEvents.SIGNING_IN_MANAGED);
-                        signinManager.signin(coreAccountInfo, accessPoint, wrappedCallback);
+                        signinManager.signin(coreAccountInfo, signinAccessPoint, wrappedCallback);
                     }
 
                     @Override
                     public void onCancel() {
+                        SigninMetricsUtils.logSigninFunnelEvent(
+                                accessPoint, SigninFunnelEvent.MANAGEMENT_NOTICE_DECLINED);
                         if (callback != null) callback.onSignInAborted();
                     }
                 };
@@ -206,6 +232,8 @@ final class FreManagementNoticeDialogHelper {
                     signinManager.extractDomainName(coreAccountInfo.getEmail()));
         }
         signinFlowLogger.onManagementNoticeShown();
+        SigninMetricsUtils.logSigninFunnelEvent(
+                accessPoint, SigninFunnelEvent.MANAGEMENT_NOTICE_SHOWN);
     }
 
     private static void recordFREEvent(@FRESigninEvents int event) {

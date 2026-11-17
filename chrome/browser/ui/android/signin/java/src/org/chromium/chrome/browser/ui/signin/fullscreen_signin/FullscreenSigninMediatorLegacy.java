@@ -785,33 +785,30 @@ class FullscreenSigninMediatorLegacy
         if (mDestroyed) return;
         AccountInfo signedInAccount = getSignedInAccount();
         final SignInCallback signInCallback = getSigninCallback(signinTimestampsLogger);
-        final @SigninAccessPoint int accessPoint =
-                mModel.get(FullscreenSigninProperties.SHOULD_HIDE_DISMISS_BUTTON)
-                        ? SigninAccessPoint.FORCED_SIGNIN
-                        : mAccessPoint;
         assumeNonNull(mSelectedAccount);
         if (signedInAccount != null) {
             // If there already exists another signed-in account, first
             // sign-out and then sign-in with the selected account.
             signOutThenSignInWithSelectedAccount(
-                    mSelectedAccount, accessPoint, signinTimestampsLogger, signInCallback);
+                    mSelectedAccount, signinTimestampsLogger, signInCallback);
         } else {
             checkAccountManagementAndSignIn(
-                    mSelectedAccount, accessPoint, signinTimestampsLogger, signInCallback);
+                    mSelectedAccount, signinTimestampsLogger, signInCallback);
         }
     }
 
     /** Performs sign-in after confirming account management with the user, if necessary. */
     private void checkAccountManagementAndSignIn(
             AccountInfo account,
-            @SigninAccessPoint int accessPoint,
             SigninFlowTimestampsLogger signinTimestampsLogger,
             SignInCallback signInCallback) {
         FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                 account,
                 assertNonNull(mSigninManager),
                 signinTimestampsLogger,
-                accessPoint,
+                mAccessPoint,
+                /* isSigninForced= */ mModel.get(
+                        FullscreenSigninProperties.SHOULD_HIDE_DISMISS_BUTTON),
                 signInCallback,
                 mContext,
                 mModalDialogManager,
@@ -858,23 +855,18 @@ class FullscreenSigninMediatorLegacy
      * Signs out from the current account and then signs in with the selected account.
      *
      * @param selectedAccount The account to sign in with.
-     * @param accessPoint The signin access point.
      * @param signinTimestampsLogger a logger for signin flow events.
      * @param signInCallback The callback to be called after sign-in completes or aborts.
      */
     private void signOutThenSignInWithSelectedAccount(
             AccountInfo selectedAccount,
-            @SigninAccessPoint int accessPoint,
             SigninFlowTimestampsLogger signinTimestampsLogger,
             SignInCallback signInCallback) {
         Runnable signOutCallback =
                 () -> {
                     if (mDestroyed) return;
                     checkAccountManagementAndSignIn(
-                            selectedAccount,
-                            accessPoint,
-                            signinTimestampsLogger,
-                            signInCallback);
+                            selectedAccount, signinTimestampsLogger, signInCallback);
                 };
         assumeNonNull(mSigninManager).signOut(SignoutReason.ABORT_SIGNIN, signOutCallback);
     }

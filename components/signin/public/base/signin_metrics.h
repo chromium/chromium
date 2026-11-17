@@ -697,7 +697,10 @@ enum class SigninFunnelEvent {
   kDefaultAccountSelected = 9,
   kAccountPickerDismissed = 10,
   kAccountAdded = 11,
-  kMaxValue = kAccountAdded,
+  kManagementNoticeShown = 12,
+  kManagementNoticeAccepted = 13,
+  kManagementNoticeDeclined = 14,
+  kMaxValue = kManagementNoticeDeclined,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninFunnelEvent)
 

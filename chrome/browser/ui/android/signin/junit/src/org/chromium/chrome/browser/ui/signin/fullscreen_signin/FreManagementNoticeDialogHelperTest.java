@@ -37,9 +37,12 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
 import org.chromium.chrome.browser.ui.signin.ConfirmManagedSyncDataDialogCoordinator;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SigninFunnelEvent;
 import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -58,6 +61,7 @@ public class FreManagementNoticeDialogHelperTest {
     @Mock private SigninFlowTimestampsLogger mTimestampLogger;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private FullscreenSigninCoordinator.Delegate mHost;
+    @Mock private SigninMetricsUtils.Natives mSigninMetricsUtilsJniMock;
     @Mock private Context mContext;
 
     private final CoreAccountInfo mCoreAccountInfo =
@@ -69,6 +73,7 @@ public class FreManagementNoticeDialogHelperTest {
 
     @Before
     public void setUp() {
+        SigninMetricsUtilsJni.setInstanceForTesting(mSigninMetricsUtilsJniMock);
         when(mSigninManager.extractDomainName(mCoreAccountInfo.getEmail()))
                 .thenReturn("domain.com");
 
@@ -96,11 +101,16 @@ public class FreManagementNoticeDialogHelperTest {
     }
 
     private void checkAccountManagementAndSignIn() {
+        checkAccountManagementAndSignIn(/* isSigninForced= */ false);
+    }
+
+    private void checkAccountManagementAndSignIn(boolean isSigninForced) {
         FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
                 mCoreAccountInfo,
                 mSigninManager,
                 mTimestampLogger,
                 SigninAccessPoint.START_PAGE,
+                isSigninForced,
                 mCallback,
                 mContext,
                 mModalDialogManager,
@@ -171,6 +181,7 @@ public class FreManagementNoticeDialogHelperTest {
                 mSigninManager,
                 mTimestampLogger,
                 accessPoint,
+                /* isSigninForced= */ false,
                 mCallback,
                 mContext,
                 mModalDialogManager,
@@ -178,6 +189,12 @@ public class FreManagementNoticeDialogHelperTest {
         assertTrue(mSignInCompleted);
         assertFalse(mSignInAborted);
         verify(mSigninManager).setUserAcceptedAccountManagement(true);
+        verify(mSigninMetricsUtilsJniMock)
+                .logSigninFunnelEvent(accessPoint, SigninFunnelEvent.MANAGEMENT_NOTICE_SHOWN);
+        verify(mSigninMetricsUtilsJniMock)
+                .logSigninFunnelEvent(accessPoint, SigninFunnelEvent.MANAGEMENT_NOTICE_ACCEPTED);
+        verify(mSigninMetricsUtilsJniMock, never())
+                .logSigninFunnelEvent(accessPoint, SigninFunnelEvent.MANAGEMENT_NOTICE_DECLINED);
     }
 
     @Test
@@ -212,6 +229,7 @@ public class FreManagementNoticeDialogHelperTest {
                 mSigninManager,
                 mTimestampLogger,
                 accessPoint,
+                /* isSigninForced= */ false,
                 mCallback,
                 mContext,
                 mModalDialogManager,
@@ -244,6 +262,7 @@ public class FreManagementNoticeDialogHelperTest {
                 mSigninManager,
                 mTimestampLogger,
                 accessPoint,
+                /* isSigninForced= */ false,
                 mCallback,
                 mContext,
                 mModalDialogManager,
@@ -252,6 +271,12 @@ public class FreManagementNoticeDialogHelperTest {
         assertTrue(mSignInAborted);
         verify(mSigninManager, never()).setUserAcceptedAccountManagement(true);
         verify(mSigninManager, never()).signin(any(), anyInt(), any());
+        verify(mSigninMetricsUtilsJniMock)
+                .logSigninFunnelEvent(accessPoint, SigninFunnelEvent.MANAGEMENT_NOTICE_SHOWN);
+        verify(mSigninMetricsUtilsJniMock)
+                .logSigninFunnelEvent(accessPoint, SigninFunnelEvent.MANAGEMENT_NOTICE_DECLINED);
+        verify(mSigninMetricsUtilsJniMock, never())
+                .logSigninFunnelEvent(accessPoint, SigninFunnelEvent.MANAGEMENT_NOTICE_ACCEPTED);
     }
 
     @Test
@@ -265,6 +290,7 @@ public class FreManagementNoticeDialogHelperTest {
                 mSigninManager,
                 mTimestampLogger,
                 accessPoint,
+                /* isSigninForced= */ false,
                 mCallback,
                 mContext,
                 mModalDialogManager,
@@ -272,6 +298,7 @@ public class FreManagementNoticeDialogHelperTest {
         verify(mSigninManager).signin(eq(mCoreAccountInfo), eq(accessPoint), notNull());
         verify(mSigninManager, never()).setUserAcceptedAccountManagement(anyBoolean());
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
+        verify(mSigninMetricsUtilsJniMock, never()).logSigninFunnelEvent(anyInt(), anyInt());
     }
 
     @Test
@@ -287,6 +314,36 @@ public class FreManagementNoticeDialogHelperTest {
         assertFalse(mSignInAborted);
         verify(mSigninManager).setUserAcceptedAccountManagement(true);
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
+        verify(mSigninMetricsUtilsJniMock)
+                .logSigninFunnelEvent(
+                        SigninAccessPoint.START_PAGE, SigninFunnelEvent.MANAGEMENT_NOTICE_SHOWN);
+        verify(mSigninMetricsUtilsJniMock)
+                .logSigninFunnelEvent(
+                        SigninAccessPoint.START_PAGE, SigninFunnelEvent.MANAGEMENT_NOTICE_ACCEPTED);
+        verify(mSigninMetricsUtilsJniMock, never())
+                .logSigninFunnelEvent(
+                        SigninAccessPoint.START_PAGE, SigninFunnelEvent.MANAGEMENT_NOTICE_DECLINED);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
+    public void testNewNotice_AccountManagementAccepted_SigninForced() {
+        mIsAccountManaged = true;
+        respondToHostNotice(/* accept= */ true);
+
+        checkAccountManagementAndSignIn(/* isSigninForced= */ true);
+
+        verify(mSigninManager)
+                .signin(eq(mCoreAccountInfo), eq(SigninAccessPoint.FORCED_SIGNIN), notNull());
+        verify(mSigninMetricsUtilsJniMock)
+                .logSigninFunnelEvent(
+                        SigninAccessPoint.START_PAGE, SigninFunnelEvent.MANAGEMENT_NOTICE_SHOWN);
+        verify(mSigninMetricsUtilsJniMock)
+                .logSigninFunnelEvent(
+                        SigninAccessPoint.START_PAGE, SigninFunnelEvent.MANAGEMENT_NOTICE_ACCEPTED);
+        verify(mSigninMetricsUtilsJniMock, never())
+                .logSigninFunnelEvent(
+                        SigninAccessPoint.START_PAGE, SigninFunnelEvent.MANAGEMENT_NOTICE_DECLINED);
     }
 
     @Test
@@ -319,6 +376,15 @@ public class FreManagementNoticeDialogHelperTest {
         verify(mSigninManager, never()).setUserAcceptedAccountManagement(true);
         verify(mSigninManager, never()).signin(any(), anyInt(), any());
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
+        verify(mSigninMetricsUtilsJniMock)
+                .logSigninFunnelEvent(
+                        SigninAccessPoint.START_PAGE, SigninFunnelEvent.MANAGEMENT_NOTICE_SHOWN);
+        verify(mSigninMetricsUtilsJniMock)
+                .logSigninFunnelEvent(
+                        SigninAccessPoint.START_PAGE, SigninFunnelEvent.MANAGEMENT_NOTICE_DECLINED);
+        verify(mSigninMetricsUtilsJniMock, never())
+                .logSigninFunnelEvent(
+                        SigninAccessPoint.START_PAGE, SigninFunnelEvent.MANAGEMENT_NOTICE_ACCEPTED);
     }
 
     @Test
@@ -333,5 +399,6 @@ public class FreManagementNoticeDialogHelperTest {
         verify(mSigninManager, never()).setUserAcceptedAccountManagement(anyBoolean());
         verify(mHost, never()).displayManagementNotice(any(), any());
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
+        verify(mSigninMetricsUtilsJniMock, never()).logSigninFunnelEvent(anyInt(), anyInt());
     }
 }
