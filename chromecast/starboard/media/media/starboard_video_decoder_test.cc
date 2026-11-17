@@ -139,7 +139,9 @@ class StarboardVideoDecoderTest : public ::testing::Test {
     StarboardDrmKeyTracker::GetInstance().ClearStateForTesting();
   }
 
-  ~StarboardVideoDecoderTest() override = default;
+  ~StarboardVideoDecoderTest() override {
+    StarboardDrmKeyTracker::GetInstance().ClearStateForTesting();
+  }
 
   // This should be destructed last.
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -2045,6 +2047,31 @@ TEST_F(StarboardVideoDecoderTest,
   StarboardDrmKeyTracker::GetInstance().AddKey(kKeyId, "session_id");
   // The key-available callback is posted to this sequence.
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(StarboardVideoDecoderTest,
+       RejectsEmptyNonEosBufferBeforeInitialization) {
+  EXPECT_CALL(*starboard_, WriteSample).Times(0);
+
+  auto empty_buffer = base::MakeRefCounted<DecoderBufferAdapter>(
+      base::MakeRefCounted<::media::DecoderBuffer>(0));
+
+  StarboardVideoDecoder decoder(starboard_.get());
+  MockDelegate delegate;
+  EXPECT_CALL(delegate, OnVideoResolutionChanged).Times(0);
+
+  ASSERT_TRUE(decoder.SetConfig(GetBasicConfig()));
+  decoder.SetDelegate(&delegate);
+
+  EXPECT_EQ(decoder.PushBuffer(empty_buffer.get()),
+            MediaPipelineBackend::BufferStatus::kBufferFailed);
+
+  MediaPipelineBackend::VideoDecoder::Statistics stats = {};
+  decoder.GetStatistics(&stats);
+  EXPECT_EQ(stats.decoded_bytes, 0u);
+
+  // Initializing after a rejected buffer must not replay a failed push.
+  decoder.Initialize(&fake_player_);
 }
 
 }  // namespace

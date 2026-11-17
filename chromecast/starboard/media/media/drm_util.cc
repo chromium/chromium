@@ -39,6 +39,28 @@ StarboardDrmSampleInfo* DrmInfoWrapper::GetDrmSampleInfo() {
   return drm_sample_info_.get();
 }
 
+bool DrmInfoWrapper::VerifySubsamplesMatchSize(size_t buffer_size) const {
+  if (!drm_sample_info_) {
+    return true;
+  }
+
+  if (drm_sample_info_->subsample_mapping.empty()) {
+    return false;
+  }
+
+  base::CheckedNumeric<size_t> total_size = 0;
+  for (const StarboardDrmSubSampleMapping& subsample :
+       drm_sample_info_->subsample_mapping) {
+    if (subsample.clear_byte_count < 0 || subsample.encrypted_byte_count < 0) {
+      return false;
+    }
+    total_size += static_cast<size_t>(subsample.clear_byte_count);
+    total_size += static_cast<size_t>(subsample.encrypted_byte_count);
+  }
+
+  return total_size.IsValid() && total_size.ValueOrDie() == buffer_size;
+}
+
 // static
 bool DrmInfoWrapper::VerifySubsamplesMatchSize(
     const CastDecoderBuffer& buffer) {
@@ -53,6 +75,11 @@ bool DrmInfoWrapper::VerifySubsamplesMatchSize(
 
   base::CheckedNumeric<size_t> total_size = 0;
   for (const SubsampleEntry& subsample : decrypt_config->subsamples()) {
+    if (!base::IsValueInRangeForNumericType<int32_t>(subsample.clear_bytes) ||
+        !base::IsValueInRangeForNumericType<int32_t>(subsample.cypher_bytes)) {
+      LOG(ERROR) << "Subsample byte count exceeds supported range.";
+      return false;
+    }
     total_size += subsample.clear_bytes;
     total_size += subsample.cypher_bytes;
   }
@@ -61,6 +88,40 @@ bool DrmInfoWrapper::VerifySubsamplesMatchSize(
     LOG(ERROR) << "Subsample sizes do not equal input size. Total size: "
                << size_t{total_size.ValueOrDefault(0)}
                << ", expected size: " << buffer.data_size();
+    return false;
+  }
+
+  return true;
+}
+
+// static
+bool DrmInfoWrapper::VerifySubsamplesMatchSize(
+    const ::media::DecoderBuffer& buffer) {
+  if (buffer.end_of_stream()) {
+    return true;
+  }
+
+  const ::media::DecryptConfig* decrypt_config = buffer.decrypt_config();
+  if (!decrypt_config || decrypt_config->subsamples().empty()) {
+    return true;
+  }
+
+  base::CheckedNumeric<size_t> total_size = 0;
+  for (const ::media::SubsampleEntry& subsample :
+       decrypt_config->subsamples()) {
+    if (!base::IsValueInRangeForNumericType<int32_t>(subsample.clear_bytes) ||
+        !base::IsValueInRangeForNumericType<int32_t>(subsample.cypher_bytes)) {
+      LOG(ERROR) << "Subsample byte count exceeds supported range.";
+      return false;
+    }
+    total_size += subsample.clear_bytes;
+    total_size += subsample.cypher_bytes;
+  }
+
+  if (!total_size.IsValid() || total_size.ValueOrDie() != buffer.size()) {
+    LOG(ERROR) << "Subsample sizes do not equal input size. Total size: "
+               << size_t{total_size.ValueOrDefault(0)}
+               << ", expected size: " << buffer.size();
     return false;
   }
 
