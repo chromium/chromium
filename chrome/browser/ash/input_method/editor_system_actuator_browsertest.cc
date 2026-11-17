@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/editor_system_actuator.h"
 
+#include "base/check_deref.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -16,8 +17,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/manta/manta_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
@@ -94,7 +97,8 @@ IN_PROC_BROWSER_TEST_P(EditorSystemActuatorAccessibilityTest,
           ash::AccessibilityManager::Get()->profile()),
       std::make_unique<EditorGeolocationMockProvider>("testing_country"));
   EditorSystemActuator system_actuator(
-      ash::AccessibilityManager::Get()->profile(),
+      CHECK_DEREF(ash::AnnotatedAccountId::Get(
+          ash::AccessibilityManager::Get()->profile())),
       mojo::PendingAssociatedRemote<orca::mojom::SystemActuator>()
           .InitWithNewEndpointAndPassReceiver(),
       &editor_mediator);
@@ -114,7 +118,8 @@ IN_PROC_BROWSER_TEST_P(EditorSystemActuatorAccessibilityTest,
           ash::AccessibilityManager::Get()->profile()),
       std::make_unique<EditorGeolocationMockProvider>("testing_country"));
   EditorSystemActuator system_actuator(
-      ash::AccessibilityManager::Get()->profile(),
+      CHECK_DEREF(ash::AnnotatedAccountId::Get(
+          ash::AccessibilityManager::Get()->profile())),
       mojo::PendingAssociatedRemote<orca::mojom::SystemActuator>()
           .InitWithNewEndpointAndPassReceiver(),
       &editor_mediator);

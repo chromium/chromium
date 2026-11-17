@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_helpers.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
@@ -119,8 +120,8 @@ bool EditorMediator::IsServiceConnected() {
 void EditorMediator::ResetEditorConnections() {
   if (editor_service_connector_) {
     service_connection_ = std::make_unique<ServiceConnection>(
-        profile_, this, metrics_recorder_.get(),
-        editor_service_connector_.get());
+        CHECK_DEREF(ash::AnnotatedAccountId::Get(profile_)), this,
+        metrics_recorder_.get(), editor_service_connector_.get());
     panel_manager_.BindEditorClient();
   }
 }
@@ -331,7 +332,7 @@ void EditorMediator::FetchAndUpdateInputContextForTesting() {
 }
 
 EditorMediator::ServiceConnection::ServiceConnection(
-    Profile* profile,
+    const AccountId& account_id,
     EditorMediator* mediator,
     EditorMetricsRecorder* metrics_recorder,
     EditorServiceConnector* service_connector) {
@@ -345,7 +346,7 @@ EditorMediator::ServiceConnection::ServiceConnection(
       editor_event_sink_receiver;
 
   system_actuator_ = std::make_unique<EditorSystemActuator>(
-      profile, system_actuator_remote.InitWithNewEndpointAndPassReceiver(),
+      account_id, system_actuator_remote.InitWithNewEndpointAndPassReceiver(),
       mediator);
   text_query_provider_ = std::make_unique<EditorTextQueryProvider>(
       text_query_provider_remote.InitWithNewEndpointAndPassReceiver(),

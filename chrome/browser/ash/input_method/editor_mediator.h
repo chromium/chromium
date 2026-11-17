@@ -35,6 +35,7 @@
 #include "ui/display/display_observer.h"
 #include "ui/gfx/range/range.h"
 
+class AccountId;
 class ApplicationLocaleStorage;
 
 namespace manta {
@@ -153,7 +154,7 @@ class EditorMediator : public EditorContext::Observer,
 
   class ServiceConnection {
    public:
-    ServiceConnection(Profile* profile,
+    ServiceConnection(const AccountId& account_id,
                       EditorMediator* mediator,
                       EditorMetricsRecorder* metrics_recorder,
                       EditorServiceConnector* service_connector);

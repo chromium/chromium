@@ -5,17 +5,20 @@
 #include "chrome/browser/ash/input_method/editor_system_actuator.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/input_method/editor_feedback.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chrome/browser/ash/input_method/editor_text_insertion.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/feedback/feedback_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
 
@@ -50,10 +53,10 @@ EditorTextInsertion::InsertionStrategy GetInsertionStrategy(const GURL& url) {
 }  // namespace
 
 EditorSystemActuator::EditorSystemActuator(
-    Profile* profile,
+    const AccountId& account_id,
     mojo::PendingAssociatedReceiver<orca::mojom::SystemActuator> receiver,
     System* system)
-    : profile_(profile),
+    : account_id_(account_id),
       system_actuator_receiver_(this, std::move(receiver)),
       system_(system) {}
 
@@ -113,9 +116,9 @@ void EditorSystemActuator::CloseUI() {
 }
 
 void EditorSystemActuator::SubmitFeedback(const std::string& description) {
-  // TODO: b/384383652 - Use `ShellDelegate::SendSpecializedFeatureFeedback`
-  // after this is moved out of //chrome.
-  SendEditorFeedback(profile_, description);
+  ash::Shell::Get()->shell_delegate()->SendSpecializedFeatureFeedback(
+      account_id_, feedback::kOrcaFeedbackProductId, description,
+      /*image=*/std::nullopt, /*image_mime_type=*/std::nullopt);
   system_->Announce(
       l10n_util::GetStringUTF16(IDS_EDITOR_ANNOUNCEMENT_TEXT_FOR_FEEDBACK));
 }

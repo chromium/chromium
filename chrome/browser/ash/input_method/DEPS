@@ -12,7 +12,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/browser_process_platform_part_ash.h",
   "+chrome/browser/extensions/component_loader.h",
-  "+chrome/browser/feedback",
   "+chrome/browser/metrics",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/input_method",

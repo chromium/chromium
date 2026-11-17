@@ -17,8 +17,8 @@
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chrome/browser/ash/input_method/editor_text_insertion.h"
 #include "chrome/browser/ash/input_method/editor_transition_enums.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
+#include "components/account_id/account_id.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "url/gurl.h"
@@ -41,8 +41,9 @@ class EditorSystemActuator : public orca::mojom::SystemActuator {
     virtual size_t GetSelectedTextLength() = 0;
   };
 
+  // `account_id` is the account of the user that the editor runs for.
   EditorSystemActuator(
-      Profile* profile,
+      const AccountId& account_id,
       mojo::PendingAssociatedReceiver<orca::mojom::SystemActuator> receiver,
       System* system);
   ~EditorSystemActuator() override;
@@ -68,7 +69,7 @@ class EditorSystemActuator : public orca::mojom::SystemActuator {
  private:
   void QueueTextInsertion(const std::string pending_text);
 
-  raw_ptr<Profile> profile_;
+  const AccountId account_id_;
   mojo::AssociatedReceiver<orca::mojom::SystemActuator>
       system_actuator_receiver_;
 
