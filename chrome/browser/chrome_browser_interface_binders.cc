@@ -27,6 +27,7 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_processor_impl_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/pwc/pwc_api_binder.h"
 #include "chrome/browser/reader_mode/reader_mode_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -357,10 +358,13 @@ void BindSpeechRecognitionClientBrowserInterfaceHandler(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<media::mojom::SpeechRecognitionClientBrowserInterface>
         receiver) {
-  if (captions::IsLiveCaptionFeatureSupported()) {
+  Profile* profile = Profile::FromBrowserContext(
+      frame_host->GetProcess()->GetBrowserContext());
+  // A profile with keyed services disabled by default, e.g.
+  // TopChromeWebUIProfile, has no SpeechRecognitionClientBrowserInterface.
+  if (captions::IsLiveCaptionFeatureSupported() &&
+      !AreKeyedServicesDisabledForProfileByDefault(profile)) {
     // Bind in this process.
-    Profile* profile = Profile::FromBrowserContext(
-        frame_host->GetProcess()->GetBrowserContext());
     SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(profile)
         ->BindReceiver(std::move(receiver), frame_host->GetGlobalId());
   }
