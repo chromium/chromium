@@ -61,9 +61,6 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIHistoryHost);
 
-  source->AddBoolean("replaceSyncPromosWithSignInPromos",
-                     syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-
 #if !BUILDFLAG(IS_CHROMEOS)
   source->AddBoolean("unoPhase2FollowUp",
                      base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp));
@@ -85,8 +82,7 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"signinOnPhonePromoSubtitle",
        IDS_HISTORY_SIGNIN_ON_PHONE_PROMO_SUBTITLE},
       {"signinOnPhonePromoTitle", IDS_HISTORY_SIGNIN_ON_PHONE_PROMO_TITLE},
-      {"turnOnSyncPromo", IDS_HISTORY_TURN_ON_SYNC_PROMO},
-      {"turnOnSyncPromoDesc", IDS_HISTORY_TURN_ON_SYNC_PROMO_DESC},
+      {"turnOnSyncHistoryButton", IDS_HISTORY_SYNC_HISTORY_BUTTON},
       {"turnOnSyncHistoryPromo", IDS_HISTORY_SYNC_HISTORY_PROMO},
       {"syncHistoryPromoBodySignedOut",
        IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_SIGNED_OUT},
@@ -97,8 +93,6 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"verifyItsYou", IDS_VERIFY_IT_IS_YOU}};
   source->AddLocalizedStrings(kStrings);
 
-  source->AddLocalizedString("turnOnSyncHistoryButton",
-                             IDS_HISTORY_SYNC_HISTORY_BUTTON);
   source->AddString("accountPictureUrl",
                     profiles::GetPlaceholderAvatarIconUrl());
 

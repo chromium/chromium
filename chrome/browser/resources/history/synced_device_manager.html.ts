@@ -35,18 +35,6 @@ export function getHtml(this: HistorySyncedDeviceManagerElement) {
   ${this.noSyncedTabsMessage_()}
 </div>
 
-<div id="signInGuide"
-    ?hidden="${
-        !this.showSignInGuide_() || this.replaceSyncPromosWithSignInPromos_}">
-  <div id="sync-promo-illustration"></div>
-  <div id="turn-on-sync-promo">$i18n{turnOnSyncPromo}</div>
-  <div id="turn-on-sync-promo-desc">$i18n{turnOnSyncPromoDesc}</div>
-  <cr-button id="turn-on-sync-button" class="action-button"
-      @click="${this.onTurnOnSyncClick_}">
-    $i18n{turnOnSyncButton}
-  </cr-button>
-</div>
-
 <if expr="not is_chromeos">
 ${this.shouldShowHistorySyncOptIn_() ? html`
   <div id="history-sync-optin" class="history-sync-optin">

@@ -28,7 +28,6 @@ namespace history {
 inline constexpr char kIsGlicEnabledKey[] = "isGlicEnabled";
 inline constexpr char kIsGlicWebActuationAvailableKey[] =
     "isGlicWebActuationAvailable";
-inline constexpr char kTurnOnSyncButtonKey[] = "turnOnSyncButton";
 inline constexpr char kHistorySyncPromoBodySignedInKey[] =
     "historySyncPromoBodySignedIn";
 inline constexpr char kHistorySyncPromoBodyWebOnlySignedInKey[] =
@@ -37,8 +36,6 @@ inline constexpr char kTurnOnSignedInSyncHistoryPromoBodySignInSyncOffKey[] =
     "turnOnSignedInSyncHistoryPromoBodySignInSyncOff";
 inline constexpr char kSyncHistoryPromoBodyWebOnlySignedInKey[] =
     "syncHistoryPromoBodyWebOnlySignedIn";
-inline constexpr char kAccountNameKey[] = "accountName";
-inline constexpr char kAccountEmailKey[] = "accountEmail";
 inline constexpr char kIsHistoryClustersEnabledKey[] =
     "isHistoryClustersEnabled";
 inline constexpr char kManagedByIconKey[] = "managedByIcon";

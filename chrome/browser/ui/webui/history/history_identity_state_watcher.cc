@@ -8,7 +8,6 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -76,44 +75,26 @@ void HistoryIdentityStateWatcher::OnSyncShutdown(syncer::SyncService* sync) {
 
 HistoryIdentityState::SignIn
 HistoryIdentityStateWatcher::GetHistorySignInState() const {
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    switch (signin_util::GetSignedInState(identity_manager_)) {
-      case signin_util::SignedInState::kSignedOut:
-        return HistoryIdentityState::SignIn::kSignedOut;
+  switch (signin_util::GetSignedInState(identity_manager_)) {
+    case signin_util::SignedInState::kSignedOut:
+      return HistoryIdentityState::SignIn::kSignedOut;
 
-      case signin_util::SignedInState::kWebOnlySignedIn:
-        return HistoryIdentityState::SignIn::kWebOnlySignedIn;
+    case signin_util::SignedInState::kWebOnlySignedIn:
+      return HistoryIdentityState::SignIn::kWebOnlySignedIn;
 
-      case signin_util::SignedInState::kSignInPending:
-        return HistoryIdentityState::SignIn::kSignInPending;
+    case signin_util::SignedInState::kSignInPending:
+      return HistoryIdentityState::SignIn::kSignInPending;
 
-      case signin_util::SignedInState::kSignedIn:
-      case signin_util::SignedInState::kSyncing:
-      case signin_util::SignedInState::kSyncPaused:
-        return HistoryIdentityState::SignIn::kSignedIn;
-    }
-  } else {
-    // Note: This intentionally does not check whether the history data type is
-    // actually enabled (for historical reasons, mostly).
-    return identity_manager_ && identity_manager_->HasPrimaryAccount(
-                                    signin::ConsentLevel::kSync)
-               ? HistoryIdentityState::SignIn::kSignedIn
-               : HistoryIdentityState::SignIn::kSignedOut;
+    case signin_util::SignedInState::kSignedIn:
+    case signin_util::SignedInState::kSyncing:
+    case signin_util::SignedInState::kSyncPaused:
+      return HistoryIdentityState::SignIn::kSignedIn;
   }
 }
 
 HistoryIdentityState::SyncState
 HistoryIdentityStateWatcher::GetSyncStateForType(
     syncer::UserSelectableType type) const {
-  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    // Note: This intentionally does not check whether the history data type is
-    // actually enabled (for historical reasons, mostly).
-    return identity_manager_ && identity_manager_->HasPrimaryAccount(
-                                    signin::ConsentLevel::kSync)
-               ? HistoryIdentityState::SyncState::kTurnedOn
-               : HistoryIdentityState::SyncState::kTurnedOff;
-  }
-
   // If the type is disabled by policy, we consider the corresponding sync
   // state as disabled.
   if (!signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(

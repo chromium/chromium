@@ -418,30 +418,6 @@ suite('<history-synced-device-manager>', function() {
     assertTrue(element.$.menu.getIfExists()!.open);
   });
 
-  // <if expr="is_chromeos">
-  // On ChromeOS, this promo may be shown depending on the
-  // replaceSyncPromosWithSignInPromos loadTimeData value. For other platforms,
-  // the flag is true so this promo is not shown (checked in other tests below).
-  test('show sign in promo', async () => {
-    webUIListenerCallback('history-identity-state-changed', {
-      signIn: HistorySignInState.SIGNED_OUT,
-      tabsSync: SyncState.TURNED_OFF,
-      historySync: SyncState.TURNED_OFF,
-    });
-    await microtasksFinished();
-    assertEquals(
-        loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'),
-        element.$.signInGuide.hidden);
-    webUIListenerCallback('history-identity-state-changed', {
-      signIn: HistorySignInState.SIGNED_IN,
-      tabsSync: SyncState.TURNED_ON,
-      historySync: SyncState.TURNED_OFF,
-    });
-    await microtasksFinished();
-    assertTrue(element.$.signInGuide.hidden);
-  });
-  // </if>
-
   test('no synced tabs message', async () => {
     await microtasksFinished();
     // When user is not logged in, there is no synced tabs.
@@ -494,6 +470,7 @@ suite('<history-synced-device-manager>', function() {
     assertTrue(element.$.noSyncedTabs.hidden);
   });
 
+  // <if expr="not is_chromeos">
   test('hide sign in promo in guest mode', async () => {
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGNED_OUT,
@@ -501,18 +478,13 @@ suite('<history-synced-device-manager>', function() {
       historySync: SyncState.TURNED_OFF,
     });
     await microtasksFinished();
-    // <if expr="not is_chromeos">
     assertTrue(isChildVisible(element, '#history-sync-optin'));
-    // </if>
     element.configureSignInForTest({
       signInAllowed: true,
       guestSession: true,
     });
     await microtasksFinished();
-    assertTrue(element.$.signInGuide.hidden);
-    // <if expr="not is_chromeos">
     assertFalse(isChildVisible(element, '#history-sync-optin'));
-    // </if>
   });
 
   test('hide sign-in promo if sign-in is disabled', async function() {
@@ -522,19 +494,15 @@ suite('<history-synced-device-manager>', function() {
       historySync: SyncState.TURNED_OFF,
     });
     await microtasksFinished();
-    // <if expr="not is_chromeos">
     assertTrue(isChildVisible(element, '#history-sync-optin'));
-    // </if>
     element.configureSignInForTest({
       signInAllowed: false,
       guestSession: false,
     });
     await microtasksFinished();
-    assertTrue(element.$.signInGuide.hidden);
-    // <if expr="not is_chromeos">
     assertFalse(isChildVisible(element, '#history-sync-optin'));
-    // </if>
   });
+  // </if>
 
   test('no synced tabs message displays on load', async () => {
     // On initial load, the identityStateChanged_ callback is triggered, which
@@ -649,9 +617,6 @@ suite('<history-sync-optin>', function() {
   test('check history sync optin elements are visible', async () => {
     await microtasksFinished();
 
-    // The old promo should not be visible.
-    assertFalse(isChildVisible(element, '#turn-on-sync-promo'));
-
     // The new promo elements for WEB_ONLY_SIGNED_IN state are shown correctly.
     assertTrue(isChildVisible(element, '#sync-history-button'));
     assertTrue(isChildVisible(element, '#history-sync-optin'));
@@ -676,7 +641,6 @@ suite('<history-sync-optin>', function() {
       historySync: SyncState.TURNED_OFF,
     });
     await microtasksFinished();
-    assertFalse(isChildVisible(element, '#signInGuide'));
     // The other states promo elements should not be visible.
     assertFalse(isChildVisible(element, '#signed-in-sync-history-promo-desc'));
     assertFalse(isChildVisible(element, '#verify-its-you-button'));

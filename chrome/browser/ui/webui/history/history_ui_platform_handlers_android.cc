@@ -106,7 +106,6 @@ void PopulatePlatformDataSource(content::WebUIDataSource* source,
   source->AddString(kHistorySyncPromoBodyWebOnlySignedInKey, "");
   source->AddString(kTurnOnSignedInSyncHistoryPromoBodySignInSyncOffKey, "");
   source->AddString(kSyncHistoryPromoBodyWebOnlySignedInKey, "");
-  source->AddString(kTurnOnSyncButtonKey, "");
 
   // Managed UI is handled natively on Android.
   source->AddString(kManagedByIconKey, "");

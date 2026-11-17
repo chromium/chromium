@@ -31,7 +31,6 @@ export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
       'recordLongTime',
       'recordSigninPendingOffered',
       'recordTime',
-      'startTurnOnSyncFlow',
     ]);
 
     this.handler = TestMock.fromClass(HistoryPageHandlerRemote);
@@ -144,10 +143,6 @@ export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
 
   recordSigninPendingOffered(accessPoint: AccessPoint) {
     this.methodCalled('recordSigninPendingOffered', accessPoint);
-  }
-
-  startTurnOnSyncFlow() {
-    this.methodCalled('startTurnOnSyncFlow');
   }
 
   getSyncedDevicesForFiltering(): Promise<{devices: Device[]}> {

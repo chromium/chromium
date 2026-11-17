@@ -65,14 +65,9 @@ void PopulatePlatformDataSource(content::WebUIDataSource* source,
   source->AddBoolean(kIsGlicWebActuationAvailableKey,
                      is_glic_web_actuation_available);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  source->AddLocalizedString(kTurnOnSyncButtonKey,
-                             IDS_HISTORY_TURN_ON_SYNC_BUTTON);
-#else
+#if !BUILDFLAG(IS_CHROMEOS)
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  bool has_primary_account =
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
   signin::AccountPreviewDataService* account_preview_data_service =
       AccountPreviewDataServiceFactory::GetForProfile(profile);
   AccountInfo account_info = signin_ui_util::GetSingleAccountForPromos(
@@ -133,20 +128,7 @@ void PopulatePlatformDataSource(content::WebUIDataSource* source,
         kSyncHistoryPromoBodyWebOnlySignedInKey,
         IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_SIGNED_OUT);
   }
-  source->AddString(kAccountNameKey, account_info.GetFullName().value_or(""));
-  source->AddString(kAccountEmailKey, account_info.GetEmail());
-  if (!has_primary_account && !account_info.IsEmpty()) {
-    source->AddString(
-        kTurnOnSyncButtonKey,
-        l10n_util::GetStringFUTF16(
-            IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON,
-            base::UTF8ToUTF16(account_info.GetGivenName().value_or(
-                account_info.GetEmail()))));
-  } else {
-    source->AddLocalizedString(kTurnOnSyncButtonKey,
-                               IDS_HISTORY_TURN_ON_SYNC_BUTTON);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);

@@ -32,9 +32,6 @@ class HistoryLoginHandler : public content::WebUIMessageHandler {
   // Handler for the "otherDevicesInitialized" message. No args.
   void HandleOtherDevicesInitialized(const base::ListValue& args);
 
-  // Handler for the "startTurnOnSyncFlow" message. No args.
-  void HandleTurnOnSyncFlow(const base::ListValue& args);
-
   // Handler for the "recordSigninPendingOffered" message. Takes an
   // `history::mojom::AccessPoint` integer argument.
   void HandleRecordSigninPendingOffered(const base::ListValue& args);
@@ -43,7 +40,8 @@ class HistoryLoginHandler : public content::WebUIMessageHandler {
   // DictionaryValue containing the initial identity state.
   void HandleGetInitialIdentityState(const base::ListValue& args);
 
-  // Called by |history_sign_in_state_watcher_| when the signin state changes
+  // Called by |history_identity_state_watcher_| when the identity state
+  // changes.
   void IdentityStateChanged();
 
   base::DictValue GetHistoryIdentityStateDict();

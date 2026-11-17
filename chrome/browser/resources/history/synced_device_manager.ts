@@ -51,7 +51,6 @@ export interface HistorySyncedDeviceManagerElement {
   $: {
     menu: CrLazyRenderLitElement<CrActionMenuElement>,
     noSyncedTabs: HTMLElement,
-    signInGuide: HTMLElement,
   };
 }
 
@@ -128,9 +127,6 @@ export class HistorySyncedDeviceManagerElement extends
   };
   accessor searchTerm: string = '';
   accessor sessionList: ForeignSession[]|null = null;
-
-  protected readonly replaceSyncPromosWithSignInPromos_: boolean =
-      loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos');
 
   override connectedCallback() {
     super.connectedCallback();
@@ -254,10 +250,6 @@ export class HistorySyncedDeviceManagerElement extends
     };
   }
 
-  protected onTurnOnSyncClick_() {
-    BrowserProxyImpl.getInstance().startTurnOnSyncFlow();
-  }
-
   // <if expr="not is_chromeos">
   protected onTurnOnHistorySyncClick_() {
     BrowserProxyImpl.getInstance().handler.turnOnHistorySync(
@@ -351,12 +343,14 @@ export class HistorySyncedDeviceManagerElement extends
     return this.historyIdentityState_.signIn === state;
   }
 
+  // <if expr="not is_chromeos">
   protected shouldShowHistorySyncOptIn_(): boolean {
-    return this.replaceSyncPromosWithSignInPromos_ && !this.guestSession_ &&
-        this.signInAllowed_ && !this.isTabsSyncDisabled_() &&
+    return !this.guestSession_ && this.signInAllowed_ &&
+        !this.isTabsSyncDisabled_() &&
         !(this.isSignInState_(HistorySignInState.SIGNED_IN) &&
           this.isTabsSyncTurnedOn_());
   }
+  // </if>
 
   protected isTabsSyncTurnedOn_(): boolean {
     return this.historyIdentityState_.tabsSync === SyncState.TURNED_ON;
@@ -376,21 +370,6 @@ export class HistorySyncedDeviceManagerElement extends
 
     return this.isSignInState_(HistorySignInState.SIGNED_IN) &&
         this.isTabsSyncTurnedOn_() && this.syncedDevices_.length === 0;
-  }
-
-  /**
-   * Shows the signin guide when the user is not signed in, signin is allowed
-   * and not in a guest session.
-   */
-  protected showSignInGuide_(): boolean {
-    const show = this.isSignInState_(HistorySignInState.SIGNED_OUT) &&
-        !this.guestSession_ && this.signInAllowed_;
-    if (show) {
-      BrowserProxyImpl.getInstance().recordAction(
-          'Signin_Impression_FromRecentTabs');
-    }
-
-    return show;
   }
 
   /**
@@ -453,17 +432,10 @@ export class HistorySyncedDeviceManagerElement extends
 
     this.fire('history-view-changed');
 
-    if (this.replaceSyncPromosWithSignInPromos_) {
-      // User signed out, syncing without tabs, or disabled sync in general =>
-      // clear synced device list.
-      if (this.isSignInState_(HistorySignInState.SIGNED_OUT) ||
-          this.isTabsSyncDisabled_()) {
-        this.clearDisplayedSyncedDevices_();
-        this.sessionList = null;
-        return;
-      }
-    } else if (this.isSignInState_(HistorySignInState.SIGNED_OUT)) {
-      // User signed out, clear synced device list and show the sign in promo.
+    // User signed out, syncing without tabs, or disabled sync in general =>
+    // clear synced device list.
+    if (this.isSignInState_(HistorySignInState.SIGNED_OUT) ||
+        this.isTabsSyncDisabled_()) {
       this.clearDisplayedSyncedDevices_();
       this.sessionList = null;
       return;
@@ -477,10 +449,6 @@ export class HistorySyncedDeviceManagerElement extends
   }
 
   private maybeRecordSigninPendingOffered_() {
-    if (!this.replaceSyncPromosWithSignInPromos_) {
-      return;
-    }
-
     // Reset the flag if the state changes away from SIGNED_IN_PAUSED.
     if (!this.isSignInState_(HistorySignInState.SIGN_IN_PENDING)) {
       this.signinPausedImpressionRecorded_ = false;

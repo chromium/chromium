@@ -40,7 +40,6 @@ export interface BrowserProxy {
   navigateToUrl(url: string, target: string, e: MouseEvent): void;
   otherDevicesInitialized(): void;
   getInitialIdentityState(): Promise<HistoryIdentityState>;
-  startTurnOnSyncFlow(): void;
   getSyncedDevicesForFiltering(): Promise<{devices: Device[]}>;
   getTimePeriodOptions(): Promise<{options: TimePeriodOption[]}>;
 }
@@ -94,10 +93,6 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   getInitialIdentityState(): Promise<HistoryIdentityState> {
     return sendWithPromise<HistoryIdentityState>('getInitialIdentityState');
-  }
-
-  startTurnOnSyncFlow() {
-    chrome.send('startTurnOnSyncFlow');
   }
 
   getSyncedDevicesForFiltering() {

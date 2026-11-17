@@ -14,17 +14,6 @@
   overflow: auto;
 }
 
-#sync-promo-illustration {
-  background: url(images/sign_in_promo.svg) no-repeat center center;
-  background-size: contain;
-  height: 222px;
-  margin-top: 100px;
-  width: 594.5px;
-<if expr="is_android">
-  max-width: 100%;
-</if>
-}
-
 .sync-history-illustration {
   content: url(images/sync_history_promo.svg);
   width: 100%;
@@ -37,10 +26,6 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  #sync-promo-illustration {
-    background-image: url(images/sign_in_promo_dark.svg);
-  }
-
   .sync-history-illustration  {
     content: url(images/sync_history_promo_dark.svg);
   }
@@ -58,30 +43,6 @@
   height: auto;
   padding-block: 80px;
 </if>
-}
-
-#signInGuide {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow-x: hidden;
-  text-align: center;
-}
-
-#turn-on-sync-promo {
-  font-size: 215%;
-  margin-top: 40px;
-}
-
-#turn-on-sync-promo-desc {
-  color: var(--cr-secondary-text-color);
-  font-size: 123%;
-  margin-top: 10px;
-}
-
-#turn-on-sync-button {
-  margin: 24px 0;
 }
 
 #synced-device-list {

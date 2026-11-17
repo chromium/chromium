@@ -9,21 +9,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/history/history_identity_state_watcher.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "components/signin/public/base/signin_switches.h"
-#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/webui/resources/cr_components/history/history.mojom.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/signin/signin_ui_util.h"
-#endif
 
 HistoryLoginHandler::HistoryLoginHandler(
     base::RepeatingClosure identity_state_changed_callback)
@@ -36,11 +29,6 @@ void HistoryLoginHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "otherDevicesInitialized",
       base::BindRepeating(&HistoryLoginHandler::HandleOtherDevicesInitialized,
-                          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      "startTurnOnSyncFlow",
-      base::BindRepeating(&HistoryLoginHandler::HandleTurnOnSyncFlow,
                           base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
@@ -86,27 +74,6 @@ void HistoryLoginHandler::IdentityStateChanged() {
 
   FireWebUIListener("history-identity-state-changed",
                     GetHistoryIdentityStateDict());
-}
-
-void HistoryLoginHandler::HandleTurnOnSyncFlow(
-    const base::ListValue& /*args*/) {
-#if !BUILDFLAG(IS_ANDROID)
-  Profile* profile = Profile::FromWebUI(web_ui());
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  CoreAccountInfo account_info =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-#if !BUILDFLAG(IS_CHROMEOS)
-  if (account_info.IsEmpty()) {
-    account_info = signin_ui_util::GetSingleAccountForPromos(
-                       identity_manager,
-                       AccountPreviewDataServiceFactory::GetForProfile(profile))
-                       .GetCoreAccountInfo();
-  }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-  signin_ui_util::EnableHistorySyncFromSingleAccountPromo(
-      profile, account_info, signin_metrics::AccessPoint::kRecentTabs);
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void HistoryLoginHandler::HandleRecordSigninPendingOffered(
