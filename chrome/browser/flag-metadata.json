@@ -543,7 +543,7 @@
   {
     "name": "android-open-incognito-as-window-restrictions",
     "owners": [ "shuyng@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "android-page-info-as-app-menu-item",
@@ -4913,7 +4913,7 @@
   {
     "name": "enforce-incognito-isolation",
     "owners": [ "shuyng@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 162
+    "expiry_milestone": 170
   },
   {
     "name": "enhanced-calendar",
@@ -6288,7 +6288,7 @@
   {
     "name": "incognito-as-window-full-screen",
     "owners": [ "shuyng@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "incognito-screenshot",
