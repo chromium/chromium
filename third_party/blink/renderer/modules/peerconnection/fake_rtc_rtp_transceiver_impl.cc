@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/fake_rtc_rtp_transceiver_impl.h"
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <utility>

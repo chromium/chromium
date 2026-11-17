@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_recorder_context.h"
 
 #include <array>
-#include <cstdint>
 #include <optional>
 #include <string>
 

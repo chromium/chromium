@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel.h"
 
-#include <cstdint>
 #include <optional>
 #include <string>
 #include <utility>

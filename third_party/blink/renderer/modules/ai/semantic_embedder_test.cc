@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/ai/semantic_embedder.h"
 
-#include <cstdint>
 #include <optional>
 
 #include "base/functional/callback_helpers.h"

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/media_stream_remote_video_source.h"
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <utility>

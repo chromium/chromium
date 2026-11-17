@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error.h"
 
-#include <cstdint>
 #include <optional>
 #include <utility>
 

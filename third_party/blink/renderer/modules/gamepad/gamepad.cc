@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/modules/gamepad/gamepad.h"
 
 #include <algorithm>
-#include <cstdint>
 
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/timing/performance.h"

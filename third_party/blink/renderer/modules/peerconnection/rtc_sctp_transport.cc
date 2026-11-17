@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_sctp_transport.h"
 
-#include <cstdint>
 #include <limits>
 #include <memory>
 #include <optional>

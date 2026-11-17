@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_underlying_sink_wrapper.h"
 
 #include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <utility>
 

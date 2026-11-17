@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_util.h"
 
-#include <cstdint>
 #include <cstdlib>
 #include <ctime>
 #include <vector>

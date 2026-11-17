@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_transceiver_impl.h"
 
 #include <algorithm>
-#include <cstdint>
 #include <iterator>
 #include <memory>
 #include <optional>

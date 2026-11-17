@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel.h"
 
 #include <cstddef>
-#include <cstdint>
 #include <limits>
 #include <memory>
 #include <optional>

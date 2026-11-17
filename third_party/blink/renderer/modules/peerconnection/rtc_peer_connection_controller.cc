@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_controller.h"
 
-#include <cstdint>
-
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"

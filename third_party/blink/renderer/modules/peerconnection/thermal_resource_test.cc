@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/thermal_resource.h"
 
 #include <cstddef>
-#include <cstdint>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"

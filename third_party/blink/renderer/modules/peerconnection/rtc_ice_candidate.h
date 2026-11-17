@@ -31,7 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_ICE_CANDIDATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_ICE_CANDIDATE_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 
 #include "third_party/blink/renderer/modules/modules_export.h"

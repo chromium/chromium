@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <utility>

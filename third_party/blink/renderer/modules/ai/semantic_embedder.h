@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_SEMANTIC_EMBEDDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_SEMANTIC_EMBEDDER_H_
 
-#include <cstdint>
+#include <stdint.h>
 
 #include "third_party/blink/public/mojom/ai/ai_semantic_embedder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"

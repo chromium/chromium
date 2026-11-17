@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
 
 #include <array>
-#include <cstdint>
 #include <cstdlib>
 #include <memory>
 #include <optional>

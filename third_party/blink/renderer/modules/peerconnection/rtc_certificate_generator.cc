@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
 
-#include <cstdint>
 #include <optional>
 #include <utility>
 

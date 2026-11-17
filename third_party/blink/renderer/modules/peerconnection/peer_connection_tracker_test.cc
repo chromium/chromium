@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_tracker.h"
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <utility>

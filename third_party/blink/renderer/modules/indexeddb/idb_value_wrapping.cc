@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
 
-#include <cstdint>
 #include <memory>
 #include <utility>
 

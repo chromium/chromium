@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/mediastream/transferred_media_stream_track.h"
 
-#include <cstdint>
 #include <memory>
 
 #include "base/functional/callback_helpers.h"

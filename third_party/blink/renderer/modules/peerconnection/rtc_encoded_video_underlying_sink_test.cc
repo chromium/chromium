@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_underlying_sink.h"
 
-#include <cstdint>
 #include <memory>
 #include <utility>
 

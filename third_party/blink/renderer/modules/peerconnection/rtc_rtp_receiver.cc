@@ -6,7 +6,6 @@
 
 #include <inttypes.h>
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

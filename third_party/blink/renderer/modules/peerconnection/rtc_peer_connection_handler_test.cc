@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <string.h>
 
-#include <cstdint>
 #include <limits>
 #include <map>
 #include <memory>

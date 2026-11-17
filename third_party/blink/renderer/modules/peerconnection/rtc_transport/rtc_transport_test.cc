@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport.h"
 
 #include <cstddef>
-#include <cstdint>
 #include <cstdlib>
 #include <memory>
 #include <utility>

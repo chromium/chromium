@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 
 #include <algorithm>
-#include <cstdint>
 #include <optional>
 
 #include "base/check.h"

@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/webaudio/wave_shaper_handler.h"
 
 #include <algorithm>
-#include <cstdint>
 #include <memory>
 
 #include "base/containers/span.h"

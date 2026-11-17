@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_TESTING_FAKE_WEBRTC_DATA_CHANNEL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_TESTING_FAKE_WEBRTC_DATA_CHANNEL_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <string>
 
 #include "third_party/webrtc/api/data_channel_interface.h"

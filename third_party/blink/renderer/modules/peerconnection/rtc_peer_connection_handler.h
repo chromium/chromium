@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_PEER_CONNECTION_HANDLER_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

@@ -4,7 +4,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_TRANSPORT_RTC_TRANSPORT_ICE_CANDIDATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_TRANSPORT_RTC_TRANSPORT_ICE_CANDIDATE_H_
 
-#include <cstdint>
+#include <stdint.h>
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_candidate_type.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"

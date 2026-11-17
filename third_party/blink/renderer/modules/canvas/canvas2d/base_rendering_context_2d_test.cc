@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

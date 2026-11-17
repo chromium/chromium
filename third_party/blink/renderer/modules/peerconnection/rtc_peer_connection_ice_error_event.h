@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_PEER_CONNECTION_ICE_ERROR_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_PEER_CONNECTION_ICE_ERROR_EVENT_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 
 #include "third_party/blink/renderer/core/dom/events/event.h"

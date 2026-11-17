@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBTRANSPORT_OUTGOING_STREAM_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBTRANSPORT_OUTGOING_STREAM_H_
 
+#include <stdint.h>
+
 #include <cstddef>
-#include <cstdint>
 #include <utility>
 
 #include "base/containers/span.h"

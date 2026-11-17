@@ -25,8 +25,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_DATA_CHANNEL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_DATA_CHANNEL_H_
 
+#include <stdint.h>
+
 #include <cstddef>
-#include <cstdint>
 #include <optional>
 
 #include "base/containers/span.h"

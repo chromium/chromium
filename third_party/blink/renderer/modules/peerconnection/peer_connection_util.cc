@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_util.h"
 
 #include <cmath>
-#include <cstdint>
 
 #include "base/notreached.h"
 #include "base/time/time.h"

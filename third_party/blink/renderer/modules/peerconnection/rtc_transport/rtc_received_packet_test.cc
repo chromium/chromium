@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_received_packet.h"
 
-#include <cstdint>
 #include <utility>
 
 #include "testing/gtest/include/gtest/gtest.h"

@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_ice_candidate.h"
 
-#include <cstdint>
-
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_candidate_type.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
