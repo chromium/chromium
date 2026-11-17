@@ -26,7 +26,6 @@ export function getHtml(this: AddPasswordDialogElement) {
     <cr-input id="websiteInput" label="$i18n{websiteLabel}" autofocus required
         placeholder="example.com" .value="${this.website_}"
         ?invalid="${this.isWebsiteInputInvalid_()}"
-        ?show-error-message="${this.showWebsiteError_()}"
         error-message="${this.websiteErrorMessage_ || ''}" spellcheck="false"
         @input="${this.onWebsiteInput_}" @blur="${this.onWebsiteInputBlur_}">
     </cr-input>

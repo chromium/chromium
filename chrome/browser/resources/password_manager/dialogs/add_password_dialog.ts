@@ -264,10 +264,6 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     return this.websiteErrorMessage_ !== null;
   }
 
-  protected showWebsiteError_(): boolean {
-    return !!this.websiteErrorMessage_ && this.websiteErrorMessage_.length > 0;
-  }
-
   protected onUsernameInput_() {
     this.username_ = this.$.usernameInput.value;
   }

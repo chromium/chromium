@@ -358,14 +358,14 @@ suite('AddPasswordDialogTest', function() {
     await microtasksFinished();
 
     assertFalse(dialog.$.websiteInput.invalid);
-    assertFalse(dialog.$.websiteInput.hasAttribute('show-error-message'));
+    assertFalse(isVisible(dialog.$.websiteInput.$.error));
     assertEquals('', dialog.$.websiteInput.errorMessage);
     // Simulate losing focus.
     dialog.$.websiteInput.dispatchEvent(new CustomEvent('blur'));
     await microtasksFinished();
 
     assertTrue(dialog.$.websiteInput.invalid);
-    assertFalse(dialog.$.websiteInput.hasAttribute('show-error-message'));
+    assertFalse(isVisible(dialog.$.websiteInput.$.error));
     assertEquals('', dialog.$.websiteInput.errorMessage);
 
     // Enter a website without a TLD and lose focus.
@@ -375,7 +375,7 @@ suite('AddPasswordDialogTest', function() {
     await microtasksFinished();
 
     assertTrue(dialog.$.websiteInput.invalid);
-    assertTrue(dialog.$.websiteInput.hasAttribute('show-error-message'));
+    assertTrue(isVisible(dialog.$.websiteInput.$.error));
     assertEquals(
         dialog.i18n('missingTLD', 'example.com'),
         dialog.$.websiteInput.errorMessage);
