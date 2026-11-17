@@ -23,6 +23,8 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
+import org.chromium.components.feature_engagement.UiFormat;
 import org.chromium.url.GURL;
 
 import java.util.function.Supplier;
@@ -98,7 +100,11 @@ public class MinimizedCustomTabIphController
         assert profile != null;
         var tracker = TrackerFactory.getTrackerForProfile(profile);
         if (!tracker.isInitialized()) return;
-        if (!tracker.wouldTriggerHelpUi(FeatureConstants.CCT_MINIMIZED_FEATURE)) return;
+        FeatureProperties featureProperties = new FeatureProperties(UiFormat.BLUE_BUBBLE);
+        if (!tracker.wouldTriggerHelpUi(
+                FeatureConstants.CCT_MINIMIZED_FEATURE, featureProperties)) {
+            return;
+        }
         float startingRadiusPx =
                 button.getContext()
                                 .getResources()

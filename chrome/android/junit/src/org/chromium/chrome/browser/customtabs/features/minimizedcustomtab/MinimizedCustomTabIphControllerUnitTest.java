@@ -43,7 +43,9 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.UiFormat;
 import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -88,7 +90,10 @@ public class MinimizedCustomTabIphControllerUnitTest {
         mProfileSupplier = () -> mProfile;
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         when(mTracker.isInitialized()).thenReturn(true);
-        when(mTracker.wouldTriggerHelpUi(FeatureConstants.CCT_MINIMIZED_FEATURE)).thenReturn(true);
+        when(mTracker.wouldTriggerHelpUi(
+                        FeatureConstants.CCT_MINIMIZED_FEATURE,
+                        new FeatureProperties(UiFormat.BLUE_BUBBLE)))
+                .thenReturn(true);
         TrackerFactory.setTrackerForTests(mTracker);
         mController =
                 new MinimizedCustomTabIphController(
@@ -106,6 +111,10 @@ public class MinimizedCustomTabIphControllerUnitTest {
     public void testShowsIphOnPageLoad() {
         var tabObserver = mController.getTabObserverForTesting();
         tabObserver.onPageLoadFinished(mTab, JUnitTestGURLs.EXAMPLE_URL);
+        verify(mTracker)
+                .wouldTriggerHelpUi(
+                        FeatureConstants.CCT_MINIMIZED_FEATURE,
+                        new FeatureProperties(UiFormat.BLUE_BUBBLE));
         var captor = ArgumentCaptor.forClass(IphCommand.class);
         verify(mUserEducationHelper).requestShowIph(captor.capture());
         var cmd = captor.getValue();
