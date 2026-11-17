@@ -25,7 +25,6 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_LONG_CLICK;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_AT_MOVEMENT_GRANULARITY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_HTML_ELEMENT;
-import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PAGE_DOWN;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PASTE;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PREVIOUS_HTML_ELEMENT;
@@ -3770,61 +3769,22 @@ public class WebContentsAccessibilityTest {
     @Test
     @SmallTest
     public void testNodeInfo_extras_unclippedBounds() throws Throwable {
-        // Build a simple web page with a scrollable view.
+        // Build a simple web page with a scrollable view and wait for all paragraphs to load.
         setupTestFromFile("content/test/data/android/scroll_element_offscreen.html");
-
-        // Find the <div> that contains example paragraphs that can be scrolled.
         int vvIdDiv = waitForNodeMatching(sViewIdResourceNameMatcher, "scroll_view");
-        mNodeInfo = createAccessibilityNodeInfo(vvIdDiv);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+        waitForChildCount(vvIdDiv, 100);
 
-        // The page may take a moment to finish onload method, so poll for a child count.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return createAccessibilityNodeInfo(vvIdDiv).getChildCount() == 100;
-                },
-                NODE_TIMEOUT_ERROR);
-
-        // Find the root WebView node.
+        // Accessibility-focus the root WebView so auto-focus does not scroll back up.
         int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        focusAccessibilityNode(rootVvid);
 
-        // Request accessibility focus on the root WebView node directly to prevent auto-focus
-        // scrollback loops.
-        performActionOnUiThread(rootVvid, ACTION_ACCESSIBILITY_FOCUS, null);
-        CriteriaHelper.pollUiThreadLongTimeout(
-                "Timed out waiting for root WebView to acquire accessibility focus.",
-                () -> {
-                    Criteria.checkThat(
-                            createAccessibilityNodeInfo(rootVvid).isAccessibilityFocused(),
-                            Matchers.is(true));
-                });
+        // Scroll the bottom paragraph onto screen so the container top moves above the viewport.
+        int lastParagraphVvid = waitForNodeMatching(sTextMatcher, "Example Text 99");
+        scrollNodeOnScreenAndWaitForContainerTopOffscreen(lastParagraphVvid, vvIdDiv);
 
-        // Send scroll down events on the root WebView so the container moves offscreen at the top.
-        // We perform two page downs to ensure it scrolls past the container's initial top offset
-        // even on high-density emulators with small CSS viewports.
-        performActionOnUiThread(rootVvid, ACTION_PAGE_DOWN, null);
-        CriteriaHelper.pollUiThread(
-                () -> mActivityTestRule.mWcax.getScrollYForTesting() > 0f,
-                "Timed out waiting for first page scroll to complete.");
-
-        performActionOnUiThread(rootVvid, ACTION_PAGE_DOWN, null);
-        CriteriaHelper.pollUiThreadLongTimeout(
-                "Timed out waiting for container to scroll offscreen.",
-                () -> {
-                    AccessibilityNodeInfoCompat info = createAccessibilityNodeInfo(vvIdDiv);
-                    Criteria.checkThat(
-                            info.getExtras() != null
-                                    && info.getExtras().getInt(EXTRAS_KEY_UNCLIPPED_TOP, 1) < 0,
-                            Matchers.is(true));
-                });
-
-        // Signal end of test.
         mActivityTestRule.sendEndOfTestSignal();
 
-        // Refresh the AccessibilityNodeInfo object for the container.
         mNodeInfo = createAccessibilityNodeInfo(vvIdDiv);
-
-        // Check that the container has unclipped values set.
         Assert.assertNotNull(NODE_EXTRAS_UNCLIPPED_ERROR, mNodeInfo.getExtras());
         Assert.assertTrue(
                 NODE_EXTRAS_UNCLIPPED_ERROR,
@@ -7663,5 +7623,45 @@ public class WebContentsAccessibilityTest {
                             + " ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY.",
                     nodeInfo.getActionList().contains(ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY));
         }
+    }
+
+    private void waitForChildCount(int viewId, int expectedChildCount) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    AccessibilityNodeInfoCompat nodeInfo = createAccessibilityNodeInfo(viewId);
+                    Criteria.checkThat(nodeInfo, Matchers.notNullValue());
+                    Criteria.checkThat(nodeInfo.getChildCount(), Matchers.is(expectedChildCount));
+                });
+    }
+
+    private void focusAccessibilityNode(int viewId) throws Throwable {
+        Assert.assertTrue(
+                PERFORM_ACTION_ERROR,
+                performActionOnUiThread(viewId, ACTION_ACCESSIBILITY_FOCUS, null));
+        CriteriaHelper.pollUiThreadLongTimeout(
+                "Timed out waiting for node to acquire accessibility focus.",
+                () -> {
+                    AccessibilityNodeInfoCompat nodeInfo = createAccessibilityNodeInfo(viewId);
+                    Criteria.checkThat(nodeInfo, Matchers.notNullValue());
+                    Criteria.checkThat(nodeInfo.isAccessibilityFocused(), Matchers.is(true));
+                });
+    }
+
+    private void scrollNodeOnScreenAndWaitForContainerTopOffscreen(
+            int targetViewId, int containerViewId) throws Throwable {
+        Assert.assertTrue(
+                PERFORM_ACTION_ERROR,
+                performActionOnUiThread(targetViewId, ACTION_SHOW_ON_SCREEN, null));
+        CriteriaHelper.pollUiThreadLongTimeout(
+                "Timed out waiting for container to scroll offscreen.",
+                () -> {
+                    AccessibilityNodeInfoCompat containerInfo =
+                            createAccessibilityNodeInfo(containerViewId);
+                    Criteria.checkThat(containerInfo, Matchers.notNullValue());
+                    Criteria.checkThat(containerInfo.getExtras(), Matchers.notNullValue());
+                    Criteria.checkThat(
+                            containerInfo.getExtras().getInt(EXTRAS_KEY_UNCLIPPED_TOP),
+                            Matchers.lessThan(0));
+                });
     }
 }
