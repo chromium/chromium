@@ -4328,17 +4328,14 @@ class AXPosition {
       return SlowCompareTo(other);
     }
 
-    // Normalize any text positions at the end of an anchor to equivalent
+    // Normalize a pair of text positions at the end of an anchor to equivalent
     // positions at the start of the next anchor. This will potentially make the
     // two positions not be ancestors of one another, if they originally were.
     AXPositionInstance normalized_this_position = Clone();
-    if (normalized_this_position->IsTextPosition()) {
+    AXPositionInstance normalized_other_position = other.Clone();
+    if (IsTextPosition() && other.IsTextPosition()) {
       normalized_this_position =
           normalized_this_position->AsLeafTextPositionBeforeCharacter();
-    }
-
-    AXPositionInstance normalized_other_position = other.Clone();
-    if (normalized_other_position->IsTextPosition()) {
       normalized_other_position =
           normalized_other_position->AsLeafTextPositionBeforeCharacter();
     }
@@ -4380,9 +4377,9 @@ class AXPosition {
     // as is, because a generated newline separates it from "Go", while
     // TextPosition anchor_id=6 text_offset=0 is normalized to anchor_id=9
     // text_offset=0, i.e. after the generated newline.
-    if ((normalized_this_position->IsTextPosition() &&
-         normalized_this_position->AtEndOfAnchor()) ||
-        (normalized_other_position->IsTextPosition() &&
+    if (normalized_this_position->IsTextPosition() &&
+        normalized_other_position->IsTextPosition() &&
+        (normalized_this_position->AtEndOfAnchor() ||
          normalized_other_position->AtEndOfAnchor())) {
       return SlowCompareTo(other);
     }
@@ -4425,6 +4422,13 @@ class AXPosition {
     // stack.
     if (our_ancestors.empty() || other_ancestors.empty())
       return SlowCompareTo(other);
+
+    // Defer to "SlowCompareTo" when the common anchor is a leaf node for tree
+    // positions. Such a leaf can only have a tree position before or after it,
+    // not between its children.
+    if (IsLeafNodeForTreePosition(*common_anchor)) {
+      return SlowCompareTo(other);
+    }
 
     AXPositionInstance this_uncommon_tree_position =
         CreateTreePositionAtStartOfAnchor(*our_ancestors.top());

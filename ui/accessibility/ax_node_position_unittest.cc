@@ -11764,6 +11764,51 @@ TEST_F(AXPositionTest, OperatorsTreePositionsAroundEmbeddedCharacter) {
   EXPECT_EQ(*after_inline_box_8, *after_root_1);
 }
 
+TEST_F(AXPositionTest, CompareToTreePositionOnEmptyText) {
+  // ++1 kRootWebArea "ac"
+  // ++++2 kStaticText "a"
+  // ++++3 kStaticText (empty)
+  // ++++4 kStaticText "c"
+  Init(TestAXTreeUpdate({ax::mojom::Role::kRootWebArea,
+                         {TestAXTreeUpdateNode("a"), TestAXTreeUpdateNode(""),
+                          TestAXTreeUpdateNode("c")}}));
+  const AXNode& root = *GetTree()->root();
+
+  auto end_of_text = CreateTextPosition(*root.children()[0], 1,
+                                        ax::mojom::TextAffinity::kDownstream);
+  auto before_empty_text =
+      CreateTreePosition(*root.children()[1], AXNodePosition::BEFORE_TEXT);
+
+  // The end of "a" is before a tree position on the empty text after it.
+  EXPECT_LT(*end_of_text->CompareTo(*before_empty_text), 0);
+  EXPECT_GT(*before_empty_text->CompareTo(*end_of_text), 0);
+}
+
+TEST_F(AXPositionTest, CompareToPositionsInsideEmptyTextField) {
+  // ++1 kRootWebArea
+  // ++++2 kTextField (empty)
+  // ++++++3 kGenericContainer (empty)
+  // ++++++4 kGenericContainer (empty)
+  Init(TestAXTreeUpdate({ax::mojom::Role::kRootWebArea,
+                         {{ax::mojom::Role::kTextField,
+                           {{ax::mojom::Role::kGenericContainer, {}},
+                            {ax::mojom::Role::kGenericContainer, {}}}}}}));
+  const AXNode& text_field = *GetTree()->root()->children()[0];
+
+  auto before_first_container = CreateTreePosition(*text_field.children()[0],
+                                                   AXNodePosition::BEFORE_TEXT);
+  auto before_last_container = CreateTreePosition(*text_field.children()[1],
+                                                  AXNodePosition::BEFORE_TEXT);
+  auto in_last_container = CreateTextPosition(
+      *text_field.children()[1], 0, ax::mojom::TextAffinity::kDownstream);
+
+  // Positions inside an empty text field are at its start.
+  EXPECT_EQ(0, *before_first_container->CompareTo(*before_last_container));
+  EXPECT_EQ(0, *before_last_container->CompareTo(*before_first_container));
+  EXPECT_EQ(0, *in_last_container->CompareTo(*before_first_container));
+  EXPECT_EQ(0, *before_first_container->CompareTo(*in_last_container));
+}
+
 TEST_F(AXPositionTest, OperatorsTextPositionsAroundEmbeddedCharacter) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
