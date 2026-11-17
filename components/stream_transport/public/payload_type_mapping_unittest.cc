@@ -87,6 +87,11 @@ TEST(PayloadTypeMappingTest, ExpectedTypeUrlIsUniquePerPayloadType) {
   }
 }
 
+TEST(PayloadTypeMappingTest, ExpectedTypeUrlForActuation) {
+  EXPECT_EQ(ExpectedTypeUrl(PayloadType::kActuation),
+            "type.googleapis.com/actor.proto.ServerToBrowserPayload");
+}
+
 TEST(PayloadTypeMappingTest, ExpectedTypeUrlForTaskIngress) {
   EXPECT_EQ(ExpectedTypeUrl(PayloadType::kTaskIngress),
             "type.googleapis.com/"

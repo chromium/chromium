@@ -6,7 +6,7 @@ syntax = "proto3";
 
 option optimize_for = LITE_RUNTIME;
 
-package chrome.aix.autobrowse.proto;
+package actor.proto;
 
 import "components/optimization_guide/proto/features/actions_data.proto";
 import "components/optimization_guide/proto/features/common_quality_data.proto";

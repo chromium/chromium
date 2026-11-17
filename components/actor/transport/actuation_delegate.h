@@ -8,7 +8,9 @@
 #include "base/functional/callback_forward.h"
 #include "components/actor/core/task_id.h"
 
-namespace chrome::aix::autobrowse::proto {
+namespace actor {
+
+namespace proto {
 class PauseTaskRequest;
 class PerformActionsRequest;
 class PerformActionsResponse;
@@ -17,11 +19,7 @@ class ResumeTaskResponse;
 class StartTaskRequest;
 class StartTaskResponse;
 class StopTaskRequest;
-}  // namespace chrome::aix::autobrowse::proto
-
-namespace actor {
-
-namespace proto = ::chrome::aix::autobrowse::proto;
+}  // namespace proto
 
 // Delegate interface for executing actuation tasks and actions on the browser.
 //

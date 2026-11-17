@@ -21,11 +21,11 @@
 #include "ui/gfx/image/image.h"
 #include "url/origin.h"
 
-namespace chrome::aix::autobrowse::proto {
-class ObservationConfig;
-}  // namespace chrome::aix::autobrowse::proto
-
 namespace actor {
+
+namespace proto {
+class ObservationConfig;
+}  // namespace proto
 
 class ActorKeyedService;
 class AutofillSelectionDialogEventHandler;

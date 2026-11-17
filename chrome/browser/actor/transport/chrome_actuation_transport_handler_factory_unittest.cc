@@ -35,8 +35,6 @@
 namespace actor {
 namespace {
 
-namespace proto = ::chrome::aix::autobrowse::proto;
-
 class FakeTransportSession : public stream_transport::TransportSession {
  public:
   explicit FakeTransportSession(std::string_view session_id)
