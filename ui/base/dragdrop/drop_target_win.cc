@@ -20,7 +20,9 @@ void DropTargetWin::Init(HWND hwnd) {
   CHECK(!hwnd_, base::NotFatalUntil::M163);
   CHECK(hwnd, base::NotFatalUntil::M163);
   HRESULT result = RegisterDragDrop(hwnd, this);
-  CHECK(SUCCEEDED(result), base::NotFatalUntil::M163);
+  // TODO(crbug.com/585893735): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(SUCCEEDED(result));
 }
 
 
