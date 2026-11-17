@@ -105,6 +105,8 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   // View that displays a blue dot on the top-right corner of the displayed
   // badge if there are unread badges to be shown in the overflow menu.
   UIView* _unreadIndicatorView;
+  // Vertical separator view displayed trailing the badge.
+  UIView* _separatorView;
 }
 
 #pragma mark - Public
@@ -140,6 +142,19 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   [_badgeStackView addArrangedSubview:_buttonContainer];
   [_badgeStackView setCustomSpacing:kLeadingSeparatorSpace
                           afterView:_buttonContainer];
+
+  if (IsLocationBarBadgeMigrationEnabled()) {
+    _separatorView = [[UIView alloc] init];
+    _separatorView.translatesAutoresizingMaskIntoConstraints = NO;
+    _separatorView.isAccessibilityElement = NO;
+    _separatorView.accessibilityIdentifier =
+        kLocationBarBadgeSeparatorAccessibilityIdentifier;
+    _separatorView.backgroundColor = [UIColor colorNamed:kGrey300Color];
+    _separatorView.layer.cornerRadius = kSeparatorWidthConstant / 2.0;
+    _separatorView.clipsToBounds = YES;
+    _separatorView.hidden = YES;
+    [_badgeStackView addArrangedSubview:_separatorView];
+  }
 
   [self updateAccessibilityStatus];
 
@@ -333,6 +348,10 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
     HideViewIfNecessary(_badgeStackView, !_locationBarBadgeShouldBeVisible);
   }
 
+  if (IsLocationBarBadgeMigrationEnabled()) {
+    HideViewIfNecessary(_separatorView, ![self shouldShowSeparator]);
+  }
+
   // Whether the default/placeholder badge should show. Only shown if no other
   // badge or chip is shown.
   BOOL placeholderHidden = self.view && !_badgeConfig && _badgeItems.count == 0;
@@ -354,6 +373,12 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
       RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kReaderMode);
     }
   }
+}
+
+// Returns YES if `_separatorView` should be visible.
+- (BOOL)shouldShowSeparator {
+  return _badgeItems.count > 0 && _locationBarBadgeShouldBeVisible &&
+         !_shouldCollapseForFullscreen;
 }
 
 // Updates the button container's configuration with the given background color.
@@ -521,6 +546,16 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
     [_label.leadingAnchor
         constraintEqualToAnchor:labelLeadingSpace.trailingAnchor],
   ]];
+
+  if (IsLocationBarBadgeMigrationEnabled()) {
+    [NSLayoutConstraint activateConstraints:@[
+      [_separatorView.widthAnchor
+          constraintEqualToConstant:kSeparatorWidthConstant],
+      [_separatorView.heightAnchor
+          constraintEqualToAnchor:self.view.heightAnchor
+                       multiplier:kSeparatorHeightMultiplier],
+    ]];
+  }
 
   AddSameConstraints(_badgeContentView, _buttonContainer);
 }
@@ -966,15 +1001,21 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   _shouldCollapseForFullscreen = progress <= kFullscreenProgressThreshold;
+  CGFloat alphaValue = 0;
   if (_shouldCollapseForFullscreen) {
     _buttonContainer.hidden = YES;
   } else {
     // Fade in/out the badge.
-    CGFloat alphaValue = fmax((progress - kFullscreenProgressThreshold) /
-                                  (1 - kFullscreenProgressThreshold),
-                              0);
+    alphaValue = fmax((progress - kFullscreenProgressThreshold) /
+                          (1 - kFullscreenProgressThreshold),
+                      0);
     _buttonContainer.alpha = alphaValue;
     _buttonContainer.hidden = NO;
+  }
+
+  if (IsLocationBarBadgeMigrationEnabled()) {
+    _separatorView.alpha = alphaValue;
+    HideViewIfNecessary(_separatorView, ![self shouldShowSeparator]);
   }
 
   [self updateAccessibilityStatus];

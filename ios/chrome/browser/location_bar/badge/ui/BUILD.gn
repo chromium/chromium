@@ -50,6 +50,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "location_bar_badge_view_controller_unittest.mm" ]
   deps = [
+    ":constants",
     ":ui",
     "//base",
     "//base/test:test_support",

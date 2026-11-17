@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
 #import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
+#import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_constants.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_item.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_mutator.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -389,4 +390,81 @@ TEST_F(LocationBarBadgeViewControllerTest,
   UIButton* button =
       chrome_test_util::FindViewByClass<UIButton>(view_controller_.view);
   EXPECT_NSEQ(button.accessibilityIdentifier, nil);
+}
+
+// Tests that `separatorView` is configured and hidden by default.
+TEST_F(LocationBarBadgeViewControllerTest,
+       SeparatorViewConfiguredAndHiddenByDefault) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kLocationBarBadgeMigration);
+
+  [view_controller_ view];
+  UIView* separator_view = chrome_test_util::FindViewById(
+      view_controller_.view, kLocationBarBadgeSeparatorAccessibilityIdentifier);
+  ASSERT_NE(nil, separator_view);
+  EXPECT_TRUE(separator_view.hidden);
+}
+
+// Tests that `setBadgeItems:` displays the separator when items are present and
+// migration is enabled.
+TEST_F(LocationBarBadgeViewControllerTest,
+       SetBadgeItemsShowsSeparatorWhenItemsProvidedAndMigrationEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kLocationBarBadgeMigration);
+
+  [view_controller_ view];
+  LocationBarBadgeItem* badge_item = CreateBadgeItem(
+      [[UIImage alloc] init], LocationBarBadgeDisplayState::kCollapsed);
+
+  [view_controller_ setBadgeItems:@[ badge_item ]];
+
+  UIView* separator_view = chrome_test_util::FindViewById(
+      view_controller_.view, kLocationBarBadgeSeparatorAccessibilityIdentifier);
+  ASSERT_NE(nil, separator_view);
+  EXPECT_FALSE(view_controller_.view.hidden);
+  EXPECT_FALSE(separator_view.hidden);
+
+  // Clearing items should hide the separator along with the view.
+  [view_controller_ setBadgeItems:@[]];
+  EXPECT_TRUE(view_controller_.view.hidden);
+  EXPECT_TRUE(separator_view.hidden);
+}
+
+// Tests that `updateForFullscreenProgress:` hides the separator at progress 0
+// and restores visibility and full alpha at progress 1, even if items were
+// cleared while partially collapsed.
+TEST_F(LocationBarBadgeViewControllerTest,
+       UpdateForFullscreenProgressUpdatesSeparatorVisibilityAndAlpha) {
+  base::test::ScopedFeatureList feature_list(kLocationBarBadgeMigration);
+  [view_controller_ view];
+  LocationBarBadgeItem* badge_item = CreateBadgeItem(
+      [[UIImage alloc] init], LocationBarBadgeDisplayState::kCollapsed);
+  [view_controller_ setBadgeItems:@[ badge_item ]];
+
+  UIView* separator_view = chrome_test_util::FindViewById(
+      view_controller_.view, kLocationBarBadgeSeparatorAccessibilityIdentifier);
+  ASSERT_NE(nil, separator_view);
+
+  [view_controller_ updateForFullscreenProgress:0.0];
+  EXPECT_TRUE(separator_view.hidden);
+
+  // Clear items while collapsed, then restore fullscreen to 1.0 before
+  // re-adding a badge item.
+  [view_controller_ setBadgeItems:@[]];
+  [view_controller_ updateForFullscreenProgress:1.0];
+  [view_controller_ setBadgeItems:@[ badge_item ]];
+  EXPECT_FALSE(separator_view.hidden);
+  EXPECT_EQ(1.0, separator_view.alpha);
+}
+
+// Tests that `separatorView` is not created when migration is disabled.
+TEST_F(LocationBarBadgeViewControllerTest,
+       SeparatorViewNotCreatedWhenMigrationDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kLocationBarBadgeMigration);
+
+  [view_controller_ view];
+  EXPECT_EQ(nil, chrome_test_util::FindViewById(
+                     view_controller_.view,
+                     kLocationBarBadgeSeparatorAccessibilityIdentifier));
 }

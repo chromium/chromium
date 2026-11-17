@@ -44,4 +44,7 @@ extern NSString* const kLocationBarBadgeImageViewIdentifier;
 // Accessibility identifier for the badge's label.
 extern NSString* const kLocationBarBadgeLabelIdentifier;
 
+// Accessibility identifier for the badge's trailing separator view.
+extern NSString* const kLocationBarBadgeSeparatorAccessibilityIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_BADGE_UI_LOCATION_BAR_BADGE_CONSTANTS_H_
