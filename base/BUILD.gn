@@ -228,6 +228,7 @@ source_set("asan_raw_ptr_service") {
       ":tracing_buildflags",
       "//base/allocator/partition_allocator/src/partition_alloc",
       "//build:blink_buildflags",
+      "//build/rust/crubit:annotations",
       "//third_party/abseil-cpp:absl",
       "//third_party/perfetto:libperfetto",
     ]
@@ -1227,6 +1228,10 @@ component("base") {
   # Base provides conversions between CXX types and base types (e.g.
   # std::string_view).
   public_deps += [ "//build/rust:cxx_cppdeps" ]
+
+  # Public headers (e.g. `memory/weak_ptr.h`) use Crubit annotations (e.g.
+  # `CRUBIT_NEVER_BITWISE_RELOCATABLE`).
+  public_deps += [ "//build/rust/crubit:annotations" ]
 
   # Needed for <atomic> if using newer C++ library than sysroot, except if
   # building inside the cros_sdk environment - use host_toolchain as a

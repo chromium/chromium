@@ -85,6 +85,7 @@
 #include "base/memory/safe_ref_traits.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
+#include "third_party/crubit/support/annotations.h"
 
 namespace base {
 
@@ -423,8 +424,13 @@ class BASE_EXPORT BindWeakPtrFactoryPassKey {
 // need weak pointers within the implementation of a class.  This class is also
 // useful when working with primitive types.  For example, you could have a
 // WeakPtrFactory<bool> that is used to pass around a weak reference to a bool.
+//
+// `CRUBIT_NEVER_BITWISE_RELOCATABLE`, because the factory and its `WeakPtr`s
+// store the address of a `T` object.  This makes `T` not bitwise-relocatable
+// when it stores the factory as a member (typically `weak_factory_{this}`).
 template <class T>
-class WeakPtrFactory : public internal::WeakPtrFactoryBase {
+class CRUBIT_NEVER_BITWISE_RELOCATABLE WeakPtrFactory
+    : public internal::WeakPtrFactoryBase {
  public:
   WeakPtrFactory() = delete;
 
