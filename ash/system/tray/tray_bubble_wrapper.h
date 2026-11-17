@@ -44,11 +44,11 @@ class ASH_EXPORT TrayBubbleWrapper : public TrayBubbleBase {
 
   TrayBackgroundView* tray() { return tray_; }
   TrayBubbleView* bubble_view() { return bubble_view_; }
-  views::Widget* bubble_widget() { return bubble_widget_; }
+  views::Widget* bubble_widget() { return bubble_widget_.get(); }
 
  private:
   raw_ptr<TrayBackgroundView> tray_;
-  raw_ptr<views::Widget> bubble_widget_ = nullptr;
+  std::unique_ptr<views::Widget> bubble_widget_;
 
   // Owned by `bubble_widget_`
   raw_ptr<TrayBubbleView> bubble_view_ = nullptr;

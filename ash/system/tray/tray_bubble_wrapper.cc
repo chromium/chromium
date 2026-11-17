@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/tray/tray_bubble_wrapper.h"
+
 #include <memory>
 
 #include "ash/app_list/app_list_controller_impl.h"
@@ -10,6 +11,7 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_event_filter.h"
+#include "base/memory/ptr_util.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -36,6 +38,7 @@ TrayBubbleWrapper::~TrayBubbleWrapper() {
     }
     bubble_widget_->RemoveObserver(this);
     bubble_widget_->Close();
+    tray_->TakeClosedBubbleWidget(std::move(bubble_widget_));
   }
   CHECK(!TrayBubbleBase::IsInObserverList());
 }
@@ -48,10 +51,12 @@ void TrayBubbleWrapper::ShowBubble(
 
   bubble_view_ = bubble_view.get();
   bubble_widget_ =
-      views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
+      base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
+          std::move(bubble_view),
+          views::Widget::InitParams::CLIENT_OWNS_WIDGET));
   bubble_widget_->AddObserver(this);
 
-  TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
+  TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_.get());
   bubble_view_->InitializeAndShowBubble();
 
   // We need to explicitly dismiss app list bubble here due to b/1186479.
@@ -61,7 +66,7 @@ void TrayBubbleWrapper::ShowBubble(
 
   if (event_handling_) {
     tray_event_filter_ = std::make_unique<TrayEventFilter>(
-        bubble_widget_, bubble_view_, /*tray_button=*/tray_);
+        bubble_widget_.get(), bubble_view_, /*tray_button=*/tray_);
   }
 }
 
@@ -74,13 +79,13 @@ TrayBubbleView* TrayBubbleWrapper::GetBubbleView() const {
 }
 
 views::Widget* TrayBubbleWrapper::GetBubbleWidget() const {
-  return bubble_widget_;
+  return bubble_widget_.get();
 }
 
 void TrayBubbleWrapper::OnWidgetDestroying(views::Widget* widget) {
-  CHECK_EQ(bubble_widget_, widget);
+  CHECK_EQ(bubble_widget_.get(), widget);
   bubble_widget_->RemoveObserver(this);
-  bubble_widget_ = nullptr;
+  tray_->TakeClosedBubbleWidget(std::move(bubble_widget_));
 
   tray_->HideBubbleWithView(bubble_view_);  // May destroy |bubble_view_|
 }

@@ -537,6 +537,10 @@ void TrayBackgroundView::UpdateStatusArea(bool should_log_visible_pod_count) {
   }
 }
 
+void TrayBackgroundView::DeleteClosedBubbleWidgets() {
+  closed_bubble_widgets_.clear();
+}
+
 void TrayBackgroundView::UpdateAfterLockStateChange(bool locked) {
   if (should_close_bubble_on_lock_state_change_) {
     CloseBubble();
@@ -653,6 +657,14 @@ TrayBubbleView* TrayBackgroundView::GetBubbleView() {
 
 views::Widget* TrayBackgroundView::GetBubbleWidget() const {
   return nullptr;
+}
+
+void TrayBackgroundView::TakeClosedBubbleWidget(
+    std::unique_ptr<views::Widget> widget) {
+  closed_bubble_widgets_.push_back(std::move(widget));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&TrayBackgroundView::DeleteClosedBubbleWidgets,
+                                weak_factory_.GetWeakPtr()));
 }
 
 void TrayBackgroundView::ShowBubble() {}

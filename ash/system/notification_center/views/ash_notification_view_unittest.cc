@@ -36,6 +36,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -2294,6 +2295,12 @@ TEST_F(AshNotificationViewTest, TestDeleteOnToggleInlineSettings) {
             test_api->GetNotificationViewForId(id));
         if (view && view->GetWidget()) {
           view->GetWidget()->CloseNow();
+          // The tray frees the closed widget, and with it the view, in a
+          // posted task. Run it so the view is deleted during the call.
+          base::RunLoop run_loop;
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, run_loop.QuitClosure());
+          run_loop.Run();
         }
       },
       base::Unretained(test_api), "id");
@@ -2339,6 +2346,12 @@ TEST_F(AshNotificationViewTest, TestDeleteOnToggleSnoozeSettings) {
             test_api->GetNotificationViewForId(id));
         if (view && view->GetWidget()) {
           view->GetWidget()->CloseNow();
+          // The tray frees the closed widget, and with it the view, in a
+          // posted task. Run it so the view is deleted during the call.
+          base::RunLoop run_loop;
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, run_loop.QuitClosure());
+          run_loop.Run();
         }
       },
       base::Unretained(test_api), "id");
@@ -2385,6 +2398,12 @@ TEST_F(AshNotificationViewTest, TestDeleteOnToggleExpand) {
             test_api->GetNotificationViewForId(id));
         if (view && view->GetWidget()) {
           view->GetWidget()->CloseNow();
+          // The tray frees the closed widget, and with it the view, in a
+          // posted task. Run it so the view is deleted during the call.
+          base::RunLoop run_loop;
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, run_loop.QuitClosure());
+          run_loop.Run();
         }
       },
       base::Unretained(test_api), "id");

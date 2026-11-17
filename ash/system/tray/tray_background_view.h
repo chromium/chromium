@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_TRAY_TRAY_BACKGROUND_VIEW_H_
 
 #include <memory>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/constants/tray_background_view_catalog.h"
@@ -125,6 +126,11 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   // Returns the associated tray bubble widget, if a bubble exists. Otherwise
   // returns nullptr.
   virtual views::Widget* GetBubbleWidget() const;
+
+  // Keeps the closed widget of a destroyed or closing `TrayBubbleWrapper` and
+  // frees it from a posted task: its window goes away asynchronously and its
+  // views may still be on the call stack.
+  void TakeClosedBubbleWidget(std::unique_ptr<views::Widget> widget);
 
   // Returns a lock that prevents window activation from closing bubbles.
   [[nodiscard]] static base::ScopedClosureRunner
@@ -317,6 +323,9 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   // `LogVisiblePodCountMetric()`.
   void UpdateStatusArea(bool should_log_visible_pod_count);
 
+  // Frees the widgets kept by `TakeClosedBubbleWidget()`.
+  void DeleteClosedBubbleWidgets();
+
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(
       views::View* source,
@@ -425,6 +434,9 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   bool should_close_bubble_on_lock_state_change_;
 
   base::ObserverList<Observer> observers_;
+
+  // Closed bubble widgets waiting for `DeleteClosedBubbleWidgets()`.
+  std::vector<std::unique_ptr<views::Widget>> closed_bubble_widgets_;
 
   base::WeakPtrFactory<TrayBackgroundView> weak_factory_{this};
 };
