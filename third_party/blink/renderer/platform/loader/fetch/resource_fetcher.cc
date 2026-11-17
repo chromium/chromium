@@ -38,7 +38,6 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -1199,13 +1198,6 @@ void ResourceFetcher::UpdateMemoryCacheStats(
     RecordResourceHistogram("Preload.", factory.GetType(), policy);
   } else {
     RecordResourceHistogram("", factory.GetType(), policy);
-  }
-
-  // Async (and defer) scripts may have more cache misses, track them
-  // separately. See https://crbug.com/1043679 for context.
-  if (params.Defer() != FetchParameters::DeferOption::kNoDefer &&
-      factory.GetType() == ResourceType::kScript) {
-    UMA_HISTOGRAM_ENUMERATION(RESOURCE_HISTOGRAM_PREFIX "AsyncScript", policy);
   }
 }
 

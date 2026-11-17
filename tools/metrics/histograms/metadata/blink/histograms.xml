@@ -3981,19 +3981,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.MemoryCache.RevalidationPolicy2.AsyncScript"
-    enum="RevalidationPolicy" expires_after="2026-11-15">
-  <owner>hiroshige@chromium.org</owner>
-  <owner>lizeb@chromium.org</owner>
-  <owner>gjc@chromium.org</owner>
-  <owner>loading-dev@chromium.org</owner>
-  <summary>
-    RevalidationPolicy used for non-preloading requests of async and defer
-    scripts. https://crbug.com/1043679 https://crbug.com/1376866 Warning: this
-    histogram was expired from 2021/10/25 to 2022/12/09; data may be missing.
-  </summary>
-</histogram>
-
 <histogram name="Blink.MemoryCache.RevalidationPolicy2.Preload.{ResourceType}"
     enum="RevalidationPolicy" expires_after="2027-06-30">
   <owner>hiroshige@chromium.org</owner>
