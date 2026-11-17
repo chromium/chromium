@@ -347,12 +347,18 @@
   margin-inline-start: auto;
 }
 
-/* The dot uses the URL color so that it follows dark mode and themes. */
+/* The dot uses the URL color so that it follows dark mode and themes. The 8x8
+   dot sits in the middle of a box with the same size and end margin as the
+   remove button, so on hover the X shows up exactly where the dot was. */
 #actionIcon.blue-dot {
   -webkit-mask-image: url(chrome://resources/cr_components/searchbox/icons/dot.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 8px;
   background-color: var(--color-searchbox-results-url);
-  height: 8px;
-  width: 8px;
+  height: 24px;
+  margin-inline-end: 1px;
+  width: 24px;
 }
 
 :host(:is(:focus-within, [selected])) #actionIcon.blue-dot {
