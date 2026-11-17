@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/webid/identity_provider_permission_request.h"
 #include "components/autofill/core/browser/studies/hats_surveys_util.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/permissions/permission_request_manager.h"
@@ -81,9 +80,7 @@ void MaybeTriggerPersonalizationAndTrustHatsSurvey(
     blink::mojom::RpMode rp_mode,
     content::IdentityRequestAccount::LoginState login_state,
     size_t num_accounts_shown) {
-  if (!web_contents ||
-      !base::FeatureList::IsEnabled(
-          autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey)) {
+  if (!web_contents) {
     return;
   }
   Profile* profile =

@@ -8626,12 +8626,9 @@ TEST_F(BrowserAutofillManagerTest, PersonalizationAndTrust_CreditCard_Bnpl) {
 // instead of Address.
 TEST_F(BrowserAutofillManagerTest,
        PersonalizationAndTrust_OtpPrecedenceOverAddresses) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
+  base::test::ScopedFeatureList feature_list(
       {features::kAutofillPersonalizationAndTrustAddressSurvey,
-       features::kAutofillPersonalizationAndTrustOneTimePasswordSurvey},
-      /*disabled_features=*/{});
+       features::kAutofillPersonalizationAndTrustOneTimePasswordFilledSurvey});
 
   FormData form = test::GetFormData(
       {.fields = {{.role = ADDRESS_HOME_LINE1,

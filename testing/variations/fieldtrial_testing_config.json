@@ -2640,7 +2640,7 @@
             ]
         }
     ],
-    "AutofillPersonalizationAndTrustFedCmSurvey": [
+    "AutofillPersonalizationAndTrustFedCmAcceptedSurvey": [
         {
             "platforms": [
                 "chromeos",
@@ -2652,13 +2652,11 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "accepted_en_site_id": "tNbq1KRht0ugnJ3q1cK0SGeWwELo",
-                        "auto_reauthn_en_site_id": "Qx96YdFA30ugnJ3q1cK0XmiYT58b",
-                        "dismissed_en_site_id": "CE2NRCkcc0ugnJ3q1cK0NjvL6ikD",
+                        "en_site_id": "tNbq1KRht0ugnJ3q1cK0SGeWwELo",
                         "probability": "1.0"
                     },
                     "enable_features": [
-                        "AutofillPersonalizationAndTrustFedCmSurvey"
+                        "AutofillPersonalizationAndTrustFedCmAcceptedSurvey"
                     ]
                 }
             ]
@@ -2672,19 +2670,17 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "accepted_en_site_id": "F3NeHc4VA0tK1KeaPYj0WLQuvTmu",
-                        "auto_reauthn_en_site_id": "qwmHVHdK70tK1KeaPYj0YefdQLf3",
-                        "dismissed_en_site_id": "wKK7FdcxP0tK1KeaPYj0Xaf36Zyt",
+                        "en_site_id": "F3NeHc4VA0tK1KeaPYj0WLQuvTmu",
                         "probability": "1.0"
                     },
                     "enable_features": [
-                        "AutofillPersonalizationAndTrustFedCmSurvey"
+                        "AutofillPersonalizationAndTrustFedCmAcceptedSurvey"
                     ]
                 }
             ]
         }
     ],
-    "AutofillPersonalizationAndTrustOneTimePasswordSurvey": [
+    "AutofillPersonalizationAndTrustFedCmAutoReauthnSurvey": [
         {
             "platforms": [
                 "chromeos",
@@ -2696,12 +2692,11 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "dismissed_en_site_id": "7FdPpHe410ugnJ3q1cK0YgpEG8BC",
-                        "filled_en_site_id": "wbg3hNwKm0ugnJ3q1cK0VFrsCmfr",
+                        "en_site_id": "Qx96YdFA30ugnJ3q1cK0XmiYT58b",
                         "probability": "1.0"
                     },
                     "enable_features": [
-                        "AutofillPersonalizationAndTrustOneTimePasswordSurvey"
+                        "AutofillPersonalizationAndTrustFedCmAutoReauthnSurvey"
                     ]
                 }
             ]
@@ -2715,12 +2710,131 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "dismissed_en_site_id": "LFSQF62Nb0tK1KeaPYj0YVPCcc9G",
-                        "filled_en_site_id": "nNpmz3GCH0tK1KeaPYj0Nf6Bi5Ze",
+                        "en_site_id": "qwmHVHdK70tK1KeaPYj0YefdQLf3",
                         "probability": "1.0"
                     },
                     "enable_features": [
-                        "AutofillPersonalizationAndTrustOneTimePasswordSurvey"
+                        "AutofillPersonalizationAndTrustFedCmAutoReauthnSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillPersonalizationAndTrustFedCmDismissedSurvey": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "CE2NRCkcc0ugnJ3q1cK0NjvL6ikD",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "AutofillPersonalizationAndTrustFedCmDismissedSurvey"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android",
+                "android_desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "wKK7FdcxP0tK1KeaPYj0Xaf36Zyt",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "AutofillPersonalizationAndTrustFedCmDismissedSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillPersonalizationAndTrustOneTimePasswordDismissedSurvey": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "7FdPpHe410ugnJ3q1cK0YgpEG8BC",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "AutofillPersonalizationAndTrustOneTimePasswordDismissedSurvey"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android",
+                "android_desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "LFSQF62Nb0tK1KeaPYj0YVPCcc9G",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "AutofillPersonalizationAndTrustOneTimePasswordDismissedSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillPersonalizationAndTrustOneTimePasswordFilledSurvey": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "wbg3hNwKm0ugnJ3q1cK0VFrsCmfr",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "AutofillPersonalizationAndTrustOneTimePasswordFilledSurvey"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android",
+                "android_desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "nNpmz3GCH0tK1KeaPYj0Nf6Bi5Ze",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "AutofillPersonalizationAndTrustOneTimePasswordFilledSurvey"
                     ]
                 }
             ]

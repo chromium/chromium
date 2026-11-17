@@ -57,7 +57,8 @@ bool CanTriggerPersonalizationAndTrustSurvey(const FormStructure& form,
             features::kAutofillPersonalizationAndTrustCreditCardSurvey);
       case FillingProduct::kOneTimePassword:
         return base::FeatureList::IsEnabled(
-            features::kAutofillPersonalizationAndTrustOneTimePasswordSurvey);
+            features::
+                kAutofillPersonalizationAndTrustOneTimePasswordFilledSurvey);
       case FillingProduct::kNone:
       case FillingProduct::kMerchantPromoCode:
       case FillingProduct::kIban:
@@ -319,7 +320,8 @@ void MaybeTriggerOneTimePasswordDismissalHatsSurvey(
     SuggestionHidingReason reason,
     base::span<const SuggestionType> shown_types) {
   if (!base::FeatureList::IsEnabled(
-          features::kAutofillPersonalizationAndTrustOneTimePasswordSurvey) ||
+          features::
+              kAutofillPersonalizationAndTrustOneTimePasswordDismissedSurvey) ||
       reason == SuggestionHidingReason::kAcceptSuggestion) {
     return;
   }

@@ -889,22 +889,16 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       autofill_personalization_and_trust_product_specific_data);
   survey_configs.emplace_back(
       &::autofill::features::
-          kAutofillPersonalizationAndTrustOneTimePasswordSurvey,
+          kAutofillPersonalizationAndTrustOneTimePasswordFilledSurvey,
       kHatsSurveyTriggerAutofillPersonalizationAndTrustOneTimePasswordFilled,
-      /*presupplied_trigger_id=*/
-      ::autofill::features::
-          kAutofillPersonalizationAndTrustOneTimePasswordSurveyFilledTriggerId
-              .Get(),
+      /*presupplied_trigger_id=*/std::nullopt,
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
       autofill_personalization_and_trust_product_specific_data);
   survey_configs.emplace_back(
       &::autofill::features::
-          kAutofillPersonalizationAndTrustOneTimePasswordSurvey,
+          kAutofillPersonalizationAndTrustOneTimePasswordDismissedSurvey,
       kHatsSurveyTriggerAutofillPersonalizationAndTrustOneTimePasswordDismissed,
-      /*presupplied_trigger_id=*/
-      ::autofill::features::
-          kAutofillPersonalizationAndTrustOneTimePasswordSurveyDismissedTriggerId
-              .Get(),
+      /*presupplied_trigger_id=*/std::nullopt,
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
       /*product_specific_string_data_fields=*/
       with_client_context_psd_fields({
@@ -958,27 +952,24 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           "Origin of the website (eTLD+1)",
       };
   survey_configs.emplace_back(
-      &::autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey,
+      &::autofill::features::
+          kAutofillPersonalizationAndTrustFedCmAcceptedSurvey,
       kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAccepted,
-      /*presupplied_trigger_id=*/
-      ::autofill::features::
-          kAutofillPersonalizationAndTrustFedCmSurveyAcceptedTriggerId.Get(),
+      /*presupplied_trigger_id=*/std::nullopt,
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
       autofill_personalization_and_trust_fedcm_product_specific_data);
   survey_configs.emplace_back(
-      &::autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey,
+      &::autofill::features::
+          kAutofillPersonalizationAndTrustFedCmAutoReauthnSurvey,
       kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAutoReauthn,
-      /*presupplied_trigger_id=*/
-      ::autofill::features::
-          kAutofillPersonalizationAndTrustFedCmSurveyAutoReauthnTriggerId.Get(),
+      /*presupplied_trigger_id=*/std::nullopt,
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
       autofill_personalization_and_trust_fedcm_product_specific_data);
   survey_configs.emplace_back(
-      &::autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey,
+      &::autofill::features::
+          kAutofillPersonalizationAndTrustFedCmDismissedSurvey,
       kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmDismissed,
-      /*presupplied_trigger_id=*/
-      ::autofill::features::
-          kAutofillPersonalizationAndTrustFedCmSurveyDismissedTriggerId.Get(),
+      /*presupplied_trigger_id=*/std::nullopt,
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
       autofill_personalization_and_trust_fedcm_product_specific_data);
 

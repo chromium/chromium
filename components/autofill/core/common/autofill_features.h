@@ -382,29 +382,17 @@ BASE_DECLARE_FEATURE(kAutofillPersonalizationAndTrustAutofillAiSurvey);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillPersonalizationAndTrustCreditCardSurvey);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillPersonalizationAndTrustFedCmSurvey);
+BASE_DECLARE_FEATURE(kAutofillPersonalizationAndTrustFedCmAcceptedSurvey);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE_PARAM(
-    std::string,
-    kAutofillPersonalizationAndTrustFedCmSurveyAcceptedTriggerId);
+BASE_DECLARE_FEATURE(kAutofillPersonalizationAndTrustFedCmAutoReauthnSurvey);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE_PARAM(
-    std::string,
-    kAutofillPersonalizationAndTrustFedCmSurveyAutoReauthnTriggerId);
+BASE_DECLARE_FEATURE(kAutofillPersonalizationAndTrustFedCmDismissedSurvey);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE_PARAM(
-    std::string,
-    kAutofillPersonalizationAndTrustFedCmSurveyDismissedTriggerId);
+BASE_DECLARE_FEATURE(
+    kAutofillPersonalizationAndTrustOneTimePasswordDismissedSurvey);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillPersonalizationAndTrustOneTimePasswordSurvey);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE_PARAM(
-    std::string,
-    kAutofillPersonalizationAndTrustOneTimePasswordSurveyFilledTriggerId);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE_PARAM(
-    std::string,
-    kAutofillPersonalizationAndTrustOneTimePasswordSurveyDismissedTriggerId);
+BASE_DECLARE_FEATURE(
+    kAutofillPersonalizationAndTrustOneTimePasswordFilledSurvey);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillPolicyControlledFeatureAutofill);
 COMPONENT_EXPORT(AUTOFILL)

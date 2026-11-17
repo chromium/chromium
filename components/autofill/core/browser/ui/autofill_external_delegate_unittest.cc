@@ -1881,7 +1881,7 @@ TEST_F(AutofillExternalDelegateTest,
 TEST_F(AutofillExternalDelegateTest,
        PersonalizationAndTrustSurvey_OtpDismissal) {
   base::test::ScopedFeatureList feature_list{
-      features::kAutofillPersonalizationAndTrustOneTimePasswordSurvey};
+      features::kAutofillPersonalizationAndTrustOneTimePasswordDismissedSurvey};
   IssueOnQuery();
 
   OnSuggestionsReturned(queried_field(),
@@ -1904,7 +1904,7 @@ TEST_F(AutofillExternalDelegateTest,
 TEST_F(AutofillExternalDelegateTest,
        PersonalizationAndTrustSurvey_NoDismissalSurvey_OnOtpFilling) {
   base::test::ScopedFeatureList feature_list{
-      features::kAutofillPersonalizationAndTrustOneTimePasswordSurvey};
+      features::kAutofillPersonalizationAndTrustOneTimePasswordDismissedSurvey};
   IssueOnQuery();
 
   OnSuggestionsReturned(queried_field(),

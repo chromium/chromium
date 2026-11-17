@@ -1319,8 +1319,6 @@ TEST_F(IdentityDialogControllerTest, ShowNativeAppUiDismissed) {
 // Tests that a HaT survey about personalization and trust is launched when the
 // user accepts an account in FedCM and login succeeds.
 TEST_F(IdentityDialogControllerTest, PersonalizationAndTrustSurvey_Accept) {
-  base::test::ScopedFeatureList feature_list{
-      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
   MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&BuildMockHatsService)));
@@ -1353,8 +1351,6 @@ TEST_F(IdentityDialogControllerTest, PersonalizationAndTrustSurvey_Accept) {
 // selection.
 TEST_F(IdentityDialogControllerTest,
        PersonalizationAndTrustSurvey_DoNotTrigger_AcceptFailed) {
-  base::test::ScopedFeatureList feature_list{
-      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
   MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&BuildMockHatsService)));
@@ -1376,8 +1372,6 @@ TEST_F(IdentityDialogControllerTest,
 // runs in active mode with a sign-up account.
 TEST_F(IdentityDialogControllerTest,
        PersonalizationAndTrustSurvey_Accept_ActiveMode) {
-  base::test::ScopedFeatureList feature_list{
-      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
   MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&BuildMockHatsService)));
@@ -1410,8 +1404,6 @@ TEST_F(IdentityDialogControllerTest,
 // dialog is shown in auto sign-in mode and login succeeds.
 TEST_F(IdentityDialogControllerTest,
        PersonalizationAndTrustSurvey_AutoReauthn) {
-  base::test::ScopedFeatureList feature_list{
-      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
   MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&BuildMockHatsService)));
@@ -1449,8 +1441,6 @@ TEST_F(IdentityDialogControllerTest,
 // dialog.
 TEST_F(IdentityDialogControllerTest,
        PersonalizationAndTrustSurvey_AutoReauthn_ActiveMode) {
-  base::test::ScopedFeatureList feature_list{
-      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
   MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&BuildMockHatsService)));
@@ -1495,8 +1485,6 @@ TEST_F(IdentityDialogControllerTest,
 // user dismisses a FedCM dialog. If both sign-up and sign-in accounts are
 // present, the interaction type is estimated as sign-in.
 TEST_F(IdentityDialogControllerTest, PersonalizationAndTrustSurvey_Dismiss) {
-  base::test::ScopedFeatureList feature_list{
-      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
   MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&BuildMockHatsService)));
@@ -1532,8 +1520,6 @@ TEST_F(IdentityDialogControllerTest, PersonalizationAndTrustSurvey_Dismiss) {
 // accounts dialog where only the browser-trusted state is sign-in.
 TEST_F(IdentityDialogControllerTest,
        PersonalizationAndTrustSurvey_Dismiss_BrowserTrustedSignIn) {
-  base::test::ScopedFeatureList feature_list{
-      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
   MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&BuildMockHatsService)));
@@ -1568,8 +1554,6 @@ TEST_F(IdentityDialogControllerTest,
 // accounts dialog with sign-up accounts.
 TEST_F(IdentityDialogControllerTest,
        PersonalizationAndTrustSurvey_Dismiss_SignUp) {
-  base::test::ScopedFeatureList feature_list{
-      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
   MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&BuildMockHatsService)));
@@ -1602,8 +1586,6 @@ TEST_F(IdentityDialogControllerTest,
 // Tests that the HaT survey PSDs cap the number of accounts shown at "5+".
 TEST_F(IdentityDialogControllerTest,
        PersonalizationAndTrustSurvey_Dismiss_AccountsCountCap) {
-  base::test::ScopedFeatureList feature_list{
-      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
   MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&BuildMockHatsService)));
@@ -1633,8 +1615,6 @@ TEST_F(IdentityDialogControllerTest,
 // Tests that the survey PSD specifies "0" when no accounts are shown.
 TEST_F(IdentityDialogControllerTest,
        PersonalizationAndTrustSurvey_Dismiss_NoAccounts) {
-  base::test::ScopedFeatureList feature_list{
-      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
   MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&BuildMockHatsService)));
@@ -1665,8 +1645,6 @@ TEST_F(IdentityDialogControllerTest,
 // other than explicit user dismissal (such as being ignored).
 TEST_F(IdentityDialogControllerTest,
        PersonalizationAndTrustSurvey_DoNotTrigger_DismissIgnored) {
-  base::test::ScopedFeatureList feature_list{
-      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
   MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&BuildMockHatsService)));
@@ -1685,8 +1663,6 @@ TEST_F(IdentityDialogControllerTest,
 // dialogs.
 TEST_F(IdentityDialogControllerTest,
        PersonalizationAndTrustSurvey_DoNotTrigger_DismissError) {
-  base::test::ScopedFeatureList feature_list{
-      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
   MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&BuildMockHatsService)));
@@ -1711,8 +1687,6 @@ TEST_F(IdentityDialogControllerTest,
 // Tests that no HaT survey is launched when auto-reauthn login fails.
 TEST_F(IdentityDialogControllerTest,
        PersonalizationAndTrustSurvey_DoNotTrigger_AutoReauthnFailed) {
-  base::test::ScopedFeatureList feature_list{
-      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
   MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&BuildMockHatsService)));
@@ -1738,8 +1712,6 @@ TEST_F(IdentityDialogControllerTest,
 // suppresses the UI.
 TEST_F(IdentityDialogControllerTest,
        PersonalizationAndTrustSurvey_DoNotTrigger_AutoReauthn_ActorTask) {
-  base::test::ScopedFeatureList feature_list{
-      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
   MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&BuildMockHatsService)));
@@ -1762,57 +1734,16 @@ TEST_F(IdentityDialogControllerTest,
   controller->OnFedCmFederatedLogin(/*success=*/true);
 }
 
-// Tests that no HaT survey is launched on account acceptance when the survey
-// feature is disabled.
-TEST_F(IdentityDialogControllerTest,
-       PersonalizationAndTrustSurvey_DoNotTrigger_FeatureDisabled_Accept) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey);
-  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
-      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile(), base::BindRepeating(&BuildMockHatsService)));
-
-  auto controller = std::make_unique<IdentityDialogController>(web_contents());
-  auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
-  ON_CALL(*mock_view, Show).WillByDefault(Return(true));
-  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
-  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
-
-  EXPECT_CALL(*mock_hats_service, LaunchDelayedSurveyForWebContents).Times(0);
-  controller->OnAccountSelected(
-      GURL(kIdpEtldPlusOne), kAccountId,
-      content::IdentityRequestAccount::LoginState::kSignIn);
-  controller->OnFedCmFederatedLogin(/*success=*/true);
-}
-
-// Tests that no HaT survey is launched on dialog dismissal when the survey
-// feature is disabled.
-TEST_F(IdentityDialogControllerTest,
-       PersonalizationAndTrustSurvey_DoNotTrigger_FeatureDisabled_Dismiss) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey);
-  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
-      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile(), base::BindRepeating(&BuildMockHatsService)));
-
-  auto controller = std::make_unique<IdentityDialogController>(web_contents());
-  auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
-  ON_CALL(*mock_view, Show).WillByDefault(Return(true));
-  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
-  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
-
-  EXPECT_CALL(*mock_hats_service, LaunchDelayedSurveyForWebContents).Times(0);
-  controller->OnDismiss(IdentityDialogController::DismissReason::kCloseButton);
-}
-
 // Tests that the product-specific string data keys supplied to HaTS match the
 // fields configured in the survey configs.
 TEST_F(IdentityDialogControllerTest,
        PersonalizationAndTrustSurvey_PsdKeysMatchSurveyConfig) {
-  base::test::ScopedFeatureList feature_list{
-      autofill::features::kAutofillPersonalizationAndTrustFedCmSurvey};
+  base::test::ScopedFeatureList feature_list(
+      {autofill::features::kAutofillPersonalizationAndTrustFedCmAcceptedSurvey,
+       autofill::features::
+           kAutofillPersonalizationAndTrustFedCmAutoReauthnSurvey,
+       autofill::features::
+           kAutofillPersonalizationAndTrustFedCmDismissedSurvey});
   MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&BuildMockHatsService)));

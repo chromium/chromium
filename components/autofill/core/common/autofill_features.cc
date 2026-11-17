@@ -993,45 +993,16 @@ BASE_FEATURE(kAutofillPersonalizationAndTrustAutofillAiSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillPersonalizationAndTrustCreditCardSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kAutofillPersonalizationAndTrustFedCmSurvey,
+BASE_FEATURE(kAutofillPersonalizationAndTrustFedCmAcceptedSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
-// The FedCM surveys share a single feature, but require different trigger IDs.
-// Since Finch does not allow duplicate parameter names within a group, each
-// survey uses a separately named "en_site_id" parameter.
-BASE_FEATURE_PARAM(std::string,
-                   kAutofillPersonalizationAndTrustFedCmSurveyAcceptedTriggerId,
-                   &kAutofillPersonalizationAndTrustFedCmSurvey,
-                   "accepted_en_site_id",
-                   "");
-BASE_FEATURE_PARAM(
-    std::string,
-    kAutofillPersonalizationAndTrustFedCmSurveyAutoReauthnTriggerId,
-    &kAutofillPersonalizationAndTrustFedCmSurvey,
-    "auto_reauthn_en_site_id",
-    "");
-BASE_FEATURE_PARAM(
-    std::string,
-    kAutofillPersonalizationAndTrustFedCmSurveyDismissedTriggerId,
-    &kAutofillPersonalizationAndTrustFedCmSurvey,
-    "dismissed_en_site_id",
-    "");
-BASE_FEATURE(kAutofillPersonalizationAndTrustOneTimePasswordSurvey,
+BASE_FEATURE(kAutofillPersonalizationAndTrustFedCmAutoReauthnSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
-// The OTP surveys share a single feature, but require different trigger IDs.
-// Since Finch does not allow duplicate parameter names within a group, each
-// survey uses a separately named "en_site_id" parameter.
-BASE_FEATURE_PARAM(
-    std::string,
-    kAutofillPersonalizationAndTrustOneTimePasswordSurveyFilledTriggerId,
-    &kAutofillPersonalizationAndTrustOneTimePasswordSurvey,
-    "filled_en_site_id",
-    "");
-BASE_FEATURE_PARAM(
-    std::string,
-    kAutofillPersonalizationAndTrustOneTimePasswordSurveyDismissedTriggerId,
-    &kAutofillPersonalizationAndTrustOneTimePasswordSurvey,
-    "dismissed_en_site_id",
-    "");
+BASE_FEATURE(kAutofillPersonalizationAndTrustFedCmDismissedSurvey,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillPersonalizationAndTrustOneTimePasswordDismissedSurvey,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillPersonalizationAndTrustOneTimePasswordFilledSurvey,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether Autofill may fill across origins.
 // In payment forms, the cardholder name field is often on the merchant's origin
