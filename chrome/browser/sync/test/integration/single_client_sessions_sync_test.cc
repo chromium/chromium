@@ -16,6 +16,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 #include "chrome/browser/sync/test/integration/history_helper.h"
 #include "chrome/browser/sync/test/integration/session_hierarchy_match_checker.h"
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
@@ -326,8 +327,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, Sanity) {
   GURL url = embedded_test_server()->GetURL("/sync/simple.html");
   NavigateTab(0, url);
   EXPECT_TRUE(GetLocalWindows(0, &old_windows));
-  EXPECT_TRUE(
-      UpdatedProgressMarkerChecker(GetSyncService(0), GetFakeServer()).Wait());
+  EXPECT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
 
   // Get foreign session data from client 0.
   SyncedSessionVector sessions;
