@@ -222,6 +222,8 @@ extern const base::FeatureParam<bool> kContextualTasksEntryPointsAppMenu;
 extern const base::FeatureParam<bool>
     kContextualTasksEntryPointsImageContextMenu;
 extern const base::FeatureParam<bool> kContextualTasksEntryPointsToolbarButton;
+extern const base::FeatureParam<bool>
+    kContextualTasksEntryPointsForceToolbarButton;
 extern const base::FeatureParam<bool> kContextualTasksEntryPointsOmnibox;
 // Whether contextual zero-prefix suggestions are requested without Lens and
 // fulfilled in the Contextual Tasks side panel. Separate from `omnibox`, which
