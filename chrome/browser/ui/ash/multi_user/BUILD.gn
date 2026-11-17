@@ -20,7 +20,6 @@ static_library("multi_user") {
     "//base",
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
-    "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/auth",
@@ -40,7 +39,6 @@ static_library("multi_user") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/session",
   ]

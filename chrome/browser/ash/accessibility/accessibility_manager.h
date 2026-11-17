@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/experiences/extensions/common/api/accessibility_private.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -512,7 +513,11 @@ class AccessibilityManager
   void OnDeviceListsComplete() override;
 
   // Test helpers:
-  void SetProfileForTest(Profile* profile);
+  // Sets `profile` as the current a11y context. `account_id` is the AccountId
+  // of the user owning `profile`, or empty if `profile` is not a user profile
+  // (e.g. the signin profile).
+  void SetProfileForTest(Profile* profile,
+                         const AccountId& account_id = EmptyAccountId());
   static void SetBrailleControllerForTest(
       extensions::api::braille_display_private::BrailleController* controller);
   void SetOpenSettingsSubpageObserverForTest(
@@ -625,7 +630,10 @@ class AccessibilityManager
           state);
   void UpdateBrailleImeState();
 
-  void SetProfile(Profile* profile);
+  // Sets `profile` as the current a11y context. `account_id` must be the
+  // AccountId of the user owning `profile`, or empty if `profile` is not a
+  // user profile.
+  void SetProfile(Profile* profile, const AccountId& account_id);
 
   void SetProfileByUser(const user_manager::User* user);
 
@@ -721,6 +729,9 @@ class AccessibilityManager
 
   // Profile which has the current a11y context.
   raw_ptr<Profile> profile_ = nullptr;
+  // AccountId of the user owning `profile_`. Empty if `profile_` is null or
+  // not a user profile (e.g. the signin profile).
+  AccountId account_id_ = EmptyAccountId();
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   base::ScopedObservation<session_manager::SessionManager,

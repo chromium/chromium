@@ -64,7 +64,6 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chromeos/ash/components/audio/sounds.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -795,11 +794,9 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
   const bool enabled = profile_->GetPrefs()->GetBoolean(
       prefs::kAccessibilitySpokenFeedbackEnabled);
 
-  if (IsUserBrowserContext(profile_)) {
+  if (account_id_.is_valid()) {
     user_manager::KnownUser known_user(&local_state_.get());
-    known_user.SetBooleanPref(
-        multi_user_util::GetAccountIdFromProfile(profile_),
-        kUserSpokenFeedbackEnabled, enabled);
+    known_user.SetBooleanPref(account_id_, kUserSpokenFeedbackEnabled, enabled);
   }
 
   if (enabled) {
@@ -1708,12 +1705,23 @@ void AccessibilityManager::OnActiveOutputNodeChanged() {
 
 void AccessibilityManager::OnProfileWillBeDestroyed(Profile* profile) {
   CHECK_EQ(profile_, profile, base::NotFatalUntil::M160);
-  SetProfile(nullptr);
+  SetProfile(nullptr, EmptyAccountId());
 }
 
-void AccessibilityManager::SetProfile(Profile* profile) {
-  if (profile_ == profile)
+void AccessibilityManager::SetProfile(Profile* profile,
+                                      const AccountId& account_id) {
+  if (profile_ == profile) {
+    CHECK_EQ(account_id_, account_id);
     return;
+  }
+
+  // `account_id` identifies the user who owns `profile`. It is empty if there
+  // is no profile or `profile` is the sign-in profile.
+  if (!profile || IsSigninBrowserContext(profile)) {
+    CHECK(!account_id.is_valid());
+  } else {
+    CHECK(account_id.is_valid());
+  }
 
   if (profile_)
     CHECK(profile_observation_.IsObservingSource(profile_.get()),
@@ -1844,6 +1852,7 @@ void AccessibilityManager::SetProfile(Profile* profile) {
 
   bool had_profile = (profile_ != nullptr);
   profile_ = profile;
+  account_id_ = account_id;
 
   if (!had_profile && profile)
     CheckBrailleState();
@@ -1873,7 +1882,7 @@ void AccessibilityManager::SetProfileByUser(const user_manager::User* user) {
   Profile* profile = Profile::FromBrowserContext(
       BrowserContextHelper::Get()->GetBrowserContextByUser(user));
   CHECK(profile, base::NotFatalUntil::M160);
-  SetProfile(profile);
+  SetProfile(profile, user->GetAccountId());
 }
 
 void AccessibilityManager::ActiveUserChanged(user_manager::User* active_user) {
@@ -2102,7 +2111,8 @@ void AccessibilityManager::SetActiveProfile() {
   // Update `profile_` when entering the login screen.
   if (!session_manager::SessionManager::Get()->GetActiveSession()) {
     SetProfile(Profile::FromBrowserContext(
-        BrowserContextHelper::Get()->GetSigninBrowserContext()));
+                   BrowserContextHelper::Get()->GetSigninBrowserContext()),
+               EmptyAccountId());
   }
 }
 
@@ -2530,8 +2540,7 @@ void AccessibilityManager::SetStartupSoundEnabled(bool value) const {
     return;
 
   user_manager::KnownUser known_user(&local_state_.get());
-  known_user.SetBooleanPref(multi_user_util::GetAccountIdFromProfile(profile_),
-                            kUserStartupSoundEnabled, value);
+  known_user.SetBooleanPref(account_id_, kUserStartupSoundEnabled, value);
 }
 
 void AccessibilityManager::PreviewFlashNotification() const {
@@ -2560,13 +2569,14 @@ void AccessibilityManager::UpdateBluetoothBrailleDisplayAddress(
     return;
 
   user_manager::KnownUser known_user(&local_state_.get());
-  known_user.SetStringPref(multi_user_util::GetAccountIdFromProfile(profile_),
-                           kUserBluetoothBrailleDisplayAddress, address);
+  known_user.SetStringPref(account_id_, kUserBluetoothBrailleDisplayAddress,
+                           address);
   RestartBrltty(address);
 }
 
-void AccessibilityManager::SetProfileForTest(Profile* profile) {
-  SetProfile(profile);
+void AccessibilityManager::SetProfileForTest(Profile* profile,
+                                             const AccountId& account_id) {
+  SetProfile(profile, account_id);
 }
 
 // static
