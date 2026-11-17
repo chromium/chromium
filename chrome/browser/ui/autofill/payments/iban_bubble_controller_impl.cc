@@ -121,14 +121,17 @@ void IbanBubbleControllerImpl::ReshowBubble() {
     return;
   }
 
-  is_reshow_ = true;
+  if (current_bubble_type_ != IbanBubbleType::kUploadCompleted) {
+    is_reshow_ = true;
+  }
   CHECK(current_bubble_type_ != IbanBubbleType::kInactive);
   if (current_bubble_type_ == IbanBubbleType::kLocalSave ||
       current_bubble_type_ == IbanBubbleType::kUploadSave) {
     CHECK(!save_iban_prompt_callback_.is_null());
   } else {
     CHECK(current_bubble_type_ == IbanBubbleType::kManageSavedIban ||
-          current_bubble_type_ == IbanBubbleType::kUploadInProgress);
+          current_bubble_type_ == IbanBubbleType::kUploadInProgress ||
+          current_bubble_type_ == IbanBubbleType::kUploadCompleted);
   }
   QueueOrShowBubble(/*force_show=*/true);
 }
@@ -150,20 +153,7 @@ void IbanBubbleControllerImpl::ShowConfirmationBubbleView(
                        CreateForSaveIbanFailure(hit_max_strikes);
 
   // Show upload confirmation bubble.
-  AutofillBubbleHandler* autofill_bubble_handler = GetAutofillBubbleHandler();
-  CHECK(autofill_bubble_handler);
-  SetBubbleView(*autofill_bubble_handler->ShowSaveIbanConfirmationBubble(
-      web_contents(), this));
-  UpdatePageActionIcon();
-
-  // Auto close confirmation bubble when IBAN saved is successful.
-  if (iban_saved) {
-    auto_close_confirmation_timer_.Start(
-        FROM_HERE, kAutoCloseConfirmationBubbleWaitSec,
-        base::BindOnce(&IbanBubbleControllerImpl::HideBubble,
-                       base::Unretained(this),
-                       /*initiated_by_bubble_manager=*/false));
-  }
+  QueueOrShowBubble();
 }
 
 std::u16string IbanBubbleControllerImpl::GetWindowTitle() const {
@@ -321,6 +311,9 @@ void IbanBubbleControllerImpl::OnBubbleDiscarded() {
   LogBubbleCloseMetrics(was_bubble_shown_
                             ? PaymentsUiClosedReason::kNotInteracted
                             : PaymentsUiClosedReason::kUnknown);
+  if (current_bubble_type_ == IbanBubbleType::kUploadCompleted) {
+    ResetConfirmationState();
+  }
 }
 
 void IbanBubbleControllerImpl::LogBubbleCloseMetrics(
@@ -363,6 +356,13 @@ void IbanBubbleControllerImpl::LogBubbleCloseMetrics(
   }
 }
 
+void IbanBubbleControllerImpl::ResetConfirmationState() {
+  current_bubble_type_ = IbanBubbleType::kInactive;
+  UpdatePageActionIcon();
+  confirmation_ui_params_.reset();
+  auto_close_confirmation_timer_.Stop();
+}
+
 void IbanBubbleControllerImpl::OnBubbleClosed(
     PaymentsUiClosedReason closed_reason) {
   if (current_bubble_type_ == IbanBubbleType::kLocalSave ||
@@ -387,10 +387,7 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
   }
 
   if (current_bubble_type_ == IbanBubbleType::kUploadCompleted) {
-    current_bubble_type_ = IbanBubbleType::kInactive;
-
-    UpdatePageActionIcon();
-    confirmation_ui_params_.reset();
+    ResetConfirmationState();
     return;
   }
 
@@ -461,8 +458,23 @@ IbanBubbleControllerImpl::GetPageActionTooltipText() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 void IbanBubbleControllerImpl::DoShowBubble() {
-  AutofillBubbleHandler* autofill_bubble_handler = GetAutofillBubbleHandler();
+  AutofillBubbleHandler* const autofill_bubble_handler =
+      GetAutofillBubbleHandler();
   CHECK(autofill_bubble_handler);
+  if (current_bubble_type_ == IbanBubbleType::kUploadCompleted) {
+    SetBubbleView(*autofill_bubble_handler->ShowSaveIbanConfirmationBubble(
+        web_contents(), this));
+    CHECK(bubble_view());
+    if (confirmation_ui_params_->is_success) {
+      auto_close_confirmation_timer_.Start(
+          FROM_HERE, kAutoCloseConfirmationBubbleWaitSec,
+          base::BindOnce(&IbanBubbleControllerImpl::HideBubble,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         /*initiated_by_bubble_manager=*/false));
+    }
+    return;
+  }
+
   SetBubbleView(*autofill_bubble_handler->ShowIbanBubble(
       web_contents(), this,
       /*is_user_gesture=*/is_reshow_, current_bubble_type_));
@@ -496,8 +508,13 @@ void IbanBubbleControllerImpl::DoShowBubble() {
 }
 
 bool IbanBubbleControllerImpl::CanBeReshown() const {
-  return current_bubble_type_ != IbanBubbleType::kUploadCompleted &&
-         current_bubble_type_ != IbanBubbleType::kInactive;
+  if (current_bubble_type_ == IbanBubbleType::kInactive) {
+    return false;
+  }
+  if (current_bubble_type_ == IbanBubbleType::kUploadCompleted) {
+    return !IsShowingBubble();
+  }
+  return true;
 }
 
 BubbleType IbanBubbleControllerImpl::GetBubbleType() const {

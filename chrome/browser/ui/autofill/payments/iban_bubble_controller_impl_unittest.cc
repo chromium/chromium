@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
 
+#include "base/callback_list.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
+#include "chrome/browser/ui/autofill/bubble_manager_impl.h"
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -24,29 +27,73 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace autofill {
+namespace {
 
-class TestBubbleManager : public BubbleManager {
+using ::testing::NiceMock;
+using ::testing::Return;
+using ::testing::ReturnRef;
+
+// Test `AutofillBubbleBase` implementation which notifies the controller when
+// the bubble hides (to match prod).
+class ObserveHideTestAutofillBubble : public AutofillBubbleBase {
  public:
-  TestBubbleManager() = default;
-  ~TestBubbleManager() override = default;
+  explicit ObserveHideTestAutofillBubble(content::WebContents* web_contents)
+      : web_contents_(web_contents->GetWeakPtr()) {}
+  ~ObserveHideTestAutofillBubble() override = default;
 
-  // BubbleManager:
-  void RequestShowController(autofill::BubbleControllerBase& controller_to_show,
-                             bool force_show) override {
-    controller_to_show.ShowBubble();
+  void Hide() override {
+    // Call `OnBubbleClosed()` because the real implementation does so.
+    if (web_contents_) {
+      IbanBubbleControllerImpl* const controller =
+          IbanBubbleControllerImpl::FromWebContents(web_contents_.get());
+      controller->OnBubbleClosed(PaymentsUiClosedReason::kUnknown);
+    }
   }
-  void OnBubbleHiddenByController(
-      autofill::BubbleControllerBase& controller_to_hide,
-      bool show_next_bubble) override {}
-  bool HasPendingBubbleOfSameType(
-      const autofill::BubbleType bubble_type) const override {
-    return false;
-  }
-  bool HasConflictingPendingBubble(
-      const autofill::BubbleType bubble_type) const override {
-    return false;
-  }
+
+  bool IsMouseHovered() const override { return false; }
+
+ private:
+  // `WeakPtr` because `ObserveHideTestAutofillBubble` outlives the
+  // `WebContents` in tests.
+  const base::WeakPtr<content::WebContents> web_contents_;
 };
+
+class ObserveHideTestAutofillBubbleHandler : public TestAutofillBubbleHandler {
+ public:
+  ObserveHideTestAutofillBubbleHandler() = default;
+  ObserveHideTestAutofillBubbleHandler(
+      const ObserveHideTestAutofillBubbleHandler&) = delete;
+  ObserveHideTestAutofillBubbleHandler& operator=(
+      const ObserveHideTestAutofillBubbleHandler&) = delete;
+  ~ObserveHideTestAutofillBubbleHandler() override = default;
+
+  AutofillBubbleBase* ShowIbanBubble(content::WebContents* web_contents,
+                                     IbanBubbleController* controller,
+                                     bool is_user_gesture,
+                                     IbanBubbleType bubble_type) override {
+    if (!iban_bubble_) {
+      iban_bubble_ =
+          std::make_unique<ObserveHideTestAutofillBubble>(web_contents);
+    }
+    return iban_bubble_.get();
+  }
+
+  AutofillBubbleBase* ShowSaveIbanConfirmationBubble(
+      content::WebContents* web_contents,
+      IbanBubbleController* controller) override {
+    if (!confirmation_bubble_) {
+      confirmation_bubble_ =
+          std::make_unique<ObserveHideTestAutofillBubble>(web_contents);
+    }
+    return confirmation_bubble_.get();
+  }
+
+ private:
+  std::unique_ptr<ObserveHideTestAutofillBubble> iban_bubble_;
+  std::unique_ptr<ObserveHideTestAutofillBubble> confirmation_bubble_;
+};
+
+}  // namespace
 
 class IbanBubbleControllerImplTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -63,17 +110,27 @@ class IbanBubbleControllerImplTest : public ChromeRenderViewHostTestHarness {
     NavigateAndCommit(GURL("about:blank"));
 
     ON_CALL(mock_tab_interface_, GetContents())
-        .WillByDefault(testing::Return(web_contents()));
-    ON_CALL(mock_tab_interface_, IsActivated())
-        .WillByDefault(testing::Return(true));
+        .WillByDefault(Return(web_contents()));
+    ON_CALL(mock_tab_interface_, IsActivated()).WillByDefault(Return(true));
     ON_CALL(mock_tab_interface_, GetBrowserWindowInterface())
-        .WillByDefault(testing::Return(&mock_browser_window_interface_));
+        .WillByDefault(Return(&mock_browser_window_interface_));
+    ON_CALL(mock_tab_interface_, RegisterDidActivate)
+        .WillByDefault([this](tabs::TabInterface::DidActivateCallback cb) {
+          return did_activate_callbacks_.Add(std::move(cb));
+        });
+    ON_CALL(mock_tab_interface_, RegisterWillDeactivate)
+        .WillByDefault([this](tabs::TabInterface::WillDeactivateCallback cb) {
+          return will_deactivate_callbacks_.Add(std::move(cb));
+        });
+    ON_CALL(mock_tab_interface_, RegisterWillDiscardContents)
+        .WillByDefault(
+            [this](tabs::TabInterface::WillDiscardContentsCallback cb) {
+              return will_discard_callbacks_.Add(std::move(cb));
+            });
     ON_CALL(mock_browser_window_interface_, GetUnownedUserDataHost())
-        .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
+        .WillByDefault(ReturnRef(unowned_user_data_host_));
 
-    test_bubble_manager_registration_ =
-        std::make_unique<ui::ScopedUnownedUserData<BubbleManager>>(
-            mock_tab_interface_.GetUnownedUserDataHost(), test_bubble_manager_);
+    bubble_manager_ = std::make_unique<BubbleManagerImpl>(&mock_tab_interface_);
 
     tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                          &mock_tab_interface_);
@@ -85,6 +142,22 @@ class IbanBubbleControllerImplTest : public ChromeRenderViewHostTestHarness {
 
     IbanBubbleControllerImpl::CreateForWebContents(web_contents());
   }
+
+  void TearDown() override {
+    bubble_manager_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  void SetTabActive(bool active) {
+    ON_CALL(mock_tab_interface_, IsActivated()).WillByDefault(Return(active));
+    if (active) {
+      did_activate_callbacks_.Notify(&mock_tab_interface_);
+    } else {
+      will_deactivate_callbacks_.Notify(&mock_tab_interface_);
+    }
+  }
+
+  BubbleManager& bubble_manager() { return *bubble_manager_; }
 
   void ShowLocalSaveBubble(const Iban& iban) {
     controller()->OfferLocalSave(
@@ -131,12 +204,17 @@ class IbanBubbleControllerImplTest : public ChromeRenderViewHostTestHarness {
 
   std::u16string_view saved_nickname_;
   tabs::MockTabInterface mock_tab_interface_;
-  TestBubbleManager test_bubble_manager_;
-  std::unique_ptr<ui::ScopedUnownedUserData<BubbleManager>>
-      test_bubble_manager_registration_;
-  MockBrowserWindowInterface mock_browser_window_interface_;
+  base::RepeatingCallbackList<void(tabs::TabInterface*)>
+      did_activate_callbacks_;
+  base::RepeatingCallbackList<void(tabs::TabInterface*)>
+      will_deactivate_callbacks_;
+  base::RepeatingCallbackList<
+      void(tabs::TabInterface*, content::WebContents*, content::WebContents*)>
+      will_discard_callbacks_;
+  std::unique_ptr<BubbleManagerImpl> bubble_manager_;
+  NiceMock<MockBrowserWindowInterface> mock_browser_window_interface_;
   ui::UnownedUserDataHost unowned_user_data_host_;
-  TestAutofillBubbleHandler test_autofill_bubble_handler_;
+  ObserveHideTestAutofillBubbleHandler test_autofill_bubble_handler_;
   std::unique_ptr<ui::ScopedUnownedUserData<AutofillBubbleHandler>>
       test_autofill_bubble_handler_registration_;
   base::WeakPtrFactory<IbanBubbleControllerImplTest> weak_ptr_factory_{this};
@@ -299,6 +377,7 @@ TEST_F(IbanBubbleControllerImplTest, OnConfirmationPromptAutoClosed_Success) {
   task_environment()->FastForwardBy(
       IbanBubbleControllerImpl::kAutoCloseConfirmationBubbleWaitSec);
   EXPECT_EQ(controller()->GetPaymentBubbleView(), nullptr);
+  EXPECT_EQ(controller()->GetIbanBubbleType(), IbanBubbleType::kInactive);
 }
 
 // Test that fallback as local save confirmation prompt is not auto-closed in 3
@@ -372,6 +451,73 @@ TEST_F(IbanBubbleControllerImplTest,
       "Autofill.SaveIbanPromptOffer.Local.FirstShow", 0);
   histogram_tester.ExpectTotalCount(
       "Autofill.SaveIbanPromptOffer.Upload.FirstShow", 0);
+}
+
+// Tests that an upload confirmation arriving while the tab is inactive is
+// queued in `BubbleManager` and starts its auto-close timer only once shown.
+TEST_F(IbanBubbleControllerImplTest,
+       ShowConfirmationBubbleView_QueuedWhileInactiveAndAutoClosesOnShow) {
+  SetTabActive(false);
+  ShowConfirmationBubbleView(/*iban_saved=*/true, /*hit_max_strikes=*/false);
+
+  EXPECT_EQ(controller()->GetPaymentBubbleView(), nullptr);
+  EXPECT_TRUE(
+      bubble_manager().HasPendingBubbleOfSameType(BubbleType::kSaveIban));
+
+  // Auto-close timer must not run while the confirmation bubble is queued.
+  task_environment()->FastForwardBy(
+      IbanBubbleControllerImpl::kAutoCloseConfirmationBubbleWaitSec);
+  EXPECT_TRUE(
+      bubble_manager().HasPendingBubbleOfSameType(BubbleType::kSaveIban));
+
+  // Activating the tab shows the queued confirmation bubble and starts the
+  // auto-close timer.
+  SetTabActive(true);
+  EXPECT_NE(controller()->GetPaymentBubbleView(), nullptr);
+
+  task_environment()->FastForwardBy(
+      IbanBubbleControllerImpl::kAutoCloseConfirmationBubbleWaitSec);
+  EXPECT_EQ(controller()->GetPaymentBubbleView(), nullptr);
+  EXPECT_EQ(controller()->GetIbanBubbleType(), IbanBubbleType::kInactive);
+}
+
+// Tests that closing a confirmation bubble early stops its auto-close timer so
+// a subsequent save bubble is not closed when the original timer elapses.
+TEST_F(IbanBubbleControllerImplTest,
+       EarlyConfirmationCloseStopsAutoCloseTimer) {
+  ShowConfirmationBubbleView(/*iban_saved=*/true, /*hit_max_strikes=*/false);
+  ASSERT_NE(controller()->GetPaymentBubbleView(), nullptr);
+
+  SetTabActive(false);
+  SetTabActive(true);
+  ASSERT_EQ(controller()->GetPaymentBubbleView(), nullptr);
+  ASSERT_EQ(controller()->GetIbanBubbleType(), IbanBubbleType::kInactive);
+
+  ShowLocalSaveBubble(test::GetLocalIban());
+  ASSERT_NE(controller()->GetPaymentBubbleView(), nullptr);
+
+  task_environment()->FastForwardBy(
+      IbanBubbleControllerImpl::kAutoCloseConfirmationBubbleWaitSec);
+  EXPECT_NE(controller()->GetPaymentBubbleView(), nullptr);
+  EXPECT_EQ(controller()->GetIbanBubbleType(), IbanBubbleType::kLocalSave);
+}
+
+// Tests that discarding a queued upload confirmation resets confirmation state.
+TEST_F(IbanBubbleControllerImplTest,
+       ShowConfirmationBubbleView_DiscardedWhileQueuedResetsState) {
+  SetTabActive(false);
+  ShowConfirmationBubbleView(/*iban_saved=*/true, /*hit_max_strikes=*/false);
+  ASSERT_EQ(controller()->GetIbanBubbleType(),
+            IbanBubbleType::kUploadCompleted);
+
+  // Exceed `BubbleManagerImpl`'s pending request timeout (1 hour) so the queued
+  // confirmation bubble is discarded when the tab becomes active.
+  task_environment()->FastForwardBy(base::Hours(2));
+  SetTabActive(true);
+
+  EXPECT_EQ(controller()->GetPaymentBubbleView(), nullptr);
+  EXPECT_EQ(controller()->GetIbanBubbleType(), IbanBubbleType::kInactive);
+  EXPECT_FALSE(controller()->IsIconVisible());
 }
 
 }  // namespace autofill

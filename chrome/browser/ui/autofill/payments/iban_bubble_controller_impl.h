@@ -147,6 +147,10 @@ class IbanBubbleControllerImpl
   // Logs metrics when the bubble is closed.
   void LogBubbleCloseMetrics(PaymentsUiClosedReason reason);
 
+  // Resets confirmation bubble state, updates the page action icon, and stops
+  // the auto-close timer.
+  void ResetConfirmationState();
+
   // Observer for when a bubble is created. Initialized only during tests.
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
 
