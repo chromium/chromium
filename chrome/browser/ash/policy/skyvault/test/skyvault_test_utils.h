@@ -63,7 +63,7 @@ class MockMigrationNotificationManager : public MigrationNotificationManager {
 // succeed the upload with a small delay.
 class MockMigrationCoordinator : public MigrationCoordinator {
  public:
-  explicit MockMigrationCoordinator(Profile* profile);
+  explicit MockMigrationCoordinator(user_manager::User* user);
   ~MockMigrationCoordinator() override;
 
   // MigrationCoordinator overrides:

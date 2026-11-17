@@ -13,6 +13,10 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
+namespace user_manager {
+class User;
+}  // namespace user_manager
+
 namespace policy::local_user_files {
 
 using drive::DriveIntegrationService;
@@ -36,6 +40,8 @@ class SkyvaultTestBase : public InProcessBrowserTest {
 
  protected:
   Profile* profile() { return browser()->GetProfile(); }
+
+  user_manager::User* user();
 
   const base::FilePath& my_files_dir() { return my_files_dir_; }
 

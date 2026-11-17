@@ -19,8 +19,8 @@ MockMigrationNotificationManager::MockMigrationNotificationManager(
     : MigrationNotificationManager(context) {}
 MockMigrationNotificationManager::~MockMigrationNotificationManager() = default;
 
-MockMigrationCoordinator::MockMigrationCoordinator(Profile* profile)
-    : MigrationCoordinator(profile) {
+MockMigrationCoordinator::MockMigrationCoordinator(user_manager::User* user)
+    : MigrationCoordinator(user) {
   ON_CALL(*this, Run)
       .WillByDefault([this](MigrationDestination destination,
                             std::vector<base::FilePath> file_paths,

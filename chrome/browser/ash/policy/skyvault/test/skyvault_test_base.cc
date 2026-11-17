@@ -42,10 +42,12 @@ void SkyvaultTestBase::TearDown() {
   storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
 }
 
+user_manager::User* SkyvaultTestBase::user() {
+  return ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile());
+}
+
 void SkyvaultTestBase::SetUpMyFiles() {
-  my_files_dir_ = file_manager::util::GetMyFilesFolder(
-      *ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
-          browser()->GetProfile()));
+  my_files_dir_ = file_manager::util::GetMyFilesFolder(*user());
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(base::CreateDirectory(my_files_dir_));
@@ -177,10 +179,8 @@ base::FilePath SkyvaultGoogleDriveTest::SetUpSourceFile(
   base::FilePath source_file_path = CopyTestFile(test_file_name, source_path);
 
   base::FilePath local_relative_path;
-  file_manager::util::GetMyFilesFolder(
-      *ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
-          browser()->GetProfile()))
-      .AppendRelativePath(source_file_path, &local_relative_path);
+  file_manager::util::GetMyFilesFolder(*user()).AppendRelativePath(
+      source_file_path, &local_relative_path);
   FileInfo info(test_file_name, local_relative_path);
   // Check that the source file exists at the intended source location and is
   // not in Drive.

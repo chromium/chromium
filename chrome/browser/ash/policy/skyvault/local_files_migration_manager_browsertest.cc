@@ -170,11 +170,14 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
     provider_.UpdateChromePolicy(policies);
   }
 
+  user_manager::User* user() {
+    return ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+        browser()->GetProfile());
+  }
+
   // Creates mount point for My files and registers local filesystem.
   void SetUpMyFiles() {
-    my_files_dir_ = file_manager::util::GetMyFilesFolder(
-        *ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
-            browser()->GetProfile()));
+    my_files_dir_ = file_manager::util::GetMyFilesFolder(*user());
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       ASSERT_TRUE(base::CreateDirectory(my_files_dir_));
@@ -259,7 +262,7 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
       .Times(2);
 
   std::unique_ptr<MockMigrationCoordinator> coordinator =
-      std::make_unique<MockMigrationCoordinator>(browser()->GetProfile());
+      std::make_unique<MockMigrationCoordinator>(user());
 
   EXPECT_CALL(*coordinator.get(),
               Run(GetCloudProvider(GetMigrationDestination()),
@@ -331,7 +334,7 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
       });
 
   std::unique_ptr<MockMigrationCoordinator> coordinator =
-      std::make_unique<MockMigrationCoordinator>(browser()->GetProfile());
+      std::make_unique<MockMigrationCoordinator>(user());
 
   EXPECT_CALL(*coordinator.get(),
               Run(GetCloudProvider(GetMigrationDestination()),
@@ -381,7 +384,7 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
       });
 
   std::unique_ptr<MockMigrationCoordinator> coordinator =
-      std::make_unique<MockMigrationCoordinator>(browser()->GetProfile());
+      std::make_unique<MockMigrationCoordinator>(user());
 
   EXPECT_CALL(*coordinator.get(),
               Run(GetCloudProvider(GetMigrationDestination()),
@@ -518,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
   base::ScopedMockTimeMessageLoopTaskRunner task_runner;
 
   std::unique_ptr<MockMigrationCoordinator> coordinator =
-      std::make_unique<MockMigrationCoordinator>(browser()->GetProfile());
+      std::make_unique<MockMigrationCoordinator>(user());
   {
     testing::InSequence s;
     EXPECT_CALL(*coordinator.get(),
@@ -560,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
   EXPECT_CALL(observer_, OnMigrationSucceeded).Times(1);
 
   std::unique_ptr<MockMigrationCoordinator> coordinator =
-      std::make_unique<MockMigrationCoordinator>(browser()->GetProfile());
+      std::make_unique<MockMigrationCoordinator>(user());
   {
     testing::InSequence s;
     EXPECT_CALL(*coordinator.get(), Run(MigrationDestination::kOneDrive, _,
@@ -615,7 +618,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
   base::ScopedMockTimeMessageLoopTaskRunner task_runner;
 
   std::unique_ptr<MockMigrationCoordinator> coordinator =
-      std::make_unique<MockMigrationCoordinator>(browser()->GetProfile());
+      std::make_unique<MockMigrationCoordinator>(user());
   {
     testing::InSequence s;
     EXPECT_CALL(*coordinator.get(), Run(MigrationDestination::kOneDrive, _,

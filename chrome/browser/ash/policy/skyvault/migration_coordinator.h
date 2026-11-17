@@ -11,12 +11,17 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/policy/skyvault/drive_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "storage/browser/file_system/file_system_url.h"
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace policy::local_user_files {
 
@@ -39,7 +44,8 @@ using MigrationStoppedCallback = base::OnceCallback<void(bool)>;
 // interacting with the respective cloud provider.
 class MigrationCloudUploader {
  public:
-  MigrationCloudUploader(Profile* profile,
+  // `user` must not be null and must outlive this instance.
+  MigrationCloudUploader(user_manager::User* user,
                          std::vector<base::FilePath> files,
                          const std::string& upload_root,
                          const base::FilePath& error_log_path,
@@ -62,11 +68,16 @@ class MigrationCloudUploader {
   // Called after the error for `file_path` was logged.
   virtual void OnErrorLogged(const base::FilePath& file_path) = 0;
 
+  // Returns the Profile for `user_`. Only for the handful of upload APIs
+  // (OdfsSkyvaultUploader::Upload(), DriveSkyvaultUploader's constructor)
+  // that still require one.
+  Profile* GetProfile() const;
+
   // Maps file to their upload errors, if any.
   std::map<base::FilePath, MigrationUploadError> errors_;
 
-  // Profile for which this instance was created.
-  const raw_ptr<Profile> profile_;
+  // The user for which this instance was created.
+  const raw_ref<user_manager::User> user_;
   // The paths of the files or directories to be uploaded.
   const std::vector<base::FilePath> files_;
   // The name of the device-unique upload root folder on Drive
@@ -95,7 +106,8 @@ class MigrationCloudUploader {
 // handled by derived classes of MigrationCloudUploader.
 class MigrationCoordinator {
  public:
-  explicit MigrationCoordinator(Profile* profile);
+  // `user` must not be null and must outlive this instance.
+  explicit MigrationCoordinator(user_manager::User* user);
   MigrationCoordinator(const MigrationCoordinator&) = delete;
   MigrationCoordinator& operator=(const MigrationCoordinator&) = delete;
   virtual ~MigrationCoordinator();
@@ -127,8 +139,8 @@ class MigrationCoordinator {
       base::FilePath upload_root_path,
       base::FilePath error_log_path);
 
-  // Profile for which this instance was created.
-  raw_ptr<Profile> profile_;
+  // The user for which this instance was created.
+  const raw_ref<user_manager::User> user_;
 
   base::FilePath error_log_path_;
 
@@ -145,7 +157,8 @@ class MigrationCoordinator {
 // Migration file uploader for uploads to Microsoft OneDrive.
 class OneDriveMigrationUploader : public MigrationCloudUploader {
  public:
-  OneDriveMigrationUploader(Profile* profile,
+  // `user` must not be null and must outlive this instance.
+  OneDriveMigrationUploader(user_manager::User* user,
                             std::vector<base::FilePath> files,
                             const std::string& upload_root,
                             const base::FilePath& error_log_path,
@@ -182,7 +195,8 @@ class OneDriveMigrationUploader : public MigrationCloudUploader {
 // Migration file uploader for uploads to Google Drive.
 class GoogleDriveMigrationUploader : public MigrationCloudUploader {
  public:
-  GoogleDriveMigrationUploader(Profile* profile,
+  // `user` must not be null and must outlive this instance.
+  GoogleDriveMigrationUploader(user_manager::User* user,
                                std::vector<base::FilePath> files,
                                const std::string& upload_root,
                                const base::FilePath& error_log_path,

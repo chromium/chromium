@@ -955,7 +955,7 @@ LocalFilesMigrationManagerFactory::BuildServiceInstanceForBrowserContext(
   std::unique_ptr<LocalFilesMigrationManager> instance =
       std::make_unique<LocalFilesMigrationManager>(
           g_browser_process->local_state(), user, profile->GetPrefs(),
-          std::make_unique<MigrationCoordinator>(profile),
+          std::make_unique<MigrationCoordinator>(user),
           MigrationNotificationManagerFactory::GetForBrowserContext(context));
   instance->Initialize();
   return instance;

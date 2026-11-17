@@ -9,6 +9,7 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "base/base_paths.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -51,10 +52,9 @@ void OnMigrationStopped(std::unique_ptr<MigrationCloudUploader> uploader,
 }
 
 // Returns the file's path relative to MyFiles.
-base::FilePath GetPathRelativeToMyFiles(Profile* profile,
+base::FilePath GetPathRelativeToMyFiles(const user_manager::User& user,
                                         const base::FilePath& file_path) {
-  base::FilePath my_files_path = file_manager::util::GetMyFilesFolder(
-      *ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
+  base::FilePath my_files_path = file_manager::util::GetMyFilesFolder(user);
   base::FilePath rel_path;
   my_files_path.AppendRelativePath(file_path.DirName(), &rel_path);
   return rel_path;
@@ -106,7 +106,7 @@ void CloseFile(base::File file) {
   file.Close();
 }
 
-base::File CreateOrOpenLogFile(Profile* profile, base::FilePath path) {
+base::File CreateOrOpenLogFile(base::FilePath path) {
   base::File error_log_file_ =
       base::File(path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_APPEND);
   if (!error_log_file_.IsValid()) {
@@ -132,8 +132,8 @@ void LogError(base::File& error_log_file,
 
 }  // namespace
 
-MigrationCoordinator::MigrationCoordinator(Profile* profile)
-    : profile_(profile) {
+MigrationCoordinator::MigrationCoordinator(user_manager::User* user)
+    : user_(CHECK_DEREF(user)) {
   error_log_path_ =
       base::FilePath(kErrorLogFileBasePath).Append(kErrorLogFileName);
 }
@@ -152,12 +152,12 @@ void MigrationCoordinator::Run(MigrationDestination destination,
   switch (destination) {
     case MigrationDestination::kGoogleDrive:
       uploader_ = std::make_unique<GoogleDriveMigrationUploader>(
-          profile_, std::move(files), upload_root, error_log_path_,
+          &user_.get(), std::move(files), upload_root, error_log_path_,
           std::move(wrapped_callback));
       break;
     case MigrationDestination::kOneDrive:
       uploader_ = std::make_unique<OneDriveMigrationUploader>(
-          profile_, std::move(files), upload_root, error_log_path_,
+          &user_.get(), std::move(files), upload_root, error_log_path_,
           std::move(wrapped_callback));
       break;
     case MigrationDestination::kDelete:
@@ -207,12 +207,12 @@ void MigrationCoordinator::OnMigrationDone(
 }
 
 MigrationCloudUploader::MigrationCloudUploader(
-    Profile* profile,
+    user_manager::User* user,
     std::vector<base::FilePath> files,
     const std::string& upload_root,
     const base::FilePath& error_log_path,
     MigrationDoneCallback callback)
-    : profile_(profile),
+    : user_(CHECK_DEREF(user)),
       files_(std::move(files)),
       upload_root_(upload_root),
       done_callback_(std::move(callback)),
@@ -235,19 +235,23 @@ void MigrationCloudUploader::Run() {
   }
 
   log_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&CreateOrOpenLogFile, profile_, error_log_path_),
+      FROM_HERE, base::BindOnce(&CreateOrOpenLogFile, error_log_path_),
       base::BindOnce(&MigrationCloudUploader::OnLogFileReady,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+Profile* MigrationCloudUploader::GetProfile() const {
+  return Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(&user_.get()));
+}
+
 OneDriveMigrationUploader::OneDriveMigrationUploader(
-    Profile* profile,
+    user_manager::User* user,
     std::vector<base::FilePath> files,
     const std::string& upload_root,
     const base::FilePath& error_log_path,
     MigrationDoneCallback callback)
-    : MigrationCloudUploader(profile,
+    : MigrationCloudUploader(user,
                              std::move(files),
                              upload_root,
                              error_log_path,
@@ -260,10 +264,9 @@ void OneDriveMigrationUploader::OnLogFileReady(base::File log_file) {
   // TODO(aidazolic): Consider if we can start all jobs at the same time, or we
   // need chunking.
   for (const auto& file_path : files_) {
-    base::FilePath relative_path =
-        GetPathRelativeToMyFiles(profile_, file_path);
+    base::FilePath relative_path = GetPathRelativeToMyFiles(*user_, file_path);
     auto uploader = ash::cloud_upload::OdfsSkyvaultUploader::Upload(
-        profile_, file_path, relative_path, upload_root_,
+        GetProfile(), file_path, relative_path, upload_root_,
         UploadTrigger::kMigration,
         // No need to show progress updates.
         /*progress_callback=*/base::DoNothing(),
@@ -313,14 +316,13 @@ void OneDriveMigrationUploader::OnUploadDone(
 
   if (error.value() == MigrationUploadError::kNetworkError) {
     // Just retry, uploaders handle waiting for connectivity.
-    base::FilePath relative_path =
-        GetPathRelativeToMyFiles(profile_, file_path);
+    base::FilePath relative_path = GetPathRelativeToMyFiles(*user_, file_path);
     // Safe to replace; original OdfsSkyvaultUploader is destroyed when its
     // Upload method completes.
     uploaders_.insert_or_assign(
         file_path,
         ash::cloud_upload::OdfsSkyvaultUploader::Upload(
-            profile_, file_path, relative_path, upload_root_,
+            GetProfile(), file_path, relative_path, upload_root_,
             UploadTrigger::kMigration,
             // No need to show progress updates.
             /*progress_callback=*/base::DoNothing(),
@@ -364,12 +366,12 @@ void OneDriveMigrationUploader::OnErrorLogged(const base::FilePath& file_path) {
 }
 
 GoogleDriveMigrationUploader::GoogleDriveMigrationUploader(
-    Profile* profile,
+    user_manager::User* user,
     std::vector<base::FilePath> files,
     const std::string& upload_root,
     const base::FilePath& error_log_path,
     MigrationDoneCallback callback)
-    : MigrationCloudUploader(profile,
+    : MigrationCloudUploader(user,
                              std::move(files),
                              upload_root,
                              error_log_path,
@@ -382,10 +384,10 @@ void GoogleDriveMigrationUploader::OnLogFileReady(base::File log_file) {
   // TODO(aidazolic): Consider if we can start all jobs at the same time, or we
   // need chunking.
   for (const auto& file_path : files_) {
-    base::FilePath target_path = GetPathRelativeToMyFiles(profile_, file_path);
+    base::FilePath target_path = GetPathRelativeToMyFiles(*user_, file_path);
     std::unique_ptr<DriveSkyvaultUploader> uploader =
         std::make_unique<DriveSkyvaultUploader>(
-            profile_, file_path, target_path, upload_root_,
+            GetProfile(), file_path, target_path, upload_root_,
             base::BindOnce(&GoogleDriveMigrationUploader::OnUploadDone,
                            weak_ptr_factory_.GetWeakPtr(), file_path));
 
@@ -434,10 +436,10 @@ void GoogleDriveMigrationUploader::OnUploadDone(
 
   if (error.value() == MigrationUploadError::kNetworkError) {
     // Just retry, uploaders handle waiting for connectivity.
-    base::FilePath target_path = GetPathRelativeToMyFiles(profile_, file_path);
+    base::FilePath target_path = GetPathRelativeToMyFiles(*user_, file_path);
     std::unique_ptr<DriveSkyvaultUploader> uploader =
         std::make_unique<DriveSkyvaultUploader>(
-            profile_, file_path, target_path, upload_root_,
+            GetProfile(), file_path, target_path, upload_root_,
             base::BindOnce(&GoogleDriveMigrationUploader::OnUploadDone,
                            weak_ptr_factory_.GetWeakPtr(), file_path));
 

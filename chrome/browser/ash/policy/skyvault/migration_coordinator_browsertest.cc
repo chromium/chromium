@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, SuccessfulUpload) {
   const std::string nested_file = "video_long.ogv";
   base::FilePath nested_file_path = CopyTestFile(nested_file, dir_path);
 
-  MigrationCoordinator coordinator(profile());
+  MigrationCoordinator coordinator(user());
   coordinator.SetErrorLogPathForTesting(error_log_path_);
   base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>,
                          base::FilePath, base::FilePath>
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest,
   const std::string file = "video_long.ogv";
   base::FilePath file_path = CopyTestFile(file, my_files_dir());
 
-  MigrationCoordinator coordinator(profile());
+  MigrationCoordinator coordinator(user());
   coordinator.SetErrorLogPathForTesting(error_log_path_);
   base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>,
                          base::FilePath, base::FilePath>
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, EmptyUrls) {
   SetUpMyFiles();
   SetUpODFS();
 
-  MigrationCoordinator coordinator(profile());
+  MigrationCoordinator coordinator(user());
   coordinator.SetErrorLogPathForTesting(error_log_path_);
   base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>,
                          base::FilePath, base::FilePath>
@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, CancelUpload) {
   const std::string test_file_name = "video_long.ogv";
   base::FilePath file_path = CopyTestFile(test_file_name, my_files_dir());
 
-  MigrationCoordinator coordinator(profile());
+  MigrationCoordinator coordinator(user());
   coordinator.SetErrorLogPathForTesting(error_log_path_);
   coordinator.Run(MigrationDestination::kOneDrive, {file_path},
                   kUploadRootPrefix, base::DoNothing());
@@ -453,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, SuccessfulUpload) {
       .WillOnce(
           base::test::RunOnceCallback<1>(drive::FileError::FILE_ERROR_OK));
 
-  MigrationCoordinator coordinator(profile());
+  MigrationCoordinator coordinator(user());
   coordinator.SetErrorLogPathForTesting(error_log_path_);
   base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>,
                          base::FilePath, base::FilePath>
@@ -498,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, FailedUpload) {
       .WillOnce(
           base::test::RunOnceCallback<1>(drive::FileError::FILE_ERROR_FAILED));
 
-  MigrationCoordinator coordinator(profile());
+  MigrationCoordinator coordinator(user());
   coordinator.SetErrorLogPathForTesting(error_log_path_);
   base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>,
                          base::FilePath, base::FilePath>
@@ -537,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, CancelUpload) {
   const std::string file = "video_long.ogv";
   base::FilePath file_path = SetUpSourceFile(file, my_files_dir());
 
-  MigrationCoordinator coordinator(profile());
+  MigrationCoordinator coordinator(user());
   coordinator.SetErrorLogPathForTesting(error_log_path_);
   base::RunLoop run_loop;
   coordinator.SetCancelledCallbackForTesting(
