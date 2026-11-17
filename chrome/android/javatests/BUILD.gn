@@ -1285,6 +1285,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.profiles") {
 
   sources = [
     "src/org/chromium/chrome/browser/profiles/OtrProfileIdTest.java",
+    "src/org/chromium/chrome/browser/profiles/ProfileAttributesStorageIntegrationTest.java",
     "src/org/chromium/chrome/browser/profiles/ProfileResolverTest.java",
     "src/org/chromium/chrome/browser/profiles/ProfileTest.java",
   ]

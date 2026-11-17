@@ -44,6 +44,7 @@ class GlobalBrowserCollection;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
+class ProfileAttributesStorageAndroid;
 class ProfileManagerAndroid;
 #endif
 
@@ -632,6 +633,11 @@ class ProfileManager : public Profile::Delegate {
   std::unique_ptr<ProfileAttributesStorage> profile_attributes_storage_;
 
 #if BUILDFLAG(IS_ANDROID)
+  // Java counterpart of `profile_attributes_storage_`, created with it.
+  // Declared after it, so that it's destroyed first.
+  std::unique_ptr<ProfileAttributesStorageAndroid>
+      profile_attributes_storage_android_;
+
   // Handles the communication with the Java ProfileManager.
   std::unique_ptr<ProfileManagerAndroid> profile_manager_android_;
 #endif  // BUILDFLAG(IS_ANDROID)

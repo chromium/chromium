@@ -161,6 +161,7 @@ source_set("misc") {
 
   if (is_android) {
     sources += [
+      "android/profile_attributes_storage_android.cc",
       "android/profile_manager_utils.cc",
       "android/profile_resolver.cc",
       "android/profile_resolver.h",
@@ -621,6 +622,10 @@ source_set("profile_util") {
     "profile_statistics_factory.h",
     "reporting_util.h",
   ]
+
+  if (is_android) {
+    sources += [ "android/profile_attributes_storage_android.h" ]
+  }
 
   public_deps = [
     ":profile",

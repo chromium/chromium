@@ -30,6 +30,10 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/profiles/android/profile_attributes_storage_android.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_paths.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
@@ -299,6 +303,9 @@ void TestingProfileManager::DeleteSystemProfile() {
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 void TestingProfileManager::DeleteProfileAttributesStorage() {
+#if BUILDFLAG(IS_ANDROID)
+  profile_manager_->profile_attributes_storage_android_.reset();
+#endif
   profile_manager_->profile_attributes_storage_.reset(nullptr);
 }
 

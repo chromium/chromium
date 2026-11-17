@@ -135,6 +135,7 @@
 #include "components/live_caption/live_caption_controller.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #else
+#include "chrome/browser/profiles/android/profile_attributes_storage_android.h"
 #include "chrome/browser/profiles/profile_manager_android.h"
 #include "chrome/browser/signin/signin_manager_android_factory.h"
 #include "chrome/browser/startup_data.h"
@@ -1160,6 +1161,11 @@ ProfileAttributesStorage& ProfileManager::GetProfileAttributesStorage() {
   if (!profile_attributes_storage_) {
     profile_attributes_storage_ = std::make_unique<ProfileAttributesStorage>(
         g_browser_process->local_state(), user_data_dir_);
+#if BUILDFLAG(IS_ANDROID)
+    profile_attributes_storage_android_ =
+        std::make_unique<ProfileAttributesStorageAndroid>(
+            *profile_attributes_storage_);
+#endif
   }
   return *profile_attributes_storage_.get();
 }
