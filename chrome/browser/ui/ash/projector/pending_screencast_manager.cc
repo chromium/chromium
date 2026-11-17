@@ -51,11 +51,22 @@ bool IsWebmOrProjectorFile(const base::FilePath& path) {
   return IsMediaFile(path) || IsMetadataFile(path);
 }
 
+// Returns whether `path` is under "/" without ".." components, so it cannot
+// escape the DriveFS mount.
+bool IsValidDriveRelativePath(const base::FilePath& path) {
+  return !path.ReferencesParent() && base::FilePath("/").IsParent(path);
+}
+
 // "Absolute path" is the DriveFS absolute path of `drive_relative_path` on
 // local file system, for example: absolute_path =
 // "/{$drivefs_mounted_point}/root/{$drive_relative_path}";
-base::FilePath GetLocalAbsolutePath(const base::FilePath& drivefs_mounted_point,
-                                    const base::FilePath& drive_relative_path) {
+// Returns std::nullopt if `drive_relative_path` is not a valid Drive path.
+std::optional<base::FilePath> GetLocalAbsolutePath(
+    const base::FilePath& drivefs_mounted_point,
+    const base::FilePath& drive_relative_path) {
+  if (!IsValidDriveRelativePath(drive_relative_path)) {
+    return std::nullopt;
+  }
   base::FilePath root("/");
   base::FilePath absolute_path(drivefs_mounted_point);
   root.AppendRelativePath(drive_relative_path, &absolute_path);
@@ -119,14 +130,18 @@ void GetDriveFileMetadata(
   if (!drive_integration_service) {
     return;
   }
-  const base::FilePath local_path = GetLocalAbsolutePath(
+  const std::optional<base::FilePath> local_path = GetLocalAbsolutePath(
       drive_integration_service->GetMountPointPath(), drive_relative_path);
+  if (!local_path) {
+    std::move(callback).Run(base::FilePath(), std::string());
+    return;
+  }
 
   // drive::DriveIntegrationService::GetMetadata should only be called on UI
   // thread.
   drive_integration_service->GetMetadata(
-      local_path, base::BindOnce(&ParseFileIdOnGetMetaData, std::move(callback),
-                                 local_path));
+      *local_path, base::BindOnce(&ParseFileIdOnGetMetaData,
+                                  std::move(callback), *local_path));
 }
 
 // Reads the screencast metadata file from `metadata_file_local_path`. A sample
@@ -218,9 +233,9 @@ std::optional<ash::PendingScreencastContainer> GetPendingScreencastContainer(
     bool upload_failed) {
   CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
         base::NotFatalUntil::M162);
-  const base::FilePath container_absolute_path =
+  const std::optional<base::FilePath> container_absolute_path =
       GetLocalAbsolutePath(drivefs_mounted_point, container_dir);
-  if (!base::PathExists(container_absolute_path)) {
+  if (!container_absolute_path || !base::PathExists(*container_absolute_path)) {
     return std::nullopt;
   }
 
@@ -231,7 +246,7 @@ std::optional<ash::PendingScreencastContainer> GetPendingScreencastContainer(
   base::Time created_time;
   std::string media_name;
 
-  base::FileEnumerator files(container_absolute_path, /*recursive=*/false,
+  base::FileEnumerator files(*container_absolute_path, /*recursive=*/false,
                              base::FileEnumerator::FILES);
 
   // Calculates the size of media file and metadata file, and the created time
@@ -407,6 +422,9 @@ void PendingScreencastManager::OnSyncingStatusUpdate(
   std::vector<drivefs::mojom::ItemEvent> pending_webm_or_projector_events;
   for (const auto& event : status.item_events) {
     const base::FilePath event_file = base::FilePath(event->path);
+    if (!IsValidDriveRelativePath(event_file)) {
+      continue;
+    }
 
     if (event->state == drivefs::mojom::ItemEvent::State::kCompleted) {
       OnFileSyncedCompletely(event_file);
@@ -465,6 +483,7 @@ void PendingScreencastManager::OnError(
   // mojom::DriveError::Type has 2 types: kCantUploadStorageFull and
   // kPinningFailedDiskFull. Only handle kCantUploadStorageFull so far.
   if (error.type != drivefs::mojom::DriveError::Type::kCantUploadStorageFull ||
+      !IsValidDriveRelativePath(error_file) ||
       !IsWebmOrProjectorFile(error_file)) {
     return;
   }

@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -55,6 +56,8 @@ constexpr char kTestMediaFile[] = "test_screencast.webm";
 constexpr char kTestMetadataFile[] = "test_screencast.projector";
 constexpr char kDefaultMetadataFilePath[] =
     "/root/test_screencast/test_screencast.projector";
+// Resolves to "<profile>/external_screencast" unless ".." is rejected.
+constexpr char kParentRefScreencastPath[] = "/root/../../external_screencast";
 
 constexpr char kProjectorPendingScreencastBatchIOTaskDurationHistogramName[] =
     "Ash.Projector.PendingScreencastBatchIOTaskDuration";
@@ -944,6 +947,77 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
   SimulateSyncingEvent(syncing_status);
   WaitForPendingStatusUpdateToBeFinished();
   VerifyNotificationCount(0);
+}
+
+IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
+                       IgnoreInvalidPathsInPendingAndErrorEvents) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  drive::DriveIntegrationService* service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(
+          browser()->GetProfile());
+  ASSERT_TRUE(service);
+  ASSERT_TRUE(service->IsMounted());
+
+  // "/root/.." only resolves on the local file system if "/root" exists.
+  ASSERT_TRUE(
+      base::CreateDirectory(service->GetMountPointPath().Append("root")));
+
+  const base::FilePath external_dir =
+      browser()->GetProfile()->GetPath().Append("external_screencast");
+  ASSERT_TRUE(base::CreateDirectory(external_dir));
+  ASSERT_TRUE(base::WriteFile(external_dir.Append(kTestMediaFile),
+                              std::string(kTestMediaFileBytes, 'a')));
+  ASSERT_TRUE(base::WriteFile(external_dir.Append(kTestMetadataFile),
+                              std::string(kTestMetadataFileBytes, 'b')));
+
+  const std::string parent_ref_media_path =
+      base::StrCat({kParentRefScreencastPath, "/", kTestMediaFile});
+  const std::string parent_ref_metadata_path =
+      base::StrCat({kParentRefScreencastPath, "/", kTestMetadataFile});
+  const std::string relative_media_path =
+      base::StrCat({"root/test_screencast/", kTestMediaFile});
+
+  drivefs::mojom::SyncingStatus syncing_status;
+  AddTransferItemEvent(syncing_status, parent_ref_media_path,
+                       /*total_bytes=*/kTestMediaFileBytes,
+                       /*transferred_bytes=*/0);
+  AddTransferItemEvent(syncing_status, parent_ref_metadata_path,
+                       /*total_bytes=*/kTestMetadataFileBytes,
+                       /*transferred_bytes=*/0);
+  AddTransferItemEvent(syncing_status, relative_media_path,
+                       /*total_bytes=*/kTestMediaFileBytes,
+                       /*transferred_bytes=*/0);
+
+  pending_screencast_manager()->OnError(
+      {drivefs::mojom::DriveError::Type::kCantUploadStorageFull,
+       base::FilePath(parent_ref_media_path)});
+  pending_screencast_manager()->OnError(
+      {drivefs::mojom::DriveError::Type::kCantUploadStorageFull,
+       base::FilePath(relative_media_path)});
+
+  SimulateSyncingEvent(syncing_status);
+  WaitForPendingStatusUpdateToBeFinished();
+
+  EXPECT_EQ(0, status_waiter()->screencast_update_count());
+  EXPECT_TRUE(pending_screencast_manager()->GetPendingScreencasts().empty());
+  histogram_tester_.ExpectTotalCount(
+      kProjectorPendingScreencastBatchIOTaskDurationHistogramName,
+      /*count=*/0);
+}
+
+IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
+                       IgnoreInvalidPathInCompletedMetadataEvent) {
+  base::test::TestFuture<const base::FilePath&, const std::string&> future;
+  pending_screencast_manager()->SetOnGetFileIdCallbackForTest(
+      future.GetCallback());
+
+  // The first accepted completed metadata event consumes the test callback.
+  MockSyncFileCompleted(
+      base::StrCat({kParentRefScreencastPath, "/", kTestMetadataFile}),
+      kTestMetadataFileBytes);
+  MockSyncFileCompleted(kDefaultMetadataFilePath, kTestMetadataFileBytes);
+
+  EXPECT_EQ(GetDriveFsAbsolutePath(kDefaultMetadataFilePath), future.Get<0>());
 }
 
 class PendingScreencastMangerMultiProfileTest : public LoginManagerTest {
