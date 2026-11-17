@@ -40,6 +40,9 @@ ToastId GetToastIdForError(ErrorCode error) {
 
     case ErrorCode::kInactivityTimeout:
       return ToastId::kTtcInactivityTimeout;
+
+    case ErrorCode::kPermissionDenied:
+      return ToastId::kTtcPermissionDenied;
   }
 
   NOTREACHED();

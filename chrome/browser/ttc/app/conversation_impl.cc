@@ -166,7 +166,15 @@ void ConversationImpl::OnBackendInitialized() {
 }
 
 void ConversationImpl::OnBackendClosed() {
+  const SessionLifecycle lifecycle = session_controller_->GetSessionLifecycle();
+  if (lifecycle == SessionLifecycle::kFinished) {
+    return;
+  }
   session_controller_->GetJournal().Log("TtcBackendClosed", {});
+  if (lifecycle == SessionLifecycle::kInitializing) {
+    session_controller_->OnError(ErrorCode::kInternalBackendError);
+    return;
+  }
   session_controller_->EndSessionAsync();
 }
 

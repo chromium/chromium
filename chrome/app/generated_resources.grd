@@ -14543,6 +14543,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_TTC_MIC_MUTED_TOAST" translateable="false" desc="Text shown in a toast notification when the system mutes the microphone during a TTC session, e.g. with a hardware switch.">
         Your microphone is muted
       </message>
+      <message name="IDS_TTC_PERMISSION_DENIED_TOAST" translateable="false" desc="Text shown in a toast notification when the user's Google Account does not have access to use TTC.">
+        Permission denied
+      </message>
       <message name="IDS_TTC_VOICE_PLATE_INITIALIZING_ACCNAME" translateable="false" desc="Accessible status name for the TTC voice plate waveform while initializing.">
         Initializing
       </message>

@@ -117,8 +117,14 @@ class FakeSessionController : public SessionController {
   void OnError(ErrorCode error) override {
     last_error_ = error;
     ++error_count_;
+    if (IsFatal(error)) {
+      SetSessionLifecycle(SessionLifecycle::kFinished);
+    }
   }
-  void EndSessionAsync() override { ++end_session_count_; }
+  void EndSessionAsync() override {
+    ++end_session_count_;
+    SetSessionLifecycle(SessionLifecycle::kFinished);
+  }
 
   struct SystemMicMute {
     bool muted;
@@ -303,6 +309,29 @@ TEST_F(ConversationImplTest, BackendClosedEndsSession) {
   conversation.OnBackendClosed();
   EXPECT_EQ(session_controller_.end_session_count(), 1);
   EXPECT_EQ(session_controller_.error_count(), 0);
+}
+
+TEST_F(ConversationImplTest,
+       BackendClosedDuringInitializingReportsInternalBackendError) {
+  ConversationImpl& conversation = CreateConversation();
+  EXPECT_EQ(session_controller_.GetSessionLifecycle(),
+            SessionLifecycle::kInitializing);
+
+  conversation.OnBackendClosed();
+  EXPECT_EQ(session_controller_.error_count(), 1);
+  EXPECT_EQ(session_controller_.last_error(), ErrorCode::kInternalBackendError);
+  EXPECT_EQ(session_controller_.end_session_count(), 0);
+}
+
+TEST_F(ConversationImplTest,
+       BackendClosedAfterPermissionDeniedDoesNotOverwriteError) {
+  ConversationImpl& conversation = CreateConversation();
+
+  conversation.OnBackendError(ErrorCode::kPermissionDenied);
+  conversation.OnBackendClosed();
+  EXPECT_EQ(session_controller_.error_count(), 1);
+  EXPECT_EQ(session_controller_.last_error(), ErrorCode::kPermissionDenied);
+  EXPECT_EQ(session_controller_.end_session_count(), 0);
 }
 
 TEST_F(ConversationImplTest, ToolCallForwardedToSessionController) {

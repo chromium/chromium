@@ -44,7 +44,7 @@ namespace {
 class FakeObserver : public TtcBackend::Observer {
  public:
   void OnBackendInitialized() override {}
-  void OnBackendClosed() override {}
+  void OnBackendClosed() override { ++closed_count_; }
   void OnBackendError(ErrorCode error) override { last_error_ = error; }
   void OnTranscriptions(const std::string& input_transcription,
                         const std::string& output_transcription) override {}
@@ -81,6 +81,7 @@ class FakeObserver : public TtcBackend::Observer {
   int audio_output_count() const { return audio_output_count_; }
   const std::vector<int16_t>& last_samples() const { return last_samples_; }
   int64_t last_sequence_number() const { return last_sequence_number_; }
+  int closed_count() const { return closed_count_; }
   std::optional<ErrorCode> last_error() const { return last_error_; }
   const std::string& last_tool_call_id() const { return last_tool_call_id_; }
   // The call IDs of each batch passed to `OnToolCallBatch()`.
@@ -109,6 +110,7 @@ class FakeObserver : public TtcBackend::Observer {
   std::vector<ToolResponseCallback> batched_tool_response_callbacks_;
   ToolResponseCallback tool_response_callback_;
   int audio_output_count_ = 0;
+  int closed_count_ = 0;
   std::vector<int16_t> last_samples_;
   int64_t last_sequence_number_ = -1;
   std::optional<ErrorCode> last_error_;
@@ -320,10 +322,12 @@ optimization_guide::proto::TtcServerFrame MakeUserTurnStateFrame(
 class TtcMesClientTest : public testing::Test {
  public:
   TtcMesClientTest() {
-    ON_CALL(model_executor_, StartStreamingSession).WillByDefault([this] {
-      return std::make_unique<FakeRemoteModelExecutionSession>(
-          last_sent_frame_);
-    });
+    ON_CALL(model_executor_, StartStreamingSession)
+        .WillByDefault([this](auto, const auto&, auto callback) {
+          streaming_callback_ = std::move(callback);
+          return std::make_unique<FakeRemoteModelExecutionSession>(
+              last_sent_frame_);
+        });
 
     client_ =
         std::make_unique<TestTtcMesClient>(&model_executor_, &debug_sink_);
@@ -345,6 +349,8 @@ class TtcMesClientTest : public testing::Test {
   FakeObserver observer_;
   testing::NiceMock<optimization_guide::MockRemoteModelExecutor>
       model_executor_;
+  optimization_guide::OptimizationGuideModelExecutionStreamingCallback
+      streaming_callback_;
   // Written by the sessions `client_` creates; declared before `client_` so
   // that it outlives them.
   std::optional<optimization_guide::proto::TtcClientFrame> last_sent_frame_;
@@ -480,6 +486,38 @@ TEST_F(TtcMesClientTest, CloseStopsSetupTimeout) {
   task_environment_.FastForwardBy(kTtcSetupTimeout.Get());
 
   EXPECT_EQ(observer_.last_error(), std::nullopt);
+}
+
+TEST_F(TtcMesClientTest, MapsStreamingErrorsAndStopsSetupTimer) {
+  using Error = optimization_guide::OptimizationGuideModelExecutionError;
+  ASSERT_TRUE(streaming_callback_);
+  auto send_error = [&](Error::ModelExecutionError code) {
+    streaming_callback_.Run(
+        optimization_guide::OptimizationGuideModelStreamingResult(
+            base::unexpected(Error::FromModelExecutionError(code)),
+            /*execution_info=*/nullptr));
+  };
+
+  send_error(Error::ModelExecutionError::kPermissionDenied);
+  EXPECT_EQ(observer_.last_error(), ErrorCode::kPermissionDenied);
+  task_environment_.FastForwardBy(kTtcSetupTimeout.Get());
+  EXPECT_EQ(observer_.last_error(), ErrorCode::kPermissionDenied);
+
+  send_error(Error::ModelExecutionError::kGenericFailure);
+  EXPECT_EQ(observer_.last_error(), ErrorCode::kInternalBackendError);
+}
+
+TEST_F(TtcMesClientTest, DisconnectStopsSetupTimeoutAndSkipsClosedOnError) {
+  using Session = optimization_guide::RemoteModelExecutionSession;
+  client().OnConnectionStateChanged(Session::ConnectionState::kDisconnected,
+                                    Session::DisconnectReason::kError);
+  EXPECT_EQ(observer_.closed_count(), 0);
+  task_environment_.FastForwardBy(kTtcSetupTimeout.Get());
+  EXPECT_EQ(observer_.last_error(), std::nullopt);
+
+  client().OnConnectionStateChanged(Session::ConnectionState::kDisconnected,
+                                    Session::DisconnectReason::kServerClosed);
+  EXPECT_EQ(observer_.closed_count(), 1);
 }
 
 TEST_F(TtcMesClientTest, DebugSinkGetsExactSentAudio) {

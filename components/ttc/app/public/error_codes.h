@@ -43,6 +43,9 @@ enum class ErrorCode {
 
   // The active session timed out due to user inactivity (no speech or audio).
   kInactivityTimeout = 1007,
+
+  // The user's account does not have permission to access TTC.
+  kPermissionDenied = 1008,
 };
 
 // Whether an error is fatal to the session. Fatal errors end the session.

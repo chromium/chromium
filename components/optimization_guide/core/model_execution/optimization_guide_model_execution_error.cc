@@ -59,6 +59,7 @@ OptimizationGuideModelExecutionError::FromHttpStatusCode(
       return OptimizationGuideModelExecutionError(
           ModelExecutionError::kInvalidRequest);
     case net::HTTP_UNAUTHORIZED:
+    case net::HTTP_FORBIDDEN:
     case net::HTTP_PROXY_AUTHENTICATION_REQUIRED:
       return OptimizationGuideModelExecutionError(
           ModelExecutionError::kPermissionDenied);

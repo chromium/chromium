@@ -838,6 +838,15 @@ void ToastService::RegisterToasts() {
             .AddCloseButton()
             .AddGlobalScoped()
             .Build());
+    toast_registry_->RegisterToast(
+        ToastId::kTtcPermissionDenied,
+        ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kErrorIcon
+                                        : vector_icons::kErrorOldIcon,
+                                    IDS_TTC_PERMISSION_DENIED_TOAST)
+            .AddCloseButton()
+            .AddGlobalScoped()
+            .Build());
   }
 
   toast_registry_->RegisterToast(

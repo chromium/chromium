@@ -280,10 +280,10 @@ void TtcMesClient::Connect(Observer* observer) {
     }
   }
 
-  SendFrame(setup_frame);
   setup_timer_.Start(
       FROM_HERE, kTtcSetupTimeout.Get(),
       base::BindOnce(&TtcMesClient::OnSetupTimeout, base::Unretained(this)));
+  SendFrame(setup_frame);
 }
 
 void TtcMesClient::OnConnectionStateChanged(
@@ -309,18 +309,28 @@ void TtcMesClient::OnConnectionStateChanged(
   }
   if (state == optimization_guide::RemoteModelExecutionSession::
                    ConnectionState::kDisconnected) {
-    observer_->OnBackendClosed();
+    setup_timer_.Stop();
+    if (disconnect_reason != optimization_guide::RemoteModelExecutionSession::
+                                 DisconnectReason::kError) {
+      observer_->OnBackendClosed();
+    }
   }
 }
 
 void TtcMesClient::OnStreamingResult(
     optimization_guide::OptimizationGuideModelStreamingResult result) {
   if (!result.response.has_value()) {
+    setup_timer_.Stop();
+    const auto model_error = result.response.error().error();
     RecordServerResponseError(
         "ModelExecutionError",
-        base::StrCat({"execution error ",
-                      base::ToString(result.response.error().error())}));
-    observer_->OnBackendError(ErrorCode::kInternalBackendError);
+        base::StrCat({"execution error ", base::ToString(model_error)}));
+    observer_->OnBackendError(
+        model_error ==
+                optimization_guide::OptimizationGuideModelExecutionError::
+                    ModelExecutionError::kPermissionDenied
+            ? ErrorCode::kPermissionDenied
+            : ErrorCode::kInternalBackendError);
     return;
   }
 

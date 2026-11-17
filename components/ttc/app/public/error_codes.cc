@@ -36,6 +36,8 @@ std::ostream& operator<<(std::ostream& os, ErrorCode error) {
       return os << "SetupTimeout";
     case ErrorCode::kInactivityTimeout:
       return os << "InactivityTimeout";
+    case ErrorCode::kPermissionDenied:
+      return os << "PermissionDenied";
   }
   NOTREACHED();
 }
@@ -54,6 +56,7 @@ bool IsFatal(ErrorCode error) {
     case ErrorCode::kAudioUnknownError:
     case ErrorCode::kSetupTimeout:
     case ErrorCode::kInactivityTimeout:
+    case ErrorCode::kPermissionDenied:
       return true;
   }
   NOTREACHED();

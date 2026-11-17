@@ -37,6 +37,7 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/websockets/websocket_errors.h"
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -664,6 +665,72 @@ TEST_F(RemoteModelExecutionSessionImplTest,
       "OptimizationGuide.ModelExecution.Streaming.DisconnectReason."
       "ScamDetection",
       StreamingDisconnectReasonInternal::kServerDropUnclean, 1);
+}
+
+TEST_F(RemoteModelExecutionSessionImplTest, CleanChannelDropStatusCodes) {
+  const struct {
+    uint16_t code;
+    std::string_view reason;
+    std::optional<ModelExecutionError> expected_error;
+  } kTestCases[] = {
+      {net::kWebSocketErrorNoStatusReceived, "", std::nullopt},
+      {net::kWebSocketErrorPolicyViolation,
+       "Request trace id: 123, PERMISSION_DENIED: user is not permitted",
+       ModelExecutionError::kPermissionDenied},
+      {net::kWebSocketErrorPolicyViolation,
+       "The caller does not have permission",
+       ModelExecutionError::kPermissionDenied},
+      {net::kWebSocketErrorPolicyViolation,
+       "Request is missing required authentication credential.",
+       ModelExecutionError::kPermissionDenied},
+      {net::kWebSocketErrorPolicyViolation, "Malformed credentials received.",
+       ModelExecutionError::kPermissionDenied},
+      {net::kWebSocketErrorPolicyViolation, "Precondition check failed.",
+       ModelExecutionError::kGenericFailure},
+      {net::kWebSocketErrorPolicyViolation, "",
+       ModelExecutionError::kGenericFailure},
+      {net::kWebSocketErrorInternalServerError,
+       "Authentication backend error: 1", ModelExecutionError::kGenericFailure},
+  };
+
+  for (const auto& tc : kTestCases) {
+    SCOPED_TRACE(testing::Message() << tc.code << ": " << tc.reason);
+    base::HistogramTester histogram_tester;
+    RemoteModelExecutionSessionImpl* session =
+        CreateSession(ModelBasedCapabilityKey::kScamDetection);
+    TestObserver observer;
+    session->AddObserver(&observer);
+    session->Send(BuildTestMessage("query"));
+    fake_client_->SimulateConnected();
+
+    fake_client_->SimulateDropChannel(/*was_clean=*/true, tc.code,
+                                      std::string(tc.reason));
+    EXPECT_THAT(
+        observer.events,
+        testing::ElementsAre(
+            std::pair{ConnectionState::kConnecting, std::nullopt},
+            std::pair{ConnectionState::kConnected, std::nullopt},
+            std::pair{ConnectionState::kDisconnected,
+                      tc.expected_error ? DisconnectReason::kError
+                                        : DisconnectReason::kServerClosed}));
+    session->RemoveObserver(&observer);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.Streaming.DisconnectReason."
+        "ScamDetection",
+        StreamingDisconnectReasonInternal::kServerDropClean, 1);
+    if (!tc.expected_error) {
+      EXPECT_FALSE(response_future_.IsReady());
+      continue;
+    }
+    OptimizationGuideModelStreamingResult result = response_future_.Take();
+    EXPECT_THAT(
+        result.response,
+        base::test::ErrorIs(testing::Property(
+            &OptimizationGuideModelExecutionError::error, *tc.expected_error)));
+    ASSERT_TRUE(result.execution_info);
+    EXPECT_EQ(result.execution_info->model_execution_error_enum(),
+              static_cast<uint32_t>(*tc.expected_error));
+  }
 }
 
 TEST_F(RemoteModelExecutionSessionImplTest,

@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 
+#include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
@@ -18,6 +19,24 @@ OptimizationGuideModelExecutionError CreateModelExecutionErrorFromErrorState(
       error_response);
 }
 }  // namespace
+
+TEST(OptimizationGuideModelExecutionErrorTest, FromHttpStatusCode) {
+  using Error = OptimizationGuideModelExecutionError;
+  using Code = Error::ModelExecutionError;
+  EXPECT_EQ(Error::FromHttpStatusCode(net::HTTP_BAD_REQUEST).error(),
+            Code::kInvalidRequest);
+  EXPECT_EQ(Error::FromHttpStatusCode(net::HTTP_UNAUTHORIZED).error(),
+            Code::kPermissionDenied);
+  EXPECT_EQ(Error::FromHttpStatusCode(net::HTTP_FORBIDDEN).error(),
+            Code::kPermissionDenied);
+  EXPECT_EQ(Error::FromHttpStatusCode(net::HTTP_PROXY_AUTHENTICATION_REQUIRED)
+                .error(),
+            Code::kPermissionDenied);
+  EXPECT_EQ(Error::FromHttpStatusCode(net::HTTP_TOO_MANY_REQUESTS).error(),
+            Code::kRequestThrottled);
+  EXPECT_EQ(Error::FromHttpStatusCode(net::HTTP_INTERNAL_SERVER_ERROR).error(),
+            Code::kGenericFailure);
+}
 
 TEST(OptimizationGuideModelExecutionErrorTest, ShouldLogModelQuality) {
   EXPECT_TRUE(CreateModelExecutionErrorFromErrorState(

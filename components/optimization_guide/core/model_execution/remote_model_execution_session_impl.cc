@@ -23,6 +23,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/access_token_helper.h"
@@ -40,6 +41,7 @@
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/websockets/websocket_errors.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {
@@ -116,6 +118,26 @@ RemoteModelExecutionSession::DisconnectReason GetDisconnectReason(
     case StreamingDisconnectReasonInternal::kSessionDestroyed:
       NOTREACHED();
   }
+}
+
+std::optional<OptimizationGuideModelExecutionError>
+GetDropChannelError(bool was_clean, uint16_t code, const std::string& reason) {
+  if (was_clean && (code == net::kWebSocketNormalClosure ||
+                    code == net::kWebSocketErrorNoStatusReceived)) {
+    return std::nullopt;
+  }
+  if (was_clean && code == net::kWebSocketErrorPolicyViolation) {
+    const std::string lower_reason = base::ToLowerASCII(reason);
+    if (lower_reason.contains("permission") ||
+        lower_reason.contains("unauthenticated") ||
+        lower_reason.contains("authentication") ||
+        lower_reason.contains("credential")) {
+      return OptimizationGuideModelExecutionError::FromModelExecutionError(
+          ModelExecutionError::kPermissionDenied);
+    }
+  }
+  return OptimizationGuideModelExecutionError::FromModelExecutionError(
+      ModelExecutionError::kGenericFailure);
 }
 
 }  // namespace
@@ -436,11 +458,7 @@ void RemoteModelExecutionSessionImpl::OnDropChannel(
                          base::NumberToString(elapsed->InMilliseconds()), "ms"})
                   : "");
   HandleDisconnection(
-      was_clean
-          ? std::nullopt
-          : std::make_optional(
-                OptimizationGuideModelExecutionError::FromModelExecutionError(
-                    ModelExecutionError::kGenericFailure)),
+      GetDropChannelError(was_clean, code, reason),
       was_clean ? StreamingDisconnectReasonInternal::kServerDropClean
                 : StreamingDisconnectReasonInternal::kServerDropUnclean);
 }
@@ -559,7 +577,9 @@ void RemoteModelExecutionSessionImpl::HandleDisconnection(
       return;
     }
   }
-  NotifyObservers(state_change_id, GetDisconnectReason(disconnect_reason));
+  NotifyObservers(state_change_id,
+                  error.has_value() ? DisconnectReason::kError
+                                    : GetDisconnectReason(disconnect_reason));
 }
 
 void RemoteModelExecutionSessionImpl::ResetIdleTimer() {

@@ -81,6 +81,7 @@ found in the LICENSE file.
     <variant name="TtcInactivityTimeout" summary="TTC inactivity timeout"/>
     <variant name="TtcMicrophoneMuted" summary="TTC microphone muted"/>
     <variant name="TtcNoMicrophoneError" summary="TTC no microphone error"/>
+    <variant name="TtcPermissionDenied" summary="TTC permission denied"/>
   </token>
 </histogram>
 
