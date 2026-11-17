@@ -393,7 +393,6 @@ TEST_P(ScreensaverImagesPolicyHandlerForAnySessionTest,
   // Expectation: The unset image list pref should not cause a cache cleanup.
   {
     CreateScreensaverImagesPolicyHandler();
-    task_environment()->RunUntilIdle();
     EXPECT_TRUE(base::PathExists(GetExpectedFilePath(kImageUrl1)));
     EXPECT_TRUE(base::PathExists(GetExpectedFilePath(kImageUrl2)));
   }
@@ -407,7 +406,6 @@ TEST_P(ScreensaverImagesPolicyHandlerForAnySessionTest,
         base::Value(true));
 
     CreateScreensaverImagesPolicyHandler();
-    task_environment()->RunUntilIdle();
 
     EXPECT_TRUE(base::PathExists(GetExpectedFilePath(kImageUrl1)));
     EXPECT_TRUE(base::PathExists(GetExpectedFilePath(kImageUrl2)));
