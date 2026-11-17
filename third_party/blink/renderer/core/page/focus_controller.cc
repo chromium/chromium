@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -1774,6 +1775,20 @@ Element* FindFocusableElementAcrossFocusScopes(
                    scope, owner_map, descend_into_frames);
 }
 
+InputDeviceCapabilities* SourceCapabilitiesForElement(
+    const Element& element,
+    const InputDeviceCapabilities* source_capabilities) {
+  if (!source_capabilities) {
+    return nullptr;
+  }
+  LocalDOMWindow* window = element.GetDocument().domWindow();
+  if (!window) {
+    return nullptr;
+  }
+  return window->GetInputDeviceCapabilities()->FiresTouchEvents(
+      source_capabilities->firesTouchEvents());
+}
+
 }  // anonymous namespace
 
 FocusController::FocusController(Page* page)
@@ -2189,9 +2204,10 @@ bool FocusController::AdvanceFocusInDocumentOrder(
       scroll_marker && scroll_marker->UltimateOriginatingElement() == current &&
       current->IsKeyboardFocusableSlow()) {
     SetFocusedFrame(document->GetFrame());
-    current->Focus(FocusParams(SelectionBehaviorOnFocus::kReset, type,
-                               source_capabilities, FocusOptions::Create(),
-                               FocusTrigger::kUserGesture));
+    current->Focus(
+        FocusParams(SelectionBehaviorOnFocus::kReset, type,
+                    SourceCapabilitiesForElement(*current, source_capabilities),
+                    FocusOptions::Create(), FocusTrigger::kUserGesture));
     return true;
   }
 
@@ -2293,9 +2309,10 @@ bool FocusController::AdvanceFocusInDocumentOrder(
 
   Frame* new_frame = new_document.GetFrame();
   SetFocusedFrame(new_frame);
-  element->Focus(FocusParams(SelectionBehaviorOnFocus::kReset, type,
-                             source_capabilities, FocusOptions::Create(),
-                             FocusTrigger::kUserGesture));
+  element->Focus(
+      FocusParams(SelectionBehaviorOnFocus::kReset, type,
+                  SourceCapabilitiesForElement(*element, source_capabilities),
+                  FocusOptions::Create(), FocusTrigger::kUserGesture));
   return true;
 }
 
