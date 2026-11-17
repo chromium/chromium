@@ -665,6 +665,14 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
   [self updateAccessibility];
 }
 
+- (void)setLocationBarBadgeView:(UIView*)locationBarBadgeView {
+  if (!_badgesContainerView.contextualPanelEntrypointView &&
+      locationBarBadgeView) {
+    _badgesContainerView.contextualPanelEntrypointView = locationBarBadgeView;
+  }
+  [self updateAccessibility];
+}
+
 - (void)setReaderModeChipView:(UIView*)readerModeChipView {
   if (!_badgesContainerView.readerModeChipView && readerModeChipView) {
     _badgesContainerView.readerModeChipView = readerModeChipView;

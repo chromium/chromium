@@ -282,3 +282,34 @@ TEST_F(LocationBarSteadyViewTest,
   EXPECT_EQ(1.0, container.badgeView.superview.alpha);
   EXPECT_EQ(2u, container.accessibilityElements.count);
 }
+
+// Tests that setting `locationBarBadgeView` configures the badge view on
+// `badgesContainerView` and preserves the initial view across subsequent calls.
+TEST_F(LocationBarSteadyViewTest,
+       SetsLocationBarBadgeViewWhenNotAlreadyConfigured) {
+  UIView* test_badge_view = [[UIView alloc] init];
+  [view_ setLocationBarBadgeView:test_badge_view];
+  EXPECT_EQ(test_badge_view,
+            view_.badgesContainerView.contextualPanelEntrypointView);
+
+  // Subsequent injections should not overwrite the configured badge view.
+  UIView* second_badge_view = [[UIView alloc] init];
+  [view_ setLocationBarBadgeView:second_badge_view];
+  EXPECT_EQ(test_badge_view,
+            view_.badgesContainerView.contextualPanelEntrypointView);
+}
+
+// Tests that `setLocationBarBadgeView:` does not overwrite an existing
+// `contextualPanelEntrypointView` on `badgesContainerView`.
+TEST_F(LocationBarSteadyViewTest,
+       PreservesContextualPanelEntryPointViewWhenLocationBarBadgeViewSet) {
+  UIView* entrypoint_view = [[UIView alloc] init];
+  [view_ setContextualPanelEntrypointView:entrypoint_view];
+  EXPECT_EQ(entrypoint_view,
+            view_.badgesContainerView.contextualPanelEntrypointView);
+
+  UIView* badge_view = [[UIView alloc] init];
+  [view_ setLocationBarBadgeView:badge_view];
+  EXPECT_EQ(entrypoint_view,
+            view_.badgesContainerView.contextualPanelEntrypointView);
+}

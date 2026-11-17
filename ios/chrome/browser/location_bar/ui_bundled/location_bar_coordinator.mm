@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_coordinator.h"
 
+#import "base/check.h"
 #import "base/memory/ptr_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
@@ -999,11 +1001,15 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
 
     [self.viewController
         addChildViewController:self.locationBarBadgeCoordinator.viewController];
-    // TODO(crbug.com/469528076): After migration, refactor to
-    // setLocationBarBadgeView and set it in LocationBarSteadyView.
-    [self.viewController
-        setContextualPanelEntrypointView:self.locationBarBadgeCoordinator
-                                             .viewController.view];
+    if (IsLocationBarBadgeMigrationEnabled()) {
+      [self.viewController
+          setLocationBarBadgeView:self.locationBarBadgeCoordinator
+                                      .viewController.view];
+    } else {
+      [self.viewController
+          setContextualPanelEntrypointView:self.locationBarBadgeCoordinator
+                                               .viewController.view];
+    }
     [self.locationBarBadgeCoordinator.viewController
         didMoveToParentViewController:self.viewController];
   } else {

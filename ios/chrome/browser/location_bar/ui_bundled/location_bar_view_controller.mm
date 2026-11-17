@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_view_controller.h"
 
+#import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
@@ -138,6 +139,9 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 // The injected Contextual Panel entrypoint view;
 @property(nonatomic, strong) UIView* contextualPanelEntrypointView;
 
+// The injected Location Bar Badge view.
+@property(nonatomic, strong) UIView* locationBarBadgeView;
+
 // The injected reader mode chip view.
 @property(nonatomic, strong) UIView* readerModeChipView;
 
@@ -255,7 +259,15 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 - (void)setContextualPanelEntrypointView:
     (UIView*)contextualPanelEntrypointView {
   DCHECK(!self.contextualPanelEntrypointView);
+  CHECK(!self.locationBarBadgeView);
   _contextualPanelEntrypointView = contextualPanelEntrypointView;
+}
+
+- (void)setLocationBarBadgeView:(UIView*)locationBarBadgeView {
+  CHECK(locationBarBadgeView);
+  CHECK(!self.locationBarBadgeView);
+  CHECK(!self.contextualPanelEntrypointView);
+  _locationBarBadgeView = locationBarBadgeView;
 }
 
 - (void)setReaderModeChipView:(UIView*)readerModeChipView {
@@ -362,6 +374,11 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
   if (self.contextualPanelEntrypointView) {
     [self.locationBarSteadyView
         setContextualPanelEntrypointView:self.contextualPanelEntrypointView];
+  }
+
+  if (self.locationBarBadgeView) {
+    [self.locationBarSteadyView
+        setLocationBarBadgeView:self.locationBarBadgeView];
   }
 
   if (self.incognitoBadgeView) {

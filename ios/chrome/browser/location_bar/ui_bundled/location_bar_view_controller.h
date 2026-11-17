@@ -208,6 +208,11 @@ enum class CustomLeadingViewType;
 // controller is initialized.
 - (void)setContextualPanelEntrypointView:(UIView*)contextualPanelEntrypointView;
 
+// Sets the Location Bar Badge view (`locationBarBadgeView`). This must be
+// called only once and set before the view of this view controller is
+// initialized.
+- (void)setLocationBarBadgeView:(UIView*)locationBarBadgeView;
+
 // Sets the Reader Mode Chip view. This must be called only once and set before
 // the view of this view controller is initialized.
 - (void)setReaderModeChipView:(UIView*)readerModeChipView;

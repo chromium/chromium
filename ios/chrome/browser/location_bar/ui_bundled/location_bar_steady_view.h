@@ -91,6 +91,9 @@
 // Sets the view displaying the Contextual Panel's entrypoint.
 - (void)setContextualPanelEntrypointView:(UIView*)contextualPanelEntrypointView;
 
+// Sets the view displaying the Location Bar Badge (`locationBarBadgeView`).
+- (void)setLocationBarBadgeView:(UIView*)locationBarBadgeView;
+
 // Sets the view displaying the Reader Mode chip.
 - (void)setReaderModeChipView:(UIView*)readerModeChipView;
 
