@@ -62,6 +62,7 @@ source_set("unit_tests") {
     "//components/commerce/core:shopping_service_test_support",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/content_suggestions/impression_limits/model",
     "//ios/chrome/browser/content_suggestions/shop_card/model:prefs",

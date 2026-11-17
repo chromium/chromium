@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/content_suggestions/shop_card/coordinator/shop_card_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/test/test_bookmark_client.h"
 #import "components/commerce/core/commerce_feature_list.h"
@@ -13,8 +12,7 @@
 #import "components/commerce/core/pref_names.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/keyed_service/core/keyed_service.h"
-#import "components/prefs/pref_registry_simple.h"
-#import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_suggestions/impression_limits/model/impression_limit_service.h"
 #import "ios/chrome/browser/content_suggestions/impression_limits/model/impression_limit_service_factory.h"
@@ -39,69 +37,38 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-namespace {
-
-const char* kPrefsToRegister[] = {
-    shop_card_prefs::kShopCardPriceDropUrlImpressions,
-    tab_resumption_prefs::kTabResumptionRegularUrlImpressions,
-    tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions,
-    tab_resumption_prefs::kTabResumptionWithPriceTrackableUrlImpressions,
-};
-
-}  // namespace
-
 class ShopCardMediatorTest : public PlatformTest {
  public:
   ShopCardMediatorTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /* enabled_features*/ {},
-        /* disabled_features*/ {});
-
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return commerce::MockShoppingService::Build();
-            }));
+        base::BindOnce(&commerce::MockShoppingService::Build));
     builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
                               ios::HistoryServiceFactory::GetDefaultFactory());
-    bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
-    for (auto* const pref : kPrefsToRegister) {
-      pref_service_.registry()->RegisterDictionaryPref(pref);
-    }
     builder.AddTestingFactory(
         ImpressionLimitServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](PrefService* pref_service,
-               bookmarks::BookmarkModel* bookmark_model,
-               ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<ImpressionLimitService>(
-                  pref_service,
-                  ios::HistoryServiceFactory::GetForProfile(profile),
-                  bookmark_model,
-                  commerce::ShoppingServiceFactory::GetForProfile(profile));
-            },
-            &pref_service_, bookmark_model_.get()));
+        ImpressionLimitServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        ios::BookmarkModelFactory::GetInstance(),
+        base::BindOnce(&bookmarks::TestBookmarkClient::CreateModel));
+    builder.AddTestingFactory(
+        commerce::ShoppingServiceFactory::GetInstance(),
+        base::BindOnce(&std::make_unique<commerce::MockShoppingService>));
 
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    shopping_service_ = std::make_unique<commerce::MockShoppingService>();
-    favicon_loader_ =
-        IOSChromeFaviconLoaderFactory::GetForProfile(profile_.get());
-
-    pref_service_.registry()->RegisterBooleanPref(
-        commerce::kPriceTrackingHomeModuleEnabled, true);
-    pref_service_.registry()->RegisterBooleanPref(
-        prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled, true);
     mediator_ = [[ShopCardMediator alloc]
-        initWithShoppingService:shopping_service_.get()
-                    prefService:pref_service()
-                  bookmarkModel:bookmark_model_.get()
+        initWithShoppingService:commerce::ShoppingServiceFactory::GetForProfile(
+                                    profile_.get())
+                    prefService:profile_->GetPrefs()
+                  bookmarkModel:ios::BookmarkModelFactory::GetForProfile(
+                                    profile_.get())
                    imageFetcher:std::make_unique<
                                     image_fetcher::ImageDataFetcher>(
                                     profile_->GetSharedURLLoaderFactory())
-                  faviconLoader:favicon_loader_
+                  faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                    profile_.get())
          impressionLimitService:ImpressionLimitServiceFactory::GetForProfile(
                                     profile_)];
   }
@@ -112,19 +79,12 @@ class ShopCardMediatorTest : public PlatformTest {
 
   ShopCardMediator* mediator() { return mediator_; }
 
-  PrefService* pref_service() { return &pref_service_; }
-
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_;
-  TestingPrefServiceSimple pref_service_;
-  std::unique_ptr<commerce::MockShoppingService> shopping_service_;
   ShopCardMediator* mediator_;
-  raw_ptr<FaviconLoader> favicon_loader_;
 };
 
 // Test disconnecting the mediator.
