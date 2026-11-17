@@ -88,7 +88,7 @@ seed version you can pass:
 ## Running on different platforms
 
 The same tests can run on almost all the platforms: (win, linux, mac, cros,
-android and WebView). However not all platforms can run on the same target
+android, Android desktop and WebView). However not all platforms can run on the same target
 platform.
 
 ### Android
@@ -104,6 +104,17 @@ Then you should be able to invoke the tests:
 `vpython3 -m pytest -k 'not test_basic_rendering' chrome/test/variations
 --target-platform=android
 --avd-config=tools/android/avd/proto/android_30_google_apis_x86.textpb`
+
+### Android Desktop
+
+Required operating system: Linux.
+
+Set up your environment the same way as for Android. The tests install the
+desktop variant of Chrome on an Android desktop emulator:
+
+`vpython3 -m pytest -k 'not test_basic_rendering' chrome/test/variations
+--target-platform=android_desktop
+--avd-config=tools/android/avd/proto/android_37_desktop_x64.textpb`
 
 ### Android WebView
 
@@ -189,8 +200,8 @@ If you want to test you changes on the real build bot, you can select custom
 Tryjob in the Gerrit UI. Depending on which platform you want to check, please
 choose one of the following builders:
 
--   android-emulator-finch-smoke-chrome (note: Android WebView tests use the
-    same builder).
+-   android-emulator-finch-smoke-chrome (note: Android Desktop and Android
+    WebView tests use the same builder).
 -   chromeos-betty-finch-smoke-chrome
 -   linux-finch-smoke-chrome
 -   mac-arm64-finch-smoke-chrome

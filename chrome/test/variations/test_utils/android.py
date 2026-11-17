@@ -62,17 +62,37 @@ def _installer_args(
   return args
 
 
-def install_chrome(channel: str, device: device_utils.DeviceUtils) -> str:
-  """Installs Chrome to the device and returns the package name."""
+def install_chrome(
+  channel: str, device: device_utils.DeviceUtils, package: str
+) -> str:
+  """Installs Chrome to the device and returns the package name.
+
+  Args:
+    channel: The release channel to install.
+    device: The device to install Chrome on.
+    package: The installer package variant, e.g. 'Chrome' for phones and
+      tablets or 'ChromeDesktop' for Android desktop devices.
+
+  Returns:
+    The Android package name of the installed Chrome, e.g. 'com.chrome.dev'.
+
+  Raises:
+    RuntimeError: If the installer fails.
+  """
   args = _installer_args('chrome', channel, device)
-  # TODO(b/563029158): Revert once clank/bin/install_chrome.py defaults to
-  # Standalone Chrome for M154+.
-  args.append('--package=Chrome')
+  # The package is always passed explicitly. For phones, 'Chrome' can be
+  # dropped once clank/bin/install_chrome.py defaults to Standalone Chrome for
+  # M154+ (b/563029158). 'ChromeDesktop' must stay, otherwise the installer
+  # may install the phone APK on Android desktop devices.
+  args.append(f'--package={package}')
   try:
-    subprocess.check_output(args=args, stderr=subprocess.STDOUT)
+    output = subprocess.check_output(args=args, stderr=subprocess.STDOUT)
   except subprocess.CalledProcessError as e:
-    logging.error('Subprocess error caught %s', e.output.decode())
+    logging.error(
+      'Subprocess error caught %s', e.output.decode(errors='replace')
+    )
     raise RuntimeError('Chrome installation failed.')
+  logging.info('Chrome installer output:\n%s', output.decode(errors='replace'))
   return _package_name(channel)
 
 
@@ -111,14 +131,30 @@ def _forward_port(
 
 
 def launch_emulator(
-  avd_config: str, emulator_window: bool, ports: Optional[List[int]] = None
+  avd_config: str,
+  emulator_window: bool,
+  ports: Optional[List[int]] = None,
+  ensure_main_user: bool = False,
 ) -> avd._AvdInstance:
-  """Launches the emulator and forwards ports from device to host."""
+  """Launches the emulator and forwards ports from device to host.
+
+  Args:
+    avd_config: Path to the AVD config textpb.
+    emulator_window: Whether to show the emulator window.
+    ports: Host ports to forward to the device.
+    ensure_main_user: Whether to switch to and unlock the main user after
+      boot. Needed on images with a headless system user (e.g. Android
+      desktop), where apps otherwise never get a visible window.
+  """
   avd_config = avd.AvdConfig(avd_config)
   avd_config.Install()
 
   instance = avd_config.CreateInstance()
   instance.Start(writable_system=True, window=emulator_window)
+
+  if ensure_main_user:
+    user_id = instance.device.EnsureMainUser()
+    logging.info('Switched to the main user (%s)', user_id)
 
   _forward_port(instance.device, ports)
 

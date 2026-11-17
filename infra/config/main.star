@@ -229,6 +229,7 @@ chromium_luci.configure_targets(
             # The following mixins are referenced via
             # //testing/buildbot/waterfalls.pyl
             "11-x86-emulator": True,
+            "17-desktop-x64-emulator": True,
             "android_extra_verbosity": True,
             "android": True,
             "blink_tests_write_run_histories": True,

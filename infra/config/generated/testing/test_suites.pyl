@@ -888,6 +888,20 @@
     },
 
     'chrome_android_finch_smoke_tests': {
+      'variations_android_desktop_smoke_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--target-platform=android_desktop',
+          ],
+        },
+        'test': 'variations_desktop_smoke_tests',
+        'mixins': [
+          '17-desktop-x64-emulator',
+        ],
+      },
       'variations_android_smoke_tests': {
         'test_common': {
           'mixins': [
@@ -898,6 +912,9 @@
           ],
         },
         'test': 'variations_desktop_smoke_tests',
+        'mixins': [
+          '11-x86-emulator',
+        ],
       },
       'variations_webview_smoke_tests': {
         'test_common': {
@@ -909,6 +926,9 @@
           ],
         },
         'test': 'variations_desktop_smoke_tests',
+        'mixins': [
+          '11-x86-emulator',
+        ],
       },
     },
 

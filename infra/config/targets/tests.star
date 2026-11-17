@@ -2681,6 +2681,17 @@ targets.tests.gtest_test(
 )
 
 targets.tests.isolated_script_test(
+    name = "variations_android_desktop_smoke_tests",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+    args = [
+        "--target-platform=android_desktop",
+    ],
+    binary = "variations_desktop_smoke_tests",
+)
+
+targets.tests.isolated_script_test(
     name = "variations_android_smoke_tests",
     mixins = [
         "has_native_resultdb_integration",

@@ -7,6 +7,7 @@ import pytest
 from chrome.test.variations import drivers
 from chrome.test.variations import fixtures
 from chrome.test.variations.fixtures import test_options
+from chrome.test.variations.fixtures.test_options import ANDROID_PLATFORMS
 from chrome.test.variations.test_utils.driver import DriverUtil
 from http.server import HTTPServer
 from selenium.common.exceptions import WebDriverException
@@ -32,8 +33,8 @@ def test_load_simple_url(
     # expecting { 'product': 'Chrome/120.0.6090.0' }
     version = versions['product'].split('/')[1]
     add_tag('launched_version', version)
-    # Window bounds cannot be changed on Android / WebView.
-    if test_options.platform not in ('android', 'webview', 'android_webview'):
+    # ChromeDriver can't change window bounds on Android.
+    if test_options.platform not in ANDROID_PLATFORMS:
       driver.set_window_size(800, 600)
     driver.get(url)
     WebDriverWait(driver, 5).until(
@@ -60,8 +61,8 @@ def test_basic_rendering(
   with driver_factory.create_driver(
     seed_file=seed_locator.get_seed()
   ) as driver:
-    # Window bounds cannot be changed on Android / WebView.
-    if test_options.platform not in ('android', 'webview', 'android_webview'):
+    # ChromeDriver can't change window bounds on Android.
+    if test_options.platform not in ANDROID_PLATFORMS:
       driver.set_window_size(800, 600)
     driver.get(url)
     driver_factory.wait_for_screenshot()

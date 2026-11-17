@@ -8,6 +8,11 @@ import pytest
 from chrome.test.variations import test_utils
 from chrome.test.variations.fixtures.result_sink import AddTag
 
+# Target platforms that run Chrome or WebView on an Android emulator.
+ANDROID_PLATFORMS = frozenset(
+  {'android', 'android_desktop', 'webview', 'android_webview'}
+)
+
 
 @attr.define(frozen=True)
 class TestOptions:
@@ -28,6 +33,7 @@ def pytest_addoption(parser):
       'win',
       'mac',
       'android',
+      'android_desktop',
       'webview',
       'android_webview',
       'cros',

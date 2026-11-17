@@ -835,7 +835,6 @@
         'mixins': [
           'chrome-finch-swarming-pool',
           'linux-jammy',
-          '11-x86-emulator',
           'skia_gold_test',
         ],
         'test_suites': {

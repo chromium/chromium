@@ -5,6 +5,49 @@
     "isolated_scripts": [
       {
         "args": [
+          "--target-platform=android_desktop",
+          "--avd-config=../../tools/android/avd/proto/android_37_desktop_x64.textpb",
+          "--git-revision=${got_revision}"
+        ],
+        "description": "Run with android_37_desktop_x64",
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//chrome/test/variations:variations_desktop_smoke_tests",
+        "module_scheme": "flat",
+        "name": "variations_android_desktop_smoke_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests.finch"
+          },
+          "named_caches": [
+            {
+              "name": "android_37_desktop_x64",
+              "path": ".android_emulator/android_37_desktop_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_37_desktop_x64"
+            }
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "variations_desktop_smoke_tests",
+        "test_id_prefix": "ninja://chrome/test/variations:variations_desktop_smoke_tests/"
+      },
+      {
+        "args": [
           "--target-platform=android",
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
           "--git-revision=${got_revision}"

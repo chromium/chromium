@@ -48,8 +48,21 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "chrome_android_finch_smoke_tests",
     tests = {
-        "variations_android_smoke_tests": targets.legacy_test_config(),
-        "variations_webview_smoke_tests": targets.legacy_test_config(),
+        "variations_android_desktop_smoke_tests": targets.legacy_test_config(
+            mixins = [
+                "17-desktop-x64-emulator",
+            ],
+        ),
+        "variations_android_smoke_tests": targets.legacy_test_config(
+            mixins = [
+                "11-x86-emulator",
+            ],
+        ),
+        "variations_webview_smoke_tests": targets.legacy_test_config(
+            mixins = [
+                "11-x86-emulator",
+            ],
+        ),
     },
 )
 
