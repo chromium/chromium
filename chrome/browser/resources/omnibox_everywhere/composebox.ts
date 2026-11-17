@@ -30,9 +30,9 @@ import type {ContextUploadErrorType} from '//resources/mojo/components/omnibox/c
 import {ContextUploadStatus, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {OmniboxEverywhereBrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
+import {browserProxyFactory} from './omnibox_everywhere.mojom-webui.js';
 
 export interface OmniboxEverywhereComposeboxElement {
   $: {
@@ -166,13 +166,12 @@ export class OmniboxEverywhereComposeboxElement extends
     const rect = e?.detail?.anchorRect ||
         this.getContextEntrypointElement()?.getBoundingClientRect();
     if (rect) {
-      OmniboxEverywhereBrowserProxyImpl.getInstance()
-          .handler.showContextActionMenu({
-            x: Math.round(rect.x),
-            y: Math.round(rect.y),
-            width: Math.round(rect.width),
-            height: Math.round(rect.height),
-          });
+      browserProxyFactory.getInstance().handler.showContextActionMenu({
+        x: Math.round(rect.x),
+        y: Math.round(rect.y),
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+      });
     }
   }
   private webuiOmniboxSimplificationEnabled_: boolean =

@@ -37,9 +37,9 @@ import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebo
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 
-import {OmniboxEverywhereBrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './omnibox.css.js';
 import {getHtml} from './omnibox.html.js';
+import {browserProxyFactory} from './omnibox_everywhere.mojom-webui.js';
 import type {OmniboxEverywhereProfileIconElement} from './profile_icon.js';
 
 
@@ -737,7 +737,7 @@ export class OmniboxEverywhereOmniboxElement extends
     // `rect` is in WebUI viewport coordinates (CSS DIPs); the browser converts
     // it to screen coordinates to anchor the native menu.
     const rect = this.$.overflowMenuButton.getBoundingClientRect();
-    OmniboxEverywhereBrowserProxyImpl.getInstance().handler.showOverflowMenu(
+    browserProxyFactory.getInstance().handler.showOverflowMenu(
         {
           x: Math.round(rect.left),
           y: Math.round(rect.top),
@@ -856,13 +856,12 @@ export class OmniboxEverywhereOmniboxElement extends
     const rect = e?.detail?.anchorRect ||
         this.shadowRoot?.querySelector('#context')?.getBoundingClientRect();
     if (rect) {
-      OmniboxEverywhereBrowserProxyImpl.getInstance()
-          .handler.showContextActionMenu({
-            x: Math.round(rect.x),
-            y: Math.round(rect.y),
-            width: Math.round(rect.width),
-            height: Math.round(rect.height),
-          });
+      browserProxyFactory.getInstance().handler.showContextActionMenu({
+        x: Math.round(rect.x),
+        y: Math.round(rect.y),
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+      });
     }
   }
 

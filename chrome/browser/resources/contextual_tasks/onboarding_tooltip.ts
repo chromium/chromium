@@ -11,7 +11,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
+import {browserProxyFactory} from './contextual_tasks.mojom-webui.js';
 import {getCss} from './onboarding_tooltip.css.js';
 import {getHtml} from './onboarding_tooltip.html.js';
 import {recordAction} from './utils.js';
@@ -214,7 +214,7 @@ export class ContextualTasksOnboardingTooltipElement extends CrLitElement {
     if (this.tooltipImpressionTimer_) {
       recordAction('ContextualTasks.OnboardingTooltip.Shown');
     }
-    BrowserProxyImpl.getInstance().handler.onboardingTooltipDismissed();
+    browserProxyFactory.getInstance().handler.onboardingTooltipDismissed();
     recordAction('ContextualTasks.OnboardingTooltip.Accepted');
     this.userDismissedTooltip_ = true;
     this.onboardingTooltipIsVisible_ = false;
@@ -242,7 +242,7 @@ export class ContextualTasksOnboardingTooltipElement extends CrLitElement {
 
   protected onHelpLinkClick_(e: Event) {
     e.preventDefault();
-    BrowserProxyImpl.getInstance().handler.openOnboardingHelpUi();
+    browserProxyFactory.getInstance().handler.openOnboardingHelpUi();
   }
 }
 

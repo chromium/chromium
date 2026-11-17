@@ -7,14 +7,14 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_tooltip/cr_tooltip.js';
 
 import type {CrTooltipElement} from '//resources/cr_elements/cr_tooltip/cr_tooltip.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {browserProxyFactory} from './contextual_tasks.mojom-webui.js';
 import {getCss} from './info_tooltip.css.js';
 import {getHtml} from './info_tooltip.html.js';
-import {EventTracker} from '//resources/js/event_tracker.js';
-import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 
 /**
  * Caret border width is 8px, producing a 16px wide triangle.
@@ -251,7 +251,7 @@ export class ContextualTasksInfoTooltipElement extends CrLitElement {
 
   protected onLinkClick_(e: Event) {
     e.preventDefault();
-    BrowserProxyImpl.getInstance().handler.openAskGHelpUi();
+    browserProxyFactory.getInstance().handler.openAskGHelpUi();
   }
 
   protected onTooltipCloseClick_(e: Event) {

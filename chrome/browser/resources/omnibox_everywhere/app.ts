@@ -16,7 +16,7 @@ import '//resources/cr_elements/icons.html.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {ComposeboxState} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxVoiceSearchElement, VoicePermissionPromptState} from '//resources/cr_components/composebox/composebox_voice_search.js';
-import {browserProxyFactory} from '//resources/cr_components/most_visited/most_visited.mojom-webui.js';
+import {browserProxyFactory as mostVisitedProxyFactory} from '//resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import type {MostVisitedInfo} from '//resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import type {SearchAnimatedGlowElement} from '//resources/cr_components/search/animated_glow.js';
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
@@ -32,11 +32,11 @@ import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebo
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {OmniboxEverywhereBrowserProxyImpl} from './browser_proxy.js';
 import type {OmniboxEverywhereComposeboxElement} from './composebox.js';
 import {FreChinMode} from './fre_chin.js';
 import type {ShowHotkeyDropdownDetail} from './fre_chin.js';
 import type {OmniboxEverywhereOmniboxElement} from './omnibox.js';
+import {browserProxyFactory} from './omnibox_everywhere.mojom-webui.js';
 import type {ComposeboxInitialState} from './omnibox_everywhere.mojom-webui.js';
 
 const PERMISSION_PROMPT_CSS_CLASS = 'permission-prompt-showing';
@@ -336,7 +336,7 @@ export class OmniboxEverywhereAppElement extends
 
     if (this.mostVisitedEnabled_) {
       this.mostVisitedListenerId_ =
-          browserProxyFactory.getInstance()
+          mostVisitedProxyFactory.getInstance()
               .callbackRouter.setMostVisitedInfo.addListener(
                   (info: MostVisitedInfo) => {
                     this.hasMostVisitedTiles_ =
@@ -345,7 +345,7 @@ export class OmniboxEverywhereAppElement extends
     }
 
     const omniboxEverywhereCallbackRouter =
-        OmniboxEverywhereBrowserProxyImpl.getInstance().callbackRouter;
+        browserProxyFactory.getInstance().callbackRouter;
     this.omniboxEverywhereListenerIds_.push(
         omniboxEverywhereCallbackRouter.openComposebox.addListener(
             onOpenComposebox),
@@ -369,7 +369,7 @@ export class OmniboxEverywhereAppElement extends
 
   private removeListeners_() {
     if (this.mostVisitedListenerId_ !== null) {
-      browserProxyFactory.getInstance().callbackRouter.removeListener(
+      mostVisitedProxyFactory.getInstance().callbackRouter.removeListener(
           this.mostVisitedListenerId_);
       this.mostVisitedListenerId_ = null;
     }
@@ -378,7 +378,7 @@ export class OmniboxEverywhereAppElement extends
     }
     this.searchboxListenerIds_ = [];
     const omniboxEverywhereCallbackRouter =
-        OmniboxEverywhereBrowserProxyImpl.getInstance().callbackRouter;
+        browserProxyFactory.getInstance().callbackRouter;
     for (const id of this.omniboxEverywhereListenerIds_) {
       omniboxEverywhereCallbackRouter.removeListener(id);
     }
@@ -530,8 +530,7 @@ export class OmniboxEverywhereAppElement extends
 
   protected onMostVisitedCloseClick_() {
     this.hasMostVisitedTiles_ = false;
-    OmniboxEverywhereBrowserProxyImpl.getInstance()
-        .handler.onDismissMostVisited();
+    browserProxyFactory.getInstance().handler.onDismissMostVisited();
   }
 
   private setIsComposebox_(isComposebox: boolean) {
@@ -539,8 +538,7 @@ export class OmniboxEverywhereAppElement extends
       return;
     }
     this.isComposeboxMode_ = isComposebox;
-    OmniboxEverywhereBrowserProxyImpl.getInstance().handler.setIsComposebox(
-        isComposebox);
+    browserProxyFactory.getInstance().handler.setIsComposebox(isComposebox);
   }
 
   protected onFreClose_() {

@@ -6,8 +6,8 @@ import 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
 
 import {FreChinMode} from 'chrome://omnibox-everywhere.top-chrome/fre_chin.js';
 import type {FreChinElement} from 'chrome://omnibox-everywhere.top-chrome/fre_chin.js';
-import {ComposeboxProxyImpl, OmniboxEverywhereBrowserProxyImpl, SearchboxBrowserProxy} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
-import type {OmniboxEverywhereAppElement, OmniboxEverywhereComposeboxElement, OmniboxEverywhereOmniboxElement, OmniboxEverywhereProfileIconElement} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
+import {browserProxyFactory as omniboxEverywhereProxyFactory, ComposeboxProxyImpl, OmniboxEverywherePageHandlerRemote, SearchboxBrowserProxy} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
+import type {OmniboxEverywhereAppElement, OmniboxEverywhereComposeboxElement, OmniboxEverywhereOmniboxElement, OmniboxEverywherePageRemote, OmniboxEverywhereProfileIconElement} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
 import {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
@@ -30,7 +30,7 @@ import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestOmniboxEverywhereBrowserProxy, TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
+import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 function getInputValue(
     inputElement: HTMLInputElement|HTMLTextAreaElement|HTMLElement): string {
@@ -53,7 +53,8 @@ function blurActiveElement() {
 suite('OmniboxEverywhereOmniboxTest', () => {
   let omnibox: OmniboxEverywhereOmniboxElement;
   let testProxy: TestSearchboxBrowserProxy;
-  let testEverywhereProxy: TestOmniboxEverywhereBrowserProxy;
+  let testEverywhereHandler: TestMock<OmniboxEverywherePageHandlerRemote>&
+      OmniboxEverywherePageHandlerRemote;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -80,8 +81,11 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     });
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
-    testEverywhereProxy = new TestOmniboxEverywhereBrowserProxy();
-    OmniboxEverywhereBrowserProxyImpl.setInstance(testEverywhereProxy);
+    testEverywhereHandler =
+        TestMock.fromClass(OmniboxEverywherePageHandlerRemote);
+    omniboxEverywhereProxyFactory.setInstance(
+        omniboxEverywhereProxyFactory.createForTest(testEverywhereHandler)
+            .instance);
     omnibox = document.createElement('omnibox-everywhere-omnibox');
     document.body.appendChild(omnibox);
     await microtasksFinished();
@@ -98,7 +102,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     });
 
     const args =
-        await testEverywhereProxy.handler.whenCalled('showContextActionMenu');
+        await testEverywhereHandler.whenCalled('showContextActionMenu');
     assertEquals(10, args.x);
     assertEquals(20, args.y);
     assertEquals(30, args.width);
@@ -1212,8 +1216,8 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         await microtasksFinished();
 
         assertTrue(enterEvent.defaultPrevented);
-        const args = await testEverywhereProxy.handler.whenCalled(
-            'showContextActionMenu');
+        const args =
+            await testEverywhereHandler.whenCalled('showContextActionMenu');
         assertTrue(args !== undefined);
       });
 
@@ -1644,7 +1648,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
           button.click();
 
           const [rect, sourceType] =
-              await testEverywhereProxy.handler.whenCalled('showOverflowMenu');
+              await testEverywhereHandler.whenCalled('showOverflowMenu');
           assertDeepEquals({x: 120, y: 36, width: 28, height: 28}, rect);
           // click() has `detail` 0, like a keyboard activation.
           assertEquals(MenuSourceType.kKeyboard, sourceType);
@@ -1661,7 +1665,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
 
           // Primary pointerdown prevents focus transfer and suppresses reopen
           // unless cancelled by pointercancel.
-          testEverywhereProxy.handler.reset();
+          testEverywhereHandler.reset();
           const downEvent = new PointerEvent(
               'pointerdown', {bubbles: true, cancelable: true, button: 0});
           button.dispatchEvent(downEvent);
@@ -1669,7 +1673,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
           button.click();
           await microtasksFinished();
           assertEquals(
-              0, testEverywhereProxy.handler.getCallCount('showOverflowMenu'));
+              0, testEverywhereHandler.getCallCount('showOverflowMenu'));
           assertFalse(omnibox.isOverflowMenuOpen);
 
           // pointercancel clears suppression so the next click opens the menu.
@@ -1684,7 +1688,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
           assertFalse(button.parentElement!.classList.contains('menu-open'));
 
           button.click();
-          await testEverywhereProxy.handler.whenCalled('showOverflowMenu');
+          await testEverywhereHandler.whenCalled('showOverflowMenu');
           assertTrue(omnibox.isOverflowMenuOpen);
         });
 
@@ -1694,14 +1698,14 @@ suite('OmniboxEverywhereOmniboxTest', () => {
                ['mouse', MenuSourceType.kMouse],
                ['touch', MenuSourceType.kTouch],
       ] as Array<[string, MenuSourceType]>) {
-        testEverywhereProxy.handler.reset();
+        testEverywhereHandler.reset();
         omnibox.isOverflowMenuOpen = false;
         button.dispatchEvent(new PointerEvent(
             'pointerdown', {bubbles: true, button: 0, pointerType}));
         button.dispatchEvent(
             new MouseEvent('click', {bubbles: true, detail: 1}));
         const [, sourceType] =
-            await testEverywhereProxy.handler.whenCalled('showOverflowMenu');
+            await testEverywhereHandler.whenCalled('showOverflowMenu');
         assertEquals(expected, sourceType);
         omnibox.onOverflowMenuClosed();
       }
@@ -1713,7 +1717,8 @@ suite('OmniboxEverywhereOmniboxTest', () => {
 suite('OmniboxEverywhereComposeboxTest', () => {
   let composebox: OmniboxEverywhereComposeboxElement;
   let testProxy: TestSearchboxBrowserProxy;
-  let testEverywhereProxy: TestOmniboxEverywhereBrowserProxy;
+  let testEverywhereHandler: TestMock<OmniboxEverywherePageHandlerRemote>&
+      OmniboxEverywherePageHandlerRemote;
   let mockPageHandler: TestMock<PageHandlerRemote>&PageHandlerRemote;
 
   setup(async () => {
@@ -1732,8 +1737,11 @@ suite('OmniboxEverywhereComposeboxTest', () => {
     });
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
-    testEverywhereProxy = new TestOmniboxEverywhereBrowserProxy();
-    OmniboxEverywhereBrowserProxyImpl.setInstance(testEverywhereProxy);
+    testEverywhereHandler =
+        TestMock.fromClass(OmniboxEverywherePageHandlerRemote);
+    omniboxEverywhereProxyFactory.setInstance(
+        omniboxEverywhereProxyFactory.createForTest(testEverywhereHandler)
+            .instance);
     mockPageHandler = TestMock.fromClass(PageHandlerRemote);
     ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
         mockPageHandler,
@@ -1808,8 +1816,8 @@ suite('OmniboxEverywhereComposeboxTest', () => {
           anchorRect: {x: 15, y: 25, width: 35, height: 45},
         });
 
-        const args = await testEverywhereProxy.handler.whenCalled(
-            'showContextActionMenu');
+        const args =
+            await testEverywhereHandler.whenCalled('showContextActionMenu');
         assertEquals(15, args.x);
         assertEquals(25, args.y);
         assertEquals(35, args.width);
@@ -2278,7 +2286,9 @@ class MockSpeechRecognition {
 suite('OmniboxEverywhereAppTest', () => {
   let app: OmniboxEverywhereAppElement;
   let testProxy: TestSearchboxBrowserProxy;
-  let testEverywhereProxy: TestOmniboxEverywhereBrowserProxy;
+  let testEverywhereHandler: TestMock<OmniboxEverywherePageHandlerRemote>&
+      OmniboxEverywherePageHandlerRemote;
+  let testEverywherePage: OmniboxEverywherePageRemote;
   let mockPageHandler: TestMock<PageHandlerRemote>&PageHandlerRemote;
 
   setup(async () => {
@@ -2323,8 +2333,12 @@ suite('OmniboxEverywhereAppTest', () => {
 
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
-    testEverywhereProxy = new TestOmniboxEverywhereBrowserProxy();
-    OmniboxEverywhereBrowserProxyImpl.setInstance(testEverywhereProxy);
+    testEverywhereHandler =
+        TestMock.fromClass(OmniboxEverywherePageHandlerRemote);
+    const {instance, remote} =
+        omniboxEverywhereProxyFactory.createForTest(testEverywhereHandler);
+    omniboxEverywhereProxyFactory.setInstance(instance);
+    testEverywherePage = remote;
     mockPageHandler = TestMock.fromClass(PageHandlerRemote);
     ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
         mockPageHandler,
@@ -2578,9 +2592,9 @@ suite('OmniboxEverywhereAppTest', () => {
         await microtasksFinished();
 
         let isComposebox =
-            await testEverywhereProxy.handler.whenCalled('setIsComposebox');
+            await testEverywhereHandler.whenCalled('setIsComposebox');
         assertTrue(isComposebox);
-        testEverywhereProxy.handler.reset();
+        testEverywhereHandler.reset();
 
         const composebox =
             app.shadowRoot.querySelector('omnibox-everywhere-composebox')!;
@@ -2590,9 +2604,9 @@ suite('OmniboxEverywhereAppTest', () => {
         await microtasksFinished();
 
         isComposebox =
-            await testEverywhereProxy.handler.whenCalled('setIsComposebox');
+            await testEverywhereHandler.whenCalled('setIsComposebox');
         assertFalse(isComposebox);
-        testEverywhereProxy.handler.reset();
+        testEverywhereHandler.reset();
 
         // Reopen composebox and verify query submission cleans up UI without
         // calling setIsComposebox across Mojo.
@@ -2600,9 +2614,9 @@ suite('OmniboxEverywhereAppTest', () => {
             'open-composebox', {text: 'query', files: [], mode: 0, model: 0});
         await microtasksFinished();
         isComposebox =
-            await testEverywhereProxy.handler.whenCalled('setIsComposebox');
+            await testEverywhereHandler.whenCalled('setIsComposebox');
         assertTrue(isComposebox);
-        testEverywhereProxy.handler.reset();
+        testEverywhereHandler.reset();
 
         const activeComposebox =
             app.shadowRoot.querySelector('omnibox-everywhere-composebox')!;
@@ -2610,8 +2624,7 @@ suite('OmniboxEverywhereAppTest', () => {
         activeComposebox.fire('composebox-submit');
         await microtasksFinished();
 
-        assertEquals(
-            0, testEverywhereProxy.handler.getCallCount('setIsComposebox'));
+        assertEquals(0, testEverywhereHandler.getCallCount('setIsComposebox'));
         const restoredSearchbox =
             app.shadowRoot.querySelector('omnibox-everywhere-omnibox');
         assertTrue(!!restoredSearchbox);
@@ -3084,12 +3097,11 @@ suite('OmniboxEverywhereAppTest', () => {
             closeButton.getAttribute('aria-label'));
 
         closeButton.click();
-        await testEverywhereProxy.handler.whenCalled('onDismissMostVisited');
+        await testEverywhereHandler.whenCalled('onDismissMostVisited');
         await microtasksFinished();
 
         assertEquals(
-            1,
-            testEverywhereProxy.handler.getCallCount('onDismissMostVisited'));
+            1, testEverywhereHandler.getCallCount('onDismissMostVisited'));
         assertTrue(mvContainer.hidden);
       });
 
@@ -3208,8 +3220,8 @@ suite('OmniboxEverywhereAppTest', () => {
         assertTrue(!!searchbox);
 
         // Demote window to enter resting state in persistent mode.
-        testEverywhereProxy.page.onDemoted();
-        await testEverywhereProxy.page.$.flushForTesting();
+        testEverywherePage.onDemoted();
+        await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
         assertEquals('4', mv.getAttribute('max-tiles'));
@@ -3232,8 +3244,8 @@ suite('OmniboxEverywhereAppTest', () => {
         window.dispatchEvent(new Event('blur'));
         await microtasksFinished();
         assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
-        testEverywhereProxy.page.onDemoted();
-        await testEverywhereProxy.page.$.flushForTesting();
+        testEverywherePage.onDemoted();
+        await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
         assertEquals('4', mv.getAttribute('max-tiles'));
@@ -3281,8 +3293,8 @@ suite('OmniboxEverywhereAppTest', () => {
         assertTrue(!!searchbox);
 
         // Resting state uses 4 tiles.
-        testEverywhereProxy.page.onDemoted();
-        await testEverywhereProxy.page.$.flushForTesting();
+        testEverywherePage.onDemoted();
+        await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertTrue(dynamicApp600.hasAttribute('small-loomnibox'));
         assertEquals('4', mv.getAttribute('max-tiles'));
@@ -3335,8 +3347,8 @@ suite('OmniboxEverywhereAppTest', () => {
         // does not restore it (and expand mid-click) on click-activation.
         searchbox.$.input.focus();
         assertEquals(inputElement, getDeepActiveElement());
-        testEverywhereProxy.page.onDemoted();
-        await testEverywhereProxy.page.$.flushForTesting();
+        testEverywherePage.onDemoted();
+        await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
         assertEquals(document.body, getDeepActiveElement());
@@ -3371,8 +3383,8 @@ suite('OmniboxEverywhereAppTest', () => {
         assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
 
         // Closing the + context menu keeps it at 480px.
-        testEverywhereProxy.page.onContextMenuClosed();
-        await testEverywhereProxy.page.$.flushForTesting();
+        testEverywherePage.onContextMenuClosed();
+        await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
 
@@ -3414,8 +3426,8 @@ suite('OmniboxEverywhereAppTest', () => {
 
         // 6. Demotion shrinks it, and becoming visible while demoted doesn't
         // expand it or focus the input.
-        testEverywhereProxy.page.onDemoted();
-        await testEverywhereProxy.page.$.flushForTesting();
+        testEverywherePage.onDemoted();
+        await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
         assertEquals(document.body, getDeepActiveElement());
@@ -3439,8 +3451,8 @@ suite('OmniboxEverywhereAppTest', () => {
         await microtasksFinished();
         assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
         assertEquals(document.body, getDeepActiveElement());
-        testEverywhereProxy.page.focusInput();
-        await testEverywhereProxy.page.$.flushForTesting();
+        testEverywherePage.focusInput();
+        await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
         assertEquals(inputElement, getDeepActiveElement());
@@ -3459,21 +3471,21 @@ suite('OmniboxEverywhereAppTest', () => {
         // While expanded, closing the + context menu restores input focus.
         assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
         blurActiveElement();
-        testEverywhereProxy.page.onContextMenuClosed();
-        await testEverywhereProxy.page.$.flushForTesting();
+        testEverywherePage.onContextMenuClosed();
+        await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertEquals(composeboxInputElement, getDeepActiveElement());
 
-        testEverywhereProxy.page.onDemoted();
-        await testEverywhereProxy.page.$.flushForTesting();
+        testEverywherePage.onDemoted();
+        await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
         assertEquals(document.body, getDeepActiveElement());
 
         // Closing the + context menu (or the menu being canceled by demotion)
         // doesn't focus the composebox input, so it stays at 480px.
-        testEverywhereProxy.page.onContextMenuClosed();
-        await testEverywhereProxy.page.$.flushForTesting();
+        testEverywherePage.onContextMenuClosed();
+        await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
         assertEquals(document.body, getDeepActiveElement());
@@ -3484,12 +3496,12 @@ suite('OmniboxEverywhereAppTest', () => {
 
         // A + menu action that reopens the composebox (e.g. picking a model)
         // focuses the input, so it expands.
-        testEverywhereProxy.page.onDemoted();
-        await testEverywhereProxy.page.$.flushForTesting();
+        testEverywherePage.onDemoted();
+        await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
-        testEverywhereProxy.page.openComposebox(null);
-        await testEverywhereProxy.page.$.flushForTesting();
+        testEverywherePage.openComposebox(null);
+        await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
         assertEquals(composeboxInputElement, getDeepActiveElement());
@@ -3497,8 +3509,8 @@ suite('OmniboxEverywhereAppTest', () => {
         // 9. Leaving composebox mode in the background (e.g. the AI Mode pref
         // turning off) while demoted stays at 480px and doesn't focus the
         // input.
-        testEverywhereProxy.page.onDemoted();
-        await testEverywhereProxy.page.$.flushForTesting();
+        testEverywherePage.onDemoted();
+        await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
         testProxy.page.updateAimPopupEligibility(false);
@@ -3527,8 +3539,8 @@ suite('OmniboxEverywhereAppTest', () => {
         searchbox.shadowRoot.querySelector<HTMLElement>('#voiceSearchButton')!;
     assertTrue(!!voiceButton);
 
-    testEverywhereProxy.page.onDemoted();
-    await testEverywhereProxy.page.$.flushForTesting();
+    testEverywherePage.onDemoted();
+    await testEverywherePage.$.flushForTesting();
     await microtasksFinished();
     assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
 
@@ -3553,15 +3565,15 @@ suite('OmniboxEverywhereAppTest', () => {
         await microtasksFinished();
         assertTrue(!!dynamicApp.shadowRoot.querySelector('fre-modal'));
 
-        testEverywhereProxy.page.onDemoted();
-        await testEverywhereProxy.page.$.flushForTesting();
+        testEverywherePage.onDemoted();
+        await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
 
         // The input can't take focus under the modal, but the hotkey still
         // expands Loomnibox (and the FRE modal with it).
-        testEverywhereProxy.page.focusInput();
-        await testEverywhereProxy.page.$.flushForTesting();
+        testEverywherePage.focusInput();
+        await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
         assertFalse(
@@ -4601,7 +4613,9 @@ suite('OmniboxEverywhereProfileIconTest', () => {
 suite('OmniboxEverywhereContextMenuTest', () => {
   let app: OmniboxEverywhereAppElement;
   let testProxy: TestSearchboxBrowserProxy;
-  let testEverywhereProxy: TestOmniboxEverywhereBrowserProxy;
+  let testEverywhereHandler: TestMock<OmniboxEverywherePageHandlerRemote>&
+      OmniboxEverywherePageHandlerRemote;
+  let testEverywherePage: OmniboxEverywherePageRemote;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -4635,8 +4649,12 @@ suite('OmniboxEverywhereContextMenuTest', () => {
         'getMostVisitedExpandedState', Promise.resolve({isExpanded: false}));
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
-    testEverywhereProxy = new TestOmniboxEverywhereBrowserProxy();
-    OmniboxEverywhereBrowserProxyImpl.setInstance(testEverywhereProxy);
+    testEverywhereHandler =
+        TestMock.fromClass(OmniboxEverywherePageHandlerRemote);
+    const {instance, remote} =
+        omniboxEverywhereProxyFactory.createForTest(testEverywhereHandler);
+    omniboxEverywhereProxyFactory.setInstance(instance);
+    testEverywherePage = remote;
     const mockPageHandler = TestMock.fromClass(PageHandlerRemote);
     ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
         mockPageHandler,
@@ -4660,7 +4678,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
     });
 
     const args =
-        await testEverywhereProxy.handler.whenCalled('showContextActionMenu');
+        await testEverywhereHandler.whenCalled('showContextActionMenu');
     assertEquals(10, args.x);
     assertEquals(20, args.y);
     assertEquals(30, args.width);
@@ -4671,7 +4689,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
       'openComposebox with tool Mojo listener switches app to composebox mode',
       async () => {
         assertFalse(app.hasAttribute('is-composebox-mode_'));
-        testEverywhereProxy.page.openComposebox({
+        testEverywherePage.openComposebox({
           tool: ToolMode.kDeepSearch,
           model: ModelMode.kUnspecified,
           tab: null,
@@ -4694,7 +4712,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
       'openComposebox with tab Mojo listener adds tab to composebox',
       async () => {
         assertFalse(app.hasAttribute('is-composebox-mode_'));
-        testEverywhereProxy.page.openComposebox({
+        testEverywherePage.openComposebox({
           tool: ToolMode.kUnspecified,
           model: ModelMode.kUnspecified,
           tab: {
@@ -4721,7 +4739,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
   test(
       'openComposebox with file Mojo listener adds file to composebox',
       async () => {
-        testEverywhereProxy.page.openComposebox({
+        testEverywherePage.openComposebox({
           tool: ToolMode.kUnspecified,
           model: ModelMode.kUnspecified,
           tab: null,
@@ -4752,7 +4770,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
       'file upload validation error displays error scrim in composebox',
       async () => {
         const testToken = '00000000000000010000000000000002';
-        testEverywhereProxy.page.openComposebox({
+        testEverywherePage.openComposebox({
           tool: ToolMode.kUnspecified,
           model: ModelMode.kUnspecified,
           tab: null,
@@ -4792,7 +4810,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
       'max images exceeded error displays error scrim and button dismisses',
       async () => {
         const testToken = '00000000000000010000000000000003';
-        testEverywhereProxy.page.openComposebox({
+        testEverywherePage.openComposebox({
           tool: ToolMode.kUnspecified,
           model: ModelMode.kUnspecified,
           tab: null,
@@ -4836,7 +4854,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
       'openComposebox with isPendingContextUpload suppresses suggestions ' +
           'dropdown',
       async () => {
-        testEverywhereProxy.page.openComposebox({
+        testEverywherePage.openComposebox({
           tool: ToolMode.kUnspecified,
           model: ModelMode.kUnspecified,
           tab: null,
@@ -4898,7 +4916,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
         assertFalse(
             !!app.shadowRoot.querySelector('omnibox-everywhere-composebox'));
 
-        testEverywhereProxy.page.openComposebox({
+        testEverywherePage.openComposebox({
           tool: ToolMode.kUnspecified,
           model: ModelMode.kUnspecified,
           tab: null,
@@ -4915,10 +4933,10 @@ suite('OmniboxEverywhereContextMenuTest', () => {
         assertTrue(composebox.isPendingContextUpload);
 
         // Reset the mock calls before cancelling.
-        testEverywhereProxy.handler.reset();
+        testEverywhereHandler.reset();
 
         // Cancel the screenshot capture.
-        testEverywhereProxy.page.onScreenshotCaptureCancelled();
+        testEverywherePage.onScreenshotCaptureCancelled();
         await microtasksFinished();
 
         // App should revert to searchbox mode.
@@ -4927,7 +4945,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
         assertTrue(
             !!app.shadowRoot.querySelector('omnibox-everywhere-omnibox'));
         const isComposeboxArg =
-            await testEverywhereProxy.handler.whenCalled('setIsComposebox');
+            await testEverywhereHandler.whenCalled('setIsComposebox');
         assertFalse(isComposeboxArg);
       });
 
@@ -4937,7 +4955,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
       async () => {
         // First transition to composebox mode normally (e.g. from context
         // menu).
-        testEverywhereProxy.page.openComposebox({
+        testEverywherePage.openComposebox({
           tool: ToolMode.kUnspecified,
           model: ModelMode.kUnspecified,
           tab: null,
@@ -4955,7 +4973,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
         await microtasksFinished();
 
         // Initiate screenshot/file upload from within composebox mode.
-        testEverywhereProxy.page.openComposebox({
+        testEverywherePage.openComposebox({
           tool: ToolMode.kUnspecified,
           model: ModelMode.kUnspecified,
           tab: null,
@@ -4972,7 +4990,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
         assertEquals('existing multiline query', composebox.input);
 
         // Cancel the screenshot capture.
-        testEverywhereProxy.page.onScreenshotCaptureCancelled();
+        testEverywherePage.onScreenshotCaptureCancelled();
         await microtasksFinished();
 
         // Should remain in composebox mode with isPendingContextUpload reset to
@@ -5076,7 +5094,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
               mvtStyle.getPropertyValue('--add-shortcut-foreground-color')
                   .trim());
 
-          testEverywhereProxy.page.openComposebox({
+          testEverywherePage.openComposebox({
             tool: ToolMode.kUnspecified,
             model: ModelMode.kUnspecified,
             tab: null,
@@ -5121,7 +5139,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
         omnibox.isOverflowMenuOpen = true;
         await microtasksFinished();
 
-        testEverywhereProxy.page.onOverflowMenuClosed();
+        testEverywherePage.onOverflowMenuClosed();
         await microtasksFinished();
 
         assertFalse(omnibox.isOverflowMenuOpen);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
+import {browserProxyFactory} from './contextual_tasks.mojom-webui.js';
 import type {WebViewType} from './web_view_type.js';
 
 interface WebViewWithPartition extends chrome.webviewTag.WebView {
@@ -34,7 +34,7 @@ export class WindowManager {
     });
 
     // Register listener for calls from C++
-    const browserProxy = BrowserProxyImpl.getInstance();
+    const browserProxy = browserProxyFactory.getInstance();
     browserProxy.callbackRouter.onWindowClosed.addListener(
         (windowId: {value: string}) => {
           this.onWindowClosedFromBrowser(windowId.value);
@@ -61,7 +61,7 @@ export class WindowManager {
     const url = new URL(window.location.href);
     const taskIdStr = url.searchParams.get('chrome_task_id');
     if (taskIdStr) {
-      const browserProxy = BrowserProxyImpl.getInstance();
+      const browserProxy = browserProxyFactory.getInstance();
       browserProxy.handler.registerWindow(
           {value: {value: taskIdStr}},
           e.targetUrl,
@@ -75,7 +75,7 @@ export class WindowManager {
         newWebview.remove();
       }
       // Request C++ to close the actual window
-      const browserProxy = BrowserProxyImpl.getInstance();
+      const browserProxy = browserProxyFactory.getInstance();
       browserProxy.handler.closeWindow({value: windowId});
     });
 

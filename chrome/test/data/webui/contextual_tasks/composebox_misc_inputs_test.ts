@@ -6,7 +6,6 @@
 import 'chrome://contextual-tasks/app.js';
 
 import type {ContextualTasksAppElement} from 'chrome://contextual-tasks/app.js';
-import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
@@ -23,8 +22,7 @@ import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {FAKE_TOKEN_STRING, fixtureUrl, getSubmitContainer} from './contextual_tasks_test_utils.js';
-import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
+import {FAKE_TOKEN_STRING, fixtureUrl, getSubmitContainer, setupTestHandler} from './contextual_tasks_test_utils.js';
 import {ADD_FILE_CONTEXT_FN, ADD_TAB_CONTEXT_FN} from './test_searchbox_utils.js';
 
 async function dispatchDragAndDropEvent(dropZone: Element, files: File[]) {
@@ -95,7 +93,6 @@ function disableAnimationsRecursively(element: Element) {
 suite('ContextualTasksComposeboxMiscInputsTest', () => {
   let contextualTasksApp: ContextualTasksAppElement;
   let composebox: any;
-  let testProxy: TestContextualTasksBrowserProxy;
   let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
       ComposeboxPageHandlerRemote;
   let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
@@ -126,8 +123,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
       composeboxShowContextMenu: true,
     });
 
-    testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    BrowserProxyImpl.setInstance(testProxy);
+    setupTestHandler(fixtureUrl);
 
     mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
     mockComposeboxPageHandler.setResultFor(

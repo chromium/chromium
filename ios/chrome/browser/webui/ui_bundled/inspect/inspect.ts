@@ -2,14 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './inspect.mojom-webui.js';
-
-const callbackRouter = new PageCallbackRouter();
-const handler = new PageHandlerRemote();
-
-PageHandlerFactory.getRemote().createPageHandler(
-    callbackRouter.$.bindNewPipeAndPassRemote(),
-    handler.$.bindNewPipeAndPassReceiver());
+import {browserProxyFactory} from './inspect.mojom-webui.js';
 
 
 /**
@@ -111,7 +104,7 @@ function logMessageReceived(
   frame.querySelector('.logs')!.appendChild(log);
 }
 
-callbackRouter.logMessageReceived.addListener(
+browserProxyFactory.getInstance().callbackRouter.logMessageReceived.addListener(
     (mainFrameId: string, frameId: string, frameLocation: string, level: string,
      message: string) => {
       logMessageReceived(mainFrameId, frameId, frameLocation, level, message);
@@ -121,7 +114,7 @@ callbackRouter.logMessageReceived.addListener(
  * Notify the application to start collecting console logs.
  */
 function startLogging() {
-  handler.setLoggingEnabled(true);
+  browserProxyFactory.getInstance().handler.setLoggingEnabled(true);
   document.getElementById('start-logging')!.hidden = true;
   document.getElementById('stop-logging')!.hidden = false;
 }
@@ -130,7 +123,7 @@ function startLogging() {
  * Notify the application to stop collecting console logs.
  */
 function stopLogging() {
-  handler.setLoggingEnabled(false);
+  browserProxyFactory.getInstance().handler.setLoggingEnabled(false);
   document.getElementById('tabs')!.innerHTML = '';
   document.getElementById('start-logging')!.hidden = false;
   document.getElementById('stop-logging')!.hidden = true;

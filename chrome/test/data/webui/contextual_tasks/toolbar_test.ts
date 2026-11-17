@@ -4,23 +4,20 @@
 
 import 'chrome://contextual-tasks/toolbar_app.js';
 
-import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {ToolbarBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_toolbar_browser_proxy.js';
 import type {ContextualTasksToolbarAppElement} from 'chrome://contextual-tasks/toolbar_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {TestContextualTasksBrowserProxy, TestToolbarBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
+import {setupTestHandler} from './contextual_tasks_test_utils.js';
+import {TestToolbarBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 
 suite('ToolbarAppTest', () => {
   let toolbarApp: ContextualTasksToolbarAppElement;
-  let proxy: TestContextualTasksBrowserProxy;
   let toolbarProxy: TestToolbarBrowserProxy;
 
   setup(async () => {
-    proxy = new TestContextualTasksBrowserProxy(
-        'chrome://webui-test/contextual_tasks/test.html');
-    BrowserProxyImpl.setInstance(proxy);
+    setupTestHandler('chrome://webui-test/contextual_tasks/test.html');
     toolbarProxy = new TestToolbarBrowserProxy();
     ToolbarBrowserProxyImpl.setInstance(toolbarProxy);
 

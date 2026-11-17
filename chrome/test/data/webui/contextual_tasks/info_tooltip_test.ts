@@ -6,26 +6,25 @@ import 'chrome://contextual-tasks/info_tooltip.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 
 import type {ContextualTasksInfoTooltipElement} from 'chrome://contextual-tasks/info_tooltip.js';
-import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
+import {setupTestHandler} from './contextual_tasks_test_utils.js';
+import type {TestContextualTasksPageHandler} from './test_contextual_tasks_browser_proxy.js';
 
 suite('InfoTooltipTest', () => {
   let tooltipElement: ContextualTasksInfoTooltipElement;
   let container: HTMLDivElement;
   let target: HTMLDivElement;
-  let testProxy: TestContextualTasksBrowserProxy;
+  let testHandler: TestContextualTasksPageHandler;
 
   setup(async () => {
     loadTimeData.resetForTesting({
       tabFaviconChipsToCoinsEnabled: false,
     });
 
-    testProxy = new TestContextualTasksBrowserProxy('about:blank');
-    BrowserProxyImpl.setInstance(testProxy);
+    testHandler = setupTestHandler('about:blank').handler;
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
@@ -197,6 +196,6 @@ suite('InfoTooltipTest', () => {
     // The anchor keeps its href for hover/middle-click, but the click is
     // handled by a parameterless Mojo call so no renderer-supplied URL is
     // passed to the browser process.
-    await testProxy.handler.whenCalled('openAskGHelpUi');
+    await testHandler.whenCalled('openAskGHelpUi');
   });
 });

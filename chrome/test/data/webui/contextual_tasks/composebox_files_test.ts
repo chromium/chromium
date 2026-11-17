@@ -5,7 +5,6 @@
 import 'chrome://contextual-tasks/app.js';
 
 import type {ContextualTasksAppElement} from 'chrome://contextual-tasks/app.js';
-import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {LensOverlayDismissalSource, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
@@ -23,14 +22,12 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import type {CtComposeboxAppParts} from './contextual_tasks_test_utils.js';
-import {assertStyle, createCtComposeboxApp, deleteLastFile, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, fixtureUrl, getSubmitButton, getSubmitContainer} from './contextual_tasks_test_utils.js';
-import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
+import {assertStyle, createCtComposeboxApp, deleteLastFile, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, fixtureUrl, getSubmitButton, getSubmitContainer, setupTestHandler} from './contextual_tasks_test_utils.js';
 import {ADD_FILE_CONTEXT_FN, uploadFileAndVerify} from './test_searchbox_utils.js';
 
 suite('ContextualTasksComposeboxFilesTest', () => {
   let contextualTasksApp: ContextualTasksAppElement;
   let composebox: any;
-  let testProxy: TestContextualTasksBrowserProxy;
   let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
       ComposeboxPageHandlerRemote;
   let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
@@ -94,8 +91,7 @@ suite('ContextualTasksComposeboxFilesTest', () => {
       forcedEmbeddedPageHost: '',
     });
 
-    testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    BrowserProxyImpl.setInstance(testProxy);
+    setupTestHandler(fixtureUrl);
 
     mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
     mockComposeboxPageHandler.setResultFor(
@@ -446,8 +442,7 @@ suite('ContextualTasksComposeboxForkFilesTest', () => {
       tabFaviconChipsToCoinsEnabled: false,
     });
 
-    const testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    BrowserProxyImpl.setInstance(testProxy);
+    setupTestHandler(fixtureUrl);
 
     mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
     mockComposeboxPageHandler.setResultFor(
@@ -888,8 +883,7 @@ suite('ContextualTasksComposeboxForkAutoTabTest', () => {
       tabFaviconChipsToCoinsEnabled: false,
     });
 
-    const testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    BrowserProxyImpl.setInstance(testProxy);
+    setupTestHandler(fixtureUrl);
 
     mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
     mockComposeboxPageHandler.setResultFor(
