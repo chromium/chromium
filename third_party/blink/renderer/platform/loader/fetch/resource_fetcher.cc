@@ -1186,7 +1186,6 @@ ResourceFetcher::MapToPolicyForMetrics(RevalidationPolicy policy,
 }
 
 void ResourceFetcher::UpdateMemoryCacheStats(
-    Resource* resource,
     RevalidationPolicyForMetrics policy,
     const FetchParameters& params,
     const ResourceFactory& factory,
@@ -1202,14 +1201,6 @@ void ResourceFetcher::UpdateMemoryCacheStats(
     RecordResourceHistogram("", factory.GetType(), policy);
   }
 
-  // Aims to count Resource only referenced from MemoryCache (i.e. what would be
-  // dead if MemoryCache holds weak references to Resource). Currently we check
-  // references to Resource from ResourceClient and `preloads_` only, because
-  // they are major sources of references.
-  if (resource && !resource->IsAlive() && !ContainsAsPreload(resource)) {
-    RecordResourceHistogram("Dead.", factory.GetType(), policy);
-  }
-
   // Async (and defer) scripts may have more cache misses, track them
   // separately. See https://crbug.com/1043679 for context.
   if (params.Defer() != FetchParameters::DeferOption::kNoDefer &&
@@ -1218,7 +1209,7 @@ void ResourceFetcher::UpdateMemoryCacheStats(
   }
 }
 
-bool ResourceFetcher::ContainsAsPreload(Resource* resource) const {
+bool ResourceFetcher::ContainsAsPreloadForTesting(Resource* resource) const {
   auto it = preloads_.find(PreloadKey(resource->Url(), resource->GetType()));
   return it != preloads_.end() && it->value == resource;
 }
@@ -1484,8 +1475,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     prepare_helper.UpgradeForLoaderIfNecessary(pauser);
   }
 
-  UpdateMemoryCacheStats(resource,
-                         MapToPolicyForMetrics(policy, resource, defer_policy),
+  UpdateMemoryCacheStats(MapToPolicyForMetrics(policy, resource, defer_policy),
                          params, factory, is_static_data);
 
   switch (policy) {

@@ -3994,21 +3994,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.MemoryCache.RevalidationPolicy2.Dead.{ResourceType}"
-    enum="RevalidationPolicy" expires_after="2026-11-29">
-  <owner>hiroshige@chromium.org</owner>
-  <owner>gjc@chromium.org</owner>
-  <owner>loading-dev@chromium.org</owner>
-  <summary>
-    RevalidationPolicy used for requests that hit Resource only referenced from
-    MemoryCache for each resource type ({ResourceType}).
-    https://crbug.com/579496 Requests counted by this are also counted by
-    Blink.MemoryCache.RevalidationPolicy2 or
-    Blink.MemoryCache.RevalidationPolicy2.Preload. https://crbug.com/1376866
-  </summary>
-  <token key="ResourceType" variants="ResourceType"/>
-</histogram>
-
 <histogram name="Blink.MemoryCache.RevalidationPolicy2.Preload.{ResourceType}"
     enum="RevalidationPolicy" expires_after="2027-06-30">
   <owner>hiroshige@chromium.org</owner>

@@ -344,7 +344,7 @@ class PLATFORM_EXPORT ResourceFetcher
   void UpdateImagePrioritiesAndSpeculativeDecodes();
 
   // Returns whether the given resource is contained as a preloaded resource.
-  bool ContainsAsPreload(Resource*) const;
+  bool ContainsAsPreloadForTesting(Resource*) const;
 
   void RemovePreload(Resource*);
 
@@ -605,8 +605,7 @@ class PLATFORM_EXPORT ResourceFetcher
                                                             Resource*,
                                                             DeferPolicy);
 
-  void UpdateMemoryCacheStats(Resource*,
-                              RevalidationPolicyForMetrics,
+  void UpdateMemoryCacheStats(RevalidationPolicyForMetrics,
                               const FetchParameters&,
                               const ResourceFactory&,
                               bool is_static_data) const;

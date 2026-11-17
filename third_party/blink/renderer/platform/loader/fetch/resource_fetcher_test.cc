@@ -842,7 +842,7 @@ TEST_P(ResourceFetcherTest, PreloadResourceTwice) {
       MockResource::Fetch(fetch_params_original, fetcher, nullptr);
   ASSERT_TRUE(resource);
   EXPECT_TRUE(resource->IsLinkPreload());
-  EXPECT_TRUE(fetcher->ContainsAsPreload(resource));
+  EXPECT_TRUE(fetcher->ContainsAsPreloadForTesting(resource));
   platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
 
   FetchParameters fetch_params =
@@ -850,10 +850,10 @@ TEST_P(ResourceFetcherTest, PreloadResourceTwice) {
   fetch_params.SetLinkPreload(true);
   Resource* new_resource = MockResource::Fetch(fetch_params, fetcher, nullptr);
   EXPECT_EQ(resource, new_resource);
-  EXPECT_TRUE(fetcher->ContainsAsPreload(resource));
+  EXPECT_TRUE(fetcher->ContainsAsPreloadForTesting(resource));
 
   fetcher->ClearPreloads(ResourceFetcher::kClearAllPreloads);
-  EXPECT_FALSE(fetcher->ContainsAsPreload(resource));
+  EXPECT_FALSE(fetcher->ContainsAsPreloadForTesting(resource));
   EXPECT_FALSE(MemoryCache::Get()->Contains(resource));
   EXPECT_TRUE(resource->IsUnusedPreload());
 }
@@ -964,13 +964,13 @@ TEST_P(ResourceFetcherTest, RepetitiveLinkPreloadShouldBeMerged) {
       MockResource::Fetch(fetch_params_for_preload, fetcher, nullptr);
   ASSERT_TRUE(resource1);
   EXPECT_TRUE(resource1->IsUnusedPreload());
-  EXPECT_TRUE(fetcher->ContainsAsPreload(resource1));
+  EXPECT_TRUE(fetcher->ContainsAsPreloadForTesting(resource1));
   platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
 
   // The second preload fetch returns the first preload.
   Resource* resource2 =
       MockResource::Fetch(fetch_params_for_preload, fetcher, nullptr);
-  EXPECT_TRUE(fetcher->ContainsAsPreload(resource1));
+  EXPECT_TRUE(fetcher->ContainsAsPreloadForTesting(resource1));
   EXPECT_TRUE(resource1->IsUnusedPreload());
   EXPECT_EQ(resource1, resource2);
 
@@ -978,7 +978,7 @@ TEST_P(ResourceFetcherTest, RepetitiveLinkPreloadShouldBeMerged) {
   Resource* resource3 =
       MockResource::Fetch(fetch_params_for_request, fetcher, nullptr);
   EXPECT_EQ(resource1, resource3);
-  EXPECT_FALSE(fetcher->ContainsAsPreload(resource1));
+  EXPECT_FALSE(fetcher->ContainsAsPreloadForTesting(resource1));
   EXPECT_FALSE(resource1->IsUnusedPreload());
 }
 
@@ -999,13 +999,13 @@ TEST_P(ResourceFetcherTest, RepetitiveSpeculativePreloadShouldBeMerged) {
       MockResource::Fetch(fetch_params_for_preload, fetcher, nullptr);
   ASSERT_TRUE(resource1);
   EXPECT_TRUE(resource1->IsUnusedPreload());
-  EXPECT_TRUE(fetcher->ContainsAsPreload(resource1));
+  EXPECT_TRUE(fetcher->ContainsAsPreloadForTesting(resource1));
   platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
 
   // The second preload fetch returns the first preload.
   Resource* resource2 =
       MockResource::Fetch(fetch_params_for_preload, fetcher, nullptr);
-  EXPECT_TRUE(fetcher->ContainsAsPreload(resource1));
+  EXPECT_TRUE(fetcher->ContainsAsPreloadForTesting(resource1));
   EXPECT_TRUE(resource1->IsUnusedPreload());
   EXPECT_EQ(resource1, resource2);
 
@@ -1013,7 +1013,7 @@ TEST_P(ResourceFetcherTest, RepetitiveSpeculativePreloadShouldBeMerged) {
   Resource* resource3 =
       MockResource::Fetch(fetch_params_for_request, fetcher, nullptr);
   EXPECT_EQ(resource1, resource3);
-  EXPECT_FALSE(fetcher->ContainsAsPreload(resource1));
+  EXPECT_FALSE(fetcher->ContainsAsPreloadForTesting(resource1));
   EXPECT_FALSE(resource1->IsUnusedPreload());
 }
 
@@ -1038,13 +1038,13 @@ TEST_P(ResourceFetcherTest, SpeculativePreloadShouldBePromotedToLinkPreload) {
   ASSERT_TRUE(resource1);
   EXPECT_TRUE(resource1->IsUnusedPreload());
   EXPECT_FALSE(resource1->IsLinkPreload());
-  EXPECT_TRUE(fetcher->ContainsAsPreload(resource1));
+  EXPECT_TRUE(fetcher->ContainsAsPreloadForTesting(resource1));
   platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
 
   // The second preload fetch returns the first preload.
   Resource* resource2 =
       MockResource::Fetch(fetch_params_for_link_preload, fetcher, nullptr);
-  EXPECT_TRUE(fetcher->ContainsAsPreload(resource1));
+  EXPECT_TRUE(fetcher->ContainsAsPreloadForTesting(resource1));
   EXPECT_TRUE(resource1->IsUnusedPreload());
   EXPECT_TRUE(resource1->IsLinkPreload());
   EXPECT_EQ(resource1, resource2);
@@ -1053,7 +1053,7 @@ TEST_P(ResourceFetcherTest, SpeculativePreloadShouldBePromotedToLinkPreload) {
   Resource* resource3 =
       MockResource::Fetch(fetch_params_for_request, fetcher, nullptr);
   EXPECT_EQ(resource1, resource3);
-  EXPECT_FALSE(fetcher->ContainsAsPreload(resource1));
+  EXPECT_FALSE(fetcher->ContainsAsPreloadForTesting(resource1));
   EXPECT_FALSE(resource1->IsUnusedPreload());
   EXPECT_TRUE(resource1->IsLinkPreload());
 }
@@ -1104,7 +1104,7 @@ TEST_P(ResourceFetcherTest, LinkPreload304MatchClearsUnusedPreload) {
   ASSERT_TRUE(preload_resource);
   EXPECT_TRUE(preload_resource->IsLinkPreload());
   EXPECT_TRUE(preload_resource->IsUnusedPreload());
-  EXPECT_TRUE(fetcher->ContainsAsPreload(preload_resource));
+  EXPECT_TRUE(fetcher->ContainsAsPreloadForTesting(preload_resource));
 
   // Response returns 304 without body
   ResourceResponse response(url);
@@ -1121,7 +1121,7 @@ TEST_P(ResourceFetcherTest, LinkPreload304MatchClearsUnusedPreload) {
   EXPECT_NE(preload_resource, new_resource);
   // But preload_resource should be removed from preloads_ and not considered
   // unused.
-  EXPECT_FALSE(fetcher->ContainsAsPreload(preload_resource));
+  EXPECT_FALSE(fetcher->ContainsAsPreloadForTesting(preload_resource));
   EXPECT_FALSE(preload_resource->IsUnusedPreload());
 
   const auto& preload_records = fetcher->GetPreloadRecords();
@@ -1156,7 +1156,7 @@ TEST_P(ResourceFetcherTest, LinkPreload304NeverReferencedWarnsUnused) {
   ASSERT_TRUE(preload_resource);
   EXPECT_TRUE(preload_resource->IsLinkPreload());
   EXPECT_TRUE(preload_resource->IsUnusedPreload());
-  EXPECT_TRUE(fetcher->ContainsAsPreload(preload_resource));
+  EXPECT_TRUE(fetcher->ContainsAsPreloadForTesting(preload_resource));
 
   ResourceResponse response(url);
   response.SetHttpStatusCode(304);
@@ -1164,7 +1164,7 @@ TEST_P(ResourceFetcherTest, LinkPreload304NeverReferencedWarnsUnused) {
   preload_resource->FinishForTest();
 
   // The preload is never referenced by any subsequent request.
-  EXPECT_TRUE(fetcher->ContainsAsPreload(preload_resource));
+  EXPECT_TRUE(fetcher->ContainsAsPreloadForTesting(preload_resource));
   EXPECT_TRUE(preload_resource->IsUnusedPreload());
 
   const auto& preload_records = fetcher->GetPreloadRecords();
@@ -1212,7 +1212,7 @@ TEST_P(ResourceFetcherTest,
   ASSERT_TRUE(preload_resource);
   EXPECT_TRUE(preload_resource->IsLinkPreload());
   EXPECT_TRUE(preload_resource->IsUnusedPreload());
-  EXPECT_TRUE(fetcher->ContainsAsPreload(preload_resource));
+  EXPECT_TRUE(fetcher->ContainsAsPreloadForTesting(preload_resource));
 
   ResourceResponse response(url);
   response.SetHttpStatusCode(304);
@@ -1229,7 +1229,7 @@ TEST_P(ResourceFetcherTest,
   EXPECT_NE(preload_resource, new_resource);
   // Because parameters mismatched, preload_resource should NOT be cleared from
   // preloads_ and should remain unused.
-  EXPECT_TRUE(fetcher->ContainsAsPreload(preload_resource));
+  EXPECT_TRUE(fetcher->ContainsAsPreloadForTesting(preload_resource));
   EXPECT_TRUE(preload_resource->IsUnusedPreload());
 
   const auto& preload_records = fetcher->GetPreloadRecords();
@@ -1756,7 +1756,7 @@ TEST_P(ResourceFetcherTest, DuplicatePreloadAllowsPriorityChange) {
       MockResource::Fetch(fetch_params_for_preload, fetcher, nullptr);
   ASSERT_TRUE(resource1);
   EXPECT_TRUE(resource1->IsUnusedPreload());
-  EXPECT_TRUE(fetcher->ContainsAsPreload(resource1));
+  EXPECT_TRUE(fetcher->ContainsAsPreloadForTesting(resource1));
   EXPECT_EQ(ResourceLoadPriority::kLow,
             resource1->GetResourceRequest().Priority());
 
@@ -1770,7 +1770,7 @@ TEST_P(ResourceFetcherTest, DuplicatePreloadAllowsPriorityChange) {
   Resource* resource2 =
       MockResource::Fetch(fetch_params_for_preload2, fetcher, nullptr);
 
-  EXPECT_TRUE(fetcher->ContainsAsPreload(resource1));
+  EXPECT_TRUE(fetcher->ContainsAsPreloadForTesting(resource1));
   EXPECT_TRUE(resource1->IsUnusedPreload());
   EXPECT_EQ(resource1, resource2);
   EXPECT_EQ(ResourceLoadPriority::kHigh,
@@ -1782,7 +1782,7 @@ TEST_P(ResourceFetcherTest, DuplicatePreloadAllowsPriorityChange) {
   Resource* resource3 =
       MockResource::Fetch(fetch_params_for_request, fetcher, nullptr);
   EXPECT_EQ(resource1, resource3);
-  EXPECT_FALSE(fetcher->ContainsAsPreload(resource1));
+  EXPECT_FALSE(fetcher->ContainsAsPreloadForTesting(resource1));
   EXPECT_FALSE(resource1->IsUnusedPreload());
 }
 

@@ -132,7 +132,7 @@ class LinkLoaderPreloadTestBase : public testing::Test,
       Resource* resource = loader->GetResourceForTesting();
       ASSERT_NE(resource, nullptr);
       EXPECT_EQ(expected.load_url.GetString(), resource->Url().GetString());
-      EXPECT_TRUE(fetcher->ContainsAsPreload(resource));
+      EXPECT_TRUE(fetcher->ContainsAsPreloadForTesting(resource));
       EXPECT_EQ(expected.priority, resource->GetResourceRequest().Priority());
       EXPECT_EQ(expected.context,
                 resource->GetResourceRequest().GetRequestContext());
