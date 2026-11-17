@@ -9,6 +9,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/autofill/core/common/autofill_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -66,6 +67,13 @@ TEST(CountryNamesForLocaleTest, EmptyCountryCodeForEmptyCountryName) {
 TEST(CountryNamesForLocaleTest, EmptyCountryCodeForInvalidCountryName) {
   CountryNamesForLocale de_names("de");
   EXPECT_EQ("", de_names.GetCountryCode(u"ThisISNotACountry"));
+}
+
+// Test that an empty string is returned for an oversized country name.
+TEST(CountryNamesForLocaleTest, EmptyCountryCodeForOversizedCountryName) {
+  CountryNamesForLocale en_us_names("en_US");
+  EXPECT_EQ("", en_us_names.GetCountryCode(
+                    std::u16string(kMaxStringLength + 1, u'\uFDFA')));
 }
 
 // Test that an instance is correctly constructed using the move semantics.

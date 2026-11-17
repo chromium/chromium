@@ -5,6 +5,7 @@
 #include "components/autofill/core/common/autofill_data_validation.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -68,6 +69,35 @@ TEST(AutofillDataValidationTest,
   form_data.set_fields(std::move(fields));
 
   EXPECT_FALSE(IsValidFormData(form_data));
+}
+
+// Tests that `IsValidFormFieldData` enforces `kMaxStringLength` on
+// `selected_option_text`.
+TEST(AutofillDataValidationTest, SelectedOptionTextValidation) {
+  FormFieldData field;
+  field.set_form_control_type(FormControlType::kSelectOne);
+  field.set_max_length(0);
+
+  EXPECT_TRUE(IsValidFormFieldData(field));
+
+  field.set_selected_option_text(std::u16string(kMaxStringLength, u'a'));
+  EXPECT_TRUE(IsValidFormFieldData(field));
+
+  field.set_selected_option_text(std::u16string(kMaxStringLength + 1, u'a'));
+  EXPECT_FALSE(IsValidFormFieldData(field));
+}
+
+// Tests that `IsValidFormFieldData` enforces `kMaxSelectedTextLength` on
+// `selected_text`.
+TEST(AutofillDataValidationTest, SelectedTextValidation) {
+  FormFieldData field;
+  EXPECT_TRUE(IsValidFormFieldData(field));
+
+  field.set_selected_text(std::u16string(kMaxSelectedTextLength, u'a'));
+  EXPECT_TRUE(IsValidFormFieldData(field));
+
+  field.set_selected_text(std::u16string(kMaxSelectedTextLength + 1, u'a'));
+  EXPECT_FALSE(IsValidFormFieldData(field));
 }
 
 }  // namespace
