@@ -5,14 +5,25 @@
 #include "chrome/services/speech/soda_speech_recognizer_impl.h"
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chrome/services/speech/soda/mock_soda_client.h"
+#include "chrome/services/speech/speech_recognition_recognizer_impl.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/audio_data.mojom.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_error_code.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "media/mojo/mojom/speech_recognition_result.mojom.h"
@@ -21,6 +32,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -407,5 +419,174 @@ TEST_P(SodaSpeechRecognizerImplTest, MarkDoneCalledOnStop) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, SodaSpeechRecognizerImplTest, testing::Bool());
+
+// Tests continuous SodaSpeechRecognizerImpl with a real
+// SpeechRecognitionRecognizerImpl across silence releases.
+class SodaSpeechRecognizerImplSilenceTest
+    : public media::mojom::SpeechRecognitionSessionClient,
+      public testing::Test {
+ public:
+  SodaSpeechRecognizerImplSilenceTest() {
+    auto options = media::mojom::SpeechRecognitionOptions::New();
+    options->recognition_mode = media::mojom::SpeechRecognitionMode::kCaption;
+    options->recognizer_client_type =
+        media::mojom::RecognizerClientType::kLiveCaption;
+    options->skip_continuously_empty_audio = true;
+
+    mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
+        recognizer_client;
+    auto recognizer_client_receiver =
+        recognizer_client.InitWithNewPipeAndPassReceiver();
+    soda_recognizer_ = std::make_unique<SpeechRecognitionRecognizerImpl>(
+        std::move(recognizer_client), std::move(options), base::FilePath(),
+        base::flat_map<std::string, base::FilePath>(), "en-US",
+        /*mask_offensive_words=*/false);
+
+    auto soda_client =
+        std::make_unique<testing::NiceMock<::soda::MockSodaClient>>();
+    soda_client_ = soda_client.get();
+    ON_CALL(*soda_client_, IsInitialized()).WillByDefault([this]() {
+      return soda_initialized_;
+    });
+    ON_CALL(*soda_client_, Reset(testing::_, testing::_, testing::_))
+        .WillByDefault([this](const SerializedSodaConfig config, int, int) {
+          soda_config_ = config;
+          soda_config_.soda_config = nullptr;
+          soda_config_.soda_config_size = 0;
+          soda_initialized_ = true;
+          soda_running_ = true;
+        });
+    ON_CALL(*soda_client_, Destroy()).WillByDefault([this]() {
+      StopSoda();
+      soda_initialized_ = false;
+    });
+    ON_CALL(*soda_client_, MarkDone()).WillByDefault([this]() { StopSoda(); });
+    soda_recognizer_->SetSodaClientForTesting(std::move(soda_client));
+
+    soda_recognizer_receiver_.emplace(soda_recognizer_.get());
+    recognizer_ = std::make_unique<SodaSpeechRecognizerImpl>(
+        /*continuous=*/true, kSampleRate,
+        soda_recognizer_receiver_->BindNewPipeAndPassRemote(),
+        std::move(recognizer_client_receiver),
+        session_client_.BindNewPipeAndPassRemote(), mojo::NullReceiver());
+  }
+
+  ~SodaSpeechRecognizerImplSilenceTest() override = default;
+
+  // media::mojom::SpeechRecognitionSessionClient implementation.
+  void ResultRetrieved(std::vector<media::mojom::WebSpeechRecognitionResultPtr>
+                           results) override {
+    ASSERT_FALSE(results.empty());
+    ASSERT_FALSE(results[0]->hypotheses.empty());
+    last_utterance_ = results[0]->hypotheses[0]->utterance;
+  }
+  void ErrorOccurred(media::mojom::SpeechRecognitionErrorPtr error) override {
+    error_ = error->code;
+  }
+  void Started() override { recognition_started_ = true; }
+  void AudioStarted() override { audio_started_ = true; }
+  void SoundStarted() override {}
+  void SoundEnded() override {}
+  void AudioEnded() override { audio_ended_ = true; }
+  void Ended() override { recognition_ended_ = true; }
+
+ protected:
+  static constexpr int kSampleRate = 16000;
+
+  void AddAudio(int16_t sample) {
+    auto audio_data = media::mojom::AudioDataS16::New();
+    audio_data->channel_count = 1;
+    audio_data->sample_rate = kSampleRate;
+    audio_data->frame_count = kSampleRate / 10;
+    audio_data->data.resize(audio_data->frame_count, sample);
+    recognizer_->AddAudioFromRenderer(std::move(audio_data));
+  }
+
+  [[nodiscard]] bool AddSpeechAndWaitForSoda() {
+    AddAudio(/*sample=*/1000);
+    return base::test::RunUntil([&]() { return soda_running_; });
+  }
+
+  [[nodiscard]] bool AddSilenceAndWaitForSodaRelease() {
+    environment_.FastForwardBy(base::Seconds(11));
+    AddAudio(/*sample=*/0);
+    return base::test::RunUntil([&]() { return !soda_initialized_; });
+  }
+
+  void SendSodaRecognitionResultAndWait(const std::string& transcription) {
+    soda::chrome::SodaResponse response;
+    response.set_soda_type(soda::chrome::SodaResponse::RECOGNITION);
+    auto* result = response.mutable_recognition_result();
+    result->set_result_type(soda::chrome::SodaRecognitionResult::FINAL);
+    result->add_hypothesis(transcription);
+    SendSodaResponse(response);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return recognition_ended_ ||
+             last_utterance_ == base::UTF8ToUTF16(transcription);
+    }));
+  }
+
+  void SendSodaResponse(const soda::chrome::SodaResponse& response) {
+    std::string serialized = response.SerializeAsString();
+    soda_config_.callback(serialized.c_str(), serialized.size(),
+                          soda_config_.callback_handle);
+  }
+
+  void StopSoda() {
+    if (std::exchange(soda_running_, false)) {
+      soda::chrome::SodaResponse response;
+      response.set_soda_type(soda::chrome::SodaResponse::STOP);
+      SendSodaResponse(response);
+    }
+  }
+
+  base::test::TaskEnvironment environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  mojo::Receiver<media::mojom::SpeechRecognitionSessionClient> session_client_{
+      this};
+
+  std::unique_ptr<SpeechRecognitionRecognizerImpl> soda_recognizer_;
+  raw_ptr<testing::NiceMock<::soda::MockSodaClient>> soda_client_ = nullptr;
+  SerializedSodaConfig soda_config_ = {};
+  bool soda_initialized_ = false;
+  bool soda_running_ = false;
+  std::optional<mojo::Receiver<media::mojom::SpeechRecognitionRecognizer>>
+      soda_recognizer_receiver_;
+
+  std::unique_ptr<SodaSpeechRecognizerImpl> recognizer_;
+
+  bool recognition_started_ = false;
+  bool recognition_ended_ = false;
+  bool audio_started_ = false;
+  bool audio_ended_ = false;
+  std::u16string last_utterance_;
+  media::mojom::SpeechRecognitionErrorCode error_ =
+      media::mojom::SpeechRecognitionErrorCode::kNone;
+};
+
+TEST_F(SodaSpeechRecognizerImplSilenceTest, SessionSurvivesExtendedSilence) {
+  ASSERT_TRUE(base::test::RunUntil([&]() { return recognition_started_; }));
+
+  ASSERT_TRUE(AddSpeechAndWaitForSoda());
+  SendSodaRecognitionResultAndWait("before silence");
+  EXPECT_TRUE(audio_started_);
+  EXPECT_EQ(u"before silence", last_utterance_);
+
+  // Releasing SODA for silence should not end the session.
+  ASSERT_TRUE(AddSilenceAndWaitForSodaRelease());
+  ASSERT_TRUE(AddSpeechAndWaitForSoda());
+  SendSodaRecognitionResultAndWait("after silence");
+  EXPECT_EQ(u"after silence", last_utterance_);
+  EXPECT_FALSE(audio_ended_);
+  EXPECT_FALSE(recognition_ended_);
+  EXPECT_EQ(media::mojom::SpeechRecognitionErrorCode::kNone, error_);
+
+  // Stopping while SODA is released ends the session cleanly.
+  ASSERT_TRUE(AddSilenceAndWaitForSodaRelease());
+  recognizer_->StopCapture();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return recognition_ended_; }));
+  EXPECT_TRUE(audio_ended_);
+  EXPECT_EQ(media::mojom::SpeechRecognitionErrorCode::kNone, error_);
+}
 
 }  // namespace speech

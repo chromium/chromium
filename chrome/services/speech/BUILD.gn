@@ -66,10 +66,14 @@ source_set("unit_tests") {
     ":lib",
     "//base",
     "//base/test:test_support",
+    "//chrome/services/speech/soda",
     "//chrome/services/speech/soda:test_support",
+    "//components/soda:buildflags",
+    "//media",
     "//media/mojo/common",
     "//media/mojo/mojom:web_speech_recognition",
     "//mojo/public/cpp/bindings",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 
