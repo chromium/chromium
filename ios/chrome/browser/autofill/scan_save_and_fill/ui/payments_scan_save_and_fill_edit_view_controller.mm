@@ -4,15 +4,19 @@
 
 #import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_edit_view_controller.h"
 
+#import <string>
+
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/numerics/safe_conversions.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/timer/elapsed_timer.h"
 #import "build/branding_buildflags.h"
 #import "components/application_locale_storage/application_locale_storage.h"
+#import "components/autofill/core/browser/data_model/data_model_util.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/grit/components_scaled_resources.h"
@@ -98,6 +102,21 @@ void StyleButtonForConfirmation(UIButtonConfiguration* config) {
       [config.image imageWithTintColor:blueColor
                          renderingMode:UIImageRenderingModeAlwaysOriginal];
 }
+
+// Returns the scanned month zero-padded ("3" -> "03"), or as scanned if it
+// isn't a valid month.
+NSString* ScannedExpirationMonthForDisplay(NSString* month) {
+  int month_value = 0;
+  if (!base::StringToInt(base::SysNSStringToUTF8(month), &month_value)) {
+    return month;
+  }
+  std::u16string padded_month =
+      autofill::data_util::Expiration2DigitMonthAsString(month_value);
+  if (padded_month.empty()) {
+    return month;
+  }
+  return base::SysUTF16ToNSString(padded_month);
+}
 }  // namespace
 
 @interface PaymentsScanSaveAndFillEditViewController () <
@@ -120,7 +139,7 @@ void StyleButtonForConfirmation(UIButtonConfiguration* config) {
   NSString* _cardCVC;
   NSString* _nickname;
 
-  // Initial scanned details.
+  // Initial scanned details as shown; the `IOS.ScannedCard.*Edited` baseline.
   NSString* _scannedCardNumber;
   NSString* _scannedExpirationMonth;
   NSString* _scannedExpirationYear;
@@ -382,14 +401,16 @@ void StyleButtonForConfirmation(UIButtonConfiguration* config) {
   base::UmaHistogramTimes("IOS.ScanCard.EndToEndLatency",
                           _sessionTimer.Elapsed());
 
+  NSString* displayMonth = ScannedExpirationMonthForDisplay(expirationMonth);
+
   _scannedCardNumber = cardNumber;
-  _scannedExpirationMonth = expirationMonth;
+  _scannedExpirationMonth = displayMonth;
   _scannedExpirationYear = expirationYear;
 
   _cardNumber = cardNumber;
   if (expirationMonth.length > 0 && expirationYear.length > 0) {
     _expirationDate =
-        [NSString stringWithFormat:@"%@%@%@", expirationMonth, kDateSeparator,
+        [NSString stringWithFormat:@"%@%@%@", displayMonth, kDateSeparator,
                                    expirationYear];
   }
 

@@ -667,3 +667,23 @@ TEST_F(PaymentsScanSaveAndFillEditViewControllerTest,
   histogram_tester.ExpectUniqueSample("IOS.ScannedCard.ExpYearEdited", false,
                                       1);
 }
+
+// Tests that a scanned single-digit month is shown zero-padded and that the
+// padding alone isn't logged as an edit on Save.
+TEST_F(PaymentsScanSaveAndFillEditViewControllerTest,
+       TestScannedExpirationMonthZeroPaddedWithoutLoggingEdit) {
+  base::HistogramTester histogram_tester;
+  CreateController();
+
+  [view_controller_ setCreditCardNumber:@"4111222233334444"
+                        expirationMonth:@"3"
+                         expirationYear:@"29"];
+  TableViewTextEditItem* expiration_date_item =
+      GetItem(kSectionIdentifierCardDetails, 1);
+  EXPECT_NSEQ(@"03/29", expiration_date_item.textFieldValue);
+
+  [view_controller_ didTapSave];
+
+  histogram_tester.ExpectUniqueSample("IOS.ScannedCard.ExpMonthEdited", false,
+                                      1);
+}
