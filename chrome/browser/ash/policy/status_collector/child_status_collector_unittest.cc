@@ -840,4 +840,31 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivityMetrics) {
       /*sample=*/2000, /*expected_count=*/1);
 }
 
+TEST_F(ChildStatusCollectorTest,
+       ReportingAppActivityMetricsHandlesBackwardClockJump) {
+  base::HistogramTester histogram_tester;
+
+  const ash::app_time::AppId app1(apps::AppType::kWeb, "app1");
+  SimulateAppActivity(app1, base::Minutes(1));
+
+  // Simulate a persisted last-report timestamp from before the system clock was
+  // adjusted backwards (so the persisted timestamp is ahead of current
+  // Time::Now()).
+  const Time future_report_time = Time::Now() + base::Hours(1);
+  pref_service()->SetInt64(
+      ash::prefs::kPerAppTimeLimitsLastSuccessfulReportTime,
+      future_report_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+
+  GetStatus();
+  status_collector_->OnSubmittedSuccessfully();
+  EXPECT_EQ(1, child_status_.app_activity_size());
+
+  histogram_tester.ExpectTotalCount(
+      ChildStatusCollector::GetReportSizeHistogramNameForTest(),
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      ChildStatusCollector::GetTimeSinceLastReportHistogramNameForTest(),
+      /*expected_count=*/0);
+}
+
 }  // namespace policy

@@ -312,12 +312,14 @@ bool ChildStatusCollector::GetAppActivity(
       base::Time last_successful_report_time =
           base::Time::FromDeltaSinceWindowsEpoch(
               base::Microseconds(last_successful_report_time_int));
-      CHECK_LT(last_successful_report_time,
-               last_report_params_->generation_time, base::NotFatalUntil::M160);
       base::TimeDelta elapsed_time =
           last_report_params_->generation_time - last_successful_report_time;
-      base::UmaHistogramCounts100000(kTimeSinceLastReportHistogramName,
-                                     elapsed_time.InMinutes());
+      // Elapsed time can be zero or negative if the system clock was adjusted
+      // backwards since the last report timestamp was persisted.
+      if (elapsed_time.is_positive()) {
+        base::UmaHistogramCounts100000(kTimeSinceLastReportHistogramName,
+                                       elapsed_time.InMinutes());
+      }
     }
   }
   return last_report_params_->anything_reported;
