@@ -42,6 +42,7 @@ source_set("unit_tests") {
     ":enhanced_network_tts",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/enhanced_network_tts/mojom",
     "//google_apis",
     "//mojo/public/cpp/bindings",
     "//net",

@@ -33,7 +33,6 @@ source_set("unit_tests") {
     ":keymint",
     "//base",
     "//base/test:test_support",
-    "//chrome/test:test_support",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/user_prefs/test:test_support",

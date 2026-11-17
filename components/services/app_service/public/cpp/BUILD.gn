@@ -371,8 +371,9 @@ source_set("unit_tests") {
 
     deps += [
       ":instance_update",
-      "//chrome/test:test_support",
+      "//chrome/test/base:testing_profile_impl",
       "//components/services/app_service/public/cpp/shortcut:unit_tests",
+      "//ui/aura:test_support",
     ]
   }
 }

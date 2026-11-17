@@ -77,13 +77,20 @@ source_set("unit_tests") {
   deps = [
     ":activity",
     ":on_task",
+    "//ash/constants",
+    "//ash/public/cpp",
     "//ash/webui/boca_ui:constants",
     "//base",
-    "//chrome/test:test_support",
+    "//base/test:test_support",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/strings:strings_grit",
     "//components/prefs:test_support",
     "//components/session_manager/test:test_support",
     "//components/sessions:session_id",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/message_center",
+    "//ui/message_center/public/cpp",
   ]
 }

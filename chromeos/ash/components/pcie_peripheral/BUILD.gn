@@ -31,7 +31,7 @@ source_set("unit_tests") {
   deps = [
     ":pcie_peripheral",
     "//base",
-    "//chrome/test:test_support",
+    "//base/test:test_support",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/peripheral_notification",
     "//services/device/public/cpp:test_support",

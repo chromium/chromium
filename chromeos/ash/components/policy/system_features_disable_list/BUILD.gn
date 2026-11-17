@@ -35,12 +35,15 @@ source_set("unit_tests") {
     ":system_features_disable_list",
     "//base",
     "//base/test:test_support",
-    "//chrome/test:test_support",
+    "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/settings:test_support",
     "//chromeos/constants",
+    "//components/account_id",
     "//components/policy/core/common",
     "//components/prefs:test_support",
+    "//components/user_manager",
+    "//components/user_manager:test_support",
     "//testing/gtest",
   ]
 }
