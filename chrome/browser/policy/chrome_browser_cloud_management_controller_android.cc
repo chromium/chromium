@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
@@ -29,6 +30,7 @@
 #include "components/enterprise/client_certificates/core/key_upload_client.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
@@ -98,7 +100,10 @@ void DeferredInitializationRunner::OnProviderUpdatePropagated(
   // `ReadyToInit()` checked for a DM token, before the platform policies
   // carrying it reached the `PolicyService`. Have it read the token again so
   // that the deferred initialization doesn't use the stale value.
-  BrowserDMTokenStorage::Get()->RefreshEnrollmentToken();
+  if (base::FeatureList::IsEnabled(
+          features::kCbcmRefreshEnrollmentTokenBeforeDeferredInit)) {
+    BrowserDMTokenStorage::Get()->RefreshEnrollmentToken();
+  }
   std::move(callback_).Run();
 }
 

@@ -44,6 +44,11 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kUserPolicyCacheSizeLimit2MB);
 // Enables policy initialization for signed-in users in new entry points.
 POLICY_EXPORT BASE_DECLARE_FEATURE(
     kInitializePoliciesForSignedInUserInNewEntryPoints);
+
+// When enabled, the CBCM enrollment token is read again right before the
+// deferred initialization enrolls the browser.
+POLICY_EXPORT BASE_DECLARE_FEATURE(
+    kCbcmRefreshEnrollmentTokenBeforeDeferredInit);
 #endif
 
 // Enables a configurable delay for policy registration.
