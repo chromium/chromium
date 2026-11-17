@@ -13,10 +13,6 @@
 
 namespace base {
 
-namespace {
-constexpr base::TimeDelta kPollInterval = base::Seconds(2);
-}
-
 // static
 AvailableMemoryMonitor* AvailableMemoryMonitor::Get() {
   static base::NoDestructor<AvailableMemoryMonitor> instance;

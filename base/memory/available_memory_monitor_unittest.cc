@@ -136,8 +136,8 @@ TEST_F(AvailableMemoryMonitorTest, PollsPeriodically) {
   monitor.AddObserver(&observer);
   EXPECT_EQ(observer.sample_count(), 0);
 
-  // Fast forward by the poll interval (2 seconds) to trigger the first check.
-  task_environment_.FastForwardBy(base::Seconds(2));
+  // Fast forward by the poll interval to trigger the first check.
+  task_environment_.FastForwardBy(AvailableMemoryMonitor::kPollInterval);
 
   EXPECT_EQ(observer.sample_count(), 1);
 
@@ -145,7 +145,7 @@ TEST_F(AvailableMemoryMonitorTest, PollsPeriodically) {
   monitor.SetFakeSample(CreateSample(300));
 
   // Advance time again to trigger the second check.
-  task_environment_.FastForwardBy(base::Seconds(2));
+  task_environment_.FastForwardBy(AvailableMemoryMonitor::kPollInterval);
   EXPECT_EQ(observer.sample_count(), 2);
   EXPECT_EQ(observer.last_sample()->available_physical_bytes,
             base::ByteSize(300));
@@ -161,7 +161,7 @@ TEST_F(AvailableMemoryMonitorTest, StopsPollingWhenNoObservers) {
   monitor.AddObserver(&observer);
 
   // Trigger one sample update.
-  task_environment_.FastForwardBy(base::Seconds(2));
+  task_environment_.FastForwardBy(AvailableMemoryMonitor::kPollInterval);
   const int initial_count = observer.sample_count();
   EXPECT_EQ(initial_count, 1);
 
@@ -183,7 +183,7 @@ TEST_F(AvailableMemoryMonitorTest, LateObserverCanAccessCachedData) {
   monitor.AddObserver(&observer1);
 
   // Fire the timer to populate the cache.
-  task_environment_.FastForwardBy(base::Seconds(2));
+  task_environment_.FastForwardBy(AvailableMemoryMonitor::kPollInterval);
   EXPECT_EQ(observer1.sample_count(), 1);
 
   // Add the second observer. It should not get a callback.

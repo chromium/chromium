@@ -71,30 +71,30 @@ class UrgentPageDiscardingPolicyMemoryMonitorTest : public GraphTestHarness {
 
 TEST_F(UrgentPageDiscardingPolicyMemoryMonitorTest, MonitorFollowsPageDemand) {
   auto* policy = graph()->PassToGraph(CreatePolicy());
-  task_env().FastForwardBy(base::Seconds(4));
+  task_env().FastForwardBy(2 * base::AvailableMemoryMonitor::kPollInterval);
   EXPECT_EQ(0, monitor_.poll_count());
 
   auto first_page = CreateNode<PageNodeImpl>();
   auto second_page = CreateNode<PageNodeImpl>();
-  task_env().FastForwardBy(base::Seconds(2));
+  task_env().FastForwardBy(base::AvailableMemoryMonitor::kPollInterval);
   EXPECT_EQ(1, monitor_.poll_count());
   first_page.reset();
-  task_env().FastForwardBy(base::Seconds(2));
+  task_env().FastForwardBy(base::AvailableMemoryMonitor::kPollInterval);
   EXPECT_EQ(2, monitor_.poll_count());
   second_page.reset();
-  task_env().FastForwardBy(base::Seconds(4));
+  task_env().FastForwardBy(2 * base::AvailableMemoryMonitor::kPollInterval);
   EXPECT_EQ(2, monitor_.poll_count());
 
   auto resumed_page = CreateNode<PageNodeImpl>();
-  task_env().FastForwardBy(base::Seconds(2));
+  task_env().FastForwardBy(base::AvailableMemoryMonitor::kPollInterval);
   EXPECT_EQ(3, monitor_.poll_count());
   auto owned_policy = graph()->TakeFromGraphAs(policy);
-  task_env().FastForwardBy(base::Seconds(4));
+  task_env().FastForwardBy(2 * base::AvailableMemoryMonitor::kPollInterval);
   EXPECT_EQ(3, monitor_.poll_count());
 
   // Reattaching to a graph that already has pages must resume monitoring.
   graph()->PassToGraph(std::move(owned_policy));
-  task_env().FastForwardBy(base::Seconds(2));
+  task_env().FastForwardBy(base::AvailableMemoryMonitor::kPollInterval);
   EXPECT_EQ(4, monitor_.poll_count());
   owned_policy = graph()->TakeFromGraphAs(policy);
 }
@@ -112,14 +112,14 @@ TEST_F(UrgentPageDiscardingPolicyMemoryMonitorTest,
   observation.Observe(&monitor_);
   auto* policy = graph()->PassToGraph(CreatePolicy());
   auto page = CreateNode<PageNodeImpl>();
-  task_env().FastForwardBy(base::Seconds(2));
+  task_env().FastForwardBy(base::AvailableMemoryMonitor::kPollInterval);
   EXPECT_EQ(1, monitor_.poll_count());
 
   page.reset();
-  task_env().FastForwardBy(base::Seconds(4));
+  task_env().FastForwardBy(2 * base::AvailableMemoryMonitor::kPollInterval);
   EXPECT_EQ(3, monitor_.poll_count());
   observation.Reset();
-  task_env().FastForwardBy(base::Seconds(4));
+  task_env().FastForwardBy(2 * base::AvailableMemoryMonitor::kPollInterval);
   EXPECT_EQ(3, monitor_.poll_count());
   auto owned_policy = graph()->TakeFromGraphAs(policy);
 }

@@ -62,6 +62,12 @@ class BASE_EXPORT AvailableMemoryMonitor {
 #endif
   };
 
+#if BUILDFLAG(IS_WIN)
+  static constexpr base::TimeDelta kPollInterval = base::Seconds(5);
+#else
+  static constexpr base::TimeDelta kPollInterval = base::Seconds(2);
+#endif
+
   class Observer : public base::CheckedObserver {
    public:
     // Called when a new memory sample is available.
