@@ -55,6 +55,7 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/mac_window_util.h"
 #include "ui/base/cocoa/appkit_utils.h"
 #endif
 
@@ -106,9 +107,8 @@ void OmniboxEverywhereContextMenuController::Cancel() {
   if (is_open_ && context_menu_runner_) {
     context_menu_runner_->Cancel();
     is_open_ = false;
-  } else {
-    weak_factory_.InvalidateWeakPtrs();
   }
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 void OmniboxEverywhereContextMenuController::Reset() {
@@ -462,9 +462,29 @@ void OmniboxEverywhereContextMenuController::ExecuteCommand(int command_id,
   web_contents()->Focus();
   switch (command_id) {
     case kEmoji:
-      if (views::Widget* host_widget = widget()) {
-        host_widget->ShowEmojiPanel();
-      }
+      // Defer invoking the OS emoji panel until after the context menu runner
+      // finishes unwinding (`[NSMenu popUpContextMenu:...]` / `OnMenuClosed()`),
+      // and on macOS activate the host app so CharacterPalette.app attaches to
+      // the non-activating Loomnibox panel without resigning key window status.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](base::WeakPtr<OmniboxEverywhereContextMenuController> self) {
+                if (!self || !self->web_contents()) {
+                  return;
+                }
+                views::Widget* host_widget = self->widget();
+                if (!host_widget) {
+                  return;
+                }
+#if BUILDFLAG(IS_MAC)
+                ActivatePopupForEmojiPanelOnMac(
+                    host_widget->GetNativeWindow());
+#endif
+                self->web_contents()->Focus();
+                host_widget->ShowEmojiPanel();
+              },
+              weak_factory_.GetWeakPtr()));
       break;
     case kUndo:
       web_contents()->Undo();

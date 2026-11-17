@@ -592,6 +592,14 @@ TEST_F(OmniboxEverywhereContextMenuControllerTest, ContextMenuEmojiCommand) {
     EXPECT_TRUE(controller_->IsCommandIdEnabled(CommandId::kEmoji));
     EXPECT_EQ(emoji_panel_shown_count(), 0);
     controller_->ExecuteCommand(CommandId::kEmoji, 0);
+    EXPECT_EQ(emoji_panel_shown_count(), 0);
+    task_environment()->RunUntilIdle();
+    EXPECT_EQ(emoji_panel_shown_count(), 1);
+
+    // Cancelling after posting the ShowEmojiPanel task aborts it.
+    controller_->ExecuteCommand(CommandId::kEmoji, 0);
+    controller_->Cancel();
+    task_environment()->RunUntilIdle();
     EXPECT_EQ(emoji_panel_shown_count(), 1);
   }
 }
