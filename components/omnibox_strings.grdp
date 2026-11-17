@@ -456,7 +456,7 @@
     Ask about a tab
   </message>
   <message name="IDS_FUSEBOX_ATTACHMENT_BUTTON_IPH" desc="Text displayed in the in-product help bubble pointing to the (+) button in the Omnibox." formatter_data="android_java">
-    Add a tab or image to enhance your search
+    Add tabs, photos, and more to enhance your search
   </message>
 
   <!-- Accessibility labels for autocomplete match types.
