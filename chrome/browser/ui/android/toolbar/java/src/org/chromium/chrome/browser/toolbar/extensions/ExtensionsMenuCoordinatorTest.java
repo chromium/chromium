@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.view.View;
 
@@ -68,6 +69,7 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.MenuEntrySt
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.OptionalSectionType;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.SiteSettingsState;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -659,6 +661,35 @@ public class ExtensionsMenuCoordinatorTest {
     public void testClickMenuButton_clearsOmniboxFocus() {
         mExtensionsMenuButton.performClick();
         verify(mClearOmniboxFocus).run();
+    }
+
+    @Test
+    public void testInitialTintAppliedOnConstruction() {
+        ColorStateList initialTint = ColorStateList.valueOf(Color.DKGRAY);
+        ThemeColorProvider themeColorProvider = mock(ThemeColorProvider.class);
+        when(themeColorProvider.getActivityFocusTint()).thenReturn(initialTint);
+        when(themeColorProvider.getTint()).thenReturn(ColorStateList.valueOf(Color.BLACK));
+        when(themeColorProvider.getBrandedColorScheme()).thenReturn(BrandedColorScheme.APP_DEFAULT);
+
+        ListMenuButton menuButton = new ListMenuButton(mContext, null);
+        ExtensionsMenuCoordinator coordinator =
+                new ExtensionsMenuCoordinator(
+                        mContext,
+                        menuButton,
+                        themeColorProvider,
+                        mTask,
+                        mWindowAndroid,
+                        mProfile,
+                        mCurrentTabSupplier,
+                        mTabCreator,
+                        mExtensionsToolbarBridge,
+                        mMenuButtonPinningDelegate,
+                        mModalDialogManager,
+                        mClearOmniboxFocus,
+                        /* isWebApp= */ false);
+
+        assertEquals(initialTint, menuButton.getImageTintList());
+        coordinator.destroy();
     }
 
     private SiteSettingsState createSiteSettingsState(String label, boolean isOn) {

@@ -96,6 +96,8 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.toolbar.extensions"
   sources = [
     "ExtensionAccessControlButtonMediatorTest.java",
+    "ExtensionAccessControlButtonViewBinderTest.java",
+    "ExtensionActionButtonViewBinderTest.java",
     "ExtensionActionDragHelperTest.java",
     "ExtensionActionListAnchoredModelListTest.java",
     "ExtensionActionListMediatorTest.java",
@@ -166,9 +168,11 @@ android_library("javatests") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/desktop_windowing:java",
     "//chrome/browser/ui/android/extensions:java",
     "//chrome/browser/ui/android/extensions:java_resources",
     "//chrome/browser/ui/android/extensions:test_support_java",
+    "//chrome/browser/ui/android/multiwindow:java",
     "//chrome/browser/ui/android/toolbar:core_java",
     "//chrome/browser/ui/android/toolbar:java_resources",
     "//chrome/test/android:chrome_java_integration_test_support",

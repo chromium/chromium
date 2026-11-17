@@ -37,6 +37,7 @@ import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.app.Instrumentation;
+import android.content.res.ColorStateList;
 import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.View;
@@ -68,10 +69,12 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionTestMessageListener;
 import org.chromium.chrome.browser.ui.extensions.ExtensionTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -87,6 +90,8 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.util.ValueUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -137,6 +142,12 @@ public class ExtensionsToolbarTest {
 
     @After
     public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (mActivityTestRule.getActivity() != null) {
+                        mActivityTestRule.getActivity().onTopResumedActivityChanged(true);
+                    }
+                });
         for (String id : new ArrayList<>(mInstalledTestExtensions)) {
             uninstallTestExtension(id);
         }
@@ -1320,5 +1331,103 @@ public class ExtensionsToolbarTest {
         CriteriaHelper.pollInstrumentationThread(
                 () -> !ExtensionTestUtils.isExtensionEnabled(mProfile, extensionId),
                 "Extension should have been disabled after clicking 'Change it back'");
+    }
+
+    @Test
+    @LargeTest
+    public void testExtensionsToolbarDimsOnInactiveWindow() throws IOException {
+        AppHeaderUtils.setAppInDesktopWindowForTesting(true);
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+
+        String pinnedId = loadBasicExtension("pinned_ext", "Pinned Extension", "Pinned Action");
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, pinnedId, true);
+        waitForView(withContentDescription("Pinned Action"));
+
+        String url = mTestServer.getURL("/chrome/test/data/android/simple.html");
+        String requestId =
+                loadContentScriptExtension(
+                        "request_ext", "Request Extension", "Request Action", url);
+        ExtensionTestUtils.setWithholdHostPermissions(mProfile, requestId, true);
+        mPage = mPage.loadWebPageProgrammatically(url);
+
+        WebContents webContents =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mActivityTestRule.getActivity().getActivityTab().getWebContents());
+        ExtensionTestUtils.addHostAccessRequest(mProfile, webContents, requestId);
+        waitForView(withId(R.id.extensions_request_access_button));
+
+        float expectedDisabledAlpha =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                ValueUtils.getFloat(
+                                        mActivityTestRule.getActivity().getResources(),
+                                        org.chromium.ui.R.dimen.default_disabled_alpha));
+
+        ColorStateList focusedMenuTint =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            ListMenuButton menuButton =
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .findViewById(R.id.extensions_menu_button);
+                            return menuButton.getImageTintList();
+                        });
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        areToolbarButtonsInExpectedFocusState(
+                                "Pinned Action", 1.0f, focusedMenuTint, /* expectFocused= */ true));
+
+        // Unfocus the window and verify action button, request access button, and menu button dim.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().onTopResumedActivityChanged(false));
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        areToolbarButtonsInExpectedFocusState(
+                                "Pinned Action",
+                                expectedDisabledAlpha,
+                                focusedMenuTint,
+                                /* expectFocused= */ false));
+
+        // Refocus the window and verify dimming clears.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().onTopResumedActivityChanged(true));
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        areToolbarButtonsInExpectedFocusState(
+                                "Pinned Action", 1.0f, focusedMenuTint, /* expectFocused= */ true));
+    }
+
+    private boolean areToolbarButtonsInExpectedFocusState(
+            String actionDescription,
+            float expectedActionAlpha,
+            ColorStateList focusedMenuTint,
+            boolean expectFocused) {
+        View actionButton =
+                findViewWithContentDescription(
+                        mActivityTestRule
+                                .getActivity()
+                                .getWindow()
+                                .getDecorView()
+                                .findViewById(android.R.id.content),
+                        actionDescription);
+        TextView requestButton =
+                mActivityTestRule.getActivity().findViewById(R.id.extensions_request_access_button);
+        ListMenuButton menuButton =
+                mActivityTestRule.getActivity().findViewById(R.id.extensions_menu_button);
+        if (actionButton == null || requestButton == null || menuButton == null) {
+            return false;
+        }
+        boolean actionAlphaMatches =
+                Math.abs(actionButton.getAlpha() - expectedActionAlpha) < 0.01f;
+        boolean menuTintMatchesFocus =
+                java.util.Objects.equals(focusedMenuTint, menuButton.getImageTintList())
+                        == expectFocused;
+        boolean requestTintMatchesMenu =
+                java.util.Objects.equals(
+                        requestButton.getTextColors(), menuButton.getImageTintList());
+        return actionAlphaMatches && menuTintMatchesFocus && requestTintMatchesMenu;
     }
 }

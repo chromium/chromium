@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -35,6 +36,9 @@ public class ExtensionActionButtonProperties {
     /** The accessible name of the action. */
     public static final WritableObjectPropertyKey<String> ACCESSIBLE_NAME =
             new WritableObjectPropertyKey<>();
+
+    /** The alpha of the action button (e.g. dimmed when the window is unfocused). */
+    public static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
 
     /** The {@link ExtensionActionDragHelper} to distinguish input events. */
     public static final WritableObjectPropertyKey<ExtensionActionDragHelper> DRAG_HELPER =
@@ -73,6 +77,7 @@ public class ExtensionActionButtonProperties {
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 ACCESSIBLE_NAME,
+                ALPHA,
                 DRAG_HELPER,
                 ICON,
                 ID,

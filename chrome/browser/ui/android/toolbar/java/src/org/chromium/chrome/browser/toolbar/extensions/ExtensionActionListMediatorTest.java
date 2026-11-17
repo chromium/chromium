@@ -22,6 +22,7 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -55,6 +56,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
@@ -64,6 +66,7 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridg
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridgeJni;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionPopupContents;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.ui.toolbar.AdminPolicy;
 import org.chromium.chrome.browser.ui.toolbar.SiteAccess;
 import org.chromium.content_public.browser.WebContents;
@@ -144,6 +147,7 @@ public class ExtensionActionListMediatorTest {
     @Mock private WebContents mWebContents;
 
     @Mock private ExtensionsToolbarBridge mExtensionsToolbarBridge;
+    @Mock private ThemeColorProvider mThemeColorProvider;
 
     @Mock private ExtensionActionPopupContents mPopupContentsMock;
 
@@ -158,6 +162,7 @@ public class ExtensionActionListMediatorTest {
     @Mock private Runnable mClearOmniboxFocus;
 
     @Captor private ArgumentCaptor<PopupMenuShownListener> mPopupListenerCaptor;
+    @Captor private ArgumentCaptor<ThemeColorProvider.TintObserver> mTintObserverCaptor;
 
     @Captor
     private ArgumentCaptor<ExtensionsToolbarBridge.ActionListDelegate> mBridgeDelegateCaptor;
@@ -216,6 +221,7 @@ public class ExtensionActionListMediatorTest {
                 .thenReturn(new String[] {ACTION1_ID, ACTION2_ID});
 
         // Initialize common objects.
+        when(mThemeColorProvider.getUnfocusedAlpha()).thenReturn(1.0f);
         mTab = new MockTab(TAB_ID, mProfile);
         mTab.setWebContentsOverrideForTesting(mWebContents);
         mCurrentTabSupplier = ObservableSuppliers.createNullable(mTab);
@@ -232,6 +238,7 @@ public class ExtensionActionListMediatorTest {
                         mCurrentTabSupplier,
                         mRecyclerViewDelegate,
                         mExtensionsToolbarBridge,
+                        mThemeColorProvider,
                         /* contextMenuPopulatorFactory= */ null,
                         /* selectionDropdownMenuDelegate= */ null,
                         mTabModelSelector,
@@ -248,6 +255,7 @@ public class ExtensionActionListMediatorTest {
 
         mMediator.fitActionsWithinWidth(1000);
         verify(mExtensionsToolbarBridge).setActionListDelegate(mBridgeDelegateCaptor.capture());
+        verify(mThemeColorProvider).addTintObserver(mTintObserverCaptor.capture());
 
         shadowOf(Looper.getMainLooper()).idle();
     }
@@ -1016,6 +1024,93 @@ public class ExtensionActionListMediatorTest {
                         keyCode,
                         /* repeat= */ 0,
                         metaState));
+    }
+
+    @Test
+    public void testTintChangeDimsActionButtons() {
+        mMediator.reconcileActionItems();
+        assertEquals(2, mModels.size());
+        assertEquals(1.0f, mModels.get(0).model.get(ExtensionActionButtonProperties.ALPHA), 1e-4f);
+        assertEquals(1.0f, mModels.get(1).model.get(ExtensionActionButtonProperties.ALPHA), 1e-4f);
+
+        ColorStateList focusedTint = ColorStateList.valueOf(Color.BLACK);
+        ColorStateList unfocusedTint = ColorStateList.valueOf(Color.GRAY);
+        float unfocusedAlpha = 0.38f;
+
+        ThemeColorProvider.TintObserver tintObserver = mTintObserverCaptor.getValue();
+        tintObserver.onTintChanged(
+                focusedTint, unfocusedTint, unfocusedAlpha, BrandedColorScheme.APP_DEFAULT);
+
+        assertEquals(
+                unfocusedAlpha,
+                mModels.get(0).model.get(ExtensionActionButtonProperties.ALPHA),
+                1e-4f);
+        assertEquals(
+                unfocusedAlpha,
+                mModels.get(1).model.get(ExtensionActionButtonProperties.ALPHA),
+                1e-4f);
+
+        // Newly added action while unfocused should inherit mUnfocusedAlpha.
+        when(mExtensionsToolbarBridge.getPinnedActionIds())
+                .thenReturn(new String[] {ACTION1_ID, ACTION2_ID, ACTION3_ID});
+        mMediator.reconcileActionItems();
+        assertEquals(3, mModels.size());
+        assertEquals(
+                unfocusedAlpha,
+                mModels.get(2).model.get(ExtensionActionButtonProperties.ALPHA),
+                1e-4f);
+
+        // Restoring focus un-dims all buttons.
+        tintObserver.onTintChanged(focusedTint, focusedTint, 1.0f, BrandedColorScheme.APP_DEFAULT);
+        for (int i = 0; i < mModels.size(); i++) {
+            assertEquals(
+                    1.0f, mModels.get(i).model.get(ExtensionActionButtonProperties.ALPHA), 1e-4f);
+        }
+    }
+
+    @Test
+    public void testInitialDimmedState_UnfocusedWindow() {
+        float unfocusedAlpha = 0.38f;
+        ThemeColorProvider unfocusedThemeColorProvider = mock(ThemeColorProvider.class);
+        when(unfocusedThemeColorProvider.getUnfocusedAlpha()).thenReturn(unfocusedAlpha);
+
+        ModelList models = new ModelList();
+        ExtensionActionListMediator mediator =
+                new ExtensionActionListMediator(
+                        ApplicationProvider.getApplicationContext(),
+                        mWindowAndroid,
+                        models,
+                        mTask,
+                        mProfile,
+                        mCurrentTabSupplier,
+                        mRecyclerViewDelegate,
+                        mExtensionsToolbarBridge,
+                        unfocusedThemeColorProvider,
+                        /* contextMenuPopulatorFactory= */ null,
+                        /* selectionDropdownMenuDelegate= */ null,
+                        mTabModelSelector,
+                        mModalDialogManager,
+                        mClearOmniboxFocus) {
+                    @Override
+                    Bitmap getIconForAction(String actionId, WebContents webContents) {
+                        return mActions.get(actionId).getIcon();
+                    }
+                };
+        mediator.fitActionsWithinWidth(1000);
+        mediator.reconcileActionItems();
+
+        assertEquals(2, models.size());
+        assertEquals(
+                unfocusedAlpha,
+                models.get(0).model.get(ExtensionActionButtonProperties.ALPHA),
+                1e-4f);
+        assertEquals(
+                unfocusedAlpha,
+                models.get(1).model.get(ExtensionActionButtonProperties.ALPHA),
+                1e-4f);
+
+        mediator.destroy();
+        verify(unfocusedThemeColorProvider).removeTintObserver(any());
     }
 
     private static Bitmap createSimpleIcon(int color) {

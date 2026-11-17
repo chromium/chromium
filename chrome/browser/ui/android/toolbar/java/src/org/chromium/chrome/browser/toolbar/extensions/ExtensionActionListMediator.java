@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -28,6 +29,7 @@ import org.chromium.chrome.browser.extensions.ContextMenuSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
@@ -36,6 +38,7 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionAction.HoverCardState;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionPopupContents;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.ui.toolbar.InvocationSource;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.content_public.browser.WebContents;
@@ -146,6 +149,8 @@ class ExtensionActionListMediator implements Destroyable {
     private @Nullable Runnable mShowHoverCardRunnable;
 
     private final ExtensionsToolbarBridge mExtensionsToolbarBridge;
+    private final ThemeColorProvider mThemeColorProvider;
+    private final ThemeColorProvider.TintObserver mTintObserver = this::onTintChanged;
     private final ToolbarDelegate mToolbarDelegate = new ToolbarDelegate();
     private final ToolbarObserver mToolbarObserver = new ToolbarObserver();
 
@@ -175,6 +180,8 @@ class ExtensionActionListMediator implements Destroyable {
     // the toolbar requests us to be a certain size. Until then, we assume we have infinite space.
     private @Nullable Integer mAvailableWidthForPinnedActions;
 
+    private float mUnfocusedAlpha;
+
     public ExtensionActionListMediator(
             Context context,
             WindowAndroid windowAndroid,
@@ -184,6 +191,7 @@ class ExtensionActionListMediator implements Destroyable {
             NullableObservableSupplier<Tab> currentTabSupplier,
             ExtensionActionListCoordinator.RecyclerViewDelegate recyclerViewDelegate,
             ExtensionsToolbarBridge extensionsToolbarBridge,
+            ThemeColorProvider themeColorProvider,
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
             TabModelSelector tabModelSelector,
@@ -197,12 +205,16 @@ class ExtensionActionListMediator implements Destroyable {
         mCurrentTabSupplier = currentTabSupplier;
         mRecyclerViewDelegate = recyclerViewDelegate;
         mExtensionsToolbarBridge = extensionsToolbarBridge;
+        mThemeColorProvider = themeColorProvider;
         mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
         mSelectionDropdownMenuDelegate = selectionDropdownMenuDelegate;
         mTabModelSelector = tabModelSelector;
         mModalDialogManager = modalDialogManager;
         mClearOmniboxFocus = clearOmniboxFocus;
         mModalDialogManager.addObserver(mModalDialogManagerObserver);
+
+        mUnfocusedAlpha = mThemeColorProvider.getUnfocusedAlpha();
+        mThemeColorProvider.addTintObserver(mTintObserver);
 
         mExtensionsToolbarBridge.setActionListDelegate(mToolbarDelegate);
         mExtensionsToolbarBridge.addObserver(mToolbarObserver);
@@ -224,6 +236,7 @@ class ExtensionActionListMediator implements Destroyable {
 
         assert mActionState instanceof ActionState.Idle;
 
+        mThemeColorProvider.removeTintObserver(mTintObserver);
         mModalDialogManager.removeObserver(mModalDialogManagerObserver);
         mExtensionsToolbarBridge.removeObserver(mToolbarObserver);
         mExtensionsToolbarBridge.setActionListDelegate(null);
@@ -406,6 +419,7 @@ class ExtensionActionListMediator implements Destroyable {
                         .with(
                                 ExtensionActionButtonProperties.ACCESSIBLE_NAME,
                                 action.getAccessibleName())
+                        .with(ExtensionActionButtonProperties.ALPHA, mUnfocusedAlpha)
                         .with(
                                 ExtensionActionButtonProperties.ICON,
                                 getIconForAction(actionId, webContents))
@@ -432,6 +446,20 @@ class ExtensionActionListMediator implements Destroyable {
                                     return true;
                                 })
                         .build());
+    }
+
+    private void onTintChanged(
+            @Nullable ColorStateList tint,
+            @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
+            @BrandedColorScheme int brandedColorScheme) {
+        if (mUnfocusedAlpha == unfocusedAlpha) {
+            return;
+        }
+        mUnfocusedAlpha = unfocusedAlpha;
+        for (int i = 0; i < mModels.size(); i++) {
+            mModels.get(i).model.set(ExtensionActionButtonProperties.ALPHA, mUnfocusedAlpha);
+        }
     }
 
     @VisibleForTesting

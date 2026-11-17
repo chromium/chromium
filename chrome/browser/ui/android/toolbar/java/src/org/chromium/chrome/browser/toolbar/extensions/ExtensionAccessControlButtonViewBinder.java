@@ -8,7 +8,9 @@ import static org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarPr
 import static org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_CONTENT_DESCRIPTION;
 import static org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_EXTENSION_COUNT;
+import static org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_TINT;
 
+import android.content.res.ColorStateList;
 import android.view.View;
 import android.widget.TextView;
 
@@ -24,6 +26,11 @@ class ExtensionAccessControlButtonViewBinder {
         if (key == IS_REQUEST_ACCESS_BUTTON_VISIBLE) {
             view.setVisibility(
                     model.get(IS_REQUEST_ACCESS_BUTTON_VISIBLE) ? View.VISIBLE : View.GONE);
+        } else if (key == REQUEST_ACCESS_BUTTON_TINT) {
+            ColorStateList tint = model.get(REQUEST_ACCESS_BUTTON_TINT);
+            if (tint != null) {
+                ((TextView) view).setTextColor(tint);
+            }
         } else if (key == REQUEST_ACCESS_BUTTON_EXTENSION_COUNT) {
             int count = model.get(REQUEST_ACCESS_BUTTON_EXTENSION_COUNT);
             // A count of -1 indicates that the user has dismissed the button.

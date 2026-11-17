@@ -15,7 +15,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.view.Display;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
@@ -38,9 +40,11 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.RequestAccessButtonParams;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -63,6 +67,7 @@ public class ExtensionAccessControlButtonMediatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ExtensionsToolbarBridge mExtensionsToolbarBridge;
+    @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private Context mContext;
@@ -74,6 +79,7 @@ public class ExtensionAccessControlButtonMediatorTest {
             ObservableSuppliers.createNullable();
 
     @Captor private ArgumentCaptor<ExtensionsToolbarBridge.Observer> mToolbarObserverCaptor;
+    @Captor private ArgumentCaptor<ThemeColorProvider.TintObserver> mTintObserverCaptor;
     @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
     @Mock private Runnable mClearOmniboxFocus;
 
@@ -114,12 +120,7 @@ public class ExtensionAccessControlButtonMediatorTest {
                 .thenReturn(new RequestAccessButtonParams(new String[0], ""));
         when(mExtensionsToolbarBridge.onRequestAccessButtonClicked(any())).thenReturn(true);
 
-        mModel =
-                new PropertyModel.Builder(
-                                PropertyModel.concatKeys(
-                                        ExtensionsMenuProperties.ALL_KEYS,
-                                        ExtensionsToolbarProperties.ALL_KEYS))
-                        .build();
+        mModel = new PropertyModel.Builder(ExtensionsToolbarProperties.ALL_KEYS).build();
 
         mMediator =
                 new ExtensionAccessControlButtonMediator(
@@ -127,14 +128,17 @@ public class ExtensionAccessControlButtonMediatorTest {
                         mModel,
                         mCurrentTabSupplier,
                         mExtensionsToolbarBridge,
+                        mThemeColorProvider,
                         (v) -> {},
                         mIsWindowCompactSupplier,
                         mClearOmniboxFocus);
         verify(mExtensionsToolbarBridge).addObserver(mToolbarObserverCaptor.capture());
+        verify(mThemeColorProvider).addTintObserver(mTintObserverCaptor.capture());
     }
 
     @After
     public void tearDown() {
+        mMediator.destroy();
         MessagesFactory.detachMessageDispatcher(mMessageDispatcher);
     }
 
@@ -423,5 +427,47 @@ public class ExtensionAccessControlButtonMediatorTest {
         // heightDp = 10 / 2 = 5
         // scaleFactor = 2.0f
         verify(mExtensionsToolbarBridge).getIcon("a", mWebContents, 5, 5, 2.0f);
+    }
+
+    @Test
+    public void testTintChangeUpdatesButtonTint() {
+        ColorStateList focusedTint = ColorStateList.valueOf(Color.BLACK);
+        ColorStateList unfocusedTint = ColorStateList.valueOf(Color.GRAY);
+
+        ThemeColorProvider.TintObserver tintObserver = mTintObserverCaptor.getValue();
+        tintObserver.onTintChanged(
+                focusedTint, unfocusedTint, 0.38f, BrandedColorScheme.APP_DEFAULT);
+        assertEquals(
+                unfocusedTint, mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_TINT));
+
+        tintObserver.onTintChanged(focusedTint, focusedTint, 1.0f, BrandedColorScheme.APP_DEFAULT);
+        assertEquals(
+                focusedTint, mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_TINT));
+    }
+
+    @Test
+    public void testInitialTint_UnfocusedWindow() {
+        ColorStateList unfocusedTint = ColorStateList.valueOf(Color.GRAY);
+        ThemeColorProvider unfocusedThemeColorProvider = mock(ThemeColorProvider.class);
+        when(unfocusedThemeColorProvider.getActivityFocusTint()).thenReturn(unfocusedTint);
+
+        PropertyModel model =
+                new PropertyModel.Builder(ExtensionsToolbarProperties.ALL_KEYS).build();
+        ExtensionAccessControlButtonMediator mediator =
+                new ExtensionAccessControlButtonMediator(
+                        mContext,
+                        model,
+                        mCurrentTabSupplier,
+                        mExtensionsToolbarBridge,
+                        unfocusedThemeColorProvider,
+                        (v) -> {},
+                        mIsWindowCompactSupplier,
+                        mClearOmniboxFocus);
+
+        assertEquals(
+                unfocusedTint, model.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_TINT));
+
+        mediator.destroy();
+        verify(unfocusedThemeColorProvider).removeTintObserver(any());
     }
 }

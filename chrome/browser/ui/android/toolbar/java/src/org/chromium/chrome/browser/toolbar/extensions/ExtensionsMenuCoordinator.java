@@ -228,6 +228,13 @@ public class ExtensionsMenuCoordinator
 
         mThemeColorProvider = themeColorProvider;
         mThemeColorProvider.addTintObserver(mTintObserver);
+        if (mThemeColorProvider.getActivityFocusTint() != null) {
+            onTintChanged(
+                    mThemeColorProvider.getTint(),
+                    mThemeColorProvider.getActivityFocusTint(),
+                    mThemeColorProvider.getUnfocusedAlpha(),
+                    mThemeColorProvider.getBrandedColorScheme());
+        }
         mExtensionsToolbarBridge.addObserver(this);
 
         // Create the main page property model and bind it to its view.

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
+import android.content.res.ColorStateList;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
@@ -30,9 +31,13 @@ class ExtensionsToolbarProperties {
     public static final WritableIntPropertyKey EXTENSIONS_MENU_BUTTON_DEFAULT_BACKGROUND =
             new WritableIntPropertyKey();
 
+    public static final WritableObjectPropertyKey<ColorStateList> REQUEST_ACCESS_BUTTON_TINT =
+            new WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 IS_REQUEST_ACCESS_BUTTON_VISIBLE,
+                REQUEST_ACCESS_BUTTON_TINT,
                 REQUEST_ACCESS_BUTTON_EXTENSION_COUNT,
                 REQUEST_ACCESS_BUTTON_CONTENT_DESCRIPTION,
                 EXTENSIONS_MENU_BUTTON_DEFAULT_BACKGROUND,

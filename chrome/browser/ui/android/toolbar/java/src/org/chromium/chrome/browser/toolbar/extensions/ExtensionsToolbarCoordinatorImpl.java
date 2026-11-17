@@ -152,6 +152,7 @@ public class ExtensionsToolbarCoordinatorImpl
                         profile,
                         currentTabSupplier,
                         mExtensionsToolbarBridge,
+                        themeColorProvider,
                         rootView,
                         contextMenuPopulatorFactory,
                         selectionDropdownMenuDelegate,
@@ -186,6 +187,7 @@ public class ExtensionsToolbarCoordinatorImpl
                         mToolbarModel,
                         currentTabSupplier,
                         mExtensionsToolbarBridge,
+                        themeColorProvider,
                         (TextView) mContainer.findViewById(R.id.extensions_request_access_button),
                         CallbackUtils.emptyCallback(),
                         () ->
