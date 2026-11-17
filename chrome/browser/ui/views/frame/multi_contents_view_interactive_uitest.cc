@@ -181,6 +181,35 @@ class MultiContentsViewUiTest
     return result;
   }
 
+  // Same as `CheckResizeValues()`, but checks the sizes of the
+  // `ContentsWebView`s, which exclude the borders of the
+  // `ContentsContainerView`s hosting them.
+  auto CheckContentsWebViewResizeValues(
+      base::RepeatingCallback<bool(double, double)> check,
+      ui::test::StateIdentifier<MultiContentsViewLayoutObserver> observer_id) {
+    auto result = Steps(
+        PollView(
+            observer_id, kMultiContentsViewElementId,
+            [check](const MultiContentsView* multi_contents_view) -> bool {
+              const gfx::Size& start_size =
+                  multi_contents_view->start_contents_view_for_testing()
+                      ->size();
+              const gfx::Size& end_size =
+                  multi_contents_view->end_contents_view_for_testing()->size();
+              switch (multi_contents_view->GetSplitLayout()) {
+                case split_tabs::SplitTabLayout::kSideBySide:
+                  return check.Run(start_size.width(), end_size.width());
+                case split_tabs::SplitTabLayout::kStacked:
+                  return check.Run(start_size.height(), end_size.height());
+                default:
+                  NOTREACHED();
+              }
+            }),
+        WaitForState(observer_id, true), StopObservingState(observer_id));
+    AddDescriptionPrefix(result, "CheckContentsWebViewResizeValues()");
+    return result;
+  }
+
   // Perform a check on the contents view sizes following a direct resize call
   auto CheckResize(int resize_amount,
                    base::RepeatingCallback<bool(double, double)> check) {
@@ -329,6 +358,8 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, ResizesInSplitView) {
                                       kFirstLayoutObserver);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(MultiContentsViewLayoutObserver,
                                       kSecondLayoutObserver);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(MultiContentsViewLayoutObserver,
+                                      kThirdLayoutObserver);
 
   const bool is_side_by_side =
       GetParam() == split_tabs::SplitTabLayout::kSideBySide;
@@ -347,7 +378,7 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, ResizesInSplitView) {
       // clamped by minimum window height (~752px), so the initial active height
       // does not equal 500px and this check is skipped.
       If([is_side_by_side]() { return is_side_by_side; },
-         Then(CheckResizeValues(
+         Then(CheckContentsWebViewResizeValues(
              base::BindRepeating([](double start_size, double end_size) {
                return base::IsApproximatelyEqual(start_size, 500.0, 1.0);
              }),
@@ -358,17 +389,23 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, ResizesInSplitView) {
       // constraint on test bots, and large enough for each contents view to be
       // above the minimum contents size.
       ResizeContents(450),
-      // Check that the active contents size is 450. The inactive contents
-      // should be 150, in line with the 0.75 split ratio.
+      // Check that the active contents size is 450. ResizeContents takes in
+      // the size of the active contents view, but must resize the entire
+      // browser window while preserving the split ratio, so there may be a
+      // small rounding error.
+      CheckContentsWebViewResizeValues(
+          base::BindRepeating([](double start_size, double end_size) {
+            return base::IsApproximatelyEqual(start_size, 450.0, 1.0);
+          }),
+          kSecondLayoutObserver),
+      // Check that the contents views are still sized in line with the 0.75
+      // split ratio.
       CheckResizeValues(
           base::BindRepeating([](double start_size, double end_size) {
-            // ResizeContents takes in the size of the active contents view, but
-            // must resize the entire browser window while preserving the
-            // split ratio, so there may be a small rounding error.
-            return base::IsApproximatelyEqual(start_size, 450.0, 1.0) &&
-                   base::IsApproximatelyEqual(end_size, 150.0, 1.0);
+            return base::IsApproximatelyEqual(
+                start_size / (start_size + end_size), 0.75, 0.01);
           }),
-          kSecondLayoutObserver));
+          kThirdLayoutObserver));
 }
 
 // Create a new split and exit the split view and ensure only 1 contents view is

@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
 
+#include <map>
+#include <optional>
+#include <string>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -11,8 +15,10 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -27,6 +33,9 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/sessions/core/serialized_navigation_entry.h"
+#include "components/sessions/core/serialized_user_agent_override.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -34,8 +43,11 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace {
@@ -222,6 +234,25 @@ IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest, ShownTimeRecorded) {
   TestShownTimeRecorded();
 }
 
+// The contents size of the browser window should match the size of the
+// WebContents, which excludes the footer laid out below it.
+IN_PROC_BROWSER_TEST_F(FooterControllerExtensionTest,
+                       ContentsSizeExcludesFooter) {
+  auto extension = LoadNtpExtension();
+  NavigateCurrentTab(extension->url());
+  ASSERT_TRUE(footer()->GetVisible());
+
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser());
+  browser_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  const gfx::Size web_contents_size =
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetSize();
+  ASSERT_LT(web_contents_size.height(),
+            browser_view->GetActiveContentsContainerView()->height());
+  EXPECT_EQ(web_contents_size, browser_view->GetContentsSize());
+}
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 class FooterControllerEnterpriseTest
     : public FooterControllerExtensionTestBase,
@@ -324,6 +355,54 @@ IN_PROC_BROWSER_TEST_P(FooterControllerEnterpriseTest,
   NavigateCurrentTab(extension->url());
   VerifyNoticeMetricsRecorded(/*total_count= */ 3, /*management_count= */ 2,
                               /*extension_count= */ 1);
+}
+
+// Session restore adds the selected tab to a browser window before showing it.
+// On Linux, activating the window while adding the tab shows the window, which
+// lays out the WebContents again. Either way, the restored tab should be sized
+// to exclude the footer. Regression test for a DCHECK failure in
+// chrome::AddRestoredTab() when restoring an NTP with a footer.
+IN_PROC_BROWSER_TEST_P(FooterControllerEnterpriseTest,
+                       RestoredNtpInNewWindowExcludesFooterFromSize) {
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      managed() ? policy::EnterpriseManagementAuthority::DOMAIN_LOCAL
+                : policy::EnterpriseManagementAuthority::NONE);
+
+  // Create a browser window without showing it, like session restore does.
+  BrowserWindowInterface* const new_browser = CreateBrowserWindow(
+      BrowserWindowCreateParams(*profile(), /*from_user_gesture=*/false));
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(new_browser);
+  ASSERT_FALSE(browser_view->GetWidget()->IsVisible());
+  browser_view->GetWidget()->LayoutRootViewIfNecessary();
+  new_tab_footer::NewTabFooterController::From(new_browser)
+      ->SkipErrorPageCheckForTesting(true);
+
+  const GURL ntp_url = chrome::ChromeUINewTabURLAsGURL();
+  sessions::SerializedNavigationEntry navigation_entry;
+  navigation_entry.set_index(0);
+  navigation_entry.set_virtual_url(ntp_url);
+  navigation_entry.set_encoded_page_state(
+      blink::PageState::CreateFromURL(ntp_url).ToEncodedData());
+
+  content::WebContents* const web_contents = chrome::AddRestoredTab(
+      new_browser, {navigation_entry}, /*tab_index=*/0,
+      /*selected_navigation=*/0, /*extension_app_id=*/std::string(),
+      /*group=*/std::nullopt, /*select=*/true, /*pin=*/false,
+      /*last_active_time_ticks=*/base::TimeTicks::Now(),
+      /*last_active_time=*/base::Time::Now(),
+      /*storage_namespace=*/nullptr,
+      /*user_agent_override=*/sessions::SerializedUserAgentOverride(),
+      /*extra_data=*/std::map<std::string, std::string>(),
+      /*from_session_restore=*/true, /*is_active_browser=*/true);
+
+  EXPECT_EQ(managed(), browser_view->GetActiveContentsContainerView()
+                           ->new_tab_footer_view()
+                           ->GetVisible());
+  EXPECT_EQ(web_contents->GetSize(), browser_view->GetContentsSize());
+
+  CloseBrowserSynchronously(new_browser);
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 

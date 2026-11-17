@@ -2233,7 +2233,11 @@ gfx::Rect BrowserView::GetBounds() const {
 
 gfx::Size BrowserView::GetContentsSize() const {
   CHECK(initialized_, base::NotFatalUntil::M162);
-  return multi_contents_view_->GetActiveContentsContainerView()->size();
+  // Use the size of the active `ContentsWebView` rather than its
+  // `ContentsContainerView`, since the container also hosts views laid out
+  // around the `WebContents` (e.g. the NTP footer, docked DevTools and split
+  // view borders).
+  return multi_contents_view_->GetActiveContentsView()->size();
 }
 
 void BrowserView::SetContentsSize(const gfx::Size& size) {
