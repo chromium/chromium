@@ -760,7 +760,7 @@ bool IsPageContextActionableOptimizationEnabled() {
   return base::FeatureList::IsEnabled(kPageContextActionableOptimization);
 }
 
-BASE_FEATURE(kPageContextPdf, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPageContextPdf, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsPageContextPDFEnabled() {
   return base::FeatureList::IsEnabled(kPageContextPdf);
