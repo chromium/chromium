@@ -1,4 +1,5 @@
-per-file fake_gemini_block_node*=fbeauchamp@google.com
+per-file fake_gemini_block_data_types*=fbeauchamp@google.com
 per-file gemini_actuation*=fbeauchamp@google.com,gsaul@google.com
-per-file gemini_block_node*=fbeauchamp@google.com
+per-file gemini_block_data_types*=fbeauchamp@google.com
+per-file gemini_browser_actuations_block*=fbeauchamp@google.com
 per-file gemini_custom_ui*=fbeauchamp@google.com
