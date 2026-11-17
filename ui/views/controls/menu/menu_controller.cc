@@ -10,7 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/check.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
@@ -1890,9 +1890,10 @@ ui::PostDispatchAction MenuController::OnWillDispatchKeyEvent(
   }
 
   if (IsEditableCombobox() || has_focused_text_input) {
-    const base::flat_set<ui::KeyboardCode> kKeysThatDontPropagate = {
-        ui::VKEY_DOWN, ui::VKEY_UP, ui::VKEY_ESCAPE, ui::VKEY_F4,
-        ui::VKEY_RETURN};
+    static constexpr auto kKeysThatDontPropagate =
+        base::MakeFixedFlatSet<ui::KeyboardCode>({ui::VKEY_DOWN, ui::VKEY_UP,
+                                                  ui::VKEY_ESCAPE, ui::VKEY_F4,
+                                                  ui::VKEY_RETURN});
     if (!kKeysThatDontPropagate.contains(event->key_code()) &&
         (!has_focused_text_input || event->key_code() != ui::VKEY_TAB)) {
       if (has_focused_text_input) {
