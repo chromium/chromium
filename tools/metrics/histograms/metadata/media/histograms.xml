@@ -5283,8 +5283,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GetDisplayMedia.RequiresUserActivationResult"
-    enum="GetDisplayMediaTransientActivation" expires_after="2025-03-14">
-  <owner>eladalon@chromium.org</owner>
+    enum="GetDisplayMediaTransientActivation" expires_after="2027-11-12">
+  <owner>tovep@chromium.org</owner>
+  <owner>agpalak@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
   <owner>fbeaufort@chromium.org</owner>
   <owner>hendrich@chromium.org</owner>
   <summary>
@@ -5293,6 +5295,9 @@ chromium-metrics-reviews@google.com.
     once `blink::features::kGetDisplayMediaRequiresUserActivation` is enabled
     and can be bypassed with the `ScreenCaptureWithoutGestureAllowedForOrigins`
     policy.
+
+    Warning: this histogram was expired from 2025-03-14 to 2026-11-12; data may
+    be missing.
   </summary>
 </histogram>
 
