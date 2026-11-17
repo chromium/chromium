@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @fileoverview Suite of tests for the RepeatDirective class. */
-import 'chrome://extensions/extensions.js';
-
-import {PromiseResolver} from '//resources/js/promise_resolver.js';
-import {asyncMap} from 'chrome://extensions/extensions.js';
+/** @fileoverview Suite of tests for the AsyncMapDirective class. */
+import {asyncMap} from 'chrome://resources/cr_elements/async_map_directive.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -21,7 +19,7 @@ suite('AsyncMapDirectiveTest', function() {
 
     override render() {
       return html`
-        <div>${this.name}</div>
+        <div>${this.index}: ${this.name}</div>
         ${
           this.featureEnabled ? html`
            <div class="feature">Cool Feature Enabled!</div>` :
@@ -31,11 +29,13 @@ suite('AsyncMapDirectiveTest', function() {
     static override get properties() {
       return {
         name: {type: String},
+        index: {type: Number},
         featureEnabled: {type: Boolean},
       };
     }
 
     accessor name: string = '';
+    accessor index: number = -1;
     accessor featureEnabled: boolean = false;
   }
 
@@ -51,8 +51,8 @@ suite('AsyncMapDirectiveTest', function() {
          <div>
            ${
           asyncMap(
-              this.items, item => html`
-                <test-child .name="${item}"
+              this.items, (item, index) => html`
+                <test-child .name="${item}" .index="${index}"
                     .featureEnabled="${this.featureEnabled}">
                 </test-child>`,
               initialCount)}
@@ -145,8 +145,13 @@ suite('AsyncMapDirectiveTest', function() {
     // Just check that it takes at least 2 cycles, which seems to be
     // consistent with an initialCount of 2.
     assertGT(itemsRendered.length, 1);
-    assertEquals(
-        12, testElement.shadowRoot.querySelectorAll('test-child').length);
+    const renderedItems =
+        testElement.shadowRoot.querySelectorAll<TestChildElement>('test-child');
+    assertEquals(12, renderedItems.length);
+    renderedItems.forEach((child, index) => {
+      assertEquals(index, child.index);
+      assertEquals(testElement.items[index], child.name);
+    });
   });
 
   test('Different initial count', async () => {
@@ -197,8 +202,11 @@ suite('AsyncMapDirectiveTest', function() {
         testElement.shadowRoot.querySelectorAll<TestChildElement>('test-child');
     assertEquals(3, renderedItems.length);
     assertEquals('Hello', renderedItems[0]!.name);
+    assertEquals(0, renderedItems[0]!.index);
     assertEquals('World', renderedItems[1]!.name);
+    assertEquals(1, renderedItems[1]!.index);
     assertEquals('Goodbye', renderedItems[2]!.name);
+    assertEquals(2, renderedItems[2]!.index);
 
     // Correctly render no items.
     testElement.reset();

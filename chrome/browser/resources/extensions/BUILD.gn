@@ -23,7 +23,6 @@ build_webui("build") {
     "activity_log/activity_log_stream.ts",
     "activity_log/activity_log_stream_item.html.ts",
     "activity_log/activity_log_stream_item.ts",
-    "async_map_directive.ts",
     "code_section.html.ts",
     "code_section.ts",
     "detail_view.html.ts",

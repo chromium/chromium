@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {asyncMap} from '//resources/cr_elements/async_map_directive.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {asyncMap} from './async_map_directive.js';
 import type {ExtensionsItemListElement} from './item_list.js';
 import type {ServiceInterface} from './service.js';
 

@@ -19,7 +19,6 @@ export {ActivityLogHistoryItemElement} from './activity_log/activity_log_history
 export {ActivityLogStreamElement} from './activity_log/activity_log_stream.js';
 export type {StreamItem} from './activity_log/activity_log_stream_item.js';
 export {ActivityLogStreamItemElement, ARG_URL_PLACEHOLDER} from './activity_log/activity_log_stream_item.js';
-export {asyncMap} from './async_map_directive.js';
 export {ExtensionsCodeSectionElement} from './code_section.js';
 export {ExtensionsDetailViewElement} from './detail_view.js';
 export {DragAndDropHandler} from './drag_and_drop_handler.js';

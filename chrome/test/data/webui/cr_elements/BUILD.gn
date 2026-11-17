@@ -36,6 +36,10 @@ build_webui_tests("build") {
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/pending.d.ts" ]
 
+  if (!is_android || is_desktop_android) {
+    files += [ "async_map_directive_test.ts" ]
+  }
+
   if (!is_android) {
     files += [
       "cr_a11y_announcer_test.ts",

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
-import {AsyncDirective, directive, html, PartType} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {PartInfo, TemplateResult} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {assert} from '//resources/js/assert.js';
+import {AsyncDirective, directive, html, PartType} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PartInfo, TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 
 // Directive to render some items in an array asynchronously. Initially
 // renders `initialCount` items, and renders remaining items asynchronously
@@ -13,7 +13,7 @@ import type {PartInfo, TemplateResult} from 'chrome://resources/lit/v3_0/lit.rol
 // `initialCount` when frames render more quickly than the target, and halves if
 // frames render more slowly than the target (20fps).
 class AsyncMapDirective<T> extends AsyncDirective {
-  template: (item: T) => TemplateResult = _item => html``;
+  template: (item: T, index: number) => TemplateResult = _item => html``;
   initialCount: number = -1;
   items: T[] = [];
 
@@ -33,7 +33,7 @@ class AsyncMapDirective<T> extends AsyncDirective {
   }
 
   render(
-      items: T[], template: ((item: T) => TemplateResult),
+      items: T[], template: ((item: T, index: number) => TemplateResult),
       initialCount: number) {
     // Clear any outstanding timeout or animation frame.
     if (this.timeout_) {
@@ -67,7 +67,7 @@ class AsyncMapDirective<T> extends AsyncDirective {
   }
 
   private renderItems_(): TemplateResult[] {
-    return this.renderedItems_.map(item => this.template(item));
+    return this.renderedItems_.map((item, index) => this.template(item, index));
   }
 
   private async renderInChunks_() {
@@ -115,7 +115,7 @@ class AsyncMapDirective<T> extends AsyncDirective {
 export interface AsyncMapDirectiveFn {
   <T>(
       items: T[],
-      template: (item: T) => TemplateResult,
+      template: (item: T, index: number) => TemplateResult,
       initialCount: number,
       ): unknown;
 }
