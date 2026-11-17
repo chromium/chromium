@@ -233,7 +233,9 @@ void HardwareDisplayController::SchedulePageFlip(
     DrmOverlayPlaneList plane_list,
     SwapCompletionOnceCallback submission_callback,
     PresentationOnceCallback presentation_callback) {
-  CHECK(!page_flip_request_, base::NotFatalUntil::M163);
+  // TODO(crbug.com/586663758): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!page_flip_request_);
   TRACE_EVENT0("drm", "HDC::SchedulePageFlip");
   scoped_refptr<PageFlipRequest> page_flip_request =
       base::MakeRefCounted<PageFlipRequest>(GetRefreshInterval());
