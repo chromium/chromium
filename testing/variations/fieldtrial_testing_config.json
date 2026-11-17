@@ -6090,6 +6090,7 @@
                         "ContextualTasksEphemeralBrandedEntryPoint",
                         "ContextualTasksEphemeralButtonAutoDismiss",
                         "ContextualTasksEphemeralButtonContextMenu",
+                        "ContextualTasksEphemeralPinButtonRefactor",
                         "ContextualTasksPinnedButtonActiveIndicator",
                         "ContextualTasksPinningStringVariants",
                         "ContextualTasksPinningV2",
@@ -6099,7 +6100,6 @@
                         "EnableContextualTasksPinButtonOnSrp"
                     ],
                     "disable_features": [
-                        "ContextualTasksEphemeralPinButtonRefactor",
                         "ContextualTasksHideMenuOnAiPage",
                         "EphemeralPinningVisibleWhenPermanentlyPinned"
                     ]

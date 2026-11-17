@@ -82,10 +82,9 @@ BASE_FEATURE(kEnableContextualTasksPinButtonOnSrp,
 BASE_FEATURE(kContextualTasksPinningV2, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Routes the unpinned Contextual Tasks ephemeral toolbar button through
-// PinnedToolbarActions::ShowActionEphemerallyInToolbar in Pinning V2 instead of
-// the separate ContextualTasksButton view.
+// PinnedToolbarActions::ShowActionEphemerallyInToolbar in Pinning V2.
 BASE_FEATURE(kContextualTasksEphemeralPinButtonRefactor,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Shows an active indicator (blue icon and underline pill) on the permanent
 // pinned contextual tasks toolbar button when the active tab has an ongoing
