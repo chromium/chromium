@@ -180,6 +180,12 @@
   <message name="IDS_ERRORPAGES_SUMMARY_PROXY_CONNECTION_FAILED" desc="Summary in the error page when the proxy server connection failed.">
     There is something wrong with the proxy server, or the address is incorrect.
   </message>
+  <message name="IDS_ERRORPAGES_SUMMARY_TUNNEL_CONNECTION_FAILED" desc="Summary in the error page when establishing a tunnel connection through the proxy server failed.">
+    The proxy server couldn’t establish a secure connection.
+  </message>
+  <message name="IDS_ERRORPAGES_SUMMARY_PROXY_CERTIFICATE_INVALID" desc="Summary in the error page when the proxy server presented an invalid security certificate.">
+    The proxy server’s security certificate is invalid.
+  </message>
   <message name="IDS_ERRORPAGES_SUMMARY_CACHE_READ_FAILURE" desc="Summary in the error page when we encountered an error reading from the cache.  Generally this happens when the disk cache is corrupted from improper shutdown.">
     The saved (cached) copy of this site was unreadable.
   </message>

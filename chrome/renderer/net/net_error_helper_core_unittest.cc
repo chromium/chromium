@@ -1216,4 +1216,103 @@ TEST_F(NetErrorHelperCoreAutoFetchTest, AutoFetchTriggered) {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+testing::AssertionResult HasSuggestionSummary(
+    const base::Value& suggestion_value,
+    int expected_message_id) {
+  const base::DictValue* suggestion_dict = suggestion_value.GetIfDict();
+  if (!suggestion_dict) {
+    return testing::AssertionFailure() << "Suggestion entry is not a dict";
+  }
+  const std::string* suggestion = suggestion_dict->FindString("summary");
+  if (!suggestion) {
+    return testing::AssertionFailure() << "Suggestion dict missing 'summary'";
+  }
+  const std::string expected = l10n_util::GetStringUTF8(expected_message_id);
+  if (*suggestion != expected) {
+    return testing::AssertionFailure() << "Expected summary \"" << expected
+                                       << "\", got \"" << *suggestion << "\"";
+  }
+  return testing::AssertionSuccess();
+}
+
+struct ProxyErrorTestCase {
+  net::Error error_code;
+  int expected_heading_id;
+  int expected_summary_id;
+  bool expected_reload_button_shown;
+};
+
+class NetErrorHelperCoreProxyErrorTest
+    : public NetErrorHelperCoreTest,
+      public testing::WithParamInterface<ProxyErrorTestCase> {};
+
+TEST_P(NetErrorHelperCoreProxyErrorTest,
+       ProxyErrorsHaveDedicatedStringsAndSuggestions) {
+  const ProxyErrorTestCase& test_case = GetParam();
+  EXPECT_TRUE(error_page::LocalizedError::HasStrings(
+      error_page::Error::kNetErrorDomain, test_case.error_code));
+
+  error_page::LocalizedError::PageState page_state =
+      GetErrorPageState(test_case.error_code, /*is_kiosk_mode=*/false);
+  const std::string* heading =
+      page_state.strings.FindStringByDottedPath("heading.msg");
+  ASSERT_TRUE(heading);
+  EXPECT_EQ(*heading, l10n_util::GetStringUTF8(test_case.expected_heading_id));
+
+  const std::string* summary =
+      page_state.strings.FindStringByDottedPath("summary.msg");
+  ASSERT_TRUE(summary);
+  EXPECT_EQ(*summary, l10n_util::GetStringUTF8(test_case.expected_summary_id));
+
+  EXPECT_EQ(page_state.reload_button_shown,
+            test_case.expected_reload_button_shown);
+  EXPECT_EQ(page_state.strings.FindDict("reloadButton") != nullptr,
+            test_case.expected_reload_button_shown);
+
+  const base::ListValue* suggestions_summary_list =
+      page_state.strings.FindList("suggestionsSummaryList");
+  ASSERT_TRUE(suggestions_summary_list);
+#if BUILDFLAG(IS_CHROMEOS)
+  ASSERT_EQ(suggestions_summary_list->size(), 2u);
+  EXPECT_TRUE(
+      HasSuggestionSummary((*suggestions_summary_list)[0],
+                           IDS_ERRORPAGES_SUGGESTION_CONTACT_ADMIN_SUMMARY));
+  EXPECT_TRUE(HasSuggestionSummary((*suggestions_summary_list)[1],
+                                   IDS_ERRORPAGES_SUGGESTION_DIAGNOSE));
+#else
+  ASSERT_EQ(suggestions_summary_list->size(), 1u);
+  EXPECT_TRUE(HasSuggestionSummary(
+      (*suggestions_summary_list)[0],
+      IDS_ERRORPAGES_SUGGESTION_CONTACT_ADMIN_SUMMARY_STANDALONE));
+#endif
+
+  // In kiosk mode, administrator and diagnostic tool suggestions are omitted.
+  error_page::LocalizedError::PageState kiosk_page_state =
+      GetErrorPageState(test_case.error_code, /*is_kiosk_mode=*/true);
+  const base::ListValue* kiosk_suggestions =
+      kiosk_page_state.strings.FindList("suggestionsSummaryList");
+  ASSERT_TRUE(kiosk_suggestions);
+  EXPECT_TRUE(kiosk_suggestions->empty());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NetErrorHelperCoreProxyErrorTest,
+    testing::Values(
+        ProxyErrorTestCase{
+            net::ERR_TUNNEL_CONNECTION_FAILED,
+            IDS_ERRORPAGES_HEADING_NOT_AVAILABLE,
+            IDS_ERRORPAGES_SUMMARY_TUNNEL_CONNECTION_FAILED,
+            /*expected_reload_button_shown=*/true,
+        },
+        ProxyErrorTestCase{
+            net::ERR_PROXY_CERTIFICATE_INVALID,
+            IDS_ERRORPAGES_HEADING_INSECURE_CONNECTION,
+            IDS_ERRORPAGES_SUMMARY_PROXY_CERTIFICATE_INVALID,
+            /*expected_reload_button_shown=*/false,
+        }),
+    [](const testing::TestParamInfo<ProxyErrorTestCase>& info) {
+      return net::ErrorToShortString(info.param.error_code);
+    });
+
 }  // namespace
