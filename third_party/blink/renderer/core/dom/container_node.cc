@@ -23,6 +23,8 @@
 
 #include "third_party/blink/renderer/core/dom/container_node.h"
 
+#include <algorithm>
+
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_html_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sethtmlunsafeoptions_trustedhtmlparseroptions.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -743,6 +745,16 @@ void ContainerNode::ReplaceChild(const VectorOf<Node>& new_children,
         return;
       }
       if (!detector.NeedsRecheck()) {
+        needs_recheck = true;
+      }
+      // The detector above only watches this node's document. Synchronous
+      // event handlers run during the removal (e.g. `blur`) could have
+      // inserted one of `new_children` into a different document, so a
+      // recheck is needed if any of them is not in this document.
+      if (!needs_recheck &&
+          std::ranges::any_of(new_children, [this](const Node* child) {
+            return child->GetDocument() != GetDocument();
+          })) {
         needs_recheck = true;
       }
     }
