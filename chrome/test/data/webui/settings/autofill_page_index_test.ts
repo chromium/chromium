@@ -85,6 +85,7 @@ suite('AutofillPageIndex', function() {
       showSuggestionsFromGeminiSettings: true,
       shoppingIntegrationEnabled: true,
       offersAndLoyaltyCardsSettingsEnabled: true,
+      settingsRefresh2026: '',
     });
     resetRouterForTesting();
 
@@ -236,6 +237,33 @@ suite('AutofillPageIndex', function() {
     const result = await index.searchContents('a');
     assertGT(result.matchCount, 0);
     assertFalse(result.canceled);
+    assertFalse(result.wasClearSearch);
+  });
+
+  test('SettingsRefresh2026RendersAutofillPageV2', async function() {
+    assertTrue(!!index.$.viewManager.querySelector(
+        'settings-autofill-page#parent[slot=view]'));
+    assertFalse(!!index.$.viewManager.querySelector(
+        'settings-autofill-page-v2#parent[slot=view]'));
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      settingsRefresh2026: 'settings-refresh-2026',
+    });
+    resetRouterForTesting();
+
+    index = document.createElement('settings-autofill-page-index');
+    document.body.appendChild(index);
+    await microtasksFinished();
+
+    assertFalse(!!index.$.viewManager.querySelector(
+        'settings-autofill-page#parent[slot=view]'));
+    assertTrue(!!index.$.viewManager.querySelector(
+        'settings-autofill-page-v2#parent[slot=view]'));
+
+    const result = await index.searchContents('Payments');
+    assertFalse(result.canceled);
+    assertGT(result.matchCount, 0);
     assertFalse(result.wasClearSearch);
   });
 });

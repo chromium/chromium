@@ -47,13 +47,15 @@ export function getHtml(this: SettingsAutofillPageV2Element) {
   ` : ''}
   ${this.isShoppingEnabled_ ? html`
     <cr-link-row id="shoppingManagerButton" label="$i18n{shoppingCardTitle}"
-        start-icon="settings20:shopping-bag" @click="${this.onShoppingClick_}">
+        sub-label="$i18n{shoppingSublabel}" start-icon="settings20:shopping-bag"
+        @click="${this.onShoppingClick_}">
       <span slot="icon-label">${this.shoppingCount_}</span>
     </cr-link-row>
   ` : ''}
   ${this.showSuggestionsFromGeminiSettings_ ? html`
     <cr-link-row id="suggestionsFromGeminiLinkRow"
         label="$i18n{autofillPersonalContextSettingsTitle}"
+        sub-label="$i18n{autofillPersonalContextSettingsSummary}"
         start-icon="${this.spark_}"
         @click="${this.onSuggestionsFromGeminiClick_}">
     </cr-link-row>

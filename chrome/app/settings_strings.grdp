@@ -443,6 +443,9 @@
     <message name="IDS_SETTINGS_YOUR_SAVED_INFO_TRAVEL_SUBLABEL" desc="Sublabel for the Travel link row on the 'Your saved info' page.">
       Flight info, known traveller and redress numbers, vehicles
     </message>
+    <message name="IDS_SETTINGS_YOUR_SAVED_INFO_SHOPPING_SUBLABEL" desc="Sublabel for the Shopping link row on the 'Your saved info' page.">
+      Orders and shipments
+    </message>
     <message name="IDS_PASSWORDS_PAGE_IMPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX" desc="Shown after 'Google Chrome is trying to ' (or in some languages, 'Google Chrome wants to ') in a dialog message. Text for the dialog box that prompts the user for the biometric authentication before replacing passwords during Import.">
       replace existing passwords
     </message>
