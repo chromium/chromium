@@ -76,6 +76,12 @@ import org.chromium.content_public.browser.WebContents;
                 (PaymentHandlerContentFrameLayout)
                         LayoutInflater.from(context)
                                 .inflate(R.layout.payment_handler_content, null);
+        // Inflated without a parent, so the XML layout params are ignored and the sheet would
+        // default this view to MATCH_PARENT. WRAP_CONTENT lets the sheet see content height
+        // changes from window.resizeTo() mid-animation and retarget. The legacy half/full sheet
+        // doesn't depend on the content height, thus not impacted.
+        mContentView.setLayoutParams(
+                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         mContentView.setInputProtector(inputProtector);
         mContentView.setPadding(
                 /* left= */ 0, /* top= */ mToolbarHeightPx, /* right= */ 0, /* bottom= */ 0);

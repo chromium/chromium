@@ -74,13 +74,15 @@ import java.lang.annotation.RetentionPolicy;
     private final BottomSheetController mBottomSheetController;
     private final int mToolbarViewHeightPx;
     // The preferred content height in px: the height set by the payment app via
-    // PaymentRequestEvent.openWindow(url, {preferredSize}), or the default height supplied when it
-    // did not set one. Null for the legacy ServiceTabLauncher path, which uses the half/full sheet.
-    private final @Nullable Integer mPreferredContentHeightPx;
+    // PaymentRequestEvent.openWindow(url, {preferredSize}) or window.resizeTo(), or the default
+    // height supplied when it did not set one. Null for the legacy ServiceTabLauncher path, which
+    // uses the half/full sheet.
+    private @Nullable Integer mPreferredContentHeightPx;
     // See HANDLEBAR_HEIGHT_DP.
     private final int mHandlebarHeightPx;
     // See MIN_CONTENT_HEIGHT_DP.
     private final int mMinContentHeightPx;
+    private final DisplayAndroid mDisplay;
     private @CloseReason int mCloseReason = CloseReason.OTHERS;
     private final ActivityStateListener mActivityStateListener;
     private final InputProtector mInputProtector;
@@ -148,6 +150,7 @@ import java.lang.annotation.RetentionPolicy;
         // WebContents::GetContainerBounds(), which differ from Activity UI scaling on Automotive
         // (crbug.com/586512452).
         mMinContentHeightPx = DisplayUtil.dpToPx(display, MIN_CONTENT_HEIGHT_DP);
+        mDisplay = display;
         mModel = model;
         mModel.set(PaymentHandlerProperties.BACK_PRESS_CALLBACK, this::onSystemBackButtonClicked);
         mHider = hider;
@@ -259,6 +262,45 @@ import java.lang.annotation.RetentionPolicy;
      */
     private boolean hasPreferredHeight() {
         return mPreferredContentHeightPx != null;
+    }
+
+    /**
+     * Handles window.resizeTo() from the payment handler's top-level page. Unlike other consumers
+     * of resizeTo(), which apply the bounds to their outer window, this treats the height as the
+     * inner height, i.e. the height of the payment handler WebContents. The width is ignored. The
+     * height goes through the same minimum and clamping as the preferred height; see
+     * computeWrapContentWebViewHeightPx().
+     *
+     * <p>Ignored on the legacy ServiceTabLauncher path, which uses the half/full sheet.
+     *
+     * <p>This is experimental: window.resizeBy(), moveTo() and moveBy() also reach here, but behave
+     * unexpectedly, because content builds the bounds from the outer window that hosts the payment
+     * handler. TODO(crbug.com/573971229): Handle resizeBy(), moveTo() and moveBy() properly.
+     *
+     * <p>TODO(crbug.com/574061585): Enforce user activation for resizeTo().
+     *
+     * @param preferredHeightCssPx The requested height of the payment handler WebContents in CSS
+     *     pixels (1 CSS px = 1 dp).
+     */
+    /* package */ void onDynamicHeightChanged(int preferredHeightCssPx) {
+        // Only a sheet that wraps its content can follow a new height. That is every sheet opened
+        // through the main path, with the height from openWindow({preferredSize}) or the default
+        // height. The legacy ServiceTabLauncher path has no preferred height and uses the fixed
+        // half/full sheet, so the request is ignored there.
+        if (!hasPreferredHeight()) return;
+        // Ignore requests that arrive while the sheet is not showing, e.g. after the UI is
+        // destroyed, before the sheet opens, or while it animates out.
+        if (mIsDestroyed
+                || !mBottomSheetController.isSheetOpen()
+                || mBottomSheetController.isSheetHiding()) {
+            return;
+        }
+
+        // One CSS pixel is one dp at 100% page zoom (page zoom is not applied, matching desktop).
+        // Scale with DisplayAndroid rather than Activity DisplayMetrics to match Blink and
+        // WebContents::GetContainerBounds() on Automotive (crbug.com/586512452).
+        mPreferredContentHeightPx = DisplayUtil.dpToPx(mDisplay, preferredHeightCssPx);
+        updateContentVisibleHeight();
     }
 
     /**

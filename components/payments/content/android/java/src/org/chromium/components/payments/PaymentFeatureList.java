@@ -47,6 +47,8 @@ public abstract class PaymentFeatureList {
             "PaymentHandlerDialogUseFrameOriginAsInitiator";
     public static final String PAYMENT_HANDLER_DIALOG_USE_INITIATOR_IN_URL_LOAD =
             "PaymentHandlerDialogUseInitiatorInUrlLoad";
+    public static final String PAYMENT_HANDLER_DYNAMIC_CUSTOM_SIZE =
+            "PaymentHandlerDynamicCustomSize";
     public static final String SECURE_PAYMENT_CONFIRMATION = "SecurePaymentConfirmationBrowser";
     public static final String THREE_D_SECURE_TELEMETRY = "ThreeDSecureTelemetry";
 

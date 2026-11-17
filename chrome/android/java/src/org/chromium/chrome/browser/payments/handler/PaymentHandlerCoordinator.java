@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.payments.handler;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
+import android.graphics.Rect;
 
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
@@ -20,6 +21,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentHandlerNavigationThrottle;
@@ -171,10 +173,24 @@ public class PaymentHandlerCoordinator {
                         intentRequestTracker,
                         /* enablePermissionRequests= */ false);
         assert webContentView.getParent() == null;
+        // Only attach a delegate with the feature on, so that the ThinWebView keeps its default
+        // behavior otherwise.
+        @Nullable WebContentsDelegateAndroid webContentsDelegate = null;
+        if (PaymentFeatureList.isEnabled(PaymentFeatureList.PAYMENT_HANDLER_DYNAMIC_CUSTOM_SIZE)) {
+            webContentsDelegate =
+                    new WebContentsDelegateAndroid() {
+                        @Override
+                        public void setContentsBounds(WebContents source, Rect bounds) {
+                            mediator.onDynamicHeightChanged(bounds.height());
+                        }
+                    };
+        }
         thinWebView.attachWebContents(
                 mPaymentHandlerWebContents,
                 webContentView,
-                new ThinWebViewAttachParams.Builder().build());
+                new ThinWebViewAttachParams.Builder()
+                        .setWebContentsDelegate(webContentsDelegate)
+                        .build());
         PaymentHandlerView view =
                 new PaymentHandlerView(
                         activity,

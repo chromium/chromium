@@ -8,6 +8,6 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/payment_handler_content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
 </org.chromium.chrome.browser.payments.handler.PaymentHandlerContentFrameLayout>

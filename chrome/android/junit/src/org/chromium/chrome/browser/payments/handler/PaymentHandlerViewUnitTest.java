@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -70,5 +71,13 @@ public class PaymentHandlerViewUnitTest {
 
         assertEquals((float) HeightMode.DISABLED, view.getHalfHeightRatio(), FLOAT_TOLERANCE);
         assertEquals((float) HeightMode.WRAP_CONTENT, view.getFullHeightRatio(), FLOAT_TOLERANCE);
+    }
+
+    @Test
+    public void testContentViewHasWrapContentLayoutParams() {
+        PaymentHandlerView view = createView(/* hasPreferredHeight= */ true);
+
+        assertEquals(LayoutParams.MATCH_PARENT, view.getContentView().getLayoutParams().width);
+        assertEquals(LayoutParams.WRAP_CONTENT, view.getContentView().getLayoutParams().height);
     }
 }
