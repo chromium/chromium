@@ -63,7 +63,6 @@
 #include "chrome/browser/ui/views/autofill/at_memory_promo_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
-#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
 #include "chrome/browser/ui/views/dictation/dictation_iph.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
@@ -2209,15 +2208,10 @@ void MaybeRegisterChromeFeaturePromos(
               "Triggered when there are 3 or more tabs in an ephemeral "
               "focused group to suggest creating a tab group.")));
 
-  const ui::ElementIdentifier contextual_tasks_ephemeral_element_id =
-      contextual_tasks::IsContextualTasksEphemeralPinButtonRefactorEnabled()
-          ? kPinnedToolbarActionShowSidePanelContextualTasksElementId
-          : kContextualTasksEphemeralToolbarButtonElementId;
-
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHSidePanelContextualTasksPinnableFeature,
-          contextual_tasks_ephemeral_element_id,
+          kPinnedToolbarActionShowSidePanelContextualTasksElementId,
           IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_TEXT,
           IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_PIN_TO_TOOLBAR,
           base::BindRepeating(
@@ -2256,23 +2250,16 @@ void MaybeRegisterChromeFeaturePromos(
               "to smoothly onboard them into the pinning tutorial.")));
 
   // kIPHContextualTasksEphemeralToolbarButtonFeature:
-  const bool is_ephemeral_button_on_right =
-      contextual_tasks::GetEnableRightHandContextualTasksEphemeralButton() ||
-      contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
-          .Get() ||
-      contextual_tasks::IsContextualTasksPinningV2Enabled();
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(
           feature_engagement::kIPHContextualTasksEphemeralToolbarButtonFeature,
-          contextual_tasks_ephemeral_element_id,
+          kPinnedToolbarActionShowSidePanelContextualTasksElementId,
           contextual_tasks::GetContextualTasksPinningStringId(
               IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH),
           contextual_tasks::GetContextualTasksPinningStringId(
               IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH_SCREENREADER),
           FeaturePromoSpecification::AcceleratorInfo())
-          .SetBubbleArrow(is_ephemeral_button_on_right
-                              ? HelpBubbleArrow::kTopRight
-                              : HelpBubbleArrow::kTopLeft)
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetMetadata(148, "dianaou@google.com",
                        "Triggered when the ephemeral contextual tasks toolbar "
                        "button is shown after closing the side panel.")));
