@@ -662,7 +662,8 @@ class EnableDisableSingleClientSelfNotifyTest
 
   sync_pb::ClientToServerMessage TriggerGetUpdatesCycleAndWait() {
     TriggerSyncForDataTypes(0, {syncer::BOOKMARKS});
-    EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+    EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0), GetFakeServer())
+                    .Wait());
 
     sync_pb::ClientToServerMessage message;
     EXPECT_TRUE(GetFakeServer()->GetLastGetUpdatesMessage(&message));

@@ -20,6 +20,7 @@
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/progress_marker_map.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "net/http/http_status_code.h"
@@ -199,6 +200,12 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
 
   // Returns the store birthday.
   std::string GetStoreBirthday() const;
+
+  // Returns true if `progress_markers` are non-empty and up to date with all
+  // server entities and migration versions for all non-commit-only types in
+  // `progress_markers`.
+  bool AreProgressMarkersUpToDateForTesting(
+      const ProgressMarkerMap& progress_markers) const;
 
   // Returns all entities stored by the server of the given `data_type`.
   // Permanent entities are excluded. This method is only used in tests.

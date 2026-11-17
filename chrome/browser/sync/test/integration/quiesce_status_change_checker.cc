@@ -98,8 +98,9 @@ class QuiesceStatusChangeChecker::NestedUpdatedProgressMarkerChecker
  public:
   NestedUpdatedProgressMarkerChecker(
       syncer::SyncServiceImpl* service,
+      fake_server::FakeServer* fake_server,
       const base::RepeatingClosure& check_exit_condition_cb)
-      : UpdatedProgressMarkerChecker(service),
+      : UpdatedProgressMarkerChecker(service, fake_server),
         check_exit_condition_cb_(check_exit_condition_cb) {}
 
   ~NestedUpdatedProgressMarkerChecker() override = default;
@@ -112,12 +113,13 @@ class QuiesceStatusChangeChecker::NestedUpdatedProgressMarkerChecker
 };
 
 QuiesceStatusChangeChecker::QuiesceStatusChangeChecker(
-    std::vector<raw_ptr<syncer::SyncServiceImpl, VectorExperimental>> services)
+    std::vector<raw_ptr<syncer::SyncServiceImpl, VectorExperimental>> services,
+    fake_server::FakeServer* fake_server)
     : MultiClientStatusChangeChecker(services) {
   CHECK_LE(1U, services.size());
   for (syncer::SyncServiceImpl* service : services) {
     checkers_.push_back(std::make_unique<NestedUpdatedProgressMarkerChecker>(
-        service,
+        service, fake_server,
         base::BindRepeating(&QuiesceStatusChangeChecker::CheckExitCondition,
                             base::Unretained(this))));
   }

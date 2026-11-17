@@ -7,8 +7,13 @@
 
 #include <optional>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
+
+namespace fake_server {
+class FakeServer;
+}  // namespace fake_server
 
 // Waits until all local changes have been committed and progress markers are
 // updated. This includes local changes posted to the sync thread before the
@@ -25,7 +30,10 @@
 // TODO(crbug.com/40746547): replace the checker with more specific checkers.
 class UpdatedProgressMarkerChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit UpdatedProgressMarkerChecker(syncer::SyncServiceImpl* service);
+  // Both `service` and `fake_server` must not be null and must outlive this
+  // object.
+  UpdatedProgressMarkerChecker(syncer::SyncServiceImpl* service,
+                               fake_server::FakeServer* fake_server);
   ~UpdatedProgressMarkerChecker() override;
 
   // StatusChangeChecker implementation.
@@ -38,6 +46,7 @@ class UpdatedProgressMarkerChecker : public SingleClientStatusChangeChecker {
  private:
   void GotHasUnsyncedItems(bool has_unsynced_items);
 
+  const raw_ref<fake_server::FakeServer> fake_server_;
   bool waiting_for_engine_initialization_ = false;
   std::optional<bool> has_unsynced_items_;
 

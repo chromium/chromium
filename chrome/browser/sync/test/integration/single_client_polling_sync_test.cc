@@ -158,7 +158,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientPollingSyncTest,
   // After restart, the last sync cycle snapshot should be empty.
   // Once a sync request happened (e.g. by a poll), that snapshot is populated.
   // We use the following checker to simply wait for an non-empty snapshot.
-  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(
+      UpdatedProgressMarkerChecker(GetSyncService(0), GetFakeServer()).Wait());
 }
 
 }  // namespace

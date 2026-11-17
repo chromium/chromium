@@ -11,6 +11,10 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 
+namespace fake_server {
+class FakeServer;
+}  // namespace fake_server
+
 namespace syncer {
 class SyncServiceImpl;
 }  // namespace syncer
@@ -23,9 +27,11 @@ class SyncServiceImpl;
 // progress markers are needed to confirm that clients are in sync.
 class QuiesceStatusChangeChecker : public MultiClientStatusChangeChecker {
  public:
-  explicit QuiesceStatusChangeChecker(
+  // `fake_server` must not be null and must outlive this object.
+  QuiesceStatusChangeChecker(
       std::vector<raw_ptr<syncer::SyncServiceImpl, VectorExperimental>>
-          services);
+          services,
+      fake_server::FakeServer* fake_server);
 
   QuiesceStatusChangeChecker(const QuiesceStatusChangeChecker&) = delete;
   QuiesceStatusChangeChecker& operator=(const QuiesceStatusChangeChecker&) =

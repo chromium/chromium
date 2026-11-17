@@ -5,15 +5,19 @@
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/service/sync_service_impl.h"
+#include "components/sync/test/fake_server.h"
 
 UpdatedProgressMarkerChecker::UpdatedProgressMarkerChecker(
-    syncer::SyncServiceImpl* service)
-    : SingleClientStatusChangeChecker(service) {
+    syncer::SyncServiceImpl* service,
+    fake_server::FakeServer* fake_server)
+    : SingleClientStatusChangeChecker(service),
+      fake_server_(CHECK_DEREF(fake_server)) {
   CHECK(sync_datatype_helper::test()->TestUsesSelfNotifications());
 
   // HasUnsyncedItemsForTest() requires the engine to be initialized.
@@ -48,28 +52,24 @@ bool UpdatedProgressMarkerChecker::IsExitConditionSatisfied(std::ostream* os) {
     return false;
   }
 
+  if (has_unsynced_items_.value()) {
+    *os << "Has unsynced items.";
+    return false;
+  }
+
   const syncer::SyncCycleSnapshot& snap =
       service()->GetLastCycleSnapshotForDebugging();
   // Assuming the lack of ongoing remote changes, the progress marker can be
   // considered updated when:
-  // 1. Progress markers are non-empty (which discards the default value for
-  //    GetLastCycleSnapshot() prior to the first sync cycle).
-  // 2. Our last sync cycle committed no changes (because commits are followed
-  //    by the test-only 'self-notify' cycle).
-  // 3. No pending local changes (which will ultimately generate new progress
+  // 1. No pending local changes (which will ultimately generate new progress
   //    markers once submitted to the server).
-  if (snap.download_progress_markers().empty()) {
-    *os << "Progress markers are empty.";
-    return false;
-  }
-
-  if (snap.model_neutral_state().num_successful_commits > 0) {
-    *os << "Last sync cycle wasn't empty.";
-    return false;
-  }
-
-  if (has_unsynced_items_.value()) {
-    *os << "Has unsynced items.";
+  // 2. Progress markers are non-empty and match the latest state on
+  //    `FakeServer` (commits are followed by the test-only 'self-notify'
+  //    GetUpdates cycle, and commit-only cycles do not update progress
+  //    markers).
+  if (!fake_server_->AreProgressMarkersUpToDate(
+          snap.download_progress_markers())) {
+    *os << "Progress markers are not up to date.";
     return false;
   }
 
@@ -95,15 +95,9 @@ void UpdatedProgressMarkerChecker::OnStateChanged(syncer::SyncService* sync) {
 
 void UpdatedProgressMarkerChecker::OnSyncCycleCompleted(
     syncer::SyncService* sync) {
-  // Ignore sync cycles that were started before our constructor posted
-  // HasUnsyncedItemsForTest() to the sync thread.
-  if (!has_unsynced_items_.has_value()) {
-    return;
-  }
-
-  // Override |has_unsynced_items_| with the result of the sync cycle.
-  const syncer::SyncCycleSnapshot& snap =
-      service()->GetLastCycleSnapshotForDebugging();
-  has_unsynced_items_ = snap.has_remaining_local_changes();
-  CheckExitCondition();
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  has_unsynced_items_.reset();
+  service()->HasUnsyncedItemsForTest(
+      base::BindOnce(&UpdatedProgressMarkerChecker::GotHasUnsyncedItems,
+                     weak_ptr_factory_.GetWeakPtr()));
 }

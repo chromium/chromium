@@ -830,6 +830,42 @@ std::string LoopbackServer::GetStoreBirthday() const {
   return base::NumberToString(store_birthday_);
 }
 
+bool LoopbackServer::AreProgressMarkersUpToDateForTesting(
+    const ProgressMarkerMap& progress_markers) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  sync_pb::GetUpdatesMessage get_updates;
+  for (const auto& [type, serialized_marker] : progress_markers) {
+    if (CommitOnlyTypes().Has(type)) {
+      continue;
+    }
+    sync_pb::DataTypeProgressMarker marker;
+    if (!marker.ParseFromString(serialized_marker) || marker.token().empty()) {
+      return false;
+    }
+    *get_updates.add_from_progress_marker() = std::move(marker);
+  }
+
+  if (get_updates.from_progress_marker().empty()) {
+    return false;
+  }
+
+  UpdateSieve sieve(get_updates, migration_versions_);
+  std::vector<DataType> datatypes_to_migrate;
+  if (sieve.ShouldTriggerMigration(migration_versions_,
+                                   &datatypes_to_migrate)) {
+    return false;
+  }
+
+  for (const auto& [id, entity] : entities_) {
+    if (sieve.ClientWantsItem(*entity)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 std::vector<sync_pb::SyncEntity> LoopbackServer::GetSyncEntitiesByDataType(
     DataType data_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

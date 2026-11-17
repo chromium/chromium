@@ -326,7 +326,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, Sanity) {
   GURL url = embedded_test_server()->GetURL("/sync/simple.html");
   NavigateTab(0, url);
   EXPECT_TRUE(GetLocalWindows(0, &old_windows));
-  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(
+      UpdatedProgressMarkerChecker(GetSyncService(0), GetFakeServer()).Wait());
 
   // Get foreign session data from client 0.
   SyncedSessionVector sessions;
@@ -797,7 +798,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, CorruptForeignTabUpdate) {
   // Mimic a browser restart by forcing a refresh to get updates.
   GetSyncService(0)->TriggerRefresh(
       syncer::SyncService::TriggerRefreshSource::kUnknown, {syncer::SESSIONS});
-  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(
+      UpdatedProgressMarkerChecker(GetSyncService(0), GetFakeServer()).Wait());
 
   // Foreign data should be empty.
   SyncedSessionVector sessions;

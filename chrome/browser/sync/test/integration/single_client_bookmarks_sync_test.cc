@@ -706,8 +706,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
   SetFavicon(kSingleProfileIndex, bookmark, icon_url, original_favicon,
              bookmarks_helper::FROM_SYNC);
 
-  ASSERT_TRUE(
-      UpdatedProgressMarkerChecker(GetSyncService(kSingleProfileIndex)).Wait());
+  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(kSingleProfileIndex),
+                                           GetFakeServer())
+                  .Wait());
 
   scoped_refptr<base::RefCountedMemory> original_favicon_bytes =
       original_favicon.As1xPNGBytes();
@@ -732,15 +733,17 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest, DeleteFaviconFromSync) {
       AddURL(kSingleProfileIndex, u"title", page_url, GetStoreType());
   SetFavicon(0, bookmark, icon_url, CreateFavicon(SK_ColorWHITE),
              bookmarks_helper::FROM_UI);
-  ASSERT_TRUE(
-      UpdatedProgressMarkerChecker(GetSyncService(kSingleProfileIndex)).Wait());
+  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(kSingleProfileIndex),
+                                           GetFakeServer())
+                  .Wait());
 
   // Simulate receiving a favicon deletion from sync.
   DeleteFaviconMappings(kSingleProfileIndex, bookmark,
                         bookmarks_helper::FROM_SYNC);
 
-  ASSERT_TRUE(
-      UpdatedProgressMarkerChecker(GetSyncService(kSingleProfileIndex)).Wait());
+  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(kSingleProfileIndex),
+                                           GetFakeServer())
+                  .Wait());
   ASSERT_THAT(
       GetBookmarkBarNode(kSingleProfileIndex, GetStoreType())->children(),
       ElementsAre(IsUrlBookmark(u"title", page_url)));
@@ -1372,7 +1375,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
   // We use the following checker to simply wait for an non-empty snapshot.
   GetSyncService(0)->TriggerRefresh(
       syncer::SyncService::TriggerRefreshSource::kUnknown, {syncer::BOOKMARKS});
-  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(
+      UpdatedProgressMarkerChecker(GetSyncService(0), GetFakeServer()).Wait());
   ASSERT_EQ(1u, GetBookmarkBarNode(kSingleProfileIndex, GetStoreType())
                     ->children()
                     .size());

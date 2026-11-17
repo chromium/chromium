@@ -265,7 +265,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTest,
   // Setup sync, wait for its completion, and make sure changes were synced.
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(
+      UpdatedProgressMarkerChecker(GetSyncService(0), GetFakeServer()).Wait());
   // Upon a local creation, the received update will be seen as reflection and
   // get counted as incremental update.
   EXPECT_EQ(1, histogram_tester.GetBucketCount(
@@ -288,7 +289,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTest,
   // After restart, the last sync cycle snapshot should be empty. Once a sync
   // request happened (e.g. by a poll), that snapshot is populated. We use the
   // following checker to simply wait for an non-empty snapshot.
-  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(
+      UpdatedProgressMarkerChecker(GetSyncService(0), GetFakeServer()).Wait());
 
   // If that metadata hasn't been properly persisted, the password stored on the
   // server will be received at the client as an initial update or an

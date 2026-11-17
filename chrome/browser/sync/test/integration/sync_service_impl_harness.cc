@@ -27,8 +27,10 @@
 #include "chrome/browser/sync/test/integration/invalidations/invalidations_status_checker.h"
 #include "chrome/browser/sync/test/integration/quiesce_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
+#include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_signin_delegate.h"
+#include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/channel_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -413,7 +415,9 @@ bool SyncServiceImplHarness::AwaitQuiescence(
   for (SyncServiceImplHarness* harness : clients) {
     services.push_back(harness->service());
   }
-  return QuiesceStatusChangeChecker(services).Wait();
+  return QuiesceStatusChangeChecker(
+             services, sync_datatype_helper::test()->GetFakeServer())
+      .Wait();
 }
 
 bool SyncServiceImplHarness::AwaitEngineInitialization() {

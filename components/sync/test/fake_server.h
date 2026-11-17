@@ -22,6 +22,7 @@
 #include "base/values.h"
 #include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/progress_marker_map.h"
 #include "components/sync/engine/loopback_server/loopback_server.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/engine/loopback_server/persistent_bookmark_entity.h"
@@ -264,6 +265,12 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
       syncer::DataType type) const;
 
   std::string GetStoreBirthday() const;
+
+  // Returns true if `progress_markers` are non-empty and up to date with all
+  // server entities and migration versions for all non-commit-only types in
+  // `progress_markers`.
+  bool AreProgressMarkersUpToDate(
+      const syncer::ProgressMarkerMap& progress_markers) const;
 
   // Returns the current FakeServer as a WeakPtr.
   base::WeakPtr<FakeServer> AsWeakPtr();

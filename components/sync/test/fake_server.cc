@@ -641,6 +641,13 @@ std::string FakeServer::GetStoreBirthday() const {
   return loopback_server_->GetStoreBirthday();
 }
 
+bool FakeServer::AreProgressMarkersUpToDate(
+    const syncer::ProgressMarkerMap& progress_markers) const {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return loopback_server_->AreProgressMarkersUpToDateForTesting(  // IN-TEST
+      progress_markers);
+}
+
 const std::vector<sync_pb::DeletionOrigin>&
 FakeServer::GetCommittedDeletionOrigins(syncer::DataType type) const {
   auto it = committed_deletion_origins_.find(type);

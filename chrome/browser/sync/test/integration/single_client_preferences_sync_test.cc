@@ -248,7 +248,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest,
   GetSyncService(0)->TriggerRefresh(
       syncer::SyncService::TriggerRefreshSource::kUnknown,
       {syncer::PREFERENCES});
-  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(
+      UpdatedProgressMarkerChecker(GetSyncService(0), GetFakeServer()).Wait());
 
   EXPECT_EQ(0, histogram_tester.GetBucketCount(
                    "Sync.DataTypeEntityChange.PREFERENCE",
