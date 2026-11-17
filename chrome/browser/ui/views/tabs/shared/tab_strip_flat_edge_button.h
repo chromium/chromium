@@ -33,14 +33,17 @@ class TabStripFlatEdgeButton : public views::LabelButton,
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
-  // views::MaskedTargeterDelegate
+  // views::MaskedTargeterDelegate:
   bool GetHitTestMask(SkPath* mask) const override;
 
   void SetFlatEdge(FlatEdge flat_edge);
   void SetCornerRadius(float corner_radius);
+  void SetButtonSize(int button_size);
   void SetIconSize(int icon_size);
   void UpdateIcon(const ui::ImageModel& icon_image);
   void SetInsets(const gfx::Insets& insets);
+  void SetOuterInsets(const gfx::Insets& outer_insets);
+  void SetExtendHitTestToTop(bool extend_hit_test_to_top);
   void SetIconOpacity(float opacity);
   void SetPaintTransparent(bool paint_transparent);
 
@@ -76,6 +79,11 @@ class TabStripFlatEdgeButton : public views::LabelButton,
     return foreground_frame_inactive_color_id_;
   }
 
+ protected:
+  // Returns whether the containing browser frame is in condensed mode (e.g.,
+  // maximized or fullscreen), in which top-edge Fitts' law hit-testing applies.
+  virtual bool IsFrameCondensed() const;
+
  private:
   // views::View:
   void AddedToWidget() override;
@@ -84,9 +92,11 @@ class TabStripFlatEdgeButton : public views::LabelButton,
 
   ui::ColorId GetForegroundColor() const;
   ui::ColorId GetBackgroundColor() const;
+  gfx::Rect GetButtonBounds() const;
   SkRRect GetButtonShape() const;
   gfx::RoundedCornersF GetButtonCornerRadii() const;
 
+  void UpdateBorder();
   // Updates the label visibility and padding based on whether it should be
   // shown.
   void UpdateLabel(bool should_show);
@@ -96,6 +106,7 @@ class TabStripFlatEdgeButton : public views::LabelButton,
   // Whether the label should be shown, if there is space.
   bool should_show_label_ = false;
   std::u16string label_text_;
+  std::optional<int> button_size_;
   int icon_size_ = 0;
   float expansion_factor_ = 1.0f;
   views::LayoutOrientation expansion_orientation_ =
@@ -103,6 +114,9 @@ class TabStripFlatEdgeButton : public views::LabelButton,
   float flat_edge_factor_ = 1.0f;
   FlatEdge flat_edge_ = FlatEdge::kNone;
   std::optional<float> corner_radius_;
+  gfx::Insets internal_insets_;
+  gfx::Insets outer_insets_;
+  bool extend_hit_test_to_top_ = false;
   bool paint_transparent_ = false;
   ui::ColorId foreground_frame_active_color_id_;
   ui::ColorId foreground_frame_inactive_color_id_;

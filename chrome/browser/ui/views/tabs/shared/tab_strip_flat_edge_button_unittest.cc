@@ -7,11 +7,31 @@
 #include <memory>
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/widget/widget.h"
+
+namespace {
+
+class TestTabStripFlatEdgeButton : public TabStripFlatEdgeButton {
+ public:
+  void set_frame_condensed(bool condensed) { condensed_ = condensed; }
+
+  // TabStripFlatEdgeButton:
+  bool IsFrameCondensed() const override { return condensed_; }
+
+ private:
+  bool condensed_ = false;
+};
+
+}  // namespace
 
 class TabStripFlatEdgeButtonTest : public ChromeViewsTestBase {
  public:
@@ -165,4 +185,80 @@ TEST_F(TabStripFlatEdgeButtonTest, ForegroundFrameColorIds) {
       kColorNewTabButtonCRForegroundFrameInactive);
   EXPECT_EQ(button_->foreground_frame_inactive_color_id_for_testing(),
             kColorNewTabButtonCRForegroundFrameInactive);
+}
+
+TEST_F(TabStripFlatEdgeButtonTest, SetOuterInsetsUpdatesPreferredSizeAndMask) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  TabStripFlatEdgeButton* button = widget->SetContentsView(std::move(button_));
+
+  button->SetButtonSize(28);
+  button->SetCornerRadius(14.0f);
+  constexpr auto kOuterInsets = gfx::Insets::TLBR(6, 0, 7, 0);
+  button->SetOuterInsets(kOuterInsets);
+
+  EXPECT_EQ(button->GetPreferredSize(), gfx::Size(28, 41));
+  EXPECT_EQ(button->GetInsets(), kOuterInsets);
+
+  // Internal insets combine with outer insets without double-counting.
+  button->SetInsets(gfx::Insets::VH(0, 4));
+  EXPECT_EQ(button->GetInsets(), gfx::Insets::TLBR(6, 4, 7, 4));
+
+  button->SetSize(button->GetPreferredSize());
+  // Inside the circular visual button.
+  EXPECT_TRUE(button->HitTestPoint(gfx::Point(14, 20)));
+  // Outside the rounded top-left corner of the circle.
+  EXPECT_FALSE(button->HitTestPoint(gfx::Point(0, 6)));
+  // Above and below the visual button in the outer insets.
+  EXPECT_FALSE(button->HitTestPoint(gfx::Point(14, 2)));
+  EXPECT_FALSE(button->HitTestPoint(gfx::Point(14, 38)));
+}
+
+TEST_F(TabStripFlatEdgeButtonTest, ExtendHitTestToTopRespectsCondensedFrame) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* button =
+      widget->SetContentsView(std::make_unique<TestTabStripFlatEdgeButton>());
+
+  button->SetButtonSize(28);
+  button->SetCornerRadius(14.0f);
+  button->SetOuterInsets(gfx::Insets::TLBR(6, 0, 7, 0));
+  button->SetExtendHitTestToTop(true);
+  button->SetSize(button->GetPreferredSize());
+
+  // When the frame is not condensed, the top outer inset is not hit-tested.
+  button->set_frame_condensed(false);
+  EXPECT_FALSE(button->HitTestPoint(gfx::Point(0, 0)));
+  EXPECT_FALSE(button->HitTestPoint(gfx::Point(14, 0)));
+  EXPECT_FALSE(button->HitTestPoint(gfx::Point(14, 2)));
+  EXPECT_TRUE(button->HitTestPoint(gfx::Point(14, 20)));
+  EXPECT_FALSE(button->HitTestPoint(gfx::Point(14, 38)));
+
+  // When the frame is condensed, the top corners become square and the hit
+  // test mask extends all the way to the top edge (y = 0).
+  button->set_frame_condensed(true);
+  EXPECT_TRUE(button->HitTestPoint(gfx::Point(0, 0)));
+  EXPECT_TRUE(button->HitTestPoint(gfx::Point(14, 0)));
+  EXPECT_TRUE(button->HitTestPoint(gfx::Point(27, 0)));
+  EXPECT_TRUE(button->HitTestPoint(gfx::Point(14, 2)));
+  EXPECT_TRUE(button->HitTestPoint(gfx::Point(14, 20)));
+  // Bottom remains rounded and excluded from the bottom outer inset.
+  EXPECT_FALSE(button->HitTestPoint(gfx::Point(0, 33)));
+  EXPECT_FALSE(button->HitTestPoint(gfx::Point(14, 38)));
+}
+
+TEST_F(TabStripFlatEdgeButtonTest,
+       InternalInsetsStayClickableWithoutOuterInsets) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  TabStripFlatEdgeButton* button = widget->SetContentsView(std::move(button_));
+
+  const int default_size = GetLayoutConstant(
+      LayoutConstant::kVerticalTabStripTopContainerButtonSize);
+  button->SetInsets(gfx::Insets::VH(5, 6));
+
+  EXPECT_EQ(button->GetPreferredSize(), gfx::Size(default_size, default_size));
+  button->SetSize(button->GetPreferredSize());
+  // Internal top inset remains inside the clickable button shape.
+  EXPECT_TRUE(button->HitTestPoint(gfx::Point(default_size / 2, 2)));
 }

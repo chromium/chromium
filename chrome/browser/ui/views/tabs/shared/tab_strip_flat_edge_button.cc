@@ -21,6 +21,7 @@
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_targeter.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -75,6 +76,7 @@ TabStripFlatEdgeButton::TabStripFlatEdgeButton()
           kColorTabSearchButtonCRForegroundFrameActive),
       foreground_frame_inactive_color_id_(
           kColorTabSearchButtonCRForegroundFrameInactive) {
+  SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   ConfigureInkDrop(
       this, std::make_unique<views::RoundRectHighlightPathGenerator>(
                 gfx::Insets(), GetButtonCornerRadii()));
@@ -91,14 +93,17 @@ TabStripFlatEdgeButton::~TabStripFlatEdgeButton() = default;
 
 gfx::Size TabStripFlatEdgeButton::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  const int raw_button_size = GetLayoutConstant(
-      LayoutConstant::kVerticalTabStripTopContainerButtonSize);
+  const int raw_button_size = button_size_.value_or(GetLayoutConstant(
+      LayoutConstant::kVerticalTabStripTopContainerButtonSize));
   gfx::Size size(raw_button_size, raw_button_size);
 
   if (expansion_orientation_ == views::LayoutOrientation::kHorizontal) {
     size.set_width(size.width() * expansion_factor_);
   } else {
     size.set_height(size.height() * expansion_factor_);
+  }
+  if (!size.IsEmpty()) {
+    size.Enlarge(outer_insets_.width(), outer_insets_.height());
   }
   return size;
 }
@@ -121,10 +126,32 @@ void TabStripFlatEdgeButton::UpdateIcon(const ui::ImageModel& icon_image) {
   SetImageModel(views::Button::STATE_DISABLED, image_model);
 }
 
+void TabStripFlatEdgeButton::SetButtonSize(int button_size) {
+  if (button_size_ == button_size) {
+    return;
+  }
+  button_size_ = button_size;
+  PreferredSizeChanged();
+}
+
 void TabStripFlatEdgeButton::SetInsets(const gfx::Insets& insets) {
-  std::unique_ptr<views::LabelButtonBorder> border = CreateDefaultBorder();
-  border->set_insets(insets);
-  SetBorder(std::move(border));
+  internal_insets_ = insets;
+  UpdateBorder();
+}
+
+void TabStripFlatEdgeButton::SetOuterInsets(const gfx::Insets& outer_insets) {
+  if (outer_insets_ == outer_insets) {
+    return;
+  }
+  outer_insets_ = outer_insets;
+  UpdateBorder();
+  UpdateHighlightPathAndInkDrop();
+  PreferredSizeChanged();
+}
+
+void TabStripFlatEdgeButton::SetExtendHitTestToTop(
+    bool extend_hit_test_to_top) {
+  extend_hit_test_to_top_ = extend_hit_test_to_top;
 }
 
 void TabStripFlatEdgeButton::SetIconOpacity(float opacity) {
@@ -215,8 +242,19 @@ void TabStripFlatEdgeButton::OnThemeChanged() {
 }
 
 bool TabStripFlatEdgeButton::GetHitTestMask(SkPath* mask) const {
-  *mask = SkPath::RRect(GetButtonShape());
+  gfx::Rect rect = GetButtonBounds();
+  gfx::RoundedCornersF corner_radii = GetButtonCornerRadii();
+  if (extend_hit_test_to_top_ && IsFrameCondensed()) {
+    rect.SetVerticalBounds(0, rect.bottom());
+    corner_radii.set_upper_left(0.0f);
+    corner_radii.set_upper_right(0.0f);
+  }
+  *mask = SkPath::RRect(gfx::RoundedRectToSkRRect(rect, corner_radii));
   return true;
+}
+
+bool TabStripFlatEdgeButton::IsFrameCondensed() const {
+  return false;
 }
 
 void TabStripFlatEdgeButton::SetFlatEdge(FlatEdge flat_edge) {
@@ -240,7 +278,7 @@ void TabStripFlatEdgeButton::SetCornerRadius(float corner_radius) {
 void TabStripFlatEdgeButton::UpdateHighlightPathAndInkDrop() {
   SetProperty(views::kHighlightPathGeneratorKey,
               std::make_unique<views::RoundRectHighlightPathGenerator>(
-                  gfx::Insets(), GetButtonCornerRadii()));
+                  outer_insets_, GetButtonCornerRadii()));
   // The ink drop doesn't automatically pick up on rounded corner changes, so
   // we need to manually notify it here.
   if (GetWidget() && views::InkDrop::Get(this)->HasInkDrop()) {
@@ -348,8 +386,20 @@ gfx::RoundedCornersF TabStripFlatEdgeButton::GetButtonCornerRadii() const {
   }
 }
 
+gfx::Rect TabStripFlatEdgeButton::GetButtonBounds() const {
+  gfx::Rect bounds = GetLocalBounds();
+  bounds.Inset(outer_insets_);
+  return bounds;
+}
+
 SkRRect TabStripFlatEdgeButton::GetButtonShape() const {
-  return gfx::RoundedRectToSkRRect(GetLocalBounds(), GetButtonCornerRadii());
+  return gfx::RoundedRectToSkRRect(GetButtonBounds(), GetButtonCornerRadii());
+}
+
+void TabStripFlatEdgeButton::UpdateBorder() {
+  std::unique_ptr<views::LabelButtonBorder> border = CreateDefaultBorder();
+  border->set_insets(internal_insets_ + outer_insets_);
+  SetBorder(std::move(border));
 }
 
 void TabStripFlatEdgeButton::UpdateLabel(bool should_show) {
