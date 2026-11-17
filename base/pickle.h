@@ -353,9 +353,10 @@ class BASE_EXPORT Pickle {
   // TODO(https://crbug.com/478784025): Use `SpanWriter` for writing data
   // instead of manual management.
 
-  // `header_` uses UnprotectedInRelease for performance reasons (based on
-  // analysis of sampling profiler data).
-  raw_ptr<Header, UnprotectedInRelease> header_;
+  // UnprotectedInReleaseForPerformance: Based on analysis of sampling profiler
+  // data and tracing_perftests TraceEventPerfTest.Create_10000_TracedValue.
+  // Resize() reassigns `header_` on every reallocation.
+  raw_ptr<Header, UnprotectedInReleaseForPerformance> header_;
   size_t header_size_;  // Supports extra data between header and payload.
   // Allocation size of payload (or -1 if allocation is const). Note: this
   // doesn't count the header.
