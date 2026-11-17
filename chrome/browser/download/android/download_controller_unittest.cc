@@ -11,15 +11,19 @@
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/android/profile_key_startup_accessor.h"
 #include "chrome/browser/download/android/dangerous_download_dialog_bridge.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/download/simple_download_manager_coordinator_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_source.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "components/download/public/common/simple_download_manager_coordinator.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -28,6 +32,7 @@
 #include "content/public/test/mock_download_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/gurl.h"
 
 using ::testing::_;
@@ -64,6 +69,8 @@ class DownloadControllerTest : public testing::Test {
   void SetUp() override {
     profile_.SetDownloadManagerForTesting(
         std::make_unique<NiceMock<content::MockDownloadManager>>());
+    SimpleDownloadManagerCoordinatorFactory::GetForKey(profile_.GetProfileKey())
+        ->SetSimpleDownloadManager(download_manager(), true);
     DownloadCoreServiceFactory::GetForBrowserContext(&profile_)
         ->SetDownloadManagerDelegateForTesting(
             std::make_unique<ChromeDownloadManagerDelegate>(&profile_));
@@ -76,6 +83,11 @@ class DownloadControllerTest : public testing::Test {
 
   TestMockDownloadItem* item() { return &item_; }
   Profile* profile() { return &profile_; }
+
+  content::MockDownloadManager* download_manager() {
+    return static_cast<content::MockDownloadManager*>(
+        profile_.GetDownloadManager());
+  }
 
   DownloadController* controller() { return &controller_; }
 
@@ -299,4 +311,28 @@ TEST_F(DownloadControllerTest,
   ASSERT_NE(nullptr, dangerous_download_bridge());
   EXPECT_CALL(*item(), ValidateDangerousDownload()).Times(1);
   dangerous_download_bridge()->Accepted(kGuid);
+}
+
+TEST_F(DownloadControllerTest,
+       ScheduleRemoveDownloadItem_NullBrowserContext_RemovesViaCoordinator) {
+  TestMockDownloadItem unattached_item;
+  ASSERT_EQ(nullptr,
+            content::DownloadItemUtils::GetBrowserContext(&unattached_item));
+  EXPECT_CALL(unattached_item, GetGuid())
+      .WillRepeatedly(ReturnRefOfCopy(std::string("unattached-guid")));
+
+  ProfileKeyStartupAccessor::GetInstance()->SetProfileKey(
+      profile()->GetProfileKey());
+  absl::Cleanup reset_profile_key = [] {
+    ProfileKeyStartupAccessor::GetInstance()->Reset();
+  };
+
+  base::test::TestFuture<void> remove_future;
+  EXPECT_CALL(*download_manager(), GetDownloadByGuid("unattached-guid"))
+      .WillOnce(Return(&unattached_item));
+  EXPECT_CALL(unattached_item, Remove())
+      .WillOnce(base::test::InvokeFuture(remove_future));
+
+  DownloadController::ScheduleRemoveDownloadItem(&unattached_item);
+  EXPECT_TRUE(remove_future.Wait());
 }
