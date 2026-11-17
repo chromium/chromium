@@ -167,6 +167,15 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mConfirmationDialog != null) {
+            mConfirmationDialog.dismiss();
+            mConfirmationDialog = null;
+        }
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         sPausedInstance = null;
@@ -210,6 +219,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                                 })
                         .setNegativeButton(
                                 R.string.cancel, (dialog, which) -> mConfirmationDialog = null)
+                        .setOnDismissListener(dialog -> mConfirmationDialog = null)
                         .show();
         return true;
     }

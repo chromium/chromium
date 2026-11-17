@@ -429,6 +429,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         super.onDestroyView();
         if (mConfirmationDialog != null) {
             mConfirmationDialog.dismiss();
+            mConfirmationDialog = null;
         }
     }
 
@@ -1994,9 +1995,11 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                                     if (mWebsiteSettingsObserver != null) {
                                         mWebsiteSettingsObserver.onPermissionsReset();
                                     }
+                                    mConfirmationDialog = null;
                                 })
                         .setNegativeButton(
                                 R.string.cancel, (dialog, which) -> mConfirmationDialog = null)
+                        .setOnDismissListener(dialog -> mConfirmationDialog = null)
                         .show();
     }
 
@@ -2024,9 +2027,11 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                                     if (mWebsiteSettingsObserver != null) {
                                         mWebsiteSettingsObserver.onPermissionsReset();
                                     }
+                                    mConfirmationDialog = null;
                                 })
                         .setNegativeButton(
                                 R.string.cancel, (dialog, which) -> mConfirmationDialog = null)
+                        .setOnDismissListener(dialog -> mConfirmationDialog = null)
                         .show();
     }
 

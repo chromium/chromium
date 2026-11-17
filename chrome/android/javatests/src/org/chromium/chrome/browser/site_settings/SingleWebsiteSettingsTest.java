@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
@@ -30,10 +31,17 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import android.view.View;
+
 import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 import androidx.test.InstrumentationRegistry;
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
+
+import leakcanary.AppWatcher;
+import leakcanary.LeakCanary;
 
 import org.junit.Assume;
 import org.junit.Before;
@@ -44,16 +52,22 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import shark.AndroidObjectInspectors;
+import shark.ObjectInspector;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.LeakCanaryChecker.LeakCheckHook;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -72,6 +86,7 @@ import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.browser_ui.site_settings.PermissionSetting;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsUtil;
 import org.chromium.components.browser_ui.site_settings.Website;
@@ -1489,5 +1504,81 @@ public class SingleWebsiteSettingsTest {
             String origin, String embedder, @ContentSetting int setting) {
         return createWebsiteWithStorageAccessPermission(
                 origin, embedder, setting, ProviderType.NONE);
+    }
+
+    @Test
+    @LargeTest
+    public void singleWebsiteSettingsClearAndResetTest() {
+        mCtaTestRule.startOnBlankPage();
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startAllSitesSettings(SiteSettingsCategory.Type.ALL_SITES);
+        List<ObjectInspector> originalInspectors = LeakCanary.getConfig().getObjectInspectors();
+        try {
+            openAndResetSingleWebsiteSettings(settingsActivity);
+            // WideDisplayPadding still retains the popped SingleWebsiteSettings fragment while
+            // SettingsActivity stays open, so exclude fragment/lifecycle inspectors to check that
+            // the dismissed confirmation dialog's view hierarchy is not retained.
+            List<ObjectInspector> inspectors = new ArrayList<>();
+            for (ObjectInspector inspector : originalInspectors) {
+                if (inspector != AndroidObjectInspectors.ANDROIDX_FRAGMENT
+                        && inspector != AndroidObjectInspectors.LIFECYCLE_REGISTRY) {
+                    inspectors.add(inspector);
+                }
+            }
+            LeakCanary.setConfig(
+                    LeakCanary.getConfig().newBuilder().objectInspectors(inspectors).build());
+            new LeakCheckHook().onAfterTestClass(SingleWebsiteSettingsTest.class);
+        } finally {
+            LeakCanary.setConfig(
+                    LeakCanary.getConfig()
+                            .newBuilder()
+                            .objectInspectors(originalInspectors)
+                            .build());
+            ApplicationTestUtils.finishActivity(settingsActivity);
+        }
+    }
+
+    private static void openAndResetSingleWebsiteSettings(SettingsActivity settingsActivity) {
+        Website site = new Website(WebsiteAddress.create(EXAMPLE_ADDRESS), null);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Preference sitePref = new Preference(settingsActivity);
+                    sitePref.setFragment(SingleWebsiteSettings.class.getName());
+                    sitePref.getExtras().putSerializable(SingleWebsiteSettings.EXTRA_SITE, site);
+                    ((PreferenceFragmentCompat) settingsActivity.getMainFragment())
+                            .onPreferenceTreeClick(sitePref);
+                });
+        CriteriaHelper.pollUiThread(
+                () -> settingsActivity.getMainFragment() instanceof SingleWebsiteSettings);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleWebsiteSettings singleWebsite =
+                            (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                    Preference resetPref =
+                            singleWebsite.findPreference(SingleWebsiteSettings.PREF_RESET_SITE);
+                    singleWebsite.onPreferenceClick(resetPref);
+                });
+        View[] dialogRootView = new View[1];
+        onView(withText(R.string.website_reset))
+                .inRoot(isDialog())
+                .check(
+                        (view, noViewFoundException) -> {
+                            if (noViewFoundException != null) {
+                                throw noViewFoundException;
+                            }
+                            dialogRootView[0] = view.getRootView();
+                        })
+                .perform(click());
+        CriteriaHelper.pollUiThread(
+                () -> !(settingsActivity.getMainFragment() instanceof SingleWebsiteSettings));
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        assertNotNull("Confirmation dialog root view should be captured.", dialogRootView[0]);
+        AppWatcher.INSTANCE.getObjectWatcher().clearWatchedObjects();
+        AppWatcher.INSTANCE
+                .getObjectWatcher()
+                .expectWeaklyReachable(
+                        dialogRootView[0],
+                        "SingleWebsiteSettings.mConfirmationDialog view hierarchy");
+        dialogRootView[0] = null;
     }
 }

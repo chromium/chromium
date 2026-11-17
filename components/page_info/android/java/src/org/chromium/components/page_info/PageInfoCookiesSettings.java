@@ -120,6 +120,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         super.onDestroyView();
         if (mConfirmationDialog != null) {
             mConfirmationDialog.dismiss();
+            mConfirmationDialog = null;
         }
     }
 
@@ -194,6 +195,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                                 (dialog, which) -> mOnClearCallback.run())
                         .setNegativeButton(
                                 R.string.cancel, (dialog, which) -> mConfirmationDialog = null)
+                        .setOnDismissListener(dialog -> mConfirmationDialog = null)
                         .show();
     }
 

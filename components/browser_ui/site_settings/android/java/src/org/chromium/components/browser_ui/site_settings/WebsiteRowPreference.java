@@ -101,6 +101,15 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
     }
 
     @Override
+    public void onDetached() {
+        super.onDetached();
+        if (mConfirmationDialog != null) {
+            mConfirmationDialog.dismiss();
+            mConfirmationDialog = null;
+        }
+    }
+
+    @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
@@ -143,6 +152,7 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
                                 })
                         .setNegativeButton(
                                 R.string.cancel, (dialog, which) -> mConfirmationDialog = null)
+                        .setOnDismissListener(dialog -> mConfirmationDialog = null)
                         .show();
     }
 
