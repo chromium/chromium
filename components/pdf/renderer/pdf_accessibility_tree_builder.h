@@ -44,7 +44,9 @@ class PdfAccessibilityTreeBuilder {
       std::map<int32_t, chrome_pdf::PageCharacterIndex>*
           node_id_to_page_char_index,
       std::map<int32_t, PdfAccessibilityTree::AnnotationInfo>*
-          node_id_to_annotation_info);
+          node_id_to_annotation_info,
+      std::map<int32_t, PdfAccessibilityTree::ImageInfo>*
+          node_id_to_image_info);
 
   PdfAccessibilityTreeBuilder(const PdfAccessibilityTreeBuilder&) = delete;
   PdfAccessibilityTreeBuilder& operator=(const PdfAccessibilityTreeBuilder&) =
@@ -174,6 +176,8 @@ class PdfAccessibilityTreeBuilder {
       node_id_to_page_char_index_;
   raw_ptr<std::map<int32_t, PdfAccessibilityTree::AnnotationInfo>>
       node_id_to_annotation_info_;
+  raw_ptr<std::map<int32_t, PdfAccessibilityTree::ImageInfo>>
+      node_id_to_image_info_;
 };
 
 }  // namespace pdf

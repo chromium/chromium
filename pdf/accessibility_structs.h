@@ -119,7 +119,7 @@ struct AccessibilityImageInfo {
   gfx::RectF bounds;
 
   // Index of the image object in its page.
-  int32_t page_object_index;
+  int32_t page_object_index = 0;
 };
 
 // Represents a node in the PDF's structure tree. This tree represents the

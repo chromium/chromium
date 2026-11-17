@@ -630,6 +630,7 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
       banner_node_.reset();
       status_node_.reset();
       status_node_text_.reset();
+      node_id_to_image_info_.clear();
     }
     return;
   }
@@ -724,7 +725,7 @@ void PdfAccessibilityTree::AddPageContent(
       /*mark_headings_using_heuristic=*/!is_tagged_, text_runs, chars,
       page_objects, page_info, page_index, page_structure_tree, doc_node_.get(),
       &(*obj), &nodes_, &node_id_to_page_char_index_,
-      &node_id_to_annotation_info_);
+      &node_id_to_annotation_info_, &node_id_to_image_info_);
   tree_builder.BuildPageTree();
 }
 
@@ -974,6 +975,7 @@ void PdfAccessibilityTree::ClearAccessibilityNodes() {
   nodes_.clear();
   node_id_to_page_char_index_.clear();
   node_id_to_annotation_info_.clear();
+  node_id_to_image_info_.clear();
 }
 
 std::optional<blink::WebAXObject>
@@ -1161,6 +1163,15 @@ PdfAccessibilityTree::GetPdfAnnotationInfoFromAXNode(int32_t ax_node_id) const {
     return std::nullopt;
 
   return AnnotationInfo(iter->second.page_index, iter->second.annotation_index);
+}
+
+std::optional<PdfAccessibilityTree::ImageInfo>
+PdfAccessibilityTree::GetImageInfo(int32_t ax_node_id) const {
+  auto it = node_id_to_image_info_.find(ax_node_id);
+  if (it == node_id_to_image_info_.end()) {
+    return std::nullopt;
+  }
+  return it->second;
 }
 
 void PdfAccessibilityTree::MaybeHandleAccessibilityChange(

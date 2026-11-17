@@ -228,7 +228,8 @@ PdfAccessibilityTreeBuilder::PdfAccessibilityTreeBuilder(
     std::map<int32_t, chrome_pdf::PageCharacterIndex>*
         node_id_to_page_char_index,
     std::map<int32_t, PdfAccessibilityTree::AnnotationInfo>*
-        node_id_to_annotation_info)
+        node_id_to_annotation_info,
+    std::map<int32_t, PdfAccessibilityTree::ImageInfo>* node_id_to_image_info)
     : mark_headings_using_heuristic_(mark_headings_using_heuristic),
       // Use structure tree mode if a structure tree exists. Structure tree mode
       // preserves semantic structure from the PDF's tags and inserts any
@@ -259,7 +260,8 @@ PdfAccessibilityTreeBuilder::PdfAccessibilityTreeBuilder(
       nodes_(nodes),
       first_node_index_(nodes->size()),
       node_id_to_page_char_index_(node_id_to_page_char_index),
-      node_id_to_annotation_info_(node_id_to_annotation_info) {
+      node_id_to_annotation_info_(node_id_to_annotation_info),
+      node_id_to_image_info_(node_id_to_image_info) {
   page_node_ = CreateAndAppendNode(ax::mojom::Role::kRegion,
                                    ax::mojom::Restriction::kReadOnly);
   page_node_->AddStringAttribute(
@@ -493,6 +495,9 @@ ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateImageNode(
                                    image.alt_text);
   }
   image_node->relative_bounds.bounds = image.bounds;
+  node_id_to_image_info_->emplace(
+      image_node->id,
+      PdfAccessibilityTree::ImageInfo{page_index_, image.page_object_index});
   return image_node;
 }
 

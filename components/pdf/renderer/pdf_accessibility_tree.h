@@ -76,6 +76,15 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
     uint32_t annotation_index;
   };
 
+  // Stores the page index and image object index in the page.
+  struct ImageInfo {
+    friend constexpr bool operator==(const ImageInfo&,
+                                     const ImageInfo&) = default;
+
+    uint32_t page_index = 0;
+    int32_t page_object_index = 0;
+  };
+
   // chrome_pdf::PdfAccessibilityDataHandler:
   void SetAccessibilityViewportInfo(
       chrome_pdf::AccessibilityViewportInfo viewport_info) override;
@@ -93,6 +102,11 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   void HandleAction(const chrome_pdf::AccessibilityActionData& action_data);
   std::optional<AnnotationInfo> GetPdfAnnotationInfoFromAXNode(
       int32_t ax_node_id) const;
+
+  // Resolves an accessibility node ID to its underlying PDF page and object
+  // index, or returns `std::nullopt` if `ax_node_id` does not correspond to a
+  // tracked image node.
+  std::optional<ImageInfo> GetImageInfo(int32_t ax_node_id) const;
 
   // Given the AXNode and the character offset within the AXNode, finds the
   // respective page index and character index within the page. Returns
@@ -274,6 +288,13 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   // Map between AXNode id to annotation object. Used to find the annotation
   // object to which an action can be passed.
   std::map<int32_t, AnnotationInfo> node_id_to_annotation_info_;
+
+  // Map between AXNode id to image object info. Used to resolve an image AXNode
+  // back to its page index and PDFium page object index. Assumes PDF editing
+  // does not add or erase images, and that adding or removing Ink annotations
+  // (strokes and text) does not shift `page_object_index` for existing images.
+  std::map<int32_t, ImageInfo> node_id_to_image_info_;
+
   bool invalid_plugin_message_received_ = false;
 
   // Index of the next expected PDF accessibility page info, used to ignore

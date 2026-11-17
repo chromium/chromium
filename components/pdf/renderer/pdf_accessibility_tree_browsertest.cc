@@ -12757,6 +12757,145 @@ TEST_F(PdfAccessibilityTreeTest, StitchChildTreeAction) {
   EXPECT_EQ(0u, inline_box->GetChildCount());
 }
 
+TEST_F(PdfAccessibilityTreeTest, GetImageInfo) {
+  CreatePdfAccessibilityTree();
+
+  page_count_ = 2u;
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(
+      CreateAccessibilityDocInfo());
+
+  // Page 0 with two images at non-zero page object indices.
+  page_info_.page_index = 0u;
+  page_objects_.images.emplace_back(
+      /*alt_text=*/"Image 1", /*text_run_index=*/0u,
+      gfx::RectF(10.0f, 10.0f, 50.0f, 50.0f), /*page_object_index=*/3);
+  page_objects_.images.emplace_back(
+      /*alt_text=*/"Image 2", /*text_run_index=*/0u,
+      gfx::RectF(10.0f, 70.0f, 50.0f, 50.0f), /*page_object_index=*/7);
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+
+  // Page 1 with one image.
+  page_info_.page_index = 1u;
+  page_objects_.images.clear();
+  page_objects_.images.emplace_back(
+      /*alt_text=*/"Image 3", /*text_run_index=*/0u,
+      gfx::RectF(20.0f, 20.0f, 40.0f, 40.0f), /*page_object_index=*/5);
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  WaitForThreadTasks();
+  WaitForThreadDelayedTasks();
+
+  const ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
+  CheckRootAndStatusNodes(root_node, page_count_,
+                          /*is_pdf_ocr_test=*/false, /*is_ocr_completed=*/false,
+                          /*create_empty_ocr_results=*/false);
+  ASSERT_EQ(3u, root_node->GetChildCount());
+
+  const ui::AXNode* page0_node = root_node->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page0_node);
+  ASSERT_EQ(1u, page0_node->GetChildCount());
+  const ui::AXNode* para0_node = page0_node->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, para0_node);
+  ASSERT_EQ(2u, para0_node->GetChildCount());
+  const ui::AXNode* page0_image0 = para0_node->GetChildAtIndex(0u);
+  const ui::AXNode* page0_image1 = para0_node->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page0_image0);
+  ASSERT_NE(nullptr, page0_image1);
+  EXPECT_EQ(ax::mojom::Role::kImage, page0_image0->GetRole());
+  EXPECT_EQ(ax::mojom::Role::kImage, page0_image1->GetRole());
+
+  const ui::AXNode* page1_node = root_node->GetChildAtIndex(2u);
+  ASSERT_NE(nullptr, page1_node);
+  ASSERT_EQ(1u, page1_node->GetChildCount());
+  const ui::AXNode* para1_node = page1_node->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, para1_node);
+  ASSERT_EQ(1u, para1_node->GetChildCount());
+  const ui::AXNode* page1_image0 = para1_node->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, page1_image0);
+  EXPECT_EQ(ax::mojom::Role::kImage, page1_image0->GetRole());
+
+  const int32_t page0_image0_id = page0_image0->id();
+  const int32_t page0_image1_id = page0_image1->id();
+  const int32_t page1_image0_id = page1_image0->id();
+
+  EXPECT_EQ((PdfAccessibilityTree::ImageInfo{0u, 3}),
+            pdf_accessibility_tree_->GetImageInfo(page0_image0_id));
+  EXPECT_EQ((PdfAccessibilityTree::ImageInfo{0u, 7}),
+            pdf_accessibility_tree_->GetImageInfo(page0_image1_id));
+  EXPECT_EQ((PdfAccessibilityTree::ImageInfo{1u, 5}),
+            pdf_accessibility_tree_->GetImageInfo(page1_image0_id));
+
+  // Non-image nodes and unknown IDs should return std::nullopt.
+  EXPECT_EQ(std::nullopt,
+            pdf_accessibility_tree_->GetImageInfo(root_node->id()));
+  EXPECT_EQ(std::nullopt,
+            pdf_accessibility_tree_->GetImageInfo(page0_node->id()));
+  EXPECT_EQ(std::nullopt,
+            pdf_accessibility_tree_->GetImageInfo(para0_node->id()));
+  EXPECT_EQ(std::nullopt, pdf_accessibility_tree_->GetImageInfo(0));
+
+  // Reloading the accessibility tree should clear previous image mappings.
+  page_count_ = 1u;
+  page_info_.page_index = 0u;
+  page_objects_.images.clear();
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(
+      CreateAccessibilityDocInfo());
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  WaitForThreadTasks();
+  WaitForThreadDelayedTasks();
+
+  EXPECT_EQ(std::nullopt,
+            pdf_accessibility_tree_->GetImageInfo(page0_image0_id));
+  EXPECT_EQ(std::nullopt,
+            pdf_accessibility_tree_->GetImageInfo(page0_image1_id));
+  EXPECT_EQ(std::nullopt,
+            pdf_accessibility_tree_->GetImageInfo(page1_image0_id));
+
+  // Receiving invalid plugin data on a subsequent page destroys the tree and
+  // clears previous image mappings.
+  page_count_ = 2u;
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(
+      CreateAccessibilityDocInfo());
+
+  chrome_pdf::AccessibilityImageInfo valid_image;
+  valid_image.alt_text = "Valid image";
+  valid_image.bounds = gfx::RectF(0.0f, 0.0f, 10.0f, 10.0f);
+  valid_image.text_run_index = 0;
+  valid_image.page_object_index = 9;
+  page_objects_.images = {valid_image};
+  page_info_.page_index = 0u;
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  WaitForThreadTasks();
+  WaitForThreadDelayedTasks();
+
+  const ui::AXNode* reloaded_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_NE(nullptr, reloaded_root);
+  const ui::AXNode* valid_image_node =
+      reloaded_root->GetChildAtIndex(1u)->GetChildAtIndex(0u)->GetChildAtIndex(
+          0u);
+  ASSERT_NE(nullptr, valid_image_node);
+  const int32_t valid_image_node_id = valid_image_node->id();
+  EXPECT_EQ((PdfAccessibilityTree::ImageInfo{0u, 9}),
+            pdf_accessibility_tree_->GetImageInfo(valid_image_node_id));
+
+  chrome_pdf::AccessibilityImageInfo invalid_image;
+  invalid_image.text_run_index = 99;
+  page_objects_.images = {invalid_image};
+  page_info_.page_index = 1u;
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  WaitForThreadTasks();
+  WaitForThreadDelayedTasks();
+
+  EXPECT_EQ(nullptr, pdf_accessibility_tree_->GetRoot());
+  EXPECT_EQ(std::nullopt,
+            pdf_accessibility_tree_->GetImageInfo(valid_image_node_id));
+}
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 using PdfOcrTest = PdfAccessibilityTreeTest;
 
