@@ -1022,7 +1022,10 @@ void ShelfAppButton::ChildPreferredSizeChanged(views::View* child) {
 void ShelfAppButton::OnThemeChanged() {
   ShelfButton::OnThemeChanged();
 
-  UpdateMainAndMaybeHostBadgeIconImage();
+  // Only placeholder vector icons and badged app shortcuts use theme colors.
+  if (ImageModelHasPlaceholderIcon() || has_host_badge_) {
+    UpdateMainAndMaybeHostBadgeIconImage();
+  }
 
   // Redraw progress indicator to adjust colors.
   if (progress_indicator_) {

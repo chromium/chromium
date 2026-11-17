@@ -5487,4 +5487,41 @@ TEST_F(ShelfViewAppMenuHoverTest,
   test_api_->RunMessageLoopUntilAnimationsDone();
 }
 
+// Verifies that status, title, and theme updates do not rebuild a standard app
+// button's resized and shadowed icon when the icon inputs have not changed.
+TEST_F(ShelfViewTest, AvoidsRedundantIconRebuild) {
+  // Use a display larger than 600px on both axes so entering tablet mode
+  // switches from dense (36dp) to normal (44dp) shelf icons.
+  UpdateDisplay("1200x800");
+
+  const ShelfID id = AddAppShortcut();
+  ShelfAppButton* button = GetButtonByID(id);
+  ASSERT_TRUE(button);
+
+  const gfx::ImageSkia initial_image = button->GetImage();
+  ASSERT_FALSE(initial_image.isNull());
+
+  // Updating item status or title via ShelfModel::Set() should keep the
+  // existing ImageSkia backing storage.
+  const int index = GetModel()->ItemIndexByID(id);
+  ShelfItem item = GetModel()->items()[index];
+  item.status = STATUS_RUNNING;
+  item.title = u"Updated Title";
+  GetModel()->Set(index, item);
+  EXPECT_TRUE(initial_image.BackedBySameObjectAs(button->GetImage()));
+
+  // Theme updates should also preserve the theme-independent bitmap icon.
+  button->OnThemeChanged();
+  EXPECT_TRUE(initial_image.BackedBySameObjectAs(button->GetImage()));
+
+  // Changing the source icon or shelf icon size must rebuild the icon.
+  item.image = CreateImageSkiaIcon(SK_ColorBLUE);
+  GetModel()->Set(index, item);
+  const gfx::ImageSkia updated_image = button->GetImage();
+  EXPECT_FALSE(initial_image.BackedBySameObjectAs(updated_image));
+
+  TabletModeControllerTestApi().EnterTabletMode();
+  EXPECT_FALSE(updated_image.BackedBySameObjectAs(button->GetImage()));
+}
+
 }  // namespace ash

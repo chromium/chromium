@@ -375,9 +375,11 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Minimum distance before drag starts.
   static const int kMinimumDragDistance;
 
-  // Updates relevant fields of the button and reflects the item status has
-  // changed.
-  void UpdateButton(ShelfAppButton* button, const ShelfItem& item);
+  // Updates the button to reflect the shelf item, and updates its icon image
+  // if should_update_image is true.
+  void UpdateButton(ShelfAppButton* button,
+                    const ShelfItem& item,
+                    bool should_update_image);
 
   // Common setup done for all children views. |layer_type| specifies the type
   // of layer for the |view|. Use ui::LAYER_NOT_DRAWN if the content of the view

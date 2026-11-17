@@ -846,8 +846,9 @@ void ShelfView::OnShelfConfigUpdated() {
   for (size_t i = 0; i < view_model_->view_size(); i++) {
     ShelfAppButton* button =
         static_cast<ShelfAppButton*>(view_model_->view_at(i));
-    if (!button->IsIconSizeCurrent())
-      ShelfItemChanged(i, model_->items()[i]);
+    if (!button->IsIconSizeCurrent()) {
+      button->UpdateMainAndMaybeHostBadgeIconImage();
+    }
   }
 }
 
@@ -1008,7 +1009,7 @@ views::View* ShelfView::CreateViewForItem(const ShelfItem& item) {
     case TYPE_DIALOG: {
       ShelfAppButton* button = new ShelfAppButton(
           this, shelf_button_delegate_ ? shelf_button_delegate_.get() : this);
-      UpdateButton(button, item);
+      UpdateButton(button, item, /*should_update_image=*/true);
       view = button;
       break;
     }
@@ -1023,10 +1024,14 @@ views::View* ShelfView::CreateViewForItem(const ShelfItem& item) {
   return view;
 }
 
-void ShelfView::UpdateButton(ShelfAppButton* button, const ShelfItem& item) {
+void ShelfView::UpdateButton(ShelfAppButton* button,
+                             const ShelfItem& item,
+                             bool should_update_image) {
   button->ReflectItemStatus(item);
-  button->SetMainAndMaybeHostBadgeImage(item.image, item.has_placeholder_icon,
-                                        item.badge_image);
+  if (should_update_image) {
+    button->SetMainAndMaybeHostBadgeImage(item.image, item.has_placeholder_icon,
+                                          item.badge_image);
+  }
   button->SetNotificationBadgeColor(item.notification_badge_color);
   button->GetViewAccessibility().SetName(item.accessible_name);
   // If an empty accessible name of the item is provided, in such a case we want
@@ -2398,7 +2403,15 @@ void ShelfView::ShelfItemChanged(int model_index, const ShelfItem& old_item) {
     case TYPE_DIALOG: {
       CHECK(views::IsViewClass<ShelfAppButton>(view));
       ShelfAppButton* button = static_cast<ShelfAppButton*>(view);
-      UpdateButton(button, item);
+      // Skip rebuilding the resized and drop-shadowed icon on status or title
+      // updates. Promise apps always update since their icon size and shadow
+      // also depend on installation status and progress.
+      const bool should_update_image =
+          old_item.is_promise_app || item.is_promise_app ||
+          old_item.has_placeholder_icon != item.has_placeholder_icon ||
+          !old_item.image.BackedBySameObjectAs(item.image) ||
+          !old_item.badge_image.BackedBySameObjectAs(item.badge_image);
+      UpdateButton(button, item, should_update_image);
       break;
     }
     case TYPE_UNDEFINED:
