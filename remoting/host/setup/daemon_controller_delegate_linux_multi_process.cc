@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -47,7 +48,26 @@ bool RunSystemctlCommand(const base::CommandLine::StringVector& args) {
   return result;
 }
 
-bool WriteConfigs(const base::DictValue& full_config) {
+}  // namespace
+
+// static
+base::FilePath
+DaemonControllerDelegateLinuxMultiProcess::GetPrivilegedConfigPath() {
+  return GetMultiProcessHostGlobalConfigDir().Append(kDefaultHostConfigFile);
+}
+
+// static
+base::FilePath
+DaemonControllerDelegateLinuxMultiProcess::GetUnprivilegedConfigPath() {
+  return GetMultiProcessHostGlobalConfigDir().Append(
+      kDefaultUnprivilegedConfigFileName);
+}
+
+// static
+bool DaemonControllerDelegateLinuxMultiProcess::WriteConfigs(
+    const base::DictValue& full_config) {
+  CHECK_EQ(getuid(), 0u);
+
   // Ensure the configuration directory exists.
   base::FilePath config_dir = GetMultiProcessHostGlobalConfigDir();
   base::File::Error error;
@@ -121,21 +141,6 @@ bool WriteConfigs(const base::DictValue& full_config) {
   }
 
   return true;
-}
-
-}  // namespace
-
-// static
-base::FilePath
-DaemonControllerDelegateLinuxMultiProcess::GetPrivilegedConfigPath() {
-  return GetMultiProcessHostGlobalConfigDir().Append(kDefaultHostConfigFile);
-}
-
-// static
-base::FilePath
-DaemonControllerDelegateLinuxMultiProcess::GetUnprivilegedConfigPath() {
-  return GetMultiProcessHostGlobalConfigDir().Append(
-      kDefaultUnprivilegedConfigFileName);
 }
 
 DaemonControllerDelegateLinuxMultiProcess::

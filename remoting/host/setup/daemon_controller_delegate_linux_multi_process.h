@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/memory/raw_ref.h"
+#include "base/values.h"
 #include "remoting/host/setup/daemon_controller.h"
 
 namespace remoting {
@@ -48,6 +49,11 @@ class DaemonControllerDelegateLinuxMultiProcess
   // Returns a config path that can be accessed by an unprivileged user. Note
   // that the returned config file could still contain sensitive information.
   static base::FilePath GetUnprivilegedConfigPath();
+
+  // Writes `full_config` to the privileged config file, and its unprivileged
+  // keys to the unprivileged config file, creating their directory if needed.
+  // Must be run as root. Returns false on failure.
+  static bool WriteConfigs(const base::DictValue& full_config);
 
   // DaemonController::Delegate interface.
   DaemonController::State GetState() override;

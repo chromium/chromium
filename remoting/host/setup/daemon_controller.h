@@ -165,9 +165,9 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
 #if BUILDFLAG(IS_LINUX)
   // Makes Create() use `type`, set up for `local_user_name` (may be empty, see
   // CheckLocalUserForHostTypeSetup()), instead of the configured host type.
-  // Used by start-host and migrate-host, which may set up a host type that
-  // isn't configured yet. A multi-process delegate runs the start hook of
-  // `type` with `local_user_name` when it starts the host (see
+  // Used by start-host, which may set up a host type that isn't configured
+  // yet. A multi-process delegate runs the start hook of `type` with
+  // `local_user_name` when it starts the host (see
   // DaemonControllerDelegateLinuxMultiProcess).
   static void SetHostTypeForSetup(const HostType& type,
                                   std::string_view local_user_name = "");

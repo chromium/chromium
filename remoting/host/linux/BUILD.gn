@@ -207,6 +207,24 @@ source_set("host_types") {
   ]
 }
 
+source_set("host_type_migrator") {
+  sources = [
+    "host_type_migrator.cc",
+    "host_type_migrator.h",
+  ]
+  public_deps = [
+    ":host_types",
+    "//base",
+    "//remoting/base:os_utils",
+  ]
+  deps = [
+    "//remoting/base",
+    "//remoting/host:common",
+    "//remoting/host/setup:common",
+    "//remoting/protocol",
+  ]
+}
+
 source_set("host_types_test_util") {
   testonly = true
   sources = [
@@ -249,15 +267,13 @@ source_set("session_routing_config") {
 source_set("remoting_migrate_host_main_impl") {
   sources = [ "migrate_host_main.cc" ]
   deps = [
+    ":host_type_migrator",
     ":host_types",
     ":remoting_migrate_host_main_headers",
     "//base",
-    "//remoting/base",
     "//remoting/base:logging",
-    "//remoting/host:common",
+    "//remoting/base:os_utils",
     "//remoting/host:host_main_headers",
-    "//remoting/host/base",
-    "//remoting/host/setup:common",
   ]
 }
 
@@ -534,6 +550,7 @@ source_set("unit_tests") {
     "gnome_lock_state_tracker_unittest.cc",
     "gvariant_ref_unittest.cc",
     "gvariant_type_unittest.cc",
+    "host_type_migrator_unittest.cc",
     "host_types_unittest.cc",
     "peer_connection_bpf_policy_linux_unittest.cc",
     "peer_connection_landlock_policy_linux_unittest.cc",
@@ -569,6 +586,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/linux/dbus" ]
 
   deps = [
+    ":host_type_migrator",
     ":host_types",
     ":host_types_test_util",
     ":platform_impls",

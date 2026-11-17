@@ -132,14 +132,15 @@ class HostType {
   // case the state is kept.
   bool RunStopHostHook(const HostTypeContext& context) const;
 
+  // Stops and disables the host unit of this host type, without changing its
+  // state. See RunStopHostHook(). Also called on its own by migrate-host to
+  // restart the host unit while keeping its state. Returns false on failure.
+  virtual bool StopHostUnit(const HostTypeContext& context) const = 0;
+
  protected:
   // Enables and starts the host unit of this host type, without changing its
   // state. See RunStartHostHook(). Returns false on failure.
   virtual bool StartHostUnit(const HostTypeContext& context) const = 0;
-
-  // Stops and disables the host unit of this host type, without changing its
-  // state. See RunStopHostHook(). Returns false on failure.
-  virtual bool StopHostUnit(const HostTypeContext& context) const = 0;
 
   // Sets up the state of this host type, see RunStartHostHook(). The default
   // implementation does nothing and returns true.
