@@ -1617,6 +1617,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "V8Flag_always_specialize_for_script_context",
                 "Auto-generated flag for V8Flag_always_specialize_for_script_context."),
+        Flag.baseFeature(
+                NetworkServiceFeatures.ORB_SNIFFERS_IN_RUST,
+                "Enables the Rust-based ORB content sniffers instead of C++."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
