@@ -169,7 +169,7 @@ GURL ComputeURLForDeduping(const GURL& url) {
   if (url.has_ref())
     replacements.ClearRef();
 
-  if (GetConfig().use_host_for_visit_deduping && url.has_path()) {
+  if (url.has_path()) {
     replacements.ClearPath();
   }
 

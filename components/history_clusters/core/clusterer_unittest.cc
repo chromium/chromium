@@ -6,7 +6,6 @@
 
 #include "base/test/task_environment.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
-#include "components/history_clusters/core/config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,12 +16,7 @@ using ::testing::ElementsAre;
 
 class ClustererTest : public ::testing::Test {
  public:
-  void SetUp() override {
-    config_.use_host_for_visit_deduping = false;
-    SetConfigForTesting(config_);
-
-    clusterer_ = std::make_unique<Clusterer>();
-  }
+  void SetUp() override { clusterer_ = std::make_unique<Clusterer>(); }
 
   void TearDown() override { clusterer_.reset(); }
 
@@ -32,7 +26,6 @@ class ClustererTest : public ::testing::Test {
   }
 
  private:
-  Config config_;
   std::unique_ptr<Clusterer> clusterer_;
   base::test::TaskEnvironment task_environment_;
 };
@@ -60,7 +53,7 @@ TEST_F(ClustererTest, ClusterTwoVisitsTiedByReferringVisit) {
   visits.push_back(testing::CreateClusterVisit(visit));
 
   history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
-      2, GURL("https://google.com/next"), base::Time::FromTimeT(2));
+      2, GURL("https://foo.com/"), base::Time::FromTimeT(2));
   visit2.referring_visit_of_redirect_chain_start = 1;
   visits.push_back(testing::CreateClusterVisit(visit2));
 
@@ -82,7 +75,7 @@ TEST_F(ClustererTest, ClusterTwoVisitsTiedByOpenerVisitOverReferrer) {
   // misordered to ensure that the visits are sorted by visit time rather than
   // by ID.
   history::AnnotatedVisit visit5 = testing::CreateDefaultAnnotatedVisit(
-      5, GURL("https://google.com/somepage"), base::Time::FromTimeT(2));
+      5, GURL("https://somepage.com/"), base::Time::FromTimeT(2));
   visits.push_back(testing::CreateClusterVisit(visit5));
 
   history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
@@ -110,7 +103,7 @@ TEST_F(ClustererTest, ClusterTwoVisitsTiedByOpenerVisit) {
   visits.push_back(testing::CreateClusterVisit(visit));
 
   history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
-      2, GURL("https://google.com/next"), base::Time::FromTimeT(2));
+      2, GURL("https://foo.com/"), base::Time::FromTimeT(2));
   visit2.opener_visit_of_redirect_chain_start = 5;
   visits.push_back(testing::CreateClusterVisit(visit2));
 
