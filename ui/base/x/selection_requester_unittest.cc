@@ -5,6 +5,7 @@
 #include "ui/base/x/selection_requester.h"
 
 #include <stddef.h>
+#include <unistd.h>
 
 #include <memory>
 #include <vector>
@@ -12,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -135,11 +137,43 @@ class SelectionRequesterTest : public testing::Test {
   }
 
   void TearDown() override {
+    for (x11::Window window : owned_windows_) {
+      connection_->DestroyWindow({window});
+    }
+    connection_->Sync();
     requestor_ = nullptr;
     helper_.reset();
+    connection_->DispatchAll();
+  }
+
+  // Returns a selection atom isolated to this test worker process so parallel
+  // test shards sharing one Xvfb server do not clobber each other's owner.
+  x11::Atom CreateUniqueSelection() {
+    return connection_->GetAtom(
+        base::StringPrintf("FAKE_SELECTION_%d", getpid()).c_str());
+  }
+
+  x11::Window CreateSelectionOwner(x11::Atom selection) {
+    x11::Window window = connection_->CreateDummyWindow("Test Selection Owner");
+    owned_windows_.push_back(window);
+    connection_->SetSelectionOwner({
+        .owner = window,
+        .selection = selection,
+        .time = x11::Time::CurrentTime,
+    });
+    connection_->Sync();
+    return window;
+  }
+
+  // Flushes pending X11 requests, waits for server replies, and dispatches
+  // queued responses in sequence order.
+  void PumpX11() {
+    connection_->Sync();
+    connection_->DispatchAll();
   }
 
   raw_ref<x11::Connection> connection_;
+  std::vector<x11::Window> owned_windows_;
 
   std::unique_ptr<XClipboardHelper> helper_;
   raw_ptr<SelectionRequester> requestor_ = nullptr;
@@ -371,6 +405,122 @@ TEST_F(SelectionRequesterTest, StaleSelectionNotifyAfterIncrOtherTarget) {
   EXPECT_FALSE(future2.IsReady());
 
   SendSelectionNotifyFailure(selection, target2, CurrentProperty());
+  ASSERT_TRUE(future2.IsReady());
+  EXPECT_TRUE(future2.Get().success);
+  EXPECT_EQ("Data2", base::as_string_view(future2.Get().data));
+}
+
+// Test that a live selection owner taking longer than 5 seconds to produce its
+// initial SelectionNotify (e.g. encoding a large PNG image on demand) is not
+// aborted prematurely. Regression test for https://crbug.com/487168662.
+TEST_F(SelectionRequesterTest, SlowSelectionOwnerDoesNotTimeOutEarly) {
+  x11::Atom selection = CreateUniqueSelection();
+  x11::Atom target = connection_->GetAtom("TARGET");
+  CreateSelectionOwner(selection);
+
+  ConvertSelectionFuture future;
+  PerformConvertSelection(selection, target, future);
+  PumpX11();
+
+  // Simulate an owner taking 15 seconds to encode the requested format before
+  // starting an INCR transfer.
+  for (int i = 0; i < 3; ++i) {
+    task_environment_.FastForwardBy(base::Seconds(5));
+    PumpX11();
+    EXPECT_FALSE(future.IsReady());
+  }
+
+  SendIncrStart(selection, target);
+  SendIncrChunk("LargeImage");
+  SendIncrChunk("Payload");
+  SendIncrChunk("");
+
+  ASSERT_TRUE(future.IsReady());
+  const ConvertSelectionResult& result = future.Get();
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ("LargeImagePayload", base::as_string_view(result.data));
+  EXPECT_EQ(x11::Atom::STRING, result.type);
+}
+
+// Test that if the selection owner loses ownership before replying, the
+// request still aborts after the short 5-second timeout rather than waiting
+// for the full slow-owner deadline.
+TEST_F(SelectionRequesterTest, LostSelectionOwnershipTimesOutQuickly) {
+  x11::Atom selection = CreateUniqueSelection();
+  x11::Atom target = connection_->GetAtom("TARGET");
+  CreateSelectionOwner(selection);
+
+  ConvertSelectionFuture future;
+  PerformConvertSelection(selection, target, future);
+  PumpX11();
+
+  task_environment_.FastForwardBy(base::Seconds(3));
+  EXPECT_FALSE(future.IsReady());
+
+  // The owner exits or clears ownership before replying.
+  connection_->SetSelectionOwner({
+      .owner = x11::Window::None,
+      .selection = selection,
+      .time = x11::Time::CurrentTime,
+  });
+  connection_->Sync();
+
+  task_environment_.FastForwardBy(base::Seconds(2));
+  PumpX11();
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get().success);
+}
+
+// Test that if another window takes ownership of the selection while a request
+// is waiting on the previous owner, the request aborts after the short
+// 5-second timeout rather than waiting for the full slow-owner deadline.
+TEST_F(SelectionRequesterTest, ReplacedSelectionOwnerTimesOutQuickly) {
+  x11::Atom selection = CreateUniqueSelection();
+  x11::Atom target = connection_->GetAtom("TARGET");
+  CreateSelectionOwner(selection);
+
+  ConvertSelectionFuture future;
+  PerformConvertSelection(selection, target, future);
+  PumpX11();
+
+  task_environment_.FastForwardBy(base::Seconds(3));
+  EXPECT_FALSE(future.IsReady());
+
+  // Another client (such as a clipboard manager) takes ownership.
+  CreateSelectionOwner(selection);
+
+  task_environment_.FastForwardBy(base::Seconds(2));
+  PumpX11();
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get().success);
+}
+
+// Test that a selection owner that stays alive owning the selection without
+// ever replying still eventually times out so subsequent requests can proceed.
+TEST_F(SelectionRequesterTest, UnresponsiveSelectionOwnerEventuallyTimesOut) {
+  x11::Atom selection = CreateUniqueSelection();
+  x11::Atom target1 = connection_->GetAtom("TARGET1");
+  x11::Atom target2 = connection_->GetAtom("TARGET2");
+  CreateSelectionOwner(selection);
+
+  ConvertSelectionFuture future1;
+  ConvertSelectionFuture future2;
+  PerformConvertSelection(selection, target1, future1);
+  PerformConvertSelection(selection, target2, future2);
+  PumpX11();
+
+  for (int i = 0; i < 12; ++i) {
+    EXPECT_FALSE(future1.IsReady());
+    task_environment_.FastForwardBy(base::Seconds(5));
+    PumpX11();
+  }
+
+  ASSERT_TRUE(future1.IsReady());
+  EXPECT_FALSE(future1.Get().success);
+
+  // The next queued request should now be in flight and able to succeed.
+  EXPECT_FALSE(future2.IsReady());
+  SendSelectionNotify(selection, target2, "Data2");
   ASSERT_TRUE(future2.IsReady());
   EXPECT_TRUE(future2.Get().success);
   EXPECT_EQ("Data2", base::as_string_view(future2.Get().data));

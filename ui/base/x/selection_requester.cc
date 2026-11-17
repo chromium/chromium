@@ -25,11 +25,16 @@ const char kChromeSelection[] = "CHROME_SELECTION";
 const char kChromeSelectionAlt[] = "CHROME_SELECTION_ALT";
 
 // The amount of time to wait for the selection owner to make progress on the
-// in-flight request before aborting it. Requests are processed serially, so
-// without this, a single owner that never responds would block all subsequent
-// requests indefinitely. The clipboard is asynchronous, so this does not need
-// to be short to keep the UI responsive.
+// in-flight request before checking whether to abort it. Requests are
+// processed serially, so without a timeout, a single owner that never responds
+// would block all subsequent requests indefinitely.
 constexpr base::TimeDelta kRequestTimeout = base::Seconds(5);
+
+// Maximum time to wait for the initial SelectionNotify when the same live
+// selection owner still holds the selection. Encoding a large image (such as
+// an 8Kx4K PNG) on demand in another X11 client can take well over 5 seconds
+// before the owner sends its initial SelectionNotify.
+constexpr base::TimeDelta kMaxInitialResponseTimeout = base::Seconds(60);
 
 // Combines |data| into a single std::vector<uint8_t>.
 std::vector<uint8_t> CombineData(
@@ -65,8 +70,8 @@ void SelectionRequester::PerformConvertSelectionAsync(
     x11::Atom selection,
     x11::Atom target,
     ConvertSelectionCallback callback) {
-  requests_.push(
-      std::make_unique<Request>(selection, target, std::move(callback)));
+  requests_.push(std::make_unique<Request>(next_request_id_++, selection,
+                                           target, std::move(callback)));
   if (requests_.size() == 1) {
     ConvertSelectionForCurrentRequest();
   }
@@ -153,10 +158,12 @@ void SelectionRequester::OnSelectionNotify(
 
   if (request->out_type == x11::Connection::Get()->GetAtom(kIncr)) {
     request->data_sent_incrementally = true;
+    request->checking_owner = false;
     request->out_data.clear();
     request->out_type = x11::Atom::None;
     // The owner is making progress, so give it more time.
-    timeout_timer_.Reset();
+    timeout_timer_.Start(FROM_HERE, kRequestTimeout, this,
+                         &SelectionRequester::OnRequestTimeout);
   } else {
     // Note: `this` may be deleted after this call.
     CompleteCurrentRequest(success);
@@ -207,12 +214,87 @@ void SelectionRequester::OnPropertyEvent(
   }
 
   // The owner is making progress, so give it more time.
-  timeout_timer_.Reset();
+  timeout_timer_.Start(FROM_HERE, kRequestTimeout, this,
+                       &SelectionRequester::OnRequestTimeout);
+}
+
+void SelectionRequester::OnGetInitialOwner(
+    uint64_t request_id,
+    x11::GetSelectionOwnerResponse response) {
+  Request* request = GetCurrentRequest();
+  // Replies and events are dispatched in sequence order, so this reply is
+  // handled before any SelectionNotify for the ConvertSelection sent after it.
+  // The request can only have completed already if the timeout fired first.
+  if (!request || request->id != request_id) {
+    return;
+  }
+  request->owner = response ? response->owner : x11::Window::None;
 }
 
 void SelectionRequester::OnRequestTimeout() {
-  // Note: `this` may be deleted after this call.
-  CompleteCurrentRequest(false);
+  Request* request = GetCurrentRequest();
+  if (!request) {
+    return;
+  }
+
+  // Only the wait for the initial SelectionNotify can be extended, and only
+  // while a live owner holds the selection. The request is aborted:
+  // - Once an INCR transfer has started. The timer is restarted whenever a
+  //   chunk arrives, so this means the transfer stalled for `kRequestTimeout`.
+  // - If the owner check sent by the previous timeout got no reply within
+  //   `kRequestTimeout`, which means the X server itself is unresponsive.
+  // - If `owner` is None. Either the selection had no owner when the request
+  //   was sent, or not even the reply to the initial GetSelectionOwner arrived
+  //   within `kRequestTimeout`. Neither case has a live owner worth waiting
+  //   for.
+  // - Once `kMaxInitialResponseTimeout` has passed, so that an owner that never
+  //   replies can't block the queue indefinitely.
+  if (request->data_sent_incrementally || request->checking_owner ||
+      request->owner == x11::Window::None ||
+      base::TimeTicks::Now() >= request->initial_response_deadline) {
+    // Note: `this` may be deleted after this call.
+    CompleteCurrentRequest(false);
+    return;
+  }
+
+  // Check whether `owner` still owns the selection. If it exited or another
+  // client took the selection, it will never reply. The X server answers this
+  // itself without involving the owner, so the reply normally arrives long
+  // before the owner's SelectionNotify. If the SelectionNotify arrives first,
+  // the request completes and OnCheckOwnerOnTimeout() ignores the reply.
+  request->checking_owner = true;
+  auto* connection = x11::Connection::Get();
+  connection->GetSelectionOwner({request->selection})
+      .OnResponse(base::BindOnce(&SelectionRequester::OnCheckOwnerOnTimeout,
+                                 GetWeakPtr(), request->id));
+  connection->Flush();
+  timeout_timer_.Start(FROM_HERE, kRequestTimeout, this,
+                       &SelectionRequester::OnRequestTimeout);
+}
+
+void SelectionRequester::OnCheckOwnerOnTimeout(
+    uint64_t request_id,
+    x11::GetSelectionOwnerResponse response) {
+  Request* request = GetCurrentRequest();
+  if (!request || request->id != request_id ||
+      request->data_sent_incrementally) {
+    return;
+  }
+
+  request->checking_owner = false;
+  x11::Window current_owner = response ? response->owner : x11::Window::None;
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (current_owner != request->owner ||
+      now >= request->initial_response_deadline) {
+    // Note: `this` may be deleted after this call.
+    CompleteCurrentRequest(false);
+    return;
+  }
+
+  base::TimeDelta next_timeout =
+      std::min(kRequestTimeout, request->initial_response_deadline - now);
+  timeout_timer_.Start(FROM_HERE, next_timeout, this,
+                       &SelectionRequester::OnRequestTimeout);
 }
 
 void SelectionRequester::CompleteCurrentRequest(bool success) {
@@ -247,15 +329,21 @@ void SelectionRequester::ConvertSelectionForCurrentRequest() {
   request->property = x_properties_[next_property_index_];
   next_property_index_ = (next_property_index_ + 1) % x_properties_.size();
 
-  x11::Connection::Get()->ConvertSelection({
+  auto* connection = x11::Connection::Get();
+  connection->GetSelectionOwner({request->selection})
+      .OnResponse(base::BindOnce(&SelectionRequester::OnGetInitialOwner,
+                                 GetWeakPtr(), request->id));
+  connection->ConvertSelection({
       .requestor = x_window_,
       .selection = request->selection,
       .target = request->target,
       .property = request->property,
       .time = x11::Time::CurrentTime,
   });
-  x11::Connection::Get()->Flush();
+  connection->Flush();
 
+  request->initial_response_deadline =
+      base::TimeTicks::Now() + kMaxInitialResponseTimeout;
   timeout_timer_.Start(FROM_HERE, kRequestTimeout, this,
                        &SelectionRequester::OnRequestTimeout);
 }
@@ -264,13 +352,13 @@ SelectionRequester::Request* SelectionRequester::GetCurrentRequest() {
   return requests_.empty() ? nullptr : requests_.front().get();
 }
 
-SelectionRequester::Request::Request(x11::Atom selection,
+SelectionRequester::Request::Request(uint64_t id,
+                                     x11::Atom selection,
                                      x11::Atom target,
                                      ConvertSelectionCallback callback)
-    : selection(selection),
+    : id(id),
+      selection(selection),
       target(target),
-      data_sent_incrementally(false),
-      out_type(x11::Atom::None),
       callback(std::move(callback)) {}
 
 SelectionRequester::Request::~Request() = default;

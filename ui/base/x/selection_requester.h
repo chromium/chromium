@@ -7,6 +7,7 @@
 
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -16,8 +17,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/xproto.h"
 
 namespace ui {
 class SelectionData;
@@ -70,10 +73,13 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionRequester {
 
   // A request that has been issued.
   struct Request {
-    Request(x11::Atom selection,
+    Request(uint64_t id,
+            x11::Atom selection,
             x11::Atom target,
             ConvertSelectionCallback callback);
     ~Request();
+
+    const uint64_t id;
 
     // The target and selection requested in the XConvertSelection() request.
     // Used for error detection.
@@ -84,20 +90,38 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionRequester {
     // request. Set when the request is sent to the selection owner.
     x11::Atom property = x11::Atom::None;
 
+    // Window owning `selection` when ConvertSelection was issued, if any.
+    x11::Window owner = x11::Window::None;
+
+    // Deadline for receiving the initial SelectionNotify while `owner` still
+    // owns `selection`.
+    base::TimeTicks initial_response_deadline;
+
+    // Whether an async GetSelectionOwner check is in flight after a timeout
+    // interval elapsed.
+    bool checking_owner = false;
+
     // Whether the result of the XConvertSelection() request is being sent
     // incrementally.
-    bool data_sent_incrementally;
+    bool data_sent_incrementally = false;
 
     // The result data for the XConvertSelection() request.
     std::vector<scoped_refptr<base::RefCountedMemory>> out_data;
-    x11::Atom out_type;
+    x11::Atom out_type = x11::Atom::None;
 
     ConvertSelectionCallback callback;
   };
 
+  void OnGetInitialOwner(uint64_t request_id,
+                         x11::GetSelectionOwnerResponse response);
+
   // Called when the in-flight request has not made progress within the
-  // timeout. Aborts the request so that subsequent requests can proceed.
+  // timeout. Aborts the request or extends the wait if the same selection owner
+  // is still active before sending its initial SelectionNotify.
   void OnRequestTimeout();
+
+  void OnCheckOwnerOnTimeout(uint64_t request_id,
+                             x11::GetSelectionOwnerResponse response);
 
   // Removes the current request from the queue, converts the selection for the
   // next request, and runs the completed request's callback.
@@ -143,6 +167,8 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionRequester {
 
   // Aborts the in-flight request if the selection owner stops responding.
   base::OneShotTimer timeout_timer_;
+
+  uint64_t next_request_id_ = 1;
 
   base::WeakPtrFactory<SelectionRequester> weak_ptr_factory_{this};
 };
