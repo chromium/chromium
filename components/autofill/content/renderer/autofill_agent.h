@@ -26,7 +26,6 @@
 #include "base/types/strong_alias.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
-#include "components/autofill/content/renderer/at_memory_handler.h"
 #include "components/autofill/content/renderer/email_verification_handler.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
@@ -645,8 +644,6 @@ class AutofillAgent : public content::RenderFrameObserver,
     int tokens = 0;
     base::TimeTicks last_replenish_time;
   } ask_for_values_to_fill_throttle_;
-
-  AtMemoryHandler at_memory_handler_{this};
 
   struct {
     bool has_warned = false;

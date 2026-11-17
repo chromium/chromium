@@ -781,7 +781,6 @@ CallTimerState AutofillAgent::GetCallTimerState(
 
 void AutofillAgent::FocusedElementChanged(
     const WebElement& new_focused_element) {
-  at_memory_handler_.FocusedElementChanged(new_focused_element);
   inactivity_timer_.Stop();
   ObserveCaret(new_focused_element);
 
@@ -1148,7 +1147,7 @@ bool AutofillAgent::DidReceiveKeyDown(const WebElement& element,
     return false;  // Do not prevent default.
   }
 
-  return at_memory_handler_.DidReceiveKeyDown(element, event);
+  return false;
 }
 
 void AutofillAgent::OpenTextDataListChooser(const WebInputElement& element) {
@@ -1521,10 +1520,8 @@ void AutofillAgent::ApplyFieldAction(
                                    /*smart_replace=*/true);
             break;
           }
-          case mojom::FieldActionType::kReplaceSelectionForAtMemory: {
-            at_memory_handler_.ReplaceSelectionForAtMemory(field_id, value);
+          case mojom::FieldActionType::kReplaceSelectionForAtMemory:
             break;
-          }
           case mojom::FieldActionType::kSelectAll:
             DCHECK(value.empty());
             form_control.SelectText(/*select_all=*/true);
@@ -1577,7 +1574,6 @@ void AutofillAgent::ApplyFieldAction(
           }
           break;
         case mojom::FieldActionType::kReplaceSelectionForAtMemory:
-          at_memory_handler_.ReplaceSelectionForAtMemory(field_id, value);
           break;
         case mojom::FieldActionType::kSelectAll:
           DCHECK(value.empty());
@@ -1857,7 +1853,6 @@ void AutofillAgent::ShowSuggestions(
     autofill_driver->AskForValuesToFill(form, field.renderer_id(),
                                         GetCaretBounds(), trigger_source,
                                         password_request);
-    at_memory_handler_.MaybeUpdateAskForValuesToFill(element, trigger_source);
   }
 }
 
@@ -1881,7 +1876,6 @@ void AutofillAgent::ShowSuggestionsForContentEditable(
     autofill_driver->AskForValuesToFill(*form, field.renderer_id(),
                                         GetCaretBounds(), trigger_source,
                                         std::nullopt);
-    at_memory_handler_.MaybeUpdateAskForValuesToFill(element, trigger_source);
   }
 }
 
@@ -2268,7 +2262,6 @@ void AutofillAgent::DidCompleteFocusChangeInFrame() {
 void AutofillAgent::DidReceiveLeftMouseDownOrGestureTapInNode(
     const WebNode& node) {
   DCHECK(node);
-  at_memory_handler_.DidReceiveLeftMouseDownOrGestureTapInNode(node);
   WebElement contenteditable;
   const bool is_focused =
       node.Focused() || ((contenteditable = node.RootEditableElement()) &&
