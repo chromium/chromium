@@ -17,6 +17,20 @@ CHROME_PREFERENCE_KEYS_PATH = (
   'preferences/ChromePreferenceKeys.java'
 )
 
+PROFILE_PREFERENCE_KEYS_PATH = (
+  'chrome/browser/preferences/android/java/src/org/chromium/chrome/browser/'
+  'preferences/ProfilePreferenceKeys.java'
+)
+
+# Files where SharedPreferences keys are declared. Constants are compared
+# across the union of these files so that moving an existing key from one file
+# to another (e.g. ChromePreferenceKeys -> ProfilePreferenceKeys) is not
+# reported as a new key.
+PREFERENCE_KEYS_PATHS = (
+  CHROME_PREFERENCE_KEYS_PATH,
+  PROFILE_PREFERENCE_KEYS_PATH,
+)
+
 DECLARATION_PATTERN = re.compile(
   r'public\s+static\s+final\s+(?:String|KeyPrefix)\s+([A-Z0-9_]+)\s*='
 )
@@ -46,24 +60,22 @@ def CheckNoNewSharedPreferencesCounters(input_api, output_api):
   if input_api.no_diffs:
     return []
 
-  affected_file = None
-  for f in input_api.AffectedFiles(include_deletes=False):
-    if f.UnixLocalPath() == CHROME_PREFERENCE_KEYS_PATH:
-      affected_file = f
-      break
+  affected_files = [
+    f
+    for f in input_api.AffectedFiles(include_deletes=False)
+    if f.UnixLocalPath() in PREFERENCE_KEYS_PATHS
+  ]
 
-  if not affected_file:
+  if not affected_files:
     return []
 
-  old_contents_text = (
-    '\n'.join(affected_file.OldContents())
-    if affected_file.OldContents()
-    else ''
-  )
-  new_contents_text = '\n'.join(affected_file.NewContents())
-
-  old_constants = set(DECLARATION_PATTERN.findall(old_contents_text))
-  new_constants = set(DECLARATION_PATTERN.findall(new_contents_text))
+  old_constants = set()
+  new_constants = set()
+  for affected_file in affected_files:
+    old_contents_text = '\n'.join(affected_file.OldContents() or [])
+    new_contents_text = '\n'.join(affected_file.NewContents())
+    old_constants.update(DECLARATION_PATTERN.findall(old_contents_text))
+    new_constants.update(DECLARATION_PATTERN.findall(new_contents_text))
 
   added_constants = new_constants - old_constants
 
@@ -80,7 +92,8 @@ def CheckNoNewSharedPreferencesCounters(input_api, output_api):
     'SharedPreferences Counter / Impression Anti-Pattern Check Failed:\n'
     'Based on the name(s) of your new preferences, it looks like you\n'
     'may be adding a SharedPreference for counting some action/event\n'
-    'with a preference key to ChromePreferenceKeys.java:\n'
+    'with a preference key to ChromePreferenceKeys.java or\n'
+    'ProfilePreferenceKeys.java:\n'
     f'{formatted_keys}\n\n'
     'Using SharedPreferences for counting events (or most "counting")\n'
     'is generally an anti-pattern and is discouraged. It can almost always\n'

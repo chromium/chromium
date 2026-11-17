@@ -255,6 +255,7 @@ public class ChromePreferenceKeysTest {
     @Test
     public void testKeysConformToFormat() {
         doTestKeysConformToFormat(ChromePreferenceKeys.getKeysInUse());
+        doTestKeysConformToFormat(ProfilePreferenceKeys.getKeysInUse());
     }
 
     /**
@@ -263,7 +264,74 @@ public class ChromePreferenceKeysTest {
      */
     @Test
     public void testLegacyKeysDoNotConformToFormat() {
-        doTestKeysDoNotConformToFormat(LegacyChromePreferenceKeys.getKeysInUse());
+        doTestKeysDoNotConformToFormat(LegacyChromePreferenceKeys.getKeysForTesting());
+        doTestKeysDoNotConformToFormat(ChromePreferenceKeys.getLegacyKeysInUse());
+        doTestKeysDoNotConformToFormat(ProfilePreferenceKeys.getLegacyKeysInUse());
+    }
+
+    /**
+     * Verify that every legacy-format key and prefix registered in any registry is in the
+     * OWNERS-gated {@link LegacyChromePreferenceKeys} allowlist, so that new unformatted keys or
+     * prefixes cannot be added without review, while existing ones can move between registries.
+     */
+    @Test
+    public void testLegacyKeysAndPrefixesAreAllowlisted() {
+        assumeTrue(BuildConfig.ENABLE_ASSERTS);
+        Set<String> allowedKeys = new HashSet<>(LegacyChromePreferenceKeys.getKeysForTesting());
+        Set<String> allowedPrefixPatterns =
+                toPatterns(LegacyChromePreferenceKeys.getPrefixesForTesting());
+        for (PreferenceKeyRegistry registry : AllPreferenceKeyRegistries.KNOWN_REGISTRIES) {
+            failIfNotSubset(
+                    registry.mLegacyFormatKeys,
+                    allowedKeys,
+                    "Legacy-format key not in LegacyChromePreferenceKeys allowlist; new keys must"
+                            + " follow the format \"Chrome.[Feature].[Key]\"");
+            failIfNotSubset(
+                    toPatterns(registry.mLegacyPrefixes),
+                    allowedPrefixPatterns,
+                    "Legacy-format KeyPrefix not in LegacyChromePreferenceKeys allowlist; new"
+                        + " prefixes must follow the format \"Chrome.[Feature].[KeyPrefix].*\"");
+        }
+    }
+
+    /**
+     * Verify that every allowlisted legacy key and prefix is either still registered or has been
+     * deprecated, so that the allowlist cannot be used to (re)introduce a key that is not tracked.
+     */
+    @Test
+    public void testLegacyAllowlistEntriesAreInUseOrDeprecated() {
+        assumeTrue(BuildConfig.ENABLE_ASSERTS);
+        Set<String> knownKeys = new HashSet<>(DeprecatedChromePreferenceKeys.getKeysForTesting());
+        Set<String> knownPrefixPatterns =
+                toPatterns(DeprecatedChromePreferenceKeys.getPrefixesForTesting());
+        for (PreferenceKeyRegistry registry : AllPreferenceKeyRegistries.KNOWN_REGISTRIES) {
+            knownKeys.addAll(registry.mLegacyFormatKeys);
+            knownPrefixPatterns.addAll(toPatterns(registry.mLegacyPrefixes));
+        }
+        failIfNotSubset(
+                new HashSet<>(LegacyChromePreferenceKeys.getKeysForTesting()),
+                knownKeys,
+                "LegacyChromePreferenceKeys key is neither in use nor deprecated");
+        failIfNotSubset(
+                toPatterns(LegacyChromePreferenceKeys.getPrefixesForTesting()),
+                knownPrefixPatterns,
+                "LegacyChromePreferenceKeys KeyPrefix is neither in use nor deprecated");
+    }
+
+    private static Set<String> toPatterns(Collection<KeyPrefix> prefixes) {
+        Set<String> patterns = new HashSet<>();
+        for (KeyPrefix prefix : prefixes) {
+            patterns.add(prefix.pattern());
+        }
+        return patterns;
+    }
+
+    private static void failIfNotSubset(
+            Set<String> subset, Set<String> superset, String failureMessage) {
+        Set<String> difference = Sets.difference(subset, superset);
+        if (!difference.isEmpty()) {
+            fail(failureMessage + ": " + String.join(",", difference));
+        }
     }
 
     private void doTestKeysConformToFormat(List<String> usedList) {

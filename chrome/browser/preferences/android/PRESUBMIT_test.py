@@ -255,6 +255,72 @@ class CheckNoNewSharedPreferencesCountersTest(unittest.TestCase):
     self.assertEqual('warning', results[0].type)
     self.assertIn('MY_FEATURE_VIEW_COUNT', results[0].message)
 
+  def testNewCountKeyInProfilePreferenceKeysWarns(self):
+    old_decls = []
+    new_decls = [
+      '    public static final String MY_FEATURE_VIEW_COUNT = '
+      '"Chrome.MyFeature.ViewCount";',
+    ]
+    mock_file = self._create_mock_file(
+      old_decls, new_decls, file_path=PRESUBMIT.PROFILE_PREFERENCE_KEYS_PATH
+    )
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [mock_file]
+    results = PRESUBMIT.CheckNoNewSharedPreferencesCounters(
+      mock_input_api, MockOutputApi()
+    )
+    self.assertEqual(1, len(results))
+    self.assertEqual('warning', results[0].type)
+    self.assertIn('MY_FEATURE_VIEW_COUNT', results[0].message)
+    self.assertIn('ProfilePreferenceKeys.java', results[0].message)
+
+  def testMovingCountKeyToProfilePreferenceKeysPasses(self):
+    count_decl = (
+      '    public static final String READER_MODE_ACTION_SHOW_COUNT = '
+      '"Chrome.ReaderMode.ActionShowCount";'
+    )
+    other_decl = '    public static final String EXISTING_KEY = "existing_key";'
+    chrome_file = self._create_mock_file(
+      [count_decl, other_decl],
+      [other_decl],
+      file_path=PRESUBMIT.CHROME_PREFERENCE_KEYS_PATH,
+    )
+    profile_file = self._create_mock_file(
+      [], [count_decl], file_path=PRESUBMIT.PROFILE_PREFERENCE_KEYS_PATH
+    )
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [chrome_file, profile_file]
+    results = PRESUBMIT.CheckNoNewSharedPreferencesCounters(
+      mock_input_api, MockOutputApi()
+    )
+    self.assertEqual([], results)
+
+  def testMovingKeyAndAddingNewCountKeyWarnsOnlyForNewKey(self):
+    moved_decl = (
+      '    public static final String READER_MODE_ACTION_SHOW_COUNT = '
+      '"Chrome.ReaderMode.ActionShowCount";'
+    )
+    new_decl = (
+      '    public static final String PROMO_CLICK_COUNTER = '
+      '"Chrome.Promo.ClickCounter";'
+    )
+    chrome_file = self._create_mock_file(
+      [moved_decl], [], file_path=PRESUBMIT.CHROME_PREFERENCE_KEYS_PATH
+    )
+    profile_file = self._create_mock_file(
+      [],
+      [moved_decl, new_decl],
+      file_path=PRESUBMIT.PROFILE_PREFERENCE_KEYS_PATH,
+    )
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [chrome_file, profile_file]
+    results = PRESUBMIT.CheckNoNewSharedPreferencesCounters(
+      mock_input_api, MockOutputApi()
+    )
+    self.assertEqual(1, len(results))
+    self.assertIn('PROMO_CLICK_COUNTER', results[0].message)
+    self.assertNotIn('READER_MODE_ACTION_SHOW_COUNT', results[0].message)
+
 
 if __name__ == '__main__':
   unittest.main()

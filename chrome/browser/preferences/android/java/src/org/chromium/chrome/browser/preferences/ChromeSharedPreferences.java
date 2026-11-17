@@ -22,8 +22,8 @@ public class ChromeSharedPreferences {
                     ? new PreferenceKeyRegistry(
                             "chrome",
                             ChromePreferenceKeys.getKeysInUse(),
-                            LegacyChromePreferenceKeys.getKeysInUse(),
-                            LegacyChromePreferenceKeys.getPrefixesInUse())
+                            ChromePreferenceKeys.getLegacyKeysInUse(),
+                            ChromePreferenceKeys.getLegacyPrefixesInUse())
                     : null);
 
     /**

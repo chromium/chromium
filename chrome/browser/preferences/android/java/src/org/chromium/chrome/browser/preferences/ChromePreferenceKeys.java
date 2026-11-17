@@ -26,8 +26,7 @@ import java.util.List;
  *
  * <p>To deprecate a key that is not used anymore: 1. Add its constant value to {@link
  * DeprecatedChromePreferenceKeys#getKeysForTesting()}, in alphabetical order by value. 2. Remove
- * the key from {@link #getKeysInUse()} or {@link LegacyChromePreferenceKeys#getKeysInUse()}. 3.
- * Delete the constant.
+ * the key from {@link #getKeysInUse()} or {@link #getLegacyKeysInUse()}. 3. Delete the constant.
  *
  * <p>To add a new KeyPrefix: 1. Declare it as a KeyPrefix constant in this class. Its value should
  * follow the format "Chrome.[Feature].[KeyPrefix].*" and the constants names should be in
@@ -35,8 +34,8 @@ import java.util.List;
  *
  * <p>To deprecate a KeyPrefix that is not used anymore: 1. Add its String value to {@link
  * DeprecatedChromePreferenceKeys#getPrefixesForTesting()}, including the ".*", in alphabetical
- * order by value. 2. Remove it from {@link #getKeysInUse()} or {@link
- * LegacyChromePreferenceKeys#getPrefixesInUse()}. 3. Delete the KeyPrefix constant.
+ * order by value. 2. Remove it from {@link #getKeysInUse()} or {@link #getLegacyPrefixesInUse()}.
+ * 3. Delete the KeyPrefix constant.
  *
  * <p>Tests in ChromePreferenceKeysTest and checks in {@link StrictPreferenceKeyChecker} ensure the
  * validity of this file.
@@ -1198,7 +1197,7 @@ public final class ChromePreferenceKeys {
 
     /**
      * These values are currently used as SharedPreferences keys, along with the keys in {@link
-     * LegacyChromePreferenceKeys#getKeysInUse()}. Add new SharedPreferences keys here.
+     * #getLegacyKeysInUse()}. Add new SharedPreferences keys here.
      *
      * @return The list of [keys in use] conforming to the format.
      */
@@ -1418,6 +1417,141 @@ public final class ChromePreferenceKeys {
                 VERTICAL_TABS_USER_RESIZED_WIDTH_DP,
                 WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT,
                 WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES);
+    }
+
+    /**
+     * These values are currently used as SharedPreferences keys but do not conform to the
+     * "Chrome.[Feature].[Key]" format. Do not add new keys here; new keys must be added to {@link
+     * #getKeysInUse()}. Every entry must also be in {@code LegacyChromePreferenceKeys}, which is
+     * enforced by ChromePreferenceKeysTest.
+     *
+     * @return The list of legacy-format [keys in use].
+     */
+    @CheckDiscard("Validation is performed in tests and in debug builds.")
+    static List<String> getLegacyKeysInUse() {
+        return Arrays.asList(
+                APP_LOCALE,
+                AUTOFILL_ASSISTANT_ENABLED,
+                AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED,
+                BACKUP_FIRST_BACKUP_DONE,
+                BACKUP_FLOW_SIGNIN_ACCOUNT_NAME,
+                BOOKMARKS_LAST_MODIFIED_FOLDER_ID,
+                BOOKMARKS_LAST_USED_URL,
+                BOOKMARKS_LAST_USED_PARENT,
+                CHROME_DEFAULT_BROWSER,
+                CONTENT_SUGGESTIONS_SHOWN,
+                CONTEXTUAL_SEARCH_TAP_SINCE_OPEN_QUICK_ANSWER_COUNT,
+                CONTEXTUAL_SEARCH_TAP_TRIGGERED_PROMO_COUNT,
+                CRASH_UPLOAD_FAILURE_BROWSER,
+                CRASH_UPLOAD_FAILURE_GPU,
+                CRASH_UPLOAD_FAILURE_OTHER,
+                CRASH_UPLOAD_FAILURE_RENDERER,
+                CRASH_UPLOAD_SUCCESS_BROWSER,
+                CRASH_UPLOAD_SUCCESS_GPU,
+                CRASH_UPLOAD_SUCCESS_OTHER,
+                CRASH_UPLOAD_SUCCESS_RENDERER,
+                CUSTOM_TABS_LAST_URL,
+                DEPRECATED_HOMEPAGE_CUSTOM_URI,
+                DOWNLOAD_AUTO_RESUMPTION_ATTEMPT_LEFT,
+                DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS,
+                DOWNLOAD_IS_DOWNLOAD_HOME_ENABLED,
+                DOWNLOAD_NEXT_DOWNLOAD_NOTIFICATION_ID,
+                DOWNLOAD_PENDING_DOWNLOAD_NOTIFICATIONS,
+                DOWNLOAD_PENDING_OMA_DOWNLOADS,
+                DOWNLOAD_UMA_ENTRY,
+                FIRST_RUN_FLOW_COMPLETE,
+                FIRST_RUN_FLOW_SIGNIN_SETUP,
+                FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE,
+                FIRST_RUN_SKIP_WELCOME_PAGE,
+                HISTORY_SHOW_HISTORY_INFO,
+                HOMEPAGE_ENABLED,
+                HOMEPAGE_USE_DEFAULT_URI,
+                DYNAMIC_SHORTCUTS_ADDED,
+                LATEST_UNSUPPORTED_VERSION,
+                LOCALE_MANAGER_AUTO_SWITCH,
+                LOCALE_MANAGER_MISSING_TIMEZONES,
+                LOCALE_MANAGER_PARTNER_PROMO_KEYWORD_SELECTED,
+                LOCALE_MANAGER_PROMO_SHOWN,
+                LOCALE_MANAGER_PROMO_V2_CHECKED,
+                LOCALE_MANAGER_SEARCH_ENGINE_PROMO_SHOW_STATE,
+                LOCALE_MANAGER_SEARCH_WIDGET_PRESENT_FIRST_START,
+                LOCALE_MANAGER_SHOULD_REPING_RLZ_FOR_SEARCH_PROMO,
+                LOCALE_MANAGER_WAS_IN_SPECIAL_LOCALE,
+                MEDIA_WEBRTC_NOTIFICATION_IDS,
+                METRICS_MAIN_INTENT_LAUNCH_COUNT,
+                METRICS_MAIN_INTENT_LAUNCH_TIMESTAMP,
+                NOTIFICATIONS_CHANNELS_VERSION,
+                NOTIFICATIONS_LAST_SHOWN_NOTIFICATION_TYPE,
+                NOTIFICATIONS_NEXT_TRIGGER,
+                NTP_SNIPPETS_IS_SCHEDULED,
+                OFFLINE_AUTO_FETCH_SHOWING_IN_PROGRESS,
+                OFFLINE_AUTO_FETCH_USER_CANCEL_ACTION_IN_PROGRESS,
+                OFFLINE_INDICATOR_V2_ENABLED,
+                PAYMENTS_CHECK_SAVE_CARD_TO_DEVICE,
+                PAYMENTS_PAYMENT_COMPLETE_ONCE,
+                PRIVACY_IN_SAMPLE_FOR_METRICS,
+                PROFILES_BOOT_TIMESTAMP,
+                PROMOS_SKIPPED_ON_FIRST_START,
+                RLZ_NOTIFIED,
+                SEARCH_ENGINE_CHOICE_CHROME_VERSION,
+                SEARCH_ENGINE_CHOICE_DEFAULT_TYPE_BEFORE,
+                SEARCH_ENGINE_CHOICE_PRESENTED_VERSION,
+                SEARCH_ENGINE_CHOICE_PROPAGATED_PACKAGE_NAME,
+                SEARCH_ENGINE_CHOICE_REQUESTED_TIMESTAMP,
+                SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS,
+                SEND_TAB_TO_SELF_NEXT_NOTIFICATION_ID,
+                SETTINGS_DEVELOPER_ENABLED,
+                SETTINGS_DEVELOPER_TRACING_CATEGORIES,
+                SETTINGS_DEVELOPER_TRACING_MODE,
+                SETTINGS_PRIVACY_OTHER_FORMS_OF_HISTORY_DIALOG_SHOWN,
+                SETTINGS_WEBSITE_FAILED_BUILD_VERSION,
+                SIGNIN_PROMO_LAST_SHOWN_ACCOUNT_NAMES,
+                SIGNIN_PROMO_LAST_SHOWN_MAJOR_VERSION,
+                SIGNIN_PROMO_NTP_PROMO_DISMISSED,
+                SIGNIN_PROMO_NTP_PROMO_SUPPRESSION_PERIOD_START,
+                SIGNIN_PROMO_BOOKMARKS_DECLINED,
+                SIGNIN_LEGACY_PRIMARY_ACCOUNT_EMAIL,
+                SNAPSHOT_DATABASE_REMOVED,
+                SYNC_ERROR_MESSAGE_SHOWN_AT_TIME,
+                TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF,
+                TABMODEL_ACTIVE_TAB_ID,
+                TABMODEL_HAS_COMPUTED_MAX_ID,
+                TABMODEL_HAS_RUN_FILE_MIGRATION,
+                TABMODEL_HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION,
+                TAB_ID_MANAGER_NEXT_ID,
+                TOS_ACKED_ACCOUNTS,
+                TWA_DISCLOSURE_ACCEPTED_PACKAGES,
+                UI_THEME_SETTING,
+                VERIFIED_DIGITAL_ASSET_LINKS,
+                WEBAPK_UNINSTALLED_PACKAGES,
+                KEY_ZERO_SUGGEST_LIST_SIZE);
+    }
+
+    /**
+     * These values are currently used as SharedPreferences key prefixes but do not conform to the
+     * "Chrome.[Feature].[KeyPrefix].*" format. Do not add new prefixes here. Every entry must also
+     * be in {@code LegacyChromePreferenceKeys}, which is enforced by ChromePreferenceKeysTest.
+     *
+     * @return The list of legacy-format {@link KeyPrefix}es in use.
+     */
+    @CheckDiscard("Validation is performed in tests and in debug builds.")
+    static List<KeyPrefix> getLegacyPrefixesInUse() {
+        return Arrays.asList(
+                CUSTOM_TABS_DEX_LAST_UPDATE_TIME_PREF_PREFIX,
+                PAYMENTS_PAYMENT_INSTRUMENT_USE_COUNT,
+                PAYMENTS_PAYMENT_INSTRUMENT_USE_DATE,
+                KEY_ZERO_SUGGEST_URL_PREFIX,
+                KEY_ZERO_SUGGEST_DISPLAY_TEXT_PREFIX,
+                KEY_ZERO_SUGGEST_DESCRIPTION_PREFIX,
+                KEY_ZERO_SUGGEST_NATIVE_TYPE_PREFIX,
+                KEY_ZERO_SUGGEST_NATIVE_SUBTYPES_PREFIX,
+                KEY_ZERO_SUGGEST_IS_SEARCH_TYPE_PREFIX,
+                KEY_ZERO_SUGGEST_ANSWER_TEXT_PREFIX,
+                KEY_ZERO_SUGGEST_GROUP_ID_PREFIX,
+                KEY_ZERO_SUGGEST_IS_DELETABLE_PREFIX,
+                KEY_ZERO_SUGGEST_IS_STARRED_PREFIX,
+                KEY_ZERO_SUGGEST_POST_CONTENT_TYPE_PREFIX,
+                KEY_ZERO_SUGGEST_POST_CONTENT_DATA_PREFIX);
     }
 
     private ChromePreferenceKeys() {}

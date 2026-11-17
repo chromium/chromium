@@ -26,6 +26,7 @@ public class AllPreferenceKeyRegistries {
             BuildConfig.ENABLE_ASSERTS
                     ? Set.of(
                             assertNonNull(ChromeSharedPreferences.REGISTRY),
+                            assertNonNull(ProfilePreferenceKeys.REGISTRY),
                             assertNonNull(CachedFlagsSharedPreferences.REGISTRY))
                     : null;
 
