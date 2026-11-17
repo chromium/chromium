@@ -14,7 +14,6 @@ allow_circular_includes_from_untriaged = [
   "//chrome/browser/apps/app_preload_service:app_preload_service",
   "//chrome/browser/apps/app_service/publishers:publishers",
   "//chrome/browser/apps/app_service:app_service",
-  "//chrome/browser/apps/browser_instance:browser_instance",
   "//chrome/browser/apps/link_capturing:link_capturing",
   "//chrome/browser/apps/platform_apps/api:api",
   "//chrome/browser/apps/platform_apps:platform_apps",

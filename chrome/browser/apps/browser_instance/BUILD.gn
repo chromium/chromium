@@ -23,11 +23,5 @@ source_set("browser_instance") {
     "//content/public/browser",
     "//extensions/browser",
     "//extensions/common",
-
-    # For circular includes from.
-    "//chrome/browser/ui/ash/shelf",
   ]
-
-  # TODO(crbug.com/40251079): Remove circular dependencies.
-  allow_circular_includes_from = [ "//chrome/browser/ui/ash/shelf" ]
 }

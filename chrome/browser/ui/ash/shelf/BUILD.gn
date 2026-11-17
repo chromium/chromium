@@ -78,6 +78,7 @@ static_library("shelf") {
     "//ash/webui/mall:app_id",
     "//ash/webui/projector_app/public/cpp",
     "//chrome/app/theme:chrome_unscaled_resources",
+    "//chrome/browser/apps/browser_instance",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/app_service",
