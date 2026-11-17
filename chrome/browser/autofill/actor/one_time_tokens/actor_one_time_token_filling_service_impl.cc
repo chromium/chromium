@@ -49,6 +49,7 @@
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_flow.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_retriever.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
@@ -398,6 +399,7 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
       CHECK_DEREF(AffiliationServiceFactory::GetForProfile(profile_)));
   gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
       *service->GetBackend(), std::move(checker), otp_frame_origin,
+      one_time_tokens::GmailOtpFlow::kActor,
       web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(),
       allow_psl_matching,
       base::BindOnce(&ActorOneTimeTokenFillingServiceImpl::OnOtpRetrieved,
