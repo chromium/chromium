@@ -6821,6 +6821,221 @@ TEST_P(QuicSessionPoolAsyncDnsJobPostHandshakePoolingTest,
   socket_data2.ExpectAllWriteDataConsumed();
 }
 
+// Verifies that when the default network disconnects while dual-stack attempts
+// are in flight, the job falls back to a remaining endpoint using 0-RTT.
+TEST_P(QuicSessionPoolAsyncDnsJobTest,
+       OnNetworkDisconnectedFallsBackToZeroRttEndpoint) {
+  quic_params_->migrate_sessions_on_network_change_v2 = true;
+  quic_params_->migrate_sessions_early_v2 = true;
+  scoped_mock_network_change_notifier_ =
+      std::make_unique<ScopedMockNetworkChangeNotifier>();
+  MockNetworkChangeNotifier* mock_ncn =
+      scoped_mock_network_change_notifier_->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+  mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
+
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      fake_resolver_.AddFakeRequest();
+  InitializeWithFakeResolver();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+
+  ProofVerifyDetailsChromium verify_details1 = DefaultProofVerifyDetails();
+  ProofVerifyDetailsChromium verify_details2 = DefaultProofVerifyDetails();
+  ProofVerifyDetailsChromium verify_details3 = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details1);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details3);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+
+  MockQuicData ipv6_socket_data(version_);
+  ipv6_socket_data.AddReadPauseForever();
+  ipv6_socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  MockQuicData ipv4_socket_data(version_);
+  ipv4_socket_data.AddReadPauseForever();
+  ipv4_socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  MockQuicData fallback_socket_data(version_);
+  fallback_socket_data.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  fallback_socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  fallback_socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_THAT(builder.CallRequest(), IsError(ERR_IO_PENDING));
+
+  endpoint_request->set_endpoints(
+      {MakeUsableDualEndpoint(kIpv6Addr1, kIpv4Addr1),
+       MakeUsableEndpoint(kIpv4Addr2)});
+  endpoint_request->set_crypto_ready(true);
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+
+  crypto_client_stream_factory_.WaitForStreams(1);
+  FastForwardBy(SlowTimerDelay());
+  crypto_client_stream_factory_.WaitForStreams(2);
+  ASSERT_EQ(2u, QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()));
+
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ZERO_RTT);
+  mock_ncn->NotifyNetworkDisconnected(kDefaultNetworkForTests);
+
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  EXPECT_TRUE(HasActiveSession(kDefaultDestination));
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream);
+
+  ipv6_socket_data.ExpectAllReadDataConsumed();
+  ipv6_socket_data.ExpectAllWriteDataConsumed();
+  ipv4_socket_data.ExpectAllReadDataConsumed();
+  ipv4_socket_data.ExpectAllWriteDataConsumed();
+  fallback_socket_data.ExpectAllReadDataConsumed();
+  fallback_socket_data.ExpectAllWriteDataConsumed();
+}
+
+// Verifies that in-flight dual-stack requests pool onto an existing confirmed
+// session waiting for a new network when the default network disconnects.
+TEST_P(QuicSessionPoolAsyncDnsJobTest,
+       OnNetworkDisconnectedPoolsPendingDualStackJobsToWaitingSession) {
+  quic_params_->migrate_sessions_on_network_change_v2 = true;
+  quic_params_->migrate_sessions_early_v2 = true;
+  scoped_mock_network_change_notifier_ =
+      std::make_unique<ScopedMockNetworkChangeNotifier>();
+  MockNetworkChangeNotifier* mock_ncn =
+      scoped_mock_network_change_notifier_->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+  mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
+
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request2 =
+      fake_resolver_.AddFakeRequest();
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request3 =
+      fake_resolver_.AddFakeRequest();
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request1 =
+      fake_resolver_.AddFakeRequest();
+  InitializeWithFakeResolver();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+
+  ProofVerifyDetailsChromium verify_details1 = DefaultProofVerifyDetails();
+  ProofVerifyDetailsChromium verify_details2 = DefaultProofVerifyDetails();
+  ProofVerifyDetailsChromium verify_details3 = DefaultProofVerifyDetails();
+  ProofVerifyDetailsChromium verify_details4 = DefaultProofVerifyDetails();
+  ProofVerifyDetailsChromium verify_details5 = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details1);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details3);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details4);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details5);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+
+  MockQuicData socket_data1(version_);
+  socket_data1.AddReadPauseForever();
+  socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  MockQuicData socket_data2(version_);
+  socket_data2.AddReadPauseForever();
+  socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  MockQuicData socket_data3(version_);
+  socket_data3.AddReadPauseForever();
+  socket_data3.AddSocketDataToFactory(socket_factory_.get());
+
+  MockQuicData socket_data4(version_);
+  socket_data4.AddReadPauseForever();
+  socket_data4.AddSocketDataToFactory(socket_factory_.get());
+
+  MockQuicData active_socket_data(version_);
+  active_socket_data.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  active_socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  active_socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  const url::SchemeHostPort server2(url::kHttpsScheme, kServer2HostName,
+                                    kDefaultServerPort);
+  RequestBuilder builder2(this);
+  builder2.destination = server2;
+  builder2.url = GURL(kServer2Url);
+  TestCompletionCallback callback2;
+  builder2.callback = callback2.callback();
+  EXPECT_THAT(builder2.CallRequest(), IsError(ERR_IO_PENDING));
+
+  const url::SchemeHostPort server3(url::kHttpsScheme, kServer3HostName,
+                                    kDefaultServerPort);
+  RequestBuilder builder3(this);
+  builder3.destination = server3;
+  builder3.url = GURL(kServer3Url);
+  TestCompletionCallback callback3;
+  builder3.callback = callback3.callback();
+  EXPECT_THAT(builder3.CallRequest(), IsError(ERR_IO_PENDING));
+
+  RequestBuilder builder1(this);
+  EXPECT_THAT(builder1.CallRequest(), IsError(ERR_IO_PENDING));
+
+  endpoint_request2->set_endpoints(
+      {MakeUsableDualEndpoint(kIpv6Addr1, kIpv4Addr1)});
+  endpoint_request2->set_crypto_ready(true);
+  endpoint_request2->CallOnServiceEndpointRequestFinished(OK);
+
+  endpoint_request3->set_endpoints(
+      {MakeUsableDualEndpoint(kIpv6Addr2, kIpv4Addr1)});
+  endpoint_request3->set_crypto_ready(true);
+  endpoint_request3->CallOnServiceEndpointRequestFinished(OK);
+
+  crypto_client_stream_factory_.WaitForStreams(2);
+  FastForwardBy(SlowTimerDelay());
+  crypto_client_stream_factory_.WaitForStreams(4);
+
+  endpoint_request1->add_endpoint(MakeUsableEndpoint(kIpv4Addr1));
+  endpoint_request1->set_crypto_ready(true);
+  endpoint_request1->CallOnServiceEndpointRequestFinished(OK);
+  crypto_client_stream_factory_.WaitForStreams(5);
+  ASSERT_EQ(5u, crypto_client_stream_factory_.streams().size());
+
+  crypto_client_stream_factory_.streams()[4]->NotifySessionOneRttKeyAvailable();
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  QuicChromiumClientSession* active_session =
+      GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(active_session);
+  ASSERT_TRUE(active_session->OneRttKeysAvailable());
+  ASSERT_EQ(5u, QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()));
+
+  mock_ncn->SetConnectedNetworksList({});
+  mock_ncn->NotifyNetworkDisconnected(kDefaultNetworkForTests);
+
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+  EXPECT_THAT(callback3.WaitForResult(), IsOk());
+  EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), active_session));
+
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle1 =
+      builder1.request.ReleaseSessionHandle();
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle2 =
+      builder2.request.ReleaseSessionHandle();
+  std::unique_ptr<QuicChromiumClientSession::Handle> handle3 =
+      builder3.request.ReleaseSessionHandle();
+  ASSERT_TRUE(handle1);
+  ASSERT_TRUE(handle2);
+  ASSERT_TRUE(handle3);
+  EXPECT_TRUE(handle2->SharesSameSession(*handle1));
+  EXPECT_TRUE(handle3->SharesSameSession(*handle1));
+  EXPECT_FALSE(net_log_observer_
+                   .GetEntriesWithType(
+                       NetLogEventType::
+                           QUIC_CONNECTION_MIGRATION_WAITING_FOR_NEW_NETWORK)
+                   .empty());
+
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
+  socket_data3.ExpectAllReadDataConsumed();
+  socket_data3.ExpectAllWriteDataConsumed();
+  socket_data4.ExpectAllReadDataConsumed();
+  socket_data4.ExpectAllWriteDataConsumed();
+  active_socket_data.ExpectAllReadDataConsumed();
+  active_socket_data.ExpectAllWriteDataConsumed();
+}
+
 class QuicSessionPoolAsyncDnsJobProactivePoolingTest
     : public QuicSessionPoolAsyncDnsJobTest {
  protected:
