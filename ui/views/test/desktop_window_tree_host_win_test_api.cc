@@ -4,6 +4,9 @@
 
 #include "ui/views/test/desktop_window_tree_host_win_test_api.h"
 
+#include <utility>
+
+#include "base/functional/callback.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 #include "ui/views/win/hwnd_message_handler.h"
 
@@ -55,6 +58,23 @@ LRESULT DesktopWindowTreeHostWinTestApi::SimulatePenEventForTesting(
     POINTER_PEN_INFO pointer_pen_info) {
   return host_->message_handler_->HandlePointerEventTypePen(message, pointer_id,
                                                             pointer_pen_info);
+}
+
+bool DesktopWindowTreeHostWinTestApi::SimulateTouchEventForTesting(
+    UINT message,
+    UINT32 pointer_id,
+    LPARAM l_param,
+    const POINTER_TOUCH_INFO& pointer_touch_info) {
+  HWNDMessageHandler* handler = host_->message_handler_.get();
+  handler->SetMsgHandled(FALSE);
+  handler->HandlePointerEventTypeTouch(message, pointer_id, l_param,
+                                       pointer_touch_info);
+  return handler->msg_handled_ != FALSE;
+}
+
+void DesktopWindowTreeHostWinTestApi::SetSendMouseEventCallbackForTesting(
+    SendMouseEventCallback callback) {
+  host_->send_mouse_event_callback_for_testing_ = std::move(callback);
 }
 
 }  // namespace test

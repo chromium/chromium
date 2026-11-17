@@ -6,14 +6,17 @@
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_WINDOW_TREE_HOST_WIN_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/display/display.h"
+#include "ui/events/pointer_details.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
 #include "ui/views/win/hwnd_message_handler_delegate.h"
@@ -76,32 +79,29 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
 
   // When DesktopDragDropClientWin starts a touch-initiated drag, it calls
   // this method to record that we're in touch drag mode, and synthesizes
-  // right mouse button down and move events to get ::DoDragDrop started.
-  void StartTouchDrag(gfx::Point screen_point);
+  // left mouse button down and move events to get ::DoDragDrop started.
+  // Only events from `pointer_id` drive the drag; other touches are ignored.
+  void StartTouchDrag(gfx::Point screen_point, ui::PointerId pointer_id);
 
   // If in touch drag mode, this method synthesizes a left mouse button up
-  // event to match the left mouse button down event in StartTouchDrag. It
-  // also restores the cursor pos to where the drag started, to avoid leaving
-  // the cursor outside the Chrome window doing the drag drop. This allows
-  // subsequent touch drag drops to succeed. Touch drag drop requires that
-  // the cursor be over the same window as the touch drag point.
+  // event to match the left mouse button down event in StartTouchDrag.
   // This needs to be called in two cases:
   // 1. The normal case is that ::DoDragDrop starts, we get touch move events,
   // which we turn into mouse move events, and then we get a touch release
-  // event. Calling FinishTouchDragIfInDrag generates a mouse up, which stops
+  // event. Calling FinishTouchDrag generates a mouse up, which stops
   // the drag drop.
   // 2. ::DoDragDrop exits immediately, w/o us handling any touch events. In
-  // this case, FinishTouchDragIfInDrag makes sure we have a mouse button up to
+  // this case, FinishTouchDrag makes sure we have a mouse button up to
   // match the mouse button down, because we won't get a touch release event. We
   // don't know for sure if ::DoDragDrop exited immediately, other than by
-  // checking if `in_touch_drag_` has been set to false.
+  // checking if `touch_drag_pointer_id_` has been reset.
   //
-  // So, we always call FinishTouchDragIfInDrag after ::DoDragDrop exits, to
+  // So, we always call FinishTouchDrag after ::DoDragDrop exits, to
   // make sure it gets called, and we make it handle getting called multiple
   // times. Most of the time, FinishTouchDrag will have already been called when
   // we get a touch release event, in which case the second call needs to be a
-  // noop, which is accomplished by checking if `in_touch_drag_` is already
-  // false.
+  // noop, which is accomplished by checking if `touch_drag_pointer_id_` has
+  // already been reset.
   void FinishTouchDrag(gfx::Point screen_point);
 
   // Returns true if any window is in a move/resize loop.
@@ -328,6 +328,10 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
 
   void ClearBackgroundPaintBrush();
 
+  // Injects a mouse event during a touch drag, or runs
+  // `send_mouse_event_callback_for_testing_` if set.
+  void SendTouchDragMouseEvent(const gfx::Point& screen_point, int flags);
+
   std::unique_ptr<HWNDMessageHandler> message_handler_;
   std::unique_ptr<aura::client::FocusClient> focus_client_;
 
@@ -402,13 +406,18 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
 
   std::unique_ptr<wm::ScopedTooltipDisabler> tooltip_disabler_;
 
-  // Set to true when DesktopDragDropClientWin starts a touch-initiated drag
-  // drop and false when it finishes. While in touch drag, if touch move events
-  // are received, the equivalent mouse events are generated, because ole32
+  // Set to the initiating touch's id when DesktopDragDropClientWin starts a
+  // touch-initiated drag drop and reset when it finishes. While in touch drag,
+  // touch events for this id generate equivalent mouse events, because ole32
   // ::DoDragDrop does not seem to handle touch events. WinRT drag drop does
   // support touch, but we've been unable to use it in Chrome. See
-  // https://crbug.com/1236783 for more info.
-  bool in_touch_drag_ = false;
+  // https://crbug.com/1236783 for more info. Tracking the id keeps other
+  // touches on this HWND from steering or dropping the drag.
+  std::optional<ui::PointerId> touch_drag_pointer_id_;
+
+  // Overrides mouse event injection during touch drags for testing.
+  base::RepeatingCallback<void(const gfx::Point& screen_point, int flags)>
+      send_mouse_event_callback_for_testing_;
 
   // The z-order level of the window; the window exhibits "always on top"
   // behavior if > 0.

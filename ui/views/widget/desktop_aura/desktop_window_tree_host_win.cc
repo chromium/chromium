@@ -17,6 +17,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -31,7 +32,10 @@
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/cursor_client.h"
+#include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/focus_client.h"
+#include "ui/aura/env.h"
+#include "ui/aura/env_input_state_controller.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/base/class_property.h"
@@ -52,6 +56,8 @@
 #include "ui/compositor/paint_context.h"
 #include "ui/display/win/dpi.h"
 #include "ui/display/win/screen_win.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "ui/events/keyboard_hook.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_keyboard_layout_map.h"
@@ -245,21 +251,22 @@ aura::Window* DesktopWindowTreeHostWin::GetContentWindowForHWND(HWND hwnd) {
   return weak_ptr ? weak_ptr->get() : nullptr;
 }
 
-void DesktopWindowTreeHostWin::StartTouchDrag(gfx::Point screen_point) {
+void DesktopWindowTreeHostWin::StartTouchDrag(gfx::Point screen_point,
+                                              ui::PointerId pointer_id) {
   // Send a mouse down and mouse move before do drag drop runs its own event
   // loop. This is required for ::DoDragDrop to start the drag.
-  ui::SendMouseEvent(screen_point,
-                     (MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_VIRTUALDESK));
-  ui::SendMouseEvent(screen_point,
-                     (MOUSEEVENTF_MOVE | MOUSEEVENTF_VIRTUALDESK));
-  in_touch_drag_ = true;
+  SendTouchDragMouseEvent(screen_point,
+                          (MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_VIRTUALDESK));
+  SendTouchDragMouseEvent(screen_point,
+                          (MOUSEEVENTF_MOVE | MOUSEEVENTF_VIRTUALDESK));
+  touch_drag_pointer_id_ = pointer_id;
 }
 
 void DesktopWindowTreeHostWin::FinishTouchDrag(gfx::Point screen_point) {
-  if (in_touch_drag_) {
-    in_touch_drag_ = false;
-    ui::SendMouseEvent(screen_point,
-                       (MOUSEEVENTF_LEFTUP | MOUSEEVENTF_VIRTUALDESK));
+  if (touch_drag_pointer_id_) {
+    touch_drag_pointer_id_.reset();
+    SendTouchDragMouseEvent(screen_point,
+                            (MOUSEEVENTF_LEFTUP | MOUSEEVENTF_VIRTUALDESK));
   }
 }
 
@@ -1283,6 +1290,18 @@ void DesktopWindowTreeHostWin::HandleDestroying() {
     return;
   }
   called_handle_destroying_ = true;
+  // Cancel any touch drag now, while the widget is intact. No further touch
+  // events will arrive, and the drag client is destroyed before it can finish
+  // the drag.
+  // TODO(crbug.com/585657789): Also clear any non-drag touches still down on
+  // this HWND from touch_ids_down() when the host is destroyed.
+  if (touch_drag_pointer_id_) {
+    ui::TouchEvent cancel(ui::EventType::kTouchCancelled, gfx::Point(),
+                          ui::EventTimeForNow(),
+                          ui::PointerDetails(ui::EventPointerType::kTouch,
+                                             *touch_drag_pointer_id_));
+    HandleTouchEvent(&cancel);
+  }
   if (drag_drop_client_) {
     drag_drop_client_->OnNativeWidgetDestroying(GetHWND());
   }
@@ -1477,14 +1496,35 @@ void DesktopWindowTreeHostWin::HandleKeyEvent(ui::KeyEvent* event) {
 }
 
 void DesktopWindowTreeHostWin::HandleTouchEvent(ui::TouchEvent* event) {
-  // HWNDMessageHandler asynchronously processes touch events. Because of this
-  // it's possible for the aura::WindowEventDispatcher to have been destroyed
-  // by the time we attempt to process them.
-  Widget* widget = GetWidget();
-  if (!widget || !widget->GetNativeView()) {
+  if (!window()) {
     return;
   }
-  if (in_touch_drag_) {
+  const auto update_env_touch_state = [&]() {
+    ui::TouchEvent dip_event(*event);
+    dip_event.UpdateForRootTransform(
+        GetInverseRootTransform(),
+        GetInverseRootTransformForLocalEventCoordinates());
+    aura::Env::GetInstance()->env_controller()->UpdateStateForTouchEvent(
+        window(), dip_event);
+  };
+  if (touch_drag_pointer_id_) {
+    event->SetHandled();
+    if (event->type() == ui::EventType::kTouchPressed ||
+        event->type() == ui::EventType::kTouchReleased ||
+        event->type() == ui::EventType::kTouchCancelled) {
+      // Touch events during a drag are not dispatched to Aura, so update
+      // EnvInputStateController (in DIPs) directly. This covers touches other
+      // than the drag touch too, so a touch pressed mid-drag and held past the
+      // end of the drag is still reported as down, and a touch released
+      // mid-drag is not left marked as down.
+      update_env_touch_state();
+    }
+    // Browser UI and web contents share this HWND, so ignore touches other than
+    // the one that started the drag (e.g. a resting palm or a second finger on
+    // browser UI) so they cannot steer or drop it.
+    if (event->pointer_details().id != *touch_drag_pointer_id_) {
+      return;
+    }
     POINT event_point(event->location().x(), event->location().y());
     ::ClientToScreen(GetHWND(), &event_point);
     gfx::Point screen_point(event_point);
@@ -1492,10 +1532,36 @@ void DesktopWindowTreeHostWin::HandleTouchEvent(ui::TouchEvent* event) {
     // to mouse pointer events. The drag controller (`DesktopDragDropClientWin`)
     // will manage gesture states until a drop happens.
     if (event->type() == ui::EventType::kTouchMoved) {
-      ui::SendMouseEvent(screen_point,
-                         (MOUSEEVENTF_MOVE | MOUSEEVENTF_VIRTUALDESK));
-    } else if (event->type() == ui::EventType::kTouchReleased) {
+      SendTouchDragMouseEvent(screen_point,
+                              (MOUSEEVENTF_MOVE | MOUSEEVENTF_VIRTUALDESK));
+    } else if (event->type() == ui::EventType::kTouchReleased ||
+               event->type() == ui::EventType::kTouchCancelled) {
+      // The synthesized left button up below would otherwise make
+      // DragSourceWin::QueryContinueDrag() commit a drop, so mark the drag as
+      // cancelled first. The button up is still needed to release the
+      // synthesized button and let ::DoDragDrop exit.
+      if (event->type() == ui::EventType::kTouchCancelled) {
+        if (aura::client::DragDropClient* drag_drop_client =
+                aura::client::GetDragDropClient(window())) {
+          drag_drop_client->DragCancel();
+        }
+      }
       FinishTouchDrag(screen_point);
+    }
+    return;
+  }
+  // HWNDMessageHandler asynchronously processes touch events. Because of this
+  // it's possible for the aura::WindowEventDispatcher to have been destroyed
+  // by the time we attempt to process them.
+  Widget* widget = GetWidget();
+  if (!widget || !widget->GetNativeView() || !dispatcher() ||
+      dispatcher()->in_shutdown()) {
+    if (event->type() == ui::EventType::kTouchReleased ||
+        event->type() == ui::EventType::kTouchCancelled) {
+      update_env_touch_state();
+    }
+    if (dispatcher() && dispatcher()->in_shutdown()) {
+      event->SetHandled();
     }
     return;
   }
@@ -1896,6 +1962,16 @@ void DesktopWindowTreeHostWin::ClearBackgroundPaintBrush() {
     DeleteObject(background_paint_brush_);
     background_paint_brush_ = nullptr;
   }
+}
+
+void DesktopWindowTreeHostWin::SendTouchDragMouseEvent(
+    const gfx::Point& screen_point,
+    int flags) {
+  if (send_mouse_event_callback_for_testing_) {
+    send_mouse_event_callback_for_testing_.Run(screen_point, flags);
+    return;
+  }
+  ui::SendMouseEvent(screen_point, flags);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -7,6 +7,7 @@
 
 #include <windows.h>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_ui_types.h"
@@ -43,6 +44,18 @@ class DesktopWindowTreeHostWinTestApi {
   LRESULT SimulatePenEventForTesting(UINT message,
                                      UINT32 pointer_id,
                                      POINTER_PEN_INFO pointer_pen_info);
+
+  // Like SimulatePenEventForTesting(), but for touch. Returns whether the
+  // message was marked handled.
+  bool SimulateTouchEventForTesting(
+      UINT message,
+      UINT32 pointer_id,
+      LPARAM l_param,
+      const POINTER_TOUCH_INFO& pointer_touch_info);
+
+  using SendMouseEventCallback =
+      base::RepeatingCallback<void(const gfx::Point& screen_point, int flags)>;
+  void SetSendMouseEventCallbackForTesting(SendMouseEventCallback callback);
 
   void SetMockCursorPositionForTesting(const gfx::Point& position);
 

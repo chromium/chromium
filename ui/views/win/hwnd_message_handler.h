@@ -479,6 +479,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
 
     // Pointer events.
     CR_MESSAGE_HANDLER_EX(WM_POINTERACTIVATE, OnPointerActivate)
+    CR_MESSAGE_HANDLER_EX(WM_POINTERCAPTURECHANGED, OnPointerEvent)
     CR_MESSAGE_HANDLER_EX(WM_POINTERDOWN, OnPointerEvent)
     CR_MESSAGE_HANDLER_EX(WM_POINTERUP, OnPointerEvent)
     CR_MESSAGE_HANDLER_EX(WM_POINTERUPDATE, OnPointerEvent)
@@ -646,6 +647,14 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   LRESULT HandlePointerEventTypeTouchOrNonClient(UINT message,
                                                  WPARAM w_param,
                                                  LPARAM l_param);
+
+  // Helper for HandlePointerEventTypeTouchOrNonClient() once the
+  // POINTER_TOUCH_INFO has been retrieved.
+  LRESULT HandlePointerEventTypeTouch(
+      UINT message,
+      UINT32 pointer_id,
+      LPARAM l_param,
+      const POINTER_TOUCH_INFO& pointer_touch_info);
 
   // Helper to handle client area events of PT_PEN.
   LRESULT HandlePointerEventTypePenClient(UINT message,

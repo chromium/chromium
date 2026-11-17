@@ -237,6 +237,11 @@ void EnableMenuItemByCommand(HMENU menu, UINT command, bool enabled) {
 constexpr int kAutoHideTaskbarThicknessPx = 2;
 
 ui::EventType GetTouchEventType(POINTER_FLAGS pointer_flags) {
+  // A canceled pointer also has POINTER_FLAG_UP or POINTER_FLAG_UPDATE set, so
+  // check this first.
+  if (pointer_flags & POINTER_FLAG_CANCELED) {
+    return ui::EventType::kTouchCancelled;
+  }
   if (pointer_flags & POINTER_FLAG_DOWN) {
     return ui::EventType::kTouchPressed;
   }
@@ -2531,6 +2536,12 @@ LRESULT HWNDMessageHandler::OnPointerEvent(UINT message,
 
   switch (pointer_type) {
     case PT_PEN:
+      // TODO(crbug.com/585663523): Handle WM_POINTERCAPTURECHANGED and
+      // POINTER_FLAG_CANCELED in PenEventProcessor so touch-mode stylus
+      // contacts release their id_generator_ ID and clear touch_ids_down_.
+      if (message == WM_POINTERCAPTURECHANGED) {
+        break;
+      }
       return HandlePointerEventTypePenClient(message, w_param, l_param);
     case PT_TOUCH:
       return HandlePointerEventTypeTouchOrNonClient(message, w_param, l_param);
@@ -3728,9 +3739,17 @@ LRESULT HWNDMessageHandler::HandlePointerEventTypeTouchOrNonClient(
     SetMsgHandled(FALSE);
     return -1;
   }
+  return HandlePointerEventTypeTouch(message, pointer_id, l_param,
+                                     pointer_touch_info);
+}
 
+LRESULT HWNDMessageHandler::HandlePointerEventTypeTouch(
+    UINT message,
+    UINT32 pointer_id,
+    LPARAM l_param,
+    const POINTER_TOUCH_INFO& pointer_touch_info) {
   TRACE_EVENT1(
-      "ui", "HWNDMessageHandler::HandlePointerEventTypeTouchOrNonClient",
+      "ui", "HWNDMessageHandler::HandlePointerEventTypeTouch",
       "POINTER_TOUCH_INFO",
       base::StringPrintf(
           "pointerId: %" PRIu32 "\npointerFlags: %" PRIu32
@@ -3776,15 +3795,27 @@ LRESULT HWNDMessageHandler::HandlePointerEventTypeTouchOrNonClient(
   // for now. POINTER_FLAG_INCONTACT indicates this pointer is in contact with
   // the digitizer surface, which means pressing the screen.
   if ((message == WM_POINTERUPDATE) &&
-      !(pointer_flags & POINTER_FLAG_INCONTACT)) {
+      !(pointer_flags & (POINTER_FLAG_INCONTACT | POINTER_FLAG_CANCELED))) {
     SetMsgHandled(TRUE);
+    return 0;
+  }
+
+  // After losing capture of a pointer, this window typically receives no
+  // further messages for it, including WM_POINTERUP. Cancel the touch so its id
+  // is released and Aura does not keep reporting it as down. Ignore non-press
+  // messages for pointers this window is not tracking.
+  const bool capture_changed = message == WM_POINTERCAPTURECHANGED;
+  ui::EventType event_type = capture_changed ? ui::EventType::kTouchCancelled
+                                             : GetTouchEventType(pointer_flags);
+  if (event_type != ui::EventType::kTouchPressed &&
+      !id_generator_.HasGeneratedIDFor(pointer_id)) {
+    SetMsgHandled(FALSE);
     return 0;
   }
 
   POINT client_point = pointer_info.ptPixelLocationRaw;
   ::ScreenToClient(hwnd(), &client_point);
   gfx::Point touch_point = gfx::Point(client_point.x, client_point.y);
-  ui::EventType event_type = GetTouchEventType(pointer_flags);
   const base::TimeTicks event_time = ui::EventTimeForNow();
   auto mapped_pointer_id =
       static_cast<ui::PointerId>(id_generator_.GetGeneratedID(pointer_id));
@@ -3809,13 +3840,16 @@ LRESULT HWNDMessageHandler::HandlePointerEventTypeTouchOrNonClient(
       ui::PointerDetails(ui::EventPointerType::kTouch, mapped_pointer_id,
                          radius_x, radius_y, pressure, rotation_angle),
       ui::GetModifiersFromKeyState());
-  ui::ComputeEventLatencyOSFromPOINTER_INFO(event_type, pointer_info,
-                                            event_time);
+  if (!capture_changed) {
+    ui::ComputeEventLatencyOSFromPOINTER_INFO(event_type, pointer_info,
+                                              event_time);
+  }
   event.latency()->AddLatencyNumberWithTimestamp(
       ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, event_time);
 
-  // Release the pointer id for touch release events.
-  if (event_type == ui::EventType::kTouchReleased) {
+  // Release the pointer id for touch release and cancel events.
+  if (event_type == ui::EventType::kTouchReleased ||
+      event_type == ui::EventType::kTouchCancelled) {
     id_generator_.ReleaseNumber(pointer_id);
   }
 
@@ -3824,22 +3858,32 @@ LRESULT HWNDMessageHandler::HandlePointerEventTypeTouchOrNonClient(
   delegate_->HandleTouchEvent(&event);
 
   if (!IsDestroyed()) {
-    // Mark touch released events handled. These will usually turn into tap
-    // gestures, and doing this avoids propagating the event to other windows.
+    if (capture_changed) {
+      // WM_POINTERCAPTURECHANGED is a notification; leave it unhandled so
+      // DefWindowProc still sees it as before.
+      SetMsgHandled(FALSE);
+      return 0;
+    }
+    // Mark touch released and canceled events handled. Releases will usually
+    // turn into tap gestures, and doing this avoids propagating the event to
+    // other windows.
     if (delegate_->GetFrameMode() == FrameMode::SYSTEM_DRAWN) {
-      // WM_NCPOINTERUP must be DefWindowProc'ed in order for the system caption
-      // buttons to work correctly.
-      if (message == WM_POINTERUP) {
+      // WM_NCPOINTERUP and WM_NCPOINTERUPDATE must be DefWindowProc'ed in order
+      // for the system caption buttons to work correctly.
+      if (message == WM_POINTERUP ||
+          (message == WM_POINTERUPDATE &&
+           event_type == ui::EventType::kTouchCancelled)) {
         event.SetHandled();
       }
-    } else {
+    } else if (event_type == ui::EventType::kTouchReleased ||
+               event_type == ui::EventType::kTouchCancelled) {
       // Messages on HTCAPTION should be DefWindowProc'ed, as we let Windows
       // take care of dragging the window and double-tapping to maximize.
       const bool on_titlebar =
           ::SendMessage(hwnd(), WM_NCHITTEST, 0, l_param) == HTCAPTION;
       // Unlike above, we must mark both WM_POINTERUP and WM_NCPOINTERUP as
       // handled, in order for the custom caption buttons to work correctly.
-      if (event_type == ui::EventType::kTouchReleased && !on_titlebar) {
+      if (!on_titlebar) {
         event.SetHandled();
       }
     }

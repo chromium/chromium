@@ -29,13 +29,17 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "base/win/windows_version.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/ax_system_caret_win.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/drag_drop_client.h"
+#include "ui/aura/env.h"
+#include "ui/aura/env_input_state_controller.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_targeter.h"
@@ -47,7 +51,11 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/display/screen.h"
+#include "ui/events/event.h"
+#include "ui/events/event_utils.h"
+#include "ui/events/pointer_details.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/test/test_event_handler.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/point.h"
@@ -683,6 +691,480 @@ TEST_F(DesktopWindowTreeHostWinTest, OverlappingWindowMoveSuppression) {
 
   second.RunAndReset();
   EXPECT_FALSE(IsDataDragSuppressed());
+}
+
+namespace {
+
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+
+// Screen point and MOUSEEVENTF_* flags (without MOUSEEVENTF_VIRTUALDESK).
+using InjectedMouseEvent = std::pair<gfx::Point, int>;
+
+class CancelingDragDropClient : public aura::client::DragDropClient {
+ public:
+  explicit CancelingDragDropClient(base::RepeatingClosure on_cancel)
+      : on_cancel_(std::move(on_cancel)) {}
+
+  // aura::client::DragDropClient:
+  ui::mojom::DragOperation StartDragAndDrop(
+      std::unique_ptr<ui::OSExchangeData> data,
+      aura::Window* root_window,
+      aura::Window* source_window,
+      const gfx::Point& screen_location,
+      int allowed_operations,
+      ui::mojom::DragEventSource source) override {
+    return ui::mojom::DragOperation::kNone;
+  }
+  void DragCancel() override { on_cancel_.Run(); }
+  bool IsDragDropInProgress() override { return false; }
+  void AddObserver(aura::client::DragDropClientObserver* observer) override {}
+  void RemoveObserver(aura::client::DragDropClientObserver* observer) override {
+  }
+
+ private:
+  base::RepeatingClosure on_cancel_;
+};
+
+}  // namespace
+
+class DesktopWindowTreeHostWinTouchDragTest
+    : public DesktopWindowTreeHostWinTest {
+ public:
+  DesktopWindowTreeHostWinTouchDragTest() {
+    // Keep touch presses dispatched to Aura from moving the system cursor.
+    feature_list_.InitAndDisableFeature(features::kEnableTouchDragCursorSync);
+  }
+
+  void SetUp() override {
+    DesktopWindowTreeHostWinTest::SetUp();
+    widget_ = std::make_unique<Widget>();
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
+    params.bounds = gfx::Rect(100, 100, 200, 200);
+    widget_->Init(std::move(params));
+    widget_->Show();
+    host_ = static_cast<DesktopWindowTreeHostWin*>(
+        widget_->GetNativeWindow()->GetHost());
+    drag_drop_client_ = std::make_unique<CancelingDragDropClient>(
+        base::BindLambdaForTesting([this] {
+          // DragCancel() must precede the synthesized MOUSEEVENTF_LEFTUP so
+          // DragSourceWin::QueryContinueDrag() returns DRAGDROP_S_CANCEL.
+          EXPECT_THAT(mouse_events_, IsEmpty());
+          ++drag_cancel_count_;
+        }));
+    original_drag_drop_client_ =
+        aura::client::GetDragDropClient(host_->window());
+    aura::client::SetDragDropClient(host_->window(), drag_drop_client_.get());
+    DesktopWindowTreeHostWinTestApi(host_).SetSendMouseEventCallbackForTesting(
+        base::BindLambdaForTesting(
+            [this](const gfx::Point& screen_point, int flags) {
+              mouse_events_.emplace_back(screen_point,
+                                         flags & ~MOUSEEVENTF_VIRTUALDESK);
+            }));
+  }
+
+  void TearDown() override {
+    if (host_) {
+      DesktopWindowTreeHostWinTestApi(host_)
+          .SetSendMouseEventCallbackForTesting({});
+    }
+    if (host_ && widget_->GetNativeView()) {
+      aura::client::SetDragDropClient(host_->window(),
+                                      original_drag_drop_client_);
+    }
+    original_drag_drop_client_ = nullptr;
+    drag_drop_client_.reset();
+    host_ = nullptr;
+    widget_.reset();
+    DesktopWindowTreeHostWinTest::TearDown();
+  }
+
+ protected:
+  Widget* widget() { return widget_.get(); }
+  DesktopWindowTreeHostWin* host() { return host_; }
+  int drag_cancel_count() const { return drag_cancel_count_; }
+
+  bool SendTouch(ui::EventType type,
+                 const gfx::Point& client_location,
+                 ui::PointerId id) {
+    ui::TouchEvent event(type, client_location, base::TimeTicks::Now(),
+                         ui::PointerDetails(ui::EventPointerType::kTouch, id));
+    static_cast<HWNDMessageHandlerDelegate*>(host_)->HandleTouchEvent(&event);
+    return event.handled();
+  }
+
+  // Sends a touch pointer message through HWNDMessageHandler. Returns whether
+  // it was marked handled.
+  bool SendPointerMessage(UINT message,
+                          UINT32 os_pointer_id,
+                          POINTER_FLAGS flags,
+                          const gfx::Point& client_location) {
+    const gfx::Point screen_location = ToScreen(client_location);
+    POINTER_TOUCH_INFO info = {};
+    info.pointerInfo.pointerType = PT_TOUCH;
+    info.pointerInfo.pointerId = os_pointer_id;
+    info.pointerInfo.pointerFlags = flags;
+    info.pointerInfo.ptPixelLocation = screen_location.ToPOINT();
+    info.pointerInfo.ptPixelLocationRaw = screen_location.ToPOINT();
+    return DesktopWindowTreeHostWinTestApi(host_).SimulateTouchEventForTesting(
+        message, os_pointer_id,
+        MAKELPARAM(screen_location.x(), screen_location.y()), info);
+  }
+
+  // Closes the widget synchronously, first clearing the pointers that would
+  // otherwise dangle.
+  void CloseNowAndForgetHost() {
+    host_ = nullptr;
+    original_drag_drop_client_ = nullptr;
+    widget_->CloseNow();
+  }
+
+  gfx::Point ToScreen(const gfx::Point& client_location) {
+    POINT point = client_location.ToPOINT();
+    ::ClientToScreen(DesktopWindowTreeHostWinTestApi(host_).GetHWND(), &point);
+    return gfx::Point(point);
+  }
+
+  std::vector<InjectedMouseEvent> TakeMouseEvents() {
+    return std::exchange(mouse_events_, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<Widget> widget_;
+  raw_ptr<DesktopWindowTreeHostWin> host_ = nullptr;
+  raw_ptr<aura::client::DragDropClient> original_drag_drop_client_ = nullptr;
+  std::unique_ptr<CancelingDragDropClient> drag_drop_client_;
+  int drag_cancel_count_ = 0;
+  std::vector<InjectedMouseEvent> mouse_events_;
+};
+
+// Verifies that the initiating touch drives cursor movement and drop location.
+TEST_F(DesktopWindowTreeHostWinTouchDragTest, FollowsItsTouch) {
+  constexpr ui::PointerId kDragTouch = 0;
+  constexpr gfx::Point kStart(150, 150);
+  host()->StartTouchDrag(kStart, kDragTouch);
+  EXPECT_THAT(TakeMouseEvents(),
+              ElementsAre(InjectedMouseEvent{kStart, MOUSEEVENTF_LEFTDOWN},
+                          InjectedMouseEvent{kStart, MOUSEEVENTF_MOVE}));
+
+  EXPECT_TRUE(
+      SendTouch(ui::EventType::kTouchMoved, gfx::Point(20, 20), kDragTouch));
+  EXPECT_THAT(TakeMouseEvents(),
+              ElementsAre(InjectedMouseEvent{ToScreen(gfx::Point(20, 20)),
+                                             MOUSEEVENTF_MOVE}));
+
+  EXPECT_TRUE(
+      SendTouch(ui::EventType::kTouchReleased, gfx::Point(30, 40), kDragTouch));
+  EXPECT_THAT(TakeMouseEvents(),
+              ElementsAre(InjectedMouseEvent{ToScreen(gfx::Point(30, 40)),
+                                             MOUSEEVENTF_LEFTUP}));
+
+  // Subsequent FinishTouchDrag() calls (e.g. after ::DoDragDrop exits) no-op.
+  host()->FinishTouchDrag(kStart);
+  EXPECT_THAT(TakeMouseEvents(), IsEmpty());
+}
+
+// Verifies that calling FinishTouchDrag() while a drag is still active (e.g.
+// when ::DoDragDrop exits early on Esc) releases the synthesized mouse button
+// and resets drag tracking so subsequent touches dispatch to Aura normally.
+TEST_F(DesktopWindowTreeHostWinTouchDragTest, FinishTouchDragEndsActiveDrag) {
+  ui::test::TestEventHandler touch_counter;
+  host()->window()->AddPreTargetHandler(&touch_counter);
+
+  constexpr ui::PointerId kDragTouch = 0;
+  constexpr gfx::Point kStart(150, 150);
+  host()->StartTouchDrag(kStart, kDragTouch);
+  TakeMouseEvents();
+
+  // Touch events during the drag bypass Aura dispatch.
+  SendTouch(ui::EventType::kTouchMoved, gfx::Point(20, 20), kDragTouch);
+  EXPECT_EQ(0, touch_counter.num_touch_events());
+  TakeMouseEvents();
+
+  host()->FinishTouchDrag(kStart);
+  EXPECT_THAT(TakeMouseEvents(),
+              ElementsAre(InjectedMouseEvent{kStart, MOUSEEVENTF_LEFTUP}));
+
+  // Subsequent touches for kDragTouch now dispatch through Aura normally
+  // without synthesizing mouse events.
+  SendTouch(ui::EventType::kTouchPressed, gfx::Point(20, 20), kDragTouch);
+  SendTouch(ui::EventType::kTouchMoved, gfx::Point(30, 30), kDragTouch);
+  SendTouch(ui::EventType::kTouchReleased, gfx::Point(30, 30), kDragTouch);
+  EXPECT_EQ(3, touch_counter.num_touch_events());
+  EXPECT_THAT(TakeMouseEvents(), IsEmpty());
+
+  host()->window()->RemovePreTargetHandler(&touch_counter);
+}
+
+// Verifies that touches other than the initiating touch are ignored during a
+// touch drag and cannot steer or drop it.
+TEST_F(DesktopWindowTreeHostWinTouchDragTest, IgnoresOtherTouches) {
+  // Use a non-zero id for the drag touch so hardcoding id 0 would fail.
+  constexpr ui::PointerId kDragTouch = 1;
+  constexpr ui::PointerId kOtherTouch = 0;
+  host()->StartTouchDrag(gfx::Point(150, 150), kDragTouch);
+  TakeMouseEvents();
+
+  for (ui::EventType type :
+       {ui::EventType::kTouchPressed, ui::EventType::kTouchMoved,
+        ui::EventType::kTouchReleased, ui::EventType::kTouchCancelled}) {
+    SCOPED_TRACE(ui::EventTypeName(type));
+    EXPECT_TRUE(SendTouch(type, gfx::Point(5, 5), kOtherTouch));
+    EXPECT_THAT(TakeMouseEvents(), IsEmpty());
+    EXPECT_EQ(0, drag_cancel_count());
+  }
+
+  // The drag still drops at the initiating touch's release location.
+  EXPECT_TRUE(
+      SendTouch(ui::EventType::kTouchReleased, gfx::Point(20, 20), kDragTouch));
+  EXPECT_THAT(TakeMouseEvents(),
+              ElementsAre(InjectedMouseEvent{ToScreen(gfx::Point(20, 20)),
+                                             MOUSEEVENTF_LEFTUP}));
+}
+
+// Verifies that EnvInputStateController clears the touch state when a touch
+// drag consumes the release or cancel event, so Env::is_touch_down() and
+// touch_ids_down() reset and later single-touch drags are not refused.
+TEST_F(DesktopWindowTreeHostWinTouchDragTest, ReleaseUpdatesTouchState) {
+  aura::Env* env = aura::Env::GetInstance();
+  const aura::EnvInputStateController* controller = env->env_controller();
+
+  for (ui::EventType end_type :
+       {ui::EventType::kTouchReleased, ui::EventType::kTouchCancelled}) {
+    SCOPED_TRACE(ui::EventTypeName(end_type));
+    constexpr ui::PointerId kDragTouch = 0;
+    SendTouch(ui::EventType::kTouchPressed, gfx::Point(20, 20), kDragTouch);
+    ASSERT_EQ(1u << kDragTouch, controller->touch_ids_down());
+
+    host()->StartTouchDrag(gfx::Point(150, 150), kDragTouch);
+    TakeMouseEvents();
+    EXPECT_TRUE(SendTouch(end_type, gfx::Point(20, 20), kDragTouch));
+    EXPECT_EQ(end_type == ui::EventType::kTouchCancelled ? 1 : 0,
+              drag_cancel_count());
+    EXPECT_THAT(TakeMouseEvents(),
+                ElementsAre(InjectedMouseEvent{ToScreen(gfx::Point(20, 20)),
+                                               MOUSEEVENTF_LEFTUP}));
+    EXPECT_FALSE(env->is_touch_down());
+    EXPECT_EQ(0u, controller->touch_ids_down());
+  }
+
+  // A subsequent touch is now recognized as the sole active touch.
+  constexpr ui::PointerId kNextTouch = 1;
+  constexpr ui::PointerId kOtherTouch = 2;
+  SendTouch(ui::EventType::kTouchPressed, gfx::Point(20, 20), kNextTouch);
+  EXPECT_EQ(1u << kNextTouch, controller->touch_ids_down());
+  SendTouch(ui::EventType::kTouchPressed, gfx::Point(5, 5), kOtherTouch);
+  host()->StartTouchDrag(gfx::Point(150, 150), kNextTouch);
+  TakeMouseEvents();
+  widget()->Close();
+
+  // While the widget is closing, cancelling the drag touch still cancels the
+  // drag and clears its state.
+  EXPECT_TRUE(SendTouch(ui::EventType::kTouchCancelled, gfx::Point(20, 20),
+                        kNextTouch));
+  EXPECT_EQ(2, drag_cancel_count());
+  EXPECT_THAT(TakeMouseEvents(),
+              ElementsAre(InjectedMouseEvent{ToScreen(gfx::Point(20, 20)),
+                                             MOUSEEVENTF_LEFTUP}));
+  EXPECT_EQ(1u << kOtherTouch, controller->touch_ids_down());
+
+  // Releasing another touch clears its state too.
+  EXPECT_TRUE(
+      SendTouch(ui::EventType::kTouchReleased, gfx::Point(5, 5), kOtherTouch));
+  EXPECT_FALSE(env->is_touch_down());
+  EXPECT_EQ(0u, controller->touch_ids_down());
+
+  // New presses are handled but not tracked.
+  EXPECT_TRUE(
+      SendTouch(ui::EventType::kTouchPressed, gfx::Point(5, 5), kOtherTouch));
+  EXPECT_EQ(0u, controller->touch_ids_down());
+}
+
+// Verifies that destroying the host during a touch drag cancels the drag and
+// clears the drag touch's state, since the drag client that would otherwise
+// finish the drag is destroyed first.
+TEST_F(DesktopWindowTreeHostWinTouchDragTest, HostDestructionCancelsDrag) {
+  aura::Env* env = aura::Env::GetInstance();
+  const aura::EnvInputStateController* controller = env->env_controller();
+
+  constexpr ui::PointerId kDragTouch = 0;
+  SendTouch(ui::EventType::kTouchPressed, gfx::Point(20, 20), kDragTouch);
+  ASSERT_EQ(1u << kDragTouch, controller->touch_ids_down());
+  host()->StartTouchDrag(gfx::Point(150, 150), kDragTouch);
+  TakeMouseEvents();
+  const gfx::Point client_origin_in_screen = ToScreen(gfx::Point());
+
+  CloseNowAndForgetHost();
+  EXPECT_EQ(1, drag_cancel_count());
+  EXPECT_THAT(TakeMouseEvents(),
+              ElementsAre(InjectedMouseEvent{client_origin_in_screen,
+                                             MOUSEEVENTF_LEFTUP}));
+  EXPECT_FALSE(env->is_touch_down());
+  EXPECT_EQ(0u, controller->touch_ids_down());
+}
+
+namespace {
+
+constexpr POINTER_FLAGS kPointerDownFlags =
+    POINTER_FLAG_DOWN | POINTER_FLAG_INRANGE | POINTER_FLAG_INCONTACT;
+
+}  // namespace
+
+// Verifies that losing capture of a pointer cancels its touch and releases its
+// id, since no WM_POINTERUP follows.
+TEST_F(DesktopWindowTreeHostWinTouchDragTest, PointerCaptureLossCancelsTouch) {
+  const aura::EnvInputStateController* controller =
+      aura::Env::GetInstance()->env_controller();
+
+  SendPointerMessage(WM_POINTERDOWN, 42, kPointerDownFlags, gfx::Point(20, 20));
+  ASSERT_EQ(1u, controller->touch_ids_down());
+
+  // Left unhandled so DefWindowProc still receives the notification.
+  EXPECT_FALSE(SendPointerMessage(WM_POINTERCAPTURECHANGED, 42,
+                                  POINTER_FLAG_INRANGE |
+                                      POINTER_FLAG_INCONTACT |
+                                      POINTER_FLAG_CAPTURECHANGED,
+                                  gfx::Point(20, 20)));
+  EXPECT_EQ(0u, controller->touch_ids_down());
+
+  // The id was released, so the next pointer is mapped to it again.
+  SendPointerMessage(WM_POINTERDOWN, 43, kPointerDownFlags, gfx::Point(20, 20));
+  EXPECT_EQ(1u, controller->touch_ids_down());
+  SendPointerMessage(WM_POINTERUP, 43, POINTER_FLAG_UP, gfx::Point(20, 20));
+  EXPECT_EQ(0u, controller->touch_ids_down());
+}
+
+// Verifies that losing capture of the drag touch cancels the drag rather than
+// committing a drop.
+TEST_F(DesktopWindowTreeHostWinTouchDragTest,
+       PointerCaptureLossCancelsTouchDrag) {
+  const aura::EnvInputStateController* controller =
+      aura::Env::GetInstance()->env_controller();
+
+  SendPointerMessage(WM_POINTERDOWN, 42, kPointerDownFlags, gfx::Point(20, 20));
+  ASSERT_EQ(1u, controller->touch_ids_down());
+  host()->StartTouchDrag(gfx::Point(150, 150), /*pointer_id=*/0);
+  TakeMouseEvents();
+
+  EXPECT_FALSE(SendPointerMessage(WM_POINTERCAPTURECHANGED, 42,
+                                  POINTER_FLAG_INRANGE |
+                                      POINTER_FLAG_INCONTACT |
+                                      POINTER_FLAG_CAPTURECHANGED,
+                                  gfx::Point(30, 40)));
+  EXPECT_EQ(1, drag_cancel_count());
+  EXPECT_THAT(TakeMouseEvents(),
+              ElementsAre(InjectedMouseEvent{ToScreen(gfx::Point(30, 40)),
+                                             MOUSEEVENTF_LEFTUP}));
+  EXPECT_EQ(0u, controller->touch_ids_down());
+}
+
+// Verifies that a client-area canceled WM_POINTERUP or WM_POINTERUPDATE on
+// either a system-drawn or custom-drawn frame cancels the touch and is marked
+// handled, like a release.
+TEST_F(DesktopWindowTreeHostWinTouchDragTest, CanceledPointerUpIsHandled) {
+  const aura::EnvInputStateController* controller =
+      aura::Env::GetInstance()->env_controller();
+  // Away from the caption, whose messages are left to DefWindowProc.
+  constexpr gfx::Point kLocation(100, 100);
+
+  // Only GetFrameMode() needs to change. FrameTypeChanged() is not called
+  // since it requires a system-drawn frame.
+  for (const auto& [frame_type, expected_mode] :
+       {std::pair{Widget::FrameType::kForceNative, FrameMode::SYSTEM_DRAWN},
+        std::pair{Widget::FrameType::kForceCustom, FrameMode::CUSTOM_DRAWN}}) {
+    SCOPED_TRACE(static_cast<int>(expected_mode));
+    widget()->set_frame_type(frame_type);
+    ASSERT_EQ(expected_mode,
+              static_cast<HWNDMessageHandlerDelegate*>(host())->GetFrameMode());
+
+    SendPointerMessage(WM_POINTERDOWN, 42, kPointerDownFlags, kLocation);
+    ASSERT_EQ(1u, controller->touch_ids_down());
+
+    EXPECT_TRUE(SendPointerMessage(
+        WM_POINTERUP, 42, POINTER_FLAG_UP | POINTER_FLAG_CANCELED, kLocation));
+    EXPECT_EQ(0u, controller->touch_ids_down());
+
+    SendPointerMessage(WM_POINTERDOWN, 43, kPointerDownFlags, kLocation);
+    ASSERT_EQ(1u, controller->touch_ids_down());
+
+    EXPECT_TRUE(SendPointerMessage(WM_POINTERUPDATE, 43,
+                                   POINTER_FLAG_UPDATE | POINTER_FLAG_CANCELED,
+                                   kLocation));
+    EXPECT_EQ(0u, controller->touch_ids_down());
+  }
+}
+
+// Verifies that non-press messages for pointers this window is not tracking
+// are ignored and left to DefWindowProc.
+TEST_F(DesktopWindowTreeHostWinTouchDragTest, IgnoresUntrackedPointers) {
+  const aura::EnvInputStateController* controller =
+      aura::Env::GetInstance()->env_controller();
+
+  EXPECT_FALSE(SendPointerMessage(WM_POINTERUP, 42, POINTER_FLAG_UP,
+                                  gfx::Point(20, 20)));
+  EXPECT_FALSE(SendPointerMessage(WM_POINTERUPDATE, 42,
+                                  POINTER_FLAG_UPDATE | POINTER_FLAG_CANCELED,
+                                  gfx::Point(20, 20)));
+  EXPECT_FALSE(SendPointerMessage(
+      WM_POINTERCAPTURECHANGED, 42,
+      POINTER_FLAG_INRANGE | POINTER_FLAG_CAPTURECHANGED, gfx::Point(20, 20)));
+  EXPECT_EQ(0u, controller->touch_ids_down());
+
+  // No id was generated for the untracked pointer, so the next pointer is
+  // mapped to the first id.
+  SendPointerMessage(WM_POINTERDOWN, 43, kPointerDownFlags, gfx::Point(20, 20));
+  EXPECT_EQ(1u, controller->touch_ids_down());
+  SendPointerMessage(WM_POINTERUP, 43, POINTER_FLAG_UP, gfx::Point(20, 20));
+}
+
+// Verifies that a secondary touch pressed during a touch drag, which cannot
+// steer the drag, is still tracked by EnvInputStateController: releasing it
+// mid-drag clears its state, and holding it past the end of the drag keeps it
+// reported as down.
+TEST_F(DesktopWindowTreeHostWinTouchDragTest, TracksOtherTouchesDuringDrag) {
+  aura::Env* env = aura::Env::GetInstance();
+  const aura::EnvInputStateController* controller = env->env_controller();
+
+  constexpr ui::PointerId kDragTouch = 0;
+  constexpr ui::PointerId kOtherTouch = 1;
+  SendTouch(ui::EventType::kTouchPressed, gfx::Point(20, 20), kDragTouch);
+  host()->StartTouchDrag(gfx::Point(150, 150), kDragTouch);
+  TakeMouseEvents();
+
+  // Pressing and releasing another touch mid-drag updates touch_ids_down()
+  // without steering or ending the drag.
+  EXPECT_TRUE(
+      SendTouch(ui::EventType::kTouchPressed, gfx::Point(5, 5), kOtherTouch));
+  EXPECT_THAT(TakeMouseEvents(), IsEmpty());
+  EXPECT_EQ((1u << kDragTouch) | (1u << kOtherTouch),
+            controller->touch_ids_down());
+
+  EXPECT_TRUE(
+      SendTouch(ui::EventType::kTouchReleased, gfx::Point(5, 5), kOtherTouch));
+  EXPECT_THAT(TakeMouseEvents(), IsEmpty());
+  EXPECT_EQ(1u << kDragTouch, controller->touch_ids_down());
+
+  // Pressing another touch mid-drag and holding it past the drag's end leaves
+  // it marked as down until it is released.
+  EXPECT_TRUE(
+      SendTouch(ui::EventType::kTouchPressed, gfx::Point(5, 5), kOtherTouch));
+  EXPECT_EQ((1u << kDragTouch) | (1u << kOtherTouch),
+            controller->touch_ids_down());
+
+  EXPECT_TRUE(
+      SendTouch(ui::EventType::kTouchReleased, gfx::Point(20, 20), kDragTouch));
+  EXPECT_THAT(TakeMouseEvents(),
+              ElementsAre(InjectedMouseEvent{ToScreen(gfx::Point(20, 20)),
+                                             MOUSEEVENTF_LEFTUP}));
+  EXPECT_TRUE(env->is_touch_down());
+  EXPECT_EQ(1u << kOtherTouch, controller->touch_ids_down());
+
+  SendTouch(ui::EventType::kTouchReleased, gfx::Point(5, 5), kOtherTouch);
+  EXPECT_FALSE(env->is_touch_down());
+  EXPECT_EQ(0u, controller->touch_ids_down());
 }
 
 namespace {
