@@ -19,6 +19,17 @@ tests.
      necessary to run the whole test class to reproduce the leak.
    - **Critical**: Pass `--enable-leak-checks` to the test runner if the class
      lacks `@EnableLeakChecks`.
+   - Put a new leak regression test in the test class of the feature being
+     fixed, not in `PublicTransitLeakTest`, as long as that class is in
+     `chrome_public_test_apk` and runs on phones. Do not add `@EnableLeakChecks`
+     to it: the CQ (`android-x64-rel`) runs `chrome_public_test_apk` with
+     `--enable-leak-checks` on its phone builder, so every test class there is
+     leak-checked unless it opts out with `@DisableLeakChecks` (do not opt out).
+     Existing uses of `@EnableLeakChecks` stay; do not add new ones.
+   - The CQ does not leak-check `chrome_public_unit_test_apk` (the
+     `unit_device_javatests` targets), `chrome_public_test_apk_tablet`, or tests
+     restricted to tablet or desktop. If the feature's test class is one of
+     these, put the leak test in a phone `chrome_public_test_apk` class instead.
    - Run the test and look for LeakCanary detections in the log output.
    - Do not get sidetracked by other crashes, or even other leaks. Report these,
      but do not try to fix them unless they seems to be variations of the
@@ -86,9 +97,6 @@ tests.
    - Run the specific leak test:
      `out/Debug/bin/run_chrome_public_test_apk --enable-leak-checks -f "YourLeakTest*"`.
    - Verify that LeakCanary no longer reports the leak.
-   - **Trybot Verification**: To run the LeakCanary bot on CQ / trybots,
-     include the following footer in the CL description:
-     `Cq-Include-Trybots: luci.chromium.try:android-16-x64-leakcanary-rel`
 
 ## Best Practices & Gotchas
 
