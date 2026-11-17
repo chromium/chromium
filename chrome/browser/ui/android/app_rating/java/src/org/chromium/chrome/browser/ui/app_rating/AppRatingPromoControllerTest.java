@@ -75,7 +75,9 @@ public class AppRatingPromoControllerTest {
         AppRatingManagerFactory.setInstanceForTesting(mAppRatingManager);
         TrackerFactory.setTrackerForTests(mTracker);
         LocalStatePrefs.get().setBoolean(Pref.APP_RATING_POLICY_ENABLED, true);
-        when(mTracker.wouldTriggerHelpUi(FeatureConstants.APP_RATING_PROMPT_FEATURE))
+        when(mTracker.wouldTriggerHelpUi(
+                        eq(FeatureConstants.APP_RATING_PROMPT_FEATURE),
+                        eq(new FeatureProperties(UiFormat.DIALOG))))
                 .thenReturn(true);
         when(mTracker.shouldTriggerHelpUi(eq(FeatureConstants.APP_RATING_PROMPT_FEATURE), any()))
                 .thenReturn(true);
@@ -152,11 +154,17 @@ public class AppRatingPromoControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_APP_RATING_PROMPT)
     public void testMaybeShowPromo_WouldNotTriggerHelpUi() {
-        when(mTracker.wouldTriggerHelpUi(FeatureConstants.APP_RATING_PROMPT_FEATURE))
+        when(mTracker.wouldTriggerHelpUi(
+                        eq(FeatureConstants.APP_RATING_PROMPT_FEATURE),
+                        eq(new FeatureProperties(UiFormat.DIALOG))))
                 .thenReturn(false);
         Assert.assertFalse(
                 "Promo should not be shown if Tracker says it would not trigger.",
                 AppRatingPromoController.maybeShowPromo(mProfile, mActivity, ALLOWED_COUNTRY));
+        verify(mTracker)
+                .wouldTriggerHelpUi(
+                        eq(FeatureConstants.APP_RATING_PROMPT_FEATURE),
+                        eq(new FeatureProperties(UiFormat.DIALOG)));
         verify(mSegmentationService, never()).getClassificationResult(any(), any(), any(), any());
     }
 

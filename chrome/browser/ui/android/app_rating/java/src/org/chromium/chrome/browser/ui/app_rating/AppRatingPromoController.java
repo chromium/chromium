@@ -86,7 +86,9 @@ public class AppRatingPromoController {
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         // Check if the 72-hour cooldown has passed (without actually claiming the UI yet).
         // This fails fast to avoid waking up the Segmentation Service unnecessarily.
-        if (!tracker.wouldTriggerHelpUi(FeatureConstants.APP_RATING_PROMPT_FEATURE)) {
+        FeatureProperties featureProperties = new FeatureProperties(UiFormat.DIALOG);
+        if (!tracker.wouldTriggerHelpUi(
+                FeatureConstants.APP_RATING_PROMPT_FEATURE, featureProperties)) {
             return false;
         }
 
