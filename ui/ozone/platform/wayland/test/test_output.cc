@@ -24,7 +24,11 @@ TestOutput::TestOutput(TestOutputMetrics metrics)
     : GlobalObject(&wl_output_interface, nullptr, kOutputVersion),
       metrics_(std::move(metrics)) {}
 
-TestOutput::~TestOutput() = default;
+TestOutput::~TestOutput() {
+  if (xdg_output_) {
+    xdg_output_->set_output(nullptr);
+  }
+}
 
 // static
 TestOutput* TestOutput::FromResource(wl_resource* resource) {
@@ -109,11 +113,16 @@ void TestOutput::OnBind() {
 
 void TestOutput::SetXdgOutput(TestZXdgOutput* xdg_output) {
   xdg_output_ = xdg_output;
+  xdg_output_->set_output(this);
   // Make sure to send the necessary information for a client that
   // relies on the xdg information.
   if (!suppress_implicit_flush_) {
     Flush();
   }
+}
+
+void TestOutput::UnsetXdgOutput() {
+  xdg_output_ = nullptr;
 }
 
 }  // namespace wl

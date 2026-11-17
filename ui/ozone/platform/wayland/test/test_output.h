@@ -64,6 +64,8 @@ class TestOutput : public GlobalObject {
   void Flush();
 
   void SetXdgOutput(TestZXdgOutput* xdg_output);
+  // Called when the zxdg_output set by `SetXdgOutput()` is destroyed.
+  void UnsetXdgOutput();
   TestZXdgOutput* xdg_output() { return xdg_output_; }
 
   void set_suppress_implicit_flush(bool suppress_implicit_flush) {

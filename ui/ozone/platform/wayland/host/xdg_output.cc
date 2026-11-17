@@ -68,14 +68,29 @@ void XDGOutput::UpdateMetrics(bool compute_scale_from_size,
   // physical size even for scales other than 1, which is considered
   // spec-compliant and has been similarly worked around in toolkits like GTK.
   // See https://gitlab.gnome.org/GNOME/mutter/-/issues/2631 for more details.
-  //
+  // The physical size comes from the untransformed mode, while the logical size
+  // has the output transform applied, so a rotated output reports the
+  // transposed size.
+  gfx::Size transposed_physical_size = physical_size;
+  transposed_physical_size.Transpose();
+  const bool logical_space_is_physical =
+      logical_size == physical_size || logical_size == transposed_physical_size;
+
+  // In that case, the logical position and size are in physical pixels, so
+  // convert them to DIPs with wl_output's scale (in the same way GTK does).
+  if (logical_space_is_physical && metrics.scale_factor > 1.f) {
+    const float inverse_scale = 1.f / metrics.scale_factor;
+    metrics.origin = gfx::ScaleToFlooredPoint(logical_position_, inverse_scale);
+    metrics.logical_size = gfx::ScaleToFlooredSize(logical_size, inverse_scale);
+  }
+
   // TODO(crbug.com/336007385): Deriving display scale from xdg-ouput logical
   // size has been considered hacky and bug-prone, eg: rounding issues, as the
   // rounding algorithm used by compositors is unspecified. wp-fractional-scale
   // should be used instead as the long term solution, though it requires
   // broader refactor in how scales are assigned to browser windows.
   compute_scale_from_size &=
-      (!logical_size.IsEmpty() && logical_size != physical_size);
+      (!logical_size.IsEmpty() && !logical_space_is_physical);
   if (compute_scale_from_size) {
     const float max_physical_side =
         std::max(physical_size.width(), physical_size.height());

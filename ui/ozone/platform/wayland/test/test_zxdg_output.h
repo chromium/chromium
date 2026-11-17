@@ -10,6 +10,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
@@ -17,6 +18,7 @@ namespace wl {
 
 extern const struct zxdg_output_v1_interface kTestZXdgOutputImpl;
 
+class TestOutput;
 struct TestOutputMetrics;
 
 // Handles the server-side representation of the zxdg_output.
@@ -30,6 +32,13 @@ class TestZXdgOutput : public ServerObject {
   // Called by the owning wl_output as part of its Flush() operation that
   // propagates the current state of `metrics_` to clients.
   void Flush(const TestOutputMetrics& metrics);
+
+  // Sets the wl_output this zxdg_output belongs to. The two are unlinked when
+  // either of them is destroyed.
+  void set_output(TestOutput* output) { output_ = output; }
+
+ private:
+  raw_ptr<TestOutput> output_ = nullptr;
 };
 
 }  // namespace wl

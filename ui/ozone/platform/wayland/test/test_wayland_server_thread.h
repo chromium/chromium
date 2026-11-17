@@ -76,6 +76,8 @@ struct ServerConfig {
   bool supports_xdg_toplevel_drag = false;
   // Whether to advertise the xx_session_manager_v1 global.
   bool supports_session_management = false;
+  // Whether to advertise the zxdg_output_manager_v1 global.
+  bool supports_xdg_output = false;
 };
 
 class TestWaylandServerThread;

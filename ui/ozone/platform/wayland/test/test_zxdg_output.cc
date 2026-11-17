@@ -7,6 +7,7 @@
 #include <xdg-output-unstable-v1-server-protocol.h>
 
 #include "ui/base/wayland/wayland_display_util.h"
+#include "ui/ozone/platform/wayland/test/test_output.h"
 #include "ui/ozone/platform/wayland/test/test_output_metrics.h"
 
 namespace wl {
@@ -14,7 +15,11 @@ namespace wl {
 TestZXdgOutput::TestZXdgOutput(wl_resource* resource)
     : ServerObject(resource) {}
 
-TestZXdgOutput::~TestZXdgOutput() = default;
+TestZXdgOutput::~TestZXdgOutput() {
+  if (output_) {
+    output_->UnsetXdgOutput();
+  }
+}
 
 void TestZXdgOutput::Flush(const TestOutputMetrics& metrics) {
   zxdg_output_v1_send_logical_size(resource(), metrics.xdg_logical_size.width(),
