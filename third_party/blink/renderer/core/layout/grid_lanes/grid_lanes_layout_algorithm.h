@@ -220,10 +220,12 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   };
 
   // Selects a whole-row break, or no breakpoint if fragmentation is disabled
-  // or all remaining rows can be placed.
+  // or all remaining rows can be placed. If an earlier break is needed,
+  // returns no breakpoint and sets `out_early_break` instead.
   std::optional<Breakpoint> FindRowBreakpoint(
       const HeapVector<GridLanesFragmentationItem>& row_items,
-      const Vector<EBreakBetween>& row_break_between);
+      const Vector<EBreakBetween>& row_break_between,
+      const EarlyBreak** out_early_break);
 
   // Commits items before the selected row break and updates the
   // continuation state and intrinsic size of the current fragment.

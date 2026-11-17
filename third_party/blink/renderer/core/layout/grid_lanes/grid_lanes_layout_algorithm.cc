@@ -1258,6 +1258,11 @@ GridLanesFragmentationItem GridLanesLayoutAlgorithm::LayoutItemForFragmentation(
         stitched_offset;
   }
   item_fragment.area = containing_grid_area;
+  // A line-type early break identifies a row, not a line in a child.
+  if (item_early_break && item_early_break->Type() != EarlyBreak::kBlock) {
+    CHECK(!is_columns);
+    item_early_break = nullptr;
+  }
   item_fragment.result = item.node.Layout(
       child_space,
       ::blink::GetFragmentationLayoutInputForChild(
@@ -1664,7 +1669,8 @@ BreakStatus GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
 std::optional<GridLanesLayoutAlgorithm::Breakpoint>
 GridLanesLayoutAlgorithm::FindRowBreakpoint(
     const HeapVector<GridLanesFragmentationItem>& row_items,
-    const Vector<EBreakBetween>& row_break_between) {
+    const Vector<EBreakBetween>& row_break_between,
+    const EarlyBreak** out_early_break) {
   const auto& space = GetConstraintSpace();
   // Clipped overflow may resume with fragmentation disabled. Commit its
   // remaining items without selecting any more row breaks.
@@ -1672,6 +1678,7 @@ GridLanesLayoutAlgorithm::FindRowBreakpoint(
     return std::nullopt;
   }
   const LayoutUnit fragmentainer_space = FragmentainerSpaceLeftForChildren();
+  ColumnBreakInfo break_info;
   for (wtf_size_t begin = 0; begin < row_items.size();) {
     const wtf_size_t row = row_items[begin].lane_idx;
     wtf_size_t end = begin + 1;
@@ -1699,6 +1706,10 @@ GridLanesLayoutAlgorithm::FindRowBreakpoint(
         !has_separation &&
         FragmentainerOffsetForChildren() + row_offset <= LayoutUnit();
     const auto break_between = row_break_between[row];
+    if (early_break_ && early_break_->Type() == EarlyBreak::kLine &&
+        static_cast<wtf_size_t>(early_break_->LineNumber()) == row) {
+      return Breakpoint(row, row_offset, /*is_forced_break=*/false);
+    }
     if (has_separation && IsForcedBreakValue(space, break_between)) {
       container_builder_.SetHasForcedBreak();
       return Breakpoint(row, row_offset, /*is_forced_break=*/true);
@@ -1711,25 +1722,39 @@ GridLanesLayoutAlgorithm::FindRowBreakpoint(
     const BreakAppeal appeal = CalculateBreakAppealBefore(
         space, LayoutResult::kSuccess, break_between, has_separation,
         /*breakable_at_start_of_container=*/false);
-    for (wtf_size_t index = begin; index < end; ++index) {
-      const GridLanesFragmentationItem& entry = row_items[index];
-      const LayoutUnit fragmentainer_offset =
-          FragmentainerOffsetForChildren() + entry.offset.block_offset;
-      // Let MovePastBreakpoint record fragmentation bookkeeping even when
-      // this row must stay to make progress.
-      if ((!is_row_outside_fragment &&
-           ::blink::MovePastBreakpoint(space, entry.data->item->node,
-                                       *entry.result, fragmentainer_offset,
-                                       FragmentainerCapacityForChildren(),
-                                       appeal, &container_builder_,
-                                       /*is_row_item=*/true)) ||
-          must_keep_row_for_progress) {
-        continue;
+    if (!early_break_) {
+      for (wtf_size_t index = begin; index < end; ++index) {
+        const GridLanesFragmentationItem& entry = row_items[index];
+        const LayoutUnit fragmentainer_offset =
+            FragmentainerOffsetForChildren() + entry.offset.block_offset;
+        // Let MovePastBreakpoint record fragmentation bookkeeping even when
+        // this row must stay to make progress.
+        if ((!is_row_outside_fragment &&
+             ::blink::MovePastBreakpoint(space, entry.data->item->node,
+                                         *entry.result, fragmentainer_offset,
+                                         FragmentainerCapacityForChildren(),
+                                         appeal, &container_builder_,
+                                         /*is_row_item=*/true, &break_info)) ||
+            must_keep_row_for_progress) {
+          continue;
+        }
+        PropagateSpaceShortage(entry.result, fragmentainer_offset,
+                               FragmentainerCapacityForChildren(),
+                               &container_builder_);
+        if (break_info.early_break &&
+            break_info.early_break->GetBreakAppeal() > appeal) {
+          *out_early_break = break_info.early_break;
+          return std::nullopt;
+        }
+        return Breakpoint(row, row_offset, /*is_forced_break=*/false);
       }
-      PropagateSpaceShortage(entry.result, fragmentainer_offset,
-                             FragmentainerCapacityForChildren(),
-                             &container_builder_);
-      return Breakpoint(row, row_offset, /*is_forced_break=*/false);
+    }
+    if (has_separation) {
+      if (!break_info.early_break ||
+          appeal >= break_info.early_break->GetBreakAppeal()) {
+        break_info.early_break =
+            MakeGarbageCollected<EarlyBreak>(static_cast<int>(row), appeal);
+      }
     }
     begin = end;
   }
@@ -1745,8 +1770,13 @@ BreakStatus GridLanesLayoutAlgorithm::FinishRowFragmentation(
   const auto& space = GetConstraintSpace();
   const LayoutUnit fragmentainer_space = FragmentainerSpaceLeftForChildren();
   const auto container_writing_direction = space.GetWritingDirection();
+  const EarlyBreak* early_break = nullptr;
   const std::optional<Breakpoint> breakpoint =
-      FindRowBreakpoint(row_items, row_break_between);
+      FindRowBreakpoint(row_items, row_break_between, &early_break);
+  if (early_break) {
+    container_builder_.SetEarlyBreak(early_break);
+    return BreakStatus::kNeedsEarlierBreak;
+  }
 
   if (breakpoint && fragmentainer_space != kIndefiniteSize) {
     // Shift the deferred row and later rows past the unused fragmentainer
