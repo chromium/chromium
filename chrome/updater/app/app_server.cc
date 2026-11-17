@@ -134,6 +134,10 @@ base::OnceClosure AppServer::ModeCheck() {
         SwapVersions(global_prefs.get(), CreateLocalPrefs(updater_scope()));
     event.SetActivated(activated).WriteAsync();
     if (!activated) {
+      // Commit while holding the global prefs lock. Releasing `global_prefs`
+      // writes pending changes asynchronously, so the write can land after the
+      // lock is released and race with the next reader.
+      PrefsCommitPendingWrites(global_prefs->GetPrefService());
       return base::BindOnce(&AppServer::Shutdown, this, kErrorFailedToSwap);
     }
   }

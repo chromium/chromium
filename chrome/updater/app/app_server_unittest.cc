@@ -179,6 +179,7 @@ TEST_F(AppServerTestCase, SelfPromoteFails) {
       CreateGlobalPrefs(GetUpdaterScopeForTesting());
   ASSERT_TRUE(global_prefs);
   EXPECT_TRUE(global_prefs->GetSwapping());
+  EXPECT_TRUE(global_prefs->GetMigratedLegacyUpdaters());
   EXPECT_EQ(global_prefs->GetActiveVersion(), "0");
 }
 
@@ -266,6 +267,7 @@ TEST_F(AppServerTestCase, StateDirtySwapFails) {
       CreateGlobalPrefs(GetUpdaterScopeForTesting());
   ASSERT_TRUE(global_prefs);
   EXPECT_TRUE(global_prefs->GetSwapping());
+  EXPECT_TRUE(global_prefs->GetMigratedLegacyUpdaters());
   EXPECT_EQ(global_prefs->GetActiveVersion(), kUpdaterVersion);
 }
 
