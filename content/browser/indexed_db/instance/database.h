@@ -195,8 +195,6 @@ class CONTENT_EXPORT Database {
       Transaction* transaction);
 
   bool IsObjectStoreIdInMetadata(int64_t object_store_id) const;
-  bool IsObjectStoreIdAndMaybeIndexIdInMetadata(int64_t object_store_id,
-                                                int64_t index_id) const;
 
   // Returns metadata relevant to idb-internals.
   storage::mojom::IdbDatabaseMetadataPtr GetIdbInternalsMetadata() const;
@@ -336,10 +334,6 @@ class CONTENT_EXPORT Database {
       Transaction* current_transaction,
       std::vector<PartitionedLockManager::PartitionedLockRequest>&
           lock_requests);
-
-  // Returns `nullptr` if the object store does not exist.
-  const blink::IndexedDBObjectStoreMetadata* GetObjectStoreMetadataIfExists(
-      int64_t object_store_id) const;
 
   // Gets metadata for the given object store ID, asserting that the object
   // store exists.
