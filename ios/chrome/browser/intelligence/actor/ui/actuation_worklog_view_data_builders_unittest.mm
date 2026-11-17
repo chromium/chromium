@@ -91,4 +91,40 @@ TEST_F(ActuationWorklogViewDataBuildersTest, TestHeaderContentShowsStatus) {
   }
 }
 
+// Tests that the user response item quotes the response and is active.
+TEST_F(ActuationWorklogViewDataBuildersTest, TestItemForUserResponse) {
+  ActuationWorklogItem* item = ActuationWorklogItemForUserResponse(@"Allow");
+
+  EXPECT_NSEQ(item.title, l10n_util::GetNSString(
+                              IDS_IOS_ACTOR_WORKLOG_USER_RESPONDED_TITLE));
+  EXPECT_NSEQ(
+      item.subtitle,
+      l10n_util::GetNSStringF(IDS_IOS_ACTOR_WORKLOG_USER_RESPONSE, u"Allow"));
+  EXPECT_TRUE(item.icon);
+  EXPECT_TRUE(item.active);
+}
+
+// Tests that the task continues item is active.
+TEST_F(ActuationWorklogViewDataBuildersTest, TestItemForTaskContinues) {
+  ActuationWorklogItem* item = ActuationWorklogItemForTaskContinues();
+
+  EXPECT_NSEQ(item.title,
+              l10n_util::GetNSString(IDS_IOS_ACTOR_WORKLOG_TASK_CONTINUES));
+  EXPECT_FALSE(item.subtitle);
+  EXPECT_TRUE(item.icon);
+  EXPECT_TRUE(item.active);
+}
+
+// Tests that the task ended item is inactive, so that it isn't kept visible
+// as a running step when the worklog is collapsed.
+TEST_F(ActuationWorklogViewDataBuildersTest, TestItemForTaskEnded) {
+  ActuationWorklogItem* item = ActuationWorklogItemForTaskEnded();
+
+  EXPECT_NSEQ(item.title,
+              l10n_util::GetNSString(IDS_IOS_ACTOR_WORKLOG_TASK_ENDED));
+  EXPECT_FALSE(item.subtitle);
+  EXPECT_TRUE(item.icon);
+  EXPECT_FALSE(item.active);
+}
+
 }  // namespace

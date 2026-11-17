@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data_builders.h"
 
+#import "base/check.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -11,7 +13,7 @@
 
 namespace {
 
-// Icon size for SF symbols in chips.
+// Point size of the SF symbols in chips and labeled items.
 constexpr CGFloat kIconSize = 16.0;
 
 // Returns header content with a status message above `task_title`.
@@ -118,4 +120,34 @@ ActuationHeaderContentVariants* ActuationHeaderContentVariantsForTask(
                                                       current_step)
                 compactContent:default_content
                expandedContent:default_content];
+}
+
+ActuationWorklogItem* ActuationWorklogItemForUserResponse(NSString* response) {
+  CHECK(response.length);
+  return [ActuationWorklogItem
+      labeledItemWithTitle:l10n_util::GetNSString(
+                               IDS_IOS_ACTOR_WORKLOG_USER_RESPONDED_TITLE)
+                  subtitle:l10n_util::GetNSStringF(
+                               IDS_IOS_ACTOR_WORKLOG_USER_RESPONSE,
+                               base::SysNSStringToUTF16(response))
+                      icon:SymbolWithPointSize(SymbolEllipsisMessage, kIconSize)
+                    active:YES];
+}
+
+ActuationWorklogItem* ActuationWorklogItemForTaskContinues() {
+  return [ActuationWorklogItem
+      labeledItemWithTitle:l10n_util::GetNSString(
+                               IDS_IOS_ACTOR_WORKLOG_TASK_CONTINUES)
+                  subtitle:nil
+                      icon:SymbolWithPointSize(SymbolPlayFill, kIconSize)
+                    active:YES];
+}
+
+ActuationWorklogItem* ActuationWorklogItemForTaskEnded() {
+  return [ActuationWorklogItem
+      labeledItemWithTitle:l10n_util::GetNSString(
+                               IDS_IOS_ACTOR_WORKLOG_TASK_ENDED)
+                  subtitle:nil
+                      icon:SymbolWithPointSize(SymbolStopFill, kIconSize)
+                    active:NO];
 }

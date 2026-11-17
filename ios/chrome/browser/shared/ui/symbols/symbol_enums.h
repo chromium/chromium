@@ -201,6 +201,7 @@ typedef NS_ENUM(NSInteger, Symbol) {
   SymbolEllipsis,
   SymbolEllipsisCircle,
   SymbolEllipsisCircleFill,
+  SymbolEllipsisMessage,
   SymbolEllipsisRectangle,
   SymbolEnvelope,
   SymbolEqual,

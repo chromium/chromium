@@ -419,6 +419,18 @@
       <message name="IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_PAYMENT_TITLE" desc="Title of worklog card prompting the user to fill payment info. [iOS only]">
         Filling payment info
       </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_TASK_CONTINUES" desc="Title of the worklog step shown when an actor task resumes after the user responded. [iOS only]">
+        Task continues
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_TASK_ENDED" desc="Title of the worklog step shown when an actor task ends after the user responded. [iOS only]">
+        Task ended
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_USER_RESPONDED_TITLE" desc="Title of the worklog step shown when the user responds to the actor, either by typing a message or by tapping a button. [iOS only]">
+        You responded
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_USER_RESPONSE" desc="Subtitle of the worklog step shown when the user responds to the actor, quoting the user's typed message or the label of the tapped button. [iOS only]">
+        “<ph name="RESPONSE">$1<ex>Allow</ex></ph>”
+      </message>
       <message name="IDS_IOS_ADDRESSES_NOT_ENCRYPTED_DIALOG_TEXT" desc="Text of a dialog shown to users when they turn on the ability to use and save addresses in their Google Account. This is shown to users who encrypt their data with their own passphrase in order to explain that addresses they will save in the future will not be encrypted. [iOS only]">
         Addresses aren't encrypted with your passphrase. This lets you use them in other Google services.
       </message>

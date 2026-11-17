@@ -369,6 +369,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"ellipsis.circle", SymbolType::kSystem};
     case SymbolEllipsisCircleFill:
       return {@"ellipsis.circle.fill", SymbolType::kSystem};
+    case SymbolEllipsisMessage:
+      return {@"ellipsis.message", SymbolType::kSystem};
     case SymbolEllipsisRectangle:
       return {@"ellipsis.rectangle", SymbolType::kSystem};
     case SymbolEnvelope:

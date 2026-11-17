@@ -14,6 +14,7 @@
 
 @class ActuationHeaderContentVariants;
 @class ActuationWorklogChip;
+@class ActuationWorklogItem;
 
 // Returns the chip displayed for `tool_type`, or `nil` if there is no tool or
 // the tool doesn't display a chip.
@@ -28,5 +29,19 @@ ActuationHeaderContentVariants* ActuationHeaderContentVariantsForTask(
     NSString* task_title,
     actor::ActorTaskState task_state,
     NSString* current_step);
+
+// TODO(crbug.com/586900659): Call the user response builders below from the
+// user response flow.
+
+// Returns the item showing that the user responded with `response`, which is
+// either a typed message or the title of a tapped button. `response` must not
+// be empty.
+ActuationWorklogItem* ActuationWorklogItemForUserResponse(NSString* response);
+
+// Returns the item showing that the task continues after a user response.
+ActuationWorklogItem* ActuationWorklogItemForTaskContinues();
+
+// Returns the item showing that the task ended after a user response.
+ActuationWorklogItem* ActuationWorklogItemForTaskEnded();
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UI_ACTUATION_WORKLOG_VIEW_DATA_BUILDERS_H_
