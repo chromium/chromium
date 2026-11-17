@@ -17,10 +17,19 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
 #include "components/user_education/common/user_education_context.h"
+#include "components/user_education/common/user_education_features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+// Constants sent to the UI to ensure that the correct promo is shown and the
+// correct metrics are recorded. The distinction between empty and disabled is
+// that empty means that promos would have been shown, whereas disabled
+// indicates that no promo is allowed for the current page.
+constexpr std::string_view kSimpleBrowserPromo = "simple";
+constexpr std::string_view kEmptyBrowserPromo = "empty";
+constexpr std::string_view kDisabledBrowserPromo = "disabled";
 
 void CheckController(user_education::NtpPromoController* controller) {
   CHECK(controller)
@@ -51,6 +60,32 @@ NtpPromoHandler::NtpPromoHandler(
       promo_controller_(promo_controller) {}
 
 NtpPromoHandler::~NtpPromoHandler() = default;
+
+// static
+std::string_view NtpPromoHandler::GetNtpPromoType(
+    Profile* profile,
+    content::WebContents* web_contents) {
+  auto* controller = UserEducationServiceFactory::GetForBrowserContext(profile)
+                         ->ntp_promo_controller();
+  if (!controller) {
+    return kDisabledBrowserPromo;
+  }
+  auto* user_education =
+      BrowserUserEducationInterface::MaybeGetForWebContentsInTab(web_contents);
+  if (!user_education) {
+    return kDisabledBrowserPromo;
+  }
+  auto context =
+      user_education->GetUserEducationContext(base::PassKey<NtpPromoHandler>());
+
+  switch (user_education::features::GetNtpBrowserPromoType()) {
+    case user_education::features::NtpBrowserPromoType::kSimple:
+      return controller->HasShowablePromo(context) ? kSimpleBrowserPromo
+                                                   : kEmptyBrowserPromo;
+    case user_education::features::NtpBrowserPromoType::kNone:
+      return kDisabledBrowserPromo;
+  }
+}
 
 user_education::UserEducationContextPtr NtpPromoHandler::GetContext() const {
   if (auto* user_education =

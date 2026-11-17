@@ -7,12 +7,15 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+class Profile;
 
 namespace content {
 class WebContents;
@@ -27,6 +30,12 @@ class NtpPromoHandler : public ntp_promo::mojom::NtpPromoHandler {
   NtpPromoHandler(const NtpPromoHandler&) = delete;
   void operator=(const NtpPromoHandler&) = delete;
   ~NtpPromoHandler() override;
+
+  // Returns the type of browser promo the New Tab Page in `web_contents` can
+  // show: "simple", "empty" (promos are allowed but none is showable), or
+  // "disabled" (no promo is allowed for the page).
+  static std::string_view GetNtpPromoType(Profile* profile,
+                                          content::WebContents* web_contents);
 
   // ntp_promo::mojom::NtpPromoHandler:
   void RequestPromos() override;

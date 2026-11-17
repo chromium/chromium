@@ -53,6 +53,7 @@
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -65,6 +66,7 @@
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/views/scheduled_restart/scheduled_restart_bubble_controller.h"
 #endif
+#include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/util/webui_util_desktop.h"
@@ -91,6 +93,10 @@
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/prediction_options.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/service/sync_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/storage_partition.h"
@@ -558,6 +564,39 @@ NewTabPageHandler::~NewTabPageHandler() {
     microsoft_auth_service_->RemoveObserver(this);
   }
 #endif
+}
+
+// Defined here rather than in new_tab_page_ui.cc so that `:core`, which owns
+// `GetTrackedElementIds()`, links without `:impl`. The identifier keeps its
+// "NewTabPageUI::kRealboxContextualEntrypointElementId" name because the
+// WebUI and user education tutorials reference it by that name.
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(NewTabPageUI,
+                                      kRealboxContextualEntrypointElementId);
+
+// static
+std::vector<ui::ElementIdentifier> NewTabPageHandler::GetTrackedElementIds() {
+  return {CustomizeButtonsHandler::kCustomizeChromeButtonElementId,
+          NewTabPageUI::kRealboxContextualEntrypointElementId};
+}
+
+// static
+bool NewTabPageHandler::IsManagedProfile(Profile* profile) {
+  return NewTabPageUI::IsManagedProfile(profile);
+}
+
+// Defined here rather than in new_tab_page_ui.cc so that `:core` links without
+// `:impl`. It stays a `NewTabPageUI` member because `signin::IdentityManager`
+// befriends `NewTabPageUI` to allow the `FindExtendedPrimaryAccountInfo()`
+// call below.
+// static
+bool NewTabPageUI::IsManagedProfile(Profile* profile) {
+  // TODO(crbug.com/40183609): Stop calling the private method
+  // FindExtendedPrimaryAccountInfo().
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  return /* Can be null if Chrome signin is disabled. */ identity_manager &&
+         identity_manager
+                 ->FindExtendedPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                 .IsManaged() == signin::Tribool::kTrue;
 }
 
 // static

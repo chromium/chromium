@@ -1,0 +1,5 @@
+include_rules = [
+  # The shared NTP core must not depend on any NTP host.
+  "-chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h",
+  "-chrome/browser/ui/webui/new_tab_page_extension",
+]

@@ -9,7 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
+#include "chrome/browser/ui/webui/new_tab_page/core/ntp_load_time_data.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_config_map.h"
@@ -46,7 +46,7 @@ base::DictValue NewTabPageExtensionConfigProvider::GetLoadTimeData(
       contextual_search::ContextualSearchService::IsContextSharingEnabled(
           profile->GetPrefs());
   base::DictValue dict =
-      NewTabPageUI::GetLoadTimeData(profile, session_allows_drag_and_drop);
+      ntp::BuildLoadTimeData(profile, session_allows_drag_and_drop);
 
   // Gate NTP subsystems not yet supported in the component extension.
   // TODO(crbug.com/572840536): Add support in the component extension.
