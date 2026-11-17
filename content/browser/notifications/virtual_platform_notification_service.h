@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/supports_user_data.h"
+#include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/platform_notification_service.h"
 #include "content/public/common/persistent_notification_status.h"
@@ -56,6 +57,9 @@ class CONTENT_EXPORT VirtualPlatformNotificationService
     ~Notification();
 
     std::string id;
+    // Identifies the notification to automation clients. Kept when the
+    // notification is replaced by one with the same ID.
+    base::UnguessableToken token;
     GURL origin;
     bool is_persistent = false;
     // Empty for non-persistent notifications.
@@ -65,7 +69,7 @@ class CONTENT_EXPORT VirtualPlatformNotificationService
 
   enum class CloseReason {
     // Closed through SimulateClose().
-    kClient,
+    kDismissed,
     // Closed by the page, the service worker or the browser.
     kOther,
   };
@@ -80,11 +84,12 @@ class CONTENT_EXPORT VirtualPlatformNotificationService
     virtual void OnNotificationShown(
         VirtualPlatformNotificationService* service,
         const Notification& notification) = 0;
-    // Called when the notification with `notification_id` is closed. Not
-    // called for the notifications that remain when the service is destroyed.
+    // Called when `notification` is closed. Not called for the notifications
+    // that remain when the service is destroyed. `notification` is valid only
+    // during the call.
     virtual void OnNotificationClosed(
         VirtualPlatformNotificationService* service,
-        const std::string& notification_id,
+        const Notification& notification,
         CloseReason reason) = 0;
     // Called when the browser context is destroyed, but not when the last
     // observer is detached. The service must not be used afterwards, not even
@@ -111,25 +116,43 @@ class CONTENT_EXPORT VirtualPlatformNotificationService
 
   // Detaches `observer`. When the last observer is gone, closes the remaining
   // notifications like the platform would, without close events for service
-  // workers, and destroys the service.
+  // workers, deletes the database rows of the persistent notifications shown by
+  // the service that still exist, and destroys the service. The UKM events of
+  // these notifications that arrive later are skipped, see
+  // ConsumeSkippedUkmEvent().
   void Detach(Observer* observer);
+
+  // Returns true once for each persistent notification shown by a destroyed
+  // service whose UKM event had not arrived, so that it is not recorded.
+  static bool ConsumeSkippedUkmEvent(BrowserContext* browser_context,
+                                     const std::string& notification_id);
 
   BrowserContext* browser_context() const { return browser_context_; }
   const std::map<std::string, Notification>& notifications() const {
     return notifications_;
   }
 
-  // Simulates the user activating the notification, or the action at
-  // `action_index` of it. Closes the notification if the click cannot be
-  // delivered. Does nothing if there is no such notification. `action_index`
-  // must be empty for non-persistent notifications, and a valid index into the
-  // actions otherwise.
-  void SimulateClick(const std::string& notification_id,
-                     std::optional<int> action_index);
+  // Returns the notification with `token`, or null if there is none.
+  const Notification* FindNotification(
+      const base::UnguessableToken& token) const;
 
-  // Simulates the user dismissing the notification. Does nothing if there is
-  // no such notification.
-  void SimulateClose(const std::string& notification_id);
+  // Simulates the user activating the notification with `token`, or the
+  // action at `action_index` of it. Closes the notification if the click
+  // cannot be delivered. Does nothing if there is no such notification.
+  // `action_index` must be empty for non-persistent notifications, and a valid
+  // index into the actions otherwise. Runs `callback` asynchronously on the
+  // calling sequence once the click is processed, also if it is dropped, if
+  // there is no such notification, or if this service is destroyed before.
+  void SimulateClick(base::UnguessableToken token,
+                     std::optional<int> action_index,
+                     base::OnceClosure callback);
+
+  // Simulates the user dismissing the notification with `token`, which removes
+  // it. Does nothing if there is no such notification. Runs `callback`
+  // asynchronously on the calling sequence once the close is processed, also
+  // if the close event cannot be delivered, if there is no such notification,
+  // or if this service is destroyed before.
+  void SimulateClose(base::UnguessableToken token, base::OnceClosure callback);
 
   // PlatformNotificationService:
   void DisplayNotification(
@@ -174,6 +197,9 @@ class CONTENT_EXPORT VirtualPlatformNotificationService
 
   raw_ptr<BrowserContext> browser_context_;
   std::map<std::string, Notification> notifications_;
+  // IDs and origins of the persistent notifications shown by `this` whose UKM
+  // events have not arrived yet.
+  std::map<std::string, GURL> ukm_pending_ids_;
   base::ObserverList<Observer> observers_;
   // Whether observers are being notified.
   bool notifying_ = false;

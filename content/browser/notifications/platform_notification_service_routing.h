@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_NOTIFICATIONS_PLATFORM_NOTIFICATION_SERVICE_ROUTING_H_
 #define CONTENT_BROWSER_NOTIFICATIONS_PLATFORM_NOTIFICATION_SERVICE_ROUTING_H_
 
+#include <string>
+
 #include "content/common/content_export.h"
 
 namespace content {
@@ -17,6 +19,12 @@ class PlatformNotificationService;
 // provided by the embedder. May return null.
 CONTENT_EXPORT PlatformNotificationService* GetPlatformNotificationServiceFor(
     BrowserContext* browser_context);
+
+// Like GetPlatformNotificationServiceFor(), but returns null if the UKM event
+// of `notification_id` must be skipped.
+CONTENT_EXPORT PlatformNotificationService*
+GetPlatformNotificationServiceForUkmEvent(BrowserContext* browser_context,
+                                          const std::string& notification_id);
 
 }  // namespace content
 

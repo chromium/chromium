@@ -141,7 +141,8 @@ void PlatformNotificationServiceProxy::RecordNotificationUkmEvent(
     const NotificationDatabaseData& data) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   PlatformNotificationService* notification_service =
-      GetPlatformNotificationServiceFor(browser_context_);
+      GetPlatformNotificationServiceForUkmEvent(browser_context_,
+                                                data.notification_id);
   if (!notification_service) {
     return;
   }

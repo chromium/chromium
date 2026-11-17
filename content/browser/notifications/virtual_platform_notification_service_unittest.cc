@@ -10,13 +10,20 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/gtest_util.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "content/browser/notifications/notification_event_dispatcher_impl.h"
+#include "content/browser/notifications/notification_id_generator.h"
+#include "content/browser/notifications/platform_notification_service_proxy.h"
 #include "content/browser/notifications/platform_notification_service_routing.h"
 #include "content/browser/permissions/permission_controller_impl.h"
+#include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/public/browser/notification_database_data.h"
+#include "content/public/browser/platform_notification_context.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/mock_platform_notification_service.h"
@@ -53,10 +60,11 @@ class TestObserver : public VirtualPlatformNotificationService::Observer {
       override {
     shown_.push_back(notification.id);
   }
-  void OnNotificationClosed(VirtualPlatformNotificationService* service,
-                            const std::string& notification_id,
-                            CloseReason reason) override {
-    closed_.emplace_back(notification_id, reason);
+  void OnNotificationClosed(
+      VirtualPlatformNotificationService* service,
+      const VirtualPlatformNotificationService::Notification& notification,
+      CloseReason reason) override {
+    closed_.emplace_back(notification.id, reason);
   }
   void OnServiceDestroyed(
       VirtualPlatformNotificationService* service) override {
@@ -73,9 +81,10 @@ class TestObserver : public VirtualPlatformNotificationService::Observer {
 // allowed.
 class DetachingObserver : public TestObserver {
  public:
-  void OnNotificationClosed(VirtualPlatformNotificationService* service,
-                            const std::string& notification_id,
-                            CloseReason reason) override {
+  void OnNotificationClosed(
+      VirtualPlatformNotificationService* service,
+      const VirtualPlatformNotificationService::Notification& notification,
+      CloseReason reason) override {
     service->Detach(this);
   }
 };
@@ -110,6 +119,29 @@ class TestNotificationListener
   mojo::Receiver<blink::mojom::NonPersistentNotificationListener> receiver_{
       this};
 };
+
+// Counts the UKM events that reach the embedder.
+class UkmCountingNotificationService : public MockPlatformNotificationService {
+ public:
+  using MockPlatformNotificationService::MockPlatformNotificationService;
+
+  int ukm_event_count() const { return ukm_event_count_; }
+
+  // MockPlatformNotificationService:
+  void RecordNotificationUkmEvent(
+      const NotificationDatabaseData& data) override {
+    ++ukm_event_count_;
+  }
+
+ private:
+  int ukm_event_count_ = 0;
+};
+
+NotificationDatabaseData CreateDatabaseData(const std::string& id) {
+  NotificationDatabaseData data;
+  data.notification_id = id;
+  return data;
+}
 
 blink::PlatformNotificationData CreateData(const std::u16string& title,
                                            const std::string& tag = "") {
@@ -158,6 +190,11 @@ class VirtualPlatformNotificationServiceTest
             RenderProcessHost::NotificationServiceCreatorType::kDocument);
   }
 
+  base::UnguessableToken TokenOf(VirtualPlatformNotificationService* service,
+                                 const std::string& id) {
+    return service->notifications().at(id).token;
+  }
+
   TestBrowserContext* test_browser_context() {
     return static_cast<TestBrowserContext*>(browser_context());
   }
@@ -183,11 +220,59 @@ class VirtualPlatformNotificationServiceTest
               PermissionControllerImpl::OverrideStatus::kOverrideSet);
   }
 
+  PlatformNotificationContext* notification_context() {
+    return browser_context()
+        ->GetStoragePartitionForUrl(GURL(kOrigin))
+        ->GetPlatformNotificationContext();
+  }
+
+  // Writes the database row of a persistent notification and returns its ID.
+  // Without a service worker, the notification is not displayed.
+  std::string WriteDatabaseRow(PlatformNotificationService* service) {
+    const int64_t persistent_id = service->ReadNextPersistentNotificationId();
+    base::test::TestFuture<bool, std::string> written;
+    notification_context()->WriteNotificationData(
+        persistent_id, /*service_worker_registration_id=*/1, GURL(kOrigin),
+        NotificationDatabaseData(),
+        written.GetCallback<bool, const std::string&>());
+    EXPECT_TRUE(written.Wait());
+    return NotificationIdGenerator().GenerateForPersistentNotification(
+        GURL(kOrigin), /*tag=*/"", /*is_shown_by_browser=*/false,
+        persistent_id);
+  }
+
+  bool HasDatabaseRow(const std::string& id) {
+    base::test::TestFuture<bool, NotificationDatabaseData> future;
+    notification_context()->ReadNotificationDataAndRecordInteraction(
+        id, GURL(kOrigin), PlatformNotificationContext::Interaction::NONE,
+        future.GetCallback<bool, const NotificationDatabaseData&>());
+    return future.Get<0>();
+  }
+
   std::set<std::string> GetDisplayedNotifications(
       PlatformNotificationService* service) {
     base::test::TestFuture<std::set<std::string>, bool> future;
     service->GetDisplayedNotifications(future.GetCallback());
     return future.Get<0>();
+  }
+};
+
+// Sets the embedder service before the notification context is initialized,
+// so that the database reports UKM events.
+class VirtualPlatformNotificationServiceUkmTest
+    : public VirtualPlatformNotificationServiceTest {
+ protected:
+  std::unique_ptr<BrowserContext> CreateBrowserContext() override {
+    auto context = std::make_unique<TestBrowserContext>();
+    context->set_is_off_the_record(true);
+    context->SetPlatformNotificationService(
+        std::make_unique<UkmCountingNotificationService>(context.get()));
+    return context;
+  }
+
+  UkmCountingNotificationService* embedder() {
+    return static_cast<UkmCountingNotificationService*>(
+        browser_context()->GetPlatformNotificationService());
   }
 };
 
@@ -245,9 +330,11 @@ TEST_F(VirtualPlatformNotificationServiceTest,
 
   service->Detach(&observer1);
   // A close event would have been delivered before the click.
-  service->SimulateClick("id", std::nullopt);
-  EXPECT_TRUE(
-      base::test::RunUntil([&] { return listener.click_count() == 1; }));
+  base::test::TestFuture<void> clicked;
+  service->SimulateClick(TokenOf(service, "id"), std::nullopt,
+                         clicked.GetCallback());
+  EXPECT_TRUE(clicked.Wait());
+  EXPECT_EQ(listener.click_count(), 1);
   EXPECT_EQ(listener.close_count(), 0);
 
   service->Detach(&observer2);
@@ -361,11 +448,35 @@ TEST_F(VirtualPlatformNotificationServiceTest, ReplacesNotificationWithSameId) {
       VirtualPlatformNotificationService::Attach(browser_context(), &observer);
 
   Display(service, "id", u"First");
+  const base::UnguessableToken token = service->notifications().at("id").token;
   Display(service, "id", u"Second");
   ASSERT_EQ(service->notifications().size(), 1u);
   EXPECT_EQ(service->notifications().at("id").data.title, u"Second");
+  EXPECT_EQ(service->notifications().at("id").token, token);
   EXPECT_EQ(observer.shown(), (std::vector<std::string>{"id", "id"}));
   EXPECT_TRUE(observer.closed().empty());
+
+  service->Detach(&observer);
+}
+
+TEST_F(VirtualPlatformNotificationServiceTest, FindNotification) {
+  TestObserver observer;
+  auto* service =
+      VirtualPlatformNotificationService::Attach(browser_context(), &observer);
+  Display(service, "a");
+  DisplayPersistent(service, "b");
+
+  const base::UnguessableToken token_a = service->notifications().at("a").token;
+  const base::UnguessableToken token_b = service->notifications().at("b").token;
+  EXPECT_NE(token_a, token_b);
+  ASSERT_TRUE(service->FindNotification(token_a));
+  EXPECT_EQ(service->FindNotification(token_a)->id, "a");
+  ASSERT_TRUE(service->FindNotification(token_b));
+  EXPECT_EQ(service->FindNotification(token_b)->id, "b");
+  EXPECT_FALSE(service->FindNotification(base::UnguessableToken::Create()));
+
+  service->CloseNotification("a");
+  EXPECT_FALSE(service->FindNotification(token_a));
 
   service->Detach(&observer);
 }
@@ -416,8 +527,17 @@ TEST_F(VirtualPlatformNotificationServiceTest, SimulateUnknownNotification) {
   auto* service =
       VirtualPlatformNotificationService::Attach(browser_context(), &observer);
 
-  service->SimulateClick("unknown", std::nullopt);
-  service->SimulateClose("unknown");
+  base::test::TestFuture<void> clicked;
+  service->SimulateClick(base::UnguessableToken::Create(), std::nullopt,
+                         clicked.GetCallback());
+  // Callbacks are asynchronous even if there is nothing to do.
+  EXPECT_FALSE(clicked.IsReady());
+  EXPECT_TRUE(clicked.Wait());
+  base::test::TestFuture<void> closed;
+  service->SimulateClose(base::UnguessableToken::Create(),
+                         closed.GetCallback());
+  EXPECT_FALSE(closed.IsReady());
+  EXPECT_TRUE(closed.Wait());
   EXPECT_TRUE(observer.closed().empty());
 
   service->Detach(&observer);
@@ -433,16 +553,19 @@ TEST_F(VirtualPlatformNotificationServiceTest, SimulateClickAndClose) {
   Display(service, "id");
   EXPECT_TRUE(base::test::RunUntil([&] { return listener.show_count() == 1; }));
 
-  service->SimulateClick("id", std::nullopt);
-  EXPECT_TRUE(
-      base::test::RunUntil([&] { return listener.click_count() == 1; }));
+  base::test::TestFuture<void> clicked;
+  service->SimulateClick(TokenOf(service, "id"), std::nullopt,
+                         clicked.GetCallback());
+  EXPECT_TRUE(clicked.Wait());
+  EXPECT_EQ(listener.click_count(), 1);
   EXPECT_TRUE(service->notifications().contains("id"));
 
-  service->SimulateClose("id");
-  EXPECT_TRUE(
-      base::test::RunUntil([&] { return listener.close_count() == 1; }));
+  base::test::TestFuture<void> closed;
+  service->SimulateClose(TokenOf(service, "id"), closed.GetCallback());
+  EXPECT_TRUE(closed.Wait());
+  EXPECT_EQ(listener.close_count(), 1);
   EXPECT_TRUE(service->notifications().empty());
-  EXPECT_EQ(observer.closed(), (Closed{{"id", CloseReason::kClient}}));
+  EXPECT_EQ(observer.closed(), (Closed{{"id", CloseReason::kDismissed}}));
 
   service->Detach(&observer);
 }
@@ -454,10 +577,13 @@ TEST_F(VirtualPlatformNotificationServiceTest, SimulateClickChecksActionIndex) {
   Display(service, "non-persistent");
   DisplayPersistent(service, "persistent");
 
-  EXPECT_CHECK_DEATH(service->SimulateClick("non-persistent", 0));
-  EXPECT_CHECK_DEATH(service->SimulateClick("persistent", -1));
+  EXPECT_CHECK_DEATH(service->SimulateClick(TokenOf(service, "non-persistent"),
+                                            0, base::DoNothing()));
+  EXPECT_CHECK_DEATH(service->SimulateClick(TokenOf(service, "persistent"), -1,
+                                            base::DoNothing()));
   // The notification has no actions.
-  EXPECT_CHECK_DEATH(service->SimulateClick("persistent", 0));
+  EXPECT_CHECK_DEATH(service->SimulateClick(TokenOf(service, "persistent"), 0,
+                                            base::DoNothing()));
 
   service->Detach(&observer);
 }
@@ -469,8 +595,10 @@ TEST_F(VirtualPlatformNotificationServiceTest,
       VirtualPlatformNotificationService::Attach(browser_context(), &observer);
   Display(service, "id");
 
-  service->SimulateClick("id", std::nullopt);
-  EXPECT_TRUE(base::test::RunUntil([&] { return !observer.closed().empty(); }));
+  base::test::TestFuture<void> clicked;
+  service->SimulateClick(TokenOf(service, "id"), std::nullopt,
+                         clicked.GetCallback());
+  EXPECT_TRUE(clicked.Wait());
   EXPECT_TRUE(service->notifications().empty());
   EXPECT_EQ(observer.closed(), (Closed{{"id", CloseReason::kOther}}));
 
@@ -485,9 +613,12 @@ TEST_F(VirtualPlatformNotificationServiceTest,
   // The test browser context does not grant the permission.
   DisplayPersistent(service, "id");
 
-  service->SimulateClick("id", std::nullopt);
+  base::test::TestFuture<void> clicked;
+  service->SimulateClick(TokenOf(service, "id"), std::nullopt,
+                         clicked.GetCallback());
   EXPECT_TRUE(service->notifications().empty());
   EXPECT_EQ(observer.closed(), (Closed{{"id", CloseReason::kOther}}));
+  EXPECT_TRUE(clicked.Wait());
 
   service->Detach(&observer);
 }
@@ -500,12 +631,14 @@ TEST_F(VirtualPlatformNotificationServiceTest,
       VirtualPlatformNotificationService::Attach(browser_context(), &observer);
   DisplayPersistent(service, "id");
 
-  service->SimulateClick("id", std::nullopt);
+  base::test::TestFuture<void> clicked;
+  service->SimulateClick(TokenOf(service, "id"), std::nullopt,
+                         clicked.GetCallback());
   // The click is dispatched, unlike without the permission.
   EXPECT_TRUE(service->notifications().contains("id"));
   // There is no database entry, so the dispatch fails and the notification is
   // closed.
-  EXPECT_TRUE(base::test::RunUntil([&] { return !observer.closed().empty(); }));
+  EXPECT_TRUE(clicked.Wait());
   EXPECT_TRUE(service->notifications().empty());
   EXPECT_EQ(observer.closed(), (Closed{{"id", CloseReason::kOther}}));
 
@@ -528,9 +661,10 @@ TEST_F(VirtualPlatformNotificationServiceTest,
                                          GURL(kOrigin), data,
                                          blink::NotificationResources());
 
-  service->SimulateClick("id", 0);
+  base::test::TestFuture<void> clicked;
+  service->SimulateClick(TokenOf(service, "id"), 0, clicked.GetCallback());
   EXPECT_TRUE(service->notifications().contains("id"));
-  EXPECT_TRUE(base::test::RunUntil([&] { return !observer.closed().empty(); }));
+  EXPECT_TRUE(clicked.Wait());
   EXPECT_EQ(observer.closed(), (Closed{{"id", CloseReason::kOther}}));
 
   service->Detach(&observer);
@@ -543,9 +677,47 @@ TEST_F(VirtualPlatformNotificationServiceTest,
       VirtualPlatformNotificationService::Attach(browser_context(), &observer);
   DisplayPersistent(service, "id");
 
-  service->SimulateClose("id");
+  base::test::TestFuture<void> closed;
+  service->SimulateClose(TokenOf(service, "id"), closed.GetCallback());
   EXPECT_TRUE(service->notifications().empty());
-  EXPECT_EQ(observer.closed(), (Closed{{"id", CloseReason::kClient}}));
+  EXPECT_EQ(observer.closed(), (Closed{{"id", CloseReason::kDismissed}}));
+  EXPECT_TRUE(closed.Wait());
+
+  service->Detach(&observer);
+}
+
+TEST_F(VirtualPlatformNotificationServiceTest,
+       SimulateClickRunsCallbackAfterServiceIsDestroyed) {
+  TestObserver observer;
+  auto* service =
+      VirtualPlatformNotificationService::Attach(browser_context(), &observer);
+  TestNotificationListener listener;
+  RegisterListener(listener, "id");
+  Display(service, "id");
+
+  base::test::TestFuture<void> clicked;
+  service->SimulateClick(TokenOf(service, "id"), std::nullopt,
+                         clicked.GetCallback());
+  service->Detach(&observer);
+  EXPECT_TRUE(clicked.Wait());
+}
+
+TEST_F(VirtualPlatformNotificationServiceTest,
+       SimulateClickRunsCallbackIfReplyIsDropped) {
+  TestObserver observer;
+  auto* service =
+      VirtualPlatformNotificationService::Attach(browser_context(), &observer);
+  TestNotificationListener listener;
+  RegisterListener(listener, "id");
+  Display(service, "id");
+
+  base::test::TestFuture<void> clicked;
+  service->SimulateClick(TokenOf(service, "id"), std::nullopt,
+                         clicked.GetCallback());
+  // Replacing the listener drops the pending click reply.
+  TestNotificationListener other_listener;
+  RegisterListener(other_listener, "id");
+  EXPECT_TRUE(clicked.Wait());
 
   service->Detach(&observer);
 }
@@ -582,6 +754,155 @@ TEST_F(VirtualPlatformNotificationServiceTest,
   EXPECT_EQ(service->ReadNextPersistentNotificationId(), id + 1);
 
   service->Detach(&observer);
+}
+
+TEST_F(VirtualPlatformNotificationServiceTest, DetachDeletesRows) {
+  TestObserver observer;
+  auto* service =
+      VirtualPlatformNotificationService::Attach(browser_context(), &observer);
+  const std::string removed = WriteDatabaseRow(service);
+  const std::string shown = WriteDatabaseRow(service);
+  DisplayPersistent(service, removed);
+  DisplayPersistent(service, shown);
+  // Like a click without a service worker: the notification is removed, but
+  // its row stays.
+  service->ClosePersistentNotification(removed);
+  ASSERT_TRUE(HasDatabaseRow(removed));
+
+  service->Detach(&observer);
+  EXPECT_FALSE(HasDatabaseRow(removed));
+  EXPECT_FALSE(HasDatabaseRow(shown));
+}
+
+TEST_F(VirtualPlatformNotificationServiceTest,
+       DoesNotSkipUkmEventsWithoutEmbedder) {
+  TestObserver observer;
+  auto* service =
+      VirtualPlatformNotificationService::Attach(browser_context(), &observer);
+  DisplayPersistent(service, "id");
+  service->Detach(&observer);
+
+  EXPECT_FALSE(VirtualPlatformNotificationService::ConsumeSkippedUkmEvent(
+      browser_context(), "id"));
+}
+
+TEST_F(VirtualPlatformNotificationServiceUkmTest,
+       SkipsUkmEventsOfNotificationsClosedOnDetach) {
+  TestObserver observer;
+  auto* service =
+      VirtualPlatformNotificationService::Attach(browser_context(), &observer);
+  DisplayPersistent(service, "persistent");
+  Display(service, "non-persistent");
+  service->Detach(&observer);
+
+  EXPECT_TRUE(VirtualPlatformNotificationService::ConsumeSkippedUkmEvent(
+      browser_context(), "persistent"));
+  // Only the first event is skipped.
+  EXPECT_FALSE(VirtualPlatformNotificationService::ConsumeSkippedUkmEvent(
+      browser_context(), "persistent"));
+  EXPECT_FALSE(VirtualPlatformNotificationService::ConsumeSkippedUkmEvent(
+      browser_context(), "non-persistent"));
+}
+
+TEST_F(VirtualPlatformNotificationServiceUkmTest,
+       SkipsUkmEventsOfRemovedNotifications) {
+  TestObserver observer;
+  auto* service =
+      VirtualPlatformNotificationService::Attach(browser_context(), &observer);
+  DisplayPersistent(service, "dismissed");
+  DisplayPersistent(service, "closed");
+  service->SimulateClose(TokenOf(service, "dismissed"), base::DoNothing());
+  service->ClosePersistentNotification("closed");
+  ASSERT_TRUE(service->notifications().empty());
+  service->Detach(&observer);
+
+  // The UKM events of the deleted rows arrive later.
+  EXPECT_TRUE(VirtualPlatformNotificationService::ConsumeSkippedUkmEvent(
+      browser_context(), "dismissed"));
+  EXPECT_TRUE(VirtualPlatformNotificationService::ConsumeSkippedUkmEvent(
+      browser_context(), "closed"));
+}
+
+TEST_F(VirtualPlatformNotificationServiceUkmTest,
+       DoesNotSkipUkmEventsThatArrivedWhileAttached) {
+  TestObserver observer;
+  auto* service =
+      VirtualPlatformNotificationService::Attach(browser_context(), &observer);
+  DisplayPersistent(service, "id");
+  service->ClosePersistentNotification("id");
+  service->RecordNotificationUkmEvent(CreateDatabaseData("id"));
+  service->Detach(&observer);
+
+  EXPECT_FALSE(VirtualPlatformNotificationService::ConsumeSkippedUkmEvent(
+      browser_context(), "id"));
+}
+
+TEST_F(VirtualPlatformNotificationServiceUkmTest,
+       SkippedUkmEventsSurviveAttach) {
+  TestObserver observer;
+  auto* service =
+      VirtualPlatformNotificationService::Attach(browser_context(), &observer);
+  DisplayPersistent(service, "first");
+  service->Detach(&observer);
+
+  // A quick enable and disable while the first UKM event is in flight.
+  service =
+      VirtualPlatformNotificationService::Attach(browser_context(), &observer);
+  DisplayPersistent(service, "second");
+  service->Detach(&observer);
+
+  EXPECT_TRUE(VirtualPlatformNotificationService::ConsumeSkippedUkmEvent(
+      browser_context(), "first"));
+  EXPECT_TRUE(VirtualPlatformNotificationService::ConsumeSkippedUkmEvent(
+      browser_context(), "second"));
+}
+
+TEST_F(VirtualPlatformNotificationServiceUkmTest, ProxySkipsUkmEvents) {
+  PlatformNotificationServiceProxy proxy(nullptr, browser_context());
+
+  TestObserver observer;
+  auto* service =
+      VirtualPlatformNotificationService::Attach(browser_context(), &observer);
+  DisplayPersistent(service, "arrived");
+  DisplayPersistent(service, "pending");
+  // While attached, the event goes to the virtual service.
+  proxy.RecordNotificationUkmEvent(CreateDatabaseData("arrived"));
+  EXPECT_EQ(embedder()->ukm_event_count(), 0);
+  service->Detach(&observer);
+
+  // Only the first event of a pending notification is skipped.
+  proxy.RecordNotificationUkmEvent(CreateDatabaseData("pending"));
+  EXPECT_EQ(embedder()->ukm_event_count(), 0);
+  proxy.RecordNotificationUkmEvent(CreateDatabaseData("pending"));
+  EXPECT_EQ(embedder()->ukm_event_count(), 1);
+  proxy.RecordNotificationUkmEvent(CreateDatabaseData("arrived"));
+  EXPECT_EQ(embedder()->ukm_event_count(), 2);
+}
+
+TEST_F(VirtualPlatformNotificationServiceUkmTest, SkipsUkmEventsOfDeletedRows) {
+  TestObserver observer;
+  auto* service =
+      VirtualPlatformNotificationService::Attach(browser_context(), &observer);
+  const std::string dismissed = WriteDatabaseRow(service);
+  const std::string shown = WriteDatabaseRow(service);
+  DisplayPersistent(service, dismissed);
+  DisplayPersistent(service, shown);
+  service->SimulateClose(TokenOf(service, dismissed), base::DoNothing());
+  service->Detach(&observer);
+  EXPECT_FALSE(HasDatabaseRow(dismissed));
+  EXPECT_FALSE(HasDatabaseRow(shown));
+
+  // Later deletions are recorded. The UKM events are posted in order, so the
+  // skipped ones would be counted first.
+  const std::string later = WriteDatabaseRow(embedder());
+  base::test::TestFuture<bool> deleted;
+  notification_context()->DeleteNotificationData(later, GURL(kOrigin),
+                                                 /*close_notification=*/false,
+                                                 deleted.GetCallback());
+  ASSERT_TRUE(deleted.Get());
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return embedder()->ukm_event_count() > 0; }));
+  EXPECT_EQ(embedder()->ukm_event_count(), 1);
 }
 
 }  // namespace content

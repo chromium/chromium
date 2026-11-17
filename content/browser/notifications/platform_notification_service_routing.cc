@@ -18,4 +18,14 @@ PlatformNotificationService* GetPlatformNotificationServiceFor(
   return browser_context->GetPlatformNotificationService();
 }
 
+PlatformNotificationService* GetPlatformNotificationServiceForUkmEvent(
+    BrowserContext* browser_context,
+    const std::string& notification_id) {
+  if (VirtualPlatformNotificationService::ConsumeSkippedUkmEvent(
+          browser_context, notification_id)) {
+    return nullptr;
+  }
+  return GetPlatformNotificationServiceFor(browser_context);
+}
+
 }  // namespace content

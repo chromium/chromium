@@ -4,6 +4,8 @@
 
 #include "content/browser/notifications/virtual_platform_notification_service.h"
 
+#include <algorithm>
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -13,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/bind_post_task.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -22,6 +25,7 @@
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/platform_notification_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/origin.h"
 
@@ -30,6 +34,21 @@ namespace content {
 namespace {
 
 constexpr char kUserDataKey[] = "VirtualPlatformNotificationService";
+constexpr char kSkippedUkmEventsKey[] = "VirtualNotificationSkippedUkmEvents";
+
+// IDs of the persistent notifications shown by destroyed services, whose UKM
+// events have not arrived yet.
+struct SkippedUkmEvents : base::SupportsUserData::Data {
+  std::set<std::string> notification_ids;
+};
+
+// Returns a callback that runs `callback` on the current sequence, also when
+// it is dropped, e.g. with a database task skipped at shutdown on a worker.
+base::OnceClosure RunOnCurrentSequenceEvenIfDropped(
+    base::OnceClosure callback) {
+  return mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      base::BindPostTaskToCurrentDefault(std::move(callback)));
+}
 
 }  // namespace
 
@@ -87,47 +106,94 @@ void VirtualPlatformNotificationService::Detach(Observer* observer) {
   if (!observers_.empty()) {
     return;
   }
-  // Close the remaining notifications like the platform would.
-  // TODO(crbug.com/576760752): Deleting the database rows records UKM events,
-  // which reach the embedder after this service is destroyed. Skip them.
+  // Close the remaining non-persistent notifications like the platform would.
+  // Persistent ones are closed below.
   auto* dispatcher = NotificationEventDispatcher::GetInstance();
   for (const auto& [id, notification] : notifications_) {
-    if (notification.is_persistent) {
-      dispatcher->DispatchNotificationCloseEvent(
-          browser_context_, id, notification.origin,
-          /*by_user=*/false, base::DoNothing());
-    } else {
+    if (!notification.is_persistent) {
       dispatcher->DispatchNonPersistentCloseEvent(id, base::DoNothing());
     }
+  }
+  // Delete the rows that may still exist: of the persistent notifications still
+  // shown, and of removed ones, e.g. after a click without a service worker.
+  // Otherwise they would be recorded later, e.g. when a restart prunes them.
+  // Rows left at shutdown, when database tasks are skipped, are still recorded
+  // then. Skip the UKM events that arrive after `this` is destroyed, unless
+  // there is no embedder service, which would not record them anyway.
+  SkippedUkmEvents* skipped = nullptr;
+  if (browser_context_->GetPlatformNotificationService()) {
+    skipped = static_cast<SkippedUkmEvents*>(
+        browser_context_->GetUserData(kSkippedUkmEventsKey));
+    if (!skipped) {
+      auto owned = std::make_unique<SkippedUkmEvents>();
+      skipped = owned.get();
+      browser_context_->SetUserData(kSkippedUkmEventsKey, std::move(owned));
+    }
+  }
+  for (const auto& [id, origin] : ukm_pending_ids_) {
+    if (skipped) {
+      skipped->notification_ids.insert(id);
+    }
+    // Like a close not by the user, without a close event.
+    browser_context_->GetStoragePartitionForUrl(origin)
+        ->GetPlatformNotificationContext()
+        ->DeleteNotificationData(id, origin, /*close_notification=*/false,
+                                 base::DoNothing());
   }
   // Destroys `this`.
   browser_context_->RemoveUserData(kUserDataKey);
 }
 
-void VirtualPlatformNotificationService::SimulateClick(
-    const std::string& notification_id,
-    std::optional<int> action_index) {
+// static
+bool VirtualPlatformNotificationService::ConsumeSkippedUkmEvent(
+    BrowserContext* browser_context,
+    const std::string& notification_id) {
   CHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto it = notifications_.find(notification_id);
-  if (it == notifications_.end()) {
+  auto* skipped = static_cast<SkippedUkmEvents*>(
+      browser_context->GetUserData(kSkippedUkmEventsKey));
+  return skipped && skipped->notification_ids.erase(notification_id);
+}
+
+const VirtualPlatformNotificationService::Notification*
+VirtualPlatformNotificationService::FindNotification(
+    const base::UnguessableToken& token) const {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto it = std::ranges::find(notifications_, token, [](const auto& entry) {
+    return entry.second.token;
+  });
+  return it != notifications_.end() ? &it->second : nullptr;
+}
+
+void VirtualPlatformNotificationService::SimulateClick(
+    base::UnguessableToken token,
+    std::optional<int> action_index,
+    base::OnceClosure callback) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  callback = RunOnCurrentSequenceEvenIfDropped(std::move(callback));
+  const Notification* notification = FindNotification(token);
+  if (!notification) {
+    std::move(callback).Run();
     return;
   }
   if (action_index) {
-    CHECK(it->second.is_persistent);
+    CHECK(notification->is_persistent);
     CHECK_GE(*action_index, 0);
     CHECK_LT(static_cast<size_t>(*action_index),
-             it->second.data.actions.size());
+             notification->data.actions.size());
   }
+  // Copy, as the notification may be removed below.
+  const std::string notification_id = notification->id;
+  const GURL origin = notification->origin;
   auto* dispatcher = NotificationEventDispatcher::GetInstance();
-  if (!it->second.is_persistent) {
+  if (!notification->is_persistent) {
     dispatcher->DispatchNonPersistentClickEvent(
         notification_id,
         base::BindOnce(
             &VirtualPlatformNotificationService::OnNonPersistentClickDispatched,
-            weak_ptr_factory_.GetWeakPtr(), notification_id));
+            weak_ptr_factory_.GetWeakPtr(), notification_id)
+            .Then(std::move(callback)));
     return;
   }
-  const GURL origin = it->second.origin;
   if (browser_context_->GetPermissionController()
           ->GetPermissionResultForOriginWithoutContext(
               PermissionDescriptorUtil::
@@ -138,6 +204,7 @@ void VirtualPlatformNotificationService::SimulateClick(
     // Mimic PersistentNotificationHandler: drop the click and close the
     // notification.
     RemoveNotification(notification_id, CloseReason::kOther);
+    std::move(callback).Run();
     return;
   }
   dispatcher->DispatchNotificationClickEvent(
@@ -145,27 +212,34 @@ void VirtualPlatformNotificationService::SimulateClick(
       /*reply=*/std::nullopt,
       base::BindOnce(
           &VirtualPlatformNotificationService::OnPersistentClickDispatched,
-          weak_ptr_factory_.GetWeakPtr(), notification_id));
+          weak_ptr_factory_.GetWeakPtr(), notification_id)
+          .Then(std::move(callback)));
 }
 
 void VirtualPlatformNotificationService::SimulateClose(
-    const std::string& notification_id) {
+    base::UnguessableToken token,
+    base::OnceClosure callback) {
   CHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto it = notifications_.find(notification_id);
-  if (it == notifications_.end()) {
+  callback = RunOnCurrentSequenceEvenIfDropped(std::move(callback));
+  const Notification* notification = FindNotification(token);
+  if (!notification) {
+    std::move(callback).Run();
     return;
   }
-  const GURL origin = it->second.origin;
-  const bool is_persistent = it->second.is_persistent;
-  RemoveNotification(notification_id, CloseReason::kClient);
+  // Copy, as the notification is removed below.
+  const std::string notification_id = notification->id;
+  const GURL origin = notification->origin;
+  const bool is_persistent = notification->is_persistent;
+  RemoveNotification(notification_id, CloseReason::kDismissed);
   auto* dispatcher = NotificationEventDispatcher::GetInstance();
   if (is_persistent) {
     dispatcher->DispatchNotificationCloseEvent(
         browser_context_, notification_id, origin,
-        /*by_user=*/true, base::DoNothing());
+        /*by_user=*/true,
+        base::IgnoreArgs<PersistentNotificationStatus>(std::move(callback)));
   } else {
     dispatcher->DispatchNonPersistentCloseEvent(notification_id,
-                                                base::DoNothing());
+                                                std::move(callback));
   }
 }
 
@@ -209,6 +283,7 @@ void VirtualPlatformNotificationService::DisplayPersistentNotification(
   notification.service_worker_scope = service_worker_scope;
   notification.data = notification_data;
   AddNotification(std::move(notification));
+  ukm_pending_ids_.insert_or_assign(notification_id, origin);
 }
 
 void VirtualPlatformNotificationService::CloseNotification(
@@ -297,6 +372,8 @@ int64_t VirtualPlatformNotificationService::ReadNextPersistentNotificationId() {
 void VirtualPlatformNotificationService::RecordNotificationUkmEvent(
     const NotificationDatabaseData& data) {
   CHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Not recorded.
+  ukm_pending_ids_.erase(data.notification_id);
 }
 
 void VirtualPlatformNotificationService::AddNotification(
@@ -304,6 +381,10 @@ void VirtualPlatformNotificationService::AddNotification(
   CHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(!notifying_);
   const std::string id = notification.id;
+  auto it = notifications_.find(id);
+  notification.token = it != notifications_.end()
+                           ? it->second.token
+                           : base::UnguessableToken::Create();
   auto& stored = notifications_[id] = std::move(notification);
   base::AutoReset<bool> notifying(&notifying_, true);
   for (Observer& observer : observers_) {
@@ -316,14 +397,13 @@ void VirtualPlatformNotificationService::RemoveNotification(
     CloseReason reason) {
   CHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(!notifying_);
-  // Keep the ID alive, as `notification_id` may refer to the erased key.
   auto node = notifications_.extract(notification_id);
   if (!node) {
     return;
   }
   base::AutoReset<bool> notifying(&notifying_, true);
   for (Observer& observer : observers_) {
-    observer.OnNotificationClosed(this, node.key(), reason);
+    observer.OnNotificationClosed(this, node.mapped(), reason);
   }
 }
 
