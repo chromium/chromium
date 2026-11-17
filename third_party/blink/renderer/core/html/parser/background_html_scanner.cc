@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/html/parser/background_html_scanner.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -39,11 +38,6 @@ enum class CompileStrategy {
   // All scripts are compiled eagerly.
   kEager,
 };
-
-void EmitHTMLInlineCompilationHistograms(bool script_streamer_timed_out) {
-  UMA_HISTOGRAM_BOOLEAN("WebCore.Scripts.InlineStreamerTimedOut",
-                        script_streamer_timed_out);
-}
 
 CompileOptions GetCompileOptions(bool first_script_in_scan) {
   static const base::FeatureParam<CompileStrategy>::Option
@@ -205,12 +199,8 @@ void BackgroundHTMLScanner::ScriptTokenScanner::ScanToken(
 
         parser_lock->AddInlineScriptStreamer(script_text, streamer);
 
-        auto run_streamer_task = CrossThreadBindOnce(
-            [](scoped_refptr<BackgroundInlineScriptStreamer> streamer) {
-              streamer->Run();
-              EmitHTMLInlineCompilationHistograms(streamer->TimedOut());
-            },
-            streamer);
+        auto run_streamer_task =
+            CrossThreadBindOnce(&BackgroundInlineScriptStreamer::Run, streamer);
         if (task_runner_) {
           PostCrossThreadTask(*task_runner_, FROM_HERE,
                               std::move(run_streamer_task));

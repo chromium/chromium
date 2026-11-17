@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/html/parser/background_html_scanner.h"
 
 #include "base/run_loop.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -175,82 +174,14 @@ TEST_F(BackgroundHTMLScannerTest, ExtraStartTag) {
   EXPECT_NE(parser->TakeInlineScriptStreamer("foo<script>bar"), nullptr);
 }
 
-TEST_F(BackgroundHTMLScannerTest, HistogramEmission) {
-  base::HistogramTester histogram_tester;
-
-  auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
-  auto scanner = CreateScanner(parser);
-  scanner->Scan("<script>function test() { return 42; }</script>");
-  FlushTaskRunner();
-
-  EXPECT_NE(parser->TakeInlineScriptStreamer("function test() { return 42; }"),
-            nullptr);
-
-  // Verify the histogram was emitted
-  histogram_tester.ExpectTotalCount("WebCore.Scripts.InlineStreamerTimedOut",
-                                    1);
-}
-
-TEST_F(BackgroundHTMLScannerTest, HistogramEmissionWithTimeout) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kPrecompileInlineScripts, {{"inline-script-timeout", "1000"}});
-
-  base::HistogramTester histogram_tester;
-
-  auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
-  auto scanner = CreateScanner(parser);
-  scanner->Scan("<script>var x = 1; var y = 2;</script>");
-  FlushTaskRunner();
-
-  EXPECT_NE(parser->TakeInlineScriptStreamer("var x = 1; var y = 2;"), nullptr);
-  histogram_tester.ExpectTotalCount("WebCore.Scripts.InlineStreamerTimedOut",
-                                    1);
-}
-
-TEST_F(BackgroundHTMLScannerTest, MainThreadTaskRunnerForHistograms) {
-  base::HistogramTester histogram_tester;
-
-  auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
-  // Use a sequenced task runner (non-null)
-  auto scanner = CreateScanner(parser);
-
-  // Scan multiple scripts to test both code paths (with/without task_runner_)
-  scanner->Scan("<script>foo</script><script>bar</script>");
-  FlushTaskRunner();
-
-  EXPECT_NE(parser->TakeInlineScriptStreamer("foo"), nullptr);
-  EXPECT_NE(parser->TakeInlineScriptStreamer("bar"), nullptr);
-
-  // Should emit one histogram per script
-  histogram_tester.ExpectTotalCount("WebCore.Scripts.InlineStreamerTimedOut",
-                                    2);
-}
-
-TEST_F(BackgroundHTMLScannerTest, EmptyScriptNoHistogram) {
-  base::HistogramTester histogram_tester;
-
+TEST_F(BackgroundHTMLScannerTest, EmptyScript) {
   auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
   auto scanner = CreateScanner(parser);
   scanner->Scan("<script></script>");
   FlushTaskRunner();
 
-  // Empty scripts shouldn't create streamers or emit histograms
-  histogram_tester.ExpectTotalCount("WebCore.Scripts.InlineStreamerTimedOut",
-                                    0);
-}
-
-TEST_F(BackgroundHTMLScannerTest, SmallScriptNoHistogram) {
-  base::HistogramTester histogram_tester;
-
-  auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
-  auto scanner = CreateScanner(parser, /*min_script_size=*/100u);
-  scanner->Scan("<script>x</script>");
-  FlushTaskRunner();
-
-  // Scripts below min size shouldn't create streamers or emit histograms
-  histogram_tester.ExpectTotalCount("WebCore.Scripts.InlineStreamerTimedOut",
-                                    0);
+  // Empty scripts shouldn't create streamers.
+  EXPECT_EQ(parser->TakeInlineScriptStreamer(""), nullptr);
 }
 
 TEST_F(BackgroundHTMLScannerTest, CompileStrategyLazy) {
