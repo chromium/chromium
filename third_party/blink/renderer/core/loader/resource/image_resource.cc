@@ -34,6 +34,7 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
@@ -63,7 +64,6 @@
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "v8/include/v8.h"
@@ -79,30 +79,34 @@ constexpr auto kFlushDelay = base::Seconds(1);
 
 wtf_size_t FindTransparentPlaceholderIndex(const KURL& image_url) {
   CHECK(IsMainThread());
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      Vector<String>, known_transparent_urls,
-      ({"data:image/gif;base64,R0lGODlhAQABAIAAAP///////"
-        "yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==",
-        "data:image/gif;base64,R0lGODlhAQABAID/"
-        "AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="}));
-  return known_transparent_urls.Find(image_url);
+  static const base::NoDestructor<Vector<String>> known_transparent_urls({
+      String::FromLiteral<"data:image/gif;base64,R0lGODlhAQABAIAAAP///////"
+                          "yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">(),
+      String::FromLiteral<"data:image/gif;base64,R0lGODlhAQABAID/"
+                          "AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==">(),
+  });
+  return known_transparent_urls->Find(image_url);
 }
 
 scoped_refptr<SharedBuffer> GetDataForTransparentPlaceholderImageIndex(
     wtf_size_t index) {
   CHECK(index >= 0 && index < 2);
   CHECK(IsMainThread());
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      Vector<scoped_refptr<SharedBuffer>>, known_transparent_encoded_gifs,
-      ({SharedBuffer::Create(base::span_from_cstring(
-            "\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\xff\xff\xff"
-            "\xff\xff\xff\x21\xf9\x04\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00"
-            "\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b")),
-        SharedBuffer::Create(base::span_from_cstring(
-            "\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\xff\x00\xc0\xc0\xc0"
-            "\x00\x00\x00\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00"
-            "\x01\x00\x01\x00\x00\x02\x02\x44\x01\x00\x3b"))}));
-  return known_transparent_encoded_gifs[index];
+  static base::NoDestructor<Vector<scoped_refptr<SharedBuffer>>>
+      known_transparent_encoded_gifs(
+          {SharedBuffer::Create(base::span_from_cstring(
+               "\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\xff\xff"
+               "\xff"
+               "\xff\xff\xff\x21\xf9\x04\x01\x0a\x00\x01\x00\x2c\x00\x00\x00"
+               "\x00"
+               "\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b")),
+           SharedBuffer::Create(base::span_from_cstring(
+               "\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\xff\x00\xc0\xc0"
+               "\xc0"
+               "\x00\x00\x00\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00"
+               "\x00"
+               "\x01\x00\x01\x00\x00\x02\x02\x44\x01\x00\x3b"))});
+  return (*known_transparent_encoded_gifs)[index];
 }
 
 void MarkKnownTransparentPlaceholderResourceRequestIfNeeded(

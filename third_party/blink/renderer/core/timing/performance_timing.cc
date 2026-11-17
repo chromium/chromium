@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/timing/performance_timing.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -390,35 +391,54 @@ uint64_t PerformanceTiming::MonotonicTimeToIntegerMilliseconds(
 // static
 const PerformanceTiming::NameToAttributeMap&
 PerformanceTiming::GetAttributeMapping() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<NameToAttributeMap>, map, ());
-  if (!map.IsSet()) {
-    *map = {
-        {"navigationStart", &PerformanceTiming::navigationStart},
-        {"unloadEventStart", &PerformanceTiming::unloadEventStart},
-        {"unloadEventEnd", &PerformanceTiming::unloadEventEnd},
-        {"redirectStart", &PerformanceTiming::redirectStart},
-        {"redirectEnd", &PerformanceTiming::redirectEnd},
-        {"fetchStart", &PerformanceTiming::fetchStart},
-        {"domainLookupStart", &PerformanceTiming::domainLookupStart},
-        {"domainLookupEnd", &PerformanceTiming::domainLookupEnd},
-        {"connectStart", &PerformanceTiming::connectStart},
-        {"connectEnd", &PerformanceTiming::connectEnd},
-        {"secureConnectionStart", &PerformanceTiming::secureConnectionStart},
-        {"requestStart", &PerformanceTiming::requestStart},
-        {"responseStart", &PerformanceTiming::responseStart},
-        {"responseEnd", &PerformanceTiming::responseEnd},
-        {"domLoading", &PerformanceTiming::domLoading},
-        {"domInteractive", &PerformanceTiming::domInteractive},
-        {"domContentLoadedEventStart",
+  static base::NoDestructor<ThreadSpecific<NameToAttributeMap>> map;
+  if (!map->IsSet()) {
+    **map = {
+        {AtomicString::FromLiteral<"navigationStart">(),
+         &PerformanceTiming::navigationStart},
+        {AtomicString::FromLiteral<"unloadEventStart">(),
+         &PerformanceTiming::unloadEventStart},
+        {AtomicString::FromLiteral<"unloadEventEnd">(),
+         &PerformanceTiming::unloadEventEnd},
+        {AtomicString::FromLiteral<"redirectStart">(),
+         &PerformanceTiming::redirectStart},
+        {AtomicString::FromLiteral<"redirectEnd">(),
+         &PerformanceTiming::redirectEnd},
+        {AtomicString::FromLiteral<"fetchStart">(),
+         &PerformanceTiming::fetchStart},
+        {AtomicString::FromLiteral<"domainLookupStart">(),
+         &PerformanceTiming::domainLookupStart},
+        {AtomicString::FromLiteral<"domainLookupEnd">(),
+         &PerformanceTiming::domainLookupEnd},
+        {AtomicString::FromLiteral<"connectStart">(),
+         &PerformanceTiming::connectStart},
+        {AtomicString::FromLiteral<"connectEnd">(),
+         &PerformanceTiming::connectEnd},
+        {AtomicString::FromLiteral<"secureConnectionStart">(),
+         &PerformanceTiming::secureConnectionStart},
+        {AtomicString::FromLiteral<"requestStart">(),
+         &PerformanceTiming::requestStart},
+        {AtomicString::FromLiteral<"responseStart">(),
+         &PerformanceTiming::responseStart},
+        {AtomicString::FromLiteral<"responseEnd">(),
+         &PerformanceTiming::responseEnd},
+        {AtomicString::FromLiteral<"domLoading">(),
+         &PerformanceTiming::domLoading},
+        {AtomicString::FromLiteral<"domInteractive">(),
+         &PerformanceTiming::domInteractive},
+        {AtomicString::FromLiteral<"domContentLoadedEventStart">(),
          &PerformanceTiming::domContentLoadedEventStart},
-        {"domContentLoadedEventEnd",
+        {AtomicString::FromLiteral<"domContentLoadedEventEnd">(),
          &PerformanceTiming::domContentLoadedEventEnd},
-        {"domComplete", &PerformanceTiming::domComplete},
-        {"loadEventStart", &PerformanceTiming::loadEventStart},
-        {"loadEventEnd", &PerformanceTiming::loadEventEnd},
+        {AtomicString::FromLiteral<"domComplete">(),
+         &PerformanceTiming::domComplete},
+        {AtomicString::FromLiteral<"loadEventStart">(),
+         &PerformanceTiming::loadEventStart},
+        {AtomicString::FromLiteral<"loadEventEnd">(),
+         &PerformanceTiming::loadEventEnd},
     };
   }
-  return *map;
+  return **map;
 }
 
 void PerformanceTiming::Trace(Visitor* visitor) const {

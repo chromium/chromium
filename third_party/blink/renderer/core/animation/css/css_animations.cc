@@ -35,6 +35,7 @@
 #include <ranges>
 #include <tuple>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_computed_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
@@ -1066,19 +1067,19 @@ Vector<const CSSProperty*> PropertiesForTransitionAll(
 
 const StylePropertyShorthand& PropertiesForTransitionAllDiscrete(
     const ExecutionContext* execution_context) {
-  DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties,
-                      (PropertiesForTransitionAll(true, execution_context)));
-  DEFINE_STATIC_LOCAL(StylePropertyShorthand, property_shorthand,
-                      (CSSPropertyID::kInvalid, properties));
+  static base::NoDestructor<Vector<const CSSProperty*>> properties(
+      PropertiesForTransitionAll(true, execution_context));
+  static StylePropertyShorthand property_shorthand(CSSPropertyID::kInvalid,
+                                                   *properties);
   return property_shorthand;
 }
 
 const StylePropertyShorthand& PropertiesForTransitionAllNormal(
     const ExecutionContext* execution_context) {
-  DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties,
-                      (PropertiesForTransitionAll(false, execution_context)));
-  DEFINE_STATIC_LOCAL(StylePropertyShorthand, property_shorthand,
-                      (CSSPropertyID::kInvalid, properties));
+  static base::NoDestructor<Vector<const CSSProperty*>> properties(
+      PropertiesForTransitionAll(false, execution_context));
+  static StylePropertyShorthand property_shorthand(CSSPropertyID::kInvalid,
+                                                   *properties);
   return property_shorthand;
 }
 

@@ -7,8 +7,10 @@
 #include <limits>
 #include <map>
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -16,9 +18,10 @@ namespace {
 
 uint64_t& PausedCountPerBrowsingContextGroup(
     const base::UnguessableToken& token) {
+  DCHECK(IsMainThread());
   using BrowsingContextGroupMap = std::map<base::UnguessableToken, uint64_t>;
-  DEFINE_STATIC_LOCAL(BrowsingContextGroupMap, counts, ());
-  return counts[token];
+  static base::NoDestructor<BrowsingContextGroupMap> counts;
+  return (*counts)[token];
 }
 
 }  // namespace

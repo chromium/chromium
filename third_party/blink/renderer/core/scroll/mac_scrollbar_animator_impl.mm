@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/scroll/mac_scrollbar_animator_impl.h"
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #import "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -13,6 +15,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 namespace {
@@ -21,11 +24,12 @@ typedef HeapHashMap<WeakMember<const Scrollbar>, MacScrollbarImplV2*>
     ScrollbarToAnimatorV2Map;
 
 ScrollbarToAnimatorV2Map& GetScrollbarToAnimatorV2Map() {
+  DCHECK(IsMainThread());
   using ScrollbarToAnimatorV2MapHolder =
       DisallowNewWrapper<ScrollbarToAnimatorV2Map>;
-  DEFINE_STATIC_LOCAL(Persistent<ScrollbarToAnimatorV2MapHolder>, holder,
-                      (MakeGarbageCollected<ScrollbarToAnimatorV2MapHolder>()));
-  return holder->Value();
+  static base::NoDestructor<Persistent<ScrollbarToAnimatorV2MapHolder>> holder(
+      MakeGarbageCollected<ScrollbarToAnimatorV2MapHolder>());
+  return (*holder)->Value();
 }
 
 }  // namespace

@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animate_element.h"
 
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -81,76 +82,77 @@ AnimatedPropertyType AnimatedPropertyTypeForCSSAttribute(
     const QualifiedName& attribute_name) {
   using AttributeToPropertyTypeMap =
       HashMap<QualifiedName, AnimatedPropertyType>;
-  DEFINE_STATIC_LOCAL(AttributeToPropertyTypeMap, css_property_map, ());
-
-  if (css_property_map.empty()) {
-    // Fill the map for the first use.
-    struct AttrToTypeEntry {
-      // RAW_PTR_EXCLUSION: Stack-scoped.
-      RAW_PTR_EXCLUSION const QualifiedName& attr = g_null_name;
-      const AnimatedPropertyType prop_type;
-    };
-    const auto attr_to_types = std::to_array<const AttrToTypeEntry>({
-        {svg_names::kAlignmentBaselineAttr, kAnimatedString},
-        {svg_names::kBaselineShiftAttr, kAnimatedString},
-        {svg_names::kBufferedRenderingAttr, kAnimatedString},
-        {svg_names::kClipPathAttr, kAnimatedString},
-        {svg_names::kClipRuleAttr, kAnimatedString},
-        {svg_names::kColorAttr, kAnimatedColor},
-        {svg_names::kColorInterpolationAttr, kAnimatedString},
-        {svg_names::kColorInterpolationFiltersAttr, kAnimatedString},
-        {svg_names::kColorRenderingAttr, kAnimatedString},
-        {svg_names::kCursorAttr, kAnimatedString},
-        {svg_names::kDisplayAttr, kAnimatedString},
-        {svg_names::kDominantBaselineAttr, kAnimatedString},
-        {svg_names::kFillAttr, kAnimatedColor},
-        {svg_names::kFillOpacityAttr, kAnimatedNumber},
-        {svg_names::kFillRuleAttr, kAnimatedString},
-        {svg_names::kFilterAttr, kAnimatedString},
-        {svg_names::kFloodColorAttr, kAnimatedColor},
-        {svg_names::kFloodOpacityAttr, kAnimatedNumber},
-        {svg_names::kFontFamilyAttr, kAnimatedString},
-        {svg_names::kFontSizeAttr, kAnimatedLength},
-        {svg_names::kFontStretchAttr, kAnimatedString},
-        {svg_names::kFontStyleAttr, kAnimatedString},
-        {svg_names::kFontVariantAttr, kAnimatedString},
-        {svg_names::kFontWeightAttr, kAnimatedString},
-        {svg_names::kImageRenderingAttr, kAnimatedString},
-        {svg_names::kLetterSpacingAttr, kAnimatedLength},
-        {svg_names::kLightingColorAttr, kAnimatedColor},
-        {svg_names::kMarkerEndAttr, kAnimatedString},
-        {svg_names::kMarkerMidAttr, kAnimatedString},
-        {svg_names::kMarkerStartAttr, kAnimatedString},
-        {svg_names::kMaskAttr, kAnimatedString},
-        {svg_names::kMaskTypeAttr, kAnimatedString},
-        {svg_names::kOpacityAttr, kAnimatedNumber},
-        {svg_names::kOverflowAttr, kAnimatedString},
-        {svg_names::kPaintOrderAttr, kAnimatedString},
-        {svg_names::kPointerEventsAttr, kAnimatedString},
-        {svg_names::kShapeRenderingAttr, kAnimatedString},
-        {svg_names::kStopColorAttr, kAnimatedColor},
-        {svg_names::kStopOpacityAttr, kAnimatedNumber},
-        {svg_names::kStrokeAttr, kAnimatedColor},
-        {svg_names::kStrokeDasharrayAttr, kAnimatedLengthList},
-        {svg_names::kStrokeDashoffsetAttr, kAnimatedLength},
-        {svg_names::kStrokeLinecapAttr, kAnimatedString},
-        {svg_names::kStrokeLinejoinAttr, kAnimatedString},
-        {svg_names::kStrokeMiterlimitAttr, kAnimatedNumber},
-        {svg_names::kStrokeOpacityAttr, kAnimatedNumber},
-        {svg_names::kStrokeWidthAttr, kAnimatedLength},
-        {svg_names::kTextAnchorAttr, kAnimatedString},
-        {svg_names::kTextDecorationAttr, kAnimatedString},
-        {svg_names::kTextRenderingAttr, kAnimatedString},
-        {svg_names::kVectorEffectAttr, kAnimatedString},
-        {svg_names::kVisibilityAttr, kAnimatedString},
-        {svg_names::kWordSpacingAttr, kAnimatedLength},
-    });
-    for (const auto& item : attr_to_types) {
-      css_property_map.Set(item.attr, item.prop_type);
-    }
-  }
-  auto it = css_property_map.find(attribute_name);
-  if (it == css_property_map.end()) {
+  static const base::NoDestructor<AttributeToPropertyTypeMap> css_property_map(
+      []() {
+        AttributeToPropertyTypeMap map;
+        // Fill the map for the first use.
+        struct AttrToTypeEntry {
+          // RAW_PTR_EXCLUSION: Stack-scoped.
+          RAW_PTR_EXCLUSION const QualifiedName& attr = g_null_name;
+          const AnimatedPropertyType prop_type;
+        };
+        const auto attr_to_types = std::to_array<const AttrToTypeEntry>({
+            {svg_names::kAlignmentBaselineAttr, kAnimatedString},
+            {svg_names::kBaselineShiftAttr, kAnimatedString},
+            {svg_names::kBufferedRenderingAttr, kAnimatedString},
+            {svg_names::kClipPathAttr, kAnimatedString},
+            {svg_names::kClipRuleAttr, kAnimatedString},
+            {svg_names::kColorAttr, kAnimatedColor},
+            {svg_names::kColorInterpolationAttr, kAnimatedString},
+            {svg_names::kColorInterpolationFiltersAttr, kAnimatedString},
+            {svg_names::kColorRenderingAttr, kAnimatedString},
+            {svg_names::kCursorAttr, kAnimatedString},
+            {svg_names::kDisplayAttr, kAnimatedString},
+            {svg_names::kDominantBaselineAttr, kAnimatedString},
+            {svg_names::kFillAttr, kAnimatedColor},
+            {svg_names::kFillOpacityAttr, kAnimatedNumber},
+            {svg_names::kFillRuleAttr, kAnimatedString},
+            {svg_names::kFilterAttr, kAnimatedString},
+            {svg_names::kFloodColorAttr, kAnimatedColor},
+            {svg_names::kFloodOpacityAttr, kAnimatedNumber},
+            {svg_names::kFontFamilyAttr, kAnimatedString},
+            {svg_names::kFontSizeAttr, kAnimatedLength},
+            {svg_names::kFontStretchAttr, kAnimatedString},
+            {svg_names::kFontStyleAttr, kAnimatedString},
+            {svg_names::kFontVariantAttr, kAnimatedString},
+            {svg_names::kFontWeightAttr, kAnimatedString},
+            {svg_names::kImageRenderingAttr, kAnimatedString},
+            {svg_names::kLetterSpacingAttr, kAnimatedLength},
+            {svg_names::kLightingColorAttr, kAnimatedColor},
+            {svg_names::kMarkerEndAttr, kAnimatedString},
+            {svg_names::kMarkerMidAttr, kAnimatedString},
+            {svg_names::kMarkerStartAttr, kAnimatedString},
+            {svg_names::kMaskAttr, kAnimatedString},
+            {svg_names::kMaskTypeAttr, kAnimatedString},
+            {svg_names::kOpacityAttr, kAnimatedNumber},
+            {svg_names::kOverflowAttr, kAnimatedString},
+            {svg_names::kPaintOrderAttr, kAnimatedString},
+            {svg_names::kPointerEventsAttr, kAnimatedString},
+            {svg_names::kShapeRenderingAttr, kAnimatedString},
+            {svg_names::kStopColorAttr, kAnimatedColor},
+            {svg_names::kStopOpacityAttr, kAnimatedNumber},
+            {svg_names::kStrokeAttr, kAnimatedColor},
+            {svg_names::kStrokeDasharrayAttr, kAnimatedLengthList},
+            {svg_names::kStrokeDashoffsetAttr, kAnimatedLength},
+            {svg_names::kStrokeLinecapAttr, kAnimatedString},
+            {svg_names::kStrokeLinejoinAttr, kAnimatedString},
+            {svg_names::kStrokeMiterlimitAttr, kAnimatedNumber},
+            {svg_names::kStrokeOpacityAttr, kAnimatedNumber},
+            {svg_names::kStrokeWidthAttr, kAnimatedLength},
+            {svg_names::kTextAnchorAttr, kAnimatedString},
+            {svg_names::kTextDecorationAttr, kAnimatedString},
+            {svg_names::kTextRenderingAttr, kAnimatedString},
+            {svg_names::kVectorEffectAttr, kAnimatedString},
+            {svg_names::kVisibilityAttr, kAnimatedString},
+            {svg_names::kWordSpacingAttr, kAnimatedLength},
+        });
+        for (const auto& item : attr_to_types) {
+          map.Set(item.attr, item.prop_type);
+        }
+        return map;
+      }());
+  auto it = css_property_map->find(attribute_name);
+  if (it == css_property_map->end()) {
     return kAnimatedUnknown;
   }
   return it->value;
@@ -158,9 +160,9 @@ AnimatedPropertyType AnimatedPropertyTypeForCSSAttribute(
 
 AnimatedPropertyValueType PropertyValueType(bool is_css_property,
                                             const String& value) {
-  DEFINE_STATIC_LOCAL(const AtomicString, inherit,
-                      (AtomicString::FromLiteral<"inherit">()));
-  if (!is_css_property || value.empty() || value != inherit) {
+  static const base::NoDestructor<AtomicString> inherit(
+      AtomicString::FromLiteral<"inherit">());
+  if (!is_css_property || value.empty() || value != *inherit) {
     return kRegularPropertyValue;
   }
   return kInheritValue;

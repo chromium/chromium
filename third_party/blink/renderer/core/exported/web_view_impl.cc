@@ -34,10 +34,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/task/common/task_annotator.h"
 #include "base/time/time.h"
@@ -193,6 +195,7 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
 #include "ui/base/mojom/menu_source_type.mojom-blink.h"
 #include "ui/base/ui_base_features.h"
@@ -257,8 +260,9 @@ const double WebView::kMaxTextSizeMultiplier = 3.0;
 
 // static
 HashSet<WebViewImpl*>& WebViewImpl::AllInstances() {
-  DEFINE_STATIC_LOCAL(HashSet<WebViewImpl*>, all_instances, ());
-  return all_instances;
+  DCHECK(IsMainThread());
+  static base::NoDestructor<HashSet<WebViewImpl*>> all_instances;
+  return *all_instances;
 }
 
 namespace {

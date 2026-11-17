@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 
+#include "base/no_destructor.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/features.h"
@@ -181,9 +182,9 @@ const AtomicString& FrameLoadRequest::CleanNavigationTarget(
   if (ContainsNewLineAndLessThan(target)) {
     LogDanglingMarkupHistogram(origin_window_, target);
     if (RuntimeEnabledFeatures::RemoveDanglingMarkupInTargetEnabled()) {
-      DEFINE_STATIC_LOCAL(const AtomicString, blank,
-                          (AtomicString::FromLiteral<"_blank">()));
-      return blank;
+      static const base::NoDestructor<AtomicString> blank(
+          AtomicString::FromLiteral<"_blank">());
+      return *blank;
     }
   }
   return target;

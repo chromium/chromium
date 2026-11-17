@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/editing/commands/remove_format_command.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -43,22 +44,17 @@ RemoveFormatCommand::RemoveFormatCommand(Document& document)
     : CompositeEditCommand(document) {}
 
 static bool IsElementForRemoveFormatCommand(const Element* element) {
-  DEFINE_STATIC_LOCAL(HashSet<QualifiedName>, elements,
-                      ({
-                          html_names::kAcronymTag, html_names::kBTag,
-                          html_names::kBdoTag,     html_names::kBigTag,
-                          html_names::kCiteTag,    html_names::kCodeTag,
-                          html_names::kDfnTag,     html_names::kEmTag,
-                          html_names::kFontTag,    html_names::kITag,
-                          html_names::kInsTag,     html_names::kKbdTag,
-                          html_names::kNobrTag,    html_names::kQTag,
-                          html_names::kSTag,       html_names::kSampTag,
-                          html_names::kSmallTag,   html_names::kStrikeTag,
-                          html_names::kStrongTag,  html_names::kSubTag,
-                          html_names::kSupTag,     html_names::kTtTag,
-                          html_names::kUTag,       html_names::kVarTag,
-                      }));
-  return elements.Contains(element->TagQName());
+  static base::NoDestructor<HashSet<QualifiedName>> elements({
+      html_names::kAcronymTag, html_names::kBTag,     html_names::kBdoTag,
+      html_names::kBigTag,     html_names::kCiteTag,  html_names::kCodeTag,
+      html_names::kDfnTag,     html_names::kEmTag,    html_names::kFontTag,
+      html_names::kITag,       html_names::kInsTag,   html_names::kKbdTag,
+      html_names::kNobrTag,    html_names::kQTag,     html_names::kSTag,
+      html_names::kSampTag,    html_names::kSmallTag, html_names::kStrikeTag,
+      html_names::kStrongTag,  html_names::kSubTag,   html_names::kSupTag,
+      html_names::kTtTag,      html_names::kUTag,     html_names::kVarTag,
+  });
+  return elements->Contains(element->TagQName());
 }
 
 void RemoveFormatCommand::DoApply(EditingState* editing_state) {

@@ -32,6 +32,8 @@
 #include <memory>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
@@ -44,6 +46,7 @@
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -320,10 +323,11 @@ gfx::PointF ShapeOutsideInfo::ShapeToLayoutObjectPoint(
 
 // static
 ShapeOutsideInfo::InfoMap& ShapeOutsideInfo::GetInfoMap() {
+  DCHECK(IsMainThread());
   using InfoMapHolder = DisallowNewWrapper<InfoMap>;
-  DEFINE_STATIC_LOCAL(Persistent<InfoMapHolder>, holder,
-                      (MakeGarbageCollected<InfoMapHolder>()));
-  return holder->Value();
+  static base::NoDestructor<Persistent<InfoMapHolder>> holder(
+      MakeGarbageCollected<InfoMapHolder>());
+  return (*holder)->Value();
 }
 
 void ShapeOutsideInfo::Trace(Visitor* visitor) const {

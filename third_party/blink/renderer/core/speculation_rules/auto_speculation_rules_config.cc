@@ -5,12 +5,12 @@
 #include "third_party/blink/renderer/core/speculation_rules/auto_speculation_rules_config.h"
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/strings/pattern.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/loader/javascript_framework_detection.mojom-shared.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -113,16 +113,15 @@ void AutoSpeculationRulesConfig::ParseUrlMatchPatternConfig(
 const AutoSpeculationRulesConfig& AutoSpeculationRulesConfig::GetInstance() {
   CHECK(base::FeatureList::IsEnabled(features::kAutoSpeculationRules));
 
-  DEFINE_STATIC_LOCAL(
-      AutoSpeculationRulesConfig, instance,
-      (String::FromUtf8(base::GetFieldTrialParamByFeatureAsString(
-          features::kAutoSpeculationRules, "config", "{}"))));
+  static base::NoDestructor<AutoSpeculationRulesConfig> instance(
+      String::FromUtf8(base::GetFieldTrialParamByFeatureAsString(
+          features::kAutoSpeculationRules, "config", "{}")));
 
   if (g_override) {
     return *g_override;
   }
 
-  return instance;
+  return *instance;
 }
 
 AutoSpeculationRulesConfig*

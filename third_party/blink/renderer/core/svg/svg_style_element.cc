@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
 
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
@@ -30,7 +31,6 @@
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -57,10 +57,10 @@ const AtomicString& SVGStyleElement::type() const {
   if (RuntimeEnabledFeatures::SvgStyleElementReflectTypeAndMediaEnabled()) {
     return getAttribute(svg_names::kTypeAttr);
   }
-  DEFINE_STATIC_LOCAL(const AtomicString, default_value,
-                      (AtomicString::FromLiteral<"text/css">()));
+  static const base::NoDestructor<AtomicString> default_value(
+      AtomicString::FromLiteral<"text/css">());
   const AtomicString& n = getAttribute(svg_names::kTypeAttr);
-  return n.IsNull() ? default_value : n;
+  return n.IsNull() ? *default_value : n;
 }
 
 void SVGStyleElement::setType(const AtomicString& type) {

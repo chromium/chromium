@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_aura.h"
 
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "cc/input/scrollbar.h"
@@ -115,8 +116,8 @@ ScrollbarTheme& ScrollbarTheme::NativeTheme() {
     return ScrollbarThemeOverlay::GetInstance();
   }
 
-  DEFINE_STATIC_LOCAL(ScrollbarThemeAura, theme, ());
-  return theme;
+  static base::NoDestructor<ScrollbarThemeAura> theme;
+  return *theme;
 }
 
 bool ScrollbarThemeAura::SupportsDragSnapBack() const {

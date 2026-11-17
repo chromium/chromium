@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -1186,9 +1187,9 @@ ExecutionContext* ModelContext::GetExecutionContext() const {
 }
 
 const AtomicString& ModelContext::InterfaceName() const {
-  DEFINE_STATIC_LOCAL(AtomicString, name,
-                      (AtomicString::FromLiteral<"ModelContext">()));
-  return name;
+  static base::NoDestructor<AtomicString> name(
+      AtomicString::FromLiteral<"ModelContext">());
+  return *name;
 }
 
 ScriptPromise<IDLSequence<Tool>> ModelContext::getTools(

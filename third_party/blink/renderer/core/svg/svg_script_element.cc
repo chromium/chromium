@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_script_element.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlscriptelement_svgscriptelement.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
@@ -230,13 +231,11 @@ bool SVGScriptElement::IsAnimatableAttribute(const QualifiedName& name) const {
 
 const AttrNameToTrustedType& SVGScriptElement::GetCheckedAttributeTypes()
     const {
-  DEFINE_STATIC_LOCAL(
-      AttrNameToTrustedType, attribute_map,
-      ({{"href", std::pair{SpecificTrustedType::kScriptURL,
-                           trusted_types_names::kSVGScriptElement}}
-
-      }));
-  return attribute_map;
+  static const base::NoDestructor<AttrNameToTrustedType> attribute_map(
+      {{AtomicString::FromLiteral<"href">(),
+        std::pair{SpecificTrustedType::kScriptURL,
+                  trusted_types_names::kSVGScriptElement}}});
+  return *attribute_map;
 }
 
 V8HTMLOrSVGScriptElement* SVGScriptElement::AsV8HTMLOrSVGScriptElement() {

@@ -33,6 +33,7 @@
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -262,9 +263,9 @@ HTMLFrameOwnerElement* Frame::DeprecatedLocalOwner() const {
 }
 
 static ChromeClient& GetEmptyChromeClient() {
-  DEFINE_STATIC_LOCAL(Persistent<EmptyChromeClient>, client,
-                      (MakeGarbageCollected<EmptyChromeClient>()));
-  return *client;
+  static base::NoDestructor<Persistent<EmptyChromeClient>> client(
+      MakeGarbageCollected<EmptyChromeClient>());
+  return **client;
 }
 
 ChromeClient& Frame::GetChromeClient() const {

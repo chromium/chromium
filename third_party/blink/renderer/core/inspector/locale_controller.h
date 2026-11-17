@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_LOCALE_CONTROLLER_H_
 
 #include "base/i18n/language_tag.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -21,6 +22,8 @@ class LocaleController {
   String SetLocaleOverride(const String& locale, bool is_claiming_override);
 
  private:
+  friend class base::NoDestructor<LocaleController>;
+
   LocaleController();
   ~LocaleController() = default;
 

@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/frame/screen.h"
 
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -192,8 +193,8 @@ const display::ScreenInfo& Screen::GetScreenInfo() const {
     if (screen.display_id == display_id_)
       return screen;
   }
-  DEFINE_STATIC_LOCAL(display::ScreenInfo, kEmptyScreenInfo, ());
-  return kEmptyScreenInfo;
+  static base::NoDestructor<display::ScreenInfo> kEmptyScreenInfo;
+  return *kEmptyScreenInfo;
 }
 
 }  // namespace blink

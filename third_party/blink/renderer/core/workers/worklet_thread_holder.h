@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKLET_THREAD_HOLDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKLET_THREAD_HOLDER_H_
 
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/thread_annotations.h"
@@ -53,8 +54,8 @@ class WorkletThreadHolder {
   ~WorkletThreadHolder() = default;
 
   static base::Lock& HolderInstanceLock() {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, holder_lock, ());
-    return holder_lock;
+    static base::NoDestructor<base::Lock> holder_lock;
+    return *holder_lock;
   }
 
   void Initialize(std::unique_ptr<WorkerBackingThread> backing_thread) {

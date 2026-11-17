@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/script/detect_javascript_frameworks.h"
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/javascript_framework_detection.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
@@ -23,7 +24,6 @@
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
@@ -65,13 +65,13 @@ bool IsFrameworkIDUsed(Document& document, const AtomicString& framework_id) {
 
 inline void CheckIdMatches(Document& document,
                            JavaScriptFrameworkDetectionResult& result) {
-  DEFINE_STATIC_LOCAL(AtomicString, kReactId,
-                      (AtomicString::FromLiteral<"react-root">()));
+  static base::NoDestructor<AtomicString> kReactId(
+      AtomicString::FromLiteral<"react-root">());
   if (IsFrameworkIDUsed(document, AtomicString(kGatsbyId))) {
     result.detected_versions[JavaScriptFramework::kGatsby] =
         kNoFrameworkVersionDetected;
   }
-  if (IsFrameworkIDUsed(document, kReactId)) {
+  if (IsFrameworkIDUsed(document, *kReactId)) {
     result.detected_versions[JavaScriptFramework::kReact] =
         kNoFrameworkVersionDetected;
   }
@@ -80,11 +80,12 @@ inline void CheckIdMatches(Document& document,
 inline void CheckAttributeMatches(const Element& element,
                                   JavaScriptFrameworkDetectionResult& result,
                                   AtomicString& detected_ng_version) {
-  DEFINE_STATIC_LOCAL(QualifiedName, ng_version, (AtomicString("ng-version")));
-  DEFINE_STATIC_LOCAL(QualifiedName, data_reactroot,
-                      (AtomicString("data-reactroot")));
+  static base::NoDestructor<QualifiedName> ng_version(
+      AtomicString("ng-version"));
+  static base::NoDestructor<QualifiedName> data_reactroot(
+      AtomicString("data-reactroot"));
   static constexpr char kSvelte[] = "svelte-";
-  if (element.FastHasAttribute(data_reactroot)) {
+  if (element.FastHasAttribute(*data_reactroot)) {
     result.detected_versions[JavaScriptFramework::kReact] =
         kNoFrameworkVersionDetected;
   }
@@ -92,10 +93,10 @@ inline void CheckAttributeMatches(const Element& element,
     result.detected_versions[JavaScriptFramework::kSvelte] =
         kNoFrameworkVersionDetected;
   }
-  if (element.FastHasAttribute(ng_version)) {
+  if (element.FastHasAttribute(*ng_version)) {
     result.detected_versions[JavaScriptFramework::kAngular] =
         kNoFrameworkVersionDetected;
-    detected_ng_version = element.FastGetAttribute(ng_version);
+    detected_ng_version = element.FastGetAttribute(*ng_version);
   }
 }
 
@@ -113,35 +114,35 @@ inline void CheckPropertyMatches(Element& element,
     return;
   }
 
-  DEFINE_STATIC_LOCAL(AtomicString, vue_string,
-                      (AtomicString::FromLiteral<"__vue__">()));
-  DEFINE_STATIC_LOCAL(AtomicString, vue_app_string,
-                      (AtomicString::FromLiteral<"__vue_app__">()));
-  DEFINE_STATIC_LOCAL(AtomicString, k_string,
-                      (AtomicString::FromLiteral<"__k">()));
-  DEFINE_STATIC_LOCAL(AtomicString, reactRootContainer_string,
-                      (AtomicString::FromLiteral<"_reactRootContainer">()));
-  DEFINE_STATIC_LOCAL(AtomicString, reactListening_string,
-                      (AtomicString::FromLiteral<"_reactListening">()));
-  DEFINE_STATIC_LOCAL(AtomicString, reactFiber_string,
-                      (AtomicString::FromLiteral<"__reactFiber">()));
+  static base::NoDestructor<AtomicString> vue_string(
+      AtomicString::FromLiteral<"__vue__">());
+  static base::NoDestructor<AtomicString> vue_app_string(
+      AtomicString::FromLiteral<"__vue_app__">());
+  static base::NoDestructor<AtomicString> k_string(
+      AtomicString::FromLiteral<"__k">());
+  static base::NoDestructor<AtomicString> reactRootContainer_string(
+      AtomicString::FromLiteral<"_reactRootContainer">());
+  static base::NoDestructor<AtomicString> reactListening_string(
+      AtomicString::FromLiteral<"_reactListening">());
+  static base::NoDestructor<AtomicString> reactFiber_string(
+      AtomicString::FromLiteral<"__reactFiber">());
   for (uint32_t i = 0; i < property_names->Length(); ++i) {
     v8::Local<v8::Value> key;
     if (!property_names->Get(context, i).ToLocal(&key) || !key->IsString()) {
       continue;
     }
     AtomicString key_value = ToCoreAtomicString(isolate, key.As<v8::String>());
-    if (key_value == vue_string || key_value == vue_app_string) {
+    if (key_value == *vue_string || key_value == *vue_app_string) {
       result.detected_versions[JavaScriptFramework::kVue] =
           kNoFrameworkVersionDetected;
-    } else if (key_value == k_string) {
+    } else if (key_value == *k_string) {
       result.detected_versions[JavaScriptFramework::kPreact] =
           kNoFrameworkVersionDetected;
-    } else if (key_value == reactRootContainer_string) {
+    } else if (key_value == *reactRootContainer_string) {
       result.detected_versions[JavaScriptFramework::kReact] =
           kNoFrameworkVersionDetected;
-    } else if (key_value.starts_with(reactListening_string) ||
-               key_value.starts_with(reactFiber_string)) {
+    } else if (key_value.starts_with(*reactListening_string) ||
+               key_value.starts_with(*reactFiber_string)) {
       result.detected_versions[JavaScriptFramework::kReact] =
           kNoFrameworkVersionDetected;
     }

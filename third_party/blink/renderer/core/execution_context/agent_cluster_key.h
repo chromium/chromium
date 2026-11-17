@@ -10,6 +10,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/frame/agent_cluster_key.mojom-blink.h"
 #include "third_party/blink/public/web/web_agent_cluster_key.h"
@@ -199,14 +200,14 @@ struct HashTraits<AgentClusterKey> : GenericHashTraits<AgentClusterKey> {
   }
 
   static AgentClusterKey& EmptyValue() {
-    DEFINE_STATIC_LOCAL(AgentClusterKey, kEmpty,
-                        (AgentClusterKey::CreateEmpty(PassKey())));
-    return kEmpty;
+    static base::NoDestructor<AgentClusterKey> kEmpty(
+        AgentClusterKey::CreateEmpty(PassKey()));
+    return *kEmpty;
   }
   static AgentClusterKey& DeletedValue() {
-    DEFINE_STATIC_LOCAL(AgentClusterKey, kDeleted,
-                        (AgentClusterKey::CreateDeleted(PassKey())));
-    return kDeleted;
+    static base::NoDestructor<AgentClusterKey> kDeleted(
+        AgentClusterKey::CreateDeleted(PassKey()));
+    return *kDeleted;
   }
 };
 

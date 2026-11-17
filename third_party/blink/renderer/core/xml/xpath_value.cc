@@ -28,11 +28,11 @@
 
 #include <limits>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/xml/xpath_expression_node.h"
 #include "third_party/blink/renderer/core/xml/xpath_util.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
@@ -53,9 +53,9 @@ const NodeSet& Value::ToNodeSet(EvaluationContext* context) const {
     context->had_type_conversion_error = true;
 
   if (!data_) {
-    DEFINE_STATIC_LOCAL(Persistent<NodeSet>, empty_node_set,
-                        (NodeSet::Create()));
-    return *empty_node_set;
+    static base::NoDestructor<Persistent<NodeSet>> empty_node_set(
+        NodeSet::Create());
+    return **empty_node_set;
   }
 
   return data_->GetNodeSet();

@@ -28,6 +28,7 @@
 #include <algorithm>
 
 #include "base/auto_reset.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
@@ -48,7 +49,6 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
@@ -503,10 +503,11 @@ SMILTime SVGSMILElement::ParseClockValue(const StringView& data) {
 
   StringView parse = data.StripWhiteSpace();
 
-  DEFINE_STATIC_LOCAL(const AtomicString, indefinite_value,
-                      (AtomicString::FromLiteral<"indefinite">()));
-  if (parse == indefinite_value)
+  static const base::NoDestructor<AtomicString> indefinite_value(
+      AtomicString::FromLiteral<"indefinite">());
+  if (parse == *indefinite_value) {
     return SMILTime::Indefinite();
+  }
 
   wtf_size_t colon_one = parse.find(':');
   if (colon_one == StringView::npos) {

@@ -32,6 +32,7 @@
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/memory/values_equivalent.h"
+#include "base/no_destructor.h"
 #include "base/numerics/clamped_math.h"
 #include "build/build_config.h"
 #include "cc/input/overscroll_behavior.h"
@@ -106,6 +107,7 @@
 #include "third_party/blink/renderer/platform/transforms/scale_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/translate_transform_operation.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
@@ -181,10 +183,9 @@ PseudoElementStyleCache& ComputedStyle::EnsurePseudoElementStyleCache() const {
 }
 
 const ComputedStyle& ComputedStyle::GetInitialStyleSingleton() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<Persistent<const ComputedStyle>>,
-      thread_specific_initial_style, ());
-  Persistent<const ComputedStyle>& persistent = *thread_specific_initial_style;
+  static base::NoDestructor<ThreadSpecific<Persistent<const ComputedStyle>>>
+      thread_specific_initial_style;
+  Persistent<const ComputedStyle>& persistent = **thread_specific_initial_style;
   if (!persistent) [[unlikely]] {
     persistent = MakeGarbageCollected<ComputedStyle>(PassKey());
     LEAK_SANITIZER_IGNORE_OBJECT(&persistent);
@@ -1812,15 +1813,15 @@ const AtomicString& ComputedStyle::HyphenString() const {
   }
 
   // FIXME: This should depend on locale.
-  DEFINE_STATIC_LOCAL(AtomicString, hyphen_minus_string,
-                      (base::span_from_ref(uchar::kHyphenMinus)));
-  DEFINE_STATIC_LOCAL(AtomicString, hyphen_string,
-                      (base::span_from_ref(uchar::kHyphen)));
+  static base::NoDestructor<AtomicString> hyphen_minus_string{
+      base::span_from_ref(uchar::kHyphenMinus)};
+  static base::NoDestructor<AtomicString> hyphen_string{
+      base::span_from_ref(uchar::kHyphen)};
   const SimpleFontData* primary_font = GetFont()->PrimaryFont();
   DCHECK(primary_font);
   return primary_font && primary_font->GlyphForCharacter(uchar::kHyphen)
-             ? hyphen_string
-             : hyphen_minus_string;
+             ? *hyphen_string
+             : *hyphen_minus_string;
 }
 
 ETextAlign ComputedStyle::GetTextAlign(bool is_last_line) const {
@@ -2035,51 +2036,49 @@ const AtomicString& ComputedStyle::TextEmphasisMarkString() const {
     case TextEmphasisMark::kCustom:
       return TextEmphasisCustomMark();
     case TextEmphasisMark::kDot: {
-      DEFINE_STATIC_LOCAL(AtomicString, filled_dot_string,
-                          (base::span_from_ref(uchar::kBullet)));
-      DEFINE_STATIC_LOCAL(AtomicString, open_dot_string,
-                          (base::span_from_ref(uchar::kWhiteBullet)));
+      static base::NoDestructor<AtomicString> filled_dot_string{
+          base::span_from_ref(uchar::kBullet)};
+      static base::NoDestructor<AtomicString> open_dot_string{
+          base::span_from_ref(uchar::kWhiteBullet)};
       return GetTextEmphasisFill() == TextEmphasisFill::kFilled
-                 ? filled_dot_string
-                 : open_dot_string;
+                 ? *filled_dot_string
+                 : *open_dot_string;
     }
     case TextEmphasisMark::kCircle: {
-      DEFINE_STATIC_LOCAL(AtomicString, filled_circle_string,
-                          (base::span_from_ref(uchar::kBlackCircle)));
-      DEFINE_STATIC_LOCAL(AtomicString, open_circle_string,
-                          (base::span_from_ref(uchar::kWhiteCircle)));
+      static base::NoDestructor<AtomicString> filled_circle_string{
+          base::span_from_ref(uchar::kBlackCircle)};
+      static base::NoDestructor<AtomicString> open_circle_string{
+          base::span_from_ref(uchar::kWhiteCircle)};
       return GetTextEmphasisFill() == TextEmphasisFill::kFilled
-                 ? filled_circle_string
-                 : open_circle_string;
+                 ? *filled_circle_string
+                 : *open_circle_string;
     }
     case TextEmphasisMark::kDoubleCircle: {
-      DEFINE_STATIC_LOCAL(AtomicString, filled_double_circle_string,
-                          (base::span_from_ref(uchar::kFisheye)));
-      DEFINE_STATIC_LOCAL(AtomicString, open_double_circle_string,
-                          (base::span_from_ref(uchar::kBullseye)));
+      static base::NoDestructor<AtomicString> filled_double_circle_string{
+          base::span_from_ref(uchar::kFisheye)};
+      static base::NoDestructor<AtomicString> open_double_circle_string{
+          base::span_from_ref(uchar::kBullseye)};
       return GetTextEmphasisFill() == TextEmphasisFill::kFilled
-                 ? filled_double_circle_string
-                 : open_double_circle_string;
+                 ? *filled_double_circle_string
+                 : *open_double_circle_string;
     }
     case TextEmphasisMark::kTriangle: {
-      DEFINE_STATIC_LOCAL(
-          AtomicString, filled_triangle_string,
-          (base::span_from_ref(uchar::kBlackUpPointingTriangle)));
-      DEFINE_STATIC_LOCAL(
-          AtomicString, open_triangle_string,
-          (base::span_from_ref(uchar::kWhiteUpPointingTriangle)));
+      static base::NoDestructor<AtomicString> filled_triangle_string{
+          base::span_from_ref(uchar::kBlackUpPointingTriangle)};
+      static base::NoDestructor<AtomicString> open_triangle_string{
+          base::span_from_ref(uchar::kWhiteUpPointingTriangle)};
       return GetTextEmphasisFill() == TextEmphasisFill::kFilled
-                 ? filled_triangle_string
-                 : open_triangle_string;
+                 ? *filled_triangle_string
+                 : *open_triangle_string;
     }
     case TextEmphasisMark::kSesame: {
-      DEFINE_STATIC_LOCAL(AtomicString, filled_sesame_string,
-                          (base::span_from_ref(uchar::kSesameDot)));
-      DEFINE_STATIC_LOCAL(AtomicString, open_sesame_string,
-                          (base::span_from_ref(uchar::kWhiteSesameDot)));
+      static base::NoDestructor<AtomicString> filled_sesame_string{
+          base::span_from_ref(uchar::kSesameDot)};
+      static base::NoDestructor<AtomicString> open_sesame_string{
+          base::span_from_ref(uchar::kWhiteSesameDot)};
       return GetTextEmphasisFill() == TextEmphasisFill::kFilled
-                 ? filled_sesame_string
-                 : open_sesame_string;
+                 ? *filled_sesame_string
+                 : *open_sesame_string;
     }
     case TextEmphasisMark::kAuto:
       NOTREACHED();
@@ -2240,11 +2239,11 @@ AppliedTextDecorationVector* ComputedStyle::EnsureAppliedTextDecorationsCache()
 
 const AppliedTextDecorationVector& ComputedStyle::AppliedTextDecorations()
     const {
-  DEFINE_STATIC_LOCAL(Persistent<AppliedTextDecorationVector>, empty,
-                      (MakeGarbageCollected<AppliedTextDecorationVector>()));
+  static base::NoDestructor<Persistent<AppliedTextDecorationVector>> empty(
+      MakeGarbageCollected<AppliedTextDecorationVector>());
   CHECK(IsMainThread());
   if (!HasAppliedTextDecorations()) {
-    return *empty;
+    return **empty;
   }
 
   if (!IsDecoratingBoxIncludingPrecomputedHover()) {
@@ -2308,11 +2307,11 @@ const ComputedGridTrackList& ComputedStyle::ComputedGridTemplate(
     return *track_list;
   }
   // If `track_list` is null, that means it is the initial value.
-  DEFINE_STATIC_LOCAL(
-      Persistent<ComputedGridTrackList>, default_track_list,
-      (MakeGarbageCollected<ComputedGridTrackList>(ComputedGridTrackList())));
+  static base::NoDestructor<Persistent<ComputedGridTrackList>>
+      default_track_list(
+          MakeGarbageCollected<ComputedGridTrackList>(ComputedGridTrackList()));
   CHECK(IsMainThread());
-  return *default_track_list;
+  return **default_track_list;
 }
 
 bool ComputedStyle::HasPropertyDependingOnCurrentColor() const {

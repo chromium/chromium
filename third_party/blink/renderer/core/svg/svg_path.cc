@@ -27,6 +27,8 @@
 #include <optional>
 #include <utility>
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_path_blender.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream.h"
@@ -38,6 +40,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -82,9 +85,10 @@ struct CSSPathCache final : public GarbageCollected<CSSPathCache> {
 };
 
 CSSPathCache& GetPathCache() {
-  DEFINE_STATIC_LOCAL(Persistent<CSSPathCache>, cache,
-                      (MakeGarbageCollected<CSSPathCache>()));
-  return *cache;
+  DCHECK(IsMainThread());
+  static base::NoDestructor<Persistent<CSSPathCache>> cache(
+      MakeGarbageCollected<CSSPathCache>());
+  return **cache;
 }
 
 const CSSPathValue* GetFromCache(const String& string) {

@@ -4,6 +4,7 @@
 
 #include <algorithm>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_utils.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
@@ -729,20 +730,20 @@ PhysicalFragment::StickyDescendants() const {
   if (propagated_data_ && propagated_data_->sticky_descendants) {
     return *propagated_data_->sticky_descendants;
   }
-  DEFINE_STATIC_LOCAL(
-      Persistent<GCedHeapVector<SplitAxisItem<LayoutBoxModelObject>>>, empty,
-      (MakeGarbageCollected<
-          GCedHeapVector<SplitAxisItem<LayoutBoxModelObject>>>()));
-  return *empty;
+  static base::NoDestructor<
+      Persistent<GCedHeapVector<SplitAxisItem<LayoutBoxModelObject>>>>
+      empty(MakeGarbageCollected<
+            GCedHeapVector<SplitAxisItem<LayoutBoxModelObject>>>());
+  return **empty;
 }
 
 const GCedHeapVector<SnapArea>& PhysicalFragment::SnapAreas() const {
   if (propagated_data_ && propagated_data_->snap_areas) {
     return *propagated_data_->snap_areas;
   }
-  DEFINE_STATIC_LOCAL(Persistent<GCedHeapVector<SnapArea>>, empty,
-                      (MakeGarbageCollected<GCedHeapVector<SnapArea>>()));
-  return *empty;
+  static base::NoDestructor<Persistent<GCedHeapVector<SnapArea>>> empty(
+      MakeGarbageCollected<GCedHeapVector<SnapArea>>());
+  return **empty;
 }
 
 bool PhysicalFragment::DependsOnPercentageBlockSize(

@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/css/css_path_value.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
@@ -18,10 +19,10 @@
 namespace blink {
 
 const StylePath* StylePath::EmptyPath() {
-  DEFINE_STATIC_LOCAL(Persistent<StylePath>, empty_path,
-                      (MakeGarbageCollected<StylePath>(SVGPathByteStream())));
+  static base::NoDestructor<Persistent<StylePath>> empty_path(
+      MakeGarbageCollected<StylePath>(SVGPathByteStream()));
   CHECK(IsMainThread());
-  return empty_path.Get();
+  return empty_path->Get();
 }
 
 const Path& StylePath::GetUnzoomedPath() const {

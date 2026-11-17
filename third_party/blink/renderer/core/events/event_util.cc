@@ -6,9 +6,9 @@
 
 #include <algorithm>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -16,11 +16,11 @@ namespace blink {
 namespace event_util {
 
 const Vector<AtomicString>& MouseButtonEventTypes() {
-  DEFINE_STATIC_LOCAL(
-      const Vector<AtomicString>, mouse_button_event_types,
-      ({event_type_names::kClick, event_type_names::kMousedown,
-        event_type_names::kMouseup, event_type_names::kDOMActivate}));
-  return mouse_button_event_types;
+  static const base::NoDestructor<Vector<AtomicString>>
+      mouse_button_event_types(
+          {event_type_names::kClick, event_type_names::kMousedown,
+           event_type_names::kMouseup, event_type_names::kDOMActivate});
+  return *mouse_button_event_types;
 }
 
 bool IsMouseButtonEventType(const AtomicString& event_type) {

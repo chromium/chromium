@@ -27,6 +27,7 @@
 
 #include <algorithm>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -40,17 +41,16 @@
 namespace blink {
 
 ScrollbarThemeOverlay& ScrollbarThemeOverlay::GetInstance() {
-  DEFINE_STATIC_LOCAL(
-      ScrollbarThemeOverlay, theme,
-      (WebThemeEngineHelper::GetNativeThemeEngine()
-           ->GetSize(WebThemeEngine::kPartScrollbarVerticalThumb)
-           .width(),
-       0,
-       WebThemeEngineHelper::GetNativeThemeEngine()
-           ->GetSize(WebThemeEngine::kPartScrollbarVerticalThumb)
-           .width(),
-       0));
-  return theme;
+  static base::NoDestructor<ScrollbarThemeOverlay> theme(
+      WebThemeEngineHelper::GetNativeThemeEngine()
+          ->GetSize(WebThemeEngine::kPartScrollbarVerticalThumb)
+          .width(),
+      0,
+      WebThemeEngineHelper::GetNativeThemeEngine()
+          ->GetSize(WebThemeEngine::kPartScrollbarVerticalThumb)
+          .width(),
+      0);
+  return *theme;
 }
 
 ScrollbarThemeOverlay::ScrollbarThemeOverlay(int thumb_thickness_default_dip,

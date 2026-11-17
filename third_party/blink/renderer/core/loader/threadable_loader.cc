@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -62,7 +63,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -82,22 +82,20 @@ bool IsDomainAllowedForCCNS(const KURL& url) {
 
   // Thread-safe because `allowed_domains` is initialized once and is strictly
   // read-only thereafter with no concurrent mutations.
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      const HashSet<String>, allowed_domains, ([]() {
-        HashSet<String> set;
-        String param(
-            features::kBackForwardCacheCCNSAllowedDomains.Get().c_str());
-        Vector<String> list = param.Split(',');
-        for (const auto& item : list) {
-          String domain = item.StripWhiteSpace();
-          if (!domain.empty()) {
-            set.insert(domain);
-          }
-        }
-        return set;
-      }()));
+  static const base::NoDestructor<HashSet<String>> allowed_domains([]() {
+    HashSet<String> set;
+    String param(features::kBackForwardCacheCCNSAllowedDomains.Get().c_str());
+    Vector<String> list = param.Split(',');
+    for (const auto& item : list) {
+      String domain = item.StripWhiteSpace();
+      if (!domain.empty()) {
+        set.insert(domain);
+      }
+    }
+    return set;
+  }());
 
-  return allowed_domains.Contains(host);
+  return allowed_domains->Contains(host);
 }
 
 }  // namespace

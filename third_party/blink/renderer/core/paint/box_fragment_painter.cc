@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -704,10 +705,7 @@ void BoxFragmentPainter::PaintAdHighlightIfNeeded(
 
   // Paint an "AD" text overlay.
   {
-    DEFINE_STATIC_LOCAL(SkPath, ad_label_path, ());
-
-    // Check if we have parsed the path yet.
-    if (ad_label_path.isEmpty()) {
+    static const base::NoDestructor<SkPath> ad_label_path([]() {
       const char kAdLabelSvgPath[] =
           "M36.6 62H21.9l-2.3 6.6H10.1L23.6 32.2h11.2L48.4 "
           "68.7H38.9zm-12.3-6.7h10L 29.3 40.8zM62.6 39.3v22.2h3.4q5.7 0 "
@@ -715,11 +713,12 @@ void BoxFragmentPainter::PaintAdHighlightIfNeeded(
           "12.4 1.2 4.1 1.2 7 4 2.5 2.5 3.8 5.7 1.2 3.2 1.2 7.3 0 4.1-1.2 "
           "7.4-1.3 3.2-3.8 5.7-3 2.8-7 4-4.1 1.2-12.3 1.2h-9.9z";
 
-      bool success =
-          SkParsePath::FromSVGString(kAdLabelSvgPath, &ad_label_path);
+      SkPath path;
+      bool success = SkParsePath::FromSVGString(kAdLabelSvgPath, &path);
 
       DCHECK(success) << "Internal Ad Highlight SVG string failed to parse.";
-    }
+      return path;
+    }());
 
     // Calculate the scale and offset to fit the 100x100 SVG path within
     // the element's paint_rect, matching CSS
@@ -762,7 +761,7 @@ void BoxFragmentPainter::PaintAdHighlightIfNeeded(
     // Apply the transform and draw the path.
     GraphicsContextStateSaver state_saver(context);
     context.ConcatCTM(transform);
-    context.DrawPath(ad_label_path, ad_label_flags, AutoDarkMode::Disabled());
+    context.DrawPath(*ad_label_path, ad_label_flags, AutoDarkMode::Disabled());
   }
 }
 

@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -83,28 +84,27 @@ constexpr int kTechnologyCount = std::bit_width(
 // regex patterns in kThirdPartyTechnologiesSourceLocationRegexString.
 ThirdPartyScriptDetector::Technology GetTechnologyFromGroupIndex(int index) {
   using Technology = ThirdPartyScriptDetector::Technology;
-  DEFINE_STATIC_LOCAL(const Vector<Technology>,
-                      technologies_in_regex_capturing_group_order, ([] {
-                        Vector<Technology> vector{
-                            Technology::kElementor,
-                            Technology::kGoogleAnalytics,
-                            Technology::kGoogleFontApi,
-                            Technology::kGoogleTagManager,
-                            Technology::kGoogleMaps,
-                            Technology::kMetaPixel,
-                            Technology::kYouTube,
-                            Technology::kAdobeAnalytics,
-                            Technology::kTiktokPixel,
-                            Technology::kHotjar,
-                            Technology::kGoogleAdSense,
-                            Technology::kGooglePublisherTag,
-                            Technology::kGoogleAdsLibraries,
-                            Technology::kFundingChoices,
-                            Technology::kSliderRevolution,
-                            Technology::kWordPress};
-                        return vector;
-                      }()));
-  return technologies_in_regex_capturing_group_order[index];
+  static const base::NoDestructor<Vector<Technology>>
+      technologies_in_regex_capturing_group_order([] {
+        Vector<Technology> vector{Technology::kElementor,
+                                  Technology::kGoogleAnalytics,
+                                  Technology::kGoogleFontApi,
+                                  Technology::kGoogleTagManager,
+                                  Technology::kGoogleMaps,
+                                  Technology::kMetaPixel,
+                                  Technology::kYouTube,
+                                  Technology::kAdobeAnalytics,
+                                  Technology::kTiktokPixel,
+                                  Technology::kHotjar,
+                                  Technology::kGoogleAdSense,
+                                  Technology::kGooglePublisherTag,
+                                  Technology::kGoogleAdsLibraries,
+                                  Technology::kFundingChoices,
+                                  Technology::kSliderRevolution,
+                                  Technology::kWordPress};
+        return vector;
+      }());
+  return (*technologies_in_regex_capturing_group_order)[index];
 }
 }  // namespace
 

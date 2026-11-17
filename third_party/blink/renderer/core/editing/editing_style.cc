@@ -26,9 +26,11 @@
 
 #include "third_party/blink/renderer/core/editing/editing_style.h"
 
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/values_equivalent.h"
+#include "base/no_destructor.h"
 #include "base/stl_util.h"
 #include "mojo/public/mojom/base/text_direction.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
@@ -75,7 +77,7 @@
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -117,28 +119,30 @@ enum EditingPropertiesType {
 
 static const Vector<const CSSProperty*>& AllEditingProperties(
     const ExecutionContext* execution_context) {
-  DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties, ());
-  if (properties.empty()) {
+  static const base::NoDestructor<Vector<const CSSProperty*>> properties([&]() {
+    Vector<const CSSProperty*> result;
     CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
-        execution_context, kStaticEditingProperties, properties);
-  }
-  return properties;
+        execution_context, kStaticEditingProperties, result);
+    return result;
+  }());
+  return *properties;
 }
 
 static const Vector<const CSSProperty*>& InheritableEditingProperties(
     const ExecutionContext* execution_context) {
-  DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties, ());
-  if (properties.empty()) {
+  static const base::NoDestructor<Vector<const CSSProperty*>> properties([&]() {
+    Vector<const CSSProperty*> result;
     const Vector<const CSSProperty*>& all =
         AllEditingProperties(execution_context);
-    properties.ReserveInitialCapacity(all.size());
+    result.ReserveInitialCapacity(all.size());
     for (const CSSProperty* property : all) {
       if (property->IsInherited()) {
-        properties.push_back(property);
+        result.push_back(property);
       }
     }
-  }
-  return properties;
+    return result;
+  }());
+  return *properties;
 }
 
 template <class StyleDeclarationType>
@@ -815,12 +819,13 @@ static const CSSPropertyID kStaticBlockProperties[] = {
 
 static const Vector<const CSSProperty*>& BlockPropertiesVector(
     const ExecutionContext* execution_context) {
-  DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties, ());
-  if (properties.empty()) {
+  static const base::NoDestructor<Vector<const CSSProperty*>> properties([&]() {
+    Vector<const CSSProperty*> result;
     CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
-        execution_context, kStaticBlockProperties, properties);
-  }
-  return properties;
+        execution_context, kStaticBlockProperties, result);
+    return result;
+  }());
+  return *properties;
 }
 
 EditingStyle* EditingStyle::ExtractAndRemoveBlockProperties(
@@ -1133,44 +1138,48 @@ bool EditingStyle::ConflictsWithInlineStyleOfElement(
 
 static const HeapVector<Member<HtmlElementEquivalent>>&
 HtmlElementEquivalents() {
+  DCHECK(IsMainThread());
   using Holder = DisallowNewWrapper<HeapVector<Member<HtmlElementEquivalent>>>;
-  DEFINE_STATIC_LOCAL(Persistent<Holder>, html_element_equivalents_holder,
-                      (MakeGarbageCollected<Holder>()));
-  HeapVector<Member<HtmlElementEquivalent>>* html_element_equivalents =
-      &html_element_equivalents_holder->Value();
-  if (!html_element_equivalents->size()) {
-    html_element_equivalents->push_back(
-        MakeGarbageCollected<HtmlElementEquivalent>(
-            CSSPropertyID::kFontWeight, CSSValueID::kBold, html_names::kBTag));
-    html_element_equivalents->push_back(
-        MakeGarbageCollected<HtmlElementEquivalent>(CSSPropertyID::kFontWeight,
-                                                    CSSValueID::kBold,
-                                                    html_names::kStrongTag));
-    html_element_equivalents->push_back(
-        MakeGarbageCollected<HtmlElementEquivalent>(
-            CSSPropertyID::kVerticalAlign, CSSValueID::kSub,
-            html_names::kSubTag));
-    html_element_equivalents->push_back(
-        MakeGarbageCollected<HtmlElementEquivalent>(
-            CSSPropertyID::kVerticalAlign, CSSValueID::kSuper,
-            html_names::kSupTag));
-    html_element_equivalents->push_back(
-        MakeGarbageCollected<HtmlElementEquivalent>(
-            CSSPropertyID::kFontStyle, CSSValueID::kItalic, html_names::kITag));
-    html_element_equivalents->push_back(
-        MakeGarbageCollected<HtmlElementEquivalent>(CSSPropertyID::kFontStyle,
-                                                    CSSValueID::kItalic,
-                                                    html_names::kEmTag));
+  static const base::NoDestructor<Persistent<Holder>>
+      html_element_equivalents_holder([]() {
+        auto* holder = MakeGarbageCollected<Holder>();
+        HeapVector<Member<HtmlElementEquivalent>>& html_element_equivalents =
+            holder->Value();
+        html_element_equivalents.push_back(
+            MakeGarbageCollected<HtmlElementEquivalent>(
+                CSSPropertyID::kFontWeight, CSSValueID::kBold,
+                html_names::kBTag));
+        html_element_equivalents.push_back(
+            MakeGarbageCollected<HtmlElementEquivalent>(
+                CSSPropertyID::kFontWeight, CSSValueID::kBold,
+                html_names::kStrongTag));
+        html_element_equivalents.push_back(
+            MakeGarbageCollected<HtmlElementEquivalent>(
+                CSSPropertyID::kVerticalAlign, CSSValueID::kSub,
+                html_names::kSubTag));
+        html_element_equivalents.push_back(
+            MakeGarbageCollected<HtmlElementEquivalent>(
+                CSSPropertyID::kVerticalAlign, CSSValueID::kSuper,
+                html_names::kSupTag));
+        html_element_equivalents.push_back(
+            MakeGarbageCollected<HtmlElementEquivalent>(
+                CSSPropertyID::kFontStyle, CSSValueID::kItalic,
+                html_names::kITag));
+        html_element_equivalents.push_back(
+            MakeGarbageCollected<HtmlElementEquivalent>(
+                CSSPropertyID::kFontStyle, CSSValueID::kItalic,
+                html_names::kEmTag));
 
-    html_element_equivalents->push_back(HtmlTextDecorationEquivalent::Create(
-        CSSValueID::kUnderline, html_names::kUTag));
-    html_element_equivalents->push_back(HtmlTextDecorationEquivalent::Create(
-        CSSValueID::kLineThrough, html_names::kSTag));
-    html_element_equivalents->push_back(HtmlTextDecorationEquivalent::Create(
-        CSSValueID::kLineThrough, html_names::kStrikeTag));
-  }
+        html_element_equivalents.push_back(HtmlTextDecorationEquivalent::Create(
+            CSSValueID::kUnderline, html_names::kUTag));
+        html_element_equivalents.push_back(HtmlTextDecorationEquivalent::Create(
+            CSSValueID::kLineThrough, html_names::kSTag));
+        html_element_equivalents.push_back(HtmlTextDecorationEquivalent::Create(
+            CSSValueID::kLineThrough, html_names::kStrikeTag));
+        return holder;
+      }());
 
-  return *html_element_equivalents;
+  return (*html_element_equivalents_holder)->Value();
 }
 
 bool EditingStyle::ConflictsWithImplicitStyleOfElement(
@@ -1198,35 +1207,37 @@ bool EditingStyle::ConflictsWithImplicitStyleOfElement(
 
 static const HeapVector<Member<HtmlAttributeEquivalent>>&
 HtmlAttributeEquivalents() {
+  DCHECK(IsMainThread());
   using Holder =
       DisallowNewWrapper<HeapVector<Member<HtmlAttributeEquivalent>>>;
-  DEFINE_STATIC_LOCAL(Persistent<Holder>, html_attribute_equivalents_holder,
-                      (MakeGarbageCollected<Holder>()));
-  HeapVector<Member<HtmlAttributeEquivalent>>* html_attribute_equivalents =
-      &html_attribute_equivalents_holder->Value();
-  if (!html_attribute_equivalents->size()) {
-    // elementIsStyledSpanOrHTMLEquivalent depends on the fact each
-    // HTMLAttriuteEquivalent matches exactly one attribute of exactly one
-    // element except dirAttr.
-    html_attribute_equivalents->push_back(
-        MakeGarbageCollected<HtmlAttributeEquivalent>(CSSPropertyID::kColor,
-                                                      html_names::kFontTag,
-                                                      html_names::kColorAttr));
-    html_attribute_equivalents->push_back(
-        MakeGarbageCollected<HtmlAttributeEquivalent>(
-            CSSPropertyID::kFontFamily, html_names::kFontTag,
-            html_names::kFaceAttr));
-    html_attribute_equivalents->push_back(HtmlFontSizeEquivalent::Create());
+  static const base::NoDestructor<Persistent<Holder>>
+      html_attribute_equivalents_holder([]() {
+        auto* holder = MakeGarbageCollected<Holder>();
+        HeapVector<Member<HtmlAttributeEquivalent>>&
+            html_attribute_equivalents = holder->Value();
+        // elementIsStyledSpanOrHTMLEquivalent depends on the fact each
+        // HTMLAttributeEquivalent matches exactly one attribute of exactly one
+        // element except dirAttr.
+        html_attribute_equivalents.push_back(
+            MakeGarbageCollected<HtmlAttributeEquivalent>(
+                CSSPropertyID::kColor, html_names::kFontTag,
+                html_names::kColorAttr));
+        html_attribute_equivalents.push_back(
+            MakeGarbageCollected<HtmlAttributeEquivalent>(
+                CSSPropertyID::kFontFamily, html_names::kFontTag,
+                html_names::kFaceAttr));
+        html_attribute_equivalents.push_back(HtmlFontSizeEquivalent::Create());
 
-    html_attribute_equivalents->push_back(
-        MakeGarbageCollected<HtmlAttributeEquivalent>(CSSPropertyID::kDirection,
-                                                      html_names::kDirAttr));
-    html_attribute_equivalents->push_back(
-        MakeGarbageCollected<HtmlAttributeEquivalent>(
-            CSSPropertyID::kUnicodeBidi, html_names::kDirAttr));
-  }
+        html_attribute_equivalents.push_back(
+            MakeGarbageCollected<HtmlAttributeEquivalent>(
+                CSSPropertyID::kDirection, html_names::kDirAttr));
+        html_attribute_equivalents.push_back(
+            MakeGarbageCollected<HtmlAttributeEquivalent>(
+                CSSPropertyID::kUnicodeBidi, html_names::kDirAttr));
+        return holder;
+      }());
 
-  return *html_attribute_equivalents;
+  return (*html_attribute_equivalents_holder)->Value();
 }
 
 bool EditingStyle::ConflictsWithImplicitStyleOfAttributes(
@@ -1513,17 +1524,20 @@ void EditingStyle::MergeInlineAndImplicitStyleOfElement(
 static const CSSValueList& MergeTextDecorationValues(
     const CSSValueList& merged_value,
     const CSSValueList& value_to_merge) {
-  DEFINE_STATIC_LOCAL(Persistent<CSSIdentifierValue>, underline,
-                      (CSSIdentifierValue::Create(CSSValueID::kUnderline)));
-  DEFINE_STATIC_LOCAL(Persistent<CSSIdentifierValue>, line_through,
-                      (CSSIdentifierValue::Create(CSSValueID::kLineThrough)));
+  static base::NoDestructor<Persistent<CSSIdentifierValue>> underline{
+      CSSIdentifierValue::Create(CSSValueID::kUnderline)};
+  static base::NoDestructor<Persistent<CSSIdentifierValue>> line_through{
+      CSSIdentifierValue::Create(CSSValueID::kLineThrough)};
   CSSValueList& result = *merged_value.Copy();
-  if (value_to_merge.HasValue(*underline) && !merged_value.HasValue(*underline))
-    result.Append(*underline);
+  if (value_to_merge.HasValue(**underline) &&
+      !merged_value.HasValue(**underline)) {
+    result.Append(**underline);
+  }
 
-  if (value_to_merge.HasValue(*line_through) &&
-      !merged_value.HasValue(*line_through))
-    result.Append(*line_through);
+  if (value_to_merge.HasValue(**line_through) &&
+      !merged_value.HasValue(**line_through)) {
+    result.Append(**line_through);
+  }
 
   return result;
 }
@@ -2005,15 +2019,17 @@ void StyleChange::ExtractTextStyles(Document* document,
       style->GetPropertyCSSValue(CSSPropertyID::kTextDecorationLine);
   if (const auto* text_decoration_value_list =
           DynamicTo<CSSValueList>(text_decoration)) {
-    DEFINE_STATIC_LOCAL(Persistent<CSSIdentifierValue>, underline,
-                        (CSSIdentifierValue::Create(CSSValueID::kUnderline)));
-    DEFINE_STATIC_LOCAL(Persistent<CSSIdentifierValue>, line_through,
-                        (CSSIdentifierValue::Create(CSSValueID::kLineThrough)));
+    static base::NoDestructor<Persistent<CSSIdentifierValue>> underline{
+        CSSIdentifierValue::Create(CSSValueID::kUnderline)};
+    static base::NoDestructor<Persistent<CSSIdentifierValue>> line_through{
+        CSSIdentifierValue::Create(CSSValueID::kLineThrough)};
     CSSValueList* new_text_decoration = text_decoration_value_list->Copy();
-    if (new_text_decoration->RemoveAll(*underline))
+    if (new_text_decoration->RemoveAll(**underline)) {
       apply_underline_ = true;
-    if (new_text_decoration->RemoveAll(*line_through))
+    }
+    if (new_text_decoration->RemoveAll(**line_through)) {
       apply_line_through_ = true;
+    }
 
     // If trimTextDecorations, delete underline and line-through
     SetTextDecorationProperty(

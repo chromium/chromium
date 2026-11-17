@@ -7,8 +7,10 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/optional_util.h"
@@ -71,6 +73,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -686,11 +689,10 @@ CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
 
 OffscreenCanvas::ContextFactoryVector&
 OffscreenCanvas::RenderingContextFactories() {
-  DEFINE_STATIC_LOCAL(
-      ContextFactoryVector, context_factories,
-      (static_cast<int>(CanvasRenderingContext::CanvasRenderingAPI::kMaxValue) +
-       1));
-  return context_factories;
+  static base::NoDestructor<ContextFactoryVector> context_factories(
+      static_cast<int>(CanvasRenderingContext::CanvasRenderingAPI::kMaxValue) +
+      1);
+  return *context_factories;
 }
 
 CanvasRenderingContextFactory* OffscreenCanvas::GetRenderingContextFactory(
@@ -702,6 +704,7 @@ CanvasRenderingContextFactory* OffscreenCanvas::GetRenderingContextFactory(
 
 void OffscreenCanvas::RegisterRenderingContextFactory(
     std::unique_ptr<CanvasRenderingContextFactory> rendering_context_factory) {
+  DCHECK(IsMainThread());
   CanvasRenderingContext::CanvasRenderingAPI rendering_api =
       rendering_context_factory->GetRenderingAPI();
   DCHECK_LE(rendering_api,

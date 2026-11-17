@@ -30,6 +30,7 @@
 #include <tuple>
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/numerics/clamped_math.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
@@ -208,21 +209,21 @@ int ComputeAutocapitalizeFlags(const Element* element) {
 
   int flags = 0;
 
-  DEFINE_STATIC_LOCAL(const AtomicString, characters,
-                      (AtomicString::FromLiteral<"characters">()));
-  DEFINE_STATIC_LOCAL(const AtomicString, words,
-                      (AtomicString::FromLiteral<"words">()));
-  DEFINE_STATIC_LOCAL(const AtomicString, sentences,
-                      (AtomicString::FromLiteral<"sentences">()));
+  static const base::NoDestructor<AtomicString> characters(
+      AtomicString::FromLiteral<"characters">());
+  static const base::NoDestructor<AtomicString> words(
+      AtomicString::FromLiteral<"words">());
+  static const base::NoDestructor<AtomicString> sentences(
+      AtomicString::FromLiteral<"sentences">());
 
   const AtomicString& autocapitalize = html_element->autocapitalize();
   if (autocapitalize == keywords::kNone) {
     flags |= kWebTextInputFlagAutocapitalizeNone;
-  } else if (autocapitalize == characters) {
+  } else if (autocapitalize == *characters) {
     flags |= kWebTextInputFlagAutocapitalizeCharacters;
-  } else if (autocapitalize == words) {
+  } else if (autocapitalize == *words) {
     flags |= kWebTextInputFlagAutocapitalizeWords;
-  } else if (autocapitalize == sentences) {
+  } else if (autocapitalize == *sentences) {
     flags |= kWebTextInputFlagAutocapitalizeSentences;
   } else if (autocapitalize == g_empty_atom) {
     // https://html.spec.whatwg.org/multipage/interaction.html#autocapitalization

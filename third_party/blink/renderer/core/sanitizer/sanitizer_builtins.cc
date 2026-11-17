@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_builtins.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -52,29 +52,27 @@ SanitizerNameMap MakeNameMap(base::span<const ElementAttrs> entries) {
 }  // namespace sanitizer_generated_builtins
 
 const Sanitizer* SanitizerBuiltins::GetDefaultUnsafe() {
-  DEFINE_STATIC_LOCAL(Persistent<Sanitizer>, default_unsafe_,
-                      (Sanitizer::CreateEmpty()));
-  return default_unsafe_.Get();
+  static base::NoDestructor<Persistent<Sanitizer>> default_unsafe_(
+      Sanitizer::CreateEmpty());
+  return default_unsafe_->Get();
 }
 
 const Sanitizer* SanitizerBuiltins::GetDefaultSafe() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<Sanitizer>, default_safe_,
-      (blink::sanitizer_generated_builtins::BuildDefaultConfig()));
-  return default_safe_.Get();
+  static base::NoDestructor<Persistent<Sanitizer>> default_safe_(
+      blink::sanitizer_generated_builtins::BuildDefaultConfig());
+  return default_safe_->Get();
 }
 
 const Sanitizer* SanitizerBuiltins::GetBaseline() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<Sanitizer>, baseline_,
-      (blink::sanitizer_generated_builtins::BuildBaselineConfig()));
-  return baseline_.Get();
+  static base::NoDestructor<Persistent<Sanitizer>> baseline_(
+      blink::sanitizer_generated_builtins::BuildBaselineConfig());
+  return baseline_->Get();
 }
 
 const SanitizerNameSet* SanitizerBuiltins::GetNonReplaceableElements() {
-  DEFINE_STATIC_LOCAL(SanitizerNameSet, non_replaceable_elements_,
-                      (BuildNonReplaceableElements()));
-  return &non_replaceable_elements_;
+  static base::NoDestructor<SanitizerNameSet> non_replaceable_elements_(
+      BuildNonReplaceableElements());
+  return non_replaceable_elements_.get();
 }
 
 }  // namespace blink

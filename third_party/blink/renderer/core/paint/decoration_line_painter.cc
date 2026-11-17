@@ -6,6 +6,8 @@
 
 #include <cmath>
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "cc/paint/color_filter.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_record.h"
@@ -16,6 +18,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -373,6 +376,7 @@ void WavyGeometry::PaintFill(GraphicsContext& context,
 }
 
 const WavyGeometry& GetWavyGeometry(const DecorationGeometry& line_geometry) {
+  DCHECK(IsMainThread());
   struct WavyCache {
     WavyParams key;
     WavyGeometry geometry;
@@ -380,13 +384,13 @@ const WavyGeometry& GetWavyGeometry(const DecorationGeometry& line_geometry) {
     DISALLOW_NEW();
   };
 
-  DEFINE_STATIC_LOCAL(std::optional<WavyCache>, wavy_cache, (std::nullopt));
+  static base::NoDestructor<std::optional<WavyCache>> wavy_cache(std::nullopt);
 
   const WavyParams params{line_geometry.wavy_wave, line_geometry.Thickness()};
-  if (!wavy_cache || wavy_cache->key != params) {
-    wavy_cache.emplace(params, WavyGeometry(params));
+  if (!*wavy_cache || (*wavy_cache)->key != params) {
+    wavy_cache->emplace(params, WavyGeometry(params));
   }
-  return wavy_cache->geometry;
+  return (*wavy_cache)->geometry;
 }
 
 }  // namespace

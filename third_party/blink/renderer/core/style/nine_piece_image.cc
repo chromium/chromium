@@ -25,17 +25,18 @@
 #include "third_party/blink/renderer/core/style/nine_piece_image.h"
 
 #include "base/memory/values_equivalent.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
 static NinePieceImageData& DefaultData() {
-  DEFINE_STATIC_LOCAL(Persistent<NinePieceImageData>, data,
-                      (MakeGarbageCollected<NinePieceImageData>()));
+  static base::NoDestructor<Persistent<NinePieceImageData>> data(
+      MakeGarbageCollected<NinePieceImageData>());
   CHECK(IsMainThread());
-  data->single_owner = false;
-  return *data;
+  (*data)->single_owner = false;
+  return **data;
 }
 
 NinePieceImage::NinePieceImage() : data_(DefaultData()) {}
@@ -58,17 +59,17 @@ NinePieceImage::NinePieceImage(StyleImage* image,
 }
 
 NinePieceImage NinePieceImage::MaskDefaults() {
-  DEFINE_STATIC_LOCAL(Persistent<NinePieceImageData>, data,
-                      (MakeGarbageCollected<NinePieceImageData>()));
+  static base::NoDestructor<Persistent<NinePieceImageData>> data(
+      MakeGarbageCollected<NinePieceImageData>());
   CHECK(IsMainThread());
-  if (data->single_owner) {
+  if ((*data)->single_owner) {
     // First initialization.
-    data->image_slices = LengthBox(0);
-    data->fill = true;
-    data->border_slices = BorderImageLengthBox(Length::Auto());
-    data->single_owner = false;
+    (*data)->image_slices = LengthBox(0);
+    (*data)->fill = true;
+    (*data)->border_slices = BorderImageLengthBox(Length::Auto());
+    (*data)->single_owner = false;
   }
-  return NinePieceImage(data.Get());
+  return NinePieceImage(data->Get());
 }
 
 bool NinePieceImageData::operator==(const NinePieceImageData& other) const {

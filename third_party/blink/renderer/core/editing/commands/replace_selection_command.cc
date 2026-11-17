@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/editing/commands/replace_selection_command.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
@@ -78,7 +79,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -936,59 +936,57 @@ void ReplaceSelectionCommand::RemoveRedundantStylesAndKeepStyleSpanInline(
 
 static bool IsProhibitedParagraphChild(const AtomicString& name) {
   // https://dvcs.w3.org/hg/editing/raw-file/57abe6d3cb60/editing.html#prohibited-paragraph-child
-  DEFINE_STATIC_LOCAL(
-      HashSet<AtomicString>, elements,
-      ({
-          html_names::kAddressTag.LocalName(),
-          html_names::kArticleTag.LocalName(),
-          html_names::kAsideTag.LocalName(),
-          html_names::kBlockquoteTag.LocalName(),
-          html_names::kCaptionTag.LocalName(),
-          html_names::kCenterTag.LocalName(),
-          html_names::kColTag.LocalName(),
-          html_names::kColgroupTag.LocalName(),
-          html_names::kDdTag.LocalName(),
-          html_names::kDetailsTag.LocalName(),
-          html_names::kDirTag.LocalName(),
-          html_names::kDivTag.LocalName(),
-          html_names::kDlTag.LocalName(),
-          html_names::kDtTag.LocalName(),
-          html_names::kFieldsetTag.LocalName(),
-          html_names::kFigcaptionTag.LocalName(),
-          html_names::kFigureTag.LocalName(),
-          html_names::kFooterTag.LocalName(),
-          html_names::kFormTag.LocalName(),
-          html_names::kH1Tag.LocalName(),
-          html_names::kH2Tag.LocalName(),
-          html_names::kH3Tag.LocalName(),
-          html_names::kH4Tag.LocalName(),
-          html_names::kH5Tag.LocalName(),
-          html_names::kH6Tag.LocalName(),
-          html_names::kHeaderTag.LocalName(),
-          html_names::kHgroupTag.LocalName(),
-          html_names::kHrTag.LocalName(),
-          html_names::kLiTag.LocalName(),
-          html_names::kListingTag.LocalName(),
-          html_names::kMainTag.LocalName(),  // Missing in the specification.
-          html_names::kMenuTag.LocalName(),
-          html_names::kNavTag.LocalName(),
-          html_names::kOlTag.LocalName(),
-          html_names::kPTag.LocalName(),
-          html_names::kPlaintextTag.LocalName(),
-          html_names::kPreTag.LocalName(),
-          html_names::kSectionTag.LocalName(),
-          html_names::kSummaryTag.LocalName(),
-          html_names::kTableTag.LocalName(),
-          html_names::kTbodyTag.LocalName(),
-          html_names::kTdTag.LocalName(),
-          html_names::kTfootTag.LocalName(),
-          html_names::kThTag.LocalName(),
-          html_names::kTheadTag.LocalName(),
-          html_names::kTrTag.LocalName(),
-          html_names::kUlTag.LocalName(),
-          html_names::kXmpTag.LocalName(),
-      }));
-  return elements.Contains(name);
+  static base::NoDestructor<HashSet<AtomicString>> elements({
+      html_names::kAddressTag.LocalName(),
+      html_names::kArticleTag.LocalName(),
+      html_names::kAsideTag.LocalName(),
+      html_names::kBlockquoteTag.LocalName(),
+      html_names::kCaptionTag.LocalName(),
+      html_names::kCenterTag.LocalName(),
+      html_names::kColTag.LocalName(),
+      html_names::kColgroupTag.LocalName(),
+      html_names::kDdTag.LocalName(),
+      html_names::kDetailsTag.LocalName(),
+      html_names::kDirTag.LocalName(),
+      html_names::kDivTag.LocalName(),
+      html_names::kDlTag.LocalName(),
+      html_names::kDtTag.LocalName(),
+      html_names::kFieldsetTag.LocalName(),
+      html_names::kFigcaptionTag.LocalName(),
+      html_names::kFigureTag.LocalName(),
+      html_names::kFooterTag.LocalName(),
+      html_names::kFormTag.LocalName(),
+      html_names::kH1Tag.LocalName(),
+      html_names::kH2Tag.LocalName(),
+      html_names::kH3Tag.LocalName(),
+      html_names::kH4Tag.LocalName(),
+      html_names::kH5Tag.LocalName(),
+      html_names::kH6Tag.LocalName(),
+      html_names::kHeaderTag.LocalName(),
+      html_names::kHgroupTag.LocalName(),
+      html_names::kHrTag.LocalName(),
+      html_names::kLiTag.LocalName(),
+      html_names::kListingTag.LocalName(),
+      html_names::kMainTag.LocalName(),  // Missing in the specification.
+      html_names::kMenuTag.LocalName(),
+      html_names::kNavTag.LocalName(),
+      html_names::kOlTag.LocalName(),
+      html_names::kPTag.LocalName(),
+      html_names::kPlaintextTag.LocalName(),
+      html_names::kPreTag.LocalName(),
+      html_names::kSectionTag.LocalName(),
+      html_names::kSummaryTag.LocalName(),
+      html_names::kTableTag.LocalName(),
+      html_names::kTbodyTag.LocalName(),
+      html_names::kTdTag.LocalName(),
+      html_names::kTfootTag.LocalName(),
+      html_names::kThTag.LocalName(),
+      html_names::kTheadTag.LocalName(),
+      html_names::kTrTag.LocalName(),
+      html_names::kUlTag.LocalName(),
+      html_names::kXmpTag.LocalName(),
+  });
+  return elements->Contains(name);
 }
 
 bool ReplacementFragment::HasBlockLevelContent() const {

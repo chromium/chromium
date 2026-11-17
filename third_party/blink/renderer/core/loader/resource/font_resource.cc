@@ -32,6 +32,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -62,7 +63,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #endif  // IS_WIN
 
 
@@ -95,11 +95,10 @@ scoped_refptr<base::SequencedTaskRunner> GetFontDecodingTaskRunner() {
   // On Windows, the font decoding relies on FontManager, which requires
   // creating garbage collected objects. This means the thread the decoding
   // runs on must be GC enabled.
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      std::unique_ptr<NonMainThread>, font_decoding_thread,
-      (NonMainThread::CreateThread(
-          ThreadCreationParams(ThreadType::kFontThread).SetSupportsGC(true))));
-  return font_decoding_thread->GetTaskRunner();
+  static base::NoDestructor<std::unique_ptr<NonMainThread>>
+      font_decoding_thread(NonMainThread::CreateThread(
+          ThreadCreationParams(ThreadType::kFontThread).SetSupportsGC(true)));
+  return (*font_decoding_thread)->GetTaskRunner();
 #else
   return worker_pool::CreateSequencedTaskRunner(
       {base::TaskPriority::USER_BLOCKING});

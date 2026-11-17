@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/public/common/metrics/accept_language_and_content_language_usage.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -38,8 +39,8 @@ const AtomicString& DocumentXmlLanguage(const Document& document) {
 }
 
 bool HasNoTranslate(const Document& document) {
-  DEFINE_STATIC_LOCAL(const AtomicString, google,
-                      (AtomicString::FromLiteral<"google">()));
+  static const base::NoDestructor<AtomicString> google(
+      AtomicString::FromLiteral<"google">());
 
   HTMLHeadElement* head_element = document.head();
   if (!head_element)
@@ -47,8 +48,9 @@ bool HasNoTranslate(const Document& document) {
 
   for (const HTMLMetaElement& meta_element :
        Traversal<HTMLMetaElement>::ChildrenOf(*head_element)) {
-    if (meta_element.GetName() != google)
+    if (meta_element.GetName() != *google) {
       continue;
+    }
 
     // Check if the tag contains content="notranslate" or value="notranslate"
     AtomicString content = meta_element.Content();

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -45,7 +46,8 @@ bool IsSuffix(const StringView& term) {
 
 TextFragmentSelector TextFragmentSelector::FromTextDirective(
     const StringView& directive) {
-  DEFINE_STATIC_LOCAL(const TextFragmentSelector, kInvalidSelector, (kInvalid));
+  static const base::NoDestructor<TextFragmentSelector> kInvalidSelector(
+      kInvalid);
   SelectorType type;
   StringView start;
   StringView end;
@@ -55,13 +57,13 @@ TextFragmentSelector TextFragmentSelector::FromTextDirective(
   DCHECK(!directive.contains('&'));
 
   if (HasInvalidUrlEscapeSequences(directive)) {
-    return kInvalidSelector;
+    return *kInvalidSelector;
   }
 
   Vector<StringView> terms = directive.Split(',');
 
   if (terms.empty() || terms.size() > 4)
-    return kInvalidSelector;
+    return *kInvalidSelector;
 
   if (IsPrefix(terms.front())) {
     prefix = terms.front();
@@ -69,7 +71,7 @@ TextFragmentSelector TextFragmentSelector::FromTextDirective(
     terms.erase(terms.begin());
 
     if (!IsValidTerm(prefix) || terms.empty())
-      return kInvalidSelector;
+      return *kInvalidSelector;
   }
 
   if (IsSuffix(terms.back())) {
@@ -78,24 +80,24 @@ TextFragmentSelector TextFragmentSelector::FromTextDirective(
     terms.pop_back();
 
     if (!IsValidTerm(suffix) || terms.empty())
-      return kInvalidSelector;
+      return *kInvalidSelector;
   }
 
   DCHECK(!terms.empty());
   if (terms.size() > 2)
-    return kInvalidSelector;
+    return *kInvalidSelector;
 
   type = kExact;
   start = terms.front();
   if (!IsValidTerm(start))
-    return kInvalidSelector;
+    return *kInvalidSelector;
   terms.erase(terms.begin());
 
   if (!terms.empty()) {
     type = kRange;
     end = terms.front();
     if (!IsValidTerm(end))
-      return kInvalidSelector;
+      return *kInvalidSelector;
 
     terms.erase(terms.begin());
   }

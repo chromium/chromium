@@ -26,6 +26,8 @@
 
 #include <algorithm>
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -73,6 +75,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "ui/gfx/geometry/quad_f.h"
 
 namespace blink {
@@ -94,10 +97,11 @@ class SecureTextTimer;
 typedef HeapHashMap<WeakMember<const LayoutText>, Member<SecureTextTimer>>
     SecureTextTimerMap;
 static SecureTextTimerMap& GetSecureTextTimers() {
+  DCHECK(IsMainThread());
   using SecureTextTimerMapHolder = DisallowNewWrapper<SecureTextTimerMap>;
-  DEFINE_STATIC_LOCAL(const Persistent<SecureTextTimerMapHolder>, holder,
-                      (MakeGarbageCollected<SecureTextTimerMapHolder>()));
-  return holder->Value();
+  static const base::NoDestructor<Persistent<SecureTextTimerMapHolder>> holder(
+      MakeGarbageCollected<SecureTextTimerMapHolder>());
+  return (*holder)->Value();
 }
 
 class SecureTextTimer final : public GarbageCollected<SecureTextTimer>,
@@ -157,9 +161,10 @@ using SelectionDisplayItemClientMap =
     GCedHeapHashMap<WeakMember<const LayoutText>,
                     Member<SelectionDisplayItemClient>>;
 SelectionDisplayItemClientMap& GetSelectionDisplayItemClientMap() {
-  DEFINE_STATIC_LOCAL(Persistent<SelectionDisplayItemClientMap>, holder,
-                      (MakeGarbageCollected<SelectionDisplayItemClientMap>()));
-  return *holder;
+  DCHECK(IsMainThread());
+  static base::NoDestructor<Persistent<SelectionDisplayItemClientMap>> holder(
+      MakeGarbageCollected<SelectionDisplayItemClientMap>());
+  return **holder;
 }
 
 }  // anonymous namespace

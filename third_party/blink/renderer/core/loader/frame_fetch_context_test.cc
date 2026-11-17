@@ -36,6 +36,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -103,8 +104,8 @@ class DummyFrameOwner final : public GarbageCollected<DummyFrameOwner>,
   void SetContentFrame(Frame&) override {}
   void ClearContentFrame() override {}
   const FramePolicy& GetFramePolicy() const override {
-    DEFINE_STATIC_LOCAL(FramePolicy, frame_policy, ());
-    return frame_policy;
+    static base::NoDestructor<FramePolicy> frame_policy;
+    return *frame_policy;
   }
   void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr) override {}
   void DispatchLoad() override {}

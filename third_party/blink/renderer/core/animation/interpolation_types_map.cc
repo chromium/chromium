@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/animation/css_angle_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_aspect_ratio_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_basic_shape_interpolation_type.h"
@@ -78,6 +80,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -97,14 +100,15 @@ static const PropertyRegistration* GetRegistration(
 
 const InterpolationTypes* InterpolationTypesMap::Get(
     const PropertyHandle& property) const {
+  DCHECK(IsMainThread());
   using ApplicableTypesMap =
       GCedHeapHashMap<PropertyHandle, Member<InterpolationTypes>>;
-  DEFINE_STATIC_LOCAL(Persistent<ApplicableTypesMap>, all_applicable_types_map,
-                      (MakeGarbageCollected<ApplicableTypesMap>()));
+  static base::NoDestructor<Persistent<ApplicableTypesMap>>
+      all_applicable_types_map(MakeGarbageCollected<ApplicableTypesMap>());
 
-  DEFINE_STATIC_LOCAL(Persistent<ApplicableTypesMap>,
-                      reduce_motion_applicable_types_map,
-                      (MakeGarbageCollected<ApplicableTypesMap>()));
+  static base::NoDestructor<Persistent<ApplicableTypesMap>>
+      reduce_motion_applicable_types_map(
+          MakeGarbageCollected<ApplicableTypesMap>());
 
   // Custom property interpolation types may change over time so don't trust the
   // applicable_types_map without checking the registry. Also since the static
@@ -118,8 +122,8 @@ const InterpolationTypes* InterpolationTypesMap::Get(
   bool reduce_motion = document_.ShouldForceReduceMotion();
 
   ApplicableTypesMap& applicable_types_map =
-      reduce_motion ? *reduce_motion_applicable_types_map
-                    : *all_applicable_types_map;
+      reduce_motion ? **reduce_motion_applicable_types_map
+                    : **all_applicable_types_map;
 
   auto entry = applicable_types_map.find(property);
   if (entry != applicable_types_map.end()) {

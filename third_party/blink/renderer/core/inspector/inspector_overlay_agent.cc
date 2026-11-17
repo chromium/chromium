@@ -32,6 +32,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/picture_layer.h"
@@ -1566,10 +1567,10 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
   overlay_settings.SetPluginsEnabled(false);
   overlay_settings.SetLoadsImagesAutomatically(true);
 
-  DEFINE_STATIC_LOCAL(Persistent<LocalFrameClient>, dummy_local_frame_client,
-                      (MakeGarbageCollected<EmptyLocalFrameClient>()));
+  static base::NoDestructor<Persistent<LocalFrameClient>>
+      dummy_local_frame_client(MakeGarbageCollected<EmptyLocalFrameClient>());
   auto* frame = MakeGarbageCollected<LocalFrame>(
-      dummy_local_frame_client, *overlay_page_, nullptr, nullptr, nullptr,
+      *dummy_local_frame_client, *overlay_page_, nullptr, nullptr, nullptr,
       FrameInsertType::kInsertInConstructor, LocalFrameToken(), nullptr,
       nullptr, mojo::NullRemote());
   frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame));

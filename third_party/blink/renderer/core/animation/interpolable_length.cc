@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/animation/length_property_functions.h"
 #include "third_party/blink/renderer/core/animation/underlying_value.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
@@ -391,11 +392,11 @@ void InterpolableLength::SetHasPercentage() {
     SetExpression(AsExpression());
   }
 
-  DEFINE_STATIC_LOCAL(Persistent<CSSMathExpressionNode>, zero_percent,
-                      {PercentageNode(0)});
+  static base::NoDestructor<Persistent<CSSMathExpressionNode>> zero_percent(
+      PercentageNode(0));
   SetExpression(
       *CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
-          expression_, zero_percent, CSSMathOperator::kAdd));
+          expression_, *zero_percent, CSSMathOperator::kAdd));
 }
 
 void InterpolableLength::SubtractFromOneHundredPercent() {
@@ -411,11 +412,11 @@ void InterpolableLength::SubtractFromOneHundredPercent() {
     SetExpression(AsExpression());
   }
 
-  DEFINE_STATIC_LOCAL(Persistent<CSSMathExpressionNode>, hundred_percent,
-                      {PercentageNode(100)});
+  static base::NoDestructor<Persistent<CSSMathExpressionNode>> hundred_percent(
+      PercentageNode(100));
   SetExpression(
       *CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
-          hundred_percent, expression_, CSSMathOperator::kSubtract));
+          *hundred_percent, expression_, CSSMathOperator::kSubtract));
 }
 
 bool InterpolableLength::IsNeutralValue() const {

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_fluent.h"
 
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
@@ -19,8 +20,8 @@
 namespace blink {
 
 ScrollbarThemeFluent& ScrollbarThemeFluent::GetInstance() {
-  DEFINE_STATIC_LOCAL(ScrollbarThemeFluent, theme, ());
-  return theme;
+  static base::NoDestructor<ScrollbarThemeFluent> theme;
+  return *theme;
 }
 
 ScrollbarThemeFluent::ScrollbarThemeFluent() {

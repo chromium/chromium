@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_test_base.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -20,8 +21,8 @@ class EnabledTextCheckerClient : public WebTextCheckClient {
 };
 
 EnabledTextCheckerClient* GetEnabledTextCheckerClient() {
-  DEFINE_STATIC_LOCAL(EnabledTextCheckerClient, client, ());
-  return &client;
+  static base::NoDestructor<EnabledTextCheckerClient> client;
+  return client.get();
 }
 
 }  // namespace

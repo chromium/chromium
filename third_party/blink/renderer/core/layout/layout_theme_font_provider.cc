@@ -25,10 +25,10 @@
 
 #include "third_party/blink/renderer/core/layout/layout_theme_font_provider.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/css/font_size_functions.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -45,9 +45,9 @@ constexpr float kDefaultFontSizeFallback = 16.0;
 // IE uses MS Shell Dlg there, which we render incorrectly at certain pixel
 // sizes (e.g. 15px). So, for now we just use Arial.
 const AtomicString& LayoutThemeFontProvider::DefaultGUIFont() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, font_face,
-                                  (AtomicString::FromLiteral<"Arial">()));
-  return font_face;
+  static const base::NoDestructor<AtomicString> font_face(
+      AtomicString::FromLiteral<"Arial">());
+  return *font_face;
 }
 
 float LayoutThemeFontProvider::DefaultFontSize(const Document* document) {

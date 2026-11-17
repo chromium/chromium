@@ -24,6 +24,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/color_provider_color_maps.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
@@ -102,6 +103,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
@@ -182,17 +184,19 @@ void ResetPluginCache() {
 // Set of all live pages; includes internal Page objects that are
 // not observable from scripts.
 static Page::PageSet& AllPages() {
+  DCHECK(IsMainThread());
   using PageSetHolder = DisallowNewWrapper<Page::PageSet>;
-  DEFINE_STATIC_LOCAL(Persistent<PageSetHolder>, pages,
-                      (MakeGarbageCollected<PageSetHolder>()));
-  return pages->Value();
+  static base::NoDestructor<Persistent<PageSetHolder>> pages(
+      MakeGarbageCollected<PageSetHolder>());
+  return (*pages)->Value();
 }
 
 Page::PageSet& Page::OrdinaryPages() {
+  DCHECK(IsMainThread());
   using PageSetHolder = DisallowNewWrapper<Page::PageSet>;
-  DEFINE_STATIC_LOCAL(Persistent<PageSetHolder>, pages,
-                      (MakeGarbageCollected<PageSetHolder>()));
-  return pages->Value();
+  static base::NoDestructor<Persistent<PageSetHolder>> pages(
+      MakeGarbageCollected<PageSetHolder>());
+  return (*pages)->Value();
 }
 
 void Page::InsertOrdinaryPageForTesting(Page* page) {

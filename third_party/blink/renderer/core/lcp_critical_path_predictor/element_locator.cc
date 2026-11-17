@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
@@ -96,8 +97,8 @@ namespace {
 // Do not modify this set outside TokenStreamMatcher::InitSets() to avoid race
 // conditions.
 HashSet<const StringImpl*>& ClosePElementSet() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<const StringImpl*>, set, ());
-  return set;
+  static base::NoDestructor<HashSet<const StringImpl*>> set;
+  return *set;
 }
 
 // The list of tags that their start tag tokens need to be closed immediately,
@@ -107,16 +108,16 @@ HashSet<const StringImpl*>& ClosePElementSet() {
 // Do not modify this set outside TokenStreamMatcher::InitSets() to avoid race
 // conditions.
 HashSet<const StringImpl*>& ImmediatelyPopTheCurrentNodeTags() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<const StringImpl*>, set, ());
-  return set;
+  static base::NoDestructor<HashSet<const StringImpl*>> set;
+  return *set;
 }
 
 // A restricted of tags against which this TokenStreamMatcher will initiate
 // a match, when match_against_restricted_set flag is turned on, to reduce
 // performance hit.
 HashSet<const StringImpl*>& RestrictedTagSubset() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<const StringImpl*>, set, ());
-  return set;
+  static base::NoDestructor<HashSet<const StringImpl*>> set;
+  return *set;
 }
 
 }  // namespace

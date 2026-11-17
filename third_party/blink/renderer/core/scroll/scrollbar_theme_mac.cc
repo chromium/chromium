@@ -27,6 +27,8 @@
 
 #include <variant>
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/platform/mac/web_scrollbar_theme.h"
@@ -40,7 +42,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -51,10 +53,11 @@ static bool s_jump_on_track_click = false;
 typedef HeapHashSet<WeakMember<Scrollbar>> ScrollbarSet;
 
 static ScrollbarSet& GetScrollbarSet() {
+  DCHECK(IsMainThread());
   using ScrollbarSetHolder = DisallowNewWrapper<ScrollbarSet>;
-  DEFINE_STATIC_LOCAL(Persistent<ScrollbarSetHolder>, holder,
-                      (MakeGarbageCollected<ScrollbarSetHolder>()));
-  return holder->Value();
+  static base::NoDestructor<Persistent<ScrollbarSetHolder>> holder(
+      MakeGarbageCollected<ScrollbarSetHolder>());
+  return (*holder)->Value();
 }
 
 // Values returned by NSScrollerImp's methods for querying sizes of various
@@ -101,8 +104,8 @@ const NSScrollerImpValues& GetScrollbarPainterValues(
 ScrollbarThemeMac::ScrollbarThemeMac() {}
 
 ScrollbarTheme& ScrollbarTheme::NativeTheme() {
-  DEFINE_STATIC_LOCAL(ScrollbarThemeMac, overlay_theme, ());
-  return overlay_theme;
+  static base::NoDestructor<ScrollbarThemeMac> overlay_theme;
+  return *overlay_theme;
 }
 
 void ScrollbarThemeMac::PaintTickmarks(const PaintInfo& paint_info,

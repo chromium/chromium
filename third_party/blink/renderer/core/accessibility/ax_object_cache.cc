@@ -31,6 +31,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -69,7 +70,7 @@ using ARIAWidgetSet = HashSet<String, DeprecatedCaseFoldingHashTraits<String>>;
 
 const ARIAWidgetSet& ARIARoleWidgetSet() {
   // clang-format off
-  DEFINE_STATIC_LOCAL(ARIAWidgetSet, widget_set, ({
+  static base::NoDestructor<ARIAWidgetSet> widget_set({
     // From http://www.w3.org/TR/wai-aria/roles#widget_roles
     "alert", "alertdialog", "button", "checkbox", "dialog", "gridcell", "link",
     "log", "marquee", "menuitem", "menuitemcheckbox", "menuitemradio", "option",
@@ -79,9 +80,9 @@ const ARIAWidgetSet& ARIARoleWidgetSet() {
     // This list is also from the w3.org site referenced above.
     "combobox", "grid", "listbox", "menu", "menubar", "radiogroup", "tablist",
     "tree", "treegrid",
-  }));
+  });
   // clang-format on
-  return widget_set;
+  return *widget_set;
 }
 
 bool IncludesARIAWidgetRole(const String& role) {

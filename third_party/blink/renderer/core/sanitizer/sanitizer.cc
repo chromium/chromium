@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_attribute_namespace.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_element_namespace.h"
@@ -1492,14 +1493,14 @@ void StreamingSanitizer::DidParseDocument(Document* document) {
 StreamingSanitizer* StreamingSanitizer::SafeFor(StreamingSanitizer* parent) {
   CHECK(RuntimeEnabledFeatures::DeclarativeFragmentEnabled());
   if (!parent) {
-    DEFINE_STATIC_LOCAL(Persistent<Sanitizer>, default_fragment_safe, ([] {
-                          Sanitizer* s = Sanitizer::CreateEmpty();
-                          s->setComments(true);
-                          s->removeUnsafe();
-                          return s;
-                        }()));
-    return MakeGarbageCollected<StreamingSanitizer>(default_fragment_safe.Get(),
-                                                    Sanitizer::Mode::kSafe);
+    static base::NoDestructor<Persistent<Sanitizer>> default_fragment_safe([] {
+      Sanitizer* s = Sanitizer::CreateEmpty();
+      s->setComments(true);
+      s->removeUnsafe();
+      return s;
+    }());
+    return MakeGarbageCollected<StreamingSanitizer>(
+        default_fragment_safe->Get(), Sanitizer::Mode::kSafe);
   }
 
   if (parent->mode_ == Sanitizer::Mode::kSafe) {

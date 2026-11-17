@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 
+#include "base/check.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/optional_util.h"
 #include "cc/layers/surface_layer.h"
@@ -71,6 +73,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -84,11 +87,12 @@ namespace {
 // of hashing the |frame_token| passed on creation of a RemoteFrame object.
 using RemoteFramesByTokenMap = HeapHashMap<uint64_t, WeakMember<RemoteFrame>>;
 static RemoteFramesByTokenMap& GetRemoteFramesMap() {
+  DCHECK(IsMainThread());
   using RemoteFramesByTokenMapHolder =
       DisallowNewWrapper<RemoteFramesByTokenMap>;
-  DEFINE_STATIC_LOCAL(Persistent<RemoteFramesByTokenMapHolder>, holder,
-                      (MakeGarbageCollected<RemoteFramesByTokenMapHolder>()));
-  return holder->Value();
+  static base::NoDestructor<Persistent<RemoteFramesByTokenMapHolder>> holder(
+      MakeGarbageCollected<RemoteFramesByTokenMapHolder>());
+  return (*holder)->Value();
 }
 
 }  // namespace

@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/loader/resource/xsl_style_sheet_resource.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -41,12 +42,11 @@ static void ApplyXSLRequestProperties(FetchParameters& params) {
   // difference between an XSL stylesheet and a CSS stylesheet, so it assumes
   // stylesheets are all CSS unless they already have an Accept: header set.
   // Should we teach the browser process the difference?
-  DEFINE_STATIC_LOCAL(
-      const AtomicString, accept_xslt,
-      (AtomicString::FromLiteral<
+  static const base::NoDestructor<AtomicString> accept_xslt(
+      AtomicString::FromLiteral<
           "text/xml, application/xml, application/xhtml+xml, "
-          "text/xsl, application/rss+xml, application/atom+xml">()));
-  params.MutableResourceRequest().SetHTTPAccept(accept_xslt);
+          "text/xsl, application/rss+xml, application/atom+xml">());
+  params.MutableResourceRequest().SetHTTPAccept(*accept_xslt);
 }
 
 XSLStyleSheetResource* XSLStyleSheetResource::FetchSynchronously(

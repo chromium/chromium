@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/execution_context/window_agent_factory.h"
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -13,8 +15,8 @@
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -54,10 +56,11 @@ WindowAgent* WindowAgentFactory::GetAgentForAgentClusterKey(
           : SecurityOrigin::Create(agent_cluster_key.GetURL());
   if (CommonSchemeRegistry::IsExtensionScheme(origin->Protocol().Ascii()) &&
       !Platform::Current()->ShouldUsePerBrowsingInstanceWindowAgent(origin)) {
+    DCHECK(IsMainThread());
     using AgentsMapHolder = DisallowNewWrapper<AgentsMap>;
-    DEFINE_STATIC_LOCAL(Persistent<AgentsMapHolder>, static_agents_map,
-                        (MakeGarbageCollected<AgentsMapHolder>()));
-    agents = &static_agents_map->Value();
+    static base::NoDestructor<Persistent<AgentsMapHolder>> static_agents_map(
+        MakeGarbageCollected<AgentsMapHolder>());
+    agents = &(*static_agents_map)->Value();
   }
 
   // For all other cases, we rely on the provided AgentClusterKey.

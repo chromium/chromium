@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/functional/function_ref.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_highlight_hit_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_highlights_from_point_options.h"
 #include "third_party/blink/renderer/core/dom/abstract_range.h"
@@ -310,8 +311,8 @@ HighlightRegistry::GetActiveHighlightsForReplacedElement(
     const Element& element) const {
   auto it = active_highlights_in_replaced_element_.find(&element);
   if (it == active_highlights_in_replaced_element_.end()) {
-    DEFINE_STATIC_LOCAL(const HashSet<AtomicString>, empty_set, ());
-    return empty_set;
+    static const base::NoDestructor<HashSet<AtomicString>> empty_set;
+    return *empty_set;
   }
   return it->value;
 }

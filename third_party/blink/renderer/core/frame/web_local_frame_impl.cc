@@ -99,6 +99,7 @@
 #include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -319,8 +320,8 @@ class DummyFrameOwner final : public GarbageCollected<DummyFrameOwner>,
   void SetContentFrame(Frame&) override {}
   void ClearContentFrame() override {}
   const FramePolicy& GetFramePolicy() const override {
-    DEFINE_STATIC_LOCAL(FramePolicy, frame_policy, ());
-    return frame_policy;
+    static base::NoDestructor<FramePolicy> frame_policy;
+    return *frame_policy;
   }
   void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr) override {}
   void DispatchLoad() override {}

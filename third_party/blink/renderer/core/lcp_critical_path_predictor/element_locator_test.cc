@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/no_destructor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -20,9 +21,9 @@ namespace blink {
 using ElementLocatorTest = EditingTestBase;
 
 bool HasDataLocateMe(Element& element) {
-  DEFINE_STATIC_LOCAL(const AtomicString, kDataLocateMe,
-                      (AtomicString::FromLiteral<"data-locate-me">()));
-  return element.hasAttribute(kDataLocateMe);
+  static const base::NoDestructor<AtomicString> kDataLocateMe(
+      AtomicString::FromLiteral<"data-locate-me">());
+  return element.hasAttribute(*kDataLocateMe);
 }
 
 TEST_F(ElementLocatorTest, OfElement) {

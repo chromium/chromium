@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/location.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
@@ -29,37 +30,35 @@ namespace blink {
 namespace {
 
 base::Lock& IsolatesLock() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
-  return lock;
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
 }
 
 HashSet<v8::Isolate*>& Isolates() EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<v8::Isolate*>, isolates, ());
-  return isolates;
+  static base::NoDestructor<HashSet<v8::Isolate*>> isolates;
+  return *isolates;
 }
 
 HashSet<v8::Isolate*>& ForegroundedIsolates()
     EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<v8::Isolate*>, foregrounded_isolates,
-                                  ());
-  return foregrounded_isolates;
+  static base::NoDestructor<HashSet<v8::Isolate*>> foregrounded_isolates;
+  return *foregrounded_isolates;
 }
 
 v8::Isolate::Priority& IsolateCurrentPriority()
     EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(v8::Isolate::Priority,
-                                  isolate_current_priority,
-                                  (v8::Isolate::Priority::kUserBlocking));
+  static v8::Isolate::Priority isolate_current_priority(
+      v8::Isolate::Priority::kUserBlocking);
   return isolate_current_priority;
 }
 
 bool& BatterySaverModeEnabled() EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(bool, battery_saver_mode_enabled, ());
+  static bool battery_saver_mode_enabled;
   return battery_saver_mode_enabled;
 }
 
 bool& MemorySaverModeEnabled() EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(bool, memory_saver_mode_enabled, ());
+  static bool memory_saver_mode_enabled;
   return memory_saver_mode_enabled;
 }
 

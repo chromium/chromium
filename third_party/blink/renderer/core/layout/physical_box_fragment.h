@@ -280,7 +280,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
 
   const PhysicalBoxStrut& UsedPositionInsets() const {
     if (!used_position_insets_) {
-      DEFINE_STATIC_LOCAL(const PhysicalBoxStrut, zero_insets, ());
+      static const PhysicalBoxStrut zero_insets;
       return zero_insets;
     }
     return used_position_insets_->insets;

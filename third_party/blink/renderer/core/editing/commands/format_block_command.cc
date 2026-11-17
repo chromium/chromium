@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/editing/commands/format_block_command.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/commands/editing_commands_utilities.h"
@@ -177,21 +178,20 @@ Element* FormatBlockCommand::ElementForFormatBlockCommand(
 }
 
 bool IsElementForFormatBlock(const QualifiedName& tag_name) {
-  DEFINE_STATIC_LOCAL(HashSet<QualifiedName>, block_tags,
-                      ({
-                          html_names::kAddressTag, html_names::kArticleTag,
-                          html_names::kAsideTag,   html_names::kBlockquoteTag,
-                          html_names::kDdTag,      html_names::kDivTag,
-                          html_names::kDlTag,      html_names::kDtTag,
-                          html_names::kFooterTag,  html_names::kH1Tag,
-                          html_names::kH2Tag,      html_names::kH3Tag,
-                          html_names::kH4Tag,      html_names::kH5Tag,
-                          html_names::kH6Tag,      html_names::kHeaderTag,
-                          html_names::kHgroupTag,  html_names::kMainTag,
-                          html_names::kNavTag,     html_names::kPTag,
-                          html_names::kPreTag,     html_names::kSectionTag,
-                      }));
-  return block_tags.Contains(tag_name);
+  static base::NoDestructor<HashSet<QualifiedName>> block_tags({
+      html_names::kAddressTag, html_names::kArticleTag,
+      html_names::kAsideTag,   html_names::kBlockquoteTag,
+      html_names::kDdTag,      html_names::kDivTag,
+      html_names::kDlTag,      html_names::kDtTag,
+      html_names::kFooterTag,  html_names::kH1Tag,
+      html_names::kH2Tag,      html_names::kH3Tag,
+      html_names::kH4Tag,      html_names::kH5Tag,
+      html_names::kH6Tag,      html_names::kHeaderTag,
+      html_names::kHgroupTag,  html_names::kMainTag,
+      html_names::kNavTag,     html_names::kPTag,
+      html_names::kPreTag,     html_names::kSectionTag,
+  });
+  return block_tags->Contains(tag_name);
 }
 
 Node* EnclosingBlockToSplitTreeTo(Node* start_node) {

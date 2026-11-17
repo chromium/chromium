@@ -36,10 +36,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -255,9 +257,9 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -286,10 +288,11 @@ constexpr unsigned kMaxDocumentChunkSize = 1000000;
 // of hashing the |frame_token| passed on creation of a LocalFrame object.
 using LocalFramesByTokenMap = HeapHashMap<uint64_t, WeakMember<LocalFrame>>;
 static LocalFramesByTokenMap& GetLocalFramesMap() {
+  DCHECK(IsMainThread());
   using LocalFramesByTokenMapHolder = DisallowNewWrapper<LocalFramesByTokenMap>;
-  DEFINE_STATIC_LOCAL(Persistent<LocalFramesByTokenMapHolder>, holder,
-                      (MakeGarbageCollected<LocalFramesByTokenMapHolder>()));
-  return holder->Value();
+  static base::NoDestructor<Persistent<LocalFramesByTokenMapHolder>> holder(
+      MakeGarbageCollected<LocalFramesByTokenMapHolder>());
+  return (*holder)->Value();
 }
 
 // Maximum number of burst download requests allowed.

@@ -6,12 +6,12 @@
 
 #include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/tag_converters.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "v8/include/v8.h"
 
@@ -83,8 +83,8 @@ void LocaleController::UpdateLocale(const base::i18n::LanguageTag& locale) {
 
 // static
 LocaleController& LocaleController::instance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(LocaleController, instance, ());
-  return instance;
+  static base::NoDestructor<LocaleController> instance;
+  return *instance;
 }
 
 }  // namespace blink

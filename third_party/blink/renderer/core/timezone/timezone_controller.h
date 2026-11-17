@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/device/public/mojom/time_zone_monitor.mojom-blink.h"
@@ -79,6 +80,8 @@ class CORE_EXPORT TimeZoneController final
   static void ChangeTimeZoneForTesting(const String&);
 
  private:
+  friend class base::NoDestructor<TimeZoneController>;
+
   TimeZoneController();
   static TimeZoneController& instance();
   static bool HasTimeZoneOverride();

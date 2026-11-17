@@ -6,18 +6,18 @@
 
 #include <optional>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/annotation/text_annotation_selector.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
 namespace {
 std::optional<AnnotationSelector::GeneratorFunc>& GetGeneratorForTesting() {
-  DEFINE_STATIC_LOCAL(std::optional<AnnotationSelector::GeneratorFunc>,
-                      generator, ());
-  return generator;
+  static base::NoDestructor<std::optional<AnnotationSelector::GeneratorFunc>>
+      generator;
+  return *generator;
 }
 }  //  namespace
 

@@ -7,6 +7,7 @@
 #include <iterator>
 
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_html.h"
@@ -104,9 +105,9 @@ AttributeTypeVector BuildAttributeVector() {
 }
 
 const AttributeTypeVector& GetAttributeTypeVector() {
-  DEFINE_STATIC_LOCAL(AttributeTypeVector, attribute_table_,
-                      (BuildAttributeVector()));
-  return attribute_table_;
+  static base::NoDestructor<AttributeTypeVector> attribute_table_(
+      BuildAttributeVector());
+  return *attribute_table_;
 }
 
 AttributeTypeVector BuildPropertyVector() {
@@ -142,9 +143,9 @@ AttributeTypeVector BuildPropertyVector() {
 }
 
 const AttributeTypeVector& GetPropertyTypeVector() {
-  DEFINE_STATIC_LOCAL(AttributeTypeVector, property_table_,
-                      (BuildPropertyVector()));
-  return property_table_;
+  static base::NoDestructor<AttributeTypeVector> property_table_(
+      BuildPropertyVector());
+  return *property_table_;
 }
 
 // Find an entry matching `attribute` on any element in an AttributeTypeVector.

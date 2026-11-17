@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -292,10 +293,10 @@ void SVGTextContentElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     HeapVector<CSSPropertyValue, 8>& style) {
   if (name.Matches(xml_names::kSpaceAttr)) {
-    DEFINE_STATIC_LOCAL(const AtomicString, preserve_string,
-                        (AtomicString::FromLiteral<"preserve">()));
+    static const base::NoDestructor<AtomicString> preserve_string(
+        AtomicString::FromLiteral<"preserve">());
 
-    if (value == preserve_string) {
+    if (value == *preserve_string) {
       UseCounter::Count(GetDocument(), WebFeature::kWhiteSpacePreFromXMLSpace);
       // Longhands of `white-space: pre`.
       AddPropertyToPresentationAttributeStyle(

@@ -92,10 +92,8 @@ EffectPaintPropertyNode::State FrameCaret::CaretEffectNodeState(
   // within the CALayer for the caret.
   state.opacity = visible ? 1.f : 0.001f;
   state.local_transform_space = &local_transform_space;
-  DEFINE_STATIC_LOCAL(
-      CompositorElementId, element_id,
-      (CompositorElementIdFromUniqueObjectId(
-          NewUniqueObjectId(), CompositorElementIdNamespace::kPrimaryEffect)));
+  static CompositorElementId element_id(CompositorElementIdFromUniqueObjectId(
+      NewUniqueObjectId(), CompositorElementIdNamespace::kPrimaryEffect));
   state.compositor_element_id = element_id;
   if (!display_item_client_->IsInCanvasSubtree()) {
     state.direct_compositing_reasons = {

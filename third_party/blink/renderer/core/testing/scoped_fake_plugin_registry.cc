@@ -5,13 +5,13 @@
 #include "third_party/blink/renderer/core/testing/scoped_fake_plugin_registry.h"
 
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/plugins/plugin_registry.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
@@ -21,9 +21,9 @@ namespace {
 class FakePluginRegistryImpl : public mojom::blink::PluginRegistry {
  public:
   static void Bind(mojo::ScopedMessagePipeHandle handle) {
-    DEFINE_STATIC_LOCAL(FakePluginRegistryImpl, impl, ());
-    impl.receivers_.Add(
-        &impl,
+    static base::NoDestructor<FakePluginRegistryImpl> impl;
+    impl->receivers_.Add(
+        impl.get(),
         mojo::PendingReceiver<mojom::blink::PluginRegistry>(std::move(handle)));
   }
 

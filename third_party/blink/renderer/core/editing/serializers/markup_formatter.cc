@@ -27,7 +27,8 @@
 
 #include "third_party/blink/renderer/core/editing/serializers/markup_formatter.h"
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include <string_view>
+
 #include "third_party/blink/renderer/core/dom/cdata_section.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -53,8 +54,7 @@ namespace {
 
 struct EntityDescription {
   UChar entity;
-  // RAW_PTR_EXCLUSION: #global-scope
-  RAW_PTR_EXCLUSION const std::string& reference;
+  std::string_view reference;
   EntityMask mask;
 };
 
@@ -133,24 +133,15 @@ void MarkupFormatter::AppendCharactersReplacingEntities(
     const StringView& source,
     EntityMask entity_mask,
     StringBuilder& result) {
-  DEFINE_STATIC_LOCAL(const std::string, amp_reference, ("&amp;"));
-  DEFINE_STATIC_LOCAL(const std::string, lt_reference, ("&lt;"));
-  DEFINE_STATIC_LOCAL(const std::string, gt_reference, ("&gt;"));
-  DEFINE_STATIC_LOCAL(const std::string, quot_reference, ("&quot;"));
-  DEFINE_STATIC_LOCAL(const std::string, nbsp_reference, ("&nbsp;"));
-  DEFINE_STATIC_LOCAL(const std::string, tab_reference, ("&#9;"));
-  DEFINE_STATIC_LOCAL(const std::string, line_feed_reference, ("&#10;"));
-  DEFINE_STATIC_LOCAL(const std::string, carriage_return_reference, ("&#13;"));
-
-  static const EntityDescription kEntityMaps[] = {
-      {'&', amp_reference, kEntityAmp},
-      {'<', lt_reference, kEntityLt},
-      {'>', gt_reference, kEntityGt},
-      {'"', quot_reference, kEntityQuot},
-      {uchar::kNoBreakSpace, nbsp_reference, kEntityNbsp},
-      {'\t', tab_reference, kEntityTab},
-      {'\n', line_feed_reference, kEntityLineFeed},
-      {'\r', carriage_return_reference, kEntityCarriageReturn},
+  static constexpr EntityDescription kEntityMaps[] = {
+      {'&', "&amp;", kEntityAmp},
+      {'<', "&lt;", kEntityLt},
+      {'>', "&gt;", kEntityGt},
+      {'"', "&quot;", kEntityQuot},
+      {uchar::kNoBreakSpace, "&nbsp;", kEntityNbsp},
+      {'\t', "&#9;", kEntityTab},
+      {'\n', "&#10;", kEntityLineFeed},
+      {'\r', "&#13;", kEntityCarriageReturn},
   };
 
   VisitCharacters(source, [&](auto chars) {

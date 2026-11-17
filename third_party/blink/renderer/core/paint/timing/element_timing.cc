@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/timing/element_timing.h"
 
 #include "base/check_deref.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -254,10 +255,10 @@ void ElementTiming::QueuePerformanceEntriesForReportingIfNeeded(
     const String& image_url = url.ProtocolIsData()
                                   ? image_string.substr(0, kInlineImageMaxChars)
                                   : image_string;
-    DEFINE_STATIC_LOCAL(const AtomicString, kImagePaint,
-                        (AtomicString::FromLiteral<"image-paint">()));
+    static const base::NoDestructor<AtomicString> kImagePaint(
+        AtomicString::FromLiteral<"image-paint">());
     element_timings_.push_back(PerformanceElementTiming::Create(
-        kImagePaint, image_url, intersection_rect,
+        *kImagePaint, image_url, intersection_rect,
         performance_->MonotonicTimeToDOMHighResTimeStamp(load_time),
         element->FastGetAttribute(html_names::kElementtimingAttr),
         intrinsic_size.width(), intrinsic_size.height(),
@@ -281,10 +282,10 @@ void ElementTiming::QueuePerformanceEntriesForReportingIfNeeded(
   CHECK(!element->IsInShadowTree());
 
   if (IsRegisteredForElementTiming(element)) {
-    DEFINE_STATIC_LOCAL(const AtomicString, kTextPaint,
-                        (AtomicString::FromLiteral<"text-paint">()));
+    static const base::NoDestructor<AtomicString> kTextPaint(
+        AtomicString::FromLiteral<"text-paint">());
     element_timings_.push_back(PerformanceElementTiming::Create(
-        kTextPaint,
+        *kTextPaint,
         /*url=*/g_empty_string, record.ElementTimingRect(),
         /*load_time=*/0.0,
         element->FastGetAttribute(html_names::kElementtimingAttr),

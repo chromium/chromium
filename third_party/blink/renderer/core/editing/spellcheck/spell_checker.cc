@@ -81,7 +81,7 @@ bool IsWhiteSpaceOrPunctuation(UChar c) {
 }  // namespace
 
 static WebSpellCheckPanelHostClient& GetEmptySpellCheckPanelHostClient() {
-  DEFINE_STATIC_LOCAL(EmptySpellCheckPanelHostClient, client, ());
+  static EmptySpellCheckPanelHostClient client;
   return client;
 }
 

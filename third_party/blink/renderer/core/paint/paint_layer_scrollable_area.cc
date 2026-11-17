@@ -47,6 +47,8 @@
 #include <optional>
 #include <utility>
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/animation/animation_timeline.h"
@@ -131,6 +133,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -3078,11 +3081,12 @@ void PaintLayerScrollableArea::DelayScrollOffsetClampScope::
 
 HeapVector<Member<PaintLayerScrollableArea>>&
 PaintLayerScrollableArea::DelayScrollOffsetClampScope::NeedsClampList() {
+  DCHECK(IsMainThread());
   using Holder =
       DisallowNewWrapper<HeapVector<Member<PaintLayerScrollableArea>>>;
-  DEFINE_STATIC_LOCAL(Persistent<Holder>, needs_clamp_list,
-                      (MakeGarbageCollected<Holder>()));
-  return needs_clamp_list->Value();
+  static base::NoDestructor<Persistent<Holder>> needs_clamp_list(
+      MakeGarbageCollected<Holder>());
+  return (*needs_clamp_list)->Value();
 }
 
 ScrollbarTheme& PaintLayerScrollableArea::GetPageScrollbarTheme() const {

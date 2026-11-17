@@ -32,6 +32,7 @@
 #include <utility>
 
 #include "base/memory/values_equivalent.h"
+#include "base/no_destructor.h"
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
@@ -4592,9 +4593,9 @@ const GCedHeapVector<Member<Node>>& LayoutBox::ReadingFlowNodes() const {
   if (const auto* nodes = GetPhysicalFragment(0)->ReadingFlowNodes()) {
     return *nodes;
   }
-  DEFINE_STATIC_LOCAL(Persistent<GCedHeapVector<Member<Node>>>, empty_vector,
-                      (MakeGarbageCollected<GCedHeapVector<Member<Node>>>()));
-  return *empty_vector.Get();
+  static base::NoDestructor<Persistent<GCedHeapVector<Member<Node>>>>
+      empty_vector(MakeGarbageCollected<GCedHeapVector<Member<Node>>>());
+  return *empty_vector->Get();
 }
 
 }  // namespace blink

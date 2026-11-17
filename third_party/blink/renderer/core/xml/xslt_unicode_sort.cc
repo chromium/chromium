@@ -38,8 +38,10 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/i18n/unicode/ucol.h"
 
@@ -180,12 +182,14 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
     status = U_ZERO_ERROR;
   }
 
-  DEFINE_STATIC_LOCAL(std::unique_ptr<UCollatorHolder>, cached_collator, ());
+  DCHECK(IsMainThread());
+  static base::NoDestructor<std::unique_ptr<UCollatorHolder>> cached_collator;
   std::unique_ptr<UCollatorHolder> collator;
-  if (cached_collator &&
-      std::string_view(cached_collator->equivalent_locale) == equivalent_locale &&
-      cached_collator->lower_first == comp->lower_first) {
-    collator = std::move(cached_collator);
+  if (*cached_collator &&
+      std::string_view((*cached_collator)->equivalent_locale) ==
+          equivalent_locale &&
+      (*cached_collator)->lower_first == comp->lower_first) {
+    collator = std::move(*cached_collator);
   } else {
     collator = std::make_unique<UCollatorHolder>();
     base::span(collator->equivalent_locale).copy_from(equivalent_locale);
@@ -382,7 +386,7 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
     }
   }
 
-  cached_collator = std::move(collator);
+  *cached_collator = std::move(collator);
 }
 
 }  // namespace blink

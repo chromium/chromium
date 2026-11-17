@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_FLUENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_FLUENT_H_
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
@@ -60,6 +61,7 @@ class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {
                                              float new_position) const override;
 
  private:
+  friend class base::NoDestructor<ScrollbarThemeFluent>;
   friend class ScrollbarThemeFluentMock;
 
   int ThumbThickness(float scale_from_dip,

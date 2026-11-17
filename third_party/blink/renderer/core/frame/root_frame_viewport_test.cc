@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/root_frame_viewport.h"
 
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
@@ -83,8 +84,8 @@ class ScrollableAreaStub : public GarbageCollected<ScrollableAreaStub>,
   }
 
   ScrollbarTheme& GetPageScrollbarTheme() const override {
-    DEFINE_STATIC_LOCAL(ScrollbarThemeOverlayMock, theme, ());
-    return theme;
+    static base::NoDestructor<ScrollbarThemeOverlayMock> theme;
+    return *theme;
   }
   bool ScrollAnimatorEnabled() const override { return true; }
 

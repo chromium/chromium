@@ -33,6 +33,7 @@
 #include <limits>
 
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/no_destructor.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -116,11 +117,9 @@ class HeapSizeCache {
 // tuning, and hence don't need to be as refined when the value is large, so we
 // threshold at a list of exponentially separated buckets.
 size_t QuantizeMemorySize(size_t size) {
-  const int kNumberOfBuckets = 100;
-  DEFINE_STATIC_LOCAL(Vector<size_t>, bucket_size_list, ());
-
-  if (bucket_size_list.empty()) {
-    bucket_size_list.resize(kNumberOfBuckets);
+  constexpr int kNumberOfBuckets = 100;
+  static const base::NoDestructor<Vector<size_t>> bucket_size_list([]() {
+    Vector<size_t> list(kNumberOfBuckets);
 
     float size_of_next_bucket =
         10000000.0;  // First bucket size is roughly 10M.
@@ -136,8 +135,7 @@ size_t QuantizeMemorySize(size_t size) {
 
     for (int i = 0; i < kNumberOfBuckets; ++i) {
       size_t current_bucket_size = static_cast<size_t>(size_of_next_bucket);
-      bucket_size_list[i] =
-          current_bucket_size - (current_bucket_size % granularity);
+      list[i] = current_bucket_size - (current_bucket_size % granularity);
 
       size_of_next_bucket *= scaling_factor;
       if (size_of_next_bucket >= next_power_of_ten) {
@@ -150,19 +148,20 @@ size_t QuantizeMemorySize(size_t size) {
       }
 
       // Watch out for overflow, if the range is too large for size_t.
-      if (i > 0 && bucket_size_list[i] < bucket_size_list[i - 1]) {
-        bucket_size_list[i] = std::numeric_limits<size_t>::max();
+      if (i > 0 && list[i] < list[i - 1]) {
+        list[i] = std::numeric_limits<size_t>::max();
       }
     }
-  }
+    return list;
+  }());
 
   for (int i = 0; i < kNumberOfBuckets; ++i) {
-    if (size <= bucket_size_list[i]) {
-      return bucket_size_list[i];
+    if (size <= (*bucket_size_list)[i]) {
+      return (*bucket_size_list)[i];
     }
   }
 
-  return bucket_size_list[kNumberOfBuckets - 1];
+  return (*bucket_size_list)[kNumberOfBuckets - 1];
 }
 
 MemoryInfo::MemoryInfo(Precision precision) {

@@ -29,6 +29,7 @@
 
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
@@ -968,9 +969,9 @@ String SVGImage::FilenameExtension() const {
 }
 
 const AtomicString& SVGImage::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, svg_mime_type,
-                      (AtomicString::FromLiteral<"image/svg+xml">()));
-  return svg_mime_type;
+  static const base::NoDestructor<AtomicString> svg_mime_type(
+      AtomicString::FromLiteral<"image/svg+xml">());
+  return *svg_mime_type;
 }
 
 }  // namespace blink

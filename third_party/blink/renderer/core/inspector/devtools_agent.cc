@@ -10,6 +10,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/functional/callback_helpers.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
@@ -240,8 +241,8 @@ void UpdateSessionCountCrashKey(int delta) {
   if (!need_update) {
     return;
   }
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
-  base::AutoLock auto_lock(lock);
+  static base::NoDestructor<base::Lock> lock;
+  base::AutoLock auto_lock(*lock);
   static base::debug::CrashKeyString* devtools_present =
       base::debug::AllocateCrashKeyString("devtools_present",
                                           base::debug::CrashKeySize::Size32);

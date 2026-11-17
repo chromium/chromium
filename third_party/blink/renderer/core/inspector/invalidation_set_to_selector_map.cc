@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
@@ -14,6 +16,7 @@
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/inspector/style_rule_to_style_sheet_contents_map.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -328,8 +331,9 @@ void InvalidationSetToSelectorMap::Trace(Visitor* visitor) const {
 // static
 Persistent<InvalidationSetToSelectorMap>&
 InvalidationSetToSelectorMap::GetInstanceReference() {
-  DEFINE_STATIC_LOCAL(Persistent<InvalidationSetToSelectorMap>, instance, ());
-  return instance;
+  DCHECK(IsMainThread());
+  static base::NoDestructor<Persistent<InvalidationSetToSelectorMap>> instance;
+  return *instance;
 }
 
 }  // namespace blink

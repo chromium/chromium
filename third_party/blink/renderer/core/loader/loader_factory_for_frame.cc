@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -35,7 +36,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_url_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 namespace blink {
@@ -89,9 +89,9 @@ class BackgroundResourceFetchAssetsWithCustomLoaderFactory
 };
 
 Vector<String>& CorsExemptHeaderList() {
-  DEFINE_STATIC_LOCAL(ThreadSpecific<Vector<String>>, cors_exempt_header_list,
-                      ());
-  return *cors_exempt_header_list;
+  static base::NoDestructor<ThreadSpecific<Vector<String>>>
+      cors_exempt_header_list;
+  return **cors_exempt_header_list;
 }
 
 Vector<std::unique_ptr<URLLoaderThrottle>> CreateThrottlesImpl(

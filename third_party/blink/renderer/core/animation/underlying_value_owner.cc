@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 #include <memory>
+
+#include "base/no_destructor.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
 
@@ -38,8 +40,8 @@ void UnderlyingValueOwner::SetNonInterpolableValue(
 }
 
 const InterpolationValue& UnderlyingValueOwner::Value() const {
-  DEFINE_STATIC_LOCAL(NullValueWrapper, null_value_wrapper, ());
-  return *this ? *value_ : null_value_wrapper.value->underlying();
+  static base::NoDestructor<NullValueWrapper> null_value_wrapper;
+  return *this ? *value_ : null_value_wrapper->value->underlying();
 }
 
 void UnderlyingValueOwner::Set(std::nullptr_t) {

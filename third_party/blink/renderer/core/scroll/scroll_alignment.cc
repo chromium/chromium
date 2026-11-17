@@ -49,71 +49,64 @@ namespace blink {
 
 // static
 const mojom::blink::ScrollAlignment& ScrollAlignment::CenterIfNeeded() {
-  DEFINE_STATIC_LOCAL(const mojom::blink::ScrollAlignment,
-                      g_scroll_align_center_if_needed,
-                      (mojom::blink::ScrollAlignment::Behavior::kNoScroll,
-                       mojom::blink::ScrollAlignment::Behavior::kCenter,
-                       mojom::blink::ScrollAlignment::Behavior::kClosestEdge));
+  static const mojom::blink::ScrollAlignment g_scroll_align_center_if_needed(
+      mojom::blink::ScrollAlignment::Behavior::kNoScroll,
+      mojom::blink::ScrollAlignment::Behavior::kCenter,
+      mojom::blink::ScrollAlignment::Behavior::kClosestEdge);
   return g_scroll_align_center_if_needed;
 }
 
 // static
 const mojom::blink::ScrollAlignment& ScrollAlignment::ToEdgeIfNeeded() {
-  DEFINE_STATIC_LOCAL(const mojom::blink::ScrollAlignment,
-                      g_scroll_align_to_edge_if_needed,
-                      (mojom::blink::ScrollAlignment::Behavior::kNoScroll,
-                       mojom::blink::ScrollAlignment::Behavior::kClosestEdge,
-                       mojom::blink::ScrollAlignment::Behavior::kClosestEdge));
+  static const mojom::blink::ScrollAlignment g_scroll_align_to_edge_if_needed(
+      mojom::blink::ScrollAlignment::Behavior::kNoScroll,
+      mojom::blink::ScrollAlignment::Behavior::kClosestEdge,
+      mojom::blink::ScrollAlignment::Behavior::kClosestEdge);
   return g_scroll_align_to_edge_if_needed;
 }
 
 // static
 const mojom::blink::ScrollAlignment& ScrollAlignment::CenterAlways() {
-  DEFINE_STATIC_LOCAL(const mojom::blink::ScrollAlignment,
-                      g_scroll_align_center_always,
-                      (mojom::blink::ScrollAlignment::Behavior::kCenter,
-                       mojom::blink::ScrollAlignment::Behavior::kCenter,
-                       mojom::blink::ScrollAlignment::Behavior::kCenter));
+  static const mojom::blink::ScrollAlignment g_scroll_align_center_always(
+      mojom::blink::ScrollAlignment::Behavior::kCenter,
+      mojom::blink::ScrollAlignment::Behavior::kCenter,
+      mojom::blink::ScrollAlignment::Behavior::kCenter);
   return g_scroll_align_center_always;
 }
 
 // static
 const mojom::blink::ScrollAlignment& ScrollAlignment::TopAlways() {
-  DEFINE_STATIC_LOCAL(const mojom::blink::ScrollAlignment,
-                      g_scroll_align_top_always,
-                      (mojom::blink::ScrollAlignment::Behavior::kTop,
-                       mojom::blink::ScrollAlignment::Behavior::kTop,
-                       mojom::blink::ScrollAlignment::Behavior::kTop));
+  static const mojom::blink::ScrollAlignment g_scroll_align_top_always(
+      mojom::blink::ScrollAlignment::Behavior::kTop,
+      mojom::blink::ScrollAlignment::Behavior::kTop,
+      mojom::blink::ScrollAlignment::Behavior::kTop);
   return g_scroll_align_top_always;
 }
 
 // static
 const mojom::blink::ScrollAlignment& ScrollAlignment::BottomAlways() {
-  DEFINE_STATIC_LOCAL(const mojom::blink::ScrollAlignment,
-                      g_scroll_align_bottom_always,
-                      (mojom::blink::ScrollAlignment::Behavior::kBottom,
-                       mojom::blink::ScrollAlignment::Behavior::kBottom,
-                       mojom::blink::ScrollAlignment::Behavior::kBottom));
+  static const mojom::blink::ScrollAlignment g_scroll_align_bottom_always(
+      mojom::blink::ScrollAlignment::Behavior::kBottom,
+      mojom::blink::ScrollAlignment::Behavior::kBottom,
+      mojom::blink::ScrollAlignment::Behavior::kBottom);
   return g_scroll_align_bottom_always;
 }
 
 // static
 const mojom::blink::ScrollAlignment& ScrollAlignment::LeftAlways() {
-  DEFINE_STATIC_LOCAL(const mojom::blink::ScrollAlignment,
-                      g_scroll_align_left_always,
-                      (mojom::blink::ScrollAlignment::Behavior::kLeft,
-                       mojom::blink::ScrollAlignment::Behavior::kLeft,
-                       mojom::blink::ScrollAlignment::Behavior::kLeft));
+  static const mojom::blink::ScrollAlignment g_scroll_align_left_always(
+      mojom::blink::ScrollAlignment::Behavior::kLeft,
+      mojom::blink::ScrollAlignment::Behavior::kLeft,
+      mojom::blink::ScrollAlignment::Behavior::kLeft);
   return g_scroll_align_left_always;
 }
 
 // static
 const mojom::blink::ScrollAlignment& ScrollAlignment::RightAlways() {
-  DEFINE_STATIC_LOCAL(const mojom::blink::ScrollAlignment,
-                      g_scroll_align_right_always,
-                      (mojom::blink::ScrollAlignment::Behavior::kRight,
-                       mojom::blink::ScrollAlignment::Behavior::kRight,
-                       mojom::blink::ScrollAlignment::Behavior::kRight));
+  static const mojom::blink::ScrollAlignment g_scroll_align_right_always(
+      mojom::blink::ScrollAlignment::Behavior::kRight,
+      mojom::blink::ScrollAlignment::Behavior::kRight,
+      mojom::blink::ScrollAlignment::Behavior::kRight);
   return g_scroll_align_right_always;
 }
 

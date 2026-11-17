@@ -34,6 +34,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
@@ -84,8 +85,8 @@ constexpr base::TimeDelta kForcibleTerminationDelay = base::Seconds(2);
 }  // namespace
 
 base::Lock& WorkerThread::ThreadSetLock() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
-  return lock;
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
 }
 
 static std::atomic_int g_unique_worker_thread_id(1);
@@ -377,13 +378,13 @@ unsigned WorkerThread::WorkerThreadCount() {
 }
 
 HashSet<WorkerThread*>& WorkerThread::InitializingWorkerThreads() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<WorkerThread*>, threads, ());
-  return threads;
+  static base::NoDestructor<HashSet<WorkerThread*>> threads;
+  return *threads;
 }
 
 HashSet<WorkerThread*>& WorkerThread::WorkerThreads() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<WorkerThread*>, threads, ());
-  return threads;
+  static base::NoDestructor<HashSet<WorkerThread*>> threads;
+  return *threads;
 }
 
 bool WorkerThread::IsForciblyTerminated() {

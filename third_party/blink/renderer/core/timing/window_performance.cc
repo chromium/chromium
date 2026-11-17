@@ -39,6 +39,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -180,27 +181,28 @@ AtomicString GetFrameSrc(HTMLFrameOwnerElement* frame_owner) {
 }
 
 const AtomicString& SelfKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, kSelfAttribution,
-                      (AtomicString::FromLiteral<"self">()));
-  return kSelfAttribution;
+  static const base::NoDestructor<AtomicString> kSelfAttribution(
+      AtomicString::FromLiteral<"self">());
+  return *kSelfAttribution;
 }
 
 const AtomicString& SameOriginAncestorKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, kSameOriginAncestorAttribution,
-                      (AtomicString::FromLiteral<"same-origin-ancestor">()));
-  return kSameOriginAncestorAttribution;
+  static const base::NoDestructor<AtomicString> kSameOriginAncestorAttribution(
+      AtomicString::FromLiteral<"same-origin-ancestor">());
+  return *kSameOriginAncestorAttribution;
 }
 
 const AtomicString& SameOriginDescendantKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, kSameOriginDescendantAttribution,
-                      (AtomicString::FromLiteral<"same-origin-descendant">()));
-  return kSameOriginDescendantAttribution;
+  static const base::NoDestructor<AtomicString>
+      kSameOriginDescendantAttribution(
+          AtomicString::FromLiteral<"same-origin-descendant">());
+  return *kSameOriginDescendantAttribution;
 }
 
 const AtomicString& SameOriginKeyword() {
-  DEFINE_STATIC_LOCAL(const AtomicString, kSameOriginAttribution,
-                      (AtomicString::FromLiteral<"same-origin">()));
-  return kSameOriginAttribution;
+  static const base::NoDestructor<AtomicString> kSameOriginAttribution(
+      AtomicString::FromLiteral<"same-origin">());
+  return *kSameOriginAttribution;
 }
 
 AtomicString SameOriginAttribution(Frame* observer_frame,
@@ -536,17 +538,17 @@ std::pair<AtomicString, DOMWindow*> WindowPerformance::SanitizedAttribution(
   DCHECK(IsMainThread());
   if (has_multiple_contexts) {
     // Unable to attribute, multiple script execution contents were involved.
-    DEFINE_STATIC_LOCAL(const AtomicString, kAmbiguousAttribution,
-                        (AtomicString::FromLiteral<"multiple-contexts">()));
-    return std::make_pair(kAmbiguousAttribution, nullptr);
+    static const base::NoDestructor<AtomicString> kAmbiguousAttribution(
+        AtomicString::FromLiteral<"multiple-contexts">());
+    return std::make_pair(*kAmbiguousAttribution, nullptr);
   }
 
   LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(task_context);
   if (!window || !window->GetFrame()) {
     // Unable to attribute as no script was involved.
-    DEFINE_STATIC_LOCAL(const AtomicString, kUnknownAttribution,
-                        (AtomicString::FromLiteral<"unknown">()));
-    return std::make_pair(kUnknownAttribution, nullptr);
+    static const base::NoDestructor<AtomicString> kUnknownAttribution(
+        AtomicString::FromLiteral<"unknown">());
+    return std::make_pair(*kUnknownAttribution, nullptr);
   }
 
   // Exactly one culprit location, attribute based on origin boundary.
@@ -572,21 +574,21 @@ std::pair<AtomicString, DOMWindow*> WindowPerformance::SanitizedAttribution(
         last_cross_origin_frame = frame;
       }
     }
-    DEFINE_STATIC_LOCAL(
-        const AtomicString, kCrossOriginDescendantAttribution,
-        (AtomicString::FromLiteral<"cross-origin-descendant">()));
-    return std::make_pair(kCrossOriginDescendantAttribution,
+    static const base::NoDestructor<AtomicString>
+        kCrossOriginDescendantAttribution(
+            AtomicString::FromLiteral<"cross-origin-descendant">());
+    return std::make_pair(*kCrossOriginDescendantAttribution,
                           last_cross_origin_frame->DomWindow());
   }
   if (observer_frame->Tree().IsDescendantOf(culprit_frame)) {
-    DEFINE_STATIC_LOCAL(const AtomicString, kCrossOriginAncestorAttribution,
-                        (AtomicString::FromLiteral<"cross-origin-ancestor">()));
-    return std::make_pair(kCrossOriginAncestorAttribution, nullptr);
+    static const base::NoDestructor<AtomicString>
+        kCrossOriginAncestorAttribution(
+            AtomicString::FromLiteral<"cross-origin-ancestor">());
+    return std::make_pair(*kCrossOriginAncestorAttribution, nullptr);
   }
-  DEFINE_STATIC_LOCAL(
-      const AtomicString, kCrossOriginAttribution,
-      (AtomicString::FromLiteral<"cross-origin-unreachable">()));
-  return std::make_pair(kCrossOriginAttribution, nullptr);
+  static const base::NoDestructor<AtomicString> kCrossOriginAttribution(
+      AtomicString::FromLiteral<"cross-origin-unreachable">());
+  return std::make_pair(*kCrossOriginAttribution, nullptr);
 }
 
 void WindowPerformance::markConditional(ScriptState* script_state,

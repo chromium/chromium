@@ -29,6 +29,7 @@
 
 #include <memory>
 
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/layers/layer.h"
 #include "cc/trees/layer_tree_host.h"
@@ -48,9 +49,9 @@
 namespace blink {
 
 ChromeClient& GetStaticEmptyChromeClientInstance() {
-  DEFINE_STATIC_LOCAL(Persistent<ChromeClient>, chrome_client,
-                      (MakeGarbageCollected<EmptyChromeClient>()));
-  return *chrome_client;
+  static base::NoDestructor<Persistent<ChromeClient>> chrome_client(
+      MakeGarbageCollected<EmptyChromeClient>());
+  return **chrome_client;
 }
 
 class EmptyPopupMenu : public PopupMenu {

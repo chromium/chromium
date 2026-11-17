@@ -27,6 +27,7 @@
 
 #include <optional>
 
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "cc/input/scroll_utils.h"
 #include "cc/input/scrollbar.h"
@@ -286,8 +287,8 @@ ScrollbarTheme& ScrollbarTheme::GetTheme() {
   if (MockScrollbarsEnabled()) {
     // We only support mock overlay scrollbars.
     DCHECK(OverlayScrollbarsEnabled());
-    DEFINE_STATIC_LOCAL(ScrollbarThemeOverlayMock, overlay_mock_theme, ());
-    return overlay_mock_theme;
+    static base::NoDestructor<ScrollbarThemeOverlayMock> overlay_mock_theme;
+    return *overlay_mock_theme;
   }
   return NativeTheme();
 }

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_OVERLAY_MOBILE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_OVERLAY_MOBILE_H_
 
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay.h"
@@ -25,6 +26,8 @@ class CORE_EXPORT ScrollbarThemeOverlayMobile : public ScrollbarThemeOverlay {
   bool UsesNinePatchThumbResource() const override { return false; }
 
  protected:
+  friend class base::NoDestructor<ScrollbarThemeOverlayMobile>;
+
   ScrollbarThemeOverlayMobile(int thumb_thickness, int scrollbar_margin);
 
   ScrollbarPart HitTest(const Scrollbar&, const gfx::Point&) const override;

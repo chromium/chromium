@@ -5,6 +5,7 @@
 
 #include <optional>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -149,30 +150,38 @@ ScriptValue PerformanceMark::detail(ScriptState* script_state) {
 // static
 const PerformanceMark::UserFeatureNameToWebFeatureMap&
 PerformanceMark::GetUseCounterMapping() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<UserFeatureNameToWebFeatureMap>, map, ());
-  if (!map.IsSet()) {
-    *map = {
-        {"NgOptimizedImage", WebFeature::kUserFeatureNgOptimizedImage},
-        {"NgAfterRender", WebFeature::kUserFeatureNgAfterRender},
-        {"NgHydration", WebFeature::kUserFeatureNgHydration},
-        {"next-third-parties-ga", WebFeature::kUserFeatureNextThirdPartiesGA},
-        {"next-third-parties-gtm", WebFeature::kUserFeatureNextThirdPartiesGTM},
-        {"next-third-parties-YouTubeEmbed",
+  static base::NoDestructor<ThreadSpecific<UserFeatureNameToWebFeatureMap>> map;
+  if (!map->IsSet()) {
+    **map = {
+        {String::FromLiteral<"NgOptimizedImage">(),
+         WebFeature::kUserFeatureNgOptimizedImage},
+        {String::FromLiteral<"NgAfterRender">(),
+         WebFeature::kUserFeatureNgAfterRender},
+        {String::FromLiteral<"NgHydration">(),
+         WebFeature::kUserFeatureNgHydration},
+        {String::FromLiteral<"next-third-parties-ga">(),
+         WebFeature::kUserFeatureNextThirdPartiesGA},
+        {String::FromLiteral<"next-third-parties-gtm">(),
+         WebFeature::kUserFeatureNextThirdPartiesGTM},
+        {String::FromLiteral<"next-third-parties-YouTubeEmbed">(),
          WebFeature::kUserFeatureNextThirdPartiesYouTubeEmbed},
-        {"next-third-parties-GoogleMapsEmbed",
+        {String::FromLiteral<"next-third-parties-GoogleMapsEmbed">(),
          WebFeature::kUserFeatureNextThirdPartiesGoogleMapsEmbed},
-        {"nuxt-image", WebFeature::kUserFeatureNuxtImage},
-        {"nuxt-picture", WebFeature::kUserFeatureNuxtPicture},
-        {"nuxt-third-parties-ga", WebFeature::kUserFeatureNuxtThirdPartiesGA},
-        {"nuxt-third-parties-gtm", WebFeature::kUserFeatureNuxtThirdPartiesGTM},
-        {"nuxt-third-parties-YouTubeEmbed",
+        {String::FromLiteral<"nuxt-image">(),
+         WebFeature::kUserFeatureNuxtImage},
+        {String::FromLiteral<"nuxt-picture">(),
+         WebFeature::kUserFeatureNuxtPicture},
+        {String::FromLiteral<"nuxt-third-parties-ga">(),
+         WebFeature::kUserFeatureNuxtThirdPartiesGA},
+        {String::FromLiteral<"nuxt-third-parties-gtm">(),
+         WebFeature::kUserFeatureNuxtThirdPartiesGTM},
+        {String::FromLiteral<"nuxt-third-parties-YouTubeEmbed">(),
          WebFeature::kUserFeatureNuxtThirdPartiesYouTubeEmbed},
-        {"nuxt-third-parties-GoogleMaps",
+        {String::FromLiteral<"nuxt-third-parties-GoogleMaps">(),
          WebFeature::kUserFeatureNuxtThirdPartiesGoogleMaps},
     };
   }
-  return *map;
+  return **map;
 }
 
 // static

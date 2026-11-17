@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/paint/custom_scrollbar_theme.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/layout/custom_scrollbar.h"
 #include "third_party/blink/renderer/core/layout/layout_custom_scrollbar_part.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
@@ -33,13 +34,12 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
 CustomScrollbarTheme* CustomScrollbarTheme::GetCustomScrollbarTheme() {
-  DEFINE_STATIC_LOCAL(CustomScrollbarTheme, theme, ());
-  return &theme;
+  static base::NoDestructor<CustomScrollbarTheme> theme;
+  return theme.get();
 }
 
 ScrollbarPart CustomScrollbarTheme::HitTest(

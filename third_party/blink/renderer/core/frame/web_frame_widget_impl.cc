@@ -36,6 +36,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/to_vector.h"
 #include "base/debug/crash_logging.h"
@@ -44,6 +45,7 @@
 #include "base/functional/function_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -188,6 +190,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
@@ -411,9 +414,10 @@ bool IsElementNotNullAndEditable(Element* element) {
 
 bool& InputDisabledPerBrowsingContextGroup(
     const base::UnguessableToken& token) {
+  DCHECK(IsMainThread());
   using BrowsingContextGroupMap = std::map<base::UnguessableToken, bool>;
-  DEFINE_STATIC_LOCAL(BrowsingContextGroupMap, values, ());
-  return values[token];
+  static base::NoDestructor<BrowsingContextGroupMap> values;
+  return (*values)[token];
 }
 
 // Get the root editable HTMLElement container that supports stylus handwriting.

@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_animate_motion_element.h"
 
+#include "base/no_destructor.h"
 #include "base/numerics/angle_conversions.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -50,7 +51,6 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 
 namespace blink {
@@ -187,15 +187,17 @@ void SVGAnimateMotionElement::ParseAttribute(
 
 SVGAnimateMotionElement::RotateMode SVGAnimateMotionElement::GetRotateMode()
     const {
-  DEFINE_STATIC_LOCAL(const AtomicString, auto_val,
-                      (AtomicString::FromLiteral<"auto">()));
-  DEFINE_STATIC_LOCAL(const AtomicString, auto_reverse,
-                      (AtomicString::FromLiteral<"auto-reverse">()));
+  static const base::NoDestructor<AtomicString> auto_val(
+      AtomicString::FromLiteral<"auto">());
+  static const base::NoDestructor<AtomicString> auto_reverse(
+      AtomicString::FromLiteral<"auto-reverse">());
   const AtomicString& rotate = getAttribute(svg_names::kRotateAttr);
-  if (rotate == auto_val)
+  if (rotate == *auto_val) {
     return kRotateAuto;
-  if (rotate == auto_reverse)
+  }
+  if (rotate == *auto_reverse) {
     return kRotateAutoReverse;
+  }
   return kRotateAngle;
 }
 

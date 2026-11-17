@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/editing/commands/editing_commands_utilities.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -649,9 +650,9 @@ SelectionInDomTree SelectionForParagraphIteration(
 }
 
 const String& NonBreakingSpaceString() {
-  DEFINE_STATIC_LOCAL(String, non_breaking_space_string,
-                      (base::span_from_ref(uchar::kNoBreakSpace)));
-  return non_breaking_space_string;
+  static base::NoDestructor<String> non_breaking_space_string{
+      base::span_from_ref(uchar::kNoBreakSpace)};
+  return *non_breaking_space_string;
 }
 
 // TODO(tkent): This is a workaround of some crash bugs in the editing code,

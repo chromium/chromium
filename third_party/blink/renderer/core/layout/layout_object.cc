@@ -34,8 +34,10 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/no_destructor.h"
 #include "partition_alloc/partition_alloc.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
@@ -163,6 +165,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -3487,13 +3490,14 @@ void LayoutObject::UpdateFirstLineImageObservers(
     return;
   }
 
+  DCHECK(IsMainThread());
   using FirstLineStyleMap =
       HeapHashMap<WeakMember<const LayoutObject>, Member<const ComputedStyle>>;
   using FirstLineStyleMapHolder = DisallowNewWrapper<FirstLineStyleMap>;
-  DEFINE_STATIC_LOCAL(Persistent<FirstLineStyleMapHolder>,
-                      first_line_style_map_holder,
-                      (MakeGarbageCollected<FirstLineStyleMapHolder>()));
-  auto& first_line_style_map = first_line_style_map_holder->Value();
+  static base::NoDestructor<Persistent<FirstLineStyleMapHolder>>
+      first_line_style_map_holder(
+          MakeGarbageCollected<FirstLineStyleMapHolder>());
+  auto& first_line_style_map = (*first_line_style_map_holder)->Value();
   DCHECK_EQ(registered_as_first_line_image_observer_,
             first_line_style_map.Contains(this));
   const auto* old_first_line_style = registered_as_first_line_image_observer_

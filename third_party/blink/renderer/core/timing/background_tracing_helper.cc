@@ -9,6 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -181,9 +182,8 @@ const BackgroundTracingHelper::SiteHashSet&
 BackgroundTracingHelper::GetSiteHashSet() {
   // This needs to be thread-safe because performance.mark is supported by both
   // windows and workers.
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(SiteHashSet, site_hash_set_,
-                                  (MakeSiteHashSet()));
-  return site_hash_set_;
+  static base::NoDestructor<SiteHashSet> site_hash_set_(MakeSiteHashSet());
+  return *site_hash_set_;
 }
 
 // static

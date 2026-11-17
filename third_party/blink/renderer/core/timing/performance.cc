@@ -37,6 +37,7 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
@@ -892,24 +893,18 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
                                    const AtomicString& mark_name,
                                    PerformanceMarkOptions* mark_options,
                                    ExceptionState& exception_state) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      const AtomicString, mark_fully_loaded,
-      (AtomicString::FromLiteral<"mark_fully_loaded">()));
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      const AtomicString, mark_fully_visible,
-      (AtomicString::FromLiteral<"mark_fully_visible">()));
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      const AtomicString, mark_interactive,
-      (AtomicString::FromLiteral<"mark_interactive">()));
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      const AtomicString, mark_feature_usage,
-      (AtomicString::FromLiteral<"mark_feature_usage">()));
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      const AtomicString, mark_parser_blocking,
-      (blink::features::kHTMLParserYieldEventNameForPause.Get().c_str()));
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      const AtomicString, mark_parser_restart,
-      (features::kHTMLParserYieldEventNameForResume.Get().c_str()));
+  static const base::NoDestructor<AtomicString> mark_fully_loaded(
+      AtomicString::FromLiteral<"mark_fully_loaded">());
+  static const base::NoDestructor<AtomicString> mark_fully_visible(
+      AtomicString::FromLiteral<"mark_fully_visible">());
+  static const base::NoDestructor<AtomicString> mark_interactive(
+      AtomicString::FromLiteral<"mark_interactive">());
+  static const base::NoDestructor<AtomicString> mark_feature_usage(
+      AtomicString::FromLiteral<"mark_feature_usage">());
+  static const base::NoDestructor<AtomicString> mark_parser_blocking(
+      blink::features::kHTMLParserYieldEventNameForPause.Get().c_str());
+  static const base::NoDestructor<AtomicString> mark_parser_restart(
+      features::kHTMLParserYieldEventNameForResume.Get().c_str());
   bool has_start_time = mark_options && mark_options->hasStartTime();
   if (has_start_time || (mark_options && mark_options->hasDetail())) {
     UseCounter::Count(GetExecutionContext(), WebFeature::kUserTimingL3);
@@ -921,7 +916,7 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
         *performance_mark);
     GetUserTiming().AddMarkToPerformanceTimeline(*performance_mark,
                                                  mark_options);
-    if (mark_name == mark_fully_loaded) {
+    if (mark_name == *mark_fully_loaded) {
       if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
         window->GetFrame()
             ->Loader()
@@ -930,7 +925,7 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
             .SetUserTimingMarkFullyLoaded(
                 base::Milliseconds(performance_mark->startTime()));
       }
-    } else if (mark_name == mark_fully_visible) {
+    } else if (mark_name == *mark_fully_visible) {
       if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
         window->GetFrame()
             ->Loader()
@@ -939,7 +934,7 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
             .SetUserTimingMarkFullyVisible(
                 base::Milliseconds(performance_mark->startTime()));
       }
-    } else if (mark_name == mark_interactive) {
+    } else if (mark_name == *mark_interactive) {
       if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
         window->GetFrame()
             ->Loader()
@@ -948,7 +943,7 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
             .SetUserTimingMarkInteractive(
                 base::Milliseconds(performance_mark->startTime()));
       }
-    } else if (mark_name == mark_feature_usage && mark_options->hasDetail()) {
+    } else if (mark_name == *mark_feature_usage && mark_options->hasDetail()) {
       if (RuntimeEnabledFeatures::PerformanceMarkFeatureUsageEnabled()) {
         ProcessUserFeatureMark(mark_options);
       }
@@ -989,16 +984,16 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
     }
 
     if (RuntimeEnabledFeatures::HTMLParserYieldByUserTimingEnabled() &&
-        !mark_parser_blocking.empty() && !mark_parser_restart.empty()) {
-      DCHECK_NE(mark_parser_blocking, "");
-      DCHECK_NE(mark_parser_restart, "");
+        !mark_parser_blocking->empty() && !mark_parser_restart->empty()) {
+      DCHECK_NE(*mark_parser_blocking, "");
+      DCHECK_NE(*mark_parser_restart, "");
       static const size_t timeout =
           blink::features::kHTMLParserYieldTimeoutInMs.Get();
       LocalDOMWindow* window = LocalDOMWindow::From(script_state);
       if (window && window->GetFrame() &&
           window->GetFrame()->IsOutermostMainFrame()) {
         Document* document = window->GetFrame()->GetDocument();
-        if (mark_name == mark_parser_blocking) {
+        if (mark_name == *mark_parser_blocking) {
           base::UmaHistogramBoolean(
               kParserPausingCalledAfterResumimg,
               parser_yield_state_ == ParserYieldState::kResumed);
@@ -1017,7 +1012,7 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
                 BindOnce(&NotifyParserResume, WrapPersistent(document), false),
                 base::Milliseconds(timeout));
           }
-        } else if (mark_name == mark_parser_restart) {
+        } else if (mark_name == *mark_parser_restart) {
           base::UmaHistogramBoolean(
               kParserResumingCalledBeforePausing,
               parser_yield_state_ != ParserYieldState::kPaused);

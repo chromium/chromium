@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/features.h"
@@ -121,8 +122,8 @@ void TimeZoneController::Init() {
 
 // static
 TimeZoneController& TimeZoneController::instance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(TimeZoneController, instance, ());
-  return instance;
+  static base::NoDestructor<TimeZoneController> instance;
+  return *instance;
 }
 
 bool CanonicalEquals(const String& time_zone_a, const String& time_zone_b) {

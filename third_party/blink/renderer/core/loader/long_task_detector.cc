@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/long_task_detector.h"
 
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -15,10 +16,10 @@ constexpr base::TimeDelta LongTaskDetector::kLongTaskThreshold;
 
 // static
 LongTaskDetector& LongTaskDetector::Instance() {
-  DEFINE_STATIC_LOCAL(Persistent<LongTaskDetector>, long_task_detector,
-                      (MakeGarbageCollected<LongTaskDetector>()));
+  static base::NoDestructor<Persistent<LongTaskDetector>> long_task_detector(
+      MakeGarbageCollected<LongTaskDetector>());
   DCHECK(IsMainThread());
-  return *long_task_detector;
+  return **long_task_detector;
 }
 
 LongTaskDetector::LongTaskDetector() = default;

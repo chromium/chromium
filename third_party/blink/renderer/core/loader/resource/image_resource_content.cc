@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -94,9 +93,9 @@ class NullImageResourceInfo final
 
 ImageResourceContent::ImageResourceContent(scoped_refptr<blink::Image> image)
     : image_(std::move(image)) {
-  DEFINE_STATIC_LOCAL(Persistent<NullImageResourceInfo>, null_info,
-                      (MakeGarbageCollected<NullImageResourceInfo>()));
-  info_ = null_info;
+  static base::NoDestructor<Persistent<NullImageResourceInfo>> null_info(
+      MakeGarbageCollected<NullImageResourceInfo>());
+  info_ = *null_info;
 }
 
 ImageResourceContent* ImageResourceContent::CreateLoaded(

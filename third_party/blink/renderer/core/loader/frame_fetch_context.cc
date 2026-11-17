@@ -42,6 +42,7 @@ BASE_FEATURE(kFastMemoryCacheWithDevTools, base::FEATURE_ENABLED_BY_DEFAULT);
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/http/structured_headers.h"
@@ -131,7 +132,6 @@ BASE_FEATURE(kFastMemoryCacheWithDevTools, base::FEATURE_ENABLED_BY_DEFAULT);
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
@@ -164,13 +164,13 @@ AtomicString GenerateBoolHeaderValue(bool value) {
 // https://www.rfc-editor.org/rfc/rfc8941.html.
 const AtomicString SerializeBoolHeader(const bool value) {
   if (value) {
-    DEFINE_STATIC_LOCAL(AtomicString, true_value,
-                        (GenerateBoolHeaderValue(true)));
-    return true_value;
+    static base::NoDestructor<AtomicString> true_value{
+        GenerateBoolHeaderValue(true)};
+    return *true_value;
   }
-  DEFINE_STATIC_LOCAL(AtomicString, false_value,
-                      (GenerateBoolHeaderValue(false)));
-  return false_value;
+  static base::NoDestructor<AtomicString> false_value{
+      GenerateBoolHeaderValue(false)};
+  return *false_value;
 }
 
 mojom::FetchCacheMode DetermineFrameCacheMode(Frame* frame) {

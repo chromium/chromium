@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/no_destructor.h"
 #include "base/uuid.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -53,9 +54,9 @@ class RegistryHolder : public GarbageCollected<RegistryHolder> {
 
 MapType& GetTrackerMap() {
   DCHECK(IsMainThread());
-  DEFINE_STATIC_LOCAL(Persistent<RegistryHolder>, holder,
-                      (MakeGarbageCollected<RegistryHolder>()));
-  return holder->GetMap();
+  static base::NoDestructor<Persistent<RegistryHolder>> holder(
+      MakeGarbageCollected<RegistryHolder>());
+  return (*holder)->GetMap();
 }
 
 }  // namespace

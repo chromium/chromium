@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/xml/xpath_parser.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_xpath_ns_resolver.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/xml/xpath_evaluator.h"
@@ -36,7 +37,6 @@
 #include "third_party/blink/renderer/core/xml/xpath_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
@@ -74,48 +74,40 @@ static XMLCat CharCat(UChar a_char) {
   return kNotPartOfName;
 }
 
-static void SetUpAxisNamesMap(AxisNamesMap& axis_names) {
-  struct AxisName {
-    const char* name;
-    Step::Axis axis;
-  };
-  const AxisName kAxisNameList[] = {
-      {"ancestor", Step::kAncestorAxis},
-      {"ancestor-or-self", Step::kAncestorOrSelfAxis},
-      {"attribute", Step::kAttributeAxis},
-      {"child", Step::kChildAxis},
-      {"descendant", Step::kDescendantAxis},
-      {"descendant-or-self", Step::kDescendantOrSelfAxis},
-      {"following", Step::kFollowingAxis},
-      {"following-sibling", Step::kFollowingSiblingAxis},
-      {"namespace", Step::kNamespaceAxis},
-      {"parent", Step::kParentAxis},
-      {"preceding", Step::kPrecedingAxis},
-      {"preceding-sibling", Step::kPrecedingSiblingAxis},
-      {"self", Step::kSelfAxis}};
-  for (const auto& axis_name : kAxisNameList)
-    axis_names.Set(axis_name.name, axis_name.axis);
-}
-
 static bool IsAxisName(const String& name, Step::Axis& type) {
-  DEFINE_STATIC_LOCAL(AxisNamesMap, axis_names, ());
+  static const base::NoDestructor<AxisNamesMap> axis_names({
+      {String::FromLiteral<"ancestor">(), Step::kAncestorAxis},
+      {String::FromLiteral<"ancestor-or-self">(), Step::kAncestorOrSelfAxis},
+      {String::FromLiteral<"attribute">(), Step::kAttributeAxis},
+      {String::FromLiteral<"child">(), Step::kChildAxis},
+      {String::FromLiteral<"descendant">(), Step::kDescendantAxis},
+      {String::FromLiteral<"descendant-or-self">(),
+       Step::kDescendantOrSelfAxis},
+      {String::FromLiteral<"following">(), Step::kFollowingAxis},
+      {String::FromLiteral<"following-sibling">(), Step::kFollowingSiblingAxis},
+      {String::FromLiteral<"namespace">(), Step::kNamespaceAxis},
+      {String::FromLiteral<"parent">(), Step::kParentAxis},
+      {String::FromLiteral<"preceding">(), Step::kPrecedingAxis},
+      {String::FromLiteral<"preceding-sibling">(), Step::kPrecedingSiblingAxis},
+      {String::FromLiteral<"self">(), Step::kSelfAxis},
+  });
 
-  if (axis_names.empty())
-    SetUpAxisNamesMap(axis_names);
-
-  AxisNamesMap::iterator it = axis_names.find(name);
-  if (it == axis_names.end())
+  AxisNamesMap::const_iterator it = axis_names->find(name);
+  if (it == axis_names->end()) {
     return false;
+  }
   type = it->value;
   return true;
 }
 
 static bool IsNodeTypeName(const String& name) {
-  DEFINE_STATIC_LOCAL(HashSet<String>, node_type_names,
-                      ({
-                          "comment", "text", "processing-instruction", "node",
-                      }));
-  return node_type_names.Contains(name);
+  static const base::NoDestructor<HashSet<String>> node_type_names({
+      String::FromLiteral<"comment">(),
+      String::FromLiteral<"text">(),
+      String::FromLiteral<"processing-instruction">(),
+      String::FromLiteral<"node">(),
+  });
+  return node_type_names->Contains(name);
 }
 
 // Returns whether the current token can possibly be a binary operator, given

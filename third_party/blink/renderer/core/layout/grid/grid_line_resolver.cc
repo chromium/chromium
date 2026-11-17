@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_line_resolver.h"
 
 #include <algorithm>
+
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_data.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_named_line_collection.h"
 #include "third_party/blink/renderer/core/style/computed_grid_template_areas.h"
@@ -655,8 +657,8 @@ const NamedGridLinesMap& GridLineResolver::ImplicitNamedLinesMap(
                : grid_template_areas->implicit_named_grid_row_lines;
   }
 
-  DEFINE_STATIC_LOCAL(const NamedGridLinesMap, empty, ());
-  return empty;
+  static const base::NoDestructor<NamedGridLinesMap> empty;
+  return *empty;
 }
 
 const NamedGridLinesMap& GridLineResolver::ExplicitNamedLinesMap(

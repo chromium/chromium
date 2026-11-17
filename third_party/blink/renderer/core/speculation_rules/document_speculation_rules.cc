@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/containers/to_vector.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/state_transitions.h"
 #include "net/http/http_no_vary_search_data.h"
@@ -41,7 +42,6 @@
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "url/gurl.h"
@@ -1222,9 +1222,8 @@ void DocumentSpeculationRules::SetPendingUpdateState(
 #if DCHECK_IS_ON()
   // TODO(jbroman): This could use "using enum" once that's allowed.
   using S = PendingUpdateState;
-  DEFINE_STATIC_LOCAL(
-      base::StateTransitions<S>, transitions,
-      ({
+  static base::NoDestructor<base::StateTransitions<S>> transitions(
+      base::StateTransitions<S>({
           // When there is no update, we can only queue an update.
           {S::kNoUpdate,
            {S::kMicrotaskQueued, S::kMicrotaskQueuedWithForcedStyleUpdate}},
@@ -1243,7 +1242,8 @@ void DocumentSpeculationRules::SetPendingUpdateState(
           {S::kMicrotaskQueuedWithForcedStyleUpdate, {S::kNoUpdate}},
       }));
   if (pending_update_state_ != new_state) {
-    DCHECK_STATE_TRANSITION(&transitions, pending_update_state_, new_state);
+    DCHECK_STATE_TRANSITION(transitions.get(), pending_update_state_,
+                            new_state);
   }
 #endif
   pending_update_state_ = new_state;

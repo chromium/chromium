@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 
 #include "base/check.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -52,17 +53,24 @@ LargestContentfulPaintType GetLargestContentfulPaintTypeFromString(
   using LargestContentfulPaintTypeMap =
       HashMap<AtomicString, LargestContentfulPaintType>;
 
-  DEFINE_STATIC_LOCAL(LargestContentfulPaintTypeMap,
-                      largest_contentful_paint_type_map,
-                      ({{"svg", LargestContentfulPaintType::kSVG},
-                        {"gif", LargestContentfulPaintType::kGIF},
-                        {"png", LargestContentfulPaintType::kPNG},
-                        {"jpg", LargestContentfulPaintType::kJPG},
-                        {"avif", LargestContentfulPaintType::kAVIF},
-                        {"webp", LargestContentfulPaintType::kWebP}}));
+  static const base::NoDestructor<LargestContentfulPaintTypeMap>
+      largest_contentful_paint_type_map({
+          {AtomicString::FromLiteral<"svg">(),
+           LargestContentfulPaintType::kSVG},
+          {AtomicString::FromLiteral<"gif">(),
+           LargestContentfulPaintType::kGIF},
+          {AtomicString::FromLiteral<"png">(),
+           LargestContentfulPaintType::kPNG},
+          {AtomicString::FromLiteral<"jpg">(),
+           LargestContentfulPaintType::kJPG},
+          {AtomicString::FromLiteral<"avif">(),
+           LargestContentfulPaintType::kAVIF},
+          {AtomicString::FromLiteral<"webp">(),
+           LargestContentfulPaintType::kWebP},
+      });
 
-  auto it = largest_contentful_paint_type_map.find(type_string);
-  if (it != largest_contentful_paint_type_map.end()) {
+  auto it = largest_contentful_paint_type_map->find(type_string);
+  if (it != largest_contentful_paint_type_map->end()) {
     return it->value;
   }
 
