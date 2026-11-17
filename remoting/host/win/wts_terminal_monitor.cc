@@ -9,6 +9,7 @@
 #include <wtsapi32.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
@@ -53,8 +54,9 @@ bool WtsTerminalMonitor::LookupTerminalId(uint32_t session_id,
   }
 
   std::string id;
-  if (!base::WideToUTF8(working_directory, (bytes / sizeof(wchar_t)) - 1,
-                        &id)) {
+  if (!base::WideToUTF8(
+          std::wstring_view(working_directory, (bytes / sizeof(wchar_t)) - 1),
+          &id)) {
     return false;
   }
 

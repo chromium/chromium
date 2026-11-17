@@ -7,11 +7,13 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/logging.h"
-#include "base/strings/utf_string_conversions.h"
-
 // Needed for GetComputerNameExW/ComputerNameDnsFullyQualified.
 #include <windows.h>
+
+#include <string_view>
+
+#include "base/logging.h"
+#include "base/strings/utf_string_conversions.h"
 #else
 #include "net/base/network_interfaces.h"
 #endif
@@ -32,7 +34,7 @@ std::string GetFqdn() {
     return std::string();
   }
   std::string fqdn;
-  if (!base::WideToUTF8(buffer, size, &fqdn)) {
+  if (!base::WideToUTF8(std::wstring_view(buffer, size), &fqdn)) {
     LOG(ERROR) << "Failed to convert from Wide to UTF8";
     return std::string();
   }
