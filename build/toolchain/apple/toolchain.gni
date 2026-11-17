@@ -335,11 +335,11 @@ template("single_apple_toolchain") {
         # We must always prefix with `lib` even if the library already starts
         # with that prefix or else our stdlib is unable to find libc.rlib (or
         # actually liblibc.rlib).
+        rmetaname = "{{output_dir}}/lib{{target_output_name}}.rmeta"
         rlibname =
             "{{output_dir}}/lib{{target_output_name}}{{output_extension}}"
         rspfile = rustc_rsp_path
         depfile = "$rlibname.d"
-        rmetaname = "{{output_dir}}/lib{{target_output_name}}.rmeta"
 
         default_output_extension = ".rlib"
 
@@ -434,17 +434,23 @@ template("single_apple_toolchain") {
       }
 
       tool("rust_dylib") {
-        dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
+        # Like in `tool("rust_rlib")`, we must always prefix with `lib` (even
+        # if the library name already starts with that prefix), because
+        # `rustc` looks for `lib<crate name>...` files.
+        rmetaname = "{{output_dir}}/lib{{target_output_name}}.rmeta"
+        dllname = "{{output_dir}}/lib{{target_output_name}}{{output_extension}}"
         rspfile = rustc_rsp_path
         depfile = "$dllname.d"
         pool = "//build/toolchain:link_pool($default_toolchain)"
-        rmetaname = "{{output_dir}}/lib{{target_output_name}}.rmeta"
 
         # TODO(danakj): solink can generate TOC files for re-exporting library
         # symbols, and we should do the same here.
 
         default_output_extension = ".dylib"
-        output_prefix = "lib"
+
+        # This is prefixed unconditionally in `dllname` and `rmetaname`.
+        # output_prefix = "lib"
+
         default_output_dir = "{{root_out_dir}}"
         description = "RUST(DYLIB) {{output}}"
         outputs = [

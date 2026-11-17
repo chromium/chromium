@@ -753,16 +753,17 @@ template("single_gcc_toolchain") {
         # We must always prefix with `lib` even if the library already starts
         # with that prefix or else our stdlib is unable to find libc.rlib (or
         # actually liblibc.rlib).
+        rmetaname = "{{output_dir}}/lib{{target_output_name}}.rmeta"
         rlibname =
             "{{output_dir}}/lib{{target_output_name}}{{output_extension}}"
         rspfile = rustc_rsp_path
         depfile = "$rlibname.d"
-        rmetaname = "{{output_dir}}/lib{{target_output_name}}.rmeta"
 
         default_output_extension = ".rlib"
 
-        # This is prefixed unconditionally in `rlibname`.
+        # This is prefixed unconditionally in `rlibname` and `rmetaname`.
         # output_prefix = "lib"
+
         # Static libraries go in the target out directory by default so we can
         # generate different targets with the same name and not have them
         # collide.
@@ -828,14 +829,20 @@ template("single_gcc_toolchain") {
       }
 
       tool("rust_dylib") {
-        dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
+        # Like in `tool("rust_rlib")`, we must always prefix with `lib` (even
+        # if the library name already starts with that prefix), because
+        # `rustc` looks for `lib<crate name>...` files.
+        rmetaname = "{{output_dir}}/lib{{target_output_name}}.rmeta"
+        dllname = "{{output_dir}}/lib{{target_output_name}}{{output_extension}}"
         depfile = "$dllname.d"
         rspfile = rustc_rsp_path
-        rmetaname = "{{output_dir}}/lib{{target_output_name}}.rmeta"
         pool = "//build/toolchain:link_pool($default_toolchain)"
 
         default_output_extension = default_shlib_extension
-        output_prefix = "lib"
+
+        # This is prefixed unconditionally in `dllname` and `rmetaname`.
+        # output_prefix = "lib"
+
         default_output_dir = "{{root_out_dir}}${default_shlib_subdir}"
         description = "RUST(DYLIB) {{output}}"
         outputs = [

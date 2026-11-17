@@ -242,17 +242,6 @@ template("rust_target") {
     if (_override_crate_type_as_dylib) {
       _configs += invoker.library_configs
       _configs += default_component_configs - default_compiler_configs
-
-      # Removing `libs = [ "dl", ...]` works around the `android_compile_dbg`
-      # problem from https://crbug.com/498216362#comment16.  This is only
-      # done for Android, because:
-      # * Link-time/delayed `cfg` (`#[link...cfg]`) seems to only be applied
-      #   for Android in `rust/library/std/src/sys/pal/unix/mod.rs`.
-      # * Without `config:default_libs` linking would fail on Windows due to
-      #   missing `delayimp.lib` / `undefined symbol: ___delayLoadHelper2@8`.
-      if (is_android) {
-        _configs -= [ "//build/config:default_libs" ]
-      }
     } else {
       _configs += invoker.shared_library_configs
     }
@@ -824,7 +813,11 @@ template("rust_target") {
         cpp_api_from_rust(_cpp_api_from_rust_target_name) {
           forward_variables_from(_secondary_rust_compiler_attrs,
                                  _SECONDARY_RUST_COMPILER_ATTR_NAMES)
-          rust_target = ":${_main_target_name}"
+
+          # `:${_target_name}` (rather than `:${_main_target_name}`), so that
+          # dependents of the bindings also get the `data_deps` of the group
+          # above (e.g. the `.so` / `.dll` copy of a `dylib`).
+          rust_target = ":${_target_name}"
           rustc_env_and_flags = _rustc_env_and_flags
           original_attributes = _cpp_api_from_rust_attributes
           crate_name = _crate_name
@@ -840,7 +833,7 @@ template("rust_target") {
             # (e.g. google3).
             h_out = "${target_gen_dir}/${_crate_name}.h"
           } else {
-            h_out = "${target_gen_dir}/${_main_target_name}.h"
+            h_out = "${target_gen_dir}/${_target_name}.h"
           }
         }
       }
