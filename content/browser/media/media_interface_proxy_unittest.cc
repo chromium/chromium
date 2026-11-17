@@ -398,6 +398,10 @@ TEST_F(MediaInterfaceProxyTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       media::kMediaFoundationClearPlayback);
+  if (!media::SupportMediaFoundationClearPlayback()) {
+    GTEST_SKIP() << "MediaFoundation clear playback requires Windows 10 RS3 "
+                    "or later.";
+  }
 
   mojo::PendingRemote<media::mojom::InterfaceFactory> dummy_factory_remote;
   auto dummy_factory_receiver =
@@ -428,6 +432,10 @@ TEST_F(MediaInterfaceProxyTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       media::kMediaFoundationClearPlayback);
+  if (!media::SupportMediaFoundationClearPlayback()) {
+    GTEST_SKIP() << "MediaFoundation clear playback requires Windows 10 RS3 "
+                    "or later.";
+  }
 
   MockMediaFoundationInterfaceFactory mock_factory;
   mojo::Receiver<media::mojom::InterfaceFactory> factory_receiver(
