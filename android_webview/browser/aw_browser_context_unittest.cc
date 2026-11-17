@@ -112,7 +112,10 @@ TEST_F(AwBrowserContextTest, SetAllowedPrerenderingCount) {
 }
 
 TEST_F(AwBrowserContextTest, MigrateVisitedLinksDisabled) {
-  // Default is disabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kWebViewMigrateVisitedLinks);
+
   AwBrowserContext context(
       AwBrowserContextStore::kDefaultContextName,
       base::FilePath(AwBrowserContextStore::kDefaultContextPath),
