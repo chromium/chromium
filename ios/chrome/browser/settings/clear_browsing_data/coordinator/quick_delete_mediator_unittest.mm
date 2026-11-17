@@ -13,6 +13,7 @@
 #import "components/browsing_data/core/pref_names.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/history/core/browser/history_service.h"
+#import "components/history/core/common/pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url.h"
@@ -97,7 +98,6 @@ class QuickDeleteMediatorTest : public PlatformTest {
     OCMStub([consumer_
         setBrowsingDataSummary:l10n_util::GetNSString(
                                    IDS_CLEAR_BROWSING_DATA_CALCULATING)]);
-    OCMStub([consumer_ setHistorySelection:NO]);
     OCMStub([consumer_ setTabsSelection:NO]);
     OCMStub([consumer_ setSiteDataSelection:NO]);
     OCMStub([consumer_ setCacheSelection:NO]);
@@ -672,6 +672,33 @@ TEST_F(QuickDeleteMediatorTest, TestUpdateSiteSettingsSelection) {
   OCMExpect([consumer_ setSiteSettingsSelection:YES]);
   [mediator_ updateSiteSettingsSelection:YES];
   EXPECT_TRUE(prefs()->GetBoolean(browsing_data::prefs::kDeleteSiteSettings));
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that live changes to AllowDeletingBrowserHistory disable history
+// deletion on the consumer, clear history selection, and exclude history from
+// removal when another data type is deleted.
+TEST_F(QuickDeleteMediatorTest, HistoryDeletionDisallowedLivePolicyChange) {
+  prefs()->SetBoolean(browsing_data::prefs::kDeleteBrowsingHistory, true);
+  prefs()->SetBoolean(browsing_data::prefs::kDeleteCookies, true);
+
+  OCMExpect([consumer_ setHistoryDeletionEnabled:YES]);
+  OCMExpect([consumer_ setHistorySelection:YES]);
+  OCMExpect([consumer_ setSiteDataSelection:YES]);
+  CreateMediator();
+  mediator_.consumer = consumer_;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  OCMExpect([consumer_ setHistoryDeletionEnabled:NO]);
+  OCMExpect([consumer_ setHistorySelection:NO]);
+  prefs()->SetBoolean(prefs::kAllowDeletingBrowserHistory, false);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  [mediator_ updateHistorySelection:NO];
+  EXPECT_TRUE(
+      prefs()->GetBoolean(browsing_data::prefs::kDeleteBrowsingHistory));
+  EXPECT_FALSE(IsRemoveDataMaskSet(TriggerDeletionWithFakeRemover(),
+                                   BrowsingDataRemoveMask::REMOVE_HISTORY));
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 

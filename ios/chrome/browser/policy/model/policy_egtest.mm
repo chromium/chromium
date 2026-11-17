@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
+#import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
@@ -56,10 +57,93 @@
 #import "ios/web/public/test/element_selector.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
+using base::test::ios::kWaitForClearBrowsingDataTimeout;
 using policy_test_utils::SetPolicy;
 
 namespace {
+
+// Opens the History UI, verifies whether `kHistoryToolbarEditButtonIdentifier`
+// is enabled or disabled, and closes the History UI.
+void VerifyHistoryUIForAllowDeletingBrowserHistory(bool expected_enabled) {
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::HistoryDestinationButton()];
+
+  id<GREYMatcher> edit_button_state_matcher =
+      expected_enabled
+          ? grey_allOf(grey_enabled(), grey_sufficientlyVisible(), nil)
+          : grey_allOf(grey_not(grey_enabled()), grey_sufficientlyVisible(),
+                       nil);
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kHistoryToolbarEditButtonIdentifier)]
+      assertWithMatcher:edit_button_state_matcher];
+
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kHistoryNavigationControllerDoneButtonIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                 kHistoryTableViewIdentifier)];
+}
+
+// Opens Quick Delete (Clear Browsing Data), navigates to the Browsing Data
+// selection page, verifies whether the Browsing History row is enabled and
+// selected or disabled and unselected, and dismisses Quick Delete without
+// deleting the seeded history entries.
+void VerifyQuickDeleteForAllowDeletingBrowserHistory(bool expected_enabled) {
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuAction:chrome_test_util::ButtonWithAccessibilityLabel(
+                             l10n_util::GetNSString(
+                                 IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA))];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::ClearBrowsingDataView()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_text(l10n_util::GetNSString(IDS_CLEAR_BROWSING_DATA_CALCULATING))
+                                     timeout:kWaitForClearBrowsingDataTimeout];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::BrowsingDataButtonMatcher()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
+              IDS_IOS_DELETE_BROWSING_DATA_TITLE)];
+
+  NSString* expected_counter_subtitle = l10n_util::GetNSStringF(
+      IDS_DEL_BROWSING_HISTORY_COUNTER_SINGLE_DOMAIN_TEXT, u"example.com");
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_allOf(
+              grey_ancestor(chrome_test_util::ClearBrowsingHistoryButton()),
+              chrome_test_util::ContainsPartialText(expected_counter_subtitle),
+              nil)];
+  id<GREYMatcher> history_row_state_matcher =
+      expected_enabled
+          ? grey_allOf(grey_enabled(),
+                       grey_accessibilityTrait(UIAccessibilityTraitSelected),
+                       grey_sufficientlyVisible(), nil)
+          : grey_allOf(
+                grey_accessibilityTrait(UIAccessibilityTraitNotEnabled),
+                grey_not(grey_accessibilityTrait(UIAccessibilityTraitSelected)),
+                grey_sufficientlyVisible(), nil);
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ClearBrowsingHistoryButton()]
+      assertWithMatcher:history_row_state_matcher];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        chrome_test_util::ButtonWithAccessibilityLabelId(
+                            IDS_IOS_DELETE_BROWSING_DATA_CANCEL)];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::ClearBrowsingDataView()];
+}
 
 // Verifies that a bool type policy sets the pref properly.
 void VerifyBoolPolicy(const std::string& policy_key,
@@ -355,6 +439,103 @@ const char kTestPageText[] = "pony";
   [ChromeEarlGrey waitForWebStateContainingText:kTestPageText];
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 1,
                   @"History had an unexpected entry count");
+}
+
+// Tests for the AllowDeletingBrowserHistory policy across unset, false, and
+// true states on History UI (including dynamically exiting active Edit mode)
+// and Quick Delete (Clear Browsing Data).
+- (void)testAllowDeletingBrowserHistory {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  // Set history to a clean state and verify it is clean.
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
+
+  [ChromeEarlGrey resetBrowsingDataPrefs];
+  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
+                  @"History was unexpectedly non-empty");
+
+  // Perform a navigation and seed a domain visit so History UI and Quick Delete
+  // (`HistoryCounter` unique domains) both display non-empty browsing history.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kTestPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageText];
+  [ChromeEarlGrey addHistoryServiceTypedURL:GURL("https://example.com/")];
+  GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 2,
+                  @"History had an unexpected entry count");
+
+  // Unset state (default allows deleting browser history).
+  [PolicyAppInterface clearPolicies];
+  GREYAssertTrue(base::test::ios::WaitUntilConditionOrTimeout(
+                     base::test::ios::kWaitForUIElementTimeout,
+                     ^{
+                       return [ChromeEarlGrey
+                           userBooleanPref:prefs::kAllowDeletingBrowserHistory];
+                     }),
+                 @"Unexpected default value for AllowDeletingBrowserHistory");
+  VerifyQuickDeleteForAllowDeletingBrowserHistory(/*expected_enabled=*/true);
+
+  // Verify History UI in unset state, enter active Edit mode, then dynamically
+  // set AllowDeletingBrowserHistory to false and verify History UI exits active
+  // Edit mode and disables the Edit button.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::HistoryDestinationButton()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kHistoryToolbarEditButtonIdentifier)]
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
+                                   nil)];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kHistoryToolbarEditButtonIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistoryToolbarDeleteButtonIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  SetPolicy(false, policy::key::kAllowDeletingBrowserHistory);
+  GREYAssertTrue(
+      base::test::ios::WaitUntilConditionOrTimeout(
+          base::test::ios::kWaitForUIElementTimeout,
+          ^{
+            return ![ChromeEarlGrey
+                userBooleanPref:prefs::kAllowDeletingBrowserHistory];
+          }),
+      @"AllowDeletingBrowserHistory preference was unexpectedly true");
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistoryToolbarDeleteButtonIdentifier)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kHistoryToolbarEditButtonIdentifier)]
+      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
+                                   grey_sufficientlyVisible(), nil)];
+
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kHistoryNavigationControllerDoneButtonIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                 kHistoryTableViewIdentifier)];
+
+  // False (disabled) state across History UI and Quick Delete.
+  VerifyHistoryUIForAllowDeletingBrowserHistory(/*expected_enabled=*/false);
+  VerifyQuickDeleteForAllowDeletingBrowserHistory(/*expected_enabled=*/false);
+
+  // True (enabled) state across History UI and Quick Delete.
+  SetPolicy(true, policy::key::kAllowDeletingBrowserHistory);
+  GREYAssertTrue(
+      base::test::ios::WaitUntilConditionOrTimeout(
+          base::test::ios::kWaitForUIElementTimeout,
+          ^{
+            return [ChromeEarlGrey
+                userBooleanPref:prefs::kAllowDeletingBrowserHistory];
+          }),
+      @"AllowDeletingBrowserHistory preference was unexpectedly false");
+  VerifyHistoryUIForAllowDeletingBrowserHistory(/*expected_enabled=*/true);
+  VerifyQuickDeleteForAllowDeletingBrowserHistory(/*expected_enabled=*/true);
 }
 
 // Tests for the SearchSuggestEnabled policy.

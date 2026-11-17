@@ -9,16 +9,23 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 
-class ProfileIOS;
+class FaviconLoader;
+class PrefService;
+@protocol HistoryConsumer;
 
 @interface HistoryMediator : NSObject <TableViewFaviconDataSource>
 
-// The coordinator's profile.
-@property(nonatomic, assign) ProfileIOS* profile;
+// Consumer for history UI updates.
+@property(nonatomic, weak) id<HistoryConsumer> consumer;
 
 - (instancetype)init NS_UNAVAILABLE;
-// Init method. `profile` can't be nil.
-- (instancetype)initWithProfile:(ProfileIOS*)profile NS_DESIGNATED_INITIALIZER;
+// Initializes the mediator. `faviconLoader` and `prefService` must be non-null.
+- (instancetype)initWithFaviconLoader:(FaviconLoader*)faviconLoader
+                          prefService:(PrefService*)prefService
+    NS_DESIGNATED_INITIALIZER;
+
+// Disconnects from the model layer. Must be called before deallocation.
+- (void)disconnect;
 
 @end
 

@@ -20,6 +20,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
+#import "components/history/core/common/pref_names.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/download_filter_util.h"
 #import "ios/chrome/browser/download/model/download_record.h"
@@ -35,7 +39,8 @@ using base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents;
 using CategorizationResult =
     std::pair<std::vector<DownloadRecord>, std::vector<DownloadRecord>>;
 
-@interface DownloadListMediator () <DownloadRecordObserverDelegate>
+@interface DownloadListMediator () <DownloadRecordObserverDelegate,
+                                    PrefObserverDelegate>
 
 // Cached download records to avoid frequent service calls.
 @property(nonatomic, assign) std::vector<DownloadRecord> allRecords;
@@ -52,8 +57,21 @@ using CategorizationResult =
   // Service for managing download records.
   raw_ptr<DownloadRecordService> _downloadRecordService;
 
+  // Pref service for querying enterprise policies.
+  raw_ptr<PrefService> _prefService;
+
+  // Pref observer bridge and registrar for live policy updates.
+  // `_prefChangeRegistrar` holds an unretained pointer to
+  // `_prefObserverBridge`, so `_prefObserverBridge` must be declared first to
+  // outlive it.
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
+  PrefChangeRegistrar _prefChangeRegistrar;
+
   // Flag to indicate if the mediator is ready (i.e., has a consumer).
   BOOL _isReady;
+
+  // Flag to indicate if initial download records have loaded.
+  BOOL _hasLoadedRecords;
 
   // Observer bridge for download record updates.
   std::unique_ptr<DownloadRecordObserverBridge> _observerBridge;
@@ -73,11 +91,14 @@ using CategorizationResult =
 
 - (instancetype)initWithDownloadRecordService:
                     (DownloadRecordService*)downloadRecordService
+                                  prefService:(PrefService*)prefService
                                   isIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
     CHECK(downloadRecordService);
+    CHECK(prefService);
     _downloadRecordService = downloadRecordService;
+    _prefService = prefService;
     _isIncognito = isIncognito;
     _observerBridge = std::make_unique<DownloadRecordObserverBridge>(self);
     _currentFilterType = DownloadFilterType::kAll;
@@ -95,11 +116,18 @@ using CategorizationResult =
 
 - (void)connect {
   _downloadRecordService->AddObserver(_observerBridge.get());
+  _prefChangeRegistrar.Init(_prefService);
+  _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+  _prefObserverBridge->ObserveChangesForPreference(
+      prefs::kAllowDeletingBrowserHistory, &_prefChangeRegistrar);
   [self setupApplicationObservers];
 }
 
 - (void)disconnect {
   [self removeApplicationObservers];
+  _prefChangeRegistrar.RemoveAll();
+  _prefObserverBridge.reset();
+  _prefService = nullptr;
   if (_downloadRecordService && _observerBridge) {
     _downloadRecordService->RemoveObserver(_observerBridge.get());
     // Nullify the delegate before destroying the bridge. This is safe to do
@@ -120,6 +148,7 @@ using CategorizationResult =
   }
   _downloadRecordService = nullptr;
   _isReady = NO;
+  _hasLoadedRecords = NO;
 }
 
 #pragma mark - Observers
@@ -229,6 +258,10 @@ using CategorizationResult =
 }
 
 - (void)deleteDownloadItem:(DownloadListItem*)item {
+  if (!_prefService ||
+      !_prefService->GetBoolean(prefs::kAllowDeletingBrowserHistory)) {
+    return;
+  }
   NSString* downloadID = item.downloadID;
   std::string downloadIdString = base::SysNSStringToUTF8(downloadID);
   base::FilePath filePath = item.filePath;
@@ -300,6 +333,18 @@ using CategorizationResult =
   // Found matching records, update UI.
   [self invalidateSearchCache];
   [self updateConsumer];
+}
+
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (preferenceName != prefs::kAllowDeletingBrowserHistory || !_isReady ||
+      !_hasLoadedRecords) {
+    return;
+  }
+  self.filteredRecordsCache =
+      [self applyFilterWithTypeAndKeyword:self.allRecords];
+  [self setDownloadListItems:self.filteredRecordsCache];
 }
 
 #pragma mark - Private Methods
@@ -380,6 +425,7 @@ using CategorizationResult =
 // Updates records and UI with the given records.
 - (void)updateRecordsAndUI:(std::vector<DownloadRecord>)records
                showLoading:(BOOL)showLoading {
+  _hasLoadedRecords = YES;
   self.allRecords = std::move(records);
   std::vector<DownloadRecord> recordsToDisplay =
       [self applyFilterWithTypeAndKeyword:self.allRecords];
@@ -437,10 +483,16 @@ using CategorizationResult =
 
 // Sets the download list items in the consumer.
 - (void)setDownloadListItems:(const std::vector<DownloadRecord>&)records {
+  if (!_prefService) {
+    return;
+  }
   NSMutableArray<DownloadListItem*>* items = [NSMutableArray array];
+  BOOL allowDeletingHistory =
+      _prefService->GetBoolean(prefs::kAllowDeletingBrowserHistory);
   for (const auto& record : records) {
     DownloadListItem* item =
-        [[DownloadListItem alloc] initWithDownloadRecord:record];
+        [[DownloadListItem alloc] initWithDownloadRecord:record
+                                    allowDeletingHistory:allowDeletingHistory];
     [items addObject:item];
   }
   [self.consumer setDownloadListItems:items.copy];

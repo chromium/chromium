@@ -23,6 +23,7 @@ schema:
 supported_on:
 - chrome.*:57-
 - chrome_os:57-
+- ios:160-
 tags:
 - local-data-access
 - admin-sharing

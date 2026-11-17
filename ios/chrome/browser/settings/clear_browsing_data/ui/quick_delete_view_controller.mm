@@ -283,6 +283,10 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [self updatePrimaryActionButtonEnabledStatus];
 }
 
+- (void)setHistoryDeletionEnabled:(BOOL)enabled {
+  // No-op: This ViewController doesn't show the individual browsing data types.
+}
+
 - (void)setTabsSelection:(BOOL)selected {
   _tabsSelected = selected;
   [self updatePrimaryActionButtonEnabledStatus];

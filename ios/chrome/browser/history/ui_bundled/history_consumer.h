@@ -29,6 +29,9 @@
 // Tells the consumer whether to show notice about other forms of
 // browsing history or not.
 - (void)showNoticeAboutOtherFormsOfBrowsingHistory:(BOOL)shouldShowNotice;
+
+// Sets whether deleting browser history is allowed by policy.
+- (void)setHistoryDeletionAllowed:(BOOL)historyDeletionAllowed;
 @end
 
 #endif  // IOS_CHROME_BROWSER_HISTORY_UI_BUNDLED_HISTORY_CONSUMER_H_

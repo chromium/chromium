@@ -72,6 +72,7 @@
   BOOL isIncognito = profile->IsOffTheRecord();
   _mediator = [[DownloadListMediator alloc]
       initWithDownloadRecordService:downloadRecordService
+                        prefService:profile->GetPrefs()
                         isIncognito:isIncognito];
 
   [_mediator connect];

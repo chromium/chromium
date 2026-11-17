@@ -47,6 +47,9 @@ enum class TimePeriod;
 // Sets the boolean value for the history pref selection.
 - (void)setHistorySelection:(BOOL)selected;
 
+// Sets whether history deletion is enabled by policy.
+- (void)setHistoryDeletionEnabled:(BOOL)enabled;
+
 // Sets the boolean value for the tabs pref selection.
 - (void)setTabsSelection:(BOOL)selected;
 

@@ -18,6 +18,7 @@
 
 class Browser;
 class BrowserList;
+class PrefService;
 class TabGroup;
 
 namespace history {
@@ -58,6 +59,7 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
                           public KeyedService {
  public:
   TabsSearchService(bool is_off_the_record,
+                    PrefService* pref_service,
                     BrowserList* browser_list,
                     signin::IdentityManager* identity_manager,
                     syncer::SyncService* sync_service,
@@ -151,6 +153,9 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
 
   // Is the service used for off-the-record BrowserState?
   const bool is_off_the_record_;
+  // Passed to `IOSBrowsingHistoryDriver` to enforce
+  // `AllowDeletingBrowserHistory`; must outlive this service.
+  raw_ptr<PrefService> pref_service_;
   // The KeyedServices used.
   raw_ptr<BrowserList> browser_list_;
   // The optional KeyedServices used (may be null when off-the-record).

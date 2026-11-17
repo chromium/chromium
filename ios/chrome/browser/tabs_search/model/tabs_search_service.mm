@@ -6,10 +6,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/check.h"
 #import "base/i18n/break_iterator.h"
 #import "base/i18n/string_search.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/prefs/pref_service.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -30,6 +32,7 @@ using base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents;
 
 TabsSearchService::TabsSearchService(
     bool is_off_the_record,
+    PrefService* pref_service,
     BrowserList* browser_list,
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service,
@@ -39,6 +42,7 @@ TabsSearchService::TabsSearchService(
     history::WebHistoryService* web_history_service,
     syncer::DeviceInfoTracker* device_info_tracker)
     : is_off_the_record_(is_off_the_record),
+      pref_service_(pref_service),
       browser_list_(browser_list),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
@@ -47,6 +51,7 @@ TabsSearchService::TabsSearchService(
       history_service_(history_service),
       web_history_service_(web_history_service),
       device_info_tracker_(device_info_tracker) {
+  CHECK(pref_service_);
   DCHECK(browser_list_);
 
   // Those services are only used if not off-the-record, so allow them to
@@ -169,7 +174,8 @@ void TabsSearchService::SearchHistory(
   DCHECK(completion);
 
   if (!browsing_history_service_) {
-    history_driver_ = std::make_unique<IOSBrowsingHistoryDriver>(this);
+    history_driver_ =
+        std::make_unique<IOSBrowsingHistoryDriver>(pref_service_, this);
 
     browsing_history_service_ =
         std::make_unique<history::BrowsingHistoryService>(

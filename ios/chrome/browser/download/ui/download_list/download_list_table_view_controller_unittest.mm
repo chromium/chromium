@@ -149,7 +149,8 @@ DownloadRecord CreateTestDownloadRecord(
 
 /// Creates a test DownloadListItem from a DownloadRecord.
 DownloadListItem* CreateTestDownloadListItem(const DownloadRecord& record) {
-  return [[DownloadListItem alloc] initWithDownloadRecord:record];
+  return [[DownloadListItem alloc] initWithDownloadRecord:record
+                                     allowDeletingHistory:YES];
 }
 
 }  // namespace

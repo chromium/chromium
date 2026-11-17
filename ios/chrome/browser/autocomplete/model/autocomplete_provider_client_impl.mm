@@ -9,6 +9,7 @@
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/history/core/browser/top_sites.h"
+#import "components/history/core/common/pref_names.h"
 #import "components/language/core/browser/pref_names.h"
 #import "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #import "components/omnibox/browser/autocomplete_classifier.h"
@@ -277,6 +278,10 @@ bool AutocompleteProviderClientImpl::IsGuestSession() const {
 
 bool AutocompleteProviderClientImpl::SearchSuggestEnabled() const {
   return profile_->GetPrefs()->GetBoolean(prefs::kSearchSuggestEnabled);
+}
+
+bool AutocompleteProviderClientImpl::AllowDeletingBrowserHistory() const {
+  return profile_->GetPrefs()->GetBoolean(prefs::kAllowDeletingBrowserHistory);
 }
 
 bool AutocompleteProviderClientImpl::IsUrlDataCollectionActive() const {

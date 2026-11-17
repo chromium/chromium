@@ -11,15 +11,17 @@
 
 @protocol DownloadListConsumer;
 class DownloadRecordService;
+class PrefService;
 
 // Mediator for download list view controller.
 @interface DownloadListMediator : NSObject <DownloadListMutator>
 
 #pragma mark - Setup Methods
 
-// Inits with the download record service and incognito status.
+// Inits with the download record service, pref service, and incognito status.
 - (instancetype)initWithDownloadRecordService:
                     (DownloadRecordService*)downloadRecordService
+                                  prefService:(PrefService*)prefService
                                   isIncognito:(BOOL)isIncognito;
 
 // Default initializer is unavailable.

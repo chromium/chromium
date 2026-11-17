@@ -8,6 +8,8 @@
 #import <string_view>
 
 #import "base/strings/utf_string_conversions.h"
+#import "components/history/core/common/pref_names.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -41,6 +43,15 @@ TEST_F(AutocompleteProviderClientImplTest, GetBuiltinsToProvideAsUserTypes) {
       ElementsAre(base::ASCIIToUTF16(std::string_view(kChromeUIChromeURLsURL)),
                   base::ASCIIToUTF16(std::string_view(kChromeUIFlagsURL)),
                   base::ASCIIToUTF16(std::string_view(kChromeUIVersionURL))));
+}
+
+// Tests that `AllowDeletingBrowserHistory()` reflects the pref value.
+TEST_F(AutocompleteProviderClientImplTest, AllowDeletingBrowserHistory) {
+  profile_->GetPrefs()->SetBoolean(prefs::kAllowDeletingBrowserHistory, true);
+  EXPECT_TRUE(client_->AllowDeletingBrowserHistory());
+
+  profile_->GetPrefs()->SetBoolean(prefs::kAllowDeletingBrowserHistory, false);
+  EXPECT_FALSE(client_->AllowDeletingBrowserHistory());
 }
 
 }  // namespace

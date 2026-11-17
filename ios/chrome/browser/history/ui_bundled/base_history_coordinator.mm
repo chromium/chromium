@@ -7,6 +7,7 @@
 #import "components/history/core/browser/browsing_history_service.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync_device_info/device_info_sync_service.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/history/model/web_history_service_factory.h"
 #import "ios/chrome/browser/history/ui_bundled/base_history_coordinator+subclassing.h"
@@ -58,8 +59,14 @@
   _browserObserver =
       std::make_unique<BrowserObserverBridge>(self.browser, self);
 
+  ProfileIOS* profile = self.profile;
+
   // Initialize and set HistoryMediator.
-  _mediator = [[HistoryMediator alloc] initWithProfile:self.profile];
+  _mediator = [[HistoryMediator alloc]
+      initWithFaviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                profile)
+                prefService:profile->GetPrefs()];
+  _mediator.consumer = self.viewController;
   self.viewController.imageDataSource = _mediator;
 
   // Initialize and configure HistoryServices.
@@ -67,14 +74,14 @@
       std::make_unique<IOSBrowsingHistoryDriverDelegateBridge>(
           self.viewController);
   _browsingHistoryDriver = std::make_unique<IOSBrowsingHistoryDriver>(
-      _browsingHistoryDriverDelegate.get());
+      profile->GetPrefs(), _browsingHistoryDriverDelegate.get());
   auto* device_info_service =
-      DeviceInfoSyncServiceFactory::GetForProfile(self.profile);
+      DeviceInfoSyncServiceFactory::GetForProfile(profile);
   _browsingHistoryService = std::make_unique<history::BrowsingHistoryService>(
       _browsingHistoryDriver.get(),
-      ios::HistoryServiceFactory::GetForProfile(self.profile),
-      ios::WebHistoryServiceFactory::GetForProfile(self.profile),
-      SyncServiceFactory::GetForProfile(self.profile),
+      ios::HistoryServiceFactory::GetForProfile(profile),
+      ios::WebHistoryServiceFactory::GetForProfile(profile),
+      SyncServiceFactory::GetForProfile(profile),
       device_info_service ? device_info_service->GetDeviceInfoTracker()
                           : nullptr,
       /*critical_action_provider=*/nullptr);
@@ -93,6 +100,8 @@
 
   // Clear C++ objects as they may reference objects that will become
   // unavailable.
+  [_mediator disconnect];
+  _mediator = nil;
   _browsingHistoryDriver = nullptr;
   _browsingHistoryService = nullptr;
   _browsingHistoryDriverDelegate = nullptr;
@@ -118,6 +127,8 @@
     _browserObserver.reset();
   }
 
+  [_mediator disconnect];
+  _mediator = nil;
   _browsingHistoryDriver = nullptr;
   _browsingHistoryService = nullptr;
   _browsingHistoryDriverDelegate = nullptr;
@@ -195,9 +206,12 @@
                     [weakSelf shareURL:item.URL title:item.text fromView:view];
                   }]];
 
-    [menuElements addObject:[actionFactory actionToDeleteWithBlock:^{
-                    [historyItemDelegate historyEntryItemDidRequestDelete:item];
-                  }]];
+    if ([historyItemDelegate isHistoryDeletionAllowed]) {
+      [menuElements addObject:[actionFactory actionToDeleteWithBlock:^{
+                      [historyItemDelegate
+                          historyEntryItemDidRequestDelete:item];
+                    }]];
+    }
 
     return [UIMenu menuWithTitle:@"" children:menuElements];
   };

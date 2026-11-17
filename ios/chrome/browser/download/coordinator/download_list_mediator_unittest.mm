@@ -15,13 +15,16 @@
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/observer_list.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
+#import "components/history/core/common/pref_names.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/download_filter_util.h"
@@ -41,6 +44,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 using testing::_;
 
@@ -309,6 +313,9 @@ class DownloadListMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kAllowDeletingBrowserHistory, true);
+
     // Set up test downloads directory.
     ASSERT_TRUE(test_downloads_dir_.CreateUniqueTempDir());
     downloads_path_ = test_downloads_dir_.GetPath().AppendASCII("downloads");
@@ -332,6 +339,7 @@ class DownloadListMediatorTest : public PlatformTest {
 
     [mediator_ disconnect];
     mediator_ = nil;
+    EXPECT_OCMOCK_VERIFY(mock_consumer_);
 
     if (mock_service_) {
       mock_service_->CleanupTestEnvironment();
@@ -345,6 +353,7 @@ class DownloadListMediatorTest : public PlatformTest {
   void InitializeMediatorAndLoadTestData() {
     mediator_ = [[DownloadListMediator alloc]
         initWithDownloadRecordService:mock_service_.get()
+                          prefService:&pref_service_
                           isIncognito:NO];
     ASSERT_TRUE(mediator_);
 
@@ -365,10 +374,12 @@ class DownloadListMediatorTest : public PlatformTest {
 
     [mediator_ loadDownloadRecords];
     run_loop.Run();
+    EXPECT_OCMOCK_VERIFY(mock_consumer_);
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
   DownloadListMediator* mediator_;
   id mock_consumer_;
   std::unique_ptr<MockDownloadRecordService> mock_service_;
@@ -815,7 +826,8 @@ TEST_F(DownloadListMediatorTest, TestDeleteDownloadItem) {
   record.file_path = base::FilePath(fileName);
 
   DownloadListItem* item =
-      [[DownloadListItem alloc] initWithDownloadRecord:record];
+      [[DownloadListItem alloc] initWithDownloadRecord:record
+                                  allowDeletingHistory:YES];
 
   // Set up RunLoop to wait for async file deletion completion.
   base::RunLoop run_loop;
@@ -853,7 +865,8 @@ TEST_F(DownloadListMediatorTest, TestDeleteDownloadItemFileNotExists) {
   record.state = web::DownloadTask::State::kCancelled;
 
   DownloadListItem* item =
-      [[DownloadListItem alloc] initWithDownloadRecord:record];
+      [[DownloadListItem alloc] initWithDownloadRecord:record
+                                  allowDeletingHistory:YES];
 
   // Verify the file doesn't exist before deletion.
   base::FilePath fullPath = downloads_path_.Append(fileName);
@@ -881,6 +894,153 @@ TEST_F(DownloadListMediatorTest, TestDeleteDownloadItemFileNotExists) {
   [mock_consumer_ verify];
 }
 
+// Tests that when history deletion is disallowed via policy, the mediator
+// updates items to omit `DownloadListItemActionDelete` and ignores
+// `deleteDownloadItem:`.
+TEST_F(DownloadListMediatorTest, TestLivePolicyChangeDisallowsDeletion) {
+  [mediator_ connect];
+
+  [[mock_consumer_ expect]
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        EXPECT_EQ(items.count, 6U);
+        for (DownloadListItem* item in items) {
+          EXPECT_FALSE(item.availableActions & DownloadListItemActionDelete);
+        }
+        return YES;
+      }]];
+
+  pref_service_.SetBoolean(prefs::kAllowDeletingBrowserHistory, false);
+
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  // Attempting to delete an item when disallowed should be a no-op.
+  DownloadRecord record;
+  record.download_id = "test_disallowed_id";
+  record.file_path = base::FilePath("test.pdf");
+  DownloadListItem* item =
+      [[DownloadListItem alloc] initWithDownloadRecord:record
+                                  allowDeletingHistory:NO];
+
+  EXPECT_CALL(*mock_service_, RemoveDownloadByIdAsync(_, _)).Times(0);
+  [mediator_ deleteDownloadItem:item];
+
+  // Deleting after disconnect (when `_prefService` is null) should also be a
+  // no-op.
+  [mediator_ disconnect];
+  [mediator_ deleteDownloadItem:item];
+}
+
+// Tests that changing `kAllowDeletingBrowserHistory` before initial download
+// records have loaded does not prematurely update the consumer, and that the
+// subsequent initial load reflects the updated policy state.
+TEST_F(DownloadListMediatorTest,
+       LivePolicyChangeBeforeInitialLoadDoesNotUpdateConsumer) {
+  DownloadListMediator* unloaded_mediator = [[DownloadListMediator alloc]
+      initWithDownloadRecordService:mock_service_.get()
+                        prefService:&pref_service_
+                        isIncognito:NO];
+  OCMockObject<DownloadListConsumer>* strict_consumer =
+      OCMStrictProtocolMock(@protocol(DownloadListConsumer));
+
+  // Mirror `DownloadListCoordinator -start`: connect before setting the
+  // consumer, then set the consumer before `-loadDownloadRecords` runs.
+  [unloaded_mediator connect];
+  pref_service_.SetBoolean(prefs::kAllowDeletingBrowserHistory, false);
+
+  [unloaded_mediator setConsumer:strict_consumer];
+  pref_service_.SetBoolean(prefs::kAllowDeletingBrowserHistory, true);
+  pref_service_.SetBoolean(prefs::kAllowDeletingBrowserHistory, false);
+  EXPECT_OCMOCK_VERIFY(strict_consumer);
+
+  // Perform the initial load and verify all loaded items reflect the
+  // disallowed policy state.
+  base::RunLoop run_loop;
+  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+
+  OCMExpect([strict_consumer setLoadingState:YES]);
+  OCMExpect([strict_consumer setLoadingState:NO]);
+  OCMExpect([strict_consumer
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        EXPECT_EQ(items.count, 6U);
+        for (DownloadListItem* item in items) {
+          EXPECT_FALSE(item.availableActions & DownloadListItemActionDelete);
+        }
+        return YES;
+      }]]);
+  OCMExpect([strict_consumer setEmptyState:NO]);
+  OCMExpect([strict_consumer setDownloadListHeaderShown:YES])
+      .andDo([quit_closure](NSInvocation* invocation) { quit_closure.Run(); });
+
+  [unloaded_mediator loadDownloadRecords];
+  run_loop.Run();
+
+  [unloaded_mediator disconnect];
+  EXPECT_OCMOCK_VERIFY(strict_consumer);
+  [strict_consumer stopMocking];
+}
+
+// Tests that a live policy change while an asynchronous reload is in flight
+// recomputes filtered items from cached records instead of pushing an empty
+// list.
+TEST_F(DownloadListMediatorTest,
+       LivePolicyChangeDuringReloadPreservesFilteredItems) {
+  [mediator_ connect];
+
+  [[mock_consumer_ expect]
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        EXPECT_EQ(items.count, 1U);
+        if (items.count != 1U) {
+          return NO;
+        }
+        EXPECT_NSEQ(items[0].downloadID, @"1");
+        EXPECT_TRUE(items[0].availableActions & DownloadListItemActionDelete);
+        return YES;
+      }]];
+  [mediator_ filterRecordsWithType:DownloadFilterType::kPDF];
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  // Start an asynchronous reload, then flip the policy before the background
+  // file categorization reply runs on the main sequence.
+  [[mock_consumer_ expect] setLoadingState:YES];
+  [mediator_ loadDownloadRecords];
+
+  [[mock_consumer_ expect]
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        EXPECT_EQ(items.count, 1U);
+        if (items.count != 1U) {
+          return NO;
+        }
+        EXPECT_NSEQ(items[0].downloadID, @"1");
+        EXPECT_FALSE(items[0].availableActions & DownloadListItemActionDelete);
+        return YES;
+      }]];
+  pref_service_.SetBoolean(prefs::kAllowDeletingBrowserHistory, false);
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  // Drain the in-flight reload so tasks do not outlive the test.
+  base::RunLoop run_loop;
+  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+  [[mock_consumer_ expect] setLoadingState:NO];
+  [[mock_consumer_ expect]
+      setDownloadListItems:[OCMArg checkWithBlock:^BOOL(
+                                       NSArray<DownloadListItem*>* items) {
+        EXPECT_EQ(items.count, 1U);
+        if (items.count != 1U) {
+          return NO;
+        }
+        EXPECT_NSEQ(items[0].downloadID, @"1");
+        EXPECT_FALSE(items[0].availableActions & DownloadListItemActionDelete);
+        quit_closure.Run();
+        return YES;
+      }]];
+  run_loop.Run();
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
 // Test class specifically for incognito mediator testing - equivalent to
 // DownloadListMediatorTest.
 class DownloadListMediatorIncognitoTest : public PlatformTest {
@@ -893,6 +1053,9 @@ class DownloadListMediatorIncognitoTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
+
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kAllowDeletingBrowserHistory, true);
 
     feature_list_.InitAndEnableFeature(kDownloadList);
 
@@ -910,6 +1073,7 @@ class DownloadListMediatorIncognitoTest : public PlatformTest {
   void TearDown() override {
     [mediator_ disconnect];
     mediator_ = nil;
+    EXPECT_OCMOCK_VERIFY(mock_consumer_);
 
     if (mock_service_) {
       mock_service_->CleanupTestEnvironment();
@@ -923,6 +1087,7 @@ class DownloadListMediatorIncognitoTest : public PlatformTest {
     // Create incognito mediator (isIncognito:YES).
     mediator_ = [[DownloadListMediator alloc]
         initWithDownloadRecordService:mock_service_.get()
+                          prefService:&pref_service_
                           isIncognito:YES];
     ASSERT_TRUE(mediator_);
 
@@ -947,10 +1112,12 @@ class DownloadListMediatorIncognitoTest : public PlatformTest {
 
     // Wait for async operations to complete.
     run_loop.Run();
+    EXPECT_OCMOCK_VERIFY(mock_consumer_);
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
   DownloadListMediator* mediator_;
   id mock_consumer_;
   std::unique_ptr<MockDownloadRecordService> mock_service_;
@@ -1104,7 +1271,8 @@ TEST_F(DownloadListMediatorTest, TestCancelDownloadItemInProgress) {
 
   // Create download list item.
   DownloadListItem* item =
-      [[DownloadListItem alloc] initWithDownloadRecord:inProgressRecord];
+      [[DownloadListItem alloc] initWithDownloadRecord:inProgressRecord
+                                  allowDeletingHistory:YES];
 
   // Verify initial state is kInProgress.
   EXPECT_EQ(task_ptr->GetState(), web::DownloadTask::State::kInProgress);

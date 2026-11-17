@@ -40,7 +40,8 @@ std::unique_ptr<KeyedService> TabsSearchServiceFactory::BuildServiceInstanceFor(
   syncer::DeviceInfoSyncService* device_info_service =
       DeviceInfoSyncServiceFactory::GetForProfile(profile);
   return std::make_unique<TabsSearchService>(
-      is_off_the_record, BrowserListFactory::GetForProfile(profile),
+      is_off_the_record, profile.GetPrefs(),
+      BrowserListFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile),
       IOSChromeTabRestoreServiceFactory::GetForProfile(profile),

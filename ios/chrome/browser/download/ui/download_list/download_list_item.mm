@@ -27,16 +27,19 @@ NSString* const kStatusTextEmptyString = @"";
 
 @implementation DownloadListItem {
   DownloadRecord _downloadRecord;
+  BOOL _allowDeletingHistory;
   NSString* _downloadID;
   UIImage* _fileTypeIcon;
 }
 
 #pragma mark - Initialization
 
-- (instancetype)initWithDownloadRecord:(const DownloadRecord&)downloadRecord {
+- (instancetype)initWithDownloadRecord:(const DownloadRecord&)downloadRecord
+                  allowDeletingHistory:(BOOL)allowDeletingHistory {
   self = [super init];
   if (self) {
     _downloadRecord = downloadRecord;
+    _allowDeletingHistory = allowDeletingHistory;
   }
   return self;
 }
@@ -176,8 +179,10 @@ NSString* const kStatusTextEmptyString = @"";
     actions |= DownloadListItemActionOpenInFiles;
   }
 
-  // All non-in-progress downloads can be deleted.
-  actions |= DownloadListItemActionDelete;
+  // All non-in-progress downloads can be deleted if permitted by policy.
+  if (_allowDeletingHistory) {
+    actions |= DownloadListItemActionDelete;
+  }
 
   return actions;
 }
@@ -189,6 +194,9 @@ NSString* const kStatusTextEmptyString = @"";
 - (BOOL)isEqualToItem:(DownloadListItem*)item {
   if (self == item) {
     return YES;
+  }
+  if (_allowDeletingHistory != item->_allowDeletingHistory) {
+    return NO;
   }
   const DownloadRecord& other = item->_downloadRecord;
   return _downloadRecord == other;

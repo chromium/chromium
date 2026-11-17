@@ -14,20 +14,22 @@
 #include "url/gurl.h"
 
 class IOSBrowsingHistoryDriverDelegate;
+class PrefService;
 
 // A simple implementation of BrowsingHistoryServiceHandler that delegates to
 // IOSBrowsingHistoryDriverDelegate for most actions.
 class IOSBrowsingHistoryDriver : public history::BrowsingHistoryDriver {
  public:
-  explicit IOSBrowsingHistoryDriver(IOSBrowsingHistoryDriverDelegate* delegate);
+  // `prefs` and `delegate` must be non-null and must outlive this instance.
+  IOSBrowsingHistoryDriver(PrefService* prefs,
+                           IOSBrowsingHistoryDriverDelegate* delegate);
 
   IOSBrowsingHistoryDriver(const IOSBrowsingHistoryDriver&) = delete;
   IOSBrowsingHistoryDriver& operator=(const IOSBrowsingHistoryDriver&) = delete;
 
   ~IOSBrowsingHistoryDriver() override;
 
- private:
-  // history::BrowsingHistoryDriver implementation.
+  // history::BrowsingHistoryDriver:
   void OnQueryComplete(
       const std::vector<history::BrowsingHistoryService::HistoryEntry>& results,
       const history::BrowsingHistoryService::QueryResultsInfo&
@@ -47,6 +49,8 @@ class IOSBrowsingHistoryDriver : public history::BrowsingHistoryDriver {
       history::WebHistoryService* history_service,
       base::OnceCallback<void(bool)> callback) override;
 
+ private:
+  raw_ptr<PrefService> prefs_ = nullptr;
   raw_ptr<IOSBrowsingHistoryDriverDelegate> delegate_;
 };
 

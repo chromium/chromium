@@ -27,3 +27,13 @@ source_set("ui") {
     "//ui/base",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "quick_delete_browsing_data_view_controller_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//ios/chrome/test:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -41,6 +41,7 @@ source_set("model") {
     "//components/application_locale_storage",
     "//components/browser_sync",
     "//components/history/core/browser",
+    "//components/history/core/common",
     "//components/keyed_service/ios",
     "//components/language/core/browser",
     "//components/omnibox/browser",
@@ -89,8 +90,10 @@ source_set("unit_tests") {
   deps = [
     ":model",
     "//base/test:test_support",
+    "//components/history/core/common",
     "//components/omnibox/browser",
     "//components/omnibox/browser:test_support",
+    "//components/prefs",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",

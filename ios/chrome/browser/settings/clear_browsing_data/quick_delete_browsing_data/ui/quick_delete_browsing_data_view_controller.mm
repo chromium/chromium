@@ -35,6 +35,9 @@ const CGFloat kDefaultSymbolSize = 24;
 // TableView's footer section height.
 constexpr CGFloat kSectionFooterHeight = 0;
 
+// Content view alpha for disabled browsing data cells.
+constexpr CGFloat kDisabledCellAlpha = 0.5;
+
 // The URL for signing out of Chrome from Delete Browsing Data (DBD).
 const char kDBDSignOutOfChromeURL[] = "settings://DBDSignOutOfChrome";
 
@@ -86,6 +89,7 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
   NSString* _autofillSummary;
   NSString* _siteSettingsSummary;
   BOOL _historySelected;
+  BOOL _historyDeletionEnabled;
   BOOL _tabsSelected;
   BOOL _siteDataSelected;
   BOOL _cacheSelected;
@@ -101,7 +105,11 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
 
 - (instancetype)init {
   UITableViewStyle style = ChromeTableViewStyle();
-  return [super initWithStyle:style];
+  self = [super initWithStyle:style];
+  if (self) {
+    _historyDeletionEnabled = YES;
+  }
+  return self;
 }
 
 #pragma mark - UIViewController
@@ -293,8 +301,20 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
 }
 
 - (void)setHistorySelection:(BOOL)selected {
-  _historySelected = selected;
+  _historySelected = selected && _historyDeletionEnabled;
   [self updateSnapshotForItemIdentifier:ItemIdentifierHistory];
+}
+
+- (void)setHistoryDeletionEnabled:(BOOL)enabled {
+  if (_historyDeletionEnabled == enabled) {
+    return;
+  }
+  _historyDeletionEnabled = enabled;
+  if (!_historyDeletionEnabled) {
+    _historySelected = NO;
+  }
+  [self updateSnapshotForItemIdentifier:ItemIdentifierHistory];
+  [self updateDoneButtonEnabledStatus];
 }
 
 - (void)setTabsSelection:(BOOL)selected {
@@ -390,6 +410,7 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
                                 summary:(NSString*)summary
                                    icon:(UIImage*)icon
                                selected:(BOOL)selected
+                                enabled:(BOOL)enabled
                 accessibilityIdentifier:(NSString*)accessibilityIdentifier {
   TableViewCellContentConfiguration* configuration =
       [[TableViewCellContentConfiguration alloc] init];
@@ -408,10 +429,17 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
 
   cell.contentConfiguration = configuration;
   cell.accessibilityIdentifier = accessibilityIdentifier;
+  cell.userInteractionEnabled = enabled;
+  cell.contentView.alpha = enabled ? 1.0 : kDisabledCellAlpha;
 
   UIAccessibilityTraits traits = cell.accessibilityTraits;
   traits |= UIAccessibilityTraitButton;
-  if (selected) {
+  if (enabled) {
+    traits &= ~UIAccessibilityTraitNotEnabled;
+  } else {
+    traits |= UIAccessibilityTraitNotEnabled;
+  }
+  if (selected && enabled) {
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
     traits |= UIAccessibilityTraitSelected;
   } else {
@@ -436,9 +464,14 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
 
   cell.contentConfiguration = configuration;
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  cell.userInteractionEnabled = YES;
+  cell.contentView.alpha = 1.0;
 
   cell.accessibilityIdentifier = kQuickDeleteManageOtherDataCellIdentifier;
-  cell.accessibilityTraits |= UIAccessibilityTraitButton;
+  UIAccessibilityTraits traits = cell.accessibilityTraits;
+  traits |= UIAccessibilityTraitButton;
+  traits &= ~(UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected);
+  cell.accessibilityTraits = traits;
 
   return cell;
 }
@@ -455,6 +488,7 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
                           summary:_historySummary
                              icon:[self iconForItemIdentifier:itemIdentifier]
                          selected:_historySelected
+                          enabled:_historyDeletionEnabled
           accessibilityIdentifier:kQuickDeleteBrowsingDataHistoryIdentifier];
     }
     case ItemIdentifierTabs: {
@@ -463,6 +497,7 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
                           summary:_tabsSummary
                              icon:[self iconForItemIdentifier:itemIdentifier]
                          selected:_tabsSelected
+                          enabled:YES
           accessibilityIdentifier:kQuickDeleteBrowsingDataTabsIdentifier];
     }
     case ItemIdentifierSiteData: {
@@ -474,6 +509,7 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
                                       IDS_DEL_COOKIES_COUNTER)
                              icon:[self iconForItemIdentifier:itemIdentifier]
                          selected:_siteDataSelected
+                          enabled:YES
           accessibilityIdentifier:kQuickDeleteBrowsingDataSiteDataIdentifier];
     }
     case ItemIdentifierCache: {
@@ -482,6 +518,7 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
                           summary:_cacheSummary
                              icon:[self iconForItemIdentifier:itemIdentifier]
                          selected:_cacheSelected
+                          enabled:YES
           accessibilityIdentifier:kQuickDeleteBrowsingDataCacheIdentifier];
     }
     case ItemIdentifierAutofill: {
@@ -490,6 +527,7 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
                           summary:_autofillSummary
                              icon:[self iconForItemIdentifier:itemIdentifier]
                          selected:_autofillSelected
+                          enabled:YES
           accessibilityIdentifier:kQuickDeleteBrowsingDataAutofillIdentifier];
     }
     case ItemIdentifierSiteSettings: {
@@ -499,6 +537,7 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
                           summary:_siteSettingsSummary
                              icon:[self iconForItemIdentifier:itemIdentifier]
                          selected:_siteSettingsSelected
+                          enabled:YES
           accessibilityIdentifier:
               kQuickDeleteBrowsingDataSiteSettingsIdentifier];
     }
@@ -541,6 +580,9 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
 - (void)toggleSelectionForItemIdentifier:(ItemIdentifier)itemIdentifier {
   switch (itemIdentifier) {
     case ItemIdentifierHistory: {
+      if (!_historyDeletionEnabled) {
+        return;
+      }
       _historySelected = !_historySelected;
       break;
     }

@@ -12,6 +12,7 @@
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/bookmarks/managed/managed_bookmarks_policy_handler.h"
+#import "components/browsing_data/core/pref_names.h"
 #import "components/collaboration/public/pref_names.h"
 #import "components/commerce/core/pref_names.h"
 #import "components/component_updater/pref_names.h"
@@ -83,6 +84,9 @@ namespace {
 constexpr auto kSimplePolicyMap = std::to_array<PolicyToPreferenceMapEntry>({
   { policy::key::kAllowChromeDataInBackups,
     prefs::kAllowChromeDataInBackups,
+    base::Value::Type::BOOLEAN },
+  { policy::key::kAllowDeletingBrowserHistory,
+    prefs::kAllowDeletingBrowserHistory,
     base::Value::Type::BOOLEAN },
   { policy::key::kAppStoreRatingEnabled,
     prefs::kAppStoreRatingPolicyEnabled,
@@ -242,6 +246,9 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
         entry.policy_name, entry.preference_path, entry.value_type));
   }
 
+  handlers->AddHandler(std::make_unique<policy::BooleanDisablingPolicyHandler>(
+      policy::key::kAllowDeletingBrowserHistory,
+      browsing_data::prefs::kDeleteBrowsingHistory));
   handlers->AddHandler(std::make_unique<policy::BooleanDisablingPolicyHandler>(
       policy::key::kAutofillAddressEnabled,
       autofill::prefs::kAutofillProfileEnabled));

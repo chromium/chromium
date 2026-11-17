@@ -12,6 +12,7 @@
 #import "components/browsing_data/core/pref_names.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/history/core/common/pref_names.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
@@ -294,9 +295,8 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   [_consumer setManageOtherDataTitle:[self manageOtherDataTitle]];
   [_consumer setManageOtherDataSubtitle:[self manageOtherDataSubtitle]];
   [_consumer setShouldShowFooter:_isSignedIn];
-  [_consumer
-      setHistorySelection:_prefs->GetBoolean(
-                              browsing_data::prefs::kDeleteBrowsingHistory)];
+  [_consumer setHistoryDeletionEnabled:[self isHistoryDeletionAllowed]];
+  [_consumer setHistorySelection:[self shouldDeleteBrowsingHistory]];
   [_consumer
       setTabsSelection:_prefs->GetBoolean(browsing_data::prefs::kCloseTabs)];
   [_consumer setSiteDataSelection:_prefs->GetBoolean(
@@ -366,7 +366,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
 
   BrowsingDataRemoveMask removeMask = BrowsingDataRemoveMask::REMOVE_NOTHING;
 
-  if (_prefs->GetBoolean(browsing_data::prefs::kDeleteBrowsingHistory)) {
+  if ([self shouldDeleteBrowsingHistory]) {
     removeMask |= BrowsingDataRemoveMask::REMOVE_HISTORY;
 
     // If browsing History will be cleared set the kLastClearBrowsingDataTime.
@@ -474,6 +474,12 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
 }
 
 - (void)updateHistorySelection:(BOOL)selected {
+  if (![self isHistoryDeletionAllowed] ||
+      _prefs->IsManagedPreference(
+          browsing_data::prefs::kDeleteBrowsingHistory)) {
+    return;
+  }
+
   BOOL current_state =
       _prefs->GetBoolean(browsing_data::prefs::kDeleteBrowsingHistory);
   if (current_state == selected) {
@@ -573,6 +579,14 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   if (_deletionTriggered) {
+    return;
+  }
+
+  if (preferenceName == prefs::kAllowDeletingBrowserHistory) {
+    [_consumer setHistoryDeletionEnabled:[self isHistoryDeletionAllowed]];
+    [self restartCounters];
+    [self updateConsumerSelectionForPref:browsing_data::prefs::
+                                             kDeleteBrowsingHistory];
     return;
   }
 
@@ -746,7 +760,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
 - (void)dispatchBrowsingDataSummary {
   NSMutableArray<NSString*>* summaryItems = [[NSMutableArray alloc] init];
 
-  if (_prefs->GetBoolean(browsing_data::prefs::kDeleteBrowsingHistory)) {
+  if ([self shouldDeleteBrowsingHistory]) {
     if (_browsingHistorySummary && _browsingHistorySummary.length > 0) {
       [summaryItems addObject:_browsingHistorySummary];
     }
@@ -926,6 +940,8 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
 
 - (void)observePreferences {
   _prefObserverBridge->ObserveChangesForPreference(
+      prefs::kAllowDeletingBrowserHistory, &_prefChangeRegistrar);
+  _prefObserverBridge->ObserveChangesForPreference(
       browsing_data::prefs::kDeleteTimePeriod, &_prefChangeRegistrar);
   _prefObserverBridge->ObserveChangesForPreference(
       browsing_data::prefs::kDeleteBrowsingHistory, &_prefChangeRegistrar);
@@ -981,7 +997,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   }
 
   if (preferenceName == browsing_data::prefs::kDeleteBrowsingHistory) {
-    [_consumer setHistorySelection:_prefs->GetBoolean(preferenceName)];
+    [_consumer setHistorySelection:[self shouldDeleteBrowsingHistory]];
     return;
   }
 
@@ -1009,6 +1025,18 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
     [_consumer setSiteSettingsSelection:[self isSiteSettingsSelected]];
     return;
   }
+}
+
+// Returns whether deleting browser history is allowed by enterprise policy.
+- (BOOL)isHistoryDeletionAllowed {
+  return _prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory);
+}
+
+// Returns whether browsing history should be deleted. History deletion is
+// skipped when disallowed by policy even if `kDeleteBrowsingHistory` is set.
+- (BOOL)shouldDeleteBrowsingHistory {
+  return [self isHistoryDeletionAllowed] &&
+         _prefs->GetBoolean(browsing_data::prefs::kDeleteBrowsingHistory);
 }
 
 // Returns whether site settings should be deleted. Site settings can only be

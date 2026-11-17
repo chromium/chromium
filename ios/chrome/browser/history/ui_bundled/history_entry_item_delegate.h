@@ -13,6 +13,8 @@
 @protocol HistoryEntryItemDelegate
 // Returns true if ListItem owner is in edit mode.
 - (BOOL)isEditing;
+// Returns YES if browser history deletion is allowed by policy.
+- (BOOL)isHistoryDeletionAllowed;
 // Called when custom accessibility action to delete the entry is invoked.
 - (void)historyEntryItemDidRequestDelete:
     (ListItem<HistoryEntryItemInterface>*)item;

@@ -321,7 +321,7 @@ enum ItemType : NSInteger {
 - (void)updateToolbarButtonsWithAnimation:(BOOL)animated {
   self.deleteButton.enabled =
       [[self.tableView indexPathsForSelectedRows] count];
-  self.editButton.enabled = !self.empty;
+  self.editButton.enabled = !self.empty && [self isHistoryDeletionAllowed];
   [self setToolbarItems:[self createToolbarButtons] animated:animated];
 }
 
@@ -403,6 +403,22 @@ enum ItemType : NSInteger {
   // history via delete browsing data.
   self.filterQueryResult = YES;
   [self showHistoryMatchingQuery:nil];
+}
+
+- (void)setHistoryDeletionAllowed:(BOOL)historyDeletionAllowed {
+  if ([self isHistoryDeletionAllowed] == historyDeletionAllowed) {
+    return;
+  }
+  [super setHistoryDeletionAllowed:historyDeletionAllowed];
+  if (!self.viewLoaded) {
+    return;
+  }
+  if (!historyDeletionAllowed && self.editing) {
+    [self exitEditMode];
+  } else {
+    [self updateNavigationBar];
+    [self updateToolbarButtonsWithAnimation:YES];
+  }
 }
 
 #pragma mark - UISearchResultsUpdating
@@ -524,6 +540,9 @@ enum ItemType : NSInteger {
 
 // Called when the edit button is tapped. Updates the view for edit mode.
 - (void)didTapEditButton {
+  if (![self isHistoryDeletionAllowed]) {
+    return;
+  }
   [self animateViewsConfigurationForEditingChange];
   [self updateNavigationBar];
 }

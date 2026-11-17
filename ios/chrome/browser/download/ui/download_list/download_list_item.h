@@ -58,8 +58,10 @@ typedef NS_OPTIONS(NSUInteger, DownloadListItemAction) {
 /// Returns the download state for this download item.
 @property(nonatomic, assign, readonly) web::DownloadTask::State downloadState;
 
-/// Initializes a download list item with the given download record.
+/// Initializes a download list item with the given download record and history
+/// deletion permission.
 - (instancetype)initWithDownloadRecord:(const DownloadRecord&)downloadRecord
+                  allowDeletingHistory:(BOOL)allowDeletingHistory
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

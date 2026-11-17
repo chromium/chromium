@@ -136,6 +136,8 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
   // YES once `_initialLoadTimer` has been started, so that it is only ever
   // started once per controller lifetime.
   BOOL _initialLoadTimerStarted;
+  // YES if deleting browser history is allowed by policy.
+  BOOL _historyDeletionAllowed;
 }
 // YES if there are no results to show.
 @property(nonatomic, assign) BOOL empty;
@@ -162,6 +164,7 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
 - (instancetype)init {
   if ((self = [super initWithStyle:ChromeTableViewStyle()])) {
     _indicatorState = IndicatorState::IDLE;
+    _historyDeletionAllowed = YES;
   }
   return self;
 }
@@ -388,6 +391,28 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
   [self showHistoryMatchingQuery:_currentQuery];
 }
 
+- (void)setHistoryDeletionAllowed:(BOOL)historyDeletionAllowed {
+  if (_historyDeletionAllowed == historyDeletionAllowed) {
+    return;
+  }
+  _historyDeletionAllowed = historyDeletionAllowed;
+  if (!self.viewLoaded) {
+    return;
+  }
+  // Force update a11y actions based on history deletion policy.
+  TableViewModel<TableViewItem*>* tableViewModel = self.tableViewModel;
+  for (int section = 0; section < [tableViewModel numberOfSections];
+       section++) {
+    if (![tableViewModel numberOfItemsInSection:section]) {
+      continue;
+    }
+    NSInteger sectionIdentifier =
+        [tableViewModel sectionIdentifierForSectionIndex:section];
+    [self reconfigureCellsForItems:
+              [tableViewModel itemsInSectionWithIdentifier:sectionIdentifier]];
+  }
+}
+
 #pragma mark - HistoryEntryInserterDelegate
 
 - (void)historyEntryInserter:(HistoryEntryInserter*)inserter
@@ -410,11 +435,18 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
 
 #pragma mark - HistoryEntryItemDelegate
 
+- (BOOL)isHistoryDeletionAllowed {
+  return _historyDeletionAllowed;
+}
+
 - (void)historyEntryItemDidRequestOpen:(HistoryEntryItem*)item {
   [self openURL:item.URL];
 }
 
 - (void)historyEntryItemDidRequestDelete:(HistoryEntryItem*)item {
+  if (![self isHistoryDeletionAllowed]) {
+    return;
+  }
   NSInteger sectionIdentifier =
       [_entryInserter sectionIdentifierForTimestamp:item.timestamp];
   if ([self.tableViewModel hasSectionForSectionIdentifier:sectionIdentifier] &&
@@ -466,11 +498,8 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
   browsing_data::RecordDeleteBrowsingDataAction(
       browsing_data::DeleteBrowsingDataAction::kHistoryPageEntries);
 
-  if (!self.browser) {
-    return;
-  }
-
-  if (!self.historyService) {
+  if (!self.browser || !self.historyService ||
+      ![self isHistoryDeletionAllowed]) {
     return;
   }
 

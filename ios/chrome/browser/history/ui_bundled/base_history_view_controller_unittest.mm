@@ -19,6 +19,7 @@
 #import "components/history/core/browser/features.h"
 #import "ios/chrome/browser/history/ui_bundled/base_history_view_controller+subclassing.h"
 #import "ios/chrome/browser/history/ui_bundled/history_entry_item.h"
+#import "ios/chrome/browser/history/ui_bundled/history_table_view_controller.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -323,4 +324,65 @@ TEST_F(BaseHistoryViewControllerTest,
 
   histogram_tester.ExpectTotalCount("IOS.HistoryPage.TimeToFirstVisibleContent",
                                     0);
+}
+
+// Tests that `setHistoryDeletionAllowed:NO` exits edit mode when history
+// deletion becomes disallowed, and does not prematurely load the view when
+// pushed before presentation.
+TEST_F(BaseHistoryViewControllerTest, LivePolicyChangeExitsEditMode) {
+  HistoryTableViewController* table_controller =
+      [[HistoryTableViewController alloc] init];
+  table_controller.browser = browser_.get();
+
+  // Pushing initial policy state before presentation should not force `view` to
+  // load prematurely.
+  [table_controller setHistoryDeletionAllowed:NO];
+  EXPECT_FALSE(table_controller.viewLoaded);
+  EXPECT_FALSE([table_controller isHistoryDeletionAllowed]);
+
+  [table_controller setHistoryDeletionAllowed:YES];
+  [table_controller loadViewIfNeeded];
+
+  [table_controller setEditing:YES animated:NO];
+  ASSERT_TRUE(table_controller.editing);
+
+  [table_controller setHistoryDeletionAllowed:NO];
+  EXPECT_FALSE(table_controller.editing);
+  EXPECT_FALSE([table_controller isHistoryDeletionAllowed]);
+
+  [table_controller detachFromBrowser];
+}
+
+// Tests that disallowing history deletion hides the VoiceOver Delete custom
+// action on `HistoryEntryItem` and prevents `historyEntryItemDidRequestDelete:`
+// from selecting the row.
+TEST_F(BaseHistoryViewControllerTest,
+       DisallowingHistoryDeletionHidesDeleteCustomActionAndBlocksDelete) {
+  CheckController();
+
+  if (![history_controller_.tableViewModel
+          hasSectionForSectionIdentifier:kTestSectionIdentifier]) {
+    [history_controller_.tableViewModel
+        addSectionWithIdentifier:kTestSectionIdentifier];
+  }
+  HistoryEntryItem* item =
+      [[HistoryEntryItem alloc] initWithType:kItemTypeEnumZero
+                       accessibilityDelegate:history_controller_];
+  item.URL = GURL("http://example.com");
+  item.timestamp = base::Time::Now();
+  [history_controller_.tableViewModel addItem:item
+                      toSectionWithIdentifier:kTestSectionIdentifier];
+  [history_controller_.tableView reloadData];
+
+  LegacyTableViewCell* cell =
+      [item cellForTableView:history_controller_.tableView];
+  [item configureCell:cell];
+  EXPECT_EQ(4U, cell.accessibilityCustomActions.count);
+
+  [history_controller_ setHistoryDeletionAllowed:NO];
+  [item configureCell:cell];
+  EXPECT_EQ(3U, cell.accessibilityCustomActions.count);
+
+  [history_controller_ historyEntryItemDidRequestDelete:item];
+  EXPECT_EQ(nil, history_controller_.tableView.indexPathForSelectedRow);
 }
