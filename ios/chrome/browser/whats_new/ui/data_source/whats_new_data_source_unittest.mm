@@ -71,7 +71,7 @@ TEST_F(WhatsNewDataSourceTest, TestWhatsNewItemEntryError) {
       [entries objectForKey:@"WhatsNewItemTestKeyError"];
   NSDictionary* entry = [keys objectAtIndex:0];
 
-  EXPECT_CHECK_DEATH(ConstructWhatsNewItem(entry));
+  EXPECT_NOTREACHED_DEATH(ConstructWhatsNewItem(entry));
 }
 
 // Test that `WhatsNewFeatureEntries` correctly returns entries Features entry
