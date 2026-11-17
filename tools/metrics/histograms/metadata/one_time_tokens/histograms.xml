@@ -76,9 +76,6 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/tools/one_time_token/attempt_otp_filling_metrics.cc:AttemptOtpFillingStepSuffix) -->
 
-<!-- TODO(crbug.com/583695450): Remove GmailNonAgentic once GmailOtpService
-     records matches by product flow. -->
-
 <!-- LINT.IfChange(GmailOtpFlowType) -->
 
 <variants name="GmailOtpFlowType">
@@ -86,8 +83,6 @@ found in the LICENSE file.
       summary="the actor flow, where an agent task fills the OTP"/>
   <variant name="GmailAutofill"
       summary="the autofill flow, which offers the OTP as a suggestion"/>
-  <variant name="GmailNonAgentic"
-      summary="the OtpCoordinator autofill flow (GmailOtpService)"/>
 </variants>
 
 <!-- LINT.ThenChange(//components/one_time_tokens/core/browser/gmail_otp_sender_domain_metrics.cc:GmailOtpFlowType) -->

@@ -27,6 +27,7 @@ GmailOtpBackend* FakeGmailOtpService::GetBackend() {
 
 void FakeGmailOtpService::GetFreshestCachedOtp(
     const url::Origin& origin,
+    GmailOtpFlow flow,
     ukm::SourceId ukm_source_id,
     bool allow_psl_matching,
     GetFreshestCachedOtpCallback callback) {
@@ -57,6 +58,7 @@ void FakeGmailOtpService::GetFreshestCachedOtp(
 
 ExpiringSubscription FakeGmailOtpService::Subscribe(
     const url::Origin& origin,
+    GmailOtpFlow flow,
     ukm::SourceId ukm_source_id,
     bool allow_psl_matching,
     base::Time expiration,

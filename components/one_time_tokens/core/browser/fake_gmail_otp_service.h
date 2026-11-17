@@ -35,11 +35,13 @@ class FakeGmailOtpService : public GmailOtpService {
   // GmailOtpService:
   GmailOtpBackend* GetBackend() override;
   void GetFreshestCachedOtp(const url::Origin& origin,
+                            GmailOtpFlow flow,
                             ukm::SourceId ukm_source_id,
                             bool allow_psl_matching,
                             GetFreshestCachedOtpCallback callback) override;
   [[nodiscard]] ExpiringSubscription Subscribe(
       const url::Origin& origin,
+      GmailOtpFlow flow,
       ukm::SourceId ukm_source_id,
       bool allow_psl_matching,
       base::Time expiration,
