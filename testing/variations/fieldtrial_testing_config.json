@@ -988,6 +988,9 @@
             "experiments": [
                 {
                     "name": "Enabled_20260106",
+                    "params": {
+                        "animate_search_box": "true"
+                    },
                     "enable_features": [
                         "EnableSwipeToSwitchPane"
                     ]
