@@ -2264,13 +2264,6 @@ AXObject* AXObjectCacheImpl::NearestExistingAncestor(Node* node) {
   return nullptr;
 }
 
-void AXObjectCacheImpl::UpdateNumTreeUpdatesQueuedBeforeLayoutHistogram() {
-  UMA_HISTOGRAM_COUNTS_100000(
-      "Blink.Accessibility.NumTreeUpdatesQueuedBeforeLayout",
-      tree_update_callback_queue_main_.size() +
-          tree_update_callback_queue_popup_.size());
-}
-
 void AXObjectCacheImpl::InvalidateBoundingBoxForFixedOrStickyPosition() {
   for (AXID id : fixed_or_sticky_node_ids_)
     InvalidateBoundingBox(id);
@@ -2318,7 +2311,6 @@ bool AXObjectCacheImpl::PauseTreeUpdatesIfQueueFull() {
   // updates. In the case of a web page having too many updates, we need to
   // clear all queues, including the popup's.
   if (tree_update_callback_queue_main_.size() >= max_pending_updates_) {
-    UpdateNumTreeUpdatesQueuedBeforeLayoutHistogram();
     tree_updates_paused_ = true;
     LOG(INFO) << "Accessibility tree update queue is too big, updates have "
                  "been paused";
@@ -4188,8 +4180,6 @@ void AXObjectCacheImpl::MarkAriaRadioGroupMembersDirty() {
 
 void AXObjectCacheImpl::ProcessCleanLayoutCallbacks(Document& document) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
-
-  UpdateNumTreeUpdatesQueuedBeforeLayoutHistogram();
 
   CHECK(!IsFrozen());
 

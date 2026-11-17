@@ -1236,8 +1236,6 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
     max_pending_updates_ = max_pending_updates;
   }
 
-  void UpdateNumTreeUpdatesQueuedBeforeLayoutHistogram();
-
   // Invalidates the bounding boxes of fixed or sticky positioned objects which
   // should be updated when the scroll offset is changed. Like
   // InvalidateBoundingBox, it can be later retrieved by
