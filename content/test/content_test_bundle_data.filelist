@@ -4900,6 +4900,7 @@ data/accessibility/html/dt-expected-fuchsia.txt
 data/accessibility/html/dt-expected-mac.txt
 data/accessibility/html/dt-expected-uia-win.txt
 data/accessibility/html/dt-expected-win.txt
+data/accessibility/html/dt-new-class-feature-expected-android-external.txt
 data/accessibility/html/dt.html
 data/accessibility/html/element-class-id-attr-expected-android-assist-data.txt
 data/accessibility/html/element-class-id-attr-expected-android-external.txt

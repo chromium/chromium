@@ -2353,8 +2353,16 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(AccessibilityFeatures.ACCESSIBILITY_MAP_TO_NEW_CLASS_NAMES)
     public void test_dt() {
         performHtmlTest("dt.html");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_MAP_TO_NEW_CLASS_NAMES)
+    public void test_dt_newClass() {
+        performHtmlTest("dt.html", "dt-new-class-feature");
     }
 
     @Test

@@ -469,6 +469,10 @@ const char* AXRoleToAndroidClassName(ax::mojom::Role role, bool has_parent) {
       return features::IsAccessibilityMapToNewClassNamesEnabled()
                  ? kAXNoteClassname
                  : kAXViewClassname;
+    case ax::mojom::Role::kTerm:
+      return features::IsAccessibilityMapToNewClassNamesEnabled()
+                 ? kAXTermClassname
+                 : kAXViewClassname;
     default:
       return kAXViewClassname;
   }

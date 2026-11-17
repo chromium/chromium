@@ -1738,6 +1738,7 @@ std::u16string BrowserAccessibilityAndroid::GetAndroidRoleDescription() const {
     // below (to fallthrough). This ensures that ATs will not rely on
     // roleDescription to populate role.
     case ax::mojom::Role::kNote:
+    case ax::mojom::Role::kTerm:
       return features::IsAccessibilityMapToNewClassNamesEnabled()
                  ? std::u16string()
                  : GetLocalizedStringForRoleDescription();

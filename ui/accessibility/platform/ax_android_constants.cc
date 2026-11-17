@@ -39,6 +39,7 @@ const char kAXSeekBarClassname[] = "android.widget.SeekBar";
 const char kAXSpinnerClassname[] = "android.widget.Spinner";
 const char kAXSwitchClassname[] = "android.widget.Switch";
 const char kAXTabWidgetClassname[] = "android.widget.TabWidget";
+const char kAXTermClassname[] = "android.accessibility.role.Term";
 const char kAXTextViewClassname[] = "android.widget.TextView";
 const char kAXTimePickerClassname[] = "android.widget.TimePicker";
 const char kAXToggleButtonClassname[] = "android.widget.ToggleButton";
