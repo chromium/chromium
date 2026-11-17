@@ -136,7 +136,8 @@ SharedImageUsageSet GetUsageFromAccessStream(SharedImageAccessStream stream,
     case SharedImageAccessStream::kOverlay:
       return SHARED_IMAGE_USAGE_SCANOUT;
     case SharedImageAccessStream::kVaapi:
-      return SHARED_IMAGE_USAGE_VIDEO_DECODE;
+      return SHARED_IMAGE_USAGE_VIDEO_DECODE |
+             SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR;
     case SharedImageAccessStream::kWebNNTensor:
       // Note that SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR is the main usage, we
       // always need it for WebNN, the two other(*_TENSOR_READ/WRITE) are for
@@ -2128,7 +2129,7 @@ std::unique_ptr<VideoImageRepresentation> CompoundImageBacking::ProduceVideo(
     MemoryTypeTracker* tracker,
     VideoDevice device) {
   std::unique_ptr<SharedImageBacking> transient_backing;
-  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kGL,
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kVaapi,
                                        AccessParams(), transient_backing);
   if (!backing) {
     return nullptr;
