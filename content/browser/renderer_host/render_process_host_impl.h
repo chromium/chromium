@@ -15,12 +15,13 @@
 #include <string>
 #include <utility>
 
+#include "base/callback_list.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/safe_ref.h"
@@ -208,11 +209,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
       public mojom::RendererHost,
       public blink::mojom::DomStorageProvider,
       public memory_instrumentation::mojom::CoordinatorConnector,
-      public metrics::HistogramChildProcess,
 #if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
       public media::mojom::VideoDecoderTracker,
 #endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
-      public base::MemoryPressureListener {
+      public metrics::HistogramChildProcess {
  public:
   // Special depth used when there are no RenderProcessHostPriorityClients.
   static const unsigned int kMaxFrameDepthForPriority;
@@ -1160,9 +1160,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingRemote<memory_instrumentation::mojom::ClientProcess>
           client_process) override;
 
-  // base::MemoryPressureListener:
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override;
+  // Forwards the memory pressure level to the child process.
+  void OnMemoryPressureLevelUpdated(
+      base::MemoryPressureLevel memory_pressure_level);
 
   // Generates a command line to be used to spawn a renderer and appends the
   // results to |*command_line|.
@@ -1731,8 +1731,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Tracing track used to emit async event related to lifecycle.
   perfetto::NamedTrack tracing_track_;
 
-  std::optional<base::MemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
+  // Subscription to the memory pressure notifications of the
+  // MemoryPressureSource.
+  base::CallbackListSubscription memory_pressure_subscription_;
 
   mojo::ScopedMessagePipeHandle initial_gpu_channel_;
 

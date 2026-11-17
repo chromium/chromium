@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_shared_memory.h"
@@ -704,8 +705,12 @@ void BrowserChildProcessHostImpl::OnProcessLaunched() {
       system_tracing_service_->BindAndPassPendingRemote());
 #endif
 
-  memory_pressure_listener_registration_.emplace(
-      base::MemoryPressureListenerTag::kBrowserChildProcessHostImpl, this);
+  if (auto* memory_pressure_source = base::MemoryPressureSource::MaybeGet()) {
+    memory_pressure_subscription_ =
+        memory_pressure_source->AddCallback(base::BindRepeating(
+            &BrowserChildProcessHostImpl::OnMemoryPressureLevelUpdated,
+            base::Unretained(this)));
+  }
 }
 
 void BrowserChildProcessHostImpl::RegisterCoordinatorClient(
@@ -744,7 +749,7 @@ void BrowserChildProcessHostImpl::RegisterCoordinatorClient(
               delegate_->GetServiceName()));
 }
 
-void BrowserChildProcessHostImpl::OnMemoryPressure(
+void BrowserChildProcessHostImpl::OnMemoryPressureLevelUpdated(
     base::MemoryPressureLevel memory_pressure_level) {
   // Match the existing behavior of only sending the memory pressure level to
   // select process types.

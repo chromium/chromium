@@ -11,7 +11,8 @@
 #include <memory>
 #include <optional>
 
-#include "base/memory/memory_pressure_listener.h"
+#include "base/callback_list.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -68,8 +69,7 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
       public base::win::ObjectWatcher::Delegate,
 #endif
       public ChildProcessLauncher::Client,
-      public memory_instrumentation::mojom::CoordinatorConnector,
-      public base::MemoryPressureListener {
+      public memory_instrumentation::mojom::CoordinatorConnector {
  public:
   // Constructs a process host with |ipc_mode| determining how IPC is done.
   BrowserChildProcessHostImpl(content::ProcessType process_type,
@@ -189,8 +189,9 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
       mojo::PendingRemote<memory_instrumentation::mojom::ClientProcess>
           client_process) override;
 
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override;
+  // Forwards the memory pressure level to the child process.
+  void OnMemoryPressureLevelUpdated(
+      base::MemoryPressureLevel memory_pressure_level);
 
   // Returns true if the process has successfully launched. Must only be called
   // on the IO thread.
@@ -289,8 +290,9 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
   ChildThreadTypeSwitcher child_thread_type_switcher_;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-  std::optional<base::MemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
+  // Subscription to the memory pressure notifications of the
+  // MemoryPressureSource.
+  base::CallbackListSubscription memory_pressure_subscription_;
 
   base::WeakPtrFactory<BrowserChildProcessHostImpl> weak_factory_{this};
 };

@@ -41,6 +41,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/structured_shared_memory.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
@@ -2314,8 +2315,12 @@ void RenderProcessHostImpl::InitializeChannelProxy() {
 
   // Must register after binding `child_process_`.
   if (!run_renderer_in_process()) {
-    memory_pressure_listener_registration_.emplace(
-        base::MemoryPressureListenerTag::kRenderProcessHostImpl, this);
+    if (auto* memory_pressure_source = base::MemoryPressureSource::MaybeGet()) {
+      memory_pressure_subscription_ =
+          memory_pressure_source->AddCallback(base::BindRepeating(
+              &RenderProcessHostImpl::OnMemoryPressureLevelUpdated,
+              base::Unretained(this)));
+    }
   }
 }
 
@@ -2984,7 +2989,7 @@ void RenderProcessHostImpl::RegisterCoordinatorClient(
   coordinator_connector_receiver_.reset();
 }
 
-void RenderProcessHostImpl::OnMemoryPressure(
+void RenderProcessHostImpl::OnMemoryPressureLevelUpdated(
     base::MemoryPressureLevel memory_pressure_level) {
   // Match the existing behavior of only sending the memory pressure level on
   // select platforms.
