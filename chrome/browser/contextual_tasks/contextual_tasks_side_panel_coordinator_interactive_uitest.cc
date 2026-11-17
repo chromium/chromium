@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_interactive_test_base.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_location_bar.h"
@@ -119,35 +119,24 @@ using testing::Pointee;
 namespace contextual_tasks {
 
 class MockContextualTasksComposeboxHandler
-    : public ContextualTasksComposeboxHandler {
+    : public ContextualTasksComposeboxHandlerInterface {
  public:
-  MockContextualTasksComposeboxHandler(
-      ContextualTasksUI* ui_controller,
-      Profile* profile,
-      content::WebContents* web_contents,
-      mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
-      mojo::PendingReceiver<searchbox::mojom::PageHandler>
-          pending_searchbox_handler,
-      mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
-      GetSessionHandleCallback get_session_callback,
-      ClearSessionHandleCallback clear_session_callback,
-      TakeInputStateModelCallback get_inputstatemodel_callback)
-      : ContextualTasksComposeboxHandler(
-            ui_controller,
-            profile,
-            web_contents,
-            std::move(pending_handler),
-            std::move(pending_searchbox_handler),
-            std::move(pending_searchbox_page),
-            std::move(get_session_callback),
-            std::move(clear_session_callback),
-            std::move(get_inputstatemodel_callback)) {}
+  MockContextualTasksComposeboxHandler() = default;
   ~MockContextualTasksComposeboxHandler() override = default;
 
+  MOCK_METHOD(void, ResetInputStateModel, (), (override));
   MOCK_METHOD(void,
               UpdateSuggestedTabContext,
               (const contextual_tasks::SuggestedTabInfo* suggested_tab),
               (override));
+  MOCK_METHOD(void, OnTaskChanged, (), (override));
+  MOCK_METHOD(void, InitializeInputStateModel, (), (override));
+  MOCK_METHOD(void, UpdateStateFromUrl, (const GURL&), (override));
+  MOCK_METHOD(void,
+              SetAimThreadRestoredTabs,
+              (std::vector<searchbox::mojom::TabInfoPtr>),
+              (override));
+  MOCK_METHOD(std::vector<int32_t>, GetSelectedTabIds, (), (const, override));
 };
 
 class MockActiveTaskContextProviderObserver
@@ -953,12 +942,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
 }
 
 // This tests the following CUJ:
-// 1. Navigate the active tab associated with a task to https://foo.com.
-// 2. Open the Contextual Tasks side panel and verify the active tab context
-//    suggestion is populated for https://foo.com.
-// 3. Switch to another tab associated with the same task that is ineligible
-//    for auto-suggestion (chrome://settings) and verify the active tab context
-//    suggestion is cleared.
+//  (1) User navigates the active tab (associated with Task 1) to a valid web
+//      URL and opens the Contextual Tasks side panel.
+//  (2) The active tab context suggestion is populated in the side panel
+//      composebox for the active tab's URL.
+//  (3) User switches to another tab associated with Task 1 that is on an
+//      ineligible URL (chrome://settings), clearing the active tab context
+//      suggestion.
 IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
                        UpdateActiveTabContextStatusOnTabSwitch) {
   SetUpTasks();
@@ -966,55 +956,28 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   GURL foo("https://foo.com");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), foo));
-  coordinator->Show(false,
-                    omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
-  ASSERT_TRUE(content::WaitForLoadStop(coordinator->GetActiveWebContents()));
-  ContextualTasksUI* ui = GetContextualTasksUI();
-  mojo::PendingRemote<composebox::mojom::PageHandler> composebox_handler_remote;
-  mojo::PendingReceiver<composebox::mojom::PageHandler>
-      composebox_handler_receiver =
-          composebox_handler_remote.InitWithNewPipeAndPassReceiver();
-  mojo::PendingRemote<searchbox::mojom::Page> searchbox_page_remote;
-  mojo::PendingReceiver<searchbox::mojom::Page> searchbox_page_receiver =
-      searchbox_page_remote.InitWithNewPipeAndPassReceiver();
-  mojo::PendingRemote<searchbox::mojom::PageHandler> searchbox_handler_remote;
-  mojo::PendingReceiver<searchbox::mojom::PageHandler>
-      searchbox_handler_receiver =
-          searchbox_handler_remote.InitWithNewPipeAndPassReceiver();
 
-  auto mock_composebox_handler =
-      std::make_unique<testing::NiceMock<MockContextualTasksComposeboxHandler>>(
-          ui, browser()->GetProfile(),
-          TabListInterface::From(browser())->GetTab(0)->GetContents(),
-          std::move(composebox_handler_receiver),
-          std::move(searchbox_handler_receiver),
-          std::move(searchbox_page_remote),
-          base::BindRepeating(
-              &ContextualTasksUI::GetOrCreateContextualSessionHandle,
-              base::Unretained(ui)),
-          base::DoNothing(),
-          base::BindRepeating(&ContextualTasksUI::TakeInputStateModel,
-                              base::Unretained(ui)));
-  MockContextualTasksComposeboxHandler* mock_handler =
-      mock_composebox_handler.get();
-  coordinator->Close();
-  ui->SetComposeboxHandlerForTesting(std::move(mock_composebox_handler));
+  testing::NiceMock<MockContextualTasksComposeboxHandler>
+      mock_composebox_handler;
+  ContextualTasksUI* ui = nullptr;
 
   // Define expectations on the mock handler.
   using SuggestedTabInfo = contextual_tasks::SuggestedTabInfo;
 
-  base::RunLoop initial_run_loop;
-  EXPECT_CALL(*mock_handler, UpdateSuggestedTabContext(
-                                 Pointee(Field(&SuggestedTabInfo::url, foo))))
+  base::RunLoop initial_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  EXPECT_CALL(
+      mock_composebox_handler,
+      UpdateSuggestedTabContext(Pointee(Field(&SuggestedTabInfo::url, foo))))
       .WillRepeatedly([&initial_run_loop](const SuggestedTabInfo* tab_info) {
         initial_run_loop.Quit();
       });
 
   bool switched_tabs = false;
-  base::RunLoop tab_switch_run_loop;
-  EXPECT_CALL(*mock_handler, UpdateSuggestedTabContext(testing::IsNull()))
-      .WillRepeatedly([&switched_tabs, &tab_switch_run_loop](
-                          const SuggestedTabInfo* tab_info) {
+  base::RunLoop tab_switch_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  EXPECT_CALL(mock_composebox_handler,
+              UpdateSuggestedTabContext(testing::IsNull()))
+      .WillRepeatedly([&switched_tabs,
+                       &tab_switch_run_loop](const SuggestedTabInfo* tab_info) {
         if (switched_tabs) {
           tab_switch_run_loop.Quit();
         }
@@ -1027,8 +990,29 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
             false, omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
       }),
       WaitForShow(kContextualTasksSidePanelWebViewElementId),
-      // Trigger update on open now that panel is showing.
-      Do([&]() { ui->OnActiveTabContextStatusChanged(); }),
+      // Wait for the WebUI composebox handler to initialize before overriding
+      // it so the async Mojo `CreatePageHandler()` call neither overwrites the
+      // mock handler nor disconnects an in-flight WebUI Mojo call.
+      Do([&]() {
+        content::WebContents* side_panel_contents =
+            coordinator->GetActiveWebContents();
+        ASSERT_NE(side_panel_contents, nullptr);
+        ASSERT_TRUE(content::WaitForLoadStop(side_panel_contents));
+        ASSERT_TRUE(content::ExecJs(
+            side_panel_contents,
+            "customElements.whenDefined('contextual-tasks-app')"
+            ".then(async () => {"
+            "  const app = document.querySelector('contextual-tasks-app');"
+            "  await app.updateComplete;"
+            "  const composebox = app.shadowRoot.querySelector('#composebox');"
+            "  await composebox.updateComplete;"
+            "  await composebox.searchboxHandler_.getInputState();"
+            "})"));
+        ui = GetContextualTasksUI();
+        ASSERT_NE(ui, nullptr);
+        ui->SetComposeboxHandler(&mock_composebox_handler);
+        ui->OnActiveTabContextStatusChanged();
+      }),
       // Wait for UpdateSuggestedTabContext to be called with foo.
       Do([&]() { initial_run_loop.Run(); }),
       // Verify that active tab context suggestion is showing.
@@ -1044,7 +1028,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
       Do([&]() {
         tab_switch_run_loop.Run();
         EXPECT_FALSE(ui->IsActiveTabContextSuggestionShowing());
-        ui->SetComposeboxHandlerForTesting(nullptr);
+        ui->SetComposeboxHandler(nullptr);
       }));
 }
 
