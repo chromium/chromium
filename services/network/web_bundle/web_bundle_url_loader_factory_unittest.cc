@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -102,6 +103,15 @@ class TestWebBundleHandle : public mojom::WebBundleHandle {
     run_loop.Run();
   }
 
+  void RunUntilBundleLoadFinished() {
+    if (is_load_finished_) {
+      return;
+    }
+    base::RunLoop run_loop;
+    quit_closure_for_load_finished_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
   // mojom::WebBundleHandle
   void Clone(mojo::PendingReceiver<mojom::WebBundleHandle> receiver) override {
     NOTREACHED();
@@ -114,13 +124,20 @@ class TestWebBundleHandle : public mojom::WebBundleHandle {
       std::move(quit_closure_for_bundle_error_).Run();
   }
 
-  void OnWebBundleLoadFinished(bool success) override {}
+  void OnWebBundleLoadFinished(bool success) override {
+    is_load_finished_ = true;
+    if (quit_closure_for_load_finished_) {
+      std::move(quit_closure_for_load_finished_).Run();
+    }
+  }
 
  private:
   mojo::Receiver<mojom::WebBundleHandle> receiver_;
   std::optional<std::pair<mojom::WebBundleErrorType, std::string>>
       last_bundle_error_;
   base::OnceClosure quit_closure_for_bundle_error_;
+  bool is_load_finished_ = false;
+  base::OnceClosure quit_closure_for_load_finished_;
 };
 
 class MockMemoryQuotaConsumer : public WebBundleMemoryQuotaConsumer {
@@ -286,6 +303,8 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
 
   void RunUntilBundleError() { handle_->RunUntilBundleError(); }
 
+  void RunUntilBundleLoadFinished() { handle_->RunUntilBundleLoadFinished(); }
+
   const std::optional<std::pair<mojom::WebBundleErrorType, std::string>>&
   last_bundle_error() const {
     return handle_->last_bundle_error();
@@ -295,6 +314,24 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
 
   const std::vector<GURL>& coep_reports() const {
     return coep_reporter_.reports();
+  }
+
+  void ExpectResponseBlockedByOrb(StartRequestResult& request) {
+    EXPECT_EQ(net::OK, request.client->completion_status().error_code);
+    EXPECT_EQ(
+        0u, request.client->completion_status().decoded_body_length.InBytes());
+    ASSERT_TRUE(request.client->response_head());
+    EXPECT_EQ(0, request.client->response_head()->content_length);
+    ASSERT_TRUE(request.client->response_head()->headers);
+    size_t iter = 0;
+    std::string name;
+    std::string value;
+    EXPECT_FALSE(request.client->response_head()->headers->EnumerateHeaderLines(
+        &iter, &name, &value));
+    std::string body;
+    ASSERT_TRUE(mojo::BlockingCopyToString(
+        request.client->response_body_release(), &body));
+    EXPECT_TRUE(body.empty());
   }
 
  protected:
@@ -590,6 +627,378 @@ TEST_F(WebBundleURLLoaderFactoryTest, CrossOriginJs) {
       request.client->response_body_release(), &body));
   EXPECT_EQ("const not_secret = 1;", body)
       << "body should be valid one because JS is not a ORB protected resource";
+}
+
+TEST_F(WebBundleURLLoaderFactoryTest, CrossOriginSniffedContentBlockedByOrb) {
+  const GURL kOctetStreamJsonUrl("https://other.test/octet-stream-json");
+  const GURL kJsWithJsonUrl("https://other.test/js-with-json");
+  const GURL kJsWithParserBreakerUrl(
+      "https://other.test/js-with-parser-breaker");
+  const GURL kPngWithHtmlUrl("https://other.test/png-with-html");
+  const GURL kOctetStreamXmlUrl("https://other.test/octet-stream-xml");
+
+  web_package::WebBundleBuilder builder;
+  builder.AddExchange(kOctetStreamJsonUrl,
+                      {{":status", "200"},
+                       {"content-type", "application/octet-stream"},
+                       {"x-test-header", "value"}},
+                      "{\"key\": 1}");
+  builder.AddExchange(
+      kJsWithJsonUrl,
+      {{":status", "200"}, {"content-type", "application/javascript"}},
+      "{\"key\": 1}");
+  builder.AddExchange(
+      kJsWithParserBreakerUrl,
+      {{":status", "200"}, {"content-type", "application/javascript"}},
+      ")]}'\n{\"key\": 1}");
+  builder.AddExchange(kPngWithHtmlUrl,
+                      {{":status", "200"}, {"content-type", "image/png"}},
+                      "<!DOCTYPE html><html><body>text</body></html>");
+  builder.AddExchange(
+      kOctetStreamXmlUrl,
+      {{":status", "200"}, {"content-type", "application/octet-stream"}},
+      "<?xml version=\"1.0\"?><root/>");
+  WriteBundle(builder.CreateBundle());
+  FinishWritingBundle();
+
+  for (const GURL& url :
+       {kOctetStreamJsonUrl, kJsWithJsonUrl, kJsWithParserBreakerUrl,
+        kPngWithHtmlUrl, kOctetStreamXmlUrl}) {
+    SCOPED_TRACE(url.spec());
+    auto request = StartRequest(url, kResourceRequestId);
+    request.client->RunUntilComplete();
+
+    EXPECT_FALSE(last_bundle_error().has_value());
+    ExpectResponseBlockedByOrb(request);
+  }
+}
+
+TEST_F(WebBundleURLLoaderFactoryTest,
+       CrossOriginSniffedEmptyAndMediaAllowedByOrb) {
+  const GURL kEmptyJsUrl("https://other.test/empty.js");
+  const GURL kEmptyOctetStreamUrl("https://other.test/empty.bin");
+  const GURL kOctetStreamPngUrl("https://other.test/image.bin");
+  const GURL kOctetStreamWebmUrl("https://other.test/video.bin");
+  const std::string kPngBody("\x89PNG\r\n\x1a\npayload", 15);
+  const std::string kWebmBody("\x1a\x45\xdf\xa3payload", 11);
+
+  web_package::WebBundleBuilder builder;
+  builder.AddExchange(
+      kEmptyJsUrl,
+      {{":status", "200"}, {"content-type", "application/javascript"}}, "");
+  builder.AddExchange(
+      kEmptyOctetStreamUrl,
+      {{":status", "200"}, {"content-type", "application/octet-stream"}}, "");
+  builder.AddExchange(
+      kOctetStreamPngUrl,
+      {{":status", "200"}, {"content-type", "application/octet-stream"}},
+      kPngBody);
+  builder.AddExchange(
+      kOctetStreamWebmUrl,
+      {{":status", "200"}, {"content-type", "application/octet-stream"}},
+      kWebmBody);
+  WriteBundle(builder.CreateBundle());
+  FinishWritingBundle();
+
+  {
+    auto request = StartRequest(kEmptyJsUrl, kResourceRequestId);
+    request.client->RunUntilComplete();
+    EXPECT_EQ(net::OK, request.client->completion_status().error_code);
+    ASSERT_TRUE(request.client->response_head()->headers);
+    EXPECT_TRUE(request.client->response_head()->headers->HasHeaderValue(
+        "content-type", "application/javascript"));
+    std::string body;
+    ASSERT_TRUE(mojo::BlockingCopyToString(
+        request.client->response_body_release(), &body));
+    EXPECT_TRUE(body.empty());
+  }
+
+  {
+    auto request = StartRequest(kEmptyOctetStreamUrl, kResourceRequestId2);
+    request.client->RunUntilComplete();
+    EXPECT_EQ(net::OK, request.client->completion_status().error_code);
+    ASSERT_TRUE(request.client->response_head()->headers);
+    EXPECT_TRUE(request.client->response_head()->headers->HasHeaderValue(
+        "content-type", "application/octet-stream"));
+    std::string body;
+    ASSERT_TRUE(mojo::BlockingCopyToString(
+        request.client->response_body_release(), &body));
+    EXPECT_TRUE(body.empty());
+  }
+
+  {
+    auto request = StartRequest(kOctetStreamPngUrl, kResourceRequestId3);
+    request.client->RunUntilComplete();
+    EXPECT_EQ(net::OK, request.client->completion_status().error_code);
+    std::string body;
+    ASSERT_TRUE(mojo::BlockingCopyToString(
+        request.client->response_body_release(), &body));
+    EXPECT_EQ(kPngBody, body);
+  }
+
+  {
+    auto request = StartRequest(kOctetStreamWebmUrl, kResourceRequestId);
+    request.client->RunUntilComplete();
+    EXPECT_EQ(net::OK, request.client->completion_status().error_code);
+    std::string body;
+    ASSERT_TRUE(mojo::BlockingCopyToString(
+        request.client->response_body_release(), &body));
+    EXPECT_EQ(kWebmBody, body);
+  }
+}
+
+TEST_F(WebBundleURLLoaderFactoryTest, CrossOriginSniffedLargePayload) {
+  const GURL kLargeJsonUrl("https://other.test/large-json");
+  const GURL kLargeJsUrl("https://other.test/large-js");
+  const std::string kLargeJsonBody =
+      "{\"data\": \"" + std::string(2000, 'a') + "\"}";
+  const std::string kLargeJsBody =
+      "const data = \"" + std::string(2000, 'a') + "\";";
+
+  web_package::WebBundleBuilder builder;
+  builder.AddExchange(
+      kLargeJsonUrl,
+      {{":status", "200"}, {"content-type", "application/octet-stream"}},
+      kLargeJsonBody);
+  builder.AddExchange(
+      kLargeJsUrl,
+      {{":status", "200"}, {"content-type", "application/javascript"}},
+      kLargeJsBody);
+  WriteBundle(builder.CreateBundle());
+  FinishWritingBundle();
+
+  {
+    auto request = StartRequest(kLargeJsonUrl, kResourceRequestId);
+    request.client->RunUntilComplete();
+    ExpectResponseBlockedByOrb(request);
+  }
+
+  {
+    auto request = StartRequest(kLargeJsUrl, kResourceRequestId2);
+    request.client->RunUntilComplete();
+    EXPECT_EQ(net::OK, request.client->completion_status().error_code);
+    std::string body;
+    ASSERT_TRUE(mojo::BlockingCopyToString(
+        request.client->response_body_release(), &body));
+    EXPECT_EQ(kLargeJsBody, body);
+  }
+}
+
+TEST_F(WebBundleURLLoaderFactoryTest, CrossOriginSniffedStreamingBundle) {
+  const GURL kStreamingJsonUrl("https://other.test/streaming-json");
+  const GURL kStreamingJsUrl("https://other.test/streaming-js");
+  const std::string kLargeJsonBody =
+      "{\"data\": \"" + std::string(10000, 'a') + "\"}";
+  const std::string kLargeJsBody =
+      "const data = \"" + std::string(10000, 'a') + "\";";
+
+  web_package::WebBundleBuilder builder;
+  builder.AddExchange(kResourceUrl,
+                      {{":status", "200"}, {"content-type", "text/plain"}},
+                      "body");
+  // Pad response headers (> 3072 bytes) while staying within
+  // INITIAL_BUFFER_SIZE_FOR_RESPONSE (4096 bytes), so ResponseParser finishes
+  // parsing the header in its initial 4096-byte read while fewer than
+  // net::kMaxBytesToSniff (1024) payload bytes are buffered.
+  builder.AddExchange(kStreamingJsonUrl,
+                      {{":status", "200"},
+                       {"content-type", "application/octet-stream"},
+                       {"x-padding", std::string(4000, 'x')}},
+                      kLargeJsonBody);
+  builder.AddExchange(kStreamingJsUrl,
+                      {{":status", "200"},
+                       {"content-type", "application/javascript"},
+                       {"x-padding", std::string(4000, 'x')}},
+                      kLargeJsBody);
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+
+  auto request1 = StartRequest(GURL(kResourceUrl), kResourceRequestId);
+  auto json_request = StartRequest(kStreamingJsonUrl, kResourceRequestId2);
+  auto js_request = StartRequest(kStreamingJsUrl, kResourceRequestId3);
+
+  // Write the first 4800 bytes: enough for metadata, kResourceUrl, and
+  // ResponseParser's 4096-byte header read for kStreamingJsonUrl, so
+  // SendResponseToLoader queues OnDataAvailableForOrb in pending_reads_, while
+  // still short of kStreamingJsonUrl's first net::kMaxBytesToSniff body bytes.
+  ASSERT_GT(bundle.size(), 5800u);
+  WriteBundle(base::span(bundle).first<4800>());
+  request1.client->RunUntilComplete();
+  EXPECT_EQ(net::OK, request1.client->completion_status().error_code);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return factory_->PendingReadCountForTesting() == 2u; }));
+
+  // Response must not be delivered while OnDataAvailableForOrb is waiting in
+  // BundleDataSource::pending_reads_.
+  EXPECT_FALSE(json_request.client->has_received_response());
+  EXPECT_FALSE(js_request.client->has_received_response());
+
+  // Stream another 1000 bytes (total 5800 bytes), crossing the 1024-byte sniff
+  // threshold for kStreamingJsonUrl before the rest of its 10KB body arrives.
+  WriteBundle(base::span(bundle).subspan<4800, 1000>());
+  json_request.client->RunUntilComplete();
+  ExpectResponseBlockedByOrb(json_request);
+  EXPECT_FALSE(js_request.client->has_received_response());
+
+  WriteBundle(base::span(bundle).subspan<5800>());
+  FinishWritingBundle();
+
+  js_request.client->RunUntilComplete();
+  EXPECT_EQ(net::OK, js_request.client->completion_status().error_code);
+  std::string js_body;
+  ASSERT_TRUE(mojo::BlockingCopyToString(
+      js_request.client->response_body_release(), &js_body));
+  EXPECT_EQ(kLargeJsBody, js_body);
+}
+
+TEST_F(WebBundleURLLoaderFactoryTest,
+       FactoryDestructionWhileOrbSniffingPending) {
+  const GURL kStreamingJsonUrl("https://other.test/streaming-json");
+  const GURL kStreamingJsUrl("https://other.test/streaming-js");
+
+  web_package::WebBundleBuilder builder;
+  builder.AddExchange(kStreamingJsonUrl,
+                      {{":status", "200"},
+                       {"content-type", "application/octet-stream"},
+                       {"x-padding", std::string(4000, 'x')}},
+                      "{\"data\": \"" + std::string(10000, 'a') + "\"}");
+  builder.AddExchange(
+      kStreamingJsUrl,
+      {{":status", "200"}, {"content-type", "application/javascript"}},
+      "const data = \"" + std::string(10000, 'a') + "\";");
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+
+  auto json_request = StartRequest(kStreamingJsonUrl, kResourceRequestId);
+  auto js_request = StartRequest(kStreamingJsUrl, kResourceRequestId2);
+
+  // Queue OnDataAvailableForOrb for `json_request` in `source_->pending_reads_`
+  // while `js_request` is still awaiting `parser_->ParseResponse`.
+  ASSERT_GT(bundle.size(), 4800u);
+  WriteBundle(base::span(bundle).first<4800>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return factory_->PendingReadCountForTesting() == 2u; }));
+  EXPECT_FALSE(json_request.client->has_received_response());
+  EXPECT_FALSE(js_request.client->has_received_response());
+
+  factory_ = nullptr;
+
+  json_request.client->RunUntilComplete();
+  EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
+            json_request.client->completion_status().error_code);
+  EXPECT_FALSE(json_request.client->has_received_response());
+
+  js_request.client->RunUntilComplete();
+  EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
+            js_request.client->completion_status().error_code);
+  EXPECT_FALSE(js_request.client->has_received_response());
+}
+
+TEST_F(WebBundleURLLoaderFactoryTest, BundleFetchErrorWhileOrbSniffingPending) {
+  const GURL kStreamingJsonUrl("https://other.test/streaming-json");
+  const GURL kStreamingJsUrl("https://other.test/streaming-js");
+
+  web_package::WebBundleBuilder builder;
+  builder.AddExchange(kStreamingJsonUrl,
+                      {{":status", "200"},
+                       {"content-type", "application/octet-stream"},
+                       {"x-padding", std::string(4000, 'x')}},
+                      "{\"data\": \"" + std::string(10000, 'a') + "\"}");
+  builder.AddExchange(
+      kStreamingJsUrl,
+      {{":status", "200"}, {"content-type", "application/javascript"}},
+      "const data = \"" + std::string(10000, 'a') + "\";");
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+
+  auto json_request = StartRequest(kStreamingJsonUrl, kResourceRequestId);
+  auto js_request = StartRequest(kStreamingJsUrl, kResourceRequestId2);
+
+  ASSERT_GT(bundle.size(), 4800u);
+  WriteBundle(base::span(bundle).first<4800>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return factory_->PendingReadCountForTesting() == 2u; }));
+  EXPECT_FALSE(json_request.client->has_received_response());
+  EXPECT_FALSE(js_request.client->has_received_response());
+
+  // Report a bundle fetch error while the data pipe is still open and ORB
+  // sniffing is pending in `source_->pending_reads_`.
+  factory_->OnWebBundleFetchFailed();
+
+  json_request.client->RunUntilComplete();
+  EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
+            json_request.client->completion_status().error_code);
+  EXPECT_FALSE(json_request.client->has_received_response());
+
+  js_request.client->RunUntilComplete();
+  EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
+            js_request.client->completion_status().error_code);
+  EXPECT_FALSE(js_request.client->has_received_response());
+
+  RunUntilBundleError();
+  ASSERT_TRUE(last_bundle_error().has_value());
+  EXPECT_EQ(mojom::WebBundleErrorType::kWebBundleFetchFailed,
+            last_bundle_error()->first);
+}
+
+TEST_F(WebBundleURLLoaderFactoryTest, ClientDisconnectWhileOrbSniffingPending) {
+  const GURL kStreamingJsonUrl("https://other.test/streaming-json");
+
+  web_package::WebBundleBuilder builder;
+  builder.AddExchange(kStreamingJsonUrl,
+                      {{":status", "200"},
+                       {"content-type", "application/octet-stream"},
+                       {"x-padding", std::string(4000, 'x')}},
+                      "{\"data\": \"" + std::string(10000, 'a') + "\"}");
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+
+  auto request = StartRequest(kStreamingJsonUrl, kResourceRequestId);
+
+  ASSERT_GT(bundle.size(), 4800u);
+  WriteBundle(base::span(bundle).first<4800>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return factory_->PendingReadCountForTesting() == 1u; }));
+  EXPECT_FALSE(request.client->has_received_response());
+
+  // Client cancels request while sniffing is pending in
+  // source_->pending_reads_. Wait for URLLoaderClient disconnect so URLLoader
+  // is guaranteed to be destroyed (invalidating its WeakPtr) before the
+  // remaining bundle bytes trigger OnDataAvailableForOrb.
+  request.loader.reset();
+  request.client->RunUntilDisconnect();
+  EXPECT_TRUE(request.client->has_received_disconnect());
+  EXPECT_FALSE(request.client->has_received_response());
+  EXPECT_EQ(1u, factory_->PendingReadCountForTesting());
+  request.client.reset();
+
+  WriteBundle(base::span(bundle).subspan<4800>());
+  FinishWritingBundle();
+  RunUntilBundleLoadFinished();
+  EXPECT_EQ(0u, factory_->PendingReadCountForTesting());
+}
+
+TEST_F(WebBundleURLLoaderFactoryTest, CrossOriginTruncatedSniffedPayload) {
+  const GURL kCrossOriginDataUrl("https://other.test/data.bin");
+  web_package::WebBundleBuilder builder;
+  // Use a response header (~4000 bytes) + payload (500 bytes) whose combined
+  // length exceeds INITIAL_BUFFER_SIZE_FOR_RESPONSE (4096 bytes), so that
+  // parsing the response header succeeds while the payload itself is truncated.
+  builder.AddExchange(kCrossOriginDataUrl,
+                      {{":status", "200"},
+                       {"content-type", "application/octet-stream"},
+                       {"x-padding", std::string(4000, 'x')}},
+                      "{\"data\": \"" + std::string(500, 'a') + "\"}");
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+  // Truncate 100 bytes from the end of the bundle (inside the 500-byte
+  // payload).
+  ASSERT_GT(bundle.size(), 100u);
+  bundle.resize(bundle.size() - 100);
+  WriteBundle(bundle);
+  FinishWritingBundle();
+
+  auto request = StartRequest(kCrossOriginDataUrl, kResourceRequestId);
+  request.client->RunUntilComplete();
+
+  EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
+            request.client->completion_status().error_code);
+  EXPECT_FALSE(request.client->has_received_response());
 }
 
 TEST_F(WebBundleURLLoaderFactoryTest, WrongBundleURL) {

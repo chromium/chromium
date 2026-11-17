@@ -13,15 +13,18 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/web_package/web_bundle_parser.h"
 #include "components/web_package/web_bundle_utils.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
+#include "net/base/mime_sniffer.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/ssl/ssl_info.h"
@@ -476,6 +479,8 @@ class WebBundleURLLoaderFactory::BundleDataSource
   }
 
  private:
+  friend class WebBundleURLLoaderFactory;
+
   void ProcessPendingReads() {
     std::vector<PendingRead> pendings(std::move(pending_reads_));
     std::vector<PendingReadToDataPipe> pipe_pendings(
@@ -556,10 +561,16 @@ WebBundleURLLoaderFactory::WebBundleURLLoaderFactory(
 }
 
 WebBundleURLLoaderFactory::~WebBundleURLLoaderFactory() {
-  for (auto loader : pending_loaders_) {
+  auto pending_loaders = std::move(pending_loaders_);
+  for (auto loader : pending_loaders) {
     if (loader)
       loader->OnFail(net::ERR_FAILED);
   }
+  if (source_) {
+    auto source = std::move(source_);
+    source->AbortPendingReads();
+  }
+  parser_.reset();
 }
 
 base::WeakPtr<WebBundleURLLoaderFactory>
@@ -697,8 +708,11 @@ void WebBundleURLLoaderFactory::StartLoad(base::WeakPtr<URLLoader> loader) {
 
   parser_->ParseResponse(
       it->second->offset, it->second->length,
-      base::BindOnce(&WebBundleURLLoaderFactory::OnResponseParsed,
-                     weak_ptr_factory_.GetWeakPtr(), loader->GetWeakPtr()));
+      mojo::WrapCallbackWithDropHandler(
+          base::BindOnce(&WebBundleURLLoaderFactory::OnResponseParsed,
+                         weak_ptr_factory_.GetWeakPtr(), loader->GetWeakPtr()),
+          base::BindOnce(&URLLoader::OnFail, loader->GetWeakPtr(),
+                         net::ERR_INVALID_WEB_BUNDLE)));
 }
 
 void WebBundleURLLoaderFactory::ReportErrorAndCancelPendingLoaders(
@@ -714,7 +728,10 @@ void WebBundleURLLoaderFactory::ReportErrorAndCancelPendingLoaders(
       loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
   }
 
-  source_.reset();
+  if (source_) {
+    auto source = std::move(source_);
+    source->AbortPendingReads();
+  }
   parser_.reset();
 }
 
@@ -817,6 +834,10 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
     uint64_t payload_length) {
   if (!loader)
     return;
+  if (HasError() || !source_) {
+    loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
+    return;
+  }
   mojom::URLResponseHeadPtr response_head =
       web_package::CreateResourceResponseFromHeaderString(headers);
   // Currently we allow only net::HTTP_OK responses in bundles.
@@ -880,10 +901,31 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
       loader->BlockResponseForOrb(std::move(response_head));
       return;
     case network::orb::ResponseAnalyzer::Decision::kAllow:
-    case network::orb::ResponseAnalyzer::Decision::kSniffMore:
-      break;
+      AllowResponse(std::move(loader), std::move(response_head), payload_offset,
+                    payload_length);
+      return;
+    case network::orb::ResponseAnalyzer::Decision::kSniffMore: {
+      uint64_t read_length = std::min(
+          static_cast<uint64_t>(net::kMaxBytesToSniff), payload_length);
+      source_->Read(
+          payload_offset, read_length,
+          base::BindOnce(&WebBundleURLLoaderFactory::OnDataAvailableForOrb,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(loader),
+                         std::move(response_head), std::move(orb_analyzer),
+                         payload_offset, payload_length, read_length));
+      return;
+    }
   }
+}
 
+void WebBundleURLLoaderFactory::AllowResponse(
+    base::WeakPtr<URLLoader> loader,
+    mojom::URLResponseHeadPtr response_head,
+    uint64_t payload_offset,
+    uint64_t payload_length) {
+  if (!loader) {
+    return;
+  }
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
   if (CreateDataPipe(nullptr, producer, consumer) != MOJO_RESULT_OK) {
@@ -894,6 +936,43 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
   source_->ReadToDataPipe(
       std::move(producer), payload_offset, payload_length,
       base::BindOnce(&URLLoader::OnWriteCompleted, loader->GetWeakPtr()));
+}
+
+void WebBundleURLLoaderFactory::OnDataAvailableForOrb(
+    base::WeakPtr<URLLoader> loader,
+    mojom::URLResponseHeadPtr response_head,
+    std::unique_ptr<orb::ResponseAnalyzer> orb_analyzer,
+    uint64_t payload_offset,
+    uint64_t payload_length,
+    uint64_t expected_read_length,
+    const std::optional<std::vector<uint8_t>>& data) {
+  if (!loader) {
+    return;
+  }
+  if (HasError() || !source_ || !data || data->size() != expected_read_length) {
+    loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
+    return;
+  }
+
+  auto decision = network::orb::ResponseAnalyzer::Decision::kSniffMore;
+  if (!data->empty()) {
+    decision = orb_analyzer->Sniff(base::as_string_view(*data));
+  }
+  if (decision == network::orb::ResponseAnalyzer::Decision::kSniffMore) {
+    decision = orb_analyzer->HandleEndOfSniffableResponseBody();
+    DCHECK_NE(network::orb::ResponseAnalyzer::Decision::kSniffMore, decision);
+  }
+  switch (decision) {
+    case network::orb::ResponseAnalyzer::Decision::kBlock:
+      loader->BlockResponseForOrb(std::move(response_head));
+      return;
+    case network::orb::ResponseAnalyzer::Decision::kAllow:
+      AllowResponse(std::move(loader), std::move(response_head), payload_offset,
+                    payload_length);
+      return;
+    case network::orb::ResponseAnalyzer::Decision::kSniffMore:
+      NOTREACHED();
+  }
 }
 
 void WebBundleURLLoaderFactory::OnMemoryQuotaExceeded() {
@@ -928,6 +1007,10 @@ void WebBundleURLLoaderFactory::OnWebBundleFetchFailed() {
       SubresourceWebBundleLoadResult::kWebBundleFetchFailed,
       mojom::WebBundleErrorType::kWebBundleFetchFailed,
       "Failed to fetch the Web Bundle.");
+}
+
+size_t WebBundleURLLoaderFactory::PendingReadCountForTesting() const {
+  return source_ ? source_->pending_reads_.size() : 0;
 }
 
 }  // namespace network

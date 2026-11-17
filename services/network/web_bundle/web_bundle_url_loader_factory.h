@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_WEB_BUNDLE_WEB_BUNDLE_URL_LOADER_FACTORY_H_
 #define SERVICES_NETWORK_WEB_BUNDLE_WEB_BUNDLE_URL_LOADER_FACTORY_H_
 
+#include <cstddef>
 #include <optional>
 #include <vector>
 
@@ -17,6 +18,7 @@
 #include "services/network/public/cpp/orb/orb_api.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 
 namespace network {
@@ -72,6 +74,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
 
   void StartLoader(base::WeakPtr<URLLoader> loader);
   void OnWebBundleFetchFailed();
+  size_t PendingReadCountForTesting() const;
 
  private:
   class BundleDataSource;
@@ -104,6 +107,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
                             const std::string& headers,
                             uint64_t payload_offset,
                             uint64_t payload_length);
+  void AllowResponse(base::WeakPtr<URLLoader> loader,
+                     mojom::URLResponseHeadPtr response_head,
+                     uint64_t payload_offset,
+                     uint64_t payload_length);
+  void OnDataAvailableForOrb(
+      base::WeakPtr<URLLoader> loader,
+      mojom::URLResponseHeadPtr response_head,
+      std::unique_ptr<orb::ResponseAnalyzer> orb_analyzer,
+      uint64_t payload_offset,
+      uint64_t payload_length,
+      uint64_t expected_read_length,
+      const std::optional<std::vector<uint8_t>>& data);
 
   void OnMemoryQuotaExceeded();
   void OnDataCompleted();
@@ -117,13 +132,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
 
   const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
   mojo::Remote<mojom::CrossOriginEmbedderPolicyReporter> coep_reporter_;
+  // `orb_state_` must be destructed after `source_`, since `source_` may hold
+  // pending read callbacks that own an `orb::ResponseAnalyzer` referencing
+  // `orb_state_`.
+  orb::PerFactoryState orb_state_;
   std::unique_ptr<BundleDataSource> source_;
   mojo::Remote<web_package::mojom::WebBundleParser> parser_;
   web_package::mojom::BundleMetadataPtr metadata_;
   std::optional<SubresourceWebBundleLoadResult> load_result_;
   bool data_completed_ = false;
   std::vector<base::WeakPtr<URLLoader>> pending_loaders_;
-  orb::PerFactoryState orb_state_;
   base::WeakPtrFactory<WebBundleURLLoaderFactory> weak_ptr_factory_{this};
 };
 
