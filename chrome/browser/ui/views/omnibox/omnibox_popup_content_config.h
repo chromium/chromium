@@ -22,6 +22,7 @@ struct OmniboxPopupContentConfig {
 
   static OmniboxPopupContentConfig ForClassic();
   static OmniboxPopupContentConfig ForFull();
+  static OmniboxPopupContentConfig ForFullInLocationBar();
   static OmniboxPopupContentConfig ForAim();
 };
 
