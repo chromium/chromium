@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_prefs.h"
-#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -95,18 +94,10 @@ void OrganizerPanelPageHandler::SetSectionShowAll(const std::string& section_id,
 }
 
 void OrganizerPanelPageHandler::OnBrowserWindowInterfaceChanged() {
-  vertical_tab_strip_mode_subscription_ = {};
   organizer_panel_subscription_ = {};
   auto* browser = webui::GetBrowserWindowInterface(web_contents_);
   if (!browser) {
     return;
-  }
-  if (auto* controller = tabs::VerticalTabStripStateController::From(browser)) {
-    OnVerticalTabStripModeChanged(controller);
-    vertical_tab_strip_mode_subscription_ =
-        controller->RegisterOnModeChanged(base::BindRepeating(
-            &OrganizerPanelPageHandler::OnVerticalTabStripModeChanged,
-            base::Unretained(this)));
   }
   if (auto* panel_controller = OrganizerPanelController::From(browser)) {
     UpdateInTrayView(panel_controller);
@@ -114,11 +105,6 @@ void OrganizerPanelPageHandler::OnBrowserWindowInterfaceChanged() {
         base::BindRepeating(&OrganizerPanelPageHandler::UpdateInTrayView,
                             base::Unretained(this)));
   }
-}
-
-void OrganizerPanelPageHandler::OnVerticalTabStripModeChanged(
-    tabs::VerticalTabStripStateController* controller) {
-  page_->OnVerticalTabsEnabledChanged(controller->ShouldDisplayVerticalTabs());
 }
 
 void OrganizerPanelPageHandler::UpdateInTrayView(

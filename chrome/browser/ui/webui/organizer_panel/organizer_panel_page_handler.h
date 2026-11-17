@@ -27,10 +27,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace tabs {
-class VerticalTabStripStateController;
-}  // namespace tabs
-
 class OrganizerPanelPageHandler : public organizer_panel::mojom::PageHandler {
  public:
   OrganizerPanelPageHandler(
@@ -54,8 +50,6 @@ class OrganizerPanelPageHandler : public organizer_panel::mojom::PageHandler {
 
  private:
   void OnBrowserWindowInterfaceChanged();
-  void OnVerticalTabStripModeChanged(
-      tabs::VerticalTabStripStateController* controller);
   void OnSectionsStateChanged();
 
   void UpdateInTrayView(OrganizerPanelController* controller);
@@ -69,7 +63,6 @@ class OrganizerPanelPageHandler : public organizer_panel::mojom::PageHandler {
   PrefChangeRegistrar pref_change_registrar_;
   std::optional<bool> in_tray_view_;
   base::CallbackListSubscription browser_window_changed_subscription_;
-  base::CallbackListSubscription vertical_tab_strip_mode_subscription_;
   base::CallbackListSubscription organizer_panel_subscription_;
 };
 

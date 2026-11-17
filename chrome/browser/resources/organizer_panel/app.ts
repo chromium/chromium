@@ -52,10 +52,6 @@ export class OrganizerPanelAppElement extends CrLitElement {
       shortcut_: {type: String},
       sectionDelegates_: {type: Array},
       searchQuery_: {type: String},
-      verticalTabsEnabled: {
-        type: Boolean,
-        reflect: true,
-      },
       inTrayView: {
         type: Boolean,
         reflect: true,
@@ -63,7 +59,6 @@ export class OrganizerPanelAppElement extends CrLitElement {
     };
   }
 
-  accessor verticalTabsEnabled: boolean = false;
   accessor inTrayView: boolean = true;
   protected accessor shortcut_: string = loadTimeData.getString('shortcutText');
   protected accessor searchQuery_: string = '';
@@ -72,7 +67,6 @@ export class OrganizerPanelAppElement extends CrLitElement {
           this.getSectionDelegates_();
 
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
-  private verticalTabsEnabledChangedListenerId_: number|null = null;
   private inTrayViewChangedListenerId_: number|null = null;
   private hasRecordedSearch_: boolean = false;
   private hasBeenHidden_: boolean = false;
@@ -130,11 +124,6 @@ export class OrganizerPanelAppElement extends CrLitElement {
     window.addEventListener('focus', this.onWindowFocused_);
     window.addEventListener('contextmenu', this.onContextMenu_);
     document.addEventListener('visibilitychange', this.onVisibilityChange_);
-    this.verticalTabsEnabledChangedListenerId_ =
-        this.browserProxy_.callbackRouter.onVerticalTabsEnabledChanged
-            .addListener((verticalTabsEnabled: boolean) => {
-              this.verticalTabsEnabled = verticalTabsEnabled;
-            });
     this.inTrayViewChangedListenerId_ =
         this.browserProxy_.callbackRouter.onIsInTrayViewChanged.addListener(
             (inTrayView: boolean) => {
@@ -148,10 +137,6 @@ export class OrganizerPanelAppElement extends CrLitElement {
     window.removeEventListener('focus', this.onWindowFocused_);
     window.removeEventListener('contextmenu', this.onContextMenu_);
     document.removeEventListener('visibilitychange', this.onVisibilityChange_);
-    assert(this.verticalTabsEnabledChangedListenerId_ !== null);
-    this.browserProxy_.callbackRouter.removeListener(
-        this.verticalTabsEnabledChangedListenerId_);
-    this.verticalTabsEnabledChangedListenerId_ = null;
     assert(this.inTrayViewChangedListenerId_ !== null);
     this.browserProxy_.callbackRouter.removeListener(
         this.inTrayViewChangedListenerId_);

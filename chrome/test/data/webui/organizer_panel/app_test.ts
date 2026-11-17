@@ -225,26 +225,10 @@ suite('OrganizerPanelAppTest', () => {
     const divider =
         app.$.list.shadowRoot.querySelector<HTMLElement>('.divider');
     assertTrue(!!divider);
-    assertFalse(app.verticalTabsEnabled);
-    assertFalse(app.hasAttribute('vertical-tabs-enabled'));
-    assertEquals('rgb(10, 20, 30)', getComputedStyle(divider).backgroundColor);
-
-    remotePage.onVerticalTabsEnabledChanged(true);
-    await microtasksFinished();
-
-    assertTrue(app.verticalTabsEnabled);
-    assertTrue(app.hasAttribute('vertical-tabs-enabled'));
     assertEquals('rgb(10, 20, 30)', getComputedStyle(divider).backgroundColor);
 
     app.style.removeProperty('--color-organizer-panel-divider');
     await microtasksFinished();
-    assertEquals('rgb(40, 50, 60)', getComputedStyle(divider).backgroundColor);
-
-    remotePage.onVerticalTabsEnabledChanged(false);
-    await microtasksFinished();
-
-    assertFalse(app.verticalTabsEnabled);
-    assertFalse(app.hasAttribute('vertical-tabs-enabled'));
     assertEquals('rgb(40, 50, 60)', getComputedStyle(divider).backgroundColor);
   });
 

@@ -60,11 +60,6 @@ class FakeOrganizerPanelPage : public organizer_panel::mojom::Page {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  void OnVerticalTabsEnabledChanged(bool vertical_tabs_enabled) override {
-    vertical_tabs_enabled_ = vertical_tabs_enabled;
-    Notify(vertical_tabs_enabled_changed_quit_closure_);
-  }
-
   void OnIsInTrayViewChanged(bool in_tray_view) override {
     is_in_tray_view_ = in_tray_view;
     Notify(is_in_tray_view_changed_quit_closure_);
@@ -77,20 +72,12 @@ class FakeOrganizerPanelPage : public organizer_panel::mojom::Page {
     Notify(sections_state_changed_quit_closure_);
   }
 
-  void WaitForVerticalTabsEnabledChanged() {
-    WaitFor(vertical_tabs_enabled_changed_quit_closure_);
-  }
-
   void WaitForIsInTrayViewChanged() {
     WaitFor(is_in_tray_view_changed_quit_closure_);
   }
 
   void WaitForSectionsStateChanged() {
     WaitFor(sections_state_changed_quit_closure_);
-  }
-
-  std::optional<bool> vertical_tabs_enabled() const {
-    return vertical_tabs_enabled_;
   }
 
   std::optional<bool> is_in_tray_view() const { return is_in_tray_view_; }
@@ -114,11 +101,9 @@ class FakeOrganizerPanelPage : public organizer_panel::mojom::Page {
   }
 
   mojo::Receiver<organizer_panel::mojom::Page> receiver_{this};
-  std::optional<bool> vertical_tabs_enabled_;
   std::optional<bool> is_in_tray_view_;
   base::flat_map<std::string, organizer_panel::mojom::SectionStatePtr>
       sections_state_;
-  base::OnceClosure vertical_tabs_enabled_changed_quit_closure_;
   base::OnceClosure is_in_tray_view_changed_quit_closure_;
   base::OnceClosure sections_state_changed_quit_closure_;
 };
@@ -331,26 +316,6 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
-                       OnVerticalTabsEnabledChangedNotifiesPage) {
-  auto* vt_controller = tabs::VerticalTabStripStateController::From(browser());
-  ASSERT_TRUE(vt_controller);
-  vt_controller->SetVerticalTabsEnabled(false);
-
-  TestHandlerHarness harness(active_web_contents());
-
-  harness.page().WaitForVerticalTabsEnabledChanged();
-  EXPECT_EQ(false, harness.page().vertical_tabs_enabled());
-
-  vt_controller->SetVerticalTabsEnabled(true);
-  harness.page().WaitForVerticalTabsEnabledChanged();
-  EXPECT_EQ(true, harness.page().vertical_tabs_enabled());
-
-  vt_controller->SetVerticalTabsEnabled(false);
-  harness.page().WaitForVerticalTabsEnabledChanged();
-  EXPECT_EQ(false, harness.page().vertical_tabs_enabled());
-}
-
-IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
                        OnIsInTrayViewChangedNotifiesPage) {
   auto* vt_controller = tabs::VerticalTabStripStateController::From(browser());
   ASSERT_TRUE(vt_controller);
@@ -384,24 +349,17 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
 
   // Initially not attached to any BrowserWindowInterface, so page was not
   // notified.
-  EXPECT_FALSE(harness.page().vertical_tabs_enabled().has_value());
   EXPECT_FALSE(harness.page().is_in_tray_view().has_value());
 
   // Attach BrowserWindowInterface to simulated preloaded contents.
   webui::SetBrowserWindowInterface(web_contents.get(), browser());
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return harness.page().vertical_tabs_enabled().has_value() &&
-           harness.page().is_in_tray_view().has_value();
-  }));
-  EXPECT_EQ(true, harness.page().vertical_tabs_enabled());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return harness.page().is_in_tray_view().has_value(); }));
   EXPECT_EQ(false, harness.page().is_in_tray_view());
 
   vt_controller->SetVerticalTabsEnabled(false);
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return harness.page().vertical_tabs_enabled() == false &&
-           harness.page().is_in_tray_view() == true;
-  }));
-  EXPECT_EQ(false, harness.page().vertical_tabs_enabled());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return harness.page().is_in_tray_view() == true; }));
   EXPECT_EQ(true, harness.page().is_in_tray_view());
 }
 
