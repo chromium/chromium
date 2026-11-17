@@ -301,6 +301,8 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="0" label="Filesystem Read Failure"/>
   <int value="1" label="Filesystem Write Failure"/>
   <int value="2" label="Missing Version"/>
+  <int value="3" label="Only Missing Native"/>
+  <int value="4" label="Not Skipped"/>
 </enum>
 
 <enum name="AppBoundEncryptionSupportLevel">

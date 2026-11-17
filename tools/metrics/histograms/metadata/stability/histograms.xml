@@ -207,10 +207,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crashpad.AnrUpload.Skipped" enum="AnrSkippedReason"
-    expires_after="2024-06-30">
+    expires_after="2027-05-16">
   <owner>smaier@google.com</owner>
   <owner>crashpad-dev@chromium.org</owner>
-  <summary>The reason that an ANR upload was skipped.</summary>
+  <summary>
+    The outcome of preparing an ANR report for upload. Recorded when Chrome
+    processes the ANRs it reads from Android's ApplicationExitInfo: either the
+    reason an ANR was skipped, or &quot;Not Skipped&quot; when the report was
+    written out for upload. &quot;Missing Version&quot; means the process exited
+    before Chrome stored its version in the process state summary, which happens
+    for ANRs early in startup.
+
+    Warning: this histogram was expired from 2024-06-30 to 2026-11-16; data may
+    be missing.
+  </summary>
 </histogram>
 
 <histogram name="Crashpad.CrashReportPending" enum="CrashpadReportPending"
