@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ASH_MAGIC_BOOST_MAGIC_BOOST_OPT_IN_CARD_H_
 #define CHROME_BROWSER_UI_ASH_MAGIC_BOOST_MAGIC_BOOST_OPT_IN_CARD_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -16,7 +18,7 @@ class ApplicationLocaleStorage;
 namespace views {
 class Label;
 class MdTextButton;
-class UniqueWidgetPtr;
+class Widget;
 }  // namespace views
 
 namespace chromeos {
@@ -41,7 +43,7 @@ class MagicBoostOptInCard : public chromeos::editor_menu::PreTargetHandlerView {
   // given `anchor_view_bounds`.
   // `application_locale_storage` must be non-null and must outlive the returned
   // widget.
-  static views::UniqueWidgetPtr CreateWidget(
+  static std::unique_ptr<views::Widget> CreateWidget(
       const ApplicationLocaleStorage* application_locale_storage,
       MagicBoostCardController* controller,
       const gfx::Rect& anchor_view_bounds);

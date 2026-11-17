@@ -34,7 +34,6 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromeos {
@@ -225,12 +224,12 @@ MagicBoostOptInCard::MagicBoostOptInCard(
 MagicBoostOptInCard::~MagicBoostOptInCard() = default;
 
 // static
-views::UniqueWidgetPtr MagicBoostOptInCard::CreateWidget(
+std::unique_ptr<views::Widget> MagicBoostOptInCard::CreateWidget(
     const ApplicationLocaleStorage* application_locale_storage,
     MagicBoostCardController* controller,
     const gfx::Rect& anchor_view_bounds) {
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
@@ -239,8 +238,7 @@ views::UniqueWidgetPtr MagicBoostOptInCard::CreateWidget(
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.name = GetWidgetName();
 
-  views::UniqueWidgetPtr widget =
-      std::make_unique<views::Widget>(std::move(params));
+  auto widget = std::make_unique<views::Widget>(std::move(params));
   MagicBoostOptInCard* magic_boost_opt_in_card =
       widget->SetContentsView(std::make_unique<MagicBoostOptInCard>(
           application_locale_storage, controller));

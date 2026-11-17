@@ -11,11 +11,12 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_card_controller.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
-#include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace gfx {
 class Rect;
@@ -34,7 +35,8 @@ namespace chromeos {
 // Some functions in this controller are virtual for testing.
 class MagicBoostCardController
     : public ReadWriteCardController,
-      public chromeos::MahiMediaAppEventsProxy::Observer {
+      public chromeos::MahiMediaAppEventsProxy::Observer,
+      public views::WidgetObserver {
  public:
   // `application_locale_storage` must be non-null and must outlive `this`.
   explicit MagicBoostCardController(
@@ -54,6 +56,9 @@ class MagicBoostCardController
   // chromeos::MahiMediaAppEventsProxy::Observer:
   void OnPdfContextMenuShown(const gfx::Rect& anchor) override;
   void OnPdfContextMenuHide() override;
+
+  // views::WidgetObserver:
+  void OnWidgetDestroyed(views::Widget* widget) override;
 
   // Shows/closes Magic Boost opt-in widget.
   virtual void ShowOptInUi(const gfx::Rect& anchor_view_bounds);
@@ -75,8 +80,15 @@ class MagicBoostCardController
   views::Widget* opt_in_widget_for_test() { return opt_in_widget_.get(); }
 
  private:
+  // Deletes `closed_opt_in_widget_`.
+  void DeleteClosedOptInWidget();
+
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
-  views::UniqueWidgetPtr opt_in_widget_;
+  std::unique_ptr<views::Widget> opt_in_widget_;
+  // Holds the opt-in widget after it is closed, until it can be deleted.
+  std::unique_ptr<views::Widget> closed_opt_in_widget_;
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      opt_in_widget_observation_{this};
   ash::magic_boost::OptInFeatures opt_in_features_;
   base::WeakPtrFactory<MagicBoostCardController> weak_factory_{this};
 };

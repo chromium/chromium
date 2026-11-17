@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_metrics.h"
@@ -17,7 +18,7 @@
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
 #include "ui/views/view_utils.h"
-#include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget.h"
 
 namespace chromeos {
 
@@ -76,7 +77,7 @@ void MagicBoostCardController::OnDismiss(bool is_other_command_executed) {
     views::AsViewClass<MagicBoostOptInCard>(opt_in_widget_->GetContentsView())
         ->OnAnchorMenuDismissed();
 
-    opt_in_widget_.reset();
+    CloseOptInUi();
   }
 }
 
@@ -109,7 +110,7 @@ void MagicBoostCardController::OnPdfContextMenuHide() {
 void MagicBoostCardController::ShowOptInUi(
     const gfx::Rect& anchor_view_bounds) {
   if (opt_in_widget_) {
-    opt_in_widget_.reset();
+    CloseOptInUi();
   }
 
   // If the disclaimer view is showing, close it.
@@ -118,6 +119,7 @@ void MagicBoostCardController::ShowOptInUi(
   opt_in_widget_ = MagicBoostOptInCard::CreateWidget(
       &application_locale_storage_.get(),
       /*controller=*/this, anchor_view_bounds);
+  opt_in_widget_observation_.Observe(opt_in_widget_.get());
   opt_in_widget_->ShowInactive();
 
   magic_boost::RecordOptInCardActionMetrics(
@@ -125,7 +127,20 @@ void MagicBoostCardController::ShowOptInUi(
 }
 
 void MagicBoostCardController::CloseOptInUi() {
-  opt_in_widget_.reset();
+  if (!opt_in_widget_) {
+    return;
+  }
+
+  // This can run inside the card's own button callback, so the widget can't be
+  // deleted yet. Closing it hides its window and destroys it a task later; the
+  // widget is deleted right after that.
+  opt_in_widget_observation_.Reset();
+  opt_in_widget_->Close();
+  closed_opt_in_widget_ = std::move(opt_in_widget_);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MagicBoostCardController::DeleteClosedOptInWidget,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void MagicBoostCardController::ShowDisclaimerUi(int64_t display_id) {
@@ -150,6 +165,16 @@ MagicBoostCardController::GetOptInFeatures() const {
 
 base::WeakPtr<MagicBoostCardController> MagicBoostCardController::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+void MagicBoostCardController::OnWidgetDestroyed(views::Widget* widget) {
+  // The opt-in widget's window is gone, e.g. after the card closed itself when
+  // it was deactivated.
+  CloseOptInUi();
+}
+
+void MagicBoostCardController::DeleteClosedOptInWidget() {
+  closed_opt_in_widget_.reset();
 }
 
 void MagicBoostCardController::SetMagicBoostControllerForTesting(
