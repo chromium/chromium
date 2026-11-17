@@ -2944,6 +2944,24 @@ FOO_TEST_SUITE_WITH_TEST_COMMON = """\
 }
 """
 
+FOO_TEST_SUITE_WITH_REMOVE_TEST_COMMON_MIXIN = """\
+{
+  'basic_suites': {
+    'foo_tests': {
+      'foo_test': {
+        'remove_mixins': ['test-common-mixin'],
+        'test_common': {
+          'args': ['test-common-arg'],
+          'mixins': ['test-common-mixin'],
+        },
+        'args': ['test-arg'],
+        'mixins': ['test-mixin'],
+      },
+    },
+  },
+}
+"""
+
 MIXIN_ARGS = """\
 {
   'builder_mixin': {
@@ -3440,6 +3458,23 @@ class MixinTests(TestCase):
     )
     fbb.check_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
+
+  def test_remove_mixin_test_common(self):
+    fbb = FakeBBGen(
+      self.args,
+      FOO_GTESTS_WATERFALL,
+      FOO_TEST_SUITE_WITH_REMOVE_TEST_COMMON_MIXIN,
+      LUCI_MILO_CFG,
+      mixins=TEST_COMMON_MIXINS,
+    )
+    outputs = fbb.generate_outputs()
+    tester_tests = outputs['chromium.test']['Fake Tester']['gtest_tests']
+    self.assertEqual(len(tester_tests), 1)
+    foo_test = tester_tests[0]
+    self.assertIn('test-common-arg', foo_test['args'])
+    self.assertIn('test-arg', foo_test['args'])
+    self.assertIn('test-mixin-arg', foo_test['args'])
+    self.assertNotIn('test-common-mixin-arg', foo_test['args'])
 
 
 TEST_SUITE_WITH_PARAMS = """\
