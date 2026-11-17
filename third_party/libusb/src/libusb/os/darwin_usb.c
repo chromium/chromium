@@ -53,7 +53,7 @@ static clock_serv_t clock_realtime;
 static clock_serv_t clock_monotonic;
 
 static CFRunLoopRef libusb_darwin_acfl = NULL; /* event cf loop */
-_Atomic int32_t initCount = ATOMIC_VAR_INIT(0);
+_Atomic int32_t initCount = 0;
 
 static usbi_mutex_t darwin_cached_devices_lock = PTHREAD_MUTEX_INITIALIZER;
 static struct list_head darwin_cached_devices = {&darwin_cached_devices, &darwin_cached_devices};

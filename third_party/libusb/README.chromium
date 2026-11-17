@@ -46,3 +46,5 @@ Local Modifications:
   usbi_get_device_by_session_id return a reference; this version does not, so
   that call would over-release the device. The new block is therefore placed
   before active_contexts_lock is taken, keeping the two locks non-nested.
+- Replaced ATOMIC_VAR_INIT(0), which C23 removed, with a plain 0 initializer
+  in darwin_usb.c.
