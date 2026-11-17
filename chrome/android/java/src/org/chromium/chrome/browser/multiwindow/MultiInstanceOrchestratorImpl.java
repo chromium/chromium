@@ -461,7 +461,7 @@ import java.util.function.Supplier;
         var targetActivityClass =
                 MultiWindowUtils.getInstance().getOpenInOtherWindowActivity(sourceActivity);
         if (targetActivityClass == null) {
-            destroyAdditionalNavigationParams(loadUrlParams);
+            loadUrlParams.destroyAdditionalNavigationParams();
             return false;
         }
 
@@ -529,7 +529,7 @@ import java.util.function.Supplier;
                 if (multiInstanceManager != null) {
                     multiInstanceManager.showInstanceCreationLimitMessage();
                 }
-                destroyAdditionalNavigationParams(loadUrlParams);
+                loadUrlParams.destroyAdditionalNavigationParams();
                 return false;
             }
             openUrlInOtherWindowApi31(
@@ -563,7 +563,7 @@ import java.util.function.Supplier;
         multiInstanceManager.showTargetSelectorDialog(
                 (instanceInfo) -> {
                     if (instanceInfo == null) {
-                        destroyAdditionalNavigationParams(loadUrlParams);
+                        loadUrlParams.destroyAdditionalNavigationParams();
                         return;
                     }
                     openUrlInOtherWindowApi31(
@@ -575,14 +575,6 @@ import java.util.function.Supplier;
                 targetInstanceType,
                 title);
         return true;
-    }
-
-    private static void destroyAdditionalNavigationParams(LoadUrlParams loadUrlParams) {
-        var params = loadUrlParams.getAdditionalNavigationParams();
-        if (params != null) {
-            params.destroy();
-            loadUrlParams.setAdditionalNavigationParams(null);
-        }
     }
 
     private void moveTabsToOtherWindowPreApi31(List<Tab> tabs) {

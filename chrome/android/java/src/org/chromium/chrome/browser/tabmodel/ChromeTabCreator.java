@@ -200,7 +200,10 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             @TabLaunchType int type,
             @Nullable Tab parent,
             @Nullable Intent intent) {
-        if (mTabModel == null) return null;
+        if (mTabModel == null) {
+            loadUrlParams.destroyAdditionalNavigationParams();
+            return null;
+        }
         int position =
                 (intent == null || !IntentUtils.isTrustedIntentFromSelf(intent))
                         ? TabModel.INVALID_TAB_INDEX
@@ -324,6 +327,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             @Nullable Intent intent,
             boolean copyHistory) {
         if (mTabModel == null || mTabModel instanceof StubTabModel || mOrderController == null) {
+            loadUrlParams.destroyAdditionalNavigationParams();
             return null;
         }
         // Measure tab creation duration for different launch types to understand tab creation
@@ -352,6 +356,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             AsyncTabParams asyncParams =
                     mAsyncTabParamsManager.getAsyncTabParams().get(assignedTabId);
             if (TabLaunchTypeUtils.isReparentingLaunch(type) && asyncParams == null) {
+                loadUrlParams.destroyAdditionalNavigationParams();
                 return null;
             }
 
@@ -365,6 +370,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             Tab tab;
             @TabCreationState int creationState = TabCreationState.LIVE_IN_FOREGROUND;
             if (isReparenting) {
+                loadUrlParams.destroyAdditionalNavigationParams();
                 TabReparentingParams params = (TabReparentingParams) asyncParams;
                 assert params != null;
                 tab = params.getTabToReparent();
@@ -387,6 +393,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
                                         createDefaultTabDelegateFactory()),
                                 params.getFinalizeCallback());
             } else if (asyncParams != null && asyncParams.getWebContents() != null) {
+                loadUrlParams.destroyAdditionalNavigationParams();
                 openInForeground = true;
                 assumeNonNull(intent);
 

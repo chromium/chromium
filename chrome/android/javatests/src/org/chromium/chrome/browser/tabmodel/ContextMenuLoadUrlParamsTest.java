@@ -76,6 +76,7 @@ public class ContextMenuLoadUrlParamsTest {
 
     // Load parameters of the last call to openNewTab().
     private static LoadUrlParams sOpenNewTabLoadUrlParams;
+    private static AdditionalNavigationParams sOpenNewTabAdditionalNavigationParams;
 
     // Records parameters of calls to TabModelSelector methods and otherwise behaves like
     // TabModelSelectorImpl.
@@ -87,6 +88,7 @@ public class ContextMenuLoadUrlParamsTest {
                 Tab parent,
                 boolean incognito) {
             sOpenNewTabLoadUrlParams = loadUrlParams;
+            sOpenNewTabAdditionalNavigationParams = loadUrlParams.getAdditionalNavigationParams();
             return super.openNewTab(loadUrlParams, type, parent, incognito);
         }
 
@@ -183,9 +185,7 @@ public class ContextMenuLoadUrlParamsTest {
                 mActivityTestRule.getTestServer().getURL(HTML_PATH),
                 sOpenNewTabLoadUrlParams.getReferrer().getUrl());
 
-        AdditionalNavigationParams navigationParams =
-                sOpenNewTabLoadUrlParams.getAdditionalNavigationParams();
-        assertNotNull(navigationParams);
+        assertNotNull(sOpenNewTabAdditionalNavigationParams);
     }
 
     /**
@@ -206,9 +206,7 @@ public class ContextMenuLoadUrlParamsTest {
                 mActivityTestRule.getTestServer().getURL(HTML_PATH),
                 sOpenNewTabLoadUrlParams.getReferrer().getUrl());
 
-        AdditionalNavigationParams navigationParams =
-                sOpenNewTabLoadUrlParams.getAdditionalNavigationParams();
-        assertNotNull(navigationParams);
+        assertNotNull(sOpenNewTabAdditionalNavigationParams);
     }
 
     /**
@@ -229,9 +227,7 @@ public class ContextMenuLoadUrlParamsTest {
                 mActivityTestRule.getTestServer().getURL(HTML_PATH),
                 sOpenNewTabLoadUrlParams.getReferrer().getUrl());
 
-        AdditionalNavigationParams navigationParams =
-                sOpenNewTabLoadUrlParams.getAdditionalNavigationParams();
-        assertNotNull(navigationParams);
+        assertNotNull(sOpenNewTabAdditionalNavigationParams);
     }
 
     /**
@@ -262,7 +258,7 @@ public class ContextMenuLoadUrlParamsTest {
             } else {
                 assertNotNull(sOpenNewTabLoadUrlParams);
                 assertNull(sOpenNewTabLoadUrlParams.getReferrer());
-                assertNull(sOpenNewTabLoadUrlParams.getAdditionalNavigationParams());
+                assertNull(sOpenNewTabAdditionalNavigationParams);
             }
         } finally {
             Intents.release();
@@ -295,6 +291,7 @@ public class ContextMenuLoadUrlParamsTest {
         }
 
         sOpenNewTabLoadUrlParams = null;
+        sOpenNewTabAdditionalNavigationParams = null;
         ContextMenuUtils.selectContextMenuItem(
                 InstrumentationRegistry.getInstrumentation(),
                 activityToWaitFor,

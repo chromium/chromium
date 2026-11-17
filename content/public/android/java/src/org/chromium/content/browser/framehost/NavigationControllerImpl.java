@@ -239,6 +239,7 @@ import org.chromium.url.Origin;
                                     params.getIsPdf(),
                                     params.getRemoveExtraHeadersOnCrossOriginRedirect(),
                                     params.getInternalScrollToTextFragment());
+            params.setAdditionalNavigationParams(null);
             // Store passed in user data on the navigation handle, except in the case of a duplicate
             // navigation.
             if (result != null
@@ -246,6 +247,8 @@ import org.chromium.url.Origin;
                     && result.getNotStartedReason() == null) {
                 result.getNavigationHandle().setUserDataHost(params.takeNavigationHandleUserData());
             }
+        } else {
+            params.destroyAdditionalNavigationParams();
         }
         return result != null
                 ? result

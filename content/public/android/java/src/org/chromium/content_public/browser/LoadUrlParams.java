@@ -104,8 +104,8 @@ public class LoadUrlParams {
     }
 
     /**
-     * Creates a new LoadUrlParams that is a copy of {@code other}.
-     * The user data host is intentionally not copied.
+     * Creates a new LoadUrlParams that is a copy of {@code other}. The user data host and {@link
+     * AdditionalNavigationParams} are intentionally not copied.
      */
     public static LoadUrlParams copy(LoadUrlParams other) {
         LoadUrlParams copy = new LoadUrlParams(other.mUrl);
@@ -116,9 +116,10 @@ public class LoadUrlParams {
         if (other.mExtraHeaders != null) {
             copy.mExtraHeaders = new HashMap<>(other.mExtraHeaders);
         }
-        // mNavigationHandleUserDataHost is intentionally not copied.  We don't want any user data
-        // from one navigation to potentially affect a different navigation, and UserHandleData
-        // does not support deep copy.
+        // mNavigationHandleUserDataHost and mAdditionalNavigationParams are intentionally not
+        // copied. We don't want any user data from one navigation to potentially affect a different
+        // navigation, UserHandleData does not support deep copy, and AdditionalNavigationParams
+        // has single-navigation native ownership (enforced by LifetimeAssert).
 
         copy.mVerbatimHeaders = other.mVerbatimHeaders;
         copy.mUaOverrideOption = other.mUaOverrideOption;
@@ -133,7 +134,6 @@ public class LoadUrlParams {
         copy.mInputStartTimestamp = other.mInputStartTimestamp;
         copy.mHasUserGesture = other.mHasUserGesture;
         copy.mShouldClearHistoryList = other.mShouldClearHistoryList;
-        copy.mAdditionalNavigationParams = other.mAdditionalNavigationParams;
         copy.mRemoveExtraHeadersOnCrossOriginRedirect =
                 other.mRemoveExtraHeadersOnCrossOriginRedirect;
         copy.mInternalScrollToTextFragment = other.mInternalScrollToTextFragment;
@@ -633,6 +633,16 @@ public class LoadUrlParams {
      */
     public @Nullable AdditionalNavigationParams getAdditionalNavigationParams() {
         return mAdditionalNavigationParams;
+    }
+
+    /**
+     * Destroys and clears the additional navigation params associated with the load, if present.
+     */
+    public void destroyAdditionalNavigationParams() {
+        if (mAdditionalNavigationParams != null) {
+            mAdditionalNavigationParams.destroy();
+            mAdditionalNavigationParams = null;
+        }
     }
 
     public boolean isBaseUrlDataScheme() {

@@ -37,6 +37,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
@@ -257,6 +258,9 @@ class TabImpl implements Tab {
 
     /** URL load to be performed lazily when the Tab is next shown. */
     private @Nullable LoadUrlParams mPendingLoadParams;
+
+    /** URL load waiting for a {@link BeforeUnloadCallback} confirmation dialog to resolve. */
+    private @Nullable LoadUrlParams mBeforeUnloadPendingParams;
 
     /** True while a page load is in progress. */
     private boolean mIsLoading;
@@ -938,13 +942,26 @@ class TabImpl implements Tab {
             boolean shouldIntercept = isTabInBrowser() && !isDormant();
             if (shouldIntercept
                     && HistoryManagerUtils.maybeInterceptLoadUrl(this, params.getUrl())) {
+                params.destroyAdditionalNavigationParams();
                 return new LoadUrlResult(
                         TabLoadStatus.PAGE_LOAD_FAILED, /* navigationHandle= */ null);
             }
-            if (maybeHandleBeforeUnload(() -> loadUrl(params))) {
+            if (mBeforeUnloadPendingParams != null && mBeforeUnloadPendingParams != params) {
+                mBeforeUnloadPendingParams.destroyAdditionalNavigationParams();
+            }
+            mBeforeUnloadPendingParams = params;
+            if (maybeHandleBeforeUnload(
+                    () -> loadUrl(params),
+                    () -> {
+                        if (mBeforeUnloadPendingParams == params) {
+                            mBeforeUnloadPendingParams = null;
+                        }
+                        params.destroyAdditionalNavigationParams();
+                    })) {
                 return new LoadUrlResult(
                         TabLoadStatus.DEFAULT_PAGE_LOAD, /* navigationHandle= */ null);
             }
+            mBeforeUnloadPendingParams = null;
 
             // Call getPdfInfoAndUpdateLoadUrl(params) unconditionally so params.setIsPdf(true) is
             // set even when a previous native page commit is pending.
@@ -1001,12 +1018,16 @@ class TabImpl implements Tab {
     }
 
     private LoadUrlResult loadUrlInternal(LoadUrlParams params, GURL fixedUrl) {
-        if (mWebContents == null) return new LoadUrlResult(TabLoadStatus.PAGE_LOAD_FAILED, null);
-
-        if (!fixedUrl.isValid()) return new LoadUrlResult(TabLoadStatus.PAGE_LOAD_FAILED, null);
+        if (mWebContents == null || !fixedUrl.isValid()) {
+            params.destroyAdditionalNavigationParams();
+            return new LoadUrlResult(TabLoadStatus.PAGE_LOAD_FAILED, null);
+        }
 
         // Discard pending load params if they exist. At this point we are navigating to a new URL
         // programmatically and the pending load never occurred.
+        if (mPendingLoadParams != null && mPendingLoadParams != params) {
+            mPendingLoadParams.destroyAdditionalNavigationParams();
+        }
         mPendingLoadParams = null;
 
         // Record UMA "ShowHistory" here. That way it'll pick up both user
@@ -1018,6 +1039,7 @@ class TabImpl implements Tab {
         }
 
         if (TabImplJni.get().handleNonNavigationAboutURL(fixedUrl)) {
+            params.destroyAdditionalNavigationParams();
             return new LoadUrlResult(TabLoadStatus.DEFAULT_PAGE_LOAD, null);
         }
 
@@ -1082,6 +1104,7 @@ class TabImpl implements Tab {
             RecordHistogram.recordBooleanHistogram(
                     "Tabs.FreezeAndAppendPendingNavigationResult", updatedState != null);
             if (updatedState != null) {
+                params.destroyAdditionalNavigationParams();
                 mUrl = new GURL(updatedState.getVirtualUrlFromState());
             } else {
                 // If we failed to append the pending navigation, clobber with the new pending
@@ -1099,6 +1122,9 @@ class TabImpl implements Tab {
     }
 
     private void setPendingLoadParams(LoadUrlParams params) {
+        if (mPendingLoadParams != null && mPendingLoadParams != params) {
+            mPendingLoadParams.destroyAdditionalNavigationParams();
+        }
         mPendingLoadParams = params;
         mUrl = new GURL(params.getUrl());
     }
@@ -1285,7 +1311,7 @@ class TabImpl implements Tab {
                 && getWebContents().getNavigationController().canGoForward();
     }
 
-    private boolean maybeHandleBeforeUnload(Runnable proceedAction) {
+    private boolean maybeHandleBeforeUnload(Runnable proceedAction, Runnable cancelAction) {
         if (mBypassBeforeUnload || isDestroyed()) return false;
 
         BeforeUnloadCallback callback = getUserDataHost().getUserData(BeforeUnloadCallback.class);
@@ -1297,23 +1323,30 @@ class TabImpl implements Tab {
                         mBypassBeforeUnload = true;
                         proceedAction.run();
                         mBypassBeforeUnload = false;
+                    } else {
+                        cancelAction.run();
                     }
                 };
-        Runnable onCancel = () -> {};
-        return callback.handleBeforeUnload(onProceed, onCancel);
+        return callback.handleBeforeUnload(onProceed, cancelAction);
     }
 
     @Override
     public void goBack() {
         if (!canGoBack()) return;
-        if (maybeHandleBeforeUnload(this::goBack)) return;
+        if (maybeHandleBeforeUnload(
+                this::goBack, /* cancelAction= */ CallbackUtils.emptyRunnable())) {
+            return;
+        }
         assumeNonNull(getWebContents()).getNavigationController().goBack();
     }
 
     @Override
     public void goForward() {
         if (!canGoForward()) return;
-        if (maybeHandleBeforeUnload(this::goForward)) return;
+        if (maybeHandleBeforeUnload(
+                this::goForward, /* cancelAction= */ CallbackUtils.emptyRunnable())) {
+            return;
+        }
         assumeNonNull(getWebContents()).getNavigationController().goForward();
     }
 
@@ -1546,6 +1579,14 @@ class TabImpl implements Tab {
         mTabViewManager.destroy();
         mNativePageController.destroy();
         mWebContentsState = null;
+        if (mPendingLoadParams != null) {
+            mPendingLoadParams.destroyAdditionalNavigationParams();
+            mPendingLoadParams = null;
+        }
+        if (mBeforeUnloadPendingParams != null) {
+            mBeforeUnloadPendingParams.destroyAdditionalNavigationParams();
+            mBeforeUnloadPendingParams = null;
+        }
 
         if (mWindowAndroid != null) {
             mWindowAndroid.getOcclusionSupplier().removeObserver(mOcclusionCallback);
@@ -1648,6 +1689,9 @@ class TabImpl implements Tab {
                 assumeNonNull(mUrl);
                 setTitle(pendingTitle != null ? pendingTitle : mUrl.getSpec());
             } else {
+                if (mPendingLoadParams != null) {
+                    mPendingLoadParams.destroyAdditionalNavigationParams();
+                }
                 mPendingLoadParams = null;
             }
 

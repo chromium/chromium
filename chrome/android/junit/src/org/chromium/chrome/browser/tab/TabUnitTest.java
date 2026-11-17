@@ -27,6 +27,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -101,6 +102,7 @@ import org.chromium.components.tabs.DetachReason;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
+import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -1720,10 +1722,58 @@ public class TabUnitTest {
                 };
         mTab.getUserDataHost().setUserData(BeforeUnloadCallback.class, callback);
 
-        LoadUrlParams params = new LoadUrlParams("https://www.google.com");
+        LoadUrlParams params = spy(new LoadUrlParams("https://www.google.com"));
+        AdditionalNavigationParams additionalParams = mock(AdditionalNavigationParams.class);
+        params.setAdditionalNavigationParams(additionalParams);
         mTab.loadUrl(params);
 
         verify(mObserver, never()).onLoadUrl(any(), any(), any());
+        verify(additionalParams).destroy();
+
+        mTab.loadUrl(new LoadUrlParams("https://www.example.com"));
+        verify(params, times(1)).destroyAdditionalNavigationParams();
+    }
+
+    @Test
+    public void testLoadUrl_BeforeUnloadCallback_DestroyedWhilePending() {
+        BeforeUnloadCallback callback = (onProceed, onCancel) -> true;
+        mTab.getUserDataHost().setUserData(BeforeUnloadCallback.class, callback);
+
+        LoadUrlParams params = new LoadUrlParams("https://www.google.com");
+        AdditionalNavigationParams additionalParams = mock(AdditionalNavigationParams.class);
+        params.setAdditionalNavigationParams(additionalParams);
+        mTab.loadUrl(params);
+        verify(additionalParams, never()).destroy();
+
+        mTab.destroy();
+        verify(additionalParams).destroy();
+    }
+
+    @Test
+    public void testLoadUrl_NullWebContents_DestroysAdditionalNavigationParams() {
+        mTab.setNativePtrForTesting(1);
+        mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
+        LoadUrlParams params = new LoadUrlParams("https://www.google.com");
+        AdditionalNavigationParams additionalParams = mock(AdditionalNavigationParams.class);
+        params.setAdditionalNavigationParams(additionalParams);
+
+        mTab.loadUrl(params);
+
+        verify(additionalParams).destroy();
+    }
+
+    @Test
+    public void testDestroy_DestroysPendingLoadAdditionalNavigationParams() {
+        mTab.setWebContentsForTesting(mWebContents);
+        LoadUrlParams params = new LoadUrlParams("https://www.google.com");
+        AdditionalNavigationParams additionalParams = mock(AdditionalNavigationParams.class);
+        params.setAdditionalNavigationParams(additionalParams);
+        mTab.discardAndAppendPendingNavigation(params, /* title= */ null);
+        mTab.setWebContentsForTesting(null);
+        verify(additionalParams, never()).destroy();
+
+        mTab.destroy();
+        verify(additionalParams).destroy();
     }
 
     @Test

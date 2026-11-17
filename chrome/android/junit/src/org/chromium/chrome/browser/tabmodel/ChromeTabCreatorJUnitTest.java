@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -102,11 +103,13 @@ public class ChromeTabCreatorJUnitTest {
     @Test
     public void testCreateNewTab_NullTabModel() {
         // mTabModel is null by default.
+        LoadUrlParams loadUrlParams = new LoadUrlParams("about:blank");
+        AdditionalNavigationParams additionalParams = mock(AdditionalNavigationParams.class);
+        loadUrlParams.setAdditionalNavigationParams(additionalParams);
         assertNull(
                 mTabCreator.createNewTab(
-                        new LoadUrlParams("about:blank"),
-                        TabLaunchType.FROM_CHROME_UI,
-                        /* parent= */ null));
+                        loadUrlParams, TabLaunchType.FROM_CHROME_UI, /* parent= */ null));
+        verify(additionalParams).destroy();
     }
 
     @Test
@@ -114,11 +117,13 @@ public class ChromeTabCreatorJUnitTest {
         mTabCreator.setTabModel(new StubTabModel(/* isIncognito= */ true, /* profile= */ null));
         mTabCreator.setTabModelOrderController(mock(TabModelOrderController.class));
 
+        LoadUrlParams loadUrlParams = new LoadUrlParams("about:blank");
+        AdditionalNavigationParams additionalParams = mock(AdditionalNavigationParams.class);
+        loadUrlParams.setAdditionalNavigationParams(additionalParams);
         assertNull(
                 mTabCreator.createNewTab(
-                        new LoadUrlParams("about:blank"),
-                        TabLaunchType.FROM_CHROME_UI,
-                        /* parent= */ null));
+                        loadUrlParams, TabLaunchType.FROM_CHROME_UI, /* parent= */ null));
+        verify(additionalParams).destroy();
     }
 
     @Test
