@@ -819,13 +819,15 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
                  "SourceBuffer.";
         }
       }
+      CHECK(video_codec == VideoCodec::kAV2 || entry.extra_data.empty());
       video_config.Initialize(video_codec, video_codec_profile,
                               entry.alpha_mode, VideoColorSpace::REC709(),
                               CalculateRotation(track->header, moov_->header),
                               coded_size, visible_rect, natural_size,
-                              // No decoder-specific buffer needed for AVC;
-                              // SPS/PPS are embedded in the video stream
-                              EmptyExtraData(), scheme);
+                              // VideoSampleEntry::extra_data is only populated
+                              // for AV2 out-of-band config OBUs ('av2C') and is
+                              // empty for all other video codecs.
+                              entry.extra_data, scheme);
       DVLOG(3) << __func__ << " video_track_id=" << video_track_id
                << " is_encrypted=" << is_track_encrypted;
 

@@ -8,14 +8,19 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -33,9 +38,15 @@
 #include "media/base/test_helpers.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_spatial_format.h"
+#include "media/formats/mp4/box_constants.h"
 #include "media/formats/mp4/es_descriptor.h"
 #include "media/formats/mp4/fourccs.h"
+#include "media/formats/mp4/writable_box_definitions.h"
 #include "media/media_buildflags.h"
+#include "media/muxers/box_byte_stream.h"
+#include "media/muxers/mp4_fragment_box_writer.h"
+#include "media/muxers/mp4_movie_box_writer.h"
+#include "media/muxers/mp4_muxer_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,6 +68,135 @@ enum class Keyframeness {
 // Tells gtest how to print our Keyframeness enum values.
 std::ostream& operator<<(std::ostream& os, Keyframeness k) {
   return os << (k == Keyframeness::kKeyframe ? "kKeyframe" : "kNonKeyframe");
+}
+
+// Builds a minimal spec-compliant fragmented MP4 (ftyp + moov + moof + mdat)
+// with a single AV2 video track and two samples (one keyframe, one
+// non-keyframe) using the MP4 box writers.
+std::vector<uint8_t> BuildSyntheticAv2FragmentedMp4(
+    bool in_band,
+    base::span<const uint8_t> codec_config_payload,
+    base::span<const uint8_t> keyframe_sample,
+    base::span<const uint8_t> inter_sample) {
+  constexpr uint32_t kTimescale = 1000;
+  constexpr uint16_t kWidth = 368;
+  constexpr uint16_t kHeight = 656;
+  constexpr uint32_t kSampleDuration = 40;
+  constexpr uint32_t kTotalDuration = 2 * kSampleDuration;
+
+  std::vector<uint8_t> fmp4;
+  Mp4MuxerContext context(base::BindRepeating(
+      [](std::vector<uint8_t>* out, base::span<const uint8_t> data) {
+        out->insert(out->end(), data.begin(), data.end());
+      },
+      &fmp4));
+  context.SetVideoTrack({0, kTimescale});
+
+  writable_boxes::FileType ftyp(FOURCC_ISOM, 0x200);
+  ftyp.compatible_brands = {
+      FOURCC_ISOM,
+      FOURCC_ISO6,
+      static_cast<uint32_t>(in_band ? FOURCC_av2e : FOURCC_AV2E),
+  };
+  Mp4FileTypeBoxWriter(context, ftyp).WriteAndFlush();
+
+  writable_boxes::Movie moov;
+  moov.header.timescale = kTimescale;
+  moov.header.duration = base::Milliseconds(kTotalDuration);
+  moov.header.next_track_id = 2u;
+
+  writable_boxes::Track track(1u, /*is_audio=*/false);
+  track.header.flags =
+      static_cast<uint32_t>(writable_boxes::TrackHeaderFlags::kTrackEnabled) |
+      static_cast<uint32_t>(writable_boxes::TrackHeaderFlags::kTrackInMovie);
+  track.header.duration = base::Milliseconds(kTotalDuration);
+  track.header.natural_size = gfx::Size(kWidth, kHeight);
+  base::span(track.header.matrix).copy_from(kDisplayIdentityMatrix);
+
+  track.media.header.timescale = kTimescale;
+  track.media.header.duration = base::Milliseconds(kTotalDuration);
+  track.media.header.language = "und";
+  track.media.handler.name = "AV2 VideoHandler";
+  track.media.information.video_header.emplace();
+  track.media.information.data_information.data_reference.entries
+      .emplace_back();
+
+  writable_boxes::VisualSampleEntry vse(VideoCodec::kAV2);
+  vse.coded_size = gfx::Size(kWidth, kHeight);
+  vse.color_information.emplace(
+      VideoColorSpace(9, 16, 9, gfx::ColorSpace::RangeID::FULL));
+  writable_boxes::AV2CodecConfiguration av2_config;
+  av2_config.in_band = in_band;
+  av2_config.av2_decoder_configuration_data.assign(codec_config_payload.begin(),
+                                                   codec_config_payload.end());
+  vse.av2_decoder_configuration = std::move(av2_config);
+
+  track.media.information.sample_table.sample_description.entry_count = 1;
+  track.media.information.sample_table.sample_description.video_sample_entry =
+      std::move(vse);
+  moov.tracks.push_back(std::move(track));
+
+  writable_boxes::TrackExtends trex;
+  trex.track_id = 1u;
+  trex.default_sample_description_index = 1u;
+  trex.default_sample_duration = base::Milliseconds(kSampleDuration);
+  moov.extends.track_extends.push_back(std::move(trex));
+
+  Mp4MovieBoxWriter(context, moov).WriteAndFlush();
+
+  writable_boxes::MovieFragment moof(1u);
+  writable_boxes::TrackFragment traf;
+  traf.header.track_id = 1u;
+  traf.header.flags =
+      static_cast<uint32_t>(
+          writable_boxes::TrackFragmentHeaderFlags::kDefaultBaseIsMoof) |
+      static_cast<uint32_t>(writable_boxes::TrackFragmentHeaderFlags::
+                                kkDefaultSampleFlagsPresent);
+  traf.header.default_sample_flags =
+      static_cast<uint32_t>(
+          writable_boxes::FragmentSampleFlags::kSampleFlagIsNonSync) |
+      static_cast<uint32_t>(
+          writable_boxes::FragmentSampleFlags::kSampleFlagDependsYes);
+  traf.decode_time.track_id = 1u;
+  traf.decode_time.base_media_decode_time = base::Milliseconds(0);
+
+  traf.run.sample_count = 2u;
+  traf.run.flags =
+      static_cast<uint16_t>(
+          writable_boxes::TrackFragmentRunFlags::kDataOffsetPresent) |
+      static_cast<uint16_t>(
+          writable_boxes::TrackFragmentRunFlags::kFirstSampleFlagsPresent) |
+      static_cast<uint16_t>(
+          writable_boxes::TrackFragmentRunFlags::kSampleDurationPresent) |
+      static_cast<uint16_t>(
+          writable_boxes::TrackFragmentRunFlags::kSampleSizePresent);
+  traf.run.first_sample_flags = static_cast<uint32_t>(
+      writable_boxes::FragmentSampleFlags::kSampleFlagDependsNo);
+  const base::TimeTicks t0;
+  traf.run.sample_timestamps = {
+      t0,
+      t0 + base::Milliseconds(kSampleDuration),
+      t0 + base::Milliseconds(2 * kSampleDuration),
+  };
+  traf.run.sample_sizes = {
+      static_cast<uint32_t>(keyframe_sample.size()),
+      static_cast<uint32_t>(inter_sample.size()),
+  };
+  moof.track_fragments.push_back(std::move(traf));
+
+  writable_boxes::MediaData mdat;
+  std::vector<uint8_t> track_bytes;
+  track_bytes.insert(track_bytes.end(), keyframe_sample.begin(),
+                     keyframe_sample.end());
+  track_bytes.insert(track_bytes.end(), inter_sample.begin(),
+                     inter_sample.end());
+  mdat.track_data.push_back(std::move(track_bytes));
+
+  BoxByteStream fragment_stream;
+  Mp4MovieFragmentBoxWriter(context, moof).Write(fragment_stream);
+  Mp4MediaDataBoxWriter(context, mdat).WriteAndFlush(fragment_stream);
+
+  return fmp4;
 }
 
 }  // namespace
@@ -1308,6 +1448,99 @@ TEST_F(MP4StreamParserTest, ParseEquirectangularProjection) {
             VideoStereoMode::kTopBottomLeftFirst);
   EXPECT_EQ(video_decoder_config_.spatial_format().projection_type,
             VideoProjectionType::kEquirect360);
+}
+
+TEST_F(MP4StreamParserTest, DemuxingAv2OutOfBand) {
+  static constexpr auto kAv2CPayload = std::to_array<uint8_t>({
+      0x00, 0x00, 0x19, 0x04, 0x80, 0x1a, 0x00, 0x22, 0x6d, 0xf4,
+      0x78, 0x3c, 0xc0, 0x00, 0x00, 0x1c, 0xdd, 0xcd, 0x01, 0x35,
+      0x7e, 0x77, 0x7e, 0xa4, 0xdc, 0xca, 0xd0, 0x80,
+  });
+  static constexpr auto kKeyframeSample =
+      std::to_array<uint8_t>({0x02, 0x38, 0x80, 0x04, 0x18, 0xde, 0xad, 0xbe});
+  static constexpr auto kInterSample =
+      std::to_array<uint8_t>({0x04, 0x18, 0xca, 0xfe, 0xba});
+
+  const std::vector<uint8_t> fmp4 = BuildSyntheticAv2FragmentedMp4(
+      /*in_band=*/false, kAv2CPayload, kKeyframeSample, kInterSample);
+
+  auto params = GetDefaultInitParametersExpectations();
+  params.duration = base::Milliseconds(80);
+  params.liveness = StreamLiveness::kRecorded;
+  params.detected_audio_track_count = 0;
+  params.detected_video_track_count = 1;
+  InitializeParserWithInitParametersExpectations(params);
+  capture_video_buffers_ = true;
+
+#if BUILDFLAG(ENABLE_DAV2D_DECODER)
+  ASSERT_TRUE(AppendAllDataThenParseInPieces(fmp4, 128));
+  EXPECT_TRUE(configs_received_);
+  EXPECT_TRUE(video_decoder_config_.IsValidConfig());
+  EXPECT_EQ(video_decoder_config_.codec(), VideoCodec::kAV2);
+  EXPECT_EQ(video_decoder_config_.profile(), AV2PROFILE_MAIN_420_10_IP0);
+  EXPECT_EQ(video_decoder_config_.level(), 1u);
+  EXPECT_EQ(video_decoder_config_.coded_size(), gfx::Size(368, 656));
+  EXPECT_EQ(video_decoder_config_.natural_size(), gfx::Size(368, 656));
+  EXPECT_EQ(video_decoder_config_.color_space_info(),
+            VideoColorSpace(9, 16, 9, gfx::ColorSpace::RangeID::FULL));
+  EXPECT_EQ(video_decoder_config_.extra_data(),
+            std::vector<uint8_t>(kAv2CPayload.begin() + 2, kAv2CPayload.end()));
+
+  ASSERT_EQ(video_buffers_.size(), 2u);
+  EXPECT_TRUE(video_buffers_[0]->is_key_frame());
+  EXPECT_EQ(video_buffers_[0]->timestamp(), base::Milliseconds(0));
+  EXPECT_EQ(video_buffers_[0]->duration(), base::Milliseconds(40));
+  EXPECT_EQ(base::span(*video_buffers_[0]), base::span(kKeyframeSample));
+
+  EXPECT_FALSE(video_buffers_[1]->is_key_frame());
+  EXPECT_EQ(video_buffers_[1]->timestamp(), base::Milliseconds(40));
+  EXPECT_EQ(video_buffers_[1]->duration(), base::Milliseconds(40));
+  EXPECT_EQ(base::span(*video_buffers_[1]), base::span(kInterSample));
+#else
+  EXPECT_MEDIA_LOG(ErrorLog("Unsupported VisualSampleEntry type av2E"));
+  EXPECT_FALSE(AppendAllDataThenParseInPieces(fmp4, 128));
+#endif  // BUILDFLAG(ENABLE_DAV2D_DECODER)
+}
+
+TEST_F(MP4StreamParserTest, DemuxingAv2InBand) {
+  // InBandAV2CodecConfigurationBox ('av2c') with max_profile_idc = 3
+  // (Main_422_10_IP1) and max_level_idx = 10.
+  const uint16_t kPackedInBandConfig = (3u << 6) | (10u << 1);
+  static constexpr auto kKeyframeSample = std::to_array<uint8_t>(
+      {0x06, 0x04, 0x80, 0x1a, 0x00, 0x22, 0x80, 0x03, 0x18, 0xab, 0xcd});
+  static constexpr auto kInterSample =
+      std::to_array<uint8_t>({0x03, 0x18, 0x12, 0x34});
+
+  const std::vector<uint8_t> fmp4 = BuildSyntheticAv2FragmentedMp4(
+      /*in_band=*/true, base::U16ToBigEndian(kPackedInBandConfig),
+      kKeyframeSample, kInterSample);
+
+  auto params = GetDefaultInitParametersExpectations();
+  params.duration = base::Milliseconds(80);
+  params.liveness = StreamLiveness::kRecorded;
+  params.detected_audio_track_count = 0;
+  params.detected_video_track_count = 1;
+  InitializeParserWithInitParametersExpectations(params);
+  capture_video_buffers_ = true;
+
+#if BUILDFLAG(ENABLE_DAV2D_DECODER)
+  ASSERT_TRUE(AppendAllDataThenParseInPieces(fmp4, 128));
+  EXPECT_TRUE(configs_received_);
+  EXPECT_TRUE(video_decoder_config_.IsValidConfig());
+  EXPECT_EQ(video_decoder_config_.codec(), VideoCodec::kAV2);
+  EXPECT_EQ(video_decoder_config_.profile(), AV2PROFILE_MAIN_422_10_IP1);
+  EXPECT_EQ(video_decoder_config_.level(), 10u);
+  EXPECT_TRUE(video_decoder_config_.extra_data().empty());
+
+  ASSERT_EQ(video_buffers_.size(), 2u);
+  EXPECT_TRUE(video_buffers_[0]->is_key_frame());
+  EXPECT_EQ(base::span(*video_buffers_[0]), base::span(kKeyframeSample));
+  EXPECT_FALSE(video_buffers_[1]->is_key_frame());
+  EXPECT_EQ(base::span(*video_buffers_[1]), base::span(kInterSample));
+#else
+  EXPECT_MEDIA_LOG(ErrorLog("Unsupported VisualSampleEntry type av2e"));
+  EXPECT_FALSE(AppendAllDataThenParseInPieces(fmp4, 128));
+#endif  // BUILDFLAG(ENABLE_DAV2D_DECODER)
 }
 
 }  // namespace mp4

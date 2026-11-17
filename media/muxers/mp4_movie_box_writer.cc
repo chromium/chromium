@@ -55,22 +55,21 @@ void Mp4FileTypeBoxWriter::Write(BoxByteStream& writer) {
   writer.WriteU32(box_->major_brand);    // normal rate.
   writer.WriteU32(box_->minor_version);  // normal rate.
 
-  // It should include at least one of `avc1`, `avc3`, `av01`, `vp09`, `hvc1`,
-  // or `hev1`.
+  // It should include at least one of `avc1`, `avc3`, `av01`, `av2E`, `av2e`,
+  // `vp09`, `hvc1`, or `hev1`.
   CHECK_GE(box_->compatible_brands.size(), 1u);
   CHECK(box_->compatible_brands.end() !=
-        std::find_if(box_->compatible_brands.begin(),
-                     box_->compatible_brands.end(), [](const auto type) {
-                       return type == mp4::FOURCC_AVC1 ||
-                              type == mp4::FOURCC_AVC3 ||
-                              type == mp4::FOURCC_AV01 ||
-                              type == mp4::FOURCC_VP09
+        std::find_if(
+            box_->compatible_brands.begin(), box_->compatible_brands.end(),
+            [](const auto type) {
+              return type == mp4::FOURCC_AVC1 || type == mp4::FOURCC_AVC3 ||
+                     type == mp4::FOURCC_AV01 || type == mp4::FOURCC_AV2E ||
+                     type == mp4::FOURCC_av2e || type == mp4::FOURCC_VP09
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-                              || type == mp4::FOURCC_HVC1 ||
-                              type == mp4::FOURCC_HEV1
+                     || type == mp4::FOURCC_HVC1 || type == mp4::FOURCC_HEV1
 #endif
-                           ;
-                     }));
+                  ;
+            }));
 
   for (const uint32_t& brand : box_->compatible_brands) {
     writer.WriteU32(brand);
@@ -706,6 +705,11 @@ Mp4MovieVisualSampleEntryBoxWriter::Mp4MovieVisualSampleEntryBoxWriter(
       AddChildBox(std::make_unique<Mp4MovieAV1CodecConfigurationBoxWriter>(
           context, box_->av1_decoder_configuration.value()));
       break;
+    case VideoCodec::kAV2:
+      CHECK(box_->av2_decoder_configuration.has_value());
+      AddChildBox(std::make_unique<Mp4MovieAV2CodecConfigurationBoxWriter>(
+          context, box_->av2_decoder_configuration.value()));
+      break;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     case VideoCodec::kH264:
       CHECK(box_->avc_decoder_configuration.has_value());
@@ -742,6 +746,11 @@ void Mp4MovieVisualSampleEntryBoxWriter::Write(BoxByteStream& writer) {
       break;
     case VideoCodec::kAV1:
       writer.StartBox(mp4::FOURCC_AV01);
+      break;
+    case VideoCodec::kAV2:
+      writer.StartBox(box_->av2_decoder_configuration->in_band
+                          ? mp4::FOURCC_av2e
+                          : mp4::FOURCC_AV2E);
       break;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     case VideoCodec::kH264:
@@ -1025,7 +1034,7 @@ void Mp4MovieVPCodecConfigurationBoxWriter::Write(BoxByteStream& writer) {
   writer.EndBox();
 }
 
-// Mp4MovieAV1CodecConfigurationBoxWriter (`vpcC`) class.
+// Mp4MovieAV1CodecConfigurationBoxWriter (`av1C`) class.
 Mp4MovieAV1CodecConfigurationBoxWriter::Mp4MovieAV1CodecConfigurationBoxWriter(
     const Mp4MuxerContext& context,
     const mp4::writable_boxes::AV1CodecConfiguration& box)
@@ -1041,6 +1050,25 @@ void Mp4MovieAV1CodecConfigurationBoxWriter::Write(BoxByteStream& writer) {
 
   writer.StartBox(mp4::FOURCC_AV1C);
   writer.WriteBytes(box_->av1_decoder_configuration_data);
+  writer.EndBox();
+}
+
+// Mp4MovieAV2CodecConfigurationBoxWriter (`av2C` or `av2c`) class.
+Mp4MovieAV2CodecConfigurationBoxWriter::Mp4MovieAV2CodecConfigurationBoxWriter(
+    const Mp4MuxerContext& context,
+    const mp4::writable_boxes::AV2CodecConfiguration& box)
+    : Mp4BoxWriter(context), box_(box) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+Mp4MovieAV2CodecConfigurationBoxWriter::
+    ~Mp4MovieAV2CodecConfigurationBoxWriter() = default;
+
+void Mp4MovieAV2CodecConfigurationBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartBox(box_->in_band ? mp4::FOURCC_av2c : mp4::FOURCC_AV2C);
+  writer.WriteBytes(box_->av2_decoder_configuration_data);
   writer.EndBox();
 }
 

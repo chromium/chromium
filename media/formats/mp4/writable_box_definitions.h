@@ -155,6 +155,16 @@ struct MEDIA_EXPORT AV1CodecConfiguration : FullBox {
   std::vector<uint8_t> av1_decoder_configuration_data;
 };
 
+// AV2 DecoderConfiguration Record (`av2C` or `av2c`) box.
+struct MEDIA_EXPORT AV2CodecConfiguration : Box {
+  AV2CodecConfiguration();
+  ~AV2CodecConfiguration();
+  AV2CodecConfiguration(const AV2CodecConfiguration&);
+  AV2CodecConfiguration& operator=(const AV2CodecConfiguration&);
+  std::vector<uint8_t> av2_decoder_configuration_data;
+  bool in_band = false;
+};
+
 struct MEDIA_EXPORT ColorInformation : Box {
   explicit ColorInformation(VideoColorSpace video_color_space);
   ~ColorInformation();
@@ -190,6 +200,7 @@ struct MEDIA_EXPORT VisualSampleEntry : Box {
 #endif
   std::optional<VPCodecConfiguration> vp_decoder_configuration;
   std::optional<AV1CodecConfiguration> av1_decoder_configuration;
+  std::optional<AV2CodecConfiguration> av2_decoder_configuration;
 
   PixelAspectRatioBox pixel_aspect_ratio;
   BitRate bit_rate;

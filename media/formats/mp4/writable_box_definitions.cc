@@ -124,4 +124,11 @@ AV1CodecConfiguration::AV1CodecConfiguration(const AV1CodecConfiguration&) =
 AV1CodecConfiguration& AV1CodecConfiguration::operator=(
     const AV1CodecConfiguration&) = default;
 
+AV2CodecConfiguration::AV2CodecConfiguration() = default;
+AV2CodecConfiguration::~AV2CodecConfiguration() = default;
+AV2CodecConfiguration::AV2CodecConfiguration(const AV2CodecConfiguration&) =
+    default;
+AV2CodecConfiguration& AV2CodecConfiguration::operator=(
+    const AV2CodecConfiguration&) = default;
+
 }  // namespace media::mp4::writable_boxes
