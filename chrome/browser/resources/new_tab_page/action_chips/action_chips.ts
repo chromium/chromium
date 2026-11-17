@@ -87,6 +87,11 @@ export class ActionChipsElement extends CrLitElement {
         reflect: true,
         attribute: 'small-chips-enabled',
       },
+      uncappedWidthEnabled_: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'uncapped-width-enabled',
+      },
     };
   }
 
@@ -99,6 +104,8 @@ export class ActionChipsElement extends CrLitElement {
       loadTimeData.getBoolean('ntpNextDisablementContextMenuEnabled');
   protected accessor smallChipsEnabled_: boolean =
       loadTimeData.getBoolean('ntpSmallActionChipsEnabled');
+  protected accessor uncappedWidthEnabled_: boolean =
+      loadTimeData.getBoolean('ntpSmallActionChipsUncappedWidthEnabled');
   private webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 

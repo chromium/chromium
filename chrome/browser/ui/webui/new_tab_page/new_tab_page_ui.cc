@@ -823,6 +823,10 @@ base::DictValue NewTabPageUI::GetLoadTimeData(
   dict.Set(
       "ntpSmallActionChipsEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpScaledActionChipsSmall));
+  dict.Set(
+      "ntpSmallActionChipsUncappedWidthEnabled",
+      base::FeatureList::IsEnabled(
+          ntp_features::kNtpScaledActionChipsUncappedWidth));
 
   // User education browser promos.
   int browser_promo_limit = 0;
