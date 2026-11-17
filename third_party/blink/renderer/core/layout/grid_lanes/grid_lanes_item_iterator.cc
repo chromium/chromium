@@ -206,6 +206,7 @@ GridLanesItemIterator::Entry GridLanesItemIterator::NextEntry() {
     if (next_unstarted_item_) {
       current_lane_idx = grid_lane_idx_;
       is_last_item_in_lane =
+          iteration_mode_ == kFragmentation &&
           IsLastItemInLane(current_lane_idx, grid_lanes_item_index_path_);
       next_unstarted_item_ = FindNextItem();
     }
@@ -219,8 +220,8 @@ GridLanesItemData* GridLanesItemIterator::FindNextItem(
     const BlockBreakToken* item_break_token) {
   while (grid_lane_idx_ < grid_lanes_.size()) {
     const GridLaneData& lane_data = grid_lanes_[grid_lane_idx_];
-    if (iteration_mode_ == kStackingAxisReadingFlow ||
-        lane_data.has_unfinished_items || item_break_token) {
+    if (iteration_mode_ == kReadingFlow || lane_data.has_unfinished_items ||
+        item_break_token) {
       while (!grid_lanes_item_index_path_.empty()) {
         const ItemIndexPath item_index_path = grid_lanes_item_index_path_;
         GridLanesItemData* item_data =

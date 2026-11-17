@@ -18,7 +18,7 @@ class BlockBreakToken;
 // A utility class for grid lanes layout which given a list of grid lanes and a
 // break token will iterate through unfinished grid lanes items.
 //
-// `NextItem()` processes items in one column at a time, with spanners being an
+// `NextEntry()` processes items in one column at a time, with spanners being an
 // exception to the rule. When a spanner is hit, all items before it in each
 // lane it spans must be processed before the spanner itself.
 //
@@ -30,7 +30,7 @@ class BlockBreakToken;
 // In all cases, though child break tokens are processed first, in break token
 // order. The iterator then resumes unstarted items from those positions onward.
 //
-// For reading-flow, `kStackingAxisReadingFlow` requires no break token and
+// For reading-flow, `kReadingFlow` requires no break token and
 // processes each lane fully before moving to the next, without deferring
 // spanners.
 //
@@ -47,7 +47,7 @@ class CORE_EXPORT GridLanesItemIterator {
 
   enum IterationMode {
     kFragmentation,
-    kStackingAxisReadingFlow,
+    kReadingFlow,
   };
 
   GridLanesItemIterator(const GridLanesDataVector& grid_lanes,
@@ -164,6 +164,9 @@ struct GridLanesItemIterator::Entry {
 
   GridLanesItemData* grid_lanes_item = nullptr;
   wtf_size_t grid_lane_idx = kNotFound;
+  // Currently only computed in IterationMode::kFragmentation mode
+  // to avoid unnecessary work. If it is needed in other modes it
+  // can be easily enabled there as well.
   bool is_last_item_in_lane = false;
   const BlockBreakToken* token = nullptr;
 

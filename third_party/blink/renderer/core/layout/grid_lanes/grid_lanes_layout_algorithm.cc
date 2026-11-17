@@ -28,6 +28,22 @@ namespace blink {
 
 namespace {
 
+struct ReadingFlowItem {
+  DISALLOW_NEW();
+
+ public:
+  void Trace(Visitor* visitor) const { visitor->Trace(item); }
+
+  Member<GridItemData> item;
+  LayoutUnit end_offset;
+  LayoutUnit stacking_size;
+};
+
+struct ReadingLane {
+  wtf_size_t next_item_idx = 0;
+  wtf_size_t end_idx = 0;
+};
+
 LayoutUnit StackingAxisGap(const ComputedStyle& style,
                            LogicalSize percentage_resolution_size) {
   const GridTrackSizingDirection grid_axis_direction =
@@ -460,11 +476,12 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutInternal() {
           ResolveFitToleranceForGridLanes(style, grid_lanes_available_size_),
           grid_items->HasStackingAxisAlignment(), has_main_gap_decorations);
 
-      const bool is_stacking_axis_reading_flow =
-          style.ReadingFlow() == EReadingFlow::kGridLanesTrack;
+      const bool has_visual_reading_flow =
+          style.ReadingFlow() == EReadingFlow::kGridLanesTrack ||
+          style.ReadingFlow() == EReadingFlow::kGridLanesFlow;
       GridLanesDataVector* out_grid_lanes =
           (InvolvedInBlockFragmentation(container_builder_) ||
-           gap_accumulator || is_stacking_axis_reading_flow)
+           gap_accumulator || has_visual_reading_flow)
               ? &grid_lanes
               : nullptr;
       GridLanesGapGeometryState* out_gap_geometry_state = nullptr;
@@ -653,9 +670,9 @@ void GridLanesLayoutAlgorithm::SetReadingFlowNodes(
   const EReadingFlow reading_flow = style.ReadingFlow();
   const bool is_for_columns =
       style.GridLanesTrackSizingDirection() == kForColumns;
-  // TODO(celestepan): Handle reading-flow: grid-lanes-flow across the tracks.
   if (reading_flow != EReadingFlow::kGridLanesOrder &&
-      reading_flow != EReadingFlow::kGridLanesTrack) {
+      reading_flow != EReadingFlow::kGridLanesTrack &&
+      reading_flow != EReadingFlow::kGridLanesFlow) {
     return;
   }
 
@@ -673,22 +690,136 @@ void GridLanesLayoutAlgorithm::SetReadingFlowNodes(
       add_item_to_reading_flow_nodes(item);
     }
   } else {
-    // TODO(celestepan): Support reading-flow that follows flow order rather
-    // than visual order.
-    GridLanesItemIterator item_iterator(
-        grid_lanes, /*break_token=*/nullptr,
-        style.IsReverseGridLanesFillDirection()
-            ? GridLanesItemIterator::kPreorder
-            : GridLanesItemIterator::kPostorder,
-        GridLanesItemIterator::kStackingAxisReadingFlow, is_for_columns);
-    for (auto entry = item_iterator.NextEntry(); !entry.IsNull();
-         entry = item_iterator.NextEntry()) {
-      if (!entry.grid_lanes_item) {
-        // This is an out-of-flow positioned element that's resumed after a
-        // break.
-        continue;
+    GridLanesItemIterator item_iterator(grid_lanes, /*break_token=*/nullptr,
+                                        style.IsReverseGridLanesFillDirection()
+                                            ? GridLanesItemIterator::kPreorder
+                                            : GridLanesItemIterator::kPostorder,
+                                        GridLanesItemIterator::kReadingFlow,
+                                        is_for_columns);
+    if (reading_flow == EReadingFlow::kGridLanesTrack) {
+      for (auto entry = item_iterator.NextEntry(); !entry.IsNull();
+           entry = item_iterator.NextEntry()) {
+        if (!entry.grid_lanes_item) {
+          // This is an out-of-flow positioned element that's resumed after a
+          // break.
+          continue;
+        }
+        add_item_to_reading_flow_nodes(*entry.grid_lanes_item->item);
       }
-      add_item_to_reading_flow_nodes(*entry.grid_lanes_item->item);
+    } else {
+      // A list of all the items (in kGridLanesTrack order), along with the
+      // additional information that will be needed to determine their
+      // kGridLanesFlow reading flow order.
+      HeapVector<ReadingFlowItem> items;
+      items.ReserveInitialCapacity(grid_items.Size());
+
+      // A map from lane index to the next item to process and the exclusive end
+      // of that lane's items.
+      Vector<ReadingLane> reading_lanes(grid_lanes.size());
+
+      // An ordered list of all the lanes (identified by index) that have items
+      // not yet added to the reading flow.
+      Vector<wtf_size_t> active_lanes;
+      active_lanes.ReserveInitialCapacity(grid_lanes.size());
+
+      // Run through all the items in kGridLanesTrack order, populating all of
+      // the above variables.
+      for (auto entry = item_iterator.NextEntry(); !entry.IsNull();
+           entry = item_iterator.NextEntry()) {
+        if (!entry.grid_lanes_item) {
+          // Token-only entries are resumed out-of-flow descendants.
+          continue;
+        }
+        const wtf_size_t lane_idx = entry.grid_lane_idx;
+        auto& reading_lane = reading_lanes[lane_idx];
+        // If this entry will be the first item in its lane (i.e. the lane has
+        // no 'end' yet), record the planned item index as the 'next' item in
+        // the lane, and mark the lane as active.
+        if (reading_lane.end_idx == 0) {
+          reading_lane.next_item_idx = items.size();
+          active_lanes.push_back(lane_idx);
+        }
+
+        // Fetch the relevant placement data for this item - namely, using the
+        // logical stacking axis (block for columns, inline for rows), the
+        // stacking size of the item (for later determining overlap percentages)
+        // and the end offset of the item (for later determining reading flow
+        // region divisions).
+        const auto& data = *entry.grid_lanes_item->grid_lanes_placement_data;
+        LogicalOffset offset;
+        LayoutUnit stacking_size;
+        if (GetConstraintSpace().HasBlockFragmentation()) {
+          // The collection pass retains geometry before fragmentation, so we
+          // can use that here.
+          offset = data.placement_data.offset;
+          stacking_size = data.stacking_axis_length;
+        } else {
+          // Use the final child geometry, including deferred fill-reverse and
+          // stacking-axis self-alignment.
+          const auto& child =
+              container_builder_.Children()[data.builder_child_index];
+          offset = child.offset;
+          const LogicalBoxFragment fragment(
+              container_builder_.GetWritingDirection(),
+              To<PhysicalBoxFragment>(*child.fragment));
+          stacking_size =
+              is_for_columns ? fragment.BlockSize() : fragment.InlineSize();
+        }
+        const LayoutUnit start =
+            is_for_columns ? offset.block_offset : offset.inline_offset;
+        const LayoutUnit end = start + stacking_size;
+
+        items.push_back(
+            ReadingFlowItem{entry.grid_lanes_item->item, end, stacking_size});
+
+        // Mark the end of this lane assuming this was the last item in the
+        // lane. If there are more items in this lane, this value will be
+        // updated as they are reached.
+        reading_lane.end_idx = items.size();
+      }
+
+      while (!active_lanes.empty()) {
+        LayoutUnit region_end_offset = LayoutUnit::Min();
+        // Look at the next unhandled item in each lane and bump out the
+        // `region_end_offset` to the furthest one out. This establishes our
+        // reading region.
+        for (wtf_size_t lane_idx : active_lanes) {
+          const auto& reading_lane = reading_lanes[lane_idx];
+          region_end_offset = std::max(
+              region_end_offset, items[reading_lane.next_item_idx].end_offset);
+        }
+
+        // Go through each lane, add the first item, and continue adding
+        // additional items to the reading flow until we find one that extends
+        // more than 1/3 past the current reading region (or we reach the end of
+        // the lane). This is a provisional heuristic, pending resolution of
+        // https://github.com/w3c/csswg-drafts/issues/5675.
+        wtf_size_t active_lane_count = 0;
+        for (wtf_size_t lane_idx : active_lanes) {
+          auto& reading_lane = reading_lanes[lane_idx];
+          bool is_first = true;
+          for (auto& index = reading_lane.next_item_idx;
+               index < reading_lane.end_idx; ++index) {
+            if (!is_first) {
+              const auto& item = items[index];
+              const LayoutUnit overflow =
+                  (item.end_offset - region_end_offset).ClampNegativeToZero();
+              // Compare in raw units to keep the exact 1/3 boundary. A
+              // zero-sized item beyond region_end_offset also fails this test.
+              if (int64_t{overflow.RawValue()} * 3 >
+                  int64_t{item.stacking_size.RawValue()}) {
+                break;
+              }
+            }
+            add_item_to_reading_flow_nodes(*items[index].item);
+            is_first = false;
+          }
+          if (reading_lane.next_item_idx < reading_lane.end_idx) {
+            active_lanes[active_lane_count++] = lane_idx;
+          }
+        }
+        active_lanes.Shrink(active_lane_count);
+      }
     }
   }
   container_builder_.SetReadingFlowNodes(reading_flow_nodes);
@@ -1140,19 +1271,20 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
   }
   ApplyStackingAxisAlignment(running_positions, out_grid_lanes);
 
-  const bool is_stacking_axis_reading_flow =
-      style.ReadingFlow() == EReadingFlow::kGridLanesTrack;
+  const bool has_visual_reading_flow =
+      style.ReadingFlow() == EReadingFlow::kGridLanesTrack ||
+      style.ReadingFlow() == EReadingFlow::kGridLanesFlow;
 
   // Gap-decoration data requires processing items in stacking order to ensure
   // proper decoration assignment, and column fragmentation requires processing
   // items in the correct order in the block (stacking) axis. If the stacking
   // order is reversed with 'fill-reverse', reverse the stored item order in
-  // `out_grid_lanes`, as well. Stacking-axis reading-flow also needs reversed
+  // `out_grid_lanes`, as well. Visual reading-flow also needs reversed
   // lane data for preorder traversal.
   if (out_grid_lanes && is_fill_reverse &&
       (out_gap_geometry_state ||
        (is_fragmentation_collection && is_for_columns) ||
-       is_stacking_axis_reading_flow)) {
+       has_visual_reading_flow)) {
     ReverseGridLanesItemOrder(*out_grid_lanes);
   }
 }
@@ -1906,6 +2038,8 @@ void GridLanesLayoutAlgorithm::ApplyStackingAxisAlignment(
         grid_lanes_placement_data->stretch_size_in_stacking_axis =
             candidate->original_stacking_size +
             candidate->AvailableAlignmentSpace();
+        grid_lanes_placement_data->stacking_axis_length =
+            *grid_lanes_placement_data->stretch_size_in_stacking_axis;
 
         // For columns, the stacking axis is the block axis, so the stretched
         // size is the item's total block size before fragmentation.
@@ -2542,6 +2676,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
         // fill-reverse and content alignment later.
         grid_lanes_placement_data->forward_stacking_start =
             start_offset_in_stacking_axis;
+        grid_lanes_placement_data->stacking_axis_length = stacking_size;
 
         if (is_fragmentation_collection) {
           grid_lanes_placement_data->total_block_size = fragment.BlockSize();
@@ -4460,3 +4595,4 @@ LogicalRect GridLanesLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
     blink::GridLanesFragmentationItem)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::ReadingFlowItem)

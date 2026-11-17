@@ -1877,6 +1877,13 @@
       status: "stable",
     },
     {
+      // Cross-track reading order for `reading-flow: grid-lanes-flow`.
+      // https://drafts.csswg.org/css-display-4/#reading-flow
+      name: "CSSGridLanesCrossTrackReadingFlow",
+      status: "experimental",
+      depends_on: ["CSSGridLanesLayout"],
+    },
+    {
       name: "CSSGridLanesLayout",
       status: "experimental",
       public: true,

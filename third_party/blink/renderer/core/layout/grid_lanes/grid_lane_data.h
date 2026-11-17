@@ -35,6 +35,11 @@ struct GridLanesItemPlacementData
   // child's consumed block size to detect expansion without mutating placement.
   LayoutUnit total_block_size;
 
+  // Border-box extent in the stacking axis before fragmentation. In column
+  // grid-lanes this will match total_block_size, but in row grid-lanes it may
+  // differ.
+  LayoutUnit stacking_axis_length;
+
   // Total border-box size for stacking-axis stretch during fragmentation.
   // This size may expand as a result of fragmentation break rules. An unset
   // value means no stretch, unlike a fixed size of zero.

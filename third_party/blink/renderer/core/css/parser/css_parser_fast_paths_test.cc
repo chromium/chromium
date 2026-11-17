@@ -169,8 +169,7 @@ TEST(CSSParserFastPathsTest, ParseReadingFlow) {
                                             keyword, context));
   }
 
-  for (const char* keyword :
-       {"grid-lanes-flow", "grid-lanes-track", "grid-lanes-order"}) {
+  for (const char* keyword : {"grid-lanes-track", "grid-lanes-order"}) {
     SCOPED_TRACE(keyword);
     // 'grid-lanes' feature disabled
     {
@@ -187,6 +186,40 @@ TEST(CSSParserFastPathsTest, ParseReadingFlow) {
           CSSPropertyID::kReadingFlow, keyword, context));
       EXPECT_TRUE(CSSParser::ParseSingleValue(CSSPropertyID::kReadingFlow,
                                               keyword, context));
+    }
+  }
+
+  {
+    const char* keyword = "grid-lanes-flow";
+    // 'grid-lanes' disabled, 'grid-lanes-cross-track-reading-flow' enabled
+    {
+      ScopedCSSGridLanesLayoutForTest disabled(false);
+      ScopedCSSGridLanesCrossTrackReadingFlowForTest scoped_cross_track(true);
+      EXPECT_FALSE(CSSParserFastPaths::MaybeParseValue(
+          CSSPropertyID::kReadingFlow, keyword, context));
+      EXPECT_FALSE(CSSParser::ParseSingleValue(CSSPropertyID::kReadingFlow,
+                                               keyword, context));
+    }
+    // 'grid-lanes' feature enabled
+    {
+      ScopedCSSGridLanesLayoutForTest enabled(true);
+      // 'grid-lanes-cross-track-reading-flow' enabled
+      {
+        ScopedCSSGridLanesCrossTrackReadingFlowForTest scoped_cross_track(true);
+        EXPECT_TRUE(CSSParserFastPaths::MaybeParseValue(
+            CSSPropertyID::kReadingFlow, keyword, context));
+        EXPECT_TRUE(CSSParser::ParseSingleValue(CSSPropertyID::kReadingFlow,
+                                                keyword, context));
+      }
+      // 'grid-lanes-cross-track-reading-flow' disabled
+      {
+        ScopedCSSGridLanesCrossTrackReadingFlowForTest scoped_cross_track(
+            false);
+        EXPECT_FALSE(CSSParserFastPaths::MaybeParseValue(
+            CSSPropertyID::kReadingFlow, keyword, context));
+        EXPECT_FALSE(CSSParser::ParseSingleValue(CSSPropertyID::kReadingFlow,
+                                                 keyword, context));
+      }
     }
   }
 }

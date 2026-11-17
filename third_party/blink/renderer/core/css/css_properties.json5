@@ -5515,9 +5515,8 @@
       field_template: "keyword",
       keywords: ["normal", "flex-visual", "flex-flow", "grid-rows", "grid-columns", "grid-order", "source-order"],
       runtime_enabled_keywords: {
-        CSSGridLanesLayout: [
-          "grid-lanes-flow", "grid-lanes-track", "grid-lanes-order"
-        ],
+        CSSGridLanesCrossTrackReadingFlow: ["grid-lanes-flow"],
+        CSSGridLanesLayout: ["grid-lanes-track", "grid-lanes-order"],
       },
       typedom_types: ["Keyword"],
       default_value: "normal",
