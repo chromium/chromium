@@ -1471,20 +1471,19 @@ class FirstRunParameterizedInteractiveUiTest
   // Custom url tracker. This is used for tracking navigation before proceeding
   // to the history sync optin screen. The navigation might go through a spinner
   // screen which is provided today by a different url from the `target_url`.
+  // The URL is read from the browser side rather than by evaluating JS in the
+  // page: a script still in flight when a navigation replaces the frame never
+  // replies, which could crash even when it is set to
+  // continue across navigations (see crbug.com/579147532).
   // TODO(crbug.com/445926827): Once the spinners are incorporated in the
   // history sync dialog, we can use `WaitForWebContentsNavigation`.
-  InteractiveBrowserTestApi::StateChange PageWithUrl(
-      const std::string& target_url) {
-    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kStateChange);
-    InteractiveBrowserTestApi::StateChange expected_url_change;
-    expected_url_change.type =
-        InteractiveBrowserTestApi::StateChange::Type::kConditionTrue;
-    expected_url_change.event = kStateChange;
-    expected_url_change.test_function =
-        "() => window.location.href === '" + target_url + "'";
-    // Important for not stopping the tracking through redirections.
-    expected_url_change.continue_across_navigation = true;
-    return expected_url_change;
+  auto WaitForPageWithUrl(const GURL& target_url) {
+    return PollUntil(
+        [this, target_url]() {
+          content::WebContents* const contents = web_contents();
+          return contents && contents->GetLastCommittedURL() == target_url;
+        },
+        "WaitForPageWithUrl( " + target_url.spec() + " )");
   }
 
  private:
@@ -1879,8 +1878,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTestWithSyncService,
   RunTestSequenceInContext(
       views::ElementTrackerViews::GetContextForView(view()),
       // Web Contents already instrumented in the previous sequence.
-      WaitForStateChange(kWebContentsId, PageWithUrl(history_page_url.spec())),
-      Do([&] {
+      WaitForPageWithUrl(history_page_url), Do([&] {
         histogram_tester().ExpectUniqueSample(
             "Signin.HistorySyncOptIn.Started",
             signin_metrics::AccessPoint::kForYouFre, 1);
@@ -2018,7 +2016,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTestWithSyncService,
   RunTestSequenceInContext(
       views::ElementTrackerViews::GetContextForView(view()),
       // Web Contents already instrumented in the previous sequence.
-      WaitForStateChange(kWebContentsId, PageWithUrl(history_page_url.spec())),
+      WaitForPageWithUrl(history_page_url),
       // Button is visible once capabilities are loaded or defaulted.
       WaitForButtonVisible(kWebContentsId, GetDontSyncHistoryButtonQuery()),
 
