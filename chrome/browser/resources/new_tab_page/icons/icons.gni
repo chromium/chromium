@@ -11,4 +11,5 @@ ntp_icons_files = [
   "link_old.svg",
   "mic.svg",
   "mic_old.svg",
+  "side_nav.svg",
 ]

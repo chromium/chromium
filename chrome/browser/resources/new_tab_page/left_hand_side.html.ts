@@ -19,7 +19,9 @@ export function getHtml(this: LeftHandSideElement) {
 ${this.isExpanded_ ? html`
   <ntp-lhs-ghost-loader id="ghostLoader" role="region"
       aria-label="${this.ghostLoaderLabel_}" aria-busy="true"
-      ?is-dark="${!!this.isDark}" style="width: ${this.expandedWidth_}px;">
+      ?inert="${this.view_ !== LhsView.GHOST_LOADER}"
+      ?is-dark="${!!this.isDark}" style="width: ${this.expandedWidth_}px;"
+      @close-rail="${this.onGhostLoaderCloseRail_}">
   </ntp-lhs-ghost-loader>
 ` : ''}
 ${this.hasPreloaded_ ? html`

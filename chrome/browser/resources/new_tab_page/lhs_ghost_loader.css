@@ -79,16 +79,45 @@
 
 /* Search: threads/threads_header.scss &ActionButton, &CloseMenuButton and
  * &ScootedCloseButton */
-.ghost-close-button {
-  display: flex;
-  align-items: center;
-  block-size: 48px;
-  inline-size: 40px;
-  justify-content: center;
+#closeButton {
+  /* NTP: icon and colors match the folded rail's buttons (see
+   * cr_components/composebox/threads_rail.css). */
+  --cr-icon-button-fill-color:
+      var(--color-new-tab-page-threads-rail-primary-font);
+  --cr-icon-button-hover-background-color:
+      var(--color-new-tab-page-threads-rail-hover-background);
+  --cr-icon-button-icon-size: 22px;
+  --cr-icon-button-size: 40px;
+  --cr-icon-image: url(icons/side_nav.svg);
+  border-radius: 12px;
+  margin: 0;
   top: 0;
   position: absolute;
-  margin-block-start: 26px;
+  margin-block-start: 30px;
   inset-inline: auto 12px;
+}
+
+/* NTP: matches the folded rail's tooltips (see
+ * cr_components/composebox/threads_rail.css). */
+cr-tooltip {
+  --paper-tooltip-duration-in: 150ms;
+  --paper-tooltip-duration-out: 150ms;
+  --paper-tooltip-opacity: 1;
+}
+
+cr-tooltip::part(tooltip) {
+  align-items: center;
+  border-radius: 4px;
+  box-shadow: var(--cr-elevation-2);
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 400;
+  gap: 8px;
+  justify-content: center;
+  line-height: 16px;
+  min-width: 0;
+  padding: 2px 6px;
+  white-space: nowrap;
 }
 
 /* Search: lhspanel/lhs_panel.scss &AiryButtonsGroup */

@@ -9,7 +9,7 @@ import 'chrome://new-tab-page/lazy_load.js';
 import type {IframeElement, ThreadsRailElement} from 'chrome://new-tab-page/lazy_load.js';
 import {LhsClientAction} from 'chrome://new-tab-page/lazy_load.js';
 import type {LeftHandSideElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater, NtpLhsMessageType, ThreadsRailExpandedAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater, NtpLhsMessageType, ThreadsRailExpandedAction, TooltipPosition, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
@@ -66,6 +66,9 @@ suite('NewTabPageLeftHandSideTest', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    // Like new_tab_page.html, so that cr-tooltip's offsetParent (body) aligns
+    // with the initial containing block at x = 0.
+    document.body.style.margin = '0';
     // So that width and fade changes apply immediately instead of
     // transitioning.
     document.documentElement.style.setProperty('--cr-animations-disabled', '1');
@@ -81,6 +84,7 @@ suite('NewTabPageLeftHandSideTest', () => {
   });
 
   teardown(() => {
+    document.body.style.margin = '';
     document.documentElement.style.removeProperty('--cr-animations-disabled');
     document.documentElement.dir = '';
   });
@@ -676,17 +680,42 @@ suite('NewTabPageLeftHandSideTest', () => {
         assertEquals('261px', ghostLoader.style.width);
         // The ghost loader exposes a named, busy region to screen readers,
         // while its decorative placeholders stay hidden from the a11y tree.
+        // Only the close button is exposed.
         assertEquals('region', ghostLoader.getAttribute('role'));
         assertEquals('true', ghostLoader.getAttribute('aria-busy'));
         assertEquals(
             loadTimeData.getString('aimThreadsHistoryLabel'),
             ghostLoader.getAttribute('aria-label'));
         assertFalse(ghostLoader.hasAttribute('aria-hidden'));
+        assertFalse(ghostLoader.inert);
         assertTrue(!!ghostLoader.shadowRoot);
-        assertEquals(3, ghostLoader.shadowRoot.children.length);
-        for (const child of ghostLoader.shadowRoot.children) {
-          assertEquals('true', child.getAttribute('aria-hidden'));
+        const placeholders = ghostLoader.shadowRoot.querySelectorAll(
+            '.ghost-logo, .ghost-actions, .ghost-threads, .ghost-footer');
+        assertEquals(4, placeholders.length);
+        for (const placeholder of placeholders) {
+          assertEquals('true', placeholder.getAttribute('aria-hidden'));
         }
+        const closeButton =
+            ghostLoader.shadowRoot.querySelector<HTMLElement>('#closeButton');
+        assertTrue(!!closeButton);
+        assertFalse(!!closeButton.closest('[aria-hidden]'));
+        assertEquals(
+            loadTimeData.getString('aimThreadsCloseSidebarLabel'),
+            closeButton.getAttribute('aria-label'));
+        const closeTooltip =
+            ghostLoader.shadowRoot.querySelector<CrTooltipElement>(
+                '#closeTooltip');
+        assertTrue(!!closeTooltip);
+        assertEquals('closeButton', closeTooltip.for);
+        assertEquals(TooltipPosition.RIGHT, closeTooltip.position);
+        assertEquals(
+            loadTimeData.getString('aimThreadsCloseSidebarLabel'),
+            closeTooltip.textContent.trim());
+        closeTooltip.show();
+        assertNear(
+            closeButton.getBoundingClientRect().right + 16,
+            closeTooltip.$.tooltip.getBoundingClientRect().left,
+            LAYOUT_TOLERANCE_PX);
         assertEquals('261px', getHostWidthProperty());
 
         postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 320});
@@ -701,6 +730,72 @@ suite('NewTabPageLeftHandSideTest', () => {
         postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
         await microtasksFinished();
         assertFalse(!!getGhostLoader());
+      });
+
+  test('positions ghost loader close tooltip to the left in RTL', async () => {
+    document.documentElement.dir = 'rtl';
+    await createLeftHandSide();
+    await expandLeftHandSide();
+
+    const ghostLoader = getGhostLoader();
+    assertTrue(!!ghostLoader);
+    const closeButton =
+        ghostLoader.shadowRoot!.querySelector<HTMLElement>('#closeButton');
+    assertTrue(!!closeButton);
+    const closeTooltip =
+        ghostLoader.shadowRoot!.querySelector<CrTooltipElement>(
+            '#closeTooltip');
+    assertTrue(!!closeTooltip);
+    assertEquals(TooltipPosition.LEFT, closeTooltip.position);
+
+    closeTooltip.show();
+    const closeButtonRect = closeButton.getBoundingClientRect();
+    const tooltipRect = closeTooltip.$.tooltip.getBoundingClientRect();
+    const ghostLoaderRect = ghostLoader.getBoundingClientRect();
+    assertNear(
+        closeButtonRect.left - 16, tooltipRect.right, LAYOUT_TOLERANCE_PX);
+    assertTrue(tooltipRect.right < ghostLoaderRect.left);
+  });
+
+  test(
+      'closes rail from ghost loader close button when iframe does not load',
+      async () => {
+        await createLeftHandSide();
+
+        const folded =
+            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const collapsedWidth = `${folded.offsetWidth}px`;
+
+        // The embedded page never sends NTP_LHS_READY, so the ghost loader
+        // stays up until the user closes it.
+        await expandLeftHandSide();
+        const ghostLoader = getGhostLoader();
+        assertTrue(!!ghostLoader);
+        assertTrue(isGhostLoaderVisible());
+        assertTrue(folded.inert);
+        assertEquals('auto', getComputedStyle(ghostLoader).pointerEvents);
+        const closeButton =
+            ghostLoader.shadowRoot!.querySelector<HTMLElement>('#closeButton');
+        assertTrue(!!closeButton);
+
+        closeButton.click();
+        await microtasksFinished();
+        assertFalse(!!getGhostLoader());
+        assertFalse(folded.inert);
+        assertEquals('visible', getComputedStyle(folded).visibility);
+        assertEquals(collapsedWidth, getHostWidthProperty());
+        const expanded = getExpandedIframe();
+        assertTrue(!!expanded);
+        assertTrue(expanded.hidden);
+
+        // If the embedded page loads after the user closed the rail, the rail
+        // stays folded.
+        postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 320});
+        await microtasksFinished();
+        assertFalse(expanded.hidden);
+        assertTrue(expanded.inert);
+        assertFalse(folded.inert);
+        assertEquals(collapsedWidth, getHostWidthProperty());
       });
 
   test('toggles folded and expanded visibility on open and close', async () => {

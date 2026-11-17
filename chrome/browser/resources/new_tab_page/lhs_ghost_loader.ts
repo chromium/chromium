@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
+
+import {TooltipPosition} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
+import {isRTL} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {loadTimeData} from './i18n_setup.js';
 import {getCss} from './lhs_ghost_loader.css.js';
 import {getHtml} from './lhs_ghost_loader.html.js';
 
@@ -108,6 +114,18 @@ export class LhsGhostLoaderElement extends CrLitElement {
   protected readonly ghostLoadingBars_: GhostLoadingBar[] = GHOST_LOADING_BARS;
   protected readonly shimmerDelaysMs_: GhostShimmerDelays =
       GHOST_SHIMMER_DELAYS;
+  protected readonly closeLabel_: string =
+      loadTimeData.getString('aimThreadsCloseSidebarLabel');
+  // NTP: cr-tooltip uses physical left/right positions.
+  protected readonly closeTooltipPosition_: TooltipPosition =
+      isRTL() ? TooltipPosition.LEFT : TooltipPosition.RIGHT;
+
+  // NTP: the close button is functional, unlike the other placeholders, so
+  // that the user can close the rail when the expanded LHS iframe does not
+  // load.
+  protected onCloseClick_() {
+    this.fire('close-rail');
+  }
 }
 
 declare global {

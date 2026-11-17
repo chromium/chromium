@@ -63,6 +63,8 @@
 
 :host([view_=ghostLoader]) #ghostLoader {
   opacity: 1;
+  /* Lets the user click the ghost loader's close button. */
+  pointer-events: auto;
   visibility: visible;
 }
 

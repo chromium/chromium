@@ -254,6 +254,12 @@ export class LeftHandSideElement extends CrLitElement {
     await this.expand_();
   }
 
+  // Lets the user close the rail from the ghost loader, e.g. when the expanded
+  // LHS iframe does not load.
+  protected onGhostLoaderCloseRail_() {
+    this.isExpanded_ = false;
+  }
+
   private schedulePreloadExpanded_() {
     if (this.hasPreloaded_) {
       return;
