@@ -155,7 +155,7 @@ public abstract class AwPrefetchOmtTestBase extends AwPrefetchTestBase {
                         awContents.loadUrl("about:blank");
                         Assert.assertTrue(
                                 "Queued prefetches were not executed during AwContents#loadUrl.",
-                                prefetchQueueDrainedDuringAwContentsConstructor.get());
+                                prefetchQueueDrainedDuringLoadUrl.get());
 
                     } catch (InterruptedException e) {
                         throw new RuntimeException("UI thread interrupted while blocked", e);
