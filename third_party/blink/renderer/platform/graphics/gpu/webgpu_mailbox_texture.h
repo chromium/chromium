@@ -88,7 +88,8 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
       const gpu::SyncToken& sync_token,
       gpu::webgpu::MailboxFlags mailbox_flags,
       wgpu::TextureUsage additional_internal_usage,
-      FinishedAccessCallback finished_access_callback);
+      FinishedAccessCallback finished_access_callback,
+      scoped_refptr<media::VideoFrame> video_frame = nullptr);
 
   base::WeakPtr<WebGPUMailboxTexture> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -99,6 +100,7 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   std::unique_ptr<gpu::WebGPUTextureScopedAccess> scoped_access_;
   FinishedAccessCallback finished_access_callback_;
+  scoped_refptr<media::VideoFrame> video_frame_;
   scoped_refptr<WebGPUTextureAlphaClearer> alpha_clearer_;
   base::WeakPtrFactory<WebGPUMailboxTexture> weak_ptr_factory_{this};
 };

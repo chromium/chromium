@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/webgpu_interface_stub.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_command_serializers.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_native_test_support.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
@@ -767,6 +769,52 @@ TEST_F(WebGPUSwapBufferProviderTest,
 
   EXPECT_EQ(webgpu_->internal_usage_from_most_recent_associate_mailbox_call,
             kInternalUsage | wgpu::TextureUsage::RenderAttachment);
+}
+
+// Verifies that calling Dissociate() on a WebGPUMailboxTexture created from a
+// VideoFrame immediately dissociates the mailbox while retaining the underlying
+// VideoFrame until the WebGPUMailboxTexture itself is destroyed.
+TEST_F(WebGPUSwapBufferProviderTest,
+       MailboxTextureFromVideoFrameDissociateRetainsVideoFrame) {
+  const gfx::Size kSize(10, 20);
+
+  EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
+      .WillOnce(
+          [&](WGPUDevice device, const WGPUTextureDescriptor* desc) -> auto {
+            return ReserveTextureImpl(device, desc);
+          });
+
+  scoped_refptr<gpu::ClientSharedImage> shared_image = sii_->CreateSharedImage(
+      {viz::SinglePlaneFormat::kRGBA_8888, kSize, gfx::ColorSpace(),
+       gpu::SHARED_IMAGE_USAGE_WEBGPU_READ, "TestLabel"},
+      gpu::kNullSurfaceHandle);
+  scoped_refptr<media::VideoFrame> video_frame =
+      media::VideoFrame::WrapSharedImage(
+          media::PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(),
+          media::VideoFrame::ReleaseMailboxCB(), gfx::Rect(kSize), kSize,
+          base::Seconds(0));
+
+  bool video_frame_destroyed = false;
+  video_frame->AddDestructionObserver(base::BindOnce(
+      [](bool* destroyed) { *destroyed = true; }, &video_frame_destroyed));
+
+  scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
+      WebGPUMailboxTexture::FromVideoFrame(dawn_control_client_, device_,
+                                           wgpu::TextureUsage::TextureBinding,
+                                           std::move(video_frame));
+  ASSERT_NE(mailbox_texture, nullptr);
+  EXPECT_EQ(webgpu_->num_associated_mailboxes, 1);
+  EXPECT_FALSE(video_frame_destroyed);
+
+  // Calling Dissociate() should immediately end the SharedImage access
+  // (dissociating the mailbox) while keeping the VideoFrame alive until
+  // `mailbox_texture` is destroyed.
+  mailbox_texture->Dissociate();
+  EXPECT_EQ(webgpu_->num_associated_mailboxes, 0);
+  EXPECT_FALSE(video_frame_destroyed);
+
+  mailbox_texture.reset();
+  EXPECT_TRUE(video_frame_destroyed);
 }
 
 }  // namespace blink

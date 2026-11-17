@@ -661,6 +661,12 @@ bool GPUQueue::CopyFromVideoElement(
 void GPUQueue::ReferenceUntilGPUIsFinished(
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture) {
   CHECK(mailbox_texture);
+  // Dissociate the mailbox texture immediately so that SharedImage EndAccess is
+  // queued right after the GPU commands that used the texture (and before any
+  // subsequent device.destroy()), while keeping `mailbox_texture` (and its
+  // underlying media::VideoFrame) alive until OnSubmittedWorkDone completes.
+  mailbox_texture->Dissociate();
+
   ExecutionContext* execution_context = device_->GetExecutionContext();
 
   // If device has no valid execution context. Release
