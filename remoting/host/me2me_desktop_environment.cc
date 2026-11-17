@@ -243,11 +243,12 @@ bool Me2MeDesktopEnvironment::InitializeSecurity(
     }
 #elif BUILDFLAG(IS_MAC)
     if (desktop_environment_options().enable_privacy_overlay()) {
-      // TODO(crbug.com/451238243): Hook up HostWindow::CreatePrivacyOverlay().
-      NOTIMPLEMENTED();
+      disconnect_window_ = HostWindow::CreatePrivacyOverlay(
+          interaction_strategy().CreateLocalInputMonitor());
+    } else {
+      disconnect_window_ = HostWindow::CreateAutoHidingDisconnectWindow(
+          interaction_strategy().CreateLocalInputMonitor());
     }
-    disconnect_window_ = HostWindow::CreateAutoHidingDisconnectWindow(
-        interaction_strategy().CreateLocalInputMonitor());
 #else
     if (desktop_environment_options().enable_privacy_overlay()) {
       NOTIMPLEMENTED();
