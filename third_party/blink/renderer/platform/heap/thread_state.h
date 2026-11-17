@@ -96,6 +96,32 @@ class PLATFORM_EXPORT ThreadState final {
   // caller is invoked from a destructor, and false otherwise.
   bool IsSweepingOnOwningThread() const;
 
+  // Returns true while the current thread runs GC finalization: weak
+  // callbacks and pre-finalizers in the atomic pause, destructors during
+  // sweeping, or heap termination.
+  //
+  // The dangling pointer detector skips raw_ptr releases there, see
+  // base::allocator::SetDanglingRawPtrReleaseExemptFn(): the raw_ptr lives
+  // in a dead object, which nothing can reach, so it can't be dereferenced
+  // whatever the finalization order. Called only when the detector is about to
+  // report.
+  static bool IsInGcFinalization();
+
+  // Marks the isolate owning this thread's CppHeap as being disposed. Disposal
+  // terminates the CppHeap, running pre-finalizers and destructors of every
+  // remaining object, while `DetachFromIsolate()` has already dropped
+  // `cpp_heap_`; `IsInGcFinalization()` returns true throughout.
+  class PLATFORM_EXPORT IsolateDisposalScope final {
+    STACK_ALLOCATED();
+
+   public:
+    explicit IsolateDisposalScope(ThreadState&);
+    ~IsolateDisposalScope();
+
+   private:
+    ThreadState& state_;
+  };
+
   // Returns true during heap snapshot generation, and false otherwise.
   bool IsTakingHeapSnapshot() const;
 
@@ -164,6 +190,7 @@ class PLATFORM_EXPORT ThreadState final {
   std::unique_ptr<v8::EmbedderRootsHandler> embedder_roots_handler_;
   cppgc::HeapHandle& heap_handle_;
   v8::Isolate* isolate_ = nullptr;
+  bool is_disposing_isolate_ = false;
   base::PlatformThreadId thread_id_;
   size_t gc_callback_depth_ = 0;
   Persistent<ActiveScriptWrappableManager> active_script_wrappable_manager_;

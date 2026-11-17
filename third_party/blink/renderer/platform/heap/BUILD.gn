@@ -163,6 +163,7 @@ source_set("blink_heap_unittests_sources") {
     "test/blink_gc_memory_dump_provider_test.cc",
     "test/concurrent_marking_test.cc",
     "test/cross_thread_handle_test.cc",
+    "test/dangling_raw_ptr_gc_finalization_test.cc",
     "test/heap_auto_reset_test.cc",
     "test/heap_bind_test.cc",
     "test/heap_compact_test.cc",
@@ -183,6 +184,7 @@ source_set("blink_heap_unittests_sources") {
     "//third_party/blink/renderer/platform/wtf:wtf_config",
     "//third_party/blink/renderer:config",
     "//third_party/blink/renderer:inside_blink",
+    "//v8:external_startup_data",
   ]
 
   deps = [

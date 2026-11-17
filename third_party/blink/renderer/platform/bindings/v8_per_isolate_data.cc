@@ -193,6 +193,8 @@ void V8PerIsolateData::Destroy(v8::Isolate* isolate) {
 
   // FIXME: Remove once all v8::Isolate::GetCurrent() calls are gone.
   isolate->Exit();
+  // Disposing the isolate terminates the CppHeap.
+  ThreadState::IsolateDisposalScope disposal_scope(*ThreadState::Current());
   delete data;
 }
 

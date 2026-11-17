@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 
+#include "base/allocator/partition_alloc_support.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "gin/public/cppgc.h"
@@ -23,6 +24,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/cppgc/heap-consistency.h"
+#include "v8/include/cppgc/heap-state.h"
 #include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-embedder-heap.h"
 #include "v8/include/v8-isolate.h"
@@ -76,6 +78,7 @@ ThreadState* ThreadState::AttachMainThread(
   ThreadStateStorage::AttachMainThread(
       *thread_state, thread_state->cpp_heap().GetAllocationHandle(),
       thread_state->cpp_heap().GetHeapHandle());
+  base::allocator::SetDanglingRawPtrReleaseExemptFn(&IsInGcFinalization);
   return thread_state;
 }
 
@@ -88,6 +91,7 @@ ThreadState* ThreadState::AttachMainThreadForTesting(
       *thread_state, thread_state->cpp_heap().GetAllocationHandle(),
       thread_state->cpp_heap().GetHeapHandle());
   thread_state->EnableDetachedGarbageCollectionsForTesting();
+  base::allocator::SetDanglingRawPtrReleaseExemptFn(&IsInGcFinalization);
   return thread_state;
 }
 
@@ -199,7 +203,10 @@ ThreadState::ThreadState(
 
 ThreadState::~ThreadState() {
   DCHECK(IsCreationThread());
+  // Keep `cpp_heap_` while heap termination runs finalizers, for
+  // IsInGcFinalization().
   owning_cpp_heap_.reset();
+  cpp_heap_ = nullptr;
   ThreadStateStorage::DetachNonMainThread(*ThreadStateStorage::Current());
 }
 
@@ -285,6 +292,44 @@ bool ThreadState::IsIncrementalMarking() const {
 
 bool ThreadState::IsSweepingOnOwningThread() const {
   return cppgc::subtle::HeapState::IsSweepingOnOwningThread(heap_handle());
+}
+
+// static
+bool ThreadState::IsInGcFinalization() {
+  // May be called from any thread, including threads without an Oilpan heap.
+  ThreadStateStorage* storage = ThreadStateStorage::Current();
+  if (!storage) [[unlikely]] {
+    return false;
+  }
+  const ThreadState& state = storage->thread_state();
+  if (state.is_disposing_isolate_) [[unlikely]] {
+    return true;
+  }
+  if (!state.cpp_heap_) [[unlikely]] {
+    return false;
+  }
+  const cppgc::HeapHandle& heap = state.heap_handle();
+  if (cppgc::subtle::HeapState::IsSweepingOnOwningThread(heap)) {
+    return true;
+  }
+  // Weak callbacks and pre-finalizers run in the atomic pause after marking
+  // and before sweeping. `!IsSweeping()` also excludes V8-only minor pauses
+  // while CppHeap sweeping from an earlier collection is paused.
+  return cppgc::subtle::HeapState::IsInAtomicPause(heap) &&
+         !cppgc::subtle::HeapState::IsMarking(heap) &&
+         !cppgc::subtle::HeapState::IsSweeping(heap);
+}
+
+ThreadState::IsolateDisposalScope::IsolateDisposalScope(ThreadState& state)
+    : state_(state) {
+  DCHECK(state_.IsCreationThread());
+  DCHECK(!state_.isolate_);
+  DCHECK(!state_.is_disposing_isolate_);
+  state_.is_disposing_isolate_ = true;
+}
+
+ThreadState::IsolateDisposalScope::~IsolateDisposalScope() {
+  state_.is_disposing_isolate_ = false;
 }
 
 namespace {

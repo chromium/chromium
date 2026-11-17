@@ -6,6 +6,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/heap",
 
     # Dependencies.
+    "+base/allocator/partition_alloc_support.h",
     "+base/functional/unretained_traits.h",
     "+base/sampling_heap_profiler/poisson_allocation_sampler.h",
     "+base/task/task_runner.h",
@@ -31,6 +32,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+    'dangling_raw_ptr_gc_finalization_test\\.cc': [
+        "+gin/v8_initializer.h",
+    ],
     'run_all_tests\\.cc': [
         "+content/public/test/blink_test_environment.h",
     ],
