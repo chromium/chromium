@@ -12,6 +12,7 @@ is provided, but it does not include error handling or validation.
 import argparse
 import collections
 import errno
+import functools
 import os
 import re
 import struct
@@ -111,7 +112,7 @@ class _MemoryItemList:
     def __repr__(self):
         item_type_part = ''
         if self.size != 0:
-            item_type = type(self._items[0])
+            item_type = type(self[0])
             item_type_part = ', item type={}'.format(item_type.__name__)
 
         return '{}(offset={:#x}, size={}{})'.format(
@@ -119,39 +120,56 @@ class _MemoryItemList:
         )
 
 
-class _TypeIdItemList(_MemoryItemList):
+class _StructItemList(_MemoryItemList):
+    _FMT = None
+    _ITEM_CLS = None
+
     def __init__(self, reader, offset, size):
-        factory = lambda x: _TypeIdItem(x.ReadUInt())  # noqa: E731
-        super().__init__(reader, offset, size, factory)
+        self.offset = offset
+        self.size = size
+        end = offset + size * struct.calcsize(self._FMT)
+        self._items = [
+            self._ITEM_CLS(*x)
+            for x in struct.iter_unpack(
+                self._FMT, memoryview(reader._data)[offset:end]
+            )
+        ]
 
 
-class _ProtoIdItemList(_MemoryItemList):
-    def __init__(self, reader, offset, size):
-        factory = lambda x: _ProtoIdItem(  # noqa: E731
-            x.ReadUInt(), x.ReadUInt(), x.ReadUInt()
-        )
-        super().__init__(reader, offset, size, factory)
+class _TypeIdItemList(_StructItemList):
+    _FMT = '<I'
+    _ITEM_CLS = _TypeIdItem
 
 
-class _MethodIdItemList(_MemoryItemList):
-    def __init__(self, reader, offset, size):
-        factory = lambda x: _MethodIdItem(  # noqa: E731
-            x.ReadUShort(), x.ReadUShort(), x.ReadUInt()
-        )
-        super().__init__(reader, offset, size, factory)
+class _ProtoIdItemList(_StructItemList):
+    _FMT = '<3I'
+    _ITEM_CLS = _ProtoIdItem
+
+
+class _MethodIdItemList(_StructItemList):
+    _FMT = '<2HI'
+    _ITEM_CLS = _MethodIdItem
 
 
 class _StringItemList(_MemoryItemList):
     def __init__(self, reader, offset, size):
-        reader.Seek(offset)
-        string_item_offsets = iter([reader.ReadUInt() for _ in range(size)])
+        self.offset = offset
+        self.size = size
+        self._reader = reader
+        self._offsets = struct.unpack_from(f'<{size}I', reader._data, offset)
+        self._items = [None] * size
 
-        def factory(x):
-            data_offset = next(string_item_offsets)
-            string = x.ReadString(data_offset)
-            return _StringDataItem(len(string), string)
+    def __iter__(self):
+        for i in range(self.size):
+            yield self[i]
 
-        super().__init__(reader, offset, size, factory)
+    def __getitem__(self, key):
+        item = self._items[key]
+        if item is None:
+            string = self._reader.ReadString(self._offsets[key])
+            item = _StringDataItem(len(string), string)
+            self._items[key] = item
+        return item
 
 
 class _TypeListItem(_MemoryItemList):
@@ -177,16 +195,9 @@ class _TypeListItemList(_MemoryItemList):
         super().__init__(reader, offset, size, _TypeListItem)
 
 
-class _ClassDefItemList(_MemoryItemList):
-    def __init__(self, reader, offset, size):
-        reader.Seek(offset)
-
-        def factory(x):
-            return _ClassDefItem(
-                *(x.ReadUInt() for _ in range(len(_ClassDefItem._fields)))
-            )
-
-        super().__init__(reader, offset, size, factory)
+class _ClassDefItemList(_StructItemList):
+    _FMT = '<8I'
+    _ITEM_CLS = _ClassDefItem
 
 
 class _DexMapItem:
@@ -248,6 +259,17 @@ class _DexReader:
     def ReadString(self, data_offset):
         string_length, string_offset = self._ReadULeb128(data_offset)
         string_data_offset = string_offset + data_offset
+        # Fast path for ASCII: MUTF-8 encodes embedded NULs as 0xc0 0x80, so
+        # byte length equals utf16_size (string_length) iff all chars are 1-byte
+        # ASCII (malformed strings fall through to _DecodeMUtf8).
+        end = self._data.find(0, string_data_offset)
+        if end - string_data_offset == string_length:
+            try:
+                ret = self._data[string_data_offset:end].decode('ascii')
+                self._pos = end + 1
+                return ret
+            except UnicodeDecodeError:
+                pass
         return self._DecodeMUtf8(string_length, string_data_offset)
 
     def AlignUpTo(self, align_unit):
@@ -384,36 +406,58 @@ class DexFile:
         """Decodes dex file memory sections.
 
         Args:
-          data: bytearray containing the contents of a dex file.
+          data: bytes or bytearray containing the contents of a dex file.
         """
         self.reader = _DexReader(data)
         self.header = self.reader.ReadHeader()
-        self.map_list = _DexMapList(self.reader, self.header.map_off)
-        self.type_item_list = _TypeIdItemList(
+
+    @functools.cached_property
+    def map_list(self):
+        return _DexMapList(self.reader, self.header.map_off)
+
+    @functools.cached_property
+    def type_item_list(self):
+        return _TypeIdItemList(
             self.reader, self.header.type_ids_off, self.header.type_ids_size
         )
-        self.proto_item_list = _ProtoIdItemList(
+
+    @functools.cached_property
+    def proto_item_list(self):
+        return _ProtoIdItemList(
             self.reader, self.header.proto_ids_off, self.header.proto_ids_size
         )
-        self.method_item_list = _MethodIdItemList(
+
+    @functools.cached_property
+    def method_item_list(self):
+        return _MethodIdItemList(
             self.reader, self.header.method_ids_off, self.header.method_ids_size
         )
-        self.string_item_list = _StringItemList(
+
+    @functools.cached_property
+    def string_item_list(self):
+        return _StringItemList(
             self.reader, self.header.string_ids_off, self.header.string_ids_size
         )
-        self.class_def_item_list = _ClassDefItemList(
+
+    @functools.cached_property
+    def class_def_item_list(self):
+        return _ClassDefItemList(
             self.reader, self.header.class_defs_off, self.header.class_defs_size
         )
 
+    @functools.cached_property
+    def type_list_item_list(self):
         type_list_key = _DexMapList.TYPE_TYPE_LIST
         if type_list_key in self.map_list:
             map_list_item = self.map_list[type_list_key]
-            self.type_list_item_list = _TypeListItemList(
+            return _TypeListItemList(
                 self.reader, map_list_item.offset, map_list_item.size
             )
-        else:
-            self.type_list_item_list = _TypeListItemList(self.reader, 0, 0)
-        self._type_lists_by_offset = {
+        return _TypeListItemList(self.reader, 0, 0)
+
+    @functools.cached_property
+    def _type_lists_by_offset(self):
+        return {
             type_list.offset: type_list
             for type_list in self.type_list_item_list
         }

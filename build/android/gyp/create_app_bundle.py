@@ -11,18 +11,18 @@ import json
 import logging
 import os
 import posixpath
-import shutil
 import sys
-from xml.etree import ElementTree
+import zipfile
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 )
-from pylib.utils import dexdump
+from pylib.dex import dex_parser
 
 import bundletool
 from util import build_utils
 from util import manifest_utils
+from util import protoresources
 from util import resource_utils
 import action_helpers  # build_utils adds //build to sys.path.
 
@@ -405,32 +405,39 @@ def _WriteBundlePathmap(
                 bundle_pathmap_file.write(line)
 
 
-def _GetManifestForModule(bundle_path, module_name):
-    data = bundletool.RunBundleTool(
-        ['dump', 'manifest', '--bundle', bundle_path, '--module', module_name]
-    )
-    try:
-        return ElementTree.fromstring(data)
-    except ElementTree.ParseError:
-        sys.stderr.write('Failed to parse:\n')
-        sys.stderr.write(data)
-        raise
+def _GetManifestForModule(module_zip):
+    with zipfile.ZipFile(module_zip) as z:
+        data = z.read('manifest/AndroidManifest.xml')
+    return protoresources.Resources_pb2.XmlNode.FromString(data).element
 
 
 def _GetComponentNames(manifest, tag_name):
-    android_name = '{%s}name' % manifest_utils.ANDROID_NAMESPACE
-    return [
-        s.attrib.get(android_name)
-        for s in manifest.iterfind(f'application/{tag_name}')
-    ]
+    names = []
+    for app_node in manifest.child:
+        if app_node.element.name != 'application':
+            continue
+        for child in app_node.element.child:
+            if child.element.name != tag_name:
+                continue
+            for a in child.element.attribute:
+                if (
+                    a.namespace_uri == manifest_utils.ANDROID_NAMESPACE
+                    and a.name == 'name'
+                ):
+                    names.append(a.value)
+                    break
+    return names
 
 
 def _ClassesFromZip(module_zip):
     classes = set()
-    for package in dexdump.Dump(module_zip):
-        for java_package, package_dict in package.items():
-            java_package += '.' if java_package else ''
-            classes.update(java_package + c for c in package_dict['classes'])
+    with zipfile.ZipFile(module_zip) as z:
+        for subpath in z.namelist():
+            if subpath.startswith('dex/classes') and subpath.endswith('.dex'):
+                dexfile = dex_parser.DexFile(z.read(subpath))
+                for item in dexfile.class_def_item_list:
+                    desc = dexfile.GetTypeString(item.class_idx)
+                    classes.add(desc[1:-1].replace('/', '.'))
     return classes
 
 
@@ -438,26 +445,14 @@ def _IsJavalessService(service_name):
     return service_name.startswith(_JAVALESS_SERVICE_NAME)
 
 
-def _ValidateSplits(bundle_path, module_zips):
-    logging.info('Reading manifests and running dexdump')
+def _ValidateSplits(module_zips):
+    logging.info('Reading manifests and running dex_parser')
     base_zip = next(p for p in module_zips if os.path.basename(p) == 'base.zip')
-    module_names = sorted(
-        os.path.basename(p)[: -len('.zip')] for p in module_zips
-    )
-    # Using threads makes these step go from 7s -> 1s on my machine.
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        # Create list of classes from the base module's dex.
-        classes_future = executor.submit(_ClassesFromZip, base_zip)
-
-        # Create xmltrees of all module manifests.
-        manifest_futures = [
-            executor.submit(_GetManifestForModule, bundle_path, n)
-            for n in module_names
-        ]
-        manifests_by_name = dict(
-            zip(module_names, (f.result() for f in manifest_futures))
-        )
-        base_classes = classes_future.result()
+    manifests_by_name = {}
+    for module_zip in sorted(module_zips, key=os.path.basename):
+        module_name = os.path.basename(module_zip)[: -len('.zip')]
+        manifests_by_name[module_name] = _GetManifestForModule(module_zip)
+    base_classes = _ClassesFromZip(base_zip)
 
     # Collect service names from all split manifests.
     logging.info('Performing checks')
@@ -493,10 +488,13 @@ def _ValidateSplits(bundle_path, module_zips):
                 )
 
     # Remaining checks apply only when isolatedSplits="true".
-    isolated_splits = manifests_by_name['base'].get(
-        f'{{{manifest_utils.ANDROID_NAMESPACE}}}isolatedSplits'
+    isolated_splits = any(
+        a.namespace_uri == manifest_utils.ANDROID_NAMESPACE
+        and a.name == 'isolatedSplits'
+        and (a.value == 'true' or a.compiled_item.prim.boolean_value)
+        for a in manifests_by_name['base'].attribute
     )
-    if isolated_splits != 'true':
+    if not isolated_splits:
         return errors
 
     # Ensure all providers are present in base module. We enforce this because
@@ -542,7 +540,14 @@ def main(args):
     if options.split_dimensions:
         split_dimensions = [x.upper() for x in options.split_dimensions]
 
-    with build_utils.TempDir() as tmp_dir:
+    with (
+        build_utils.TempDir() as tmp_dir,
+        action_helpers.atomic_output(
+            options.out_bundle, only_if_changed=False
+        ) as tmp_bundle_file,
+        concurrent.futures.ThreadPoolExecutor() as executor,
+    ):
+        tmp_bundle = tmp_bundle_file.name
         base_master_resource_ids = None
         if options.base_module_rtxt_path:
             logging.info('Creating R.txt allowlist')
@@ -558,14 +563,17 @@ def main(args):
             base_master_resource_ids,
         )
 
-        tmp_bundle = os.path.join(tmp_dir, 'tmp_bundle')
-
         # Important: bundletool requires that the bundle config file is
         # named with a .pb.json extension.
-        tmp_bundle_config = tmp_bundle + '.BundleConfig.pb.json'
+        tmp_bundle_config = os.path.join(tmp_dir, 'BundleConfig.pb.json')
 
         with open(tmp_bundle_config, 'w', encoding='utf-8') as f:
             f.write(bundle_config)
+
+        if options.validate_services:
+            validate_future = executor.submit(
+                _ValidateSplits, options.module_zips
+            )
 
         logging.info('Running bundletool')
         cmd_args = build_utils.JavaCmd() + [
@@ -574,6 +582,7 @@ def main(args):
             'build-bundle',
             '--modules=' + ','.join(options.module_zips),
             '--output=' + tmp_bundle,
+            '--overwrite',
             '--config=' + tmp_bundle_config,
         ]
         if options.uncompressed:
@@ -593,20 +602,13 @@ def main(args):
         )
 
         if options.validate_services:
-            # TODO(crbug.com/40148088): This step takes 0.4s locally for bundles with
-            # isolated splits disabled and 2s for bundles with isolated splits
-            # enabled.  Consider making this run in parallel or move into a separate
-            # step before enabling isolated splits by default.
             logging.info('Validating isolated split manifests')
-            errors = _ValidateSplits(tmp_bundle, options.module_zips)
+            errors = validate_future.result()
             if errors:
                 sys.stderr.write('Bundle failed sanity checks:\n  ')
                 sys.stderr.write('\n  '.join(errors))
                 sys.stderr.write('\n')
                 sys.exit(1)
-
-        logging.info('Writing final output artifacts')
-        shutil.move(tmp_bundle, options.out_bundle)
 
     if options.rtxt_out_path:
         _ConcatTextFiles(options.rtxt_in_paths, options.rtxt_out_path)
