@@ -5034,6 +5034,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.SecureGateway.Routing.MatchDomainCount"
+    units="matchers" expires_after="2027-11-01">
+  <owner>dmytriievd@google.com</owner>
+  <owner>bling-enterprise@google.com</owner>
+  <summary>
+    Records the total number of destination matchers (domains, IP addresses and
+    subnets) of the Secure Gateway routing rules given to WebKit's proxy
+    configuration. Recorded with Enterprise.SecureGateway.Routing.RuleCount.
+    Only recorded on iOS.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.SecureGateway.Routing.RuleCount" units="rules"
+    expires_after="2027-11-01">
+  <owner>dmytriievd@google.com</owner>
+  <owner>bling-enterprise@google.com</owner>
+  <summary>
+    Records the number of Secure Gateway routing rules given to WebKit's proxy
+    configuration, each time they or the number of rules left out of it (see
+    Enterprise.SecureGateway.Routing.UnsupportedRuleCount) change: when routes
+    are first fetched or restored from the cache in a session, when they are
+    updated, and when they are removed (0). Also 0 when WebKit supports none of
+    the rules. Not recorded for profiles without routes, nor when a route
+    refresh returns the same rules. Only recorded on iOS.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.SecureGateway.Routing.UnsupportedRuleCount"
+    units="rules" expires_after="2027-11-01">
+  <owner>dmytriievd@google.com</owner>
+  <owner>bling-enterprise@google.com</owner>
+  <summary>
+    Records the number of Secure Gateway routing rules left out of WebKit's
+    proxy configuration because none of their proxies is supported. WebKit only
+    supports HTTP and HTTPS CONNECT proxies, e.g. not SOCKS5. A rule that also
+    lists DIRECT isn't left out: it connects directly instead. Recorded with
+    Enterprise.SecureGateway.Routing.RuleCount. Only recorded on iOS.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.SecurityReport.User.Mode"
     enum="SecuritySignalsMode" expires_after="2027-01-02">
   <owner>xzonghan@chromium.org</owner>

@@ -5,11 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_ENTERPRISE_PROXY_MODEL_PROXY_SERVICE_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_ENTERPRISE_PROXY_MODEL_PROXY_SERVICE_CONTROLLER_H_
 
+#import <cstddef>
+#import <vector>
+
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/sequence_checker.h"
 #import "components/enterprise/net/core/enterprise_proxy_service.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "ios/web/public/proxy/proxy_config.h"
 #import "ios/web/public/web_state_delegate.h"
 
 @class NSURLProtectionSpace;
@@ -84,7 +88,8 @@ class ProxyServiceController
   // Translates dynamic routing configs from `enterprise_proxy_service_` and
   // forwards them to `proxy_configuration_provider_`. No-op prior to iOS 18.1
   // because a WebKit bug prevents proxy authentication challenges from being
-  // delivered on older OS versions.
+  // delivered on older OS versions. Records the routing metrics when the rules
+  // given to `proxy_configuration_provider_` or the rules left out change.
   void OnDynamicProxyConfigsStatusChanged() override;
 
  private:
@@ -99,6 +104,13 @@ class ProxyServiceController
   // Owned by `BrowserState`, which outlives `ProfileIOS` keyed services.
   raw_ptr<web::ProxyConfigurationProvider> proxy_configuration_provider_ =
       nullptr;
+
+  // Rules last given to `proxy_configuration_provider_`, and number of rules
+  // left out of them because WebKit supports none of their proxies. The service
+  // notifies when a route refresh starts and completes, usually with unchanged
+  // rules, so the routing metrics are only recorded when these change.
+  std::vector<web::ProxyRule> rules_;
+  size_t unsupported_rule_count_ = 0;
 
   base::ScopedObservation<enterprise_net::EnterpriseProxyService,
                           enterprise_net::EnterpriseProxyService::Observer>

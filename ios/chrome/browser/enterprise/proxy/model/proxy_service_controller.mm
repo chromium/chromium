@@ -6,13 +6,18 @@
 
 #import <Foundation/Foundation.h>
 
+#import <cstddef>
 #import <optional>
 #import <utility>
+#import <vector>
 
 #import "base/check.h"
+#import "base/check_op.h"
 #import "base/functional/bind.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/memory/weak_ptr.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/numerics/safe_conversions.h"
 #import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/enterprise/net/core/enterprise_proxy_error_service.h"
@@ -20,15 +25,25 @@
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_error.h"
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_tab_helper.h"
 #import "ios/chrome/browser/enterprise/proxy/model/proxy_auth_challenge_util.h"
+#import "ios/web/public/proxy/proxy_config.h"
 #import "ios/web/public/proxy/proxy_configuration_provider.h"
 #import "ios/web/public/proxy/pvd_route_translator.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/auth.h"
 #import "net/http/http_response_headers.h"
+#import "net/proxy_resolution/proxy_config.h"
 #import "url/gurl.h"
 
 namespace {
+
+// Histograms of the routing rules given to WebKit.
+constexpr char kRoutingRuleCountHistogram[] =
+    "Enterprise.SecureGateway.Routing.RuleCount";
+constexpr char kRoutingMatchDomainCountHistogram[] =
+    "Enterprise.SecureGateway.Routing.MatchDomainCount";
+constexpr char kRoutingUnsupportedRuleCountHistogram[] =
+    "Enterprise.SecureGateway.Routing.UnsupportedRuleCount";
 
 // Navigation ID reported for challenges that are not attributed to a
 // navigation. `EnterpriseProxyErrorService` records no error for it.
@@ -123,6 +138,23 @@ void RunProxyAuthCallback(
                       userInfo:nil]);
 }
 
+// Records the routing `rules` given to WebKit, and the number of rules left out
+// of them because WebKit supports none of their proxies.
+void RecordRoutingRules(const std::vector<web::ProxyRule>& rules,
+                        size_t unsupported_rule_count) {
+  size_t match_domain_count = 0;
+  for (const web::ProxyRule& rule : rules) {
+    match_domain_count += rule.match_domains.size();
+  }
+  base::UmaHistogramCounts10000(kRoutingRuleCountHistogram,
+                                base::saturated_cast<int>(rules.size()));
+  base::UmaHistogramCounts100000(kRoutingMatchDomainCountHistogram,
+                                 base::saturated_cast<int>(match_domain_count));
+  base::UmaHistogramCounts1000(
+      kRoutingUnsupportedRuleCountHistogram,
+      base::saturated_cast<int>(unsupported_rule_count));
+}
+
 }  // namespace
 
 ProxyServiceController::ProxyServiceController(
@@ -205,7 +237,22 @@ void ProxyServiceController::OnDynamicProxyConfigsStatusChanged() {
   if (!@available(iOS 18.1, *)) {
     return;
   }
-  proxy_configuration_provider_->UpdateProxyConfiguration(
-      web::TranslateProvisioningDomainRoutingConfig(
-          enterprise_proxy_service_->GetDynamicRoutingConfig()));
+  const net::ProxyConfig::DynamicRoutingConfig routing_config =
+      enterprise_proxy_service_->GetDynamicRoutingConfig();
+  std::vector<web::ProxyRule> rules =
+      web::TranslateProvisioningDomainRoutingConfig(routing_config);
+  // The translation only leaves out the rules without a proxy that WebKit
+  // supports.
+  DCHECK_GE(routing_config.routing_rules.size(), rules.size());
+  const size_t unsupported_rule_count =
+      routing_config.routing_rules.size() - rules.size();
+  // Both start empty, so nothing is recorded for a profile without routes. The
+  // rules left out are compared too, so that a config where WebKit supports
+  // none of the rules is recorded.
+  if (rules != rules_ || unsupported_rule_count != unsupported_rule_count_) {
+    RecordRoutingRules(rules, unsupported_rule_count);
+    rules_ = rules;
+    unsupported_rule_count_ = unsupported_rule_count;
+  }
+  proxy_configuration_provider_->UpdateProxyConfiguration(std::move(rules));
 }

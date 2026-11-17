@@ -17,6 +17,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/enterprise/net/core/enterprise_proxy_error_service.h"
@@ -71,8 +72,17 @@ constexpr uint16_t kProxyPort = 8443;
 constexpr uint16_t kDefaultHTTPSPort = 443;
 constexpr std::string_view kFirstDestinationPattern = "corp1.example.com";
 constexpr std::string_view kSecondDestinationPattern = "corp2.example.com";
+constexpr std::string_view kThirdDestinationPattern = "corp3.example.com";
 constexpr char16_t kUsername[] = u"test-user";
 constexpr char16_t kPassword[] = u"test-password";
+
+// Histograms of the routing rules given to WebKit.
+constexpr char kRoutingRuleCountHistogram[] =
+    "Enterprise.SecureGateway.Routing.RuleCount";
+constexpr char kRoutingMatchDomainCountHistogram[] =
+    "Enterprise.SecureGateway.Routing.MatchDomainCount";
+constexpr char kRoutingUnsupportedRuleCountHistogram[] =
+    "Enterprise.SecureGateway.Routing.UnsupportedRuleCount";
 
 class TestProxyConfigurationProvider : public web::ProxyConfigurationProvider {
  public:
@@ -98,6 +108,21 @@ net::ProxyConfig::DynamicRoutingConfig CreateSampleRoutingConfig(
   rule.destination_matchers.AddRuleFromString(std::string(destination_pattern));
   config.routing_rules.push_back(std::move(rule));
   return config;
+}
+
+// Returns a routing rule sending the traffic to `destination_patterns` through
+// a proxy of `scheme`.
+net::ProxyConfig::DynamicRoutingRule CreateRoutingRule(
+    net::ProxyServer::Scheme scheme,
+    const std::vector<std::string_view>& destination_patterns) {
+  net::ProxyConfig::DynamicRoutingRule rule;
+  rule.proxy_list.AddProxyServer(net::ProxyServer::FromSchemeHostAndPort(
+      scheme, std::string(kProxyHost), kProxyPort));
+  for (std::string_view destination_pattern : destination_patterns) {
+    rule.destination_matchers.AddRuleFromString(
+        std::string(destination_pattern));
+  }
+  return rule;
 }
 
 // Test double capturing the arguments forwarded by `ProxyServiceController`
@@ -349,6 +374,171 @@ TEST_F(ProxyServiceControllerTest, ClearsRoutesWhenUpdatedWithEmptyConfig) {
   mock_service.NotifyObservers();
 
   EXPECT_TRUE(provider.rules().empty());
+}
+
+// Tests that the routing rules are recorded when they change, but not when
+// unchanged rules are forwarded again, e.g. when a route refresh starts.
+TEST_F(ProxyServiceControllerTest, RecordsRoutingRulesWhenTheyChange) {
+  if (!@available(iOS 18.1, *)) {
+    GTEST_SKIP() << "Dynamic proxy routing requires iOS 18.1+.";
+  }
+
+  net::ProxyConfig::DynamicRoutingConfig two_rule_config;
+  two_rule_config.routing_rules.push_back(
+      CreateRoutingRule(net::ProxyServer::SCHEME_HTTPS,
+                        {kFirstDestinationPattern, kSecondDestinationPattern}));
+  two_rule_config.routing_rules.push_back(CreateRoutingRule(
+      net::ProxyServer::SCHEME_HTTPS, {kThirdDestinationPattern}));
+  net::ProxyConfig::DynamicRoutingConfig refreshing_config =
+      CreateSampleRoutingConfig(kFirstDestinationPattern);
+  refreshing_config.is_update_in_progress = true;
+  NiceMock<enterprise_net::MockEnterpriseProxyService> mock_service;
+  EXPECT_CALL(mock_service, GetDynamicRoutingConfig())
+      .WillOnce(Return(CreateSampleRoutingConfig(kFirstDestinationPattern)))
+      .WillOnce(Return(refreshing_config))
+      .WillOnce(Return(two_rule_config));
+  base::HistogramTester histogram_tester;
+
+  TestProxyConfigurationProvider provider(personal_profile_);
+  enterprise_net::EnterpriseProxyErrorService error_service(&mock_service);
+  ProxyServiceController controller(&mock_service, &error_service, &provider);
+
+  histogram_tester.ExpectUniqueSample(kRoutingRuleCountHistogram, 1, 1);
+  histogram_tester.ExpectUniqueSample(kRoutingMatchDomainCountHistogram, 1, 1);
+  histogram_tester.ExpectUniqueSample(kRoutingUnsupportedRuleCountHistogram, 0,
+                                      1);
+
+  // Unchanged rules, while a route refresh is in progress.
+  mock_service.NotifyObservers();
+
+  histogram_tester.ExpectTotalCount(kRoutingRuleCountHistogram, 1);
+
+  mock_service.NotifyObservers();
+
+  histogram_tester.ExpectBucketCount(kRoutingRuleCountHistogram, 2, 1);
+  histogram_tester.ExpectBucketCount(kRoutingMatchDomainCountHistogram, 3, 1);
+  histogram_tester.ExpectBucketCount(kRoutingUnsupportedRuleCountHistogram, 0,
+                                     2);
+  histogram_tester.ExpectTotalCount(kRoutingRuleCountHistogram, 2);
+}
+
+// Tests that nothing is recorded for a profile without routes.
+TEST_F(ProxyServiceControllerTest, DoesNotRecordRoutingRulesWithoutRoutes) {
+  if (!@available(iOS 18.1, *)) {
+    GTEST_SKIP() << "Dynamic proxy routing requires iOS 18.1+.";
+  }
+
+  NiceMock<enterprise_net::MockEnterpriseProxyService> mock_service;
+  base::HistogramTester histogram_tester;
+
+  TestProxyConfigurationProvider provider(personal_profile_);
+  enterprise_net::EnterpriseProxyErrorService error_service(&mock_service);
+  ProxyServiceController controller(&mock_service, &error_service, &provider);
+  mock_service.NotifyObservers();
+
+  histogram_tester.ExpectTotalCount(kRoutingRuleCountHistogram, 0);
+  histogram_tester.ExpectTotalCount(kRoutingMatchDomainCountHistogram, 0);
+  histogram_tester.ExpectTotalCount(kRoutingUnsupportedRuleCountHistogram, 0);
+}
+
+// Tests that removing the routes is recorded as no rules.
+TEST_F(ProxyServiceControllerTest, RecordsRemovedRoutingRules) {
+  if (!@available(iOS 18.1, *)) {
+    GTEST_SKIP() << "Dynamic proxy routing requires iOS 18.1+.";
+  }
+
+  NiceMock<enterprise_net::MockEnterpriseProxyService> mock_service;
+  EXPECT_CALL(mock_service, GetDynamicRoutingConfig())
+      .WillOnce(Return(CreateSampleRoutingConfig(kFirstDestinationPattern)))
+      .WillOnce(Return(net::ProxyConfig::DynamicRoutingConfig{}));
+  base::HistogramTester histogram_tester;
+
+  TestProxyConfigurationProvider provider(personal_profile_);
+  enterprise_net::EnterpriseProxyErrorService error_service(&mock_service);
+  ProxyServiceController controller(&mock_service, &error_service, &provider);
+  mock_service.NotifyObservers();
+
+  histogram_tester.ExpectBucketCount(kRoutingRuleCountHistogram, 1, 1);
+  histogram_tester.ExpectBucketCount(kRoutingRuleCountHistogram, 0, 1);
+  histogram_tester.ExpectBucketCount(kRoutingMatchDomainCountHistogram, 0, 1);
+}
+
+// Tests that the routing rules without a proxy that WebKit supports are
+// recorded as unsupported.
+TEST_F(ProxyServiceControllerTest, RecordsUnsupportedRoutingRules) {
+  if (!@available(iOS 18.1, *)) {
+    GTEST_SKIP() << "Dynamic proxy routing requires iOS 18.1+.";
+  }
+
+  net::ProxyConfig::DynamicRoutingConfig config;
+  config.routing_rules.push_back(CreateRoutingRule(
+      net::ProxyServer::SCHEME_SOCKS5, {kFirstDestinationPattern}));
+  config.routing_rules.push_back(CreateRoutingRule(
+      net::ProxyServer::SCHEME_HTTPS, {kSecondDestinationPattern}));
+  NiceMock<enterprise_net::MockEnterpriseProxyService> mock_service;
+  EXPECT_CALL(mock_service, GetDynamicRoutingConfig()).WillOnce(Return(config));
+  base::HistogramTester histogram_tester;
+
+  TestProxyConfigurationProvider provider(personal_profile_);
+  enterprise_net::EnterpriseProxyErrorService error_service(&mock_service);
+  ProxyServiceController controller(&mock_service, &error_service, &provider);
+
+  histogram_tester.ExpectUniqueSample(kRoutingRuleCountHistogram, 1, 1);
+  histogram_tester.ExpectUniqueSample(kRoutingUnsupportedRuleCountHistogram, 1,
+                                      1);
+}
+
+// Tests that the routing rules are recorded when WebKit supports none of them,
+// which leaves WebKit without routes.
+TEST_F(ProxyServiceControllerTest, RecordsRoutingRulesWithoutSupportedProxy) {
+  if (!@available(iOS 18.1, *)) {
+    GTEST_SKIP() << "Dynamic proxy routing requires iOS 18.1+.";
+  }
+
+  net::ProxyConfig::DynamicRoutingConfig config;
+  config.routing_rules.push_back(CreateRoutingRule(
+      net::ProxyServer::SCHEME_SOCKS5, {kFirstDestinationPattern}));
+  NiceMock<enterprise_net::MockEnterpriseProxyService> mock_service;
+  EXPECT_CALL(mock_service, GetDynamicRoutingConfig()).WillOnce(Return(config));
+  base::HistogramTester histogram_tester;
+
+  TestProxyConfigurationProvider provider(personal_profile_);
+  enterprise_net::EnterpriseProxyErrorService error_service(&mock_service);
+  ProxyServiceController controller(&mock_service, &error_service, &provider);
+
+  EXPECT_TRUE(provider.rules().empty());
+  histogram_tester.ExpectUniqueSample(kRoutingRuleCountHistogram, 0, 1);
+  histogram_tester.ExpectUniqueSample(kRoutingUnsupportedRuleCountHistogram, 1,
+                                      1);
+}
+
+// Tests that a change of the rules left out is recorded, although the rules
+// given to WebKit don't change.
+TEST_F(ProxyServiceControllerTest, RecordsAddedUnsupportedRoutingRules) {
+  if (!@available(iOS 18.1, *)) {
+    GTEST_SKIP() << "Dynamic proxy routing requires iOS 18.1+.";
+  }
+
+  net::ProxyConfig::DynamicRoutingConfig config_with_unsupported_rule =
+      CreateSampleRoutingConfig(kFirstDestinationPattern);
+  config_with_unsupported_rule.routing_rules.push_back(CreateRoutingRule(
+      net::ProxyServer::SCHEME_SOCKS5, {kSecondDestinationPattern}));
+  NiceMock<enterprise_net::MockEnterpriseProxyService> mock_service;
+  EXPECT_CALL(mock_service, GetDynamicRoutingConfig())
+      .WillOnce(Return(CreateSampleRoutingConfig(kFirstDestinationPattern)))
+      .WillOnce(Return(config_with_unsupported_rule));
+  base::HistogramTester histogram_tester;
+
+  TestProxyConfigurationProvider provider(personal_profile_);
+  enterprise_net::EnterpriseProxyErrorService error_service(&mock_service);
+  ProxyServiceController controller(&mock_service, &error_service, &provider);
+  mock_service.NotifyObservers();
+
+  histogram_tester.ExpectUniqueSample(kRoutingRuleCountHistogram, 1, 2);
+  histogram_tester.ExpectBucketCount(kRoutingUnsupportedRuleCountHistogram, 0,
+                                     1);
+  histogram_tester.ExpectBucketCount(kRoutingUnsupportedRuleCountHistogram, 1,
+                                     1);
 }
 
 // Test that ProxyServiceControllerFactory creates a controller for a regular
