@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ANDROID_ENTITY_DATA_MANAGER_ANDROID_H_
 #define CHROME_BROWSER_AUTOFILL_ANDROID_ENTITY_DATA_MANAGER_ANDROID_H_
 
+#include <cstdint>
 #include <optional>
+#include <vector>
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -111,7 +114,7 @@ class EntityDataManagerAndroid : public EntityDataManager::Observer {
   // because of a failed server call or because the user became ineligible,
   // the `on_local_save_fallback` is run, which displays the user a feedback
   // message about their data being stored locally instead.
-  // `description_string_id` and `accept_button_string_id` are the resource IDs
+  // `description_string_ids` and `accept_button_string_id` are the resource IDs
   // of the strings used in the UI while creating the description and the button
   // to accept it. Note that these resources IDs are only used for logging
   // purposes, in the case of adding a new private entity that will stored in
@@ -119,7 +122,7 @@ class EntityDataManagerAndroid : public EntityDataManager::Observer {
   void AddOrUpdateEntityInstance(
       JNIEnv* env,
       const jni_zero::JavaRef<jobject>& jEntity,
-      int32_t description_string_id,
+      base::span<const int32_t> description_string_ids,
       int32_t accept_button_string_id,
       const jni_zero::JavaRef<jbyteArray>& j_legal_message_token,
       base::OnceClosure on_local_save_fallback);
@@ -243,7 +246,7 @@ class EntityDataManagerAndroid : public EntityDataManager::Observer {
   // `targeted_record_type` will `kServerWallet`, which will lead to the
   // `on_local_save_fallback` being run, displaying a feedback message to users
   // to let them know the entity was stored locally instead.
-  // `description_string_id` and `accept_button_string_id` are the resource IDs
+  // `description_string_ids` and `accept_button_string_id` are the resource IDs
   // of the strings used in the UI while creating the description and the button
   // to accept it. Note that these resources IDs are only used for logging
   // purposes, in the case of adding a new private entity that will stored in
@@ -251,7 +254,7 @@ class EntityDataManagerAndroid : public EntityDataManager::Observer {
   void AddOrUpdateEntityInstance(
       EntityInstance entity_instance,
       EntityInstance::RecordType targeted_record_type,
-      int description_string_id,
+      base::span<const int32_t> description_string_ids,
       int accept_button_string_id,
       std::optional<std::string> legal_message_token,
       base::OnceClosure on_local_save_fallback);

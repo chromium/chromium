@@ -86,11 +86,11 @@ public class EntityDataManagerTest {
     @Test
     public void testAddOrUpdateEntityInstance() {
         Runnable localSaveFallback = () -> {};
-        int descriptionStringId = 123;
+        int[] descriptionStringIds = new int[] {123, 234};
         int acceptButtonStringId = 456;
         mEntityDataManager.addOrUpdateEntityInstance(
                 mEntityInstance,
-                descriptionStringId,
+                descriptionStringIds,
                 acceptButtonStringId,
                 /* legalMessageToken= */ null,
                 localSaveFallback);
@@ -98,7 +98,7 @@ public class EntityDataManagerTest {
                 .addOrUpdateEntityInstance(
                         NATIVE_PTR,
                         mEntityInstance,
-                        descriptionStringId,
+                        descriptionStringIds,
                         acceptButtonStringId,
                         null,
                         localSaveFallback);
@@ -107,12 +107,12 @@ public class EntityDataManagerTest {
     @Test
     public void testAddOrUpdateEntityInstance_withLegalMessageToken() {
         Runnable localSaveFallback = () -> {};
-        int descriptionStringId = 123;
+        int[] descriptionStringIds = new int[] {123, 234};
         int acceptButtonStringId = 456;
         byte[] legalMessageToken = new byte[] {1, 2, 3};
         mEntityDataManager.addOrUpdateEntityInstance(
                 mEntityInstance,
-                descriptionStringId,
+                descriptionStringIds,
                 acceptButtonStringId,
                 legalMessageToken,
                 localSaveFallback);
@@ -120,7 +120,7 @@ public class EntityDataManagerTest {
                 .addOrUpdateEntityInstance(
                         NATIVE_PTR,
                         mEntityInstance,
-                        descriptionStringId,
+                        descriptionStringIds,
                         acceptButtonStringId,
                         legalMessageToken,
                         localSaveFallback);

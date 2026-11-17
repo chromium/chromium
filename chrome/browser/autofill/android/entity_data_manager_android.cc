@@ -5,6 +5,7 @@
 #include "chrome/browser/autofill/android/entity_data_manager_android.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <optional>
 #include <ranges>
 #include <variant>
@@ -14,6 +15,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/check_deref.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
@@ -246,7 +248,7 @@ void EntityDataManagerAndroid::RemoveEntityInstance(JNIEnv* env,
 void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& jEntity,
-    int32_t description_string_id,
+    base::span<const int32_t> description_string_ids,
     int32_t accept_button_string_id,
     const jni_zero::JavaRef<jbyteArray>& j_legal_message_token,
     base::OnceClosure on_local_save_fallback) {
@@ -270,7 +272,7 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
   }
 
   AddOrUpdateEntityInstance(std::move(entity_instance), targeted_record_type,
-                            description_string_id, accept_button_string_id,
+                            description_string_ids, accept_button_string_id,
                             std::move(legal_message_token),
                             std::move(on_local_save_fallback));
 }
@@ -307,7 +309,7 @@ EntityDataManagerAndroid::ExtractPreloadedDetailsForUpsertPass(
 void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
     EntityInstance entity_instance,
     EntityInstance::RecordType targeted_record_type,
-    int description_string_id,
+    base::span<const int32_t> description_string_ids,
     int accept_button_string_id,
     std::optional<std::string> legal_message_token,
     base::OnceClosure on_local_save_fallback) {
@@ -333,7 +335,7 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
       if (base::FeatureList::IsEnabled(
               wallet::features::kWalletApiPrivatePassesConsent)) {
         session_id = RecordWalletPrivatePassConsent(
-            {description_string_id}, accept_button_string_id, *consent_auditor_,
+            description_string_ids, accept_button_string_id, *consent_auditor_,
             *identity_manager_);
       }
       wallet_pass_access_manager_->SaveWalletEntityInstance(

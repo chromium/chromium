@@ -205,9 +205,11 @@ class EntityEditorMediator {
         commitChanges();
         mDelegate.onDone(
                 mEntityInstance,
-                mEntityInstance.getRecordType() == RecordType.LOCAL
-                        ? R.string.autofill_ai_save_or_update_local_entity_source_notice
-                        : R.string.autofill_ai_save_entity_in_wallet_source_notice,
+                new int[] {
+                    mEntityInstance.getRecordType() == RecordType.LOCAL
+                            ? R.string.autofill_ai_save_or_update_local_entity_source_notice
+                            : R.string.autofill_ai_save_entity_in_wallet_source_notice
+                },
                 R.string.done,
                 hasLegalMessage() ? mLegalMessageToken : null);
     }

@@ -32,7 +32,7 @@ public class EntityEditorCoordinator {
          * The user committed changes by pressing the "Done" button.
          *
          * @param entityInstance the entity instance with all updates applied.
-         * @param descriptionStringId the resource ID of the string used to describe the storage
+         * @param descriptionStringIds the resource IDs of the strings used to describe the storage
          *     used.
          * @param acceptButtonStringId the resource ID of the string used as the accept button for
          *     the consent.
@@ -41,7 +41,7 @@ public class EntityEditorCoordinator {
          */
         default void onDone(
                 EntityInstance entityInstance,
-                int descriptionStringId,
+                int[] descriptionStringIds,
                 int acceptButtonStringId,
                 byte @Nullable [] legalMessageToken) {}
 

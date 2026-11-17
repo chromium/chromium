@@ -4,6 +4,7 @@
 
 #include "chrome/browser/autofill/android/entity_data_manager_android.h"
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -55,6 +56,7 @@ namespace {
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::DoAll;
+using ::testing::ElementsAreArray;
 using ::testing::NiceMock;
 using ::testing::Optional;
 using ::testing::Ref;
@@ -180,7 +182,7 @@ TEST_F(EntityDataManagerAndroidTest,
                                        /*requires_reauth_to_see=*/false);
   entity_data_manager_android_->AddOrUpdateEntityInstance(
       env(), jni_zero::ToJniType(env(), entity_android),
-      /*description_string_id=*/0, /*accept_button_string_id=*/0,
+      /*description_string_ids=*/{}, /*accept_button_string_id=*/0,
       base::android::ToJavaByteArray(env(), raw_token), base::DoNothing());
   webdata_helper_.WaitUntilIdle();
 }
@@ -200,7 +202,7 @@ TEST_F(EntityDataManagerAndroidTest,
   EntityInstance entity = test::GetPassportEntityInstance(
       {.record_type = EntityInstance::RecordType::kServerWallet});
 
-  const int kDescriptionId = 123;
+  constexpr std::array kDescriptionIds = {123, 234};
   const int kAcceptButtonId = 456;
 
   consent_auditor::ConsentAuditor::SessionId session_id_consent;
@@ -221,7 +223,7 @@ TEST_F(EntityDataManagerAndroidTest,
   EXPECT_CALL(on_local_save_callback, Run);
 
   test_api(*entity_data_manager_android_)
-      .AddOrUpdateEntityInstance(entity, entity.record_type(), kDescriptionId,
+      .AddOrUpdateEntityInstance(entity, entity.record_type(), kDescriptionIds,
                                  kAcceptButtonId, on_local_save_callback.Get());
   webdata_helper_.WaitUntilIdle();
 
@@ -230,7 +232,7 @@ TEST_F(EntityDataManagerAndroidTest,
                   EntityInstance::RecordType::kLocal)));
   EXPECT_EQ(session_id_consent, session_id_api);
   EXPECT_EQ(consent.confirmation_grd_id(), kAcceptButtonId);
-  EXPECT_EQ(consent.description_grd_ids(0), kDescriptionId);
+  EXPECT_THAT(consent.description_grd_ids(), ElementsAreArray(kDescriptionIds));
 }
 
 // Test that when save to wallet succeeds, it is saved as a wallet
@@ -251,7 +253,7 @@ TEST_F(EntityDataManagerAndroidTest,
   // Simulate the server returning a masked version of the entity.
   EntityInstance saved_entity = test::MaskEntityInstance(entity);
 
-  const int kDescriptionId = 123;
+  constexpr std::array kDescriptionIds = {123, 234};
   const int kAcceptButtonId = 456;
 
   // Expect that consent is logged and that the correct session ID if forward
@@ -271,7 +273,7 @@ TEST_F(EntityDataManagerAndroidTest,
   EXPECT_CALL(on_local_save_callback, Run).Times(0);
 
   test_api(*entity_data_manager_android_)
-      .AddOrUpdateEntityInstance(entity, entity.record_type(), kDescriptionId,
+      .AddOrUpdateEntityInstance(entity, entity.record_type(), kDescriptionIds,
                                  kAcceptButtonId, on_local_save_callback.Get());
   webdata_helper_.WaitUntilIdle();
 
@@ -281,7 +283,7 @@ TEST_F(EntityDataManagerAndroidTest,
   EXPECT_EQ(instances[0].guid(), entity.guid());
   EXPECT_EQ(session_id_consent, session_id_api);
   EXPECT_EQ(consent.confirmation_grd_id(), kAcceptButtonId);
-  EXPECT_EQ(consent.description_grd_ids(0), kDescriptionId);
+  EXPECT_THAT(consent.description_grd_ids(), ElementsAreArray(kDescriptionIds));
 }
 
 // Test that when targeted record type is wallet but the entity is local
@@ -304,7 +306,7 @@ TEST_F(EntityDataManagerAndroidTest,
   test_api(*entity_data_manager_android_)
       .AddOrUpdateEntityInstance(
           entity, EntityInstance::RecordType::kServerWallet,
-          /*description_string_id=*/0,
+          /*description_string_ids=*/{},
           /*accept_button_string_id=*/0, on_local_save_callback.Get());
   webdata_helper_.WaitUntilIdle();
 

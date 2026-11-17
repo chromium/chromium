@@ -601,7 +601,11 @@ public class EntityEditorModuleTest {
 
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
         verify(mDelegate)
-                .onDone(mEntityInstanceCaptor.capture(), anyInt(), anyInt(), eq(legalMessageToken));
+                .onDone(
+                        mEntityInstanceCaptor.capture(),
+                        eq(new int[] {R.string.autofill_ai_save_entity_in_wallet_source_notice}),
+                        eq(R.string.done),
+                        eq(legalMessageToken));
         histogramWatcher.assertExpected();
     }
 
@@ -625,7 +629,12 @@ public class EntityEditorModuleTest {
         editorFields.get(4).model.set(VALUE, "XYZ123");
 
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
-        verify(mDelegate).onDone(mEntityInstanceCaptor.capture(), anyInt(), anyInt(), eq(null));
+        verify(mDelegate)
+                .onDone(
+                        mEntityInstanceCaptor.capture(),
+                        eq(new int[] {R.string.autofill_ai_save_entity_in_wallet_source_notice}),
+                        eq(R.string.done),
+                        eq(null));
         histogramWatcher.assertExpected();
     }
 
@@ -688,7 +697,7 @@ public class EntityEditorModuleTest {
         passportCountryItem.model.set(VALUE, "Germany");
 
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
-        verify(mDelegate).onDone(mEntityInstanceCaptor.capture(), anyInt(), anyInt(), any());
+        verify(mDelegate).onDone(mEntityInstanceCaptor.capture(), any(), anyInt(), any());
         EntityInstance updatedEntityInstance = mEntityInstanceCaptor.getValue();
 
         AttributeInstance passportName =
@@ -739,7 +748,7 @@ public class EntityEditorModuleTest {
                 DateFieldView.getMonthName(mActivity, /* month= */ 6));
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
         // Only the month is set, the date is not valid yet.
-        verify(mDelegate, times(0)).onDone(any(), anyInt(), anyInt(), any());
+        verify(mDelegate, times(0)).onDone(any(), any(), anyInt(), any());
         assertFalse(TextUtils.isEmpty(issueDateItem.model.get(ERROR_MESSAGE)));
         // The source notice is only show for required fields.
         assertFalse(sourceNoticeItem.model.get(NOTICE_VISIBLE));
@@ -747,7 +756,7 @@ public class EntityEditorModuleTest {
         setDropdownValue(issueDate.getDayPickerForTest(), "20");
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
         // Only the month and day are set, the date is not valid yet.
-        verify(mDelegate, times(0)).onDone(any(), anyInt(), anyInt(), any());
+        verify(mDelegate, times(0)).onDone(any(), any(), anyInt(), any());
         assertFalse(TextUtils.isEmpty(issueDateItem.model.get(ERROR_MESSAGE)));
         // The source notice is only show for required fields.
         assertFalse(sourceNoticeItem.model.get(NOTICE_VISIBLE));
@@ -755,7 +764,7 @@ public class EntityEditorModuleTest {
         setDropdownValue(issueDate.getYearPickerForTest(), "2026");
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
         // The date is completely valid, the editor should be closed now.
-        verify(mDelegate).onDone(mEntityInstanceCaptor.capture(), anyInt(), anyInt(), any());
+        verify(mDelegate).onDone(mEntityInstanceCaptor.capture(), any(), anyInt(), any());
 
         EntityInstance updatedEntityInstance = mEntityInstanceCaptor.getValue();
         AttributeInstance passportIssueDate =
@@ -811,7 +820,7 @@ public class EntityEditorModuleTest {
 
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
         // The passport number field is required, it's not possible to leave it empty.
-        verify(mDelegate, times(0)).onDone(any(), anyInt(), anyInt(), any());
+        verify(mDelegate, times(0)).onDone(any(), any(), anyInt(), any());
         assertFalse(TextUtils.isEmpty(passportNumberItem.model.get(ERROR_MESSAGE)));
         assertFalse(TextUtils.isEmpty(issueDateItem.model.get(ERROR_MESSAGE)));
         assertTrue(sourceNoticeItem.model.get(NOTICE_VISIBLE));
@@ -828,7 +837,7 @@ public class EntityEditorModuleTest {
         setDropdownValue(
                 issueDate.getMonthPickerForTest(), DateFieldView.getMonthDropdownHint(mActivity));
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
-        verify(mDelegate).onDone(mEntityInstanceCaptor.capture(), anyInt(), anyInt(), any());
+        verify(mDelegate).onDone(mEntityInstanceCaptor.capture(), any(), anyInt(), any());
 
         EntityInstance updatedEntityInstance = mEntityInstanceCaptor.getValue();
         // The name attribute should not be added to the entity because it wasn't set before.
@@ -897,7 +906,7 @@ public class EntityEditorModuleTest {
 
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
         // The passport number field is required, it's not possible to leave it empty.
-        verify(mDelegate, times(0)).onDone(any(), anyInt(), anyInt(), any());
+        verify(mDelegate, times(0)).onDone(any(), any(), anyInt(), any());
         assertFalse(TextUtils.isEmpty(passportIssueDate.model.get(ERROR_MESSAGE)));
         assertFalse(TextUtils.isEmpty(passportExpirationDate.model.get(ERROR_MESSAGE)));
         assertTrue(sourceNotice.model.get(NOTICE_VISIBLE));
@@ -915,7 +924,7 @@ public class EntityEditorModuleTest {
         assertFalse(sourceNotice.model.get(NOTICE_VISIBLE));
 
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
-        verify(mDelegate).onDone(mEntityInstanceCaptor.capture(), anyInt(), anyInt(), any());
+        verify(mDelegate).onDone(mEntityInstanceCaptor.capture(), any(), anyInt(), any());
 
         EntityInstance updatedEntityInstance = mEntityInstanceCaptor.getValue();
         // The name attribute should not be added to the entity because it wasn't set before.
@@ -952,7 +961,7 @@ public class EntityEditorModuleTest {
 
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
         // The entity should not be saved because all required fields are left empty.
-        verify(mDelegate, times(0)).onDone(any(), anyInt(), anyInt(), any());
+        verify(mDelegate, times(0)).onDone(any(), any(), anyInt(), any());
         assertFalse(TextUtils.isEmpty(vehicleLicensePlate.model.get(ERROR_MESSAGE)));
         assertFalse(TextUtils.isEmpty(vehicleIdentificationNumber.model.get(ERROR_MESSAGE)));
         assertTrue(sourceNotice.model.get(NOTICE_VISIBLE));
@@ -974,7 +983,7 @@ public class EntityEditorModuleTest {
         // Click the "Done" button and make sure that the editor is closed because only one required
         // attribute is required to save the entity.
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
-        verify(mDelegate).onDone(mEntityInstanceCaptor.capture(), anyInt(), anyInt(), any());
+        verify(mDelegate).onDone(mEntityInstanceCaptor.capture(), any(), anyInt(), any());
 
         EntityInstance updatedEntityInstance = mEntityInstanceCaptor.getValue();
         // The name attribute should not be added to the entity because it wasn't set before.
@@ -1037,7 +1046,7 @@ public class EntityEditorModuleTest {
 
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
         // The entity should not be saved because all required fields are left empty.
-        verify(mDelegate, times(0)).onDone(any(), anyInt(), anyInt(), any());
+        verify(mDelegate, times(0)).onDone(any(), any(), anyInt(), any());
         assertFalse(TextUtils.isEmpty(passportNameItem.model.get(ERROR_MESSAGE)));
         assertFalse(TextUtils.isEmpty(passportNumberItem.model.get(ERROR_MESSAGE)));
         assertFalse(TextUtils.isEmpty(passportIssueDateItem.model.get(ERROR_MESSAGE)));
@@ -1054,7 +1063,7 @@ public class EntityEditorModuleTest {
 
         passportNumberItem.model.set(VALUE, "AA123456BB");
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
-        verify(mDelegate).onDone(mEntityInstanceCaptor.capture(), anyInt(), anyInt(), any());
+        verify(mDelegate).onDone(mEntityInstanceCaptor.capture(), any(), anyInt(), any());
 
         EntityInstance updatedEntityInstance = mEntityInstanceCaptor.getValue();
         assertTrue(updatedEntityInstance.hasAttribute(PASSPORT_NUMBER_ATTRIBUTE_TYPE));
@@ -1112,7 +1121,7 @@ public class EntityEditorModuleTest {
         // Click the "Done" button and make sure that the editor is closed because there are no
         // required fields in the provided entity.
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
-        verify(mDelegate).onDone(mEntityInstanceCaptor.capture(), anyInt(), anyInt(), any());
+        verify(mDelegate).onDone(mEntityInstanceCaptor.capture(), any(), anyInt(), any());
     }
 
     private void showEditorDialog(EntityInstance entityInstance) {

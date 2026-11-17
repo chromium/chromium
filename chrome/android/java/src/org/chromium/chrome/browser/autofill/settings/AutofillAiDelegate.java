@@ -159,7 +159,7 @@ public class AutofillAiDelegate {
                 @Override
                 public void onDone(
                         EntityInstance entityInstance,
-                        int descriptionStringId,
+                        int[] descriptionStringIds,
                         int acceptButtonStringId,
                         byte @Nullable [] legalMessageToken) {
                     EntityDataManager entityDataManager =
@@ -169,7 +169,7 @@ public class AutofillAiDelegate {
                     }
                     entityDataManager.addOrUpdateEntityInstance(
                             entityInstance,
-                            descriptionStringId,
+                            descriptionStringIds,
                             acceptButtonStringId,
                             legalMessageToken,
                             () -> onLocalSaveFallback());

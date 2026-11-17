@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ANDROID_ENTITY_DATA_MANAGER_ANDROID_TEST_API_H_
 #define CHROME_BROWSER_AUTOFILL_ANDROID_ENTITY_DATA_MANAGER_ANDROID_TEST_API_H_
 
+#include <cstdint>
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/autofill/android/entity_data_manager_android.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -23,11 +25,11 @@ class EntityDataManagerAndroidTestApi {
   void AddOrUpdateEntityInstance(
       EntityInstance entity_instance,
       EntityInstance::RecordType targeted_record_type,
-      int description_string_id = 0,
+      base::span<const int32_t> description_string_ids = {},
       int accept_button_string_id = 0,
       base::OnceClosure on_local_save_fallback = base::DoNothing()) {
     AddOrUpdateEntityInstance(std::move(entity_instance), targeted_record_type,
-                              description_string_id, accept_button_string_id,
+                              description_string_ids, accept_button_string_id,
                               /*legal_message_token=*/std::nullopt,
                               std::move(on_local_save_fallback));
   }
@@ -35,14 +37,14 @@ class EntityDataManagerAndroidTestApi {
   void AddOrUpdateEntityInstance(
       EntityInstance entity_instance,
       EntityInstance::RecordType targeted_record_type,
-      int description_string_id,
+      base::span<const int32_t> description_string_ids,
       int accept_button_string_id,
       std::optional<std::string> legal_message_token,
       base::OnceClosure on_local_save_fallback = base::DoNothing()) {
     entity_data_manager_android_->AddOrUpdateEntityInstance(
-        std::move(entity_instance), targeted_record_type, description_string_id,
-        accept_button_string_id, std::move(legal_message_token),
-        std::move(on_local_save_fallback));
+        std::move(entity_instance), targeted_record_type,
+        description_string_ids, accept_button_string_id,
+        std::move(legal_message_token), std::move(on_local_save_fallback));
   }
 
  private:

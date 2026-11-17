@@ -99,7 +99,7 @@ public class EntityDataManager implements Destroyable {
     /** Saves or update an entity with an optional legal message token. */
     public void addOrUpdateEntityInstance(
             EntityInstance entity,
-            int descriptionStringId,
+            int[] descriptionStringIds,
             int acceptButtonStringId,
             byte @Nullable [] legalMessageToken,
             Runnable onLocalSaveFallback) {
@@ -108,7 +108,7 @@ public class EntityDataManager implements Destroyable {
                 .addOrUpdateEntityInstance(
                         mNativeEntityDataManagerAndroid,
                         entity,
-                        descriptionStringId,
+                        descriptionStringIds,
                         acceptButtonStringId,
                         legalMessageToken,
                         onLocalSaveFallback);
@@ -421,7 +421,7 @@ public class EntityDataManager implements Destroyable {
         void addOrUpdateEntityInstance(
                 long nativeEntityDataManagerAndroid,
                 EntityInstance entity,
-                int descriptionStringId,
+                @JniType("std::vector<int32_t>") int[] descriptionStringIds,
                 int acceptButtonStringId,
                 byte @Nullable [] legalMessageToken,
                 @JniType("base::OnceClosure") Runnable onLocalSaveFallback);
