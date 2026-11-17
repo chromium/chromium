@@ -293,6 +293,24 @@ struct ToV8Traits<NotShared<T>> {
     DCHECK(!value.IsNull());
     return ToV8Traits<T>::ToV8(script_state, value.Get());
   }
+
+  template <typename V8Type>
+    requires requires { typename T::V8Type; } &&
+             std::same_as<V8Type, typename T::V8Type>
+  [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
+                                                 v8::Local<V8Type> value) {
+    DCHECK(!value.IsEmpty());
+    return value;
+  }
+
+  template <typename V8Type>
+    requires requires { typename T::V8Type; } &&
+             std::same_as<V8Type, typename T::V8Type>
+  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+      ScriptState* script_state,
+      v8::MaybeLocal<V8Type> value) {
+    return value.ToLocalChecked();
+  }
 };
 
 // MaybeShared

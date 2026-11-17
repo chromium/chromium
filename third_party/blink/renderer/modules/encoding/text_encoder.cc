@@ -31,14 +31,18 @@
 #include "third_party/blink/renderer/modules/encoding/text_encoder.h"
 
 #include <array>
+#include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_text_encoder_encode_into_result.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/encoding/encoding.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
@@ -80,6 +84,37 @@ NotShared<DOMUint8Array> CreateDOMUint8Array(
   return NotShared<DOMUint8Array>(DOMUint8Array::Create(bytes));
 }
 
+v8::MaybeLocal<v8::Uint8Array> CreateV8Uint8Array(
+    v8::Isolate* isolate,
+    base::span<const uint8_t> bytes,
+    ExceptionState& exception_state) {
+  DCHECK(isolate->InContext());
+
+  v8::Local<v8::ArrayBuffer> v8_buffer;
+  if (base::FeatureList::IsEnabled(kThrowExceptionWhenTextEncodeOOM)) {
+    if (!v8::ArrayBuffer::MaybeNew(
+             isolate, bytes.size(),
+             v8::BackingStoreInitializationMode::kUninitialized)
+             .ToLocal(&v8_buffer)) [[unlikely]] {
+      exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,
+                                        "Failed to allocate buffer.");
+      return {};
+    }
+  } else {
+    v8_buffer = v8::ArrayBuffer::New(
+        isolate, bytes.size(),
+        v8::BackingStoreInitializationMode::kUninitialized);
+  }
+
+  if (!bytes.empty()) {
+    // SAFETY: `v8_buffer` was just allocated with `bytes.size()` bytes.
+    UNSAFE_BUFFERS(
+        base::span(static_cast<uint8_t*>(v8_buffer->Data()), bytes.size()))
+        .copy_from(bytes);
+  }
+  return v8::Uint8Array::New(v8_buffer, 0, bytes.size());
+}
+
 }  // namespace
 
 TextEncoder* TextEncoder::Create(ExecutionContext* context,
@@ -101,17 +136,22 @@ String TextEncoder::encoding() const {
   return name;
 }
 
-NotShared<DOMUint8Array> TextEncoder::encode(const String& input,
-                                             ExceptionState& exception_state) {
-  if (base::FeatureList::IsEnabled(kTextEncoderFastPath)) {
+v8::MaybeLocal<v8::Uint8Array> TextEncoder::encode(
+    ScriptState* script_state,
+    const String& input,
+    ExceptionState& exception_state) {
+  v8::Isolate* isolate = script_state->GetIsolate();
+  const bool fast_path_enabled =
+      base::FeatureList::IsEnabled(kTextEncoderFastPath);
+  if (fast_path_enabled) {
     if (input.empty()) {
       RecordEncodeMetrics(0, TextEncoderFastPathResult::kEmpty);
-      return CreateDOMUint8Array({}, exception_state);
+      return CreateV8Uint8Array(isolate, {}, exception_state);
     }
 
     if (input.Is8Bit() && input.ContainsOnlyAsciiOrEmpty()) {
       RecordEncodeMetrics(input.length(), TextEncoderFastPathResult::kAscii8Bit);
-      return CreateDOMUint8Array(input.Span8(), exception_state);
+      return CreateV8Uint8Array(isolate, input.Span8(), exception_state);
     }
 
     // Short non-ASCII strings can be encoded directly into a stack buffer to
@@ -128,7 +168,8 @@ NotShared<DOMUint8Array> TextEncoder::encode(const String& input,
             return codec_->EncodeInto(chars, base::span(stack_buffer));
           });
       CHECK_EQ(encode_into_result.code_units_read, input.length());
-      return CreateDOMUint8Array(
+      return CreateV8Uint8Array(
+          isolate,
           base::span(stack_buffer).first(encode_into_result.bytes_written),
           exception_state);
     }
@@ -147,7 +188,17 @@ NotShared<DOMUint8Array> TextEncoder::encode(const String& input,
   std::string result = VisitCharacters(non_null_input, [this](auto chars) {
     return codec_->Encode(chars, UnencodableHandling::kNone);
   });
-  return CreateDOMUint8Array(base::as_byte_span(result), exception_state);
+  if (fast_path_enabled) {
+    return CreateV8Uint8Array(isolate, base::as_byte_span(result),
+                              exception_state);
+  }
+  NotShared<DOMUint8Array> result_array =
+      CreateDOMUint8Array(base::as_byte_span(result), exception_state);
+  if (exception_state.HadException()) [[unlikely]] {
+    return {};
+  }
+  return ToV8Traits<NotShared<DOMUint8Array>>::ToV8(script_state, result_array)
+      .As<v8::Uint8Array>();
 }
 
 TextEncoderEncodeIntoResult* TextEncoder::encodeInto(

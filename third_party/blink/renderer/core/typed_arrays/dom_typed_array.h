@@ -19,6 +19,7 @@ class DOMTypedArray final : public DOMArrayBufferView {
 
  public:
   using ValueType = T;
+  using V8Type = V8TypedArray;
 
   static ThisType* Create(DOMArrayBufferBase* buffer,
                           size_t byte_offset,

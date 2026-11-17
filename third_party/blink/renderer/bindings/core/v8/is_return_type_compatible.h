@@ -186,6 +186,20 @@ inline constexpr bool
     IsReturnTypeCompatible<blink::NotShared<std::remove_pointer_t<ReturnType>>,
                            ReturnType> = true;
 
+template <typename T>
+  requires std::derived_from<T, DOMArrayBufferView> &&
+           requires { typename T::V8Type; }
+inline constexpr bool
+    IsReturnTypeCompatible<blink::NotShared<T>,
+                           v8::Local<typename T::V8Type>> = true;
+
+template <typename T>
+  requires std::derived_from<T, DOMArrayBufferView> &&
+           requires { typename T::V8Type; }
+inline constexpr bool
+    IsReturnTypeCompatible<blink::NotShared<T>,
+                           v8::MaybeLocal<typename T::V8Type>> = true;
+
 // IDLRecords are compatible to arrays of pairs, as long as key/value types
 // are compatible between records and pairs.
 template <typename IDLKey,

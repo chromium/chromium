@@ -4,12 +4,15 @@
 
 #include "third_party/blink/renderer/modules/encoding/text_encoder.h"
 
+#include <array>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/rand_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -20,6 +23,14 @@
 
 namespace blink {
 namespace {
+
+std::vector<uint8_t> CopyToVector(v8::Local<v8::Uint8Array> array) {
+  std::vector<uint8_t> result(array->ByteLength());
+  if (!result.empty()) {
+    array->CopyContents(result.data(), result.size());
+  }
+  return result;
+}
 
 class TextEncoderTest : public testing::TestWithParam<bool> {
  public:
@@ -45,16 +56,18 @@ TEST_P(TextEncoderTest, EncodeEmptyAndNullString) {
   DummyExceptionStateForTesting exception_state;
 
   // Empty string
-  auto result_empty = encoder->encode("", exception_state);
+  auto result_empty =
+      encoder->encode(scope.GetScriptState(), "", exception_state)
+          .ToLocalChecked();
   EXPECT_FALSE(exception_state.HadException());
-  ASSERT_FALSE(result_empty.IsNull());
-  EXPECT_EQ(0u, result_empty->byteLength());
+  EXPECT_EQ(0u, result_empty->ByteLength());
 
   // Null string (from C++)
-  auto result_null = encoder->encode(String(), exception_state);
+  auto result_null =
+      encoder->encode(scope.GetScriptState(), String(), exception_state)
+          .ToLocalChecked();
   EXPECT_FALSE(exception_state.HadException());
-  ASSERT_FALSE(result_null.IsNull());
-  EXPECT_EQ(0u, result_null->byteLength());
+  EXPECT_EQ(0u, result_null->ByteLength());
 }
 
 TEST_P(TextEncoderTest, EncodeAscii) {
@@ -64,15 +77,17 @@ TEST_P(TextEncoderTest, EncodeAscii) {
   DummyExceptionStateForTesting exception_state;
 
   String ascii_string("Hello, World!");
-  auto result = encoder->encode(ascii_string, exception_state);
+  auto result =
+      encoder->encode(scope.GetScriptState(), ascii_string, exception_state)
+          .ToLocalChecked();
   EXPECT_FALSE(exception_state.HadException());
-  ASSERT_FALSE(result.IsNull());
-  EXPECT_EQ(13u, result->byteLength());
+  ASSERT_FALSE(result.IsEmpty());
+  EXPECT_EQ(13u, result->ByteLength());
 
-  auto span = base::as_bytes(result->ByteSpan());
+  auto bytes = CopyToVector(result);
   EXPECT_EQ("Hello, World!",
-            std::string_view(reinterpret_cast<const char*>(span.data()),
-                             span.size()));
+            std::string_view(reinterpret_cast<const char*>(bytes.data()),
+                             bytes.size()));
 }
 
 TEST_P(TextEncoderTest, EncodeShortNonAscii) {
@@ -83,20 +98,22 @@ TEST_P(TextEncoderTest, EncodeShortNonAscii) {
 
   // Non-ASCII string with <= 85 code units (exercises stack buffer)
   String utf8_string(u"Hello \U0001F680 \u2713");
-  auto result = encoder->encode(utf8_string, exception_state);
+  auto result =
+      encoder->encode(scope.GetScriptState(), utf8_string, exception_state)
+          .ToLocalChecked();
   EXPECT_FALSE(exception_state.HadException());
-  ASSERT_FALSE(result.IsNull());
+  ASSERT_FALSE(result.IsEmpty());
 
-  auto span = base::as_bytes(result->ByteSpan());
+  auto bytes = CopyToVector(result);
   // "Hello " (6) + Rocket 🚀 (4) + " " (1) + Checkmark ✓ (3) = 14 bytes
-  EXPECT_EQ(14u, span.size());
+  EXPECT_EQ(14u, bytes.size());
   const uint8_t expected[] = {
       'H',  'e',  'l',  'l',  'o',  ' ',
       0xF0, 0x9F, 0x9A, 0x80,  // Rocket 🚀
       ' ',
       0xE2, 0x9C, 0x93  // Checkmark ✓
   };
-  EXPECT_EQ(base::span(expected), span);
+  EXPECT_THAT(bytes, ::testing::ElementsAreArray(expected));
 }
 
 TEST_P(TextEncoderTest, Encode8BitLatin1NonAscii) {
@@ -113,15 +130,17 @@ TEST_P(TextEncoderTest, Encode8BitLatin1NonAscii) {
   ASSERT_TRUE(latin1_string.Is8Bit());
   ASSERT_FALSE(latin1_string.ContainsOnlyAsciiOrEmpty());
 
-  auto result = encoder->encode(latin1_string, exception_state);
+  auto result =
+      encoder->encode(scope.GetScriptState(), latin1_string, exception_state)
+          .ToLocalChecked();
   EXPECT_FALSE(exception_state.HadException());
-  ASSERT_FALSE(result.IsNull());
+  ASSERT_FALSE(result.IsEmpty());
 
-  auto span = base::as_bytes(result->ByteSpan());
+  auto bytes = CopyToVector(result);
   // 'c', 'a', 'f' (3 bytes) + 'é' in UTF-8: 0xC3, 0xA9 (2 bytes) = 5 bytes
-  EXPECT_EQ(5u, span.size());
+  EXPECT_EQ(5u, bytes.size());
   const uint8_t expected[] = {'c', 'a', 'f', 0xC3, 0xA9};
-  EXPECT_EQ(base::span(expected), span);
+  EXPECT_THAT(bytes, ::testing::ElementsAreArray(expected));
 }
 
 TEST_P(TextEncoderTest, EncodeUnpairedSurrogates) {
@@ -134,19 +153,21 @@ TEST_P(TextEncoderTest, EncodeUnpairedSurrogates) {
   const UChar surrogates[] = {0xD800, 'a', 0xDFFF};
   String surrogate_string = String(base::span(surrogates));
 
-  auto result = encoder->encode(surrogate_string, exception_state);
+  auto result =
+      encoder->encode(scope.GetScriptState(), surrogate_string, exception_state)
+          .ToLocalChecked();
   EXPECT_FALSE(exception_state.HadException());
-  ASSERT_FALSE(result.IsNull());
+  ASSERT_FALSE(result.IsEmpty());
 
-  auto span = base::as_bytes(result->ByteSpan());
+  auto bytes = CopyToVector(result);
   // U+FFFD (3 bytes) + 'a' (1 byte) + U+FFFD (3 bytes) = 7 bytes
-  EXPECT_EQ(7u, span.size());
+  EXPECT_EQ(7u, bytes.size());
   const uint8_t expected[] = {
       0xEF, 0xBF, 0xBD,  // U+FFFD
       'a',
       0xEF, 0xBF, 0xBD   // U+FFFD
   };
-  EXPECT_EQ(base::span(expected), span);
+  EXPECT_THAT(bytes, ::testing::ElementsAreArray(expected));
 }
 
 TEST_P(TextEncoderTest, EncodeStackBufferBoundary85And86) {
@@ -164,15 +185,17 @@ TEST_P(TextEncoderTest, EncodeStackBufferBoundary85And86) {
   String str_85 = builder_85.ToString();
   EXPECT_EQ(85u, str_85.length());
 
-  auto result_85 = encoder->encode(str_85, exception_state);
+  auto result_85 =
+      encoder->encode(scope.GetScriptState(), str_85, exception_state)
+          .ToLocalChecked();
   EXPECT_FALSE(exception_state.HadException());
-  ASSERT_FALSE(result_85.IsNull());
-  EXPECT_EQ(255u, result_85->byteLength());
-  auto span_85 = base::as_bytes(result_85->ByteSpan());
+  ASSERT_FALSE(result_85.IsEmpty());
+  EXPECT_EQ(255u, result_85->ByteLength());
+  auto bytes_85 = CopyToVector(result_85);
   for (size_t i = 0; i < 85; ++i) {
-    EXPECT_EQ(span_85[i * 3 + 0], 0xE3);
-    EXPECT_EQ(span_85[i * 3 + 1], 0x81);
-    EXPECT_EQ(span_85[i * 3 + 2], 0x82);
+    EXPECT_EQ(bytes_85[i * 3 + 0], 0xE3);
+    EXPECT_EQ(bytes_85[i * 3 + 1], 0x81);
+    EXPECT_EQ(bytes_85[i * 3 + 2], 0x82);
   }
 
   // One beyond boundary: 86 3-byte code points.
@@ -184,15 +207,17 @@ TEST_P(TextEncoderTest, EncodeStackBufferBoundary85And86) {
   String str_86 = builder_86.ToString();
   EXPECT_EQ(86u, str_86.length());
 
-  auto result_86 = encoder->encode(str_86, exception_state);
+  auto result_86 =
+      encoder->encode(scope.GetScriptState(), str_86, exception_state)
+          .ToLocalChecked();
   EXPECT_FALSE(exception_state.HadException());
-  ASSERT_FALSE(result_86.IsNull());
-  EXPECT_EQ(258u, result_86->byteLength());
-  auto span_86 = base::as_bytes(result_86->ByteSpan());
+  ASSERT_FALSE(result_86.IsEmpty());
+  EXPECT_EQ(258u, result_86->ByteLength());
+  auto bytes_86 = CopyToVector(result_86);
   for (size_t i = 0; i < 86; ++i) {
-    EXPECT_EQ(span_86[i * 3 + 0], 0xE3);
-    EXPECT_EQ(span_86[i * 3 + 1], 0x81);
-    EXPECT_EQ(span_86[i * 3 + 2], 0x82);
+    EXPECT_EQ(bytes_86[i * 3 + 0], 0xE3);
+    EXPECT_EQ(bytes_86[i * 3 + 1], 0x81);
+    EXPECT_EQ(bytes_86[i * 3 + 2], 0x82);
   }
 }
 
@@ -210,11 +235,13 @@ TEST_P(TextEncoderTest, EncodeLongNonAsciiFallback) {
   String long_string = builder.ToString();
   EXPECT_GT(long_string.length(), 85u);
 
-  auto result = encoder->encode(long_string, exception_state);
+  auto result =
+      encoder->encode(scope.GetScriptState(), long_string, exception_state)
+          .ToLocalChecked();
   EXPECT_FALSE(exception_state.HadException());
-  ASSERT_FALSE(result.IsNull());
+  ASSERT_FALSE(result.IsEmpty());
   // 100 rockets * 4 bytes = 400 bytes
-  EXPECT_EQ(400u, result->byteLength());
+  EXPECT_EQ(400u, result->ByteLength());
 }
 
 TEST_P(TextEncoderTest, Encode16BitLatin1LongString) {
@@ -231,15 +258,16 @@ TEST_P(TextEncoderTest, Encode16BitLatin1LongString) {
   EXPECT_FALSE(str.ContainsOnlyAsciiOrEmpty());
   EXPECT_EQ(100u, str.length());
 
-  auto result = encoder->encode(str, exception_state);
+  auto result = encoder->encode(scope.GetScriptState(), str, exception_state)
+                    .ToLocalChecked();
   EXPECT_FALSE(exception_state.HadException());
-  ASSERT_FALSE(result.IsNull());
+  ASSERT_FALSE(result.IsEmpty());
   // Each U+00E9 encodes to 2 bytes in UTF-8: 0xC3, 0xA9.
-  EXPECT_EQ(200u, result->byteLength());
-  auto span = base::as_bytes(result->ByteSpan());
+  EXPECT_EQ(200u, result->ByteLength());
+  auto bytes = CopyToVector(result);
   for (size_t i = 0; i < 100; ++i) {
-    EXPECT_EQ(span[i * 2 + 0], 0xC3);
-    EXPECT_EQ(span[i * 2 + 1], 0xA9);
+    EXPECT_EQ(bytes[i * 2 + 0], 0xC3);
+    EXPECT_EQ(bytes[i * 2 + 1], 0xA9);
   }
 }
 
@@ -258,13 +286,14 @@ TEST_P(TextEncoderTest, Encode16BitAsciiString) {
   EXPECT_TRUE(str.ContainsOnlyAsciiOrEmpty());
   EXPECT_EQ(11u, str.length());
 
-  auto result = encoder->encode(str, exception_state);
+  auto result = encoder->encode(scope.GetScriptState(), str, exception_state)
+                    .ToLocalChecked();
   EXPECT_FALSE(exception_state.HadException());
-  ASSERT_FALSE(result.IsNull());
-  EXPECT_EQ(11u, result->byteLength());
+  ASSERT_FALSE(result.IsEmpty());
+  EXPECT_EQ(11u, result->ByteLength());
   const uint8_t expected[] = {'h', 'e', 'l', 'l', 'o', ' ',
                               'w', 'o', 'r', 'l', 'd'};
-  EXPECT_EQ(base::span(expected), base::as_bytes(result->ByteSpan()));
+  EXPECT_THAT(CopyToVector(result), ::testing::ElementsAreArray(expected));
 }
 
 TEST_P(TextEncoderTest, FastPathAndLengthHistograms) {
@@ -276,7 +305,7 @@ TEST_P(TextEncoderTest, FastPathAndLengthHistograms) {
 
   {
     base::HistogramTester histogram_tester;
-    encoder->encode("", exception_state);
+    encoder->encode(scope.GetScriptState(), "", exception_state);
     histogram_tester.ExpectUniqueSample("Blink.TextEncoder.Encode.InputLength",
                                         0, 1);
     histogram_tester.ExpectUniqueSample(
@@ -288,7 +317,7 @@ TEST_P(TextEncoderTest, FastPathAndLengthHistograms) {
 
   {
     base::HistogramTester histogram_tester;
-    encoder->encode("hello", exception_state);
+    encoder->encode(scope.GetScriptState(), "hello", exception_state);
     histogram_tester.ExpectUniqueSample("Blink.TextEncoder.Encode.InputLength",
                                         5, 1);
     histogram_tester.ExpectUniqueSample(
@@ -304,7 +333,7 @@ TEST_P(TextEncoderTest, FastPathAndLengthHistograms) {
     StringBuilder builder;
     builder.Append(StringView(u"🚀🎉✨"));
     String short_utf8 = builder.ToString();
-    encoder->encode(short_utf8, exception_state);
+    encoder->encode(scope.GetScriptState(), short_utf8, exception_state);
     histogram_tester.ExpectUniqueSample("Blink.TextEncoder.Encode.InputLength",
                                         short_utf8.length(), 1);
     histogram_tester.ExpectUniqueSample(
@@ -322,7 +351,7 @@ TEST_P(TextEncoderTest, FastPathAndLengthHistograms) {
       builder.Append(static_cast<UChar>(0x00E9));
     }
     String long_str = builder.ToString();
-    encoder->encode(long_str, exception_state);
+    encoder->encode(scope.GetScriptState(), long_str, exception_state);
     histogram_tester.ExpectUniqueSample("Blink.TextEncoder.Encode.InputLength",
                                         100, 1);
     histogram_tester.ExpectUniqueSample(

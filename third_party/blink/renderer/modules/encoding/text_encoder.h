@@ -61,6 +61,7 @@ enum class TextEncoderFastPathResult {
 
 class ExecutionContext;
 class ExceptionState;
+class ScriptState;
 class TextEncoderEncodeIntoResult;
 
 class MODULES_EXPORT TextEncoder final : public ScriptWrappable {
@@ -74,7 +75,9 @@ class MODULES_EXPORT TextEncoder final : public ScriptWrappable {
 
   // Implement the IDL
   String encoding() const;
-  NotShared<DOMUint8Array> encode(const String&, ExceptionState&);
+  v8::MaybeLocal<v8::Uint8Array> encode(ScriptState*,
+                                        const String&,
+                                        ExceptionState&);
   TextEncoderEncodeIntoResult* encodeInto(const String&,
                                           NotShared<DOMUint8Array>&);
 
