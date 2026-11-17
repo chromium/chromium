@@ -13,6 +13,11 @@ namespace browser_ui {
 BASE_FEATURE(kBottomSheetDeferContentSwapOnHidden,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for translating the bottom sheet container to match keyboard IME
+// animations.
+BASE_FEATURE(kBottomSheetSmoothKeyboardTransition,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kBottomSheetTypes, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace browser_ui

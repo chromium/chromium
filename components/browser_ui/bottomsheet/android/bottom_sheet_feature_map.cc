@@ -19,6 +19,7 @@ namespace {
 // locations in the code base.
 const base::Feature* const kFeaturesExposedToJava[] = {
     &kBottomSheetDeferContentSwapOnHidden,
+    &kBottomSheetSmoothKeyboardTransition,
     &kBottomSheetTypes,
 };
 
