@@ -212,6 +212,7 @@ export class OmniboxEverywhereAppElement extends
     this.eventTracker_.add(window, 'focus', this.onWindowFocus_.bind(this));
     this.eventTracker_.add(window, 'blur', this.onWindowBlur_.bind(this));
     this.eventTracker_.add(window, 'click', this.onAppClick_.bind(this));
+    this.eventTracker_.add(window, 'mousedown', this.onMousedown_.bind(this));
     this.eventTracker_.add(this, 'text-input-focused', () => {
       this.isExpanded_ = true;
     });
@@ -768,6 +769,21 @@ export class OmniboxEverywhereAppElement extends
     // a focusable control, that control should keep focus.
     if (getDeepActiveElement() === document.body) {
       this.focusActiveInput_();
+    }
+  }
+
+  // When the browser implements window dragging itself (Aura today), a press
+  // on a window drag region (`app-region: drag`) still reaches the page. Its
+  // default action would move focus out of the input (closing the dropdown and
+  // shrinking the window under the cursor right before the drag starts) and
+  // start a text or image selection. `app-region` is inherited, so the pressed
+  // element's computed value approximates the browser's draggable region. The
+  // browser subtracts all no-drag boxes, so don't nest `drag` in `no-drag`.
+  private onMousedown_(e: MouseEvent) {
+    const target = e.composedPath()[0];
+    if (e.button === 0 && target instanceof Element &&
+        getComputedStyle(target).getPropertyValue('app-region') === 'drag') {
+      e.preventDefault();
     }
   }
 

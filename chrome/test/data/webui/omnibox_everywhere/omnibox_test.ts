@@ -2350,6 +2350,42 @@ suite('OmniboxEverywhereAppTest', () => {
     await microtasksFinished();
   });
 
+  test('mousedown on a drag region prevents its default action', async () => {
+    function mousedown(target: Element|null, button = 0): boolean {
+      assertTrue(!!target);
+      const event = new MouseEvent(
+          'mousedown',
+          {bubbles: true, composed: true, cancelable: true, button});
+      target.dispatchEvent(event);
+      return event.defaultPrevented;
+    }
+
+    // Pressing the background around the input and the dropdown would
+    // otherwise move focus out of the input (closing the dropdown) and start a
+    // selection.
+    const searchbox =
+        app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+    assertTrue(mousedown(searchbox.$.inputWrapper));
+    assertTrue(
+        mousedown(searchbox.shadowRoot.querySelector('.dropdownContainer')));
+    // Right-clicks and presses on interactive (no-drag) elements keep their
+    // default action.
+    assertFalse(mousedown(searchbox.$.inputWrapper, /*button=*/ 2));
+    assertFalse(mousedown(searchbox.$.input.inputElement));
+    assertFalse(
+        mousedown(searchbox.shadowRoot.querySelector('cr-searchbox-dropdown')!
+                      .shadowRoot.querySelector('[part~="dropdown-content"]')));
+
+    // Same for the composebox.
+    searchbox.fire('open-composebox', {text: '', files: [], mode: 0, model: 0});
+    await microtasksFinished();
+    const composebox =
+        app.shadowRoot.querySelector('omnibox-everywhere-composebox')!;
+    assertTrue(!!composebox);
+    assertTrue(mousedown(composebox));
+    assertFalse(mousedown(composebox.$.composeboxInput.inputElement));
+  });
+
 
   test('open-voice-search opens voice search dialog overlay', async () => {
     const searchbox =
