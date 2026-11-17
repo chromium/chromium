@@ -24,6 +24,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.view.LayoutInflater;
@@ -32,6 +34,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.After;
@@ -82,11 +85,19 @@ import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.ntp.NewTabPage.NtpScrollListener;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager.HomepageStateListener;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationTestHelper;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataUploadImage;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 import org.chromium.chrome.browser.omnibox.SearchEngineService;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridgeJni;
@@ -144,6 +155,8 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 /** Unit tests for {@link NewTabPageCoordinator}. */
@@ -285,6 +298,7 @@ public class NewTabPageCoordinatorUnitTest {
                 .thenReturn(mVisibilityDelegate);
         when(mBrowserControlsVisibilityManager.getBottomControlsHeight()).thenReturn(100);
 
+        NtpCustomizationConfigManager.setInstanceForTesting(new NtpCustomizationConfigManager());
         createCoordinator();
     }
 
@@ -292,8 +306,10 @@ public class NewTabPageCoordinatorUnitTest {
     public void tearDown() {
         if (mEdgeToEdgeStateProvider != null) {
             mEdgeToEdgeStateProvider.detach();
+            mEdgeToEdgeStateProvider = null;
         }
         mCoordinator.destroy();
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
     }
 
     @Test
@@ -524,6 +540,9 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     private void createCoordinator(boolean isLff) {
+        if (mCoordinator != null) {
+            mCoordinator.destroy();
+        }
         mNewTabPageLayout =
                 (NewTabPageLayout)
                         LayoutInflater.from(mActivity)
@@ -2330,6 +2349,234 @@ public class NewTabPageCoordinatorUnitTest {
                 mCoordinator.getCurrentNtpFakeSearchBoxTransitionStartOffset());
     }
 
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testSupportsEdgeToEdgeOnTop_LiveThemeSwitchWithEarlierListener() {
+        final int systemTopInset = 50;
+        int toolbarHeightNoShadow =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+        mEdgeToEdgeStateProvider = NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
+
+        NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
+        List<Boolean> observedSupportsEdgeToEdgeInEarlyListener = new ArrayList<>();
+        List<Integer> observedTopInsetInEarlyListener = new ArrayList<>();
+
+        // Register an earlier HomepageStateListener before creating NewTabPageCoordinator,
+        // reproducing EdgeToEdgeControllerImpl and TopInsetCoordinator registering during Activity
+        // initialization before an NTP is created.
+        HomepageStateListener earlyListener =
+                new HomepageStateListener() {
+                    @Override
+                    public void onBackgroundImageChanged(
+                            Bitmap originalBitmap,
+                            BackgroundImageInfo backgroundImageInfo,
+                            boolean fromInitialization,
+                            @NtpBackgroundType int oldType,
+                            @NtpBackgroundType int newType) {
+                        if (fromInitialization) return;
+                        recordStateFromEarlyListener();
+                    }
+
+                    @Override
+                    public void onBackgroundColorChanged(
+                            NtpThemeColorInfo ntpThemeColorInfo,
+                            @ColorInt int backgroundColor,
+                            boolean fromInitialization,
+                            @NtpBackgroundType int oldType,
+                            @NtpBackgroundType int newType) {
+                        if (fromInitialization) return;
+                        recordStateFromEarlyListener();
+                    }
+
+                    @Override
+                    public void onBackgroundReset(@NtpBackgroundType int oldType) {
+                        recordStateFromEarlyListener();
+                    }
+
+                    private void recordStateFromEarlyListener() {
+                        boolean supportsEdgeToEdge = mCoordinator.supportsEdgeToEdgeOnTop();
+                        observedSupportsEdgeToEdgeInEarlyListener.add(supportsEdgeToEdge);
+                        mCoordinator.onToEdgeChange(systemTopInset, supportsEdgeToEdge);
+                        observedTopInsetInEarlyListener.add(mCoordinator.getTopInset());
+                    }
+                };
+        configManager.addListener(earlyListener, mActivity, /* skipNotify= */ true);
+
+        createCoordinator(/* isLff= */ false);
+
+        assertTrue(mCoordinator.supportsEnableEdgeToEdgeOnTop());
+        assertFalse(mCoordinator.supportsEdgeToEdgeOnTop());
+        assertFalse(mCoordinator.useLightIconTint());
+        assertEquals(0, mCoordinator.getTopInset());
+
+        // 1. Live switch: DEFAULT -> CHROME_COLOR.
+        configManager.onBackgroundDataChanged(
+                mActivity,
+                createBlueChromeColorData(),
+                /* shouldNotifySyncedThemeManager= */ false);
+
+        assertEquals(List.of(true), observedSupportsEdgeToEdgeInEarlyListener);
+        assertEquals(List.of(systemTopInset), observedTopInsetInEarlyListener);
+        assertTrue(mCoordinator.supportsEdgeToEdgeOnTop());
+        assertFalse(mCoordinator.useLightIconTint());
+        assertEquals(toolbarHeightNoShadow + systemTopInset, mNewTabPageLayout.getPaddingTop());
+
+        // 2. Live reset: CHROME_COLOR -> DEFAULT.
+        observedSupportsEdgeToEdgeInEarlyListener.clear();
+        observedTopInsetInEarlyListener.clear();
+        configManager.onBackgroundDataChanged(
+                mActivity, /* backgroundData= */ null, /* shouldNotifySyncedThemeManager= */ false);
+
+        assertEquals(List.of(false), observedSupportsEdgeToEdgeInEarlyListener);
+        assertEquals(List.of(0), observedTopInsetInEarlyListener);
+        assertFalse(mCoordinator.supportsEdgeToEdgeOnTop());
+        assertFalse(mCoordinator.useLightIconTint());
+        assertEquals(toolbarHeightNoShadow, mNewTabPageLayout.getPaddingTop());
+
+        // 3. Live switch: DEFAULT -> IMAGE_FROM_DISK.
+        observedSupportsEdgeToEdgeInEarlyListener.clear();
+        observedTopInsetInEarlyListener.clear();
+        Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+        BackgroundImageInfo imageInfo =
+                new BackgroundImageInfo(
+                        new Matrix(),
+                        new Matrix(),
+                        /* portraitWindowSize= */ null,
+                        /* landscapeWindowSize= */ null);
+        NtpBackgroundDataUploadImage uploadImageData =
+                new NtpBackgroundDataUploadImage(
+                        PlatformType.ANDROID,
+                        imageInfo,
+                        bitmap,
+                        /* primaryColor= */ Color.BLUE,
+                        /* fileIdHash= */ "test_file_id_hash");
+        configManager.onBackgroundDataChanged(
+                mActivity, uploadImageData, /* shouldNotifySyncedThemeManager= */ false);
+
+        assertEquals(List.of(true), observedSupportsEdgeToEdgeInEarlyListener);
+        assertEquals(List.of(systemTopInset), observedTopInsetInEarlyListener);
+        assertTrue(mCoordinator.supportsEdgeToEdgeOnTop());
+        assertTrue(mCoordinator.useLightIconTint());
+        assertEquals(toolbarHeightNoShadow + systemTopInset, mNewTabPageLayout.getPaddingTop());
+
+        // 4. Live reset: IMAGE_FROM_DISK -> DEFAULT.
+        observedSupportsEdgeToEdgeInEarlyListener.clear();
+        observedTopInsetInEarlyListener.clear();
+        configManager.onBackgroundDataChanged(
+                mActivity, /* backgroundData= */ null, /* shouldNotifySyncedThemeManager= */ false);
+
+        assertEquals(List.of(false), observedSupportsEdgeToEdgeInEarlyListener);
+        assertEquals(List.of(0), observedTopInsetInEarlyListener);
+        assertFalse(mCoordinator.supportsEdgeToEdgeOnTop());
+        assertFalse(mCoordinator.useLightIconTint());
+        assertEquals(toolbarHeightNoShadow, mNewTabPageLayout.getPaddingTop());
+
+        // 5. Destroying the coordinator unregisters its listener.
+        configManager.removeListener(earlyListener);
+        assertTrue(configManager.getListenersSizeForTesting() > 0);
+        mCoordinator.destroy();
+        assertEquals(0, configManager.getListenersSizeForTesting());
+        configManager.onBackgroundDataChanged(
+                mActivity, uploadImageData, /* shouldNotifySyncedThemeManager= */ false);
+        assertFalse(mCoordinator.useLightIconTint());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testSupportsEdgeToEdgeOnTop_ConstructedWithActiveCustomThemeOnPhone() {
+        mEdgeToEdgeStateProvider = NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
+        applyChromeColorTheme();
+
+        createCoordinator(/* isLff= */ false);
+        assertTrue(mCoordinator.supportsEnableEdgeToEdgeOnTop());
+        assertTrue(mCoordinator.supportsEdgeToEdgeOnTop());
+        assertFalse(mCoordinator.useLightIconTint());
+
+        // Also verify construction while an uploaded image is configured on disk (even before its
+        // bitmap finishes async decoding).
+        setupDiskImageBackground();
+        createCoordinator(/* isLff= */ false);
+        assertTrue(mCoordinator.supportsEnableEdgeToEdgeOnTop());
+        assertTrue(mCoordinator.supportsEdgeToEdgeOnTop());
+        assertTrue(mCoordinator.useLightIconTint());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testSupportsEdgeToEdgeOnTop_InitializesConfigManagerOnConstruction() {
+        mEdgeToEdgeStateProvider = NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
+
+        // Persist COLOR_FROM_HEX without primaryColorLight so ensureInitialized() (triggered by
+        // initHomepageStateListener()) falls back to DEFAULT before observers query
+        // supportsEdgeToEdgeOnTop().
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
+                NtpBackgroundType.COLOR_FROM_HEX);
+        NtpCustomizationConfigManager configManager = new NtpCustomizationConfigManager();
+        NtpCustomizationConfigManager.setInstanceForTesting(configManager);
+        assertEquals(NtpBackgroundType.COLOR_FROM_HEX, configManager.getBackgroundType());
+
+        createCoordinator(/* isLff= */ false);
+
+        assertEquals(NtpBackgroundType.DEFAULT, configManager.getBackgroundType());
+        assertFalse(mCoordinator.supportsEdgeToEdgeOnTop());
+        assertFalse(mCoordinator.useLightIconTint());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testSupportsEdgeToEdgeOnTop_DisabledOnLff() {
+        mEdgeToEdgeStateProvider = NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
+        applyChromeColorTheme();
+
+        createCoordinator(/* isLff= */ true);
+
+        assertFalse(mCoordinator.supportsEnableEdgeToEdgeOnTop());
+        assertFalse(mCoordinator.supportsEdgeToEdgeOnTop());
+        assertFalse(mCoordinator.useLightIconTint());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testSupportsEdgeToEdgeOnTop_DisabledWhenWindowNotEdgeToEdge() {
+        applyChromeColorTheme();
+
+        createCoordinator(/* isLff= */ false);
+
+        assertFalse(mCoordinator.supportsEnableEdgeToEdgeOnTop());
+        assertFalse(mCoordinator.supportsEdgeToEdgeOnTop());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testSupportsEdgeToEdgeOnTop_DisabledWhenCustomizationFeatureDisabled() {
+        mEdgeToEdgeStateProvider = NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
+        NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
+        configManager.setBackgroundTypeForTesting(NtpBackgroundType.CHROME_COLOR);
+
+        createCoordinator(/* isLff= */ false);
+
+        // Verify behaviorally that NewTabPageCoordinator did not register a HomepageStateListener
+        // when NEW_TAB_PAGE_CUSTOMIZATION_V2 is disabled.
+        Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+        BackgroundImageInfo imageInfo =
+                new BackgroundImageInfo(
+                        new Matrix(),
+                        new Matrix(),
+                        /* portraitWindowSize= */ null,
+                        /* landscapeWindowSize= */ null);
+        configManager.notifyBackgroundImageChanged(
+                bitmap, imageInfo, /* fromInitialization= */ false, NtpBackgroundType.DEFAULT);
+        assertFalse(mCoordinator.supportsEnableEdgeToEdgeOnTop());
+        assertFalse(mCoordinator.supportsEdgeToEdgeOnTop());
+        assertFalse(mCoordinator.useLightIconTint());
+    }
+
     /**
      * Makes the {@link SideUiStateProvider} available to the coordinator created in {@link
      * #setUp()}, and returns the {@link SideUiObserver} it registers. Invocations on {@link
@@ -2364,5 +2611,22 @@ public class NewTabPageCoordinatorUnitTest {
                 .thenReturn(customizationCoordinator);
         assertFalse(NtpCustomizationUtils.isThemeTipBottomSheetShownFromSharedPreference());
         return customizationCoordinator;
+    }
+
+    private NtpBackgroundDataColor createBlueChromeColorData() {
+        return new NtpBackgroundDataColor(
+                mActivity,
+                PlatformType.ANDROID,
+                NtpThemeColorId.NTP_COLORS_BLUE,
+                /* isChromeColorDailyRefreshEnabled= */ false);
+    }
+
+    private void applyChromeColorTheme() {
+        NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
+        configManager.ensureInitialized(mActivity);
+        configManager.onBackgroundDataChanged(
+                mActivity,
+                createBlueChromeColorData(),
+                /* shouldNotifySyncedThemeManager= */ false);
     }
 }

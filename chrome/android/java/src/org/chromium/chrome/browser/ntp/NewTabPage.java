@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -64,11 +63,7 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager.HomepageStateListener;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
-import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
-import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler;
@@ -201,19 +196,11 @@ public class NewTabPage
     private final Activity mActivity;
     private boolean mSnapshotSingleTabCardChanged;
     private final boolean mIsInNightMode;
-    private final boolean mSupportsEnableEdgeToEdgeOnTop;
     private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final TopInsetProvider mTopInsetProvider;
     private TopInsetProvider.@Nullable Observer mTopInsetChangeObserver;
     private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
     private @Nullable Callback<EdgeToEdgeController> mEdgeToEdgeControllerCallback;
-    private boolean mIsUseEdgeToEdgeForCustomizedTheme;
-
-    private @Nullable HomepageStateListener mHomepageStateListener;
-
-    // A flag to use light tint on toolbar and status bar icons. The light tint isn't applied on
-    // tablet mode.
-    private boolean mUseLightIconTint;
 
     private @Nullable NtpSmoothTransitionDelegate mSmoothTransitionDelegate;
 
@@ -593,23 +580,10 @@ public class NewTabPage
         mToolbarHeight =
                 activity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
 
-        mSupportsEnableEdgeToEdgeOnTop =
-                NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(windowAndroid, mIsLff);
-
-        // Initialize NTP theme customization state before setting up top inset observers so that
-        // the initial customized theme state is known before observers start listening. The
-        // listener to observe custom background changes is added in all form factors as long as the
-        // feature is enabled.
-        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
-            setIsUseEdgeToEdgeForCustomizedTheme();
-            initHomepageStateListener();
-        }
-
-        if (mSupportsEnableEdgeToEdgeOnTop) {
+        if (mNewTabPageCoordinator.supportsEnableEdgeToEdgeOnTop()) {
             // Apply edge-to-edge adjustments exclusively to phones. These are not required for LFF
             // devices.
             initTopInsetProviderObserver();
-            initUseLightIconTint();
         }
 
         NewTabPageUma.recordContentSuggestionsDisplayStatus(profile);
@@ -768,40 +742,6 @@ public class NewTabPage
         mTopInsetProvider.addObserver(mTopInsetChangeObserver);
     }
 
-    // Called when ChromeFeatureList.sNewTabPageCustomizationV2 is enabled to add a
-    // HomepageStateListener.
-    private void initHomepageStateListener() {
-        mHomepageStateListener =
-                new HomepageStateListener() {
-                    @Override
-                    public void onBackgroundImageChanged(
-                            Bitmap originalBitmap,
-                            BackgroundImageInfo backgroundImageInfo,
-                            boolean fromInitialization,
-                            @NtpBackgroundType int oldType,
-                            @NtpBackgroundType int newType) {
-                        onBackgroundChangedImpl(/* applyWhiteBackgroundOnSearchBox= */ true);
-                    }
-
-                    @Override
-                    public void onBackgroundColorChanged(
-                            @Nullable NtpThemeColorInfo ntpThemeColorInfo,
-                            @ColorInt int backgroundColor,
-                            boolean fromInitialization,
-                            @NtpBackgroundType int oldType,
-                            @NtpBackgroundType int newType) {
-                        onBackgroundChangedImpl(/* applyWhiteBackgroundOnSearchBox= */ false);
-                    }
-
-                    @Override
-                    public void onBackgroundReset(@NtpBackgroundType int oldType) {
-                        onBackgroundChangedImpl(/* applyWhiteBackgroundOnSearchBox= */ false);
-                    }
-                };
-        NtpCustomizationConfigManager.getInstance()
-                .addListener(mHomepageStateListener, mContext, /* skipNotify= */ false);
-    }
-
     /**
      * Compares standard SharedPreferences with our active in-memory cached state and applies
      * updates from background sync.
@@ -835,29 +775,6 @@ public class NewTabPage
 
         NtpCustomizationConfigManager.getInstance()
                 .maybeApplyBackgroundUpdateFromDeviceSync(mActivity);
-    }
-
-    private void onBackgroundChangedImpl(boolean applyWhiteBackgroundOnSearchBox) {
-        setIsUseEdgeToEdgeForCustomizedTheme();
-
-        if (!mIsLff) {
-            mUseLightIconTint = applyWhiteBackgroundOnSearchBox;
-        }
-        mNewTabPageCoordinator.onCustomizedBackgroundChanged();
-    }
-
-    /** Initializes whether to use a light tint color on icons of toolbar and status bar. */
-    private void initUseLightIconTint() {
-        if (mIsLff) return;
-
-        @NtpBackgroundType
-        int imageType = NtpCustomizationConfigManager.getInstance().getBackgroundType();
-        if (imageType == NtpBackgroundType.IMAGE_FROM_DISK
-                || imageType == NtpBackgroundType.THEME_COLLECTION) {
-            mUseLightIconTint = true;
-        } else {
-            mUseLightIconTint = false;
-        }
     }
 
     /**
@@ -1204,11 +1121,6 @@ public class NewTabPage
             mTopInsetChangeObserver = null;
         }
 
-        if (mHomepageStateListener != null) {
-            NtpCustomizationConfigManager.getInstance().removeListener(mHomepageStateListener);
-            mHomepageStateListener = null;
-        }
-
         updateNtpScrollListener(false);
 
         sTotalCount--;
@@ -1235,7 +1147,7 @@ public class NewTabPage
 
     @Override
     public boolean useLightIconTint() {
-        return mUseLightIconTint;
+        return mNewTabPageCoordinator.useLightIconTint();
     }
 
     @Override
@@ -1245,7 +1157,7 @@ public class NewTabPage
 
     @Override
     public boolean supportsEdgeToEdgeOnTop() {
-        return mIsUseEdgeToEdgeForCustomizedTheme;
+        return mNewTabPageCoordinator.supportsEdgeToEdgeOnTop();
     }
 
     @Override
@@ -1385,15 +1297,6 @@ public class NewTabPage
      */
     public void showHomeSurfaceUiOnNtp(@Nullable Tab mostRecentTab) {
         mNewTabPageCoordinator.showHomeSurfaceUiOnNtp(mostRecentTab);
-    }
-
-    /** Sets whether the NTP is currently set as edge-to-edge. */
-    private void setIsUseEdgeToEdgeForCustomizedTheme() {
-        mIsUseEdgeToEdgeForCustomizedTheme =
-                mSupportsEnableEdgeToEdgeOnTop
-                        && !mIsLff
-                        && NtpCustomizationConfigManager.getInstance().getBackgroundType()
-                                != NtpBackgroundType.DEFAULT;
     }
 
     public boolean isMagicStackVisibleForTesting() {

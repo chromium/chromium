@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.text.Editable;
@@ -18,6 +19,7 @@ import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
@@ -66,10 +68,14 @@ import org.chromium.chrome.browser.ntp.search.NtpSearchBox;
 import org.chromium.chrome.browser.ntp.search.NtpSearchBoxFactory;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager.HomepageStateListener;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.omnibox.SearchEngineService;
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineIconObserver;
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineNameObserver;
@@ -260,6 +266,12 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private int mCurrentNtpFakeSearchBoxTransitionStartOffset;
 
     private int mTopInset;
+    private final boolean mSupportsEnableEdgeToEdgeOnTop;
+    // A flag to use light tint on toolbar and status bar icons. The light tint isn't applied on
+    // tablet mode.
+    private boolean mUseLightIconTint;
+    private @Nullable HomepageStateListener mHomepageStateListener;
+    private @Nullable NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     private @Nullable OnLayoutChangeListener mOnLayoutChangeListener;
     private @Nullable NtpSigninPromoCoordinator mSigninPromoCoordinator;
 
@@ -388,6 +400,19 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                             provider.addObserver(mSideUiObserver);
                             updateUiConfigInsetForSideUi(provider.getCurrentSideUiSpecs());
                         }));
+
+        mSupportsEnableEdgeToEdgeOnTop =
+                NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(mWindowAndroid, mIsLff);
+        // Initialize the NTP theme customization listener before setting up top inset observers so
+        // that NtpCustomizationConfigManager is initialized before observers query
+        // supportsEdgeToEdgeOnTop(). The listener to observe custom background changes is added in
+        // all form factors as long as the feature is enabled.
+        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
+            initHomepageStateListener();
+        }
+        if (mSupportsEnableEdgeToEdgeOnTop) {
+            initUseLightIconTint();
+        }
 
         NtpCustomizationPromoManager.maybeShowHomepageCustomizationSnackbarOnRecreate(
                 mActivity, mSnackbarManager, ApplicationStatus.getTaskId(mActivity));
@@ -1770,6 +1795,12 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             mSideUiStateProvider = null;
         }
 
+        if (mNtpCustomizationConfigManager != null && mHomepageStateListener != null) {
+            mNtpCustomizationConfigManager.removeListener(mHomepageStateListener);
+            mHomepageStateListener = null;
+        }
+        mNtpCustomizationConfigManager = null;
+
         mModel.set(NewTabPageLayoutProperties.DELEGATE, null);
 
         mSearchBoxScrollListener = null;
@@ -2016,6 +2047,81 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         }
         // If the background has been updated before and it should remain the same, returns false.
         return TriStateUtils.from(desiredState) != currentState;
+    }
+
+    private NtpCustomizationConfigManager getNtpCustomizationConfigManager() {
+        if (mNtpCustomizationConfigManager == null) {
+            mNtpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance();
+        }
+        return mNtpCustomizationConfigManager;
+    }
+
+    // Called when ChromeFeatureList.sNewTabPageCustomizationV2 is enabled to add a
+    // HomepageStateListener.
+    private void initHomepageStateListener() {
+        mHomepageStateListener =
+                new HomepageStateListener() {
+                    @Override
+                    public void onBackgroundImageChanged(
+                            Bitmap originalBitmap,
+                            BackgroundImageInfo backgroundImageInfo,
+                            boolean fromInitialization,
+                            @NtpBackgroundType int oldType,
+                            @NtpBackgroundType int newType) {
+                        onBackgroundChangedImpl(/* applyWhiteBackgroundOnSearchBox= */ true);
+                    }
+
+                    @Override
+                    public void onBackgroundColorChanged(
+                            @Nullable NtpThemeColorInfo ntpThemeColorInfo,
+                            @ColorInt int backgroundColor,
+                            boolean fromInitialization,
+                            @NtpBackgroundType int oldType,
+                            @NtpBackgroundType int newType) {
+                        onBackgroundChangedImpl(/* applyWhiteBackgroundOnSearchBox= */ false);
+                    }
+
+                    @Override
+                    public void onBackgroundReset(@NtpBackgroundType int oldType) {
+                        onBackgroundChangedImpl(/* applyWhiteBackgroundOnSearchBox= */ false);
+                    }
+                };
+        getNtpCustomizationConfigManager()
+                .addListener(mHomepageStateListener, mActivity, /* skipNotify= */ false);
+    }
+
+    private void onBackgroundChangedImpl(boolean applyWhiteBackgroundOnSearchBox) {
+        if (!mIsLff) {
+            mUseLightIconTint = applyWhiteBackgroundOnSearchBox;
+        }
+        onCustomizedBackgroundChanged();
+    }
+
+    /** Initializes whether to use a light tint color on icons of toolbar and status bar. */
+    private void initUseLightIconTint() {
+        if (mIsLff) return;
+
+        @NtpBackgroundType int imageType = getNtpCustomizationConfigManager().getBackgroundType();
+        mUseLightIconTint =
+                imageType == NtpBackgroundType.IMAGE_FROM_DISK
+                        || imageType == NtpBackgroundType.THEME_COLLECTION;
+    }
+
+    /** Returns whether this NTP is eligible for top edge-to-edge customization. */
+    boolean supportsEnableEdgeToEdgeOnTop() {
+        return mSupportsEnableEdgeToEdgeOnTop;
+    }
+
+    /** Returns whether this NTP currently draws edge-to-edge into the top system bar area. */
+    boolean supportsEdgeToEdgeOnTop() {
+        return mSupportsEnableEdgeToEdgeOnTop
+                && getNtpCustomizationConfigManager().getBackgroundType()
+                        != NtpBackgroundType.DEFAULT;
+    }
+
+    /** Returns whether toolbar and status bar icons should use a light tint on this NTP. */
+    boolean useLightIconTint() {
+        return mUseLightIconTint;
     }
 
     /** Returns the top inset of the NTP. */
