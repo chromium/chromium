@@ -53,6 +53,7 @@ cc_component("paint") {
     "paint_cache.cc",
     "paint_cache.h",
     "paint_canvas.h",
+    "paint_color.h",
     "paint_export.h",
     "paint_filter.cc",
     "paint_filter.h",

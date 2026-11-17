@@ -393,7 +393,7 @@ void PaintOpReader::Read(SkPath* path) {
 }
 
 void PaintOpReader::Read(PaintFlags* flags) {
-  Read(&flags->color_);
+  Read(&flags->paint_color_.color);
   Read(&flags->width_);
   Read(&flags->miter_limit_);
 
@@ -419,9 +419,8 @@ void PaintOpReader::Read(PaintFlags* flags) {
 }
 
 void PaintOpReader::Read(CorePaintFlags* flags) {
-  Read(&flags->color_);
+  Read(&flags->paint_color_.color);
   Read(&flags->width_);
-  Read(&flags->miter_limit_);
   ReadSimple(&flags->bitfields_uint_);
 }
 

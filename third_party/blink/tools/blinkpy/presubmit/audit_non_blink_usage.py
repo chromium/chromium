@@ -606,6 +606,7 @@ _CONFIG = [
             'cc::BeginMainFrameReason',
             'cc::CategorizedWorkerPool',
             'cc::ColorFilter',
+            'cc::DeferredPropertyType',
             'cc::DrawImage',
             'cc::DrawLooper',
             'cc::InspectablePaintRecorder',

@@ -114,7 +114,8 @@ void ScopedRasterFlags::AdjustStrokeIfNeeded(const SkMatrix& ctm) {
 
   const auto can_substitute_hairline =
       flags()->getStrokeCap() == PaintFlags::kDefault_Cap &&
-      flags()->getStrokeJoin() == PaintFlags::kDefault_Join;
+      flags()->getStrokeJoin() == PaintFlags::kDefault_Join &&
+      !flags()->getPaintColor().has_deferred_color();
   if (can_substitute_hairline && stroke_vec.x() < 1.f && stroke_vec.y() < 1.f) {
     // Use modulated hairline when possible, as it is faster and produces
     // results closer to the original intent.

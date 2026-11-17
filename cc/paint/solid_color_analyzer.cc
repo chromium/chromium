@@ -192,8 +192,16 @@ void CheckIfSolidShape(const SkCanvas& canvas,
   if (flags.nothingToDraw())
     return;
 
-  bool does_cover_canvas = IsFullQuad(canvas, shape);
   SkBlendMode blendmode = flags.getBlendMode();
+  // Unless clearing, a deferred color's value isn't known until raster.
+  if (flags.getPaintColor().has_deferred_color() &&
+      blendmode != SkBlendMode::kClear) {
+    *is_transparent = false;
+    *is_solid_color = false;
+    return;
+  }
+
+  bool does_cover_canvas = IsFullQuad(canvas, shape);
   if (does_cover_canvas && ActsLikeClear(blendmode, flags.getColor4f().fA)) {
     *is_transparent = true;
   } else if (!flags.isFullyTransparent() || blendmode != SkBlendMode::kSrc) {

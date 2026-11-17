@@ -567,7 +567,9 @@ void DrawLineLiteOp::Serialize(PaintOpWriter& writer,
                                const PaintFlags* flags_to_serialize,
                                const SkM44& current_ctm,
                                const SkM44& original_ctm) const {
-  writer.WriteSimpleMultiple(x0, y0, x1, y1, core_paint_flags);
+  writer.WriteSimpleMultiple(
+      x0, y0, x1, y1, core_paint_flags.paint_color_.color,
+      core_paint_flags.width_, core_paint_flags.bitfields_uint_);
 }
 
 void DrawArcOp::Serialize(PaintOpWriter& writer,
@@ -585,7 +587,9 @@ void DrawArcLiteOp::Serialize(PaintOpWriter& writer,
                               const SkM44& current_ctm,
                               const SkM44& original_ctm) const {
   writer.WriteSimpleMultiple(oval, start_angle_degrees, sweep_angle_degrees,
-                             core_paint_flags);
+                             core_paint_flags.paint_color_.color,
+                             core_paint_flags.width_,
+                             core_paint_flags.bitfields_uint_);
 }
 
 void DrawOvalOp::Serialize(PaintOpWriter& writer,

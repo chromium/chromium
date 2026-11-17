@@ -149,8 +149,12 @@ DrawingDisplayItem::BackgroundColorInfo DrawingDisplayItem::BackgroundColor()
       default:
         return {};
     }
-    return {static_cast<const cc::PaintOpWithFlags&>(op).flags.getColor4f(),
-            item_rect.width() * item_rect.height(),
+    const auto& flags = static_cast<const cc::PaintOpWithFlags&>(op).flags;
+    // Don't report a static background color when raster may replace it.
+    if (flags.getPaintColor().has_deferred_color()) {
+      return {};
+    }
+    return {flags.getColor4f(), item_rect.width() * item_rect.height(),
             may_be_solid_color &&
                 item_rect.contains(gfx::RectToSkIRect(VisualRect()))};
   }
@@ -213,7 +217,7 @@ gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
 
       const auto& flags = static_cast<const cc::PaintOpWithFlags&>(op).flags;
       if (PaintFlagsMayChangeColorOrMovePixelsExceptShader(flags) ||
-          !flags.getColor4f().isOpaque() ||
+          !flags.isOpaque() ||
           (flags.getShader() && !flags.getShader()->IsOpaque())) {
         continue;
       }

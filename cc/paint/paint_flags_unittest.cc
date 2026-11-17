@@ -4,6 +4,8 @@
 
 #include "cc/paint/paint_flags.h"
 
+#include "cc/paint/record_paint_canvas.h"
+#include "cc/test/paint_op_matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -74,6 +76,59 @@ TEST(PaintFlags, DynamicRangeLimitMix) {
   EXPECT_NEAR(
       ComputeHdrHeadroom(PaintFlags::DynamicRangeLimitMixture(0.f, 0.f), 4.f),
       4.f, kEpsilon);
+}
+
+TEST(PaintFlags, DeferredColor) {
+  PaintFlags flags;
+  CorePaintFlags& core = flags;
+  DeferredPropertyKey key{ElementId(1), DeferredPropertyType::kBackgroundColor};
+
+  // A keyed color is not treated as opaque and skips lite ops / alpha folding.
+  flags.setPaintColor({SkColors::kRed, key});
+  EXPECT_FALSE(core.isOpaque());
+  EXPECT_FALSE(flags.CanConvertToCorePaintFlags());
+  EXPECT_FALSE(flags.SupportsFoldingAlpha());
+  EXPECT_FALSE(flags.EqualsForTesting(PaintFlags()));
+  EXPECT_EQ(core.getPaintColor(), (PaintColor{SkColors::kRed, key}));
+  EXPECT_EQ(core.getPaintColor().deferred_key(), key);
+
+  // Overriding alpha flags a main-thread repaint and keeps a 0-alpha draw.
+  flags.setAlphaf(0.f);
+  EXPECT_FALSE(core.isFullyTransparent());
+  EXPECT_FALSE(flags.nothingToDraw());
+  EXPECT_EQ(core.getPaintColor(), (PaintColor{{1, 0, 0, 0}, key, true}));
+
+  // Replacing with a fresh PaintColor resets needs_main_thread_repaint.
+  flags.setPaintColor({SkColors::kBlue, key});
+  EXPECT_EQ(core.getPaintColor(), (PaintColor{SkColors::kBlue, key}));
+
+  // Setting a plain color clears the deferred key and repaint flag.
+  core.setColor(SkColors::kBlack);
+  EXPECT_EQ(core, CorePaintFlags());
+  EXPECT_TRUE(core.isOpaque());
+  EXPECT_TRUE(flags.CanConvertToCorePaintFlags());
+}
+
+TEST(PaintFlags, DrawArcLiteOpMiterLimit) {
+  PaintFlags flags;
+  flags.setStrokeMiter(10.f);
+  flags.setStyle(PaintFlags::kStroke_Style);
+  RecordPaintCanvas c;
+
+  // Open and full-circle arcs have no corners and stay on DrawArcLiteOp.
+  c.drawArc({0, 0, 10, 10}, 0, 90, flags);
+  flags.setArcClosed(true);
+  c.drawArc({0, 0, 10, 10}, 0, 360, flags);
+  c.drawArc({0, 0, 10, 10}, 0, -360, flags);
+
+  // A closed partial arc uses DrawArcOp to keep its miter limit.
+  c.drawArc({0, 0, 10, 10}, 0, 90, flags);
+
+  EXPECT_THAT(c.ReleaseAsRecord(),
+              testing::ElementsAre(
+                  PaintOpIs<DrawArcLiteOp>(), PaintOpIs<DrawArcLiteOp>(),
+                  PaintOpIs<DrawArcLiteOp>(),
+                  PaintOpEq<DrawArcOp>(SkRect{0, 0, 10, 10}, 0, 90, flags)));
 }
 
 }  // namespace

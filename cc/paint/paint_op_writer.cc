@@ -346,8 +346,8 @@ void PaintOpWriter::Write(const PaintFlags& flags, const SkM44& current_ctm) {
     // Fast path for when there is nothing complicated to write.
     // NOTE: size_t is written as two 32-bit zeros (see WriteSize()).
     WriteSimpleMultiple(
-        flags.color_, flags.width_, flags.miter_limit_, flags.bitfields_uint_,
-        flags.targeted_hdr_headroom_,
+        flags.paint_color_.color, flags.width_, flags.miter_limit_,
+        flags.bitfields_uint_, flags.targeted_hdr_headroom_,
         // flags.path_effect_.
         base::checked_cast<uint8_t>(PathEffect::Type::kNull),
         // flags.color_filter_.
@@ -361,7 +361,7 @@ void PaintOpWriter::Write(const PaintFlags& flags, const SkM44& current_ctm) {
     return;
   }
 
-  WriteSimple(flags.color_);
+  WriteSimple(flags.paint_color_.color);
   Write(flags.width_);
   Write(flags.miter_limit_);
   WriteSimple(flags.bitfields_uint_);

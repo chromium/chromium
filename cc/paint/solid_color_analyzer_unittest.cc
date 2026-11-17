@@ -422,5 +422,33 @@ TEST_F(SolidColorAnalyzerTest, ClipRRectDifferenceCoversCanvasWithClear) {
       IsSolidColor(/*max_ops_to_analyze=*/5, gfx::Rect(0, 50, 200, 100)));
 }
 
+TEST_F(SolidColorAnalyzerTest, DrawRectDeferredColor) {
+  constexpr DeferredPropertyKey kKey{ElementId(1),
+                                     DeferredPropertyType::kBackgroundColor};
+  SkRect rect = SkRect::MakeWH(200, 200);
+
+  // A deferred color can change at raster, so it is not a known solid color.
+  PaintFlags flags;
+  flags.setPaintColor({SkColors::kRed, kKey});
+  canvas_.drawRect(rect, flags);
+  EXPECT_FALSE(IsSolidColor());
+
+  // Blend modes that depend on alpha are not treated as transparent either.
+  flags.setPaintColor({SkColors::kTransparent, kKey});
+  flags.setBlendMode(SkBlendMode::kSrc);
+  canvas_.drawRect(rect, flags);
+  EXPECT_FALSE(IsSolidColor());
+
+  flags.setPaintColor({SkColors::kRed, kKey});
+  flags.setBlendMode(SkBlendMode::kDstOut);
+  canvas_.drawRect(rect, flags);
+  EXPECT_FALSE(IsSolidColor());
+
+  // Clearing ignores the paint color, so the result is still transparent.
+  flags.setBlendMode(SkBlendMode::kClear);
+  canvas_.drawRect(rect, flags);
+  EXPECT_EQ(SkColors::kTransparent, GetColor());
+}
+
 }  // namespace
 }  // namespace cc

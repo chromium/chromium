@@ -161,4 +161,24 @@ TEST(ScopedRasterFlagsTest, ThinAliasedStroke) {
   }
 }
 
+TEST(ScopedRasterFlagsTest, ThinAliasedStrokeDeferredColor) {
+  constexpr DeferredPropertyKey kKey{ElementId(1),
+                                     DeferredPropertyType::kBackgroundColor};
+  PaintFlags flags;
+  flags.setStyle(PaintFlags::kStroke_Style);
+  flags.setStrokeWidth(1);
+  flags.setAntiAlias(false);
+  flags.setPaintColor({SkColors::kRed, kKey});
+
+  // Scaling a 1px stroke by 0.5 uses anti-aliasing instead of scaling alpha,
+  // since the color may still be replaced at raster.
+  ScopedRasterFlags scoped(&flags, nullptr, SkMatrix::Scale(0.5f, 0.5f), 0,
+                           1.0f);
+  ASSERT_TRUE(scoped.flags());
+  EXPECT_TRUE(scoped.flags()->isAntiAlias());
+  EXPECT_EQ(scoped.flags()->getStrokeWidth(), 1.0f);
+  EXPECT_EQ(scoped.flags()->getPaintColor(),
+            (PaintColor{SkColors::kRed, kKey}));
+}
+
 }  // namespace cc

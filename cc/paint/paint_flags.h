@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "cc/paint/color_filter.h"
 #include "cc/paint/draw_looper.h"
+#include "cc/paint/paint_color.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/path_effect.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -41,20 +42,43 @@ class CC_PAINT_EXPORT CorePaintFlags {
     return static_cast<Style>(bitfields_.style_);
   }
   ALWAYS_INLINE void setStyle(Style style) { bitfields_.style_ = style; }
-  // TODO(crbug.com/40249893): Remove this function
-  ALWAYS_INLINE SkColor getColor() const { return color_.toSkColor(); }
-  ALWAYS_INLINE const SkColor4f& getColor4f() const { return color_; }
-  ALWAYS_INLINE void setColor(SkColor color) {
-    color_ = SkColor4f::FromColor(color);
+  ALWAYS_INLINE const PaintColor& getPaintColor() const LIFETIME_BOUND {
+    return paint_color_;
   }
-  ALWAYS_INLINE void setColor(SkColor4f color) { color_ = color; }
-  ALWAYS_INLINE float getAlphaf() const { return color_.fA; }
-  ALWAYS_INLINE bool isFullyTransparent() const { return color_.fA == 0.0f; }
-  ALWAYS_INLINE bool isOpaque() const { return color_.fA >= 1.0f; }
+  ALWAYS_INLINE void setPaintColor(const PaintColor& new_color) {
+    // Only write deferred fields when setting or clearing a deferred color.
+    if (new_color.has_deferred_color() || paint_color_.has_deferred_color())
+        [[unlikely]] {
+      paint_color_ = new_color;
+    } else {
+      paint_color_.color = new_color.color;
+    }
+  }
+  // TODO(crbug.com/40249893): Remove this function
+  ALWAYS_INLINE SkColor getColor() const {
+    return paint_color_.color.toSkColor();
+  }
+  ALWAYS_INLINE const SkColor4f& getColor4f() const {
+    return paint_color_.color;
+  }
+  ALWAYS_INLINE void setColor(SkColor color) {
+    setColor(SkColor4f::FromColor(color));
+  }
+  ALWAYS_INLINE void setColor(SkColor4f color) { setPaintColor({color}); }
+  ALWAYS_INLINE float getAlphaf() const { return paint_color_.color.fA; }
+  ALWAYS_INLINE bool isFullyTransparent() const {
+    return paint_color_.color.fA == 0.0f && !paint_color_.has_deferred_color();
+  }
+  ALWAYS_INLINE bool isOpaque() const {
+    return paint_color_.color.fA >= 1.0f && !paint_color_.has_deferred_color();
+  }
   template <class F>
     requires(std::is_same_v<F, float>)
   ALWAYS_INLINE void setAlphaf(F a) {
-    color_.fA = a;
+    paint_color_.color.fA = a;
+    if (paint_color_.has_deferred_color()) [[unlikely]] {
+      paint_color_.needs_main_thread_repaint = true;
+    }
   }
   ALWAYS_INLINE void setBlendMode(SkBlendMode mode) {
     bitfields_.blend_mode_ = static_cast<uint32_t>(mode);
@@ -154,8 +178,6 @@ class CC_PAINT_EXPORT CorePaintFlags {
   }
   ALWAYS_INLINE SkScalar getStrokeWidth() const { return width_; }
   ALWAYS_INLINE void setStrokeWidth(SkScalar width) { width_ = width; }
-  ALWAYS_INLINE SkScalar getStrokeMiter() const { return miter_limit_; }
-  ALWAYS_INLINE void setStrokeMiter(SkScalar miter) { miter_limit_ = miter; }
   enum Cap {
     kButt_Cap = SkPaint::kButt_Cap,    //!< begin/end contours with no extension
     kRound_Cap = SkPaint::kRound_Cap,  //!< begin/end contours with a
@@ -184,14 +206,15 @@ class CC_PAINT_EXPORT CorePaintFlags {
   bool IsValid() const;
 
  private:
+  friend class DrawArcLiteOp;
+  friend class DrawLineLiteOp;
   friend class PaintOpReader;
   friend class PaintOpWriter;
 
   // Match(ish) SkPaint defaults.  SkPaintDefaults is not public, so this
   // just uses these values and ignores any SkUserConfig overrides.
-  SkColor4f color_ = SkColors::kBlack;
+  PaintColor paint_color_;
   float width_ = 0.f;
-  float miter_limit_ = 4.f;
 
   struct PaintFlagsBitfields {
     uint32_t antialias_ : 1;
@@ -237,8 +260,10 @@ class CC_PAINT_EXPORT PaintFlags final : public CorePaintFlags {
   PaintFlags& operator=(const PaintFlags& other);
   PaintFlags& operator=(PaintFlags&& other);
 
+  ALWAYS_INLINE SkScalar getStrokeMiter() const { return miter_limit_; }
+  ALWAYS_INLINE void setStrokeMiter(SkScalar miter) { miter_limit_ = miter; }
   bool CanConvertToCorePaintFlags() const;
-  CorePaintFlags ToCorePaintFlags() const;
+  const CorePaintFlags& ToCorePaintFlags() const LIFETIME_BOUND;
 
   bool nothingToDraw() const;
 
@@ -333,6 +358,7 @@ class CC_PAINT_EXPORT PaintFlags final : public CorePaintFlags {
   friend class PaintOpReader;
   friend class PaintOpWriter;
 
+  float miter_limit_ = 4.f;
   // See documentation at `setTargetedHdrHeadroom`.
   float targeted_hdr_headroom_ = TargetedHdrHeadroom::kFromPlaybackParams;
   sk_sp<PathEffect> path_effect_;

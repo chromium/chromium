@@ -4,6 +4,7 @@
 
 #include "cc/paint/record_paint_canvas.h"
 
+#include <cmath>
 #include <limits>
 #include <utility>
 
@@ -24,6 +25,19 @@
 #include "third_party/skia/include/utils/SkNWayCanvas.h"
 
 namespace cc {
+namespace {
+
+bool ArcNeedsMiterLimit(const PaintFlags& flags, SkScalar sweep_angle_degrees) {
+  if (!flags.isArcClosed()) {
+    return false;  // Open arcs have no corners.
+  }
+  if (SkScalarNearlyEqual(std::abs(sweep_angle_degrees), 360)) {
+    return false;  // Full ovals have no corners.
+  }
+  return true;  // Closed partial arcs have corners.
+}
+
+}  // namespace
 
 RecordPaintCanvas::RecordPaintCanvas() = default;
 RecordPaintCanvas::~RecordPaintCanvas() = default;
@@ -262,7 +276,9 @@ void RecordPaintCanvas::drawArc(const SkRect& oval,
                                 SkScalar start_angle_degrees,
                                 SkScalar sweep_angle_degrees,
                                 const PaintFlags& flags) {
-  if (AreLiteOpsEnabled() && flags.CanConvertToCorePaintFlags()) {
+  // DrawArcLiteOp omits miter_limit_, so skip it when the arc needs one.
+  if (AreLiteOpsEnabled() && !ArcNeedsMiterLimit(flags, sweep_angle_degrees) &&
+      flags.CanConvertToCorePaintFlags()) {
     push<DrawArcLiteOp>(oval, start_angle_degrees, sweep_angle_degrees,
                         flags.ToCorePaintFlags());
     return;

@@ -179,6 +179,26 @@ TEST_F(DrawingDisplayItemTest, NonSolidColorOval) {
   EXPECT_EQ(background.color, SkColors::kTransparent);
 }
 
+TEST_F(DrawingDisplayItemTest, DeferredColorNotSolidOrOpaque) {
+  gfx::Rect rect(5, 6, 10, 10);
+  PaintRecorder recorder;
+  cc::PaintFlags flags;
+  flags.setPaintColor(
+      {SkColors::kGreen,
+       {cc::ElementId(1), cc::DeferredPropertyType::kBackgroundColor}});
+  recorder.beginRecording()->drawRect(gfx::RectToSkRect(rect), flags);
+
+  DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
+                          rect, recorder.finishRecordingAsPicture(),
+                          RasterEffectOutset::kNone);
+  // A deferred color can change at raster, so it is not treated as a static
+  // solid background or known to be opaque.
+  auto background = item.BackgroundColor();
+  EXPECT_FALSE(background.is_solid_color);
+  EXPECT_EQ(background.color, SkColors::kTransparent);
+  EXPECT_TRUE(item.RectKnownToBeOpaque().IsEmpty());
+}
+
 // Checks that DrawingDisplayItem::RectKnownToBeOpaque() doesn't cover any
 // non-opaque (including antialiased pixels) around the rounded corners.
 static void CheckOpaqueRectPixels(const DrawingDisplayItem& item,
