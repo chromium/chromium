@@ -121,7 +121,9 @@ class ActorOneTimeTokenFillingService {
 
   // Asynchronously retrieves an OTP for the profile associated with
   // `web_contents`. `predicted_otp_type` is the OTP type the model predicted
-  // for the request.
+  // for the request. When `allow_psl_matching` is true, OTPs whose sender
+  // domain matches `otp_frame_origin` via the Public Suffix List are accepted
+  // in addition to exact, `www.` subdomain, and affiliated matches.
   //
   // The `callback` will be invoked with the retrieved OTP string, or an empty
   // string if retrieval fails or no OTP is available.
@@ -129,7 +131,7 @@ class ActorOneTimeTokenFillingService {
       content::WebContents* web_contents,
       const url::Origin& otp_frame_origin,
       const std::vector<FieldGlobalId>& trigger_field_ids,
-      bool is_login_flow,
+      bool allow_psl_matching,
       PredictedOtpType predicted_otp_type,
       base::OnceCallback<
           void(base::expected<std::string,

@@ -75,7 +75,7 @@ class ActorOneTimeTokenFillingServiceImpl
       content::WebContents* web_contents,
       const url::Origin& otp_frame_origin,
       const std::vector<FieldGlobalId>& trigger_field_ids,
-      bool is_login_flow,
+      bool allow_psl_matching,
       PredictedOtpType predicted_otp_type,
       base::OnceCallback<
           void(base::expected<std::string,

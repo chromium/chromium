@@ -305,7 +305,7 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
     content::WebContents* web_contents,
     const url::Origin& otp_frame_origin,
     const std::vector<FieldGlobalId>& trigger_field_ids,
-    bool is_login_flow,
+    bool allow_psl_matching,
     PredictedOtpType predicted_otp_type,
     base::OnceCallback<void(
         base::expected<std::string, OneTimeTokenRetrievalError>)> callback) {
@@ -329,7 +329,7 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
                 "ActorOneTimeTokenFillingServiceImpl::RetrieveOtp",
                 ::actor::JournalDetailsBuilder()
                     .Add("otp_frame_origin", otp_frame_origin.Serialize())
-                    .Add("is_login_flow", is_login_flow)
+                    .Add("allow_psl_matching", allow_psl_matching)
                     .Build());
 
   std::string mock_otp =
@@ -398,7 +398,8 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
       CHECK_DEREF(AffiliationServiceFactory::GetForProfile(profile_)));
   gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
       *service->GetBackend(), std::move(checker), otp_frame_origin,
-      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(), is_login_flow,
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+      allow_psl_matching,
       base::BindOnce(&ActorOneTimeTokenFillingServiceImpl::OnOtpRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), url));
 }
