@@ -272,23 +272,15 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
 
   if (requires_ui_and_triggerability) {
     // 2. Determine how the clusters should be displayed.
-    base::ElapsedThreadTimer compute_clusters_for_ui_timer;
     clusters = GetClustersForUIOnBackgroundThread(
         clustering_request_source, QueryClustersFilterParams(),
         engagement_score_provider_is_valid, std::move(clusters),
         /*calculate_triggerability=*/false);
-    base::UmaHistogramTimes(
-        "History.Clusters.Backend.ComputeClustersForUI.ThreadTime",
-        compute_clusters_for_ui_timer.Elapsed());
 
     // 3. Determine the triggerability for the clusters.
-    base::ElapsedThreadTimer cluster_triggerability_timer;
     clusters = GetClusterTriggerabilityOnBackgroundThread(
         engagement_score_provider_is_valid, std::move(clusters),
         /*from_ui=*/true);
-    base::UmaHistogramTimes(
-        "History.Clusters.Backend.ComputeClusterTriggerability2.ThreadTime",
-        cluster_triggerability_timer.Elapsed());
 
     base::UmaHistogramTimes(
         "History.Clusters.Backend.ComputeClusters.ThreadTime",

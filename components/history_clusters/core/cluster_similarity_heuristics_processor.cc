@@ -8,7 +8,6 @@
 #include <unordered_set>
 
 #include "base/check.h"
-#include "base/metrics/histogram_functions.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
 #include "components/history_clusters/core/similar_visit.h"
 
@@ -30,16 +29,8 @@ void ClusterSimilarityHeuristicsProcessor::ProcessClusters(
     cluster_search_terms.push_back(u"");
     for (const auto& visit : clusters->at(i).visits) {
       visit_sets[i].insert(SimilarVisit(visit));
-      // Update the search terms of the cluster if empty, based on the visit and
-      // check that all search visits in a cluster have the same search terms.
+      // Update the search terms of the cluster based on the visit.
       if (!visit.annotated_visit.content_annotations.search_terms.empty()) {
-        if (!cluster_search_terms[i].empty()) {
-          base::UmaHistogramBoolean(
-              "History.Clusters.Backend.ClusterSimilarityHeuristicsProcessor."
-              "ClusterSearchTermOverriden",
-              cluster_search_terms[i] !=
-                  visit.annotated_visit.content_annotations.search_terms);
-        }
         cluster_search_terms[i] =
             visit.annotated_visit.content_annotations.search_terms;
       }

@@ -331,15 +331,9 @@ void CullVisitsThatShouldBeHidden(std::vector<history::Cluster>& clusters,
     });
     bool should_hide_cluster = cluster.visits.size() < min_visits;
     if (!should_hide_cluster) {
-      // Log the # of visits that would be "below the fold" as a percentage of
-      // all visits in the cluster.
+      // Log the # of visits that would be "below the fold".
       base::UmaHistogramCounts100("History.Clusters.Backend.NumVisitsBelowFold",
                                   num_visits_below_fold);
-      base::UmaHistogramPercentage(
-          "History.Clusters.Backend.NumVisitsBelowFoldPercentage",
-          static_cast<int>(100 *
-                           (1.0 * num_visits_below_fold /
-                            (num_visits_below_fold + cluster.visits.size()))));
     }
     return should_hide_cluster;
   });

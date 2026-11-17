@@ -303,8 +303,6 @@ TEST(HistoryClustersUtilTest, CullVisitsThatShouldBeHidden) {
 
     histogram_tester.ExpectTotalCount(
         "History.Clusters.Backend.NumVisitsBelowFold", 4);
-    histogram_tester.ExpectTotalCount(
-        "History.Clusters.Backend.NumVisitsBelowFoldPercentage", 4);
 
     // No visits are hidden as they are all high-scoring.
     EXPECT_EQ(clusters[0].cluster_id, history::ClusterId(0));
@@ -325,14 +323,10 @@ TEST(HistoryClustersUtilTest, CullVisitsThatShouldBeHidden) {
     // Clusters index 0, 2, and 3.
     histogram_tester.ExpectBucketCount(
         "History.Clusters.Backend.NumVisitsBelowFold", 0, 3);
-    histogram_tester.ExpectBucketCount(
-        "History.Clusters.Backend.NumVisitsBelowFoldPercentage", 0, 3);
 
     // Cluster index 1.
     histogram_tester.ExpectBucketCount(
         "History.Clusters.Backend.NumVisitsBelowFold", 1, 1);
-    histogram_tester.ExpectBucketCount(
-        "History.Clusters.Backend.NumVisitsBelowFoldPercentage", 20, 1);
   }
 
   {
@@ -343,8 +337,6 @@ TEST(HistoryClustersUtilTest, CullVisitsThatShouldBeHidden) {
 
     histogram_tester.ExpectTotalCount(
         "History.Clusters.Backend.NumVisitsBelowFold", 5);
-    histogram_tester.ExpectTotalCount(
-        "History.Clusters.Backend.NumVisitsBelowFoldPercentage", 5);
 
     // Cluster id = 3, with 1 visit after filtering should no longer be removed.
     ASSERT_EQ(clusters.size(), 5u);
@@ -357,14 +349,10 @@ TEST(HistoryClustersUtilTest, CullVisitsThatShouldBeHidden) {
     // Clusters 0, 2, 3, and 4.
     histogram_tester.ExpectBucketCount(
         "History.Clusters.Backend.NumVisitsBelowFold", 0, 4);
-    histogram_tester.ExpectBucketCount(
-        "History.Clusters.Backend.NumVisitsBelowFoldPercentage", 0, 4);
 
     // Cluster 1.
     histogram_tester.ExpectBucketCount(
         "History.Clusters.Backend.NumVisitsBelowFold", 1, 1);
-    histogram_tester.ExpectBucketCount(
-        "History.Clusters.Backend.NumVisitsBelowFoldPercentage", 20, 1);
   }
 }
 
