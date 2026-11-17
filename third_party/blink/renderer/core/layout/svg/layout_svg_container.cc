@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
@@ -35,6 +36,21 @@
 #include "third_party/blink/renderer/core/paint/svg_container_painter.h"
 
 namespace blink {
+
+namespace {
+
+bool CanHitBoundingBox(const HitTestRequest& request,
+                       EPointerEvents used_pointer_events) {
+  // Containers do not have geometry, but since we're only interested in the
+  // `can_hit_bounding_box` field - and the pointer-events normalization for
+  // clip-path-content - the hit-testing type doesn't matter.
+  const PointerEventsHitRules hit_rules(
+      PointerEventsHitRules::kSvgGeometryHitTesting, request,
+      used_pointer_events);
+  return hit_rules.can_hit_bounding_box;
+}
+
+}  // namespace
 
 LayoutSVGContainer::LayoutSVGContainer(SVGElement* node)
     : LayoutSVGModelObject(node) {}
@@ -260,7 +276,8 @@ bool LayoutSVGContainer::NodeAtPoint(HitTestResult& result,
     // pointer-events: bounding-box makes it possible for containers to be
     // direct targets.
     if ((is_visual_overflow ||
-         Style().UsedPointerEvents() == EPointerEvents::kBoundingBox) &&
+         CanHitBoundingBox(result.GetHitTestRequest(),
+                           Style().UsedPointerEvents())) &&
         local_location->Intersects(bounds)) {
       UpdateHitTestResult(result, PhysicalOffset::FromPointFRound(
                                       local_location->TransformedPoint()));
