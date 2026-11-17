@@ -4,6 +4,7 @@
 #include "chrome/services/speech/soda/soda_client_impl.h"
 
 #include <algorithm>
+#include <atomic>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -54,6 +55,18 @@ TEST(SodaClientImplLibraryLifetimeTest,
   config.callback = nullptr;
   config.callback_handle = nullptr;
 
+  // Compare against the initial count since the library stays loaded across
+  // tests in the same process.
+  int baseline_create_count = 0;
+  {
+    base::ScopedNativeLibrary probe(fake_lib_path);
+    ASSERT_TRUE(probe.is_valid());
+    auto get_create_count = reinterpret_cast<GetCreateCountFn>(
+        probe.GetFunctionPointer("GetFakeSodaLibraryCreateCount"));
+    ASSERT_TRUE(get_create_count);
+    baseline_create_count = CallGetCreateCount(get_create_count);
+  }
+
   {
     SodaClientImpl client1(fake_lib_path);
     ASSERT_TRUE(client1.BinaryLoadedSuccessfully());
@@ -73,7 +86,7 @@ TEST(SodaClientImplLibraryLifetimeTest,
     auto get_create_count = reinterpret_cast<GetCreateCountFn>(
         probe.GetFunctionPointer("GetFakeSodaLibraryCreateCount"));
     ASSERT_TRUE(get_create_count);
-    EXPECT_EQ(CallGetCreateCount(get_create_count), 2);
+    EXPECT_EQ(CallGetCreateCount(get_create_count), baseline_create_count + 2);
   }
 }
 
@@ -105,6 +118,7 @@ class SodaClientImplUnitTest : public testing::Test {
   std::unique_ptr<soda::SodaClientImpl> soda_client_;
   std::vector<std::string> recognition_results_;
   base::test::TestFuture<std::string> result_future_;
+  std::atomic<int> stop_count_{0};
   base::WeakPtr<SodaClientImplUnitTest> weak_this_;
   base::WeakPtrFactory<SodaClientImplUnitTest> weak_factory_{this};
 };
@@ -157,6 +171,7 @@ void SodaClientImplUnitTest::OnRecognitionResultOnMainThread(
 }
 
 void SodaClientImplUnitTest::OnStopReceived() {
+  stop_count_.fetch_add(1);
   task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&SodaClientImplUnitTest::OnStopReceivedOnMainThread,
@@ -269,6 +284,41 @@ TEST_F(SodaClientImplUnitTest, CreateSodaClient) {
   EXPECT_EQ(WaitForRecognitionResult(), "Hey Google Hey Google");
   ASSERT_GT(recognition_results_.size(), kReplayAudioCount);
   ASSERT_EQ(recognition_results_.back(), "Hey Google Hey Google");
+}
+
+TEST_F(SodaClientImplUnitTest, DestroyEmitsStopBeforeReturning) {
+  auto config_file_path =
+      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
+          .Append(base::FilePath(soda::kSodaLanguagePackRelativePath));
+  ASSERT_TRUE(base::PathExists(config_file_path));
+
+  constexpr int kSampleRate = 16000;
+  constexpr int kChannelCount = 1;
+  speech::soda::chrome::ExtendedSodaConfigMsg config_msg;
+  config_msg.set_channel_count(kChannelCount);
+  config_msg.set_sample_rate(kSampleRate);
+  config_msg.set_language_pack_directory(config_file_path.AsUTF8Unsafe());
+  config_msg.set_simulate_realtime_testonly(false);
+  config_msg.set_enable_lang_id(false);
+  config_msg.set_recognition_mode(
+      speech::soda::chrome::ExtendedSodaConfigMsg::CAPTION);
+  config_msg.set_api_key("");
+
+  auto serialized = config_msg.SerializeAsString();
+
+  SerializedSodaConfig config;
+  config.soda_config = serialized.c_str();
+  config.soda_config_size = serialized.size();
+  config.callback = &OnSodaResponse;
+  config.callback_handle = this;
+  soda_client_->Reset(config, kSampleRate, kChannelCount);
+  ASSERT_TRUE(soda_client_->IsInitialized());
+  EXPECT_EQ(0, stop_count_.load());
+
+  // Destroy() delivers STOP from a SODA thread before returning.
+  soda_client_->Destroy();
+  EXPECT_FALSE(soda_client_->IsInitialized());
+  EXPECT_EQ(1, stop_count_.load());
 }
 
 #endif  // BUILDFLAG(ENABLE_SODA_INTEGRATION_TESTS)
