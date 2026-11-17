@@ -187,7 +187,9 @@ AXNode* AXNode::GetParent() const {
 }
 
 AXNode* AXNode::GetParentCrossingTreeBoundary() const {
-  CHECK(!tree_->GetTreeUpdateInProgressState(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/586416337): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   if (parent_)
     return parent_;
   const AXTreeManager* manager = GetManager();
