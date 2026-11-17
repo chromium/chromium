@@ -100,6 +100,44 @@ bool SiteIsolationPolicy::UseDedicatedProcessesForAllSites() {
 }
 
 // static
+bool SiteIsolationPolicy::UseDedicatedProcessesForAllSitesExceptAds() {
+  // Full site isolation always wins, whatever enabled it (the
+  // --site-per-process switch, enterprise policy, field trials, or Advanced
+  // Protection). This mode is only an upgrade from partial site isolation.
+  // This also keeps the mode off on platforms that enable full site isolation
+  // by default (e.g., desktop platforms and desktop Android), so no separate
+  // platform check is needed.
+  if (UseDedicatedProcessesForAllSites()) {
+    return false;
+  }
+
+  if (IsStrictOriginIsolationEnabled()) {
+    return false;
+  }
+
+  // This mode uses more processes than partial site isolation, so apply the
+  // memory threshold for full site isolation instead of the lower threshold for
+  // partial site isolation. As a result, devices can end up in a spectrum of
+  // modes based on their memory. For example, with Chrome's default thresholds
+  // on Android: no site isolation below 2GB, partial site isolation from
+  // 2GB-4GB, site isolation with ads exclusion after 4GB.
+  if (IsSiteIsolationDisabled(SiteIsolationMode::kStrictSiteIsolation)) {
+    return false;
+  }
+
+  // Excluded ads are placed in the default SiteInstanceGroup. This matches
+  // content::ShouldUseDefaultSiteInstanceGroup(), which content/public can't
+  // include.
+  if (!GetContentClient() ||
+      !GetContentClient()->ShouldAllowDefaultSiteInstanceGroup() ||
+      !base::FeatureList::IsEnabled(features::kDefaultSiteInstanceGroups)) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(features::kExcludeAdsFromSiteIsolation);
+}
+
+// static
 bool SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled() {
   // This feature is controlled by kIsolateSandboxedIframes, and depends on
   // partial Site Isolation being enabled.
@@ -115,6 +153,9 @@ bool SiteIsolationPolicy::IsSitePerProcessOrStricter() {
   // return). If UseDedicatedProcessesForAllSites() is true, this function will
   // early return true, so AreOriginKeyedProcessesEnabledByDefault() doesn't
   // need to be checked here.
+  //
+  // UseDedicatedProcessesForAllSitesExceptAds() is less strict than
+  // site-per-process, so it is not included here.
   return UseDedicatedProcessesForAllSites() || IsStrictOriginIsolationEnabled();
 }
 
@@ -123,6 +164,10 @@ SiteIsolationDisabledReason
 SiteIsolationPolicy::GetSiteIsolationDisabledReason() {
   if (IsSitePerProcessOrStricter()) {
     return SiteIsolationDisabledReason::kNotDisabled;
+  }
+
+  if (UseDedicatedProcessesForAllSitesExceptAds()) {
+    return SiteIsolationDisabledReason::kAdsExcludedFromSiteIsolation;
   }
 
   if (IsDisableSiteIsolationFlagPresent()) {

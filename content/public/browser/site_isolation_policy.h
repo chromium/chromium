@@ -20,7 +20,10 @@ enum class SiteIsolationDisabledReason {
   kDisabledByEmbedder = 3,
   kNotEnabledByDefault = 4,
   kUnknownReason = 5,
-  kMaxValue = kUnknownReason,
+  // Site isolation is enabled for all sites except ads. See
+  // SiteIsolationPolicy::UseDedicatedProcessesForAllSitesExceptAds().
+  kAdsExcludedFromSiteIsolation = 6,
+  kMaxValue = kAdsExcludedFromSiteIsolation,
 };
 
 class BrowserContext;
@@ -39,6 +42,13 @@ class CONTENT_EXPORT SiteIsolationPolicy {
 
   // Returns true if every site should be placed in a dedicated process.
   static bool UseDedicatedProcessesForAllSites();
+
+  // Returns true if every site except ads should be placed in a dedicated
+  // process (features::kExcludeAdsFromSiteIsolation). This mode is only an
+  // upgrade from partial site isolation: it is never true when
+  // UseDedicatedProcessesForAllSites() is true, so that no user who has full
+  // site isolation loses it.
+  static bool UseDedicatedProcessesForAllSitesExceptAds();
 
   // Returns true if sandboxed iframes should be isolated.
   static bool AreIsolatedSandboxedIframesEnabled();

@@ -3360,6 +3360,9 @@ void RenderProcessHostImpl::ShutdownForBadMessage(
     std::string site_isolation_mode;
     if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
       site_isolation_mode += "spp ";
+    if (SiteIsolationPolicy::UseDedicatedProcessesForAllSitesExceptAds()) {
+      site_isolation_mode += "spp-ads ";
+    }
     if (SiteIsolationPolicy::AreIsolatedOriginsEnabled())
       site_isolation_mode += "io ";
     if (SiteIsolationPolicy::IsStrictOriginIsolationEnabled())

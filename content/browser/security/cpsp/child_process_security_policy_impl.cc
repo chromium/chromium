@@ -3049,6 +3049,9 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
         if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
           out_failure_reason += "spp ";
         }
+        if (SiteIsolationPolicy::UseDedicatedProcessesForAllSitesExceptAds()) {
+          out_failure_reason += "spp-ads ";
+        }
         if (site_info.does_site_request_dedicated_process_for_coop()) {
           out_failure_reason += "coop ";
         }

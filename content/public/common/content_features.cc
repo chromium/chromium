@@ -959,6 +959,16 @@ BASE_FEATURE(kOriginKeyedProcessesByDefault, base::FEATURE_DISABLED_BY_DEFAULT);
 // Origin-Agent-Cluster: ?1 header.
 BASE_FEATURE(kExcludeAdsFromOriginIsolation, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When full site isolation is not enabled (e.g., on Android phones that use
+// partial site isolation), enables a mode that puts every site except ads in a
+// dedicated process. See
+// SiteIsolationPolicy::UseDedicatedProcessesForAllSitesExceptAds(). Subframes
+// tagged as ads by the ad host filter are placed in the BrowsingInstance's
+// default SiteInstanceGroup. Exclusion is per site and per BrowsingInstance, so
+// all documents of an excluded site in that BrowsingInstance share a process.
+// This is a no-op when full site isolation is enabled.
+BASE_FEATURE(kExcludeAdsFromSiteIsolation, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Fires the `pushsubscriptionchange` event defined here:
 // https://w3c.github.io/push-api/#the-pushsubscriptionchange-event
 // for subscription refreshes, revoked permissions or subscription losses

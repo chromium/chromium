@@ -425,6 +425,40 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPolicyBrowserTestFieldTrialTest, Simple) {
 }
 #endif
 
+// Checks that the SitePerProcess (SitePerProcessAndroid on Android) enterprise
+// policy takes precedence over features::kExcludeAdsFromSiteIsolation, so that
+// all sites are isolated, including ads.
+class SitePerProcessPolicyAdsExclusionBrowserTest
+    : public SitePerProcessPolicyBrowserTestEnabled {
+ public:
+  SitePerProcessPolicyAdsExclusionBrowserTest() {
+    feature_list_.InitWithFeatures({features::kExcludeAdsFromSiteIsolation,
+                                    features::kDefaultSiteInstanceGroups},
+                                   {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SitePerProcessPolicyAdsExclusionBrowserTest,
+                       FullSiteIsolationWins) {
+#if BUILDFLAG(IS_ANDROID)
+  // Simulate a device with enough memory for the ads exclusion mode, so that
+  // only the policy can turn the mode off.
+  base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+      base::MiB(8000));
+  site_isolation::SiteIsolationPolicy::
+      SetDisallowMemoryThresholdCachingForTesting(true);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  EXPECT_TRUE(content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
+  EXPECT_FALSE(content::SiteIsolationPolicy::
+                   UseDedicatedProcessesForAllSitesExceptAds());
+  EXPECT_EQ(content::SiteIsolationDisabledReason::kNotDisabled,
+            content::SiteIsolationPolicy::GetSiteIsolationDisabledReason());
+}
+
 #if BUILDFLAG(IS_ANDROID)
 namespace {
 bool CheckUseDedicatedProcessesForAllSitesWithAndroidState(

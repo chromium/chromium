@@ -211,6 +211,9 @@ void ProcessInternalsHandlerImpl::GetIsolationMode(
   if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
     modes.push_back("Site Per Process");
   }
+  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSitesExceptAds()) {
+    modes.push_back("Site Per Process (Ads Excluded)");
+  }
   if (SiteIsolationPolicy::AreIsolatedOriginsEnabled()) {
     modes.push_back("Isolate Origins");
   }

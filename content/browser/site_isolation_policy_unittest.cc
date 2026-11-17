@@ -154,4 +154,146 @@ class ApplicationIsolationEnablingBrowserClient : public ContentBrowserClient {
   }
 };
 
+namespace {
+
+// A ContentBrowserClient that controls whether full site isolation is enabled
+// (as chrome/ does for the kSitePerProcess feature and Advanced Protection),
+// and whether the memory threshold for full site isolation disables it.
+class AdsExclusionBrowserClient : public ContentBrowserClient {
+ public:
+  bool ShouldEnableStrictSiteIsolation() override {
+    return enable_strict_site_isolation_;
+  }
+
+  bool ShouldDisableSiteIsolation(
+      SiteIsolationMode site_isolation_mode) override {
+    return site_isolation_mode == SiteIsolationMode::kStrictSiteIsolation &&
+           below_strict_memory_threshold_;
+  }
+
+  void set_enable_strict_site_isolation(bool enable) {
+    enable_strict_site_isolation_ = enable;
+  }
+
+  void set_below_strict_memory_threshold(bool below) {
+    below_strict_memory_threshold_ = below;
+  }
+
+ private:
+  bool enable_strict_site_isolation_ = false;
+  bool below_strict_memory_threshold_ = false;
+};
+
+}  // namespace
+
+// Tests for SiteIsolationPolicy::UseDedicatedProcessesForAllSitesExceptAds().
+// The fixture starts from partial site isolation with the feature enabled.
+class SiteIsolationPolicyAdsExclusionTest : public testing::Test {
+ public:
+  SiteIsolationPolicyAdsExclusionTest() {
+    SiteIsolationPolicy::DisableFlagCachingForTesting();
+    // Bots may run with --site-per-process. Start from partial site
+    // isolation.
+    scoped_command_line_.GetProcessCommandLine()->RemoveSwitch(
+        switches::kSitePerProcess);
+    feature_list_.InitWithFeatures({features::kExcludeAdsFromSiteIsolation,
+                                    features::kDefaultSiteInstanceGroups},
+                                   {features::kStrictOriginIsolation});
+  }
+
+ protected:
+  AdsExclusionBrowserClient& browser_client() { return browser_client_; }
+  base::CommandLine* command_line() {
+    return scoped_command_line_.GetProcessCommandLine();
+  }
+
+ private:
+  base::test::ScopedCommandLine scoped_command_line_;
+  base::test::ScopedFeatureList feature_list_;
+  AdsExclusionBrowserClient browser_client_;
+  ScopedContentBrowserClientSetting browser_client_setting_{&browser_client_};
+};
+
+// With partial site isolation, the mode is enabled, and it is not reported as
+// full site isolation.
+TEST_F(SiteIsolationPolicyAdsExclusionTest, EnabledWithPartialSiteIsolation) {
+  EXPECT_TRUE(SiteIsolationPolicy::UseDedicatedProcessesForAllSitesExceptAds());
+  EXPECT_FALSE(SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
+  EXPECT_FALSE(SiteIsolationPolicy::IsSitePerProcessOrStricter());
+  EXPECT_EQ(SiteIsolationDisabledReason::kAdsExcludedFromSiteIsolation,
+            SiteIsolationPolicy::GetSiteIsolationDisabledReason());
+}
+
+// The --site-per-process switch (also set by chrome://flags and the
+// SitePerProcess enterprise policy) keeps full site isolation.
+TEST_F(SiteIsolationPolicyAdsExclusionTest, SitePerProcessSwitchWins) {
+  command_line()->AppendSwitch(switches::kSitePerProcess);
+  EXPECT_TRUE(SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
+  EXPECT_TRUE(SiteIsolationPolicy::IsSitePerProcessOrStricter());
+  EXPECT_FALSE(
+      SiteIsolationPolicy::UseDedicatedProcessesForAllSitesExceptAds());
+}
+
+// Full site isolation enabled by the embedder (e.g. the kSitePerProcess
+// feature or Advanced Protection in chrome/) is kept.
+TEST_F(SiteIsolationPolicyAdsExclusionTest, EmbedderStrictSiteIsolationWins) {
+  browser_client().set_enable_strict_site_isolation(true);
+  EXPECT_TRUE(SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
+  EXPECT_TRUE(SiteIsolationPolicy::IsSitePerProcessOrStricter());
+  EXPECT_FALSE(
+      SiteIsolationPolicy::UseDedicatedProcessesForAllSitesExceptAds());
+}
+
+// Strict origin isolation is stricter than this mode, so it is kept.
+TEST_F(SiteIsolationPolicyAdsExclusionTest, StrictOriginIsolationWins) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kStrictOriginIsolation);
+  EXPECT_TRUE(SiteIsolationPolicy::IsSitePerProcessOrStricter());
+  EXPECT_FALSE(
+      SiteIsolationPolicy::UseDedicatedProcessesForAllSitesExceptAds());
+}
+
+// Devices below the memory threshold for full site isolation keep partial
+// site isolation.
+TEST_F(SiteIsolationPolicyAdsExclusionTest, StrictMemoryThreshold) {
+  browser_client().set_below_strict_memory_threshold(true);
+  EXPECT_FALSE(
+      SiteIsolationPolicy::UseDedicatedProcessesForAllSitesExceptAds());
+}
+
+// The --disable-site-isolation-trials switch (also set by chrome://flags)
+// turns the mode off.
+TEST_F(SiteIsolationPolicyAdsExclusionTest, DisableSiteIsolationSwitch) {
+  command_line()->AppendSwitch(switches::kDisableSiteIsolation);
+  EXPECT_FALSE(
+      SiteIsolationPolicy::UseDedicatedProcessesForAllSitesExceptAds());
+}
+
+#if BUILDFLAG(IS_ANDROID)
+// Setting the SitePerProcessAndroid enterprise policy to false adds the
+// --disable-site-isolation-for-policy switch, which turns off all site
+// isolation, including this mode.
+TEST_F(SiteIsolationPolicyAdsExclusionTest, DisableSiteIsolationForPolicy) {
+  command_line()->AppendSwitch(switches::kDisableSiteIsolationForPolicy);
+  EXPECT_FALSE(
+      SiteIsolationPolicy::UseDedicatedProcessesForAllSitesExceptAds());
+  EXPECT_EQ(SiteIsolationDisabledReason::kDisabledByPolicy,
+            SiteIsolationPolicy::GetSiteIsolationDisabledReason());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(SiteIsolationPolicyAdsExclusionTest, RequiresFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kExcludeAdsFromSiteIsolation);
+  EXPECT_FALSE(
+      SiteIsolationPolicy::UseDedicatedProcessesForAllSitesExceptAds());
+}
+
+TEST_F(SiteIsolationPolicyAdsExclusionTest, RequiresDefaultSiteInstanceGroups) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kDefaultSiteInstanceGroups);
+  EXPECT_FALSE(
+      SiteIsolationPolicy::UseDedicatedProcessesForAllSitesExceptAds());
+}
+
 }  // namespace content
