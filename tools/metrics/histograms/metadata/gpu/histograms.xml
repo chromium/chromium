@@ -1482,28 +1482,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.GraphValidation.Duration" units="ms"
-    expires_after="2025-11-15">
-  <owner>vasilyt@chromium.org</owner>
-  <owner>yzshen@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    For each graph validation of TaskGraph, records the time it takes in
-    milliseconds.
-  </summary>
-</histogram>
-
-<histogram name="GPU.GraphValidation.NeedsForceRelease" enum="Boolean"
-    expires_after="2025-11-15">
-  <owner>vasilyt@chromium.org</owner>
-  <owner>yzshen@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    For each graph valiation of TaskGraph, records whether it finds invalid
-    waits that require forceful release.
-  </summary>
-</histogram>
-
 <histogram name="Gpu.GrCompileShaderUs" units="microseconds"
     expires_after="2027-05-16">
   <owner>geofflang@chromium.org</owner>
