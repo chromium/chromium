@@ -2,7 +2,7 @@ Name: Breakpad, An open-source multi-platform crash reporting system
 Short Name: breakpad
 URL: https://chromium.googlesource.com/breakpad/breakpad
 Version: N/A
-Revision: 94c818ea27482d8a8d32b0c8de50cbca0270db9a
+Revision: d9901400606df699508f7cd3a20d00ece7aedab0
 Update Mechanism: Autoroll
 License: BSD-3-Clause, curl
 License File: LICENSE
