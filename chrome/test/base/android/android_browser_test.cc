@@ -21,6 +21,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/performance_manager/public/features.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -119,6 +120,13 @@ void AndroidBrowserTest::SetUpDefaultCommandLine(
   test_launcher_utils::PrepareBrowserCommandLineForTests(command_line);
   test_launcher_utils::PrepareBrowserCommandLineForBrowserTests(
       command_line, /*open_about_blank_on_launch=*/true);
+
+  // Test devices are often offline. The offline indicator then appears a
+  // couple of seconds after startup, changes the height of the top controls
+  // and resizes the page in the middle of a test, which makes tests flaky.
+  // Keep it from showing. Java instrumentation tests do the same, see
+  // ChromeActivityTestRule.
+  command_line->AppendSwitch(switches::kForceOnlineConnectionStateForIndicator);
 }
 
 bool AndroidBrowserTest::SetUpUserDataDirectory() {

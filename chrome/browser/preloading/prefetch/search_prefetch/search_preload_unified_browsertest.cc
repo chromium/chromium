@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
@@ -51,6 +52,7 @@
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -1345,6 +1347,18 @@ class HTTPCacheSearchPreloadUnifiedBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    SearchPreloadUnifiedBrowserTest::SetUpDefaultCommandLine(command_line);
+    // TODO(crbug.com/586997613): Without the offline indicator, which resizes
+    // the page when it appears, the first contentful paint of an activated
+    // prerender is sometimes never reported and these tests time out. Stop
+    // removing the switch once that is fixed.
+    command_line->RemoveSwitch(
+        switches::kForceOnlineConnectionStateForIndicator);
+  }
+#endif
 
   void SetUpOnMainThread() override {
     // Disable back/forward cache to ensure that it doesn't get preserved in the
