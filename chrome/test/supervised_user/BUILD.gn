@@ -19,7 +19,6 @@ static_library("test_support") {
     ":child_accounts",
     "//base",
     "//chrome/browser/sync/test/integration:sync_integration_test_support",
-    "//chrome/test:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/supervised_user/core/browser:test_support",
     "//components/supervised_user/test_support",

@@ -58,8 +58,16 @@ if (fuzzing_engine_supports_custom_main && !is_android) {
       deps += [ "//chrome:packed_resources" ]
     }
     public_deps = [
-      "//chrome/test:test_support",
+      "//chrome/browser/preloading:test_support",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/renderer",
       "//chrome/test/base:chrome_test_launcher",
+      "//chrome/test/base:in_process_browser_test",
+      "//chrome/test/base:ui_test_utils",
+      "//content/public/app",
+      "//content/public/renderer",
+      "//content/test:test_support",
+      "//net:test_support",
     ]
   }
 
@@ -248,7 +256,10 @@ if (!is_android) {
       ]
       centipede_options = [ "timeout=90" ]
       proto_source = "atspi_in_process_fuzzer.proto"
-      deps = [ "//sql" ]
+      deps = [
+        "//sql",
+        "//sql:test_support",
+      ]
     }
   }
 }

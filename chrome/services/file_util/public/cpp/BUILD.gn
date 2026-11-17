@@ -85,7 +85,7 @@ if (is_chromeos) {
     deps = [
       ":cpp",
       "//base",
-      "//chrome/test:test_support",
+      "//chrome/test/base:in_process_browser_test",
       "//content/public/browser",
       "//content/public/common",
       "//content/test:test_support",

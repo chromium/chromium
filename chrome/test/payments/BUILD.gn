@@ -17,17 +17,19 @@ static_library("test_support") {
     "test_event_waiter.h",
   ]
 
+  public_deps = [ "//components/payments/core:test_support" ]
+
   deps = [
     "//chrome/browser",
     "//chrome/browser/autofill",
     "//chrome/browser/payments",
     "//chrome/browser/ui/browser_window",
-    "//chrome/test:test_support",
     "//chrome/test/base:chrome_test_utils",
     "//components/autofill/core/browser:test_support",
     "//components/payments/content",
     "//components/payments/content:test_support",
     "//components/payments/content:utils",
+    "//components/sync_preferences:test_support",
     "//components/webauthn/core/browser",
     "//content/test:test_support",
     "//net:test_support",

@@ -11,7 +11,7 @@ source_set("browser_tests") {
   deps = [
     "//base",
     "//chrome/common/win:delay_load_hooks",
-    "//chrome/test:test_support",
+    "//chrome/test/base:in_process_browser_test",
     "//content/public/browser",
     "//content/test:test_support",
     "//services/test/echo/public/mojom",

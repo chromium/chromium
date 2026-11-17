@@ -12,9 +12,11 @@ source_set("browser_tests") {
 
   deps = [
     "//base",
-    "//chrome/test:test_support",
+    "//base/test:test_support",
+    "//chrome/test/base:in_process_browser_test",
     "//components/media_gallery_util",
     "//content/public/browser",
+    "//content/test:test_support",
     "//testing/gtest",
   ]
 

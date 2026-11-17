@@ -46,7 +46,6 @@ source_set("browser_tests") {
     "//chrome/browser/glic/public:features",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/tabs/tab_group_home:constants",
-    "//chrome/test:test_support",
     "//chrome/test/base:chrome_test_utils",
     "//chrome/test/base:test_switches",
     "//chrome/test/base:testing_browser_process",
@@ -56,6 +55,7 @@ source_set("browser_tests") {
     "//components/contextual_tasks/public",
     "//components/metrics_services_manager",
     "//components/notebooks/public",
+    "//components/omnibox/browser:test_support",
     "//components/prefs",
     "//components/ukm",
     "//components/ukm:ukm_test_helper",
@@ -466,6 +466,7 @@ source_set("browser_tests") {
     deps += [
       "//chrome/browser/permissions",
       "//components/zoom",
+      "//net:test_support",
       "//third_party/blink/public/common",
     ]
 
@@ -542,10 +543,7 @@ source_set("interactive_ui_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  deps += [
-    "//chrome/test:test_support",
-    "//chrome/test/base:web_ui_mocha_browser_test",
-  ]
+  deps += [ "//chrome/test/base:web_ui_mocha_browser_test" ]
 
   if (enable_webui_ntp) {
     deps += [
@@ -1126,9 +1124,15 @@ if (!is_android) {
       "webui_composebox_pixel_test.cc",
       "webui_composebox_pixel_test.h",
     ]
+    public_deps = [
+      "//base/i18n:test_support",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test/interaction",
+      "//content/test:test_support",
+      "//ui/base/interaction:test_support",
+    ]
     deps = [
       "//chrome/browser/ui/views/frame:browser_view_header",
-      "//chrome/test:test_support",
       "//ui/native_theme:test_support",
       "//ui/views/controls/webview",
     ]

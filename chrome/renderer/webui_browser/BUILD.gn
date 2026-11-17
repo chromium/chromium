@@ -27,9 +27,11 @@ source_set("browser_tests") {
   deps = [
     ":webui_browser",
     "//base/test:test_support",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common",
     "//chrome/common:chrome_features",
-    "//chrome/test:test_support",
+    "//chrome/test/base:in_process_browser_test",
+    "//chrome/test/base:ui_test_utils",
     "//content/public/browser",
     "//content/test:test_support",
     "//testing/gtest",

@@ -92,7 +92,6 @@ if (enable_request_header_integrity) {
 
     if (is_chrome_branded) {
       sources += [ "internal/google_header_names.h" ]
-      deps += [ "//chrome/test:test_support" ]
       data_deps = [ "internal:chromecompaneros" ]
     }
   }
