@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -280,8 +279,7 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
       base::BindOnce(&PolicyApplicator::ProfileEntryFinished,
                      weak_ptr_factory_.GetWeakPtr(), entry_identifier);
 
-  if (features::IsFixStaticIpForTwoManagedEthPortsEnabled() &&
-      IsEthernetEntry(entry_properties)) {
+  if (IsEthernetEntry(entry_properties)) {
     // Save it for later processing, when all Ethernet entries can be evaluated
     // (see ProcessEthernetEntries).
     NET_LOG(EVENT) << "Deferring processing of eth entry " << entry_identifier
@@ -552,11 +550,6 @@ void PolicyApplicator::ProfileEntryFinished(
 void PolicyApplicator::ProcessEthernetEntries() {
   auto when_done = base::BindOnce(&PolicyApplicator::ApplyRemainingPolicies,
                                   weak_ptr_factory_.GetWeakPtr());
-
-  if (!features::IsFixStaticIpForTwoManagedEthPortsEnabled()) {
-    std::move(when_done).Run();
-    return;
-  }
 
   std::string ethernet_entry_to_reapply;
   base::DictValue* shill_properties_of_entry_to_reapply = nullptr;

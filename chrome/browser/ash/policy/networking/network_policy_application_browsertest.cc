@@ -1156,21 +1156,6 @@ class NetworkPolicyApplicationEphemeralActionsEnabledUnenrolledTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// A variant of NetworkPolicyApplicationTest which activates the "kill switch"
-// for the eth policy re-application fix (b/467741000) by disabling the
-// corresponding feature.
-class NetworkPolicyApplicationNoEthFixTest
-    : public NetworkPolicyApplicationTest {
- public:
-  NetworkPolicyApplicationNoEthFixTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        ash::features::kFixStaticIpForTwoManagedEthPorts);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // This test applies a global network policy with
 // AllowOnlyPolicyNetworksToAutoconnect set to true. It then performs a user
 // log-in and simulates that user policy application is slow. This is a
@@ -2634,76 +2619,6 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
     ASSERT_TRUE(shill_properties);
     EXPECT_THAT(GetStaticIPAddressFromShillProperties(*shill_properties),
                 IsEmpty());
-  }
-}
-
-// Tests that re-applying network policy sends back all eth entries to shill if
-// the feature kFixStaticIpForTwoManagedEthPorts is disabled.
-IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationNoEthFixTest,
-                       AllEthEntriesReapplied) {
-  // Set the properties for an IP Config object.
-  const std::string kTestIPConfigPath("test_ip_config_path");
-  const std::string kEtheretAnyService("/service/100");
-  const std::string kInitialIpAddr("192.168.1.10");
-
-  base::DictValue ipv4;
-  ipv4.Set(shill::kAddressProperty, kInitialIpAddr);
-  ipv4.Set(shill::kMethodProperty, shill::kTypeIPv4);
-
-  shill_ip_config_client_test_->AddIPConfig(kTestIPConfigPath, std::move(ipv4));
-  // chrome  / policy_applicator.cc needs the static IP config to be in "UIData"
-  // too..
-  base::DictValue ui_data = CreateUIDataWithIPAddr(kInitialIpAddr);
-
-  constexpr char kEthernetGuid[] = "{EthernetGuid}";
-
-  shill_service_client_test_->AddServiceWithIPConfig(
-      kEtheretAnyService, "orig_guid_ethernet_any", "ethernet_any",
-      shill::kTypeEthernet, shill::kStateOnline, kTestIPConfigPath,
-      /*visible=*/true);
-  ASSERT_NO_FATAL_FAILURE(SetUIDataDict(kEtheretAnyService, ui_data));
-  shill_profile_client_test_->AddService(kSharedProfilePath,
-                                         kEtheretAnyService);
-  shill_service_client_test_->AddService(kServiceEth1, "orig_guid_ethernet_1",
-                                         "ethernet_1", shill::kTypeEthernet,
-                                         shill::kStateIdle, /*visible=*/true);
-  shill_profile_client_test_->AddService(kSharedProfilePath, kServiceEth1);
-  shill_service_client_test_->AddService(kServiceEth2, "orig_guid_ethernet_2",
-                                         "ethernet_2", shill::kTypeEthernet,
-                                         shill::kStateIdle, /*visible=*/true);
-  shill_profile_client_test_->AddService(kSharedProfilePath, kServiceEth2);
-
-  {
-    std::string kDeviceONCEverythingRecommended =
-        base::StringPrintf(R"(
-    {
-      "NetworkConfigurations": [
-        {
-          "GUID": "%s",
-          "Name": "EthernetName",
-          "Type": "Ethernet",
-          "Ethernet": {
-             "Authentication": "None"
-          },
-          "StaticIPConfig": {
-             "Recommended": ["Gateway", "IPAddress", "RoutingPrefix",
-                             "NameServers"]
-          },
-          "Recommended": ["IPAddressConfigType", "NameServersConfigType"]
-        }
-      ]
-    })",
-
-                           kEthernetGuid);
-
-    ConfigureServiceObserver observer(shill_manager_client_test_,
-                                      shill::kTypeEthernet);
-    SetDeviceOpenNetworkConfiguration(kDeviceONCEverythingRecommended,
-                                      /*wait_applied=*/true);
-
-    // Verify that a ConfigureService call happened once per existing Eth
-    // service.
-    EXPECT_EQ(observer.GetConfigureCount(), 3);
   }
 }
 

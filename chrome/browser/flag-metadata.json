@@ -5234,11 +5234,6 @@
     "owners": [ "ericekey@google.com", "gambard@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 163
   },
-    {
-    "name": "fix-static-ip-for-two-managed-ethernet-ports",
-    "owners": [ "olsa@google.com", "chromeos-commercial-networking@google.com" ],
-    "expiry_milestone": 160
-  },
   {
     "name": "flyout-in-bookmarks-bar",
     "owners": [ "massan@google.com", "mschillaci@google.com", "clank-app-team@google.com" ],

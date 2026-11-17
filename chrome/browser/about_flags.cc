@@ -8158,10 +8158,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAudioFlexibleLoopbackForSystemLoopbackDescription,
      kOsCrOS,
      FEATURE_VALUE_TYPE(media::kAudioFlexibleLoopbackForSystemLoopback)},
-    {"fix-static-ip-for-two-managed-ethernet-ports",
-     flag_descriptions::kFixStaticIpForTwoManagedEthPortsName,
-     flag_descriptions::kFixStaticIpForTwoManagedEthPortsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kFixStaticIpForTwoManagedEthPorts)},
 #endif
 
     {"boundary-event-dispatch-tracks-node-removal",

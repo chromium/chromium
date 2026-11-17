@@ -7774,11 +7774,6 @@ inline constexpr char kFilesTrashAutoCleanupName[] = "Trash auto cleanup";
 inline constexpr char kFilesTrashAutoCleanupDescription[] =
     "Enable background cleanup for old files in Trash.";
 
-inline constexpr char kFixStaticIpForTwoManagedEthPortsName[] =
-    "Fix static ip on managed device with two ethernet ports.";
-inline constexpr char kFixStaticIpForTwoManagedEthPortsDescription[] =
-    "Fix static ip on managed device with two ethernet ports.";
-
 inline constexpr char kFocusFollowsCursorName[] = "Focus follows cursor";
 inline constexpr char kFocusFollowsCursorDescription[] =
     "Enable window focusing by moving the cursor.";

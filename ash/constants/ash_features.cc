@@ -659,10 +659,6 @@ BASE_FEATURE(kFilesMaterializedViews, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enable background cleanup for old files in Trash.
 BASE_FEATURE(kFilesTrashAutoCleanup, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Fix manual ip address persistence on managed device with 2 ethernet ports.
-BASE_FEATURE(kFixStaticIpForTwoManagedEthPorts,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls if the Fjord variant of OOBE is shown for cuttlefish devices.
 BASE_FEATURE(kFjordOobe, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2125,10 +2121,6 @@ bool IsFastPairSavedDevicesEnabled() {
 
 bool IsFilesLocalImageSearchEnabled() {
   return base::FeatureList::IsEnabled(kFilesLocalImageSearch);
-}
-
-bool IsFixStaticIpForTwoManagedEthPortsEnabled() {
-  return base::FeatureList::IsEnabled(kFixStaticIpForTwoManagedEthPorts);
 }
 
 bool IsFjordOobeEnabled() {
