@@ -20,6 +20,9 @@
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_bubble_dialog.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_bubble_dialog_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/startup/infobar_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -372,4 +375,33 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptHeadlessBrowserTest, DoesNotCrash) {
                         DefaultBrowserPromptManager::CloseReason::kDismiss);
                   }),
                   WaitForHide(ConfirmInfoBar::kInfoBarElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptInteractiveTest,
+                       BubbleDialogManagerCloseBrowserAndIgnore) {
+  base::HistogramTester histogram_tester;
+  BrowserWindowInterface* second_browser = CreateBrowser(GetProfile());
+  auto manager = std::make_unique<DefaultBrowserBubbleDialogManager>();
+
+  RunTestSequence(Do([&]() { manager->Show(/*can_pin_to_taskbar=*/false); }),
+                  InAnyContext(WaitForShow(default_browser::kBubbleDialogId)));
+
+  CloseBrowserSynchronously(std::exchange(second_browser, nullptr));
+
+  RunTestSequence(Do([&]() {
+                    manager->CloseAll();
+                    manager.reset();
+                  }),
+                  InAnyContext(WaitForHide(default_browser::kBubbleDialogId)));
+
+  histogram_tester.ExpectBucketCount(
+      "DefaultBrowser.BubbleDialog.ShellIntegration.Interaction",
+      static_cast<int>(
+          default_browser::DefaultBrowserInteractionType::kDismissed),
+      0);
+  histogram_tester.ExpectBucketCount(
+      "DefaultBrowser.BubbleDialog.ShellIntegration.Interaction",
+      static_cast<int>(
+          default_browser::DefaultBrowserInteractionType::kIgnored),
+      1);
 }

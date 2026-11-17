@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
@@ -48,6 +49,9 @@ class DefaultBrowserBubbleDialogManager : public DefaultBrowserSurfaceManager {
   // The widget is owned by the browser window.
   std::map<raw_ptr<BrowserWindowInterface>, std::unique_ptr<views::Widget>>
       dialog_widgets_;
+
+  base::WeakPtrFactory<DefaultBrowserBubbleDialogManager> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_BUBBLE_DIALOG_MANAGER_H_

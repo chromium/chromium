@@ -48,17 +48,13 @@ void DefaultBrowserBubbleDialogManager::ShowForBrowser(
                          base::Unretained(this)));
   dialog_widget->MakeCloseSynchronous(base::BindOnce(
       &DefaultBrowserBubbleDialogManager::OnDialogWidgetCloseRequested,
-      base::Unretained(this), browser));
+      weak_ptr_factory_.GetWeakPtr(), browser));
   dialog_widgets_[browser] = std::move(dialog_widget);
 }
 
 void DefaultBrowserBubbleDialogManager::CloseForBrowser(
     BrowserWindowInterface* browser) {
-  if (auto entry = dialog_widgets_.extract(browser)) {
-    if (entry.mapped()) {
-      entry.mapped()->MakeCloseSynchronous(base::NullCallback());
-    }
-  }
+  dialog_widgets_.erase(browser);
 }
 
 void DefaultBrowserBubbleDialogManager::OnAccept() {
@@ -76,13 +72,8 @@ void DefaultBrowserBubbleDialogManager::OnDismiss() {
 }
 
 void DefaultBrowserBubbleDialogManager::CloseAllPromptInstances() {
-  auto widgets = std::move(dialog_widgets_);
-  for (auto& [browser, widget] : widgets) {
-    if (widget) {
-      widget->MakeCloseSynchronous(base::NullCallback());
-      widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-    }
-  }
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  dialog_widgets_.clear();
 }
 
 void DefaultBrowserBubbleDialogManager::RemoveWidget(

@@ -196,3 +196,49 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserDialogManagerInteractiveTest,
       Do([this]() { CloseDialogs(); }),
       WaitForHide(default_browser::kBubbleDialogId));
 }
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserDialogManagerInteractiveTest,
+                       ShowAndIgnore) {
+  RunTestSequence(
+      Do([this]() { ShowDialogManager(); }),
+      WaitForShow(default_browser::kBubbleDialogId),
+      VerifyHistogram("DefaultBrowser.BubbleDialog.ShellIntegration.Shown", 1,
+                      1),
+      Do([this]() {
+        CloseDialogs();
+        manager_.reset();
+      }),
+      WaitForHide(default_browser::kBubbleDialogId),
+      VerifyHistogram(
+          "DefaultBrowser.BubbleDialog.ShellIntegration.Interaction",
+          std::to_underlying(
+              default_browser::DefaultBrowserInteractionType::kIgnored),
+          1));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DefaultBrowserDialogManagerInteractiveTest,
+    ClosingSecondaryBrowserClosesItsPromptWithoutDismissing) {
+  BrowserWindowInterface* second_browser = CreateBrowser(GetProfile());
+  RunTestSequence(Do([this]() { ShowDialogManager(); }),
+                  WaitForShow(default_browser::kBubbleDialogId));
+
+  CloseBrowserSynchronously(std::exchange(second_browser, nullptr));
+
+  RunTestSequence(
+      VerifyHistogram(
+          "DefaultBrowser.BubbleDialog.ShellIntegration.Interaction",
+          std::to_underlying(
+              default_browser::DefaultBrowserInteractionType::kDismissed),
+          0),
+      Do([this]() {
+        CloseDialogs();
+        manager_.reset();
+      }),
+      WaitForHide(default_browser::kBubbleDialogId),
+      VerifyHistogram(
+          "DefaultBrowser.BubbleDialog.ShellIntegration.Interaction",
+          std::to_underlying(
+              default_browser::DefaultBrowserInteractionType::kIgnored),
+          1));
+}

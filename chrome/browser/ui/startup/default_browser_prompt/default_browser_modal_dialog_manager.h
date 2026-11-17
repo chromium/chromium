@@ -54,6 +54,9 @@ class DefaultBrowserModalDialogManager : public DefaultBrowserSurfaceManager {
   // A map of browser windows to the prompt modal widgets.
   std::map<BrowserWindowInterface*, std::unique_ptr<views::Widget>>
       dialog_widgets_;
+
+  base::WeakPtrFactory<DefaultBrowserModalDialogManager> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace default_browser

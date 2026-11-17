@@ -190,6 +190,36 @@ IN_PROC_BROWSER_TEST_P(DefaultBrowserModalDialogManagerInteractiveTest,
           1));
 }
 
+IN_PROC_BROWSER_TEST_P(
+    DefaultBrowserModalDialogManagerInteractiveTest,
+    ClosingSecondaryBrowserClosesItsPromptWithoutDismissing) {
+  BrowserWindowInterface* second_browser = CreateBrowser(GetProfile());
+  const char* interaction_histogram =
+      GetParam() ? "DefaultBrowser.ModalDialogWithSettingsIllustration."
+                   "ShellIntegration.Interaction"
+                 : "DefaultBrowser.ModalDialogWithoutSettingsIllustration."
+                   "ShellIntegration.Interaction";
+  RunTestSequence(
+      Do([this]() { ShowDialog(); }),
+      InAnyContext(WaitForShow(default_browser::kDefaultBrowserModalDialogId)));
+
+  CloseBrowserSynchronously(std::exchange(second_browser, nullptr));
+
+  RunTestSequence(
+      VerifyHistogram(
+          interaction_histogram,
+          static_cast<int>(
+              default_browser::DefaultBrowserInteractionType::kDismissed),
+          0),
+      Do([this]() { CloseDialogs(); }),
+      InAnyContext(WaitForHide(default_browser::kDefaultBrowserModalDialogId)),
+      VerifyHistogram(
+          interaction_histogram,
+          static_cast<int>(
+              default_browser::DefaultBrowserInteractionType::kIgnored),
+          1));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          DefaultBrowserModalDialogManagerInteractiveTest,
                          testing::Bool(),
