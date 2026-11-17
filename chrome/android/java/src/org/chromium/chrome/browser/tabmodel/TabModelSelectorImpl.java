@@ -474,8 +474,13 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
 
         // Don't execute the tab display part if Chrome has just been sent to background. This
         // avoids unnecessary work (tab restore) and prevents pollution of tab display metrics - see
-        // http://crbug.com/41071624.
-        if (type != TabSelectionType.FROM_EXIT) {
+        // http://crbug.com/41071624. Also avoid showing an Incognito tab while Incognito
+        // re-authentication is pending.
+        boolean isIncognitoReauthPending =
+                tab.isIncognitoBranded()
+                        && mIncognitoReauthDialogDelegate != null
+                        && mIncognitoReauthDialogDelegate.isIncognitoReauthPending();
+        if (type != TabSelectionType.FROM_EXIT && !isIncognitoReauthPending) {
             tab.show(type);
         }
     }

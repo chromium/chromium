@@ -120,6 +120,7 @@ public class TabModelSelectorImplTest {
     @Before
     public void setUp() {
         doReturn(true).when(mIncognitoProfile).isOffTheRecord();
+        doReturn(true).when(mIncognitoProfile).isIncognitoBranded();
         mTabCreatorManager = new MockTabCreatorManager();
 
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
@@ -394,6 +395,22 @@ public class TabModelSelectorImplTest {
         mTabModelSelector
                 .getCurrentTabModelSupplier()
                 .removeObserver(mTabModelSupplierObserverMock);
+    }
+
+    @Test
+    public void testRequestToShowTab_IncognitoReauthPending_DoesNotShowTab() {
+        mTabModelSelector.setIncognitoReauthDialogDelegate(mIncognitoReauthDialogDelegateMock);
+        doReturn(true).when(mIncognitoReauthDialogDelegateMock).isIncognitoReauthPending();
+
+        MockTab incognitoTab = spy(new MockTab(2, mIncognitoProfile));
+        doReturn(true).when(incognitoTab).isHidden();
+
+        mTabModelSelector.requestToShowTab(incognitoTab, TabSelectionType.FROM_USER);
+        verify(incognitoTab, never()).show(anyInt());
+
+        doReturn(false).when(mIncognitoReauthDialogDelegateMock).isIncognitoReauthPending();
+        mTabModelSelector.requestToShowTab(incognitoTab, TabSelectionType.FROM_USER);
+        verify(incognitoTab).show(TabSelectionType.FROM_USER);
     }
 
     @Test

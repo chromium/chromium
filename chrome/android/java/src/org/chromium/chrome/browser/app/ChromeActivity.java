@@ -1259,13 +1259,25 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         return true;
     }
 
+    private boolean isIncognitoReauthPending(Tab tab) {
+        if (tab.isIncognitoBranded() && mRootUiCoordinator != null) {
+            var incognitoReauthController =
+                    mRootUiCoordinator.getIncognitoReauthControllerSupplier().get();
+            return incognitoReauthController != null
+                    && incognitoReauthController.isIncognitoReauthPending();
+        }
+        return false;
+    }
+
     private void onActivityShown() {
         maybeRemoveWindowBackground();
 
         Tab tab = getActivityTab();
-        if (tab != null) {
-            if (tab.isHidden() && shouldShowTabOnActivityShown()) {
-                tab.show(TabSelectionType.FROM_USER);
+        if (tab != null && !isIncognitoReauthPending(tab)) {
+            if (tab.isHidden()) {
+                if (shouldShowTabOnActivityShown()) {
+                    tab.show(TabSelectionType.FROM_USER);
+                }
             } else {
                 // The visible Tab's renderer process may have died after the activity was
                 // paused. Ensure that it's restored appropriately.

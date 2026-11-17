@@ -23,6 +23,9 @@ public interface IncognitoTabModelObserver {
          * in order to ensure we show the re-auth dialog fast.
          */
         void onBeforeIncognitoTabModelSelected();
+
+        /** Returns whether an Incognito re-authentication is currently pending. */
+        boolean isIncognitoReauthPending();
     }
 
     /** Called when the Incognito {@link TabModel} is created. */
