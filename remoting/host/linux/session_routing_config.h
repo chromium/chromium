@@ -53,25 +53,17 @@ class SessionRoutingConfig {
                   bool is_corp_host = false,
                   uid_t expected_owner_uid = 0);
 
-  // Atomically writes a session routing config file to `path` with mode 0644.
-  // The file is owned by the effective user (root in production), and the
-  // parent directory of `path` must already exist, be owned by the effective
-  // user, and not be writable by group or others, so that LoadAndValidate()
-  // accepts the file. An empty `session_user` omits the `sessionUser` field,
-  // and `create_remote_user_sessions` is only written if it is true, so
-  // `WriteToFile(path, "", false)` writes `{}`.
-  // Returns an error without writing anything if `session_user` is not a valid
-  // username or the parent directory fails the checks above. Also returns an
-  // error if writing the file fails or the written file can't be loaded back.
-  // Performs blocking file I/O.
-  static base::expected<void, Loggable> WriteToFile(
-      const base::FilePath& path,
-      std::string_view session_user,
-      bool create_remote_user_sessions);
+  // Returns whether `username` is accepted as a local Linux username, e.g. for
+  // `sessionUser`. Only ASCII letters, digits, '_', '.' and '-' are allowed,
+  // and the name must not start with '-', so it is also safe to use in systemd
+  // unit names and command lines. Note that names used in unit names are
+  // additionally bounded by IsUserNameSafeForUnitName() in host_types.h (e.g.
+  // they are at most 200 characters long).
+  static bool IsValidUsername(std::string_view username);
 
   SessionRoutingConfig();
-  SessionRoutingConfig(RoutingMode mode,
-                       std::string session_user,
+  // Derives `mode()` from `session_user` and `is_corp_host`.
+  SessionRoutingConfig(std::string session_user,
                        bool create_remote_user_sessions,
                        bool is_corp_host = false);
   ~SessionRoutingConfig();
@@ -80,6 +72,22 @@ class SessionRoutingConfig {
   SessionRoutingConfig& operator=(const SessionRoutingConfig&);
   SessionRoutingConfig(SessionRoutingConfig&&);
   SessionRoutingConfig& operator=(SessionRoutingConfig&&);
+
+  bool operator==(const SessionRoutingConfig&) const = default;
+
+  // Atomically writes this session routing config to `path` with mode 0644,
+  // owned by the effective user (root in production). Performs blocking file
+  // I/O.
+  //
+  // `session_user()` must be empty or a valid username, and the parent
+  // directory of `path` must already exist, be owned by the effective user,
+  // and not be writable by group or others.
+  //
+  // An empty `session_user()` omits the `sessionUser` field, and
+  // `create_remote_user_sessions()` is only written if it is true, so a
+  // default-constructed config writes `{}`.
+  base::expected<void, Loggable> WriteToFile(
+      const base::FilePath& path = GetDefaultConfigFilePath()) const;
 
   // Resolves the local Linux username for `client_id` (e.g. `user@google.com`
   // or `user@silo.com`).

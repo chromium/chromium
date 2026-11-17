@@ -42,7 +42,10 @@ constexpr size_t kMaxConfigFileSizeBytes = 64 * 1024;  // 64 KB
 constexpr char kSessionUserKey[] = "sessionUser";
 constexpr char kCreateRemoteUserSessionsKey[] = "createRemoteUserSessions";
 
-bool IsValidUsername(std::string_view username) {
+}  // namespace
+
+// static
+bool SessionRoutingConfig::IsValidUsername(std::string_view username) {
   if (username.empty() || username.length() > 256) {
     return false;
   }
@@ -54,8 +57,6 @@ bool IsValidUsername(std::string_view username) {
            (c >= '0' && c <= '9') || c == '_' || c == '.' || c == '-';
   });
 }
-
-}  // namespace
 
 // static
 base::FilePath SessionRoutingConfig::GetDefaultConfigFilePath() {
@@ -134,30 +135,18 @@ SessionRoutingConfig::LoadAndValidate(const base::FilePath& path,
     }
   }
 
-  RoutingMode mode = RoutingMode::kRejectAll;
-  if (!session_user.empty()) {
-    mode = RoutingMode::kSessionUser;
-  } else if (is_corp_host) {
-    // Corp hosts route connections to the local user matching the client's
-    // corp username unless `sessionUser` is set.
-    mode = RoutingMode::kMatchCorpClientUsername;
-  }
-
-  return base::ok(SessionRoutingConfig(mode, std::move(session_user),
-                                       create_remote, is_corp_host));
+  return base::ok(SessionRoutingConfig(std::move(session_user), create_remote,
+                                       is_corp_host));
 }
 
-// static
 base::expected<void, Loggable> SessionRoutingConfig::WriteToFile(
-    const base::FilePath& path,
-    std::string_view session_user,
-    bool create_remote_user_sessions) {
+    const base::FilePath& path) const {
   // Never write a file that LoadAndValidate() would reject.
-  if (!session_user.empty() && !IsValidUsername(session_user)) {
+  if (!session_user_.empty() && !IsValidUsername(session_user_)) {
     return base::unexpected(Loggable(
         FROM_HERE,
         base::StrCat({"Not writing session routing config '", path.value(),
-                      "': ", base::GetQuotedJSONString(session_user),
+                      "': ", base::GetQuotedJSONString(session_user_),
                       " is not a valid username."})));
   }
 
@@ -172,10 +161,10 @@ base::expected<void, Loggable> SessionRoutingConfig::WriteToFile(
   }
 
   base::DictValue dict;
-  if (!session_user.empty()) {
-    dict.Set(kSessionUserKey, session_user);
+  if (!session_user_.empty()) {
+    dict.Set(kSessionUserKey, session_user_);
   }
-  if (create_remote_user_sessions) {
+  if (create_remote_user_sessions_) {
     dict.Set(kCreateRemoteUserSessionsKey, true);
   }
   // Pretty-printed, since users may edit the file by hand.
@@ -202,13 +191,12 @@ base::expected<void, Loggable> SessionRoutingConfig::WriteToFile(
   }
 
   // Sanity check: make sure that the daemon will accept the written file.
-  auto loaded = LoadAndValidate(path, /*is_corp_host=*/false, owner_uid);
+  auto loaded = LoadAndValidate(path, is_corp_host_, owner_uid);
   if (!loaded.has_value()) {
     return std::move(loaded).error().UnexpectedWithContext(
         FROM_HERE, "While verifying the written session routing config");
   }
-  if (!loaded->has_value() || (*loaded)->session_user() != session_user ||
-      (*loaded)->create_remote_user_sessions() != create_remote_user_sessions) {
+  if (!loaded->has_value() || **loaded != *this) {
     return base::unexpected(Loggable(
         FROM_HERE, base::StrCat({"Session routing config '", path.value(),
                                  "' doesn't match what was written."})));
@@ -218,11 +206,12 @@ base::expected<void, Loggable> SessionRoutingConfig::WriteToFile(
 
 SessionRoutingConfig::SessionRoutingConfig() = default;
 
-SessionRoutingConfig::SessionRoutingConfig(RoutingMode mode,
-                                           std::string session_user,
+SessionRoutingConfig::SessionRoutingConfig(std::string session_user,
                                            bool create_remote_user_sessions,
                                            bool is_corp_host)
-    : mode_(mode),
+    : mode_(!session_user.empty() ? RoutingMode::kSessionUser
+            : is_corp_host        ? RoutingMode::kMatchCorpClientUsername
+                                  : RoutingMode::kRejectAll),
       session_user_(std::move(session_user)),
       create_remote_user_sessions_(create_remote_user_sessions),
       is_corp_host_(is_corp_host) {}

@@ -205,6 +205,23 @@ TEST_F(SessionRoutingConfigTest, InvalidUsernameFails) {
                    .has_value());
 }
 
+TEST_F(SessionRoutingConfigTest, IsValidUsername) {
+  EXPECT_TRUE(SessionRoutingConfig::IsValidUsername("alice"));
+  EXPECT_TRUE(SessionRoutingConfig::IsValidUsername("Alice_B.c-1"));
+  EXPECT_TRUE(SessionRoutingConfig::IsValidUsername(std::string(256, 'a')));
+
+  EXPECT_FALSE(SessionRoutingConfig::IsValidUsername(""));
+  EXPECT_FALSE(SessionRoutingConfig::IsValidUsername(std::string(257, 'a')));
+  EXPECT_FALSE(SessionRoutingConfig::IsValidUsername("-alice"));
+  EXPECT_FALSE(SessionRoutingConfig::IsValidUsername("user/name"));
+  EXPECT_FALSE(SessionRoutingConfig::IsValidUsername("alice@example.com"));
+  EXPECT_FALSE(SessionRoutingConfig::IsValidUsername("alice bob"));
+  // systemctl treats these as glob patterns in unit names.
+  EXPECT_FALSE(SessionRoutingConfig::IsValidUsername("*"));
+  EXPECT_FALSE(SessionRoutingConfig::IsValidUsername("alice?"));
+  EXPECT_FALSE(SessionRoutingConfig::IsValidUsername("[ab]"));
+}
+
 TEST_F(SessionRoutingConfigTest, UnknownKeysIgnoredWithWarning) {
   base::FilePath config_file = CreateConfigFile(kUnknownKeysJson);
   auto result = SessionRoutingConfig::LoadAndValidate(
@@ -304,16 +321,19 @@ TEST_F(SessionRoutingConfigTest, WriteToFile_RoundTrip) {
   struct TestCase {
     std::string_view session_user;
     bool create_remote_user_sessions;
+    bool is_corp_host;
     std::string_view expected_json;
     SessionRoutingConfig::RoutingMode expected_mode;
   };
   constexpr TestCase kTestCases[] = {
-      {"", false, "{}", SessionRoutingConfig::RoutingMode::kRejectAll},
-      {"alice", false, R"({"sessionUser": "alice"})",
+      {"", false, false, "{}", SessionRoutingConfig::RoutingMode::kRejectAll},
+      {"", false, true, "{}",
+       SessionRoutingConfig::RoutingMode::kMatchCorpClientUsername},
+      {"alice", false, false, R"({"sessionUser": "alice"})",
        SessionRoutingConfig::RoutingMode::kSessionUser},
-      {"", true, R"({"createRemoteUserSessions": true})",
+      {"", true, false, R"({"createRemoteUserSessions": true})",
        SessionRoutingConfig::RoutingMode::kRejectAll},
-      {"alice", true,
+      {"alice", true, true,
        R"({"sessionUser": "alice", "createRemoteUserSessions": true})",
        SessionRoutingConfig::RoutingMode::kSessionUser},
   };
@@ -322,11 +342,14 @@ TEST_F(SessionRoutingConfigTest, WriteToFile_RoundTrip) {
     SCOPED_TRACE(testing::Message()
                  << "session_user: '" << test_case.session_user
                  << "', create_remote_user_sessions: "
-                 << test_case.create_remote_user_sessions);
+                 << test_case.create_remote_user_sessions
+                 << ", is_corp_host: " << test_case.is_corp_host);
 
-    auto write_result = SessionRoutingConfig::WriteToFile(
-        config_file, test_case.session_user,
-        test_case.create_remote_user_sessions);
+    SessionRoutingConfig config(std::string(test_case.session_user),
+                                test_case.create_remote_user_sessions,
+                                test_case.is_corp_host);
+    EXPECT_EQ(config.mode(), test_case.expected_mode);
+    auto write_result = config.WriteToFile(config_file);
     ASSERT_TRUE(write_result.has_value()) << write_result.error().ToString();
 
     // Fields are omitted rather than written with default values.
@@ -335,20 +358,18 @@ TEST_F(SessionRoutingConfigTest, WriteToFile_RoundTrip) {
     EXPECT_THAT(content, base::test::IsJson(test_case.expected_json));
 
     auto result = SessionRoutingConfig::LoadAndValidate(
-        config_file, /*is_corp_host=*/false, current_uid_);
+        config_file, test_case.is_corp_host, current_uid_);
     ASSERT_TRUE(result.has_value()) << result.error().ToString();
     ASSERT_TRUE(result->has_value());
-    EXPECT_EQ(result->value().mode(), test_case.expected_mode);
-    EXPECT_EQ(result->value().session_user(), test_case.session_user);
-    EXPECT_EQ(result->value().create_remote_user_sessions(),
-              test_case.create_remote_user_sessions);
+    EXPECT_EQ(result->value(), config);
   }
 }
 
 TEST_F(SessionRoutingConfigTest, WriteToFile_SetsMode0644) {
   base::FilePath config_file = GetWritableConfigFilePath();
-  ASSERT_TRUE(SessionRoutingConfig::WriteToFile(
-                  config_file, "alice", /*create_remote_user_sessions=*/true)
+  ASSERT_TRUE(SessionRoutingConfig("alice",
+                                   /*create_remote_user_sessions=*/true)
+                  .WriteToFile(config_file)
                   .has_value());
 
   int mode = 0;
@@ -358,8 +379,9 @@ TEST_F(SessionRoutingConfigTest, WriteToFile_SetsMode0644) {
 
 TEST_F(SessionRoutingConfigTest, WriteToFile_ReplacesExistingFile) {
   base::FilePath config_file = CreateConfigFile(kUnknownKeysJson, 0600);
-  ASSERT_TRUE(SessionRoutingConfig::WriteToFile(
-                  config_file, "alice", /*create_remote_user_sessions=*/false)
+  ASSERT_TRUE(SessionRoutingConfig("alice",
+                                   /*create_remote_user_sessions=*/false)
+                  .WriteToFile(config_file)
                   .has_value());
 
   std::string content;
@@ -375,8 +397,9 @@ TEST_F(SessionRoutingConfigTest, WriteToFile_ReplacesSymlinkAtPath) {
   base::FilePath config_file = GetWritableConfigFilePath();
   ASSERT_TRUE(base::CreateSymbolicLink(target_file, config_file));
 
-  ASSERT_TRUE(SessionRoutingConfig::WriteToFile(
-                  config_file, "alice", /*create_remote_user_sessions=*/false)
+  ASSERT_TRUE(SessionRoutingConfig("alice",
+                                   /*create_remote_user_sessions=*/false)
+                  .WriteToFile(config_file)
                   .has_value());
 
   EXPECT_FALSE(base::IsLink(config_file));
@@ -393,8 +416,9 @@ TEST_F(SessionRoutingConfigTest,
   base::FilePath config_file = GetWritableConfigFilePath();
   ASSERT_TRUE(base::SetPosixFilePermissions(temp_dir_.GetPath(), 0770));
 
-  EXPECT_FALSE(SessionRoutingConfig::WriteToFile(
-                   config_file, "alice", /*create_remote_user_sessions=*/false)
+  EXPECT_FALSE(SessionRoutingConfig("alice",
+                                    /*create_remote_user_sessions=*/false)
+                   .WriteToFile(config_file)
                    .has_value());
   EXPECT_FALSE(base::PathExists(config_file));
 }
@@ -404,8 +428,9 @@ TEST_F(SessionRoutingConfigTest,
   base::FilePath config_file = GetWritableConfigFilePath();
   ASSERT_TRUE(base::SetPosixFilePermissions(temp_dir_.GetPath(), 0707));
 
-  EXPECT_FALSE(SessionRoutingConfig::WriteToFile(
-                   config_file, "alice", /*create_remote_user_sessions=*/false)
+  EXPECT_FALSE(SessionRoutingConfig("alice",
+                                    /*create_remote_user_sessions=*/false)
+                   .WriteToFile(config_file)
                    .has_value());
   EXPECT_FALSE(base::PathExists(config_file));
 }
@@ -415,8 +440,9 @@ TEST_F(SessionRoutingConfigTest,
   base::FilePath config_file =
       temp_dir_.GetPath().Append("missing_dir").Append("session_routing.json");
 
-  EXPECT_FALSE(SessionRoutingConfig::WriteToFile(
-                   config_file, "alice", /*create_remote_user_sessions=*/false)
+  EXPECT_FALSE(SessionRoutingConfig("alice",
+                                    /*create_remote_user_sessions=*/false)
+                   .WriteToFile(config_file)
                    .has_value());
   EXPECT_FALSE(base::PathExists(config_file.DirName()));
 }
@@ -425,20 +451,40 @@ TEST_F(SessionRoutingConfigTest,
        WriteToFile_InvalidUsernameFailsWithoutWriting) {
   base::FilePath config_file = GetWritableConfigFilePath();
 
-  EXPECT_FALSE(
-      SessionRoutingConfig::WriteToFile(config_file, "user/name",
-                                        /*create_remote_user_sessions=*/false)
-          .has_value());
-  EXPECT_FALSE(
-      SessionRoutingConfig::WriteToFile(config_file, "-baduser",
-                                        /*create_remote_user_sessions=*/false)
-          .has_value());
+  EXPECT_FALSE(SessionRoutingConfig("user/name",
+                                    /*create_remote_user_sessions=*/false)
+                   .WriteToFile(config_file)
+                   .has_value());
+  EXPECT_FALSE(SessionRoutingConfig("-baduser",
+                                    /*create_remote_user_sessions=*/false)
+                   .WriteToFile(config_file)
+                   .has_value());
   EXPECT_FALSE(base::PathExists(config_file));
 }
 
+TEST_F(SessionRoutingConfigTest, OperatorEquals) {
+  EXPECT_EQ(SessionRoutingConfig(),
+            SessionRoutingConfig(/*session_user=*/{},
+                                 /*create_remote_user_sessions=*/false,
+                                 /*is_corp_host=*/false));
+  SessionRoutingConfig base("alice", /*create_remote_user_sessions=*/false,
+                            /*is_corp_host=*/false);
+  EXPECT_EQ(base, SessionRoutingConfig("alice", false, false));
+  EXPECT_NE(base, SessionRoutingConfig("bob", false, false));
+  EXPECT_NE(base, SessionRoutingConfig("alice", true, false));
+  EXPECT_NE(base, SessionRoutingConfig("alice", false, true));
+
+  // Different derived modes compare unequal even when other fields are close.
+  EXPECT_NE(SessionRoutingConfig(/*session_user=*/{},
+                                 /*create_remote_user_sessions=*/false,
+                                 /*is_corp_host=*/false),
+            SessionRoutingConfig(/*session_user=*/{},
+                                 /*create_remote_user_sessions=*/false,
+                                 /*is_corp_host=*/true));
+}
+
 TEST_F(SessionRoutingConfigTest, ResolveSessionUser_SessionUserMode) {
-  SessionRoutingConfig config(SessionRoutingConfig::RoutingMode::kSessionUser,
-                              "alice",
+  SessionRoutingConfig config("alice",
                               /*create_remote_user_sessions=*/false);
 
   auto resolved1 = config.ResolveSessionUser("anyone@google.com");
@@ -451,10 +497,9 @@ TEST_F(SessionRoutingConfigTest, ResolveSessionUser_SessionUserMode) {
 }
 
 TEST_F(SessionRoutingConfigTest, ResolveSessionUser_MatchCorpMode_CorpHost) {
-  SessionRoutingConfig config(
-      SessionRoutingConfig::RoutingMode::kMatchCorpClientUsername,
-      /*session_user=*/{}, /*create_remote_user_sessions=*/false,
-      /*is_corp_host=*/true);
+  SessionRoutingConfig config(/*session_user=*/{},
+                              /*create_remote_user_sessions=*/false,
+                              /*is_corp_host=*/true);
 
   // Standard corp user
   auto resolved1 = config.ResolveSessionUser("john.doe@google.com");
