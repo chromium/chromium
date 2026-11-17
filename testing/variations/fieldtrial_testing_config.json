@@ -16624,6 +16624,26 @@
             ]
         }
     ],
+    "PrivateAiCloudflareProxyMobile": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261112",
+                    "params": {
+                        "proxy-url": "https://cp7.cloudflare.com"
+                    },
+                    "enable_features": [
+                        "PrivateAi"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivateAiUseTlsSession": [
         {
             "platforms": [
