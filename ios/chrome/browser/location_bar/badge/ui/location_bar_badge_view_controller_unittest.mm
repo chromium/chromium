@@ -6,6 +6,8 @@
 
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_button_factory.h"
+#import "ios/chrome/browser/badges/ui_bundled/incognito_badge_view_controller.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
@@ -73,7 +75,17 @@ class LocationBarBadgeViewControllerTest : public PlatformTest {
                    displayState:display_state];
   }
 
+  // Configures `view_controller_` with an `IncognitoBadgeViewController`.
+  void ConfigureIncognitoBadgeViewController() {
+    BadgeButtonFactory* factory = [[BadgeButtonFactory alloc] init];
+    incognito_badge_view_controller_ =
+        [[IncognitoBadgeViewController alloc] initWithButtonFactory:factory];
+    view_controller_.incognitoBadgeViewController =
+        incognito_badge_view_controller_;
+  }
+
   LocationBarBadgeViewController* view_controller_;
+  IncognitoBadgeViewController* incognito_badge_view_controller_;
   id mock_mutator_;
   id mock_contextual_panel_mutator_;
 };
@@ -464,6 +476,79 @@ TEST_F(LocationBarBadgeViewControllerTest,
   feature_list.InitAndDisableFeature(kLocationBarBadgeMigration);
 
   [view_controller_ view];
+  EXPECT_EQ(nil, chrome_test_util::FindViewById(
+                     view_controller_.view,
+                     kLocationBarBadgeSeparatorAccessibilityIdentifier));
+}
+
+// Tests that `setBadgeItems:` displays the badge stack view and separator when
+// migration is enabled, independent of legacy `incognitoBadgeViewController`
+// visibility state.
+TEST_F(LocationBarBadgeViewControllerTest,
+       SetBadgeItemsShowsStackViewWhenLegacyIncognitoBadgeHidden) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kLocationBarBadgeMigration);
+
+  [view_controller_ view];
+  UIStackView* badge_stack_view = chrome_test_util::FindViewById<UIStackView>(
+      view_controller_.view, kLocationBarBadgeStackViewAccessibilityIdentifier);
+  ASSERT_NE(nil, badge_stack_view);
+
+  ConfigureIncognitoBadgeViewController();
+  // Showing the legacy incognito badge under migration does not mark the
+  // unified location bar badge visible before badge items arrive, and the
+  // legacy incognito view remains hidden.
+  [view_controller_ setIncognitoBadgeViewHidden:NO];
+  EXPECT_TRUE(view_controller_.view.hidden);
+  EXPECT_TRUE(incognito_badge_view_controller_.view.hidden);
+
+  LocationBarBadgeItem* badge_item = CreateBadgeItem(
+      [[UIImage alloc] init], LocationBarBadgeDisplayState::kCollapsed);
+  [view_controller_ setBadgeItems:@[ badge_item ]];
+
+  EXPECT_FALSE(view_controller_.view.hidden);
+  EXPECT_FALSE(badge_stack_view.hidden);
+  UIView* separator_view = chrome_test_util::FindViewById(
+      view_controller_.view, kLocationBarBadgeSeparatorAccessibilityIdentifier);
+  ASSERT_NE(nil, separator_view);
+  EXPECT_FALSE(separator_view.hidden);
+
+  // Hiding the legacy incognito badge under migration does not hide active
+  // badge items.
+  [view_controller_ setIncognitoBadgeViewHidden:YES];
+  EXPECT_FALSE(view_controller_.view.hidden);
+  EXPECT_FALSE(badge_stack_view.hidden);
+
+  // Clearing items should hide the badge, stack view, and separator.
+  [view_controller_ setBadgeItems:@[]];
+  EXPECT_TRUE(view_controller_.view.hidden);
+  EXPECT_TRUE(badge_stack_view.hidden);
+  EXPECT_TRUE(separator_view.hidden);
+}
+
+// Tests that the legacy incognito badge view drives badge and stack view
+// visibility when migration is disabled.
+TEST_F(LocationBarBadgeViewControllerTest,
+       LegacyIncognitoBadgeDrivesStackViewVisibilityWhenMigrationDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kLocationBarBadgeMigration);
+
+  [view_controller_ view];
+  UIStackView* badge_stack_view = chrome_test_util::FindViewById<UIStackView>(
+      view_controller_.view, kLocationBarBadgeStackViewAccessibilityIdentifier);
+  ASSERT_NE(nil, badge_stack_view);
+
+  ConfigureIncognitoBadgeViewController();
+  EXPECT_TRUE(view_controller_.view.hidden);
+  EXPECT_TRUE(badge_stack_view.hidden);
+
+  [view_controller_ setIncognitoBadgeViewHidden:NO];
+  EXPECT_FALSE(view_controller_.view.hidden);
+  EXPECT_FALSE(badge_stack_view.hidden);
+
+  [view_controller_ setIncognitoBadgeViewHidden:YES];
+  EXPECT_TRUE(view_controller_.view.hidden);
+  EXPECT_TRUE(badge_stack_view.hidden);
   EXPECT_EQ(nil, chrome_test_util::FindViewById(
                      view_controller_.view,
                      kLocationBarBadgeSeparatorAccessibilityIdentifier));

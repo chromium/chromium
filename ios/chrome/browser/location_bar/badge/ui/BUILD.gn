@@ -54,6 +54,7 @@ source_set("unit_tests") {
     ":ui",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/badges/ui_bundled",
     "//ios/chrome/browser/contextual_panel/entrypoint/ui",
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/intelligence/features",

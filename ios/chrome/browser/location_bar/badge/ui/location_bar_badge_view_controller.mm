@@ -122,6 +122,8 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 
   _badgeStackView = [[UIStackView alloc] init];
   _badgeStackView.isAccessibilityElement = NO;
+  _badgeStackView.accessibilityIdentifier =
+      kLocationBarBadgeStackViewAccessibilityIdentifier;
   _badgeStackView.axis = UILayoutConstraintAxisHorizontal;
   _badgeStackView.alignment = UIStackViewAlignmentCenter;
   _badgeStackView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -334,6 +336,9 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   }
 
   _incognitoBadgeViewShouldBeVisible = !hidden;
+  if (IsLocationBarBadgeMigrationEnabled()) {
+    return;
+  }
   _leadingSpacer.hidden = !hidden;
   [self setLocationBarBadgeHidden:hidden];
 }
@@ -342,15 +347,13 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 
 // Updates the hidden state of the views.
 - (void)updateViewsVisibility {
-  if (_incognitoBadgeView && !_incognitoBadgeViewShouldBeVisible) {
-    HideViewIfNecessary(_badgeStackView, YES);
-  } else {
-    HideViewIfNecessary(_badgeStackView, !_locationBarBadgeShouldBeVisible);
-  }
-
+  BOOL hideBadgeStackView = !_locationBarBadgeShouldBeVisible;
   if (IsLocationBarBadgeMigrationEnabled()) {
     HideViewIfNecessary(_separatorView, ![self shouldShowSeparator]);
+  } else if (_incognitoBadgeView && !_incognitoBadgeViewShouldBeVisible) {
+    hideBadgeStackView = YES;
   }
+  HideViewIfNecessary(_badgeStackView, hideBadgeStackView);
 
   // Whether the default/placeholder badge should show. Only shown if no other
   // badge or chip is shown.
