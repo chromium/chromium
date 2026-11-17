@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.buildActivity;
 
@@ -27,6 +28,7 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
 
 import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.junit.After;
@@ -34,6 +36,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -1626,8 +1629,248 @@ public class BottomSheetLayoutTest {
         shiftedOutsideRightEvent.recycle();
     }
 
+    @Test
+    @Config(qualifiers = "xxhdpi")
+    public void testImeTransition_OpenCloseLayout() {
+        BottomSheetCoordinator sheet =
+                buildCoordinator(false, false, CONTAINER_WIDTH, CONTAINER_HEIGHT);
+        InsetObserver.WindowInsetsAnimationListener listener = captureInsetsAnimationListener();
+
+        ViewGroup contentRoot = mActivity.findViewById(android.R.id.content);
+        contentRoot.setClipChildren(true);
+        contentRoot.setClipToPadding(true);
+        mOuterRoot.setClipChildren(true);
+        mOuterRoot.setClipToPadding(true);
+        mSheetContainer.setClipChildren(false);
+        mSheetContainer.setClipToPadding(true);
+
+        TestSheetContent content = buildResizeImeContent();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(createImeInsets(0, 0));
+        sheet.showContent(content);
+        sheet.setSheetState(SheetState.HALF, /* animate= */ false);
+        layoutContainerOnly(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+        assertEquals(600f, sheet.getView().getTranslationY(), MathUtils.EPSILON);
+
+        // Open 0 -> 800 (2000 -> 1200): promotes HALF -> FULL; baseline keeps container at 0f.
+        WindowInsetsAnimationCompat openAnim =
+                new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 200);
+        WindowInsetsAnimationCompat.BoundsCompat bounds =
+                new WindowInsetsAnimationCompat.BoundsCompat(Insets.NONE, Insets.of(0, 0, 0, 800));
+        listener.onPrepare(openAnim);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(createImeInsets(800, 0));
+        mKeyboardInsetSupplier.set(800);
+        layoutContainerOnly(CONTAINER_WIDTH, 1200);
+        listener.onStart(openAnim, bounds);
+
+        assertEquals(SheetState.FULL, sheet.getSheetState());
+        assertEquals(0f, sheet.getView().getTranslationY(), MathUtils.EPSILON);
+        assertEquals(0f, mSheetContainer.getTranslationY(), MathUtils.EPSILON);
+        assertEquals(1200, sheet.getVisibleViewportRectForTesting().bottom);
+        assertFalse(mSheetContainer.getClipChildren());
+        assertTrue(mSheetContainer.getClipToPadding());
+        assertTrue(mOuterRoot.getClipChildren());
+        assertTrue(mOuterRoot.getClipToPadding());
+        assertTrue(contentRoot.getClipChildren());
+        assertTrue(contentRoot.getClipToPadding());
+
+        listener.onProgress(createImeInsets(400, 0), List.of(openAnim));
+        assertEquals(0f, mSheetContainer.getTranslationY(), MathUtils.EPSILON);
+        assertEquals(1200, sheet.getVisibleViewportRectForTesting().bottom);
+
+        listener.onEnd(openAnim);
+        assertEquals(0f, mSheetContainer.getTranslationY(), MathUtils.EPSILON);
+        assertEquals(1200, sheet.getVisibleViewportRectForTesting().bottom);
+
+        // Close 800 -> 0 (1200 -> 2000): reverts FULL -> HALF.
+        WindowInsetsAnimationCompat closeAnim =
+                new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 200);
+        listener.onPrepare(closeAnim);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(createImeInsets(0, 0));
+        mKeyboardInsetSupplier.set(0);
+        layoutContainerOnly(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+        listener.onStart(closeAnim, bounds);
+
+        assertEquals(SheetState.HALF, sheet.getSheetState());
+        assertEquals(600f, sheet.getView().getTranslationY(), MathUtils.EPSILON);
+        assertEquals(0f, mSheetContainer.getTranslationY(), MathUtils.EPSILON);
+
+        listener.onProgress(createImeInsets(400, 0), List.of(closeAnim));
+        assertEquals(0f, mSheetContainer.getTranslationY(), MathUtils.EPSILON);
+        listener.onEnd(closeAnim);
+        assertEquals(0f, mSheetContainer.getTranslationY(), MathUtils.EPSILON);
+        assertTrue(mOuterRoot.getClipChildren());
+    }
+
+    @Test
+    @Config(qualifiers = "xxhdpi")
+    public void testImeTransition_ThreeButtonNavAndNonImeInsets() {
+        BottomSheetCoordinator sheet =
+                buildCoordinator(false, false, CONTAINER_WIDTH, CONTAINER_HEIGHT);
+        InsetObserver.WindowInsetsAnimationListener listener = captureInsetsAnimationListener();
+
+        TestSheetContent content = buildResizeImeContent();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(createImeInsets(0, 100));
+        layoutContainerOnly(CONTAINER_WIDTH, 1900);
+        sheet.showContent(content);
+        sheet.setSheetState(SheetState.HALF, /* animate= */ false);
+        assertEquals(570f, sheet.getView().getTranslationY(), MathUtils.EPSILON);
+        assertEquals(1900, sheet.getVisibleViewportRectForTesting().bottom);
+
+        WindowInsetsAnimationCompat.BoundsCompat bounds =
+                new WindowInsetsAnimationCompat.BoundsCompat(Insets.NONE, Insets.of(0, 0, 0, 800));
+        WindowInsetsAnimationCompat openAnim =
+                new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 200);
+        listener.onPrepare(openAnim);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(createImeInsets(800, 100));
+        mKeyboardInsetSupplier.set(800);
+        layoutContainerOnly(CONTAINER_WIDTH, 1200);
+        listener.onStart(openAnim, bounds);
+        assertEquals(SheetState.FULL, sheet.getSheetState());
+        assertEquals(0f, mSheetContainer.getTranslationY(), MathUtils.EPSILON);
+        assertEquals(1200, sheet.getVisibleViewportRectForTesting().bottom);
+
+        WindowInsetsAnimationCompat statusAnim =
+                new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.statusBars(), null, 200);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(createImeInsets(800, 100, 100));
+        listener.onProgress(createImeInsets(400, 100, 100), List.of(openAnim, statusAnim));
+        assertEquals(100, sheet.getVisibleViewportRectForTesting().top);
+        assertEquals(1200, sheet.getVisibleViewportRectForTesting().bottom);
+        assertEquals(0f, mSheetContainer.getTranslationY(), MathUtils.EPSILON);
+
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(createImeInsets(800, 100, 150));
+        listener.onEnd(statusAnim);
+        assertEquals(150, sheet.getVisibleViewportRectForTesting().top);
+        assertEquals(1200, sheet.getVisibleViewportRectForTesting().bottom);
+        assertEquals(0f, mSheetContainer.getTranslationY(), MathUtils.EPSILON);
+        listener.onEnd(openAnim);
+
+        WindowInsetsAnimationCompat closeAnim =
+                new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 200);
+        listener.onPrepare(closeAnim);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(createImeInsets(0, 100));
+        mKeyboardInsetSupplier.set(0);
+        layoutContainerOnly(CONTAINER_WIDTH, 1900);
+        listener.onStart(closeAnim, bounds);
+        assertEquals(SheetState.HALF, sheet.getSheetState());
+        assertEquals(570f, sheet.getView().getTranslationY(), MathUtils.EPSILON);
+        assertEquals(0f, mSheetContainer.getTranslationY(), MathUtils.EPSILON);
+
+        listener.onProgress(createImeInsets(400, 100), List.of(closeAnim));
+        assertEquals(0f, mSheetContainer.getTranslationY(), MathUtils.EPSILON);
+        listener.onEnd(closeAnim);
+        assertEquals(0f, mSheetContainer.getTranslationY(), MathUtils.EPSILON);
+    }
+
+    @Test
+    @Config(qualifiers = "xxhdpi")
+    public void testImeTransition_FullSheetAndShortImeLayout() {
+        BottomSheetCoordinator sheet =
+                buildCoordinator(false, false, CONTAINER_WIDTH, CONTAINER_HEIGHT);
+        InsetObserver.WindowInsetsAnimationListener listener = captureInsetsAnimationListener();
+
+        TestSheetContent content = buildResizeImeContent();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(createImeInsets(0, 0));
+        sheet.showContent(content);
+        sheet.setSheetState(SheetState.FULL, /* animate= */ false);
+        layoutContainerOnly(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+        assertEquals(0f, sheet.getView().getTranslationY(), MathUtils.EPSILON);
+
+        // FULL sheet stays anchored at 0f on IME open and close.
+        WindowInsetsAnimationCompat.BoundsCompat bounds =
+                new WindowInsetsAnimationCompat.BoundsCompat(Insets.NONE, Insets.of(0, 0, 0, 800));
+        WindowInsetsAnimationCompat openAnim =
+                new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 200);
+        listener.onPrepare(openAnim);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(createImeInsets(800, 0));
+        mKeyboardInsetSupplier.set(800);
+        layoutContainerOnly(CONTAINER_WIDTH, 1200);
+        listener.onStart(openAnim, bounds);
+        assertEquals(SheetState.FULL, sheet.getSheetState());
+        assertEquals(0f, sheet.getView().getTranslationY(), MathUtils.EPSILON);
+        assertEquals(0f, mSheetContainer.getTranslationY(), MathUtils.EPSILON);
+        listener.onProgress(createImeInsets(400, 0), List.of(openAnim));
+        assertEquals(0f, mSheetContainer.getTranslationY(), MathUtils.EPSILON);
+        listener.onEnd(openAnim);
+        assertEquals(0f, mSheetContainer.getTranslationY(), MathUtils.EPSILON);
+
+        WindowInsetsAnimationCompat closeAnim =
+                new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 200);
+        listener.onPrepare(closeAnim);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(createImeInsets(0, 0));
+        mKeyboardInsetSupplier.set(0);
+        layoutContainerOnly(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+        listener.onStart(closeAnim, bounds);
+        assertEquals(SheetState.FULL, sheet.getSheetState());
+        assertEquals(0f, sheet.getView().getTranslationY(), MathUtils.EPSILON);
+        assertEquals(0f, mSheetContainer.getTranslationY(), MathUtils.EPSILON);
+        listener.onEnd(closeAnim);
+
+        // Short edge-to-edge IME (50px <= 102px nav bar) leaves container unresized and at 0f.
+        mE2eBottomInsetDp = 34;
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(createImeInsets(0, 102));
+        layoutContainerOnly(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+        assertEquals(102, sheet.getEdgeToEdgeBottomInset());
+        assertEquals(1898, sheet.getVisibleViewportRectForTesting().bottom);
+        sheet.setSheetState(SheetState.HALF, /* animate= */ false);
+        assertEquals(498f, sheet.getView().getTranslationY(), MathUtils.EPSILON);
+
+        WindowInsetsAnimationCompat shortAnim =
+                new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 200);
+        listener.onPrepare(shortAnim);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(createImeInsets(50, 102));
+        mKeyboardInsetSupplier.set(50);
+        listener.onStart(
+                shortAnim,
+                new WindowInsetsAnimationCompat.BoundsCompat(Insets.NONE, Insets.of(0, 0, 0, 50)));
+        assertEquals(0f, mSheetContainer.getTranslationY(), MathUtils.EPSILON);
+        assertEquals(52, sheet.getEdgeToEdgeBottomInset());
+        assertEquals(1898, sheet.getVisibleViewportRectForTesting().bottom);
+        assertEquals(548f, sheet.getView().getTranslationY(), MathUtils.EPSILON);
+        listener.onProgress(createImeInsets(25, 102), List.of(shortAnim));
+        assertEquals(0f, mSheetContainer.getTranslationY(), MathUtils.EPSILON);
+        listener.onEnd(shortAnim);
+        assertEquals(0f, mSheetContainer.getTranslationY(), MathUtils.EPSILON);
+        assertEquals(SheetState.HALF, sheet.getSheetState());
+        assertEquals(52, sheet.getEdgeToEdgeBottomInset());
+        mKeyboardInsetSupplier.set(0);
+    }
+
+    private TestSheetContent buildResizeImeContent() {
+        TestSheetContent content = new TestSheetContent(mActivity);
+        content.mFullRatio = HeightMode.RESIZE_CONTENT;
+        content.mHalfRatio = 0.7f;
+        content.mPeekHeight = HeightMode.DEFAULT;
+        return content;
+    }
+
+    private InsetObserver.WindowInsetsAnimationListener captureInsetsAnimationListener() {
+        ArgumentCaptor<InsetObserver.WindowInsetsAnimationListener> captor =
+                ArgumentCaptor.forClass(InsetObserver.WindowInsetsAnimationListener.class);
+        verify(mInsetObserver).addWindowInsetsAnimationListener(captor.capture());
+        return captor.getValue();
+    }
+
+    private static WindowInsetsCompat createImeInsets(int imeHeightPx, int navBarBottomPx) {
+        return createImeInsets(imeHeightPx, navBarBottomPx, /* statusBarTopPx= */ 0);
+    }
+
+    private static WindowInsetsCompat createImeInsets(
+            int imeHeightPx, int navBarBottomPx, int statusBarTopPx) {
+        return new WindowInsetsCompat.Builder()
+                .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, imeHeightPx))
+                .setInsets(
+                        WindowInsetsCompat.Type.navigationBars(),
+                        Insets.of(0, 0, 0, navBarBottomPx))
+                .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.of(0, statusBarTopPx, 0, 0))
+                .build();
+    }
+
     private void layoutOuterRoot(int width, int height) {
         mActivity.getWindow().getDecorView().layout(0, 0, width, height);
+        layoutContainerOnly(width, height);
+    }
+
+    private void layoutContainerOnly(int width, int height) {
         ViewUtils.requestLayout(mSheetContainer, "BottomSheetLayoutTest");
         mOuterRoot.measure(
                 MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
