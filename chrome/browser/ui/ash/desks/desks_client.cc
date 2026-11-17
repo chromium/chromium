@@ -25,6 +25,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -35,8 +36,6 @@
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_events.h"
@@ -53,6 +52,8 @@
 #include "components/desks_storage/core/desk_model_wrapper.h"
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
+#include "components/services/app_service/public/cpp/app_service.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sessions/core/session_id.h"
@@ -383,11 +384,13 @@ void DesksClient::GetTemplateJson(const base::Uuid& uuid,
     return;
   }
 
-  apps::AppRegistryCache& app_cache =
-      apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
+  // `active_account_id_` is for the regular user's Profile (see
+  // IsSupportedProfile()), so AppService must be available.
+  apps::AppService& app_service =
+      CHECK_DEREF(apps::AppServiceRegistry::Get()->Find(active_account_id_));
 
   GetDeskModel()->GetTemplateJson(
-      uuid, &app_cache,
+      uuid, &app_service.AppRegistryCache(),
       base::BindOnce(&DesksClient::OnGetTemplateJson,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
