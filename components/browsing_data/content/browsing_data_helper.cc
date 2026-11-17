@@ -176,11 +176,11 @@ void RemoveSiteSettingsData(const base::Time& delete_begin,
       ContentSettingsType::HID_CHOOSER_DATA, delete_begin, delete_end,
       HostContentSettingsMap::PatternSourcePredicate());
 
-#if !BUILDFLAG(IS_ANDROID)
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::INITIALIZED_TRANSLATIONS, delete_begin, delete_end,
       HostContentSettingsMap::PatternSourcePredicate());
 
+#if !BUILDFLAG(IS_ANDROID)
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA, delete_begin,
       delete_end, HostContentSettingsMap::PatternSourcePredicate());

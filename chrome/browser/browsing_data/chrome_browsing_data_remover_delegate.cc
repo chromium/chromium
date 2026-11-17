@@ -930,11 +930,11 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, delete_begin,
         delete_end, website_settings_filter);
 
-#if !BUILDFLAG(IS_ANDROID)
     host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
         ContentSettingsType::INITIALIZED_TRANSLATIONS, delete_begin_,
         delete_end_, website_settings_filter);
 
+#if !BUILDFLAG(IS_ANDROID)
     host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
         ContentSettingsType::INTENT_PICKER_DISPLAY, delete_begin_, delete_end_,
         website_settings_filter);

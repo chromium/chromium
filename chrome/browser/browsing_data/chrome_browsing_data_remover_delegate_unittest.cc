@@ -3172,6 +3172,32 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
       << host_settings[2].primary_pattern.ToString();
 }
 
+// Tests that clearing site usage data also clears the language pairs that
+// each origin initialized with the Translator API, on every platform.
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearsInitializedTranslations) {
+  // This test relies on async loading to complete. RunUntilIdle() should be
+  // removed and an explicit wait should be added.
+  task_environment()->RunUntilIdle();
+
+  const GURL kOrigin("https://host1.com");
+  auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
+  map->SetWebsiteSettingDefaultScope(
+      kOrigin, GURL(), ContentSettingsType::INITIALIZED_TRANSLATIONS,
+      base::Value(base::DictValue().Set("en,es", true)));
+  ASSERT_FALSE(
+      map->GetWebsiteSetting(kOrigin, GURL(),
+                             ContentSettingsType::INITIALIZED_TRANSLATIONS)
+          .is_none());
+
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                constants::DATA_TYPE_SITE_USAGE_DATA, false);
+
+  EXPECT_TRUE(
+      map->GetWebsiteSetting(kOrigin, GURL(),
+                             ContentSettingsType::INITIALIZED_TRANSLATIONS)
+          .is_none());
+}
+
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveContentSettings) {
   // This test relies on async loading to complete. RunUntilIdle() should be
   // removed and an explicit wait should be added.

@@ -330,7 +330,8 @@ void WebsiteSettingsRegistry::Init() {
   Register(ContentSettingsType::INITIALIZED_TRANSLATIONS,
            "initialized-translations", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE, DESKTOP,
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
+           DESKTOP | PLATFORM_ANDROID,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS,
            "suspicious-notification-ids", base::Value(),
