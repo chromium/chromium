@@ -108,8 +108,8 @@ class MultiContentsViewUiTest
   MultiContentsViewUiTest() = default;
 
   const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    // TODO(crbug.com/579025166): Fix test failures related to missing tab
-    // search bubble.
+    // TODO(crbug.com/584313535): Remove the Tab Search tests and re-enable
+    // kOrganizerPanel.
     return {organizer_panel::kOrganizerPanel};
   }
 
