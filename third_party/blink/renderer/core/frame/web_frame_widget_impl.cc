@@ -1119,7 +1119,7 @@ WebInputEventResult WebFrameWidgetImpl::HandleKeyEvent(
 
   // If there is a popup open, it should be the one processing the event,
   // not the page.
-  scoped_refptr<WebPagePopupImpl> page_popup = View()->GetPagePopup();
+  WebPagePopupImpl* page_popup = View()->GetPagePopup();
   if (page_popup) {
     WebInputEventResult result = page_popup->HandleKeyEvent(event);
     if (event.GetType() == WebInputEvent::Type::kRawKeyDown) {
@@ -1204,7 +1204,7 @@ void WebFrameWidgetImpl::HandleMouseDown(LocalFrame& local_root,
   // If there is a popup open, close it as the user is clicking on the page
   // (outside of the popup). We also save it so we can prevent a click on an
   // element from immediately reopening the same popup.
-  scoped_refptr<WebPagePopupImpl> page_popup;
+  WebPagePopupImpl* page_popup = nullptr;
   if (event.button == WebMouseEvent::Button::kLeft) {
     page_popup = view_impl->GetPagePopup();
     view_impl->CancelPagePopup();
@@ -1242,7 +1242,7 @@ void WebFrameWidgetImpl::HandleMouseDown(LocalFrame& local_root,
   }
 
   if (view_impl->GetPagePopup() && page_popup &&
-      view_impl->GetPagePopup()->HasSamePopupClient(page_popup.get())) {
+      view_impl->GetPagePopup()->HasSamePopupClient(page_popup)) {
     // That click triggered a page popup that is the same as the one we just
     // closed.  It needs to be closed.
     view_impl->CancelPagePopup();
@@ -1402,7 +1402,7 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
 
       if (web_view->GetPagePopup() && last_hidden_page_popup_ &&
           web_view->GetPagePopup()->HasSamePopupClient(
-              last_hidden_page_popup_.get())) {
+              last_hidden_page_popup_.Get())) {
         // The tap triggered a page popup that is the same as the one we just
         // closed. It needs to be closed.
         web_view->CancelPagePopup();
@@ -1489,7 +1489,7 @@ WebInputEventResult WebFrameWidgetImpl::HandleCharEvent(
 
   // If there is a popup open, it should be the one processing the event,
   // not the page.
-  scoped_refptr<WebPagePopupImpl> page_popup = View()->GetPagePopup();
+  WebPagePopupImpl* page_popup = View()->GetPagePopup();
   if (page_popup) {
     return page_popup->HandleKeyEvent(event);
   }
@@ -1845,17 +1845,18 @@ void WebFrameWidgetImpl::RequestDecode(const cc::DrawImage& image,
 }
 
 void WebFrameWidgetImpl::Trace(Visitor* visitor) const {
-  visitor->Trace(local_root_);
   visitor->Trace(current_drag_data_);
+  visitor->Trace(mouse_capture_element_);
+  visitor->Trace(local_root_);
   visitor->Trace(frame_widget_host_);
   visitor->Trace(receiver_);
   visitor->Trace(input_target_receivers_);
   visitor->Trace(ime_render_widget_host_);
-  visitor->Trace(mouse_capture_element_);
   visitor->Trace(device_emulator_);
   visitor->Trace(animation_frame_timing_monitor_);
-  visitor->Trace(unbounded_surface_state_);
   visitor->Trace(scroll_timing_document_);
+  visitor->Trace(last_hidden_page_popup_);
+  visitor->Trace(unbounded_surface_state_);
   AnimationFrameTimingMonitor::Client::Trace(visitor);
 }
 
@@ -5283,7 +5284,7 @@ void WebFrameWidgetImpl::SetEditableSelectionOffsets(int32_t start,
 
 void WebFrameWidgetImpl::ExecuteEditCommand(const String& command,
                                             const String& value) {
-  scoped_refptr<WebPagePopupImpl> page_popup = View()->GetPagePopup();
+  WebPagePopupImpl* page_popup = View()->GetPagePopup();
   if (RuntimeEnabledFeatures::PagePopupCopyPasteEnabled() && page_popup) {
     page_popup->ExecuteEditCommand(command, value);
     return;

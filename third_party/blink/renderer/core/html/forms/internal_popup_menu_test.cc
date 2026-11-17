@@ -10,7 +10,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/trees/layer_tree_host.h"
@@ -234,8 +233,13 @@ class DisconnectOnChangeListener final : public NativeEventListener {
     }
   }
 
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(popup_);
+    NativeEventListener::Trace(visitor);
+  }
+
  private:
-  raw_ptr<WebPagePopupImpl> popup_;
+  Member<WebPagePopupImpl> popup_;
 };
 }  // namespace
 
@@ -319,16 +323,17 @@ class ShowPickerOnEventListener final : public NativeEventListener {
       web_view_ = nullptr;
     }
   }
-  WebPagePopupImpl* OpenedPopup() const { return opened_popup_.get(); }
+  WebPagePopupImpl* OpenedPopup() const { return opened_popup_.Get(); }
   void Trace(Visitor* visitor) const override {
     visitor->Trace(input_);
+    visitor->Trace(opened_popup_);
     NativeEventListener::Trace(visitor);
   }
 
  private:
   raw_ptr<WebViewImpl> web_view_;
   Member<HTMLInputElement> input_;
-  scoped_refptr<WebPagePopupImpl> opened_popup_;
+  Member<WebPagePopupImpl> opened_popup_;
 };
 }  // namespace
 
@@ -475,7 +480,7 @@ TEST_F(InternalPopupMenuTest, CompositePopupAfterWebViewClosed) {
   auto* menu = MakeGarbageCollected<InternalPopupMenu>(
       MakeGarbageCollected<EmptyChromeClient>(), *sel);
 
-  scoped_refptr<WebPagePopupImpl> popup = web_view->OpenPagePopup(menu);
+  WebPagePopupImpl* popup = web_view->OpenPagePopup(menu);
   ASSERT_TRUE(popup);
   popup->DidShowPopup();
 
@@ -799,7 +804,7 @@ class PopupClosingAutofillClient final : public WebAutofillClient {
 
  private:
   Persistent<Element> owner_;
-  raw_ptr<WebPagePopupImpl> popup_;
+  Persistent<WebPagePopupImpl> popup_;
   const Action action_;
   int gesture_count_ = 0;
 };

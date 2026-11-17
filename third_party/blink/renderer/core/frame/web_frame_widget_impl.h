@@ -1455,7 +1455,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   // This stores the last hidden page popup. If a GestureTap attempts to open
   // the popup that is closed by its previous GestureTapDown, the popup remains
   // closed.
-  scoped_refptr<WebPagePopupImpl> last_hidden_page_popup_;
+  Member<WebPagePopupImpl> last_hidden_page_popup_;
 
   base::WeakPtrFactory<mojom::blink::FrameWidgetInputHandler>
       input_handler_weak_ptr_factory_{this};

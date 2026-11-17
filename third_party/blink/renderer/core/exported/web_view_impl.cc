@@ -1128,15 +1128,11 @@ WebPagePopupImpl* WebViewImpl::OpenPagePopup(PagePopupClient* client) {
       std::move(widget_receiver), this, agent_group_scheduler,
       opener_widget->GetOriginalScreenInfos(), client);
   EnablePopupMouseWheelEventListener(web_opener_frame->LocalRoot());
-  return page_popup_.get();
+  return page_popup_.Get();
 }
 
 void WebViewImpl::CancelPagePopup() {
   if (page_popup_) {
-    // Ensure page_popup_ lifetime lasts through the call even if the member
-    // variable is cleared by a callback during it.
-    scoped_refptr<WebPagePopupImpl> owning_reference(page_popup_);
-
     page_popup_->Cancel();
   }
 }
@@ -1144,14 +1140,10 @@ void WebViewImpl::CancelPagePopup() {
 void WebViewImpl::ClosePagePopup(PagePopup* popup) {
   DCHECK(popup);
   auto* popup_impl = To<WebPagePopupImpl>(popup);
-  DCHECK_EQ(page_popup_.get(), popup_impl);
-  if (page_popup_.get() != popup_impl) {
+  DCHECK_EQ(page_popup_.Get(), popup_impl);
+  if (page_popup_.Get() != popup_impl) {
     return;
   }
-
-  // Ensure page_popup_ lifetime lasts through the call even if the member
-  // variable is cleared by a callback during it.
-  scoped_refptr<WebPagePopupImpl> owning_reference(page_popup_);
 
   page_popup_->ClosePopup();
 }
@@ -1166,10 +1158,6 @@ void WebViewImpl::CleanupPagePopup() {
 
 void WebViewImpl::UpdatePagePopup() {
   if (page_popup_) {
-    // Ensure page_popup_ lifetime lasts through the call even if the member
-    // variable is cleared by a callback during it.
-    scoped_refptr<WebPagePopupImpl> owning_reference(page_popup_);
-
     page_popup_->Update();
   }
 }

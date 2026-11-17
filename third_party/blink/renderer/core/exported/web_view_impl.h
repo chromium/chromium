@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/platform/graphics/apply_viewport_changes.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -208,7 +209,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void PerformCustomContextMenuAction(unsigned action) override;
   void DidCloseContextMenu() override;
   void CancelPagePopup() override;
-  WebPagePopupImpl* GetPagePopup() const override { return page_popup_.get(); }
+  WebPagePopupImpl* GetPagePopup() const override { return page_popup_.Get(); }
   void SetPageFrozen(bool frozen) override;
   WebFrameWidget* MainFrameWidget() override;
   void SetDeviceColorSpaceForTesting(
@@ -432,7 +433,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void UpdatePageDefinedViewportConstraints(const ViewportDescription&);
 
   WebPagePopupImpl* OpenPagePopup(PagePopupClient*);
-  bool HasOpenedPopup() const { return page_popup_.get(); }
+  bool HasOpenedPopup() const { return page_popup_.Get(); }
   void ClosePagePopup(PagePopup*);
   // Callback from PagePopup when it is closed, which it can be done directly
   // without coming through WebViewImpl.
@@ -914,7 +915,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // a reference here because we can extend the lifetime of the popup while
   // handling input events in order to compare its popup client after it was
   // closed.
-  scoped_refptr<WebPagePopupImpl> page_popup_;
+  Persistent<WebPagePopupImpl> page_popup_;
 
   Persistent<DevToolsEmulator> dev_tools_emulator_;
 

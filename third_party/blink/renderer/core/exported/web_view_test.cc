@@ -8659,7 +8659,7 @@ TEST_F(WebViewTest, PopupConstrainedByLineOfDeathAndWorkArea) {
 
   auto* menu = MakeGarbageCollected<InternalPopupMenu>(
       &frame->GetPage()->GetChromeClient(), *select);
-  scoped_refptr<WebPagePopupImpl> popup = web_view->OpenPagePopup(menu);
+  WebPagePopupImpl* popup = web_view->OpenPagePopup(menu);
   ASSERT_TRUE(popup);
   popup->DidShowPopup();
 
