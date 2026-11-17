@@ -33,7 +33,7 @@ BASE_FEATURE(kAutofillFormSubmissionEventsInCaptureMode,
 
 // LINT.IfChange(autofill_ignore_tab_index_for_focusability_ios)
 BASE_FEATURE(kAutofillIgnoreTabIndexForFocusabilityIos,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_ignore_tab_index_for_focusability_ios)
 
 BASE_FEATURE(kAutofillPaymentsSheetDetachInvalidatedListenersIos,
