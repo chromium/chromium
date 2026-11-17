@@ -16,9 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_index/content_index_provider_impl.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
@@ -50,8 +48,7 @@ std::string GetDescriptionIdFromOfflineItemKey(const std::string& id) {
 }
 
 class ContentIndexTest : public InProcessBrowserTest,
-                         public OfflineContentProvider::Observer,
-                         public TabStripModelObserver {
+                         public OfflineContentProvider::Observer {
  public:
   ContentIndexTest() = default;
   ~ContentIndexTest() override = default;
@@ -71,7 +68,6 @@ class ContentIndexTest : public InProcessBrowserTest,
     DCHECK(provider);
     provider_ = static_cast<ContentIndexProviderImpl*>(provider);
     provider_->AddObserver(this);
-    browser()->tab_strip_model()->AddObserver(this);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -99,17 +95,6 @@ class ContentIndexTest : public InProcessBrowserTest,
   void OnContentProviderGoingDown() override {
     // Clear the cached pointer to avoid a dangling pointer error later.
     provider_ = nullptr;
-  }
-
-  // TabStripModelObserver implementation:
-  void OnTabChangedAt(tabs::TabInterface* tab,
-                      TabChangeType change_type) override {
-    if (wait_for_tab_change_)
-      std::move(wait_for_tab_change_).Run();
-  }
-
-  void SetTabChangeQuitClosure(base::OnceClosure closure) {
-    wait_for_tab_change_ = std::move(closure);
   }
 
   std::optional<OfflineItem> GetItem(const ContentId& id) {
@@ -157,7 +142,6 @@ class ContentIndexTest : public InProcessBrowserTest,
   std::map<std::string, OfflineItem> offline_items_;
   raw_ptr<ContentIndexProviderImpl> provider_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  base::OnceClosure wait_for_tab_change_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentIndexTest, OfflineItemObserversReceiveEvents) {
@@ -259,15 +243,14 @@ IN_PROC_BROWSER_TEST_F(ContentIndexTest, LaunchUrl) {
                              "/content_index/content_index.html",
                              base::CompareCase::SENSITIVE));
 
+  ui_test_utils::TabAddedWaiter tab_added_waiter(browser());
   provider()->OpenItem(
       offline_items_collection::OpenParams(
           offline_items_collection::LaunchLocation::DOWNLOAD_HOME),
       offline_items().at("my-id").id);
 
   // Wait for the page to open.
-  base::RunLoop run_loop;
-  SetTabChangeQuitClosure(run_loop.QuitClosure());
-  run_loop.Run();
+  tab_added_waiter.Wait();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
@@ -341,15 +324,14 @@ IN_PROC_BROWSER_TEST_F(ContentIndexTest, DISABLED_MetricsCollected) {
     base::HistogramTester histogram_tester;
     ukm::TestAutoSetUkmRecorder ukm_recorder;
 
+    ui_test_utils::TabAddedWaiter tab_added_waiter(browser());
     provider()->OpenItem(
         offline_items_collection::OpenParams(
             offline_items_collection::LaunchLocation::DOWNLOAD_HOME),
         offline_items().at("my-id-2").id);
 
     // Wait for the page to open.
-    base::RunLoop run_loop;
-    SetTabChangeQuitClosure(run_loop.QuitClosure());
-    run_loop.Run();
+    tab_added_waiter.Wait();
 
     EXPECT_EQ(
         ukm_recorder
