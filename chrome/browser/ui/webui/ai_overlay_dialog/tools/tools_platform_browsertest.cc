@@ -101,6 +101,7 @@ class AiOverlayToolsPlatformBrowserTest : public PlatformBrowserTest {
     ASSERT_TRUE(content::NavigateToURL(
         contents, embedded_test_server()->GetURL(kTallPagePath)));
     content::WaitForHitTestData(contents->GetPrimaryMainFrame());
+    content::WaitForCopyableViewInWebContents(contents);
     ASSERT_EQ(0, content::EvalJs(contents, "scrollY").ExtractDouble());
   }
 
