@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -158,9 +159,19 @@ void LinkModuleImport::Process(LinkLoadParameters::Reason reason) {
   modulator->FetchSingle(request, window->Fetcher(),
                          ModuleGraphLevel::kTopLevelModuleFetch,
                          ModuleScriptCustomFetchType::kNone, client);
-  CSSStyleSheet* sheet = GetModuleStyleSheet(
-      modulator->GetFetchedModuleScript(resolved_url_, ModuleType::kCSS));
-  SetSheet(sheet);
+  ModuleScript* module_script =
+      modulator->GetFetchedModuleScript(resolved_url_, ModuleType::kCSS);
+  // A rejected cache hit remains in the module map despite its queued failure.
+  // Mirror the module map's CSP recheck without duplicating its report.
+  if (module_script &&
+      !window->GetContentSecurityPolicy()->AllowScriptFromSource(
+          request.Url(), options.Nonce(), options.GetIntegrityMetadata(),
+          options.ParserState(), request.Url(),
+          ResourceRequestHead::RedirectStatus::kNoRedirect,
+          ReportingDisposition::kSuppressReporting)) {
+    module_script = nullptr;
+  }
+  SetSheet(GetModuleStyleSheet(module_script));
 }
 
 void LinkModuleImport::OwnerRemoved() {
