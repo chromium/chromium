@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.Nullable;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -23,12 +24,17 @@ import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
+import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
+
+import java.util.List;
 
 /** Utilities helper class for multi-window tests. */
 public class MultiWindowTestHelper {
@@ -145,6 +151,48 @@ public class MultiWindowTestHelper {
                     }
                 });
         waitUntilActivityResumed(activity);
+    }
+
+    /**
+     * Moves {@code tab} from {@code sourceActivity} to {@code destActivity}, bringing the latter to
+     * front.
+     *
+     * <p>On Android S+, uses {@link MultiInstanceOrchestrator#moveTabsToWindowByIdChecked}. Before
+     * S, uses the "Move to other window" menu item of {@code sourceActivity}, which moves its
+     * current tab, so {@code tab} must be the current tab.
+     *
+     * @return a {@link TripBuilder} with the move as its trigger. Wait with it for the tab to be in
+     *     {@code destActivity}, e.g. with {@code TabInModelCondition}.
+     */
+    public static TripBuilder moveTabToWindowTo(
+            ChromeTabbedActivity sourceActivity, ChromeTabbedActivity destActivity, Tab tab) {
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            int destWindowId = destActivity.getWindowId();
+            return Triggers.runOnUiThreadTo(
+                    () ->
+                            MultiInstanceOrchestratorFactory.getInstance()
+                                    .moveTabsToWindowByIdChecked(
+                                            destWindowId,
+                                            List.of(tab),
+                                            /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                                            /* destGroupTabId= */ Tab.INVALID_TAB_ID,
+                                            /* bringToFront= */ true));
+        }
+
+        Tab currentTab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> sourceActivity.getTabModelSelector().getCurrentTab());
+        Assert.assertSame(
+                "Before Android S, \"Move to other window\" moves the current tab of the source"
+                        + " window",
+                tab,
+                currentTab);
+        return Triggers.runTo(
+                () ->
+                        MenuUtils.invokeCustomMenuActionSync(
+                                InstrumentationRegistry.getInstrumentation(),
+                                sourceActivity,
+                                R.id.move_to_other_window_menu_id));
     }
 
     /**

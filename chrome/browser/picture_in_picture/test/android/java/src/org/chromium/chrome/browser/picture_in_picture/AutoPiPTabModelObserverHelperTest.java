@@ -8,11 +8,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.moveActivityToFront;
 import static org.chromium.ui.test.util.DeviceRestriction.RESTRICTION_TYPE_NON_AUTO;
 
+import android.os.Build;
+
 import androidx.test.filters.MediumTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
@@ -25,9 +25,8 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
@@ -45,8 +44,8 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.tabmodel.TabInModelCondition;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 
@@ -254,10 +253,6 @@ public class AutoPiPTabModelObserverHelperTest {
     @Test
     @MediumTest
     public void testOpenSecondWindow() throws TimeoutException {
-        // TODO(crbug.com/425983853): use MultiWindowManagerApi31 methods to create windows.
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            return;
-        }
         int callCount = startObservingAndAssertInitialCallback(/* expectedIsActivated= */ true);
 
         // Create a second window
@@ -268,7 +263,7 @@ public class AutoPiPTabModelObserverHelperTest {
                 mOnActivationChangedCallbackHelper.getCallCount());
 
         // Switching away from the observed tab in the original window should still deactivate it
-        moveActivityToFront(mInitialActivity);
+        mInitialPage.bringWindowToFront();
         mInitialPage.openNewTabFast();
         mOnActivationChangedCallbackHelper.waitForCallback(callCount++);
         assertFalse(mOnActivationChangedCallbackHelper.isActivated());
@@ -283,11 +278,6 @@ public class AutoPiPTabModelObserverHelperTest {
     @Test
     @MediumTest
     public void testReparentingAndSubsequentTabSwitching() throws TimeoutException {
-        // TODO(crbug.com/425983853): use MultiWindowManagerApi31 methods to create windows and
-        // reparent tabs.
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            return;
-        }
         int callCount = startObservingAndAssertInitialCallback(/* expectedIsActivated= */ true);
         // Open a new tab
         CtaPageStation page = mInitialPage.openNewTabFast();
@@ -301,11 +291,12 @@ public class AutoPiPTabModelObserverHelperTest {
         // Create a second window
         createAndInitializeSecondWindow(mInitialActivity);
         // Move the original tab(active) to the new window
-        moveActivityToFront(mInitialActivity);
-        MenuUtils.invokeCustomMenuActionSync(
-                InstrumentationRegistry.getInstrumentation(),
-                mSecondActivity,
-                R.id.move_to_other_window_menu_id);
+        page.bringWindowToFront();
+        // |page| is stale after the move; the rest of the test uses mSecondActivity.
+        MultiWindowTestHelper.moveTabToWindowTo(mInitialActivity, mSecondActivity, mInitialTab)
+                .waitFor(
+                        new TabInModelCondition(
+                                mInitialTab.getId(), mSecondActivity::getCurrentTabModel));
 
         assertEquals(
                 "Moving an active tab should not trigger a callback.",
@@ -333,13 +324,10 @@ public class AutoPiPTabModelObserverHelperTest {
      */
     @Test
     @MediumTest
+    @MinAndroidSdkLevel(
+            value = Build.VERSION_CODES.S,
+            reason = "Tab reparenting via MultiInstanceOrchestrator needs Android S multi-instance")
     public void testMoveInactiveObservedTabToNewWindow() throws TimeoutException {
-        // Multi-instance tab reparenting via MultiInstanceOrchestrator is only supported
-        // on Android S+ (API 31+).
-        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            return;
-        }
-
         int callCount = startObservingAndAssertInitialCallback(/* expectedIsActivated= */ true);
 
         // Open a new tab in the original window so that mInitialTab becomes inactive.
@@ -364,21 +352,17 @@ public class AutoPiPTabModelObserverHelperTest {
     }
 
     /**
-     * Creates and initializes a second ChromeTabbedActivity window. This is a blocking call that
-     * waits until the new activity is fully ready for interaction.
+     * Creates and initializes a second ChromeTabbedActivity window: a new ChromeTabbedActivity task
+     * on Android S+, ChromeTabbedActivity2 before. This is a blocking call that waits until the new
+     * activity is fully ready for interaction.
      *
      * @param initialActivity The initial activity to create the second one from.
      */
     private void createAndInitializeSecondWindow(ChromeTabbedActivity initialActivity) {
-        mSecondActivity = MultiWindowTestHelper.createSecondChromeTabbedActivity(initialActivity);
-
-        CriteriaHelper.pollUiThread(
-                () -> mSecondActivity.getTabModelSelector().isTabStateInitialized());
-        ChromeTabUtils.fullyLoadUrlInNewTab(
-                InstrumentationRegistry.getInstrumentation(),
-                mSecondActivity,
-                BLANK_PAGE_URL,
-                /* incognito= */ false);
+        mSecondActivity =
+                MultiWindowUtils.isMultiInstanceApi31Enabled()
+                        ? MultiWindowTestHelper.createNewChromeTabbedActivity(initialActivity)
+                        : MultiWindowTestHelper.createSecondChromeTabbedActivity(initialActivity);
     }
 
     /**
