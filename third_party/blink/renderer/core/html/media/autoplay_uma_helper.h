@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_AUTOPLAY_UMA_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_AUTOPLAY_UMA_HELPER_H_
 
+#include "base/containers/enum_set.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/web_media_player_client.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -12,7 +13,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
@@ -20,6 +20,7 @@ namespace blink {
 enum class AutoplaySource {
   // Autoplay comes from HTMLMediaElement `autoplay` attribute.
   kAttribute = 0,
+  kMinValue = kAttribute,
   // Autoplay comes from `play()` method.
   kMethod = 1,
   // Both sources are used.
@@ -89,7 +90,7 @@ class CORE_EXPORT AutoplayUmaHelper : public NativeEventListener,
   bool ShouldListenToContextDestroyed() const;
 
   // The autoplay sources.
-  HashSet<AutoplaySource> sources_;
+  base::EnumSet<AutoplaySource> sources_;
 
   // |sources_| can be either contain 0, 1, or 2 distinct values. When
   // |sources_.size() == 2|, that indicates there are dual sources responsible

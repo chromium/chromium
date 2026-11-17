@@ -72,10 +72,11 @@ static void RecordAutoplaySourceMetrics(HTMLMediaElement* element,
 void AutoplayUmaHelper::OnAutoplayInitiated(AutoplaySource source) {
 
   // Autoplay already initiated
-  if (sources_.Contains(source))
+  if (sources_.Has(source)) {
     return;
+  }
 
-  sources_.insert(source);
+  sources_.Put(source);
 
   // Record the source.
   RecordAutoplaySourceMetrics(element_.Get(), source);
@@ -118,7 +119,7 @@ void AutoplayUmaHelper::RecordAutoplayUnmuteStatus(
     int source = static_cast<int>(AutoplaySource::kAttribute);
     if (sources_.size() == kDualSourceSize) {
       source = static_cast<int>(AutoplaySource::kDualSource);
-    } else if (sources_.Contains(AutoplaySource::kMethod)) {
+    } else if (sources_.Has(AutoplaySource::kMethod)) {
       source = static_cast<int>(AutoplaySource::kAttribute);
     }
 
@@ -204,9 +205,10 @@ void AutoplayUmaHelper::HandleContextDestroyed() {
 }
 
 void AutoplayUmaHelper::MaybeStartRecordingMutedVideoPlayMethodBecomeVisible() {
-  if (!sources_.Contains(AutoplaySource::kMethod) ||
-      !IsA<HTMLVideoElement>(element_.Get()) || !element_->muted())
+  if (!sources_.Has(AutoplaySource::kMethod) ||
+      !IsA<HTMLVideoElement>(element_.Get()) || !element_->muted()) {
     return;
+  }
 
   muted_video_play_method_intersection_observer_ = IntersectionObserver::Create(
       element_->GetDocument(),
@@ -236,8 +238,9 @@ void AutoplayUmaHelper::MaybeStopRecordingMutedVideoPlayMethodBecomeVisible(
 
 void AutoplayUmaHelper::MaybeStartRecordingMutedVideoOffscreenDuration() {
   if (!IsA<HTMLVideoElement>(element_.Get()) || !element_->muted() ||
-      !sources_.Contains(AutoplaySource::kMethod))
+      !sources_.Has(AutoplaySource::kMethod)) {
     return;
+  }
 
   // Start recording muted video playing offscreen duration.
   muted_video_autoplay_offscreen_start_time_ = base::TimeTicks::Now();
@@ -265,7 +268,7 @@ void AutoplayUmaHelper::MaybeStopRecordingMutedVideoOffscreenDuration() {
         base::TimeTicks::Now() - muted_video_autoplay_offscreen_start_time_;
   }
 
-  DCHECK(sources_.Contains(AutoplaySource::kMethod));
+  DCHECK(sources_.Has(AutoplaySource::kMethod));
 
   UMA_HISTOGRAM_CUSTOM_TIMES(
       "Media.Video.Autoplay.Muted.PlayMethod.OffscreenDuration",
