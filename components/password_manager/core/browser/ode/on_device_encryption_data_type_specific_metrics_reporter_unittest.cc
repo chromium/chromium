@@ -54,7 +54,7 @@ class OnDeviceEncryptionDataTypeSpecificMetricsReporterTest
       *out_tracker = tracker.get();
     }
     return std::make_unique<OnDeviceEncryptionDataTypeSpecificMetricsReporter>(
-        data_type, std::move(tracker), pref_service_);
+        data_type, std::move(tracker), &pref_service_);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -70,7 +70,7 @@ TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
 
   OnDeviceEncryptionDataTypeSpecificMetricsReporter reporter(
       OnDeviceEncryptionDataTypeSpecificMetricsReporter::DataType::kPasskeys,
-      std::move(tracker), pref_service_);
+      std::move(tracker), &pref_service_);
 
   // No initial metrics recorded before delay.
   histogram_tester_.ExpectTotalCount(kPasskeyHistogram, 0);
@@ -90,7 +90,7 @@ TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
 
   OnDeviceEncryptionDataTypeSpecificMetricsReporter reporter(
       OnDeviceEncryptionDataTypeSpecificMetricsReporter::DataType::kPasskeys,
-      std::move(tracker), pref_service_);
+      std::move(tracker), &pref_service_);
 
   // Simulate transitional state changes during startup (e.g. at 5s and 10s).
   task_environment_.FastForwardBy(base::Seconds(5));
@@ -118,7 +118,7 @@ TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
 
   OnDeviceEncryptionDataTypeSpecificMetricsReporter reporter(
       OnDeviceEncryptionDataTypeSpecificMetricsReporter::DataType::kPasskeys,
-      std::move(tracker), pref_service_);
+      std::move(tracker), &pref_service_);
 
   // Advance the time to start observations.
   task_environment_.FastForwardBy(kInitialStateReportingDelay);
@@ -133,7 +133,7 @@ TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
 
   OnDeviceEncryptionDataTypeSpecificMetricsReporter reporter(
       OnDeviceEncryptionDataTypeSpecificMetricsReporter::DataType::kPasskeys,
-      std::move(tracker), pref_service_);
+      std::move(tracker), &pref_service_);
 
   // Advance the time to start observations.
   task_environment_.FastForwardBy(kInitialStateReportingDelay);
@@ -180,7 +180,7 @@ TEST_P(OnDeviceEncryptionDataTypeSpecificMetricsReporterStateTransitionTest,
 
   OnDeviceEncryptionDataTypeSpecificMetricsReporter reporter(
       OnDeviceEncryptionDataTypeSpecificMetricsReporter::DataType::kPasskeys,
-      std::move(tracker), pref_service_);
+      std::move(tracker), &pref_service_);
 
   // Advance the time to start observations.
   task_environment_.FastForwardBy(kInitialStateReportingDelay);
@@ -253,7 +253,7 @@ TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
 
   OnDeviceEncryptionDataTypeSpecificMetricsReporter reporter(
       OnDeviceEncryptionDataTypeSpecificMetricsReporter::DataType::kPasskeys,
-      std::move(tracker), pref_service_);
+      std::move(tracker), &pref_service_);
 
   // Advance the time to start observations.
   task_environment_.FastForwardBy(kInitialStateReportingDelay);
@@ -291,7 +291,7 @@ TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
 
   OnDeviceEncryptionDataTypeSpecificMetricsReporter reporter(
       OnDeviceEncryptionDataTypeSpecificMetricsReporter::DataType::kPasskeys,
-      std::move(tracker), pref_service_);
+      std::move(tracker), &pref_service_);
 
   // Fast forward past initial delay. Initial sample recorded.
   task_environment_.FastForwardBy(kInitialStateReportingDelay);
@@ -327,7 +327,7 @@ TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
 
   OnDeviceEncryptionDataTypeSpecificMetricsReporter reporter(
       OnDeviceEncryptionDataTypeSpecificMetricsReporter::DataType::kPasskeys,
-      std::move(tracker), pref_service_);
+      std::move(tracker), &pref_service_);
 
   // Advance past initial delay.
   task_environment_.FastForwardBy(kInitialStateReportingDelay);
@@ -351,7 +351,7 @@ TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
 
   OnDeviceEncryptionDataTypeSpecificMetricsReporter reporter(
       OnDeviceEncryptionDataTypeSpecificMetricsReporter::DataType::kPasskeys,
-      std::move(tracker), pref_service_);
+      std::move(tracker), &pref_service_);
 
   // Advance past initial delay. Initial sample recorded.
   task_environment_.FastForwardBy(kInitialStateReportingDelay);
@@ -402,7 +402,7 @@ TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
 
   OnDeviceEncryptionDataTypeSpecificMetricsReporter reporter(
       OnDeviceEncryptionDataTypeSpecificMetricsReporter::DataType::kPasskeys,
-      std::move(tracker), pref_service_);
+      std::move(tracker), &pref_service_);
 
   // Advance past initial delay.
   task_environment_.FastForwardBy(kInitialStateReportingDelay);
@@ -440,7 +440,7 @@ TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
 
   OnDeviceEncryptionDataTypeSpecificMetricsReporter reporter(
       OnDeviceEncryptionDataTypeSpecificMetricsReporter::DataType::kPasskeys,
-      std::move(tracker), pref_service_);
+      std::move(tracker), &pref_service_);
 
   task_environment_.FastForwardBy(kInitialStateReportingDelay);
 
@@ -456,7 +456,7 @@ TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
 
   OnDeviceEncryptionDataTypeSpecificMetricsReporter reporter(
       OnDeviceEncryptionDataTypeSpecificMetricsReporter::DataType::kPasswords,
-      std::move(tracker), pref_service_);
+      std::move(tracker), &pref_service_);
 
   task_environment_.FastForwardBy(kInitialStateReportingDelay);
 

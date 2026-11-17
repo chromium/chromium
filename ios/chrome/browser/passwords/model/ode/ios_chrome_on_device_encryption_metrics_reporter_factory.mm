@@ -7,7 +7,6 @@
 #import <memory>
 #import <utility>
 
-#import "base/check_deref.h"
 #import "base/feature_list.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/ode/on_device_encryption_metrics_reporter.h"
@@ -20,6 +19,7 @@
 #import "components/trusted_vault/trusted_vault_service.h"
 #import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/trusted_vault/model/ios_trusted_vault_service_factory.h"
 
@@ -31,6 +31,7 @@ IOSChromeOnDeviceEncryptionMetricsReporterFactory::
           ProfileSelection::kNoInstanceInIncognito,
           ServiceCreation::kCreateWithProfile,
           TestingCreation::kNoServiceForTests) {
+  DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(IOSTrustedVaultServiceFactory::GetInstance());
 }
@@ -75,5 +76,5 @@ IOSChromeOnDeviceEncryptionMetricsReporterFactory::BuildServiceInstanceFor(
 
   return std::make_unique<password_manager::OnDeviceEncryptionMetricsReporter>(
       std::move(passkey_tracker), std::move(password_tracker),
-      CHECK_DEREF(profile.GetPrefs()));
+      profile.GetPrefs(), IdentityManagerFactory::GetForProfile(profile));
 }

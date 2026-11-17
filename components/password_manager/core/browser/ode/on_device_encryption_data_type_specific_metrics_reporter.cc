@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -136,10 +137,10 @@ OnDeviceEncryptionDataTypeSpecificMetricsReporter::
     OnDeviceEncryptionDataTypeSpecificMetricsReporter(
         DataType data_type,
         std::unique_ptr<OnDeviceEncryptionStateTracker> tracker,
-        PrefService& pref_service)
+        PrefService* pref_service)
     : data_type_(data_type),
       tracker_(std::move(tracker)),
-      pref_service_(pref_service) {
+      pref_service_(CHECK_DEREF(pref_service)) {
   CHECK(tracker_);
   // During startup, services are actively initializing, and might also start
   // notifying the observers. On the other hand, it is good practice to avoid
@@ -162,6 +163,14 @@ void OnDeviceEncryptionDataTypeSpecificMetricsReporter::Shutdown() {
   timer_.Stop();
   observation_.Reset();
   tracker_.reset();
+}
+
+void OnDeviceEncryptionDataTypeSpecificMetricsReporter::
+    ClearCachedTimeToUnlockData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pref_service_->ClearPref(GetFirstUnlockTimePrefName(data_type_));
+  pref_service_->ClearPref(
+      GetTimeToUnlockLastReportingTimePrefName(data_type_));
 }
 
 void OnDeviceEncryptionDataTypeSpecificMetricsReporter::

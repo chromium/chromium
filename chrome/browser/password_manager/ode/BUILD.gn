@@ -10,6 +10,7 @@ source_set("ode") {
     "//components/password_manager/core/browser/ode",
   ]
   deps = [
+    "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//components/keyed_service/content",
     "//components/pref_registry",

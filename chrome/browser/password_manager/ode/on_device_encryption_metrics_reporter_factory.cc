@@ -7,10 +7,10 @@
 #include <memory>
 #include <utility>
 
-#include "base/check_deref.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/password_manager/core/browser/ode/on_device_encryption_metrics_reporter.h"
 #include "components/password_manager/core/browser/ode/on_device_encryption_state_tracker.h"
@@ -48,6 +48,7 @@ OnDeviceEncryptionMetricsReporterFactory::
     OnDeviceEncryptionMetricsReporterFactory()
     : ProfileKeyedServiceFactory("OnDeviceEncryptionMetricsReporter",
                                  ProfileSelections::BuildForRegularProfile()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
 #if BUILDFLAG(IS_ANDROID)
   DependsOn(TrustedVaultServiceFactory::GetInstance());
@@ -100,7 +101,7 @@ OnDeviceEncryptionMetricsReporterFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<OnDeviceEncryptionMetricsReporter>(
       std::move(passkey_tracker), std::move(password_tracker),
-      CHECK_DEREF(profile->GetPrefs()));
+      profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile));
 }
 
 void OnDeviceEncryptionMetricsReporterFactory::RegisterProfilePrefs(

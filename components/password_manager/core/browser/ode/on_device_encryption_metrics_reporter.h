@@ -7,10 +7,13 @@
 
 #include <memory>
 
+#include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/ode/on_device_encryption_data_type_specific_metrics_reporter.h"
 #include "components/password_manager/core/browser/ode/on_device_encryption_state_tracker.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -19,14 +22,19 @@ namespace password_manager {
 
 // KeyedService that manages on-device encryption metrics reporters for
 // passwords and passkeys.
-class OnDeviceEncryptionMetricsReporter : public KeyedService {
+class OnDeviceEncryptionMetricsReporter
+    : public KeyedService,
+      public signin::IdentityManager::Observer {
  public:
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // `pref_service` must be non-null and outlive this instance.
+  // `identity_manager` must outlive this instance if non-null.
   OnDeviceEncryptionMetricsReporter(
       std::unique_ptr<OnDeviceEncryptionStateTracker> passkey_tracker,
       std::unique_ptr<OnDeviceEncryptionStateTracker> password_tracker,
-      PrefService& pref_service);
+      PrefService* pref_service,
+      signin::IdentityManager* identity_manager);
 
   OnDeviceEncryptionMetricsReporter(const OnDeviceEncryptionMetricsReporter&) =
       delete;
@@ -38,9 +46,21 @@ class OnDeviceEncryptionMetricsReporter : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
+
  private:
+  void ClearAllTimeToUnlockData();
+
+  const raw_ref<PrefService> pref_service_;
   OnDeviceEncryptionDataTypeSpecificMetricsReporter passkey_reporter_;
   OnDeviceEncryptionDataTypeSpecificMetricsReporter password_reporter_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

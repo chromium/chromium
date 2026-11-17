@@ -63,10 +63,11 @@ class OnDeviceEncryptionDataTypeSpecificMetricsReporter
     kPasswords,
   };
 
+  // `pref_service` must be non-null and outlive this instance.
   OnDeviceEncryptionDataTypeSpecificMetricsReporter(
       DataType data_type,
       std::unique_ptr<OnDeviceEncryptionStateTracker> tracker,
-      PrefService& pref_service);
+      PrefService* pref_service);
 
   OnDeviceEncryptionDataTypeSpecificMetricsReporter(
       const OnDeviceEncryptionDataTypeSpecificMetricsReporter&) = delete;
@@ -76,6 +77,10 @@ class OnDeviceEncryptionDataTypeSpecificMetricsReporter
   ~OnDeviceEncryptionDataTypeSpecificMetricsReporter() override;
 
   void Shutdown();
+
+  // Clears cached first-unlock and time-to-unlock reporting prefs, e.g. on
+  // sign-out or account switch. Does not clear the shared sign-in time pref.
+  void ClearCachedTimeToUnlockData();
 
   // OnDeviceEncryptionStateTracker::Observer:
   void OnDeviceEncryptionStateChanged(
