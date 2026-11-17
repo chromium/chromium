@@ -43,7 +43,7 @@ import java.util.Set;
 
 /** Cleaner that allows a window to clean up persisted state for another window. */
 @NullMarked
-public class PersistentStoreCleaner {
+public class PersistentStoreCleaner implements Destroyable {
     /** Dependencies for cleaning unused data for a specific profile. */
     private static class UnusedDataDeps implements Destroyable {
         final Set<TabContentManager> mTabContentManagers = new HashSet<>();
@@ -103,6 +103,7 @@ public class PersistentStoreCleaner {
     private final TabPersistentStoreImplCleaner mLegacyCleaner;
 
     private @Nullable UnusedDataDeps mUnusedDataDeps;
+    private boolean mIsDestroyed;
 
     /**
      * @param profile The original profile used for dependencies.
@@ -213,7 +214,7 @@ public class PersistentStoreCleaner {
      */
     public void scheduleCleanUnusedData(TabContentManager manager) {
         assertOnUiThread();
-        if (!ChromeFeatureList.sScheduleWindowCleaning.isEnabled()) return;
+        if (mIsDestroyed || !ChromeFeatureList.sScheduleWindowCleaning.isEnabled()) return;
         UnusedDataDeps unusedDataDeps = mUnusedDataDeps;
         if (unusedDataDeps == null) {
             unusedDataDeps = new UnusedDataDeps();
@@ -253,6 +254,14 @@ public class PersistentStoreCleaner {
         if (mUnusedDataDeps.mTabContentManagers.isEmpty()) {
             cleanUnusedDeps();
         }
+    }
+
+    @Override
+    public void destroy() {
+        assertOnUiThread();
+        mIsDestroyed = true;
+        cleanUnusedDeps();
+        mPersistencePolicy.destroy();
     }
 
     /** Schedules the cleaning of unused windows if a cleanup task is not already scheduled. */

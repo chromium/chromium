@@ -703,4 +703,51 @@ public class PersistentStoreCleanerUnitTest {
         assertNull(PersistentStoreCleanerFactory.getIfInstantiatedForProfile(null));
         ProfileManager.onProfileDestroyed(mProfile);
     }
+
+    @Test
+    public void testDestroy_CleansUnusedDepsAndIgnoresSubsequentSchedule() {
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(false);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
+        verify(mTabWindowManager).addObserver(mObserverCaptor.capture());
+        TabWindowManager.Observer windowObserver = mObserverCaptor.getValue();
+
+        windowObserver.onAllTabModelStateInitialized();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertNotNull(mCleaner.getArchivedTabsLeaseForTesting());
+        verify(mTabModelSelector).addObserver(mSelectorObserverCaptor.capture());
+        TabModelSelectorObserver selectorObserver = mSelectorObserverCaptor.getValue();
+
+        mCleaner.destroy();
+        assertFalse(mCleaner.hasUnusedDataDepsForTesting());
+        verify(mTabWindowManager).removeObserver(windowObserver);
+        verify(mTabModelSelector).removeObserver(selectorObserver);
+        verify(mLease).destroy();
+
+        mCleaner.scheduleCleanUnusedData(mSecondTabContentManager);
+        assertFalse(mCleaner.hasUnusedDataDepsForTesting());
+    }
+
+    @Test
+    public void testProfileDestroyed_DestroysCleanerAndReleasesDeps() {
+        PersistentStoreCleanerFactory.setForTesting(null);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+
+        PersistentStoreCleaner cleaner = PersistentStoreCleanerFactory.getForProfile(mProfile);
+        cleaner.scheduleCleanUnusedData(mTabContentManager);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertTrue(cleaner.hasUnusedDataDepsForTesting());
+        assertNotNull(cleaner.getArchivedTabsLeaseForTesting());
+        verify(mTabModelSelector).addObserver(mSelectorObserverCaptor.capture());
+
+        ProfileManager.onProfileDestroyed(mProfile);
+
+        assertFalse(cleaner.hasUnusedDataDepsForTesting());
+        verify(mTabModelSelector).removeObserver(mSelectorObserverCaptor.getValue());
+        verify(mLease).destroy();
+        assertNull(PersistentStoreCleanerFactory.getIfInstantiatedForProfile(mProfile));
+    }
 }

@@ -18,7 +18,7 @@ public class PersistentStoreCleanerFactory {
     private PersistentStoreCleanerFactory() {}
 
     private static final ProfileKeyedMap<PersistentStoreCleaner> sProfileMap =
-            new ProfileKeyedMap<>(ProfileKeyedMap.noRequiredCleanupAction());
+            ProfileKeyedMap.createMapOfDestroyables();
     private static @Nullable PersistentStoreCleaner sCleanerForTesting;
 
     /**
