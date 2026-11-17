@@ -126,6 +126,9 @@ content::WebContents* WebDialogView::web_contents() {
 // WebDialogView, views::View implementation:
 
 void WebDialogView::AddedToWidget() {
+  ClientView::AddedToWidget();
+  InitDialog();
+
   gfx::RoundedCornersF corner_radii(
       GetWebDialogFrameKind() == WebDialogDelegate::FrameKind::kDialog
           ? GetCornerRadius()
@@ -172,9 +175,11 @@ bool WebDialogView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 
 void WebDialogView::ViewHierarchyChanged(
     const ViewHierarchyChangedDetails& details) {
-  if (details.is_add && GetWidget()) {
-    InitDialog();
-  }
+  // Intentionally do not call ClientView::ViewHierarchyChanged(), which
+  // CHECKs GetWidget() and re-adds `contents_view_`: `web_view_` is already
+  // added as a child in the constructor, and subclasses (e.g.
+  // OobeWebDialogView) may be added to a parent View before being attached to
+  // a Widget.
 }
 
 views::CloseRequestResult WebDialogView::OnWindowCloseRequested() {
