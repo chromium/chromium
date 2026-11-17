@@ -82,6 +82,11 @@ void EnterpriseWarnPage::PopulateInterstitialStrings(
 
 void EnterpriseWarnPage::OnInterstitialClosing() {
   if (!proceeded_) {
+    if (!dont_proceed_recorded_) {
+      dont_proceed_recorded_ = true;
+      controller()->metrics_helper()->RecordUserDecision(
+          MetricsHelper::DONT_PROCEED);
+    }
     CleanupPendingAllowlist();
   }
 }

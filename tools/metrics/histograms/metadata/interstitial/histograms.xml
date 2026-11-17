@@ -214,7 +214,9 @@ chromium-metrics-reviews@google.com.
   <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records when a user is shown a warning while visiting a site that doesn't
-    comply with the admin rules in an enterprise managed browser.
+    comply with the admin rules in an enterprise managed browser. Note: Prior to
+    M160, DONT_PROCEED was only recorded on iOS and was omitted when closing or
+    navigating away from the warning on Desktop and Android.
   </summary>
 </histogram>
 

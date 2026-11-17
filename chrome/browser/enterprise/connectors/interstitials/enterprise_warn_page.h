@@ -74,6 +74,7 @@ class EnterpriseWarnPage
   const raw_ptr<safe_browsing::BaseUIManager> ui_manager_;
   base::WeakPtr<content::WebContents> web_contents_weak_ptr_;
   bool proceeded_ = false;
+  bool dont_proceed_recorded_ = false;
   bool pending_allowlist_cleaned_up_ = false;
   const safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList
       unsafe_resources_;

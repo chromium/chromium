@@ -41,6 +41,7 @@ class TestEnterpriseWarnControllerClient
     : public EnterpriseWarnControllerClient {
  public:
   using EnterpriseWarnControllerClient::EnterpriseWarnControllerClient;
+  void GoBack() override {}
   void Proceed() override {}
 };
 
@@ -337,5 +338,78 @@ TEST_F(EnterprisePageTest,
       &threat_type));
   EXPECT_EQ(threat_type,
             safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN);
+}
+
+TEST_F(EnterprisePageTest, EnterpriseWarn_DontProceedRecordedOnceOnClose) {
+  base::HistogramTester histograms;
+  const GURL url("https://exampleurl.net");
+
+  TestEnterpriseWarnPage test_page(
+      nullptr, web_contents(), url,
+      safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList(),
+      std::make_unique<TestEnterpriseWarnControllerClient>(web_contents(),
+                                                           url));
+
+  histograms.ExpectTotalCount(kWarnDecisionHistogram, 1);
+  histograms.ExpectBucketCount(kWarnDecisionHistogram,
+                               security_interstitials::MetricsHelper::SHOW, 1);
+
+  test_page.OnInterstitialClosing();
+  test_page.OnInterstitialClosing();
+
+  histograms.ExpectTotalCount(kWarnDecisionHistogram, 2);
+  histograms.ExpectBucketCount(kWarnDecisionHistogram,
+                               security_interstitials::MetricsHelper::SHOW, 1);
+  histograms.ExpectBucketCount(
+      kWarnDecisionHistogram,
+      security_interstitials::MetricsHelper::DONT_PROCEED, 1);
+}
+
+TEST_F(EnterprisePageTest, EnterpriseWarn_DontProceedRecordedOnceAfterGoBack) {
+  base::HistogramTester histograms;
+  const GURL url("https://exampleurl.net");
+
+  TestEnterpriseWarnPage test_page(
+      nullptr, web_contents(), url,
+      safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList(),
+      std::make_unique<TestEnterpriseWarnControllerClient>(web_contents(),
+                                                           url));
+
+  // Going back navigates away from the interstitial, which then closes it.
+  test_page.CommandReceived(
+      base::NumberToString(security_interstitials::CMD_DONT_PROCEED));
+  test_page.OnInterstitialClosing();
+
+  histograms.ExpectTotalCount(kWarnDecisionHistogram, 2);
+  histograms.ExpectBucketCount(kWarnDecisionHistogram,
+                               security_interstitials::MetricsHelper::SHOW, 1);
+  histograms.ExpectBucketCount(
+      kWarnDecisionHistogram,
+      security_interstitials::MetricsHelper::DONT_PROCEED, 1);
+}
+
+TEST_F(EnterprisePageTest, EnterpriseWarn_DontProceedNotRecordedAfterProceed) {
+  base::HistogramTester histograms;
+  const GURL url("https://exampleurl.net");
+
+  TestEnterpriseWarnPage test_page(
+      nullptr, web_contents(), url,
+      safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList(),
+      std::make_unique<TestEnterpriseWarnControllerClient>(web_contents(),
+                                                           url));
+
+  test_page.CommandReceived(
+      base::NumberToString(security_interstitials::CMD_PROCEED));
+  test_page.OnInterstitialClosing();
+
+  histograms.ExpectTotalCount(kWarnDecisionHistogram, 2);
+  histograms.ExpectBucketCount(kWarnDecisionHistogram,
+                               security_interstitials::MetricsHelper::SHOW, 1);
+  histograms.ExpectBucketCount(kWarnDecisionHistogram,
+                               security_interstitials::MetricsHelper::PROCEED,
+                               1);
+  histograms.ExpectBucketCount(
+      kWarnDecisionHistogram,
+      security_interstitials::MetricsHelper::DONT_PROCEED, 0);
 }
 }  // namespace
