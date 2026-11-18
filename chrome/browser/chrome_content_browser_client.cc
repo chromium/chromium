@@ -3952,10 +3952,10 @@ std::string ChromeContentBrowserClient::GetWebUIHostnameForCodeCacheMetrics(
 }
 
 bool ChromeContentBrowserClient::IsWebUIBundledCodeCachingEnabled(
-    const GURL& webui_lock_url) const {
+    const GURL& site_url) const {
   // Enable bundled code caching only for top-chrome WebUI hosts.
   return base::FeatureList::IsEnabled(features::kWebUIBundledCodeCache) &&
-         ::IsTopChromeWebUIURL(webui_lock_url);
+         ::IsTopChromeWebUIURL(site_url);
 }
 
 base::flat_map<GURL, int>

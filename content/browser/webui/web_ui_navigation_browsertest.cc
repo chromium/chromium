@@ -2,14 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -18,10 +23,14 @@
 #include "content/browser/site_info.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame.mojom.h"
+#include "content/public/browser/child_process_launcher_utils.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/security_principal.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -959,6 +968,106 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   // The two WebUIs should not share a process.
   EXPECT_NE(site_instance1->GetProcess()->GetID(),
             site_instance2->GetProcess()->GetID());
+}
+
+// Verify that, for WebUIs with a shared process lock host, the embedder is
+// asked about V8 feature flag overrides and WebUI bundled code caching with
+// the WebUI's site URL rather than the shared process lock URL, and that these
+// WebUIs still share a renderer process.
+IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
+                       SharedProcessLockPassesSiteURLToEmbedder) {
+  // A ContentBrowserClient that returns true only for the site URLs of the
+  // WebUIs registered below, and false for their shared process lock URL.
+  class SiteURLContentBrowserClient
+      : public ContentBrowserTestContentBrowserClient {
+   public:
+    // ContentBrowserTestContentBrowserClient:
+    bool DisallowV8FeatureFlagOverridesForSite(const GURL& site_url) override {
+      return IsWebUISiteURL(site_url);
+    }
+    bool IsWebUIBundledCodeCachingEnabled(const GURL& site_url) const override {
+      bundled_code_caching_urls_.push_back(site_url);
+      return IsWebUISiteURL(site_url);
+    }
+
+    const std::vector<GURL>& bundled_code_caching_urls() const {
+      return bundled_code_caching_urls_;
+    }
+
+   private:
+    static bool IsWebUISiteURL(const GURL& url) {
+      return url == GURL("chrome://foo.web-ui/") ||
+             url == GURL("chrome://bar.web-ui/");
+    }
+
+    // URLs passed to `IsWebUIBundledCodeCachingEnabled()`.
+    mutable std::vector<GURL> bundled_code_caching_urls_;
+  };
+  SiteURLContentBrowserClient browser_client;
+
+  ScopedWebUIConfigRegistration foo_config_registration(
+      std::make_unique<TestWebUIConfig>("foo.web-ui", kSharedProcessLockHost));
+  ScopedWebUIConfigRegistration bar_config_registration(
+      std::make_unique<TestWebUIConfig>("bar.web-ui", kSharedProcessLockHost));
+
+  GURL url1(
+      "chrome://foo.web-ui/title1.html?bindings=" +
+      base::NumberToString(
+          BindingsPolicySet({BindingsPolicyValue::kWebUi}).ToEnumBitmask()));
+  GURL url2(
+      "chrome://bar.web-ui/title1.html?bindings=" +
+      base::NumberToString(
+          BindingsPolicySet({BindingsPolicyValue::kWebUi}).ToEnumBitmask()));
+
+  // Warm up a spare renderer process. It is not created with the embedder's
+  // answer for a WebUI site URL, so the WebUIs below must not use it.
+  auto& spare_manager = SpareRenderProcessHostManager::Get();
+  spare_manager.WarmupSpare(shell()->web_contents()->GetBrowserContext());
+  const std::vector<ChildProcessId> spare_ids = spare_manager.GetSpareIds();
+  ASSERT_FALSE(spare_ids.empty());
+
+  // Visit the first WebUI page. Its site URL differs from its process lock
+  // URL.
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  auto* site_instance1 = static_cast<SiteInstanceImpl*>(
+      shell()->web_contents()->GetSiteInstance());
+  EXPECT_EQ(GURL("chrome://foo.web-ui/"),
+            site_instance1->GetSiteInfo().site_url());
+  EXPECT_EQ(GURL("chrome://web-ui/"),
+            site_instance1->GetSiteInfo().GetProcessLockURL());
+
+  // The process is created with the embedder's answer for the site URL, and
+  // is not the spare.
+  RenderProcessHost* process1 = site_instance1->GetProcess();
+  EXPECT_TRUE(process1->DisallowV8FeatureFlagOverrides());
+  EXPECT_FALSE(std::ranges::contains(spare_ids, process1->GetID()));
+
+  // WebUI bundled code caching is queried with the site URL, and never with
+  // the process lock URL.
+  EXPECT_TRUE(std::ranges::contains(browser_client.bundled_code_caching_urls(),
+                                    GURL("chrome://foo.web-ui/")));
+  EXPECT_FALSE(std::ranges::contains(browser_client.bundled_code_caching_urls(),
+                                     GURL("chrome://web-ui/")));
+
+  // Visit the second WebUI page in a new window. It reuses the process of the
+  // first WebUI, since the embedder's answer for its site URL matches.
+  Shell* new_shell = CreateBrowser();
+  EXPECT_TRUE(NavigateToURL(new_shell, url2));
+  auto* site_instance2 = static_cast<SiteInstanceImpl*>(
+      new_shell->web_contents()->GetSiteInstance());
+  EXPECT_EQ(GURL("chrome://bar.web-ui/"),
+            site_instance2->GetSiteInfo().site_url());
+  EXPECT_EQ(process1, site_instance2->GetProcess());
+
+  // The process launcher thread may read state from `browser_client`, so wait
+  // for its pending tasks before `browser_client` goes out of scope.
+  base::WaitableEvent launcher_thread_done(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  GetProcessLauncherTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&base::WaitableEvent::Signal,
+                                base::Unretained(&launcher_thread_done)));
+  ASSERT_TRUE(launcher_thread_done.TimedWait(TestTimeouts::action_timeout()));
 }
 
 // Used to test browser-side checks by disabling some renderer-side checks.

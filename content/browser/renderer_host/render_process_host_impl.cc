@@ -1687,7 +1687,7 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
 
   if (site_instance &&
       GetContentClient()->browser()->DisallowV8FeatureFlagOverridesForSite(
-          site_instance->GetSiteInfo().GetProcessLockURL())) {
+          site_instance->GetSiteInfo().site_url())) {
     flags |= RenderProcessFlags::kDisallowV8FeatureFlagOverrides;
   }
 
@@ -3710,7 +3710,7 @@ void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
           switches::kDisableWebSecurity));
 
   if (GetContentClient()->browser()->IsWebUIBundledCodeCachingEnabled(
-          process_lock.GetProcessLockURL())) {
+          process_lock.site_url())) {
     auto url_to_code_cache_map =
         GetContentClient()->browser()->GetWebUIResourceUrlToCodeCacheMap();
     if (!url_to_code_cache_map.empty()) {
@@ -5054,7 +5054,7 @@ bool RenderProcessHostImpl::IsSuitableHost(
   // can't be reused.
   if (host->DisallowV8FeatureFlagOverrides() !=
       GetContentClient()->browser()->DisallowV8FeatureFlagOverridesForSite(
-          site_info.GetProcessLockURL())) {
+          site_info.site_url())) {
     return false;
   }
 

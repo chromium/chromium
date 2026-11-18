@@ -1214,10 +1214,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual std::string GetWebUIHostnameForCodeCacheMetrics(
       const GURL& webui_url) const;
 
-  // Returns true if WebUI bundled code caching is supported for
-  // `webui_lock_url`.
-  virtual bool IsWebUIBundledCodeCachingEnabled(
-      const GURL& webui_lock_url) const;
+  // Returns true if WebUI bundled code caching is supported for `site_url`.
+  // This is evaluated once per renderer process, using the site URL the
+  // process was locked with. WebUIs that share a process lock (see
+  // `WebUIConfig::process_lock_host()`) must therefore return the same value.
+  virtual bool IsWebUIBundledCodeCachingEnabled(const GURL& site_url) const;
 
   // Gets a mapping from the WebUI resource URL to its corresponding bundled
   // bytecode cache resource ID. These mappings are used at load-time in

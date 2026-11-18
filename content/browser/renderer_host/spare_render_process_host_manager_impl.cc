@@ -796,7 +796,7 @@ SpareRenderProcessHostManagerImpl::DoesEmbedderAllowSpareUsage(
   // As such spare renderers should not be used when v8 flag overrides are
   // disabled.
   if (GetContentClient()->browser()->DisallowV8FeatureFlagOverridesForSite(
-          site_instance->GetSiteInfo().GetProcessLockURL())) {
+          site_instance->GetSiteInfo().site_url())) {
     return ContentBrowserClient::SpareProcessRefusedByEmbedderReason::
         DisallowV8FeatureFlagOverrides;
   }

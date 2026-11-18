@@ -719,7 +719,7 @@ std::string ContentBrowserClient::GetWebUIHostnameForCodeCacheMetrics(
 }
 
 bool ContentBrowserClient::IsWebUIBundledCodeCachingEnabled(
-    const GURL& webui_lock_url) const {
+    const GURL& site_url) const {
   return false;
 }
 
