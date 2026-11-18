@@ -582,6 +582,21 @@
             ]
         }
     ],
+    "AndroidAutofillRefetchManagerIfDisabled": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidAutofillRefetchManagerIfDisabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidBeforeUnloadSupport": [
         {
             "platforms": [
