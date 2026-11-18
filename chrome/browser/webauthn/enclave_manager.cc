@@ -19,7 +19,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -47,6 +46,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -1326,10 +1326,9 @@ class EnclaveManager::StateMachine {
     kSigFile,
   };
 
-  struct OpportunisticRetrievalCheckResult {
-    trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
-        account_state;
-    SystemUv system_uv;
+  enum class SystemUv {
+    kNotSupported,
+    kSupported,
   };
 
   using DeferredUVKeyCreation =
@@ -1372,7 +1371,6 @@ class EnclaveManager::StateMachine {
 #if BUILDFLAG(IS_MAC)
       webauthn::ICloudRecoveryResult,
 #endif  // BUILDFLAG(IS_MAC)
-      OpportunisticRetrievalCheckResult,
       SystemUv>;
 
   void Process(Event event) {
@@ -1672,24 +1670,6 @@ class EnclaveManager::StateMachine {
                                    result.has_value() ? "ok" : "error", ")"});
             },
 #endif  // BUILDFLAG(IS_MAC)
-            [](const OpportunisticRetrievalCheckResult& result) {
-              const bool has_pin =
-                  result.account_state.gpm_pin_metadata &&
-                  result.account_state.gpm_pin_metadata->usable_pin_metadata;
-              bool has_system_uv;
-              switch (result.system_uv) {
-                case SystemUv::kSupported:
-                  has_system_uv = true;
-                  break;
-                case SystemUv::kNotSupported:
-                  has_system_uv = false;
-                  break;
-              }
-              return base::StrCat(
-                  {"InformationAboutGpmPinAndSystemUv(",
-                   "has_gpm_pin: ", has_pin ? "yes" : "no",
-                   "has_system_uv: ", has_system_uv ? "yes" : "no", ")"});
-            },
             [](const SystemUv& system_uv) {
               bool has_system_uv;
               switch (system_uv) {
@@ -1764,8 +1744,12 @@ class EnclaveManager::StateMachine {
 #endif  // BUILDFLAG(IS_MAC)
 
     if (action_->opportunistic_store_keys_args) {
+      if (!action_->account_state) {
+        DownloadAccountState();
+        return;
+      }
       state_ = State::kStoringOpportunisticallyRetrievedKey;
-      VerifySystemUvAndGpmPinBeforeStoringOpportunisticallyRetrievedKey();
+      CheckSystemUvBeforeStoringOpportunisticallyRetrievedKey();
       return;
     }
 
@@ -2938,98 +2922,29 @@ class EnclaveManager::StateMachine {
     state_ = State::kNextAction;
   }
 
-  void VerifySystemUvAndGpmPinBeforeStoringOpportunisticallyRetrievedKey() {
-    if (action_->account_state) {
-      // iCloud Keychain recovery has already populated
-      // `action_->account_state`. Only check for system UV before storing the
-      // recovered key.
-      AreUserVerifyingKeysSupported(base::BindOnce(
-          [](base::WeakPtr<StateMachine> machine, bool is_uv_supported) {
-            // `AreUserVerifyingKeysSupported()` can run this callback before it
-            // returns, so post the result to avoid re-entering `Process()`.
-            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE,
-                base::BindOnce(&StateMachine::Process, std::move(machine),
-                               is_uv_supported ? SystemUv::kSupported
-                                               : SystemUv::kNotSupported));
-          },
-          weak_ptr_factory_.GetWeakPtr()));
-      return;
-    }
+  void CheckSystemUvBeforeStoringOpportunisticallyRetrievedKey() {
     // The keys were provided opportunistically so that a MagicArch flow can be
-    // avoided later. Download the GPM PIN metadata and check for system UV
-    // before storing these keys.
-    auto callback = base::BarrierCallback<OpportunisticRetrievalCheck>(
-        2,
-        base::BindOnce(
-            [](base::WeakPtr<StateMachine> machine,
-               std::vector<OpportunisticRetrievalCheck>
-                   opportunistic_retrieval_checks) {
-              if (!machine) {
-                return;
-              }
-              trusted_vault::
-                  DownloadAuthenticationFactorsRegistrationStateResult
-                      account_state;
-              SystemUv system_uv;
-              {
-                CHECK_EQ(opportunistic_retrieval_checks.size(), 2u);
-                auto& first = opportunistic_retrieval_checks.at(0);
-                auto& second = opportunistic_retrieval_checks.at(1);
-                const bool first_is_system_uv =
-                    std::holds_alternative<SystemUv>(first);
-                system_uv =
-                    std::get<SystemUv>(first_is_system_uv ? first : second);
-                account_state = std::get<
-                    trusted_vault::
-                        DownloadAuthenticationFactorsRegistrationStateResult>(
-                    std::move(first_is_system_uv ? second : first));
-              }
-              machine->Process(OpportunisticRetrievalCheckResult(
-                  std::move(account_state), std::move(system_uv)));
-            },
-            weak_ptr_factory_.GetWeakPtr()));
-    AreUserVerifyingKeysSupported(base::BindOnce(
-        [](base::RepeatingCallback<void(OpportunisticRetrievalCheck)> cb,
-           bool result) {
-          std::move(cb).Run(result ? SystemUv::kSupported
-                                   : SystemUv::kNotSupported);
-        },
-        callback));
-    download_account_state_request_ =
-        manager_->trusted_vault_conn_
-            ->DownloadAuthenticationFactorsRegistrationState(
-                *primary_account_info_,
-                trusted_vault::SecurityDomainId::kPasskeys,
-                base::BindOnce(
-                    [](base::RepeatingCallback<void(
-                           OpportunisticRetrievalCheck)> cb,
-                       trusted_vault::
-                           DownloadAuthenticationFactorsRegistrationStateResult
-                               result) {
-                      std::move(cb).Run(std::move(result));
-                    },
-                    callback),
-                base::DoNothing());
+    // avoided later. `action_->account_state` has already been populated. Check
+    // for system UV before storing these keys.
+    //
+    // `AreUserVerifyingKeysSupported()` can invoke its callback before
+    // returning, so `base::BindPostTaskToCurrentDefault()` avoids re-entering
+    // `Process()`.
+    AreUserVerifyingKeysSupported(base::BindPostTaskToCurrentDefault(
+        base::BindOnce([](bool is_uv_supported) -> Event {
+          return is_uv_supported ? SystemUv::kSupported
+                                 : SystemUv::kNotSupported;
+        })
+            .Then(base::BindOnce(&StateMachine::Process,
+                                 weak_ptr_factory_.GetWeakPtr()))));
   }
 
   void DoStoringOpportunisticallyRetrievedKey(Event event) {
-    CHECK(std::holds_alternative<OpportunisticRetrievalCheckResult>(event) ||
-          std::holds_alternative<SystemUv>(event))
-        << ToString(event);
-    SystemUv system_uv;
-    if (std::holds_alternative<SystemUv>(event)) {
-      // iCloud Keychain recovery has already populated `account_state`.
-      system_uv = std::get<SystemUv>(event);
-      CHECK(action_->account_state);
-    } else {
-      auto& pin_and_uv_info =
-          std::get<OpportunisticRetrievalCheckResult>(event);
-      system_uv = pin_and_uv_info.system_uv;
-      action_->account_state = std::move(pin_and_uv_info.account_state);
-    }
+    CHECK(std::holds_alternative<SystemUv>(event)) << ToString(event);
+    CHECK(action_->account_state);
     const trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult&
         account_state = *action_->account_state;
+    const SystemUv system_uv = std::get<SystemUv>(event);
     const bool has_pin = account_state.gpm_pin_metadata &&
                          account_state.gpm_pin_metadata->usable_pin_metadata;
     FIDO_LOG(EVENT) << "Opportunistic keys checks complete. "

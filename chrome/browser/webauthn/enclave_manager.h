@@ -538,13 +538,6 @@ class EnclaveManager : public EnclaveManagerInterface {
   base::WeakPtr<EnclaveManager> GetWeakPtr();
 
  private:
-  enum class SystemUv {
-    kNotSupported,
-    kSupported,
-  };
-  using OpportunisticRetrievalCheck = std::variant<
-      trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult,
-      SystemUv>;
   class StateMachine;
   class IdentityObserver;
   struct PendingAction;

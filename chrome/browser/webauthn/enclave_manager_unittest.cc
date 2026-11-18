@@ -3644,6 +3644,9 @@ TEST_F(OpportunisticKeyRetrievalEnclaveUVTest, OpportunisticStoreKeys) {
             EnclaveManager::OutOfContextRecoveryOutcome::
                 kStoreKeysFromOpportunisticFlowSucceeded);
   EXPECT_FALSE(manager_.has_wrapped_pin());
+  // Without a state from the caller, storing the keys downloads the security
+  // domain state once.
+  EXPECT_EQ(account_state_download_count_, 1u);
 
   histogram_tester.ExpectBucketCount(
       "WebAuthentication.GPM.RecoveryEvent",
@@ -3817,6 +3820,7 @@ TEST_F(OpportunisticKeyRetrievalEnclaveUVTest,
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   base::HistogramTester histogram_tester;
   EnclaveKeysWaiter enclave_keys_waiter(&manager_);
+  account_state_download_count_ = 0;
   manager_.StoreKeys(gaia_id_,
                      {trusted_vault::TrustedVaultKeyAndVersion(std::move(key),
                                                                kSecretVersion)},
@@ -3825,6 +3829,9 @@ TEST_F(OpportunisticKeyRetrievalEnclaveUVTest,
   EXPECT_EQ(enclave_keys_waiter.Wait(),
             EnclaveManager::OutOfContextRecoveryOutcome::
                 kStoreKeysFromOpportunisticFlowSucceeded);
+  // The GPM PIN is read from the security domain state, which is downloaded
+  // once.
+  EXPECT_EQ(account_state_download_count_, 1u);
 
   histogram_tester.ExpectBucketCount(
       "WebAuthentication.GPM.RecoveryEvent",
