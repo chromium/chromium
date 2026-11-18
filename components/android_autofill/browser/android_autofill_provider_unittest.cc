@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -586,6 +587,131 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillOnChangedForm) {
   android_autofill_manager().OnAskForValuesToFillTest(
       form_changed, form_changed.fields()[1].global_id());
   check.Call();
+}
+
+// Tests that with `kAutofillAndroidUseGlobalIdForFormComparison` enabled,
+// dynamic changes to form attributes, field labels, or field count on the same
+// `FormGlobalId` do not restart the ongoing Autofill session.
+TEST_F(AndroidAutofillProviderTest,
+       OnAskForValuesToFillOnChangedFormWithGlobalIdComparisonKeepsSession) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillAndroidUseGlobalIdForFormComparison};
+
+  FormData form = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  form.set_name_attribute(u"old_name");
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  EXPECT_CALL(
+      provider_bridge(),
+      StartAutofillSession(EqualsFormData(form), EqualsFieldInfo(/*index=*/1),
+                           /*has_server_predictions=*/false));
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields()[1].global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  FormData form_changed = form;
+  form_changed.set_name_attribute(u"changed_name");
+  test_api(form_changed).field(0).set_label(u"Updated First Name");
+  FormFieldData injected_field = CreateTestFormField(
+      /*label=*/"Injected", /*name=*/"injected", /*value=*/"",
+      FormControlType::kInputText);
+  injected_field.set_host_frame(main_frame_token());
+  injected_field.set_origin(form.fields()[0].origin());
+  test_api(form_changed).Append(injected_field);
+
+  android_autofill_manager().OnFormsSeen({form_changed}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  EXPECT_CALL(provider_bridge(), StartAutofillSession).Times(0);
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form_changed, form_changed.fields()[0].global_id());
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_id(),
+            form_changed.fields()[0].global_id());
+}
+
+// Tests that with `kAutofillAndroidUseGlobalIdForFormComparison` enabled,
+// prepending a dynamically injected field preserves event routing by
+// `FieldGlobalId` (reporting original session indices for existing fields,
+// ignoring events on the injected field without restarting the session, and
+// committing on submission).
+TEST_F(AndroidAutofillProviderTest,
+       DynamicFormModificationWithGlobalIdComparisonPreservesSessionEvents) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillAndroidUseGlobalIdForFormComparison};
+
+  FormData form = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  test_api(form).field(0).set_is_focusable(false);
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  // Start session on field 1 while field 0 is hidden/unfocusable.
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields()[1].global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  // Prepend a new field at index 0 and make original field 0 (now at index 1 in
+  // `changed_form`, still at index 0 in the session form) focusable.
+  FormData changed_form = form;
+  changed_form.set_name_attribute(u"mutated_form");
+  test_api(changed_form).field(0).set_is_focusable(true);
+  FormFieldData injected_field = CreateTestFormField(
+      /*label=*/"Injected", /*name=*/"injected", /*value=*/"x",
+      FormControlType::kInputText);
+  injected_field.set_host_frame(main_frame_token());
+  injected_field.set_origin(form.fields()[0].origin());
+  test_api(changed_form).Insert(0, injected_field);
+  android_autofill_manager().OnFormsSeen({changed_form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  // Focusing original field 0 (`changed_form.fields()[1]`) reports visibility
+  // and focus changes using its index (`0`) in the session's `FormDataAndroid`.
+  EXPECT_CALL(provider_bridge(),
+              OnFormFieldVisibilitiesDidChange(ElementsAre(0)));
+  EXPECT_CALL(provider_bridge(),
+              OnFocusChanged(Optional(EqualsFieldInfo(/*index=*/0))));
+  android_autofill_manager().OnFocusOnFormField(
+      changed_form, changed_form.fields()[1].global_id(),
+      AutofillManagerTestApi::pass_key());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  // Editing original field 1 (`changed_form.fields()[2]`) reports index `1` in
+  // the session's `FormDataAndroid` and updates the value of that field.
+  test_api(changed_form).field(2).set_value(u"UpdatedValue");
+  EXPECT_CALL(provider_bridge(),
+              OnFormFieldDidChange(EqualsFieldInfo(/*index=*/1)));
+  android_autofill_manager().OnTextFieldValueChanged(
+      changed_form, changed_form.fields()[2].global_id(),
+      base::TimeTicks::Now(), AutofillManagerTestApi::pass_key());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+  ASSERT_TRUE(test_api(autofill_provider()).form());
+  EXPECT_EQ(test_api(autofill_provider()).form()->form().fields()[1].value(),
+            u"UpdatedValue");
+
+  // Fields injected mid-session (here `changed_form.fields()[0]`) are not part
+  // of the session's `FormDataAndroid`, so events on them are ignored rather
+  // than restarting the session.
+  EXPECT_CALL(provider_bridge(), StartAutofillSession).Times(0);
+  EXPECT_CALL(provider_bridge(), OnFocusChanged).Times(0);
+  EXPECT_CALL(provider_bridge(), OnFormFieldDidChange).Times(0);
+  android_autofill_manager().OnFocusOnFormField(
+      changed_form, changed_form.fields()[0].global_id(),
+      AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnAskForValuesToFillTest(
+      changed_form, changed_form.fields()[0].global_id());
+  android_autofill_manager().OnTextFieldValueChanged(
+      changed_form, changed_form.fields()[0].global_id(),
+      base::TimeTicks::Now(), AutofillManagerTestApi::pass_key());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  // Submitting the mutated form still commits the session.
+  EXPECT_CALL(provider_bridge(),
+              OnFormSubmitted(mojom::SubmissionSource::FORM_SUBMISSION));
+  android_autofill_manager().OnFormSubmitted(
+      changed_form, mojom::SubmissionSource::FORM_SUBMISSION,
+      AutofillManagerTestApi::pass_key());
 }
 
 // Tests that asking for values to fill on the same form as that of the current
