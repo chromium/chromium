@@ -15,7 +15,11 @@
  * limitations under the License.
  */
 
-import type {BrowsingContext, CommandData} from '../../../protocol/protocol.js';
+import {
+  UnsupportedOperationException,
+  type BrowsingContext,
+  type CommandData,
+} from '../../../protocol/protocol.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
@@ -28,18 +32,98 @@ export interface AclConfig {
   perNavigable?: Record<BrowsingContext.BrowsingContext, AclEntry>;
 }
 
-export const ALLOWED_ACL_COMMANDS: ReadonlySet<string> = new Set([
+/** ACL rules for a command's unvalidated `params`. */
+interface AclCommandRule {
+  /** Target browsing context ID, or `undefined` when only `default` applies. */
+  getTargetContext(params: object): BrowsingContext.BrowsingContext | undefined;
+  /**
+   * Extra parameter check for restricted sessions. Throws an exception with a
+   * detailed message if the command is not allowed with `params`.
+   */
+  assertParamsAllowed?(params: unknown): void;
+}
+
+/** For commands with `params.context`. */
+const CONTEXT_TARGET_RULE: AclCommandRule = {
+  getTargetContext(params) {
+    if ('context' in params && typeof params.context === 'string') {
+      return params.context;
+    }
+    return undefined;
+  },
+};
+
+/** For commands without a target browsing context. */
+const NO_TARGET_RULE: AclCommandRule = {
+  getTargetContext() {
+    return undefined;
+  },
+};
+
+/** For `script` commands, with `params.target` and a required `sandbox`. */
+const SANDBOXED_SCRIPT_TARGET_RULE: AclCommandRule = {
+  getTargetContext(params) {
+    const context = (params as {target?: {context?: unknown}}).target?.context;
+    if (typeof context === 'string') {
+      return context;
+    }
+    return undefined;
+  },
+  assertParamsAllowed(params) {
+    // An empty or missing `sandbox` runs in the page's default realm, while a
+    // named `sandbox` runs in an isolated world.
+    const target = (
+      params as {target?: {context?: unknown; sandbox?: unknown}} | null
+    )?.target;
+    if (
+      typeof target?.context !== 'string' ||
+      typeof target?.sandbox !== 'string' ||
+      target.sandbox === ''
+    ) {
+      throw new UnsupportedOperationException(
+        "Command 'script.evaluate' in restricted sessions requires a browsing context target with a non-empty 'sandbox'.",
+      );
+    }
+  },
+};
+
+/**
+ * Commands supported in an ACL. Each rule must match how the command's
+ * processor reads the target from `params`.
+ */
+const SUPPORTED_ACL_COMMAND_RULES: ReadonlyMap<
+  CommandData['method'],
+  AclCommandRule
+> = new Map<CommandData['method'], AclCommandRule>([
   // keep-sorted start
-  'browsingContext.captureScreenshot',
-  'browsingContext.close',
-  'browsingContext.create',
-  'browsingContext.getTree',
-  'browsingContext.handleUserPrompt',
-  'browsingContext.locateNodes',
-  'browsingContext.navigate',
-  'browsingContext.reload',
-  'input.performActions',
-  'script.evaluate',
+  ['browsingContext.captureScreenshot', CONTEXT_TARGET_RULE],
+  ['browsingContext.close', CONTEXT_TARGET_RULE],
+  // Creates a new tab; `referenceContext` only positions it.
+  ['browsingContext.create', NO_TARGET_RULE],
+  // Lists all tabs; `root` only filters the result.
+  ['browsingContext.getTree', NO_TARGET_RULE],
+  ['browsingContext.handleUserPrompt', CONTEXT_TARGET_RULE],
+  // TODO: Also check `locator.value.context` for `{type: 'context'}` locators
+  // when `perNavigable` grants become settable.
+  ['browsingContext.locateNodes', CONTEXT_TARGET_RULE],
+  ['browsingContext.navigate', CONTEXT_TARGET_RULE],
+  ['browsingContext.reload', CONTEXT_TARGET_RULE],
+  ['input.performActions', CONTEXT_TARGET_RULE],
+  ['script.evaluate', SANDBOXED_SCRIPT_TARGET_RULE],
+  // keep-sorted end
+]);
+
+/** Commands that can appear in an ACL. */
+export const SUPPORTED_ACL_COMMANDS: ReadonlySet<string> = new Set<string>(
+  SUPPORTED_ACL_COMMAND_RULES.keys(),
+);
+
+/** Session commands that are always allowed without an ACL grant. */
+export const ACL_EXEMPT_COMMANDS: ReadonlySet<string> = new Set([
+  // keep-sorted start
+  'session.end',
+  'session.new',
+  'session.status',
   // keep-sorted end
 ] satisfies readonly CommandData['method'][]);
 
@@ -74,7 +158,7 @@ export class AclStorage {
     this.#navigableCommands = new WeakMap();
 
     const aclConfig = acl as AclConfig | null | undefined;
-    this.#defaultCommands = this.#extractAllowedCommands(aclConfig?.default);
+    this.#defaultCommands = this.#extractSupportedCommands(aclConfig?.default);
 
     for (const [contextId, entry] of Object.entries(
       aclConfig?.perNavigable ?? {},
@@ -83,7 +167,7 @@ export class AclStorage {
       if (context?.isTopLevelContext()) {
         this.#navigableCommands.set(
           context,
-          this.#extractAllowedCommands(entry),
+          this.#extractSupportedCommands(entry),
         );
       }
     }
@@ -91,11 +175,11 @@ export class AclStorage {
     return this.getAcl();
   }
 
-  #extractAllowedCommands(entry: AclEntry | undefined | null): Set<string> {
+  #extractSupportedCommands(entry: AclEntry | undefined | null): Set<string> {
     const commands = new Set<string>();
     if (Array.isArray(entry?.commands)) {
       for (const command of entry.commands) {
-        if (ALLOWED_ACL_COMMANDS.has(command)) {
+        if (SUPPORTED_ACL_COMMANDS.has(command)) {
           commands.add(command);
         }
       }
@@ -158,5 +242,38 @@ export class AclStorage {
       }
     }
     return false;
+  }
+
+  /** Throws if the ACL disallows `command` with the given unvalidated `params`. */
+  assertCommandAllowed(command: string, params: unknown): void {
+    if (!this.#enabled || ACL_EXEMPT_COMMANDS.has(command)) {
+      return;
+    }
+    const rule = SUPPORTED_ACL_COMMAND_RULES.get(
+      command as CommandData['method'],
+    );
+    if (rule === undefined) {
+      throw new UnsupportedOperationException(
+        `Command '${command}' is not supported in restricted sessions.`,
+      );
+    }
+    // A `default` grant covers every target, so skip resolving it.
+    if (!this.isCommandAllowed(command)) {
+      let contextId: BrowsingContext.BrowsingContext | undefined;
+      if (typeof params === 'object' && params !== null) {
+        contextId = rule.getTargetContext(params);
+      }
+      if (contextId === undefined) {
+        throw new UnsupportedOperationException(
+          `Command '${command}' is not allowed by the session ACL.`,
+        );
+      }
+      if (!this.isCommandAllowed(command, contextId)) {
+        throw new UnsupportedOperationException(
+          `Command '${command}' is not allowed by the session ACL for browsing context '${contextId}'.`,
+        );
+      }
+    }
+    rule.assertParamsAllowed?.(params);
   }
 }

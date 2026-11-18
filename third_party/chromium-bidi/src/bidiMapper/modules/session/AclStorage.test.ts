@@ -19,10 +19,15 @@ import {beforeEach, describe, it} from 'node:test';
 
 import {assert} from 'chai';
 
+import {UnsupportedOperationException} from '../../../protocol/protocol.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
-import {ALLOWED_ACL_COMMANDS, AclStorage} from './AclStorage.js';
+import {
+  ACL_EXEMPT_COMMANDS,
+  AclStorage,
+  SUPPORTED_ACL_COMMANDS,
+} from './AclStorage.js';
 
 const TOP_LEVEL_CONTEXT_1 = 'context-1';
 const TOP_LEVEL_CONTEXT_2 = 'context-2';
@@ -30,6 +35,7 @@ const CHILD_CONTEXT = 'child-context';
 const GRANDCHILD_CONTEXT = 'grandchild-context';
 const CHILD_CONTEXT_2 = 'child-context-2';
 const UNKNOWN_CONTEXT = 'unknown-context';
+const SANDBOX = 'agent-sandbox';
 
 describe('AclStorage', () => {
   let browsingContextStorage: BrowsingContextStorage;
@@ -388,31 +394,31 @@ describe('AclStorage', () => {
     });
   });
 
-  it('accepts all allowed ACL commands in default and perNavigable', () => {
+  it('accepts all supported ACL commands in default and perNavigable', () => {
     aclStorage.setEnabled(true);
-    const allAllowedCommands = [...ALLOWED_ACL_COMMANDS];
+    const allSupportedCommands = [...SUPPORTED_ACL_COMMANDS];
     const saved = aclStorage.setAcl({
       default: {
-        commands: allAllowedCommands,
+        commands: allSupportedCommands,
       },
       perNavigable: {
         [TOP_LEVEL_CONTEXT_1]: {
-          commands: allAllowedCommands,
+          commands: allSupportedCommands,
         },
       },
     });
 
     assert.deepEqual(saved, {
       default: {
-        commands: allAllowedCommands,
+        commands: allSupportedCommands,
       },
       perNavigable: {
         [TOP_LEVEL_CONTEXT_1]: {
-          commands: allAllowedCommands,
+          commands: allSupportedCommands,
         },
       },
     });
-    for (const command of ALLOWED_ACL_COMMANDS) {
+    for (const command of SUPPORTED_ACL_COMMANDS) {
       assert.isTrue(aclStorage.isCommandAllowed(command));
     }
   });
@@ -468,5 +474,347 @@ describe('AclStorage', () => {
         TOP_LEVEL_CONTEXT_1,
       ),
     );
+  });
+
+  describe('assertCommandAllowed', () => {
+    it('allows any command and target when disabled', () => {
+      for (const command of [
+        'network.addIntercept',
+        'goog:cdp.sendCommand',
+        'unknown.command',
+      ]) {
+        assert.doesNotThrow(() => aclStorage.assertCommandAllowed(command, {}));
+      }
+      assert.doesNotThrow(() =>
+        aclStorage.assertCommandAllowed('script.evaluate', {
+          target: {realm: 'any-realm'},
+        }),
+      );
+    });
+
+    it('always allows exempt commands', () => {
+      aclStorage.setEnabled(true);
+      aclStorage.setAcl({});
+
+      const expectedExemptCommands = [
+        'session.end',
+        'session.new',
+        'session.status',
+      ];
+      assert.sameMembers([...ACL_EXEMPT_COMMANDS], expectedExemptCommands);
+      for (const command of expectedExemptCommands) {
+        assert.doesNotThrow(() => aclStorage.assertCommandAllowed(command, {}));
+      }
+    });
+
+    it('throws unsupported operation for commands that an ACL cannot grant', () => {
+      aclStorage.setEnabled(true);
+      // Requesting such commands doesn't grant them.
+      aclStorage.setAcl({
+        default: {commands: ['network.addIntercept', 'goog:cdp.sendCommand']},
+      });
+
+      for (const command of [
+        'network.addIntercept',
+        'goog:cdp.sendCommand',
+        'script.callFunction',
+        'session.subscribe',
+        'session.unsubscribe',
+        'unknown.command',
+      ]) {
+        assert.throws(
+          () =>
+            aclStorage.assertCommandAllowed(command, {
+              context: TOP_LEVEL_CONTEXT_1,
+            }),
+          UnsupportedOperationException,
+          `Command '${command}' is not supported in restricted sessions.`,
+        );
+      }
+    });
+
+    it('throws unsupported operation for commands that the ACL does not grant', () => {
+      aclStorage.setEnabled(true);
+      aclStorage.setAcl({default: {commands: ['browsingContext.getTree']}});
+
+      assert.doesNotThrow(() =>
+        aclStorage.assertCommandAllowed('browsingContext.getTree', {}),
+      );
+      assert.throws(
+        () =>
+          aclStorage.assertCommandAllowed('browsingContext.create', {
+            type: 'tab',
+          }),
+        UnsupportedOperationException,
+        "Command 'browsingContext.create' is not allowed by the session ACL.",
+      );
+      assert.throws(
+        () =>
+          aclStorage.assertCommandAllowed('browsingContext.navigate', {
+            context: TOP_LEVEL_CONTEXT_1,
+            url: 'about:blank',
+          }),
+        UnsupportedOperationException,
+        `Command 'browsingContext.navigate' is not allowed by the session ACL for browsing context '${TOP_LEVEL_CONTEXT_1}'.`,
+      );
+      assert.throws(
+        () =>
+          aclStorage.assertCommandAllowed('script.evaluate', {
+            target: {context: TOP_LEVEL_CONTEXT_1},
+          }),
+        UnsupportedOperationException,
+        `Command 'script.evaluate' is not allowed by the session ACL for browsing context '${TOP_LEVEL_CONTEXT_1}'.`,
+      );
+    });
+
+    it('allows default commands for any browsing context', () => {
+      aclStorage.setEnabled(true);
+      aclStorage.setAcl({
+        default: {commands: ['browsingContext.navigate', 'script.evaluate']},
+      });
+
+      for (const params of [
+        {},
+        {context: CHILD_CONTEXT_2},
+        {context: UNKNOWN_CONTEXT},
+      ]) {
+        assert.doesNotThrow(() =>
+          aclStorage.assertCommandAllowed('browsingContext.navigate', params),
+        );
+      }
+      for (const context of [CHILD_CONTEXT_2, UNKNOWN_CONTEXT]) {
+        assert.doesNotThrow(() =>
+          aclStorage.assertCommandAllowed('script.evaluate', {
+            target: {context, sandbox: SANDBOX},
+          }),
+        );
+      }
+    });
+
+    const NO_TARGET_COMMANDS = [
+      'browsingContext.create',
+      'browsingContext.getTree',
+    ];
+    const CONTEXT_TARGET_COMMANDS = [
+      'browsingContext.captureScreenshot',
+      'browsingContext.close',
+      'browsingContext.handleUserPrompt',
+      'browsingContext.locateNodes',
+      'browsingContext.navigate',
+      'browsingContext.reload',
+      'input.performActions',
+    ];
+
+    it('covers every supported ACL command with a target rule test', () => {
+      assert.sameMembers(
+        [...SUPPORTED_ACL_COMMANDS],
+        [...NO_TARGET_COMMANDS, ...CONTEXT_TARGET_COMMANDS, 'script.evaluate'],
+      );
+    });
+
+    it('checks commands without a target tab against the default ACL only', () => {
+      aclStorage.setEnabled(true);
+      aclStorage.setAcl({
+        perNavigable: {
+          [TOP_LEVEL_CONTEXT_1]: {
+            commands: NO_TARGET_COMMANDS,
+          },
+        },
+      });
+
+      assert.throws(
+        () =>
+          aclStorage.assertCommandAllowed('browsingContext.create', {
+            type: 'tab',
+            referenceContext: TOP_LEVEL_CONTEXT_1,
+          }),
+        UnsupportedOperationException,
+        "Command 'browsingContext.create' is not allowed by the session ACL.",
+      );
+      assert.throws(
+        () =>
+          aclStorage.assertCommandAllowed('browsingContext.getTree', {
+            root: TOP_LEVEL_CONTEXT_1,
+          }),
+        UnsupportedOperationException,
+        "Command 'browsingContext.getTree' is not allowed by the session ACL.",
+      );
+      // Unlike most commands, these ignore `context`.
+      for (const command of NO_TARGET_COMMANDS) {
+        assert.throws(
+          () =>
+            aclStorage.assertCommandAllowed(command, {
+              context: TOP_LEVEL_CONTEXT_1,
+            }),
+          UnsupportedOperationException,
+          `Command '${command}' is not allowed by the session ACL.`,
+        );
+      }
+    });
+
+    it('checks `context` against the ACL of its top-level navigable', () => {
+      aclStorage.setEnabled(true);
+      for (const command of CONTEXT_TARGET_COMMANDS) {
+        aclStorage.setAcl({
+          perNavigable: {
+            [TOP_LEVEL_CONTEXT_1]: {commands: [command]},
+          },
+        });
+
+        for (const context of [
+          TOP_LEVEL_CONTEXT_1,
+          CHILD_CONTEXT,
+          GRANDCHILD_CONTEXT,
+        ]) {
+          assert.doesNotThrow(() =>
+            aclStorage.assertCommandAllowed(command, {
+              context,
+            }),
+          );
+        }
+        for (const context of [
+          TOP_LEVEL_CONTEXT_2,
+          CHILD_CONTEXT_2,
+          UNKNOWN_CONTEXT,
+        ]) {
+          assert.throws(
+            () => aclStorage.assertCommandAllowed(command, {context}),
+            UnsupportedOperationException,
+            `Command '${command}' is not allowed by the session ACL for browsing context '${context}'.`,
+          );
+        }
+        for (const params of [
+          // Malformed or missing targets get only the `default` ACL.
+          {context: 42},
+          {},
+          null,
+          // Only `script` commands run in `target`.
+          {target: {context: TOP_LEVEL_CONTEXT_1}},
+        ]) {
+          assert.throws(
+            () => aclStorage.assertCommandAllowed(command, params),
+            UnsupportedOperationException,
+            `Command '${command}' is not allowed by the session ACL.`,
+          );
+        }
+      }
+    });
+
+    it('checks `target.context` against the ACL of its top-level navigable', () => {
+      aclStorage.setEnabled(true);
+      aclStorage.setAcl({
+        perNavigable: {[TOP_LEVEL_CONTEXT_1]: {commands: ['script.evaluate']}},
+      });
+
+      for (const context of [
+        TOP_LEVEL_CONTEXT_1,
+        CHILD_CONTEXT,
+        GRANDCHILD_CONTEXT,
+      ]) {
+        assert.doesNotThrow(() =>
+          aclStorage.assertCommandAllowed('script.evaluate', {
+            target: {context, sandbox: SANDBOX},
+          }),
+        );
+      }
+      for (const params of [
+        {target: {context: CHILD_CONTEXT_2, sandbox: SANDBOX}},
+        // `script` commands run in `target`, not in `context`.
+        {
+          context: TOP_LEVEL_CONTEXT_1,
+          target: {context: CHILD_CONTEXT_2, sandbox: SANDBOX},
+        },
+      ]) {
+        assert.throws(
+          () => aclStorage.assertCommandAllowed('script.evaluate', params),
+          UnsupportedOperationException,
+          `Command 'script.evaluate' is not allowed by the session ACL for browsing context '${CHILD_CONTEXT_2}'.`,
+        );
+      }
+      for (const params of [
+        // Targets without a string `target.context` get only the `default` ACL.
+        {target: {context: 42, sandbox: SANDBOX}},
+        {target: {realm: 'window-realm'}},
+        {target: {realm: 'window-realm', sandbox: SANDBOX}},
+        {target: {realm: 42}},
+        {target: {}},
+        {target: null},
+        {target: TOP_LEVEL_CONTEXT_1},
+        {},
+        null,
+      ]) {
+        assert.throws(
+          () => aclStorage.assertCommandAllowed('script.evaluate', params),
+          UnsupportedOperationException,
+          "Command 'script.evaluate' is not allowed by the session ACL.",
+        );
+      }
+    });
+
+    it('requires a browsing context target with a non-empty sandbox for `script.evaluate`', () => {
+      const sandboxRequiredMessage =
+        "Command 'script.evaluate' in restricted sessions requires a browsing context target with a non-empty 'sandbox'.";
+      aclStorage.setEnabled(true);
+      for (const acl of [
+        {default: {commands: ['script.evaluate']}},
+        {
+          perNavigable: {
+            [TOP_LEVEL_CONTEXT_1]: {commands: ['script.evaluate']},
+          },
+        },
+      ]) {
+        aclStorage.setAcl(acl);
+
+        assert.doesNotThrow(() =>
+          aclStorage.assertCommandAllowed('script.evaluate', {
+            target: {context: TOP_LEVEL_CONTEXT_1, sandbox: SANDBOX},
+          }),
+        );
+        // `CommandProcessor` strips `realm` when `context` is present.
+        assert.doesNotThrow(() =>
+          aclStorage.assertCommandAllowed('script.evaluate', {
+            target: {
+              context: TOP_LEVEL_CONTEXT_1,
+              sandbox: SANDBOX,
+              realm: 'ignored-realm',
+            },
+          }),
+        );
+
+        for (const params of [
+          // Omitted or empty `sandbox` runs in the page's main world.
+          {target: {context: TOP_LEVEL_CONTEXT_1}},
+          {target: {context: TOP_LEVEL_CONTEXT_1, sandbox: undefined}},
+          {target: {context: TOP_LEVEL_CONTEXT_1, sandbox: ''}},
+          {target: {context: TOP_LEVEL_CONTEXT_1, sandbox: 42}},
+        ]) {
+          assert.throws(
+            () => aclStorage.assertCommandAllowed('script.evaluate', params),
+            UnsupportedOperationException,
+            sandboxRequiredMessage,
+          );
+        }
+      }
+
+      // With a `default` grant, `realm` and malformed targets pass the ACL
+      // check and must still be rejected by the sandbox check.
+      aclStorage.setAcl({default: {commands: ['script.evaluate']}});
+      for (const params of [
+        // `realm` targets can address the page's main world or workers.
+        {target: {realm: 'window-realm'}},
+        {target: {realm: 'window-realm', sandbox: SANDBOX}},
+        {target: {context: 42, sandbox: SANDBOX}},
+        {target: {}},
+        {target: null},
+        {},
+        null,
+      ]) {
+        assert.throws(
+          () => aclStorage.assertCommandAllowed('script.evaluate', params),
+          UnsupportedOperationException,
+          sandboxRequiredMessage,
+        );
+      }
+    });
   });
 });

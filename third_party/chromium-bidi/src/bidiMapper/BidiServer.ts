@@ -35,6 +35,7 @@ import {BrowsingContextStorage} from './modules/context/BrowsingContextStorage.j
 import {NetworkStorage} from './modules/network/NetworkStorage.js';
 import {PreloadScriptStorage} from './modules/script/PreloadScriptStorage.js';
 import {RealmStorage} from './modules/script/RealmStorage.js';
+import {AclStorage} from './modules/session/AclStorage.js';
 import {
   EventManager,
   EventManagerEvents,
@@ -131,6 +132,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       this.#browsingContextStorage,
       contextConfigStorage,
     );
+    const aclStorage = new AclStorage(this.#browsingContextStorage);
     this.#commandProcessor = new CommandProcessor(
       cdpConnection,
       browserCdpClient,
@@ -143,6 +145,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       this.#bluetoothProcessor,
       this.#digitalCredentialsProcessor,
       userContextStorage,
+      aclStorage,
       parser,
       async (options: MapperOptions) => {
         // This is required to ignore certificate errors when service worker is fetched.

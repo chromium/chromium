@@ -49,7 +49,7 @@ import {PermissionsProcessor} from './modules/permissions/PermissionsProcessor.j
 import type {PreloadScriptStorage} from './modules/script/PreloadScriptStorage.js';
 import type {RealmStorage} from './modules/script/RealmStorage.js';
 import {ScriptProcessor} from './modules/script/ScriptProcessor.js';
-import {AclStorage} from './modules/session/AclStorage.js';
+import type {AclStorage} from './modules/session/AclStorage.js';
 import type {EventManager} from './modules/session/EventManager.js';
 import {SessionProcessor} from './modules/session/SessionProcessor.js';
 import {StorageProcessor} from './modules/storage/StorageProcessor.js';
@@ -70,6 +70,7 @@ interface CommandProcessorEventsMap extends Record<string | symbol, unknown> {
 
 export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   // keep-sorted start
+  #aclStorage: AclStorage;
   #autofillProcessor: AutofillProcessor;
   #bluetoothProcessor: BluetoothProcessor;
   #browserCdpClient: CdpClient;
@@ -102,12 +103,14 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     bluetoothProcessor: BluetoothProcessor,
     digitalCredentialsProcessor: DigitalCredentialsProcessor,
     userContextStorage: UserContextStorage,
+    aclStorage: AclStorage,
     parser: BidiCommandParameterParser = new BidiNoOpParser(),
     initConnection: (options: MapperOptions) => Promise<void>,
     logger?: LoggerFn,
   ) {
     super();
     this.#browserCdpClient = browserCdpClient;
+    this.#aclStorage = aclStorage;
     this.#parser = parser;
     this.#logger = logger;
 
@@ -155,7 +158,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       eventManager,
       browserCdpClient,
       initConnection,
-      new AclStorage(browsingContextStorage),
+      this.#aclStorage,
     );
     this.#storageProcessor = new StorageProcessor(
       browserCdpClient,
@@ -169,6 +172,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   async #processCommand(
     command: ChromiumBidi.Command,
   ): Promise<ChromiumBidi.ResultData> {
+    // Restricted sessions can run only the commands that their ACL grants.
+    // Check before parsing, so that a disallowed command fails with an ACL
+    // error rather than a parameter validation error.
+    this.#aclStorage.assertCommandAllowed(command.method, command.params);
+
     switch (command.method) {
       // Autofill module
       // keep-sorted start block=yes
