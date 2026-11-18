@@ -226,10 +226,14 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
 
   // The selection tint never gets clipped by border-radius rounding, since we
   // want it to run right up to the edges of surrounding content.
+  // Don't paint selections when rendering a mask, clip-path (as a mask),
+  // pattern or feImage (element reference.)
   const bool draw_selection_tint =
-      layout_replaced_.IsSelected() && layout_replaced_.CanBeSelectionLeaf();
-  if (!draw_selection_tint)
+      layout_replaced_.IsSelected() && layout_replaced_.CanBeSelectionLeaf() &&
+      !local_paint_info.IsRenderingResourceSubtree();
+  if (!draw_selection_tint) {
     return;
+  }
 
   std::optional<SelectionBoundsRecorder> selection_recorder;
   const FrameSelection& frame_selection =
