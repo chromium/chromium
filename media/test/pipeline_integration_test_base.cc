@@ -49,6 +49,10 @@
 #include "media/filters/ffmpeg_demuxer.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
+#include "media/filters/symphonia_demuxer.h"
+#endif
+
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 #include "media/filters/ffmpeg_video_decoder.h"
 #endif
@@ -688,6 +692,21 @@ bool PipelineIntegrationTestBase::WaitUntilCurrentTimeIsAfter(
 void PipelineIntegrationTestBase::CreateDemuxer(
     std::unique_ptr<DataSource> data_source) {
   data_source_ = std::move(data_source);
+
+#if BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
+  if (base::FeatureList::IsEnabled(kSymphoniaDemuxing)) {
+    demuxer_ = std::make_unique<SymphoniaDemuxer>(
+        task_environment_.GetMainThreadTaskRunner(), data_source_.get(),
+        base::BindRepeating(
+            &PipelineIntegrationTestBase::DemuxerEncryptedMediaInitDataCB,
+            base::Unretained(this)),
+        base::BindRepeating(
+            &PipelineIntegrationTestBase::DemuxerMediaTracksUpdatedCB,
+            base::Unretained(this)),
+        media_log_.Clone());
+    return;
+  }
+#endif
 
 #if BUILDFLAG(ENABLE_FFMPEG)
   demuxer_ = std::unique_ptr<Demuxer>(new FFmpegDemuxer(
