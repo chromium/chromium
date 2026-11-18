@@ -1076,6 +1076,9 @@ crbug.com/418089323 conformance/offscreencanvas/methods-worker.html [ Failure ]
 crbug.com/418089323 conformance2/offscreencanvas/methods-2.html [ Failure ]
 crbug.com/418089323 conformance2/offscreencanvas/methods-2-worker.html [ Failure ]
 
+# Branch-only suppression for M159 Pixel 4 websocket timeout
+crbug.com/587450647 [ android android-pixel-4 ] deqp/functional/gles3/textureshadow/cube_nearest_mipmap_nearest_greater.html [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
