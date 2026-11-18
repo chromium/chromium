@@ -481,7 +481,9 @@ void StyledLabel::CalculateLayout(int width) const {
           CHECK(custom_view->GetProperty(kStyledLabelCustomViewKey),
                 base::NotFatalUntil::M163);
           // Do not allow wrap in custom view.
-          CHECK_EQ(position, range.start(), base::NotFatalUntil::M163);
+          // TODO(crbug.com/586449447): CHECK-exclusion: Convert to a CHECK
+          // once we are confident it won't be triggered.
+          DCHECK_EQ(position, range.start());
           chunk = remaining_string.substr(0, range.end() - position);
         } else {
           chunk = substrings[0];
