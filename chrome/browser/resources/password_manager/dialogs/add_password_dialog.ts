@@ -146,12 +146,8 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
       note_: {type: String},
       domainInfo_: {type: Object},
       usernamesBySignonRealm_: {type: Object},
-
-      /**
-       * Error message if the website input is invalid.
-       */
-      websiteErrorMessage_: {type: String},
-
+      isWebsiteRejected_: {type: Boolean},
+      isWebsiteBlurred_: {type: Boolean},
       usernameErrorMessage_: {type: String},
       isPasswordInvalid_: {type: Boolean},
     };
@@ -164,7 +160,11 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   private accessor domainInfo_: DomainInfo|null = null;
   private accessor usernamesBySignonRealm_: Map<string, Set<string>> =
       new Map();
-  protected accessor websiteErrorMessage_: string|null = null;
+  // Whether the `getDomainInfo` lookup found the website invalid.
+  private accessor isWebsiteRejected_: boolean = false;
+  // Whether `#websiteInput` lost focus since its last edit. An empty or
+  // dotless website is reported only then, not while the user types.
+  private accessor isWebsiteBlurred_: boolean = false;
   protected accessor usernameErrorMessage_: string|null = null;
   protected accessor isPasswordInvalid_: boolean = false;
 
@@ -238,31 +238,50 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
    */
   protected onWebsiteInput_() {
     this.website_ = this.$.websiteInput.value;
+    this.isWebsiteBlurred_ = false;
     if (this.website_.length === 0) {
       this.domainInfo_ = null;
-      this.websiteErrorMessage_ = null;
+      this.isWebsiteRejected_ = false;
       return;
     }
     PasswordManagerImpl.getInstance()
         .getDomainInfo(this.website_)
         .then(domainInfo => {
           this.domainInfo_ = domainInfo;
-          this.websiteErrorMessage_ =
-              !domainInfo ? this.i18n('notValidWebsite') : null;
+          this.isWebsiteRejected_ = !domainInfo;
         });
   }
 
   protected onWebsiteInputBlur_() {
-    if (this.website_.length === 0) {
-      this.websiteErrorMessage_ = '';
-    } else if (!this.websiteErrorMessage_ && !this.website_.includes('.')) {
-      this.websiteErrorMessage_ =
-          this.i18n('missingTLD', `${this.website_}.com`);
-    }
+    this.isWebsiteBlurred_ = true;
+  }
+
+  private isWebsiteMissing_(): boolean {
+    return this.isWebsiteBlurred_ && this.website_.length === 0;
+  }
+
+  // `getDomainInfo()` prepends `https://` to a website typed without a
+  // scheme, so a bare word like "example" is a valid URL. This UI hint
+  // catches the likely forgotten TLD instead. It marks the input invalid,
+  // so valid hosts such as `localhost` are flagged too.
+  private isWebsiteMissingTld_(): boolean {
+    return this.isWebsiteBlurred_ && this.website_.length > 0 &&
+        !this.website_.includes('.');
   }
 
   protected isWebsiteInputInvalid_(): boolean {
-    return this.websiteErrorMessage_ !== null;
+    return this.isWebsiteRejected_ || this.isWebsiteMissing_() ||
+        this.isWebsiteMissingTld_();
+  }
+
+  protected getWebsiteErrorMessage_(): string {
+    if (this.isWebsiteRejected_) {
+      return this.i18n('notValidWebsite');
+    }
+    if (this.isWebsiteMissingTld_()) {
+      return this.i18n('missingTLD', `${this.website_}.com`);
+    }
+    return '';
   }
 
   protected onUsernameInput_() {

@@ -5,11 +5,13 @@
 import 'chrome://password-manager/password_manager.js';
 
 import {Page, PASSWORD_NOTE_MAX_CHARACTER_COUNT, PasswordManagerImpl, Router, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import type {DomainInfo} from './password_manager.mojom-webui.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {createDomainInfo, createPasswordEntry} from './test_util.js';
@@ -404,6 +406,31 @@ suite('AddPasswordDialogTest', function() {
     assertEquals(
         dialog.i18n('missingTLD', 'example.com'),
         dialog.$.websiteInput.errorMessage);
+  });
+
+  test('missing TLD error survives lookup reply after blur', async function() {
+    const dialog = document.createElement('add-password-dialog');
+    document.body.appendChild(dialog);
+    await microtasksFinished();
+
+    const resolver = new PromiseResolver<DomainInfo|null>();
+    passwordManager.getDomainInfo = () => resolver.promise;
+
+    await setValue(dialog.$.websiteInput, 'example');
+    dialog.$.websiteInput.dispatchEvent(new CustomEvent('blur'));
+    await microtasksFinished();
+    assertTrue(dialog.$.websiteInput.invalid);
+    assertEquals(
+        dialog.i18n('missingTLD', 'example.com'),
+        dialog.$.websiteInput.errorMessage);
+
+    resolver.resolve(createDomainInfo('example'));
+    await microtasksFinished();
+    assertTrue(dialog.$.websiteInput.invalid);
+    assertEquals(
+        dialog.i18n('missingTLD', 'example.com'),
+        dialog.$.websiteInput.errorMessage);
+    assertTrue(dialog.$.addButton.disabled);
   });
 
   test('error when leaving password blank', async function() {
