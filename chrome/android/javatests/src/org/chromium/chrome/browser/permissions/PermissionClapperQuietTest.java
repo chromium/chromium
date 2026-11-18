@@ -46,6 +46,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ChromeTriggers;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -70,6 +71,8 @@ public class PermissionClapperQuietTest {
     public RuleChain mRuleChain = RuleChain.outerRule(mActivityTestRule).around(mPermissionRule);
 
     private static final String PAGE_URL = "/content/test/data/android/permission_navigation.html";
+
+    private WebPageStation mPage;
 
     private HistogramWatcher expectActionTimes(
             @PermissionTestRule.PromptAction int action, int times) {
@@ -98,7 +101,7 @@ public class PermissionClapperQuietTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mPermissionRule.resetNotificationsSettingsForTest(/* enableQuietUi= */ true);
     }
 
@@ -595,17 +598,12 @@ public class PermissionClapperQuietTest {
     public void testQuietClapperTabDestroyed() throws Exception {
         HistogramWatcher histogramWatcher = expectAction(PermissionTestRule.PromptAction.IGNORED);
 
-        ChromeTabUtils.fullyLoadUrlInNewTab(
-                InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(),
-                mPermissionRule.getURL(PAGE_URL),
-                /* incognito= */ false);
+        WebPageStation page = mPage.openWebPageInNewTab(mPermissionRule.getURL(PAGE_URL));
 
         triggerQuietClapper();
         waitForQuietIcon();
 
-        ChromeTabUtils.closeCurrentTab(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        mPage = page.closeCurrentTabFast(WebPageStation.newBuilder());
 
         waitForQuietIconGone();
 

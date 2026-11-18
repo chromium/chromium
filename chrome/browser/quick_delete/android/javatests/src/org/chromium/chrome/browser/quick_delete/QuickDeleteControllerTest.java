@@ -278,7 +278,7 @@ public class QuickDeleteControllerTest {
         // tab, so close it programmatically instead.
         TripBuilder exitSettings =
                 SettingsInTab.shouldOpenSettingsInTab()
-                        ? ChromeTriggers.closeCurrentTabProgrammaticallyTo(
+                        ? ChromeTriggers.closeCurrentTabTo(
                                 clearBrowsingDataSettings, mCtaTestRule.getActivity())
                         : clearBrowsingDataSettings.pressBackTo();
         exitSettings.arriveAt(

@@ -18,7 +18,6 @@ import android.content.Context;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
@@ -41,8 +40,6 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
@@ -59,6 +56,8 @@ import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ChromeTriggers;
+import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -125,10 +124,13 @@ public class LocationBarModelTest {
                 "No current tab",
                 Tab.INVALID_TAB_ID,
                 getCurrentTabId(mActivityTestRule.getActivity()));
-        ChromeTabUtils.closeCurrentTab(
-                InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(),
-                TabClosingSource.GRID_TAB_SWITCHER);
+        RegularTabSwitcherStation tabSwitcher =
+                ChromeTriggers.closeCurrentTabTo(mPage, TabClosingSource.GRID_TAB_SWITCHER)
+                        .reach(
+                                RegularTabSwitcherStation.afterClosingTab(
+                                        mPage,
+                                        /* regularTabsExist= */ false,
+                                        /* incognitoTabsExist= */ false));
         assertEquals(
                 "Didn't close all tabs.",
                 0,
@@ -140,13 +142,7 @@ public class LocationBarModelTest {
 
         // Restore a tab and return to the BROWSING layout so subsequent batched tests do not race
         // with an in-flight transition to the HUB layout on tablets.
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(),
-                /* incognito= */ false,
-                /* waitForNtpLoad= */ false);
-        LayoutTestUtils.startShowingAndWaitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING, false);
+        tabSwitcher.openNewTab();
     }
 
     @Test

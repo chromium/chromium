@@ -17,11 +17,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.hamcrest.Matcher;
 
+import org.chromium.base.test.transit.Outcome;
+import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElementMatchesCondition;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
 
 /** Regular tab switcher pane station. */
 public class RegularTabSwitcherStation extends TabSwitcherStation {
@@ -54,6 +58,21 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
         return new RegularTabSwitcherStation(
                 getTabCountOnUiThread(selector.getModel(false)) > 0,
                 getTabCountOnUiThread(selector.getModel(true)) > 0);
+    }
+
+    /**
+     * Outcome: the current tab of |origin|'s current TabModel starts closing and the regular tab
+     * switcher shows.
+     *
+     * <p>Static because |origin| can be the tab switcher itself.
+     */
+    public static Outcome<RegularTabSwitcherStation> afterClosingTab(
+            Station<ChromeTabbedActivity> origin,
+            boolean regularTabsExist,
+            boolean incognitoTabsExist) {
+        ChromeTabbedActivity activity = origin.getActivity();
+        return Outcome.enter(new RegularTabSwitcherStation(regularTabsExist, incognitoTabsExist))
+                .andWaitFor(new TabClosingCondition(activity::getCurrentTabModel));
     }
 
     @Override

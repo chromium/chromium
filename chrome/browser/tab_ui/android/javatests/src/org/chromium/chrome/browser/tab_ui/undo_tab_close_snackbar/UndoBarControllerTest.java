@@ -43,6 +43,7 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.hub.UndoSnackbarFacility;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
@@ -1475,14 +1476,12 @@ public class UndoBarControllerTest {
     public void testUndoSnackbarDisabled_AccessibilityEnabled() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> AccessibilityStateTestHelper.setAccessibilityEnabledForTesting(true));
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        RegularNewTabPageStation ntp = mPage.openNewTabFast();
 
         assertNull("Snack bar should be null initially", getCurrentSnackbar());
         assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
-        ChromeTabUtils.closeCurrentTab(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        mPage = ntp.closeCurrentTabFast(WebPageStation.newBuilder());
 
         assertNull(
                 "Undo snack bar should not be showing in accessibility mode", getCurrentSnackbar());

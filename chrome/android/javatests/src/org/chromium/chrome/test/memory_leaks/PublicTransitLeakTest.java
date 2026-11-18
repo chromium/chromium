@@ -94,7 +94,7 @@ public class PublicTransitLeakTest {
         // settings tab, so close it programmatically instead.
         TripBuilder exitSettings =
                 SettingsInTab.shouldOpenSettingsInTab()
-                        ? ChromeTriggers.closeCurrentTabProgrammaticallyTo(
+                        ? ChromeTriggers.closeCurrentTabTo(
                                 settings, mChromeTabbedActivityTestRule.getActivity())
                         : settings.pressBackTo();
         exitSettings.arriveAt(WebPageStation.newBuilder().initFrom(page).build());

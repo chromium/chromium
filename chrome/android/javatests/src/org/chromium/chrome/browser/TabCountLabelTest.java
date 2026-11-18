@@ -23,8 +23,9 @@ import org.chromium.chrome.browser.ui.android.bars_common.TabSwitcherDrawable;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.BottomBarTestUtils;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** Test suite for the tab count widget on the phone toolbar. */
@@ -36,9 +37,11 @@ public class TabCountLabelTest {
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
+    private WebPageStation mPage;
+
     @Before
     public void setUp() {
-        mActivityTestRule.startOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
     }
 
     private void tabCountLabelCheck(String stepName, String labelExpected) {
@@ -64,13 +67,11 @@ public class TabCountLabelTest {
     @Restriction(DeviceFormFactor.PHONE)
     public void testTabCountLabel() {
         tabCountLabelCheck("Initial state", "1");
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        RegularNewTabPageStation ntp = mPage.openNewTabFast();
         // Make sure the TAB_CREATED notification went through
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         tabCountLabelCheck("After new tab", "2");
-        ChromeTabUtils.closeCurrentTab(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        mPage = ntp.closeCurrentTabFast(WebPageStation.newBuilder());
         // Make sure the TAB_CLOSED notification went through
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         tabCountLabelCheck("After close tab", "1");

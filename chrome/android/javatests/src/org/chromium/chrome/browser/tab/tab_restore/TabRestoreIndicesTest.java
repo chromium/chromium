@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.url.GURL;
 
@@ -208,12 +207,9 @@ public class TabRestoreIndicesTest {
     // Closes the selected tab, which selects another one.
     private void closeSelectedTab(GURL nextSelectedUrl) {
         mPage =
-                ChromeTriggers.closeCurrentTabProgrammaticallyTo(mPage, mActivity)
-                        .arriveAt(
-                                WebPageStation.newBuilder()
-                                        .initSelectingExistingTab()
-                                        .withExpectedUrlSubstring(nextSelectedUrl.getSpec())
-                                        .build());
+                mPage.closeCurrentTabFast(
+                        WebPageStation.newBuilder()
+                                .withExpectedUrlSubstring(nextSelectedUrl.getSpec()));
     }
 
     // Closes a tab that isn't selected, so mPage stays valid.

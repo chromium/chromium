@@ -62,6 +62,8 @@ import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ChromeTriggers;
+import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.BottomBarTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -323,11 +325,6 @@ public class ChromeTabModalPresenterTest {
     public void testSuspend_LastTabClosed() throws Exception {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
 
-        // Make sure there is only one opened tab.
-        while (ChromeTabUtils.getTabCountOnUiThread(mActivity.getCurrentTabModel()) > 1) {
-            ChromeTabUtils.closeCurrentTab(InstrumentationRegistry.getInstrumentation(), mActivity);
-        }
-
         // Initially there are no dialogs in the pending list. Browser controls are not restricted.
         checkPendingSize(mManager, ModalDialogType.TAB, 0);
         ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
@@ -343,18 +340,19 @@ public class ChromeTabModalPresenterTest {
         checkCurrentPresenter(mManager, ModalDialogType.TAB);
 
         // Tab modal dialogs should be suspended on entering tab switcher.
-        View tabSwitcherBtn = BottomBarTestUtils.findViewById(mActivity, R.id.tab_switcher_button);
-        onView(is(tabSwitcherBtn)).perform(click());
+        RegularTabSwitcherStation tabSwitcher = mPage.openRegularTabSwitcher();
         checkPendingSize(mManager, ModalDialogType.TAB, 1);
         ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
         checkCurrentPresenter(mManager, null);
 
         // Close the only tab in the tab switcher. Verify that the queued tab modal dialogs are
         // cleared.
-        ChromeTabUtils.closeCurrentTab(
-                InstrumentationRegistry.getInstrumentation(),
-                mActivity,
-                TabClosingSource.GRID_TAB_SWITCHER);
+        ChromeTriggers.closeCurrentTabTo(tabSwitcher, TabClosingSource.GRID_TAB_SWITCHER)
+                .reach(
+                        RegularTabSwitcherStation.afterClosingTab(
+                                tabSwitcher,
+                                /* regularTabsExist= */ false,
+                                /* incognitoTabsExist= */ false));
         checkPendingSize(mManager, ModalDialogType.TAB, 0);
         ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
         checkCurrentPresenter(mManager, null);
@@ -368,7 +366,7 @@ public class ChromeTabModalPresenterTest {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
         PropertyModel dialog2 = createDialog(mActivity, mManager, "2", null);
         PropertyModel dialog3 = createDialog(mActivity, mManager, "3", null);
-        mActivityTestRule.loadUrlInNewTab("about:blank");
+        WebPageStation blankPage = mPage.openNewTabFast().loadAboutBlank();
 
         // Initially there are no dialogs in the pending list. Browser controls are not restricted.
         checkPendingSize(mManager, ModalDialogType.APP, 0);
@@ -387,18 +385,19 @@ public class ChromeTabModalPresenterTest {
         checkCurrentPresenter(mManager, ModalDialogType.TAB);
 
         // Tab modal dialogs should be suspended on entering tab switcher.
-        // Use BottomBarTestUtils.findViewById to retrieve the active view reference from the bottom
-        // bar hierarchy and match by instance equality. Direct onView(withId(...)) can be ambiguous
-        // when multiple toolbars containing R.id.tab_switcher_button are inflated.
-        View tabSwitcherBtn = BottomBarTestUtils.findViewById(mActivity, R.id.tab_switcher_button);
-        onView(is(tabSwitcherBtn)).perform(click());
+        RegularTabSwitcherStation tabSwitcher = blankPage.openRegularTabSwitcher();
         checkPendingSize(mManager, ModalDialogType.APP, 0);
         checkPendingSize(mManager, ModalDialogType.TAB, 1);
         ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
         checkCurrentPresenter(mManager, null);
 
         // Close current tab in the tab switcher.
-        ChromeTabUtils.closeCurrentTab(InstrumentationRegistry.getInstrumentation(), mActivity);
+        ChromeTriggers.closeCurrentTabTo(tabSwitcher)
+                .reach(
+                        RegularTabSwitcherStation.afterClosingTab(
+                                tabSwitcher,
+                                /* regularTabsExist= */ true,
+                                /* incognitoTabsExist= */ false));
         checkPendingSize(mManager, ModalDialogType.APP, 0);
         checkPendingSize(mManager, ModalDialogType.TAB, 0);
         ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);

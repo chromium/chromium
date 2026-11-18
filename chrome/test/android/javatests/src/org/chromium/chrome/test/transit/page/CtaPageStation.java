@@ -17,6 +17,7 @@ import android.view.KeyEvent;
 import android.view.View;
 
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.test.transit.Outcome;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.build.annotations.Nullable;
@@ -43,6 +44,7 @@ import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
 import org.chromium.chrome.test.transit.signin.SignedOutAccountMenuFacility;
 import org.chromium.chrome.test.transit.tab_search.TabSearchOverlayFacility;
 import org.chromium.chrome.test.transit.tab_strip.TabStripFacility;
+import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
 import org.chromium.chrome.test.transit.toolbar.ToolbarFacility;
 import org.chromium.chrome.test.transit.vertical_tabs.VerticalTabsFacility;
 import org.chromium.components.signin.SigninFeatureMap;
@@ -267,6 +269,23 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
                                 .withIncognito(tabToSelect.isIncognitoBranded())
                                 .initSelectingExistingTab()
                                 .build());
+    }
+
+    /** The current tab starts closing and the next tab in the same TabModel is selected. */
+    public <T extends CtaPageStation> Outcome<T> nextTabSelected(Builder<T> nextPageBuilder) {
+        return Outcome.enter(nextPageBuilder.initFrom(this).withIsSelectingTabs(1).build())
+                .andWaitFor(new TabClosingCondition(tabModelElement));
+    }
+
+    /**
+     * Closes the current tab programmatically, without undo, and arrives at the tab selected next
+     * in the same TabModel.
+     *
+     * <p>Programmatic version of {@link
+     * TabSwitcherActionMenuFacility#selectCloseTabAndDisplayAnotherTab(Builder)}.
+     */
+    public <T extends CtaPageStation> T closeCurrentTabFast(Builder<T> nextPageBuilder) {
+        return ChromeTriggers.closeCurrentTabTo(this).reach(nextTabSelected(nextPageBuilder));
     }
 
     /** Opens the tab switcher by pressing the toolbar tab switcher button. */

@@ -115,22 +115,49 @@ public class ChromeTriggers {
     }
 
     /**
-     * Close the current tab of |activity| programmatically, without undo.
+     * Close the current tab of |station|'s current TabModel programmatically, without undo.
      *
-     * <p>Takes the activity separately from |station| for Stations that are not bound to a
+     * <p>Also works while the tab switcher is showing, when there is no activity tab.
+     */
+    @CheckReturnValue
+    public static TripBuilder closeCurrentTabTo(Station<ChromeTabbedActivity> station) {
+        return closeCurrentTabTo(station, TabClosingSource.UNKNOWN);
+    }
+
+    /** {@link #closeCurrentTabTo(Station)} with an explicit closing source. */
+    @CheckReturnValue
+    public static TripBuilder closeCurrentTabTo(
+            Station<ChromeTabbedActivity> station, @TabClosingSource int source) {
+        return closeCurrentTabTo(station, station.getActivity(), source);
+    }
+
+    /**
+     * {@link #closeCurrentTabTo(Station)} for Stations that are not bound to a
      * ChromeTabbedActivity, e.g. a Settings page shown in a tab.
      */
     @CheckReturnValue
-    public static TripBuilder closeCurrentTabProgrammaticallyTo(
-            Station<?> station, ChromeTabbedActivity activity) {
+    public static TripBuilder closeCurrentTabTo(Station<?> station, ChromeTabbedActivity activity) {
+        return closeCurrentTabTo(station, activity, TabClosingSource.UNKNOWN);
+    }
+
+    /**
+     * {@link #closeCurrentTabTo(Station, ChromeTabbedActivity)} with an explicit closing source.
+     */
+    @CheckReturnValue
+    public static TripBuilder closeCurrentTabTo(
+            Station<?> station, ChromeTabbedActivity activity, @TabClosingSource int source) {
         return station.runOnUiThreadTo(
-                () ->
-                        activity.getCurrentTabModel()
-                                .getTabRemover()
-                                .closeTabs(
-                                        TabClosureParams.closeTab(activity.getActivityTab())
-                                                .allowUndo(false)
-                                                .build(),
-                                        /* allowDialog= */ false));
+                () -> {
+                    TabModel model = activity.getCurrentTabModel();
+                    Tab tab = TabModelUtils.getCurrentTab(model);
+                    assertNotNull("No current tab to close", tab);
+                    model.getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(tab)
+                                            .allowUndo(false)
+                                            .tabClosingSource(source)
+                                            .build(),
+                                    /* allowDialog= */ false);
+                });
     }
 }

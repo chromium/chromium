@@ -130,8 +130,7 @@ public class TabbedAppMenuPTTest {
         // it programmatically instead.
         TripBuilder exitSettings =
                 SettingsInTab.shouldOpenSettingsInTab()
-                        ? ChromeTriggers.closeCurrentTabProgrammaticallyTo(
-                                settings, mCtaTestRule.getActivity())
+                        ? ChromeTriggers.closeCurrentTabTo(settings, mCtaTestRule.getActivity())
                         : settings.pressBackTo();
         exitSettings.arriveAt(
                 WebPageStation.newBuilder()

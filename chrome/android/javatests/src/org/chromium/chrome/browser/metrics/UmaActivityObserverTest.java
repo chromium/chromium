@@ -222,8 +222,7 @@ public class UmaActivityObserverTest {
 
         // Close settings and return to Tabbed activity.
         if (settingsInTab) {
-            ChromeTriggers.closeCurrentTabProgrammaticallyTo(
-                            settingsStation, mCtaTestRule.getActivity())
+            ChromeTriggers.closeCurrentTabTo(settingsStation, mCtaTestRule.getActivity())
                     .arriveAt(WebPageStation.newBuilder().initFrom(pageInFirstWindow).build());
         } else {
             settingsStation.getActivity().finish();
