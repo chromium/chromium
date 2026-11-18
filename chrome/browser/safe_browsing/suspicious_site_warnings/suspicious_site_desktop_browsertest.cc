@@ -36,11 +36,15 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 
 namespace safe_browsing {
@@ -616,6 +620,65 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
   EXPECT_FALSE(GetPageInfoBubbleForTesting());
   EXPECT_FALSE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
   EXPECT_FALSE(browser()->GetTabStripModel()->IsTabBlocked(0));
+}
+
+// Regression test for crbug.com/585350626.
+IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
+                       MarkAsSafeOnAccessibilityAlertEvent) {
+  base::HistogramTester histogram_tester;
+  GURL malicious_url = embedded_test_server()->GetURL("/title1.html");
+  SetURLThreatType(malicious_url,
+                   SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
+
+  views::test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
+  base::test::TestFuture<void> alert_handled_future;
+  // Simulate an accessibility client synchronously invoking the "Mark as safe"
+  // button upon receiving ax::mojom::Event::kAlert during Widget::Show()
+  // inside SuspiciousSiteControllerDesktop::ShowBubble(). Trigger the click
+  // from AnyWidgetObserver::set_shown_callback (which runs inside
+  // Widget::Show() right after NotifyViewEvent(kAlert) unwinds) because
+  // AXUpdateNotifier disallows re-entrant notifications.
+  views::AnyWidgetObserver widget_observer(views::test::AnyWidgetTestPasskey{});
+  widget_observer.set_shown_callback(
+      base::BindLambdaForTesting([&](views::Widget* widget) {
+        auto* bubble_view = static_cast<SuspiciousSiteBubbleView*>(
+            GetPageInfoBubbleForTesting());
+        if (!bubble_view || bubble_view->GetWidget() != widget ||
+            alert_handled_future.IsReady()) {
+          return;
+        }
+        EXPECT_GE(ax_counter.GetCount(ax::mojom::Event::kAlert), 1);
+        views::test::ButtonTestApi(
+            bubble_view->mark_as_safe_button_for_testing())
+            .NotifyClick(ui::MouseEvent(
+                ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
+                ui::EF_LEFT_MOUSE_BUTTON));
+        alert_handled_future.SetValue();
+      }));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), malicious_url));
+  ASSERT_TRUE(alert_handled_future.Wait());
+
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
+  EXPECT_TRUE(SuspiciousSiteWarningAllowlist(hcsm).IsSiteAllowedForHost(
+      std::string(malicious_url.host())));
+
+  EXPECT_FALSE(safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
+      GetActiveWebContents()));
+  EXPECT_FALSE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
+  EXPECT_FALSE(browser()->GetTabStripModel()->IsTabBlocked(0));
+
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteWarningUserInteraction::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteWarningUserInteraction::kMarkAsSafe, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.SuspiciousSiteWarning.WarningOutcome",
+      SuspiciousSiteWarningOutcome::kBypassed, 1);
 }
 
 }  // namespace safe_browsing

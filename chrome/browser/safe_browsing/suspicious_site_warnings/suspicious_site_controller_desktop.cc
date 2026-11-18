@@ -259,14 +259,14 @@ void SuspiciousSiteControllerDesktop::ShowBubble() {
         SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
   }
 
-  ShowSuspiciousSiteBubble(web_contents());
-
   if (!has_shown_) {
     sb_service->ui_manager()->CreateAndSendClientSafeBrowsingWarningShownReport(
         resource_.value());
     LogUserInteraction(UserInteraction::kShown);
     has_shown_ = true;
   }
+
+  ShowSuspiciousSiteBubble(web_contents());
 }
 
 void SuspiciousSiteControllerDesktop::OnBackToSafetyClicked() {
