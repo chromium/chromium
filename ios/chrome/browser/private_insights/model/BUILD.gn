@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "features.h",
+    "features.mm",
     "private_insights_service_factory.h",
     "private_insights_service_factory.mm",
   ]

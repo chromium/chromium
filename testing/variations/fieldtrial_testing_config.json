@@ -11401,6 +11401,7 @@
                         "upload_interval": "30s"
                     },
                     "enable_features": [
+                        "IOSPrivateInsightsService",
                         "PrivateInsightsFeature"
                     ]
                 }

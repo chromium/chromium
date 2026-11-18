@@ -9,7 +9,7 @@
 
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
-#import "components/private_insights/private_insights_features.h"
+#import "ios/chrome/browser/private_insights/model/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -17,8 +17,7 @@
 namespace {
 
 std::unique_ptr<KeyedService> BuildPrivateInsightsService(ProfileIOS& profile) {
-  if (!base::FeatureList::IsEnabled(
-          private_insights::kPrivateInsightsFeature)) {
+  if (!base::FeatureList::IsEnabled(kIOSPrivateInsightsService)) {
     return nullptr;
   }
   // FCP state (e.g. OpStats) lives under the profile state path, so two

@@ -12,6 +12,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/private_insights/private_insights_features.h"
 #import "components/private_insights/private_insights_service.h"
+#import "ios/chrome/browser/private_insights/model/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -21,7 +22,6 @@
 
 namespace {
 
-using private_insights::kPrivateInsightsFeature;
 using private_insights::kPrivateInsightsUploadInterval;
 using private_insights::kTriggerUploadOutcomeHistogram;
 using private_insights::PrivateInsightsMetricsServiceAccessor;
@@ -73,7 +73,8 @@ class PrivateInsightsServiceFactoryTest : public PlatformTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{kPrivateInsightsFeature};
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kIOSPrivateInsightsService};
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::TimeSource::MOCK_TIME};
   // `PrivateInsightsService` CHECKs that local state exists.
@@ -81,7 +82,8 @@ class PrivateInsightsServiceFactoryTest : public PlatformTest {
   base::HistogramTester histogram_tester_;
 };
 
-// Tests that the service is created when `kPrivateInsightsFeature` is enabled.
+// Tests that the service is created when `kIOSPrivateInsightsService` is
+// enabled.
 TEST_F(PrivateInsightsServiceFactoryTest, ServiceCreatedWhenFeatureEnabled) {
   std::unique_ptr<TestProfileIOS> profile = BuildProfile();
 
@@ -89,10 +91,11 @@ TEST_F(PrivateInsightsServiceFactoryTest, ServiceCreatedWhenFeatureEnabled) {
             nullptr);
 }
 
-// Tests that no service is created when `kPrivateInsightsFeature` is disabled.
+// Tests that no service is created when `kIOSPrivateInsightsService` is
+// disabled.
 TEST_F(PrivateInsightsServiceFactoryTest, ServiceNullWhenFeatureDisabled) {
   base::test::ScopedFeatureList disable_feature;
-  disable_feature.InitAndDisableFeature(kPrivateInsightsFeature);
+  disable_feature.InitAndDisableFeature(kIOSPrivateInsightsService);
   std::unique_ptr<TestProfileIOS> profile = BuildProfile();
 
   EXPECT_EQ(PrivateInsightsServiceFactory::GetForProfile(profile.get()),
