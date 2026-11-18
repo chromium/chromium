@@ -2570,9 +2570,6 @@ base::Time HistoryBackend::FindMostRecentClusteredTime() {
   const auto clusters = GetMostRecentClusters(
       base::Time::Min(), base::Time::Max(),
       /*max_clusters=*/1, /*max_visits_soft_cap=*/0, false);
-  // TODO(manukh): If the most recent cluster is invalid (due to DB corruption),
-  //  `GetMostRecentClusters()` will return no clusters. We should handle this
-  //  case and not assume we've exhausted history.
   return clusters.empty() ? base::Time::Min()
                           : clusters[0]
                                 .GetMostRecentVisit()
@@ -2684,27 +2681,24 @@ std::vector<Cluster> HistoryBackend::GetMostRecentClusters(
     size_t max_visits_soft_cap,
     bool include_keywords_and_duplicates) {
   TRACE_EVENT0("browser", "HistoryBackend::GetMostRecentClusters");
-  if (!db_) {
+  if (!db_ || max_clusters == 0) {
     return {};
   }
-  const auto cluster_ids = db_->GetMostRecentClusterIds(
-      inclusive_min_time, exclusive_max_time, max_clusters);
   std::vector<Cluster> clusters;
   size_t accumulated_visits_count = 0;
-  for (const auto cluster_id : cluster_ids) {
-    const auto cluster =
-        GetCluster(cluster_id, include_keywords_and_duplicates);
-    // `cluster` should be valid in the normal flow, but DB corruption can
-    // happen. `GetCluster()` returning a cluster_id` of 0 indicates an invalid
-    // cluster.
-    if (cluster.cluster_id.value() > 0) {
-      accumulated_visits_count += cluster.visits.size();
-      clusters.push_back(std::move(cluster));
-      if (accumulated_visits_count >= max_visits_soft_cap) {
-        break;
-      }
-    }
-  }
+  // Apply the limits after validation. Otherwise an invalid batch could look
+  // like the end of history while older valid clusters still exist.
+  db_->ForEachRecentCluster(
+      inclusive_min_time, exclusive_max_time, [&](ClusterId cluster_id) {
+        auto cluster = GetCluster(cluster_id, include_keywords_and_duplicates);
+        if (cluster.cluster_id.value() <= 0) {
+          return true;
+        }
+        accumulated_visits_count += cluster.visits.size();
+        clusters.push_back(std::move(cluster));
+        return clusters.size() < max_clusters &&
+               accumulated_visits_count < max_visits_soft_cap;
+      });
   return clusters;
 }
 

@@ -84,9 +84,6 @@ void HistoryClustersServiceTaskGetMostRecentClustersForUI::
         GetDebugJSONForClusters(clusters));
   }
 
-  // TODO(manukh): If the most recent cluster is invalid (due to DB corruption),
-  //  `GetMostRecentClusters()` will return no clusters. We should handle this
-  //  case and not assume we've exhausted history.
   auto continuation_params =
       clusters.empty() ? QueryClustersContinuationParams::DoneParams()
                        : QueryClustersContinuationParams{

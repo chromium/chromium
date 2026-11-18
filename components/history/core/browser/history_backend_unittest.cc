@@ -5103,7 +5103,7 @@ TEST_F(HistoryBackendTest, GetMostRecentClusters) {
     backend_->db()->DeleteURLRow(10);
     VerifyClusters(backend_->GetMostRecentClusters(GetRelativeTime(0),
                                                    GetRelativeTime(20), 1, 100),
-                   {});
+                   {{ClusterId(2), {9, 6, 5}}});
   }
   {
     // Verify doesn't deleted visits don't interfere.
@@ -5115,6 +5115,50 @@ TEST_F(HistoryBackendTest, GetMostRecentClusters) {
                                                    GetRelativeTime(20), 1, 100),
                    {{ClusterId(2), {9, 6, 5}}});
   }
+}
+
+TEST_F(HistoryBackendTest, GetMostRecentClustersSkipsInvalidBatches) {
+  for (int i = 1; i <= 6; ++i) {
+    AddAnnotatedVisit(i);
+    AddCluster({i});
+  }
+  // The two newest batches contain candidates whose URL rows are missing.
+  for (int i = 3; i <= 6; ++i) {
+    backend_->db()->DeleteURLRow(i);
+  }
+  VerifyClusters(backend_->GetMostRecentClusters(GetRelativeTime(0),
+                                                 GetRelativeTime(10), 2, 100),
+                 {{ClusterId(2), {2}}, {ClusterId(1), {1}}});
+  // The visit soft cap still applies after skipping invalid candidates.
+  VerifyClusters(backend_->GetMostRecentClusters(GetRelativeTime(0),
+                                                 GetRelativeTime(10), 2, 1),
+                 {{ClusterId(2), {2}}});
+  backend_->db()->DeleteURLRow(2);
+  backend_->db()->DeleteURLRow(1);
+  VerifyClusters(backend_->GetMostRecentClusters(GetRelativeTime(0),
+                                                 GetRelativeTime(10), 2, 100),
+                 {});
+}
+
+TEST_F(HistoryBackendTest, GetMostRecentClustersSkipsInvalidTimestampTies) {
+  AddAnnotatedVisit(1);
+  AddAnnotatedVisit(2);
+  AddAnnotatedVisit(3);
+  AddCluster({1});
+  AddCluster({2});
+  AddCluster({3});
+  // Keep separate URL rows while making all candidate timestamps equal.
+  for (VisitID id : {2, 3}) {
+    VisitRow visit;
+    ASSERT_TRUE(backend_->db()->GetRowForVisit(id, &visit));
+    visit.visit_time = GetRelativeTime(1);
+    ASSERT_TRUE(backend_->db()->UpdateVisitRow(visit));
+  }
+  backend_->db()->DeleteURLRow(1);
+  backend_->db()->DeleteURLRow(2);
+  VerifyClusters(backend_->GetMostRecentClusters(GetRelativeTime(0),
+                                                 GetRelativeTime(10), 1, 100),
+                 {{ClusterId(3), {3}}});
 }
 
 TEST_F(HistoryBackendTest, AddClusters_GetCluster) {

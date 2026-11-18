@@ -197,9 +197,6 @@ void HistoryClustersServiceTaskUpdateClusterTriggerability::
   }
 
   if (clusters.empty()) {
-    // TODO(manukh): If the most recent cluster is invalid (due to DB
-    //  corruption), `GetMostRecentClusters()` will return no clusters. We
-    //  should handle this case and not assume we've exhausted history.
     MarkDoneAndRunCallback();
     return;
   }

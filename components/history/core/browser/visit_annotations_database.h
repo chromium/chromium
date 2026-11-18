@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/functional/function_ref.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 
@@ -117,11 +118,12 @@ class VisitAnnotationsDatabase {
   // `keyword_to_data_map`.
   Cluster GetCluster(ClusterId cluster_id);
 
-  // Get the most recent clusters within the constraints. The most recent visit
-  // of a cluster represents the cluster's time.
-  std::vector<ClusterId> GetMostRecentClusterIds(base::Time inclusive_min_time,
-                                                 base::Time exclusive_max_time,
-                                                 int max_clusters);
+  // Visits cluster candidates within the time range, newest first. Equal
+  // times are ordered by ascending cluster ID. Stops when `callback` returns
+  // false. The callback may read, but must not modify, the database.
+  void ForEachRecentCluster(base::Time inclusive_min_time,
+                            base::Time exclusive_max_time,
+                            base::FunctionRef<bool(ClusterId)> callback);
 
   // Get `VisitID`s in a cluster.
   std::vector<VisitID> GetVisitIdsInCluster(ClusterId cluster_id);

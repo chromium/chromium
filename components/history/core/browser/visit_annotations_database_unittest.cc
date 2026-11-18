@@ -68,6 +68,17 @@ class VisitAnnotationsDatabaseTest : public testing::Test,
     AddClusters({CreateCluster(visit_ids)});
   }
 
+  std::vector<ClusterId> CollectRecentClusterIds(base::Time min_time,
+                                                 base::Time max_time,
+                                                 size_t limit) {
+    std::vector<ClusterId> ids;
+    ForEachRecentCluster(min_time, max_time, [&](ClusterId id) {
+      ids.push_back(id);
+      return ids.size() < limit;
+    });
+    return ids;
+  }
+
   void ExpectContextAnnotations(VisitContextAnnotations actual,
                                 VisitContextAnnotations expected) {
     EXPECT_EQ(actual.on_visit.browser_type, expected.on_visit.browser_type);
@@ -422,7 +433,7 @@ TEST_F(
   EXPECT_THAT(duplicate_visits_retrieved, ElementsAre(3, 4));
 }
 
-TEST_F(VisitAnnotationsDatabaseTest, GetMostRecentClusterIds) {
+TEST_F(VisitAnnotationsDatabaseTest, ForEachRecentCluster) {
   AddCluster(
       {AddVisitWithTime(IntToTime(11)), AddVisitWithTime(IntToTime(12))});
   AddCluster(
@@ -434,14 +445,46 @@ TEST_F(VisitAnnotationsDatabaseTest, GetMostRecentClusterIds) {
 
   // Should return clusters with at least 1 visit >= min time.
   // Should be ordered max visit time descending.
-  EXPECT_EQ(GetMostRecentClusterIds(IntToTime(101), IntToTime(120), 10),
+  EXPECT_EQ(CollectRecentClusterIds(IntToTime(101), IntToTime(120), 10),
             std::vector<ClusterId>({ClusterId(3), ClusterId(4), ClusterId(2)}));
   // Should not return clusters with visits > max time.
-  EXPECT_EQ(GetMostRecentClusterIds(IntToTime(100), IntToTime(103), 10),
+  EXPECT_EQ(CollectRecentClusterIds(IntToTime(100), IntToTime(103), 10),
             std::vector<ClusterId>({ClusterId(2)}));
   // Should return at most `max_clusters`.
-  EXPECT_EQ(GetMostRecentClusterIds(IntToTime(0), IntToTime(500), 1),
+  EXPECT_EQ(CollectRecentClusterIds(IntToTime(0), IntToTime(500), 1),
             std::vector<ClusterId>({ClusterId(3)}));
+}
+
+TEST_F(VisitAnnotationsDatabaseTest, ForEachRecentClusterWithTimestampTies) {
+  AddCluster({AddVisitWithTime(IntToTime(100))});
+  AddCluster({AddVisitWithTime(IntToTime(100))});
+  AddCluster({AddVisitWithTime(IntToTime(100))});
+  EXPECT_EQ(CollectRecentClusterIds(IntToTime(0), IntToTime(200), 2),
+            std::vector<ClusterId>({ClusterId(1), ClusterId(2)}));
+  EXPECT_EQ(CollectRecentClusterIds(IntToTime(0), IntToTime(200), 10),
+            std::vector<ClusterId>({ClusterId(1), ClusterId(2), ClusterId(3)}));
+  EXPECT_TRUE(
+      CollectRecentClusterIds(IntToTime(0), IntToTime(100), 10).empty());
+  EXPECT_TRUE(
+      CollectRecentClusterIds(IntToTime(200), IntToTime(300), 10).empty());
+}
+
+TEST_F(VisitAnnotationsDatabaseTest, ForEachRecentClusterAcrossBatches) {
+  constexpr int kClusterCount = 1002;
+  for (int i = 0; i < kClusterCount; ++i) {
+    AddCluster({AddVisitWithTime(IntToTime(100))});
+  }
+  std::vector<ClusterId> expected;
+  for (int i = 1; i <= kClusterCount; ++i) {
+    expected.emplace_back(i);
+  }
+  EXPECT_EQ(
+      CollectRecentClusterIds(IntToTime(0), IntToTime(200), kClusterCount + 1),
+      expected);
+  expected.pop_back();
+  EXPECT_EQ(
+      CollectRecentClusterIds(IntToTime(0), IntToTime(200), kClusterCount - 1),
+      expected);
 }
 
 TEST_F(VisitAnnotationsDatabaseTest,
