@@ -7,6 +7,7 @@
 
 import argparse
 import io
+import json
 import os
 import subprocess
 import unittest
@@ -30,6 +31,17 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
 
         self.gemini_cmd = ['/path/to/gemini']
         self.skill_path = Path('agents/skills/test-skill')
+
+    def _run_failing_link_core(self, project_root: Path) -> str:
+        with (
+            unittest.mock.patch('setup._PROJECT_ROOT', project_root),
+            unittest.mock.patch('sys.argv', ['setup.py', 'link', '--core']),
+            self.assertLogs(level='ERROR') as logs,
+            self.assertRaises(SystemExit) as error,
+        ):
+            setup.main()
+        self.assertEqual(error.exception.code, 1)
+        return '\n'.join(logs.output)
 
     def test_get_installed_skills(self):
         self.mock_run.return_value = unittest.mock.MagicMock(
@@ -186,8 +198,7 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
         )
 
     @unittest.mock.patch('setup.get_available_skills')
-    @unittest.mock.patch('setup.get_installed_skills')
-    def test_handle_link(self, _mock_inst, mock_avail):
+    def test_link_named_skills(self, mock_avail):
         project_root = Path('/root/src')
         self.fs.create_dir(project_root / '.agents' / 'skills')
         mock_avail.return_value = {
@@ -199,15 +210,255 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
             ),
         }
 
-        with unittest.mock.patch('setup._PROJECT_ROOT', project_root):
-            args = argparse.Namespace(names=['skill1', 'skill2'])
-            success = setup._handle_link(args)
+        with (
+            unittest.mock.patch('setup._PROJECT_ROOT', project_root),
+            unittest.mock.patch(
+                'sys.argv', ['setup.py', 'link', 'skill1', 'skill2']
+            ),
+        ):
+            setup.main()
 
-        self.assertTrue(success)
         skills_dir = project_root / '.agents' / 'skills'
         self.assertTrue((skills_dir).is_dir())
         self.assertTrue((skills_dir / 'skill1').is_symlink())
         self.assertTrue((skills_dir / 'skill2').is_symlink())
+
+    def test_link_core_uses_manifest_paths_and_adds_new_entries(self):
+        project_root = Path('/root/src').absolute()
+        shared_skills = project_root / 'agents' / 'shared' / 'skills'
+        other_skills = project_root / 'agents' / 'skills'
+        install_dir = project_root / '.agents' / 'skills'
+        manifest_path = project_root / 'agents' / 'core_skills.json'
+        core_entries = [
+            {'path': 'agents/shared/skills/core-a'},
+            {'path': 'agents/shared/skills/core-b'},
+            {'path': 'agents/shared/skills/core-c'},
+            {'path': 'agents/shared/skills/core-d'},
+        ]
+        self.fs.create_file(
+            manifest_path, contents=json.dumps({'entries': core_entries})
+        )
+        for skill_dir in (
+            shared_skills / 'core-a',
+            shared_skills / 'core-b',
+            shared_skills / 'core-c',
+            shared_skills / 'core-d',
+            shared_skills / 'promoted',
+            other_skills / 'core-a',
+            other_skills / 'core-c',
+            other_skills / 'opt-in',
+        ):
+            self.fs.create_file(skill_dir / 'SKILL.md')
+        self.fs.create_file(install_dir / 'core-b', contents='local entry')
+        (install_dir / 'core-c').symlink_to(
+            other_skills / 'core-c', target_is_directory=True
+        )
+        dangling_target = other_skills / 'core-d'
+        (install_dir / 'core-d').symlink_to(
+            dangling_target, target_is_directory=True
+        )
+
+        with (
+            unittest.mock.patch('setup._PROJECT_ROOT', project_root),
+            unittest.mock.patch(
+                'setup.SKILL_DIRS', [shared_skills, other_skills]
+            ),
+            unittest.mock.patch('sys.argv', ['setup.py', 'link', '--core']),
+        ):
+            with self.assertLogs(level='WARNING') as logs:
+                setup.main()
+            for name in ('core-b', 'core-c', 'core-d'):
+                self.assertIn(
+                    f'Expected a link to {shared_skills / name}.',
+                    '\n'.join(logs.output),
+                )
+            self.assertEqual(
+                (install_dir / 'core-a').readlink(), shared_skills / 'core-a'
+            )
+            self.assertFalse((install_dir / 'promoted').exists())
+            core_entries = [{'path': 'agents/shared/skills/promoted'}]
+            manifest_path.write_text(
+                json.dumps({'entries': core_entries}),
+                encoding='utf-8',
+                newline='',
+            )
+            setup.main()
+            with self.assertNoLogs(level='WARNING'):
+                setup.main()
+
+        self.assertEqual(
+            (install_dir / 'core-a').readlink(), shared_skills / 'core-a'
+        )
+        self.assertEqual(
+            (install_dir / 'promoted').readlink(), shared_skills / 'promoted'
+        )
+        self.assertEqual(
+            (install_dir / 'core-b').read_text(encoding='utf-8'),
+            'local entry',
+        )
+        self.assertEqual(
+            (install_dir / 'core-c').readlink(), other_skills / 'core-c'
+        )
+        self.assertEqual((install_dir / 'core-d').readlink(), dangling_target)
+        self.assertFalse((install_dir / 'opt-in').exists())
+        self.mock_get_cmd.assert_not_called()
+        self.mock_run.assert_not_called()
+
+    def test_link_core_reports_invalid_entries_and_links_valid_skill(self):
+        project_root = Path('/root/src').absolute()
+        missing_path = 'agents/shared/skills/missing'
+        invalid_unicode_path = 'agents/shared/skills/core\ud800'
+        external_path = 'agents/shared/skills/external'
+        external_file_path = 'agents/shared/skills/external-file'
+        valid_path = 'agents/shared/skills/core'
+        invalid_paths = (
+            r'agents\shared\skills\core',
+            '/agents/shared/skills/core',
+            'agents/../core',
+        )
+        self.fs.create_file(project_root / valid_path / 'SKILL.md')
+        outside = project_root.parent / 'other-checkout'
+        outside_skill_file = outside / 'SKILL.md'
+        self.fs.create_file(outside_skill_file)
+        (project_root / external_path).symlink_to(
+            outside, target_is_directory=True
+        )
+        self.fs.create_dir(project_root / external_file_path)
+        (project_root / external_file_path / 'SKILL.md').symlink_to(
+            outside_skill_file
+        )
+        entries = [
+            {},
+            *({'path': path} for path in invalid_paths),
+            {'path': invalid_unicode_path},
+            {'path': missing_path},
+            {'path': external_path},
+            {'path': external_file_path},
+            {'path': valid_path},
+        ]
+        self.fs.create_file(
+            project_root / 'agents' / 'core_skills.json',
+            contents=json.dumps({'entries': entries}),
+        )
+
+        messages = self._run_failing_link_core(project_root)
+        self.assertIn(
+            f'Core skill is missing SKILL.md: {missing_path}', messages
+        )
+        for path in invalid_paths:
+            self.assertIn(f'Invalid core skill path: {path}', messages)
+        self.assertIn(
+            f'Core skill path is not valid Unicode: {invalid_unicode_path!r}',
+            messages,
+        )
+        for path in (external_path, external_file_path):
+            self.assertIn(
+                f'Core skill path is outside the checkout: {path}', messages
+            )
+        self.assertIn('Expected a skill path in entry 1', messages)
+        self.assertEqual(
+            (project_root / '.agents' / 'skills' / 'core').readlink(),
+            project_root / valid_path,
+        )
+
+    def test_link_core_skips_duplicate_names_until_manifest_is_corrected(self):
+        project_root = Path('/root/src').absolute()
+        first_path = 'agents/shared/skills/core'
+        second_path = 'agents/skills/Core'
+        other_path = 'agents/shared/skills/other'
+        manifest_path = project_root / 'agents' / 'core_skills.json'
+        install_dir = project_root / '.agents' / 'skills'
+        paths = (first_path, second_path, other_path)
+        for path in paths:
+            self.fs.create_file(project_root / path / 'SKILL.md')
+        self.fs.create_file(
+            manifest_path,
+            contents=json.dumps({'entries': [{'path': p} for p in paths]}),
+        )
+
+        messages = self._run_failing_link_core(project_root)
+        self.assertIn(
+            f'Duplicate core skill name: {first_path}, {second_path}', messages
+        )
+        self.assertEqual(set(install_dir.iterdir()), {install_dir / 'other'})
+
+        manifest_path.write_text(
+            json.dumps({'entries': [{'path': second_path}]}),
+            encoding='utf-8',
+            newline='',
+        )
+        with (
+            unittest.mock.patch('setup._PROJECT_ROOT', project_root),
+            unittest.mock.patch('sys.argv', ['setup.py', 'link', '--core']),
+        ):
+            setup.main()
+
+        self.assertEqual(
+            (install_dir / 'Core').readlink(), project_root / second_path
+        )
+        self.assertEqual(
+            (install_dir / 'other').readlink(), project_root / other_path
+        )
+
+    def test_link_core_refuses_redirected_install_directory(self):
+        skill_path = 'agents/shared/skills/core'
+        for relative_dir in ('.agents', '.agents/skills'):
+            with self.subTest(relative_dir=relative_dir):
+                project_root = Path(
+                    '/root/src'
+                ).absolute() / relative_dir.replace('/', '-')
+                self.fs.create_file(project_root / skill_path / 'SKILL.md')
+                self.fs.create_file(
+                    project_root / 'agents' / 'core_skills.json',
+                    contents=json.dumps({'entries': [{'path': skill_path}]}),
+                )
+                install_path = project_root / relative_dir
+                install_path.parent.mkdir(parents=True, exist_ok=True)
+                redirect_target = project_root / 'agents' / 'redirect-target'
+                redirect_target.mkdir()
+                install_path.symlink_to(
+                    redirect_target, target_is_directory=True
+                )
+
+                messages = self._run_failing_link_core(project_root)
+                self.assertIn(
+                    f'Core skill install path must not redirect: {install_path}',
+                    messages,
+                )
+                self.assertEqual(install_path.readlink(), redirect_target)
+                self.assertFalse(any(redirect_target.iterdir()))
+
+    def test_link_core_reports_unreadable_or_malformed_manifest(self):
+        for case, contents, expected in (
+            ('missing', None, 'Cannot read core skill manifest'),
+            ('invalid-json', '{', 'Cannot read core skill manifest'),
+            ('missing-entries', '{}', 'Expected an entries list'),
+        ):
+            with self.subTest(case=case):
+                project_root = Path('/root/src').absolute() / case
+                manifest_path = project_root / 'agents' / 'core_skills.json'
+                manifest_path.parent.mkdir(parents=True)
+                if contents is not None:
+                    manifest_path.write_text(
+                        contents, encoding='utf-8', newline=''
+                    )
+
+                self.assertIn(
+                    expected, self._run_failing_link_core(project_root)
+                )
+
+    def test_link_requires_one_selection_mode(self):
+        for args in ([], ['--core', 'skill1']):
+            with self.subTest(args=args):
+                with (
+                    unittest.mock.patch(
+                        'sys.argv', ['setup.py', 'link', *args]
+                    ),
+                    unittest.mock.patch('sys.stderr', new_callable=io.StringIO),
+                    self.assertRaises(SystemExit) as error,
+                ):
+                    setup.main()
+                self.assertEqual(error.exception.code, 2)
 
     def test_handle_list(self):
         # Mock get_installed_skills and get_available_skills
@@ -442,7 +693,7 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
         self.assertEqual(available['my-skill'].path, skill_v2)
 
     @unittest.mock.patch('setup.get_available_skills')
-    def test_handle_link_collision(self, mock_avail):
+    def test_link_skills_collision(self, mock_avail):
         project_root = Path('/root/src')
         link_path = project_root / '.agents' / 'skills' / 'skill1'
         self.fs.create_dir(project_root / '.agents' / 'skills')
@@ -455,9 +706,9 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
         }
 
         with unittest.mock.patch('setup._PROJECT_ROOT', project_root):
-            args = argparse.Namespace(names=['skill1'])
-            success = setup._handle_link(args)
+            success = setup.link_skills(['skill1'])
         self.assertTrue(success)
+        self.assertFalse(link_path.is_symlink())
 
     @unittest.mock.patch('setup.get_installed_skills')
     def test_handle_uninstall_missing_path(self, mock_inst):
@@ -476,7 +727,7 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
         self.assertTrue(success)
 
     @unittest.mock.patch('setup.get_available_skills')
-    def test_handle_link_creates_parent_dir(self, mock_avail):
+    def test_link_skills_creates_parent_dir(self, mock_avail):
         project_root = Path('/root/src')
         # .agents/skills does NOT exist
 
@@ -487,8 +738,7 @@ class TestSkillsSetup(fake_filesystem_unittest.TestCase):
         }
 
         with unittest.mock.patch('setup._PROJECT_ROOT', project_root):
-            args = argparse.Namespace(names=['skill1'])
-            success = setup._handle_link(args)
+            success = setup.link_skills(['skill1'])
 
         self.assertTrue(success)
         self.assertTrue((project_root / '.agents' / 'skills').is_dir())

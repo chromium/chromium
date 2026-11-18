@@ -13,14 +13,15 @@ are implemented with the Gemini CLI and require it to be installed.
 import argparse
 import copy
 import functools
+import json
 import logging
-import re
 import os
+import re
 import subprocess
 import sys
 from collections.abc import Iterable
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SKILL_DIRS = [
@@ -229,7 +230,159 @@ def list_skills() -> bool:
 
 
 def _handle_link(args: argparse.Namespace) -> bool:
+    if args.core:
+        return _link_core_skills()
     return link_skills(args.names)
+
+
+def _skill_install_dir() -> Path:
+    return _PROJECT_ROOT / '.agents' / 'skills'
+
+
+def _link_skill(path: Path, *, warn_on_conflict: bool = False) -> None:
+    logging.info('Linking skill: %s', path.name)
+    link = _skill_install_dir() / path.name
+    link.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        link.symlink_to(path, target_is_directory=True)
+    except FileExistsError:
+        if warn_on_conflict and not _is_link_to_skill(link, path):
+            logging.warning(
+                'Leaving existing skill entry "%s" unchanged. '
+                'Expected a link to %s.',
+                link.name,
+                path,
+            )
+        else:
+            logging.info('Skill entry "%s" already exists.', link.name)
+
+
+def _is_link_to_skill(link: Path, path: Path) -> bool:
+    if not link.is_symlink():
+        return False
+    try:
+        return link.samefile(path)
+    except OSError:
+        return False
+
+
+def _parse_core_skill_path(raw_path: str) -> Path | None:
+    # JSON can decode escaped, unpaired surrogates.
+    try:
+        raw_path.encode('utf-8')
+    except UnicodeEncodeError:
+        logging.error('Core skill path is not valid Unicode: %r', raw_path)
+        return None
+
+    relative_path = PurePosixPath(raw_path)
+    if (
+        relative_path.anchor
+        or not relative_path.name
+        or '..' in relative_path.parts
+        or '\\' in raw_path
+        or ':' in raw_path
+        or '\0' in raw_path
+    ):
+        logging.error('Invalid core skill path: %s', raw_path)
+        return None
+
+    return _PROJECT_ROOT.joinpath(*relative_path.parts)
+
+
+def _is_core_skill_source(path: Path, raw_path: str) -> bool:
+    try:
+        directory = path.resolve()
+        skill_file = directory / 'SKILL.md'
+        if not (
+            directory.is_relative_to(_PROJECT_ROOT)
+            and skill_file.resolve().is_relative_to(_PROJECT_ROOT)
+        ):
+            logging.error(
+                'Core skill path is outside the checkout: %s', raw_path
+            )
+            return False
+        if not skill_file.is_file():
+            logging.error('Core skill is missing SKILL.md: %s', raw_path)
+            return False
+    except (OSError, RuntimeError) as error:
+        logging.error('Cannot inspect core skill %s: %s', raw_path, error)
+        return False
+    return True
+
+
+def _is_core_install_dir_local() -> bool:
+    install_dir = _skill_install_dir()
+    for directory in (install_dir.parent, install_dir):
+        try:
+            if directory.is_symlink() or directory.resolve() != directory:
+                logging.error(
+                    'Core skill install path must not redirect: %s', directory
+                )
+                return False
+            if directory.exists() and not directory.is_dir():
+                logging.error(
+                    'Core skill install path is not a directory: %s', directory
+                )
+                return False
+        except (OSError, RuntimeError) as error:
+            logging.error(
+                'Cannot inspect install path %s: %s', directory, error
+            )
+            return False
+    return True
+
+
+def _link_core_skills() -> bool:
+    """Links the skill directories listed in the core manifest."""
+    manifest_path = _PROJECT_ROOT / 'agents' / 'core_skills.json'
+    try:
+        with manifest_path.open(encoding='utf-8') as manifest:
+            data = json.load(manifest)
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+        logging.error(
+            'Cannot read core skill manifest %s: %s', manifest_path, error
+        )
+        return False
+
+    entries = data.get('entries') if isinstance(data, dict) else None
+    if not isinstance(entries, list):
+        logging.error('Expected an entries list in %s', manifest_path)
+        return False
+    if not _is_core_install_dir_local():
+        return False
+
+    success = True
+    paths_by_name: dict[str, list[tuple[str, Path]]] = {}
+    for index, entry in enumerate(entries, start=1):
+        raw_path = entry.get('path') if isinstance(entry, dict) else None
+        if not isinstance(raw_path, str):
+            logging.error(
+                'Expected a skill path in entry %d of %s', index, manifest_path
+            )
+            success = False
+            continue
+        path = _parse_core_skill_path(raw_path)
+        if path is None:
+            success = False
+            continue
+        paths_by_name.setdefault(path.name.casefold(), []).append(
+            (raw_path, path)
+        )
+
+    for candidates in paths_by_name.values():
+        if len(candidates) > 1:
+            logging.error(
+                'Duplicate core skill name: %s',
+                ', '.join(raw_path for raw_path, _ in candidates),
+            )
+            success = False
+            continue
+        raw_path, path = candidates[0]
+        if not _is_core_skill_source(path, raw_path):
+            success = False
+            continue
+        _link_skill(path, warn_on_conflict=True)
+    return success
 
 
 def link_skills(names: list[str]) -> bool:
@@ -237,23 +390,12 @@ def link_skills(names: list[str]) -> bool:
     available = get_available_skills()
     success = True
     for name in names:
-        logging.info('Linking skill: %s', name)
         skill = available.get(name)
-        if not skill:
+        if not skill or skill.path is None:
             logging.error('Error: Skill "%s" not found.', name)
             success = False
             continue
-        # Symlink to .agents/skills
-        target_dir = _PROJECT_ROOT / '.agents' / 'skills'
-        target_dir.mkdir(parents=True, exist_ok=True)
-        try:
-            os.symlink(
-                skill.path,
-                _PROJECT_ROOT / '.agents' / 'skills' / skill.name,
-                True,
-            )
-        except FileExistsError:
-            logging.info('Skill "%s" is already linked.', name)
+        _link_skill(skill.path)
     return success
 
 
@@ -283,7 +425,7 @@ def _unlink_local_skill(name: str) -> bool:
     """
     if not _is_local_link_name(name):
         return False
-    link = _PROJECT_ROOT / '.agents' / 'skills' / name
+    link = _skill_install_dir() / name
     # Only unlink. Do not delete as it risks permanently losing files.
     if not link.is_symlink():
         return False
@@ -371,12 +513,23 @@ def main() -> None:
     )
     list_parser.set_defaults(func=_handle_list)
 
-    # Common parser for commands that take skill names as arguments.
+    link_parser = subparsers.add_parser(
+        'link', help='Link skills into .agents/skills'
+    )
+    link_selection = link_parser.add_mutually_exclusive_group(required=True)
+    link_selection.add_argument(
+        '--core', action='store_true', help='Link skills from core_skills.json'
+    )
+    link_selection.add_argument(
+        'names', nargs='*', default=[], help='Names of the skills'
+    )
+    link_parser.set_defaults(func=_handle_link)
+
+    # Common parser for commands that always take skill names.
     names_parser = argparse.ArgumentParser(add_help=False)
     names_parser.add_argument('names', nargs='+', help='Names of the skills')
 
     for cmd, help_text, handler in [
-        ('link', 'Link skills into .agents/skills', _handle_link),
         ('uninstall', 'Uninstall skills or local links', _handle_uninstall),
         ('enable', 'Enable skills (requires Gemini CLI)', _handle_enable),
         ('disable', 'Disable skills (requires Gemini CLI)', _handle_disable),

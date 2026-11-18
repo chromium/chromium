@@ -13,7 +13,21 @@ See https://agentskills.io/ for general information about the agent skills.
 ### Local agents that read `.agents/skills`
 
 Agents that discover skills in `.agents/skills`, such as Gemini CLI and GitHub
-Copilot, can use the setup script to link skills from this directory:
+Copilot, can use the setup script to link skills from the checkout. To link the
+core skills listed in [`agents/core_skills.json`](../core_skills.json), run this
+command from the root of the checkout:
+
+```sh
+agents/skills/setup.py link --core
+```
+
+Run the command again after updating your checkout to add any new core skills.
+The command does not overwrite existing entries or remove links. If an entry
+prevents the command from linking a core skill, it warns and leaves the entry
+unchanged. If manifest entries share a skill name, the command reports an error
+and skips that name. It does not install core skills through a redirected
+`.agents/skills` directory. To link or uninstall individual skills, use their
+names:
 
 ```sh
 agents/skills/setup.py link gerrit-cli histograms
