@@ -2427,6 +2427,32 @@ TEST_F(StyleResolverTest, AnchorQueryStoreOldStyle) {
   EXPECT_EQ(1u, GetCurrentOldStylesCount());
 }
 
+TEST_F(StyleResolverTest, AnchorQueryStoreOldStyleWithActiveAnimations) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #anchored {
+        position: absolute;
+        left: anchor(--a left, 42px);
+      }
+    </style>
+    <div id=anchored>A</div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* anchored = GetElementById("anchored");
+  const ComputedStyle* old_style = anchored->GetComputedStyle();
+  ASSERT_FALSE(old_style->CanAffectAnimations());
+
+  auto* effect = CreateSimpleKeyframeEffectForTest(
+      anchored, CSSPropertyID::kWidth, "50px", "100px");
+  GetDocument().Timeline().Play(effect);
+
+  PostStyleUpdateScope post_style_update_scope(GetDocument());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(1u, GetCurrentOldStylesCount());
+  EXPECT_EQ(old_style, PostStyleUpdateScope::GetOldStyle(*anchored));
+  post_style_update_scope.Apply();
+}
+
 TEST_F(StyleResolverTest, AnchorQueryBaseComputedStyle) {
   GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>

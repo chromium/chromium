@@ -194,7 +194,10 @@ bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
   // descendant explicitly inherits insets or other valid @position-try
   // properties from the element with position-try-fallbacks. This applies to
   // descendants of elements with anchor queries as well.
+  // Removing animation or transition declarations can still cancel existing
+  // effects, so those also need a consistent old style.
   LocalFrameView* frame_view = state.GetDocument().View();
+  const Element& animating_element = *state.GetAnimatingElement();
   return ((frame_view && frame_view->IsAutoSizeModeEnabled()) ||
           style_recalc_context.size_container ||
           style_recalc_context.has_anchored_container ||
@@ -206,7 +209,7 @@ bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
            (state.ParentStyle()->HasAnchorFunctions() ||
             state.ParentStyle()->PositionAnchor().IsName())) ||
           state.StyleBuilder().GetPositionTryFallbacks() != nullptr) &&
-         state.CanAffectAnimations();
+         (state.CanAffectAnimations() || animating_element.HasAnimations());
 }
 
 bool ShouldSetPendingUpdate(StyleResolverState& state, Element& element) {
