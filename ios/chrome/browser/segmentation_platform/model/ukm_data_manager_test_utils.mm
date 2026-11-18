@@ -118,9 +118,6 @@ void UkmDataManagerTestUtils::SetupForProfile(ProfileIOS* profile) {
   CHECK_EQ(ukm_database_client_.get(),
            &UkmDatabaseClientHolder::GetClientInstance(profile));
   history_service_ = ios::HistoryServiceFactory::GetForProfile(profile);
-  // Create the platform to kick off initialization.
-  segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
-      profile);
 }
 
 void UkmDataManagerTestUtils::WillDestroyProfile(ProfileIOS* profile) {
