@@ -18,16 +18,16 @@ namespace {
 
 // Wraps `testing_factory` as a KeyedServiceFactory::TestingFactory.
 base::OnceCallback<std::unique_ptr<KeyedService>(void*)> WrapFactory(
-    KeyedServiceTestingFactoryIOS testing_factory) {
+    ProfileKeyedServiceFactoryIOS::TestingFactory testing_factory) {
   if (!testing_factory) {
     return {};
   }
 
   return base::BindOnce(
-      [](KeyedServiceTestingFactoryIOS testing_factory,
+      [](ProfileKeyedServiceFactoryIOS::TestingFactory factory,
          void* context) -> std::unique_ptr<KeyedService> {
-        return std::move(testing_factory)
-            .Run(CHECK_DEREF(static_cast<ProfileIOS*>(context)));
+        return std::move(factory).Run(
+            CHECK_DEREF(static_cast<ProfileIOS*>(context)));
       },
       std::move(testing_factory));
 }

@@ -41,9 +41,7 @@ source_set("test") {
 }
 
 source_set("testing_factories") {
-  # This target is not testonly since it is used by the
-  # {Refcounted,}ProfileKeyedServiceFactoryIOS headers.
-  testonly = false
+  testonly = true
   sources = [ "testing_factories.h" ]
   deps = [
     "//base",

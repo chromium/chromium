@@ -48,9 +48,17 @@ class TestProfileIOS final : public ProfileIOS {
   // as testing factory which can simplify the factory when creating a
   // simple test double.
   struct TestingFactory {
-    template <typename ServiceFactory, typename TestingFactory>
+    template <typename ServiceFactory, typename ReturnType>
     TestingFactory(ServiceFactory* service_factory,
-                   TestingFactory testing_factory)
+                   base::OnceCallback<ReturnType(ProfileIOS&)> testing_factory)
+        : service_factory_and_testing_factory(
+              std::make_pair(service_factory,
+                             ::ios::test::internal::AdaptTestingFactory(
+                                 std::move(testing_factory)))) {}
+
+    template <typename ServiceFactory, typename ReturnType>
+    TestingFactory(ServiceFactory* service_factory,
+                   base::OnceCallback<ReturnType()> testing_factory)
         : service_factory_and_testing_factory(
               std::make_pair(service_factory,
                              ::ios::test::internal::AdaptTestingFactory(
@@ -163,9 +171,18 @@ class TestProfileIOS final : public ProfileIOS {
 
     // Adds a testing factory to the TestProfileIOS. These testing factories
     // are installed before the Profile's KeyedServices are created.
-    template <typename ServiceFactory, typename TestingFactory>
-    Builder& AddTestingFactory(ServiceFactory* service_factory,
-                               TestingFactory testing_factory) {
+    template <typename ServiceFactory, typename ReturnType>
+    Builder& AddTestingFactory(
+        ServiceFactory* service_factory,
+        base::OnceCallback<ReturnType(ProfileIOS&)> testing_factory) {
+      testing_factories_.emplace_back(service_factory,
+                                      std::move(testing_factory));
+      return *this;
+    }
+    template <typename ServiceFactory, typename ReturnType>
+    Builder& AddTestingFactory(
+        ServiceFactory* service_factory,
+        base::OnceCallback<ReturnType()> testing_factory) {
       testing_factories_.emplace_back(service_factory,
                                       std::move(testing_factory));
       return *this;

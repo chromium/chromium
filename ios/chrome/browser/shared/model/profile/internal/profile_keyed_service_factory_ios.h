@@ -13,7 +13,6 @@
 #include "base/types/pass_key.h"
 #include "components/keyed_service/core/keyed_service_factory.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_traits.h"
-#include "ios/chrome/browser/shared/model/profile/test/testing_factories.h"
 
 class ProfileIOS;
 class RefcountedProfileKeyedServiceFactoryIOS;
@@ -65,7 +64,8 @@ class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
   // A callback that returns the instance of a KeyedService for a given
   // ProfileIOS instance. This is used for testing where the test wants
   // to create a specific test double for a service.
-  using TestingFactory = KeyedServiceTestingFactoryIOS;
+  using TestingFactory =
+      base::OnceCallback<std::unique_ptr<KeyedService>(ProfileIOS&)>;
 
   // Constructor accepts zero or more traits.
   template <typename... Traits>

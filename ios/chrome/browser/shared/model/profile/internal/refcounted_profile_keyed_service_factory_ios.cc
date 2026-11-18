@@ -18,16 +18,16 @@ namespace {
 
 // Wraps `testing_factory` as a RefcountedKeyedServiceFactory::TestingFactory.
 base::OnceCallback<scoped_refptr<RefcountedKeyedService>(void*)> WrapFactory(
-    RefcountedKeyedServiceTestingFactoryIOS testing_factory) {
+    RefcountedProfileKeyedServiceFactoryIOS::TestingFactory testing_factory) {
   if (!testing_factory) {
     return {};
   }
 
   return base::BindOnce(
-      [](RefcountedKeyedServiceTestingFactoryIOS testing_factory,
+      [](RefcountedProfileKeyedServiceFactoryIOS::TestingFactory factory,
          void* context) -> scoped_refptr<RefcountedKeyedService> {
-        return std::move(testing_factory)
-            .Run(CHECK_DEREF(static_cast<ProfileIOS*>(context)));
+        return std::move(factory).Run(
+            CHECK_DEREF(static_cast<ProfileIOS*>(context)));
       },
       std::move(testing_factory));
 }

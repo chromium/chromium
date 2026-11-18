@@ -21,7 +21,6 @@ source_set("internal") {
     "//components/keyed_service/core",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_traits",
-    "//ios/chrome/browser/shared/model/profile/test:testing_factories",
   ]
 }
 

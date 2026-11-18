@@ -77,53 +77,6 @@ base::OnceCallback<SmartPtr<Base>(ProfileIOS&)> AdaptTestingFactory(
   return AdaptTestingFactory(base::IgnoreArgs<ProfileIOS&>(std::move(factory)));
 }
 
-// Adapts `factory` to conforms to {Refcounted,}KeyedServiceTestingFactoryIOS.
-//
-// Converts callback taking `ProfileIOS*` into a callback taking `ProfileIOS&`
-// (thus allowing incremental migration of the tests from the old API).
-//
-// TODO(crbug.com/576182342): Remove once all tests have been converted to use
-// factories that accept a ProfileIOS& or no-parameters.
-template <typename Type,
-          template <class> class SmartPtr,
-          typename Base = std::conditional_t<base::IsRefCountedType<Type>,
-                                             RefcountedKeyedService,
-                                             KeyedService>>
-  requires std::convertible_to<Type*, Base*>
-base::OnceCallback<SmartPtr<Base>(ProfileIOS&)> AdaptTestingFactory(
-    base::OnceCallback<SmartPtr<Type>(ProfileIOS*)> factory) {
-  if (!factory) {
-    return {};
-  }
-
-  return base::BindOnce(
-      [](base::OnceCallback<SmartPtr<Type>(ProfileIOS*)> factory,
-         ProfileIOS& profile) -> SmartPtr<Base> {
-        return std::move(factory).Run(&profile);
-      },
-      std::move(factory));
-}
-
-// Adapts `factory` to conforms to {Refcounted,}KeyedServiceTestingFactoryIOS.
-//
-// Converts a repeating callback into a once callback (as implicit conversions
-// are ignored when performing type deductions in template instantiations).
-//
-// TODO(crbug.com/576182342): Remove once all tests have been converted to use
-// base::BindOnce(...) to create their factories.
-template <typename Type,
-          typename... Args,
-          template <class> class SmartPtr,
-          typename Base = std::conditional_t<base::IsRefCountedType<Type>,
-                                             RefcountedKeyedService,
-                                             KeyedService>>
-  requires std::convertible_to<Type*, Base*>
-base::OnceCallback<SmartPtr<Base>(ProfileIOS&)> AdaptTestingFactory(
-    base::RepeatingCallback<SmartPtr<Type>(Args...)> factory) {
-  return AdaptTestingFactory(
-      base::OnceCallback<SmartPtr<Type>(Args...)>(std::move(factory)));
-}
-
 }  // namespace ios::test::internal
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_TEST_TESTING_FACTORIES_H_
