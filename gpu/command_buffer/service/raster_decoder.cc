@@ -22,6 +22,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -170,16 +171,23 @@ class ScopedGLErrorSuppressor {
 // BeginRasterCHROMIUM and EndRasterCHROMIUM. They do not invalidate
 // GrDirectContext state tracking.
 bool AllowedBetweenBeginEndRaster(CommandId command) {
+  // Kill switch, remove after M160 stable.
+  static BASE_FEATURE(kAllowFlushDuringBeginEndRaster,
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  static bool allow_flush_during_begin_end_raster =
+      base::FeatureList::IsEnabled(kAllowFlushDuringBeginEndRaster);
+
   switch (command) {
     case kCreateTransferCacheEntryINTERNAL:
     case kDeleteTransferCacheEntryINTERNAL:
     case kEndRasterCHROMIUM:
-    case kFinish:
-    case kFlush:
     case kGetError:
     case kRasterCHROMIUM:
     case kUnlockTransferCacheEntryINTERNAL:
       return true;
+    case kFinish:
+    case kFlush:
+      return allow_flush_during_begin_end_raster;
     default:
       return false;
   }
