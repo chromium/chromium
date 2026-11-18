@@ -66,9 +66,10 @@ ToProtoVerbalization(ToolDefinition::Verbalization verbalization) {
 }
 
 // Encodes `response` as the JSON object the server expects: successful calls
-// report {"status": "ok"} alongside any tool-specific values, and failures
-// report {"error": {"message": <message>, "code": <numeric actor error code>}},
-// where each of `message` and `code` is present only if set on the error.
+// report {"status": "ok"} alongside any tool-specific values, unless the tool
+// reports a "status" of its own, and failures report
+// {"error": {"message": <message>, "code": <numeric actor error code>}}, where
+// each of `message` and `code` is present only if set on the error.
 base::DictValue ToResponseDict(ToolResponse response) {
   if (!response.Ok()) {
     const ToolError& error = response.error();
@@ -91,7 +92,11 @@ base::DictValue ToResponseDict(ToolResponse response) {
   }
 
   base::DictValue dict = std::move(response).TakeResult();
-  dict.Set("status", "ok");
+  // A tool's own status says more than "ok", e.g. get_pointer's
+  // "no_active_pointer". The server tells failures by the "error" key.
+  if (!dict.contains("status")) {
+    dict.Set("status", "ok");
+  }
   return dict;
 }
 

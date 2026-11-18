@@ -682,6 +682,30 @@ TEST_F(TtcMesClientTest, ToolResponseWithoutImageSendsNoImage) {
   EXPECT_EQ(debug_sink_.last_response_image_bytes, 0u);
 }
 
+TEST_F(TtcMesClientTest, ToolResponseWithoutStatusIsSentAsOk) {
+  client().HandleServerFrame(MakeToolCallFrame("call-1", "{}"));
+  observer_.TakeToolResponseCallback().Run(
+      ToolResponse::Success(base::DictValue().Set("width", 2)));
+
+  EXPECT_EQ(base::JSONReader::ReadDict(
+                last_sent_frame().tool_response().response_json(),
+                base::JSON_PARSE_RFC),
+            base::DictValue().Set("width", 2).Set("status", "ok"));
+}
+
+// A tool's own status, such as get_pointer's "no_active_pointer", reaches the
+// server.
+TEST_F(TtcMesClientTest, ToolResponseKeepsStatusOfTool) {
+  client().HandleServerFrame(MakeToolCallFrame("call-1", "{}"));
+  observer_.TakeToolResponseCallback().Run(ToolResponse::Success(
+      base::DictValue().Set("status", "no_active_pointer")));
+
+  EXPECT_EQ(base::JSONReader::ReadDict(
+                last_sent_frame().tool_response().response_json(),
+                base::JSON_PARSE_RFC),
+            base::DictValue().Set("status", "no_active_pointer"));
+}
+
 // The error response is the only report of the rejection.
 TEST_F(TtcMesClientTest, ToolCallWithInvalidJsonIsAnsweredWithError) {
   client().HandleServerFrame(MakeToolCallFrame("call-2", "{not json"));
