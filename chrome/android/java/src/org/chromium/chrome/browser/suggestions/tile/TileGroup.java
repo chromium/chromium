@@ -438,6 +438,14 @@ public class TileGroup implements MostVisitedSites.Observer {
         reloadTilesFromCurrentSuggestions();
     }
 
+    @Override
+    public void onAiModeTileIndexChanged() {
+        // This is the only path that applies AI Mode tile index writes to the UI, both for this
+        // NTP and for other live NTPs. Code reached from here must never write
+        // NTP_MVT_AI_MODE_TILE_INDEX, or the preference listener would re-enter this method.
+        reloadTilesFromCurrentSuggestions();
+    }
+
     /**
      * Re-runs {@link #loadTiles()} on the most recently loaded suggestions so the AI Mode tile is
      * re-evaluated (shown, updated, or hidden) without a new native suggestion delivery. Any
@@ -1089,20 +1097,17 @@ public class TileGroup implements MostVisitedSites.Observer {
             int savedAiIndex =
                     prefs.readInt(
                             ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, /* defaultValue= */ 0);
+            // Only updates the preference here. The listener in TileGroupDelegateImpl reacts to the
+            // write by calling onAiModeTileIndexChanged() on every live NTP, including this one, so
+            // the AI Mode tile is removed (or restored on Undo) everywhere.
             prefs.writeInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, /* value= */ -1);
             RecordUserAction.record("Suggestions.AIM.Unpinned");
-
-            // Writing the preference alone does not reload tiles (there is no native call here to
-            // trigger loadTiles()), so re-run loadTiles() on the cached suggestions to drop the
-            // AI Mode tile from the UI.
-            reloadTilesFromCurrentSuggestions();
 
             mTileGroupDelegate.showTileRemovedSnackbar(
                     () -> {
                         prefs.writeInt(
                                 ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, savedAiIndex);
                         RecordUserAction.record("Suggestions.AIM.UndoUnpin");
-                        reloadTilesFromCurrentSuggestions();
                     });
         }
 

@@ -50,6 +50,14 @@ public interface MostVisitedSites extends CustomLinkOperations {
          * the observer should rebuild tiles from the last list it received.
          */
         default void onAiModeTileConfigChanged() {}
+
+        /**
+         * This is called when the AI Mode tile's stored index changed, including from another NTP
+         * (e.g. the other half of a split screen) removing, restoring, or moving the tile. The site
+         * suggestions themselves are unchanged, so the observer should rebuild tiles from the last
+         * list it received.
+         */
+        default void onAiModeTileIndexChanged() {}
     }
 
     /** An interface to provide {@link MostVisitedSites} with platform-specific home page data. */

@@ -803,7 +803,11 @@ public class TileGroupUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
-    public void testAiModeTile_removeAndUndo() {
+    public void testAiModeTile_removeAndUndo_writesPreferenceOnly() {
+        // Verifies that removing the AI Mode tile and undoing it only write the stored index.
+        // Applying the index to the UI is the job of onAiModeTileIndexChanged(), which the real
+        // TileGroupDelegateImpl calls from its preference listener (mocked out here); that path is
+        // covered by testAiModeTile_onAiModeTileIndexChangedAppliesPrefWrites().
         enableAiModeTileInsideMvt();
         SiteSuggestion[] sites = createSiteSuggestions(8);
 
@@ -826,22 +830,12 @@ public class TileGroupUnitTest {
                         .readInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, 0));
         assertEquals(1, mUserActionTester.getActionCount("Suggestions.AIM.Unpinned"));
         assertEquals(0, mUserActionTester.getActionCount("Suggestions.AIM.UndoUnpin"));
-        verify(mTileGroupObserver).onTileCountChanged();
-        verify(mTileGroupObserver).onTileDataChanged();
-
-        tiles = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
-        assertThat(tiles).isNotNull();
-        assertEquals(8, tiles.size());
-        for (int i = 0; i < 8; i++) {
-            assertFalse(tiles.get(i).isAiMode());
-            assertEquals("Site " + i, tiles.get(i).getTitle());
-            assertEquals(i, tiles.get(i).getIndex());
-        }
+        verify(mTileGroupObserver, never()).onTileCountChanged();
+        verify(mTileGroupObserver, never()).onTileDataChanged();
 
         ArgumentCaptor<Runnable> undoCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mTileGroupDelegate).showTileRemovedSnackbar(undoCaptor.capture());
 
-        reset(mTileGroupObserver);
         undoCaptor.getValue().run();
 
         assertEquals(
@@ -850,14 +844,8 @@ public class TileGroupUnitTest {
                         .readInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, -1));
         assertEquals(1, mUserActionTester.getActionCount("Suggestions.AIM.Unpinned"));
         assertEquals(1, mUserActionTester.getActionCount("Suggestions.AIM.UndoUnpin"));
-        verify(mTileGroupObserver).onTileCountChanged();
-        verify(mTileGroupObserver).onTileDataChanged();
-
-        tiles = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
-        assertThat(tiles).isNotNull();
-        assertEquals(9, tiles.size());
-        assertTrue(tiles.get(0).isAiMode());
-        assertEquals(0, tiles.get(0).getIndex());
+        verify(mTileGroupObserver, never()).onTileCountChanged();
+        verify(mTileGroupObserver, never()).onTileDataChanged();
     }
 
     @Test
@@ -1046,6 +1034,56 @@ public class TileGroupUnitTest {
         }
         verify(mTileGroupObserver).onTileCountChanged();
         verify(mTileGroupObserver).onTileDataChanged();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
+    public void testAiModeTile_onAiModeTileIndexChangedAppliesPrefWrites() {
+        // Verifies that onAiModeTileIndexChanged() re-reads the stored index from the cached
+        // suggestions, so an index written by this or another NTP (e.g. split screen) removes,
+        // moves, or restores the AI Mode tile without a new native delivery.
+        enableAiModeTileInsideMvt();
+        // One custom link so that index 1 is a valid AI Mode tile position (the tile is clamped
+        // to the custom-link range).
+        SiteSuggestion[] sites = new SiteSuggestion[2];
+        sites[0] = createCustomLinkSiteSuggestion("Custom 0", JUnitTestGURLs.URL_2.getSpec());
+        sites[1] = createSiteSuggestion("Organic 0", JUnitTestGURLs.RED_1.getSpec());
+        TileGroup tileGroup = initializeTileGroup(SuggestionsConfig.MAX_TILE_COUNT + 1, sites);
+        when(mSuggestionsUiDelegate.isVisible()).thenReturn(true);
+        assertTrue(getPersonalizedTiles(tileGroup).get(0).isAiMode());
+
+        // 1. Another NTP removes the tile.
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, -1);
+        reset(mTileGroupObserver);
+        tileGroup.onAiModeTileIndexChanged();
+
+        List<Tile> tiles = getPersonalizedTiles(tileGroup);
+        assertEquals(sites.length, tiles.size());
+        for (Tile tile : tiles) {
+            assertFalse(tile.isAiMode());
+        }
+        verify(mTileGroupObserver).onTileCountChanged();
+        verify(mTileGroupObserver).onTileDataChanged();
+
+        // 2. Another NTP restores the tile at a different index.
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, 1);
+        reset(mTileGroupObserver);
+        tileGroup.onAiModeTileIndexChanged();
+
+        tiles = getPersonalizedTiles(tileGroup);
+        assertEquals(sites.length + 1, tiles.size());
+        assertFalse(tiles.get(0).isAiMode());
+        assertTrue(tiles.get(1).isAiMode());
+        verify(mTileGroupObserver).onTileCountChanged();
+        verify(mTileGroupObserver).onTileDataChanged();
+
+        // 3. A redundant notification with no index change is a no-op.
+        reset(mTileGroupObserver);
+        tileGroup.onAiModeTileIndexChanged();
+        verify(mTileGroupObserver, never()).onTileCountChanged();
+        verify(mTileGroupObserver, never()).onTileDataChanged();
     }
 
     @Test

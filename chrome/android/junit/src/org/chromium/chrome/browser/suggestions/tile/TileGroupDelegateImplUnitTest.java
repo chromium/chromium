@@ -41,6 +41,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -49,8 +50,11 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils.LayoutType;
 import org.chromium.chrome.browser.omnibox.SearchEngineService;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -145,6 +149,10 @@ public class TileGroupDelegateImplUnitTest {
         // testDestroy_RemovesAiModeSupplierObservers destroys the delegate itself and nulls the
         // field.
         if (mTileGroupDelegateImpl != null) mTileGroupDelegateImpl.destroy();
+        // Clears the key only after destroy() unregisters the AI Mode tile index preference
+        // listener, so removeKey() does not notify the mocked observer.
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX);
     }
 
     @Test
@@ -385,6 +393,58 @@ public class TileGroupDelegateImplUnitTest {
 
         assertFalse(mAiModeButtonUiConfigSupplier.hasObservers());
         assertFalse(mAiModeButtonIconSupplier.hasObservers());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
+    public void testAiModeTileIndexPrefListener_NotifiesIndexChanged() {
+        // Verifies that a write to the AI Mode tile index preference (e.g. the tile being removed
+        // or restored on another NTP in split screen) notifies TileGroup via
+        // onAiModeTileIndexChanged(), while writes to unrelated keys do not.
+        mTileGroupDelegateImpl.setMostVisitedSitesObserver(mMostVisitedSitesObserver, MAX_RESULTS);
+        clearInvocations(mMostVisitedSitesObserver);
+
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, -1);
+        verify(mMostVisitedSitesObserver).onAiModeTileIndexChanged();
+
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, 2);
+        verify(mMostVisitedSitesObserver, times(2)).onAiModeTileIndexChanged();
+
+        // Bypasses ChromeSharedPreferences so the unrelated key does not need to be registered.
+        ContextUtils.getAppSharedPreferences().edit().putBoolean("unrelated_key", true).apply();
+        verify(mMostVisitedSitesObserver, times(2)).onAiModeTileIndexChanged();
+        verify(mMostVisitedSitesObserver, never()).onAiModeTileConfigChanged();
+        verify(mMostVisitedSitesObserver, never()).onSiteSuggestionsAvailable(anyBoolean(), any());
+    }
+
+    @Test
+    public void testAiModeTileIndexPrefListener_NotRegisteredWhenTileNotInsideMvt() {
+        // Verifies that without the inside-MVT layout the delegate does not listen to the AI Mode
+        // tile index preference at all.
+        mTileGroupDelegateImpl.setMostVisitedSitesObserver(mMostVisitedSitesObserver, MAX_RESULTS);
+        clearInvocations(mMostVisitedSitesObserver);
+
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, -1);
+        verify(mMostVisitedSitesObserver, never()).onAiModeTileIndexChanged();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
+    public void testDestroy_UnregistersAiModeTileIndexPrefListener() {
+        // Verifies that destroy() unregisters the preference listener so a later write from
+        // another NTP cannot reach a destroyed TileGroup.
+        mTileGroupDelegateImpl.setMostVisitedSitesObserver(mMostVisitedSitesObserver, MAX_RESULTS);
+        clearInvocations(mMostVisitedSitesObserver);
+
+        mTileGroupDelegateImpl.destroy();
+        mTileGroupDelegateImpl = null;
+
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, -1);
+        verify(mMostVisitedSitesObserver, never()).onAiModeTileIndexChanged();
     }
 
     private Tile makeTile(String title, GURL url, int index) {
