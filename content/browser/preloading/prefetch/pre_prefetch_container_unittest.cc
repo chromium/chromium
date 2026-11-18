@@ -34,7 +34,7 @@ class PrePrefetchContainerTest : public testing::Test {
     browser_context_ = std::make_unique<TestBrowserContext>();
     // Take a weak pointer while on the main thread, so that it can be passed on
     // a non-main thread later in `CreatePrefetchRequest()`.
-    browser_context_weak_ = browser_context_->GetWeakPtr();
+    browser_context_weak_on_ui_thread_ = browser_context_->GetWeakPtr();
   }
   ~PrePrefetchContainerTest() override = default;
 
@@ -43,7 +43,7 @@ class PrePrefetchContainerTest : public testing::Test {
     EXPECT_TRUE(!BrowserThread::CurrentlyOn(BrowserThread::UI));
     return PrefetchRequest::
         CreateBrowserInitiatedWithoutWebContentsOffTheMainThread(
-            browser_context_weak_, url,
+            browser_context_weak_on_ui_thread_, url,
             PrefetchType(PreloadingTriggerType::kEmbedder,
                          /*use_prefetch_proxy=*/false),
             test::kPreloadingEmbedderHistogramSuffixForTesting,
@@ -74,7 +74,7 @@ class PrePrefetchContainerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<TestBrowserContext> browser_context_;
-  base::WeakPtr<BrowserContext> browser_context_weak_;
+  base::WeakPtr<BrowserContext> browser_context_weak_on_ui_thread_;
   network::TestURLLoaderFactory test_url_loader_factory_;
 };
 

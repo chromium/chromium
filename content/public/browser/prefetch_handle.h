@@ -116,7 +116,7 @@ class CONTENT_EXPORT CrossThreadPrefetchHandle final {
   void Reset();
 
   // Must be destructed and dereferenced only on the UI thread.
-  std::unique_ptr<content::PrefetchHandle> prefetch_handle_;
+  std::unique_ptr<content::PrefetchHandle> prefetch_handle_on_ui_thread_;
 
   scoped_refptr<PrefetchStalenessAtomicState> is_stale_;
 };

@@ -34,9 +34,9 @@ CrossThreadPrefetchHandle::CreateOnUIThread(
 CrossThreadPrefetchHandle::CrossThreadPrefetchHandle(
     std::unique_ptr<content::PrefetchHandle> prefetch_handle,
     scoped_refptr<PrefetchStalenessAtomicState> is_stale)
-    : prefetch_handle_(std::move(prefetch_handle)),
+    : prefetch_handle_on_ui_thread_(std::move(prefetch_handle)),
       is_stale_(std::move(is_stale)) {
-  CHECK(prefetch_handle_);
+  CHECK(prefetch_handle_on_ui_thread_);
 }
 
 CrossThreadPrefetchHandle::CrossThreadPrefetchHandle(
@@ -45,7 +45,8 @@ CrossThreadPrefetchHandle::CrossThreadPrefetchHandle(
 CrossThreadPrefetchHandle& CrossThreadPrefetchHandle::operator=(
     CrossThreadPrefetchHandle&& other) {
   Reset();
-  prefetch_handle_ = std::move(other.prefetch_handle_);
+  prefetch_handle_on_ui_thread_ =
+      std::move(other.prefetch_handle_on_ui_thread_);
   is_stale_ = std::move(other.is_stale_);
   return *this;
 }
@@ -63,19 +64,19 @@ bool CrossThreadPrefetchHandle::IsPrefetchStale() const {
 
 void CrossThreadPrefetchHandle::Reset() {
   is_stale_.reset();
-  if (prefetch_handle_) {
+  if (prefetch_handle_on_ui_thread_) {
     // Delete the handle on the UI thread since it may touch/destroy
     // `PrefetchContainer`.
     if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
       CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
       content::GetUIThreadTaskRunner({})->DeleteSoon(
-          FROM_HERE, std::move(prefetch_handle_));
+          FROM_HERE, std::move(prefetch_handle_on_ui_thread_));
     } else {
       // Synchronously destroy the handle if on the UI thread.
-      prefetch_handle_.reset();
+      prefetch_handle_on_ui_thread_.reset();
     }
   }
-  CHECK(!prefetch_handle_);
+  CHECK(!prefetch_handle_on_ui_thread_);
 }
 
 }  // namespace content
