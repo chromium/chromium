@@ -601,6 +601,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="412" label="RFHI_WEBMCP_INVALID_TOOL_CONTINUATION"/>
   <int value="413"
       label="BIBI_BIND_WEBOTP_SERVICE_BLOCKED_BY_PERMISSIONS_POLICY"/>
+  <int value="414" label="RFHI_WEBMCP_INVALID_INVOCATION_ID"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

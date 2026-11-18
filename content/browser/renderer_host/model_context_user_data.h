@@ -217,6 +217,10 @@ class CONTENT_EXPORT ModelContextPageUserData
   explicit ModelContextPageUserData(Page& page);
   ~ModelContextPageUserData() override;
 
+  // Returns true if there is an outstanding tool execution for `invocation_id`.
+  bool HasPendingScriptToolExecution(
+      const blink::ToolInvocationToken& invocation_id) const;
+
   // When the `ExecuteRemoteScriptTool()` IPC is called on
   // `blink.mojom.ModelContextHost` (i.e., `ModelContextUserData`), this method
   // is called, and the callback to resolve/reject the Promise in the renderer
