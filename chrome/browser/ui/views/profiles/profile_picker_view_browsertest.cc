@@ -154,6 +154,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -174,6 +175,8 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/events/event_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/border.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 
@@ -576,6 +579,26 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerViewBrowserTest,
 
   WaitForLoadStop(bad_target_url, web_contents());
   EXPECT_FALSE(navigation_finished_future.IsReady());
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerViewBrowserTest,
+                       GetDialogPositionUsesWidgetCoordinates) {
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+  WaitForLoadStop(GURL("chrome://profile-picker"));
+
+  widget()->client_view()->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(30, 8, 8, 8)));
+  views::test::RunScheduledLayout(widget());
+
+  const gfx::Rect bounds =
+      view()->ConvertRectToWidget(view()->GetLocalBounds());
+  web_modal::WebContentsModalDialogHost* modal_host = view();
+  constexpr gfx::Size kDialogSize(200, 100);
+  EXPECT_EQ(gfx::Point(bounds.x() + (bounds.width() - kDialogSize.width()) / 2,
+                       bounds.y()),
+            modal_host->GetDialogPosition(kDialogSize));
+  EXPECT_EQ(bounds.size(), modal_host->GetMaximumDialogSize());
 }
 
 // Regression test for crbug.com/40910391.

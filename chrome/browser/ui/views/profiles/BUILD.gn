@@ -1387,6 +1387,7 @@ source_set("browser_tests") {
       "//chrome/test/base:profile_lifecycle_test_utils",
       "//chrome/test/base:testing_browser_process",
       "//chrome/test/user_education",
+      "//components/web_modal",
       "//ui/base:ozone_buildflags",
     ]
     if (use_ozone) {

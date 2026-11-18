@@ -539,12 +539,13 @@ gfx::NativeView ProfilePickerView::GetHostView() const {
 }
 
 gfx::Point ProfilePickerView::GetDialogPosition(const gfx::Size& size) {
-  gfx::Size widget_size = GetWidget()->GetWindowBoundsInScreen().size();
-  return gfx::Point(std::max(0, (widget_size.width() - size.width()) / 2), 0);
+  gfx::Point position(std::max(0, (width() - size.width()) / 2), 0);
+  views::View::ConvertPointToWidget(this, &position);
+  return position;
 }
 
 gfx::Size ProfilePickerView::GetMaximumDialogSize() {
-  return GetWidget()->GetWindowBoundsInScreen().size();
+  return size();
 }
 
 void ProfilePickerView::AddObserver(
