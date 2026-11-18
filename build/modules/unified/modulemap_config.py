@@ -230,8 +230,7 @@ def headers(os):
             exists=is_win,
             module_name='vcruntime_exception',
         ),
-        # We need to re-export std::align_val_t in std.new.align_val_t and
-        # std::nothrow in std.new.nothrow_t.
+        # We need to re-export std::align_val_t in std.new.align_val_t.
         Header('vcruntime_new.h', exists=is_win, module_name='vcruntime_new'),
         # We need to re-export RTTI types (std::type_info, std::bad_cast, etc.)
         # in std.typeinfo.
