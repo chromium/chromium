@@ -223,9 +223,9 @@ void AccessibilityEventRewriter::SetKeyCodesForSwitchAccessCommand(
     key_code_to_switch_access_command_.erase(key_code.first);
 
     // Map device types from Switch Access's internal representation.
-    std::set<ui::InputDeviceType> device_types;
+    InputDeviceTypeSet device_types;
     for (const std::string& switch_access_device : key_code.second) {
-      device_types.insert(GetInputDeviceType(switch_access_device));
+      device_types.Put(GetInputDeviceType(switch_access_device));
     }
 
     switch_access_key_codes_to_capture_.insert({key_code.first, device_types});
@@ -402,7 +402,7 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
   // An unknown |source_device_id| needs to pass this check as it's set that way
   // in tests.
   if (source_device_id != ui::ED_UNKNOWN_DEVICE &&
-      key->second.count(keyboard_type) == 0) {
+      !key->second.Has(keyboard_type)) {
     return false;
   }
 

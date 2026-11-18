@@ -12,6 +12,7 @@
 
 #include "ash/ash_export.h"
 #include "base/cancelable_callback.h"
+#include "base/containers/enum_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -37,6 +38,10 @@ class ASH_EXPORT AccessibilityEventRewriter
     : public ui::EventRewriter,
       public input_method::InputMethodManager::Observer {
  public:
+  using InputDeviceTypeSet = base::EnumSet<ui::InputDeviceType,
+                                           ui::INPUT_DEVICE_INTERNAL,
+                                           ui::INPUT_DEVICE_UNKNOWN>;
+
   // The maximum number of pending key events.
   // Provides us a generous buffer in case key event handling is slow to process
   // or if keys are pressed rapidly.
@@ -105,7 +110,7 @@ class ASH_EXPORT AccessibilityEventRewriter
   }
 
   // For testing use only.
-  std::map<int, std::set<ui::InputDeviceType>>
+  std::map<int, InputDeviceTypeSet>
   switch_access_key_codes_to_capture_for_test() {
     return switch_access_key_codes_to_capture_;
   }
@@ -171,8 +176,7 @@ class ASH_EXPORT AccessibilityEventRewriter
   bool chromevox_capture_all_keys_ = false;
 
   // Maps a key to a set of devices which should be captured for Switch Access.
-  std::map<int, std::set<ui::InputDeviceType>>
-      switch_access_key_codes_to_capture_;
+  std::map<int, InputDeviceTypeSet> switch_access_key_codes_to_capture_;
 
   // Maps a captured key from above to a Switch Access command.
   std::map<int, SwitchAccessCommand> key_code_to_switch_access_command_;

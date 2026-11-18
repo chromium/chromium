@@ -1166,7 +1166,8 @@ class SwitchAccessAccessibilityEventRewriterTest
                                                                      command);
   }
 
-  const std::map<int, std::set<ui::InputDeviceType>> GetKeyCodesToCapture() {
+  const std::map<int, AccessibilityEventRewriter::InputDeviceTypeSet>
+  GetKeyCodesToCapture() {
     return accessibility_event_rewriter()
         .switch_access_key_codes_to_capture_for_test();
   }
@@ -1294,7 +1295,7 @@ TEST_F(SwitchAccessAccessibilityEventRewriterTest,
       SwitchAccessCommand::kSelect);
 
   // Check that values are added to both data structures.
-  std::map<int, std::set<ui::InputDeviceType>> kc_to_capture =
+  std::map<int, AccessibilityEventRewriter::InputDeviceTypeSet> kc_to_capture =
       GetKeyCodesToCapture();
   EXPECT_EQ(2u, kc_to_capture.size());
   EXPECT_EQ(1u, kc_to_capture.count(48));
