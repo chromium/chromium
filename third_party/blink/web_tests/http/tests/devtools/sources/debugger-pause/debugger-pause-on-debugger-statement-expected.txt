@@ -1,6 +1,0 @@
-Tests that debugger will stop on "debugger" statement.
-
-Set timer for test function.
-Script execution paused.
-Script execution resumed.
-
