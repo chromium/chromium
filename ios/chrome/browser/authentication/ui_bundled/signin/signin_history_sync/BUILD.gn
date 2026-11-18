@@ -22,6 +22,7 @@ source_set("signin_history_sync") {
     "//ios/chrome/browser/authentication/ui_bundled/signin/instant_signin",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util/identity_snackbar:utils",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",

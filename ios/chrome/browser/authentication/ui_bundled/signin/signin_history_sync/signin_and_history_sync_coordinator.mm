@@ -15,10 +15,12 @@
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator/fullscreen_signin_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/instant_signin/instant_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_screen_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -232,6 +234,12 @@ HistorySyncResultToSigninCoordinatorResultOrIdentity(
     result = identity;
   } else {
     result = base::unexpected(SigninCoordinatorResultCanceledByUser);
+  }
+  if (self.contextStyle == SigninContextStyle::kAccountSwitchingPromo &&
+      result.has_value()) {
+    // As in `HistorySyncSigninCoordinator`, the snackbar is displayed after the
+    // History Sync step, whether or not it was displayed and/or accepted.
+    TriggerAccountSwitchSnackbarWithIdentity(result.value(), self.browser);
   }
   [self runCompletionWithSigninResult:std::move(result)];
 }
