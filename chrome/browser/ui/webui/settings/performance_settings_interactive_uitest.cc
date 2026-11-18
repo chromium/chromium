@@ -12,6 +12,7 @@
 #include "base/test/power_monitor_test_utils.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,6 +41,10 @@
 #include "ash/constants/ash_features.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 using performance_manager::user_tuning::prefs::BatterySaverModeState;
 using performance_manager::user_tuning::prefs::MemorySaverModeAggressiveness;
@@ -174,6 +179,13 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
                        PerformanceSendFeedbackDialogOpens) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/587378268): Re-enable once the fixture auto-approves
+  // desktop capture on macOS 26.4+.
+  if (base::mac::MacOSVersion() >= 26'04'00) {
+    GTEST_SKIP() << "Feedback screenshot blocks on SCContentSharingPicker.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
   RunTestSequence(
       InstrumentTab(kPerformanceSettingsPage),
       NavigateWebContents(
@@ -320,6 +332,13 @@ IN_PROC_BROWSER_TEST_F(MemorySettingsInteractiveTest,
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(MemorySettingsInteractiveTest,
                        MemorySaverSendFeedbackDialogOpens) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/587378268): Re-enable once the fixture auto-approves
+  // desktop capture on macOS 26.4+.
+  if (base::mac::MacOSVersion() >= 26'04'00) {
+    GTEST_SKIP() << "Feedback screenshot blocks on SCContentSharingPicker.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
   RunTestSequence(
       InstrumentTab(kPerformanceSettingsPage),
       NavigateWebContents(
@@ -601,6 +620,13 @@ IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
                        BatterySaverSendFeedbackDialogOpens) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/587378268): Re-enable once the fixture auto-approves
+  // desktop capture on macOS 26.4+.
+  if (base::mac::MacOSVersion() >= 26'04'00) {
+    GTEST_SKIP() << "Feedback screenshot blocks on SCContentSharingPicker.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
   RunTestSequence(
       InstrumentTab(kPerformanceSettingsPage),
       NavigateWebContents(
