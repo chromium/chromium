@@ -194,9 +194,6 @@ external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import
 external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.html
 external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/*
 external/wpt/html/semantics/text-level-semantics/the-bdi-element/*
-external/wpt/html/webappapis/microtask-queuing/queue-microtask-exceptions.any.*
-external/wpt/html/webappapis/scripting/events/event-handler-all-global-events.html
-external/wpt/html/webappapis/scripting/events/event-handler-onmove-02.tentative.html
 external/wpt/html/webappapis/scripting/processing-model-2/runtime-error-in-setInterval.html
 external/wpt/html/webappapis/scripting/processing-model-2/runtime-error-in-setTimeout.html
 external/wpt/inert/inert-iframe-hittest.html
