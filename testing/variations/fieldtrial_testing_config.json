@@ -3038,6 +3038,27 @@
             ]
         }
     ],
+    "AutofillQueryPerIframeStructuralSignatures": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillQueryPerIframeStructuralSignatures"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillRequireFocusInFrameForSuggestions": [
         {
             "platforms": [
