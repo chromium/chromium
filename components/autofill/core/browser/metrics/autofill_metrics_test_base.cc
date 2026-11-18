@@ -177,6 +177,7 @@ void AutofillMetricsBaseTest::SetUpHelper() {
       std::make_unique<AutofillOfferManager>(&paydm()));
 
   CreateAutofillDriver();
+  ActivateAutofillDriver(autofill_driver());
   autofill_driver().SetLocalFrameToken(test::MakeLocalFrameToken());
 
 #if !BUILDFLAG(IS_IOS)

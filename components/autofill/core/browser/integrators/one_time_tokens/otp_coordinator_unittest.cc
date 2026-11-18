@@ -195,17 +195,9 @@ class MockAutofillDriver : public TestAutofillDriver {
   MOCK_METHOD(bool, DocumentUsedWebOtp, (), (const, override));
 };
 
-class CoordinatorTestAutofillClient : public TestAutofillClient {
- public:
-  AutofillManager* GetAutofillManagerForPrimaryMainFrame() override {
-    TestAutofillDriver* driver = GetAutofillDriverFactory().driver();
-    return driver ? &driver->GetAutofillManager() : nullptr;
-  }
-};
-
 class OtpCoordinatorTest
     : public Test,
-      public WithTestAutofillClientDriverManager<CoordinatorTestAutofillClient,
+      public WithTestAutofillClientDriverManager<TestAutofillClient,
                                                  NiceMock<MockAutofillDriver>> {
  protected:
   void SetUp() override {
@@ -228,6 +220,7 @@ class OtpCoordinatorTest
     autofill_client().set_gmail_otp_service(std::move(gmail_service));
 
     CreateAutofillDriver();
+    ActivateAutofillDriver(autofill_driver());
     coordinator_ = std::make_unique<OtpCoordinator>(&autofill_client());
     frame_observer_ = std::make_unique<TestFrameObserver>(&autofill_manager(),
                                                           coordinator_.get());

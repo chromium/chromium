@@ -115,14 +115,11 @@ class TestBrowserAutofillManagerWithTestCCAM
   FieldGlobalId last_trigger_field_id_;
 };
 
-// A test Autofill client subclass that manages the ActorKeyMetricsRecorder and
-// resolves the primary main frame's AutofillManager.
+// A test Autofill client subclass that manages the ActorKeyMetricsRecorder.
 class TestActorAutofillClient : public TestAutofillClient {
  public:
   TestActorAutofillClient();
   ~TestActorAutofillClient() override;
-
-  AutofillManager* GetAutofillManagerForPrimaryMainFrame() override;
 
   ActorAutofillManager* GetActorAutofillManager() override;
   int64_t GetNavigationId() const override;

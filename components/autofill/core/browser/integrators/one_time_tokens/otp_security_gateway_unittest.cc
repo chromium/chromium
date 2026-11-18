@@ -19,7 +19,6 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/mock_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
@@ -78,11 +77,6 @@ class MockAutofillDriver : public TestAutofillDriver {
 
 class SecurityGatewayTestAutofillClient : public TestAutofillClient {
  public:
-  AutofillManager* GetAutofillManagerForPrimaryMainFrame() override {
-    TestAutofillDriver* driver = GetAutofillDriverFactory().driver();
-    return driver ? &driver->GetAutofillManager() : nullptr;
-  }
-
   test::AutofillTestingPrefService* GetPrefs() override {
     return return_null_prefs_ ? nullptr : TestAutofillClient::GetPrefs();
   }
@@ -104,6 +98,7 @@ class OtpSecurityGatewayTest : public Test,
   void SetUp() override {
     InitAutofillClient();
     CreateAutofillDriver();
+    ActivateAutofillDriver(autofill_driver());
     autofill_client().log_router().RegisterReceiver(&log_receiver_);
     auto delegate = std::make_unique<MockOtpPhishGuardDelegate>();
     phish_guard_delegate_ = delegate.get();

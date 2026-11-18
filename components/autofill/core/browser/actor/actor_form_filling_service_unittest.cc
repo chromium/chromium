@@ -1004,6 +1004,7 @@ TEST(ActorFormFillingServiceWithoutAutofillTest, NoAutofillManager) {
   base::test::TaskEnvironment task_environment;
   base::HistogramTester histogram_tester;
   TestAutofillClient client;
+  client.AllowNullPrimaryMainFrameDriver(true);
   ASSERT_FALSE(client.GetAutofillManagerForPrimaryMainFrame());
 
   GetSuggestionsFuture future;
@@ -1147,6 +1148,7 @@ TEST(ActorFormFillingServiceJournalTest,
      FillWithInvalidSuggestionId_LogsToJournal) {
   base::test::TaskEnvironment task_environment;
   TestAutofillClient client;
+  client.AllowNullPrimaryMainFrameDriver(true);
   ::actor::AggregatedJournal journal;
   MockJournalObserver observer(journal);
 

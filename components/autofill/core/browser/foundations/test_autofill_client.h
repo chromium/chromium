@@ -1033,13 +1033,11 @@ class TestAutofillClientTemplate : public T {
   base::WeakPtrFactory<TestAutofillClientTemplate> weak_ptr_factory_{this};
 };
 
-// Base class of TestAutofillClient. Its sole purpose is to initialize the
-// TestAutofillDriverFactory before the other members of a TestAutofillClient.
+// Base class of TestAutofillClient. It implements those parts of AutofillClient
+// that we do *not* want in TestContentAutofillClient and TestAutofillClientIOS
+// (because they inherit them from ContentAutofillClient and AutofillClientIOS).
 //
-// We want that because that's how it works for ContentAutofillClient and
-// AutofillClientIOS.
-//
-// We achieve this by subclassing as follows:
+// The (not very intuitive) hierarchy is:
 // 1. TestAutofillClient         derives from
 // 2. TestAutofillClientTemplate derives from
 // 3. TestAutofillClientBase     derives from
@@ -1048,12 +1046,31 @@ class TestAutofillClientBase : public AutofillClient {
  public:
   TestAutofillDriverFactory& GetAutofillDriverFactory() override;
 
+  // Returns an AutofillManager whose AutofillDriver has no parent, is not
+  // embedded, and is active.
+  //
+  // This hits a CHECK if no or multiple such AutofillManagers exist. While that
+  // is possible in production code, it is likely unintended in tests. If you do
+  // want it, disable those checks with AllowNullPrimaryMainFrameDriver()
+  // and/or AllowMultiplePrimaryMainFrameDrivers().
+  AutofillManager* GetAutofillManagerForPrimaryMainFrame() override;
+
+  void AllowNullPrimaryMainFrameDriver(bool allow) {
+    allow_null_primary_main_frame_driver_ = allow;
+  }
+
+  void AllowMultiplePrimaryMainFrameDrivers(bool allow) {
+    allow_multiple_primary_main_frame_drivers_ = allow;
+  }
+
  protected:
   explicit TestAutofillClientBase(base::PassKey<TestAutofillClient>);
   ~TestAutofillClientBase() override;
 
  private:
   TestAutofillDriverFactory autofill_driver_factory_;
+  bool allow_null_primary_main_frame_driver_ = false;
+  bool allow_multiple_primary_main_frame_drivers_ = false;
 };
 
 // A simple `AutofillClient` for tests. Consider using

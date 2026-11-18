@@ -93,14 +93,6 @@ TestActorAutofillClient::TestActorAutofillClient() {
 
 TestActorAutofillClient::~TestActorAutofillClient() = default;
 
-AutofillManager*
-TestActorAutofillClient::GetAutofillManagerForPrimaryMainFrame() {
-  if (GetAutofillDriverFactory().GetExistingDrivers().empty()) {
-    return nullptr;
-  }
-  return &GetAutofillDriverFactory().driver(0)->GetAutofillManager();
-}
-
 ActorAutofillManager* TestActorAutofillClient::GetActorAutofillManager() {
   return actor_autofill_manager_.get();
 }
@@ -119,6 +111,7 @@ ActorTestBase::~ActorTestBase() = default;
 void ActorTestBase::SetUp() {
   InitAutofillClient();
   CreateAutofillDriver();
+  ActivateAutofillDriver(autofill_driver());
   client().GetPersonalDataManager().address_data_manager().AddProfile(
       test::GetFullProfile());
 

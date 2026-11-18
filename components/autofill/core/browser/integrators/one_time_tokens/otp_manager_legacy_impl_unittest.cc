@@ -79,6 +79,7 @@ class OtpManagerLegacyImplTest
     autofill_client().set_otp_phish_guard_delegate(
         std::move(otp_phish_guard_delegate));
     CreateAutofillDriver();
+    ActivateAutofillDriver(autofill_driver());
     test_field_.set_origin(url::Origin::Create(GURL("https://example.test")));
   }
 
