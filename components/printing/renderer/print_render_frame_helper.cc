@@ -1686,7 +1686,7 @@ void PrintRenderFrameHelper::PrintFrameContent(
   if (!weak_this)
     return;
 
-  ContentProxySet typeface_content_info;
+  TypefaceSerializationContext typeface_content_info;
   ImageSerializationContext image_content_info;
   MetafileSkia metafile(mojom::SkiaDocumentType::kMSKP,
                         params->document_cookie);
@@ -2422,7 +2422,7 @@ bool PrintRenderFrameHelper::PrintPagesNative(
 
   // Provide typeface and image context to use with serializing to the print
   // compositor.
-  ContentProxySet typeface_content_info;
+  TypefaceSerializationContext typeface_content_info;
   ImageSerializationContext image_content_info;
   MetafileSkia metafile(print_params.printed_doc_type,
                         print_params.document_cookie);
@@ -3207,7 +3207,7 @@ MetafileSkia* PrintRenderFrameHelper::PrintPreviewContext::metafile() {
   return metafile_.get();
 }
 
-ContentProxySet*
+TypefaceSerializationContext*
 PrintRenderFrameHelper::PrintPreviewContext::typeface_content_info() {
   DCHECK(IsRendering());
   return &typeface_content_info_;

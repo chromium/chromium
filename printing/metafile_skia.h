@@ -119,7 +119,8 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) MetafileSkia : public Metafile {
   int GetDocumentCookie() const;
   const ContentToProxyTokenMap& GetSubframeContentInfo() const;
 
-  void UtilizeTypefaceContext(ContentProxySet* typeface_content_info);
+  void UtilizeTypefaceContext(
+      TypefaceSerializationContext* typeface_content_info);
 
   void UtilizeImageContext(ImageSerializationContext* image_content_info);
 
@@ -141,7 +142,7 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) MetafileSkia : public Metafile {
   FRIEND_TEST_ALL_PREFIXES(MetafileSkiaTest, MultiPictureDocumentTypefaces);
 
   void AppendPage(const SkSize& page_size, cc::PaintRecord record);
-  void AppendSubframeInfo(uint32_t content_id,
+  void AppendSubframeInfo(PictureContentId content_id,
                           const base::UnguessableToken& proxy_token,
                           sk_sp<SkPicture> subframe_pic_holder);
 

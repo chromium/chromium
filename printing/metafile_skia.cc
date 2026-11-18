@@ -78,9 +78,9 @@ struct MetafileSkiaData {
   std::vector<Page> pages;
   std::unique_ptr<SkStreamAsset> data_stream;
   ContentToProxyTokenMap subframe_content_info;
-  std::map<uint32_t, sk_sp<SkPicture>> subframe_pics;
+  std::map<PictureContentId, sk_sp<SkPicture>> subframe_pics;
   int document_cookie = 0;
-  raw_ptr<ContentProxySet> typeface_content_info = nullptr;
+  raw_ptr<TypefaceSerializationContext> typeface_content_info = nullptr;
   raw_ptr<ImageSerializationContext> image_content_info = nullptr;
 
   // The scale factor is used because Blink occasionally calls
@@ -112,7 +112,7 @@ bool MetafileSkia::Init() {
 }
 
 void MetafileSkia::UtilizeTypefaceContext(
-    ContentProxySet* typeface_content_info) {
+    TypefaceSerializationContext* typeface_content_info) {
   data_->typeface_content_info = typeface_content_info;
 }
 
@@ -428,10 +428,10 @@ uint32_t MetafileSkia::CreateContentForRemoteFrame(
 
   // Store the map between content id and the proxy id and store the picture
   // content.
-  const uint32_t content_id = pic->uniqueID();
-  DCHECK(!data_->subframe_content_info.contains(content_id));
+  const PictureContentId content_id(pic->uniqueID());
+  DCHECK(!data_->subframe_content_info.contains(content_id.value()));
   AppendSubframeInfo(content_id, render_proxy_token, std::move(pic));
-  return content_id;
+  return content_id.value();
 }
 
 int MetafileSkia::GetDocumentCookie() const {
@@ -446,10 +446,10 @@ void MetafileSkia::AppendPage(const SkSize& page_size, cc::PaintRecord record) {
   data_->pages.emplace_back(page_size, std::move(record));
 }
 
-void MetafileSkia::AppendSubframeInfo(uint32_t content_id,
+void MetafileSkia::AppendSubframeInfo(PictureContentId content_id,
                                       const base::UnguessableToken& proxy_token,
                                       sk_sp<SkPicture> pic_holder) {
-  data_->subframe_content_info[content_id] = proxy_token;
+  data_->subframe_content_info[content_id.value()] = proxy_token;
   data_->subframe_pics[content_id] = pic_holder;
 }
 
@@ -463,7 +463,7 @@ void MetafileSkia::CustomDataToSkPictureCallback(SkCanvas* canvas,
   if (!data_->subframe_content_info.contains(content_id))
     return;
 
-  auto it = data_->subframe_pics.find(content_id);
+  auto it = data_->subframe_pics.find(PictureContentId(content_id));
   CHECK(it != data_->subframe_pics.end());
 
   // Found the picture, draw it on canvas.

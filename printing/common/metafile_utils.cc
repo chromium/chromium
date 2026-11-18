@@ -444,7 +444,8 @@ sk_sp<SkDocument> MakePdfDocument(
 }
 
 SkSerialReturnType SerializeOopPicture(SkPicture* pic, void* ctx) {
-  const auto* context = reinterpret_cast<const ContentToProxyTokenMap*>(ctx);
+  const auto* context =
+      reinterpret_cast<const PictureSerializationContext*>(ctx);
   uint32_t pic_id = pic->uniqueID();
   auto iter = context->find(pic_id);
   if (iter == context->end()) {
@@ -466,7 +467,7 @@ sk_sp<SkPicture> DeserializeOopPicture(const void* data,
   }
 
   auto* context = reinterpret_cast<PictureDeserializationContext*>(ctx);
-  auto iter = context->find(pic_id);
+  auto iter = context->find(PictureContentId(pic_id));
   if (iter == context->end() || !iter->second) {
     // When we don't have the out-of-process picture available, we return
     // an empty picture. Returning a nullptr will cause the deserialization
@@ -479,7 +480,7 @@ sk_sp<SkPicture> DeserializeOopPicture(const void* data,
 SkSerialReturnType SerializeOopTypeface(SkTypeface* typeface, void* ctx) {
   auto* context = reinterpret_cast<TypefaceSerializationContext*>(ctx);
   SkTypefaceID typeface_id = typeface->uniqueID();
-  bool data_included = context->insert(typeface_id).second;
+  bool data_included = context->insert(TypefaceContentId(typeface_id)).second;
 
   // Need the typeface ID to identify the desired typeface.  Include an
   // indicator for when typeface data actually follows vs. when the typeface
@@ -514,8 +515,9 @@ sk_sp<SkTypeface> DeserializeOopTypeface(SkStream& stream, void* ctx) {
     return nullptr;
   }
 
+  TypefaceContentId typeface_id(id);
   auto* context = reinterpret_cast<TypefaceDeserializationContext*>(ctx);
-  auto iter = context->find(id);
+  auto iter = context->find(typeface_id);
   if (iter != context->end()) {
     CHECK(!data_included);
     return iter->second;
@@ -530,7 +532,7 @@ sk_sp<SkTypeface> DeserializeOopTypeface(SkStream& stream, void* ctx) {
     typeface = SkTypeface::MakeDeserialize(&stream, skia::DefaultFontMgr());
   }
 
-  context->emplace(id, typeface);
+  context->emplace(typeface_id, typeface);
   return typeface;
 }
 
@@ -542,7 +544,7 @@ SkSerialReturnType SerializeRasterImage(SkImage* img, void* ctx) {
   auto* context = reinterpret_cast<ImageSerializationContext*>(ctx);
 
   uint64_t img_id = img->uniqueID();
-  if (context->contains(img_id)) {
+  if (context->contains(ImageContentId(img_id))) {
     return gfx::MakeSkDataFromSpanWithCopy(base::byte_span_from_ref(img_id));
   }
 
@@ -561,7 +563,7 @@ SkSerialReturnType SerializeRasterImage(SkImage* img, void* ctx) {
   id_span.copy_from(base::byte_span_from_ref(img_id));
   data_span.copy_from(gfx::SkDataToSpan(img_data));
 
-  context->insert(img_id);
+  context->insert(ImageContentId(img_id));
 
   return data;
 }
@@ -576,11 +578,12 @@ sk_sp<SkImage> DeserializeRasterImage(sk_sp<SkData> data,
 
   base::SpanReader reader{gfx::SkDataToSpan(data)};
 
-  uint64_t img_id;
-  if (!reader.ReadU64NativeEndian(img_id)) {
+  uint64_t img_id_val;
+  if (!reader.ReadU64NativeEndian(img_id_val)) {
     // If there is no room for id, there cannot be meaningful image data.
     return nullptr;
   }
+  ImageContentId img_id(img_id_val);
 
   auto iter = context->find(img_id);
   if (iter != context->end() && iter->second) {

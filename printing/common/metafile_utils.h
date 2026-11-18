@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/types/strong_alias.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "printing/mojom/print.mojom-forward.h"
@@ -24,24 +25,31 @@ class SkWStream;
 namespace printing {
 
 using ContentToProxyTokenMap = base::flat_map<uint32_t, base::UnguessableToken>;
-using ContentProxySet = base::flat_set<uint32_t>;
 
-// Stores the mapping between a content's unique id and its actual content.
+// Identifies serialized content (remote subframes, typefaces, or images) within
+// a document.
+using PictureContentId = base::StrongAlias<class PictureContentIdTag, uint32_t>;
+using TypefaceContentId =
+    base::StrongAlias<class TypefaceContentIdTag, uint32_t>;
+using ImageContentId = base::StrongAlias<class ImageContentIdTag, uint64_t>;
+
+// Stores the mapping between a content id and its actual content.
 using PictureDeserializationContext =
-    base::flat_map<uint32_t, sk_sp<SkPicture>>;
+    base::flat_map<PictureContentId, sk_sp<SkPicture>>;
 using TypefaceDeserializationContext =
-    base::flat_map<uint32_t, sk_sp<SkTypeface>>;
-using ImageDeserializationContext = base::flat_map<uint64_t, sk_sp<SkImage>>;
+    base::flat_map<TypefaceContentId, sk_sp<SkTypeface>>;
+using ImageDeserializationContext =
+    base::flat_map<ImageContentId, sk_sp<SkImage>>;
 
 // Stores the mapping between content's unique id and its corresponding frame
 // proxy token.
 using PictureSerializationContext = ContentToProxyTokenMap;
 
 // Stores the set of typeface unique ids used by the picture frame content.
-using TypefaceSerializationContext = ContentProxySet;
+using TypefaceSerializationContext = base::flat_set<TypefaceContentId>;
 
 // Stores the set of serialized image ids used by the content.
-using ImageSerializationContext = base::flat_set<uint64_t>;
+using ImageSerializationContext = base::flat_set<ImageContentId>;
 
 sk_sp<SkDocument> MakePdfDocument(
     std::string_view creator,

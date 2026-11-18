@@ -465,7 +465,7 @@ void PrintCompositorImpl::CompositeSubframe(FrameInfo* frame_info) {
   frame_info->content = SkPicture::MakeFromStream(&stream, &procs);
 }
 
-PrintCompositorImpl::PictureDeserializationContext
+PictureDeserializationContext
 PrintCompositorImpl::GetPictureDeserializationContext(
     const ContentToFrameMap& subframe_content_map) {
   PictureDeserializationContext subframes;
@@ -479,7 +479,7 @@ PrintCompositorImpl::GetPictureDeserializationContext(
     FrameInfo* frame_info = iter->second.get();
     if (!frame_info->composited)
       CompositeSubframe(frame_info);
-    subframes[content_id] = frame_info->content;
+    subframes[PictureContentId(content_id)] = frame_info->content;
   }
   return subframes;
 }

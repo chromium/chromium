@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "printing/buildflags/buildflags.h"
+#include "printing/common/metafile_utils.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -164,14 +165,6 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   FRIEND_TEST_ALL_PREFIXES(PrintCompositorImplTest, DependencyLoop);
 
   friend class MockCompletionPrintCompositorImpl;
-
-  // The map needed during content deserialization. It stores the mapping
-  // between content id and its actual content.
-  using PictureDeserializationContext =
-      base::flat_map<uint32_t, sk_sp<SkPicture>>;
-  using TypefaceDeserializationContext =
-      base::flat_map<uint32_t, sk_sp<SkTypeface>>;
-  using ImageDeserializationContext = base::flat_map<uint64_t, sk_sp<SkImage>>;
 
   // Base structure to store a frame's content and its subframe
   // content information.

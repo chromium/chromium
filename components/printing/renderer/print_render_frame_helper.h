@@ -574,7 +574,7 @@ class PrintRenderFrameHelper
     const std::vector<uint32_t>& pages_to_render() const;
     size_t pages_rendered_count() const;
     MetafileSkia* metafile();
-    ContentProxySet* typeface_content_info();
+    TypefaceSerializationContext* typeface_content_info();
     ImageSerializationContext* image_content_info();
 
    private:
@@ -597,7 +597,7 @@ class PrintRenderFrameHelper
     std::unique_ptr<PrepareFrameAndViewForPrint> prep_frame_view_;
 
     // The typefaces encountered in the content during document serialization.
-    ContentProxySet typeface_content_info_;
+    TypefaceSerializationContext typeface_content_info_;
 
     // The images encountered in the content during document serialization.
     ImageSerializationContext image_content_info_;
