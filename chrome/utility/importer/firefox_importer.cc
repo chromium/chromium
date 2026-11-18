@@ -220,11 +220,6 @@ void FirefoxImporter::ImportHistory() {
                              user_data_importer::VISIT_SOURCE_FIREFOX_IMPORTED);
 }
 
-void FirefoxImporter::SetBookmarkHtmlParser(
-    mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser> parser) {
-  html_parser_remote_ = std::move(parser);
-}
-
 void FirefoxImporter::ImportBookmarks() {
   base::FilePath sqlite_file = GetCopiedSourcePath("places.sqlite");
   if (!base::PathExists(sqlite_file)) {
@@ -266,10 +261,7 @@ void FirefoxImporter::ImportBookmarks() {
   // `raw_html`. In that case, try to recover as much data as possible.
   base::ReadFileToString(bookmarks_file, &raw_html);
 
-  CHECK(html_parser_remote_.is_valid());
-  auto html_parser = std::make_unique<
-      mojo::Remote<user_data_importer::mojom::BookmarkHtmlParser>>(
-      std::move(html_parser_remote_));
+  auto html_parser = BindBookmarkHtmlParser();
 
   auto* raw_parser = html_parser.get();
   raw_parser->set_disconnect_handler(

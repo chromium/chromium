@@ -7,10 +7,11 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "chrome/utility/importer/importer.h"
 #include "components/user_data_importer/mojom/bookmark_html_parser.mojom-forward.h"
 #include "components/user_data_importer/utility/bookmark_parser.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 // Importer for bookmarks files.
@@ -25,10 +26,6 @@ class BookmarksFileImporter : public Importer {
                    uint16_t items,
                    ImporterBridge* bridge) override;
 
-  void SetBookmarkHtmlParser(
-      mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser> parser)
-      override;
-
  private:
   ~BookmarksFileImporter() override;
 
@@ -40,9 +37,6 @@ class BookmarksFileImporter : public Importer {
   // Called if the bookmark HTML parser disconnects without replying, e.g.
   // because its process terminated. Ends the favorites item and the import.
   void OnBookmarkHtmlParserDisconnected();
-
-  mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser>
-      html_parser_remote_;
 };
 
 #endif  // CHROME_UTILITY_IMPORTER_BOOKMARKS_FILE_IMPORTER_H_

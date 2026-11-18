@@ -18,13 +18,11 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/utility/importer/importer.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "components/user_data_importer/utility/bookmark_parser.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace user_data_importer::mojom {
@@ -51,10 +49,6 @@ class FirefoxImporter : public Importer {
   void StartImport(const user_data_importer::SourceProfile& source_profile,
                    uint16_t items,
                    ImporterBridge* bridge) override;
-
-  void SetBookmarkHtmlParser(
-      mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser> parser)
-      override;
 
  private:
   // Location of favicons in Firefox profile. It may vary depending on Firefox
@@ -155,11 +149,6 @@ class FirefoxImporter : public Importer {
   // Stored because we can only access it from the UI thread.
   std::string locale_;
 #endif
-
-  mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser>
-      html_parser_remote_;
-
-  base::WeakPtrFactory<FirefoxImporter> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_UTILITY_IMPORTER_FIREFOX_IMPORTER_H_
