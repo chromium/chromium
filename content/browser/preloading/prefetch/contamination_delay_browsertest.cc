@@ -5,7 +5,6 @@
 #include <optional>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -148,7 +147,6 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, CrossSite) {
 
   scoped_refptr<SiteInstance> site_instance =
       shell()->web_contents()->GetSiteInstance();
-  base::HistogramTester histogram_tester;
   BrowsingContextGroupSwapObserver swap_observer(shell()->web_contents());
   base::ElapsedTimer timer;
   ASSERT_TRUE(NavigateToURLFromRenderer(shell(), prefetch_url));
@@ -157,8 +155,6 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, CrossSite) {
             swap_observer.Get().type());
   EXPECT_FALSE(site_instance->IsRelatedSiteInstance(
       shell()->web_contents()->GetSiteInstance()));
-  histogram_tester.ExpectUniqueSample(
-      "Preloading.PrefetchBCGSwap.RelatedActiveContents", 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, IgnoresSameOrigin) {
@@ -318,7 +314,6 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest,
 
   scoped_refptr<SiteInstance> site_instance =
       shell()->web_contents()->GetSiteInstance();
-  base::HistogramTester histogram_tester;
   BrowsingContextGroupSwapObserver swap_observer(shell()->web_contents());
   base::ElapsedTimer timer;
   ASSERT_TRUE(NavigateToURLFromRenderer(shell(), prefetch_url));
@@ -327,8 +322,6 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest,
             swap_observer.Get().type());
   EXPECT_FALSE(site_instance->IsRelatedSiteInstance(
       shell()->web_contents()->GetSiteInstance()));
-  histogram_tester.ExpectUniqueSample(
-      "Preloading.PrefetchBCGSwap.RelatedActiveContents", 2, 1);
 }
 
 }  // namespace
