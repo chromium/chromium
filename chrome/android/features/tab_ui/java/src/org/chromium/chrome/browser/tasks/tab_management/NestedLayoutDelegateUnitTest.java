@@ -338,12 +338,14 @@ public class NestedLayoutDelegateUnitTest {
 
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab2));
 
         mDelegate.onTabClose(mTab1);
 
         verify(mMediator).updateTabGroupTitle(TAB_GROUP_ID);
-        assertModelListTabIds(TAB2_ID, TAB2_ID);
+        // The closed tab's row is removed; the header row is kept.
+        assertModelListTabIds(TAB1_ID, TAB2_ID);
+        assertEquals(TAB_GROUP, mModelList.get(0).model.get(CARD_TYPE));
+        assertEquals(TAB, mModelList.get(1).model.get(CARD_TYPE));
     }
 
     @Test
@@ -576,21 +578,23 @@ public class NestedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testDidMoveTabOutOfGroup_HeaderTabIdUpdated() {
+    public void testDidMoveTabOutOfGroup_FirstTab_HeaderKeepsTabId() {
         setupTabsInModel(mTab1, mTab3);
         addGroupHeaderToModelList(TAB1_ID);
         PropertyModel tab1Model = addTabToModelList(TAB1_ID, TAB_GROUP_ID);
         addTabToModelList(TAB3_ID, TAB_GROUP_ID);
 
         when(mTab3.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab3));
 
         mDelegate.didMoveTabOutOfGroup(mTab1, TAB_GROUP_ID);
 
         verify(mMediator).clearTabGroupProperties(tab1Model);
         verify(mMediator).updateTabGroupTitle(TAB_GROUP_ID);
 
-        assertModelListTabIds(TAB1_ID, TAB3_ID, TAB3_ID);
+        // The moved tab is placed before the group; the header keeps its original TAB_ID.
+        assertModelListTabIds(TAB1_ID, TAB1_ID, TAB3_ID);
+        assertEquals(tab1Model, mModelList.get(0).model);
+        assertEquals(TAB_GROUP, mModelList.get(1).model.get(CARD_TYPE));
     }
 
     @Test
@@ -602,8 +606,7 @@ public class NestedLayoutDelegateUnitTest {
 
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
 
-        // When group removal is active, updateTabGroupHeaderId and updateTabGroupTitle should be
-        // suppressed.
+        // When group removal is active, updateTabGroupTitle should be suppressed.
         mDelegate.onTabGroupRemoving(TAB_GROUP_ID);
         mDelegate.didMoveTabOutOfGroup(mTab3, TAB_GROUP_ID);
 

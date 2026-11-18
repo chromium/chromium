@@ -22,7 +22,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
@@ -172,7 +171,6 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
         Token tabGroupId = tab.getTabGroupId();
         if (tabGroupId != null && tabModel.containsTabGroup(tabGroupId)) {
-            updateTabGroupHeaderId(tabGroupId);
             mMediator.updateTabGroupTitle(tabGroupId);
         }
 
@@ -225,9 +223,6 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
 
     @Override
     public void didMoveTabOutOfGroup(Tab movedTab, Token oldTabGroupId) {
-        if (!isRemovingTabGroup(oldTabGroupId)) {
-            updateTabGroupHeaderId(oldTabGroupId);
-        }
         syncChildTab(movedTab, oldTabGroupId);
     }
 
@@ -346,21 +341,6 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
                 && !oldTabGroupId.equals(newTabGroupId)
                 && !isRemovingTabGroup(oldTabGroupId)) {
             mMediator.updateTabGroupTitle(oldTabGroupId);
-        }
-    }
-
-    // TODO(crbug.com/517544602): Setting TabProperties.TAB_ID on group headers should be
-    // deprecated in favor of Token, but removing this breaks Vertical Tabs group drag-and-drop and
-    // expansion.
-    private void updateTabGroupHeaderId(Token tabGroupId) {
-        int headerIndex = mModelList.indexFromTabGroupId(tabGroupId);
-        if (headerIndex == TabModel.INVALID_TAB_INDEX) return;
-
-        int firstTabId =
-                TabGroupUtils.getFirstTabIdInGroup(
-                        mMediator.getCurrentTabModelChecked(), tabGroupId);
-        if (firstTabId != Tab.INVALID_TAB_ID) {
-            mModelList.get(headerIndex).model.set(TabProperties.TAB_ID, firstTabId);
         }
     }
 

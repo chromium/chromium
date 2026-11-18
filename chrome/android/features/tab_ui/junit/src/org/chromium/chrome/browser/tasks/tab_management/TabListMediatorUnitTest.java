@@ -5113,6 +5113,7 @@ public class TabListMediatorUnitTest {
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         List<Tab> tabs = List.of(mTab1, tab3);
         createTabGroup(tabs, TAB_GROUP_ID);
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
 
         mMediator.resetWithListOfTabs(null, null, false);
         mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), null, true);
@@ -5122,11 +5123,14 @@ public class TabListMediatorUnitTest {
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(tab3));
 
         assertEquals(TAB1_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertEquals(1, mModelList.indexFromTabId(TAB1_ID));
 
         mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab1);
 
-        // Header should survive and transfer ID to tab3.
-        assertEquals(TAB3_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        // Header should survive and keep its original tab ID, while the child row is removed.
+        assertTrue(TabProperties.isTabGroupHeader(mModelList.get(0).model));
+        assertEquals(TAB1_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertEquals(TabModel.INVALID_TAB_INDEX, mModelList.indexFromTabId(TAB1_ID));
     }
 
     @Test
