@@ -13,9 +13,11 @@
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "url/gurl.h"
 
 DEFINE_USER_DATA(InitialWebUIManager);
 
@@ -54,8 +56,9 @@ InitialWebUIManager::InitialWebUIManager(BrowserWindowInterface* browser)
 
     const bool pre_navigate =
         features::kWebUIReloadButtonPrewarmWebUIPreNavigate.Get();
-    toolbar_web_contents_ =
-        waap::PrewarmHelper::PrewarmWebUIContents(profile, pre_navigate);
+    toolbar_web_contents_ = waap::PrewarmHelper::PrewarmWebUiContents(
+        profile, GURL(chrome::kChromeUIWebUIToolbarURL),
+        IDS_TASK_MANAGER_WEBUI_TOOLBAR, pre_navigate);
     webui::SetBrowserWindowInterface(toolbar_web_contents_.get(), browser);
   }
 }

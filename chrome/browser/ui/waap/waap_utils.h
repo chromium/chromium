@@ -129,15 +129,17 @@ class PrewarmHelper {
   // WebContents, which the WebUI keeps until it is attached to a window.
   static ui::ColorProviderKey GetColorProviderKey(Profile* profile);
 
-  // Prewarms the WebUI toolbar WebContents for a window of `profile`.
-  // Creates the WebContents and configures it for `profile` using
-  // ConfigureWebUIContents.
-  // If `pre_navigate` is true, starts loading the toolbar URL; otherwise, only
-  // initializes the renderer process.
+  // Prewarms the WebContents of the Top Chrome WebUI at `url` for a window of
+  // `profile`. Creates the WebContents in
+  // webui::GetProfileForTopChromeWebUIContents() and configures it for
+  // `profile` using ConfigureWebUIContents(). If `pre_navigate` is true, starts
+  // loading `url`; otherwise, only initializes the renderer process.
   // TODO(crbug.com/581783426): Enable on Android for the tab strip new tab
   // button, once TopChromeWebUIProfile is supported there.
-  static std::unique_ptr<content::WebContents> PrewarmWebUIContents(
+  static std::unique_ptr<content::WebContents> PrewarmWebUiContents(
       Profile* profile,
+      const GURL& url,
+      int task_manager_string_id,
       bool pre_navigate);
 
   // Prewarms and navigates an unbound WebUI toolbar WebContents in
@@ -159,7 +161,7 @@ class PrewarmHelper {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
-  static void ConfigureCommonWebUIContents(content::WebContents* web_contents,
+  static void ConfigureCommonWebUiContents(content::WebContents* web_contents,
                                            int task_manager_string_id,
                                            bool create_prefs_tab_helper);
 };

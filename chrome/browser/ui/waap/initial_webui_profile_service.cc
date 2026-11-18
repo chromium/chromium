@@ -29,10 +29,13 @@
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_prerenderer.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/native_theme/native_theme.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -216,8 +219,9 @@ void InitialWebUIProfileService::PrewarmWebUI() {
       features::kWebUIReloadButtonPrewarmWebUI.Get()) {
     const bool pre_navigate =
         features::kWebUIReloadButtonPrewarmWebUIPreNavigate.Get();
-    toolbar_web_contents_ =
-        waap::PrewarmHelper::PrewarmWebUIContents(profile_, pre_navigate);
+    toolbar_web_contents_ = waap::PrewarmHelper::PrewarmWebUiContents(
+        profile_, GURL(chrome::kChromeUIWebUIToolbarURL),
+        IDS_TASK_MANAGER_WEBUI_TOOLBAR, pre_navigate);
   }
 }
 
@@ -259,8 +263,10 @@ InitialWebUIProfileService::CreateSpare() {
               &contents, template_profile);
         });
   }
-  return waap::PrewarmHelper::PrewarmWebUIContents(
-      profile_, features::kWebUIReloadButtonPrewarmWebUIPreNavigate.Get());
+  return waap::PrewarmHelper::PrewarmWebUiContents(
+      profile_, GURL(chrome::kChromeUIWebUIToolbarURL),
+      IDS_TASK_MANAGER_WEBUI_TOOLBAR,
+      features::kWebUIReloadButtonPrewarmWebUIPreNavigate.Get());
 }
 
 bool InitialWebUIProfileService::IsSpareCurrent(content::WebContents& spare) {

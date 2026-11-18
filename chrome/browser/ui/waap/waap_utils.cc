@@ -97,18 +97,21 @@ void SetPrewarmColorProviderSource(content::WebContents* web_contents,
                             std::move(source));
 }
 
-std::unique_ptr<content::WebContents> CreateToolbarWebContents(
-    Profile& contents_profile) {
+std::unique_ptr<content::WebContents> CreateWebUiContents(
+    Profile& contents_profile,
+    const GURL& url) {
+  // A SiteInstance for the WebUI URL, rather than an unassigned one, lets the
+  // WebUIs share a renderer process across windows.
   return content::WebContents::Create(content::WebContents::CreateParams(
       &contents_profile,
-      content::SiteInstance::CreateForURL(
-          &contents_profile, GURL(chrome::kChromeUIWebUIToolbarURL))));
+      content::SiteInstance::CreateForURL(&contents_profile, url)));
 }
 
-void NavigateToolbarWebContents(content::WebContents& web_contents) {
-  web_contents.GetController().LoadURL(
-      GURL(chrome::kChromeUIWebUIToolbarURL), content::Referrer(),
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+void NavigateWebUiContents(content::WebContents& web_contents,
+                           const GURL& url) {
+  web_contents.GetController().LoadURL(url, content::Referrer(),
+                                       ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                       std::string());
 }
 
 }  // namespace
@@ -166,7 +169,7 @@ void PrewarmHelper::ConfigureWebUIContents(content::WebContents* web_contents,
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  ConfigureCommonWebUIContents(web_contents, task_manager_string_id,
+  ConfigureCommonWebUiContents(web_contents, task_manager_string_id,
                                /*create_prefs_tab_helper=*/true);
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -177,14 +180,14 @@ void PrewarmHelper::ConfigureWebUIContents(content::WebContents* web_contents,
   // ColorProviderSource), so a temporary source would only cause an extra
   // ColorProvider and WebPreferences recomputation.
   // TODO(crbug.com/581783426): Enable for Android if the NTB WebContents is
-  // prewarmed before a window exists (e.g. PrewarmWebUIContents with
+  // prewarmed before a window exists (e.g. PrewarmWebUiContents with
   // TopChromeWebUIProfile), with an Android ColorProviderKey source.
   SetPrewarmColorProviderSource(web_contents, GetColorProviderKey(profile));
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // static
-void PrewarmHelper::ConfigureCommonWebUIContents(
+void PrewarmHelper::ConfigureCommonWebUiContents(
     content::WebContents* web_contents,
     int task_manager_string_id,
     bool create_prefs_tab_helper) {
@@ -228,19 +231,20 @@ ui::ColorProviderKey PrewarmHelper::GetColorProviderKey(Profile* profile) {
       profile);
 }
 
-std::unique_ptr<content::WebContents> PrewarmHelper::PrewarmWebUIContents(
+std::unique_ptr<content::WebContents> PrewarmHelper::PrewarmWebUiContents(
     Profile* profile,
+    const GURL& url,
+    int task_manager_string_id,
     bool pre_navigate) {
-  Profile& contents_profile = webui::GetProfileForTopChromeWebUIContents(
-      profile, GURL(chrome::kChromeUIWebUIToolbarURL));
+  Profile& contents_profile =
+      webui::GetProfileForTopChromeWebUIContents(profile, url);
   std::unique_ptr<content::WebContents> web_contents =
-      CreateToolbarWebContents(contents_profile);
+      CreateWebUiContents(contents_profile, url);
 
-  ConfigureWebUIContents(web_contents.get(), profile,
-                         IDS_TASK_MANAGER_WEBUI_TOOLBAR);
+  ConfigureWebUIContents(web_contents.get(), profile, task_manager_string_id);
 
   if (pre_navigate) {
-    NavigateToolbarWebContents(*web_contents);
+    NavigateWebUiContents(*web_contents, url);
   } else {
     web_contents->GetSiteInstance()->GetProcess()->Init();
   }
@@ -254,10 +258,11 @@ PrewarmHelper::PrewarmUnboundWebUIContents(
     base::FunctionRef<void(content::WebContents&)> seed) {
   Profile* top_chrome_profile = webui::GetTopChromeWebUIProfile();
   CHECK(top_chrome_profile);
+  const GURL url(chrome::kChromeUIWebUIToolbarURL);
   std::unique_ptr<content::WebContents> web_contents =
-      CreateToolbarWebContents(*top_chrome_profile);
+      CreateWebUiContents(*top_chrome_profile, url);
 
-  ConfigureCommonWebUIContents(web_contents.get(),
+  ConfigureCommonWebUiContents(web_contents.get(),
                                IDS_TASK_MANAGER_WEBUI_TOOLBAR,
                                /*create_prefs_tab_helper=*/false);
   // Set up the color provider source so that early navigation can resolve
@@ -265,7 +270,7 @@ PrewarmHelper::PrewarmUnboundWebUIContents(
   SetPrewarmColorProviderSource(web_contents.get(),
                                 GetColorProviderKey(&template_profile));
   seed(*web_contents);
-  NavigateToolbarWebContents(*web_contents);
+  NavigateWebUiContents(*web_contents, url);
   return web_contents;
 }
 
