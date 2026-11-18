@@ -20,6 +20,14 @@ specific_include_rules = {
     "+content/public/browser/browser_thread.h",
     "+chrome/browser/net/profile_network_context_service.h",
     "+chrome/browser/net/profile_network_context_service_factory.h",
+    "+chrome/browser/profiles/profile.h",
+  ],
+  "browser_interop_browsertest.cc": [
+    "+chrome/browser/profiles/profile.h",
+    "+chrome/test/base/in_process_browser_test.h",
+    "+content/public/browser/browser_task_traits.h",
+    "+content/public/browser/browser_thread.h",
+    "+content/public/test/browser_test.h",
   ],
   "host_event_reporter_impl.*": [
     "+chrome/browser/policy/messaging_layer/proto",  # For ERP events prototypes

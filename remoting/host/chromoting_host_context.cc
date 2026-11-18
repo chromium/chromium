@@ -41,7 +41,9 @@ class ChromotingHostContextChromeOs : public ChromotingHostContext {
       scoped_refptr<AutoThreadTaskRunner> network_task_runner,
       scoped_refptr<AutoThreadTaskRunner> video_capture_task_runner,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-      CreateClientCertStoreCallback create_client_cert_store);
+      CreateClientCertStoreCallback create_client_cert_store,
+      scoped_refptr<base::SingleThreadTaskRunner>
+          client_cert_store_task_runner);
 
   ChromotingHostContextChromeOs(const ChromotingHostContextChromeOs&) = delete;
   ChromotingHostContextChromeOs& operator=(
@@ -62,6 +64,8 @@ class ChromotingHostContextChromeOs : public ChromotingHostContext {
     CHECK(create_client_cert_store_callback);
     create_client_cert_store_ = std::move(create_client_cert_store_callback);
   }
+  scoped_refptr<base::SequencedTaskRunner> client_cert_store_task_runner()
+      const override;
 
  private:
   // |ui_shared_url_loader_factory_| is a SharedUrlLoaderFactory which is bound
@@ -80,6 +84,10 @@ class ChromotingHostContextChromeOs : public ChromotingHostContext {
       network_shared_url_loader_factory_;
 
   CreateClientCertStoreCallback create_client_cert_store_;
+
+  // Raw browser UI task runner (not AutoThreadTaskRunner, which CHECKs that
+  // every PostTask succeeds even during browser shutdown).
+  scoped_refptr<base::SingleThreadTaskRunner> client_cert_store_task_runner_;
 };
 
 ChromotingHostContextChromeOs::ChromotingHostContextChromeOs(
@@ -89,7 +97,8 @@ ChromotingHostContextChromeOs::ChromotingHostContextChromeOs(
     scoped_refptr<AutoThreadTaskRunner> network_task_runner,
     scoped_refptr<AutoThreadTaskRunner> video_capture_task_runner,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-    CreateClientCertStoreCallback create_client_cert_store)
+    CreateClientCertStoreCallback create_client_cert_store,
+    scoped_refptr<base::SingleThreadTaskRunner> client_cert_store_task_runner)
     : ChromotingHostContext(ui_task_runner,
                             file_task_runner,
                             input_task_runner,
@@ -97,7 +106,8 @@ ChromotingHostContextChromeOs::ChromotingHostContextChromeOs(
                             video_capture_task_runner),
       ui_shared_url_loader_factory_(shared_url_loader_factory),
       pending_factory_(ui_shared_url_loader_factory_->Clone()),
-      create_client_cert_store_(std::move(create_client_cert_store)) {
+      create_client_cert_store_(std::move(create_client_cert_store)),
+      client_cert_store_task_runner_(std::move(client_cert_store_task_runner)) {
   CHECK(create_client_cert_store_);
 }
 
@@ -117,7 +127,8 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContextChromeOs::Copy() {
   return std::make_unique<ChromotingHostContextChromeOs>(
       ui_task_runner(), file_task_runner(), input_task_runner(),
       network_task_runner(), video_capture_task_runner(),
-      ui_shared_url_loader_factory_, create_client_cert_store_);
+      ui_shared_url_loader_factory_, create_client_cert_store_,
+      client_cert_store_task_runner_);
 }
 
 scoped_refptr<net::URLRequestContextGetter>
@@ -138,6 +149,11 @@ ChromotingHostContextChromeOs::url_loader_factory() {
 ChromotingHostContext::CreateClientCertStoreCallback
 ChromotingHostContextChromeOs::create_client_cert_store_callback() const {
   return create_client_cert_store_;
+}
+
+scoped_refptr<base::SequencedTaskRunner>
+ChromotingHostContextChromeOs::client_cert_store_task_runner() const {
+  return client_cert_store_task_runner_;
 }
 
 #else  // !BUILDFLAG(IS_CHROMEOS)
@@ -363,7 +379,8 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContext::CreateForChromeOS(
       ui_auto_task_runner,  // input_task_runner
       io_auto_task_runner,  // network_task_runner
       ui_auto_task_runner,  // video_capture_task_runner
-      shared_url_loader_factory, std::move(create_client_cert_store));
+      shared_url_loader_factory, std::move(create_client_cert_store),
+      std::move(ui_task_runner));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

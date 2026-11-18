@@ -2007,6 +2007,9 @@ if (!is_android) {
         "//third_party/liblouis:browser_tests",
         "//ui/file_manager/integration_tests:build",
       ]
+      if (enable_remoting) {
+        deps += [ "//remoting/host/chromeos:browser_tests" ]
+      }
     }
     if (enable_smart_card) {
       deps += [ "//chrome/browser/smart_card:browser_tests" ]

@@ -72,6 +72,7 @@ source_set("browser_interop") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/net",
+    "//chrome/browser/profiles:profile",
     "//content/public/browser",
     "//net",
     "//remoting/base",
@@ -183,6 +184,32 @@ source_set("unit_tests") {
   ]
 
   public_deps = [ "//services/viz/privileged/mojom/compositing" ]
+}
+
+# Built as part of //chrome/test:browser_tests.
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "browser_interop_browsertest.cc" ]
+
+  deps = [
+    ":browser_interop",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",  # Required for browser_interop
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//remoting/base",
+    "//remoting/host",
+    "//services/network/public/mojom",
+    "//testing/gtest",
+  ]
 }
 
 source_set("features") {
