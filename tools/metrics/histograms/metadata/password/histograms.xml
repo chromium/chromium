@@ -2897,14 +2897,15 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="PasswordManager.PasswordDropdownShown.NonWebAuthnRequest.TotalCount"
-    units="credentials" expires_after="2026-03-22">
+    units="credentials" expires_after="2027-11-14">
   <owner>derinel@google.com</owner>
   <owner>markusheintz@google.com</owner>
   <summary>
     Logs the number of passwords in the password dropdown when it's shown. This
     metric is only recorded when the field is not supporting WebAuthn
     conditional UI, that is the field is not annotated with
-    autocomplete=&quot;webauthn&quot;.
+    autocomplete=&quot;webauthn&quot;. Warning: this histogram was expired from
+    2026-03-22 to 2026-11-17; data may be missing.
   </summary>
 </histogram>
 
