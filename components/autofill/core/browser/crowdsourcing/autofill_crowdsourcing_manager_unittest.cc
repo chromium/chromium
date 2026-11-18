@@ -2220,5 +2220,158 @@ TEST_F(AutofillCrowdsourcingManagerTest, RequestsInLastMinute) {
   histogram.ExpectTotalCount("Autofill.Query.RequestsInLastMinute", 4);
 }
 
+// Tests that repeated form and structural signatures within a single query are
+// counted only once.
+TEST_F(AutofillCrowdsourcingManagerTest,
+       QuerySignatureCountMetrics_DeduplicatesSignatures) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillServerExperimentalSignatures};
+
+  // Form signatures depend on field names while structural signatures depend on
+  // control types, so all 4 forms have distinct (form, structural) signature
+  // pairs and are included in the query, yielding 3 unique form signatures
+  // ("a", "b", "c") and 2 unique structural signatures (text, email).
+  std::vector<FormData> forms = {
+      test::GetFormData(
+          {.fields = {{.name = u"a",
+                       .form_control_type = FormControlType::kInputText}}}),
+      test::GetFormData(
+          {.fields = {{.name = u"a",
+                       .form_control_type = FormControlType::kInputEmail}}}),
+      test::GetFormData(
+          {.fields = {{.name = u"b",
+                       .form_control_type = FormControlType::kInputText}}}),
+      test::GetFormData(
+          {.fields = {{.name = u"c",
+                       .form_control_type = FormControlType::kInputText}}}),
+  };
+
+  base::HistogramTester histogram;
+  EXPECT_TRUE(StartQueryRequest(forms));
+  histogram.ExpectTotalCount(
+      AutofillCrowdsourcingManager::kUmaUniqueFormSignaturesCount, 0);
+  histogram.ExpectTotalCount(
+      AutofillCrowdsourcingManager::kUmaUniqueStructuralSignaturesCount, 0);
+
+  network::TestURLLoaderFactory::PendingRequest* request =
+      url_loader_factory().GetPendingRequest(0);
+  ASSERT_NE(request, nullptr);
+  url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(request,
+                                                                      "");
+  histogram.ExpectUniqueSample(
+      AutofillCrowdsourcingManager::kUmaUniqueFormSignaturesCount, 3, 1);
+  histogram.ExpectUniqueSample(
+      AutofillCrowdsourcingManager::kUmaUniqueStructuralSignaturesCount, 2, 1);
+}
+
+// Tests that unique form and structural signatures are deduplicated across a
+// flattened form and its cross-iframe subqueries.
+TEST_F(AutofillCrowdsourcingManagerTest,
+       QuerySignatureCountMetrics_DeduplicatesIframeSubquerySignatures) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillServerExperimentalSignatures,
+       features::kAutofillQueryPerIframeStructuralSignatures},
+      {});
+
+  FormData form = test::GetFormData({
+      .fields =
+          {{.name = u"a"}, {.name = u"b"}, {.name = u"c"}, {.name = u"d"}},
+  });
+  const FormSignature kFlattenedFormSignature = CalculateFormSignature(form);
+  const FormSignature kFlattenedStructuralSignature =
+      CalculateStructuralFormSignature(form);
+  constexpr FormSignature kSubqueryFormSignature1(12345UL);
+  constexpr FormSignature kSubqueryFormSignature2(67890UL);
+  constexpr FormSignature kSubqueryStructuralSignature1(11111UL);
+  constexpr FormSignature kSubqueryStructuralSignature2(22222UL);
+
+  test_api(form).field(0).set_host_form_signature(kFlattenedFormSignature);
+  test_api(form).field(0).set_host_form_structural_signature(
+      kFlattenedStructuralSignature);
+  test_api(form).field(1).set_host_form_signature(kSubqueryFormSignature1);
+  test_api(form).field(1).set_host_form_structural_signature(
+      kSubqueryStructuralSignature1);
+  test_api(form).field(2).set_host_form_signature(kSubqueryFormSignature1);
+  test_api(form).field(2).set_host_form_structural_signature(
+      kSubqueryStructuralSignature2);
+  test_api(form).field(3).set_host_form_signature(kSubqueryFormSignature2);
+  test_api(form).field(3).set_host_form_structural_signature(
+      kSubqueryStructuralSignature1);
+
+  base::HistogramTester histogram;
+  EXPECT_TRUE(StartQueryRequest({form}));
+  network::TestURLLoaderFactory::PendingRequest* request =
+      url_loader_factory().GetPendingRequest(0);
+  ASSERT_NE(request, nullptr);
+  url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(request,
+                                                                      "");
+
+  // The encoded query contains 4 distinct (form, structural) pairs:
+  // (F0, S0) for the flattened form, plus subqueries (F1, S1), (F1, S2), and
+  // (F2, S1).
+  // - Unique form signatures: {F0, F1, F2} -> 3 (F1 is shared).
+  // - Unique structural signatures: {S0, S1, S2} -> 3 (S1 is shared).
+  histogram.ExpectUniqueSample(
+      AutofillCrowdsourcingManager::kUmaUniqueFormSignaturesCount, 3, 1);
+  histogram.ExpectUniqueSample(
+      AutofillCrowdsourcingManager::kUmaUniqueStructuralSignaturesCount, 3, 1);
+}
+
+// Tests that queries served from the in-memory cache do not emit signature
+// count metrics.
+TEST_F(AutofillCrowdsourcingManagerTest,
+       QuerySignatureCountMetrics_ExcludesInMemoryCacheHits) {
+  std::vector<FormData> forms = {
+      test::GetFormData({.fields = {{.name = u"first_name"}}}),
+  };
+
+  // The first request populates the in-memory cache.
+  EXPECT_TRUE(StartQueryRequest(forms));
+  network::TestURLLoaderFactory::PendingRequest* request =
+      url_loader_factory().GetPendingRequest(0);
+  ASSERT_NE(request, nullptr);
+  url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(request,
+                                                                      "");
+  ASSERT_THAT(responses(), SizeIs(1));
+  responses().clear();
+
+  // The second request is served from the in-memory cache and should not emit
+  // signature count metrics.
+  base::HistogramTester histogram;
+  EXPECT_TRUE(StartQueryRequest(forms));
+  ASSERT_THAT(responses(), SizeIs(1));
+  histogram.ExpectTotalCount(
+      AutofillCrowdsourcingManager::kUmaUniqueFormSignaturesCount, 0);
+  histogram.ExpectTotalCount(
+      AutofillCrowdsourcingManager::kUmaUniqueStructuralSignaturesCount, 0);
+}
+
+// Tests that queries served from the HTTP cache do not emit signature count
+// metrics.
+TEST_F(AutofillCrowdsourcingManagerTest,
+       QuerySignatureCountMetrics_ExcludesHttpCacheHits) {
+  std::vector<FormData> forms = {
+      test::GetFormData({.fields = {{.name = u"first_name"}}}),
+  };
+
+  base::HistogramTester histogram;
+  EXPECT_TRUE(StartQueryRequest(forms));
+  network::TestURLLoaderFactory::PendingRequest* request =
+      url_loader_factory().GetPendingRequest(0);
+  ASSERT_NE(request, nullptr);
+  network::URLLoaderCompletionStatus status(net::OK);
+  status.exists_in_cache = true;
+  url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
+      request, network::CreateURLResponseHead(net::HTTP_OK), "", status);
+  ASSERT_THAT(responses(), SizeIs(1));
+  histogram.ExpectUniqueSample(AutofillCrowdsourcingManager::kUmaWasInCache,
+                               CACHE_HIT, 1);
+  histogram.ExpectTotalCount(
+      AutofillCrowdsourcingManager::kUmaUniqueFormSignaturesCount, 0);
+  histogram.ExpectTotalCount(
+      AutofillCrowdsourcingManager::kUmaUniqueStructuralSignaturesCount, 0);
+}
+
 }  // namespace
 }  // namespace autofill

@@ -8375,6 +8375,29 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Query.UniqueFormSignaturesCount" units="signatures"
+    expires_after="2027-05-10">
+  <owner>pawelstus@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of unique form signatures included in an Autofill query request.
+    Recorded with every query request sent to the Autofill server that is not
+    served from the in-memory or HTTP cache.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Query.UniqueStructuralSignaturesCount"
+    units="signatures" expires_after="2027-05-10">
+  <owner>pawelstus@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of unique structural form signatures included in an Autofill
+    query request (forms without a structural signature set are ignored).
+    Recorded with every query request sent to the Autofill server that is not
+    served from the in-memory or HTTP cache.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Query.WasInCache" enum="BooleanCacheHit"
     expires_after="2027-12-12">
   <owner>battre@chromium.org</owner>

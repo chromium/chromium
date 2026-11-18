@@ -23,6 +23,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -620,6 +621,27 @@ void InitActiveExperiments() {
   GetActiveExperiments() = std::move(active_experiments);
 }
 
+// Returns the counts of unique form and structural signatures in `query`.
+std::pair<size_t, size_t> ComputeQuerySignatureCounts(
+    const AutofillPageQueryRequest& query) {
+  std::vector<uint64_t> form_signatures;
+  form_signatures.reserve(query.forms_size());
+  std::vector<uint64_t> structural_signatures;
+  structural_signatures.reserve(query.forms_size());
+  for (const AutofillPageQueryRequest::Form& form : query.forms()) {
+    if (form.has_signature()) {
+      form_signatures.push_back(form.signature());
+    }
+    if (form.has_structural_signature()) {
+      structural_signatures.push_back(form.structural_signature());
+    }
+  }
+  return {
+      base::flat_set<uint64_t>(std::move(form_signatures)).size(),
+      base::flat_set<uint64_t>(std::move(structural_signatures)).size(),
+  };
+}
+
 }  // namespace
 
 template <typename Signature>
@@ -677,6 +699,8 @@ struct AutofillCrowdsourcingManager::FormRequestData {
   std::optional<net::IsolationInfo> isolation_info;
   std::string payload;
   int num_attempts = 0;
+  size_t unique_form_signatures_count = 0;
+  size_t unique_structural_signatures_count = 0;
 };
 
 ScopedActiveAutofillExperiments::ScopedActiveAutofillExperiments() {
@@ -779,6 +803,10 @@ bool AutofillCrowdsourcingManager::StartQueryRequest(
     return true;
   }
 
+  const auto [unique_form_signatures_count,
+              unique_structural_signatures_count] =
+      ComputeQuerySignatureCounts(query);
+
   LOG_AF(client_->GetCurrentLogManager())
       << LoggingScope::kAutofillServer << LogMessage::kSendAutofillQuery << Br{}
       << "Signatures: " << query;
@@ -788,6 +816,8 @@ bool AutofillCrowdsourcingManager::StartQueryRequest(
       .request_type = CrowdsourcingRequestType::kRequestQuery,
       .isolation_info = std::move(isolation_info),
       .payload = std::move(payload).value(),
+      .unique_form_signatures_count = unique_form_signatures_count,
+      .unique_structural_signatures_count = unique_structural_signatures_count,
   });
 }
 
@@ -1101,6 +1131,13 @@ void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
   if (!simple_loader->LoadedFromCache()) {
     AutofillCrowdsourcingManager::RecordRequestsInLastMinute(
         request_data.request_type);
+    if (request_data.request_type == CrowdsourcingRequestType::kRequestQuery) {
+      base::UmaHistogramCounts100(kUmaUniqueFormSignaturesCount,
+                                  request_data.unique_form_signatures_count);
+      base::UmaHistogramCounts100(
+          kUmaUniqueStructuralSignaturesCount,
+          request_data.unique_structural_signatures_count);
+    }
   }
 
   if (!success) {

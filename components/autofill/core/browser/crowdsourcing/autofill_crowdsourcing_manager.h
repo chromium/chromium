@@ -61,6 +61,10 @@ class AutofillCrowdsourcingManager {
   // Names of UMA metrics recorded in this class.
   static constexpr char kUmaGetUrlLength[] = "Autofill.Query.GetUrlLength";
   static constexpr char kUmaMethod[] = "Autofill.Query.Method";
+  static constexpr char kUmaUniqueFormSignaturesCount[] =
+      "Autofill.Query.UniqueFormSignaturesCount";
+  static constexpr char kUmaUniqueStructuralSignaturesCount[] =
+      "Autofill.Query.UniqueStructuralSignaturesCount";
   static constexpr char kUmaWasInCache[] = "Autofill.Query.WasInCache";
 
   // `client` owns (and hence survives) this AutofillCrowdsourcingManager.
