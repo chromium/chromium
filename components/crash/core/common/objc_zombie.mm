@@ -8,11 +8,13 @@
 #include <AvailabilityMacros.h>
 #include <execinfo.h>
 #import <objc/runtime.h>
+#include <pthread.h>
 #include <string.h>
 
 #include <algorithm>
 #include <tuple>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/debug/stack_trace.h"
@@ -21,6 +23,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/gwp_asan/buildflags/buildflags.h"
@@ -81,10 +84,42 @@ size_t g_fatZombieSize = 0;
 // from |-shouldBecomeCrZombie|.
 BOOL g_zombieAllObjects = NO;
 
+base::Lock*& LockStorage() {
+  static base::Lock* lock = new base::Lock();
+  return lock;
+}
+
 // Protects |g_zombieCount|, |g_zombieIndex|, and |g_zombies|.
 base::Lock& GetLock() {
-  static auto* lock = new base::Lock();
-  return *lock;
+  return *LockStorage();
+}
+
+// True on the thread that holds GetLock() across fork(). libSystem's own fork
+// handlers, such as XPC's, run inside the pthread_atfork() ones and can
+// -dealloc on that thread, so it must not wait for the lock again.
+constinit thread_local bool g_holdingLockForFork = false;
+
+// Without these, a fork() while another thread holds GetLock() leaves the
+// child with a lock that is never released, and its first -dealloc hangs.
+// The lock is held from the prepare handler until the parent or child one.
+void LockForFork() EXCLUSIVE_LOCK_FUNCTION(GetLock()) {
+  CHECK(!g_holdingLockForFork);
+  GetLock().Acquire();
+  g_holdingLockForFork = true;
+}
+
+void UnlockInParent() UNLOCK_FUNCTION(GetLock()) {
+  CHECK(g_holdingLockForFork);
+  g_holdingLockForFork = false;
+  GetLock().Release();
+}
+
+// The child's thread has a new thread ID, so it can't release the lock that
+// the parent's thread took. The held lock is leaked.
+void ReplaceLockInChild() {
+  CHECK(g_holdingLockForFork);
+  g_holdingLockForFork = false;
+  LockStorage() = new base::Lock();
 }
 
 // How many zombies to keep before freeing, and the current head of
@@ -157,7 +192,10 @@ void ZombieDealloc(id self, SEL _cmd) {
 
   // Don't involve the lock when creating zombies without a treadmill.
   if (g_zombieCount > 0) {
-    base::AutoLock pin(GetLock());
+    // While this thread holds the lock across fork(), libSystem's fork
+    // handlers can -dealloc on it, in the parent or the child. The lock is
+    // already held and isn't recursive, so taking it again would deadlock.
+    base::AutoLockMaybe pin(g_holdingLockForFork ? nullptr : &GetLock());
 
     // Check the count again in a thread-safe manner.
     if (g_zombieCount > 0) {
@@ -273,6 +311,10 @@ BOOL ZombieInit() {
 
   if (!g_originalDeallocIMP || !g_zombieClass || !g_fatZombieClass)
     return NO;
+
+  if (pthread_atfork(&LockForFork, &UnlockInParent, &ReplaceLockInChild) != 0) {
+    return NO;
+  }
 
   initialized = YES;
   return YES;
@@ -416,6 +458,10 @@ bool ZombieEnable(bool zombieAllObjects,
   }
 
   return true;
+}
+
+base::Lock& GetZombieLockForTesting() {
+  return GetLock();
 }
 
 void ZombieDisable() {

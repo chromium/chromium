@@ -2,11 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "components/crash/core/common/objc_zombie.h"
+
 #import <Foundation/Foundation.h>
 #include <objc/runtime.h>
+#include <unistd.h>
 
 #import "base/apple/scoped_nsobject.h"
-#import "components/crash/core/common/objc_zombie.h"
+#include "base/process/process.h"
+#include "base/synchronization/lock.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
+#include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
+#include "base/threading/thread.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -94,5 +105,61 @@ TEST(ObjcZombieTest, AssociatedObjectsReleased) {
   ObjcEvilDoers::ZombieDisable();
   EXPECT_EQ(1u, [anObject.get() retainCount]);
 }
+
+// iOS Chrome is a single process and never forks, so these tests only apply
+// to Mac.
+#if BUILDFLAG(IS_MAC)
+
+// Returns whether a fork() child could -dealloc and exit.
+bool ForkedChildCanDealloc() {
+  pid_t pid = fork();
+  if (pid == 0) {
+    [[[NSObject alloc] init] release];
+    _exit(0);
+  }
+  if (pid < 0) {
+    return false;
+  }
+  base::Process child(pid);
+  int exit_code = -1;
+  if (!child.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
+                                    &exit_code)) {
+    child.Terminate(-1, /*wait=*/true);
+    return false;
+  }
+  return exit_code == 0;
+}
+
+// Verify that a fork() while another thread holds the zombie lock doesn't
+// leave the child with a lock that is never released.
+TEST(ObjcZombieTest, ForkWhileAnotherThreadHoldsZombieLock) {
+  ASSERT_TRUE(ObjcEvilDoers::ZombieEnable(YES, 100));
+
+  base::WaitableEvent locked;
+  base::Thread holder("ZombieLockHolder");
+  ASSERT_TRUE(holder.Start());
+  holder.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&] {
+        base::AutoLock lock(ObjcEvilDoers::GetZombieLockForTesting());
+        locked.Signal();
+        base::PlatformThread::Sleep(base::Milliseconds(100));
+      }));
+  locked.Wait();
+
+  EXPECT_TRUE(ForkedChildCanDealloc());
+
+  holder.Stop();
+  ObjcEvilDoers::ZombieDisable();
+}
+
+// Verify that libSystem's fork handlers, which -dealloc in the child while the
+// zombie lock is still held for fork(), don't wait for it.
+TEST(ObjcZombieTest, ForkWithZombiesEnabled) {
+  ASSERT_TRUE(ObjcEvilDoers::ZombieEnable(YES, 100));
+  EXPECT_TRUE(ForkedChildCanDealloc());
+  ObjcEvilDoers::ZombieDisable();
+}
+
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace

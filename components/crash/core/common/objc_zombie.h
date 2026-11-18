@@ -10,6 +10,10 @@
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_export.h"
 
+namespace base {
+class Lock;
+}  // namespace base
+
 // You should think twice every single time you use anything from this
 // namespace.
 namespace ObjcEvilDoers {
@@ -31,6 +35,9 @@ bool CRASH_EXPORT ZombieEnable(bool zombieAllObjects, size_t zombieCount);
 
 // Disable zombies.
 void CRASH_EXPORT ZombieDisable();
+
+// The lock that turning an object into a zombie takes.
+CRASH_EXPORT base::Lock& GetZombieLockForTesting();
 
 }  // namespace ObjcEvilDoers
 
