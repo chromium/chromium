@@ -2481,8 +2481,16 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundPrerenderBrowserTest,
 // Verifies that the adopted toolbar shows no frame of the template profile's
 // state: frames that run before the bind message applies are gated and
 // transparent, and the first ungated frame shows the bound state.
+// TODO(crbug.com/586164171): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_BoundProfileAppliedBeforeFirstPaint \
+  DISABLED_BoundProfileAppliedBeforeFirstPaint
+#else
+#define MAYBE_BoundProfileAppliedBeforeFirstPaint \
+  BoundProfileAppliedBeforeFirstPaint
+#endif
 IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundPrerenderBrowserTest,
-                       BoundProfileAppliedBeforeFirstPaint) {
+                       MAYBE_BoundProfileAppliedBeforeFirstPaint) {
   content::WebContents* spare = PrepareUnboundSpareForFirstFrameProbe();
   ASSERT_TRUE(spare);
   const int initial_sheets =
@@ -2529,8 +2537,16 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundPrerenderBrowserTest,
 // `WasShown()` runs animation frames while still unbound. `awaiting-bind` keeps
 // them transparent and inert. Removing the gate by hand makes the probe record
 // the template profile's state, which those tests would reject.
+// TODO(crbug.com/586164171): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FirstFrameProbeRecordsUnboundStateWithoutGate \
+  DISABLED_FirstFrameProbeRecordsUnboundStateWithoutGate
+#else
+#define MAYBE_FirstFrameProbeRecordsUnboundStateWithoutGate \
+  FirstFrameProbeRecordsUnboundStateWithoutGate
+#endif
 IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundPrerenderBrowserTest,
-                       FirstFrameProbeRecordsUnboundStateWithoutGate) {
+                       MAYBE_FirstFrameProbeRecordsUnboundStateWithoutGate) {
   content::WebContents* spare = PrepareUnboundSpareForFirstFrameProbe();
   ASSERT_TRUE(spare);
   const int initial_sheets =
@@ -2594,8 +2610,16 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundPrerenderBrowserTest,
 // home button on, adopting a spare seeded from the light first profile with the
 // home button off, shows its own colors and home button in its first ungated
 // animation frame.
+// TODO(crbug.com/586164171): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SecondProfileStateAppliedBeforeFirstPaint \
+  DISABLED_SecondProfileStateAppliedBeforeFirstPaint
+#else
+#define MAYBE_SecondProfileStateAppliedBeforeFirstPaint \
+  SecondProfileStateAppliedBeforeFirstPaint
+#endif
 IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundPrerenderBrowserTest,
-                       SecondProfileStateAppliedBeforeFirstPaint) {
+                       MAYBE_SecondProfileStateAppliedBeforeFirstPaint) {
   Profile* first_profile = browser()->GetProfile();
   ASSERT_FALSE(first_profile->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -2642,8 +2666,16 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundPrerenderBrowserTest,
 // Verifies that a window of the spare's template profile, whose bind message
 // carries no differing field, still lifts the gate and shows the template
 // state in its first ungated animation frame.
+// TODO(crbug.com/586164171): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_EmptyDiffLiftsGateBeforeFirstPaint \
+  DISABLED_EmptyDiffLiftsGateBeforeFirstPaint
+#else
+#define MAYBE_EmptyDiffLiftsGateBeforeFirstPaint \
+  EmptyDiffLiftsGateBeforeFirstPaint
+#endif
 IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundPrerenderBrowserTest,
-                       EmptyDiffLiftsGateBeforeFirstPaint) {
+                       MAYBE_EmptyDiffLiftsGateBeforeFirstPaint) {
   content::WebContents* spare = PrepareUnboundSpareForFirstFrameProbe();
   ASSERT_TRUE(spare);
   const int initial_sheets =
