@@ -264,7 +264,8 @@ struct NestedDataInfo<'a> {
     nested_data: NestedData<'a>,
     // Logically this can be thought of as a &mut [u8; 8] pointing to the bytes
     // in the data vector in which we'll store the pointer value. But since the
-    // borrow checker isn't that fine in granularity, we store its index instead.
+    // borrow checker isn't that fine in granularity, we store its index
+    // instead.
     ptr_loc: usize,
 }
 
@@ -329,7 +330,7 @@ fn deparse_array(
 
     let array_body = crate::pack::pack_array_body(element_type, num_elements);
 
-    deparse_structured_body(data, None, true, element_values, array_body.into_iter())
+    deparse_structured_body(data, None, true, element_values, array_body)
 }
 
 /// Serialize a union to the wire.

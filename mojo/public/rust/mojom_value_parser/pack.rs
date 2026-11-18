@@ -335,25 +335,13 @@ fn pack_n_bits<'a>(
     n: usize,
     is_tag_bits: bool,
 ) -> impl Iterator<Item = StructuredBodyElementMixed<'a>> {
-    let num_full_bitfields = n / 8; // Round down
-    let remaining_bools = n % 8;
-    let num_partial_bitfields = if remaining_bools == 0 { 0 } else { 1 };
-    let mut bitfields: Vec<BitfieldOrdinals> =
-        Vec::with_capacity(num_full_bitfields + num_partial_bitfields);
-    for i in 0..num_full_bitfields {
-        bitfields.push(std::array::from_fn(|idx| Some((i * 8 + idx, is_tag_bits))))
-    }
-    if remaining_bools != 0 {
-        bitfields.push(std::array::from_fn(|idx| {
-            if idx < remaining_bools {
-                Some((num_full_bitfields * 8 + idx, is_tag_bits))
-            } else {
-                None
-            }
+    let num_bitfields = n.div_ceil(8);
+    (0..num_bitfields).map(move |i| {
+        StructuredBodyElement::Bitfield(std::array::from_fn(|idx| {
+            let ordinal = i * 8 + idx;
+            (ordinal < n).then_some((ordinal, is_tag_bits))
         }))
-    }
-
-    bitfields.into_iter().map(StructuredBodyElement::Bitfield)
+    })
 }
 
 /// Create a structured body out of an array. This can be thought of as part of

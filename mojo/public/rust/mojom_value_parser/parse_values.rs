@@ -24,8 +24,6 @@ use crate::parse_primitives::*;
 use std::collections::BTreeMap;
 use std::sync::{Arc, LazyLock};
 
-use itertools::Itertools;
-
 /// Parse a type without nested data, i.e. anything but a struct or array
 fn parse_leaf_element(
     data: &mut ParserData,
@@ -190,7 +188,7 @@ fn skip_to_alignment(data: &mut ParserData, alignment: usize) -> ParsingResult<(
 /// Information about a nested struct/array, which we expect to see later.
 struct NestedDataInfo<'a> {
     ty: &'a PackedStructuredType,
-    field_name: String,
+    field_name: Option<&'a str>,
     ordinal: Ordinal,
     /// The expected location of the nested data, as an offset in bytes from the
     /// start of the enclosing struct
@@ -253,12 +251,33 @@ pub fn parse_struct(
         data,
         None,
         size_in_bytes,
-        field_names,
+        Some(field_names),
         fields.iter().map(StructuredBodyElementOwned::as_ref),
         num_elements_in_value,
     )?;
 
     Ok(MojomValue::Struct(parsed_names, parsed_fields))
+}
+
+/// Returns the minimum wire size in bytes required to store an array body
+/// (excluding the 8-byte header) containing `num_elements` `element_type`s.
+///
+/// If the size would overflow `usize`, returns `None`.
+fn min_array_body_size_in_bytes(
+    element_type: &MojomWireType,
+    num_elements: usize,
+) -> Option<usize> {
+    let tag_bytes = if element_type.is_nullable_primitive() {
+        num_elements.div_ceil(8).next_multiple_of(element_type.alignment())
+    } else {
+        0
+    };
+
+    let elements_bytes = match element_type {
+        MojomWireType::Leaf { leaf_type: PackedLeafType::Bool, .. } => num_elements.div_ceil(8),
+        _ => num_elements.checked_mul(element_type.size())?,
+    };
+    tag_bytes.checked_add(elements_bytes)
 }
 
 fn parse_array(
@@ -288,38 +307,32 @@ fn parse_array(
         return parse_string(data, size_in_bytes, num_elements);
     }
 
+    // Ensure the remaining message buffer can hold `num_elements` elements
+    // before allocating space for them.
+    let min_body_size =
+        min_array_body_size_in_bytes(element_type, num_elements).ok_or_else(|| {
+            ParsingError::not_enough_data(
+                data.bytes_parsed(),
+                "array body",
+                usize::MAX,
+                data.remaining_bytes(),
+            )
+        })?;
+    if min_body_size > data.remaining_bytes() {
+        return Err(ParsingError::not_enough_data(
+            data.bytes_parsed(),
+            "array body",
+            min_body_size,
+            data.remaining_bytes(),
+        ));
+    }
+
     // An array body is equivalent to a struct body with `num_elements` copies
     // of its field.
     let array_body = crate::pack::pack_array_body(element_type, num_elements);
 
-    // We also need to provide dummy field names for debugging purposes.
-    let num_tag_bitfields = if element_type.is_nullable_primitive() {
-        // Nullable primitives need some bitfields at the beginning to hold
-        // the tag bits; one bitfield for every 8 elements.
-        num_elements.div_ceil(8) // Divide by 8, rounding up
-    } else {
-        0
-    };
-    // If the array elements are bools, then they are packed into bitfields, and
-    // each bitfield has a name instead of each boolean.
-    let num_named_elements =
-        if let MojomWireType::Leaf { leaf_type: PackedLeafType::Bool, .. } = &**element_type {
-            num_elements.div_ceil(8)
-        } else {
-            num_elements
-        };
-    let tag_names = (0..num_tag_bitfields).map(|idx| format!("Array_Tags_{idx}"));
-    let elt_names = (0..num_named_elements).map(|idx| format!("Array_Element_{idx}"));
-    let field_names = tag_names.chain(elt_names).collect::<Vec<_>>();
-
-    let (_names, parsed_fields) = parse_structured_body(
-        data,
-        None,
-        size_in_bytes,
-        &field_names,
-        array_body.into_iter(),
-        num_elements,
-    )?;
+    let (_names, parsed_fields) =
+        parse_structured_body(data, None, size_in_bytes, None, array_body, num_elements)?;
 
     Ok(MojomValue::Array(parsed_fields))
 }
@@ -374,8 +387,6 @@ fn parse_union<'a>(
     let enclosing_nested_data_len = enclosing_nested_data_list.as_deref().map(Vec::len);
 
     // A union is structured data with a single, variable field.
-    // Make up a dummy field name for debugging.
-    let field_name = format!("Union_Field_{tag}");
     let struct_ref_element: StructuredBodyElementMixed =
         StructuredBodyElement::SingleValue(0, field_ty);
 
@@ -383,7 +394,7 @@ fn parse_union<'a>(
         data,
         enclosing_nested_data_list.as_deref_mut(),
         size_in_bytes,
-        std::slice::from_ref(&field_name),
+        None,
         std::iter::once(struct_ref_element),
         1,
     )?;
@@ -468,8 +479,11 @@ fn parse_string(
 ) -> ParsingResult<MojomValue> {
     // Array header size should be the size of the header (8) + the number of
     // bytes
-    if size_in_bytes != num_elements + 8 {
-        return Err(ParsingError::wrong_size(data.bytes_parsed(), size_in_bytes, num_elements + 8));
+    let expected_size = num_elements
+        .checked_add(8)
+        .ok_or_else(|| ParsingError::wrong_size(data.bytes_parsed(), size_in_bytes, usize::MAX))?;
+    if size_in_bytes != expected_size {
+        return Err(ParsingError::wrong_size(data.bytes_parsed(), size_in_bytes, expected_size));
     }
     let string_bytes = parse_raw_bytes(data, num_elements)?.to_vec();
     let rust_string = String::from_utf8(string_bytes)
@@ -513,10 +527,11 @@ fn wrap_nullable_primitive(
 ///
 /// The `fields` parameter contains the fields on the wire in the order we
 /// expect to encounter them. The `field_names` parameter contains the name of
-/// each of these fields, for debugging purposes. The `num_elements_in_value`
-/// parameter contains the number of fields we expect to have _after_ parsing,
-/// which may be smaller than the length of `fields` (e.g. because nullable
-/// primitives get split into two fields on the wire).
+/// each of these fields for debugging purposes, if they have any.
+/// The `num_elements_in_value` parameter contains the number of fields we
+/// expect to have _after_ parsing, which may be smaller than the length of
+/// `fields` (e.g. because nullable primitives get split into two fields on the
+/// wire).
 ///
 /// This function assumes we have already consumed and interpreted the
 /// data's header, so we know how big the body is supposed to be
@@ -524,11 +539,11 @@ fn wrap_nullable_primitive(
 ///
 /// The `enclosing_nested_data_list` argument is only used for a special case
 /// involving unions. See the documentation of `parse_union` for details.
-fn parse_structured_body<'a, 'b, IterT, BitfieldT>(
+fn parse_structured_body<'a, IterT, BitfieldT>(
     data: &mut ParserData,
     enclosing_nested_data_list: Option<&mut Vec<NestedDataInfo<'a>>>,
     expected_size_in_bytes: usize,
-    field_names: &[String],
+    field_names: Option<&'a [String]>,
     fields: IterT,
     num_elements_in_value: usize,
 ) -> ParsingResult<(Vec<String>, Vec<MojomValue>)>
@@ -548,13 +563,13 @@ where
     // Pre-allocate space for the parsed values, so we can write directly into
     // them by index. We have to provide dummy values since rust won't allow
     // uninitialized memory.
-    let mut ret_names: Vec<String> = vec![String::new(); num_elements_in_value];
+    let mut ret_names: Vec<String> =
+        if field_names.is_some() { vec![String::new(); num_elements_in_value] } else { Vec::new() };
     let mut ret_values: Vec<MojomValue> =
         (0..num_elements_in_value).map(|_| MojomValue::Invalid).collect();
 
-    let named_fields = Itertools::zip_eq(field_names.iter(), fields);
-
-    for (name, struct_ref_element) in named_fields {
+    for (idx, struct_ref_element) in fields.enumerate() {
+        let name = field_names.map(|names| &names[idx]);
         // Make sure we're at the right alignment for this field
         skip_to_alignment(data, struct_ref_element.alignment())?;
 
@@ -566,7 +581,9 @@ where
                     let bit = (parsed_bits >> idx) & 1;
                     let parsed_val = MojomValue::Bool(bit == 1);
                     let parsed_val = wrap_nullable_primitive(&ret_values, *ordinal, parsed_val);
-                    ret_names[*ordinal] = name.clone();
+                    if let Some(name) = name {
+                        ret_names[*ordinal] = name.clone();
+                    }
                     ret_values[*ordinal] = parsed_val;
                 }
             }
@@ -580,7 +597,9 @@ where
                         // If the pointer was (validly) null, then there's no
                         // nested data to parse, we can just say None here.
                         if pointer_value == 0 {
-                            ret_names[ordinal] = name.clone();
+                            if let Some(name) = name {
+                                ret_names[ordinal] = name.clone();
+                            }
                             ret_values[ordinal] = MojomValue::Nullable(None);
                             continue;
                         }
@@ -588,7 +607,7 @@ where
                         let nested_info = NestedDataInfo {
                             ty: nested_data_type,
                             ordinal,
-                            field_name: name.clone(),
+                            field_name: name.map(String::as_str),
                             expected_offset: data.bytes_parsed() - initial_bytes_parsed
                         - 8 // Don't count the bytes we just parsed
                         + pointer_value,
@@ -611,7 +630,9 @@ where
                             parsed_value =
                                 wrap_nullable_primitive(&ret_values, ordinal, parsed_value);
                         }
-                        ret_names[ordinal] = name.clone();
+                        if let Some(name) = name {
+                            ret_names[ordinal] = name.clone();
+                        }
                         ret_values[ordinal] = parsed_value;
                     }
                     MojomWireType::Union { variants, is_nullable } => {
@@ -621,7 +642,9 @@ where
                             // If we have a complete value, we can just store it
                             // as usual.
                             (_, Some(parsed_value)) => {
-                                ret_names[ordinal] = name.clone();
+                                if let Some(name) = name {
+                                    ret_names[ordinal] = name.clone();
+                                }
                                 ret_values[ordinal] = parsed_value;
                             }
                             // Otherwise, the union contained a pointer, and its
@@ -641,6 +664,7 @@ where
                                 // This was previously the ordinal in the
                                 // _union_ (i.e. 0)
                                 nested_data_info.ordinal = ordinal;
+                                nested_data_info.field_name = name.map(String::as_str);
                                 // This was previously the distance from the
                                 // start of the _union_
                                 // body. We need it to be the distance from the
@@ -678,9 +702,13 @@ where
         // for validation.
         let bytes_parsed_so_far = data.bytes_parsed() - initial_bytes_parsed;
         if nested_data.expected_offset != bytes_parsed_so_far {
+            let field_name = nested_data
+                .field_name
+                .map(str::to_owned)
+                .unwrap_or_else(|| format!("Element_{}", nested_data.ordinal));
             return Err(ParsingError::wrong_pointer(
                 data.bytes_parsed(),
-                nested_data.field_name,
+                field_name,
                 nested_data.expected_offset,
                 bytes_parsed_so_far,
             ));
@@ -721,7 +749,9 @@ where
             // This data was contained inside a _nullable_ union
             parsed_data = MojomValue::Nullable(Some(Box::new(parsed_data)));
         };
-        ret_names[nested_data.ordinal] = nested_data.field_name;
+        if let Some(name) = nested_data.field_name {
+            ret_names[nested_data.ordinal] = name.to_owned();
+        }
         ret_values[nested_data.ordinal] = parsed_data;
     }
 

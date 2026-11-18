@@ -760,6 +760,14 @@ fn test_array_parsing() -> anyhow::Result<()> {
         ),
     )?;
 
+    // Untrusted headers claiming more elements than fit in size_in_bytes or
+    // remaining data
+    validate_parsing_failure::<Vec<u8>>("[u4]16 [u4]0xFFFFFFFF")?;
+    validate_parsing_failure::<Vec<bool>>("[u4]16 [u4]0xFFFFFFFF")?;
+    validate_parsing_failure::<Vec<Option<u8>>>("[u4]16 [u4]0xFFFFFFFF")?;
+    validate_parsing_failure::<Vec<u64>>("[u4]0xFFFFFFF8 [u4]0x1FFFFFFD")?;
+    validate_parsing_failure::<Vec<i16>>("[u4]10 [u4]4 [s2]1 [s2]2 [s2]3 [s2]4")?;
+
     Ok(())
 }
 
