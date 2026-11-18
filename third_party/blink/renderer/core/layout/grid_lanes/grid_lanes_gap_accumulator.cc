@@ -21,6 +21,49 @@ namespace blink {
 
 namespace {
 
+const GridLanesItemData& FirstPlacedItemInLane(
+    const GridLaneData& lane_data,
+    const GridLanesGapGeometryState& state) {
+  CHECK(!lane_data.item_data.empty());
+  const auto* item = (state.is_fill_reverse ? lane_data.item_data.back()
+                                            : lane_data.item_data.front())
+                         .Get();
+  while (!item->items_densely_packed_above.empty()) {
+    const auto& packed_items = item->items_densely_packed_above;
+    item = (state.is_fill_reverse ? packed_items.back() : packed_items.front())
+               .Get();
+  }
+  return *item;
+}
+
+// https://github.com/w3c/csswg-drafts/issues/14684#issuecomment-6928803010,
+//  a spanning item has a preceding gutter in every spanned track if any spanned
+//  track has an earlier item.
+bool HasPrecedingItemInSpannedLanes(const GridLanesItemData& item,
+                                    const GridLanesDataVector& grid_lanes,
+                                    GridTrackSizingDirection direction,
+                                    const GridLanesGapGeometryState& state) {
+  const wtf_size_t span_size = item.item->SpanSize(direction);
+  if (span_size <= 1) {
+    return false;
+  }
+  // Update the cached state on the shared placement data as lanes are
+  // traversed.
+  std::optional<bool>& cached =
+      item.grid_lanes_placement_data->has_preceding_item_in_spanned_lanes;
+  if (cached.has_value()) {
+    return *cached;
+  }
+  cached = std::ranges::any_of(
+      base::span(grid_lanes)
+          .subspan(item.item->StartLine(direction), span_size),
+      [&](const GridLaneData& lane_data) {
+        return FirstPlacedItemInLane(lane_data, state)
+                   .grid_lanes_placement_data != item.grid_lanes_placement_data;
+      });
+  return *cached;
+}
+
 // Maps a forward stacking-axis offset, measured from the start of placement, to
 // its final offset after fill-reverse and content alignment.
 LayoutUnit FinalStackingOffset(LayoutUnit forward_offset,
@@ -585,16 +628,24 @@ void GridLanesGapAccumulator::RecordLaneEntry(
 
 void GridLanesGapAccumulator::RecordLaneItemTree(
     GridLanesItemData& item,
+    const GridLanesDataVector& grid_lanes,
     bool contains_last_item_in_lane,
     wtf_size_t compact_track_index,
     const GridLanesGapGeometryState& state,
     LaneItems& lane_items,
     Vector<CrossGap>& lane_cross_gaps) {
+  const auto resolve_preceding_gap = [&](bool has_preceding_item_in_lane) {
+    return has_preceding_item_in_lane ||
+           HasPrecedingItemInSpannedLanes(
+               item, grid_lanes, gap_geometry_->GetMainDirection(), state);
+  };
+
   if (state.is_fill_reverse) {
-    const bool has_preceding_gap =
-        !contains_last_item_in_lane || !item.items_densely_packed_above.empty();
-    RecordLaneEntry(item, has_preceding_gap, compact_track_index, state,
-                    lane_items, lane_cross_gaps);
+    RecordLaneEntry(
+        item,
+        resolve_preceding_gap(!contains_last_item_in_lane ||
+                              !item.items_densely_packed_above.empty()),
+        compact_track_index, state, lane_items, lane_cross_gaps);
   }
 
   const auto& densely_packed_items = item.items_densely_packed_above;
@@ -602,13 +653,13 @@ void GridLanesGapAccumulator::RecordLaneItemTree(
        ++child_index) {
     bool contains_last_item = contains_last_item_in_lane;
     contains_last_item &= child_index == densely_packed_items.size() - 1;
-    RecordLaneItemTree(*densely_packed_items[child_index], contains_last_item,
-                       compact_track_index, state, lane_items, lane_cross_gaps);
+    RecordLaneItemTree(*densely_packed_items[child_index], grid_lanes,
+                       contains_last_item, compact_track_index, state,
+                       lane_items, lane_cross_gaps);
   }
 
   if (!state.is_fill_reverse) {
-    RecordLaneEntry(item,
-                    /*has_preceding_gap=*/!lane_items.empty(),
+    RecordLaneEntry(item, resolve_preceding_gap(!lane_items.empty()),
                     compact_track_index, state, lane_items, lane_cross_gaps);
   }
 }
@@ -714,13 +765,13 @@ void GridLanesGapAccumulator::CollectLaneEntries(
     const auto& items = lane_data.item_data;
     for (wtf_size_t item_index = 0; item_index < items.size(); ++item_index) {
       RecordLaneItemTree(
-          *items[item_index],
+          *items[item_index], grid_lanes,
           /*contains_last_item_in_lane=*/item_index == items.size() - 1,
           compact_track_index, state, items_in_lane, gutters_in_lane);
     }
 
-    DCHECK_EQ(gutters_in_lane.size(),
-              items_in_lane.empty() ? 0u : items_in_lane.size() - 1);
+    CHECK_LE(gutters_in_lane.size(), items_in_lane.size());
+    CHECK_GE(gutters_in_lane.size() + 1, items_in_lane.size());
     EnsureCrossGapsOrdered(
         gutters_in_lane, OppositeDirection(gap_geometry_->GetMainDirection()));
   }

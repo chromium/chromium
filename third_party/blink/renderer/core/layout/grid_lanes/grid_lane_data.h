@@ -52,6 +52,9 @@ struct GridLanesItemPlacementData
   // Index of the item's fragment in the container builder during normal layout.
   // Unset during fragmentation collection.
   wtf_size_t builder_child_index = kNotFound;
+
+  // Cached by gap-decoration collection for spanners placed first in a lane.
+  std::optional<bool> has_preceding_item_in_spanned_lanes;
 };
 
 // Item and placement data for a single grid lanes item. With dense packing,

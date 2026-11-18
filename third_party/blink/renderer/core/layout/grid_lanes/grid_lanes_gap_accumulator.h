@@ -124,9 +124,12 @@ class CORE_EXPORT GridLanesGapAccumulator {
 
   // Records every item in a dense-packing tree in placement-opening order,
   // after fill-reverse. Final aligned box edges may have a different order.
+  // A lane's first-placed item has a preceding gutter if it spans another
+  // track with an earlier item.
   // `contains_last_item_in_lane` is true for each subtree on the path to the
   // lane's final item.
   void RecordLaneItemTree(GridLanesItemData& item,
+                          const GridLanesDataVector& grid_lanes,
                           bool contains_last_item_in_lane,
                           wtf_size_t compact_track_index,
                           const GridLanesGapGeometryState& state,
