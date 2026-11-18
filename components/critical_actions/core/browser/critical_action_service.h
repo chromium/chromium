@@ -80,22 +80,19 @@ class CriticalActionService : public KeyedService,
   // change attribution; only a different anchor does.
   // Passing an empty `conversation_anchor_id` clears any cached anchor for
   // `actor_task_id`. Anchors longer than `kMaxConversationAnchorIdLength` are
-  // treated as if MarkActorTaskConversationAnchorDroppedTooLong() had been
-  // called. No-op unless features::IsActionLevelChatLinkoutsEnabled().
+  // dropped and discard any previous anchor for `actor_task_id`: until the next
+  // call for the same `actor_task_id`, its actions get no anchor and record
+  // `ConversationAnchorResolutionOutcome::kDroppedTooLong` rather than
+  // `kCacheMiss`. This state lives in the same LRU cache as anchors, so once it
+  // is evicted, actions record `kCacheMiss` instead. Actions that carry their
+  // own `conversation_anchor_id` don't use the cache: they keep it and record
+  // `kAlreadyPresent`. No-op unless
+  // features::IsActionLevelChatLinkoutsEnabled().
   // TODO(b/583743246): Capture the anchor when an action is initiated so that
   // asynchronously logged actions are attributed to the turn that caused them.
   virtual void SetActorTaskConversationAnchorId(
       std::string_view actor_task_id,
       std::string_view conversation_anchor_id);
-
-  // UI thread entry point for callers that enforce their own, stricter anchor
-  // length limit (e.g. Glic turn IDs). Invalidates any cached anchor for
-  // `actor_task_id`. Until the next SetActorTaskConversationAnchorId() call,
-  // actions for `actor_task_id` get no anchor and record
-  // `ConversationAnchorResolutionOutcome::kDroppedTooLong` rather than
-  // `kCacheMiss`. No-op unless features::IsActionLevelChatLinkoutsEnabled().
-  virtual void MarkActorTaskConversationAnchorDroppedTooLong(
-      std::string_view actor_task_id);
 
   // UI thread entry point to log or queue a critical action linked by
   // navigation ID.

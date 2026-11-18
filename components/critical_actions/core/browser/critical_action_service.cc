@@ -228,24 +228,16 @@ void CriticalActionService::SetActorTaskConversationAnchorId(
   if (conversation_anchor_id.size() > kMaxConversationAnchorIdLength) {
     DLOG(WARNING) << "Dropping oversized conversation_anchor_id (length="
                   << conversation_anchor_id.size() << ")";
-    MarkActorTaskConversationAnchorDroppedTooLong(actor_task_id);
+    // Replaces any previous anchor, so that actions for `actor_task_id` record
+    // `kDroppedTooLong` rather than getting the previous turn's anchor.
+    task_to_anchor_cache_.Put(std::string(actor_task_id),
+                              CachedAnchor{.was_dropped_too_long = true});
     return;
   }
 
   task_to_anchor_cache_.Put(
       std::string(actor_task_id),
       CachedAnchor{.anchor_id = std::string(conversation_anchor_id)});
-}
-
-void CriticalActionService::MarkActorTaskConversationAnchorDroppedTooLong(
-    std::string_view actor_task_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!backend_ || actor_task_id.empty() ||
-      !features::IsActionLevelChatLinkoutsEnabled()) {
-    return;
-  }
-  task_to_anchor_cache_.Put(std::string(actor_task_id),
-                            CachedAnchor{.was_dropped_too_long = true});
 }
 
 void CriticalActionService::AddCriticalActionWithNavigationId(

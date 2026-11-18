@@ -1285,44 +1285,26 @@ TEST_F(CriticalActionServiceAnchorTest,
 }
 
 TEST_F(CriticalActionServiceAnchorTest,
-       MarkConversationAnchorDroppedTooLongInvalidatesPreviousAnchor) {
+       EmptyConversationAnchorClearsDroppedTooLongState) {
   base::HistogramTester histogram_tester;
-  constexpr std::string_view kTaskId = "task_marked_dropped";
+  constexpr std::string_view kTaskId = "task_oversized_then_cleared";
 
-  // Marking an empty task ID is a safe no-op.
-  service_->MarkActorTaskConversationAnchorDroppedTooLong("");
+  service_->SetActorTaskConversationAnchorId(
+      kTaskId, std::string(kMaxConversationAnchorIdLength + 1, 'z'));
+  // Clearing the anchor also clears the dropped state, so the next action
+  // records `kCacheMiss` rather than `kDroppedTooLong`.
+  service_->SetActorTaskConversationAnchorId(kTaskId, "");
+  CriticalActionEntry entry = CreateDefaultEntry();
+  entry.actor_task_id = std::string(kTaskId);
+  service_->AddCriticalAction(entry);
 
-  service_->SetActorTaskConversationAnchorId(kTaskId, "turn_1");
-  // A caller-enforced length violation invalidates `"turn_1"` and records
-  // `kDroppedTooLong` rather than `kCacheMiss`, even though the anchor itself
-  // never reached the service.
-  service_->MarkActorTaskConversationAnchorDroppedTooLong(kTaskId);
-  CriticalActionEntry entry1 = CreateDefaultEntry();
-  entry1.actor_task_id = std::string(kTaskId);
-  service_->AddCriticalAction(entry1);
+  auto retrieved = GetCriticalActionSync(entry.critical_action_id);
+  ASSERT_TRUE(retrieved.has_value());
+  EXPECT_EQ(retrieved->conversation_anchor_id, "");
 
-  auto retrieved1 = GetCriticalActionSync(entry1.critical_action_id);
-  ASSERT_TRUE(retrieved1.has_value());
-  EXPECT_EQ(retrieved1->conversation_anchor_id, "");
-
-  // Setting a valid anchor afterwards recovers normal resolution.
-  service_->SetActorTaskConversationAnchorId(kTaskId, "turn_2");
-  CriticalActionEntry entry2 = CreateDefaultEntry();
-  entry2.actor_task_id = std::string(kTaskId);
-  service_->AddCriticalAction(entry2);
-
-  auto retrieved2 = GetCriticalActionSync(entry2.critical_action_id);
-  ASSERT_TRUE(retrieved2.has_value());
-  EXPECT_EQ(retrieved2->conversation_anchor_id, "turn_2");
-
-  histogram_tester.ExpectTotalCount(
-      "CriticalActions.ConversationAnchorResolutionOutcome.Actor", 2);
-  histogram_tester.ExpectBucketCount(
+  histogram_tester.ExpectUniqueSample(
       "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
-      ConversationAnchorResolutionOutcome::kDroppedTooLong, 1);
-  histogram_tester.ExpectBucketCount(
-      "CriticalActions.ConversationAnchorResolutionOutcome.Actor",
-      ConversationAnchorResolutionOutcome::kResolvedFromCache, 1);
+      ConversationAnchorResolutionOutcome::kCacheMiss, 1);
 }
 
 TEST_F(CriticalActionServiceAnchorTest,
@@ -1434,7 +1416,6 @@ TEST_F(CriticalActionServiceAnchorTest,
   // no-ops without emitting additional anchor resolution histograms.
   service_->SetActorTaskConversationAnchorId(kTaskId, "turn_2");
   service_->SetActorTaskConversationAnchorId(kTaskId, "");
-  service_->MarkActorTaskConversationAnchorDroppedTooLong(kTaskId);
 
   CriticalActionEntry after_shutdown = CreateDefaultEntry();
   after_shutdown.actor_task_id = std::string(kTaskId);
@@ -1499,7 +1480,6 @@ TEST_F(CriticalActionServiceActionLevelDisabledTest,
   direct_entry.actor_task_id = std::string(kTaskId);
   service_->AddCriticalAction(direct_entry);
 
-  service_->MarkActorTaskConversationAnchorDroppedTooLong(kTaskId);
   CriticalActionEntry nav_entry = CreateDefaultEntry();
   nav_entry.actor_task_id = std::string(kTaskId);
   service_->AddCriticalActionWithNavigationId(nav_entry, kNavId);
