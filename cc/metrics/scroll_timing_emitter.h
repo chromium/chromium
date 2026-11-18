@@ -98,9 +98,8 @@ class CC_EXPORT ScrollTimingEmitter {
                                 uint64_t result_id);
 
   // Opens a segment for the gesture `update` belongs to, targeting
-  // `element_id`. Does nothing when the Performance Scroll Timing API does not
-  // report this scroll's input type, or when `update` carries no
-  // GestureScrollBegin timestamp to use as the segment's start time.
+  // `element_id`. Does nothing when `update` carries no GestureScrollBegin
+  // timestamp to use as the segment's start time.
   void MaybeOpenActiveSegment(base::TimeTicks scroll_id,
                               const ScrollUpdateEventMetrics& update,
                               ElementId element_id);

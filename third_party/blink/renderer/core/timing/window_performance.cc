@@ -1468,9 +1468,7 @@ void WindowPerformance::AddContainerTiming(PerformanceContainerTiming* entry) {
 namespace {
 
 // Performance Scroll Timing API: map a compositor scroll input type to the
-// `scrollSource` string defined by the API. Only touchscreen and wheel scrolls
-// emit entries; other input types return a null AtomicString and the caller
-// must skip emission.
+// `scrollSource` string defined by the API.
 AtomicString ScrollInputTypeToScrollSource(ui::ScrollInputType input_type) {
   switch (input_type) {
     case ui::ScrollInputType::kTouchscreen:
@@ -1479,7 +1477,7 @@ AtomicString ScrollInputTypeToScrollSource(ui::ScrollInputType input_type) {
       return AtomicString("wheel");
     case ui::ScrollInputType::kAutoscroll:
     case ui::ScrollInputType::kScrollbar:
-      return g_null_atom;
+      return AtomicString("other");
   }
 }
 
@@ -1496,9 +1494,6 @@ void WindowPerformance::AddScrollTiming(base::TimeTicks start_time,
   }
 
   const AtomicString scroll_source = ScrollInputTypeToScrollSource(input_type);
-  if (scroll_source.IsNull()) {
-    return;
-  }
 
   const DOMHighResTimeStamp start_dom_time =
       MonotonicTimeToDOMHighResTimeStamp(start_time);

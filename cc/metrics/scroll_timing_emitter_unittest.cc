@@ -360,25 +360,37 @@ TEST_F(ScrollTimingEmitterTest,
                       std::move(other_scroll_updates))));
 }
 
-TEST_F(ScrollTimingEmitterTest, UnsupportedInputTypesProduceNoRecord) {
-  for (ui::ScrollInputType input_type :
-       {ui::ScrollInputType::kScrollbar, ui::ScrollInputType::kAutoscroll}) {
-    emitter_.ProcessTimeline(
-        CreateTimeline(
-            1, DamagingFrame{.presentation_ts = MillisecondsTicks(40)},
-            {Stage{ScrollStart{}}, Stage{CreateUpdatesStage(kScrollId)}}),
-        CreateEvents(CreateUpdate(1, MillisecondsTicks(20), {kScroller},
-                                  kScrollId, kScrollBeginGenerated,
-                                  input_type)));
+class ScrollTimingEmitterInputTypeTest
+    : public ScrollTimingEmitterTest,
+      public testing::WithParamInterface<ui::ScrollInputType> {};
 
-    emitter_.ProcessTimeline(
-        CreateTimeline(2, NonDamagingFrame{}, {Stage{ScrollEnd{}}}),
-        /*events_metrics=*/{});
+TEST_P(ScrollTimingEmitterInputTypeTest, RecordCarriesInputType) {
+  emitter_.ProcessTimeline(
+      CreateTimeline(
+          1, DamagingFrame{.presentation_ts = MillisecondsTicks(40)},
+          {Stage{ScrollStart{}}, Stage{CreateUpdatesStage(kScrollId)}}),
+      CreateEvents(CreateUpdate(1, MillisecondsTicks(20), {kScroller},
+                                kScrollId, kScrollBeginGenerated, GetParam())));
 
-    EXPECT_THAT(emitter_.TakeCompletedScrollTimingInfos(), IsEmpty())
-        << "input type " << static_cast<int>(input_type);
-  }
+  emitter_.ProcessTimeline(
+      CreateTimeline(2, NonDamagingFrame{}, {Stage{ScrollEnd{}}}),
+      /*events_metrics=*/{});
+
+  EXPECT_THAT(emitter_.TakeCompletedScrollTimingInfos(),
+              ElementsAre(ScrollTimingInfo{
+                  .start_time = kScrollBeginGenerated,
+                  .end_time = MillisecondsTicks(40),
+                  .input_type = GetParam(),
+                  .element_id = kScroller,
+              }));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ScrollTimingEmitterInputTypeTest,
+                         testing::Values(ui::ScrollInputType::kTouchscreen,
+                                         ui::ScrollInputType::kWheel,
+                                         ui::ScrollInputType::kAutoscroll,
+                                         ui::ScrollInputType::kScrollbar));
 
 TEST_F(ScrollTimingEmitterTest, NullScrollBeginTimestampProducesNoRecord) {
   emitter_.ProcessTimeline(

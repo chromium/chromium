@@ -225,7 +225,8 @@ TEST_F(PerformanceScrollTimingTest, AddScrollTimingMapsTouchScrollSource) {
       static_cast<PerformanceScrollTiming*>(entries[0].Get())->scrollSource());
 }
 
-TEST_F(PerformanceScrollTimingTest, AddScrollTimingSkipsUnsupportedInputTypes) {
+TEST_F(PerformanceScrollTimingTest,
+       AddScrollTimingMapsScrollbarAndAutoscrollToOther) {
   V8TestingScope scope;
   auto* window = LocalDOMWindow::From(scope.GetScriptState());
   ASSERT_TRUE(window);
@@ -237,9 +238,14 @@ TEST_F(PerformanceScrollTimingTest, AddScrollTimingSkipsUnsupportedInputTypes) {
     AddScrollTimingForTest(performance, input_type, base::TimeTicks::Now(),
                            base::Milliseconds(5));
   }
-  EXPECT_TRUE(
-      performance->getBufferedEntriesByType(performance_entry_names::kScroll)
-          .empty());
+  const auto entries =
+      performance->getBufferedEntriesByType(performance_entry_names::kScroll);
+  ASSERT_EQ(2u, entries.size());
+  for (const auto& entry : entries) {
+    EXPECT_EQ(
+        AtomicString("other"),
+        static_cast<PerformanceScrollTiming*>(entry.Get())->scrollSource());
+  }
 }
 
 TEST_F(PerformanceScrollTimingTest, AddScrollTimingDropsDisconnectedTarget) {

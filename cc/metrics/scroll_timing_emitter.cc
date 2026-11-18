@@ -18,11 +18,7 @@ namespace cc {
 
 namespace {
 
-// Returns the `ui::ScrollInputType` exposed by the Performance Scroll Timing
-// API, or `std::nullopt` for scroll types the API does not report yet.
-// TODO(crbug.com/504094429): Report scrollbar and autoscroll scrolls once their
-// applied movement is observed.
-std::optional<ui::ScrollInputType> ToExposedInputType(
+ui::ScrollInputType ToScrollInputType(
     ScrollEventMetrics::ScrollType scroll_type) {
   switch (scroll_type) {
     case ScrollEventMetrics::ScrollType::kTouchscreen:
@@ -30,8 +26,9 @@ std::optional<ui::ScrollInputType> ToExposedInputType(
     case ScrollEventMetrics::ScrollType::kWheel:
       return ui::ScrollInputType::kWheel;
     case ScrollEventMetrics::ScrollType::kAutoscroll:
+      return ui::ScrollInputType::kAutoscroll;
     case ScrollEventMetrics::ScrollType::kScrollbar:
-      return std::nullopt;
+      return ui::ScrollInputType::kScrollbar;
   }
   NOTREACHED();
 }
@@ -216,16 +213,14 @@ void ScrollTimingEmitter::MaybeOpenActiveSegment(
     const ScrollUpdateEventMetrics& update,
     ElementId element_id) {
   CHECK(!active_segment_.has_value());
-  const std::optional<ui::ScrollInputType> input_type =
-      ToExposedInputType(update.scroll_type());
   const base::TimeTicks start_time = update.scroll_begin_generated_timestamp();
-  if (!input_type.has_value() || start_time.is_null()) {
+  if (start_time.is_null()) {
     return;
   }
   active_segment_ = ActiveSegment{
       .scroll_id = scroll_id,
       .start_time = start_time,
-      .input_type = *input_type,
+      .input_type = ToScrollInputType(update.scroll_type()),
       .element_id = element_id,
   };
 }
