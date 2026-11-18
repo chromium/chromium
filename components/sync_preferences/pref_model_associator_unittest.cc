@@ -20,7 +20,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_store.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
@@ -767,12 +766,10 @@ TEST_F(SyncablePrefsDatabaseDeathTest,
 #endif
 }
 
-class PrefModelAssociatorWithPreferencesAccountStorageTest
-    : public testing::Test {
+class PrefModelAssociatorDualLayerTest : public testing::Test {
  protected:
-  PrefModelAssociatorWithPreferencesAccountStorageTest()
-      : feature_list_(switches::kEnablePreferencesAccountStorage),
-        client_(base::MakeRefCounted<TestPrefModelAssociatorClient>()),
+  PrefModelAssociatorDualLayerTest()
+      : client_(base::MakeRefCounted<TestPrefModelAssociatorClient>()),
         pref_registry_(
             base::MakeRefCounted<user_prefs::PrefRegistrySyncable>()),
         local_pref_store_(base::MakeRefCounted<TestingPrefStore>()),
@@ -808,9 +805,7 @@ class PrefModelAssociatorWithPreferencesAccountStorageTest
         syncer::UserSelectableType::kPreferences, true);
   }
 
-  ~PrefModelAssociatorWithPreferencesAccountStorageTest() override {
-    sync_service_.Shutdown();
-  }
+  ~PrefModelAssociatorDualLayerTest() override { sync_service_.Shutdown(); }
 
   void MergeDataAndStartSyncing(const syncer::SyncDataList& initial_data) {
     auto error = pref_model_associator_->MergeDataAndStartSyncing(
@@ -819,8 +814,6 @@ class PrefModelAssociatorWithPreferencesAccountStorageTest
             sync_change_processor_.get()));
     EXPECT_FALSE(error.has_value());
   }
-
-  base::test::ScopedFeatureList feature_list_;
 
   scoped_refptr<TestPrefModelAssociatorClient> client_;
   scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_;
@@ -834,7 +827,7 @@ class PrefModelAssociatorWithPreferencesAccountStorageTest
 
 // Tests that no notification is issued if the effective value is unchanged upon
 // initial merge.
-TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+TEST_F(PrefModelAssociatorDualLayerTest,
        ShouldNotNotifyUponInitIfSameValueExistsInLocalStoreOnly) {
   // Load value to local store before initial merge.
   local_pref_store_->SetValue(kStringPrefName, base::Value("value"), 0);
@@ -861,7 +854,7 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
 
 // Tests that no notification is issued if the effective value is unchanged upon
 // initial merge.
-TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+TEST_F(PrefModelAssociatorDualLayerTest,
        ShouldNotNotifyUponInitIfSameValueExistsInAccountStoreOnly) {
   // Load value to account store before initial merge.
   account_pref_store_->SetValue(kStringPrefName, base::Value("value"), 0);
@@ -888,7 +881,7 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
 
 // Tests that notification is issued if the effective value changes upon
 // initial merge.
-TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+TEST_F(PrefModelAssociatorDualLayerTest,
        ShouldNotifyUponInitIfDifferentValueExistsInLocalStoreOnly) {
   // Load value to local store before initial merge.
   local_pref_store_->SetValue(kStringPrefName, base::Value("value"), 0);
@@ -920,7 +913,7 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
 // The local store is pre-populated and the remote sync data contains different
 // values. One pref remains unchanged when GetValue is called, due to the merge
 // logic, while the other adopts the remote value.
-TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+TEST_F(PrefModelAssociatorDualLayerTest,
        InitialMerge_OnStartedSyncingReceivesRemoteValue) {
   testing::StrictMock<MockSyncedPrefObserver> mock_synced_pref_observer;
   pref_model_associator_->AddSyncedPrefObserver(kCustomMergePrefName,
@@ -972,7 +965,7 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
                                                    &mock_synced_pref_observer);
 }
 
-TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+TEST_F(PrefModelAssociatorDualLayerTest,
        ShouldRecordHistogramOnPrefChangeBeforeTypeActive) {
   base::HistogramTester histogram_tester;
 
@@ -987,7 +980,7 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
                                     0);
 }
 
-TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+TEST_F(PrefModelAssociatorDualLayerTest,
        ShouldRecordHistogramOnPrefChangeAfterTypeActive) {
   base::HistogramTester histogram_tester;
   MergeDataAndStartSyncing(syncer::SyncDataList());
@@ -1007,7 +1000,7 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+TEST_F(PrefModelAssociatorDualLayerTest,
        ShouldRemoveAccountValuesUponStayStoppedAndMaybeClearData) {
   // Load pre-existing values in the local and the account stores.
   local_pref_store_->SetValue(kStringPrefName, base::Value("local value"), 0);
@@ -1033,7 +1026,7 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
   EXPECT_TRUE(account_pref_store_->GetValues().empty());
 }
 
-TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+TEST_F(PrefModelAssociatorDualLayerTest,
        ShouldBeNoOpUponStayStoppedAndMaybeClearDataIfNoAccountValue) {
   // Load pre-existing value in the local store.
   local_pref_store_->SetValue(kStringPrefName, base::Value("local value"), 0);
@@ -1059,7 +1052,7 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
   EXPECT_TRUE(account_pref_store_->GetValues().empty());
 }
 
-TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+TEST_F(PrefModelAssociatorDualLayerTest,
        ShouldCommitPrefAddedBeforeMergeDataAndStartSyncing) {
   pref_service_->SetString(kStringPrefName, "value");
 
@@ -1079,7 +1072,7 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
       CreateLocalSyncData(kStringPrefName, base::Value("value")).ToString());
 }
 
-TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+TEST_F(PrefModelAssociatorDualLayerTest,
        ShouldCommitPrefUpdatedBeforeMergeDataAndStartSyncing) {
   pref_service_->SetString(kStringPrefName, "new_value");
 
@@ -1107,7 +1100,7 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
                 .ToString());
 }
 
-TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+TEST_F(PrefModelAssociatorDualLayerTest,
        ShouldCommitPreExistingAccountValueUponMergeDataAndStartSyncing) {
   // Load value to account store before initial merge.
   account_pref_store_->SetValue(kStringPrefName, base::Value("new_value"), 0);
@@ -1144,7 +1137,7 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
 }
 
 class PrefModelAssociatorRemoteRemovalsTest
-    : public PrefModelAssociatorWithPreferencesAccountStorageTest {
+    : public PrefModelAssociatorDualLayerTest {
  private:
   base::test::ScopedFeatureList unmerge_remote_removals_feature_list_{
       features::kSyncUnmergeRemotePrefRemovals};

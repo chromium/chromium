@@ -64,7 +64,6 @@
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/sharing_message/sharing_message_bridge.h"
 #include "components/sharing_message/sharing_message_data_type_controller.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/skills/public/skill_data_type_controller.h"
 #include "components/skills/public/skills_service.h"
 #include "components/sync/base/data_type.h"
@@ -203,11 +202,6 @@ base::WeakPtr<syncer::SyncableService> SyncableServiceForPrefs(
     syncer::DataType type) {
   return prefs_service ? prefs_service->GetSyncableService(type)->AsWeakPtr()
                        : nullptr;
-}
-
-bool ArePreferencesAllowedInTransportMode() {
-  return base::FeatureList::IsEnabled(
-      switches::kEnablePreferencesAccountStorage);
 }
 
 }  // namespace
@@ -829,11 +823,8 @@ CommonControllerBuilder::CreatePreferencesDataTypeController(
       SyncableServiceForPrefs(pref_service_syncable_.value(),
                               syncer::PREFERENCES),
       base::BindRepeating(&syncer::ReportUnrecoverableError, channel),
-      ArePreferencesAllowedInTransportMode()
-          ? SyncableServiceBasedDataTypeController::DelegateMode::
-                kTransportModeWithSingleModel
-          : SyncableServiceBasedDataTypeController::DelegateMode::
-                kLegacyFullSyncModeOnly);
+      SyncableServiceBasedDataTypeController::DelegateMode::
+          kTransportModeWithSingleModel);
 }
 
 std::unique_ptr<syncer::DataTypeController>
@@ -845,11 +836,8 @@ CommonControllerBuilder::CreatePriorityPreferencesDataTypeController(
       SyncableServiceForPrefs(pref_service_syncable_.value(),
                               syncer::PRIORITY_PREFERENCES),
       base::BindRepeating(&syncer::ReportUnrecoverableError, channel),
-      ArePreferencesAllowedInTransportMode()
-          ? SyncableServiceBasedDataTypeController::DelegateMode::
-                kTransportModeWithSingleModel
-          : SyncableServiceBasedDataTypeController::DelegateMode::
-                kLegacyFullSyncModeOnly);
+      SyncableServiceBasedDataTypeController::DelegateMode::
+          kTransportModeWithSingleModel);
 }
 
 std::unique_ptr<syncer::DataTypeController>

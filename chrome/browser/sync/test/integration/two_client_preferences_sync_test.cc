@@ -17,7 +17,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync_preferences/common_syncable_prefs_database.h"
 #include "components/sync_preferences/features.h"
@@ -40,12 +39,7 @@ class TwoClientPreferencesSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientPreferencesSyncTest() : SyncTest(TWO_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitWithFeatures(
-          {switches::kEnablePreferencesAccountStorage}, {});
-    }
-  }
+  TwoClientPreferencesSyncTest() : SyncTest(TWO_CLIENT) {}
 
   TwoClientPreferencesSyncTest(const TwoClientPreferencesSyncTest&) = delete;
   TwoClientPreferencesSyncTest& operator=(const TwoClientPreferencesSyncTest&) =
@@ -56,9 +50,6 @@ class TwoClientPreferencesSyncTest
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -225,10 +216,8 @@ class TwoClientPreferencesWithAccountStorageMergeRemovalSyncTest
     : public TwoClientPreferencesSyncTest {
  public:
   TwoClientPreferencesWithAccountStorageMergeRemovalSyncTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {switches::kEnablePreferencesAccountStorage,
-         sync_preferences::features::kSyncUnmergeRemotePrefRemovals},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        sync_preferences::features::kSyncUnmergeRemotePrefRemovals);
   }
 
  private:

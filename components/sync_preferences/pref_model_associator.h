@@ -56,8 +56,6 @@ class PrefModelAssociator final : public syncer::SyncableService,
 
   // The |client| is not owned and must outlive this object.
   // |user_prefs| is the PrefStore to be hooked up to Sync.
-  // Note: This must be called iff EnablePreferencesAccountStorage feature is
-  // enabled.
   PrefModelAssociator(
       scoped_refptr<PrefModelAssociatorClient> client,
       scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs,
@@ -169,9 +167,8 @@ class PrefModelAssociator final : public syncer::SyncableService,
 
   // The PrefStore we are syncing to.
   scoped_refptr<WriteablePrefStore> user_prefs_;
-  // This is set if EnablePreferencesAccountStorage is enabled. This points to
-  // the DualLayerUserPrefStore instance, if one exists, which shares the
-  // ownership of `user_prefs_`.
+  // This points to the DualLayerUserPrefStore instance, if one exists, which
+  // shares the ownership of `user_prefs_`.
   scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs_;
 
   // The interface to the PrefService.

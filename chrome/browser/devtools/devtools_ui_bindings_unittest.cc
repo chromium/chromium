@@ -33,7 +33,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/web_contents.h"
@@ -971,15 +970,15 @@ class DevToolsUIBindingsSyncInfoTest : public testing::Test {
   raw_ptr<syncer::TestSyncService> sync_service_;
 };
 
-TEST_F(DevToolsUIBindingsSyncInfoTest, SyncDisabled) {
+TEST_F(DevToolsUIBindingsSyncInfoTest, SignedOut) {
   sync_service_->SetSignedOut();
 
   base::DictValue info =
       DevToolsUIBindings::GetSyncInformationForProfile(&profile_);
 
-  EXPECT_EQ(
-      base::FeatureList::IsEnabled(switches::kEnablePreferencesAccountStorage),
-      info.FindBool("isSyncActive").value());
+  EXPECT_TRUE(info.FindBool("isSyncActive").value());
+  EXPECT_THAT(info.FindBool("arePreferencesSynced"), testing::Optional(false));
+  EXPECT_EQ(info.Find("accountEmail"), nullptr);
 }
 
 TEST_F(DevToolsUIBindingsSyncInfoTest, PreferencesNotSynced) {

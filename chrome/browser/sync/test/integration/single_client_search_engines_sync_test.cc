@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
@@ -17,7 +16,6 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
@@ -27,6 +25,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #if BUILDFLAG(IS_ANDROID)
+#include "base/test/scoped_feature_list.h"
 #include "ui/base/device_form_factor.h"
 #endif
 
@@ -87,14 +86,10 @@ class SingleClientSearchEnginesSyncTest
  public:
   SingleClientSearchEnginesSyncTest()
       : SingleClientSearchEnginesSyncTestBase(SINGLE_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features;
 #if BUILDFLAG(IS_ANDROID)
-    enabled_features.push_back(syncer::kSyncSearchEnginesAndroidLFF);
+    scoped_feature_list_.InitAndEnableFeature(
+        syncer::kSyncSearchEnginesAndroidLFF);
 #endif
-    if (GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.push_back(switches::kEnablePreferencesAccountStorage);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, {});
   }
   ~SingleClientSearchEnginesSyncTest() override = default;
 
@@ -113,8 +108,10 @@ class SingleClientSearchEnginesSyncTest
         /*prepopulate_id=*/100));
   }
 
+#if BUILDFLAG(IS_ANDROID)
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+#endif
 };
 
 INSTANTIATE_TEST_SUITE_P(,

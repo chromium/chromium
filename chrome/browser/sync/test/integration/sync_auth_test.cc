@@ -87,9 +87,7 @@ class SyncAuthTestBase : public SyncTest {
       disabled_features.push_back(syncer::kSyncUsePropagatedAccessToken);
     }
     if (setup_sync_mode == SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.insert(enabled_features.end(),
-                              {switches::kSyncEnableBookmarksInTransportMode,
-                               switches::kEnablePreferencesAccountStorage});
+      enabled_features.push_back(switches::kSyncEnableBookmarksInTransportMode);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }

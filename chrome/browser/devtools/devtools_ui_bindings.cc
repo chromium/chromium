@@ -79,7 +79,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search_engines/util.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
@@ -1893,9 +1892,7 @@ base::DictValue DevToolsUIBindings::GetSyncInformationForProfile(
     return result;
   }
 
-  result.Set("isSyncActive", base::FeatureList::IsEnabled(
-                                 switches::kEnablePreferencesAccountStorage) ||
-                                 sync_service->IsSyncFeatureActive());
+  result.Set("isSyncActive", true);
   result.Set("arePreferencesSynced", sync_service->GetActiveDataTypes().Has(
                                          syncer::DataType::PREFERENCES));
   result.Set("isSyncPaused", sync_service->GetTransportState() ==

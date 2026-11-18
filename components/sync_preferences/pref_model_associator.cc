@@ -12,7 +12,6 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
@@ -22,9 +21,7 @@
 #include "base/strings/strcat.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/protocol/entity_data.h"
@@ -97,8 +94,6 @@ PrefModelAssociator::PrefModelAssociator(
     : PrefModelAssociator(client,
                           dual_layer_user_prefs->GetAccountPrefStore(),
                           type) {
-  CHECK(
-      base::FeatureList::IsEnabled(switches::kEnablePreferencesAccountStorage));
   dual_layer_user_prefs_ = std::move(dual_layer_user_prefs);
 }
 
@@ -158,15 +153,16 @@ void PrefModelAssociator::InitPrefAndAssociate(
 
     if (user_pref_value) {
       DVLOG(1) << "Found user pref value for " << pref_name;
-      // If account storage is enabled, `user_pref_value` refers to the account
-      // value. This value being different from the remote value implies that
-      // the value was updated before sync initialization. In some rare cases
-      // though, the account value might be more recent than the local value,
-      // for example if the pref was changed while the user was in the
+      // When `dual_layer_user_prefs_` is used, `user_pref_value` refers to the
+      // account value. This value being different from the remote value implies
+      // that the value was updated before sync initialization. In some rare
+      // cases though, the account value might be more recent than the local
+      // value, for example if the pref was changed while the user was in the
       // signin-pending state, but it's an okay compromise to let the local
       // value win.
-      // Else if account storage is disabled, this implies there exists both
-      // server and local values. Merge them.
+      // When `dual_layer_user_prefs_` is null (e.g. incognito or
+      // `TestingPrefServiceSyncable`), this implies there exists both server
+      // and local values. Merge them.
       base::Value new_value;
       if (dual_layer_user_prefs_) {
         new_value = user_pref_value->Clone();
@@ -487,7 +483,8 @@ void PrefModelAssociator::OnPrefValueChanged(std::string_view name) {
     // one below. If not, remove this histogram.
     base::UmaHistogramSparse(
         base::StrCat({"Sync.PrefModelAssociator.OnPrefValueChanged.",
-                      syncer::DataTypeToHistogramSuffix(type_)}), id);
+                      syncer::DataTypeToHistogramSuffix(type_)}),
+        id);
   }
 
   // We only process changes if we've already associated models.

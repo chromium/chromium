@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/check_is_test.h"
-#include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
@@ -17,8 +16,6 @@
 #include "components/prefs/in_memory_pref_store.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_value_store.h"
-#include "components/signin/public/base/signin_switches.h"
-#include "components/sync/base/features.h"
 #include "components/sync_preferences/dual_layer_user_pref_store.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -61,40 +58,26 @@ std::unique_ptr<PrefServiceSyncable> PrefServiceSyncableFactory::CreateSyncable(
 
   auto pref_notifier = std::make_unique<PrefNotifierImpl>();
 
-  if (base::FeatureList::IsEnabled(
-          switches::kEnablePreferencesAccountStorage)) {
-    // If EnablePreferencesAccountStorage is enabled, then a
-    // DualLayerUserPrefStore is used as the main user pref store, and sync is
-    // hooked up directly to the underlying account store.
+  // A DualLayerUserPrefStore is used as the main user pref store, and sync is
+  // hooked up directly to the underlying account store.
 
-    // In some tests, `account_pref_store_` may not have been set.
-    // TODO(crbug.com/40283049): Fix all the usages.
-    if (!account_pref_store_) {
-      CHECK_IS_TEST();
-      account_pref_store_ = base::MakeRefCounted<InMemoryPrefStore>();
-    }
-    auto dual_layer_user_pref_store =
-        base::MakeRefCounted<sync_preferences::DualLayerUserPrefStore>(
-            user_prefs_, account_pref_store_, pref_model_associator_client_);
-    auto pref_value_store = std::make_unique<PrefValueStore>(
-        managed_prefs_, supervised_user_prefs_, extension_prefs_,
-        command_line_prefs_, dual_layer_user_pref_store, recommended_prefs_,
-        pref_registry->defaults(), pref_notifier.get());
-    return std::make_unique<PrefServiceSyncable>(
-        std::move(pref_notifier), std::move(pref_value_store),
-        std::move(dual_layer_user_pref_store), std::move(pref_registry),
-        pref_model_associator_client_, read_error_callback_, async_);
+  // In some tests, `account_pref_store_` may not have been set.
+  // TODO(crbug.com/40283049): Fix all the usages.
+  if (!account_pref_store_) {
+    CHECK_IS_TEST();
+    account_pref_store_ = base::MakeRefCounted<InMemoryPrefStore>();
   }
-
+  auto dual_layer_user_pref_store =
+      base::MakeRefCounted<sync_preferences::DualLayerUserPrefStore>(
+          user_prefs_, account_pref_store_, pref_model_associator_client_);
   auto pref_value_store = std::make_unique<PrefValueStore>(
       managed_prefs_, supervised_user_prefs_, extension_prefs_,
-      command_line_prefs_, user_prefs_, recommended_prefs_,
+      command_line_prefs_, dual_layer_user_pref_store, recommended_prefs_,
       pref_registry->defaults(), pref_notifier.get());
-
   return std::make_unique<PrefServiceSyncable>(
-      std::move(pref_notifier), std::move(pref_value_store), user_prefs_,
-      std::move(pref_registry), pref_model_associator_client_,
-      read_error_callback_, async_);
+      std::move(pref_notifier), std::move(pref_value_store),
+      std::move(dual_layer_user_pref_store), std::move(pref_registry),
+      pref_model_associator_client_, read_error_callback_, async_);
 }
 
 }  // namespace sync_preferences

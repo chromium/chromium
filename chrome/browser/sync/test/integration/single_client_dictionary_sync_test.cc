@@ -9,7 +9,6 @@
 #include "chrome/browser/sync/test/integration/dictionary_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
@@ -173,12 +172,8 @@ class SingleClientDictionaryWithAccountStorageSyncTest
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientDictionaryWithAccountStorageSyncTest() : SyncTest(SINGLE_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled = {
-        syncer::kSpellcheckSeparateLocalAndAccountDictionaries};
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      enabled.push_back(switches::kEnablePreferencesAccountStorage);
-    }
-    feature_list_.InitWithFeatures(enabled, {});
+    feature_list_.InitAndEnableFeature(
+        syncer::kSpellcheckSeparateLocalAndAccountDictionaries);
   }
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
@@ -217,9 +212,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientDictionaryWithAccountStorageSyncTest,
   EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DICTIONARY));
 }
 
-IN_PROC_BROWSER_TEST_P(
-    SingleClientDictionaryWithAccountStorageSyncTest,
-    ShouldNotUploadLocalWordsToTheAccount) {
+IN_PROC_BROWSER_TEST_P(SingleClientDictionaryWithAccountStorageSyncTest,
+                       ShouldNotUploadLocalWordsToTheAccount) {
   ASSERT_TRUE(SetupClients());
   dictionary_helper::LoadDictionaries();
 

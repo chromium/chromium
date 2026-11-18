@@ -361,12 +361,9 @@ class SingleClientGetUnsyncedTypesTest : public SyncTest {
  public:
   SingleClientGetUnsyncedTypesTest() : SyncTest(SINGLE_CLIENT) {
 #if !BUILDFLAG(IS_ANDROID)
-    // These features are required to enable THEMES and BOOKMARK in transport
-    // mode.
-    feature_list_.InitWithFeatures(
-        {switches::kEnablePreferencesAccountStorage,
-         switches::kSyncEnableBookmarksInTransportMode},
-        {});
+    // This feature is required to enable BOOKMARK in transport mode.
+    feature_list_.InitAndEnableFeature(
+        switches::kSyncEnableBookmarksInTransportMode);
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 

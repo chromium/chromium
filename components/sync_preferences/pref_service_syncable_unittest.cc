@@ -14,14 +14,12 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_store.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/sync_change.h"
@@ -1388,34 +1386,7 @@ class PrefServiceSyncableFactoryTest : public PrefServiceSyncableTest {
 };
 
 TEST_F(PrefServiceSyncableFactoryTest,
-       ShouldCreateSyncServiceWithoutDualLayerStoreIfFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      switches::kEnablePreferencesAccountStorage);
-  auto pref_service =
-      pref_service_syncable_factory_.CreateSyncable(prefs_.registry());
-  EXPECT_FALSE(static_cast<PrefModelAssociator*>(
-                   pref_service->GetSyncableService(syncer::PREFERENCES))
-                   ->IsUsingDualLayerUserPrefStoreForTesting());
-  EXPECT_FALSE(
-      static_cast<PrefModelAssociator*>(
-          pref_service->GetSyncableService(syncer::PRIORITY_PREFERENCES))
-          ->IsUsingDualLayerUserPrefStoreForTesting());
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_FALSE(static_cast<PrefModelAssociator*>(
-                   pref_service->GetSyncableService(syncer::OS_PREFERENCES))
-                   ->IsUsingDualLayerUserPrefStoreForTesting());
-  EXPECT_FALSE(
-      static_cast<PrefModelAssociator*>(
-          pref_service->GetSyncableService(syncer::OS_PRIORITY_PREFERENCES))
-          ->IsUsingDualLayerUserPrefStoreForTesting());
-#endif
-}
-
-TEST_F(PrefServiceSyncableFactoryTest,
-       ShouldCreateSyncServiceWithDualLayerStoreIfFeatureEnabled) {
-  base::test::ScopedFeatureList feature_list(
-      switches::kEnablePreferencesAccountStorage);
+       ShouldCreateSyncServiceWithDualLayerStore) {
   auto pref_service =
       pref_service_syncable_factory_.CreateSyncable(prefs_.registry());
   EXPECT_TRUE(static_cast<PrefModelAssociator*>(
@@ -1440,8 +1411,6 @@ class PrefServiceSyncableFactoryTestWithAlwaysSyncingPrefs
     : public PrefServiceSyncableFactoryTest {
  public:
   PrefServiceSyncableFactoryTestWithAlwaysSyncingPrefs() {
-    feature_list_.InitWithFeatures({switches::kEnablePreferencesAccountStorage},
-                                   /*disabled_features=*/{});
     pref_service_syncable_factory_.SetPrefModelAssociatorClient(client_);
 
     // Register test prefs.
@@ -1457,7 +1426,6 @@ class PrefServiceSyncableFactoryTestWithAlwaysSyncingPrefs
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   scoped_refptr<TestPrefModelAssociatorClient> client_ =
       base::MakeRefCounted<TestPrefModelAssociatorClient>();
 };

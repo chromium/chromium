@@ -225,7 +225,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
       Difference(AllowedTypesInStandaloneTransportMode(),
                  GetTypesGatedBehindHistoryOptIn());
 
-
   EXPECT_THAT(GetSyncService(0)->GetActiveDataTypes(),
               ContainerEq(expected_types));
 }
@@ -260,7 +259,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   // With the history opt in, all types that can run in transport mode should
   // be active.
   syncer::DataTypeSet expected_types = AllowedTypesInStandaloneTransportMode();
-
 
   EXPECT_THAT(GetSyncService(0)->GetActiveDataTypes(),
               ContainerEq(expected_types));
@@ -372,10 +370,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
 // ReplaceSyncWithSigninMigrationSyncTest is
 // disabled on CrOS as the signed in, non-syncing state does not exist.
 #if !BUILDFLAG(IS_CHROMEOS)
-// A test fixture to cover Sync-to-Signin migration behavior: In PRE_ tests,
-// switches::kEnablePreferencesAccountStorage is *dis*abled, in non-PRE_ tests
-// it is *en*abled, and the migration state pref is cleared at the end of PRE_
-// so that the migration re-runs on startup in the non-PRE_ test.
+// A test fixture to cover Sync-to-Signin migration behavior: the migration
+// state pref is cleared at the end of PRE_ so that the migration re-runs on
+// startup in the non-PRE_ test.
 // This test intends to test the mobile migration behavior, but runs on desktop.
 // Desktop and mobile have different behaviors, and as a consequence this test
 // is only an approximation.
@@ -390,9 +387,6 @@ class ReplaceSyncWithSigninMigrationSyncTest : public SyncTest {
         switches::kSyncEnableBookmarksInTransportMode};
     default_features_.InitWithFeatures(enabled_features,
                                        /*disabled_features=*/{});
-
-    sync_to_signin_feature_.InitWithFeatureState(
-        switches::kEnablePreferencesAccountStorage, !content::IsPreTest());
   }
   ~ReplaceSyncWithSigninMigrationSyncTest() override = default;
 
@@ -402,7 +396,6 @@ class ReplaceSyncWithSigninMigrationSyncTest : public SyncTest {
 
  private:
   base::test::ScopedFeatureList default_features_;
-  base::test::ScopedFeatureList sync_to_signin_feature_;
 };
 
 IN_PROC_BROWSER_TEST_F(ReplaceSyncWithSigninMigrationSyncTest,
@@ -417,9 +410,7 @@ IN_PROC_BROWSER_TEST_F(ReplaceSyncWithSigninMigrationSyncTest,
       syncer::UserSelectableType::kAutofill));
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPayments));
-  // Preferences is not supported in transport mode (based on the Features
-  // set by the fixture), so it should be reported as non-selected.
-  ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPreferences));
 
   // The user disabled Payments. Note that SyncUserSettings is already
@@ -487,8 +478,7 @@ IN_PROC_BROWSER_TEST_F(ReplaceSyncWithSigninMigrationSyncTest,
       syncer::UserSelectableType::kPayments));
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kAutofill));
-  // Preferences is not supported without `kEnablePreferencesAccountStorage`.
-  ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPreferences));
 
   // Clear the migration state pref so that the migration runs on the next

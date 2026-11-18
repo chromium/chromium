@@ -126,8 +126,7 @@ class EnableDisableSingleClientTest
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
-          {switches::kEnablePreferencesAccountStorage,
-           syncer::kSpellcheckSeparateLocalAndAccountDictionaries,
+          {syncer::kSpellcheckSeparateLocalAndAccountDictionaries,
            switches::kSyncEnableBookmarksInTransportMode},
           /*disabled_features=*/{});
     }

@@ -51,9 +51,7 @@ class PrefServiceSyncable : public PrefService,
           read_error_callback,
       bool async);
 
-  // Note: This must be called only if EnablePreferencesAccountStorage feature
-  // is enabled. However, it is possible that the other overload gets called
-  // even if EnablePreferencesAccountStorage is enabled during test when using
+  // It is possible that the other overload gets called during test when using
   // TestingPrefServiceSyncable.
   // TODO(crbug.com/40283048): Fix TestingPrefServiceSyncable or remove usages.
   // Note: Can be done using templates instead of overload but chosen not to for
@@ -146,8 +144,7 @@ class PrefServiceSyncable : public PrefService,
 
   base::ObserverList<PrefServiceSyncableObserver>::Unchecked observer_list_;
 
-  // DualLayerUserPrefStore instance passed to the associators. This is non-null
-  // iff EnablePreferencesAccountStorage feature is enabled.
+  // DualLayerUserPrefStore instance passed to the associators.
   scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs_;
 
   std::unique_ptr<DemographicsPrefsClearer> demographics_prefs_clearer_;

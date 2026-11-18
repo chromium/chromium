@@ -663,9 +663,6 @@ BASE_FEATURE_PARAM(bool,
                    true);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-BASE_FEATURE(kEnablePreferencesAccountStorage,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 BASE_FEATURE(kEnableSearchAIModeSigninPromo, base::FEATURE_DISABLED_BY_DEFAULT);
 // The delay we allow for the AIM search result to load before we display the

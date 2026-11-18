@@ -54,7 +54,6 @@
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -1376,8 +1375,8 @@ class PrefHashBrowserTestAccountValueUntrustedAddition
     : public PrefHashBrowserTestBase {
  public:
   PrefHashBrowserTestAccountValueUntrustedAddition() {
-    feature_list_.InitWithFeatures({switches::kEnablePreferencesAccountStorage},
-                                   {tracked::kDisallowLegacyPrefMacFallback});
+    feature_list_.InitAndDisableFeature(
+        tracked::kDisallowLegacyPrefMacFallback);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

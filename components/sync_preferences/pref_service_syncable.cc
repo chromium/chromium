@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -19,17 +18,11 @@
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_value_store.h"
-#include "components/signin/public/base/signin_switches.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_preferences/dual_layer_user_pref_store.h"
 #include "components/sync_preferences/pref_model_associator.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
 #include "components/sync_preferences/synced_pref_observer.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/ash_features.h"
-#endif
 
 namespace sync_preferences {
 
@@ -133,8 +126,6 @@ PrefServiceSyncable::PrefServiceSyncable(
 #endif
       pref_registry_(std::move(pref_registry)),
       dual_layer_user_prefs_(std::move(dual_layer_user_prefs)) {
-  CHECK(
-      base::FeatureList::IsEnabled(switches::kEnablePreferencesAccountStorage));
   CHECK(dual_layer_user_prefs_);
   ConnectAssociatorsAndRegisterPreferences();
 }
@@ -154,9 +145,9 @@ void PrefServiceSyncable::ConnectAssociatorsAndRegisterPreferences() {
   }
 
   // Watch for syncable preferences registered after this point.
-  pref_registry_->SetSyncableRegistrationCallback(base::BindRepeating(
-      &PrefServiceSyncable::AddRegisteredSyncablePreference,
-      base::Unretained(this)));
+  pref_registry_->SetSyncableRegistrationCallback(
+      base::BindRepeating(&PrefServiceSyncable::AddRegisteredSyncablePreference,
+                          base::Unretained(this)));
 }
 
 PrefServiceSyncable::~PrefServiceSyncable() {

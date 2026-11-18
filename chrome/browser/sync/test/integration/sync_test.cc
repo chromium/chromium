@@ -1350,11 +1350,8 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
                         syncer::WORKSPACE_DESK});
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  if (base::FeatureList::IsEnabled(
-          switches::kEnablePreferencesAccountStorage)) {
-    allowed_types.Put(syncer::PRIORITY_PREFERENCES);
-    allowed_types.Put(syncer::PREFERENCES);
-  }
+  allowed_types.Put(syncer::PRIORITY_PREFERENCES);
+  allowed_types.Put(syncer::PREFERENCES);
   if (base::FeatureList::IsEnabled(
           switches::kSyncEnableBookmarksInTransportMode)) {
     allowed_types.Put(syncer::BOOKMARKS);
@@ -1423,16 +1420,13 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::CONTEXTUAL_TASK);
   }
 
-  if (
-      // Support for transport mode for search engines is implemented alongside
-      // that of preferences.
-      base::FeatureList::IsEnabled(switches::kEnablePreferencesAccountStorage)
 #if BUILDFLAG(IS_ANDROID)
-      && base::FeatureList::IsEnabled(syncer::kSyncSearchEnginesAndroidLFF)
-#endif
-  ) {
+  if (base::FeatureList::IsEnabled(syncer::kSyncSearchEnginesAndroidLFF)) {
     allowed_types.Put(syncer::SEARCH_ENGINES);
   }
+#else
+  allowed_types.Put(syncer::SEARCH_ENGINES);
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   allowed_types.Put(syncer::THEMES);

@@ -484,8 +484,7 @@ TEST_F(SyncPrefsTest, SetTypeDisabledByCustodian) {
 TEST_F(SyncPrefsTest, DefaultSelectedTypesForAccountInTransportMode) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode,
-                            switches::kEnablePreferencesAccountStorage},
+      /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode},
       /*disabled_features=*/{});
 
   // All except history-guarded types should be enabled.
@@ -801,14 +800,10 @@ class SyncPrefsMigrationTest : public testing::Test {
   SyncPrefsMigrationTest() {
     // Enable various features that are required for data types to be supported
     // in transport mode.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-            switches::kSyncEnableBookmarksInTransportMode,
+    feature_list_.InitAndEnableFeature(
+        switches::kSyncEnableBookmarksInTransportMode);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-            switches::kEnablePreferencesAccountStorage},
-        /*disabled_features=*/{});
 
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
     SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
@@ -851,7 +846,9 @@ class SyncPrefsMigrationTest : public testing::Test {
   const char* kGlobalPreferencesPref =
       SyncPrefs::GetPrefNameForTypeForTesting(UserSelectableType::kPreferences);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList feature_list_;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   TestingPrefServiceSimple pref_service_;

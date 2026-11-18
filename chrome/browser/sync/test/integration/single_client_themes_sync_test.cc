@@ -172,14 +172,7 @@ class SingleClientThemesSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientThemesSyncTest() : SyncTest(SINGLE_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      // `kEnablePreferencesAccountStorage` is used to enable themes in
-      // transport mode alongside some other data types.
-      scoped_feature_list_.InitAndEnableFeature(
-          switches::kEnablePreferencesAccountStorage);
-    }
-  }
+  SingleClientThemesSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientThemesSyncTest() override = default;
 
   bool TestUsesSelfNotifications() override { return false; }
@@ -190,9 +183,6 @@ class SingleClientThemesSyncTest
 
  protected:
   base::HistogramTester histogram_tester_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,
