@@ -16,9 +16,6 @@ namespace blink {
 
 namespace {
 
-static const V8PrivateProperty::SymbolKey
-    kByteLengthQueuingStrategySizeFunction;
-
 class ByteLengthQueuingStrategySizeFunction final : public ScriptFunction {
  public:
   static v8::Local<v8::Function> CreateFunction(ScriptState* script_state) {
@@ -99,7 +96,7 @@ ScriptValue ByteLengthQueuingStrategy::size(ScriptState* script_state) const {
   //    Function that represents a reference to F, with callback context equal
   //    to globalObject’s relevant settings object.
   return GetCachedSizeFunction(
-      script_state, kByteLengthQueuingStrategySizeFunction,
+      script_state, QueuingStrategySizeFunctionType::kByteLength,
       &ByteLengthQueuingStrategySizeFunction::CreateFunction);
 }
 
