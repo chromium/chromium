@@ -959,7 +959,7 @@ TEST_F(ScrollAnchorTest, SerializeAnchorFailsForShadowDOMElement) {
       GetScrollAnchor(LayoutViewport()).GetSerializedAnchor();
   EXPECT_FALSE(serialized.IsValid());
 
-  LayoutObject* anchor_object =
+  const LayoutObject* anchor_object =
       GetScrollAnchor(LayoutViewport()).AnchorObject();
   EXPECT_TRUE(anchor_object->GetNode()->IsInShadowTree());
 }

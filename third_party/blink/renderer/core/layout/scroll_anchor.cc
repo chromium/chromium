@@ -101,7 +101,7 @@ void ScrollAnchor::SetScroller(ScrollableArea* scroller) {
   ClearSelf();
 }
 
-LayoutObject* ScrollAnchor::AnchorObject() const {
+const LayoutObject* ScrollAnchor::AnchorObject() const {
   return LayoutObject::GetWeak(weak_anchor_object_);
 }
 
@@ -297,7 +297,7 @@ static const String UniqueSimpleSelectorAmongSiblings(Element* element) {
 // the root of the document. The computed selectors are chained together with
 // the child combinator(>) to produce a compound selector that is
 // effectively a path through the DOM tree to the node of |anchor_object|.
-static const String ComputeUniqueSelector(LayoutObject* anchor_object) {
+static String ComputeUniqueSelector(const LayoutObject* anchor_object) {
   Node* anchor_node = anchor_object->GetNode();
   DCHECK(anchor_node);
   // The scroll anchor can be a pseudo-element, but pseudo-elements aren't part
@@ -402,7 +402,7 @@ void ScrollAnchor::FindAnchor() {
   if (!found_priority_anchor)
     FindAnchorRecursive(ScrollerLayoutBox(scroller_));
 
-  if (LayoutObject* anchor_object = AnchorObject()) {
+  if (const LayoutObject* anchor_object = AnchorObject()) {
     saved_relative_offset_ =
         ComputeRelativeOffset(anchor_object, scroller_, corner_);
     TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("blink.debug"), "FindAnchor",
@@ -493,7 +493,7 @@ ScrollAnchor::ExamineResult ScrollAnchor::ExaminePriorityCandidate(
 }
 
 ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorRecursive(
-    LayoutObject* candidate) {
+    const LayoutObject* candidate) {
   if (!candidate->EverHadLayout()) {
     return kSkip;
   }
@@ -538,7 +538,7 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorRecursive(
 }
 
 ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
-    LayoutObject* candidate) {
+    const LayoutObject* candidate) {
   auto* layout_block = DynamicTo<LayoutBlock>(candidate);
   if (!layout_block)
     return kSkip;
@@ -564,7 +564,7 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
 
     for (const PhysicalFragmentLink& child : fragment.Children()) {
       if (child->IsOutOfFlowPositioned()) {
-        LayoutObject* layout_object = child->GetMutableLayoutObject();
+        const LayoutObject* layout_object = child->GetLayoutObject();
         if (layout_object && layout_object->Parent() != candidate) {
           WalkStatus status = FindAnchorRecursive(layout_object);
           if (IsViable(status))
@@ -581,7 +581,7 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
            To<PhysicalBoxFragment>(child.get())->Children()) {
         if (!grandchild->IsOutOfFlowPositioned())
           continue;
-        LayoutObject* layout_object = grandchild->GetMutableLayoutObject();
+        const LayoutObject* layout_object = grandchild->GetLayoutObject();
         if (layout_object) {
           WalkStatus status = FindAnchorRecursive(layout_object);
           if (IsViable(status))
@@ -595,7 +595,7 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
 }
 
 bool ScrollAnchor::ComputeScrollAnchorDisablingStyleChanged() {
-  LayoutObject* current = AnchorObject();
+  const LayoutObject* current = AnchorObject();
   if (!current)
     return false;
 
@@ -658,7 +658,7 @@ gfx::Vector2d ScrollAnchor::ComputeAdjustment() const {
   // (For example, anchor moving from 2.4px -> 2.6px is really 2px -> 3px, so we
   // should scroll by 1px instead of 0.2px.) This is true regardless of whether
   // the ScrollableArea actually uses fractional scroll positions.
-  LayoutObject* anchor_object = AnchorObject();
+  const LayoutObject* anchor_object = AnchorObject();
   gfx::Vector2d delta = ToRoundedVector2d(ComputeRelativeOffset(
                             anchor_object, scroller_, corner_)) -
                         ToRoundedVector2d(saved_relative_offset_);
@@ -863,7 +863,7 @@ const SerializedAnchor ScrollAnchor::GetSerializedAnchor() {
     }
   }
 
-  LayoutObject* anchor_object = AnchorObject();
+  const LayoutObject* anchor_object = AnchorObject();
   DCHECK(anchor_object->GetNode());
   SerializedAnchor new_anchor(
       saved_selector_ ? saved_selector_ : ComputeUniqueSelector(anchor_object),
@@ -896,8 +896,8 @@ void ScrollAnchor::Dispose() {
 }
 
 void ScrollAnchor::Clear() {
-  LayoutObject* anchor_object = AnchorObject();
-  LayoutObject* layout_object =
+  const LayoutObject* anchor_object = AnchorObject();
+  const LayoutObject* layout_object =
       anchor_object ? anchor_object : ScrollerLayoutBox(scroller_);
   PaintLayer* layer = nullptr;
   if (LayoutObject* parent = layout_object->Parent())

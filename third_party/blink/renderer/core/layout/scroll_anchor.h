@@ -64,7 +64,7 @@ class CORE_EXPORT ScrollAnchor final {
 
   // The LayoutObject we are currently anchored to. Lazily computed during
   // notifyBeforeLayout() and cached until the next call to clear().
-  LayoutObject* AnchorObject() const;
+  const LayoutObject* AnchorObject() const;
 
   // Called when the scroller attached to this anchor is being destroyed.
   void Dispose();
@@ -128,8 +128,8 @@ class CORE_EXPORT ScrollAnchor final {
   // to take an additional look for OOFs inside enclosing NG fragmentation
   // contexts. OOFs are direct children of fragmentainers, rather than being a
   // child of their actual containing block.
-  WalkStatus FindAnchorRecursive(LayoutObject*);
-  WalkStatus FindAnchorInOOFs(LayoutObject*);
+  WalkStatus FindAnchorRecursive(const LayoutObject*);
+  WalkStatus FindAnchorInOOFs(const LayoutObject*);
   bool ComputeScrollAnchorDisablingStyleChanged();
 
   // Find viable anchor among the priority candidates. Returns true if anchor
@@ -172,7 +172,7 @@ class CORE_EXPORT ScrollAnchor final {
   Member<ScrollableArea> scroller_;
 
   // The LayoutObject we should anchor to.
-  WeakMember<LayoutObject> weak_anchor_object_;
+  WeakMember<const LayoutObject> weak_anchor_object_;
 
   // Which corner of m_anchorObject's bounding box to anchor to.
   Corner corner_;

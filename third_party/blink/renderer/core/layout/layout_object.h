@@ -3294,7 +3294,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return descendant_needs_paint_property_update_;
   }
 
-  bool ScrollAnchorDisablingStyleChanged() {
+  bool ScrollAnchorDisablingStyleChanged() const {
     NOT_DESTROYED();
     return scroll_anchor_disabling_style_changed_;
   }
