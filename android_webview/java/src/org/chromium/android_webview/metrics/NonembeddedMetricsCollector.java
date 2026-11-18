@@ -21,7 +21,6 @@ import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.android_webview.proto.MetricsBridgeRecords.HistogramRecord;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -35,8 +34,7 @@ import java.util.concurrent.TimeUnit;
 public final class NonembeddedMetricsCollector {
     private static final String TAG = "NonembedMetrics";
 
-    private static final int MINUTES_PER_DAY =
-            (int) TimeUnit.SECONDS.toMinutes(TimeUtils.SECONDS_PER_DAY);
+    private static final int MINUTES_PER_DAY = (int) TimeUnit.DAYS.toMinutes(1);
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
