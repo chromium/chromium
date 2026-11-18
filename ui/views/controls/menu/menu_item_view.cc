@@ -1179,7 +1179,9 @@ MenuItemView::MenuItemView(MenuItemView* parent,
 
 void MenuItemView::PrepareForRun(bool has_mnemonics, bool show_mnemonics) {
   // Currently we only support showing the root.
-  CHECK(!parent_menu_item_, base::NotFatalUntil::M163);
+  // TODO(crbug.com/586323130): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!parent_menu_item_);
 
   // Force us to have a submenu.
   CreateSubmenu();
