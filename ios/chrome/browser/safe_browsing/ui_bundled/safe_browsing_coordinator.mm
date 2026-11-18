@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/safe_browsing/ui_bundled/safe_browsing_coordinator.h"
 
 #import "base/feature_list.h"
+#import "base/memory/weak_ptr.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
@@ -15,7 +16,10 @@
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/safe_browsing/model/enhanced_safe_browsing_infobar_delegate.h"
+#import "ios/chrome/browser/safe_browsing/model/suspicious_site_tab_helper.h"
+#import "ios/chrome/browser/safe_browsing/model/suspicious_site_tab_helper_delegate.h"
 #import "ios/chrome/browser/safe_browsing/model/tailored_security/tailored_security_service_factory.h"
+#import "ios/chrome/browser/safe_browsing/ui_bundled/suspicious_site_warning_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -31,7 +35,10 @@
 #import "ios/web/public/web_state.h"
 
 // Forward-declaration of the private method so subsequent code can call it.
-@interface SafeBrowsingCoordinator () <TabsDependencyInstalling>
+@interface SafeBrowsingCoordinator () <
+    SuspiciousSiteTabHelperDelegate,
+    SuspiciousSiteWarningViewControllerDelegate,
+    TabsDependencyInstalling>
 
 // The WebStateList that this mediator listens for any changes on the active web
 // state.
@@ -46,6 +53,8 @@
 @implementation SafeBrowsingCoordinator {
   TabsDependencyInstallerBridge _dependencyInstallerBridge;
   PrefChangeRegistrar _prefChangeRegistrar;
+  SuspiciousSiteWarningViewController* _suspiciousSiteWarningViewController;
+  base::WeakPtr<web::WebState> _suspiciousSiteWebState;
   BOOL _pendingBannerPreferenceChange;
 }
 
@@ -73,6 +82,9 @@
 #pragma mark - ChromeCoordinator
 
 - (void)stop {
+  if (_suspiciousSiteWarningViewController) {
+    [self handleSuspiciousSiteWarningDismissedBySystem];
+  }
   // Stop observing the WebStateList before destroying the bridge object.
   _dependencyInstallerBridge.StopObserving();
   [super stop];
@@ -104,7 +116,134 @@
   infobar_manager->AddInfoBar(std::move(infobar), /*replace_existing=*/true);
 }
 
+#pragma mark - SuspiciousSiteTabHelperDelegate
+
+- (BOOL)showSuspiciousSiteWarning {
+  [self dismissSuspiciousSiteWarning];
+
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  // Do not present if there is no active tab, the base view controller is not
+  // attached to a window, or another modal is already being presented.
+  if (!activeWebState || !self.baseViewController.view.window ||
+      self.baseViewController.presentedViewController) {
+    return NO;
+  }
+
+  SuspiciousSiteWarningViewController* warningViewController =
+      [[SuspiciousSiteWarningViewController alloc] init];
+  warningViewController.delegate = self;
+  _suspiciousSiteWarningViewController = warningViewController;
+  _suspiciousSiteWebState = activeWebState->GetWeakPtr();
+
+  __weak __typeof(self) weakSelf = self;
+  __weak SuspiciousSiteWarningViewController* weakWarningViewController =
+      warningViewController;
+  [self.baseViewController
+      presentViewController:warningViewController
+                   animated:YES
+                 completion:^{
+                   __typeof(self) strongSelf = weakSelf;
+                   if (!strongSelf) {
+                     [weakWarningViewController.presentingViewController
+                         dismissViewControllerAnimated:NO
+                                            completion:nil];
+                     return;
+                   }
+                   [strongSelf didFinishPresentingSuspiciousSiteWarning:
+                                   weakWarningViewController];
+                 }];
+  return YES;
+}
+
+- (void)dismissSuspiciousSiteWarning {
+  SuspiciousSiteWarningViewController* warningViewController =
+      _suspiciousSiteWarningViewController;
+  warningViewController.delegate = nil;
+  _suspiciousSiteWarningViewController = nil;
+  _suspiciousSiteWebState.reset();
+
+  // If the alert is still mid-presentation, UIKit ignores dismissal calls;
+  // `didFinishPresentingSuspiciousSiteWarning:` will dismiss it once the
+  // presentation transition completes.
+  if (warningViewController && !warningViewController.isBeingPresented) {
+    [warningViewController.presentingViewController
+        dismissViewControllerAnimated:NO
+                           completion:nil];
+  }
+}
+
+#pragma mark - SuspiciousSiteWarningViewControllerDelegate
+
+- (void)suspiciousSiteWarningViewControllerDidTapBackToSafety:
+    (SuspiciousSiteWarningViewController*)viewController {
+  // Ignore callbacks from stale view controllers that have already been
+  // detached by dismissal.
+  if (viewController != _suspiciousSiteWarningViewController) {
+    return;
+  }
+  if (SuspiciousSiteTabHelper* tabHelper =
+          [self suspiciousSiteTabHelperForAlertDismissal]) {
+    tabHelper->OnBackToSafetyClicked();
+  }
+}
+
+- (void)suspiciousSiteWarningViewControllerDidTapMarkAsSafe:
+    (SuspiciousSiteWarningViewController*)viewController {
+  // Ignore callbacks from stale view controllers that have already been
+  // detached by dismissal.
+  if (viewController != _suspiciousSiteWarningViewController) {
+    return;
+  }
+  if (SuspiciousSiteTabHelper* tabHelper =
+          [self suspiciousSiteTabHelperForAlertDismissal]) {
+    tabHelper->OnMarkAsSafeClicked();
+  }
+}
+
+- (void)suspiciousSiteWarningViewControllerDidDismissWithoutAction:
+    (SuspiciousSiteWarningViewController*)viewController {
+  // Ignore callbacks from stale view controllers that have already been
+  // detached by dismissal.
+  if (viewController != _suspiciousSiteWarningViewController) {
+    return;
+  }
+  [self handleSuspiciousSiteWarningDismissedBySystem];
+}
+
 #pragma mark - Private
+
+// Completes deferred dismissal if `dismissSuspiciousSiteWarning` was called
+// while `warningViewController` was still being presented.
+- (void)didFinishPresentingSuspiciousSiteWarning:
+    (SuspiciousSiteWarningViewController*)warningViewController {
+  if (warningViewController &&
+      warningViewController != _suspiciousSiteWarningViewController) {
+    [warningViewController.presentingViewController
+        dismissViewControllerAnimated:NO
+                           completion:nil];
+  }
+}
+
+// Dismisses `_suspiciousSiteWarningViewController` and returns the originating
+// tab's `SuspiciousSiteTabHelper`, if the tab is still alive.
+- (SuspiciousSiteTabHelper*)suspiciousSiteTabHelperForAlertDismissal {
+  web::WebState* webState = _suspiciousSiteWebState.get();
+  [self dismissSuspiciousSiteWarning];
+  // The originating tab may have been closed before the alert callback runs.
+  if (!webState) {
+    return nullptr;
+  }
+  return SuspiciousSiteTabHelper::FromWebState(webState);
+}
+
+// Notifies the originating tab's `SuspiciousSiteTabHelper` that the warning
+// alert was dismissed without user interaction.
+- (void)handleSuspiciousSiteWarningDismissedBySystem {
+  if (SuspiciousSiteTabHelper* tabHelper =
+          [self suspiciousSiteTabHelperForAlertDismissal]) {
+    tabHelper->OnWarningDismissedBySystem();
+  }
+}
 
 - (void)handlePreferenceChange {
   Browser* browser = self.browser;
@@ -190,10 +329,22 @@
 
 - (void)webStateInserted:(web::WebState*)webState {
   SafeBrowsingTabHelper::FromWebState(webState)->SetDelegate(self);
+  // `SuspiciousSiteTabHelper` is not attached to off-the-record WebStates or
+  // when `kSuspiciousSiteWarnings` is disabled.
+  if (SuspiciousSiteTabHelper* suspiciousSiteTabHelper =
+          SuspiciousSiteTabHelper::FromWebState(webState)) {
+    suspiciousSiteTabHelper->SetDelegate(self);
+  }
 }
 
 - (void)webStateRemoved:(web::WebState*)webState {
   SafeBrowsingTabHelper::FromWebState(webState)->RemoveDelegate();
+  // `SuspiciousSiteTabHelper` is not attached to off-the-record WebStates or
+  // when `kSuspiciousSiteWarnings` is disabled.
+  if (SuspiciousSiteTabHelper* suspiciousSiteTabHelper =
+          SuspiciousSiteTabHelper::FromWebState(webState)) {
+    suspiciousSiteTabHelper->SetDelegate(nil);
+  }
 }
 
 - (void)webStateDeleted:(web::WebState*)webState {

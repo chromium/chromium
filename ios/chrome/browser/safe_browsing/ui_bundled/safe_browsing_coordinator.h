@@ -8,8 +8,8 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper_delegate.h"
 
-// Used as a delegate for SafeBrowsingTabHelper and makes initial call to open
-// safe browsing settings from interstitial page.
+// Used as a delegate for `SafeBrowsingTabHelper` and `SuspiciousSiteTabHelper`,
+// and makes initial call to open Safe Browsing settings from interstitial page.
 @interface SafeBrowsingCoordinator
     : ChromeCoordinator <SafeBrowsingTabHelperDelegate>
 
