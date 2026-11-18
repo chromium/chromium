@@ -6,6 +6,9 @@ buganizer_public: {
   component_id: 1456393
 }
 agentic_review: {
+  # Duplicated because dirmd does not support importing a mixin in a mixin.
+  # Shared signin/profiles rules only; keep component-specific rules outside.
+  # LINT.IfChange(SigninCommonKnowledgeBase)
   capability_groups: {
     path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm|m|java)"
     rules: "components/signin/agents/knowledge_base/rules/check-are-refresh-tokens-loaded-for-async-account-list.md"
@@ -20,4 +23,5 @@ agentic_review: {
     rules: "components/signin/agents/knowledge_base/rules/prefer-get-accounts-with-refresh-tokens-over-cookie-jar.md"
     rules: "components/signin/agents/knowledge_base/rules/use-gaia-id-instead-of-email-for-account-identity.md"
   }
+  # LINT.ThenChange(/chrome/browser/profiles/COMMON_METADATA:SigninCommonKnowledgeBase)
 }
