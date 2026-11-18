@@ -6,6 +6,7 @@
 
 #import <string>
 #import <string_view>
+#import <vector>
 
 #import "base/apple/foundation_util.h"
 #import "base/containers/fixed_flat_set.h"
@@ -13,7 +14,9 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/numerics/safe_conversions.h"
+#import "base/strings/escape.h"
 #import "base/strings/strcat.h"
+#import "base/strings/string_split.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -29,10 +32,7 @@
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store+fetcher.h"
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store.h"
 #import "ios/chrome/common/channel_info.h"
-#import "net/base/apple/url_conversions.h"
-#import "net/base/url_util.h"
 #import "net/http/http_status_code.h"
-#import "url/gurl.h"
 
 namespace {
 
@@ -73,6 +73,28 @@ std::string GetOsName(const std::string& forced_platform) {
 std::string TrimWhitespace(std::string_view value) {
   return std::string(
       base::TrimWhitespaceASCII(value, base::TrimPositions::TRIM_ALL));
+}
+
+// Returns `query` with the first `name` parameter replaced by `value`, or with
+// it appended if absent, mirroring `net::AppendOrReplaceQueryParameter()`.
+std::string AppendOrReplaceQueryParameter(std::string_view query,
+                                          std::string_view name,
+                                          std::string_view value) {
+  const std::string parameter = base::StrCat(
+      {name, "=", base::EscapeQueryParamValue(value, /*use_plus=*/true)});
+  std::vector<std::string_view> pairs = base::SplitStringPiece(
+      query, "&", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  bool replaced = false;
+  for (std::string_view& pair : pairs) {
+    if (!replaced && pair.substr(0, pair.find('=')) == name) {
+      pair = parameter;
+      replaced = true;
+    }
+  }
+  if (!replaced) {
+    pairs.push_back(parameter);
+  }
+  return base::JoinString(pairs, "&");
 }
 
 }  // namespace
@@ -193,31 +215,43 @@ std::string TrimWhitespace(std::string_view value) {
 // The URL of the variations server, including query parameters that identifies
 // the request initiator. Accessed in the static serial queue
 // "*.first_run_variations_seed_manager".
-- (GURL)variationsURL {
-  GURL URL(_variationsDomain);
-  if (!URL.is_valid()) {
-    return GURL();
+- (NSURL*)variationsURL {
+  // Uses Foundation URL types because this runs before web schemes are
+  // registered, when the `url` library's scheme registry must not be read.
+  NSURLComponents* components = [NSURLComponents
+      componentsWithString:base::SysUTF8ToNSString(_variationsDomain)];
+  // Malformed `--variations-server-url` values yield no request URL.
+  if (!components.scheme.length || !components.host.length) {
+    return nil;
   }
+  // Gives hierarchical URLs a root path, matching Chrome's URL
+  // canonicalization.
+  if (!components.percentEncodedPath.length) {
+    components.percentEncodedPath = @"/";
+  }
+  std::string query =
+      base::SysNSStringToUTF8(components.percentEncodedQuery ?: @"");
   // Construct the variations seed request URL with `osname` and `milestone`,
   // plus optional `channel` and `restrict` (from the
   // `VariationsRestrictParameter` MDM policy) parameters.
-  URL = net::AppendOrReplaceQueryParameter(URL, "osname",
-                                           GetOsName(_forcedPlatform));
-  URL = net::AppendOrReplaceQueryParameter(
-      URL, "milestone", version_info::GetMajorVersionNumber());
+  query = AppendOrReplaceQueryParameter(query, "osname",
+                                        GetOsName(_forcedPlatform));
+  query = AppendOrReplaceQueryParameter(query, "milestone",
+                                        version_info::GetMajorVersionNumber());
   const std::string channel =
       _forcedChannel.empty()
           ? (GetChannel() != version_info::Channel::UNKNOWN ? GetChannelString()
                                                             : "")
           : _forcedChannel;
   if (!channel.empty()) {
-    URL = net::AppendOrReplaceQueryParameter(URL, "channel", channel);
+    query = AppendOrReplaceQueryParameter(query, "channel", channel);
   }
   if (!_restrictParameter.empty()) {
-    URL =
-        net::AppendOrReplaceQueryParameter(URL, "restrict", _restrictParameter);
+    query =
+        AppendOrReplaceQueryParameter(query, "restrict", _restrictParameter);
   }
-  return URL;
+  components.percentEncodedQuery = base::SysUTF8ToNSString(query);
+  return components.URL;
 }
 
 // Helper method for `startSeedFetch` that initiates an HTTPS request to the
@@ -229,7 +263,7 @@ std::string TrimWhitespace(std::string_view value) {
 - (void)doActualFetch {
   g_seed_fetching_in_progress = YES;
   NSMutableURLRequest* request = [NSMutableURLRequest
-       requestWithURL:net::NSURLWithGURL([self variationsURL])
+       requestWithURL:[self variationsURL]
           cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
       timeoutInterval:kRequestTimeout.InSecondsF()];
   // Pass only "gzip" as an accepted format. Do not pass delta compression

@@ -42,7 +42,6 @@ source_set("fetcher") {
     "//components/version_info",
     "//ios/chrome/common",
     "//net",
-    "//url",
   ]
 }
 
@@ -111,6 +110,7 @@ source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
+    "variations_first_run_seed_fetch_egtest.mm",
     "variations_safe_mode_egtest.mm",
     "variations_safe_mode_end_to_end_egtest.mm",
     "variations_safe_mode_seedfile_egtest.mm",
@@ -125,7 +125,9 @@ source_set("eg2_tests") {
     "//components/variations",
     "//components/variations:test_support",
     "//components/variations/service",
+    "//ios/chrome/browser/first_run/public:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -165,5 +167,6 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//url",
   ]
 }

@@ -24,6 +24,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "url/url_util.h"
 
 // The following headers should be imported after their non-testing
 // counterparts.
@@ -311,7 +312,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
 
 // Tests that surrounding ASCII whitespace is trimmed and special or non-ASCII
 // characters in `VariationsRestrictParameter` and `kFakeVariationsChannel` are
-// URL-escaped when constructing the seed request URL via `GURL`.
+// URL-escaped when constructing the seed request URL.
 TEST_F(IOSChromeVariationsSeedFetcherTest,
        TestVariationsURLWithEscapedRestrictParameter) {
   NSString* policy_key =
@@ -413,6 +414,54 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
     ASSERT_NSNE(nil, url);
     EXPECT_NSEQ(baseline_url_string, url.absoluteString);
   }
+}
+
+// Tests that building the seed request URL does not use the URL scheme
+// registry, since first-run fetches start before web schemes are registered.
+// Only DCHECK-enabled builds can detect registry use.
+TEST_F(IOSChromeVariationsSeedFetcherTest,
+       TestVariationsURLDoesNotUseSchemeRegistry) {
+  NSString* test_channel_arg = [NSString
+      stringWithFormat:@"--%@=%@",
+                       base::SysUTF8ToNSString(kFakeVariationsChannel),
+                       kTestChannel];
+  IOSChromeVariationsSeedFetcher* fetcher =
+      [[IOSChromeVariationsSeedFetcher alloc]
+          initWithArguments:@[ test_channel_arg ]];
+
+  // Marks the scheme registry as unused, as it is during early startup.
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  NSURL* url = FetchVariationsURL(fetcher);
+  ASSERT_NSNE(nil, url);
+
+  // Adding a scheme hits a DCHECK if the registry was read while building the
+  // request URL, mirroring the crash in `web::RegisterWebSchemes()`.
+  url::AddStandardScheme("variations-seed-fetcher-test", url::SCHEME_WITH_HOST);
+}
+
+// Tests that query parameters already in `--variations-server-url` are kept,
+// including ones containing `=`, and that a matching parameter is replaced.
+TEST_F(IOSChromeVariationsSeedFetcherTest,
+       TestVariationsURLWithExistingServerQueryParameters) {
+  NSString* server_arg = [NSString
+      stringWithFormat:@"--%@=https://test.finch.server/seed?a=b=c&osname=old",
+                       base::SysUTF8ToNSString(kVariationsServerURL)];
+  NSString* test_channel_arg = [NSString
+      stringWithFormat:@"--%@=%@",
+                       base::SysUTF8ToNSString(kFakeVariationsChannel),
+                       kTestChannel];
+  IOSChromeVariationsSeedFetcher* fetcher =
+      [[IOSChromeVariationsSeedFetcher alloc]
+          initWithArguments:@[ server_arg, test_channel_arg ]];
+  NSURL* url = FetchVariationsURL(fetcher);
+  ASSERT_NSNE(nil, url);
+  NSString* expected_url = [NSString
+      stringWithFormat:
+          @"https://test.finch.server/seed?a=b=c&osname=ios&milestone=%@"
+          @"&channel=%@",
+          base::SysUTF8ToNSString(version_info::GetMajorVersionNumber()),
+          kTestChannel];
+  EXPECT_NSEQ(expected_url, url.absoluteString);
 }
 
 // Tests that the see won't be created when an HTTP timeout error occurs, and
