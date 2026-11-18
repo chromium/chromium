@@ -1086,8 +1086,9 @@ const IDNTestCase kIdnCases[] = {
     // Test case for https://crbug.com/1156531 (missed skeleton map)
     {"xn--office65-hts.com", u"office\u0a5c65.com", kUnsafe},
 
-    // Check that ı has multiple skeletons.
+    // Check that ı and ɩ have multiple skeletons.
     {"xn--googe-q4a.com", u"goog\u0131e.com", kUnsafe},
+    {"xn--googe-7nc.com", u"goog\u0269e.com", kUnsafe},
 
     // appӏe.com, apple with U+04CF
     {"xn--appe-xre.com", u"xn--appe-xre.com", kUnsafe},
@@ -1294,7 +1295,10 @@ TEST_F(IDNSpoofCheckerTest, GetSimilarTopDomain) {
       // Test case for https://crbug.com/1156531
       {u"კ9.com", "39.com"},
       // Test case for https://crbug.com/1156531 (missed skeleton map)
-      {u"ੜ9.com", "39.com"}};
+      {u"ੜ9.com", "39.com"},
+      // Test cases for https://crbug.com/563001657:
+      {u"digk\u0269mo68.com", "digklmo68.com"},
+      {u"d\u0269gklmo68.com", "digklmo68.com"}};
   for (const TestCase& test_case : kTestCases) {
     const TopDomainEntry entry =
         IDNSpoofChecker().GetSimilarTopDomain(test_case.hostname);

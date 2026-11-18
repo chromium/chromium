@@ -145,6 +145,8 @@ SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
   character_map_[u'ł'] = {"l", "t"};
   // https://crbug.com/40072736:
   character_map_[u'ı'] = {"l", "i"};
+  // https://crbug.com/563001657:
+  character_map_[u'ɩ'] = {"l", "i"};
 
   // Find the characters with diacritics that have multiple skeletons.
   for (const auto& it : character_map_) {
