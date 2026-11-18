@@ -40,6 +40,7 @@ if (!is_android) {
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/omnibox",
       "//chrome/browser/ui/webui:favicon_source",
+      "//chrome/browser/ui/webui:theme_colors_source_manager",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/searchbox:plural_string_provider",
       "//chrome/browser/ui/webui/metrics_reporter",

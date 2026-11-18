@@ -102,6 +102,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/waap",
     "//chrome/browser/ui/webui:favicon_source",
+    "//chrome/browser/ui/webui:theme_colors_source_manager",
     "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/cr_components/searchbox",
