@@ -43,10 +43,10 @@ export function resetCloseMetrics() {
 }
 
 export function recordCloseMetrics() {
-  chrome.histograms.recordEnumerationValue(
+  chrome.metricsPrivate.recordEnumerationValue(
       'Tabs.Organizer.CloseAction', pendingCloseAction,
       OrganizerPanelCloseAction.COUNT);
-  chrome.histograms.recordSmallCount(
+  chrome.metricsPrivate.recordSmallCount(
       'Tabs.Organizer.NumTabsClosedPerInstance', numTabsClosed);
   resetCloseMetrics();
 }

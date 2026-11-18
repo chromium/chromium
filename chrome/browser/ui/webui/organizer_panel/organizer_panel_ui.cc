@@ -77,8 +77,7 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
     // chrome.send().
     : TopChromeWebUIController(
           web_ui,
-          /*enable_chrome_send=*/webui::IsWebUIDataSourceShared(web_ui),
-          /*enable_chrome_histograms=*/true) {
+          /*enable_chrome_send=*/webui::IsWebUIDataSourceShared(web_ui)) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIOrganizerPanelHost);
 

@@ -196,7 +196,7 @@ export class OrganizerListSectionHeaderElement extends
 
   private setExpandedFromUser_(expanded: boolean) {
     this.expanded = expanded;
-    chrome.histograms.recordUserAction(
+    chrome.metricsPrivate.recordUserAction(
         expanded ? 'OrganizerPanel.ExpandSection' :
                    'OrganizerPanel.CollapseSection');
     this.fire('toggle-action', {expanded});

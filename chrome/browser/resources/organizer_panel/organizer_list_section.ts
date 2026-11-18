@@ -273,7 +273,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
 
   protected onToggleAction_(e: CustomEvent<{expanded: boolean}>) {
     assert(this.delegate);
-    chrome.histograms.recordEnumerationValue(
+    chrome.metricsPrivate.recordEnumerationValue(
         `Tabs.Organizer.Section.${
             this.delegate.getHistogramSectionName()}.ToggleAction`,
         e.detail.expanded ? OrganizerSectionToggleAction.EXPAND :
@@ -288,7 +288,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
     if (this.showAll_ === showAll) {
       return;
     }
-    chrome.histograms.recordEnumerationValue(
+    chrome.metricsPrivate.recordEnumerationValue(
         `Tabs.Organizer.Section.${
             this.delegate.getHistogramSectionName()}.MenuAction`,
         e.detail.option, OrganizerSectionMenuOption.COUNT);
@@ -317,9 +317,9 @@ export class OrganizerListSectionElement extends CrLitElement implements
 
   private recordActionMetrics_(action: OrganizerAction, index: number) {
     const state = this.isSearching_() ? 'Filtered' : 'Unfiltered';
-    chrome.histograms.recordSmallCount(
+    chrome.metricsPrivate.recordSmallCount(
         `Tabs.Organizer.WebUI.IndexOf${action}In${state}List`, index);
-    chrome.histograms.recordMediumTime(
+    chrome.metricsPrivate.recordMediumTime(
         `Tabs.Organizer.WebUI.TimeTo${action}In${state}List`,
         Math.round(performance.now() - this.windowShownTimestamp_));
   }

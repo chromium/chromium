@@ -83,13 +83,13 @@ export class RecentTabsDelegate implements
     const data = item.data;
     assert(data);
     if (isTabGroup(data)) {
-      chrome.histograms?.recordUserAction?.(
+      chrome.metricsPrivate?.recordUserAction?.(
           'OrganizerPanel.OpenRecentlyClosedTabGroup');
     } else if (isSplitView(data)) {
-      chrome.histograms?.recordUserAction?.(
+      chrome.metricsPrivate?.recordUserAction?.(
           'OrganizerPanel.OpenRecentlyClosedSplitView');
     } else {
-      chrome.histograms?.recordUserAction?.(
+      chrome.metricsPrivate?.recordUserAction?.(
           'OrganizerPanel.OpenRecentlyClosedTab');
     }
     setCloseAction(OrganizerPanelCloseAction.OPEN_RECENTLY_CLOSED);

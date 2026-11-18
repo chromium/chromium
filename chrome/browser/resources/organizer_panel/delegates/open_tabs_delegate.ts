@@ -128,7 +128,7 @@ export class OpenTabsDelegate implements
   }
 
   onItemClick(item: OrganizerListSectionItem<OpenTabsItem>) {
-    chrome.histograms?.recordUserAction?.('OrganizerPanel.SwitchToTab');
+    chrome.metricsPrivate?.recordUserAction?.('OrganizerPanel.SwitchToTab');
     setCloseAction(OrganizerPanelCloseAction.SWITCH_TO_TAB);
     const data = item.data;
     assert(data);
@@ -141,7 +141,7 @@ export class OpenTabsDelegate implements
   }
 
   onItemActionButtonClicked(item: OrganizerListSectionItem<OpenTabsItem>) {
-    chrome.histograms?.recordUserAction?.('OrganizerPanel.CloseTab');
+    chrome.metricsPrivate?.recordUserAction?.('OrganizerPanel.CloseTab');
     setCloseAction(OrganizerPanelCloseAction.CLOSED_TAB);
     const data = item.data;
     assert(data);

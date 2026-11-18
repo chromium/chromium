@@ -97,7 +97,8 @@ export class ForeignTabsDelegate implements
   }
 
   onItemClick(item: OrganizerListSectionItem<ForeignTab>) {
-    chrome.histograms?.recordUserAction?.('OrganizerPanel.OpenCrossDeviceTab');
+    chrome.metricsPrivate?.recordUserAction?.(
+        'OrganizerPanel.OpenCrossDeviceTab');
     setCloseAction(OrganizerPanelCloseAction.OPEN_CROSS_DEVICE_TAB);
     const data = item.data;
     assert(data);
