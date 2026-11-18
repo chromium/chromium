@@ -564,7 +564,16 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
 
   // The error page should still be showing.
   EXPECT_TRUE(web_contents()->GetPrimaryMainFrame()->IsErrorDocument());
-  // There should be no new auto reload pending.
+  // There should be no new auto reload pending, and visibility or network
+  // transitions must not revive auto-reload after download conversion.
+  EXPECT_EQ(std::nullopt, GetCurrentAutoReloadDelay());
+
+  web_contents()->WasHidden();
+  web_contents()->WasShown();
+  EXPECT_EQ(std::nullopt, GetCurrentAutoReloadDelay());
+
+  SimulateNetworkGoingOffline();
+  SimulateNetworkGoingOnline();
   EXPECT_EQ(std::nullopt, GetCurrentAutoReloadDelay());
 
   manager->SetDelegate(nullptr);

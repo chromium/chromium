@@ -200,6 +200,11 @@ void NetErrorAutoReloader::DidFinishNavigation(
   }
 
   if (!handle->HasCommitted()) {
+    if (handle->IsDownload()) {
+      Reset();
+      return;
+    }
+
     // This navigation was cancelled and not committed. If there are still other
     // pending navigations, or we aren't sitting on a error page which allows
     // auto-reload, there's nothing to do.
