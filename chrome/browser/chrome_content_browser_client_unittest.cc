@@ -104,6 +104,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/generated_code_cache_settings.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/prefetch_service_delegate.h"
@@ -3833,6 +3834,8 @@ class ChromeContentBrowserClientDiskCacheDirTest
 
     testing_local_state()->RemoveManagedPref(prefs::kDiskCacheDir);
     testing_local_state()->ClearPref(prefs::kDiskCacheDir);
+    testing_local_state()->RemoveManagedPref(prefs::kDiskCacheSize);
+    testing_local_state()->ClearPref(prefs::kDiskCacheSize);
 
     default_dirs_ =
         GetNetworkContextsParentDirsForManagedPref(base::FilePath());
@@ -3844,6 +3847,8 @@ class ChromeContentBrowserClientDiskCacheDirTest
   void TearDown() override {
     testing_local_state()->RemoveManagedPref(prefs::kDiskCacheDir);
     testing_local_state()->ClearPref(prefs::kDiskCacheDir);
+    testing_local_state()->RemoveManagedPref(prefs::kDiskCacheSize);
+    testing_local_state()->ClearPref(prefs::kDiskCacheSize);
     ChromeContentBrowserClientTest::TearDown();
   }
 
@@ -4008,6 +4013,20 @@ TEST_F(ChromeContentBrowserClientDiskCacheDirTest,
   ChromeContentBrowserClient client;
   EXPECT_EQ(client.GetGeneratedCodeCacheSettings(&profile_).path(),
             default_code_cache_path_);
+}
+
+TEST_F(ChromeContentBrowserClientDiskCacheDirTest,
+       GetGeneratedCodeCacheSettingsRespectsDiskCacheSizePref) {
+  ChromeContentBrowserClient client;
+  EXPECT_EQ(client.GetGeneratedCodeCacheSettings(&profile_).size_in_bytes(), 0);
+
+  testing_local_state()->SetManagedPref(prefs::kDiskCacheSize,
+                                        base::Value(64 * 1024 * 1024));
+  EXPECT_EQ(client.GetGeneratedCodeCacheSettings(&profile_).size_in_bytes(),
+            64 * 1024 * 1024);
+
+  testing_local_state()->SetManagedPref(prefs::kDiskCacheSize, base::Value(0));
+  EXPECT_EQ(client.GetGeneratedCodeCacheSettings(&profile_).size_in_bytes(), 0);
 }
 
 TEST_F(ChromeContentBrowserClientDiskCacheDirTest,

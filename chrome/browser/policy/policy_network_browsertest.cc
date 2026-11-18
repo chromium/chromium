@@ -84,6 +84,20 @@
 #include "net/base/net_errors.h"
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include <cstdint>
+#include <optional>
+
+#include "base/byte_size.h"
+#include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/numerics/safe_conversions.h"
+#include "chrome/common/chrome_switches.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/generated_code_cache_settings.h"
+#include "content/public/common/content_client.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 // Used by DisableWithNewProfile test. See the comment in above that test.
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1264,5 +1278,129 @@ IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyEnabledByDefaultTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_CHROMEOS)
+class DiskCacheSizePolicyTest
+    : public PolicyTest,
+      public ::testing::WithParamInterface<std::optional<int>> {
+ public:
+  DiskCacheSizePolicyTest() = default;
+  ~DiskCacheSizePolicyTest() override = default;
+
+  std::optional<int> disk_cache_size() const { return GetParam(); }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    PolicyTest::SetUpInProcessBrowserTestFixture();
+    if (disk_cache_size().has_value()) {
+      PolicyMap policies;
+      SetPolicy(&policies, key::kDiskCacheSize,
+                base::Value(disk_cache_size().value()));
+      UpdateProviderPolicy(policies);
+    }
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(DiskCacheSizePolicyTest, PolicyWorks) {
+  PrefService* local_state = g_browser_process->local_state();
+  if (disk_cache_size().has_value()) {
+    EXPECT_TRUE(local_state->IsManagedPreference(prefs::kDiskCacheSize));
+    EXPECT_EQ(disk_cache_size().value(),
+              local_state->GetInteger(prefs::kDiskCacheSize));
+  } else {
+    EXPECT_FALSE(local_state->IsManagedPreference(prefs::kDiskCacheSize));
+  }
+
+  network::mojom::NetworkContextParams context_params;
+  cert_verifier::mojom::CertVerifierCreationParams cert_params;
+  ProfileNetworkContextServiceFactory::GetForContext(
+      chrome_test_utils::GetProfile(this))
+      ->ConfigureNetworkContextParams(/*in_memory=*/false, base::FilePath(),
+                                      &context_params, &cert_params);
+
+  int expected = disk_cache_size().value_or(0);
+  EXPECT_EQ(expected, context_params.http_cache_max_size);
+
+  std::optional<base::ByteSize> expected_shared_dict;
+  if (expected > 0) {
+    expected_shared_dict =
+        base::ByteSize(base::checked_cast<uint64_t>(expected));
+  }
+  EXPECT_EQ(expected_shared_dict,
+            context_params.shared_dictionary_cache_max_size);
+
+  EXPECT_EQ(expected, content::GetContentClientForTesting()
+                          ->browser()
+                          ->GetGeneratedCodeCacheSettings(
+                              chrome_test_utils::GetProfile(this))
+                          .size_in_bytes());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DiskCacheSizePolicyTest,
+                         ::testing::Values(std::nullopt, 0, 100 * 1024 * 1024));
+
+class DiskCacheSizeCommandLinePolicyTest
+    : public PolicyTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  DiskCacheSizeCommandLinePolicyTest() = default;
+  ~DiskCacheSizeCommandLinePolicyTest() override = default;
+
+  bool is_policy_set() const { return GetParam(); }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    PolicyTest::SetUpInProcessBrowserTestFixture();
+    if (is_policy_set()) {
+      PolicyMap policies;
+      SetPolicy(&policies, key::kDiskCacheSize, base::Value(100 * 1024 * 1024));
+      UpdateProviderPolicy(policies);
+    }
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kDiskCacheSize, "12345");
+    PolicyTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(DiskCacheSizeCommandLinePolicyTest, PolicyWorks) {
+  PrefService* local_state = g_browser_process->local_state();
+  if (is_policy_set()) {
+    EXPECT_TRUE(local_state->IsManagedPreference(prefs::kDiskCacheSize));
+    EXPECT_EQ(100 * 1024 * 1024,
+              local_state->GetInteger(prefs::kDiskCacheSize));
+  } else {
+    EXPECT_FALSE(local_state->IsManagedPreference(prefs::kDiskCacheSize));
+  }
+
+  network::mojom::NetworkContextParams context_params;
+  cert_verifier::mojom::CertVerifierCreationParams cert_params;
+  ProfileNetworkContextServiceFactory::GetForContext(
+      chrome_test_utils::GetProfile(this))
+      ->ConfigureNetworkContextParams(/*in_memory=*/false, base::FilePath(),
+                                      &context_params, &cert_params);
+
+  int expected = is_policy_set() ? 100 * 1024 * 1024 : 12345;
+  EXPECT_EQ(expected, context_params.http_cache_max_size);
+
+  std::optional<base::ByteSize> expected_shared_dict;
+  if (expected > 0) {
+    expected_shared_dict =
+        base::ByteSize(base::checked_cast<uint64_t>(expected));
+  }
+  EXPECT_EQ(expected_shared_dict,
+            context_params.shared_dictionary_cache_max_size);
+
+  EXPECT_EQ(expected, content::GetContentClientForTesting()
+                          ->browser()
+                          ->GetGeneratedCodeCacheSettings(
+                              chrome_test_utils::GetProfile(this))
+                          .size_in_bytes());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DiskCacheSizeCommandLinePolicyTest,
+                         ::testing::Bool());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace policy

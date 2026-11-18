@@ -17,10 +17,11 @@ future_on:
 label: Set disk cache size
 owners:
 - file://components/policy/OWNERS
-- pastarmovj@chromium.org
+- ydago@chromium.org
 schema:
   type: integer
 supported_on:
 - chrome.*:17-
+- android:160-
 tags: []
 type: int
