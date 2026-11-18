@@ -21514,7 +21514,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ScreenBrightness">
-  <owner>pdyson@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
   <summary>
     Collects metrics periodically and on screen brightness change.
   </summary>
