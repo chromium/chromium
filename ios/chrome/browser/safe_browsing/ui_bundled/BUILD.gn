@@ -6,13 +6,17 @@ source_set("ui_bundled") {
   sources = [
     "safe_browsing_coordinator.h",
     "safe_browsing_coordinator.mm",
+    "suspicious_site_warning_view_controller.h",
+    "suspicious_site_warning_view_controller.mm",
   ]
   deps = [
+    "//base",
     "//components/prefs",
     "//components/safe_browsing/core/browser/tailored_security_service",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/identity_manager",
+    "//components/strings",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/safe_browsing/model",
     "//ios/chrome/browser/safe_browsing/model:infobar_delegate",
@@ -27,21 +31,29 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/tabs/model:dependency_installer",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/web/public",
+    "//ui/base",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "safe_browsing_coordinator_unittest.mm" ]
+  sources = [
+    "safe_browsing_coordinator_unittest.mm",
+    "suspicious_site_warning_view_controller_unittest.mm",
+  ]
   deps = [
     ":ui_bundled",
+    "//base",
     "//base/test:test_support",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/browser/tailored_security_service",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/identity_manager:test_support",
+    "//components/strings",
     "//components/sync:test_support",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/safe_browsing/model/tailored_security",
@@ -52,11 +64,15 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/test:test_support",
+    "//ios/chrome/test/app:test_support",
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/components/security_interstitials/safe_browsing:test_support",
     "//ios/web/public/test",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
   ]
 }

@@ -592,9 +592,16 @@
   <message name="IDS_SUSPICIOUS_SITE_TITLE" desc="Title of the suspicious site warning dialog">
     This site doesn't seem right
   </message>
-  <message name="IDS_SUSPICIOUS_SITE_MESSAGE" desc="The body text of the suspicious site warning dialog">
-    This site seems similar to other sites associated with phishing, malware, and scams. <ph name="BEGIN_LEARN_MORE_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/link&gt;</ph>
-  </message>
+  <if expr="is_ios">
+    <message name="IDS_SUSPICIOUS_SITE_MESSAGE" desc="The body text of the suspicious site warning alert on iOS">
+      This site seems similar to other sites associated with phishing, malware, and scams.
+    </message>
+  </if>
+  <if expr="not is_ios">
+    <message name="IDS_SUSPICIOUS_SITE_MESSAGE" desc="The body text of the suspicious site warning dialog">
+      This site seems similar to other sites associated with phishing, malware, and scams. <ph name="BEGIN_LEARN_MORE_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/link&gt;</ph>
+    </message>
+  </if>
   <message name="IDS_SUSPICIOUS_SITE_BACK_TO_SAFETY" desc="The text for the primary button that takes the user back to safety">
     Back to safety
   </message>
