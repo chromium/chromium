@@ -24,7 +24,7 @@ ${this.isExpanded_ ? html`
       @close-rail="${this.onGhostLoaderCloseRail_}">
   </ntp-lhs-ghost-loader>
 ` : ''}
-${this.hasPreloaded_ ? html`
+${this.preloadStartTime_ !== null ? html`
   <ntp-iframe id="expanded" class="${this.isExpandedReady_ ? 'ready' : ''}"
       allow="clipboard-write; unbounded-element"
       style="width: ${this.expandedWidth_}px;" src="${this.expandedLhsUrl_}"

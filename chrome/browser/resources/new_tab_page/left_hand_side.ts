@@ -15,7 +15,7 @@ import {loadTimeData} from './i18n_setup.js';
 import type {IframeElement} from './iframe.js';
 import {getCss} from './left_hand_side.css.js';
 import {getHtml} from './left_hand_side.html.js';
-import {recordBoolean, recordEnumeration} from './metrics_utils.js';
+import {recordBoolean, recordDuration, recordEnumeration} from './metrics_utils.js';
 import {WindowProxy} from './window_proxy.js';
 
 const DEFAULT_EXPANDED_LHS_WIDTH_PX = 261;
@@ -166,7 +166,6 @@ export class LeftHandSideElement extends CrLitElement {
     return {
       expandedLhsUrl_: {type: String},
       expandedWidth_: {type: Number},
-      hasPreloaded_: {type: Boolean},
       isDark: {
         type: Boolean,
         reflect: true,
@@ -176,6 +175,7 @@ export class LeftHandSideElement extends CrLitElement {
         reflect: true,
       },
       isExpandedReady_: {type: Boolean},
+      preloadStartTime_: {type: Number},
       threadsRailPreloadDebounceMs_: {type: Number},
       view_: {
         type: String,
@@ -188,9 +188,12 @@ export class LeftHandSideElement extends CrLitElement {
   protected accessor expandedLhsUrl_: string =
       loadTimeData.getString('expandedLhsUrl');
   protected accessor expandedWidth_: number = DEFAULT_EXPANDED_LHS_WIDTH_PX;
-  protected accessor hasPreloaded_: boolean = false;
   protected accessor isExpanded_: boolean = false;
   protected accessor isExpandedReady_: boolean = false;
+  // Time at which <ntp-iframe id="expanded"> was stamped into the DOM so that
+  // it starts loading expandedLhsUrl_, or null while it is not stamped. Set
+  // once ensureLazyLoaded() resolves on hover, focus, or expand.
+  protected accessor preloadStartTime_: number|null = null;
   private accessor threadsRailPreloadDebounceMs_: number =
       loadTimeData.valueExists('threadsRailPreloadDebounceMs') ?
       loadTimeData.getInteger('threadsRailPreloadDebounceMs') :
@@ -207,6 +210,17 @@ export class LeftHandSideElement extends CrLitElement {
   // Width of the folded rail, measured once it has rendered.
   private collapsedWidth_: number = 0;
   private preloadTimerId_: number|null = null;
+  private isFoldedHovered_: boolean = false;
+  private isFoldedFocused_: boolean = false;
+  private hoverStartTime_: number|null = null;
+  // Longest completed hover/focus interval on the folded rail, or null if none
+  // has completed yet. Together with the active interval, this is recorded on
+  // first expand or on pagehide to tune threadsRailPreloadDebounceMs_.
+  private longestHoverDurationMs_: number|null = null;
+  // Whether the user has requested to expand the LHS at least once.
+  private hasExpanded_: boolean = false;
+  private ghostLoaderShownTime_: number|null = null;
+  private lastHiddenTime_: number|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -217,6 +231,9 @@ export class LeftHandSideElement extends CrLitElement {
     this.eventTracker_.add(
         ColorChangeUpdater.forDocument().eventTarget, COLOR_PROVIDER_CHANGED,
         this.postThemeColors_);
+    this.eventTracker_.add(
+        document, 'visibilitychange', this.onVisibilityChange_);
+    this.eventTracker_.add(window, 'pagehide', this.onPageHide_);
   }
 
   override disconnectedCallback() {
@@ -240,9 +257,20 @@ export class LeftHandSideElement extends CrLitElement {
     super.updated(changedProperties);
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('view_') &&
-        this.view_ === LhsView.EXPANDED) {
-      recordBoolean('NewTabPage.ThreadsRail.ExpandedShown', true);
+    if (changedPrivateProperties.has('view_')) {
+      if (this.view_ === LhsView.EXPANDED) {
+        recordBoolean('NewTabPage.ThreadsRail.ExpandedShown', true);
+      }
+      if (this.view_ === LhsView.GHOST_LOADER) {
+        this.ghostLoaderShownTime_ = WindowProxy.getInstance().now();
+      } else if (this.ghostLoaderShownTime_ !== null) {
+        // Record how long the ghost loader was shown, until the expanded
+        // iframe replaced it or the LHS was collapsed.
+        this.recordLatency_(
+            'NewTabPage.ThreadsRail.GhostLoaderShownDuration',
+            this.ghostLoaderShownTime_, WindowProxy.getInstance().now());
+        this.ghostLoaderShownTime_ = null;
+      }
     }
     if (changedPrivateProperties.has('isExpanded_') ||
         changedPrivateProperties.has('expandedWidth_') ||
@@ -277,19 +305,68 @@ export class LeftHandSideElement extends CrLitElement {
   }
 
   protected onFoldedPointerenter_() {
-    this.schedulePreloadExpanded_();
+    this.isFoldedHovered_ = true;
+    this.onFoldedInteractionStart_();
   }
 
   protected onFoldedPointerleave_() {
-    this.cancelPreloadTimer_();
+    this.isFoldedHovered_ = false;
+    this.onFoldedInteractionEnd_();
   }
 
   protected onFoldedFocusin_() {
+    this.isFoldedFocused_ = true;
+    this.onFoldedInteractionStart_();
+  }
+
+  protected onFoldedFocusout_(e: FocusEvent) {
+    // focusout bubbles from the rail's children, so moving focus between them
+    // fires focusout then focusin. Ignore it so that the hover/focus interval
+    // and preload timer are not interrupted while focus stays in the rail.
+    const folded = e.currentTarget as HTMLElement;
+    if (e.relatedTarget instanceof Node && folded.contains(e.relatedTarget)) {
+      return;
+    }
+    this.isFoldedFocused_ = false;
+    this.onFoldedInteractionEnd_();
+  }
+
+  // Starts a hover/focus interval on the folded rail, unless one is already
+  // active, and schedules the preload.
+  private onFoldedInteractionStart_() {
+    if (this.hoverStartTime_ === null) {
+      this.hoverStartTime_ = WindowProxy.getInstance().now();
+    }
     this.schedulePreloadExpanded_();
   }
 
-  protected onFoldedFocusout_() {
+  // Ends the hover/focus interval and cancels the preload timer once the folded
+  // rail is neither hovered nor focused.
+  private onFoldedInteractionEnd_() {
+    if (this.isFoldedHovered_ || this.isFoldedFocused_) {
+      return;
+    }
+    this.endHoverInterval_();
     this.cancelPreloadTimer_();
+  }
+
+  // Folds the active hover/focus interval, if any, into
+  // longestHoverDurationMs_.
+  private endHoverInterval_() {
+    this.longestHoverDurationMs_ = this.getLongestHoverDurationMs_();
+    this.hoverStartTime_ = null;
+  }
+
+  // Returns the longest continuous hover/focus interval on the folded rail so
+  // far, including the active one, or null if the rail was never hovered or
+  // focused.
+  private getLongestHoverDurationMs_(): number|null {
+    if (this.hoverStartTime_ === null) {
+      return this.longestHoverDurationMs_;
+    }
+    return Math.max(
+        this.longestHoverDurationMs_ ?? 0,
+        WindowProxy.getInstance().now() - this.hoverStartTime_);
   }
 
   protected async onFoldedClick_() {
@@ -307,7 +384,7 @@ export class LeftHandSideElement extends CrLitElement {
   }
 
   private schedulePreloadExpanded_() {
-    if (this.hasPreloaded_) {
+    if (this.preloadStartTime_ !== null) {
       return;
     }
     if (this.preloadTimerId_ !== null) {
@@ -331,17 +408,37 @@ export class LeftHandSideElement extends CrLitElement {
   }
 
   private async preloadExpanded_() {
-    if (this.hasPreloaded_) {
+    if (this.preloadStartTime_ !== null) {
       return;
     }
     // <ntp-iframe> is defined in the lazily loaded bundle, which may not have
     // been loaded yet if the folded rail is hovered or clicked right after the
     // NTP loads.
     await WindowProxy.getInstance().ensureLazyLoaded();
-    this.hasPreloaded_ = true;
+    // A concurrent call (e.g. a click while the hover preload is awaiting
+    // above) may have stamped the iframe already.
+    if (this.preloadStartTime_ === null) {
+      this.preloadStartTime_ = WindowProxy.getInstance().now();
+    }
   }
 
   private async expand_() {
+    if (!this.hasExpanded_) {
+      this.hasExpanded_ = true;
+      // Record whether the expanded iframe was already preloaded and ready at
+      // the first expand request, i.e. whether the ghost loader is skipped.
+      recordBoolean(
+          'NewTabPage.ThreadsRail.FirstExpandWasPreloaded',
+          this.isExpandedReady_);
+      const longestHoverDurationMs = this.getLongestHoverDurationMs_();
+      if (longestHoverDurationMs !== null) {
+        // Record the longest continuous hover/focus on the folded rail before
+        // the first expand request, to tune threadsRailPreloadDebounceMs_.
+        recordDuration(
+            'NewTabPage.ThreadsRail.LongestFocusDurationBeforeExpand',
+            longestHoverDurationMs);
+      }
+    }
     this.cancelPreloadTimer_();
     await this.preloadExpanded_();
     this.isExpanded_ = true;
@@ -370,6 +467,13 @@ export class LeftHandSideElement extends CrLitElement {
         // !isExpandedReady_ to ensure at most one sample per NTP.
         if (!this.isExpandedReady_) {
           recordBoolean('NewTabPage.ThreadsRail.ExpandedIframeLoaded', true);
+          // The iframe only exists once stamped, see getHtml().
+          assert(this.preloadStartTime_ !== null);
+          // Record time from the expanded iframe being stamped until
+          // NTP_LHS_READY.
+          this.recordLatency_(
+              'NewTabPage.ThreadsRail.IframeLoadLatency',
+              this.preloadStartTime_, WindowProxy.getInstance().now());
         }
         this.postThemeColors_();
         this.expandedWidth_ = typeof data.width === 'number' && data.width > 0 ?
@@ -411,6 +515,48 @@ export class LeftHandSideElement extends CrLitElement {
         break;
     }
   };
+
+  // Tracks when the NTP was last hidden (e.g. the user switched tabs), so that
+  // latency samples spanning background time can be dropped in
+  // recordLatency_(). Also ends the active hover/focus interval and cancels a
+  // pending preload, since the user no longer dwells on the folded rail while
+  // the page is hidden.
+  private onVisibilityChange_ = () => {
+    if (document.visibilityState === 'hidden') {
+      this.lastHiddenTime_ = WindowProxy.getInstance().now();
+      this.isFoldedHovered_ = false;
+      this.isFoldedFocused_ = false;
+      this.onFoldedInteractionEnd_();
+    }
+  };
+
+  // Records the longest continuous hover/focus on the folded rail if the NTP
+  // is closed or navigated away from without the LHS ever being expanded. Its
+  // distribution against LongestFocusDurationBeforeExpand is used to tune
+  // threadsRailPreloadDebounceMs_.
+  private onPageHide_ = () => {
+    if (this.hasExpanded_) {
+      return;
+    }
+    const longestHoverDurationMs = this.getLongestHoverDurationMs_();
+    if (longestHoverDurationMs !== null) {
+      recordDuration(
+          'NewTabPage.ThreadsRail.LongestFocusDurationWithoutExpand',
+          longestHoverDurationMs);
+    }
+  };
+
+  // Records a latency sample, unless the page is hidden now or was hidden at
+  // any point since `startTime`. While hidden, the user is not waiting and
+  // background throttling delays timers and rendering, so such samples would
+  // inflate the latency.
+  private recordLatency_(name: string, startTime: number, endTime: number) {
+    if (document.visibilityState === 'hidden' ||
+        (this.lastHiddenTime_ !== null && this.lastHiddenTime_ >= startTime)) {
+      return;
+    }
+    recordDuration(name, endTime - startTime);
+  }
 
   private postThemeColors_ = () => {
     const expanded = this.getExpandedIframe_();
