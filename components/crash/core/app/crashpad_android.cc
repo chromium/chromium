@@ -505,11 +505,8 @@ class HandlerStarter {
     }
 
     if (!browser_trampoline_.empty()) {
-      std::vector<std::string> env;
-      if (!internal::BuildEnvironmentWithApk(kBrowserIs64Bit, &env)) {
-        return database_path;
-      }
-
+      std::vector<std::string> env =
+          internal::BuildEnvironmentWithApk(kBrowserIs64Bit);
       std::set<crashpad::FileHandle> preserve_handles;
       internal::AppendSharedMemoryUserStreamArgs(user_streams_, &arguments,
                                                  &preserve_handles);
@@ -553,11 +550,8 @@ class HandlerStarter {
     }
 
     if (!handler_trampoline.empty()) {
-      std::vector<std::string> env;
-      if (!internal::BuildEnvironmentWithApk(use_64_bit, &env)) {
-        return false;
-      }
-
+      std::vector<std::string> env =
+          internal::BuildEnvironmentWithApk(use_64_bit);
       std::set<crashpad::FileHandle> preserve_handles;
       internal::AppendSharedMemoryUserStreamArgs(user_streams_, &arguments,
                                                  &preserve_handles);
@@ -640,10 +634,7 @@ bool GetHandlerTrampoline(std::string* handler_trampoline,
   return true;
 }
 
-bool BuildEnvironmentWithApk(bool use_64_bit,
-                             std::vector<std::string>* result) {
-  DCHECK(result->empty());
-
+std::vector<std::string> BuildEnvironmentWithApk(bool use_64_bit) {
 #if defined(ARCH_CPU_64_BITS)
   constexpr bool kIs64BitProcess = true;
 #else
@@ -681,13 +672,15 @@ bool BuildEnvironmentWithApk(bool use_64_bit,
                      use_64_bit ? "/lib64" : "/lib"});
   }
 
-  static constexpr char kLdPreloadVar[] = "LD_PRELOAD";
-  result->push_back("CLASSPATH=" + classpath);
-  result->push_back("LD_LIBRARY_PATH=" + library_path);
+  std::vector<std::string> result;
+  result.push_back("CLASSPATH=" + classpath);
+  result.push_back("LD_LIBRARY_PATH=" + library_path);
   auto is_env_var = [](std::string_view entry, std::string_view var) {
     return entry.starts_with(var) && entry.substr(var.size()).starts_with('=');
   };
   for (std::string& entry : env->GetAllVars()) {
+    static constexpr char kLdPreloadVar[] = "LD_PRELOAD";
+
     // Omit LD_PRELOAD when launching a cross-bitness handler, as any preloaded
     // library paths from the current process will have the wrong ELF class and
     // cause the target linker to abort on startup.
@@ -696,10 +689,10 @@ bool BuildEnvironmentWithApk(bool use_64_bit,
         (!is_same_bitness && is_env_var(entry, kLdPreloadVar))) {
       continue;
     }
-    result->push_back(std::move(entry));
+    result.push_back(std::move(entry));
   }
 
-  return true;
+  return result;
 }
 
 bool StartHandlerForClient(int fd, bool write_minidump_to_database) {

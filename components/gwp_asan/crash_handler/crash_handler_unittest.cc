@@ -178,36 +178,36 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
 
   crashpad::CrashpadClient* client = new crashpad::CrashpadClient();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  bool handler =
-      client->StartHandlerAtCrash(/* handler */ cmd_line->GetProgram(),
-                                  /* database */ directory,
-                                  /* metrics_dir */ metrics_dir,
-                                  /* url */ "",
-                                  /* annotations */ annotations,
-                                  /* arguments */ arguments);
+  bool handler = client->StartHandlerAtCrash(/*handler=*/cmd_line->GetProgram(),
+                                             /*database=*/directory,
+                                             /*metrics_dir=*/metrics_dir,
+                                             /*url=*/"",
+                                             /*annotations=*/annotations,
+                                             /*arguments=*/arguments);
 #elif BUILDFLAG(IS_ANDROID)
 
   std::string trampoline_library_path;
   std::string handler_library_path;
-  std::vector<std::string> env;
   CHECK(crash_reporter::internal::GetHandlerTrampoline(&trampoline_library_path,
                                                        &handler_library_path));
-  CHECK(crash_reporter::internal::BuildEnvironmentWithApk(
-      /* use_64_bit */ sizeof(void*) == 8, &env));
+  constexpr bool kIs64Bit = sizeof(void*) == 8;
+  std::vector<std::string> env =
+      crash_reporter::internal::BuildEnvironmentWithApk(
+          /*use_64_bit=*/kIs64Bit);
 
   bool handler = client->StartHandlerWithLinkerAtCrash(
       trampoline_library_path, handler_library_path,
-      /* is_64_bit */ sizeof(void*) == 8, &env, directory, metrics_dir,
-      /* url */ "", annotations, arguments);
+      /*is_64_bit=*/kIs64Bit, &env, directory, metrics_dir,
+      /*url=*/"", annotations, arguments);
 #else
-  bool handler = client->StartHandler(/* handler */ cmd_line->GetProgram(),
-                                      /* database */ directory,
-                                      /* metrics_dir */ metrics_dir,
-                                      /* url */ "",
-                                      /* annotations */ annotations,
-                                      /* arguments */ arguments,
-                                      /* restartable */ false,
-                                      /* asynchronous_start */ false);
+  bool handler = client->StartHandler(/*handler=*/cmd_line->GetProgram(),
+                                      /*database=*/directory,
+                                      /*metrics_dir=*/metrics_dir,
+                                      /*url=*/"",
+                                      /*annotations=*/annotations,
+                                      /*arguments=*/arguments,
+                                      /*restartable=*/false,
+                                      /*asynchronous_start=*/false);
 #endif
 
   if (!handler) {
