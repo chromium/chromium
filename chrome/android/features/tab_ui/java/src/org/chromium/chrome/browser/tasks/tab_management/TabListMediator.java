@@ -136,6 +136,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -2098,7 +2099,8 @@ public class TabListMediator implements TabListNotificationHandler {
                         }
                         return "";
                     }
-                    int numTabsInGroup = tabModel.getTabCountForGroup(tabGroupId);
+                    int numTabsInGroup =
+                            tabModel.getTabCountForGroup(TabGroupId.fromRawToken(tabGroupId));
                     if (numTabsInGroup == 0) return "";
                     String title = tabModel.getTabGroupTitle(tabGroupId);
                     Resources res = context.getResources();
@@ -3413,7 +3415,8 @@ public class TabListMediator implements TabListNotificationHandler {
     private TextResolver getActionButtonDescriptionTextResolver(Token tabGroupId) {
         return (context) -> {
             TabModel tabModel = getCurrentTabModelChecked();
-            if (tabModel.getTabCountForGroup(tabGroupId) == 0) return "";
+            if (tabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(tabGroupId)) == 0)
+                return "";
 
             Resources res = context.getResources();
             @TabGroupColorId int colorId = tabModel.getTabGroupColorWithFallback(tabGroupId);

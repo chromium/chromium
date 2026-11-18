@@ -158,6 +158,7 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityResultTracker;
@@ -2371,7 +2372,8 @@ public class VerticalTabListCoordinatorUnitTest {
         Tab tab1 = prepareMockTab(mMockTab1, TAB_ID_1);
         when(tab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTabModel.getTabById(TAB_ID_1)).thenReturn(tab1);
-        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(1);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(1);
 
         createCoordinator();
         PropertyModel model = createTabPropertyModel();
@@ -4695,7 +4697,8 @@ public class VerticalTabListCoordinatorUnitTest {
         }
         when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(tabsInGroup);
-        when(mTabModel.getTabCountForGroup(groupId)).thenReturn(tabsInGroup.size());
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(tabsInGroup.size());
         when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(firstTab));
     }
 

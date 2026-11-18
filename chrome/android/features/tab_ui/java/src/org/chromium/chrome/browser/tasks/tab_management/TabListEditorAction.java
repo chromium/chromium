@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -420,7 +421,7 @@ public abstract class TabListEditorAction {
 
                 @Nullable Token tabGroupId = tab.getTabGroupId();
                 if (tabGroupId != null) {
-                    tabCount += tabModel.getTabCountForGroup(tabGroupId);
+                    tabCount += tabModel.getTabCountForGroup(TabGroupId.fromRawToken(tabGroupId));
                 } else {
                     tabCount++;
                 }

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 class Profile;
@@ -78,7 +79,7 @@ class TabCollectionTabModelImpl {
 
   // Returns the number of tabs in a group. If the group is not found, returns
   // 0.
-  int GetTabCountForGroup(const base::Token& tab_group_id) const;
+  int GetTabCountForGroup(const tab_groups::TabGroupId& tab_group_id) const;
 
   // Returns whether a tab group with tabs exists.
   bool TabGroupExists(const base::Token& tab_group_id) const;

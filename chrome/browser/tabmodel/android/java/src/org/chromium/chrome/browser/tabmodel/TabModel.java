@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tabs.TabStripCollection;
 
 import java.lang.annotation.Retention;
@@ -484,7 +485,7 @@ public interface TabModel extends TabList {
      * Returns the number of tabs in the tab group with {@code tabGroupId} or 0 if the tab group
      * does not exist.
      */
-    int getTabCountForGroup(@Nullable Token tabGroupId);
+    int getTabCountForGroup(@Nullable TabGroupId tabGroupId);
 
     /** Returns whether a tab group exists with {@code tabGroupId}. */
     boolean containsTabGroup(@Nullable Token tabGroupId);

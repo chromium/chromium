@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupRe
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -148,11 +149,11 @@ abstract class TabListDataProviderTestBase {
         when(model.getTabCountForGroup(any()))
                 .thenAnswer(
                         invocation -> {
-                            Token tabGroupId = invocation.getArgument(0);
+                            TabGroupId tabGroupId = invocation.getArgument(0);
                             if (tabGroupId == null) return 0;
                             int count = 0;
                             for (Tab tab : tabs) {
-                                if (tabGroupId.equals(tab.getTabGroupId())) count++;
+                                if (tabGroupId.getToken().equals(tab.getTabGroupId())) count++;
                             }
                             return count;
                         });

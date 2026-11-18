@@ -29,6 +29,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -240,7 +241,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
         if (sourceUiIndex == TabModel.INVALID_TAB_INDEX) return;
 
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
-        int tabCount = tabModel.getTabCountForGroup(tabGroupId);
+        int tabCount = tabModel.getTabCountForGroup(TabGroupId.fromRawToken(tabGroupId));
         if (tabCount == 0) return;
 
         int itemsToMove = 1;
@@ -348,7 +349,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
         int headerIndex = mModelList.indexFromTabGroupId(tabGroupId);
         if (headerIndex == TabModel.INVALID_TAB_INDEX) return;
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
-        int childCount = tabModel.getTabCountForGroup(tabGroupId);
+        int childCount = tabModel.getTabCountForGroup(TabGroupId.fromRawToken(tabGroupId));
 
         for (int i = 0; i < childCount; i++) {
             if (headerIndex + 1 < mModelList.size()) {

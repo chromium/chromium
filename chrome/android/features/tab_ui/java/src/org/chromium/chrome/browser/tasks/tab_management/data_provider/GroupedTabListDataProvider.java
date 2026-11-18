@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataObserver.PayloadType;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -315,7 +316,9 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
         if (model == null) return;
 
         int count =
-                isGroupCollapsed(model, tabGroupId) ? 1 : 1 + model.getTabCountForGroup(tabGroupId);
+                isGroupCollapsed(model, tabGroupId)
+                        ? 1
+                        : 1 + model.getTabCountForGroup(TabGroupId.fromRawToken(tabGroupId));
         moveItemsAt(index, count);
     }
 
@@ -353,7 +356,9 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
         updateItemAt(headerIndex, updatedGroupItem, PayloadType.COLLAPSED);
 
         if (isCollapsed) {
-            removeItemsAt(headerIndex + 1, model.getTabCountForGroup(tabGroupId));
+            removeItemsAt(
+                    headerIndex + 1,
+                    model.getTabCountForGroup(TabGroupId.fromRawToken(tabGroupId)));
         } else {
             List<Tab> children = model.getTabsInGroup(tabGroupId);
             Tab selectedTab = TabModelUtils.getCurrentTab(model);

@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -350,7 +351,7 @@ class VerticalTabGroupSpineDecoration extends RecyclerView.ItemDecoration {
             // If there is only one child, and the child is being dragged, then the whole tab group
             // is being dragged.
             if (mCurrentGroupInfo.mIsChildBeingDraggedInternally
-                    && tabModel.getTabCountForGroup(groupId) <= 1) {
+                    && tabModel.getTabCountForGroup(TabGroupId.fromRawToken(groupId)) <= 1) {
                 mCurrentGroupInfo.mIsChildBeingDraggedInternally = false;
                 mCurrentGroupInfo.mGroupDraggingY = childDraggingY;
             }

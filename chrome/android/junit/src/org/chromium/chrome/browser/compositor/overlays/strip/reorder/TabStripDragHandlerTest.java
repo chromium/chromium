@@ -102,6 +102,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
@@ -445,7 +446,8 @@ public class TabStripDragHandlerTest {
     @Test
     public void test_startGroupDragAction_withOneGroupInMultiWindowMode_ReturnsTrue() {
         when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
-        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(2);
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(true);
         assertTrue(
                 "Should startGroupDragAction for last group in multi-window mode.",
@@ -492,7 +494,8 @@ public class TabStripDragHandlerTest {
     @Test
     public void test_startGroupDragAction_withOneGroupAndOneWindow_ReturnsFalse() {
         when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
-        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(2);
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(true);
         MultiWindowUtils.setVisibleTabbedTaskCountForTesting(1);
         assertFalse(

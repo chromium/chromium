@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.UndoGroupMetadata;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.util.TokenHolder;
 
 import java.util.List;
@@ -88,7 +89,8 @@ public class UndoGroupSnackbarControllerUnitTest {
         when(mUndoGroupMetadata.getTabGroupId()).thenReturn(mTabGroupId);
         when(mSecondUndoGroupMetadata.isIncognito()).thenReturn(false);
         when(mSecondUndoGroupMetadata.getTabGroupId()).thenReturn(mTabGroupId);
-        when(mTabModel.getTabCountForGroup(mTabGroupId)).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(mTabGroupId)))
+                .thenReturn(2);
         mCurrentTabModelSupplier.set(mTabModel);
 
         mController =
@@ -103,7 +105,8 @@ public class UndoGroupSnackbarControllerUnitTest {
 
     @Test
     public void testShowUndoGroupSnackbar_SingleTabGroup_ShowsSingleTabTemplateText() {
-        when(mTabModel.getTabCountForGroup(mTabGroupId)).thenReturn(1);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(mTabGroupId)))
+                .thenReturn(1);
 
         mTabGroupObserver.showUndoGroupSnackbar(mUndoGroupMetadata);
 
@@ -113,7 +116,8 @@ public class UndoGroupSnackbarControllerUnitTest {
 
     @Test
     public void testShowUndoGroupSnackbar_MultipleTabsGroup_ShowsMultipleTabsTemplateText() {
-        when(mTabModel.getTabCountForGroup(mTabGroupId)).thenReturn(3);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(mTabGroupId)))
+                .thenReturn(3);
 
         mTabGroupObserver.showUndoGroupSnackbar(mUndoGroupMetadata);
 
@@ -220,11 +224,12 @@ public class UndoGroupSnackbarControllerUnitTest {
     @Test
     public void testShowUndoGroupSnackbar_Incognito_UsesIncognitoTabModel() {
         when(mUndoGroupMetadata.isIncognito()).thenReturn(true);
-        when(mIncognitoTabModel.getTabCountForGroup(mTabGroupId)).thenReturn(2);
+        when(mIncognitoTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(mTabGroupId)))
+                .thenReturn(2);
 
         mTabGroupObserver.showUndoGroupSnackbar(mUndoGroupMetadata);
 
-        verify(mIncognitoTabModel).getTabCountForGroup(mTabGroupId);
+        verify(mIncognitoTabModel).getTabCountForGroup(TabGroupId.fromOptionalToken(mTabGroupId));
         verify(mSnackbarManager).showSnackbar(any());
     }
 

@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.LocalizationUtils;
 
 import java.util.ArrayList;
@@ -382,7 +383,9 @@ public class TabReorderStrategy extends ReorderStrategyBase {
             int curIndex,
             boolean towardEnd) {
         // Move the tab, then animate the adjacent group indicator sliding.
-        int numTabsToSkip = mModel.getTabCountForGroup(groupTitle.getTabGroupId());
+        int numTabsToSkip =
+                mModel.getTabCountForGroup(
+                        TabGroupId.fromOptionalToken(groupTitle.getTabGroupId()));
         int destIndex = towardEnd ? curIndex + numTabsToSkip : curIndex - numTabsToSkip;
         mModel.moveTab(interactingTab.getTabId(), destIndex);
         animateViewSliding(groupTitle);

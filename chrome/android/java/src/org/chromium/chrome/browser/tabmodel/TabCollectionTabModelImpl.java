@@ -1323,7 +1323,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public int getTabCountForGroup(@Nullable Token tabGroupId) {
+    public int getTabCountForGroup(@Nullable TabGroupId tabGroupId) {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == null || tabGroupId == null) return 0;
         return TabCollectionTabModelImplJni.get()
@@ -1741,7 +1741,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         mTabIdToTabs.put(tab.getId(), tab);
         mTabCountSupplier.set(getCount());
 
-        if (tabGroupId != null && getTabCountForGroup(tabGroupId) == 1) {
+        if (tabGroupId != null && getTabCountForGroup(TabGroupId.fromRawToken(tabGroupId)) == 1) {
             setLastShownTabForGroup(tabGroupId, tab);
         }
 
@@ -2905,7 +2905,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         int getTabCountForGroup(
                 JniPtr<NativeTabCollectionTabModelImpl> self,
-                @JniType("base::Token") Token tabGroupId);
+                @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId);
 
         boolean tabGroupExists(
                 JniPtr<NativeTabCollectionTabModelImpl> self,

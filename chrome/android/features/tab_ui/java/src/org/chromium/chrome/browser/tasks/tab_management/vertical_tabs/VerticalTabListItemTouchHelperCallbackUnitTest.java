@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -561,7 +562,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
-        when(mTabModel.getTabCountForGroup(groupId)).thenReturn(1);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(1);
 
         when(mTabModel.indexOf(mTab2)).thenReturn(5);
         when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
@@ -1283,7 +1284,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         // Drag a group's only tab; its header (whose TAB_ID matches the tab) moves with it.
         Token groupId = new Token(1L, 2L);
         mPropertyModel.set(TabProperties.TAB_GROUP_ID, groupId);
-        when(mTabModel.getTabCountForGroup(groupId)).thenReturn(1);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromRawToken(groupId))).thenReturn(1);
         SimpleRecyclerViewAdapter.ViewHolder headerHolder =
                 createGroupHeaderViewHolder(groupId, 100, 50);
         headerHolder.model.set(TabProperties.TAB_ID, 1);

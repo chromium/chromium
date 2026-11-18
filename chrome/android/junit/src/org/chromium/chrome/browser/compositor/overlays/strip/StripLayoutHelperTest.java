@@ -170,6 +170,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -3435,7 +3436,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Act: Close tab and remove from group.
-        when(mModel.getTabCountForGroup(groupTitle.getTabGroupId())).thenReturn(1);
+        when(mModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupTitle.getTabGroupId())))
+                .thenReturn(1);
         closeTabAt(/* index= */ 0);
 
         // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
@@ -4947,7 +4949,8 @@ public class StripLayoutHelperTest {
             relatedTabs.add(tab);
         }
         when(mModel.containsTabGroup(tabGroupId)).thenReturn(true);
-        when(mModel.getTabCountForGroup(eq(tabGroupId))).thenReturn(numTabs);
+        when(mModel.getTabCountForGroup(eq(TabGroupId.fromOptionalToken(tabGroupId))))
+                .thenReturn(numTabs);
         when(mModel.getTabsInGroup(eq(tabGroupId))).thenReturn(relatedTabs);
 
         mStripLayoutHelper.updateGroupTextAndSharedState(tabGroupId);

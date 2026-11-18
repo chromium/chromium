@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -339,7 +340,7 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         if (mUseTabGroupCardType) {
             // Add a card for movedTab unless it moved directly into an existing multi-tab group
             // (which is handled by didMergeTabToGroup).
-            if (tabModel.getTabCountForGroup(movedTabGroupId) <= 1) {
+            if (tabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(movedTabGroupId)) <= 1) {
                 mMediator.addTabCardToModel(movedTab, getInsertionIndexOfTab(movedTab));
             }
             // Update the old group's card if it still has tabs left (if the old group dissolved,
@@ -353,7 +354,8 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         Tab lastShownTab = tabModel.getTabById(tabModel.getGroupLastShownTabId(oldTabGroupId));
         Tab previousGroupTab = lastShownTab != null ? lastShownTab : movedTab;
 
-        if (tabModel.getTabCountForGroup(movedTabGroupId) <= 1 && movedTab != previousGroupTab) {
+        if (tabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(movedTabGroupId)) <= 1
+                && movedTab != previousGroupTab) {
             // Add a tab to the model if it represents a new card. This happens if
             // the tab is either not in a group or in a group by itself. We do this
             // first so that the indices for the filter and the model match when
@@ -478,7 +480,7 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         if (tabModelOldIndex == tabModelNewIndex) return;
 
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
-        int tabCount = tabModel.getTabCountForGroup(tabGroupId);
+        int tabCount = tabModel.getTabCountForGroup(TabGroupId.fromRawToken(tabGroupId));
         if (tabCount == 0) return;
 
         int curPosition;

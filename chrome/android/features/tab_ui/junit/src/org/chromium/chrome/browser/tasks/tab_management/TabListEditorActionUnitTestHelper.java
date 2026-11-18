@@ -16,6 +16,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -148,7 +149,8 @@ public class TabListEditorActionUnitTestHelper {
                 selectedAndRelatedTabs.addAll(groupTabs);
             }
             when(tabModel.getRelatedTabList(group.getTabIdAt(0))).thenReturn(groupTabs);
-            when(tabModel.getTabCountForGroup(group.getTabGroupId())).thenReturn(groupTabs.size());
+            when(tabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(group.getTabGroupId())))
+                    .thenReturn(groupTabs.size());
 
             if (!group.isGroup() || tabGroupSyncService == null) continue;
 

@@ -368,7 +368,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public int getTabCountForGroup(@Nullable Token tabGroupId) {
+    public int getTabCountForGroup(@Nullable TabGroupId tabGroupId) {
         return 0;
     }
 

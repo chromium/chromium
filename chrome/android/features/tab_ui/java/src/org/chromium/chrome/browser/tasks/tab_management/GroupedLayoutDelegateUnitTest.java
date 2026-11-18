@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridAccessibilityHelper;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -865,7 +866,8 @@ public class GroupedLayoutDelegateUnitTest {
     @DisableFeatures(ChromeFeatureList.ANDROID_TAB_UI_REFACTOR)
     public void testDidMoveTabOutOfGroup_LastTab_RemovesCard_featureDisabled() {
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(2);
 
         createAndAddPropertyModel(TAB1_ID);
 
@@ -879,7 +881,8 @@ public class GroupedLayoutDelegateUnitTest {
     public void testDidMoveTabOutOfGroup_LastTab_KeepsCard() {
         Token oldGroupId = new Token(3L, 4L);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(2);
 
         GroupedLayoutDelegate delegate =
                 new GroupedLayoutDelegate(mMediator, mModelList, mThumbnailProvider);
@@ -927,7 +930,8 @@ public class GroupedLayoutDelegateUnitTest {
     @DisableFeatures(ChromeFeatureList.ANDROID_TAB_UI_REFACTOR)
     public void testDidMoveTabOutOfGroup_Fallback_featureDisabled() {
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(2);
 
         Token differentGroupId = new Token(3L, 4L);
         when(mTabModel.getGroupLastShownTabId(differentGroupId)).thenReturn(TAB2_ID);
@@ -957,7 +961,8 @@ public class GroupedLayoutDelegateUnitTest {
 
         when(mTab1.getTabGroupId()).thenReturn(differentGroupId);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab2));
-        when(mTabModel.getTabCountForGroup(differentGroupId)).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(differentGroupId)))
+                .thenReturn(2);
 
         delegate.didMoveTabOutOfGroup(mTab1, TAB_GROUP_ID);
 
@@ -1211,7 +1216,8 @@ public class GroupedLayoutDelegateUnitTest {
         createAndAddPropertyModel(TAB2_ID);
         createAndAddPropertyModel(TAB1_ID);
 
-        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(1);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(1);
         when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
 
@@ -1251,7 +1257,7 @@ public class GroupedLayoutDelegateUnitTest {
         mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, groupCard1));
 
         when(mTab3.getTabGroupId()).thenReturn(groupId2);
-        when(mTabModel.getTabCountForGroup(groupId1)).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId1))).thenReturn(2);
         when(mTabModel.getTabAt(2)).thenReturn(mTab3);
 
         mDelegate.onTabGroupMoved(groupId1, /* tabModelOldIndex= */ 1, /* tabModelNewIndex= */ 0);
@@ -1274,7 +1280,7 @@ public class GroupedLayoutDelegateUnitTest {
 
         mModelList.add(0, new ListItem(TabProperties.UiType.TAB_GROUP, groupCard1));
 
-        when(mTabModel.getTabCountForGroup(groupId1)).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId1))).thenReturn(2);
         when(mTabModel.getTabAt(0)).thenReturn(mTab3);
 
         mDelegate.onTabGroupMoved(groupId1, /* tabModelOldIndex= */ 0, /* tabModelNewIndex= */ 1);
@@ -1285,7 +1291,8 @@ public class GroupedLayoutDelegateUnitTest {
 
     @Test
     public void testOnTabGroupMoved_NonExistentGroup() {
-        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(1);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(1);
 
         // mModelList is empty at this point, so the group card is non-existent.
         mDelegate.onTabGroupMoved(

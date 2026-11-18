@@ -76,6 +76,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Collections;
@@ -836,7 +837,7 @@ public class TabGroupUiUtilsUnitTest {
         Token groupId = Token.createRandom();
         String syncId = "sync-closing-123";
 
-        when(mTabModel.getTabCountForGroup(groupId)).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(2);
         when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
         when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Local Title");
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.CYAN);
@@ -940,7 +941,7 @@ public class TabGroupUiUtilsUnitTest {
         when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
 
         when(mOtherModel.containsTabGroup(groupId)).thenReturn(true);
-        when(mOtherModel.getTabCountForGroup(groupId)).thenReturn(3);
+        when(mOtherModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(3);
         when(mOtherModel.getTabGroupTitle(groupId)).thenReturn("Window 2 Local Title");
         when(mOtherModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.PURPLE);
         when(mOtherModel.getTabsInGroup(groupId)).thenReturn(Collections.emptyList());

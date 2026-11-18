@@ -57,6 +57,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -174,7 +175,7 @@ public class HistoricalTabModelObserverUnitTest {
         String title = "bar";
         @TabGroupColorId int color = TabGroupColorId.GREY;
         createGroup(tabGroupId, title, color, new MockTab[] {mockTab});
-        when(mTabModel.getTabCountForGroup(tabGroupId)).thenReturn(1);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(1);
         when(mTabModel.containsTabGroup(tabGroupId)).thenReturn(false);
         when(mTabModel.isTabInTabGroup(mockTab)).thenReturn(false);
 
@@ -765,7 +766,8 @@ public class HistoricalTabModelObserverUnitTest {
         assertThat(tabList).isNotEmpty();
 
         when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(Arrays.asList(tabList));
-        when(mTabModel.getTabCountForGroup(tabGroupId)).thenReturn(tabList.length);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(tabGroupId)))
+                .thenReturn(tabList.length);
         when(mTabModel.containsTabGroup(tabGroupId)).thenReturn(true);
         when(mTabModel.getTabGroupTitle(tabGroupId)).thenReturn(title);
         when(mTabModel.getTabGroupColorWithFallback(tabGroupId)).thenReturn(color);

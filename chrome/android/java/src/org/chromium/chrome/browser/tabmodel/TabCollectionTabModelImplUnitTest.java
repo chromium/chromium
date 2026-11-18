@@ -72,6 +72,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.components.visited_url_ranking.url_grouping.TabSelectionCause;
 import org.chromium.content_public.browser.WebContents;
@@ -217,11 +218,11 @@ public class TabCollectionTabModelImplUnitTest {
         when(mTabCollectionTabModelImplJni.getTabCountForGroup(any(), any()))
                 .thenAnswer(
                         invocation -> {
-                            Token groupId = invocation.getArgument(1);
+                            TabGroupId groupId = invocation.getArgument(1);
                             if (groupId == null) return 0;
                             int count = 0;
                             for (Tab t : mTabs) {
-                                if (groupId.equals(t.getTabGroupId())) {
+                                if (groupId.getToken().equals(t.getTabGroupId())) {
                                     count++;
                                 }
                             }

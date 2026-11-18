@@ -102,6 +102,7 @@ import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -305,8 +306,9 @@ public class TabGroupUiMediatorUnitTest {
         when(mTabModel.getTabCountForGroup(any()))
                 .thenAnswer(
                         (org.mockito.invocation.InvocationOnMock invocation) -> {
-                            Token groupId = invocation.getArgument(0);
-                            List<Tab> tabs = mTabModel.getTabsInGroup(groupId);
+                            TabGroupId groupId = invocation.getArgument(0);
+                            List<Tab> tabs =
+                                    mTabModel.getTabsInGroup(TabGroupId.toOptionalToken(groupId));
                             return tabs == null ? 0 : tabs.size();
                         });
         when(mTabModel.getIndexOfTabInGroup(any()))

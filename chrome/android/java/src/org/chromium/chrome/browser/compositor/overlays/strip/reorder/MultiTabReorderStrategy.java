@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.LocalizationUtils;
 
 import java.util.ArrayList;
@@ -559,7 +560,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
             if (mModel.indexOf(tab) != targetIndex) {
                 mModel.moveGroupToIndex(groupId, targetIndex);
             }
-            return mModel.getTabCountForGroup(groupId);
+            return mModel.getTabCountForGroup(TabGroupId.fromRawToken(groupId));
         }
         if (mModel.indexOf(tab) != targetIndex) {
             mModel.moveTab(tab.getId(), targetIndex);

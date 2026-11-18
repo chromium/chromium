@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.ukm.UkmRecorderJni;
@@ -179,11 +180,11 @@ public class TabCollectionsTabModelObserversUnitTest {
         when(mTabCollectionTabModelImplJni.getTabCountForGroup(any(), any()))
                 .thenAnswer(
                         invocation -> {
-                            Token groupId = invocation.getArgument(1);
+                            TabGroupId groupId = invocation.getArgument(1);
                             if (groupId == null) return 0;
                             int count = 0;
                             for (Tab t : mTabs) {
-                                if (groupId.equals(t.getTabGroupId())) {
+                                if (groupId.getToken().equals(t.getTabGroupId())) {
                                     count++;
                                 }
                             }

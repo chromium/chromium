@@ -197,7 +197,8 @@ public class TabUngrouperImpl implements TabUngrouper {
             if (mIsTabGroup && !newTabsToUngroup.isEmpty()) {
                 Token tabGroupId = newTabsToUngroup.get(0).getTabGroupId();
                 if (tabGroupId != null
-                        && tabModel.getTabCountForGroup(tabGroupId) == newTabsToUngroup.size()) {
+                        && tabModel.getTabCountForGroup(TabGroupId.fromRawToken(tabGroupId))
+                                == newTabsToUngroup.size()) {
                     tabModel.notifyWillRemoveTabGroup(TabGroupId.fromRawToken(tabGroupId));
                 }
             }

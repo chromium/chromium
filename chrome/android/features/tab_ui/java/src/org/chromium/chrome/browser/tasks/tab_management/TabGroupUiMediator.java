@@ -68,6 +68,7 @@ import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -271,7 +272,9 @@ public class TabGroupUiMediator implements BackPressHandler {
                                                     0,
                                                     getCurrentModel()
                                                                     .getTabCountForGroup(
-                                                                            mCurrentTabGroupId)
+                                                                            TabGroupId
+                                                                                    .fromOptionalToken(
+                                                                                            mCurrentTabGroupId))
                                                             - 1));
                         }
                     }
@@ -325,7 +328,9 @@ public class TabGroupUiMediator implements BackPressHandler {
                         int numTabs = 0;
                         TabModel tabModel = getCurrentModel();
                         if (mCurrentTabGroupId != null && tabModel.isTabInTabGroup(tab)) {
-                            numTabs = tabModel.getTabCountForGroup(tab.getTabGroupId());
+                            numTabs =
+                                    tabModel.getTabCountForGroup(
+                                            TabGroupId.fromOptionalToken(tab.getTabGroupId()));
                         }
 
                         RecordHistogram.recordCount1MHistogram(

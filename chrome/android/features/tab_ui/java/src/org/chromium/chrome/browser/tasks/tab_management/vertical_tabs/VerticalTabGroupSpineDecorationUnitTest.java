@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -250,7 +251,7 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     public void testOnDraw_GroupDragging_TranslatesSpine() {
         Token groupId = new Token(1L, 2L);
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);
-        when(mTabModel.getTabCountForGroup(groupId)).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(2);
 
         PropertyModel headerModel = addGroupHeaderModel(groupId, /* isCollapsed= */ false);
         float draggingY = 50f;
@@ -282,7 +283,7 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     public void testOnDraw_SingleChildDragging_PromotedToGroupDragging() {
         Token groupId = new Token(1L, 2L);
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);
-        when(mTabModel.getTabCountForGroup(groupId)).thenReturn(1);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(1);
 
         addGroupHeaderModel(groupId, /* isCollapsed= */ false);
         PropertyModel tabModel = addTabModel(groupId);
@@ -314,7 +315,7 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     public void testOnDraw_ChildDraggingInternally_LocksSpine() {
         Token groupId = new Token(1L, 2L);
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);
-        when(mTabModel.getTabCountForGroup(groupId)).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(2);
 
         addGroupHeaderModel(groupId, /* isCollapsed= */ false);
         addTabModel(groupId);

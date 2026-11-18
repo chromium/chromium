@@ -27,6 +27,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.url.GURL;
 
 import java.util.HashSet;
@@ -246,7 +247,8 @@ public final class TabGroupSyncLocalObserver {
                                 Locale.getDefault(),
                                 "movedTab positionInGroup %d out of %d",
                                 positionInGroup,
-                                mTabModel.getTabCountForGroup(localTabGroupId.tabGroupId)));
+                                mTabModel.getTabCountForGroup(
+                                        TabGroupId.fromRawToken(localTabGroupId.tabGroupId))));
                 mRemoteTabGroupMutationHelper.moveTab(
                         localTabGroupId, movedTab.getId(), positionInGroup);
             }

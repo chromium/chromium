@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -373,7 +374,8 @@ public class NestedTabReorderUtils {
             return false;
         }
         Token groupId = getTabGroupId(model);
-        return groupId != null && tabModel.getTabCountForGroup(groupId) == 1;
+        return groupId != null
+                && tabModel.getTabCountForGroup(TabGroupId.fromRawToken(groupId)) == 1;
     }
 
     // =============================================================================================

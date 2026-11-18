@@ -146,6 +146,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -2958,7 +2959,9 @@ public class StripLayoutHelper
                     mModel.isTabMultiSelected(tab.getId())
                             && mModel.getMultiSelectedTabsCount() > 1;
 
-            if (groupId != null && mModel.getTabCountForGroup(groupId) == 1 && !isMultiSelected) {
+            if (groupId != null
+                    && mModel.getTabCountForGroup(TabGroupId.fromRawToken(groupId)) == 1
+                    && !isMultiSelected) {
                 interactingView = assertNonNull(findGroupTitle(groupId));
             }
         }

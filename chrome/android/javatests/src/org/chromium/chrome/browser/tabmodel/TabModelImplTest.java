@@ -64,6 +64,7 @@ import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -965,7 +966,8 @@ public class TabModelImplTest {
                     assertEquals(groupId, tab1.getTabGroupId());
                     assertEquals(groupId, tab2.getTabGroupId());
                     assertEquals(groupId, tab3.getTabGroupId());
-                    assertEquals(3, tabModel.getTabCountForGroup(groupId));
+                    assertEquals(
+                            3, tabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId)));
                 });
     }
 
@@ -997,8 +999,12 @@ public class TabModelImplTest {
 
                     assertEquals(groupAId, tab3.getTabGroupId());
                     assertEquals(groupBId, tab4.getTabGroupId());
-                    assertEquals(3, tabModel.getTabCountForGroup(groupAId));
-                    assertEquals(1, tabModel.getTabCountForGroup(groupBId));
+                    assertEquals(
+                            3,
+                            tabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupAId)));
+                    assertEquals(
+                            1,
+                            tabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupBId)));
                 });
     }
 

@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.UndoGroupMetadata;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.util.TokenHolder;
 
 import java.util.List;
@@ -180,7 +181,9 @@ public class UndoGroupSnackbarController
 
     private void showUndoGroupSnackbarInternal(UndoGroupMetadata undoGroupMetadata) {
         TabModel tabModel = getTabModel(undoGroupMetadata.isIncognito());
-        int mergedGroupSize = tabModel.getTabCountForGroup(undoGroupMetadata.getTabGroupId());
+        int mergedGroupSize =
+                tabModel.getTabCountForGroup(
+                        TabGroupId.fromRawToken(undoGroupMetadata.getTabGroupId()));
 
         String content = String.format(Locale.getDefault(), "%d", mergedGroupSize);
         String templateText;

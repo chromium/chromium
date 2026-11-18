@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -481,7 +482,8 @@ public class NestedLayoutDelegateUnitTest {
 
         assertEquals(3, mModelList.size());
 
-        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(2);
 
         mDelegate.didChangeTabGroupCollapsed(TAB_GROUP_ID, true, false);
 
@@ -499,7 +501,8 @@ public class NestedLayoutDelegateUnitTest {
 
         assertEquals(3, mModelList.size());
 
-        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(2);
 
         mDelegate.didChangeTabGroupCollapsed(TAB_GROUP_ID, true, false);
         assertEquals(1, mModelList.size());
@@ -693,7 +696,8 @@ public class NestedLayoutDelegateUnitTest {
         addTabToModelList(TAB2_ID, TAB_GROUP_ID);
         addTabToModelList(TAB3_ID, TAB_GROUP_ID);
 
-        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(2);
         when(mTabModel.getTabAt(2)).thenReturn(mTab1);
 
         mDelegate.onTabGroupMoved(
@@ -709,7 +713,8 @@ public class NestedLayoutDelegateUnitTest {
         addTabToModelList(TAB3_ID, TAB_GROUP_ID);
         addTabToModelList(TAB2_ID, null);
 
-        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(2);
 
         mDelegate.onTabGroupMoved(
                 TAB_GROUP_ID, /* tabModelOldIndex= */ 0, /* tabModelNewIndex= */ 1);
@@ -728,7 +733,7 @@ public class NestedLayoutDelegateUnitTest {
         addTabToModelList(TAB1_ID, groupId1);
 
         when(mTab2.getTabGroupId()).thenReturn(groupId2);
-        when(mTabModel.getTabCountForGroup(groupId1)).thenReturn(1);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId1))).thenReturn(1);
         when(mTabModel.getTabAt(1)).thenReturn(mTab2);
 
         mDelegate.onTabGroupMoved(groupId1, /* tabModelOldIndex= */ 1, /* tabModelNewIndex= */ 0);
@@ -742,7 +747,8 @@ public class NestedLayoutDelegateUnitTest {
         PropertyModel headerModel = addGroupHeaderToModelList(TAB2_ID);
         headerModel.set(TabProperties.IS_COLLAPSED, true);
 
-        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(2);
         when(mTabModel.getTabAt(2)).thenReturn(mTab1);
 
         mDelegate.onTabGroupMoved(

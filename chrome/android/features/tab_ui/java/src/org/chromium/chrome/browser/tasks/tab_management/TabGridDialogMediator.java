@@ -112,6 +112,7 @@ import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.base.WindowAndroid;
@@ -1297,7 +1298,8 @@ public class TabGridDialogMediator
     }
 
     private int getTabCountForGroup(@Nullable Token tabGroupId) {
-        return assumeNonNull(mCurrentTabModelSupplier.get()).getTabCountForGroup(tabGroupId);
+        return assumeNonNull(mCurrentTabModelSupplier.get())
+                .getTabCountForGroup(TabGroupId.fromOptionalToken(tabGroupId));
     }
 
     private void saveCurrentGroupModifiedTitle() {

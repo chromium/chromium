@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.tab_groups.TabGroupId;
 
 /** Tests for {@link TabReorderStrategy}. */
 @Config(qualifiers = "sw600dp")
@@ -550,8 +551,12 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
                         invocation -> {
                             Token tabGroupId = mTokenCaptor.getValue();
                             assertThat(tabGroupId).isNotNull();
-                            int count = mModel.getTabCountForGroup(tabGroupId);
-                            when(mModel.getTabCountForGroup(tabGroupId)).thenReturn(count + 1);
+                            int count =
+                                    mModel.getTabCountForGroup(
+                                            TabGroupId.fromOptionalToken(tabGroupId));
+                            when(mModel.getTabCountForGroup(
+                                            TabGroupId.fromOptionalToken(tabGroupId)))
+                                    .thenReturn(count + 1);
                             return null;
                         })
                 .when(mModel)
@@ -564,8 +569,12 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
                         invocation -> {
                             Tab tab = mTabListCaptor.getValue().get(0);
                             Token tabGroupId = tab.getTabGroupId();
-                            int count = mModel.getTabCountForGroup(tabGroupId);
-                            when(mModel.getTabCountForGroup(tabGroupId)).thenReturn(count - 1);
+                            int count =
+                                    mModel.getTabCountForGroup(
+                                            TabGroupId.fromOptionalToken(tabGroupId));
+                            when(mModel.getTabCountForGroup(
+                                            TabGroupId.fromOptionalToken(tabGroupId)))
+                                    .thenReturn(count - 1);
                             return null;
                         })
                 .when(mTabUnGrouper)

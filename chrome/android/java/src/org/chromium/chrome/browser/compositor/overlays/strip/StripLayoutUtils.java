@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.util.StyleUtils;
 import org.chromium.ui.widget.RectProvider;
@@ -91,7 +92,8 @@ public class StripLayoutUtils {
             return false;
         }
         return tabModel.isTabInTabGroup(tab)
-                && tabModel.getTabCountForGroup(tab.getTabGroupId()) == 1;
+                && tabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(tab.getTabGroupId()))
+                        == 1;
     }
 
     /**
@@ -103,7 +105,8 @@ public class StripLayoutUtils {
             @Nullable TabModel tabModel, StripLayoutGroupTitle stripLayoutGroupTitle) {
         return tabModel == null
                 ? 0
-                : tabModel.getTabCountForGroup(stripLayoutGroupTitle.getTabGroupId());
+                : tabModel.getTabCountForGroup(
+                        TabGroupId.fromOptionalToken(stripLayoutGroupTitle.getTabGroupId()));
     }
 
     /**

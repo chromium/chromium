@@ -88,6 +88,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -848,7 +849,8 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
 
     private String getDefaultTitle() {
         return TabGroupTitleUtils.getDefaultTitle(
-                assumeNonNull(mContext), getTabModel().getTabCountForGroup(mTabGroupId));
+                assumeNonNull(mContext),
+                getTabModel().getTabCountForGroup(TabGroupId.fromOptionalToken(mTabGroupId)));
     }
 
     @SuppressLint("ClickableViewAccessibility")

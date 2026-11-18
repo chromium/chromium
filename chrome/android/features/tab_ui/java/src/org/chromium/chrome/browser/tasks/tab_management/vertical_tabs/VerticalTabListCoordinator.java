@@ -118,6 +118,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.accessibility.KeyboardFocusUtil;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -1372,7 +1373,9 @@ public class VerticalTabListCoordinator {
 
                         // Do not allow dragging out the last tab in a group.
                         // (To be handled when dragging out tab groups is enabled).
-                        if (tabModel.getTabCountForGroup(tab.getTabGroupId()) == 1) {
+                        if (tabModel.getTabCountForGroup(
+                                        TabGroupId.fromOptionalToken(tab.getTabGroupId()))
+                                == 1) {
                             return;
                         }
                     }

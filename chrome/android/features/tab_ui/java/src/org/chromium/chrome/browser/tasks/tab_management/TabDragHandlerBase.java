@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
@@ -267,7 +268,7 @@ public abstract class TabDragHandlerBase
     }
 
     private boolean shouldAllowGroupDragToCreateInstance(Token groupId) {
-        int groupSize = getCurrentModel().getTabCountForGroup(groupId);
+        int groupSize = getCurrentModel().getTabCountForGroup(TabGroupId.fromRawToken(groupId));
         return getTabModelSelector().getTotalTabCount() > groupSize;
     }
 

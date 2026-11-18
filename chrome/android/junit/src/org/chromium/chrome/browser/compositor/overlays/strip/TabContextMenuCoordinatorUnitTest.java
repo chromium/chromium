@@ -153,6 +153,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -413,7 +414,8 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabModelSelector.getModel(true)).thenReturn(mTabModel);
         when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TAB_GROUP_ID));
-        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(1);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(1);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(Collections.singletonList(mTab1));
         when(mTabModel.getTabGroupColor(TAB_GROUP_ID)).thenReturn(TAB_GROUP_INDICATOR_COLOR_ID);
         when(mTabModel.getTabGroupColorWithFallback(TAB_GROUP_ID))

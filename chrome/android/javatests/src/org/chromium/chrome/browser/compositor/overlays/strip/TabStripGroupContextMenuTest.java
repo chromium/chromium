@@ -70,6 +70,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -132,7 +133,10 @@ public class TabStripGroupContextMenuTest {
                 TabStripTestUtils.getTabModel(
                         mActivityTestRule.getActivity(), /* isIncognito= */ false);
         int tabCount =
-                ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabCountForGroup(mTabGroupId));
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                tabModel.getTabCountForGroup(
+                                        TabGroupId.fromOptionalToken(mTabGroupId)));
         assertEquals("There should be 2 tabs in group", 2, tabCount);
 
         // Verify and click "New tab in group".
@@ -142,7 +146,10 @@ public class TabStripGroupContextMenuTest {
 
         // Verify the grouped tab count is incremented.
         int finalTabCount =
-                ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabCountForGroup(mTabGroupId));
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                tabModel.getTabCountForGroup(
+                                        TabGroupId.fromOptionalToken(mTabGroupId)));
         assertEquals("There should be 3 tabs in group", tabCount + 1, finalTabCount);
     }
 
@@ -158,7 +165,10 @@ public class TabStripGroupContextMenuTest {
                 TabStripTestUtils.getTabModel(
                         mActivityTestRule.getActivity(), /* isIncognito= */ false);
         int tabCount =
-                ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabCountForGroup(mTabGroupId));
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                tabModel.getTabCountForGroup(
+                                        TabGroupId.fromOptionalToken(mTabGroupId)));
         assertEquals("There should be 2 tabs in group", 2, tabCount);
 
         // Verify and click "Ungroup".
@@ -170,7 +180,10 @@ public class TabStripGroupContextMenuTest {
         verifyModalDialog(/* shouldShow= */ true);
         onView(withText(R.string.ungroup_tab_group_action)).inRoot(isDialog()).perform(click());
         int finalTabCount =
-                ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabCountForGroup(mTabGroupId));
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                tabModel.getTabCountForGroup(
+                                        TabGroupId.fromOptionalToken(mTabGroupId)));
         assertEquals("Tab group should be ungrouped", 0, finalTabCount);
 
         // Verify no tab group exists.
@@ -198,7 +211,10 @@ public class TabStripGroupContextMenuTest {
                 TabStripTestUtils.getTabModel(
                         mActivityTestRule.getActivity(), /* isIncognito= */ true);
         int tabCount =
-                ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabCountForGroup(mTabGroupId));
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                tabModel.getTabCountForGroup(
+                                        TabGroupId.fromOptionalToken(mTabGroupId)));
         assertEquals("There should be 2 tabs in group", 2, tabCount);
 
         // Verify and click "Ungroup".
@@ -209,7 +225,10 @@ public class TabStripGroupContextMenuTest {
         // ungrouped.
         verifyModalDialog(/* shouldShow= */ false);
         int finalTabCount =
-                ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabCountForGroup(mTabGroupId));
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                tabModel.getTabCountForGroup(
+                                        TabGroupId.fromOptionalToken(mTabGroupId)));
         assertEquals("Tab group should be ungrouped", 0, finalTabCount);
 
         // Verify no tab group exists.
@@ -234,7 +253,10 @@ public class TabStripGroupContextMenuTest {
                 TabStripTestUtils.getTabModel(
                         mActivityTestRule.getActivity(), /* isIncognito= */ false);
         int tabCount =
-                ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabCountForGroup(mTabGroupId));
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                tabModel.getTabCountForGroup(
+                                        TabGroupId.fromOptionalToken(mTabGroupId)));
         assertEquals("There should be 2 tabs in group", 2, tabCount);
 
         // Assert last tab is an ungrouped tab.
@@ -276,7 +298,10 @@ public class TabStripGroupContextMenuTest {
                 TabStripTestUtils.getTabModel(
                         mActivityTestRule.getActivity(), /* isIncognito= */ true);
         int tabCount =
-                ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabCountForGroup(mTabGroupId));
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                tabModel.getTabCountForGroup(
+                                        TabGroupId.fromOptionalToken(mTabGroupId)));
         assertEquals("There should be 2 tabs in group", 2, tabCount);
 
         // Assert last tab is an ungrouped tab.
@@ -315,7 +340,10 @@ public class TabStripGroupContextMenuTest {
                 TabStripTestUtils.getTabModel(
                         mActivityTestRule.getActivity(), /* isIncognito= */ false);
         int tabCount =
-                ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabCountForGroup(mTabGroupId));
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                tabModel.getTabCountForGroup(
+                                        TabGroupId.fromOptionalToken(mTabGroupId)));
         assertEquals("There should be 2 tabs in group", 2, tabCount);
 
         // Assert last tab is an ungrouped tab.

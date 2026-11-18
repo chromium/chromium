@@ -948,7 +948,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         when(mTabModel.isTabInTabGroup(tab)).thenReturn(true);
         when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(UNSET_TAB_GROUP_TITLE);
-        when(mTabModel.getTabCountForGroup(eq(TAB_GROUP_ID))).thenReturn(1);
+        when(mTabModel.getTabCountForGroup(eq(TabGroupId.fromOptionalToken(TAB_GROUP_ID))))
+                .thenReturn(1);
         List<Tab> tabsInGroup = Arrays.asList(tab);
         when(mTabModel.getTabsInGroup(eq(TAB_GROUP_ID))).thenReturn(tabsInGroup);
         return tabsInGroup;

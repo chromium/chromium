@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tabs.TabAlert;
 
 import java.util.ArrayList;
@@ -240,7 +241,8 @@ public abstract class ReorderStrategyTestBase {
             tab.setTabGroupId(groupId);
         }
         when(mModel.getTabsInGroup(groupId)).thenReturn(tabList);
-        when(mModel.getTabCountForGroup(groupId)).thenReturn(tabList.size());
+        when(mModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(tabList.size());
     }
 
     private static class TestAnimationHost implements AnimationHost {

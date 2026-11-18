@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -58,7 +59,7 @@ public class NestedTabReorderUtilsUnitTest {
     public void setUp() {
         when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mTabModel.getTabsInGroup(GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
-        when(mTabModel.getTabCountForGroup(GROUP_ID)).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(GROUP_ID))).thenReturn(2);
         when(mTab1.getId()).thenReturn(TAB_ID_1);
         when(mTab2.getId()).thenReturn(TAB_ID_2);
         when(mTab3.getId()).thenReturn(TAB_ID_3);
@@ -525,7 +526,7 @@ public class NestedTabReorderUtilsUnitTest {
         mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, headerModel));
         mModelList.add(new ListItem(TabProperties.UiType.TAB, solitaryChildModel));
 
-        when(mTabModel.getTabCountForGroup(GROUP_ID)).thenReturn(1);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(GROUP_ID))).thenReturn(1);
         when(mTabModel.getTabsInGroup(GROUP_ID)).thenReturn(List.of(mTab1));
         when(mTabModel.indexOf(mTab1)).thenReturn(1);
         when(mTabModel.getTabAt(0)).thenReturn(mTab3);
@@ -629,11 +630,11 @@ public class NestedTabReorderUtilsUnitTest {
                         .build();
 
         // 2 tabs in group -> not solitary
-        when(mTabModel.getTabCountForGroup(GROUP_ID)).thenReturn(2);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(GROUP_ID))).thenReturn(2);
         assertFalse(NestedTabReorderUtils.isSolitaryChild(mTabModel, childModel));
 
         // 1 tab in group -> solitary child
-        when(mTabModel.getTabCountForGroup(GROUP_ID)).thenReturn(1);
+        when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(GROUP_ID))).thenReturn(1);
         assertTrue(NestedTabReorderUtils.isSolitaryChild(mTabModel, childModel));
 
         // Standalone tab (no group ID) -> not solitary child in a group

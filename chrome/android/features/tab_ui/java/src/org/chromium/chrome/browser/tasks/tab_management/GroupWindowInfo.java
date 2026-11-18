@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -186,7 +187,7 @@ public class GroupWindowInfo {
         if (localTabModel != null
                 && localGroupId != null
                 && localTabModel.containsTabGroup(localGroupId)) {
-            int count = localTabModel.getTabCountForGroup(localGroupId);
+            int count = localTabModel.getTabCountForGroup(TabGroupId.fromRawToken(localGroupId));
             if (count > 0) {
                 return count;
             }

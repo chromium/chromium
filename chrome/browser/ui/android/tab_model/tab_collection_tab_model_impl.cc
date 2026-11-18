@@ -18,6 +18,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_group_android.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/tab_groups/android/tab_group_id_jni_conversion.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -146,10 +147,9 @@ std::vector<TabAndroid*> TabCollectionTabModelImpl::GetTabsInGroup(
 }
 
 int TabCollectionTabModelImpl::GetTabCountForGroup(
-    const base::Token& tab_group_id) const {
+    const TabGroupId& tab_group_id) const {
   TabGroupTabCollection* group_collection =
-      tab_strip_collection_->GetTabGroupCollection(
-          TabGroupId::FromRawToken(tab_group_id));
+      tab_strip_collection_->GetTabGroupCollection(tab_group_id);
 
   if (!group_collection) {
     return 0;
