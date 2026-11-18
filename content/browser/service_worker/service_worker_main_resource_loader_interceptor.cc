@@ -28,6 +28,7 @@
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 namespace content {
@@ -82,15 +83,24 @@ bool ShouldCreateForWorker(
 }
 
 // Returns false if a worker with `worker_storage_key` hosted in `process_id`
-// must never match that origin's service worker registrations: a worker with an
-// opaque StorageKey origin (e.g. created by a sandboxed frame), or a process
-// that is not allowed to access the origin's data.
-bool CanWorkerAccessServiceWorkers(
-    ChildProcessId process_id,
-    const blink::StorageKey& worker_storage_key) {
-  return !worker_storage_key.origin().opaque() &&
-         ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
-             process_id.GetUnsafeValue(), worker_storage_key.origin());
+// must never match `request_url`'s service worker registrations: a worker with
+// an opaque StorageKey origin (e.g. created by a sandboxed frame), a
+// cross-origin `request_url` (unless `--disable-web-security` is enabled for
+// non-blob URLs), or a process that is not allowed to access the origin's data.
+bool CanWorkerAccessServiceWorkers(ChildProcessId process_id,
+                                   const blink::StorageKey& worker_storage_key,
+                                   const GURL& request_url) {
+  if (worker_storage_key.origin().opaque()) {
+    return false;
+  }
+  if (!worker_storage_key.origin().IsSameOriginWith(
+          url::Origin::Create(request_url)) &&
+      (request_url.SchemeIsBlob() ||
+       !service_worker_security_utils::IsWebSecurityDisabled())) {
+    return false;
+  }
+  return ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
+      process_id.GetUnsafeValue(), worker_storage_key.origin());
 }
 
 }  // namespace
@@ -228,7 +238,8 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
     return nullptr;
   }
 
-  if (!CanWorkerAccessServiceWorkers(process_id, worker_storage_key)) {
+  if (!CanWorkerAccessServiceWorkers(process_id, worker_storage_key,
+                                     resource_request.url)) {
     return nullptr;
   }
 
@@ -256,7 +267,7 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
   }
 
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
-      std::move(navigation_handle)));
+      std::move(navigation_handle), worker_storage_key));
 }
 
 ServiceWorkerMainResourceLoaderInterceptor::
@@ -274,10 +285,24 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
 
   ServiceWorkerContextCore* context_core =
       handle_->context_wrapper()->context();
-  if (!context_core || !browser_context) {
+  if (!context_core || !browser_context || !handle_->service_worker_client()) {
     CompleteWithoutLoader(std::move(loader_callback),
                           handle_->service_worker_client());
     return;
+  }
+
+  if (handle_->service_worker_client()->IsContainerForWorkerClient()) {
+    CHECK(worker_storage_key_.has_value(), base::NotFatalUntil::M160);
+    if (!ShouldCreateForWorker(tentative_resource_request.url,
+                               handle_->parent_service_worker_client()) ||
+        !CanWorkerAccessServiceWorkers(
+            handle_->service_worker_client()->GetProcessId(),
+            *worker_storage_key_, tentative_resource_request.url)) {
+      handle_->ResetServiceWorkerClient();
+      CompleteWithoutLoader(std::move(loader_callback),
+                            /*service_worker_client=*/nullptr);
+      return;
+    }
   }
 
   if ((tentative_resource_request.destination ==
@@ -356,8 +381,10 @@ void ServiceWorkerMainResourceLoaderInterceptor::CompleteWithoutLoader(
 
 ServiceWorkerMainResourceLoaderInterceptor::
     ServiceWorkerMainResourceLoaderInterceptor(
-        base::WeakPtr<ServiceWorkerMainResourceHandle> handle)
-    : handle_(std::move(handle)) {
+        base::WeakPtr<ServiceWorkerMainResourceHandle> handle,
+        std::optional<blink::StorageKey> worker_storage_key)
+    : handle_(std::move(handle)),
+      worker_storage_key_(std::move(worker_storage_key)) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(handle_, base::NotFatalUntil::M159);
   CHECK(handle_->scoped_service_worker_client());
