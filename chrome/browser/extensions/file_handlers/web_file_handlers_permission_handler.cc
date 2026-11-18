@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/files/file_path.h"
 #include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"

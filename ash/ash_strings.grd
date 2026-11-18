@@ -12192,6 +12192,14 @@ You can manage this account’s settings by installing the Family Link app on yo
       <message name="IDS_USER_INSTALLED_CHROME_APP_DEPRECATION_BLOCKED_LAUNCH_DIALOG_CLOSE_BUTTON" desc="The text of the button to dismiss the dialog displayed when a Chrome App launch is blocked.">
         Got it
       </message>
+
+      <!-- Web File Handlers permission dialog -->
+      <message name="IDS_EXTENSIONS_WFH_PERMISSION_HANDLER_FILES" desc="Label showing file names in singular or plural form.">
+        {FILE_COUNT, plural,
+      =1 {Open and edit <ph name="FILE1">{FILE1}<ex>1.txt</ex></ph> in this extension}
+      other {Open and edit <ph name="FILE1">{FILE1}<ex>1.txt</ex></ph>, ... in this app}
+    }
+      </message>
     </messages>
   </release>
 </grit>

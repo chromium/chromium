@@ -701,14 +701,6 @@
   <message name="IDS_EXTENSIONS_CANT_INSTALL_MV2_EXTENSION" desc="The text shown to a user when they try to install an extension that is no longer supported by the browser.">
     Cannot install extension because it uses an unsupported manifest version.
   </message>
-<if expr="is_chromeos">
-  <message name="IDS_EXTENSIONS_WFH_PERMISSION_HANDLER_FILES" desc="Label showing file names in singular or plural form.">
-    {FILE_COUNT, plural,
-      =1 {Open and edit <ph name="FILE1">{FILE1}<ex>1.txt</ex></ph> in this extension}
-      other {Open and edit <ph name="FILE1">{FILE1}<ex>1.txt</ex></ph>, ... in this app}
-    }
-  </message>
-</if>
 
 <if expr="is_chromeos">
   <!-- Extensions Kiosk apps -->
