@@ -233,7 +233,9 @@ omnibox::InputType InputTypeForAttachmentOption(
     // when server-side config becomes available via the input state model.
     _cachedUIConfig = [ComposeboxUIConfig localFallbackUIConfig];
     _webStateList = webStateList;
+    _entrypoint = entrypoint;
     _modeHolder = modeHolder;
+    _modeHolder.mode = [self defaultTool];
     [_modeHolder addObserver:self];
     _prefService = prefService;
     _aimEligibilityService = aimEligibilityService;
@@ -248,7 +250,6 @@ omnibox::InputType InputTypeForAttachmentOption(
     if (sessionHandle) {
       _sessionHandle = sessionHandle->AsWeakPtr();
     }
-    _entrypoint = entrypoint;
     _isIncognito = isIncognito;
 
     if (_templateURLService) {

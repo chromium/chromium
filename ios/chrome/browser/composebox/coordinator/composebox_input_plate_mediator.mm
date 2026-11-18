@@ -436,7 +436,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     _persistTabContextAgent = persistTabContextAgent;
     _isIncognito = isIncognito;
     _modeHolder = modeHolder;
-    _previousMode = _modeHolder.mode;
     _templateURLService = templateURLService;
     _searchEngineObserver =
         std::make_unique<SearchEngineObserverBridge>(self, _templateURLService);
@@ -458,6 +457,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                   isIncognito:_isIncognito];
     _stateManager.delegate = self;
     _stateManager.items = _items;
+    _previousMode = _modeHolder.mode;
 
     contextual_tasks::ContextualTasksService* tasksService =
         IOSContextualTasksServiceFactory::GetForProfile(_profile);
@@ -536,10 +536,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
   if ([self canAttachActiveTab]) {
     [self extractFaviconForCurrentTab];
-  }
-
-  if (self.isCobrowse && _modeHolder.isRegularSearch) {
-    [self setToolMode:omnibox::ToolMode::TOOL_MODE_AIM];
   }
 
   [self commitUIUpdates];

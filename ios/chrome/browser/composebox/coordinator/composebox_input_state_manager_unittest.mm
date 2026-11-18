@@ -1533,12 +1533,33 @@ TEST_F(ComposeboxInputStateManagerTest,
   recorder.contextualSearchMetricsRecorder = nullptr;
 }
 
+// Tests that initializing `ComposeboxInputStateManager` for the Cobrowse
+// entrypoint sets the initial mode to AI Mode (`TOOL_MODE_AIM`).
+TEST_F(ComposeboxInputStateManagerTest,
+       CobrowseInitializesActiveToolModeToAIM) {
+  [manager_ disconnect];
+  ComposeboxModeHolder* cobrowse_mode_holder =
+      [[ComposeboxModeHolder alloc] init];
+  manager_ = [[ComposeboxInputStateManager alloc]
+       initWithWebStateList:&web_state_list_
+                 modeHolder:cobrowse_mode_holder
+                prefService:&pref_service_
+      aimEligibilityService:mock_aim_service_.get()
+            identityManager:identity_test_env_.identity_manager()
+         templateURLService:nullptr
+              sessionHandle:session_handle_.get()
+                 entrypoint:ComposeboxEntrypoint::kCobrowse
+                isIncognito:NO];
+
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_AIM);
+  EXPECT_EQ(cobrowse_mode_holder.mode, ComposeboxMode::kAIM);
+}
+
 // Tests that toggling off an active tool in Cobrowse returns to plain AI Mode
 // (`TOOL_MODE_AIM`) rather than regular search.
 TEST_F(ComposeboxInputStateManagerTest,
        ToggleToolModeOffInCobrowseReturnsToAIMode) {
   [manager_ disconnect];
-  mode_holder_.mode = ComposeboxMode::kAIM;
   manager_ = [[ComposeboxInputStateManager alloc]
        initWithWebStateList:&web_state_list_
                  modeHolder:mode_holder_

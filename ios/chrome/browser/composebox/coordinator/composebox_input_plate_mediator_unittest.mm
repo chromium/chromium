@@ -531,7 +531,6 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
       id<BrowserCoordinatorCommands> browser_coordinator_handler = nil,
       id<SceneCommands> scene_handler = nil) {
     ComposeboxModeHolder* mode_holder = [[ComposeboxModeHolder alloc] init];
-    mode_holder.mode = mode;
     ComposeboxInputPlateMediator* mediator =
         [[ComposeboxInputPlateMediator alloc]
             initWithContextualSearchSession:std::move(session)
@@ -550,6 +549,9 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
                                  entrypoint:entrypoint];
     [mediator
         setPageContextWrapperFactoryForTesting:page_context_wrapper_factory_];
+    if (mode != ComposeboxMode::kRegularSearch) {
+      mode_holder.mode = mode;
+    }
     return mediator;
   }
 
