@@ -1080,10 +1080,6 @@ const base::FeatureParam<base::TimeDelta> kEcheScanningCycleOffTime{
 // Enables a limit on the number of notifications that can show.
 BASE_FEATURE(kNotificationLimit, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enabled notification expansion animation.
-BASE_FEATURE(kNotificationExpansionAnimation,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables notifications to be shown within context menus.
 BASE_FEATURE(kNotificationsInContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2351,10 +2347,6 @@ bool IsNotificationLimitEnabled() {
 
 bool IsOAuthIppEnabled() {
   return base::FeatureList::IsEnabled(kEnableOAuthIpp);
-}
-
-bool IsNotificationExpansionAnimationEnabled() {
-  return base::FeatureList::IsEnabled(kNotificationExpansionAnimation);
 }
 
 bool IsNotificationsInContextMenuEnabled() {

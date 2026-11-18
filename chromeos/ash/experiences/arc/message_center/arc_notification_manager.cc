@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/arc_app_id_provider.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/public/cpp/message_center/arc_notification_manager_delegate.h"
@@ -689,6 +688,7 @@ void ArcNotificationManager::CancelPress(const std::string& key) {
   notifications_instance->CancelPress(key);
 }
 
+// TODO(crbug.com/35786193): Can this be removed altogether?
 void ArcNotificationManager::SetNotificationConfiguration() {
   auto* notifications_instance = ARC_GET_INSTANCE_FOR_METHOD(
       instance_owner_->holder(), SetNotificationConfiguration);
@@ -700,8 +700,7 @@ void ArcNotificationManager::SetNotificationConfiguration() {
   }
 
   NotificationConfigurationPtr configuration = NotificationConfiguration::New();
-  configuration->expansion_animation =
-      features::IsNotificationExpansionAnimationEnabled();
+  configuration->expansion_animation = false;
 
   notifications_instance->SetNotificationConfiguration(
       std::move(configuration));
