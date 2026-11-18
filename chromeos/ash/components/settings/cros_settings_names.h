@@ -133,6 +133,12 @@ inline constexpr char kDeviceChannelDowngradeBehavior[] =
 inline constexpr char kDeviceExtendedAutoUpdateEnabled[] =
     "cros.system.device_extended_auto_update_enabled";
 
+// An integer pref that specifies whether the device is allowed to migrate to
+// the Next OS, and after what date it is forced to migrate. Please see
+// DeviceOsMigrationTargetDate policy for details.
+inline constexpr char kDeviceOsMigrationTargetDate[] =
+    "cros.system.device_os_migration_target_date";
+
 // A boolean pref that indicates whether OS & firmware version info should be
 // reported along with device policy requests.
 inline constexpr char kReportDeviceVersionInfo[] =

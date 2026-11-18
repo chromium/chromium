@@ -1349,6 +1349,18 @@ void DecodeAutoUpdatePolicies(const em::ChromeDeviceSettingsProto& policy,
                     nullptr);
     }
   }
+
+  if (policy.has_deviceosmigrationtargetdate()) {
+    const em::IntegerPolicyProto& container(
+        policy.deviceosmigrationtargetdate());
+    if (container.has_value()) {
+      if (auto value = DecodeIntegerValue(container.value())) {
+        policies->Set(key::kDeviceOsMigrationTargetDate, POLICY_LEVEL_MANDATORY,
+                      POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                      std::move(*value), nullptr);
+      }
+    }
+  }
 }
 
 void DecodeAccessibilityPolicies(const em::ChromeDeviceSettingsProto& policy,

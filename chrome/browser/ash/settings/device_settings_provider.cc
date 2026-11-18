@@ -106,6 +106,7 @@ constexpr auto kKnownSettings = base::MakeFixedFlatSet<std::string_view>({
     kDeviceShowLowDiskSpaceNotification,
     kDeviceShowNumericKeyboardForPassword,
     kDeviceOffHours,
+    kDeviceOsMigrationTargetDate,
     kDeviceOwner,
     kDevicePrintersAccessMode,
     kDevicePrintersBlocklist,
@@ -726,6 +727,19 @@ void DecodeAutoUpdatePolicies(const em::ChromeDeviceSettingsProto& policy,
     if (container.has_value()) {
       new_values_cache->SetValue(kDeviceExtendedAutoUpdateEnabled,
                                  base::Value(container.value()));
+    }
+  }
+
+  if (policy.has_deviceosmigrationtargetdate()) {
+    // See DeviceOsMigrationTargetDate.yaml for description of values.
+    constexpr int64_t kMinValidValue = 0;
+    constexpr int64_t kMaxValidValue = 2147483647;
+    const em::IntegerPolicyProto& container(
+        policy.deviceosmigrationtargetdate());
+    if (container.has_value() && container.value() >= kMinValidValue &&
+        container.value() <= kMaxValidValue) {
+      new_values_cache->SetInteger(kDeviceOsMigrationTargetDate,
+                                   static_cast<int>(container.value()));
     }
   }
 }

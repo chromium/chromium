@@ -1688,6 +1688,9 @@ BASE_FEATURE(kDeviceActiveClientChurnObservationNewDeviceMetadata,
 // happens as part of a device move to a new domain.
 BASE_FEATURE(kDeviceMoveConfigSave, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the OS migration wizard.
+BASE_FEATURE(kDeviceOsMigration, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the DeviceWeeklyScheduledSuspend policy for Managed Guest Sessions.
 BASE_FEATURE(kDeviceWeeklyScheduledSuspendMgs,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2040,6 +2043,10 @@ bool IsDeskTemplateSyncEnabled() {
 
 bool IsDeviceMoveConfigSaveEnabled() {
   return base::FeatureList::IsEnabled(kDeviceMoveConfigSave);
+}
+
+bool IsDeviceOsMigrationEnabled() {
+  return base::FeatureList::IsEnabled(kDeviceOsMigration);
 }
 
 bool IsDoNotDisturbShortcutEnabled() {

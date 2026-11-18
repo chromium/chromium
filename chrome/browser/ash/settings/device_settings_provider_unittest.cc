@@ -1463,6 +1463,45 @@ TEST_F(DeviceSettingsProviderTest, DeviceExtendedAutoUpdateEnabledValueUnset) {
   EXPECT_FALSE(actual_value);
 }
 
+TEST_F(DeviceSettingsProviderTest, DecodeDeviceOsMigrationTargetDate) {
+  // Policy should not be set by default.
+  VerifyPolicyValue(kDeviceOsMigrationTargetDate, nullptr);
+
+  device_policy_->payload().mutable_deviceosmigrationtargetdate()->set_value(
+      1735689600);
+  BuildAndInstallDevicePolicy();
+  base::Value expected_timestamp(1735689600);
+  VerifyPolicyValue(kDeviceOsMigrationTargetDate, &expected_timestamp);
+
+  // Special values - 0 (Google default eligibility) and 2147483647 (no
+  // deadline).
+  device_policy_->payload().mutable_deviceosmigrationtargetdate()->set_value(0);
+  BuildAndInstallDevicePolicy();
+  base::Value expected_zero(0);
+  VerifyPolicyValue(kDeviceOsMigrationTargetDate, &expected_zero);
+
+  device_policy_->payload().mutable_deviceosmigrationtargetdate()->set_value(
+      2147483647);
+  BuildAndInstallDevicePolicy();
+  base::Value expected_no_deadline(2147483647);
+  VerifyPolicyValue(kDeviceOsMigrationTargetDate, &expected_no_deadline);
+
+  // Out-of-bounds values.
+  device_policy_->payload().mutable_deviceosmigrationtargetdate()->set_value(
+      -1);
+  BuildAndInstallDevicePolicy();
+  VerifyPolicyValue(kDeviceOsMigrationTargetDate, nullptr);
+
+  device_policy_->payload().mutable_deviceosmigrationtargetdate()->set_value(0);
+  BuildAndInstallDevicePolicy();
+  VerifyPolicyValue(kDeviceOsMigrationTargetDate, &expected_zero);
+
+  device_policy_->payload().mutable_deviceosmigrationtargetdate()->set_value(
+      int64_t{2147483647} + 1);
+  BuildAndInstallDevicePolicy();
+  VerifyPolicyValue(kDeviceOsMigrationTargetDate, nullptr);
+}
+
 TEST_F(DeviceSettingsProviderTest, DeviceExtensionsSystemLogEnabled) {
   device_policy_->payload()
       .mutable_deviceextensionssystemlogenabled()

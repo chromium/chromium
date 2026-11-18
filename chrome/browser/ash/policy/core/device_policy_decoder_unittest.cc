@@ -1053,6 +1053,16 @@ TEST_F(DevicePolicyDecoderTest, DeviceMaxUserProfiles) {
                                base::Value(5));
 }
 
+TEST_F(DevicePolicyDecoderTest, DeviceOsMigrationTargetDate) {
+  em::ChromeDeviceSettingsProto device_policy;
+  DecodeUnsetDevicePolicyTestHelper(device_policy,
+                                    key::kDeviceOsMigrationTargetDate);
+
+  device_policy.mutable_deviceosmigrationtargetdate()->set_value(1735689600);
+  DecodeDevicePolicyTestHelper(device_policy, key::kDeviceOsMigrationTargetDate,
+                               base::Value(1735689600));
+}
+
 TEST_F(DevicePolicyDecoderTest, DeviceMetricsReportingEnabled) {
   em::ChromeDeviceSettingsProto device_policy;
 
