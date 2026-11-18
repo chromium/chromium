@@ -4011,13 +4011,7 @@
     "BuildTFLiteModelExecutionTaskOnLoadingThread": [
         {
             "platforms": [
-                "android",
-                "android_desktop",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "ios"
             ],
             "experiments": [
                 {
@@ -6041,6 +6035,83 @@
             ]
         }
     ],
+    "CongestionCombined": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BuildTFLiteModelExecutionTaskOnLoadingThread",
+                        "DisableDragDropForUnneededWidgets",
+                        "EagerlyResolveCoreDllsImports",
+                        "HarfBuzzZeroCopyFontTable",
+                        "I18nOptimizations",
+                        "LabelDefaultTooltipFastPath",
+                        "MojoFixGeometricBufferGrowth2",
+                        "OffloadUpdateRunningServicesWin",
+                        "PreReadIcuData",
+                        "PreventReentrantInternalSetBounds",
+                        "SystemCaptionStyleCaching"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BuildTFLiteModelExecutionTaskOnLoadingThread",
+                        "HarfBuzzZeroCopyFontTable",
+                        "I18nOptimizations",
+                        "LabelDefaultTooltipFastPath",
+                        "MojoFixGeometricBufferGrowth2"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "chromeos",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BuildTFLiteModelExecutionTaskOnLoadingThread",
+                        "DisableDragDropForUnneededWidgets",
+                        "I18nOptimizations",
+                        "LabelDefaultTooltipFastPath",
+                        "MojoFixGeometricBufferGrowth2",
+                        "PreventReentrantInternalSetBounds"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android",
+                "android_desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BuildTFLiteModelExecutionTaskOnLoadingThread",
+                        "I18nOptimizations",
+                        "MojoFixGeometricBufferGrowth2"
+                    ]
+                }
+            ]
+        }
+    ],
     "ConsistentLogoDoodleHeight": [
         {
             "platforms": [
@@ -7370,23 +7441,6 @@
             ]
         }
     ],
-    "DisableDragDropForUnneededWidgets": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DisableDragDropForUnneededWidgets"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableGlicActorUiMagicCursorAnimation": [
         {
             "platforms": [
@@ -7893,21 +7947,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EagerStorageAccessPermissionCheck"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EagerlyResolveCoreDllsImports": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EagerlyResolveCoreDllsImports"
                     ]
                 }
             ]
@@ -10769,22 +10808,6 @@
             ]
         }
     ],
-    "HarfBuzzZeroCopyFontTable": [
-        {
-            "platforms": [
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HarfBuzzZeroCopyFontTable"
-                    ]
-                }
-            ]
-        }
-    ],
     "HashPrefixRealTimeLookupsOnIncognitoAndGuest": [
         {
             "platforms": [
@@ -11201,13 +11224,7 @@
     "I18nOptimizations": [
         {
             "platforms": [
-                "android",
-                "android_desktop",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "ios"
             ],
             "experiments": [
                 {
@@ -12492,24 +12509,6 @@
             ]
         }
     ],
-    "LabelDefaultTooltipFastPath": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LabelDefaultTooltipFastPath"
-                    ]
-                }
-            ]
-        }
-    ],
     "LaunchOnStartup": [
         {
             "platforms": [
@@ -13204,13 +13203,7 @@
     "MojoFixGeometricBufferGrowth2": [
         {
             "platforms": [
-                "android",
-                "android_desktop",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
+                "android_webview"
             ],
             "experiments": [
                 {
@@ -13927,21 +13920,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "OffloadAcceptCHFrameCheck"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OffloadUpdateRunningServicesWin": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OffloadUpdateRunningServicesWin"
                     ]
                 }
             ]
@@ -16063,21 +16041,6 @@
             ]
         }
     ],
-    "PreReadIcuData": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PreReadIcuData"
-                    ]
-                }
-            ]
-        }
-    ],
     "PreReserveOfflineItemVector": [
         {
             "platforms": [
@@ -16461,23 +16424,6 @@
                     },
                     "enable_features": [
                         "Prerender2FallbackPrefetchSpecRules"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PreventReentrantInternalSetBounds": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PreventReentrantInternalSetBounds"
                     ]
                 }
             ]
@@ -19296,21 +19242,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SyncUsePropagatedAccessToken"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SystemCaptionStyleCaching": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SystemCaptionStyleCaching"
                     ]
                 }
             ]
