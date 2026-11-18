@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -24,6 +25,8 @@ class Profile;
 namespace bookmarks {
 class BookmarkNode;
 }
+
+BASE_DECLARE_FEATURE(kBookmarkMenuOptimizations);
 
 // C++ controller for the bookmark menu; one per AppController (which
 // means there is only one).  When bookmarks are changed, this class
@@ -149,8 +152,18 @@ class BookmarkMenuBridge : public BookmarkMergedSurfaceServiceObserver {
 
   // This configures an NSMenuItem with all the data from a BookmarkNode. This
   // is used to update existing menu items, as well as to configure newly
-  // created ones, like in AddNodeToMenu().
-  void ConfigureMenuItem(const bookmarks::BookmarkNode* node, NSMenuItem* item);
+  // created ones, like in AddNodeToMenu(). When |load_favicon| is false (e.g.
+  // during OnProfileWillBeDestroyed), only already-loaded favicons are used.
+  void ConfigureMenuItem(const bookmarks::BookmarkNode* node,
+                         NSMenuItem* item,
+                         bool load_favicon);
+
+  // Updates |item|'s favicon image from |node| without re-eliding the title or
+  // rebuilding the tooltip. When |load_if_missing| is false (e.g. during
+  // OnProfileWillBeDestroyed), only already-loaded favicons are used.
+  void UpdateMenuItemFavicon(const bookmarks::BookmarkNode* node,
+                             NSMenuItem* item,
+                             bool load_if_missing);
 
   // Returns the NSMenuItem for a given BookmarkNode.
   NSMenuItem* MenuItemForNode(const bookmarks::BookmarkNode* node);
@@ -167,8 +180,9 @@ class BookmarkMenuBridge : public BookmarkMergedSurfaceServiceObserver {
 
   base::FilePath profile_dir_;  // Remembered after OnProfileWillBeDestroyed().
 
-  // The folder image so we can use one copy for all.
+  // The folder and default favicon images so we can use one copy for all.
   NSImage* __strong folder_image_;
+  NSImage* __strong default_favicon_;
 
   // In order to appropriately update items in the bookmark menu, without
   // forcing a rebuild, map the model's nodes to menu items.

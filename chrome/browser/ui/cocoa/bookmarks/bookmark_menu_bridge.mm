@@ -31,6 +31,9 @@
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
+// TODO(crbug.com/527980275): Remove killswitch after M162.
+BASE_FEATURE(kBookmarkMenuOptimizations, base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 // Recursively clear any delegates from |menu| and its unbuilt submenus.
@@ -201,14 +204,18 @@ void BookmarkMenuBridge::BookmarkNodeMoved(
 void BookmarkMenuBridge::BookmarkNodeChanged(const BookmarkNode* node) {
   NSMenuItem* item = MenuItemForNode(node);
   if (item) {
-    ConfigureMenuItem(node, item);
+    ConfigureMenuItem(node, item, /*load_favicon=*/true);
   }
 }
 
 void BookmarkMenuBridge::BookmarkNodeFaviconChanged(const BookmarkNode* node) {
   NSMenuItem* item = MenuItemForNode(node);
   if (item) {
-    ConfigureMenuItem(node, item);
+    if (base::FeatureList::IsEnabled(kBookmarkMenuOptimizations)) {
+      UpdateMenuItemFavicon(node, item, /*load_if_missing=*/true);
+    } else {
+      ConfigureMenuItem(node, item, /*load_favicon=*/true);
+    }
   }
 }
 
@@ -276,18 +283,22 @@ void BookmarkMenuBridge::AddSubmenu(NSMenu* menu,
   auto nodes = bookmark_service_->GetUnderlyingNodes(folder);
   CHECK(!nodes.empty());
   const BookmarkNode* node = nodes[0];
-  NSString* title = MenuTitleForNode(node);
-  NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:title
+  const bool optimize =
+      base::FeatureList::IsEnabled(kBookmarkMenuOptimizations);
+  NSString* initial_title = optimize ? @"" : MenuTitleForNode(node);
+  NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:initial_title
                                                 action:nil
                                          keyEquivalent:@""];
   item.image = image;
   if (@available(macOS 27, *)) {
     item.preferredImageVisibility = NSMenuItemImageVisibilityVisible;
   }
-  ConfigureMenuItem(node, item);
-  bookmark_nodes_[node] = item;
+  ConfigureMenuItem(node, item, /*load_favicon=*/!recurse);
+  if (!recurse || !optimize) {
+    bookmark_nodes_[node] = item;
+  }
 
-  NSMenu* submenu = [[NSMenu alloc] initWithTitle:title];
+  NSMenu* submenu = [[NSMenu alloc] initWithTitle:[item title]];
   [menu setSubmenu:submenu forItem:item];
 
   // Set a delegate and a tag on the item so that the submenu can be populated
@@ -333,17 +344,23 @@ void BookmarkMenuBridge::AddNodeToMenu(const BookmarkNode* node,
                recurse);
   } else {
     CHECK(node->is_url());
-    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:MenuTitleForNode(node)
+    const bool optimize =
+        base::FeatureList::IsEnabled(kBookmarkMenuOptimizations);
+    NSString* initial_title = optimize ? @"" : MenuTitleForNode(node);
+    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:initial_title
                                                   action:nil
                                            keyEquivalent:@""];
-    bookmark_nodes_[node] = item;
-    ConfigureMenuItem(node, item);
+    if (!recurse || !optimize) {
+      bookmark_nodes_[node] = item;
+    }
+    ConfigureMenuItem(node, item, /*load_favicon=*/!recurse);
     [menu addItem:item];
   }
 }
 
 void BookmarkMenuBridge::ConfigureMenuItem(const BookmarkNode* node,
-                                           NSMenuItem* item) {
+                                           NSMenuItem* item,
+                                           bool load_favicon) {
   [item setTitle:MenuTitleForNode(node)];
   [item setTag:node->id()];
   tag_to_guid_[node->id()] = node->uuid();
@@ -358,10 +375,21 @@ void BookmarkMenuBridge::ConfigureMenuItem(const BookmarkNode* node,
   [item setAction:@selector(openBookmarkMenuItem:)];
   [item setToolTip:[BookmarkMenuCocoaController tooltipForNode:node]];
 
+  const bool load_if_missing =
+      load_favicon || !base::FeatureList::IsEnabled(kBookmarkMenuOptimizations);
+  UpdateMenuItemFavicon(node, item, load_if_missing);
+}
+
+void BookmarkMenuBridge::UpdateMenuItemFavicon(const BookmarkNode* node,
+                                               NSMenuItem* item,
+                                               bool load_if_missing) {
+  CHECK(node);
+  CHECK(node->is_url());
+
   // Check to see if we have a favicon.
   NSImage* favicon = nil;
   BookmarkModel* model = bookmark_service_->bookmark_model();
-  if (model) {
+  if (model && (load_if_missing || node->is_favicon_loaded())) {
     const gfx::Image& image = model->GetFavicon(node);
     if (!image.IsEmpty()) {
       favicon = image.ToNSImage();
@@ -369,8 +397,16 @@ void BookmarkMenuBridge::ConfigureMenuItem(const BookmarkNode* node,
   }
   // If we do not have a loaded favicon, use the default site image instead.
   if (!favicon) {
-    favicon = favicon::GetDefaultFavicon().ToNSImage();
-    [favicon setTemplate:YES];
+    if (base::FeatureList::IsEnabled(kBookmarkMenuOptimizations)) {
+      if (!default_favicon_) {
+        default_favicon_ = favicon::GetDefaultFavicon().ToNSImage();
+        [default_favicon_ setTemplate:YES];
+      }
+      favicon = default_favicon_;
+    } else {
+      favicon = favicon::GetDefaultFavicon().ToNSImage();
+      [favicon setTemplate:YES];
+    }
   }
   item.image = favicon;
   if (@available(macOS 27, *)) {

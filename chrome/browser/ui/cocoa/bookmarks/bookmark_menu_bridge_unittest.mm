@@ -686,3 +686,47 @@ TEST_F(BookmarkMenuBridgeTest, BuildMenuRecursivelyBeforeProfileDestruction) {
   EXPECT_TRUE(item);
   EXPECT_EQ(item2_guid, bridge_->TagToGUID([item tag]));
 }
+
+TEST_F(BookmarkMenuBridgeTest, FaviconUpdateAndProfileDestruction) {
+  if (!base::FeatureList::IsEnabled(kBookmarkMenuOptimizations)) {
+    GTEST_SKIP();
+  }
+
+  BookmarkModel* model = bridge_->GetBookmarkModelForTesting();
+  model->CreateAccountPermanentFolders();
+  const BookmarkNode* bar_root = model->bookmark_bar_node();
+
+  const BookmarkNode* url_node =
+      model->AddURL(bar_root, 0, u"Bookmark 1", GURL("https://example.com/1"));
+
+  UpdateRootMenu();
+  NSMenuItem* url_item = MenuItemForNode(bridge_.get(), url_node);
+  ASSERT_TRUE(url_item);
+  [url_item setToolTip:@"sentinel-tooltip"];
+
+  // BookmarkNodeFaviconChanged should only update the favicon image without
+  // re-running ConfigureMenuItem (MenuTitleForNode + tooltipForNode:).
+  bridge_->BookmarkNodeFaviconChanged(url_node);
+  EXPECT_NSEQ(@"sentinel-tooltip", [url_item toolTip]);
+
+  // Add an unexpanded folder with an unloaded bookmark, then trigger
+  // OnProfileWillBeDestroyed().
+  const BookmarkNode* unloaded_folder =
+      model->AddFolder(bar_root, 1, u"Unexpanded Folder");
+  const BookmarkNode* unloaded_node = model->AddURL(
+      unloaded_folder, 0, u"Unloaded Bookmark", GURL("https://unloaded.test/"));
+  ASSERT_FALSE(unloaded_node->is_favicon_loaded());
+  ASSERT_FALSE(unloaded_node->is_favicon_loading());
+
+  bridge_->OnProfileWillBeDestroyed();
+
+  // OnProfileWillBeDestroyed() must still populate the submenu recursively,
+  // but must NOT start async favicon loading on a dying profile whose observer
+  // is immediately reset.
+  NSMenuItem* unloaded_folder_item = [menu_ itemWithTitle:@"Unexpanded Folder"];
+  ASSERT_TRUE(unloaded_folder_item);
+  ASSERT_TRUE([unloaded_folder_item hasSubmenu]);
+  EXPECT_TRUE(
+      [[unloaded_folder_item submenu] itemWithTitle:@"Unloaded Bookmark"]);
+  EXPECT_FALSE(unloaded_node->is_favicon_loading());
+}
