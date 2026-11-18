@@ -205,8 +205,11 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
 
 #pragma mark - Private
 
-// Updates navigation and action buttons based on `_showsExplicitDeclineButton`.
+// Updates navigation and action buttons, including the `_saveButton` style,
+// based on `_showsExplicitDeclineButton`.
 - (void)updateLayoutForExplicitDeclineButton {
+  _saveButton.style = _showsExplicitDeclineButton ? ChromeButtonStyleTertiary
+                                                  : ChromeButtonStylePrimary;
   if (_showsExplicitDeclineButton) {
     self.navigationItem.leftBarButtonItem = nil;
     if (!_noThanksButton) {
@@ -238,7 +241,7 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
 // Creates the sticky "No thanks" action button.
 - (ChromeButton*)createNoThanksButton {
   ChromeButton* button =
-      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStyleTertiary];
   button.enabled = _saveButton ? _saveButton.enabled : YES;
   [button
       setTitle:
