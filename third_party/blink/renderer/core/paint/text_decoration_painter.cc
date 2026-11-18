@@ -139,8 +139,7 @@ Color TextDecorationPainter::LineColorForPhase(
     const ResolvedDecoration& decoration,
     TextShadowPaintPhase text_shadow_paint_phase) const {
   if (text_shadow_paint_phase == TextShadowPaintPhase::kShadow ||
-      (RuntimeEnabledFeatures::BackgroundClipTextDecorationEnabled() &&
-       paint_info_.phase == PaintPhase::kTextClip)) {
+      paint_info_.phase == PaintPhase::kTextClip) {
     return Color::kBlack;
   }
   return decoration_info.LineColor(decoration);
