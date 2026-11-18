@@ -52,7 +52,7 @@ pub use reader::{
 };
 pub use values::{
     vec_push_entry, vec_push_value, vec_with_capacity_entries, vec_with_capacity_values, Map,
-    MapEntry, MapKey, MapKeyKind, Value, ValueKind,
+    MapEntry, MapKey, Value,
 };
 pub use writer::write;
 

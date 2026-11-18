@@ -3,11 +3,6 @@
 // found in the LICENSE file.
 
 // Crubit C++ FFI integration notes:
-// TODO(crbug.com/262737383): Update `ConvertRustMapKeyToCpp` and
-// `ConvertRustValueToCpp` to use Crubit's auto-generated C++ pattern matching
-// and accessor methods for non-repr(C) ADT enums (like `Value` and `MapKey`)
-// once available, completely replacing the manual `.tag` inspection switch
-// statements.
 // TODO(crbug.com/259749095): Call `cbor::rust::parse_with_config` directly
 // and remove `ParseResult` once Crubit supports returning generic `Result`
 // tuples (`Result<(Value, usize), Error>`) directly across FFI.
@@ -198,51 +193,56 @@ Reader::~Reader() = default;
 
 // static
 Value Reader::ConvertRustMapKeyToCpp(const cbor::rust::MapKey& rust_key) {
-  switch (rust_key.kind().tag) {
-    case cbor::rust::MapKeyKind::Tag::Int:
-      return Value(*rust_key.as_int());
-    case cbor::rust::MapKeyKind::Tag::String:
-      return Value(rust_key.as_string()->to_string_view());
-    case cbor::rust::MapKeyKind::Tag::Bytestring:
-      return Value(rust_key.as_bytestring()->to_span());
-    case cbor::rust::MapKeyKind::Tag::InvalidUtf8:
-      // Unreachable when parsing (`allow_invalid_utf8` does not apply to map
-      // keys); exists so `Writer` can encode test-only `INVALID_UTF8` keys.
-      return Value(Value::invalid_utf8, rust_key.as_invalid_utf8()->to_span());
+  if (const auto* v = rs::get_if<cbor::rust::MapKey::Int>(&rust_key)) {
+    return Value(v->__field0);
+  }
+  if (const auto* v = rs::get_if<cbor::rust::MapKey::String>(&rust_key)) {
+    return Value(v->__field0.to_string_view());
+  }
+  if (const auto* v = rs::get_if<cbor::rust::MapKey::Bytestring>(&rust_key)) {
+    return Value(v->__field0.to_span());
+  }
+  if (const auto* v = rs::get_if<cbor::rust::MapKey::InvalidUtf8>(&rust_key)) {
+    // Unreachable when parsing (`allow_invalid_utf8` does not apply to map
+    // keys); exists so `Writer` can encode test-only `INVALID_UTF8` keys.
+    return Value(Value::invalid_utf8, v->__field0.to_span());
   }
   NOTREACHED();
 }
 
 // static
 Value Reader::ConvertRustValueToCpp(const cbor::rust::Value& rust_val) {
-  switch (rust_val.kind().tag) {
-    case cbor::rust::ValueKind::Tag::Int:
-      return Value(*rust_val.as_int());
-    case cbor::rust::ValueKind::Tag::Boolean:
-      return Value(*rust_val.as_bool());
-    case cbor::rust::ValueKind::Tag::Null:
-      return Value(Value::null);
-    case cbor::rust::ValueKind::Tag::Undefined:
-      return Value(Value::undefined);
-    case cbor::rust::ValueKind::Tag::Bytestring:
-      return Value(rust_val.as_bytestring()->to_span());
-    case cbor::rust::ValueKind::Tag::String:
-      return Value(rust_val.as_string()->to_string_view());
-    case cbor::rust::ValueKind::Tag::InvalidUtf8:
-      return Value(Value::invalid_utf8, rust_val.as_invalid_utf8()->to_span());
-    case cbor::rust::ValueKind::Tag::Array: {
-      return Value(base::ToVector(rust_val.as_array()->to_span(),
-                                  ConvertRustValueToCpp));
-    }
-    case cbor::rust::ValueKind::Tag::Map: {
-      return Value(Value::MapValue(
-          base::sorted_unique,
-          base::ToVector(rust_val.map_entries()->to_span(),
-                         [](const auto& entry) {
-                           return std::pair(ConvertRustMapKeyToCpp(entry.key),
-                                            ConvertRustValueToCpp(entry.value));
-                         })));
-    }
+  if (const auto* v = rs::get_if<cbor::rust::Value::Int>(&rust_val)) {
+    return Value(v->__field0);
+  }
+  if (const auto* v = rs::get_if<cbor::rust::Value::Boolean>(&rust_val)) {
+    return Value(v->__field0);
+  }
+  if (rs::holds_alternative<cbor::rust::Value::Null>(rust_val)) {
+    return Value(Value::null);
+  }
+  if (rs::holds_alternative<cbor::rust::Value::Undefined>(rust_val)) {
+    return Value(Value::undefined);
+  }
+  if (const auto* v = rs::get_if<cbor::rust::Value::Bytestring>(&rust_val)) {
+    return Value(v->__field0.to_span());
+  }
+  if (const auto* v = rs::get_if<cbor::rust::Value::String>(&rust_val)) {
+    return Value(v->__field0.to_string_view());
+  }
+  if (const auto* v = rs::get_if<cbor::rust::Value::InvalidUtf8>(&rust_val)) {
+    return Value(Value::invalid_utf8, v->__field0.to_span());
+  }
+  if (const auto* v = rs::get_if<cbor::rust::Value::Array>(&rust_val)) {
+    return Value(base::ToVector(v->__field0, ConvertRustValueToCpp));
+  }
+  if (const auto* v = rs::get_if<cbor::rust::Value::Map>(&rust_val)) {
+    return Value(Value::MapValue(
+        base::sorted_unique,
+        base::ToVector(v->__field0.as_slice().to_span(), [](const auto& entry) {
+          return std::pair(ConvertRustMapKeyToCpp(entry.key),
+                           ConvertRustValueToCpp(entry.value));
+        })));
   }
   NOTREACHED();
 }

@@ -2,31 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/262737383): When Crubit supports generating C++ pattern
-// matching and accessor logic for non-repr(C) Rust ADT enums (like `Value` and
-// `MapKey`), remove all manual inspection (`kind()`) and payload extraction
-// (`as_int()`, `as_string()`, `as_array()`, etc.) methods below, as well as the
-// `MapKeyKind` and `ValueKind` proxy enums.
 use alloc::vec::Vec;
 use core::cmp::Ordering;
 
 use crate::constants::*;
 use crate::writer;
-
-#[repr(C)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ValueKind {
-    Int = 0,
-    Bytestring = 1,
-    String = 2,
-    Array = 3,
-    Map = 4,
-    Boolean = 5,
-    // Obsolete: Float = 6,
-    Null = 7,
-    Undefined = 8,
-    InvalidUtf8 = 9,
-}
 
 /// Value represents a CBOR structure.
 ///
@@ -59,69 +39,6 @@ impl<'a> Value<'a> {
     // append_bytes appends a serialisation of `self` to `out`.
     pub fn append_bytes(&self, out: &mut Vec<u8>) {
         writer::append_value(self, out);
-    }
-
-    pub fn kind(&self) -> ValueKind {
-        match self {
-            Self::Int(_) => ValueKind::Int,
-            Self::Bytestring(_) => ValueKind::Bytestring,
-            Self::String(_) => ValueKind::String,
-            Self::Array(_) => ValueKind::Array,
-            Self::Map(_) => ValueKind::Map,
-            Self::Boolean(_) => ValueKind::Boolean,
-            Self::Null => ValueKind::Null,
-            Self::Undefined => ValueKind::Undefined,
-            Self::InvalidUtf8(_) => ValueKind::InvalidUtf8,
-        }
-    }
-
-    pub fn as_int(&self) -> Option<i64> {
-        match self {
-            Self::Int(v) => Some(*v),
-            _ => None,
-        }
-    }
-
-    pub fn as_bool(&self) -> Option<bool> {
-        match self {
-            Self::Boolean(v) => Some(*v),
-            _ => None,
-        }
-    }
-
-    pub fn as_bytestring(&self) -> Option<&'a [u8]> {
-        match self {
-            Self::Bytestring(v) => Some(v),
-            _ => None,
-        }
-    }
-
-    pub fn as_string(&self) -> Option<&'a str> {
-        match self {
-            Self::String(s) => Some(s),
-            _ => None,
-        }
-    }
-
-    pub fn as_invalid_utf8(&self) -> Option<&'a [u8]> {
-        match self {
-            Self::InvalidUtf8(v) => Some(v),
-            _ => None,
-        }
-    }
-
-    pub fn as_array(&self) -> Option<&[Value<'a>]> {
-        match self {
-            Self::Array(v) => Some(v),
-            _ => None,
-        }
-    }
-
-    pub fn map_entries(&self) -> Option<&[MapEntry<'a>]> {
-        match self {
-            Self::Map(m) => Some(m),
-            _ => None,
-        }
     }
 }
 
@@ -197,6 +114,11 @@ impl<'a> Map<'a> {
         let index = self.0.binary_search_by_key(&key, |entry| &entry.key).ok()?;
         Some(&self.0[index].value)
     }
+
+    /// Returns the map's entries in canonical CBOR key order.
+    pub fn as_slice(&self) -> &[MapEntry<'a>] {
+        &self.0
+    }
 }
 
 impl<'a> From<Vec<MapEntry<'a>>> for Map<'a> {
@@ -230,15 +152,6 @@ impl<'a, 'b> IntoIterator for &'b Map<'a> {
     fn into_iter(self) -> Self::IntoIter {
         self.0.iter()
     }
-}
-
-#[repr(C)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub enum MapKeyKind {
-    Int = 0,
-    Bytestring = 1,
-    String = 2,
-    InvalidUtf8 = 3,
 }
 
 /// A MapKey is the type of values that can key a CBOR map.
@@ -276,43 +189,6 @@ impl<'a> MapKey<'a> {
             Self::Bytestring(b) => (MAJOR_TYPE_BYTE_STRING, b.len() as u64, Some(b)),
             Self::String(s) => (MAJOR_TYPE_TEXT_STRING, s.len() as u64, Some(s.as_bytes())),
             Self::InvalidUtf8(b) => (MAJOR_TYPE_TEXT_STRING, b.len() as u64, Some(b)),
-        }
-    }
-
-    pub fn kind(&self) -> MapKeyKind {
-        match self {
-            Self::Int(_) => MapKeyKind::Int,
-            Self::Bytestring(_) => MapKeyKind::Bytestring,
-            Self::String(_) => MapKeyKind::String,
-            Self::InvalidUtf8(_) => MapKeyKind::InvalidUtf8,
-        }
-    }
-
-    pub fn as_int(&self) -> Option<i64> {
-        match self {
-            Self::Int(v) => Some(*v),
-            _ => None,
-        }
-    }
-
-    pub fn as_bytestring(&self) -> Option<&'a [u8]> {
-        match self {
-            Self::Bytestring(v) => Some(v),
-            _ => None,
-        }
-    }
-
-    pub fn as_string(&self) -> Option<&'a str> {
-        match self {
-            Self::String(s) => Some(s),
-            _ => None,
-        }
-    }
-
-    pub fn as_invalid_utf8(&self) -> Option<&'a [u8]> {
-        match self {
-            Self::InvalidUtf8(v) => Some(v),
-            _ => None,
         }
     }
 }
