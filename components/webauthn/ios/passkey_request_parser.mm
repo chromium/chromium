@@ -7,9 +7,10 @@
 #import "base/base64url.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/webauthn/core/browser/gpm_user_verification_policy.h"
 #import "components/webauthn/core/browser/webauthn_security_utils.h"
-#import "device/fido/fido_user_verification_requirement.h"
 #import "device/fido/public/fido_constants.h"
+#import "device/fido/public/fido_types.h"
 
 namespace webauthn {
 
@@ -194,10 +195,7 @@ device::UserVerificationRequirement ToUserVerificationRequirement(
     return device::UserVerificationRequirement::kPreferred;
   }
 
-  // TODO(crbug.com/460484682): Merge this code with
-  // ShouldPerformUserVerificationForPreference().
-  return device::ConvertToUserVerificationRequirement(*user_verification)
-      .value_or(device::UserVerificationRequirement::kPreferred);
+  return UserVerificationRequirementFromString(*user_verification);
 }
 
 // Converts the provided booleans to a PasskeyRequestParams::RequestType enum.

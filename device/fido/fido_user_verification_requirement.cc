@@ -10,19 +10,6 @@ const char kUserVerificationRequired[] = "required";
 const char kUserVerificationPreferred[] = "preferred";
 const char kUserVerificationDiscouraged[] = "discouraged";
 
-std::optional<UserVerificationRequirement> ConvertToUserVerificationRequirement(
-    std::string_view user_verification_requirement) {
-  if (user_verification_requirement == kUserVerificationRequired) {
-    return UserVerificationRequirement::kRequired;
-  } else if (user_verification_requirement == kUserVerificationPreferred) {
-    return UserVerificationRequirement::kPreferred;
-  } else if (user_verification_requirement == kUserVerificationDiscouraged) {
-    return UserVerificationRequirement::kDiscouraged;
-  } else {
-    return std::nullopt;
-  }
-}
-
 std::string_view ToString(
     UserVerificationRequirement user_verification_requirement) {
   switch (user_verification_requirement) {

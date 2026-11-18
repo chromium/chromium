@@ -5,6 +5,7 @@
 #include "components/webauthn/core/browser/gpm_user_verification_policy.h"
 
 #include "build/build_config.h"
+#include "device/fido/fido_user_verification_requirement.h"
 #include "device/fido/public/fido_types.h"
 
 namespace webauthn {
@@ -26,6 +27,17 @@ bool GpmWillDoUserVerification(device::UserVerificationRequirement requirement,
     case device::UserVerificationRequirement::kDiscouraged:
       return false;
   }
+}
+
+device::UserVerificationRequirement UserVerificationRequirementFromString(
+    std::string_view user_verification) {
+  if (user_verification == device::kUserVerificationRequired) {
+    return device::UserVerificationRequirement::kRequired;
+  }
+  if (user_verification == device::kUserVerificationDiscouraged) {
+    return device::UserVerificationRequirement::kDiscouraged;
+  }
+  return device::UserVerificationRequirement::kPreferred;
 }
 
 }  // namespace webauthn

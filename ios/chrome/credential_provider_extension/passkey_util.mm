@@ -13,7 +13,6 @@
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/gpm_user_verification_policy.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
-#import "device/fido/fido_user_verification_requirement.h"
 #import "device/fido/public/fido_types.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/ASPasskeyCredentialIdentity+credential.h"
@@ -300,13 +299,9 @@ BOOL ShouldPerformUserVerificationForPreference(
     return NO;
   }
 
-  // Fall back to the `kPreferred` UV requirement as per the WebAuthn spec.
-  std::string user_verification_requirement_string =
-      SysNSStringToUTF8(user_verification_preference_string);
   return webauthn::GpmWillDoUserVerification(
-      device::ConvertToUserVerificationRequirement(
-          user_verification_requirement_string)
-          .value_or(device::UserVerificationRequirement::kPreferred),
+      webauthn::UserVerificationRequirementFromString(
+          SysNSStringToUTF8(user_verification_preference_string)),
       is_biometric_authentication_enabled);
 }
 

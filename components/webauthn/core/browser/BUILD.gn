@@ -149,6 +149,7 @@ source_set("unit_tests") {
 
   if (!is_android) {
     sources += [
+      "gpm_user_verification_policy_unittest.cc",
       "passkey_model_utils_unittest.cc",
       "signal_api_utils_unittest.cc",
     ]
@@ -169,6 +170,7 @@ source_set("unit_tests") {
       "//components/sync/protocol",
       "//components/webauthn/core/browser/device_authorization:features",
       "//crypto",
+      "//device/fido/public",
       "//testing/gmock",
       "//testing/gtest",
     ]
