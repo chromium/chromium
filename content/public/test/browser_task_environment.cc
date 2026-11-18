@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -26,6 +27,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_utils.h"
+#include "services/network/throttling/throttling_controller.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/task_scheduler/post_task_android.h"
@@ -156,6 +158,15 @@ BrowserTaskEnvironment::~BrowserTaskEnvironment() {
   // BrowserThread::CurrentlyOn() returns the results expected by the observers.
   DestroyTaskEnvironment();
 
+  // Nothing from this environment uses network::ThrottlingController any more.
+  // Detach it from this environment's IO thread so that a later test in this
+  // process can use it on another thread (crbug.com/578269543).
+  network::ThrottlingController::DetachFromThreadForTesting();
+  LOG_IF(WARNING, !network::ThrottlingController::IsEmptyForTesting())
+      << "network::ThrottlingController still has throttling conditions or "
+         "NetLog sources registered. They leak into later tests in this "
+         "process.";
+
 #if BUILDFLAG(IS_WIN)
   com_initializer_.reset();
 #endif
@@ -175,6 +186,12 @@ void BrowserTaskEnvironment::Init() {
   CHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI));
 
   CHECK(!real_io_thread_ || !HasIOMainLoop()) << "Can't have two IO threads";
+
+  // network::ThrottlingController is a process-wide singleton that binds to the
+  // first thread that uses it. An earlier test in this process may have left it
+  // bound to its own network thread, so let this environment's IO thread bind
+  // it afresh (crbug.com/578269543).
+  network::ThrottlingController::DetachFromThreadForTesting();
 
 #if BUILDFLAG(IS_WIN)
   // Similar to Chrome's UI thread, we need to initialize COM separately for

@@ -5,22 +5,27 @@
 #include "content/public/test/browser_task_environment.h"
 
 #include <atomic>
+#include <memory>
 #include <string>
 
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/network/throttling/throttling_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 using base::test::TaskEnvironment;
 
@@ -207,6 +212,28 @@ TEST(BrowserTaskEnvironmentTest, NotInitializedIOThread) {
   EXPECT_DCHECK_DEATH_WITH(
       GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing()),
       kDeathMatcher);
+}
+
+// network::ThrottlingController is a process-wide singleton that binds to the
+// thread that uses it. Verifies that consecutive BrowserTaskEnvironments can
+// each use it on their own IO thread. Regression test for crbug.com/578269543.
+TEST(BrowserTaskEnvironmentTest, ThrottlingControllerUsableOnEachIOThread) {
+  for (bool real_io_thread : {false, true, true, false}) {
+    auto task_environment =
+        real_io_thread ? std::make_unique<BrowserTaskEnvironment>(
+                             BrowserTaskEnvironment::Options::REAL_IO_THREAD)
+                       : std::make_unique<BrowserTaskEnvironment>();
+    base::RunLoop run_loop;
+    GetIOThreadTaskRunner({})->PostTaskAndReply(
+        FROM_HERE, base::BindOnce([] {
+          // Fails the controller's thread check if it is still bound to the
+          // IO thread of an earlier environment.
+          network::ThrottlingController::GetInterceptorForProfile(
+              base::UnguessableToken::Create(), GURL());
+        }),
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
 }
 
 }  // namespace content

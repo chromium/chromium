@@ -85,6 +85,23 @@ ThrottlingP2PNetworkInterceptor* ThrottlingController::GetP2PInterceptor(
 #endif
 
 // static
+void ThrottlingController::DetachFromThreadForTesting() {
+  DETACH_FROM_THREAD(instance().thread_checker_);
+}
+
+// static
+bool ThrottlingController::IsEmptyForTesting() {
+  const ThrottlingController& controller = instance();
+#if BUILDFLAG(IS_P2P_ENABLED)
+  if (!controller.p2p_interceptors_.empty()) {
+    return false;
+  }
+#endif
+  return controller.interceptors_.empty() &&
+         controller.net_log_source_profile_map_.empty();
+}
+
+// static
 void ThrottlingController::RegisterProfileIDForNetLogSource(
     uint32_t net_log_source_id,
     const base::UnguessableToken& throttling_profile_id) {

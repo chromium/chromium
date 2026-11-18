@@ -67,6 +67,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
       uint32_t net_log_source_id);
 #endif
 
+  // The controller is a process-wide singleton that binds to the first thread
+  // that uses it. Tests that run several network threads one after the other in
+  // the same process call this once a thread is done with the controller, so
+  // that the next thread can bind it. May be called on any thread.
+  static void DetachFromThreadForTesting();
+
+  // Returns true if no throttling conditions are set and no NetLog source is
+  // registered. May be called on any thread, as long as no other thread is
+  // using the controller at the same time.
+  static bool IsEmptyForTesting();
+
  private:
   friend class ScopedThrottlingToken;
   friend class base::NoDestructor<ThrottlingController>;

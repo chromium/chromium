@@ -13,12 +13,15 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "net/base/chunked_upload_data_stream.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/load_timing_info.h"
@@ -700,6 +703,39 @@ TEST(ThrottlingControllerTest, LatencyThrottlesLoadTimingReceiveHeadersStart) {
     EXPECT_EQ(load_timing_info.receive_non_informational_headers_start,
               load_timing_info.send_end);
   }
+}
+
+TEST(ThrottlingControllerTest, DetachFromThreadForTesting) {
+  const base::UnguessableToken profile_id = base::UnguessableToken::Create();
+
+  // Binds the controller to this thread.
+  ThrottlingController::GetInterceptorForProfile(profile_id, GURL());
+
+  ThrottlingController::DetachFromThreadForTesting();
+  base::Thread thread("ThrottlingControllerTest");
+  ASSERT_TRUE(thread.Start());
+  thread.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](const base::UnguessableToken& profile_id) {
+                       // Fails the thread check without the detach above.
+                       ThrottlingController::GetInterceptorForProfile(
+                           profile_id, GURL());
+                     },
+                     profile_id));
+  thread.Stop();
+
+  // Later tests in this process use the controller on this thread again.
+  ThrottlingController::DetachFromThreadForTesting();
+  ThrottlingController::GetInterceptorForProfile(profile_id, GURL());
+}
+
+TEST(ThrottlingControllerTest, IsEmptyForTestingSeesRegisteredSource) {
+  const net::NetLogWithSource net_log_with_source = net::NetLogWithSource::Make(
+      net::NetLog::Get(), net::NetLogSourceType::URL_REQUEST);
+  std::unique_ptr<ScopedThrottlingToken> token =
+      ScopedThrottlingToken::MaybeCreate(net_log_with_source.source().id,
+                                         base::UnguessableToken::Create());
+  EXPECT_FALSE(ThrottlingController::IsEmptyForTesting());
 }
 
 }  // namespace network
