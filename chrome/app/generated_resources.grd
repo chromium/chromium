@@ -3577,9 +3577,6 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_APPLICATION_INFO_HOMEPAGE_LINK" desc="Text for the link that opens the app or extension's homepage, as specified by the developer.">
           Developer website
         </message>
-        <message name="IDS_ARC_APPLICATION_INFO_MANAGE_LINK" desc="Text for the link that opens a dialog allowing to manage supported links.">
-          Manage supported links
-        </message>
         <message name="IDS_APPLICATION_INFO_APP_OVERVIEW_TITLE" desc="Text displayed above the current details for the app or extension.">
           Overview
         </message>

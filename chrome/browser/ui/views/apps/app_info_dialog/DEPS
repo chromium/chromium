@@ -2,4 +2,7 @@ specific_include_rules = {
   "app_info_footer_panel\\.cc": [
     "+ash/strings",
   ],
+  "arc_app_info_links_panel\\.cc": [
+    "+ash/strings",
+  ],
 }

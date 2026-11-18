@@ -12200,6 +12200,11 @@ You can manage this account’s settings by installing the Family Link app on yo
       other {Open and edit <ph name="FILE1">{FILE1}<ex>1.txt</ex></ph>, ... in this app}
     }
       </message>
+
+      <!-- ARC application info dialog -->
+      <message name="IDS_ARC_APPLICATION_INFO_MANAGE_LINK" desc="Text for the link that opens a dialog allowing to manage supported links.">
+        Manage supported links
+      </message>
     </messages>
   </release>
 </grit>
