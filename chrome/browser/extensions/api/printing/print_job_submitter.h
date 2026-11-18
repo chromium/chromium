@@ -18,6 +18,8 @@
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "chromeos/ash/experiences/extensions/common/api/printing.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
 #include "ui/gfx/native_ui_types.h"
 
 namespace ash {
@@ -72,6 +74,7 @@ class PrintJobSubmitter {
                     printing::PdfBlobDataFlattener* pdf_blob_data_flattener,
                     scoped_refptr<const extensions::Extension> extension,
                     api::printing::SubmitJobRequest request,
+                    mojo::PendingRemote<blink::mojom::Blob> document,
                     ash::LocalPrinter* local_printer,
                     SubmitJobCallback callback);
 
@@ -133,6 +136,7 @@ class PrintJobSubmitter {
   scoped_refptr<const extensions::Extension> extension_;
 
   api::printing::SubmitJobRequest request_;
+  mojo::PendingRemote<blink::mojom::Blob> document_;
   std::unique_ptr<printing::PrintSettings> settings_;
   std::u16string printer_name_;
 

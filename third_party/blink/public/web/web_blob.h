@@ -68,7 +68,6 @@ class BLINK_EXPORT WebBlob {
 
   void Reset();
   void Assign(const WebBlob&);
-  WebString Uuid();
   CrossVariantMojoRemote<mojom::BlobInterfaceBase> CloneBlobRemote() const;
 
   bool IsNull() const { return private_.IsNull(); }

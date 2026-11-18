@@ -4,11 +4,13 @@
 
 #include "chrome/renderer/extensions/api/printing_hooks_delegate.h"
 
-#include "extensions/renderer/bindings/api_signature.h"
+#include <optional>
+#include <utility>
+
+#include "base/check.h"
+#include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/v8_helpers.h"
-#include "gin/dictionary.h"
-#include "third_party/blink/public/web/web_blob.h"
-#include "v8/include/v8-primitive.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 
 namespace extensions {
 
@@ -18,7 +20,6 @@ constexpr char kSubmitJobMethod[] = "printing.submitJob";
 
 constexpr char kJobKey[] = "job";
 constexpr char kDocumentKey[] = "document";
-constexpr char kDocumentBlobUuidKey[] = "documentBlobUuid";
 
 }  // namespace
 
@@ -34,66 +35,39 @@ RequestResult PrintingHooksDelegate::HandleRequest(
     v8::Local<v8::Context> context,
     v8::LocalVector<v8::Value>* arguments,
     const APITypeReferenceMap& refs) {
-  // Error checks.
-  // Ensure we would like to call the SubmitJob function.
-  if (method_name != kSubmitJobMethod)
+  if (method_name != kSubmitJobMethod) {
     return RequestResult(RequestResult::NOT_HANDLED);
-  // Ensure arguments are successfully parsed and converted.
-  APISignature::V8ParseResult parse_result =
-      signature->ParseArgumentsToV8(context, *arguments, refs);
-  if (!parse_result.succeeded()) {
-    RequestResult result(RequestResult::INVALID_INVOCATION);
-    result.error = std::move(parse_result.error.value());
-    return result;
   }
 
-  return HandleSubmitJob(v8::Isolate::GetCurrent(), arguments);
-}
-
-RequestResult PrintingHooksDelegate::HandleSubmitJob(
-    v8::Isolate* isolate,
-    v8::LocalVector<v8::Value>* arguments) {
-  // If being called without the callback parameter (i.e. a promise based API
-  // call) the bindings require the final argument to be filled out with a null
-  // argument instead.
-  // TODO(tjudkins): It would be good to fix the logic to not require this. For
-  // more details see the comment in APIBindingJSUtil::SendRequest.
-  if (arguments->size() == 1u) {
-    arguments->push_back(v8::Null(isolate));
+  std::optional<RequestResult> parse_error =
+      binding::ParseArgumentsForHook(*signature, context, arguments, refs);
+  if (parse_error) {
+    return std::move(*parse_error);
   }
-  DCHECK_EQ(2u, arguments->size());
-  DCHECK((*arguments)[0]->IsObject());
 
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::Object> v8_submit_job_request =
       (*arguments)[0].As<v8::Object>();
+  v8::Local<v8::Object> v8_print_job =
+      v8_helpers::GetPropertyUnsafe(context, v8_submit_job_request, kJobKey)
+          .As<v8::Object>();
+  v8::Local<v8::Value> v8_document =
+      v8_helpers::GetPropertyUnsafe(context, v8_print_job, kDocumentKey);
 
-  gin::Dictionary submit_job_request_dict(isolate, v8_submit_job_request);
-  v8::Local<v8::Value> v8_print_job;
-  if (!submit_job_request_dict.Get(kJobKey, &v8_print_job)) {
-    NOTREACHED();
-  }
-  DCHECK(v8_print_job->IsObject());
-
-  gin::Dictionary print_job_dict(isolate, v8_print_job.As<v8::Object>());
-  v8::Local<v8::Value> v8_document;
-  if (!print_job_dict.Get(kDocumentKey, &v8_document)) {
-    NOTREACHED();
-  }
-  DCHECK(!v8_document.IsEmpty());
-  DCHECK(!v8_document->IsNull());
-  DCHECK(!v8_document->IsUndefined());
-
-  blink::WebBlob document_blob =
-      blink::WebBlob::FromV8Value(isolate, v8_document);
-  v8::Local<v8::String> document_blob_uuid;
-  v8_helpers::ToV8String(isolate, document_blob.Uuid().Utf8().data(),
-                         &document_blob_uuid);
-  if (!submit_job_request_dict.Set(kDocumentBlobUuidKey,
-                                   document_blob_uuid.As<v8::Value>())) {
-    NOTREACHED() << "Unexpected exception: couldn't update arguments";
+  base::expected<mojo::PendingRemote<blink::mojom::Blob>, RequestResult> blob =
+      binding::TakeBlobArgument(v8_document);
+  if (!blob.has_value()) {
+    return std::move(blob.error());
   }
 
-  return RequestResult(RequestResult::ARGUMENTS_UPDATED);
+  RequestResult result(RequestResult::ARGUMENTS_UPDATED);
+  result.blobs.push_back(std::move(*blob));
+  CHECK(v8_print_job
+            ->CreateDataProperty(
+                context, v8_helpers::ToV8StringUnsafe(isolate, kDocumentKey),
+                v8_document)
+            .ToChecked());
+  return result;
 }
 
 }  // namespace extensions

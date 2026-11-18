@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -95,8 +96,7 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, GetPrinterInfo) {
 }
 
 // Verifies that:
-// a) PrintingHooksDelegate substitutes corresponding Blob UUID and DCHECK
-// doesn't fail.
+// a) PrintingHooksDelegate passes the document Blob remote.
 // b) Whole API arguments handling pipeline works correctly.
 // We use fake version of PrintJobController because we don't have a mock
 // version of PrintingContext which is required to handle sending print job to
@@ -107,6 +107,29 @@ IN_PROC_BROWSER_TEST_P(PrintingApiTest, SubmitJob) {
   AddPrinterWithSemanticCaps(kId, kName, ConstructPrinterCapabilities());
 
   RunTest("submit_job.html");
+}
+
+IN_PROC_BROWSER_TEST_P(PrintingApiTest, SubmitJobFromWorkerContext) {
+  if (GetExtensionType() != ExtensionType::kExtensionMV3) {
+    GTEST_SKIP() << "Only Manifest V3 uses ServiceWorkers.";
+  }
+
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  AddPrinterWithSemanticCaps(kId, kName, ConstructPrinterCapabilities());
+
+  std::unique_ptr<TestExtensionDir> dir =
+      CreatePrintingExtension(ExtensionType::kExtensionMV3);
+  dir->WriteManifest(R"({
+    "name": "Printing service worker test",
+    "version": "0.1",
+    "manifest_version": 3,
+    "permissions": ["printing"],
+    "host_permissions": ["http://localhost/*"],
+    "background": {"service_worker": "worker.js"}
+  })");
+  dir->WriteFile(FILE_PATH_LITERAL("worker.js"),
+                 "importScripts('printing_util.js', 'submit_job.js');");
+  ASSERT_TRUE(RunExtensionTest(dir->UnpackedPath(), {}, {})) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(PrintingApiTest, SubmitJobWithMarginsAndScale) {

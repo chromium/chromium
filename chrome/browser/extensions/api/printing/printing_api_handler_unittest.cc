@@ -231,8 +231,7 @@ std::optional<api::printing::SubmitJob::Params> ConstructSubmitJobParams(
     const std::string& printer_id,
     const std::string& title,
     const std::string& ticket,
-    const std::string& content_type,
-    std::optional<std::string> document_blob_uuid) {
+    const std::string& content_type) {
   api::printing::SubmitJobRequest request;
   request.job.printer_id = printer_id;
   request.job.title = title;
@@ -243,7 +242,6 @@ std::optional<api::printing::SubmitJob::Params> ConstructSubmitJobParams(
     ADD_FAILURE() << "Failed to parse ticket \"" << ticket << "\".";
   }
   request.job.content_type = content_type;
-  request.document_blob_uuid = std::move(document_blob_uuid);
 
   base::ListValue args;
   args.Append(base::Value(request.ToValue()));
@@ -293,14 +291,20 @@ ConstructPrinterCapabilities() {
   return capabilities;
 }
 
-std::unique_ptr<content::BlobHandle> CreateMemoryBackedBlob(
+mojo::PendingRemote<blink::mojom::Blob> CreateMemoryBackedBlob(
     content::BrowserContext* browser_context,
     const std::string& content,
     const std::string& content_type) {
   base::test::TestFuture<std::unique_ptr<content::BlobHandle>> blob_future;
   browser_context->CreateMemoryBackedBlob(
       base::as_byte_span(content), content_type, blob_future.GetCallback());
-  return blob_future.Take();
+  return blob_future.Take()->PassBlob();
+}
+
+mojo::PendingRemote<blink::mojom::Blob> CreateDisconnectedBlob() {
+  mojo::PendingRemote<blink::mojom::Blob> blob;
+  blob.InitWithNewPipeAndPassReceiver().reset();
+  return blob;
 }
 
 using GetPrintersFuture =
@@ -383,16 +387,16 @@ class PrintingAPIHandlerUnittest : public testing::Test {
   std::string SubmitJob(std::string document_data = kPdfExample,
                         const char* content_type = "application/pdf") {
     // Create Blob with given data.
-    std::unique_ptr<content::BlobHandle> blob = CreateMemoryBackedBlob(
+    mojo::PendingRemote<blink::mojom::Blob> blob = CreateMemoryBackedBlob(
         testing_profile_, document_data, /*content_type=*/"");
-    auto params = ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt,
-                                           content_type, blob->GetUUID());
+    auto params =
+        ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt, content_type);
     EXPECT_TRUE(params);
 
     SubmitJobFuture job_future;
     printing_api_handler_->SubmitJob(
         /*native_window=*/nullptr, extension_, std::move(params),
-        job_future.GetCallback());
+        std::move(blob), job_future.GetCallback());
 
     auto [submit_job_status, job_id, error] = job_future.Take();
     EXPECT_FALSE(error);
@@ -775,14 +779,13 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_UnsupportedContentType) {
           std::make_optional(printing::PrinterSemanticCapsAndDefaults()));
 
   auto params =
-      ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt, "image/jpeg",
-                               /*document_blob_uuid=*/std::nullopt);
+      ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt, "image/jpeg");
   ASSERT_TRUE(params);
 
   SubmitJobFuture job_future;
   printing_api_handler_->SubmitJob(
       /*native_window=*/nullptr, extension_, std::move(params),
-      job_future.GetCallback());
+      /*document=*/{}, job_future.GetCallback());
 
   auto [submit_job_status, job_id, error] = job_future.Take();
   // According to the documentation only "application/pdf" content type is
@@ -798,14 +801,13 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_InvalidPrintTicket) {
   SetCaps(kPrinterId, ConstructPrinterCapabilities());
 
   auto params = ConstructSubmitJobParams(kPrinterId, /*title=*/"",
-                                         kIncompleteCjt, "application/pdf",
-                                         /*document_blob_uuid=*/std::nullopt);
+                                         kIncompleteCjt, "application/pdf");
   ASSERT_TRUE(params);
 
   SubmitJobFuture job_future;
   printing_api_handler_->SubmitJob(
       /*native_window=*/nullptr, extension_, std::move(params),
-      job_future.GetCallback());
+      /*document=*/{}, job_future.GetCallback());
 
   auto [submit_job_status, job_id, error] = job_future.Take();
   // Some fields of the print ticket are missing, so we expect an error as a
@@ -818,14 +820,13 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_InvalidPrintTicket) {
 
 TEST_F(PrintingAPIHandlerUnittest, SubmitJob_InvalidPrinterId) {
   auto params = ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt,
-                                         "application/pdf",
-                                         /*document_blob_uuid=*/std::nullopt);
+                                         "application/pdf");
   ASSERT_TRUE(params);
 
   SubmitJobFuture job_future;
   printing_api_handler_->SubmitJob(
       /*native_window=*/nullptr, extension_, std::move(params),
-      job_future.GetCallback());
+      /*document=*/{}, job_future.GetCallback());
 
   auto [submit_job_status, job_id, error] = job_future.Take();
   // The printer is not added, so we expect an error as a result of API call.
@@ -840,14 +841,13 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_PrinterUnavailable) {
   SetCaps(kPrinterId, std::nullopt);
 
   auto params = ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt,
-                                         "application/pdf",
-                                         /*document_blob_uuid=*/std::nullopt);
+                                         "application/pdf");
   ASSERT_TRUE(params);
 
   SubmitJobFuture job_future;
   printing_api_handler_->SubmitJob(
       /*native_window=*/nullptr, extension_, std::move(params),
-      job_future.GetCallback());
+      /*document=*/{}, job_future.GetCallback());
 
   auto [submit_job_status, job_id, error] = job_future.Take();
   // Even though the printer is added, it's not able to accept jobs until it's
@@ -864,14 +864,13 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_UnsupportedTicket) {
           std::make_optional(printing::PrinterSemanticCapsAndDefaults()));
 
   auto params = ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt,
-                                         "application/pdf",
-                                         /*document_blob_uuid=*/std::nullopt);
+                                         "application/pdf");
   ASSERT_TRUE(params);
 
   SubmitJobFuture job_future;
   printing_api_handler_->SubmitJob(
       /*native_window=*/nullptr, extension_, std::move(params),
-      job_future.GetCallback());
+      /*document=*/{}, job_future.GetCallback());
 
   auto [submit_job_status, job_id, error] = job_future.Take();
   // Print ticket requires some non-default parameters as DPI and media size
@@ -888,17 +887,16 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_InvalidData) {
   SetCaps(kPrinterId, ConstructPrinterCapabilities());
 
   auto params = ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt,
-                                         "application/pdf", "invalid_uuid");
+                                         "application/pdf");
   ASSERT_TRUE(params);
 
   SubmitJobFuture job_future;
   printing_api_handler_->SubmitJob(
       /*native_window=*/nullptr, extension_, std::move(params),
-      job_future.GetCallback());
+      CreateDisconnectedBlob(), job_future.GetCallback());
 
   auto [submit_job_status, job_id, error] = job_future.Take();
-  // We can't fetch actual document data without Blob UUID, so we expect an
-  // error as a result of API call.
+  // A disconnected Blob cannot provide document data.
   ASSERT_TRUE(error);
   EXPECT_EQ("Invalid document", error);
   EXPECT_FALSE(submit_job_status);
@@ -909,18 +907,17 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_InvalidDataPNG) {
   AddPrinter(chromeos::Printer(kPrinterId));
   SetCaps(kPrinterId, ConstructPrinterCapabilities());
 
-  auto params = ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt,
-                                         "image/png", "invalid_uuid");
+  auto params =
+      ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt, "image/png");
   ASSERT_TRUE(params);
 
   SubmitJobFuture job_future;
   printing_api_handler_->SubmitJob(
       /*native_window=*/nullptr, extension_, std::move(params),
-      job_future.GetCallback());
+      CreateDisconnectedBlob(), job_future.GetCallback());
 
   auto [submit_job_status, job_id, error] = job_future.Take();
-  // We can't fetch actual document data without Blob UUID, so we expect an
-  // error as a result of API call.
+  // A disconnected Blob cannot provide document data.
   ASSERT_TRUE(error);
   EXPECT_EQ("Invalid document", error);
   EXPECT_FALSE(submit_job_status);
@@ -933,15 +930,15 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_PrintingFailed) {
   SetCaps(kPrinterId, ConstructPrinterCapabilities());
 
   // Create Blob with given data.
-  std::unique_ptr<content::BlobHandle> blob = CreateMemoryBackedBlob(
+  mojo::PendingRemote<blink::mojom::Blob> blob = CreateMemoryBackedBlob(
       testing_profile_, kPdfExample, /*content_type=*/"");
   auto params = ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt,
-                                         "application/pdf", blob->GetUUID());
+                                         "application/pdf");
   ASSERT_TRUE(params);
 
   SubmitJobFuture job_future;
   printing_api_handler_->SubmitJob(
-      /*native_window=*/nullptr, extension_, std::move(params),
+      /*native_window=*/nullptr, extension_, std::move(params), std::move(blob),
       job_future.GetCallback());
 
   auto [submit_job_status, job_id, error] = job_future.Take();

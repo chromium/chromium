@@ -158,6 +158,7 @@ void PrintingAPIHandler::SubmitJob(
     gfx::NativeWindow native_window,
     scoped_refptr<const extensions::Extension> extension,
     std::optional<api::printing::SubmitJob::Params> params,
+    mojo::PendingRemote<blink::mojom::Blob> document,
     SubmitJobCallback callback) {
   CHECK(params, base::NotFatalUntil::M161);
   // PrintingAPIHandler must outlive PrintJobSubmitter. Even if the WeakPtr
@@ -168,7 +169,7 @@ void PrintingAPIHandler::SubmitJob(
   PrintJobSubmitter::Run(std::make_unique<PrintJobSubmitter>(
       native_window, browser_context_, print_job_controller_.get(),
       pdf_blob_data_flattener_.get(), std::move(extension),
-      std::move(params->request), &*local_printer_,
+      std::move(params->request), std::move(document), &*local_printer_,
       base::BindOnce(&PrintingAPIHandler::OnPrintJobSubmitted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(extension_id))));

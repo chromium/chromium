@@ -79,12 +79,6 @@ void WebBlob::Assign(const WebBlob& other) {
   private_ = other.private_;
 }
 
-WebString WebBlob::Uuid() {
-  if (!private_.Get())
-    return WebString();
-  return private_->GetBlobDataHandle()->GetUuidMayBlock();
-}
-
 CrossVariantMojoRemote<mojom::blink::BlobInterfaceBase>
 WebBlob::CloneBlobRemote() const {
   if (IsNull()) {

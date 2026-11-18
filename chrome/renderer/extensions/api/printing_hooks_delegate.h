@@ -6,7 +6,7 @@
 #define CHROME_RENDERER_EXTENSIONS_API_PRINTING_HOOKS_DELEGATE_H_
 
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 
@@ -26,11 +26,6 @@ class PrintingHooksDelegate : public APIBindingHooksDelegate {
       v8::Local<v8::Context> context,
       v8::LocalVector<v8::Value>* arguments,
       const APITypeReferenceMap& refs) override;
-
- private:
-  APIBindingHooks::RequestResult HandleSubmitJob(
-      v8::Isolate* isolate,
-      v8::LocalVector<v8::Value>* arguments);
 };
 
 }  // namespace extensions

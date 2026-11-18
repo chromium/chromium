@@ -62,7 +62,10 @@ function submitJob(printerId, title, url, ticket, callback) {
   fetch(url).then(response => response.arrayBuffer()).then(arrayBuffer => {
     const submitJobRequest =
         formatPrintJobRequest(printerId, title, arrayBuffer, ticket);
+    // Verify that submitJob leaves the document/blob intact.
+    const document = submitJobRequest.job.document;
     chrome.printing.submitJob(submitJobRequest, callback);
+    chrome.test.assertTrue(submitJobRequest.job.document === document);
   });
 }
 

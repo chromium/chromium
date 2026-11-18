@@ -92,6 +92,7 @@ PrintJobSubmitter::PrintJobSubmitter(
     printing::PdfBlobDataFlattener* pdf_blob_data_flattener,
     scoped_refptr<const extensions::Extension> extension,
     api::printing::SubmitJobRequest request,
+    mojo::PendingRemote<blink::mojom::Blob> document,
     ash::LocalPrinter* local_printer,
     SubmitJobCallback callback)
     : native_window_(native_window),
@@ -100,6 +101,7 @@ PrintJobSubmitter::PrintJobSubmitter(
       pdf_blob_data_flattener_(*pdf_blob_data_flattener),
       extension_(extension),
       request_(std::move(request)),
+      document_(std::move(document)),
       local_printer_(local_printer),
       callback_(std::move(callback)) {
   CHECK(extension, base::NotFatalUntil::M161);
@@ -180,17 +182,16 @@ void PrintJobSubmitter::CheckCapabilitiesCompatibility(
 }
 
 void PrintJobSubmitter::ReadDocumentData() {
-  CHECK(request_.document_blob_uuid);
+  CHECK(document_);
   if (request_.job.content_type == kPdfMimeType) {
     pdf_blob_data_flattener_->ReadAndFlattenPdf(
-        browser_context_->GetBlobRemote(*request_.document_blob_uuid),
+        std::move(document_),
         base::BindOnce(&PrintJobSubmitter::OnPdfReadAndFlattened,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
-    BlobReader::Read(
-        browser_context_->GetBlobRemote(*request_.document_blob_uuid),
-        base::BindOnce(&PrintJobSubmitter::OnImageDataRead,
-                       weak_ptr_factory_.GetWeakPtr()));
+    BlobReader::Read(std::move(document_),
+                     base::BindOnce(&PrintJobSubmitter::OnImageDataRead,
+                                    weak_ptr_factory_.GetWeakPtr()));
   }
 }
 

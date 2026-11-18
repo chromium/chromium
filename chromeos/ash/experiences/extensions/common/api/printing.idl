@@ -17,10 +17,6 @@ namespace printing {
     // <code>VendorTicketItem</code> is optional. All other fields must be
     // present.
     printerProvider.PrintJob job;
-
-    // Used internally to store the blob uuid after parameter customization and
-    // shouldn't be populated by the extension.
-    [nodoc] DOMString? documentBlobUuid;
   };
 
   // The status of $(ref:submitJob) request.
