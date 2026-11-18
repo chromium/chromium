@@ -56,7 +56,6 @@ constexpr char kHatsSurveyProbability[] = "probability";
 constexpr char kHatsSurveyEnSiteID[] = "en_site_id";
 constexpr char kHatsSurveyHistogramName[] = "hats_histogram_name";
 constexpr char kHatsSurveyUkmId[] = "hats_survey_ukm_id";
-constexpr double kHatsSurveyProbabilityDefault = 0;
 
 // Survey configs must always be hardcoded here, so that they require review
 // from HaTS owners. Do not move this method out of the anonymous namespace or
@@ -400,86 +399,87 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       });
   // LINT.ThenChange(//chrome/browser/ui/views/scheduled_restart/scheduled_restart_hats.h:ScheduledRestartHatsPsdFields)
 
-  std::vector<std::string> identity_string_psd_fields{
-      "Channel", "Chrome Version", "Number of Chrome Profiles",
-      "Number of Google Accounts", "Sign-in Status"};
-  survey_configs.emplace_back(
-      &switches::kChromeIdentitySurveyAddressBubbleSignin,
-      kHatsSurveyTriggerIdentityAddressBubbleSignin,
-      "QLEtVmyw80ugnJ3q1cK0UGdNayod", std::vector<std::string>{},
-      identity_string_psd_fields);
-  survey_configs.emplace_back(
-      &switches::kChromeIdentitySurveyDiceWebSigninAccepted,
-      kHatsSurveyTriggerIdentityDiceWebSigninAccepted,
-      "xEt7e5g7R0ugnJ3q1cK0VZ7N4MUU", std::vector<std::string>{},
-      identity_string_psd_fields);
-  survey_configs.emplace_back(
-      &switches::kChromeIdentitySurveyDiceWebSigninDeclined,
-      kHatsSurveyTriggerIdentityDiceWebSigninDeclined,
-      "2LBpsLxW40ugnJ3q1cK0YRjYGpmV", std::vector<std::string>{},
-      identity_string_psd_fields);
+  constexpr double kIdentitySurveyMediumProbability = 0.08;
+  constexpr double kIdentitySurveyLowProbability = 0.008;
+  auto add_identity_survey =
+      [&](const base::Feature* feature, const std::string& trigger,
+          const std::string& trigger_id, double default_probability,
+          hats::SurveyConfig::ProfileAgeRequirement age_requirement =
+              hats::SurveyConfig::ProfileAgeRequirement::kOneMonthOrOlder,
+          const std::vector<std::string>& extra_string_psd_fields = {}) {
+        std::vector<std::string> string_psd_fields{
+            "Channel", "Chrome Version", "Number of Chrome Profiles",
+            "Number of Google Accounts", "Sign-in Status"};
+        string_psd_fields.insert(string_psd_fields.end(),
+                                 extra_string_psd_fields.begin(),
+                                 extra_string_psd_fields.end());
+        survey_configs.push_back(hats::PermanentSurveyConfig(
+            feature, trigger, trigger_id, default_probability,
+            /*product_specific_bits_data_fields=*/{},
+            std::move(string_psd_fields), /*log_responses_to_uma=*/false,
+            /*log_responses_to_ukm=*/false, age_requirement));
+      };
+
+  add_identity_survey(&switches::kChromeIdentitySurveyAddressBubbleSignin,
+                      kHatsSurveyTriggerIdentityAddressBubbleSignin,
+                      "QLEtVmyw80ugnJ3q1cK0UGdNayod",
+                      kIdentitySurveyMediumProbability);
+  add_identity_survey(&switches::kChromeIdentitySurveyDiceWebSigninAccepted,
+                      kHatsSurveyTriggerIdentityDiceWebSigninAccepted,
+                      "xEt7e5g7R0ugnJ3q1cK0VZ7N4MUU",
+                      kIdentitySurveyMediumProbability);
+  add_identity_survey(&switches::kChromeIdentitySurveyDiceWebSigninDeclined,
+                      kHatsSurveyTriggerIdentityDiceWebSigninDeclined,
+                      "2LBpsLxW40ugnJ3q1cK0YRjYGpmV",
+                      kIdentitySurveyMediumProbability);
 
   // This survey is for the First Run Experience, so it must run on new
   // profiles.
-  survey_configs.emplace_back(
-      &switches::kChromeIdentitySurveyFirstRunSignin,
-      kHatsSurveyTriggerIdentityFirstRunSignin, "RyaBY3Nkt0ugnJ3q1cK0NsYdHNN6",
-      std::vector<std::string>{}, identity_string_psd_fields,
-      /*log_responses_to_uma=*/false,
-      /*log_responses_to_ukm=*/false, /*profile_age_requirement*/
-      hats::SurveyConfig::ProfileAgeRequirement::kAnyAge);
-  survey_configs.emplace_back(
-      &switches::kChromeIdentitySurveyPasswordBubbleSignin,
-      kHatsSurveyTriggerIdentityPasswordBubbleSignin,
-      "Y6Y4fzSar0ugnJ3q1cK0WNKdFDWW", std::vector<std::string>{},
-      identity_string_psd_fields);
-  survey_configs.emplace_back(
-      &switches::kChromeIdentitySurveyProfileMenuDismissed,
-      kHatsSurveyTriggerIdentityProfileMenuDismissed,
-      "AHS3hpM2h0ugnJ3q1cK0TTUsr4mM", std::vector<std::string>{},
-      identity_string_psd_fields);
-  survey_configs.emplace_back(&switches::kChromeIdentitySurveyProfileMenuSignin,
-                              kHatsSurveyTriggerIdentityProfileMenuSignin,
-                              "5BV1ygFHd0ugnJ3q1cK0WVqeKyud",
-                              std::vector<std::string>{},
-                              identity_string_psd_fields);
+  add_identity_survey(&switches::kChromeIdentitySurveyFirstRunSignin,
+                      kHatsSurveyTriggerIdentityFirstRunSignin,
+                      "RyaBY3Nkt0ugnJ3q1cK0NsYdHNN6",
+                      kIdentitySurveyMediumProbability,
+                      hats::SurveyConfig::ProfileAgeRequirement::kAnyAge);
+  add_identity_survey(&switches::kChromeIdentitySurveyPasswordBubbleSignin,
+                      kHatsSurveyTriggerIdentityPasswordBubbleSignin,
+                      "Y6Y4fzSar0ugnJ3q1cK0WNKdFDWW",
+                      kIdentitySurveyMediumProbability);
+  add_identity_survey(&switches::kChromeIdentitySurveyProfileMenuDismissed,
+                      kHatsSurveyTriggerIdentityProfileMenuDismissed,
+                      "AHS3hpM2h0ugnJ3q1cK0TTUsr4mM",
+                      kIdentitySurveyLowProbability);
+  add_identity_survey(&switches::kChromeIdentitySurveyProfileMenuSignin,
+                      kHatsSurveyTriggerIdentityProfileMenuSignin,
+                      "5BV1ygFHd0ugnJ3q1cK0WVqeKyud",
+                      kIdentitySurveyMediumProbability);
 
   // This survey is for a newly added profile.
-  survey_configs.emplace_back(
+  add_identity_survey(
       &switches::kChromeIdentitySurveyProfilePickerAddProfileSignin,
       kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin,
-      "dQhvVytAT0ugnJ3q1cK0WmcCsZxn", std::vector<std::string>{},
-      identity_string_psd_fields, /*log_responses_to_uma=*/false,
-      /*log_responses_to_ukm=*/false, /*profile_age_requirement*/
+      "dQhvVytAT0ugnJ3q1cK0WmcCsZxn", kIdentitySurveyMediumProbability,
       hats::SurveyConfig::ProfileAgeRequirement::kAnyAge);
 
-  survey_configs.emplace_back(
+  // Sign-in intercept profile separation creates a new profile.
+  add_identity_survey(
       &switches::kChromeIdentitySurveySigninInterceptProfileSeparation,
       kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation,
-      "EpkbgSho80ugnJ3q1cK0XfvvYoum", std::vector<std::string>{},
-      identity_string_psd_fields);
-  std::vector<std::string> identity_dismissed_signin_bubble_string_psd_fields{
-      "Channel",
-      "Chrome Version",
-      "Number of Chrome Profiles",
-      "Number of Google Accounts",
-      "Data type Sign-in Bubble Dismissed",
-      "Sign-in Status"};
-  survey_configs.emplace_back(
+      "EpkbgSho80ugnJ3q1cK0XfvvYoum", kIdentitySurveyMediumProbability,
+      hats::SurveyConfig::ProfileAgeRequirement::kAnyAge);
+  add_identity_survey(
       &switches::kChromeIdentitySurveySigninPromoBubbleDismissed,
       kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed,
-      "LSwnpVNg60ugnJ3q1cK0Uj5JGisJ", std::vector<std::string>{},
-      identity_dismissed_signin_bubble_string_psd_fields);
-  survey_configs.emplace_back(
+      "LSwnpVNg60ugnJ3q1cK0Uj5JGisJ", kIdentitySurveyMediumProbability,
+      hats::SurveyConfig::ProfileAgeRequirement::kOneMonthOrOlder,
+      /*extra_string_psd_fields=*/{"Data type Sign-in Bubble Dismissed"});
+  add_identity_survey(
       &switches::kChromeIdentitySurveySwitchProfileFromProfileMenu,
       kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu,
-      "buPSkStWM0ugnJ3q1cK0RmiQgzK1", std::vector<std::string>{},
-      identity_string_psd_fields);
-  survey_configs.emplace_back(
+      "buPSkStWM0ugnJ3q1cK0RmiQgzK1", kIdentitySurveyLowProbability);
+  add_identity_survey(
       &switches::kChromeIdentitySurveySwitchProfileFromProfilePicker,
       kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker,
-      "b5zoUGRaf0ugnJ3q1cK0RaxK8yrp", std::vector<std::string>{},
-      identity_string_psd_fields);
+      "b5zoUGRaf0ugnJ3q1cK0RaxK8yrp", kIdentitySurveyMediumProbability);
 
   survey_configs.emplace_back(
       &switches::kBeforeFirstRunDesktopRefreshSurvey,
@@ -752,6 +752,8 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(&chrome::android::kChromeSurveyNextAndroid,
                               kHatsSurveyTriggerAndroidStartupSurvey);
 
+  // TODO(crbug.com/587328974): Migrate Android Identity surveys to
+  // `hats::PermanentSurveyConfig`.
   std::vector<std::string> signin_string_psd_fields{"Number of Google Accounts",
                                                     "Sign-in Status"};
   // This survey is for the First Run Experience, so it must run on new
@@ -1029,6 +1031,28 @@ SurveyConfig::SurveyConfig(
     bool log_responses_to_ukm,
     ProfileAgeRequirement profile_age_requirement,
     RequestedBrowserType requested_browser_type)
+    : SurveyConfig(feature,
+                   trigger,
+                   presupplied_trigger_id,
+                   product_specific_bits_data_fields,
+                   product_specific_string_data_fields,
+                   log_responses_to_uma,
+                   log_responses_to_ukm,
+                   profile_age_requirement,
+                   requested_browser_type,
+                   /*default_probability=*/0.0) {}
+
+SurveyConfig::SurveyConfig(
+    const base::Feature* feature,
+    const std::string& trigger,
+    const std::optional<std::string>& presupplied_trigger_id,
+    const std::vector<std::string>& product_specific_bits_data_fields,
+    const std::vector<std::string>& product_specific_string_data_fields,
+    bool log_responses_to_uma,
+    bool log_responses_to_ukm,
+    ProfileAgeRequirement profile_age_requirement,
+    RequestedBrowserType requested_browser_type,
+    double default_probability)
     : trigger(trigger),
       product_specific_bits_data_fields(product_specific_bits_data_fields),
       product_specific_string_data_fields(product_specific_string_data_fields),
@@ -1041,7 +1065,7 @@ SurveyConfig::SurveyConfig(
   }
 
   probability = base::FeatureParam<double>(feature, kHatsSurveyProbability,
-                                           kHatsSurveyProbabilityDefault)
+                                           default_probability)
                     .Get();
 
   // The trigger_id may be provided through the associated feature parameter or
@@ -1069,6 +1093,35 @@ SurveyConfig::SurveyConfig(
   user_prompted =
       base::FeatureParam<bool>(feature, "user_prompted", false).Get();
 }
+
+PermanentSurveyConfig::PermanentSurveyConfig(
+    const base::Feature* feature,
+    const std::string& trigger,
+    const std::string& presupplied_trigger_id,
+    double default_probability,
+    const std::vector<std::string>& product_specific_bits_data_fields,
+    const std::vector<std::string>& product_specific_string_data_fields,
+    bool log_responses_to_uma,
+    bool log_responses_to_ukm,
+    ProfileAgeRequirement profile_age_requirement,
+    RequestedBrowserType requested_browser_type)
+    : SurveyConfig(feature,
+                   trigger,
+                   presupplied_trigger_id,
+                   product_specific_bits_data_fields,
+                   product_specific_string_data_fields,
+                   log_responses_to_uma,
+                   log_responses_to_ukm,
+                   profile_age_requirement,
+                   requested_browser_type,
+                   default_probability) {
+  CHECK(!presupplied_trigger_id.empty());
+  CHECK(default_probability > 0.0 && default_probability <= 1.0);
+}
+
+PermanentSurveyConfig::PermanentSurveyConfig(const PermanentSurveyConfig&) =
+    default;
+PermanentSurveyConfig::~PermanentSurveyConfig() = default;
 
 // static
 std::optional<std::string> SurveyConfig::ValidateHatsHistogramName(

@@ -6,9 +6,17 @@
 
 #include <vector>
 
+#include "base/feature_list.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+
+BASE_FEATURE(kTestSurveyFeature, base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
 
 class SurveyConfigTest : public testing::Test {
  public:
@@ -56,4 +64,38 @@ TEST_F(SurveyConfigTest, NoSurveyDeclaresDefaultProductSpecificDataKeys) {
                 testing::Not(testing::Contains(is_default_key)))
         << "Survey with trigger " << config.trigger;
   }
+}
+
+TEST_F(SurveyConfigTest, ProbabilityDefaultsToZero) {
+  const hats::SurveyConfig config(&kTestSurveyFeature, "test_trigger");
+
+  EXPECT_TRUE(config.enabled);
+  EXPECT_DOUBLE_EQ(config.probability, 0.0);
+}
+
+TEST_F(SurveyConfigTest, PermanentSurveyConfigUsesDefaultProbability) {
+  const hats::SurveyConfig config =
+      hats::PermanentSurveyConfig(&kTestSurveyFeature, "test_trigger",
+                                  /*presupplied_trigger_id=*/"site_id",
+                                  /*default_probability=*/0.25);
+
+  EXPECT_TRUE(config.enabled);
+  EXPECT_EQ(config.trigger_id, "site_id");
+  EXPECT_DOUBLE_EQ(config.probability, 0.25);
+}
+
+TEST_F(SurveyConfigTest,
+       PermanentSurveyConfigFieldTrialProbabilityOverridesDefault) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kTestSurveyFeature, {{"probability", "0.75"}});
+
+  const hats::SurveyConfig config =
+      hats::PermanentSurveyConfig(&kTestSurveyFeature, "test_trigger",
+                                  /*presupplied_trigger_id=*/"site_id",
+                                  /*default_probability=*/0.25);
+
+  EXPECT_TRUE(config.enabled);
+  EXPECT_EQ(config.trigger_id, "site_id");
+  EXPECT_DOUBLE_EQ(config.probability, 0.75);
 }

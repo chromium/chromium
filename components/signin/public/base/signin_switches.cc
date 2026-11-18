@@ -39,12 +39,12 @@ const char kForceFreDefaultBrowserStep[] = "force-fre-default-browser-step";
 const char kForceFreFeatureShowcaseSteps[] = "force-fre-feature-showcase-steps";
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/587328974): Migrate Android Identity surveys to
+// `hats::PermanentSurveyConfig` and remove `kHatsSurveyProbabilityName`.
 // Feature param to pass probability for identity surveys.
 constexpr char kHatsSurveyProbabilityName[] = "probability";
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Feature declarations, sorted by the name of the BASE_FEATURE in each block.
 // Please keep all FeatureParam and helper function definitions for a given
@@ -157,95 +157,30 @@ BASE_FEATURE_PARAM(double,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-constexpr double kMediumSurveyProbability = 0.08;
-constexpr double kLowSurveyProbability = 0.008;
 BASE_FEATURE(kChromeIdentitySurveyAddressBubbleSignin,
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(double,
-                   kChromeIdentitySurveyAddressBubbleSigninProbability,
-                   &kChromeIdentitySurveyAddressBubbleSignin,
-                   kHatsSurveyProbabilityName,
-                   kMediumSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveyDiceWebSigninAccepted,
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(double,
-                   kChromeIdentitySurveyDiceWebSigninAcceptedProbability,
-                   &kChromeIdentitySurveyDiceWebSigninAccepted,
-                   kHatsSurveyProbabilityName,
-                   kMediumSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveyDiceWebSigninDeclined,
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(double,
-                   kChromeIdentitySurveyDiceWebSigninDeclinedProbability,
-                   &kChromeIdentitySurveyDiceWebSigninDeclined,
-                   kHatsSurveyProbabilityName,
-                   kMediumSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveyFirstRunSignin,
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(double,
-                   kChromeIdentitySurveyFirstRunSigninProbability,
-                   &kChromeIdentitySurveyFirstRunSignin,
-                   kHatsSurveyProbabilityName,
-                   kMediumSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveyPasswordBubbleSignin,
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(double,
-                   kChromeIdentitySurveyPasswordBubbleSigninProbability,
-                   &kChromeIdentitySurveyPasswordBubbleSignin,
-                   kHatsSurveyProbabilityName,
-                   kMediumSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveyProfileMenuDismissed,
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(double,
-                   kChromeIdentitySurveyProfileMenuDismissedProbability,
-                   &kChromeIdentitySurveyProfileMenuDismissed,
-                   kHatsSurveyProbabilityName,
-                   kLowSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveyProfileMenuSignin,
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(double,
-                   kChromeIdentitySurveyProfileMenuSigninProbability,
-                   &kChromeIdentitySurveyProfileMenuSignin,
-                   kHatsSurveyProbabilityName,
-                   kMediumSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveyProfilePickerAddProfileSignin,
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(
-    double,
-    kChromeIdentitySurveyProfilePickerAddProfileSigninProbability,
-    &kChromeIdentitySurveyProfilePickerAddProfileSignin,
-    kHatsSurveyProbabilityName,
-    kMediumSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveySigninInterceptProfileSeparation,
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(
-    double,
-    kChromeIdentitySurveySigninInterceptProfileSeparationProbability,
-    &kChromeIdentitySurveySigninInterceptProfileSeparation,
-    kHatsSurveyProbabilityName,
-    kMediumSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveySigninPromoBubbleDismissed,
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(double,
-                   kChromeIdentitySurveySigninPromoBubbleDismissedProbability,
-                   &kChromeIdentitySurveySigninPromoBubbleDismissed,
-                   kHatsSurveyProbabilityName,
-                   kMediumSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveySwitchProfileFromProfileMenu,
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(double,
-                   kChromeIdentitySurveySwitchProfileFromProfileMenuProbability,
-                   &kChromeIdentitySurveySwitchProfileFromProfileMenu,
-                   kHatsSurveyProbabilityName,
-                   kLowSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveySwitchProfileFromProfilePicker,
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(
-    double,
-    kChromeIdentitySurveySwitchProfileFromProfilePickerProbability,
-    &kChromeIdentitySurveySwitchProfileFromProfilePicker,
-    kHatsSurveyProbabilityName,
-    kMediumSurveyProbability);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

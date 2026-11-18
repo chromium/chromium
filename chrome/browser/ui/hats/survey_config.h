@@ -275,9 +275,11 @@ struct SurveyConfig {
 
   // Constructs a SurveyConfig by inspecting |feature|. This includes checking
   // if the feature is enabled, as well as inspecting the feature parameters
-  // for the survey probability, and if |presupplied_trigger_id| is not
-  // provided, the trigger ID. To pass any product specific data for the
-  // survey, configure fields here, matches are CHECK enforced.
+  // for the survey probability (defaulting to 0.0), and if
+  // |presupplied_trigger_id| is not provided, the trigger ID. For permanent
+  // surveys that define a calibrated default probability in code rather than
+  // Finch, use PermanentSurveyConfig below. To pass any product specific data
+  // for the survey, configure fields here, matches are CHECK enforced.
   // SurveyConfig that enable |log_responses_to_uma| and/or
   // |log_responses_to_ukm| will need to have surveys reviewed by privacy to
   // ensure they are appropriate to log to UMA and/or UKM. This is enforced
@@ -354,6 +356,42 @@ struct SurveyConfig {
   static std::optional<uint64_t> ValidateHatsSurveyUkmId(
       const std::optional<uint64_t> hats_survey_ukm_id);
 
+ protected:
+  SurveyConfig(
+      const base::Feature* feature,
+      const std::string& trigger,
+      const std::optional<std::string>& presupplied_trigger_id,
+      const std::vector<std::string>& product_specific_bits_data_fields,
+      const std::vector<std::string>& product_specific_string_data_fields,
+      bool log_responses_to_uma,
+      bool log_responses_to_ukm,
+      ProfileAgeRequirement profile_age_requirement,
+      RequestedBrowserType requested_browser_type,
+      double default_probability);
+};
+
+// Configuration for permanent HaTS surveys that run continuously without an
+// active Finch study. Only use this after survey probabilities have been
+// thoroughly tested (as updating an in-code probability takes a full release
+// cycle to take effect). A Finch "probability" parameter still overrides
+// `default_probability` if needed (e.g. as a server-side kill-switch).
+struct PermanentSurveyConfig final : public SurveyConfig {
+  PermanentSurveyConfig(
+      const base::Feature* feature,
+      const std::string& trigger,
+      const std::string& presupplied_trigger_id,
+      double default_probability,
+      const std::vector<std::string>& product_specific_bits_data_fields = {},
+      const std::vector<std::string>& product_specific_string_data_fields = {},
+      bool log_responses_to_uma = false,
+      bool log_responses_to_ukm = false,
+      ProfileAgeRequirement profile_age_requirement =
+          ProfileAgeRequirement::kOneMonthOrOlder,
+      RequestedBrowserType requested_browser_type =
+          RequestedBrowserType::kRegular);
+
+  PermanentSurveyConfig(const PermanentSurveyConfig&);
+  ~PermanentSurveyConfig();
 };
 
 using SurveyConfigs = base::flat_map<std::string, SurveyConfig>;
