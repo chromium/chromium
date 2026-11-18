@@ -26,10 +26,10 @@
 #include "chrome/browser/actor/actor_navigation_throttle.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
+#include "chrome/browser/actor/actor_task_options.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
-#include "chrome/common/actor_webui.mojom-forward.h"
 #include "chrome/common/glic_enums.mojom.h"
 #include "components/actor/core/actor_ui_mode.h"
 #include "components/actor/core/aggregated_journal.h"
@@ -79,18 +79,13 @@ class ActorTask : public base::SupportsUserData {
 
   // Created only via ActorKeyedService::CreateTask or the CreateForTesting
   // method in this class.
-  ActorTask(
-      base::PassKey<ActorKeyedService, ActorTask>,
-      ActorKeyedService& service,
-      TaskId id,
-      std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
-      webui::mojom::TaskOptionsPtr options,
-      const TaskSourceInfo& source_info,
-      const EnterprisePolicyChecker* policy_checker,
-      base::WeakPtr<ActorTaskDelegate> delegate = nullptr,
-      std::optional<glic::mojom::InvocationSource> initial_invocation_source =
-          std::nullopt,
-      AllowedSchemes allowed_schemes = AllowedSchemes::kRequireHttpsOrHttp);
+  ActorTask(base::PassKey<ActorKeyedService, ActorTask>,
+            ActorKeyedService& service,
+            TaskId id,
+            std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
+            const TaskSourceInfo& source_info,
+            const EnterprisePolicyChecker* policy_checker,
+            const ActorTaskOptions& options);
   ~ActorTask() override;
 
   ActorTask() = delete;
@@ -101,13 +96,9 @@ class ActorTask : public base::SupportsUserData {
       ActorKeyedService& service,
       TaskId id,
       std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
-      webui::mojom::TaskOptionsPtr options,
       const TaskSourceInfo& source_info,
       const EnterprisePolicyChecker* policy_checker,
-      base::WeakPtr<ActorTaskDelegate> delegate,
-      std::optional<glic::mojom::InvocationSource> initial_invocation_source =
-          std::nullopt,
-      AllowedSchemes allowed_schemes = AllowedSchemes::kRequireHttpsOrHttp);
+      const ActorTaskOptions& options);
 
   TaskId id() const { return id_; }
 
@@ -125,9 +116,9 @@ class ActorTask : public base::SupportsUserData {
 
   glic::mojom::FeatureMode feature_mode() const { return feature_mode_; }
 
-  std::optional<glic::mojom::InvocationSource> initial_invocation_source()
+  std::optional<glic::mojom::InvocationSource> glic_initial_invocation_source()
       const {
-    return initial_invocation_source_;
+    return glic_initial_invocation_source_;
   }
 
   bool IsExperimentalTriggering() const;
@@ -505,7 +496,8 @@ class ActorTask : public base::SupportsUserData {
 
   // Invocation source that first opened the Glic instance this task was
   // created from. nullopt for tasks not created via Glic.
-  const std::optional<glic::mojom::InvocationSource> initial_invocation_source_;
+  const std::optional<glic::mojom::InvocationSource>
+      glic_initial_invocation_source_;
 
   // The callback to notify the client of the result of calling Act().
   ActCallback callback_for_act_;

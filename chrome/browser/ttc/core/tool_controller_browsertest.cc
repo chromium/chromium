@@ -3531,8 +3531,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
 
   const actor::TaskId control_task_id = actor_service->CreateTaskWithOptions(
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTest, "control"),
-      actor::GetNullEnterprisePolicyChecker(), /*options=*/nullptr,
-      /*delegate=*/nullptr, actor::ui::ActorUiStateManager::Get(profile()));
+      actor::GetNullEnterprisePolicyChecker(),
+      actor::ui::ActorUiStateManager::Get(profile()));
 
   std::vector<std::unique_ptr<actor::ToolRequest>> actions;
   actions.push_back(std::make_unique<actor::NavigateToolRequest>(

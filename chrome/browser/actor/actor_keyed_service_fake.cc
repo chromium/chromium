@@ -85,14 +85,15 @@ TaskId ActorKeyedServiceFake::
           base::BindRepeating(MakeOkResult,
                               /*requires_page_stabilization=*/true)));
 
-  auto task_options = webui::mojom::TaskOptions::New();
-  task_options->title = title;
-  task_options->duration = duration;
-  task_options->feature_mode = feature_mode;
+  auto webui_task_options = webui::mojom::TaskOptions::New();
+  webui_task_options->title = title;
+  webui_task_options->duration = duration;
+  webui_task_options->feature_mode = feature_mode;
+  ActorTaskOptions options;
+  options.webui_task_options = std::move(webui_task_options);
   return ActorKeyedService::CreateTaskForTesting(  // IN-TEST
       std::move(ui_event_dispatcher), source_info,
-      &no_enterprise_policy_checker_, std::move(task_options),
-      /*delegate=*/nullptr);
+      &no_enterprise_policy_checker_, std::move(options));
 }
 
 void ActorKeyedServiceFake::PauseTaskForTesting(TaskId task_id,  // IN-TEST

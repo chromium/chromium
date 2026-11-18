@@ -99,10 +99,11 @@ class ActorTaskTest : public testing::Test {
         });
 
     auto* service = ActorKeyedService::Get(profile_.get());
+    ActorTaskOptions options;
+    options.delegate = mock_delegate_.GetWeakPtr();
     TaskId task_id = service->CreateTaskForTesting(
         std::move(mock_ui_event_dispatcher), TestTaskSourceInfo(),
-        NoEnterprisePolicyChecker(), /*options=*/nullptr,
-        mock_delegate_.GetWeakPtr());
+        NoEnterprisePolicyChecker(), std::move(options));
     task_ = service->GetTask(task_id);
   }
 
@@ -890,20 +891,22 @@ TEST_F(ActorTaskCompletionMetricsTest,
        InvocationSourceCompletionMetrics_UniversalCart) {
   base::HistogramTester histograms;
 
-  auto task_options = actor::webui::mojom::TaskOptions::New();
-  task_options->title = "Completion Metrics Task";
+  ActorTaskOptions options;
+  options.webui_task_options = actor::webui::mojom::TaskOptions::New();
+  options.webui_task_options->title = "Completion Metrics Task";
+  options.delegate = mock_delegate_.GetWeakPtr();
+  options.glic_initial_invocation_source =
+      glic::mojom::InvocationSource::kUniversalCart;
 
   auto* service = ActorKeyedService::Get(profile_.get());
   auto mock_ui_event_dispatcher =
       std::make_unique<testing::NiceMock<ui::MockUiEventDispatcher>>();
   TaskId task_id = service->CreateTaskForTesting(
       std::move(mock_ui_event_dispatcher), TestTaskSourceInfo(),
-      NoEnterprisePolicyChecker(), std::move(task_options),
-      mock_delegate_.GetWeakPtr(),
-      glic::mojom::InvocationSource::kUniversalCart);
+      NoEnterprisePolicyChecker(), std::move(options));
   ActorTask* task = service->GetTask(task_id);
   ASSERT_NE(task, nullptr);
-  EXPECT_EQ(task->initial_invocation_source(),
+  EXPECT_EQ(task->glic_initial_invocation_source(),
             glic::mojom::InvocationSource::kUniversalCart);
 
   base::test::ScopedFeatureList feature_list;
@@ -922,19 +925,22 @@ TEST_F(ActorTaskCompletionMetricsTest,
        InvocationSourceCompletionMetrics_Other) {
   base::HistogramTester histograms;
 
-  auto task_options = actor::webui::mojom::TaskOptions::New();
-  task_options->title = "Completion Metrics Task";
+  ActorTaskOptions options;
+  options.webui_task_options = actor::webui::mojom::TaskOptions::New();
+  options.webui_task_options->title = "Completion Metrics Task";
+  options.delegate = mock_delegate_.GetWeakPtr();
+  options.glic_initial_invocation_source =
+      glic::mojom::InvocationSource::kOsButton;
 
   auto* service = ActorKeyedService::Get(profile_.get());
   auto mock_ui_event_dispatcher =
       std::make_unique<testing::NiceMock<ui::MockUiEventDispatcher>>();
   TaskId task_id = service->CreateTaskForTesting(
       std::move(mock_ui_event_dispatcher), TestTaskSourceInfo(),
-      NoEnterprisePolicyChecker(), std::move(task_options),
-      mock_delegate_.GetWeakPtr(), glic::mojom::InvocationSource::kOsButton);
+      NoEnterprisePolicyChecker(), std::move(options));
   ActorTask* task = service->GetTask(task_id);
   ASSERT_NE(task, nullptr);
-  EXPECT_EQ(task->initial_invocation_source(),
+  EXPECT_EQ(task->glic_initial_invocation_source(),
             glic::mojom::InvocationSource::kOsButton);
 
   base::test::ScopedFeatureList feature_list;
@@ -953,17 +959,19 @@ TEST_F(ActorTaskCompletionMetricsTest,
        InvocationSourceCompletionMetrics_Disabled) {
   base::HistogramTester histograms;
 
-  auto task_options = actor::webui::mojom::TaskOptions::New();
-  task_options->title = "Completion Metrics Task";
+  ActorTaskOptions options;
+  options.webui_task_options = actor::webui::mojom::TaskOptions::New();
+  options.webui_task_options->title = "Completion Metrics Task";
+  options.delegate = mock_delegate_.GetWeakPtr();
+  options.glic_initial_invocation_source =
+      glic::mojom::InvocationSource::kUniversalCart;
 
   auto* service = ActorKeyedService::Get(profile_.get());
   auto mock_ui_event_dispatcher =
       std::make_unique<testing::NiceMock<ui::MockUiEventDispatcher>>();
   TaskId task_id = service->CreateTaskForTesting(
       std::move(mock_ui_event_dispatcher), TestTaskSourceInfo(),
-      NoEnterprisePolicyChecker(), std::move(task_options),
-      mock_delegate_.GetWeakPtr(),
-      glic::mojom::InvocationSource::kUniversalCart);
+      NoEnterprisePolicyChecker(), std::move(options));
   ActorTask* task = service->GetTask(task_id);
   ASSERT_NE(task, nullptr);
 
@@ -983,19 +991,20 @@ TEST_F(ActorTaskCompletionMetricsTest,
        InvocationSourceCompletionMetrics_DefaultInvocationSource) {
   base::HistogramTester histograms;
 
-  auto task_options = actor::webui::mojom::TaskOptions::New();
-  task_options->title = "Completion Metrics Task";
+  ActorTaskOptions options;
+  options.webui_task_options = actor::webui::mojom::TaskOptions::New();
+  options.webui_task_options->title = "Completion Metrics Task";
+  options.delegate = mock_delegate_.GetWeakPtr();
 
   auto* service = ActorKeyedService::Get(profile_.get());
   auto mock_ui_event_dispatcher =
       std::make_unique<testing::NiceMock<ui::MockUiEventDispatcher>>();
   TaskId task_id = service->CreateTaskForTesting(
       std::move(mock_ui_event_dispatcher), TestTaskSourceInfo(),
-      NoEnterprisePolicyChecker(), std::move(task_options),
-      mock_delegate_.GetWeakPtr());
+      NoEnterprisePolicyChecker(), std::move(options));
   ActorTask* task = service->GetTask(task_id);
   ASSERT_NE(task, nullptr);
-  EXPECT_EQ(task->initial_invocation_source(), std::nullopt);
+  EXPECT_EQ(task->glic_initial_invocation_source(), std::nullopt);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

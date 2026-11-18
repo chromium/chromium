@@ -13,11 +13,13 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
+#include "chrome/browser/actor/actor_task_options.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/fake_tool_request.h"
@@ -33,6 +35,9 @@
 #include "components/actor/core/actor_switches.h"
 #include "components/actor/core/task_source_info.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/origin_gating/core/origin_gating_checker.h"
+#include "components/origin_gating/core/task_policy_config_slot.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -115,8 +120,7 @@ class ActorKeyedServiceTest : public testing::Test {
 TEST_F(ActorKeyedServiceTest, AddActiveTask) {
   auto* actor_service = ActorKeyedService::Get(profile());
   actor_service->CreateTaskWithOptions(
-      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), /*options=*/nullptr,
-      /*delegate=*/nullptr, ui_state_manager());
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager());
   ASSERT_EQ(actor_service->GetActiveTasks().size(), 1u);
   EXPECT_EQ(actor_service->GetActiveTasks().begin()->second->GetState(),
             ActorTask::State::kCreated);
@@ -126,8 +130,7 @@ TEST_F(ActorKeyedServiceTest, AddActiveTask) {
 TEST_F(ActorKeyedServiceTest, StopActiveTask) {
   auto* actor_service = ActorKeyedService::Get(profile());
   TaskId id = actor_service->CreateTaskWithOptions(
-      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), /*options=*/nullptr,
-      /*delegate=*/nullptr, ui_state_manager());
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager());
 
   // Add a tab to the task
   auto mock_tab = CreateMockTab();
@@ -159,11 +162,9 @@ TEST_F(ActorKeyedServiceTest, StopActiveTask) {
 TEST_F(ActorKeyedServiceTest, FindTaskIdsInActive_ReturnsSuccessfully) {
   auto* actor_service = ActorKeyedService::Get(profile());
   actor_service->CreateTaskWithOptions(
-      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), /*options=*/nullptr,
-      /*delegate=*/nullptr, ui_state_manager());
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager());
   const TaskId id2 = actor_service->CreateTaskWithOptions(
-      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), /*options=*/nullptr,
-      /*delegate=*/nullptr, ui_state_manager());
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager());
   actor_service->GetTask(id2)->Pause(/*from_actor=*/true);
 
   // Find a single active task.
@@ -179,8 +180,7 @@ TEST_F(ActorKeyedServiceTest, FindTaskIdsInActive_ReturnsSuccessfully) {
 TEST_F(ActorKeyedServiceTest, AddTabToPausedOrStoppedTask) {
   auto* actor_service = ActorKeyedService::Get(profile());
   TaskId id = actor_service->CreateTaskWithOptions(
-      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), /*options=*/nullptr,
-      /*delegate=*/nullptr, ui_state_manager());
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager());
 
   base::WeakPtr<ActorTask> task = actor_service->GetTask(id)->GetWeakPtr();
   ASSERT_TRUE(task);
@@ -215,8 +215,7 @@ TEST_F(ActorKeyedServiceTest, AddTabToPausedOrStoppedTask) {
 TEST_F(ActorKeyedServiceTest, PausedTaskTabs) {
   auto* actor_service = ActorKeyedService::Get(profile());
   TaskId id = actor_service->CreateTaskWithOptions(
-      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), /*options=*/nullptr,
-      /*delegate=*/nullptr, ui_state_manager());
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager());
 
   base::WeakPtr<ActorTask> task = actor_service->GetTask(id)->GetWeakPtr();
   ASSERT_TRUE(task);
@@ -282,12 +281,10 @@ TEST_F(ActorKeyedServiceTest, SetsTaskSourceInfo) {
 
   TaskId task1 = actor_service->CreateTaskWithOptions(
       TaskSourceInfo(TaskSourceInfo::Client::kTest, kId1),
-      NoEnterprisePolicyChecker(), /*options=*/nullptr, /*delegate=*/nullptr,
-      ui_state_manager());
+      NoEnterprisePolicyChecker(), ui_state_manager());
   TaskId task2 = actor_service->CreateTaskWithOptions(
       TaskSourceInfo(TaskSourceInfo::Client::kTest, kId2),
-      NoEnterprisePolicyChecker(), /*options=*/nullptr, /*delegate=*/nullptr,
-      ui_state_manager());
+      NoEnterprisePolicyChecker(), ui_state_manager());
 
   EXPECT_EQ(actor_service->GetTask(task1)->source_info().id, kId1);
   EXPECT_EQ(actor_service->GetTask(task2)->source_info().id, kId2);
@@ -298,8 +295,7 @@ TEST_F(ActorKeyedServiceTest, SetsTaskSourceInfo) {
 TEST_F(ActorKeyedServiceTest, GetActiveTasksDuringStateChangeCallback) {
   auto* actor_service = ActorKeyedService::Get(profile());
   TaskId id = actor_service->CreateTaskWithOptions(
-      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), /*options=*/nullptr,
-      /*delegate=*/nullptr, ui_state_manager());
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager());
 
   bool callback_called = false;
   auto subscription = actor_service->AddTaskStateChangedCallback(
@@ -319,12 +315,14 @@ TEST_F(ActorKeyedServiceTest, InitialTabAssociationOnCreate) {
   auto* actor_service = ActorKeyedService::Get(profile());
   auto mock_tab = CreateMockTab();
   const tabs::TabHandle tab_handle = mock_tab->GetHandle();
-  auto options = webui::mojom::TaskOptions::New();
-  options->actuation_tab_id = ActorSurfaceHandle::From(tab_handle).raw_value();
+  ActorTaskOptions options;
+  options.webui_task_options = webui::mojom::TaskOptions::New();
+  options.webui_task_options->actuation_tab_id =
+      ActorSurfaceHandle::From(tab_handle).raw_value();
 
   TaskId id = actor_service->CreateTaskWithOptions(
-      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), std::move(options),
-      /*delegate=*/nullptr, ui_state_manager());
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager(),
+      std::move(options));
 
   ActorTask* task = actor_service->GetTask(id);
   ASSERT_TRUE(task);
@@ -339,12 +337,13 @@ TEST_F(ActorKeyedServiceTest, InitialHeadlessSurfaceAssociationOnCreate) {
   ScopedHeadlessActorSurface headless =
       actor_service->CreateHeadlessActorSurface();
   const ActorSurfaceHandle handle = headless.actor_surface_handle();
-  auto options = webui::mojom::TaskOptions::New();
-  options->actuation_tab_id = handle.raw_value();
+  ActorTaskOptions options;
+  options.webui_task_options = webui::mojom::TaskOptions::New();
+  options.webui_task_options->actuation_tab_id = handle.raw_value();
 
   TaskId id = actor_service->CreateTaskWithOptions(
-      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), std::move(options),
-      /*delegate=*/nullptr, ui_state_manager());
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager(),
+      std::move(options));
 
   ActorTask* task = actor_service->GetTask(id);
   ASSERT_TRUE(task);
@@ -359,13 +358,15 @@ TEST_F(ActorKeyedServiceTest, InitialSurfaceFromOtherProfileNotAssociated) {
       testing_profile_manager()->CreateTestingProfile("other_profile");
   ScopedHeadlessActorSurface other_headless =
       ActorKeyedService::Get(other_profile)->CreateHeadlessActorSurface();
-  auto options = webui::mojom::TaskOptions::New();
-  options->actuation_tab_id = other_headless.actor_surface_handle().raw_value();
+  ActorTaskOptions options;
+  options.webui_task_options = webui::mojom::TaskOptions::New();
+  options.webui_task_options->actuation_tab_id =
+      other_headless.actor_surface_handle().raw_value();
 
   auto* actor_service = ActorKeyedService::Get(profile());
   TaskId id = actor_service->CreateTaskWithOptions(
-      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), std::move(options),
-      /*delegate=*/nullptr, ui_state_manager());
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager(),
+      std::move(options));
 
   ActorTask* task = actor_service->GetTask(id);
   ASSERT_TRUE(task);
@@ -375,14 +376,15 @@ TEST_F(ActorKeyedServiceTest, InitialSurfaceFromOtherProfileNotAssociated) {
 // ActorTask::AddActorSurface() does not attach a surface ID that resolves to no
 // surface, but CreateTaskImpl() still creates the task.
 TEST_F(ActorKeyedServiceTest, InitialUnknownSurfaceNotAssociated) {
-  auto options = webui::mojom::TaskOptions::New();
-  options->actuation_tab_id =
+  ActorTaskOptions options;
+  options.webui_task_options = webui::mojom::TaskOptions::New();
+  options.webui_task_options->actuation_tab_id =
       ActorSurfaceHandle::CreateForTesting().raw_value();
 
   auto* actor_service = ActorKeyedService::Get(profile());
   TaskId id = actor_service->CreateTaskWithOptions(
-      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), std::move(options),
-      /*delegate=*/nullptr, ui_state_manager());
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager(),
+      std::move(options));
 
   ActorTask* task = actor_service->GetTask(id);
   ASSERT_TRUE(task);
@@ -392,13 +394,11 @@ TEST_F(ActorKeyedServiceTest, InitialUnknownSurfaceNotAssociated) {
 // A kHeadless task that has no initial surface gets a new headless surface.
 TEST_F(ActorKeyedServiceTest, HeadlessModeCreatesHeadlessSurface) {
   auto* actor_service = ActorKeyedService::Get(profile());
+  ActorTaskOptions options;
+  options.execution_mode = ActorTaskOptions::ExecutionMode::kHeadless;
   TaskId id = actor_service->CreateTaskWithOptions(
-      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), /*options=*/nullptr,
-      /*delegate=*/nullptr, ui_state_manager(),
-      /*initial_invocation_source=*/std::nullopt,
-      ActorKeyedService::AllowedSchemes::kRequireHttpsOrHttp,
-      /*agent_container_config=*/std::nullopt,
-      ActorKeyedService::ExecutionMode::kHeadless);
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager(),
+      std::move(options));
 
   ActorTask* task = actor_service->GetTask(id);
   ASSERT_TRUE(task);
@@ -413,13 +413,11 @@ TEST_F(ActorKeyedServiceTest, HeadlessModeCreatesHeadlessSurface) {
 // soon as the task completes.
 TEST_F(ActorKeyedServiceTest, StoppingTaskDestroysItsHeadlessSurface) {
   auto* actor_service = ActorKeyedService::Get(profile());
+  ActorTaskOptions options;
+  options.execution_mode = ActorTaskOptions::ExecutionMode::kHeadless;
   TaskId id = actor_service->CreateTaskWithOptions(
-      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), /*options=*/nullptr,
-      /*delegate=*/nullptr, ui_state_manager(),
-      /*initial_invocation_source=*/std::nullopt,
-      ActorKeyedService::AllowedSchemes::kRequireHttpsOrHttp,
-      /*agent_container_config=*/std::nullopt,
-      ActorKeyedService::ExecutionMode::kHeadless);
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager(),
+      std::move(options));
   ActorTask* task = actor_service->GetTask(id);
   ASSERT_TRUE(task);
   const ActorSurfaceHandle handle = task->GetLastActuatedActorSurface();
@@ -437,15 +435,13 @@ TEST_F(ActorKeyedServiceTest, HeadlessModeKeepsCallerOwnedSurface) {
   ScopedHeadlessActorSurface headless =
       actor_service->CreateHeadlessActorSurface();
   const ActorSurfaceHandle handle = headless.actor_surface_handle();
-  auto options = webui::mojom::TaskOptions::New();
-  options->actuation_tab_id = handle.raw_value();
+  ActorTaskOptions options;
+  options.webui_task_options = webui::mojom::TaskOptions::New();
+  options.webui_task_options->actuation_tab_id = handle.raw_value();
+  options.execution_mode = ActorTaskOptions::ExecutionMode::kHeadless;
   TaskId id = actor_service->CreateTaskWithOptions(
-      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), std::move(options),
-      /*delegate=*/nullptr, ui_state_manager(),
-      /*initial_invocation_source=*/std::nullopt,
-      ActorKeyedService::AllowedSchemes::kRequireHttpsOrHttp,
-      /*agent_container_config=*/std::nullopt,
-      ActorKeyedService::ExecutionMode::kHeadless);
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager(),
+      std::move(options));
   ActorTask* task = actor_service->GetTask(id);
   ASSERT_TRUE(task);
   EXPECT_EQ(task->GetActorSurfaces().size(), 1u);
@@ -473,8 +469,7 @@ TEST_F(ActorKeyedServiceTest, TraceRecordingToFile) {
   RunTasksUntilIdle();
 
   TaskId id = actor_service->CreateTaskWithOptions(
-      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), /*options=*/nullptr,
-      /*delegate=*/nullptr, ui_state_manager());
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager());
   actor_service->StopTask(id, ActorTask::StoppedReason::kTaskComplete);
   testing_profile_manager()->DeleteTestingProfile("trace_profile");
 
@@ -504,8 +499,7 @@ TEST_F(ActorKeyedServiceTest, TraceRecordingToDirectory) {
       temp_dir.GetPath().AppendASCII("actor_trace.pb");
 
   TaskId id = actor_service->CreateTaskWithOptions(
-      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), /*options=*/nullptr,
-      /*delegate=*/nullptr, ui_state_manager());
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager());
   actor_service->StopTask(id, ActorTask::StoppedReason::kTaskComplete);
   testing_profile_manager()->DeleteTestingProfile("trace_profile_dir");
 
@@ -722,8 +716,7 @@ TEST_F(ActorKeyedServiceTest,
   EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
 
   TaskId task_id = actor_service->CreateTaskWithOptions(
-      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), /*options=*/nullptr,
-      /*delegate=*/nullptr, ui_state_manager());
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager());
   EXPECT_FALSE(actor_service->HasExternalTriggerPendingTaskForTesting());
   EXPECT_EQ(0u, actor_service->GetPendingTasksCount());
   EXPECT_EQ(1u, actor_service->GetActiveTasksCount());
@@ -743,8 +736,7 @@ TEST_F(ActorKeyedServiceTest,
                              TabObservationStrategy>;
   auto* actor_service = ActorKeyedService::Get(profile());
   TaskId task_id = actor_service->CreateTaskWithOptions(
-      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), /*options=*/nullptr,
-      /*delegate=*/nullptr, ui_state_manager());
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager());
 
   PerformActionsFuture empty_actions_result;
   actor_service->PerformActions(
@@ -792,6 +784,52 @@ TEST_F(ActorKeyedServiceTest,
                 .tool_result.deprecated_action_result()
                 ->code,
             mojom::ActionResultCode::kTaskWentAway);
+}
+
+TEST_F(ActorKeyedServiceTest, CreateTaskWithOptions_PopulatesActorTaskOptions) {
+  auto* actor_service = ActorKeyedService::Get(profile());
+  ASSERT_TRUE(actor_service);
+
+  auto webui_task_options = webui::mojom::TaskOptions::New();
+  webui_task_options->title = "Configured Task";
+  webui_task_options->duration = webui::mojom::TaskDuration::kTransient;
+  webui_task_options->feature_mode =
+      glic::mojom::FeatureMode::kExperimentalTriggering;
+
+  optimization_guide::proto::AgentContainerConfig agent_container_config;
+  optimization_guide::proto::Site* site =
+      agent_container_config.add_location_rules()
+          ->mutable_location()
+          ->mutable_site();
+  site->set_protocol(optimization_guide::proto::Protocol::PROTOCOL_HTTPS);
+  site->set_domain("example.com");
+
+  MockActorTaskDelegate mock_delegate;
+  ActorTaskOptions options;
+  options.webui_task_options = std::move(webui_task_options);
+  options.delegate = mock_delegate.GetWeakPtr();
+  options.glic_initial_invocation_source =
+      glic::mojom::InvocationSource::kUniversalCart;
+  options.agent_container_config = agent_container_config;
+
+  TaskId task_id = actor_service->CreateTaskWithOptions(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager(),
+      std::move(options));
+  ActorTask* task = actor_service->GetTask(task_id);
+  ASSERT_TRUE(task);
+  EXPECT_EQ(task->title(), "Configured Task");
+  EXPECT_EQ(task->delegate().get(), &mock_delegate);
+  EXPECT_EQ(task->get_task_duration(), ActorTask::TaskDuration::kTransient);
+  EXPECT_EQ(task->feature_mode(),
+            glic::mojom::FeatureMode::kExperimentalTriggering);
+  EXPECT_EQ(task->glic_initial_invocation_source(),
+            glic::mojom::InvocationSource::kUniversalCart);
+
+  const auto& slot = task->GetExecutionEngine()
+                         .GetOriginGatingChecker()
+                         .task_policy_config_slot();
+  ASSERT_TRUE(slot.has_value());
+  EXPECT_EQ(slot.value(), ConvertAgentContainerConfig(agent_container_config));
 }
 
 }  // namespace

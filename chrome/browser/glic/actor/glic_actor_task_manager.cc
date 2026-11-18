@@ -260,12 +260,16 @@ void GlicActorClientSession::CreateTask(
     options->duration = actor::webui::mojom::TaskDuration::kDefault;
   }
 
+  actor::ActorTaskOptions task_options;
+  task_options.webui_task_options = std::move(options);
+  task_options.delegate = GetWeakPtr();
+  task_options.glic_initial_invocation_source =
+      instance_metrics().initial_invocation_source();
   current_task_id_ = actor_keyed_service().CreateTaskWithOptions(
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
                             conversation_id),
-      &actor_policy_checker(), std::move(options), GetWeakPtr(),
-      actor::ui::ActorUiStateManager::Get(&profile()),
-      instance_metrics().initial_invocation_source());
+      &actor_policy_checker(), actor::ui::ActorUiStateManager::Get(&profile()),
+      std::move(task_options));
   CHECK(!current_task_id_.is_null());
 
   // TODO(b/561944228): CriticalActionService needs conversation_id, this is a

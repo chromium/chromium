@@ -79,10 +79,11 @@ class ActorCommitDeferringConditionTest
                           ui::UiEventDispatcher::UiCompleteCallback callback) {
           std::move(callback).Run(MakeOkResult());
         });
+    ActorTaskOptions options;
+    options.delegate = mock_delegate_.GetWeakPtr();
     TaskId task_id = service->CreateTaskForTesting(
         std::move(mock_ui_event_dispatcher), TestTaskSourceInfo(),
-        NoEnterprisePolicyChecker(), /*options=*/nullptr,
-        mock_delegate_.GetWeakPtr());
+        NoEnterprisePolicyChecker(), std::move(options));
     return service->GetTask(task_id);
   }
 

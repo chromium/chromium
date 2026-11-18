@@ -173,17 +173,13 @@ void ActorTask::ActorControlledTabState::OnVisibilityChanged(
   task->RecomputeHasVisibleTab();
 }
 
-ActorTask::ActorTask(
-    base::PassKey<ActorKeyedService, ActorTask>,
-    ActorKeyedService& service,
-    TaskId id,
-    std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
-    webui::mojom::TaskOptionsPtr options,
-    const TaskSourceInfo& source_info,
-    const EnterprisePolicyChecker* policy_checker,
-    base::WeakPtr<ActorTaskDelegate> delegate,
-    std::optional<glic::mojom::InvocationSource> initial_invocation_source,
-    AllowedSchemes allowed_schemes)
+ActorTask::ActorTask(base::PassKey<ActorKeyedService, ActorTask>,
+                     ActorKeyedService& service,
+                     TaskId id,
+                     std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
+                     const TaskSourceInfo& source_info,
+                     const EnterprisePolicyChecker* policy_checker,
+                     const ActorTaskOptions& options)
     : service_(service),
       id_(id),
       source_info_(source_info),
@@ -191,23 +187,25 @@ ActorTask::ActorTask(
       action_tracker_for_metrics_(std::make_unique<ActionTrackerForMetrics>()),
       ui_event_dispatcher_(std::move(ui_event_dispatcher)),
       journal_(service_->GetJournal().GetSafeRef()),
-      title_(options && options->title.has_value() ? options->title.value()
-                                                   : ""),
-      duration_(options && options->duration.has_value() &&
-                        options->duration.value() ==
+      title_(options.webui_task_options
+                 ? options.webui_task_options->title.value_or("")
+                 : ""),
+      duration_(options.webui_task_options &&
+                        options.webui_task_options->duration ==
                             actor::webui::mojom::TaskDuration::kTransient
                     ? TaskDuration::kTransient
                     : TaskDuration::kDefault),
-      feature_mode_(options && options->feature_mode.has_value()
-                        ? options->feature_mode.value()
+      feature_mode_(options.webui_task_options
+                        ? options.webui_task_options->feature_mode.value_or(
+                              glic::mojom::FeatureMode::kUnspecified)
                         : glic::mojom::FeatureMode::kUnspecified),
-      initial_invocation_source_(initial_invocation_source),
+      glic_initial_invocation_source_(options.glic_initial_invocation_source),
       policy_checker_(*policy_checker),
-      delegate_(std::move(delegate)),
+      delegate_(options.delegate),
       ui_weak_ptr_factory_(ui_event_dispatcher_.get()) {
   CHECK(policy_checker);
   CHECK(!id_.is_null());
-  execution_engine_ = ExecutionEngine::Create(*this, allowed_schemes);
+  execution_engine_ = ExecutionEngine::Create(*this, options.allowed_schemes);
 }
 
 ActorTask::~ActorTask() {
@@ -222,16 +220,18 @@ std::unique_ptr<ActorTask> ActorTask::CreateForTesting(
     ActorKeyedService& service,
     TaskId id,
     std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
-    webui::mojom::TaskOptionsPtr options,
     const TaskSourceInfo& source_info,
     const EnterprisePolicyChecker* policy_checker,
-    base::WeakPtr<ActorTaskDelegate> delegate,
-    std::optional<glic::mojom::InvocationSource> initial_invocation_source,
-    AllowedSchemes allowed_schemes) {
-  return std::make_unique<ActorTask>(
-      base::PassKey<ActorTask>(), service, id, std::move(ui_event_dispatcher),
-      std::move(options), source_info, policy_checker, std::move(delegate),
-      initial_invocation_source, allowed_schemes);
+    const ActorTaskOptions& options) {
+  // Service-level creation options are handled by ActorKeyedService and are
+  // ignored when constructing an ActorTask directly.
+  CHECK(options.execution_mode == ActorTaskOptions::ExecutionMode::kHeaded);
+  CHECK(!options.agent_container_config.has_value());
+  CHECK(!options.webui_task_options ||
+        !options.webui_task_options->actuation_tab_id.has_value());
+  return std::make_unique<ActorTask>(base::PassKey<ActorTask>(), service, id,
+                                     std::move(ui_event_dispatcher),
+                                     source_info, policy_checker, options);
 }
 
 ExecutionEngine& ActorTask::GetExecutionEngine() const {
@@ -244,7 +244,7 @@ ActorTask::State ActorTask::GetState() const {
 }
 
 bool ActorTask::IsExperimentalTriggering() const {
-  return initial_invocation_source_ ==
+  return glic_initial_invocation_source_ ==
              glic::mojom::InvocationSource::kExperimentalTriggering ||
          feature_mode_ == glic::mojom::FeatureMode::kExperimentalTriggering ||
          source_info_.type == TaskSourceInfo::Client::kExperimentalActor;
@@ -375,7 +375,7 @@ void ActorTask::SetState(State new_state) {
     RecordActorTaskCompletion(
         stopped_reason_.value(), base::TimeTicks::Now() - create_time_,
         total_actor_controlled_active_time_, total_number_of_interruptions_,
-        total_number_of_actions_, initial_invocation_source_);
+        total_number_of_actions_, glic_initial_invocation_source_);
   }
 }
 

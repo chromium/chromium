@@ -937,8 +937,9 @@ class EventInitiatorUtilsGlicActorTest : public testing::Test {
   actor::TaskId StartGlicTask(std::optional<std::string> source_id,
                               glic::mojom::FeatureMode feature_mode =
                                   glic::mojom::FeatureMode::kActuation) {
-    auto options = actor::webui::mojom::TaskOptions::New();
-    options->feature_mode = feature_mode;
+    actor::ActorTaskOptions options;
+    options.webui_task_options = actor::webui::mojom::TaskOptions::New();
+    options.webui_task_options->feature_mode = feature_mode;
     // `ActorKeyedServiceFake` hides the base class overload that takes a task
     // source, so call it through the base class.
     actor::ActorKeyedService* service = actor_service();
@@ -946,7 +947,7 @@ class EventInitiatorUtilsGlicActorTest : public testing::Test {
         actor::ui::NewMockUiEventDispatcher(),
         actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
                               std::move(source_id)),
-        &policy_checker_, std::move(options), /*delegate=*/nullptr);
+        &policy_checker_, std::move(options));
     AddTabToTask(task_id);
     return task_id;
   }

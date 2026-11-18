@@ -243,11 +243,12 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
     mock_ui_event_dispatcher_ =
         static_cast<ui::MockUiEventDispatcher*>(ui_event_dispatcher.get());
 
+    ActorTaskOptions options;
+    options.delegate = mock_actor_task_delegate_.GetWeakPtr();
     task_ = ActorTask::CreateForTesting(
         *ActorKeyedService::Get(profile()), TaskId(1),
-        std::move(ui_event_dispatcher),
-        /*options=*/nullptr, TestTaskSourceInfo(), &no_enterprise_checker_,
-        mock_actor_task_delegate_.GetWeakPtr());
+        std::move(ui_event_dispatcher), TestTaskSourceInfo(),
+        &no_enterprise_checker_, options);
 
     ON_CALL(*mock_ui_event_dispatcher_, OnPreTool)
         .WillByDefault(
@@ -1583,12 +1584,13 @@ class ExecutionEngineUrlGatingTest : public ChromeRenderViewHostTestHarness {
                          ui::UiEventDispatcher::ActorTaskAsyncChange>(
               base::BindRepeating(MakeOkResult,
                                   /*requires_page_stabilization=*/true)));
-      task_ = ActorTask::CreateForTesting(
-          *ActorKeyedService::Get(profile()), TaskId(1),
-          std::move(task_dispatcher),
-          /*options=*/nullptr, TestTaskSourceInfo(), &task_policy_checker_,
-          mock_actor_task_delegate_.GetWeakPtr(),
-          /*initial_invocation_source=*/std::nullopt, allowed_schemes);
+      ActorTaskOptions options;
+      options.delegate = mock_actor_task_delegate_.GetWeakPtr();
+      options.allowed_schemes = allowed_schemes;
+      task_ = ActorTask::CreateForTesting(*ActorKeyedService::Get(profile()),
+                                          TaskId(1), std::move(task_dispatcher),
+                                          TestTaskSourceInfo(),
+                                          &task_policy_checker_, options);
     }
     return task_->GetExecutionEngine();
   }

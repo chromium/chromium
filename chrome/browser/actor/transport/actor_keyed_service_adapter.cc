@@ -12,12 +12,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
-#include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_task_options.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -256,13 +256,13 @@ ActorKeyedServiceAdapter::~ActorKeyedServiceAdapter() = default;
 
 void ActorKeyedServiceAdapter::StartTask(const proto::StartTaskRequest& request,
                                          StartTaskCallback callback) {
-  auto options = webui::mojom::TaskOptions::New();
+  ActorTaskOptions options;
+  options.webui_task_options = webui::mojom::TaskOptions::New();
   if (!request.task_title().empty()) {
-    options->title = request.task_title();
+    options.webui_task_options->title = request.task_title();
   }
 
   proto::StartTaskResponse response;
-  auto execution_mode = ActorKeyedService::ExecutionMode::kHeaded;
   // TODO(crbug.com/576384635): Support binding multiple initial target surfaces
   // and failing task creation on unbindable tabs in ActorKeyedService.
   if (!request.target_surfaces().empty()) {
@@ -273,10 +273,10 @@ void ActorKeyedServiceAdapter::StartTask(const proto::StartTaskRequest& request,
     // the registry lookup below finds no surface.
     if (surface.tab_id() == 0 &&
         surface.execution_mode() == proto::TargetSurface::HEADLESS) {
-      execution_mode = ActorKeyedService::ExecutionMode::kHeadless;
+      options.execution_mode = ActorTaskOptions::ExecutionMode::kHeadless;
     } else if (actor_service_->GetSurfaceRegistry().Get(
                    ActorSurfaceHandle::FromRawValue(surface.tab_id()))) {
-      options->actuation_tab_id = surface.tab_id();
+      options.webui_task_options->actuation_tab_id = surface.tab_id();
     } else {
       response.set_status(
           proto::StartTaskResponse::STATUS_TARGET_TAB_NOT_FOUND);
@@ -285,18 +285,17 @@ void ActorKeyedServiceAdapter::StartTask(const proto::StartTaskRequest& request,
     }
   }
 
+  options.delegate = weak_ptr_factory_.GetWeakPtr();
+  if (request.has_agent_container_config()) {
+    options.agent_container_config = request.agent_container_config();
+  }
+
   TaskId task_id = actor_service_->CreateTaskWithOptions(
       TaskSourceInfo(TaskSourceInfo::Client::kBrowserActuator,
                      /*id=*/std::nullopt),
-      enterprise_policy_checker_, std::move(options),
-      weak_ptr_factory_.GetWeakPtr(),
+      enterprise_policy_checker_,
       ui::ActorUiStateManager::Get(actor_service_->GetProfile()),
-      /*initial_invocation_source=*/std::nullopt,
-      ActorKeyedService::AllowedSchemes::kRequireHttpsOrHttp,
-      request.has_agent_container_config()
-          ? base::optional_ref(request.agent_container_config())
-          : std::nullopt,
-      execution_mode);
+      std::move(options));
 
   if (!request.target_surfaces().empty()) {
     // The task's initial surface is either the surface in `tab_id` or the

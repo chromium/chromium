@@ -197,8 +197,9 @@ void ActorActionsRunner::Start() {
     return;
   }
 
-  auto options = webui::mojom::TaskOptions::New();
-  options->duration = webui::mojom::TaskDuration::kTransient;
+  ActorTaskOptions options;
+  options.webui_task_options = webui::mojom::TaskOptions::New();
+  options.webui_task_options->duration = webui::mojom::TaskDuration::kTransient;
   // Without a `policy_checker`, ActorActionsRunner executes transient actions
   // on behalf of trusted browser features and extension APIs, which do not
   // enforce enterprise policy URL blocking or content validation at the actor
@@ -207,8 +208,7 @@ void ActorActionsRunner::Start() {
       source_info_,
       policy_checker_ ? policy_checker_.get()
                       : GetNullEnterprisePolicyChecker(),
-      std::move(options), nullptr,
-      ui::ActorUiStateManager::Get(&profile_.get()));
+      ui::ActorUiStateManager::Get(&profile_.get()), std::move(options));
   if (!task_id_) {
     LOG(ERROR) << "Failed to create Actor task.";
     Finish(std::make_unique<optimization_guide::proto::ActionsResult>(

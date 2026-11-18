@@ -215,8 +215,7 @@ class ActorKeyedServicePromotionTaskBrowserTest
         });
     ActorTask* task = actor_keyed_service()->GetTask(
         actor_keyed_service()->CreateTaskForTesting(
-            std::move(ui), TestTaskSourceInfo(), NoEnterprisePolicyChecker(),
-            /*options=*/nullptr, /*delegate=*/nullptr));
+            std::move(ui), TestTaskSourceInfo(), NoEnterprisePolicyChecker()));
     base::test::TestFuture<mojom::ActionResultPtr> added;
     task->AddActorSurface(handle_, /*stop_task_on_detach=*/true,
                           added.GetCallback());

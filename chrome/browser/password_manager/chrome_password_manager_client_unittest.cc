@@ -3090,8 +3090,7 @@ class ChromePasswordManagerClientEnterpriseLoginTest
         actor::ui::NewMockUiEventDispatcher(),
         actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
                               kConversationId),
-        &policy_checker_, actor::webui::mojom::TaskOptions::New(),
-        /*delegate=*/nullptr);
+        &policy_checker_);
     actor_service->GetTask(task_id)->AddTab(
         mock_tab_.GetHandle(), /*stop_task_on_detach=*/true, base::DoNothing());
     return task_id;

@@ -25,11 +25,11 @@
 #include "base/supports_user_data.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
-#include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
+#include "chrome/browser/actor/actor_task_options.h"
 #include "chrome/browser/actor/tools/registry/tool_registry.h"
 #include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -140,22 +140,14 @@ class ActorKeyedService : public KeyedService,
 
   using AllowedSchemes = ActorTask::AllowedSchemes;
 
-  // Used by CreateTaskWithOptions() only when the new task has no initial
-  // surface. kHeaded creates no surface. kHeadless creates a headless surface
-  // for the task.
-  enum class ExecutionMode {
-    kHeaded,
-    kHeadless,
-  };
-
   // Starts a new task with an execution engine and returns the new task's id.
-  // `options`, when provided, contains information used to initialize the task.
+  // `options` contains information used to initialize the task.
   // The provided `policy_checker` and `ui_state_manager` must be non-null and
   // must outlive the ActorTask.
   //
-  // If `execution_mode` is kHeadless and `options` has no initial surface,
-  // CreateTaskWithOptions() creates a headless surface for the task. This
-  // service destroys the surface when the task completes.
+  // If `options.execution_mode` is kHeadless and `options` has no initial
+  // surface, CreateTaskWithOptions() creates a headless surface for the task.
+  // This service destroys the surface when the task completes.
   TaskId CreateTask(
       const TaskSourceInfo& source_info,
       const EnterprisePolicyChecker* policy_checker,
@@ -163,24 +155,13 @@ class ActorKeyedService : public KeyedService,
   TaskId CreateTaskWithOptions(
       const TaskSourceInfo& source_info,
       const EnterprisePolicyChecker* policy_checker,
-      webui::mojom::TaskOptionsPtr options,
-      base::WeakPtr<ActorTaskDelegate> delegate,
       actor::ui::ActorUiStateManagerInterface* ui_state_manager,
-      std::optional<glic::mojom::InvocationSource> initial_invocation_source =
-          std::nullopt,
-      AllowedSchemes allowed_schemes = AllowedSchemes::kRequireHttpsOrHttp,
-      base::optional_ref<const optimization_guide::proto::AgentContainerConfig>
-          agent_container_config = std::nullopt,
-      ExecutionMode execution_mode = ExecutionMode::kHeaded);
+      ActorTaskOptions options = {});
   TaskId CreateTaskForTesting(
       std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
       const TaskSourceInfo& source_info,
       const EnterprisePolicyChecker* policy_checker,
-      webui::mojom::TaskOptionsPtr options,
-      base::WeakPtr<ActorTaskDelegate> delegate,
-      std::optional<glic::mojom::InvocationSource> initial_invocation_source =
-          std::nullopt,
-      AllowedSchemes allowed_schemes = AllowedSchemes::kRequireHttpsOrHttp);
+      ActorTaskOptions options = {});
 
   // Executes the given ToolRequest actions using the execution engine for the
   // given task id.
@@ -451,14 +432,8 @@ class ActorKeyedService : public KeyedService,
       std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
       const TaskSourceInfo& source_info,
       const EnterprisePolicyChecker* policy_checker,
-      webui::mojom::TaskOptionsPtr options,
-      base::WeakPtr<ActorTaskDelegate> delegate,
       actor::ui::ActorUiStateManagerInterface* ui_state_manager,
-      std::optional<glic::mojom::InvocationSource> initial_invocation_source,
-      AllowedSchemes allowed_schemes,
-      base::optional_ref<const optimization_guide::proto::AgentContainerConfig>
-          agent_container_config = std::nullopt,
-      ExecutionMode execution_mode = ExecutionMode::kHeaded);
+      ActorTaskOptions options);
 
   void AssignAgentContainerConfig(
       ActorTask& task,

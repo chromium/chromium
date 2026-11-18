@@ -62,12 +62,14 @@ actor::TaskId ActorTaskHolder::EnsureTaskCreated() {
   TtcKeyedService* ttc_service = TtcKeyedService::Get(GetProfile());
   CHECK(ttc_service);
 
+  actor::ActorTaskOptions options;
+  options.delegate = task_delegate_.GetWeakPtr();
+  options.allowed_schemes =
+      actor::ActorKeyedService::AllowedSchemes::kRequireHttpsOrHttpOrNtp;
   task_id_ = actor_service->CreateTaskWithOptions(
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTtc, session_id_),
-      ttc_service->enterprise_policy_checker(), /*options=*/nullptr,
-      task_delegate_.GetWeakPtr(), &ttc_service->actor_ui_state_manager(),
-      /*initial_invocation_source=*/std::nullopt,
-      actor::ActorKeyedService::AllowedSchemes::kRequireHttpsOrHttpOrNtp);
+      ttc_service->enterprise_policy_checker(),
+      &ttc_service->actor_ui_state_manager(), std::move(options));
   CHECK(!task_id_.is_null());
 
   const std::string task_id_str = base::NumberToString(task_id_.value());

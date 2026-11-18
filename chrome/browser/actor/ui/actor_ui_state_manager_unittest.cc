@@ -178,8 +178,7 @@ class ActorUiStateManagerTest : public testing::Test {
   // production. Tasks from CreateTaskForTesting() send them to a mock.
   TaskId CreateTaskWithUiEvents() {
     return actor_keyed_service()->CreateTaskWithOptions(
-        TestTaskSourceInfo(), &policy_checker_, /*options=*/nullptr,
-        /*delegate=*/nullptr, actor_ui_state_manager());
+        TestTaskSourceInfo(), &policy_checker_, actor_ui_state_manager());
   }
 
  private:

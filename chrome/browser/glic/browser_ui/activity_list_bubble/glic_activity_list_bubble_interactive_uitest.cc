@@ -153,14 +153,16 @@ IN_PROC_BROWSER_TEST_F(GlicActivityListBubbleInteractiveUiTest,
   gfx::ScopedAnimationDurationScaleMode disable_animations(
       gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
-  auto task_options = actor::webui::mojom::TaskOptions::New();
-  task_options->duration = actor::webui::mojom::TaskDuration::kDefault;
-  task_options->feature_mode =
+  actor::ActorTaskOptions options;
+  options.webui_task_options = actor::webui::mojom::TaskOptions::New();
+  options.webui_task_options->duration =
+      actor::webui::mojom::TaskDuration::kDefault;
+  options.webui_task_options->feature_mode =
       glic::mojom::FeatureMode::kExperimentalTriggering;
   actor::TaskId task_id = actor_keyed_service()->CreateTaskWithOptions(
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker(),
-      std::move(task_options), nullptr,
-      actor::ui::ActorUiStateManager::Get(browser()->GetProfile()));
+      actor::ui::ActorUiStateManager::Get(browser()->GetProfile()),
+      std::move(options));
   base::test::TestFuture<actor::mojom::ActionResultPtr> future;
   actor_keyed_service()->GetTask(task_id)->AddTab(
       browser()->GetActiveTabInterface()->GetHandle(),

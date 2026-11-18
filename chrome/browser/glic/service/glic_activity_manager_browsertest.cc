@@ -380,15 +380,16 @@ IN_PROC_BROWSER_TEST_F(
       RegisterConversationInClient(instance2, "conv_2", "Hotel Options"));
   ASSERT_TRUE(NotifyUserInputSubmittedInClient(instance2));
 
-  auto task_options = actor::webui::mojom::TaskOptions::New();
-  task_options->title = "Book Hotel";
-  task_options->duration = actor::webui::mojom::TaskDuration::kDefault;
+  actor::ActorTaskOptions options;
+  options.webui_task_options = actor::webui::mojom::TaskOptions::New();
+  options.webui_task_options->title = "Book Hotel";
+  options.webui_task_options->duration =
+      actor::webui::mojom::TaskDuration::kDefault;
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(GetProfile());
   actor::TaskId task_id = actor_service->CreateTaskWithOptions(
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker(),
-      std::move(task_options), nullptr,
-      actor::ui::ActorUiStateManager::Get(GetProfile()));
+      actor::ui::ActorUiStateManager::Get(GetProfile()), std::move(options));
   actor::AddTabToTask(*tab1, *actor_service->GetTask(task_id));
   actor_service->GetTask(task_id)->Pause(/*from_actor=*/true);
 

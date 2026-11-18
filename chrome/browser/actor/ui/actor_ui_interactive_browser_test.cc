@@ -27,12 +27,13 @@ void ActorUiInteractiveBrowserTest::SetUpCommandLine(
 
 void ActorUiInteractiveBrowserTest::StartActingOnTab(
     actor::webui::mojom::TaskDuration duration) {
-  auto task_options = actor::webui::mojom::TaskOptions::New();
-  task_options->duration = duration;
+  actor::ActorTaskOptions options;
+  options.webui_task_options = actor::webui::mojom::TaskOptions::New();
+  options.webui_task_options->duration = duration;
   task_id_ = actor_keyed_service()->CreateTaskWithOptions(
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker(),
-      std::move(task_options), nullptr,
-      actor::ui::ActorUiStateManager::Get(browser()->GetProfile()));
+      actor::ui::ActorUiStateManager::Get(browser()->GetProfile()),
+      std::move(options));
   TestFuture<actor::mojom::ActionResultPtr> future;
   actor_keyed_service()->GetTask(task_id_)->AddTab(
       browser()->GetActiveTabInterface()->GetHandle(),

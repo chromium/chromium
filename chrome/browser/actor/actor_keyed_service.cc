@@ -710,68 +710,51 @@ TaskId ActorKeyedService::CreateTask(
     const TaskSourceInfo& source_info,
     const EnterprisePolicyChecker* policy_checker,
     AllowedSchemes allowed_schemes) {
-  return CreateTaskWithOptions(
-      source_info, policy_checker, /*options=*/nullptr,
-      /*delegate=*/nullptr, actor_ui_state_manager_.get(),
-      /*initial_invocation_source=*/std::nullopt, allowed_schemes);
+  ActorTaskOptions options;
+  options.allowed_schemes = allowed_schemes;
+  return CreateTaskWithOptions(source_info, policy_checker,
+                               actor_ui_state_manager_.get(),
+                               std::move(options));
 }
 
 TaskId ActorKeyedService::CreateTaskWithOptions(
     const TaskSourceInfo& source_info,
     const EnterprisePolicyChecker* policy_checker,
-    webui::mojom::TaskOptionsPtr options,
-    base::WeakPtr<ActorTaskDelegate> delegate,
     actor::ui::ActorUiStateManagerInterface* ui_state_manager,
-    std::optional<glic::mojom::InvocationSource> initial_invocation_source,
-    AllowedSchemes allowed_schemes,
-    base::optional_ref<const optimization_guide::proto::AgentContainerConfig>
-        agent_container_config,
-    ExecutionMode execution_mode) {
+    ActorTaskOptions options) {
   CHECK(ui_state_manager);
   return CreateTaskImpl(ui::NewUiEventDispatcher(ui_state_manager), source_info,
-                        policy_checker, std::move(options), std::move(delegate),
-                        ui_state_manager, initial_invocation_source,
-                        allowed_schemes, agent_container_config,
-                        execution_mode);
+                        policy_checker, ui_state_manager, std::move(options));
 }
 
 TaskId ActorKeyedService::CreateTaskForTesting(
     std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
     const TaskSourceInfo& source_info,
     const EnterprisePolicyChecker* policy_checker,
-    webui::mojom::TaskOptionsPtr options,
-    base::WeakPtr<ActorTaskDelegate> delegate,
-    std::optional<glic::mojom::InvocationSource> initial_invocation_source,
-    AllowedSchemes allowed_schemes) {
+    ActorTaskOptions options) {
   return CreateTaskImpl(std::move(ui_event_dispatcher), source_info,
-                        policy_checker, std::move(options), std::move(delegate),
-                        actor_ui_state_manager_.get(),
-                        initial_invocation_source, allowed_schemes);
+                        policy_checker, actor_ui_state_manager_.get(),
+                        std::move(options));
 }
 
 TaskId ActorKeyedService::CreateTaskImpl(
     std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
     const TaskSourceInfo& source_info,
     const EnterprisePolicyChecker* policy_checker,
-    webui::mojom::TaskOptionsPtr options,
-    base::WeakPtr<ActorTaskDelegate> delegate,
     actor::ui::ActorUiStateManagerInterface* ui_state_manager,
-    std::optional<glic::mojom::InvocationSource> initial_invocation_source,
-    AllowedSchemes allowed_schemes,
-    base::optional_ref<const optimization_guide::proto::AgentContainerConfig>
-        agent_container_config,
-    ExecutionMode execution_mode) {
+    ActorTaskOptions options) {
   TRACE_EVENT0("actor", "ActorKeyedService::CreateTask");
   GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::CreateTask", {});
 
   const TaskId task_id = next_task_id_.GenerateNextId();
   ActorSurfaceHandle initial_actor_surface;
-  if (options && options->actuation_tab_id.has_value()) {
-    initial_actor_surface =
-        ActorSurfaceHandle::FromRawValue(options->actuation_tab_id.value());
+  if (options.webui_task_options &&
+      options.webui_task_options->actuation_tab_id.has_value()) {
+    initial_actor_surface = ActorSurfaceHandle::FromRawValue(
+        options.webui_task_options->actuation_tab_id.value());
   }
   if (initial_actor_surface.is_null() &&
-      execution_mode == ExecutionMode::kHeadless) {
+      options.execution_mode == ActorTaskOptions::ExecutionMode::kHeadless) {
     ScopedHeadlessActorSurface headless_surface = CreateHeadlessActorSurface();
     initial_actor_surface = headless_surface.actor_surface_handle();
     task_headless_surfaces_.emplace(task_id, std::move(headless_surface));
@@ -780,12 +763,10 @@ TaskId ActorKeyedService::CreateTaskImpl(
   CHECK(ui_state_manager);
   auto actor_task = std::make_unique<ActorTask>(
       base::PassKey<ActorKeyedService>(), *this, task_id,
-      std::move(ui_event_dispatcher), std::move(options), source_info,
-      policy_checker, std::move(delegate), initial_invocation_source,
-      allowed_schemes);
+      std::move(ui_event_dispatcher), source_info, policy_checker, options);
 
-  if (agent_container_config.has_value()) {
-    AssignAgentContainerConfig(*actor_task, agent_container_config.value());
+  if (options.agent_container_config.has_value()) {
+    AssignAgentContainerConfig(*actor_task, *options.agent_container_config);
   }
 
   if (!initial_actor_surface.is_null()) {
