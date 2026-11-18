@@ -75,6 +75,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -442,7 +443,10 @@ class AcceleratorControllerTest : public AshTestBase {
                        ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
     if (IsConfirmationDialogOpen()) {
       AcceptConfirmationDialog();
-      base::RunLoop().RunUntilIdle();
+      // The dialog's widget closes in a posted task. Wait for it, so that the
+      // next call doesn't find this dialog still open and accept it again.
+      ASSERT_TRUE(
+          base::test::RunUntil([&] { return !IsConfirmationDialogOpen(); }));
     }
   }
 
@@ -1096,7 +1100,10 @@ TEST_F(AcceleratorControllerTest, RotateScreen) {
   EXPECT_TRUE(IsConfirmationDialogOpen());
   // Cancel on the dialog should have no effect.
   CancelConfirmationDialog();
-  base::RunLoop().RunUntilIdle();
+  // The dialog's widget closes in a posted task. Wait for it, so that the
+  // shortcut below opens a new dialog.
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return !IsConfirmationDialogOpen(); }));
   EXPECT_FALSE(accessibility_controller
                    ->HasDisplayRotationAcceleratorDialogBeenAccepted());
 
@@ -1110,10 +1117,9 @@ TEST_F(AcceleratorControllerTest, RotateScreen) {
                      ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
   EXPECT_TRUE(IsConfirmationDialogOpen());
   AcceptConfirmationDialog();
-  base::RunLoop().RunUntilIdle();
-
-  // Dialog should be closed.
-  EXPECT_FALSE(IsConfirmationDialogOpen());
+  // The dialog's widget closes in a posted task.
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return !IsConfirmationDialogOpen(); }));
   EXPECT_TRUE(accessibility_controller
                   ->HasDisplayRotationAcceleratorDialogBeenAccepted());
   display::Display::Rotation rotation_after_accept =
@@ -1559,28 +1565,23 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppList) {
   // The press event should not toggle the AppList, the release should instead.
   EXPECT_FALSE(
       ProcessInController(ui::Accelerator(ui::VKEY_LWIN, ui::EF_NONE)));
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(ui::VKEY_LWIN, GetCurrentAccelerator().key_code());
   GetAppListTestHelper()->CheckVisibility(false);
 
   EXPECT_TRUE(ProcessInController(
       CreateReleaseAccelerator(ui::VKEY_LWIN, ui::EF_NONE)));
-  base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
 
   EXPECT_TRUE(ProcessInController(
       CreateReleaseAccelerator(ui::VKEY_LWIN, ui::EF_NONE)));
-  base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(false);
 
   // The press of VKEY_BROWSER_SEARCH should toggle the AppList
   EXPECT_TRUE(ProcessInController(
       ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_NONE)));
-  base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
   EXPECT_FALSE(ProcessInController(
       CreateReleaseAccelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_NONE)));
-  base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
 
   // Verifies VKEY_RWIN triggers AppList, too. This happens if modifier
@@ -1588,13 +1589,11 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppList) {
   GetAppListTestHelper()->DismissAndRunLoop();
   EXPECT_FALSE(
       ProcessInController(ui::Accelerator(ui::VKEY_RWIN, ui::EF_NONE)));
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(ui::VKEY_RWIN, GetCurrentAccelerator().key_code());
   GetAppListTestHelper()->CheckVisibility(false);
 
   EXPECT_TRUE(ProcessInController(
       CreateReleaseAccelerator(ui::VKEY_RWIN, ui::EF_NONE)));
-  base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
   EXPECT_EQ(ui::VKEY_RWIN, GetPreviousAccelerator().key_code());
 }
