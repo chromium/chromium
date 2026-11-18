@@ -230,3 +230,23 @@ TEST_F(ThemeColorsSourceManagerTest,
                         Not(HasSubstr("baseline-grayscale")),
                         Not(HasSubstr("baseline-default")))))));
 }
+
+// Verifies that the static overload generates the CSS from a ColorProvider.
+TEST_F(ThemeColorsSourceManagerTest,
+       PopulateLocalResourceLoaderConfigFromColorProvider) {
+  blink::mojom::LocalResourceLoaderConfig config;
+  const url::Origin requesting_origin =
+      url::Origin::Create(GURL("chrome://webui-toolbar.top-chrome/"));
+  ui::ColorProvider color_provider;
+  color_provider.SetColorForTesting(ui::kColorAccent,
+                                    SkColorSetRGB(0x12, 0x34, 0x56));
+
+  ThemeColorsSourceManager::PopulateLocalResourceLoaderConfig(
+      &config, requesting_origin, color_provider);
+
+  EXPECT_THAT(config, ContainsThemeSource(Pointee(AllOf(
+                          HasResource("colors.css?sets=ui,chrome",
+                                      HasSubstr("--color-accent:#123456ff;")),
+                          HasHeader("Access-Control-Allow-Origin: "
+                                    "chrome://webui-toolbar.top-chrome")))));
+}

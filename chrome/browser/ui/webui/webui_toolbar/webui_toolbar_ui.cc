@@ -755,8 +755,7 @@ void WebUIToolbarUI::PopulateLocalResourceLoaderConfig(
     blink::mojom::LocalResourceLoaderConfig* config,
     const url::Origin& requesting_origin) {
   content::WebContents* web_contents = web_ui()->GetWebContents();
-  // An unbound spare has no user profile to read theme colors from, so its
-  // initial `colors.css` load goes through `ThemeSource`. Later reloads add a
+  // This serves only the initial `colors.css` load. Later reloads add a
   // `version` parameter and go through `ThemeSource` for every toolbar.
   if (Profile* user_profile = webui::GetUserProfile(web_contents)) {
     auto* theme_colors_manager =
@@ -764,6 +763,12 @@ void WebUIToolbarUI::PopulateLocalResourceLoaderConfig(
     CHECK(theme_colors_manager);
     theme_colors_manager->PopulateLocalResourceLoaderConfig(
         config, requesting_origin, web_contents);
+  } else {
+    // An unbound spare has no user profile to get a `ThemeColorsSourceManager`
+    // from, so generate `colors.css` from its color provider, which is seeded
+    // from the template profile.
+    ThemeColorsSourceManager::PopulateLocalResourceLoaderConfig(
+        config, requesting_origin, web_contents->GetColorProvider());
   }
 
   WebUIToolbarLayoutCssHelper::PopulateLocalResourceLoaderConfig(

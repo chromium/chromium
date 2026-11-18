@@ -94,6 +94,7 @@ void ThemeColorsSourceManager::PopulateLocalResourceLoaderConfig(
   PopulateLocalResourceLoaderConfig(config, requesting_origin, *color_provider);
 }
 
+// static
 void ThemeColorsSourceManager::PopulateLocalResourceLoaderConfig(
     blink::mojom::LocalResourceLoaderConfig* config,
     const url::Origin& requesting_origin,

@@ -6,6 +6,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/common/chrome_features.h"
@@ -203,7 +206,7 @@ class WebUIToolbarUIUnboundTest : public ChromeRenderViewHostTestHarness {
 
 // Verifies that an unbound WebUIToolbarUI seeded from a template profile
 // populates `BuildInitialState()` and its color provider from that seed, clears
-// generic font family maps while unbound, skips in-process colors.css, removes
+// generic font family maps while unbound, serves in-process colors.css, removes
 // the seed user data on bind, and still sends an empty bind message, which
 // lifts the page's gate, when bound to a profile whose state matches the seed.
 TEST_F(WebUIToolbarUIUnboundTest,
@@ -243,8 +246,19 @@ TEST_F(WebUIToolbarUIUnboundTest,
       url::Origin::Create(GURL(chrome::kChromeUIWebUIToolbarURL));
   harness->toolbar_ui->PopulateLocalResourceLoaderConfig(&config,
                                                          toolbar_origin);
-  EXPECT_FALSE(
-      config.sources.contains(url::Origin::Create(GURL("chrome://theme/"))));
+  const url::Origin theme_origin = url::Origin::Create(GURL("chrome://theme/"));
+  auto source_it = config.sources.find(theme_origin);
+  ASSERT_TRUE(source_it != config.sources.end());
+  auto resource_it =
+      source_it->second->path_to_resource_map.find("colors.css?sets=ui,chrome");
+  ASSERT_TRUE(resource_it != source_it->second->path_to_resource_map.end());
+  ASSERT_TRUE(resource_it->second->is_response_body());
+  const std::optional<std::string> expected_css =
+      ThemeSource::GenerateColorsCss(
+          harness->contents->GetColorProvider(),
+          GURL("chrome://theme/colors.css?sets=ui,chrome"));
+  ASSERT_TRUE(expected_css);
+  EXPECT_EQ(*expected_css, resource_it->second->get_response_body());
   EXPECT_TRUE(config.sources.contains(toolbar_origin));
 
   // Binding to the matching profile removes the seed user data and sends an

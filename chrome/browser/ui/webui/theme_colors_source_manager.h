@@ -46,16 +46,18 @@ class ThemeColorsSourceManager : public KeyedService {
       const url::Origin& requesting_origin,
       content::WebContents* web_contents);
 
+  // Same as above, but generates the CSS from `color_provider` and needs no
+  // profile.
+  static void PopulateLocalResourceLoaderConfig(
+      blink::mojom::LocalResourceLoaderConfig* config,
+      const url::Origin& requesting_origin,
+      const ui::ColorProvider& color_provider);
+
   // Sets a custom ColorProvider for testing. This allows tests to simulate
   // specific theme colors without needing a full Browser/BrowserWindow.
   void SetColorProviderForTesting(const ui::ColorProvider* color_provider);
 
  private:
-  void PopulateLocalResourceLoaderConfig(
-      blink::mojom::LocalResourceLoaderConfig* config,
-      const url::Origin& requesting_origin,
-      const ui::ColorProvider& color_provider);
-
   raw_ptr<Profile> profile_;
   raw_ptr<const ui::ColorProvider> color_provider_for_testing_ = nullptr;
 };

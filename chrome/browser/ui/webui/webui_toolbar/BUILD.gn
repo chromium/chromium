@@ -157,6 +157,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/waap",
     "//chrome/browser/ui/waap:waap_utils",
+    "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/metrics_reporter:test_support",
     "//chrome/browser/ui/webui/top_chrome",
