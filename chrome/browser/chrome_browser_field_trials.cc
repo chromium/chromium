@@ -377,6 +377,17 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // LFF devices.
   feature_overrides.EnableFeature(features::kAndroidDevToolsFrontend);
 
+  // Enables the bookmark improvements launched on desktop Android.
+  // TODO(crbug.com/587063794): Remove when these are enabled by default for
+  // all form factors.
+  feature_overrides.EnableFeature(
+      chrome::android::kAndroidDesktopBookmarkDialog);
+  feature_overrides.EnableFeature(
+      chrome::android::kAndroidDesktopBookmarkPopup);
+  feature_overrides.EnableFeature(chrome::android::kBookmarksBarContextMenu);
+  feature_overrides.EnableFeature(chrome::android::kBookmarksBarNTP);
+  feature_overrides.EnableFeature(chrome::android::kFlyoutInBookmarksBar);
+
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
