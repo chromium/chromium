@@ -8,12 +8,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <memory>
 
 #include "base/command_line.h"
 #include "base/containers/hashing_lru_cache.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -277,8 +279,20 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
     // less than that looks awful; do the same here.
     params.hinting = FontRenderParams::HINTING_FULL;
   } else if (params.subpixel_positioning) {
-    // Subpixel positioning requires hinting to be disabled.
-    params.hinting = FontRenderParams::HINTING_NONE;
+#if BUILDFLAG(IS_LINUX)
+    // Slight hinting only snaps glyphs vertically, so it can be kept with
+    // fractional horizontal positions.
+    const bool keep_slight_hinting = base::FeatureList::IsEnabled(
+        features::kSlightHintingWithSubpixelPositioning);
+#else
+    const bool keep_slight_hinting = false;
+#endif  // BUILDFLAG(IS_LINUX)
+    // Hinting that moves glyphs horizontally conflicts with subpixel
+    // positioning.
+    params.hinting =
+        keep_slight_hinting
+            ? std::min(params.hinting, FontRenderParams::HINTING_SLIGHT)
+            : FontRenderParams::HINTING_NONE;
   }
 
   // Use the first family from the list if Fontconfig didn't suggest a family.

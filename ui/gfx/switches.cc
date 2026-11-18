@@ -76,4 +76,9 @@ BASE_FEATURE(kTransparentIconWorkaround,
 #endif  // BUILDFLAG(IS_WIN)
 
 BASE_FEATURE(kHarfBuzzZeroCopyFontTable, base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_LINUX)
+BASE_FEATURE(kSlightHintingWithSubpixelPositioning,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_LINUX)
 }  // namespace features

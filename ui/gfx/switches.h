@@ -43,6 +43,14 @@ GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kTransparentIconWorkaround);
 // data.
 GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kHarfBuzzZeroCopyFontTable);
 
+#if BUILDFLAG(IS_LINUX)
+// When enabled, subpixel positioning at scale factors above 1x caps hinting at
+// HINTING_SLIGHT instead of disabling it. Slight hinting only adjusts glyphs
+// vertically, so it is compatible with fractional horizontal positions. Used as
+// a killswitch.
+GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kSlightHintingWithSubpixelPositioning);
+#endif  // BUILDFLAG(IS_LINUX)
+
 }  // namespace features
 
 #endif  // UI_GFX_SWITCHES_H_

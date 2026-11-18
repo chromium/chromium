@@ -8,7 +8,7 @@
     },
     {
       "name": "Caret",
-      "position": [533, 0],
+      "position": [525, 0],
       "bounds": [2, 26],
       "contentsOpaque": true,
       "transform": 2

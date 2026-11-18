@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
@@ -415,6 +416,58 @@ TEST_F(FontRenderParamsTest, DisableSubpixelPositioningSwitch) {
 }
 
 #if BUILDFLAG(IS_LINUX)
+TEST_F(FontRenderParamsTest, SubpixelPositioningKeepsSlightHinting) {
+  struct {
+    const char* hintstyle;
+    FontRenderParams::Hinting expected_hinting;
+  } kCases[] = {
+      {"hintnone", FontRenderParams::HINTING_NONE},
+      {"hintslight", FontRenderParams::HINTING_SLIGHT},
+      {"hintmedium", FontRenderParams::HINTING_SLIGHT},
+      {"hintfull", FontRenderParams::HINTING_SLIGHT},
+  };
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(test_case.hintstyle);
+    ASSERT_TRUE(LoadConfigDataIntoFontconfig(
+        std::string(kFontconfigFileHeader) + kFontconfigMatchPatternHeader +
+        CreateFontconfigEditStanza("antialias", "bool", "true") +
+        CreateFontconfigEditStanza("hinting", "bool", "true") +
+        CreateFontconfigEditStanza("hintstyle", "const", test_case.hintstyle) +
+        kFontconfigMatchFooter + kFontconfigFileFooter));
+
+    for (float scale_factor : {1.25f, 1.4f, 2.0f}) {
+      SCOPED_TRACE(scale_factor);
+      ClearFontRenderParamsCache();
+      SetFontRenderParamsDeviceScaleFactor(scale_factor);
+      FontRenderParams params =
+          GetFontRenderParams(FontRenderParamsQuery(), nullptr);
+      EXPECT_TRUE(params.subpixel_positioning);
+      EXPECT_EQ(test_case.expected_hinting, params.hinting);
+    }
+  }
+  SetFontRenderParamsDeviceScaleFactor(1.0f);
+}
+
+TEST_F(FontRenderParamsTest, SubpixelPositioningDisablesHintingWithoutFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kSlightHintingWithSubpixelPositioning);
+  ASSERT_TRUE(LoadConfigDataIntoFontconfig(
+      std::string(kFontconfigFileHeader) + kFontconfigMatchPatternHeader +
+      CreateFontconfigEditStanza("antialias", "bool", "true") +
+      CreateFontconfigEditStanza("hinting", "bool", "true") +
+      CreateFontconfigEditStanza("hintstyle", "const", "hintslight") +
+      kFontconfigMatchFooter + kFontconfigFileFooter));
+
+  ClearFontRenderParamsCache();
+  SetFontRenderParamsDeviceScaleFactor(1.25f);
+  FontRenderParams params =
+      GetFontRenderParams(FontRenderParamsQuery(), nullptr);
+  EXPECT_TRUE(params.subpixel_positioning);
+  EXPECT_EQ(FontRenderParams::HINTING_NONE, params.hinting);
+  SetFontRenderParamsDeviceScaleFactor(1.0f);
+}
+
 TEST_F(FontRenderParamsTest, OnlySetConfiguredValues) {
   // Configure the LinuxUi to request subpixel rendering.
   FontRenderParams system_params;
