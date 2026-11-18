@@ -170,8 +170,6 @@ crbug.com/558993697 [ android android-pixel-11-pro-xl ] GpuProcess_visibility [ 
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-# Samsung flake that seems to signal visibility too many times
-crbug.com/380269801 [ android android-brya ] GpuProcess_visibility [ Failure ]
 
 
 #######################################################################
