@@ -20,6 +20,7 @@ import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {
   BrowsingContext,
   ChromiumBidi,
+  type GoogBrowsingContext,
   InvalidArgumentException,
   type EmptyResult,
   NoSuchUserContextException,
@@ -372,6 +373,18 @@ export class BrowsingContextProcessor {
   ): Promise<BrowsingContext.LocateNodesResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     return await context.locateNodes(params);
+  }
+
+  async getAccessibilityTree(
+    params: GoogBrowsingContext.GetAccessibilityTreeParameters,
+  ): Promise<GoogBrowsingContext.GetAccessibilityTreeResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    if (!context.isTopLevelContext()) {
+      throw new InvalidArgumentException(
+        `Non-top-level 'context' (${params.context}) is not supported`,
+      );
+    }
+    return await context.getAccessibilityTree();
   }
 
   #onContextCreatedSubscribeHook(

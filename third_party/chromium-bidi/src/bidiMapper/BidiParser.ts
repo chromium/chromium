@@ -22,6 +22,7 @@ import type {
   BrowsingContext,
   GoogCdp,
   Emulation,
+  GoogBrowsingContext,
   Input,
   Network,
   Permissions,
@@ -138,6 +139,13 @@ export interface BidiCommandParameterParser {
   parseGetSessionParams(params: unknown): GoogCdp.GetSessionParameters;
   parseResolveRealmParams(params: unknown): GoogCdp.ResolveRealmParameters;
   parseSendCommandParams(params: unknown): GoogCdp.SendCommandParameters;
+  // keep-sorted end
+
+  // Goog BrowsingContext module
+  // keep-sorted start block=yes
+  parseGetAccessibilityTreeParams(
+    params: unknown,
+  ): GoogBrowsingContext.GetAccessibilityTreeParameters;
   // keep-sorted end
 
   // Emulation module

@@ -21,6 +21,7 @@ import type {
   BrowsingContext,
   GoogCdp,
   Emulation,
+  GoogBrowsingContext,
   Input,
   Network,
   Script,
@@ -211,6 +212,15 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   }
   parseSendCommandParams(params: unknown): GoogCdp.SendCommandParameters {
     return params as GoogCdp.SendCommandParameters;
+  }
+  // keep-sorted end
+
+  // Goog BrowsingContext module
+  // keep-sorted start block=yes
+  parseGetAccessibilityTreeParams(
+    params: unknown,
+  ): GoogBrowsingContext.GetAccessibilityTreeParameters {
+    return params as GoogBrowsingContext.GetAccessibilityTreeParameters;
   }
   // keep-sorted end
 

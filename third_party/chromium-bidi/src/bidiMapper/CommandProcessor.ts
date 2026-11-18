@@ -358,6 +358,14 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         );
       // keep-sorted end
 
+      // Goog BrowsingContext module
+      // keep-sorted start block=yes
+      case 'goog:browsingContext.getAccessibilityTree':
+        return await this.#browsingContextProcessor.getAccessibilityTree(
+          this.#parser.parseGetAccessibilityTreeParams(command.params),
+        );
+      // keep-sorted end
+
       // DigitalCredentials module
       // keep-sorted start block=yes
       case 'digitalCredentials.setVirtualWalletBehavior':

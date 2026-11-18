@@ -20,7 +20,7 @@ import {z} from 'zod';
 
 import {InvalidArgumentException} from '../protocol/protocol.js';
 
-import {GoogCdp, parseObject} from './protocol-parser.js';
+import {GoogBrowsingContext, GoogCdp, parseObject} from './protocol-parser.js';
 
 describe('parseObject', () => {
   const schema = z.object({
@@ -158,6 +158,33 @@ describe('GoogCdp', () => {
     it('should throw if the realm is not a string', () => {
       assert.throws(
         () => GoogCdp.parseResolveRealmRequest({realm: 1}),
+        InvalidArgumentException,
+      );
+    });
+  });
+});
+
+describe('GoogBrowsingContext', () => {
+  describe('parseGetAccessibilityTreeParams', () => {
+    it('should parse the context', () => {
+      const result: unknown =
+        GoogBrowsingContext.parseGetAccessibilityTreeParams({
+          context: 'context-1',
+        });
+      assert.deepEqual(result, {context: 'context-1', 'goog:params': {}});
+    });
+
+    it('should throw if the context is missing', () => {
+      assert.throws(
+        () => GoogBrowsingContext.parseGetAccessibilityTreeParams({}),
+        InvalidArgumentException,
+      );
+    });
+
+    it('should throw if the context is not a string', () => {
+      assert.throws(
+        () =>
+          GoogBrowsingContext.parseGetAccessibilityTreeParams({context: 123}),
         InvalidArgumentException,
       );
     });

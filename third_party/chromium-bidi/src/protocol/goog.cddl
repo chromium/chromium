@@ -32,12 +32,14 @@
 ;   `<module>` never shadows a core WebDriver BiDi module import.
 
 GoogCommand = (
+  goog_browsingContext.GetAccessibilityTree //
   goog_cdp.GetSession //
   goog_cdp.ResolveRealm //
   goog_cdp.SendCommand
 )
 
 GoogResult = (
+  goog_browsingContext.GetAccessibilityTreeResult /
   goog_cdp.GetSessionResult /
   goog_cdp.ResolveRealmResult /
   goog_cdp.SendCommandResult
@@ -46,6 +48,40 @@ GoogResult = (
 GoogEvent = (
   goog_cdp.Event
 )
+
+; `goog:browsingContext` module: extensions of the `browsingContext` module.
+
+; An accessibility node and its descendants in the accessibility tree. The type
+; mirrors `browsingContext.AccessibilityNode` of the specification draft
+; https://github.com/w3c/webdriver-bidi/pull/1216.
+goog_browsingContext.AccessibilityNode = {
+  accessibilityId: text,
+  children: [* goog_browsingContext.AccessibilityNode],
+  ; The accessible name. The field is absent if the name is the empty string.
+  ? name: text,
+  ; The other computed accessibility properties, e.g. `focusable`. The value of
+  ; a relation property, e.g. `labelledby`, is the space-separated list of the
+  ; shared IDs of the related DOM nodes.
+  ? properties: { * text => text },
+  ? role: text,
+  ; The shared ID of the DOM node, if the accessibility node has a DOM node.
+  ? sharedId: script.SharedId,
+}
+
+; Returns the accessibility tree of the active document of the given top-level
+; browsing context. The tree excludes the documents of the child contexts.
+goog_browsingContext.GetAccessibilityTree = (
+  method: "goog:browsingContext.getAccessibilityTree",
+  params: goog_browsingContext.GetAccessibilityTreeParameters
+)
+
+goog_browsingContext.GetAccessibilityTreeParameters = {
+  context: browsingContext.BrowsingContext,
+}
+
+goog_browsingContext.GetAccessibilityTreeResult = {
+  root: goog_browsingContext.AccessibilityNode,
+}
 
 ; `goog:cdp` module: direct access to the Chrome DevTools Protocol.
 ; https://chromedevtools.github.io/devtools-protocol

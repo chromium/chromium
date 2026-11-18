@@ -27,6 +27,7 @@ import {BrowsingContext, Script} from './webdriver-bidi.js';
 export const GoogCommandSchema: z.ZodLazy<
   z.ZodUnion<
     readonly [
+      typeof GoogBrowsingContext.GetAccessibilityTreeSchema,
       typeof GoogCdp.GetSessionSchema,
       typeof GoogCdp.ResolveRealmSchema,
       typeof GoogCdp.SendCommandSchema,
@@ -34,6 +35,7 @@ export const GoogCommandSchema: z.ZodLazy<
   >
 > = z.lazy(() =>
   z.union([
+    GoogBrowsingContext.GetAccessibilityTreeSchema,
     GoogCdp.GetSessionSchema,
     GoogCdp.ResolveRealmSchema,
     GoogCdp.SendCommandSchema,
@@ -42,6 +44,7 @@ export const GoogCommandSchema: z.ZodLazy<
 export const GoogResultSchema: z.ZodLazy<
   z.ZodUnion<
     readonly [
+      typeof GoogBrowsingContext.GetAccessibilityTreeResultSchema,
       typeof GoogCdp.GetSessionResultSchema,
       typeof GoogCdp.ResolveRealmResultSchema,
       typeof GoogCdp.SendCommandResultSchema,
@@ -49,6 +52,7 @@ export const GoogResultSchema: z.ZodLazy<
   >
 > = z.lazy(() =>
   z.union([
+    GoogBrowsingContext.GetAccessibilityTreeResultSchema,
     GoogCdp.GetSessionResultSchema,
     GoogCdp.ResolveRealmResultSchema,
     GoogCdp.SendCommandResultSchema,
@@ -57,6 +61,53 @@ export const GoogResultSchema: z.ZodLazy<
 export const GoogEventSchema: z.ZodLazy<typeof GoogCdp.EventSchema> = z.lazy(
   () => GoogCdp.EventSchema,
 );
+export namespace GoogBrowsingContext {
+  export const AccessibilityNodeSchema: z.ZodType = z.lazy(() =>
+    z.object({
+      accessibilityId: z.string(),
+      children: z.array(GoogBrowsingContext.AccessibilityNodeSchema),
+      name: z.string().optional(),
+      properties: z.record(z.string(), z.string()).optional(),
+      role: z.string().optional(),
+      sharedId: Script.SharedIdSchema.optional(),
+    }),
+  );
+}
+export namespace GoogBrowsingContext {
+  export const GetAccessibilityTreeSchema: z.ZodLazy<
+    z.ZodObject<{
+      method: z.ZodLiteral<'goog:browsingContext.getAccessibilityTree'>;
+      params: typeof GoogBrowsingContext.GetAccessibilityTreeParametersSchema;
+    }>
+  > = z.lazy(() =>
+    z.object({
+      method: z.literal('goog:browsingContext.getAccessibilityTree'),
+      params: GoogBrowsingContext.GetAccessibilityTreeParametersSchema,
+    }),
+  );
+}
+export namespace GoogBrowsingContext {
+  export const GetAccessibilityTreeParametersSchema: z.ZodLazy<
+    z.ZodObject<{
+      context: typeof BrowsingContext.BrowsingContextSchema;
+    }>
+  > = z.lazy(() =>
+    z.object({
+      context: BrowsingContext.BrowsingContextSchema,
+    }),
+  );
+}
+export namespace GoogBrowsingContext {
+  export const GetAccessibilityTreeResultSchema: z.ZodLazy<
+    z.ZodObject<{
+      root: typeof GoogBrowsingContext.AccessibilityNodeSchema;
+    }>
+  > = z.lazy(() =>
+    z.object({
+      root: GoogBrowsingContext.AccessibilityNodeSchema,
+    }),
+  );
+}
 export namespace GoogCdp {
   export const SessionIdSchema: z.ZodLazy<z.ZodString> = z.lazy(() =>
     z.string(),

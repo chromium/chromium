@@ -24,12 +24,44 @@
 import type {BrowsingContext, Script} from './webdriver-bidi.js';
 
 export type GoogCommand =
-  GoogCdp.GetSession | GoogCdp.ResolveRealm | GoogCdp.SendCommand;
+  | GoogBrowsingContext.GetAccessibilityTree
+  | GoogCdp.GetSession
+  | GoogCdp.ResolveRealm
+  | GoogCdp.SendCommand;
 export type GoogResult =
+  | GoogBrowsingContext.GetAccessibilityTreeResult
   | GoogCdp.GetSessionResult
   | GoogCdp.ResolveRealmResult
   | GoogCdp.SendCommandResult;
 export type GoogEvent = GoogCdp.Event;
+export namespace GoogBrowsingContext {
+  export type AccessibilityNode = {
+    accessibilityId: string;
+    children: [...GoogBrowsingContext.AccessibilityNode[]];
+    name?: string;
+    properties?: {
+      [key: string]: string;
+    };
+    role?: string;
+    sharedId?: Script.SharedId;
+  };
+}
+export namespace GoogBrowsingContext {
+  export type GetAccessibilityTree = {
+    method: 'goog:browsingContext.getAccessibilityTree';
+    params: GoogBrowsingContext.GetAccessibilityTreeParameters;
+  };
+}
+export namespace GoogBrowsingContext {
+  export type GetAccessibilityTreeParameters = {
+    context: BrowsingContext.BrowsingContext;
+  };
+}
+export namespace GoogBrowsingContext {
+  export type GetAccessibilityTreeResult = {
+    root: GoogBrowsingContext.AccessibilityNode;
+  };
+}
 export namespace GoogCdp {
   export type SessionId = string;
 }

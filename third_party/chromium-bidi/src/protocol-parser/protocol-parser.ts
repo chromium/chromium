@@ -605,6 +605,22 @@ export namespace GoogCdp {
   // keep-sorted end
 }
 
+/** @see `src/protocol/goog.cddl` */
+export namespace GoogBrowsingContext {
+  // keep-sorted start block=yes
+
+  export function parseGetAccessibilityTreeParams(
+    params: unknown,
+  ): Protocol.GoogBrowsingContext.GetAccessibilityTreeParameters {
+    return parseObject(
+      params,
+      WebDriverBidiGoog.GoogBrowsingContext
+        .GetAccessibilityTreeParametersSchema,
+    );
+  }
+  // keep-sorted end
+}
+
 export namespace Permissions {
   // keep-sorted start block=yes
 

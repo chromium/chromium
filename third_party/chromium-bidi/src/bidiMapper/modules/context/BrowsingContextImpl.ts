@@ -22,6 +22,7 @@ import {
   BrowsingContext,
   ChromiumBidi,
   type Emulation,
+  type GoogBrowsingContext,
   InvalidArgumentException,
   InvalidSelectorException,
   NoSuchElementException,
@@ -2164,6 +2165,191 @@ export class BrowsingContextImpl {
     return {
       nodes: resultNodes.filter((result) => result.type === 'node'),
     };
+  }
+
+  /**
+   * Returns the accessibility tree of the document of this context. The tree
+   * does not include the documents of the child contexts.
+   */
+  async getAccessibilityTree(): Promise<GoogBrowsingContext.GetAccessibilityTreeResult> {
+    // `Accessibility.enable` keeps the accessibility node IDs consistent
+    // between the calls.
+    await this.#cdpTarget.cdpClient.sendCommand('Accessibility.enable');
+
+    // A shared ID contains the document ID. Read the document ID before the
+    // CDP command and compare it after the command. A different value shows
+    // that the context navigated, and the nodes can belong to the previous
+    // document.
+    const documentId = this.#loaderId;
+    if (documentId === undefined) {
+      throw new UnsupportedOperationException(
+        `Context ${this.id} has no document`,
+      );
+    }
+    const {nodes: axNodes} = await this.#cdpTarget.cdpClient.sendCommand(
+      'Accessibility.getFullAXTree',
+      {frameId: this.id},
+    );
+    if (documentId !== this.#loaderId) {
+      throw new UnsupportedOperationException(
+        `Context ${this.id} navigated during the command`,
+      );
+    }
+    return {root: this.#buildAccessibilityTree(axNodes, documentId)};
+  }
+
+  /**
+   * Returns true if the CDP node is the root node of the document of a child
+   * context. Only the root node of a document has the `frameId` attribute.
+   */
+  #isChildDocumentAxNode(axNode: Protocol.Accessibility.AXNode): boolean {
+    return axNode.frameId !== undefined && axNode.frameId !== this.id;
+  }
+
+  #buildAccessibilityTree(
+    axNodes: Protocol.Accessibility.AXNode[],
+    documentId: string,
+  ): GoogBrowsingContext.AccessibilityNode {
+    const axNodesById = new Map<string, Protocol.Accessibility.AXNode>();
+    for (const axNode of axNodes) {
+      axNodesById.set(axNode.nodeId, axNode);
+    }
+    const axRoot = axNodes.find(
+      (axNode) =>
+        axNode.parentId === undefined && !this.#isChildDocumentAxNode(axNode),
+    );
+    if (axRoot === undefined) {
+      throw new UnsupportedOperationException(
+        `Context ${this.id} has no accessibility tree`,
+      );
+    }
+
+    // CDP returns also the ignored nodes. The accessibility tree does not
+    // contain them. The result contains the root node and each node that is
+    // not ignored. The tree excludes the documents of the child contexts.
+    const nodesById = new Map<string, GoogBrowsingContext.AccessibilityNode>();
+    for (const axNode of axNodes) {
+      if (
+        this.#isChildDocumentAxNode(axNode) ||
+        (axNode.ignored && axNode !== axRoot)
+      ) {
+        continue;
+      }
+      nodesById.set(
+        axNode.nodeId,
+        this.#toAccessibilityNode(axNode, documentId),
+      );
+    }
+
+    for (const [nodeId, node] of nodesById) {
+      node.children.push(
+        ...this.#getAccessibilityNodeChildren(
+          axNodesById.get(nodeId)!,
+          axNodesById,
+          nodesById,
+        ),
+      );
+    }
+    return nodesById.get(axRoot.nodeId)!;
+  }
+
+  /**
+   * Returns the children of the given CDP node in the result tree, in tree
+   * order.
+   *
+   * `nodesById` contains only the nodes of the result tree. A CDP child node
+   * that is not in `nodesById` is an ignored node. The children of the ignored
+   * node replace the ignored node. The replacement applies again to each
+   * ignored node below. For example, the CDP tree
+   *
+   *   list
+   *   ├── none (ignored)
+   *   │   ├── listitem "A"
+   *   │   └── listitem "B"
+   *   └── listitem "C"
+   *
+   * gives the children `listitem "A"`, `listitem "B"`, `listitem "C"` for the
+   * `list` node.
+   *
+   * The method uses a stack and not recursion, because a chain of ignored
+   * nodes can be long.
+   */
+  #getAccessibilityNodeChildren(
+    axNode: Protocol.Accessibility.AXNode,
+    axNodesById: Map<string, Protocol.Accessibility.AXNode>,
+    nodesById: Map<string, GoogBrowsingContext.AccessibilityNode>,
+  ): GoogBrowsingContext.AccessibilityNode[] {
+    const children: GoogBrowsingContext.AccessibilityNode[] = [];
+    // The stack contains the IDs of the CDP nodes to examine. The last element
+    // is the next node in tree order.
+    const pendingIds = [...(axNode.childIds ?? [])].reverse();
+    while (pendingIds.length > 0) {
+      const axChild = axNodesById.get(pendingIds.pop()!);
+      if (axChild === undefined || this.#isChildDocumentAxNode(axChild)) {
+        continue;
+      }
+      const child = nodesById.get(axChild.nodeId);
+      if (child !== undefined) {
+        children.push(child);
+        continue;
+      }
+      // The child is an ignored node. Examine its children in its place.
+      pendingIds.push(...[...(axChild.childIds ?? [])].reverse());
+    }
+    return children;
+  }
+
+  #toAccessibilityNode(
+    axNode: Protocol.Accessibility.AXNode,
+    documentId: string,
+  ): GoogBrowsingContext.AccessibilityNode {
+    const toText = (value: unknown) =>
+      typeof value === 'string' ? value : JSON.stringify(value);
+
+    const node: GoogBrowsingContext.AccessibilityNode = {
+      accessibilityId: axNode.nodeId,
+      children: [],
+    };
+    const properties: Record<string, string> = {};
+    for (const property of axNode.properties ?? []) {
+      const {value, relatedNodes} = property.value;
+      if (relatedNodes !== undefined) {
+        // The data of a relation property is in `relatedNodes`. The value is
+        // the space-separated list of the shared IDs of the related DOM nodes.
+        properties[property.name] = relatedNodes
+          .map((related) =>
+            getSharedId(this.id, documentId, related.backendDOMNodeId),
+          )
+          .join(' ');
+      } else if (value !== undefined) {
+        properties[property.name] = toText(value);
+      }
+    }
+    // The node type has no `description` and `value` fields. Add them to the
+    // properties.
+    if (
+      axNode.description?.value !== undefined &&
+      axNode.description.value !== ''
+    ) {
+      properties['description'] = toText(axNode.description.value);
+    }
+    if (axNode.value?.value !== undefined) {
+      properties['value'] = toText(axNode.value.value);
+    }
+
+    if (axNode.name?.value !== undefined && axNode.name.value !== '') {
+      node.name = toText(axNode.name.value);
+    }
+    if (Object.keys(properties).length > 0) {
+      node.properties = properties;
+    }
+    if (axNode.role?.value !== undefined) {
+      node.role = toText(axNode.role.value);
+    }
+    if (axNode.backendDOMNodeId !== undefined) {
+      node.sharedId = getSharedId(this.id, documentId, axNode.backendDOMNodeId);
+    }
+    return node;
   }
 
   #getAllRelatedCdpTargets() {

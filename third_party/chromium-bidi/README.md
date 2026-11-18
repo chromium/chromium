@@ -45,6 +45,26 @@ The command returns the default CDP session for the selected browsing context.
 
 The command resolves a BiDi realm to its CDP execution context ID.
 
+### Command `goog:browsingContext.getAccessibilityTree`
+
+The command returns the accessibility tree of the active document of a
+top-level browsing context. The command implements the specification draft
+[w3c/webdriver-bidi#1216](https://github.com/w3c/webdriver-bidi/pull/1216).
+
+- The command supports only top-level browsing contexts. A non-top-level
+  `context` causes an `invalid argument` error.
+- The tree contains only the document of the top-level browsing context. The
+  tree contains the accessibility node of an `iframe` element, but not the
+  document in the iframe.
+- The tree does not contain the ignored accessibility nodes. The children of an
+  ignored node replace the ignored node.
+- `sharedId` refers to the DOM node of the accessibility node.
+- `role` can be a Chrome-internal role, for example `RootWebArea`.
+- Each value in `properties` is a text. The properties include `description`
+  and `value`.
+- The value of a relation property in `properties`, for example `labelledby`, is
+  the space-separated list of the shared IDs of the related DOM nodes.
+
 ### Events `goog:cdp`
 
 The event `goog:cdp.<CDP Event Name>` contains a CDP event.
