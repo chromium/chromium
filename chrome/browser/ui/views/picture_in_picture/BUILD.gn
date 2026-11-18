@@ -144,6 +144,7 @@ source_set("picture_in_picture") {
     deps += [
       "//ash/constants",
       "//ash/public/cpp",
+      "//ash/strings",
       "//chrome/app/vector_icons",
       "//chrome/browser/chromeos/policy/dlp",
     ]

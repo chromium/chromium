@@ -12120,6 +12120,14 @@ You can manage this account’s settings by installing the Family Link app on yo
       <message name="IDS_EXTENSIONS_DOCUMENT_SCAN_API_START_SCAN_REQUEST_DENY" desc="Text for the deny button on the document scanner start scan confirmation dialog">
         Deny
       </message>
+
+      <!-- Picture-in-Picture window pin control -->
+      <message name="IDS_PICTURE_IN_PICTURE_PIN_WINDOW_TEXT" desc="Text label of the pin control button. Pressing the button keeps the Picture-in-Picture window where the user places it, instead of snapping it to the edge of the screen. The button appears in the Picture-in-Picture window.">
+        Pin window
+      </message>
+      <message name="IDS_PICTURE_IN_PICTURE_UNPIN_WINDOW_TEXT" desc="Text label of the unpin control button. Pressing the button snaps the Picture-in-Picture window to the edge of the screen again. The button appears in the Picture-in-Picture window when the window is pinned.">
+        Unpin window
+      </message>
     </messages>
   </release>
 </grit>
