@@ -4,7 +4,7 @@
 
 // cc_file_path: chrome/browser/glic/android/glic_android_browsertest.cc
 
-import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertTrue, readStream, testMain} from './browser_test_base.js';
+import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertTrue, readStream, runUntil, testMain} from './browser_test_base.js';
 
 class GlicAndroidBrowserTests extends ApiTestFixtureBase {
   override async setUpTest() {
@@ -70,6 +70,11 @@ class GlicAndroidBrowserTests extends ApiTestFixtureBase {
 
   async testDeviceRotationMojoResiliency() {
     assertDefined(this.host);
+  }
+
+  async testFocusPreservedOnReload() {
+    await runUntil(() => document.activeElement?.id === 'inputBox');
+    await runUntil(() => document.hasFocus());
   }
 }
 

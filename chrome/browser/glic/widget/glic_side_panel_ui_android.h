@@ -89,6 +89,8 @@ class GlicSidePanelUi
   void SwitchConversation(
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
+  bool ShouldRestoreFocusAfterReload() override;
+  void RestoreFocusAfterReload() override;
 
   // GlicUiEmbedder and Host::Delegate:
   bool IsShowing() const override;

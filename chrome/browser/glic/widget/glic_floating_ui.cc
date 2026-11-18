@@ -415,6 +415,17 @@ void GlicFloatingUi::Close(const CloseOptions& options) {
                          EmbedderCloseReason::kExplicitlyClosed);
 }
 
+bool GlicFloatingUi::ShouldRestoreFocusAfterReload() {
+  auto* glic_view = GetGlicView();
+  return HasFocus() && glic_view && glic_view->HasFocusInHierarchy();
+}
+
+void GlicFloatingUi::RestoreFocusAfterReload() {
+  if (auto* glic_view = GetGlicView()) {
+    glic_view->RequestFocus();
+  }
+}
+
 void GlicFloatingUi::ContentsCreated() {
   if (auto* glic_view = GetGlicView()) {
     glic_view->SetShowingLoadingPlaceholder(

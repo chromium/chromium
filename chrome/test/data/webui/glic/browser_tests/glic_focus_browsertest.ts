@@ -28,6 +28,16 @@ class GlicFocusBrowserTest extends ApiTestFixtureBase {
     await this.advanceToNextStep();
     await runUntil(() => !document.hasFocus());
   }
+
+  async testFocusPreservedOnReload() {
+    await runUntil(() => document.activeElement?.id === 'inputBox');
+    await runUntil(() => document.hasFocus());
+  }
+
+  async testFocusPreservedOnDetachedReload() {
+    await runUntil(() => document.activeElement?.id === 'inputBox');
+    await runUntil(() => document.hasFocus());
+  }
 }
 
 const TEST_FIXTURES = [

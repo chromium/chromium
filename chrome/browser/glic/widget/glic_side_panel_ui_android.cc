@@ -172,12 +172,19 @@ void GlicSidePanelUi::Close(const CloseOptions& options) {
 }
 
 void GlicSidePanelUi::Focus() {
+  if (co_browse_views_) {
+    co_browse_views_->RequestFocus();
+    return;
+  }
   if (auto* web_contents = delegate_->host().webui_contents()) {
     web_contents->Focus();
   }
 }
 
 bool GlicSidePanelUi::HasFocus() {
+  if (co_browse_views_) {
+    return co_browse_views_->HasFocus();
+  }
   if (auto* web_contents = delegate_->host().webui_contents()) {
     if (auto* view = web_contents->GetRenderWidgetHostView()) {
       return view->HasFocus();
@@ -239,13 +246,22 @@ void GlicSidePanelUi::ClosePanel() {
   Close(CloseOptions());
 }
 
+bool GlicSidePanelUi::ShouldRestoreFocusAfterReload() {
+  return HasFocus();
+}
+
+void GlicSidePanelUi::RestoreFocusAfterReload() {
+  Focus();
+}
+
 void GlicSidePanelUi::ContentsCreated() {
   content::WebContents* web_contents = delegate_->host().webui_contents();
   SetWebContentsDelegate(web_contents, /*delegate=*/this);
   ConfigureGlicDragAndDropForWebContents(web_contents);
   if (co_browse_views_) {
-    co_browse_views_->SetIsLoading(delegate_->host().IsShowingNativeLoading());
-    co_browse_views_->SetWebContents(web_contents);
+    co_browse_views_->SetIsLoading(delegate_->host().IsShowingNativeLoading(),
+                                   /*preserve_focus=*/false);
+    co_browse_views_->SetWebContents(web_contents, /*preserve_focus=*/false);
   }
 }
 
@@ -259,13 +275,13 @@ void GlicSidePanelUi::ActiveWebContentsChanged(
   SetWebContentsDelegate(new_contents, /*delegate=*/this);
   ConfigureGlicDragAndDropForWebContents(new_contents);
   if (co_browse_views_) {
-    co_browse_views_->SetWebContents(new_contents);
+    co_browse_views_->SetWebContents(new_contents, /*preserve_focus=*/true);
   }
 }
 
 void GlicSidePanelUi::NativeLoadingStateChanged(bool is_showing) {
   if (co_browse_views_) {
-    co_browse_views_->SetIsLoading(is_showing);
+    co_browse_views_->SetIsLoading(is_showing, /*preserve_focus=*/true);
   }
 }
 
@@ -283,6 +299,11 @@ void GlicSidePanelUi::OnBrowserDeactivated(BrowserWindowInterface* browser) {
     return;
   }
   if (tab_ && tab_->GetBrowserWindowInterface() == browser) {
+    if (co_browse_views_) {
+      // Match TabBottomSheetWebUi clearing ContentView focus on window focus
+      // loss so parked container focus is never retained across deactivation.
+      co_browse_views_->ClearContainerFocus();
+    }
     delegate_->OnEmbedderWindowActivationChanged(false);
     // Voice input is a foreground-only interaction on Android. When another
     // app or system UI (e.g. an incoming call screen) takes over, the web
@@ -552,6 +573,11 @@ void GlicSidePanelUi::SyncEmbedderWindowActivation() {
   }
   BrowserWindowInterface* browser_window = tab_->GetBrowserWindowInterface();
   if (browser_window && !browser_window->GetWindow()->IsActive()) {
+    if (co_browse_views_) {
+      // Match TabBottomSheetWebUi clearing ContentView focus on window focus
+      // loss.
+      co_browse_views_->ClearContainerFocus();
+    }
     delegate_->OnEmbedderWindowActivationChanged(false);
   }
 }

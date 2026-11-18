@@ -79,6 +79,12 @@ void Host::EmbedderDelegate::SetDragResizeEnabled(bool enabled) {}
 
 void Host::EmbedderDelegate::SetMinimumWidgetSize(const gfx::Size& size) {}
 
+bool Host::EmbedderDelegate::ShouldRestoreFocusAfterReload() {
+  return false;
+}
+
+void Host::EmbedderDelegate::RestoreFocusAfterReload() {}
+
 bool EmptyEmbedderDelegate::IsShowing() const {
   return true;
 }
@@ -155,10 +161,16 @@ void Host::HibernateImpl(bool is_destroying) {
   contents_.reset();
   web_contents_visibility_ = content::Visibility::HIDDEN;
   if (!is_destroying) {
+    // `page_handler_` was cleared above before `contents_.reset()`, which
+    // skipped `WebUIPageHandlerRemoved()` resetting `primary_webui_state_`.
+    // Reset it explicitly so observers, native loading, and reload waiters do
+    // not see stale `kReady` state after the WebUI is torn down.
+    WebUiStateChanged(nullptr, mojom::WebUiState::kUninitialized);
     // Covers hibernating with no web client to tear down.
     UpdateClientLoadState();
     UpdateNativeLoadingState();
   } else {
+    primary_webui_state_ = mojom::WebUiState::kUninitialized;
     is_showing_native_loading_ = false;
   }
 }
@@ -217,9 +229,14 @@ void Host::Reload() {
     return;
   }
 
+  const bool restore_focus =
+      delegate_ && delegate_->ShouldRestoreFocusAfterReload();
   UnsetWebClient();
   Hibernate();
   Awaken();
+  if (restore_focus && delegate_) {
+    delegate_->RestoreFocusAfterReload();
+  }
 }
 
 void Host::Awaken() {

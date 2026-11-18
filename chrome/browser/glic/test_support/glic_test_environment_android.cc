@@ -103,4 +103,9 @@ void SetActivityOrientationForTesting(content::WebContents* web_contents,
       jni_zero::AttachCurrentThread(), web_contents, orientation);
 }
 
+bool FocusExternalAndroidViewForTesting(content::WebContents* web_contents) {
+  return Java_GlicTestEnvironmentAndroid_focusExternalAndroidView(
+      jni_zero::AttachCurrentThread(), web_contents);
+}
+
 }  // namespace glic

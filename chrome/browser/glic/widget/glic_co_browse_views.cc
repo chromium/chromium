@@ -13,13 +13,17 @@
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_views_bridge.h"
 #include "chrome/browser/glic/android/jni_headers/GlicBottomSheetComponentProvider_jni.h"
 #include "chrome/browser/glic/android/jni_headers/GlicSidePanelComponentProvider_jni.h"
+#include "chrome/browser/glic/android/jni_headers/GlicUiUtils_jni.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/jni_zero/jni_zero.h"
+#include "ui/base/base_window.h"
 
 namespace glic {
 
@@ -51,8 +55,9 @@ base::ScopedClosureRunner GlicCoBrowseViews::Configure(Params params) {
   const uint64_t generation = ++generation_;
   close_callback_ = std::move(params.close_callback);
   on_native_fre_accepted_ = std::move(params.native_fre_accepted_callback);
-  SetIsLoading(params.is_loading);
-  SetWebContents(params.web_contents);
+  ClearContainerFocus();
+  SetIsLoading(params.is_loading, /*preserve_focus=*/false);
+  SetWebContents(params.web_contents, /*preserve_focus=*/false);
   return base::ScopedClosureRunner(
       base::BindOnce(&GlicCoBrowseViews::ResetIfGenerationMatches,
                      weak_ptr_factory_.GetWeakPtr(), generation));
@@ -77,19 +82,97 @@ void GlicCoBrowseViews::RecreateJavaCoBrowseViews() {
 }
 
 void GlicCoBrowseViews::OnPanelClosed() {
+  ClearContainerFocus();
   ResetNativeFre();
 }
 
-void GlicCoBrowseViews::SetWebContents(content::WebContents* web_contents) {
+void GlicCoBrowseViews::SetWebContents(content::WebContents* web_contents,
+                                       bool preserve_focus) {
+  const bool had_focus = preserve_focus && HasFocus();
   web_contents_ = web_contents ? web_contents->GetWeakPtr() : nullptr;
   if (views_bridge_) {
     views_bridge_->SetWebContents(web_contents_.get(), /*request_focus=*/false);
   }
+  if (had_focus) {
+    RequestFocus();
+  }
 }
 
-void GlicCoBrowseViews::SetIsLoading(bool is_loading) {
+void GlicCoBrowseViews::SetIsLoading(bool is_loading, bool preserve_focus) {
+  const bool was_showing_placeholder = ShouldShowLoadingPlaceholder();
+  const bool had_focus = preserve_focus && HasFocus();
   is_loading_ = is_loading;
+  const bool now_showing_placeholder = ShouldShowLoadingPlaceholder();
+  if (had_focus && now_showing_placeholder != was_showing_placeholder) {
+    // Park focus on the container before hiding either subtree so Android
+    // View.setFlags() does not trigger rootViewRequestFocus() on an outgoing
+    // focused child.
+    RequestContainerFocus();
+  }
   UpdateJavaIsLoading();
+  if (had_focus && was_showing_placeholder && !now_showing_placeholder) {
+    RequestFocus();
+  }
+}
+
+void GlicCoBrowseViews::RequestFocus() {
+  if (!IsBrowserWindowActive() || ShouldShowNativeFre()) {
+    return;
+  }
+  if (web_contents_ && !ShouldShowLoadingPlaceholder()) {
+    web_contents_->Focus();
+  } else {
+    RequestContainerFocus();
+  }
+}
+
+bool GlicCoBrowseViews::HasFocus() const {
+  if (!IsBrowserWindowActive()) {
+    return false;
+  }
+  if (web_contents_) {
+    if (auto* view = web_contents_->GetRenderWidgetHostView();
+        view && view->HasFocus()) {
+      return true;
+    }
+  }
+  return HasContainerFocus();
+}
+
+base::android::ScopedJavaLocalRef<jobject> GlicCoBrowseViews::GetContainerView()
+    const {
+  if (!views_bridge_) {
+    return nullptr;
+  }
+  return context_sharing::CoBrowseViewsBridge::GetViewFromCoBrowseViews(
+      views_bridge_->GetCoBrowseViews());
+}
+
+bool GlicCoBrowseViews::RequestContainerFocus() {
+  auto container_view = GetContainerView();
+  if (!container_view) {
+    return false;
+  }
+  return Java_GlicUiUtils_requestContainerFocus(
+      base::android::AttachCurrentThread(), container_view);
+}
+
+bool GlicCoBrowseViews::HasContainerFocus() const {
+  auto container_view = GetContainerView();
+  if (!container_view) {
+    return false;
+  }
+  return Java_GlicUiUtils_hasContainerFocus(
+      base::android::AttachCurrentThread(), container_view);
+}
+
+void GlicCoBrowseViews::ClearContainerFocus() {
+  auto container_view = GetContainerView();
+  if (!container_view) {
+    return;
+  }
+  Java_GlicUiUtils_clearContainerFocus(base::android::AttachCurrentThread(),
+                                       container_view);
 }
 
 void GlicCoBrowseViews::PrepareForShow(bool show_native_fre) {
@@ -176,8 +259,22 @@ void GlicCoBrowseViews::ResetIfGenerationMatches(uint64_t generation) {
   }
   close_callback_.Reset();
   on_native_fre_accepted_.Reset();
-  SetIsLoading(false);
-  SetWebContents(nullptr);
+  ClearContainerFocus();
+  SetIsLoading(false, /*preserve_focus=*/false);
+  SetWebContents(nullptr, /*preserve_focus=*/false);
+}
+
+bool GlicCoBrowseViews::IsBrowserWindowActive() const {
+  if (!tab_) {
+    return false;
+  }
+  if (auto* browser_window = tab_->GetBrowserWindowInterface()) {
+    if (auto* window = browser_window->GetWindow()) {
+      return window->IsActive();
+    }
+  }
+  // Unit tests using MockTabInterface may not attach a BrowserWindowInterface.
+  return true;
 }
 
 void GlicCoBrowseViews::OnCloseRequested() {

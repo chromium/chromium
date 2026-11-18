@@ -69,11 +69,21 @@ class GlicCoBrowseViews {
   // Resets native FRE when the panel closes.
   void OnPanelClosed();
 
-  // Sets or updates the active guest WebContents.
-  void SetWebContents(content::WebContents* web_contents);
+  // Sets or updates the active guest WebContents. When `preserve_focus` is
+  // true, transfers focus if the panel currently holds focus.
+  void SetWebContents(content::WebContents* web_contents, bool preserve_focus);
 
-  // Sets or updates whether the loading placeholder should show.
-  void SetIsLoading(bool is_loading);
+  // Sets or updates whether the loading placeholder should show. When
+  // `preserve_focus` is true, hands focus between the placeholder container and
+  // WebContents if the panel currently holds focus.
+  void SetIsLoading(bool is_loading, bool preserve_focus);
+
+  // Focuses the active WebContents (or parks focus on the panel container view
+  // while the loading placeholder is shown), queries whether the panel holds
+  // focus, or clears parked container focus.
+  void RequestFocus();
+  bool HasFocus() const;
+  void ClearContainerFocus();
 
   // Prepares the view before showing the panel.
   void PrepareForShow(bool show_native_fre);
@@ -100,6 +110,10 @@ class GlicCoBrowseViews {
  private:
   void EnsureBridgeCreated();
   void ResetIfGenerationMatches(uint64_t generation);
+  base::android::ScopedJavaLocalRef<jobject> GetContainerView() const;
+  bool RequestContainerFocus();
+  bool HasContainerFocus() const;
+  bool IsBrowserWindowActive() const;
   void OnCloseRequested();
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason detach_reason);

@@ -9,18 +9,82 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.Settings;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.glic.R;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 
 /** Utility class for Glic UI components. */
+@JNINamespace("glic")
 @NullMarked
 public final class GlicUiUtils {
     private GlicUiUtils() {}
+
+    /**
+     * Parks view focus on {@code containerView} itself (without auto-focusing a descendant such as
+     * the loading placeholder's close button).
+     */
+    @CalledByNative
+    public static boolean requestContainerFocus(@Nullable View containerView) {
+        if (containerView == null || !containerView.isAttachedToWindow()) {
+            return false;
+        }
+        if (containerView.isFocused()) {
+            return true;
+        }
+        if (containerView instanceof ViewGroup viewGroup) {
+            int previousFocusability = viewGroup.getDescendantFocusability();
+            try {
+                viewGroup.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+                return containerView.requestFocus();
+            } finally {
+                viewGroup.setDescendantFocusability(previousFocusability);
+            }
+        }
+        return containerView.requestFocus();
+    }
+
+    /** Returns whether {@code containerView} or any descendant within it currently holds focus. */
+    @CalledByNative
+    public static boolean hasContainerFocus(@Nullable View containerView) {
+        return containerView != null
+                && containerView.isAttachedToWindow()
+                && containerView.hasFocus();
+    }
+
+    /**
+     * Clears focus when parked on {@code containerView} itself without corrupting focused
+     * descendants or triggering root-view refocus side effects.
+     */
+    @CalledByNative
+    public static void clearContainerFocus(@Nullable View containerView) {
+        if (containerView == null || !containerView.isFocused()) {
+            return;
+        }
+        // View.clearFocus() invokes rootViewRequestFocus() on Android P+, which otherwise
+        // immediately re-focuses containerView or jumps focus onto another focusable browser view.
+        if (containerView.getRootView() instanceof ViewGroup rootGroup
+                && rootGroup != containerView) {
+            int previousRootFocusability = rootGroup.getDescendantFocusability();
+            try {
+                rootGroup.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+                containerView.clearFocus();
+            } finally {
+                rootGroup.setDescendantFocusability(previousRootFocusability);
+            }
+            return;
+        }
+        containerView.clearFocus();
+    }
 
     /**
      * Configures the Glic inactive placeholder view.

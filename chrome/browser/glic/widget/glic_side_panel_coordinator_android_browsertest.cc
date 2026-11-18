@@ -217,7 +217,8 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
   std::unique_ptr<content::WebContents> guest_web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfile()));
-  co_browse_views->SetWebContents(guest_web_contents.get());
+  co_browse_views->SetWebContents(guest_web_contents.get(),
+                                  /*preserve_focus=*/false);
   EXPECT_FALSE(coordinator->HasBottomSheetBridgeForTesting());
   EXPECT_FALSE(co_browse_views->HasViewsBridgeForTesting());
 
@@ -237,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
   coordinator->Close(close_options);
   ASSERT_OK(
       WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kClosed));
-  co_browse_views->SetWebContents(nullptr);
+  co_browse_views->SetWebContents(nullptr, /*preserve_focus=*/false);
   guest_web_contents.reset();
 }
 
@@ -252,7 +253,8 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
   std::unique_ptr<content::WebContents> guest_web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfile()));
-  co_browse_views->SetWebContents(guest_web_contents.get());
+  co_browse_views->SetWebContents(guest_web_contents.get(),
+                                  /*preserve_focus=*/false);
 
   GlicSidePanelCoordinator::ShowOptions show_options;
   show_options.suppress_animations = true;
@@ -364,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
   ShowNativeFre(tab);
   auto* views = coordinator->GetCoBrowseViews();
   ASSERT_TRUE(views);
-  views->SetIsLoading(true);
+  views->SetIsLoading(true, /*preserve_focus=*/false);
 
   EXPECT_TRUE(views->IsShowingNativeFreForTesting());
   EXPECT_TRUE(views->HasJavaNativeFreForTesting());
@@ -398,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
   ShowNativeFre(tab);
   auto* views = coordinator->GetCoBrowseViews();
   ASSERT_TRUE(views);
-  views->SetIsLoading(true);
+  views->SetIsLoading(true, /*preserve_focus=*/false);
 
   EXPECT_TRUE(views->IsShowingNativeFreForTesting());
   EXPECT_FALSE(views->ShouldShowLoadingPlaceholderForTesting());
@@ -408,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
   EXPECT_FALSE(views->IsShowingNativeFreForTesting());
   EXPECT_TRUE(views->ShouldShowLoadingPlaceholderForTesting());
 
-  views->SetIsLoading(false);
+  views->SetIsLoading(false, /*preserve_focus=*/false);
   EXPECT_FALSE(views->ShouldShowLoadingPlaceholderForTesting());
 }
 
