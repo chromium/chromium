@@ -7847,7 +7847,7 @@
     "expiry_milestone": 162
   },
   {
-    "name": "on-startup-settings-ui",
+    "name": "on-startup-settings-ui-desktop",
     "owners": ["aishwaryarj@google.com", "clank-large-form-factors@google.com"],
     "expiry_milestone": 160
   },

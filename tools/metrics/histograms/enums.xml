@@ -14386,6 +14386,7 @@ from previous Chrome versions.
       label="AutofillUpstreamAuthenticatePreflightCall:disabled"/>
   <int value="-213843428"
       label="WebIdentityDigitalCredentialsCreation:enabled"/>
+  <int value="-213552607" label="OnStartupSettingsUiDesktop:disabled"/>
   <int value="-213518852" label="protect-sync-credential:enabled"/>
   <int value="-213214894" label="enable-chromevox-arc-support"/>
   <int value="-211590646" label="ToolbarPhoneAnimationRefactor:disabled"/>
@@ -16108,6 +16109,7 @@ from previous Chrome versions.
   <int value="303058039" label="AccountConsistency:disabled"/>
   <int value="303252119" label="AutofillExpandedPopupViews:disabled"/>
   <int value="303325901" label="NearbySharingWebRtc:disabled"/>
+  <int value="304213223" label="OnStartupSettingsUiDesktop:enabled"/>
   <int value="304588364" label="TextureLayerSkipWaitForActivation:enabled"/>
   <int value="304901781" label="NewUsbBackend:enabled"/>
   <int value="305356014" label="WebViewMeasureScreenCoverage:disabled"/>

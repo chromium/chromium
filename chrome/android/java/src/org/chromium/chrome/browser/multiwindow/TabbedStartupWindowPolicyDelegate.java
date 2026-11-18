@@ -475,7 +475,7 @@ import java.util.Set;
     }
 
     private boolean shouldCacheRestoreOnStartupPref() {
-        return isHistorySyncActive() || MultiWindowUtils.isOnStartupSettingsUiEnabled();
+        return isHistorySyncActive() || MultiWindowUtils.isOnStartupSettingsUiDesktopEnabled();
     }
 
     private boolean isHistorySyncActive() {

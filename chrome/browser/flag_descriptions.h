@@ -1479,9 +1479,10 @@ inline constexpr char kSessionRestoreAfterCrashDescription[] =
     "When enabled, Chrome provides a prompt to restore windows and tabs "
     "sequentially and maintains window sizes where supported.";
 
-inline constexpr char kOnStartupSettingsUiName[] = "On Startup Settings UI";
-inline constexpr char kOnStartupSettingsUiDescription[] =
-    "Enables the On startup settings UI surface on Android.";
+inline constexpr char kOnStartupSettingsUiDesktopName[] =
+    "On Startup Settings UI Desktop";
+inline constexpr char kOnStartupSettingsUiDesktopDescription[] =
+    "Enables the On startup settings UI surface on desktop Android.";
 
 inline constexpr char kOnStartupWindowPolicyName[] = "On Startup Window Policy";
 inline constexpr char kOnStartupWindowPolicyDescription[] =

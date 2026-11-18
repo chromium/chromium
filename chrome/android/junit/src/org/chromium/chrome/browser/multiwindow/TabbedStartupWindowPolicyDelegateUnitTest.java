@@ -527,13 +527,13 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ON_STARTUP_SETTINGS_UI)
+    @DisableFeatures(ChromeFeatureList.ON_STARTUP_SETTINGS_UI_DESKTOP)
     public void testGetSessionStartupType_historySyncOffWithSyncedPref_returnsLast() {
-        // Setup synced preference with History sync disabled and settings UI flag disabled.
+        // Setup synced preference with History sync disabled and desktop settings UI flag disabled.
         when(mSyncService.getSelectedTypes()).thenReturn(Collections.emptySet());
         when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP)).thenReturn(SessionStartupPref.URLS);
 
-        // Act.
+        // Initialize native preferences on the delegate.
         mDelegate.onNativeInitialized(mProfile);
 
         // Verify effective startup type falls back to LAST.
@@ -551,12 +551,12 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ON_STARTUP_SETTINGS_UI)
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_SETTINGS_UI_DESKTOP)
     public void testSetSessionStartupType_writesPrefServiceAndUpdatesCache() {
         // Setup initial cached startup type.
         ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.LAST);
 
-        // Act.
+        // Update the session startup type through the delegate.
         mDelegate.setSessionStartupType(mProfile, SessionStartupPref.URLS);
 
         // Verify preference update on native PrefService and persistent store cache.
@@ -643,15 +643,16 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ON_STARTUP_SETTINGS_UI)
-    public void testPreferenceChange_signedOutWithOnStartupSettingsUiEnabled_cachesLocalPrefs() {
-        // Setup mock native preferences when user is signed out with default sync flag enabled.
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_SETTINGS_UI_DESKTOP)
+    public void
+            testPreferenceChange_signedOutWithOnStartupSettingsUiDesktopEnabled_cachesLocalPrefs() {
+        // Setup mock native preferences when user is signed out with desktop settings UI enabled.
         when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP)).thenReturn(SessionStartupPref.URLS);
         when(mMockDelegateNatives.getSessionStartupUrls(mPrefService))
                 .thenReturn(List.of("https://www.google.com"));
         when(mSyncService.getAccountInfo()).thenReturn(null);
 
-        // Act.
+        // Initialize native preferences on the delegate.
         mDelegate.onNativeInitialized(mProfile);
 
         // Verify local startup preferences are cached and enforced on startup.

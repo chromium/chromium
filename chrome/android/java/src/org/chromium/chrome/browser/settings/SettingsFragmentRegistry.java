@@ -357,7 +357,7 @@ public class SettingsFragmentRegistry {
 
         // On startup
         registerMapping("/onStartup", OnStartupSettingsFragment.class)
-                .availableWhen(profile -> MultiWindowUtils.isOnStartupSettingsUiEnabled());
+                .availableWhen(profile -> MultiWindowUtils.isOnStartupSettingsUiDesktopEnabled());
 
         // Appearance
         registerMapping("/appearance", AppearanceSettingsFragment.class);

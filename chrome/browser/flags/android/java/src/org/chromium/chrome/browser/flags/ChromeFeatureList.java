@@ -753,7 +753,7 @@ public abstract class ChromeFeatureList {
     public static final String ONE_STEP_AIM_ACCESS = "OneStepAimAccess";
     public static final String ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION =
             "OnDemandBackgroundTabContextCaptureOptimization";
-    public static final String ON_STARTUP_SETTINGS_UI = "OnStartupSettingsUi";
+    public static final String ON_STARTUP_SETTINGS_UI_DESKTOP = "OnStartupSettingsUiDesktop";
     public static final String ON_STARTUP_WINDOW_POLICY = "OnStartupWindowPolicy";
     public static final String OPEN_DOWNLOAD_IN_FILES_APP_IF_NO_HANDLER_FOUND =
             "OpenDownloadInFilesAppIfNoHandlerFound";
@@ -1391,8 +1391,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(NOTIFICATION_TRAMPOLINE_NO_NEW_TASK, true);
     public static final CachedFlag sNtpVision =
             newCachedFlag(NTP_VISION, /* defaultValue= */ false);
-    public static final CachedFlag sOnStartupSettingsUi =
-            newCachedFlag(ON_STARTUP_SETTINGS_UI, /* defaultValue= */ true);
+    public static final CachedFlag sOnStartupSettingsUiDesktop =
+            newCachedFlag(ON_STARTUP_SETTINGS_UI_DESKTOP, /* defaultValue= */ true);
     public static final CachedFlag sOnStartupWindowPolicy =
             newCachedFlag(ON_STARTUP_WINDOW_POLICY, /* defaultValue= */ true);
     public static final CachedFlag sOneStepAimAccess =
@@ -1694,7 +1694,7 @@ public abstract class ChromeFeatureList {
                     sNotificationTrampoline,
                     sNotificationTrampolineNoNewTask,
                     sNtpVision,
-                    sOnStartupSettingsUi,
+                    sOnStartupSettingsUiDesktop,
                     sOnStartupWindowPolicy,
                     sOneStepAimAccess,
                     sPaintPreviewDemo,

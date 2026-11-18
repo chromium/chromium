@@ -87,7 +87,7 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@EnableFeatures(ChromeFeatureList.ON_STARTUP_SETTINGS_UI)
+@EnableFeatures(ChromeFeatureList.ON_STARTUP_SETTINGS_UI_DESKTOP)
 public class OnStartupSettingsFragmentTest {
     private static final String URL_ESPN = "https://www.espn.com/";
     private static final String URL_WIKIPEDIA = "https://www.wikipedia.org/";

@@ -702,7 +702,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         updateAutofillPreferences();
         updateAddressBarPreference();
         updateAppearancePreference();
-        if (MultiWindowUtils.isOnStartupSettingsUiEnabled()) {
+        if (MultiWindowUtils.isOnStartupSettingsUiDesktopEnabled()) {
             addPreferenceIfAbsent(PREF_ON_STARTUP);
         } else {
             removePreferenceIfPresent(PREF_ON_STARTUP);
@@ -1068,7 +1068,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     if (!shouldShowGlicPreference(profile)) {
                         indexData.removeEntry(getUniqueId(PREF_GLIC));
                     }
-                    if (!MultiWindowUtils.isOnStartupSettingsUiEnabled()) {
+                    if (!MultiWindowUtils.isOnStartupSettingsUiDesktopEnabled()) {
                         indexData.removeEntry(getUniqueId(PREF_ON_STARTUP));
                     }
                     if (!shouldShowHomepagePref(context)) {

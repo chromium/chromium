@@ -472,7 +472,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kNtpVision,
     &kOmahaMinSdkVersionAndroid,
     &kOnDemandBackgroundTabContextCaptureOptimization,
-    &kOnStartupSettingsUi,
+    &kOnStartupSettingsUiDesktop,
     &kOnStartupWindowPolicy,
     &kOneStepAimAccess,
     &kOpenDownloadInPreferredApp,
@@ -934,7 +934,7 @@ BASE_FEATURE(kNtpVision, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOctoberTestUXR, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOmahaMinSdkVersionAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOnDemandBackgroundTabContextCaptureOptimization, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kOnStartupSettingsUi, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOnStartupSettingsUiDesktop, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kOnStartupWindowPolicy, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kOneStepAimAccess, base::FEATURE_DISABLED_BY_DEFAULT);
 // TODO(crbug.com/521890621): Enable on all form factors once the non-desktop

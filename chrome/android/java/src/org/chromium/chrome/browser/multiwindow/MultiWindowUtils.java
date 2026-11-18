@@ -1632,12 +1632,12 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
-     * Returns whether the On startup settings UI feature is enabled.
+     * Returns whether the On startup settings UI feature is enabled on desktop.
      *
      * @return {@code true} if the feature is enabled; {@code false} otherwise.
      */
-    public static boolean isOnStartupSettingsUiEnabled() {
-        return ChromeFeatureList.sOnStartupSettingsUi.isEnabled() && DeviceInfo.isDesktop();
+    public static boolean isOnStartupSettingsUiDesktopEnabled() {
+        return ChromeFeatureList.sOnStartupSettingsUiDesktop.isEnabled() && DeviceInfo.isDesktop();
     }
 
     /**
@@ -1647,7 +1647,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return {@code true} if supported; {@code false} otherwise.
      */
     public static boolean isRestoreOnStartupPrefSupported() {
-        return isRestoreOnStartupPrefSyncEnabled() || isOnStartupSettingsUiEnabled();
+        return isRestoreOnStartupPrefSyncEnabled() || isOnStartupSettingsUiDesktopEnabled();
     }
 
     /**

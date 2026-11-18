@@ -7887,9 +7887,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSettingsSearchCollapsibleSearchBox)},
 
-    {"on-startup-settings-ui", flag_descriptions::kOnStartupSettingsUiName,
-     flag_descriptions::kOnStartupSettingsUiDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kOnStartupSettingsUi)},
+    {"on-startup-settings-ui-desktop",
+     flag_descriptions::kOnStartupSettingsUiDesktopName,
+     flag_descriptions::kOnStartupSettingsUiDesktopDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kOnStartupSettingsUiDesktop)},
 
     {"android-settings-url", flag_descriptions::kAndroidSettingsUrlName,
      flag_descriptions::kAndroidSettingsUrlDescription, kOsAndroid,
