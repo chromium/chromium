@@ -19,7 +19,7 @@ set -eu
 cd "$(dirname "$0")"
 
 BASE_URL="https://nodejs.org/dist"
-NODE_VERSION="v24.12.0"
+NODE_VERSION="v26.13.1"
 
 upload=false  # Default value
 
@@ -98,11 +98,9 @@ download_unix() {
     exit 1
   fi
 
-  # Unpack temporarily, delete npm, npx, corepack and re-pack.
+  # Unpack temporarily, delete npm, npx and re-pack.
   tar xfz "${FOLDER}/${FILENAME}" -C "${FOLDER}/"
   rm "${FOLDER}/${FILENAME}"
-  rm "${FOLDER}/node-${NODE_VERSION}-${SUFFIX}/bin/corepack"
-  rm -rf "${FOLDER}/node-${NODE_VERSION}-${SUFFIX}/lib/node_modules/corepack"
   rm "${FOLDER}/node-${NODE_VERSION}-${SUFFIX}/bin/npm"
   rm -rf "${FOLDER}/node-${NODE_VERSION}-${SUFFIX}/lib/node_modules/npm"
   rm "${FOLDER}/node-${NODE_VERSION}-${SUFFIX}/bin/npx"
