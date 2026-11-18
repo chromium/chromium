@@ -233,6 +233,19 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("print"),
     perfetto::Category("raf_investigation"),
     perfetto::Category("rail"),
+    perfetto::Category("remoting")
+        .SetDescription(
+            "Lifecycle, signaling, and control-plane events for Chrome Remote "
+            "Desktop."),
+    perfetto::Category("remoting.debug")
+        .SetTags("debug")
+        .SetDescription(
+            "Verbose per-strip and debug events for Chrome Remote Desktop."),
+    perfetto::Category("remoting.video")
+        .SetTags("video")
+        .SetDescription(
+            "Desktop frame capture, video encoding, video stream, and renderer "
+            "events for Chrome Remote Desktop."),
     perfetto::Category("renderer"),
     perfetto::Category("renderer_host"),
     perfetto::Category("renderer.scheduler"),
