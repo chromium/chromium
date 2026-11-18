@@ -4,7 +4,6 @@
 
 import type {LhsRailConfig, ThreadsRailElement} from 'chrome://new-tab-page/lazy_load.js';
 import {ComposeboxWindowProxy, LhsClientAction, ThreadsRailAction} from 'chrome://new-tab-page/lazy_load.js';
-import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -53,15 +52,8 @@ suite('NewTabPageThreadsRailTest', () => {
         assertTrue(!!logoButton);
         assertTrue(isVisible(logoButton));
         assertEquals(
-            AIM_THREADS_GOOGLE_SEARCH_LABEL,
-            logoButton.getAttribute('aria-label'));
+            AIM_THREADS_GOOGLE_SEARCH_LABEL, logoButton.getAttribute('title'));
         assertTrue(logoButton.hasAttribute('suppress-rtl-flip'));
-        const logoTooltip =
-            threadsRailElement.shadowRoot.querySelector<HTMLElement>(
-                'cr-tooltip[for="logoButton"]');
-        assertTrue(!!logoTooltip);
-        assertEquals(
-            AIM_THREADS_GOOGLE_SEARCH_LABEL, logoTooltip.textContent.trim());
 
         assertEquals(
             0,
@@ -135,54 +127,38 @@ suite('NewTabPageThreadsRailTest', () => {
     assertEquals(4, itemButtons.length);
 
     const historyButton =
-        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#railItem-0');
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+            '[data-index="0"]');
     assertTrue(!!historyButton);
     assertEquals(
         `--cr-icon-image: url("data:image/svg+xml;charset=utf-8,${
             encodeURIComponent(historySvg)}");`,
         historyButton.getAttribute('style'));
-    assertEquals('AI Mode history', historyButton.getAttribute('aria-label'));
-    const historyTooltip =
-        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
-            'cr-tooltip[for="railItem-0"]');
-    assertTrue(!!historyTooltip);
-    assertEquals('AI Mode history', historyTooltip.textContent.trim());
+    assertEquals('AI Mode history', historyButton.getAttribute('title'));
 
     const newSearchButton =
-        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#railItem-1');
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+            '[data-index="1"]');
     assertTrue(!!newSearchButton);
     assertTrue(newSearchButton.getAttribute('style')!.includes(
         encodeURIComponent(newThreadSvg)));
     assertEquals(
-        'Start new AI Mode search', newSearchButton.getAttribute('aria-label'));
-    const newSearchTooltip =
-        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
-            'cr-tooltip[for="railItem-1"]');
-    assertTrue(!!newSearchTooltip);
-    assertEquals(
-        'Start new AI Mode search', newSearchTooltip.textContent.trim());
+        'Start new AI Mode search', newSearchButton.getAttribute('title'));
 
     const tasksButton =
-        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#railItem-2');
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+            '[data-index="2"]');
     assertTrue(!!tasksButton);
     assertTrue(tasksButton.getAttribute('style')!.includes(
         encodeURIComponent(tasksSvg)));
-    assertEquals('Scheduled Tasks', tasksButton.getAttribute('aria-label'));
-    const tasksTooltip =
-        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
-            'cr-tooltip[for="railItem-2"]');
-    assertTrue(!!tasksTooltip);
-    assertEquals('Scheduled Tasks', tasksTooltip.textContent.trim());
+    assertEquals('Scheduled Tasks', tasksButton.getAttribute('title'));
 
     const emptyItemButton =
-        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#railItem-3');
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+            '[data-index="3"]');
     assertTrue(!!emptyItemButton);
     assertFalse(emptyItemButton.hasAttribute('style'));
-    assertFalse(emptyItemButton.hasAttribute('aria-label'));
-    const emptyItemTooltip =
-        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
-            'cr-tooltip[for="railItem-3"]');
-    assertFalse(!!emptyItemTooltip);
+    assertFalse(emptyItemButton.hasAttribute('title'));
   });
 
   test('handles click actions for configured rail items', async () => {
@@ -230,7 +206,8 @@ suite('NewTabPageThreadsRailTest', () => {
 
     // 1. EXPAND_RAIL dispatches expand-rail without navigating.
     const expandButton =
-        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#railItem-0');
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+            '[data-index="0"]');
     assertTrue(!!expandButton);
     const whenExpandRail = eventToPromise('expand-rail', threadsRailElement);
     expandButton.click();
@@ -246,7 +223,8 @@ suite('NewTabPageThreadsRailTest', () => {
 
     // 2. FOCUS_REALBOX_AIM dispatches open-composebox without navigating.
     const newSearchButton =
-        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#railItem-1');
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+            '[data-index="1"]');
     assertTrue(!!newSearchButton);
     const whenOpenComposebox =
         eventToPromise('open-composebox', threadsRailElement);
@@ -263,7 +241,8 @@ suite('NewTabPageThreadsRailTest', () => {
 
     // 3. NAVIGATE navigates to targetUrl.
     const tasksButton =
-        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#railItem-2');
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+            '[data-index="2"]');
     assertTrue(!!tasksButton);
     tasksButton.click();
     assertEquals(1, windowProxy.getCallCount('navigate'));
@@ -279,7 +258,8 @@ suite('NewTabPageThreadsRailTest', () => {
     // 4. UNSPECIFIED navigates to targetUrl and records
     // UNSPECIFIED_NAVIGATE_ITEM_CLICKED.
     const unspecifiedButton =
-        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#railItem-3');
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+            '[data-index="3"]');
     assertTrue(!!unspecifiedButton);
     unspecifiedButton.click();
     assertEquals(2, windowProxy.getCallCount('navigate'));
@@ -295,7 +275,8 @@ suite('NewTabPageThreadsRailTest', () => {
     // 5. Unrecognized future ClientAction values fall back to targetUrl and
     // record FALLBACK_NAVIGATE_ITEM_CLICKED.
     const unknownActionButton =
-        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#railItem-4');
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+            '[data-index="4"]');
     assertTrue(!!unknownActionButton);
     unknownActionButton.click();
     assertEquals(3, windowProxy.getCallCount('navigate'));
@@ -355,18 +336,12 @@ suite('NewTabPageThreadsRailTest', () => {
       hostClickCount++;
     });
 
-    const childSelectors = [
-      'cr-tooltip[for="logoButton"]',
-      'cr-tooltip[for="railItem-0"]',
-      '#iconsContainer',
-    ];
-    for (const selector of childSelectors) {
-      const child =
-          threadsRailElement.shadowRoot.querySelector<HTMLElement>(selector);
-      assertTrue(!!child);
-      child.click();
-      assertEquals(0, hostClickCount);
-    }
+    const iconsContainer =
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+            '#iconsContainer');
+    assertTrue(!!iconsContainer);
+    iconsContainer.click();
+    assertEquals(0, hostClickCount);
     assertEquals(0, metrics.count('NewTabPage.ThreadsRail.Action'));
 
     const rail =
@@ -382,86 +357,53 @@ suite('NewTabPageThreadsRailTest', () => {
             ThreadsRailAction.RAIL_BACKGROUND_CLICKED));
   });
 
-  test(
-      'resets tooltips across inert toggle and suppresses stale hover',
-      async () => {
-        await createThreadsRail({
-          items: [
-            {
-              iconSvg: '<svg></svg>',
-              name: 'Open sidebar',
-              clientAction: LhsClientAction.EXPAND_RAIL,
-            },
-          ],
-        });
+  test('suppresses stale pointer hover after leaving inert', async () => {
+    await createThreadsRail({
+      items: [
+        {
+          iconSvg: '<svg></svg>',
+          name: 'Open sidebar',
+          clientAction: LhsClientAction.EXPAND_RAIL,
+        },
+      ],
+    });
 
-        const rail =
-            threadsRailElement.shadowRoot.querySelector<HTMLElement>('#rail');
-        assertTrue(!!rail);
-        const expandButton =
-            threadsRailElement.shadowRoot.querySelector<HTMLElement>(
-                '#railItem-0');
-        assertTrue(!!expandButton);
-        const initialTooltip =
-            threadsRailElement.shadowRoot.querySelector<CrTooltipElement>(
-                'cr-tooltip[for="railItem-0"]');
-        assertTrue(!!initialTooltip);
+    const rail =
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#rail');
+    assertTrue(!!rail);
+    const expandButton =
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+            '[data-index="0"]');
+    assertTrue(!!expandButton);
 
-        // Initial render does not suppress pointer hover.
-        assertFalse(threadsRailElement.hasAttribute('suppress-pointer-hover_'));
-        assertEquals('auto', getComputedStyle(expandButton).pointerEvents);
+    // Initial render does not suppress pointer hover.
+    assertFalse(threadsRailElement.hasAttribute('suppress-pointer-hover_'));
+    assertEquals('auto', getComputedStyle(expandButton).pointerEvents);
 
-        // Hover until fade-in finishes so showing_ is true and
-        // animationPlaying_ is false.
-        expandButton.dispatchEvent(new PointerEvent('pointerenter'));
-        await eventToPromise('animationend', initialTooltip.$.tooltip);
-        assertFalse(initialTooltip.$.tooltip.hidden);
+    // Becoming inert does not suppress pointer hover.
+    threadsRailElement.inert = true;
+    await microtasksFinished();
+    assertTrue(threadsRailElement.hasAttribute('inert'));
+    assertFalse(threadsRailElement.hasAttribute('suppress-pointer-hover_'));
 
-        // Marking the rail inert unmounts all tooltips and reflects [inert].
-        threadsRailElement.inert = true;
-        await microtasksFinished();
-        assertTrue(threadsRailElement.hasAttribute('inert'));
-        assertFalse(threadsRailElement.hasAttribute('suppress-pointer-hover_'));
-        assertEquals(
-            0,
-            threadsRailElement.shadowRoot.querySelectorAll('cr-tooltip')
-                .length);
+    // Leaving inert suppresses pointer hit-testing so Blink's hover
+    // recomputation at a stale mouse position cannot re-trigger :hover.
+    threadsRailElement.inert = false;
+    await microtasksFinished();
+    assertFalse(threadsRailElement.hasAttribute('inert'));
+    assertTrue(threadsRailElement.hasAttribute('suppress-pointer-hover_'));
+    assertEquals('none', getComputedStyle(rail).pointerEvents);
+    assertEquals('none', getComputedStyle(expandButton).pointerEvents);
 
-        // Clearing inert mounts fresh hidden tooltips while reflecting
-        // [suppress-pointer-hover_] so Blink's synthetic post-layout hover
-        // recomputation at a stale pre-OOPIF mouse position cannot re-trigger
-        // :hover or pointerenter.
-        threadsRailElement.inert = false;
-        await microtasksFinished();
-        assertFalse(threadsRailElement.hasAttribute('inert'));
-        assertTrue(threadsRailElement.hasAttribute('suppress-pointer-hover_'));
-        assertEquals('none', getComputedStyle(rail).pointerEvents);
-        assertEquals('none', getComputedStyle(expandButton).pointerEvents);
-        const remountedTooltip =
-            threadsRailElement.shadowRoot.querySelector<CrTooltipElement>(
-                'cr-tooltip[for="railItem-0"]');
-        assertTrue(!!remountedTooltip);
-        assertTrue(remountedTooltip.$.tooltip.hidden);
-        assertFalse(
-            remountedTooltip.$.tooltip.classList.contains('fade-in-animation'));
-        assertFalse(remountedTooltip.$.tooltip.classList.contains(
-            'fade-out-animation'));
-
-        // A real pointermove unsuppresses hover without showing tooltips until
-        // a button is hovered again.
-        window.dispatchEvent(new PointerEvent('pointermove'));
-        await microtasksFinished();
-        assertFalse(threadsRailElement.hasAttribute('suppress-pointer-hover_'));
-        assertEquals('auto', getComputedStyle(expandButton).pointerEvents);
-        assertTrue(remountedTooltip.$.tooltip.hidden);
-
-        expandButton.dispatchEvent(new PointerEvent('pointerenter'));
-        await eventToPromise('animationend', remountedTooltip.$.tooltip);
-        assertFalse(remountedTooltip.$.tooltip.hidden);
-      });
+    // A real pointermove restores pointer hit-testing.
+    window.dispatchEvent(new PointerEvent('pointermove'));
+    await microtasksFinished();
+    assertFalse(threadsRailElement.hasAttribute('suppress-pointer-hover_'));
+    assertEquals('auto', getComputedStyle(expandButton).pointerEvents);
+  });
 
   test(
-      'shows tooltip on keyboard focus immediately after leaving inert',
+      'keeps rail buttons focusable while pointer hover is suppressed',
       async () => {
         await createThreadsRail({
           items: [
@@ -475,22 +417,17 @@ suite('NewTabPageThreadsRailTest', () => {
 
         const expandButton =
             threadsRailElement.shadowRoot.querySelector<HTMLElement>(
-                '#railItem-0')!;
+                '[data-index="0"]')!;
 
         threadsRailElement.inert = true;
         await microtasksFinished();
         threadsRailElement.inert = false;
         await microtasksFinished();
         assertTrue(threadsRailElement.hasAttribute('suppress-pointer-hover_'));
-        const focusedTooltip =
-            threadsRailElement.shadowRoot.querySelector<CrTooltipElement>(
-                'cr-tooltip[for="railItem-0"]');
-        assertTrue(!!focusedTooltip);
-        assertTrue(focusedTooltip.$.tooltip.hidden);
 
         expandButton.focus();
         await microtasksFinished();
-        assertFalse(focusedTooltip.$.tooltip.hidden);
+        assertEquals(expandButton, threadsRailElement.shadowRoot.activeElement);
         assertTrue(threadsRailElement.hasAttribute('suppress-pointer-hover_'));
       });
 });

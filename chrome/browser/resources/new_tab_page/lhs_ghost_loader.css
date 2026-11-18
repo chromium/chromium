@@ -97,8 +97,7 @@
   inset-inline: auto 12px;
 }
 
-/* NTP: matches the folded rail's tooltips (see
- * cr_components/composebox/threads_rail.css). */
+/* NTP: styles the close button's tooltip. */
 cr-tooltip {
   --paper-tooltip-duration-in: 150ms;
   --paper-tooltip-duration-out: 150ms;

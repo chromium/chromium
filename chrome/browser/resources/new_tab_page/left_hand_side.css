@@ -8,8 +8,8 @@
 
 /* Stack #folded, #ghostLoader, and #expanded in a single grid cell (without
  * setting position: relative on :host, which would clip cr-tooltip's absolute
- * positioning inside #folded) so they can cross-fade over the rail background
- * while :host animates its width. */
+ * positioning inside #ghostLoader) so they can cross-fade over the rail
+ * background while :host animates its width. */
 :host {
   background-color: var(--color-new-tab-page-threads-rail-background);
   display: grid;
@@ -52,8 +52,7 @@
   width: auto;
 }
 
-/* Show the active view. Keep opacity: 1 at rest so #folded does not create a
- * stacking context that traps its cr-tooltip. */
+/* Show the active view. */
 :host([view_=folded]) #folded,
 :host([view_=expanded]) #expanded {
   opacity: 1;

@@ -85,8 +85,7 @@ export function getHtml(this: LhsGhostLoaderElement) {
 </div>
 <!-- NTP: outside .ghost-header, which is position: relative, so that the
      tooltip is positioned against an ancestor of <ntp-lhs-ghost-loader> and
-     is not clipped by its overflow: hidden. Matches the folded rail's
-     tooltips. -->
+     is not clipped by its overflow: hidden. -->
 <cr-tooltip id="closeTooltip" for="closeButton"
     position="${this.closeTooltipPosition_}" offset="16" animation-delay="0"
     hide-delay="0">
