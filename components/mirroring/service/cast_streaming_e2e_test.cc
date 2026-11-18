@@ -1216,8 +1216,16 @@ TEST_F(CastStreamingSimulationTest,
   const uint32_t usable_before_choke = samples[before_choke_idx].usable_bps;
   const uint32_t usable_during_choke = samples[before_choke_idx + 1].usable_bps;
   const uint32_t usable_after_choke = samples[before_choke_idx + 2].usable_bps;
+  // Fast recovery restores usable bandwidth to `usable_before_choke`, bounded
+  // by the `0.8 * estimate_bps` good-network-citizen ceiling (which dips
+  // slightly while packets lost during the choke remain in the estimator
+  // window).
+  const uint32_t expected_recovered_bps = std::min<uint32_t>(
+      usable_before_choke, samples[before_choke_idx + 2].estimate_bps * 0.8);
   EXPECT_NEAR(usable_during_choke, usable_before_choke * 0.85, 10'000);
-  EXPECT_GE(usable_after_choke, usable_before_choke * 0.95);
+  EXPECT_GT(usable_after_choke, usable_during_choke);
+  EXPECT_NEAR(usable_after_choke, expected_recovered_bps,
+              expected_recovered_bps * 0.05);
   EXPECT_EQ(samples.back().encoder_bps, 5'000'000u);
 }
 
