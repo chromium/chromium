@@ -6089,4 +6089,62 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   EXPECT_TRUE(error.empty());
 }
 
+// Verifies that WindowsEventRouter dispatches windows.onCreated,
+// windows.onBoundsChanged, and windows.onRemoved events for standalone popup
+// WindowControllers without a BrowserWindowInterface.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionTabsTest,
+    WindowsEventRouter_DispatchesEventsForStandalonePopupWindow) {
+  ASSERT_NE(nullptr, TabsWindowsAPI::Get(profile())->windows_event_router());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("WindowsEventsStandaloneTest").Build();
+  EventRouter* event_router = EventRouter::Get(profile());
+  content::RenderProcessHost* process =
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetProcess();
+  event_router->AddEventListenerForURL(api::windows::OnCreated::kEventName,
+                                       process, extension->url());
+  event_router->AddEventListenerForURL(
+      api::windows::OnBoundsChanged::kEventName, process, extension->url());
+  event_router->AddEventListenerForURL(api::windows::OnRemoved::kEventName,
+                                       process, extension->url());
+
+  TestEventRouterObserver event_observer(event_router);
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile()));
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  const SessionID standalone_window_id = SessionID::NewUnique();
+  sessions::SessionTabHelper::FromWebContents(web_contents.get())
+      ->SetWindowID(standalone_window_id);
+
+  {
+    TestStandaloneWindowController standalone_controller(
+        /*base_window=*/nullptr, profile(), standalone_window_id,
+        web_contents.get());
+    auto created_it =
+        event_observer.events().find(api::windows::OnCreated::kEventName);
+    ASSERT_NE(created_it, event_observer.events().end());
+    ASSERT_EQ(1u, created_it->second->args().size());
+    EXPECT_EQ(standalone_window_id.id(),
+              created_it->second->args()[0].GetDict().FindInt("id"));
+
+    standalone_controller.NotifyWindowBoundsChanged();
+    auto bounds_it =
+        event_observer.events().find(api::windows::OnBoundsChanged::kEventName);
+    ASSERT_NE(bounds_it, event_observer.events().end());
+    ASSERT_EQ(1u, bounds_it->second->args().size());
+    EXPECT_EQ(standalone_window_id.id(),
+              bounds_it->second->args()[0].GetDict().FindInt("id"));
+  }
+
+  auto removed_it =
+      event_observer.events().find(api::windows::OnRemoved::kEventName);
+  ASSERT_NE(removed_it, event_observer.events().end());
+  ASSERT_EQ(1u, removed_it->second->args().size());
+  EXPECT_EQ(standalone_window_id.id(), removed_it->second->args()[0].GetInt());
+}
+
 }  // namespace extensions

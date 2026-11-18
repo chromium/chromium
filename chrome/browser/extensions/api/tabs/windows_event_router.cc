@@ -157,6 +157,13 @@ bool WillDispatchWindowFocusedEvent(
   return true;
 }
 
+bool ShouldDispatchWindowEvent(Profile* profile,
+                               WindowController* window_controller) {
+  return profile->IsSameOrParent(window_controller->profile()) &&
+         window_controller->IsVisibleToTabsAPIForExtension(
+             /*extension=*/nullptr, /*include_dev_tools_windows=*/true);
+}
+
 }  // namespace
 
 WindowsEventRouter::WindowsEventRouter(Profile* profile)
@@ -196,14 +203,8 @@ WindowsEventRouter::~WindowsEventRouter() {
 
 void WindowsEventRouter::OnWindowControllerAdded(
     WindowController* window_controller) {
-  if (!HasEventListener(windows::OnCreated::kEventName)) {
-    return;
-  }
-  if (!profile_->IsSameOrParent(window_controller->profile())) {
-    return;
-  }
-  // Ignore any windows without an associated browser (e.g., AppWindows).
-  if (!window_controller->GetBrowserWindowInterface()) {
+  if (!HasEventListener(windows::OnCreated::kEventName) ||
+      !ShouldDispatchWindowEvent(profile_, window_controller)) {
     return;
   }
 
@@ -220,14 +221,8 @@ void WindowsEventRouter::OnWindowControllerAdded(
 
 void WindowsEventRouter::OnWindowControllerRemoved(
     WindowController* window_controller) {
-  if (!HasEventListener(windows::OnRemoved::kEventName)) {
-    return;
-  }
-  if (!profile_->IsSameOrParent(window_controller->profile())) {
-    return;
-  }
-  // Ignore any windows without an associated browser (e.g., AppWindows).
-  if (!window_controller->GetBrowserWindowInterface()) {
+  if (!HasEventListener(windows::OnRemoved::kEventName) ||
+      !ShouldDispatchWindowEvent(profile_, window_controller)) {
     return;
   }
 
@@ -240,14 +235,8 @@ void WindowsEventRouter::OnWindowControllerRemoved(
 
 void WindowsEventRouter::OnWindowBoundsChanged(
     WindowController* window_controller) {
-  if (!HasEventListener(windows::OnBoundsChanged::kEventName)) {
-    return;
-  }
-  if (!profile_->IsSameOrParent(window_controller->profile())) {
-    return;
-  }
-  // Ignore any windows without an associated browser (e.g., AppWindows).
-  if (!window_controller->GetBrowserWindowInterface()) {
+  if (!HasEventListener(windows::OnBoundsChanged::kEventName) ||
+      !ShouldDispatchWindowEvent(profile_, window_controller)) {
     return;
   }
 
@@ -256,9 +245,8 @@ void WindowsEventRouter::OnWindowBoundsChanged(
   constexpr WindowController::PopulateTabBehavior populate_behavior =
       WindowController::kDontPopulateTabs;
   constexpr mojom::ContextType context_type = mojom::ContextType::kUnspecified;
-  args->data.Append(ExtensionTabUtil::CreateWindowValueForExtension(
-      *window_controller->GetBrowserWindowInterface(), nullptr,
-      populate_behavior, context_type));
+  args->data.Append(window_controller->CreateWindowValueForExtension(
+      nullptr, populate_behavior, context_type));
   DispatchEvent(events::WINDOWS_ON_BOUNDS_CHANGED,
                 windows::OnBoundsChanged::kEventName, window_controller,
                 std::move(args));
