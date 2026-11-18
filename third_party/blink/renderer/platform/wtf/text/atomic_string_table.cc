@@ -319,8 +319,7 @@ struct LowercaseLookupTranslator {
     const StringImpl* query = buf.Impl();
     if (bucket->length() != query->length())
       return false;
-    if (bucket->RawByteSpan().data() == query->RawByteSpan().data() &&
-        bucket->Is8Bit() == query->Is8Bit()) {
+    if (bucket == query) {
       return query->ContainsNoAsciiUpper();
     }
     return VisitCharacters(*bucket, [&](auto bch) {

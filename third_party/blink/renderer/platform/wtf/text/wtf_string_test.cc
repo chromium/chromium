@@ -880,4 +880,25 @@ TEST(StringTest, CodePointAtAndNext) {
   EXPECT_EQ(6u, i);
 }
 
+TEST(StringTest, Bytes) {
+  [[clang::no_destroy]] static constinit const String kNull;
+  [[clang::no_destroy]] static constinit const String kLiteral =
+      String::FromLiteral<"abc">();
+  EXPECT_EQ(nullptr, kNull.Bytes());
+  EXPECT_EQ(kLiteral.Impl()->Bytes(), kLiteral.Bytes());
+
+  String null_string;
+  EXPECT_EQ(nullptr, null_string.Bytes());
+
+  String empty_string("");
+  EXPECT_NE(nullptr, empty_string.Bytes());
+  EXPECT_EQ(empty_string.Impl()->Bytes(), empty_string.Bytes());
+
+  String string8("abc");
+  EXPECT_EQ(string8.Span8().data(), string8.Bytes());
+
+  String string16(u"\u3042\u3044");
+  EXPECT_EQ(string16.Span16().data(), string16.Bytes());
+}
+
 }  // namespace blink

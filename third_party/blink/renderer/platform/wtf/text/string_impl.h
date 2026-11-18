@@ -262,12 +262,26 @@ class WTF_EXPORT StringImpl {
     DCHECK(!Is8Bit());
     return CharacterBuffer<uint16_t>();
   }
+  // Returns the address of the inline character buffer without reading
+  // `Is8Bit()`. Prefer `Span8()`, `Span16()`, or `RawByteSpan()` when
+  // accessing the buffer contents.
+  ALWAYS_INLINE constexpr const void* Bytes() const {
+    // SAFETY: `StringImpl` allocates character data inline immediately after
+    // `*this` (or `this + 1` is one past `*this` for empty strings), and the
+    // returned `const void*` is not dereferenced here.
+    return UNSAFE_BUFFERS(this + 1);
+  }
+  // Exposes the underlying byte representation of the character buffer (either
+  // Latin-1 or UTF-16 code units). Use `Span8()` or `Span16()` when
+  // interpreting the string as code units. If only the buffer address is needed
+  // (i.e., `RawByteSpan().data()`), use `Bytes()` instead to avoid an
+  // unnecessary atomic load in `Is8Bit()`.
   ALWAYS_INLINE base::span<const uint8_t> RawByteSpan() const {
     // SAFETY: The AllocationSize<CharType>() helper function computes a size
     // that includes `length_` UChar/LChar characters in addition to the size
     // required for the StringImpl.
     return UNSAFE_BUFFERS(base::span(base::unchecked,
-                                     reinterpret_cast<const uint8_t*>(this + 1),
+                                     static_cast<const uint8_t*>(Bytes()),
                                      CharactersSizeInBytes()));
   }
   // Create a new std::u16string based on this.

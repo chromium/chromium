@@ -477,4 +477,23 @@ TEST(StringImplTest, StaticAsciiStringImpl) {
   EXPECT_EQ(cur, kTable.c.AsStringImpl());
 }
 
+TEST(StringImplTest, Bytes) {
+  static constexpr auto kStatic = MakeStaticStringImpl("abc");
+  static_assert(kStatic.AsStringImpl()->Bytes() != nullptr);
+  static_assert(StringImpl::g_global_empty.Bytes() != nullptr);
+  EXPECT_EQ(kStatic.AsStringImpl()->Bytes(), kStatic.data_.data());
+
+  scoped_refptr<StringImpl> impl8 =
+      StringImpl::Create(base::span_from_cstring("hello"));
+  EXPECT_EQ(impl8->Bytes(), impl8->Span8().data());
+  EXPECT_EQ(impl8->Bytes(), impl8->RawByteSpan().data());
+
+  scoped_refptr<StringImpl> impl16 = StringImpl::Create(u"\u3042\u3044");
+  EXPECT_EQ(impl16->Bytes(), impl16->Span16().data());
+  EXPECT_EQ(impl16->Bytes(), impl16->RawByteSpan().data());
+
+  EXPECT_EQ(StringImpl::empty_->Bytes(),
+            StringImpl::empty_->RawByteSpan().data());
+}
+
 }  // namespace blink

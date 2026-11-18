@@ -28,12 +28,11 @@ namespace blink {
 
 base::apple::ScopedCFTypeRef<CFStringRef> StringImpl::CreateCFString() {
   return base::apple::ScopedCFTypeRef<CFStringRef>(
-      Is8Bit()
-          ? CFStringCreateWithBytes(kCFAllocatorDefault, RawByteSpan().data(),
-                                    length_, kCFStringEncodingISOLatin1,
-                                    /*isExternalRepresentation=*/false)
-          : CFStringCreateWithCharacters(kCFAllocatorDefault,
-                                         SpanUint16().data(), length_));
+      Is8Bit() ? CFStringCreateWithBytes(kCFAllocatorDefault, Span8().data(),
+                                         length_, kCFStringEncodingISOLatin1,
+                                         /*isExternalRepresentation=*/false)
+               : CFStringCreateWithCharacters(kCFAllocatorDefault,
+                                              SpanUint16().data(), length_));
 }
 
 StringImpl::operator NSString*() {

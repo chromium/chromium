@@ -369,9 +369,18 @@ class WTF_EXPORT String {
     return impl_->SpanUint16();
   }
 
+  // Returns the address of the underlying character buffer without reading
+  // `Is8Bit()`, or `nullptr` if `IsNull()`. Prefer `Span8()`, `Span16()`, or
+  // `RawByteSpan()` when accessing the buffer contents.
+  ALWAYS_INLINE constexpr const void* Bytes() const {
+    return impl_ ? impl_.get()->Bytes() : nullptr;
+  }
+
   // This exposes the underlying representation of the string. Use with
   // care. When interpreting the string as a sequence of code units
-  // Span8()/Span16() should be used.
+  // Span8()/Span16() should be used. If only the buffer address is needed
+  // (i.e., `RawByteSpan().data()`), use `Bytes()` instead to avoid an
+  // unnecessary atomic load in `Is8Bit()`.
   base::span<const uint8_t> RawByteSpan() const {
     if (!impl_) {
       return {};
