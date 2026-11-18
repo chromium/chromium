@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -313,7 +314,8 @@ static inline bool CanHaveWhitespaceChildren(
     // cell as the inline, so keep it.
     // https://drafts.csswg.org/css-tables/#fixup-algorithm
     if (!context.previous_in_flow->IsText()) {
-      return (parent.IsTable() || parent.IsTableRow() ||
+      return RuntimeEnabledFeatures::TableWhitespaceAfterInlineEnabled() &&
+             (parent.IsTable() || parent.IsTableRow() ||
               parent.IsTableSection()) &&
              context.previous_in_flow->IsInline();
     }

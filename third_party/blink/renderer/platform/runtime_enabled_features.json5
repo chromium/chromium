@@ -6977,6 +6977,11 @@
       status: "test",
     },
     {
+      // Kill switch for crbug.com/40507408.
+      name: "TableWhitespaceAfterInline",
+      status: "stable",
+    },
+    {
       name: "TabSizeInRubyBase",
       status: "stable",
     },
