@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "chrome/browser/safe_browsing/network_context_service.h"
 #include "chrome/browser/safe_browsing/network_context_service_factory.h"
@@ -23,10 +24,29 @@
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router_factory.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 namespace safe_browsing {
+
+namespace {
+
+// Enterprise Isolated Mode profiles only report to the enterprise pipeline,
+// through their own `ExtensionTelemetryEventRouter`. The service constructor
+// dereferences that router, so it must exist.
+bool ShouldBuildForIsolatedModeProfile(Profile* profile) {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  return enterprise_isolated_mode::
+             IsExtensionTelemetryEnabledInIsolatedMode() &&
+         enterprise_connectors::ExtensionTelemetryEventRouter::Get(profile);
+#else
+  return false;
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+}
+
+}  // namespace
 
 // static
 ExtensionTelemetryService* ExtensionTelemetryServiceFactory::GetForProfile(
@@ -44,10 +64,18 @@ ExtensionTelemetryServiceFactory::GetInstance() {
 
 ExtensionTelemetryServiceFactory::ExtensionTelemetryServiceFactory()
     : ProfileKeyedServiceFactory(
-          // AshInternals should be 'kNone' since ExtensionTelemetryService
-          // should not be initialized for internal profiles on ChromeOS Ash.
           "ExtensionTelemetryService",
-          ProfileSelections::BuildForRegularProfile()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              .WithGuest(ProfileSelection::kNone)
+              .WithSystem(ProfileSelection::kNone)
+              // AshInternals should be 'kNone' since ExtensionTelemetryService
+              // should not be initialized for internal profiles on ChromeOS
+              // Ash.
+              .WithAshInternals(ProfileSelection::kNone)
+              // Gated in BuildServiceInstanceForBrowserContext().
+              .WithIsolatedMode(ProfileSelection::kOwnInstance)
+              .Build()) {
   DependsOn(NetworkContextServiceFactory::GetInstance());
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
@@ -65,14 +93,24 @@ ExtensionTelemetryServiceFactory::ExtensionTelemetryServiceFactory()
 std::unique_ptr<KeyedService>
 ExtensionTelemetryServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (profile->IsEnterpriseIsolatedModeProfile()) {
+    if (!ShouldBuildForIsolatedModeProfile(profile)) {
+      return nullptr;
+    }
+    // This service never uploads to Safe Browsing, so it gets no
+    // `URLLoaderFactory`.
+    return std::make_unique<ExtensionTelemetryService>(
+        profile, /*url_loader_factory=*/nullptr);
+  }
+
   NetworkContextService* network_service =
       NetworkContextServiceFactory::GetForBrowserContext(context);
   if (!network_service) {
     return nullptr;
   }
   return std::make_unique<ExtensionTelemetryService>(
-      Profile::FromBrowserContext(context),
-      network_service->GetURLLoaderFactory());
+      profile, network_service->GetURLLoaderFactory());
 }
 
 bool ExtensionTelemetryServiceFactory::ServiceIsCreatedWithBrowserContext()

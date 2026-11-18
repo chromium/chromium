@@ -23,9 +23,11 @@ class ExtensionTelemetryService;
 // active Profile.
 class ExtensionTelemetryServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  // Creates the service if it doesn't exist already for the given |profile|.
+  // Creates the service if it doesn't exist already for the given `profile`.
   // If the service already exists, return its pointer.
-  // Returns nullptr if the profile is in Incognito/Guest mode
+  // Returns nullptr if the profile is in Incognito/Guest mode, or is an
+  // Enterprise Isolated Mode profile for which enterprise extension telemetry
+  // is unavailable (see BuildServiceInstanceForBrowserContext()).
   static ExtensionTelemetryService* GetForProfile(Profile* profile);
 
   static ExtensionTelemetryServiceFactory* GetInstance();

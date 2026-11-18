@@ -41,7 +41,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
-#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
 #include "extensions/common/extension_features.h"
@@ -140,15 +139,13 @@ class ExtensionTelemetryServiceBrowserTest
   }
 
   bool IsTelemetryServiceEnabledForESB() {
-    return telemetry_service()->esb_enabled_ &&
+    return IsEnabledForESB(*telemetry_service()) &&
            !telemetry_service()->signal_processors_.empty() &&
            telemetry_service()->timer_.IsRunning();
   }
 
   bool IsTelemetryServiceEnabledForEnterprise() {
-    return telemetry_service()->enterprise_enabled_ &&
-           !telemetry_service()->enterprise_signal_processors_.empty() &&
-           telemetry_service()->enterprise_timer_.IsRunning();
+    return IsTelemetryServiceEnabledForEnterprise(*telemetry_service());
   }
 
   bool IsExtensionStoreEmpty() {
@@ -157,6 +154,17 @@ class ExtensionTelemetryServiceBrowserTest
 
   bool IsEnterpriseExtensionStoreEmpty() {
     return telemetry_service()->enterprise_extension_store_.empty();
+  }
+
+  static bool IsEnabledForESB(const ExtensionTelemetryService& service) {
+    return service.esb_enabled_;
+  }
+
+  static bool IsTelemetryServiceEnabledForEnterprise(
+      const ExtensionTelemetryService& service) {
+    return service.enterprise_enabled_ &&
+           !service.enterprise_signal_processors_.empty() &&
+           service.enterprise_timer_.IsRunning();
   }
 
   // Returns whether `service` holds enterprise signals from `extension_id`.
@@ -1319,6 +1327,44 @@ class ExtensionTelemetryServiceIsolatedModeBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
+                       CreatesServiceForIsolatedProfile) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
+  Profile* isolated_profile = CreateIncognitoBrowser()->GetProfile();
+  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
+
+  ExtensionTelemetryService* isolated_service =
+      ExtensionTelemetryServiceFactory::GetForProfile(isolated_profile);
+
+  if (!IsMilestone2Enabled()) {
+    EXPECT_EQ(isolated_service, nullptr);
+    return;
+  }
+  ASSERT_NE(isolated_service, nullptr);
+  EXPECT_NE(isolated_service, telemetry_service());
+}
+
+IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
+                       IsolatedServiceOnlyReportsToEnterprise) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
+  Profile* isolated_profile = CreateIncognitoBrowser()->GetProfile();
+  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
+
+  ExtensionTelemetryService* isolated_service =
+      ExtensionTelemetryServiceFactory::GetForProfile(isolated_profile);
+
+  if (!IsMilestone2Enabled()) {
+    EXPECT_EQ(isolated_service, nullptr);
+    return;
+  }
+  ASSERT_NE(isolated_service, nullptr);
+  // The regular profile has ESB enabled and, from `SetUpOnMainThread()`, the
+  // reporting policy. The Isolated Mode profile inherits both through its
+  // prefs, but its service only reports to the enterprise pipeline.
+  EXPECT_FALSE(IsEnabledForESB(*isolated_service));
+  EXPECT_TRUE(IsTelemetryServiceEnabledForEnterprise(*isolated_service));
+}
+
+IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
                        GetForSignal) {
   Profile* regular_profile = browser()->GetProfile();
   Profile* isolated_profile = CreateIncognitoBrowser()->GetProfile();
@@ -1344,14 +1390,15 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
     return;
   }
 
-  // The Isolated Mode profile has no service yet, so its signals are dropped
-  // rather than reported by the caller's service.
+  ExtensionTelemetryService* isolated_service =
+      ExtensionTelemetryServiceFactory::GetForProfile(isolated_profile);
+  ASSERT_NE(isolated_service, nullptr);
   EXPECT_EQ(ExtensionTelemetryService::GetForSignal(regular_profile,
                                                     isolated_profile),
-            nullptr);
+            isolated_service);
   EXPECT_EQ(ExtensionTelemetryService::GetForSignal(isolated_profile,
                                                     /*target=*/nullptr),
-            nullptr);
+            isolated_service);
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
@@ -1375,8 +1422,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
   ASSERT_TRUE(StartEmbeddedTestServer());
   const extensions::ExtensionId extension_id = LoadSpanningExtension();
   BrowserWindowInterface* isolated_browser = CreateIncognitoBrowser();
-  ASSERT_TRUE(
-      isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+  Profile* isolated_profile = isolated_browser->GetProfile();
+  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
   const int isolated_tab_id =
       extensions::ExtensionTabUtil::GetTabId(web_contents(isolated_browser));
 
@@ -1389,7 +1436,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
     EXPECT_TRUE(HasEsbSignals(*telemetry_service(), extension_id));
     return;
   }
-  // The signal is dropped: the Isolated Mode profile has no service yet.
+  ExtensionTelemetryService* isolated_service =
+      ExtensionTelemetryServiceFactory::GetForProfile(isolated_profile);
+  ASSERT_NE(isolated_service, nullptr);
+  EXPECT_TRUE(HasEnterpriseSignals(*isolated_service, extension_id));
   EXPECT_FALSE(HasEnterpriseSignals(*telemetry_service(), extension_id));
   EXPECT_FALSE(HasEsbSignals(*telemetry_service(), extension_id));
 }
@@ -1409,9 +1459,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
                        RoutesSpanningCookiesSignalForIsolatedStore) {
   SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
   const extensions::ExtensionId extension_id = LoadSpanningExtension();
-  ASSERT_TRUE(CreateIncognitoBrowser()
-                  ->GetProfile()
-                  ->IsEnterpriseIsolatedModeProfile());
+  Profile* isolated_profile = CreateIncognitoBrowser()->GetProfile();
+  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
 
   GetCookiesFromExtension(extension_id, /*store_id=*/"1");
 
@@ -1421,7 +1470,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
     EXPECT_TRUE(HasEsbSignals(*telemetry_service(), extension_id));
     return;
   }
-  // The signal is dropped: the Isolated Mode profile has no service yet.
+  ExtensionTelemetryService* isolated_service =
+      ExtensionTelemetryServiceFactory::GetForProfile(isolated_profile);
+  ASSERT_NE(isolated_service, nullptr);
+  EXPECT_TRUE(HasEnterpriseSignals(*isolated_service, extension_id));
   EXPECT_FALSE(HasEnterpriseSignals(*telemetry_service(), extension_id));
   EXPECT_FALSE(HasEsbSignals(*telemetry_service(), extension_id));
 }
@@ -1441,9 +1493,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
                        RoutesSpanningCookiesGetSignalForIsolatedStore) {
   SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
   const extensions::ExtensionId extension_id = LoadSpanningExtension();
-  ASSERT_TRUE(CreateIncognitoBrowser()
-                  ->GetProfile()
-                  ->IsEnterpriseIsolatedModeProfile());
+  Profile* isolated_profile = CreateIncognitoBrowser()->GetProfile();
+  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
 
   GetCookieFromExtension(extension_id, /*store_id=*/"1");
 
@@ -1453,13 +1504,16 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
     EXPECT_TRUE(HasEsbSignals(*telemetry_service(), extension_id));
     return;
   }
-  // The signal is dropped: the Isolated Mode profile has no service yet.
+  ExtensionTelemetryService* isolated_service =
+      ExtensionTelemetryServiceFactory::GetForProfile(isolated_profile);
+  ASSERT_NE(isolated_service, nullptr);
+  EXPECT_TRUE(HasEnterpriseSignals(*isolated_service, extension_id));
   EXPECT_FALSE(HasEnterpriseSignals(*telemetry_service(), extension_id));
   EXPECT_FALSE(HasEsbSignals(*telemetry_service(), extension_id));
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
-                       KeepsIsolatedModeDomActivityOutOfRegularService) {
+                       RoutesIsolatedModeDomActivityToIsolatedService) {
   enterprise_connectors::test::SetOnSecurityEventReporting(
       /*prefs=*/prefs(),
       /*enabled=*/true,
@@ -1514,11 +1568,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
     return;
   }
 
-  // The activity isn't collected: telemetry logging is off for the Isolated
-  // Mode renderers while the profile has no subscriber.
-  EXPECT_FALSE(
-      extensions::ExtensionsBrowserClient::Get()->IsTelemetryLoggingEnabled(
-          isolated_profile));
+  ExtensionTelemetryService* isolated_service =
+      ExtensionTelemetryServiceFactory::GetForProfile(isolated_profile);
+  ASSERT_NE(isolated_service, nullptr);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return HasEnterpriseSignals(*isolated_service, extension_id); }));
   EXPECT_FALSE(HasEnterpriseSignals(*telemetry_service(), extension_id));
 
   // DOM activity in a regular tab is reported by the regular profile's

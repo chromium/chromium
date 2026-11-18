@@ -60,11 +60,13 @@ class SafeBrowsingTokenFetcher;
 class SearchHijackingDetector;
 class ActivityLogIngester;
 
-// This class processes extension signals and reports telemetry for a given
-// profile (regular profile only). It is used exclusively on the UI thread.
+// This class processes extension signals and reports telemetry for a regular
+// profile, or, for enterprise reporting only, an Enterprise Isolated Mode
+// profile. It is used exclusively on the UI thread.
 // Lifetime:
-// The service is instantiated when the associated profile is instantiated. It
-// is destructed when the corresponding profile is destructed.
+// The service is instantiated when the associated profile is instantiated (for
+// Enterprise Isolated Mode profiles, only when ExtensionTelemetryServiceFactory
+// allows it. It is destructed when the corresponding profile is destructed.
 // Enable/Disable states:
 // The service is enabled if:
 //  - the user is opted into Enhanced Safe Browsing (ESB) OR
