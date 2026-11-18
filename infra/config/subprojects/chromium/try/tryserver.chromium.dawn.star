@@ -179,6 +179,7 @@ shared_gpu.try_.win_optional_builder(
         "ci/Dawn Win10 x64 DEPS Builder",
         "ci/Dawn Win10 x64 DEPS Release (Intel)",
         "ci/Dawn Win10 x64 DEPS Release (NVIDIA)",
+        "ci/Dawn Win x64 DEPS Release (Software)",
     ],
     gn_args = "ci/Dawn Win10 x64 DEPS Builder",
     cq_settings = try_.cq_settings(
@@ -553,6 +554,7 @@ shared_gpu.try_.win_rate_limited_builder(
         "ci/Dawn Win10 x64 Builder",
         "ci/Dawn Win10 x64 Release (Intel)",
         "ci/Dawn Win10 x64 Release (NVIDIA)",
+        "ci/Dawn Win x64 Release (Software)",
     ],
     gn_args = "ci/Dawn Win10 x64 Builder",
     # Occasionally receives bursty CQ traffic from the Dawn repo, so increase

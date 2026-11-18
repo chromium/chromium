@@ -1,4 +1,5 @@
 {
+  "Dawn Win x64 DEPS Release (Software)": {},
   "Dawn Win10 x64 DEPS Builder": {
     "additional_compile_targets": [
       "dawn_end2end_tests",
