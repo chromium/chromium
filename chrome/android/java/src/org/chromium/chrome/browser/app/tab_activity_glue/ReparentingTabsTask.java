@@ -63,7 +63,7 @@ public class ReparentingTabsTask {
      *     may be null if no intent customization is needed.
      * @param startActivityOptions Options to pass to {@link Activity#startActivity(Intent, Bundle)}
      * @param finalizeCallback A callback that will be called after the tab is attached to the new
-     *     host activity in {@link #attachAndFinishReparenting}.
+     *     host activity in {@link ReparentingTask#finish}.
      */
     public boolean begin(
             @Nullable Context context,

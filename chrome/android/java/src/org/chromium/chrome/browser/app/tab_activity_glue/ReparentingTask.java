@@ -47,16 +47,12 @@ public class ReparentingTask implements UserData {
      * @return {@link ReparentingTask} object for a given {@link Tab}. Creates one if not present.
      */
     public static ReparentingTask from(Tab tab) {
-        ReparentingTask reparentingTask = get(tab);
+        ReparentingTask reparentingTask = tab.getUserDataHost().getUserData(USER_DATA_KEY);
         if (reparentingTask == null) {
             reparentingTask =
                     tab.getUserDataHost().setUserData(USER_DATA_KEY, new ReparentingTask(tab));
         }
         return reparentingTask;
-    }
-
-    public static @Nullable ReparentingTask get(Tab tab) {
-        return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
     private ReparentingTask(Tab tab) {
@@ -76,7 +72,7 @@ public class ReparentingTask implements UserData {
      *     may be null if no intent customization is needed.
      * @param startActivityOptions Options to pass to {@link Activity#startActivity(Intent, Bundle)}
      * @param finalizeCallback A callback that will be called after the tab is attached to the new
-     *     host activity in {@link #attachAndFinishReparenting}.
+     *     host activity in {@link #finish}.
      * @return {@code true}, if the intent was successfully launched; {@code false} otherwise.
      */
     public boolean begin(
@@ -104,7 +100,7 @@ public class ReparentingTask implements UserData {
      *     launching the new host activity. This intent's URI and action will be overridden. This
      *     may be null if no intent customization is needed.
      * @param finalizeCallback A callback that will be called after the tab is attached to the new
-     *     host activity in {@link #attachAndFinishReparenting}.
+     *     host activity in {@link #finish}.
      */
     public void setupIntent(Intent intent, @Nullable Runnable finalizeCallback) {
         if (intent == null) intent = new Intent();
@@ -142,14 +138,13 @@ public class ReparentingTask implements UserData {
     /**
      * Detaches a tab from its current activity if any.
      *
-     * In details, this function:
-     * - Removes the tab from its current {@link TabModelSelector}, effectively severing
-     *   the {@link Activity} to {@link Tab} link.
+     * <p>Removes the tab from its current {@link TabModelSelector}, effectively severing the {@link
+     * Activity} to {@link Tab} link.
      */
     public void detach() {
-        // TODO(yusufo): We can't call tab.updateWindowAndroid that sets |mWindowAndroid| to null
-        // because many code paths (including navigation) expect the tab to always be associated
-        // with an activity, and will crash. crbug.com/40489451
+        // TODO(crbug.com/40489451): We can't call tab.updateWindowAndroid that sets
+        // |mWindowAndroid| to null because many code paths (including navigation) expect the tab
+        // to always be associated with an activity, and will crash.
         WebContents webContents = mTab.getWebContents();
 
         // TODO(crbug.com/40067160): We shouldn't be detaching tabs with null WebContents as it can

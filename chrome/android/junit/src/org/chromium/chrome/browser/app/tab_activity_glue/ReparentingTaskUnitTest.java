@@ -107,16 +107,6 @@ public class ReparentingTaskUnitTest {
     }
 
     @Test
-    public void testGet_returnsReparentingTaskFromTab() {
-        mUserDataHost.setUserData(USER_DATA_KEY, mTabReparentingTask);
-
-        assertEquals(
-                "#get(...) should return the ReparentingTask from Tab's UserDataHost",
-                mTabReparentingTask,
-                ReparentingTask.get(mTab));
-    }
-
-    @Test
     public void testFrom_tabHasReparentingTask_returnsIt() {
         mUserDataHost.setUserData(USER_DATA_KEY, mTabReparentingTask);
 

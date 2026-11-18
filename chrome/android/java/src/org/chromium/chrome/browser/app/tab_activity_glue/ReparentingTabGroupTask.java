@@ -107,7 +107,7 @@ public class ReparentingTabGroupTask {
      *     launching the new host activity. This intent's URI and action will be overridden. This
      *     may be null if no intent customization is needed.
      * @param finalizeCallback A callback that will be called after the tab group is attached to the
-     *     new host activity in {@link #attachAndFinishReparenting}.
+     *     new host activity in {@link ReparentingTask#finish}.
      */
     public void setupIntent(Intent intent, @Nullable Runnable finalizeCallback) {
         // 1. Create a new Intent if none is provided.
