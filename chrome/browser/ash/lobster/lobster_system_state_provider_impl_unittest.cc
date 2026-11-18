@@ -132,8 +132,7 @@ class LobsterSystemStateProviderImplBaseTest : public testing::Test {
 
   void SetUpEligibleHardware() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kLobster,
-                              ash::features::kFeatureManagementLobster},
+        /*enabled_features=*/{ash::features::kFeatureManagementLobster},
         /*disabled_features=*/{});
   }
 

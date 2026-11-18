@@ -99,7 +99,6 @@ specialized_features::FeatureAccessConfig CreateFeatureAccessConfig() {
     return config;
   }
 
-  config.feature_flag = &ash::features::kLobster;
   config.feature_management_flag = &ash::features::kFeatureManagementLobster;
   config.capability_callback =
       base::BindRepeating([](AccountCapabilities capabilities) {

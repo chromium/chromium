@@ -164,8 +164,7 @@ class SearchSectionTestWithLobsterEnabled : public SearchSectionTest {
     SearchSectionTest::SetUp();
     magic_boost_state_.SetAvailability(true);
     feature_list_.InitWithFeatures(
-        /*enable_features=*/{ash::features::kLobster,
-                             ash::features::kFeatureManagementLobster},
+        /*enable_features=*/{ash::features::kFeatureManagementLobster},
         /*disable_features=*/{});
     AnnotateAccount();
 
