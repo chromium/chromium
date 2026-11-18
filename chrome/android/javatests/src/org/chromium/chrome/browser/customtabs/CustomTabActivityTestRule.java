@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import org.junit.Assert;
 
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
@@ -47,6 +48,7 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
     public void startCustomTabActivityWithIntent(Intent intent) {
         startCustomTabActivityWithIntentNotWaitingForFirstFrame(intent);
         waitForFirstFrame();
+        CriteriaHelper.pollUiThread(() -> getActivity().canDeliverTouchInput());
     }
 
     /**

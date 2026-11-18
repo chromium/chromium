@@ -107,6 +107,7 @@ BASE_DECLARE_FEATURE(kAsyncNotificationManagerForDownload);
 BASE_DECLARE_FEATURE(kAutomotiveBackButtonBarStreamline);
 BASE_DECLARE_FEATURE(kAuxiliarySearchHistoryDonation);
 BASE_DECLARE_FEATURE(kAvoidRecreateOnTouchscreenOrColorModeChange);
+BASE_DECLARE_FEATURE(kAvoidTaskTrampolines);
 BASE_DECLARE_FEATURE(kBackGestureReflectsDesktopBehavior);
 BASE_DECLARE_FEATURE(kBlockIntentsWhileLocked);
 BASE_DECLARE_FEATURE(kBookmarkPaneAndroid);
