@@ -15,6 +15,7 @@
 #include "components/sync/base/storage_type.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#include "ios/chrome/browser/shared/model/profile/test/testing_factories.h"
 
 namespace {
 

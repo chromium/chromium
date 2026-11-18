@@ -58,6 +58,7 @@ source_set("unit_tests") {
     "//components/universal_optout:features",
     "//components/variations:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/profile/test:testing_factories",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/test:test_support",
     "//ios/web/public",

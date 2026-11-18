@@ -66,6 +66,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/model:cloud_profile_reporting",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/profile/test:testing_factories",
     "//ios/chrome/test:test_support",
     "//mojo/public/cpp/bindings",
     "//services/network:test_support",

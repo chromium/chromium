@@ -18,6 +18,7 @@
 #import "components/universal_optout/universal_optout_service.h"
 #import "components/variations/service/test_variations_service.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/testing_factories.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/universal_optout/model/universal_optout_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
