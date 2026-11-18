@@ -4,10 +4,13 @@
 
 #include "components/android_autofill/browser/android_autofill_provider.h"
 
+#include <cstddef>
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/android/android_info.h"
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -30,6 +33,7 @@
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
@@ -38,6 +42,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/webauthn/android/mock_webauthn_cred_man_delegate.h"
@@ -281,6 +286,13 @@ class AndroidAutofillProviderTestBase
 
   MockAndroidAutofillProviderBridge& provider_bridge() {
     return *provider_bridge_;
+  }
+
+  MockFormFieldDataAndroidBridge& field_bridge(size_t index) {
+    FormDataAndroid* form = test_api(autofill_provider()).form();
+    CHECK(form);
+    return static_cast<MockFormFieldDataAndroidBridge&>(
+        test_api(*form).field_bridge(index));
   }
 
  private:
@@ -1016,6 +1028,223 @@ TEST_F(AndroidAutofillProviderTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.WebView.KeyMetrics.FillingAcceptance.Password", false, 1);
+}
+
+// Tests that filling via `OnAutofillAvailable()` caches `is_autofilled` in the
+// provider's `FormDataAndroid`, forwards `OnDidAutofillForm()` only for the
+// linked form, and records `FillingCorrectness2=true` when submitted unedited.
+TEST_F(AndroidAutofillProviderTest,
+       OnAutofillAvailableWithoutEditsRecordsFillingCorrectnessTrue) {
+  base::HistogramTester histogram_tester;
+
+  FormData postal_form = CreateFormDataForFrame(
+      GetFormData({NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_CITY,
+                   ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP}),
+      main_frame_token());
+  FormData other_form =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({postal_form, other_form},
+                                         /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  android_autofill_manager().OnAskForValuesToFillTest(
+      postal_form, postal_form.fields()[0].global_id());
+
+  EXPECT_CALL(field_bridge(0), UpdateFieldFromJava)
+      .WillOnce([](FormFieldData& field) {
+        field.set_value(u"Jane Doe");
+        field.set_is_autofilled_according_to_renderer(true);
+      });
+  provider_bridge_delegate().OnAutofillAvailable();
+
+  EXPECT_TRUE(
+      autofill_provider().GetCachedIsAutofilled(postal_form.fields()[0]));
+  EXPECT_FALSE(
+      autofill_provider().GetCachedIsAutofilled(postal_form.fields()[1]));
+
+  // `OnDidAutofillForm()` is ignored for unlinked forms and forwarded to Java
+  // for the linked session form.
+  EXPECT_CALL(provider_bridge(), OnDidAutofillForm()).Times(0);
+  android_autofill_manager().OnDidAutofillForm(
+      other_form, AutofillManagerTestApi::pass_key());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  EXPECT_CALL(provider_bridge(), OnDidAutofillForm());
+  android_autofill_manager().OnDidAutofillForm(
+      postal_form, AutofillManagerTestApi::pass_key());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  android_autofill_manager().OnFormSubmitted(
+      postal_form, mojom::SubmissionSource::FORM_SUBMISSION,
+      AutofillManagerTestApi::pass_key());
+  Reset(autofill_driver());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FillingCorrectness2.Address", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FillingCorrectness2.PostalAddress", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FormSubmission.Autofilled2.Address", true,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.WebView.KeyMetrics.FormSubmission.NotAutofilled2.Address", 0);
+}
+
+// Tests that editing a field previously filled via `OnAutofillAvailable()`
+// consults `GetCachedIsAutofilled()` (even after Blink clears
+// `is_autofilled_according_to_renderer` on the incoming `FormData`), clears the
+// cached autofilled flag, updates the Java field bridge, and records
+// `FillingCorrectness2=false` upon submission.
+TEST_F(AndroidAutofillProviderTest,
+       EditingAutofilledFieldRecordsFillingCorrectnessFalse) {
+  base::HistogramTester histogram_tester;
+
+  FormData postal_form = CreateFormDataForFrame(
+      GetFormData({NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_CITY,
+                   ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP}),
+      main_frame_token());
+  android_autofill_manager().OnFormsSeen({postal_form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  android_autofill_manager().OnAskForValuesToFillTest(
+      postal_form, postal_form.fields()[0].global_id());
+
+  EXPECT_CALL(field_bridge(0), UpdateFieldFromJava)
+      .WillOnce([](FormFieldData& field) {
+        field.set_value(u"Jane Doe");
+        field.set_is_autofilled_according_to_renderer(true);
+      });
+  provider_bridge_delegate().OnAutofillAvailable();
+  ASSERT_TRUE(
+      autofill_provider().GetCachedIsAutofilled(postal_form.fields()[0]));
+
+  // Blink clears `is_autofilled_according_to_renderer` before sending the
+  // value-changed notification.
+  FormData edited_form = postal_form;
+  test_api(edited_form).field(0).set_value(u"Jane Roe");
+  test_api(edited_form).field(0).set_is_autofilled_according_to_renderer(false);
+
+  EXPECT_CALL(field_bridge(0), UpdateValue(std::u16string_view(u"Jane Roe")));
+  EXPECT_CALL(provider_bridge(),
+              OnFormFieldDidChange(EqualsFieldInfo(/*index=*/0)));
+  android_autofill_manager().OnTextFieldValueChanged(
+      edited_form, edited_form.fields()[0].global_id(), base::TimeTicks::Now(),
+      AutofillManagerTestApi::pass_key());
+  EXPECT_FALSE(
+      autofill_provider().GetCachedIsAutofilled(edited_form.fields()[0]));
+
+  android_autofill_manager().OnFormSubmitted(
+      edited_form, mojom::SubmissionSource::FORM_SUBMISSION,
+      AutofillManagerTestApi::pass_key());
+  Reset(autofill_driver());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FillingCorrectness2.Address", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FillingCorrectness2.PostalAddress", false,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FormSubmission.Autofilled2.Address", true,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.WebView.KeyMetrics.FormSubmission.NotAutofilled2.Address", 0);
+}
+
+// Tests that typing into an unfilled field of a partially autofilled form does
+// not mark the autofilled fields as edited, keeping `FillingCorrectness2=true`.
+TEST_F(AndroidAutofillProviderTest,
+       TypingIntoUnfilledFieldOfAutofilledFormKeepsFillingCorrectnessTrue) {
+  base::HistogramTester histogram_tester;
+
+  FormData postal_form = CreateFormDataForFrame(
+      GetFormData({NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_CITY,
+                   ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP}),
+      main_frame_token());
+  android_autofill_manager().OnFormsSeen({postal_form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  android_autofill_manager().OnAskForValuesToFillTest(
+      postal_form, postal_form.fields()[0].global_id());
+
+  EXPECT_CALL(field_bridge(0), UpdateFieldFromJava)
+      .WillOnce([](FormFieldData& field) {
+        field.set_value(u"Jane Doe");
+        field.set_is_autofilled_according_to_renderer(true);
+      });
+  provider_bridge_delegate().OnAutofillAvailable();
+
+  // Type into unfilled field 1 (`ADDRESS_HOME_LINE1`).
+  FormData typed_form = postal_form;
+  test_api(typed_form).field(0).set_value(u"Jane Doe");
+  test_api(typed_form).field(0).set_is_autofilled_according_to_renderer(true);
+  test_api(typed_form).field(1).set_value(u"123 Main St");
+  android_autofill_manager().OnTextFieldValueChanged(
+      typed_form, typed_form.fields()[1].global_id(), base::TimeTicks::Now(),
+      AutofillManagerTestApi::pass_key());
+
+  android_autofill_manager().OnFormSubmitted(
+      typed_form, mojom::SubmissionSource::FORM_SUBMISSION,
+      AutofillManagerTestApi::pass_key());
+  Reset(autofill_driver());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FillingCorrectness2.Address", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FillingCorrectness2.PostalAddress", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FormSubmission.Autofilled2.Address", true,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.WebView.KeyMetrics.FormSubmission.NotAutofilled2.Address", 0);
+}
+
+// Tests that typing manually without autofill records
+// `FormSubmission.NotAutofilled2` (`true` on submission, `false` on navigation
+// without submission) and omits `FillingCorrectness2`.
+TEST_F(AndroidAutofillProviderTest,
+       TypingWithoutAutofillRecordsNotAutofilledSubmission) {
+  base::HistogramTester histogram_tester;
+
+  FormData form = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields()[0].global_id());
+  test_api(form).field(0).set_value(u"Jane");
+  android_autofill_manager().OnTextFieldValueChanged(
+      form, form.fields()[0].global_id(), base::TimeTicks::Now(),
+      AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormSubmitted(
+      form, mojom::SubmissionSource::FORM_SUBMISSION,
+      AutofillManagerTestApi::pass_key());
+  Reset(autofill_driver());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FormSubmission.NotAutofilled2.Address", true,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FillingAssistance2.Address", false, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.WebView.KeyMetrics.FillingCorrectness2.Address", 0);
+
+  // Now type into a new form and navigate away without submitting.
+  FormData abandoned_form = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({abandoned_form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnAskForValuesToFillTest(
+      abandoned_form, abandoned_form.fields()[0].global_id());
+  test_api(abandoned_form).field(0).set_value(u"John");
+  android_autofill_manager().OnTextFieldValueChanged(
+      abandoned_form, abandoned_form.fields()[0].global_id(),
+      base::TimeTicks::Now(), AutofillManagerTestApi::pass_key());
+  Reset(autofill_driver());
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.WebView.KeyMetrics.FormSubmission.NotAutofilled2.Address",
+      false, 1);
 }
 
 // Tests that if Android Autofill is disabled in OS settings, no funnel or key

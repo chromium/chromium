@@ -21,7 +21,7 @@ class AndroidAutofillProviderTestApi {
     provider_->StartNewSession(manager, form, field);
   }
 
-  const FormDataAndroid* form() && {
+  FormDataAndroid* form() && {
     return provider_->session_state_ ? provider_->session_state_->form.get()
                                      : nullptr;
   }

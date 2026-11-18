@@ -72,6 +72,8 @@ class FormFieldDataAndroid {
   FieldGlobalId global_id() const { return field_.get().global_id(); }
 
  private:
+  friend class FormDataAndroidTestApi;
+
   // The C++ <-> Java bridge.
   std::unique_ptr<FormFieldDataAndroidBridge> bridge_;
 
