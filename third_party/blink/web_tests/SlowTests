@@ -748,8 +748,6 @@ crbug.com/1044823 [ Release Win ] http/tests/devtools/extensions/extensions-reso
 crbug.com/1043901 [ Release Win ] external/wpt/preload/preload-with-type.html [ Slow ]
 crbug.com/1046784 [ Linux ] http/tests/devtools/search/search-in-sourcemap.js [ Slow ]
 crbug.com/1046784 [ Release Win ] http/tests/devtools/search/search-in-sourcemap.js [ Slow ]
-crbug.com/1046784 [ Linux ] http/tests/devtools/search/search-in-script.js [ Slow ]
-crbug.com/1046784 [ Release Win ] http/tests/devtools/search/search-in-script.js [ Slow ]
 crbug.com/1046784 [ Linux ] http/tests/devtools/coverage/coverage-view.js [ Slow ]
 crbug.com/1046784 [ Release Win ] http/tests/devtools/coverage/coverage-view.js [ Slow ]
 crbug.com/1046784 [ Linux ] inspector-protocol/dom/set-outer-html-body.js [ Slow ]
