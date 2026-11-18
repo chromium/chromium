@@ -186,9 +186,31 @@ static_library("chrome_test_launcher") {
     "//chrome/browser:chrome_browser_main",
     "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser:main_extra_parts",
-    "//chrome/test:test_support",
+    "//chrome/browser/metrics",
+    "//chrome/common:non_code_constants",
+    "//chrome/common/profiler",
+    "//chrome/renderer",
+    "//chrome/utility",
+    "//components/crash/core/app",
+    "//components/sampling_profiler",
+    "//content/public/renderer",
+    "//services/test/echo:lib",
     "//testing/libfuzzer:fuzztest_init_support",
   ]
+
+  # chrome_test_launcher.h exposes chrome_main_delegate.h / startup_timestamps.h
+  # (and the android delegate), provided by chrome/app:test_support off-Android
+  # and //chrome:chrome_android_core on Android -> public_deps.
+  if (is_android) {
+    public_deps = [ "//chrome:chrome_android_core" ]
+    deps += [ "//chrome/test/base:android_browser_test" ]
+  } else {
+    public_deps = [ "//chrome/app:test_support" ]
+    deps += [ "//chrome/test/base:in_process_browser_test" ]
+  }
+  if (is_win) {
+    deps += [ "//chrome/install_static/test:test_support" ]
+  }
   if (is_mac) {
     deps += [
       "//chrome/app_shim",

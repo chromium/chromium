@@ -157,6 +157,7 @@ static_library("test_support") {
   visibility = [
     ":win_unit_tests",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_launcher",
     "//chrome/test/base:chrome_test_suite",
     "//chrome/test/base/chromeos/crosier:test_support",
   ]
