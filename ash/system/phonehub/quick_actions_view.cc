@@ -56,13 +56,6 @@ void QuickActionsView::InitQuickActionItems() {
   quick_action_controllers_.push_back(std::move(locate_phone_controller));
 }
 
-void QuickActionsView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  for (auto& controller : quick_action_controllers_) {
-    controller->UpdateQuickActionItemUi();
-  }
-}
-
 BEGIN_METADATA(QuickActionsView)
 END_METADATA
 
