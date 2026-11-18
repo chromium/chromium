@@ -89,6 +89,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
             "(e.g. the  user selected text) and timestamp data is sent, "
             "along with basic state information from the query controller."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "lensfrontend-pa.googleapis.com"
           internal {
             contacts {
               email: "hujasonx@google.com"

@@ -50,6 +50,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
             "get supported languages with display names appropriate to the "
             "user's locale."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "translate-pa.googleapis.com"
           internal {
             contacts {
               email: "juanmojica@google.com"

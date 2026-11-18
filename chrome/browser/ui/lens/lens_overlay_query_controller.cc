@@ -126,6 +126,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
             "viewport (image bytes) and user interaction data (coordinates of "
             "a box within the screenshot or tapped object-id) are sent."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "lensfrontend-pa.googleapis.com"
           internal {
             contacts {
               email: "hujasonx@google.com"
