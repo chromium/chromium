@@ -4,6 +4,14 @@
 
 #include "components/variations/variations_features.h"
 
+namespace variations {
+
+BASE_FEATURE(kEnableExperimentOverlay, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kExperimentOverlayKillSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace variations
+
 namespace variations::internal {
 
 }  // namespace variations::internal

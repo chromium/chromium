@@ -112,6 +112,16 @@ TEST_F(ProcessedStudyTest, InitInvalidExperimentName) {
   ExpectInvalidStudyReason(InvalidStudyReason::kInvalidExperimentName);
 }
 
+// Tests that experiment group names reject non-ASCII, '<', and '*'.
+TEST_F(ProcessedStudyTest, IsValidExperimentName) {
+  EXPECT_TRUE(ProcessedStudy::IsValidExperimentName("Enabled"));
+  EXPECT_TRUE(
+      ProcessedStudy::IsValidExperimentName("Enabled,max_queue_time:75ms.V4"));
+  EXPECT_FALSE(ProcessedStudy::IsValidExperimentName("Not<Valid"));
+  EXPECT_FALSE(ProcessedStudy::IsValidExperimentName("Not*Valid"));
+  EXPECT_FALSE(ProcessedStudy::IsValidExperimentName("Not\xC3\xA9Valid"));
+}
+
 TEST_F(ProcessedStudyTest, InitInvalidEnableFeatureName) {
   Study study = CreateValidStudy();
   study.mutable_experiment(0)

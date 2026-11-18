@@ -17,6 +17,14 @@ namespace variations {
 COMPONENT_EXPORT(VARIATIONS)
 BASE_DECLARE_FEATURE(kOptimizeVariationsIpc);
 
+// Controls user opt-in for experiment overlays.
+COMPONENT_EXPORT(VARIATIONS_FEATURES)
+BASE_DECLARE_FEATURE(kEnableExperimentOverlay);
+
+// Remote kill switch for experiment overlays.
+COMPONENT_EXPORT(VARIATIONS_FEATURES)
+BASE_DECLARE_FEATURE(kExperimentOverlayKillSwitch);
+
 namespace internal {
 
 // Add Variations Features here...

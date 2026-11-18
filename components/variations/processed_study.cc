@@ -27,14 +27,6 @@ void LogInvalidReason(InvalidStudyReason reason) {
   base::UmaHistogramEnumeration("Variations.InvalidStudyReason", reason);
 }
 
-// TODO(crbug.com/41449497): Use
-// base::FeatureList::IsValidFeatureOrFieldTrialName once WebRTC trials with ","
-// in group names are removed.
-bool IsValidExperimentName(const std::string& name) {
-  return base::IsStringASCII(name) &&
-         name.find_first_of("<*") == std::string::npos;
-}
-
 // Validates that all version numbers in the study are valid.
 bool ValidateVersionNumbers(const Study& study) {
   if (study.filter().has_min_version() &&
@@ -78,7 +70,7 @@ bool ValidateExperimentNames(const Study& study) {
       DVLOG(1) << study.name() << " is missing an experiment name";
       return false;
     }
-    if (!IsValidExperimentName(experiment.name())) {
+    if (!ProcessedStudy::IsValidExperimentName(experiment.name())) {
       LogInvalidReason(InvalidStudyReason::kInvalidExperimentName);
       DVLOG(1) << study.name() << " has a invalid experiment name "
                << experiment.name();
@@ -340,6 +332,14 @@ const std::string_view ProcessedStudy::GetDefaultExperimentName() const {
   }
 
   return study_->default_experiment_name();
+}
+
+// static
+bool ProcessedStudy::IsValidExperimentName(std::string_view name) {
+  // TODO(crbug.com/41449497): Switch to field trial name validation once
+  // WebRTC trials with ',' in group names are removed.
+  return base::IsStringASCII(name) &&
+         name.find_first_of("<*") == std::string_view::npos;
 }
 
 }  // namespace variations

@@ -76,6 +76,9 @@ class COMPONENT_EXPORT(VARIATIONS) ProcessedStudy {
   // specified.
   const std::string_view GetDefaultExperimentName() const;
 
+  // Returns whether `name` is ASCII and contains no reserved group characters.
+  static bool IsValidExperimentName(std::string_view name);
+
  private:
   // Corresponding Study object. Weak reference.
   raw_ptr<const Study> study_ = nullptr;
