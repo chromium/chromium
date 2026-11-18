@@ -5077,6 +5077,54 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       CheckPopupState(OmniboxPopupState::kNone), WaitForOmniboxFocus(false));
 }
 
+// Verifies that tapping the app menu button with the omnibox focused opens the
+// app menu. Aura activates the browser window when the touch begins, which
+// restores focus to the location bar and requests focus for the popup, but the
+// menu only opens when the touch is released. Activating the popup in between
+// lost the tap (crbug.com/586343035).
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       TapAppMenuWithFocusedOmniboxOpensMenu) {
+  if (IsWebUIToolbarEnabled()) {
+    // A touch on the WebUI toolbar goes to its page and doesn't activate the
+    // browser window, so it doesn't race with the popup's focus request.
+    GTEST_SKIP() << "Needs the Views app menu button.";
+  }
+  RunTestSequence(
+      FocusOmniboxOnInitialNtp(kTab1), WaitForPopupActive(), Do([this]() {
+        BrowserView* browser_view =
+            BrowserView::GetBrowserViewForBrowser(browser());
+        views::View* app_menu_button =
+            views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+                kToolbarAppMenuButtonElementId,
+                browser_view->GetElementContext(), /*require_visible=*/true);
+        ASSERT_TRUE(app_menu_button);
+        ui::test::EventGenerator generator(
+            browser_view->GetNativeWindow()->GetRootWindow());
+        generator.set_current_screen_location(
+            app_menu_button->GetBoundsInScreen().CenterPoint());
+        generator.PressTouch();
+        // The touch activated the browser window, which restored focus to the
+        // location bar, which posted a focus request for the popup. Run the
+        // request, which is queued ahead of the quit task. It must not
+        // activate the popup while the touch is down.
+        ASSERT_TRUE(browser_view->GetWidget()->IsActive());
+        base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, run_loop.QuitClosure());
+        run_loop.Run();
+        views::Widget* popup_widget = GetPopupWidget(browser());
+        ASSERT_TRUE(popup_widget);
+        EXPECT_FALSE(popup_widget->IsActive());
+        generator.ReleaseTouch();
+      }),
+      InAnyContext(WaitForShow(AppMenuModel::kMoreToolsMenuItem)),
+      // Closing the menu hands focus back to the popup.
+      InAnyContext(
+          SendKeyPress(kBrowserViewElementId, ui::VKEY_ESCAPE, ui::EF_NONE)),
+      InAnyContext(WaitForHide(AppMenuModel::kMoreToolsMenuItem)),
+      WaitForPopupActive());
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Verifies that while the popup is collapsed (no dropdown), it does not extend
