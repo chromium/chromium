@@ -75,6 +75,12 @@ class POLICY_EXPORT PolicyConversionsClient {
       PolicyMap updater_policies,
       std::optional<PolicyConversions::PolicyToSchemaMap>
           updater_policy_schemas);
+  // Mojo equivalent of `ConvertUpdaterPolicies()`, keyed by policy name. See
+  // `GetPolicyMojo()` for how the output differs from the `base::Value` one.
+  base::flat_map<std::string, mojom::PolicyPtr> ConvertUpdaterPoliciesMojo(
+      const PolicyMap& updater_policies,
+      const std::optional<PolicyConversions::PolicyToSchemaMap>&
+          updater_policy_schemas) const;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   // Converts the given `value` to JSON, respecting the configuration

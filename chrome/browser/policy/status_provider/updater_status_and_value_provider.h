@@ -38,8 +38,10 @@ class UpdaterStatusAndValueProvider : public policy::PolicyStatusProvider,
 
   // policy::PolicyValueProvider implementation.
   base::DictValue GetValues() override;
+  policy::PolicyGroupMojoMap GetValuesMojo() const override;
 
   base::DictValue GetNames() override;
+  policy::PolicyGroupNamesMojoMap GetNamesMojo() const override;
 
   void Refresh() override;
 

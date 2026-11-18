@@ -5,7 +5,10 @@
 #include "chrome/browser/policy/status_provider/updater_status_and_value_provider.h"
 
 #include <algorithm>
+#include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/barrier_callback.h"
 #include "base/sequence_checker.h"
@@ -117,6 +120,46 @@ base::DictValue UpdaterStatusAndValueProvider::GetNames() {
     updater_policies.Set(policy::kPolicyNamesKey, GetGoogleUpdatePolicyNames());
     names.Set(kUpdaterPoliciesId, std::move(updater_policies));
   }
+  return names;
+}
+
+policy::PolicyGroupMojoMap UpdaterStatusAndValueProvider::GetValuesMojo()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  policy::PolicyGroupMojoMap policy_values;
+  if (!updater_policies_) {
+    return policy_values;
+  }
+
+  auto client =
+      std::make_unique<policy::ChromePolicyConversionsClient>(profile_);
+  // Skip entries marked as default values so chrome://policy only shows updater
+  // policies that were actually set.
+  client->SetDropDefaultValues(true);
+
+  auto group = policy::mojom::PolicyGroup::New();
+  group->name = kUpdaterPoliciesName;
+  group->policies = client->ConvertUpdaterPoliciesMojo(
+      *updater_policies_, GetGoogleUpdatePolicySchemas());
+  policy_values.emplace(kUpdaterPoliciesId, std::move(group));
+  return policy_values;
+}
+
+policy::PolicyGroupNamesMojoMap UpdaterStatusAndValueProvider::GetNamesMojo()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  policy::PolicyGroupNamesMojoMap names;
+  if (!updater_policies_) {
+    return names;
+  }
+
+  std::vector<std::string> policy_names;
+  for (const auto& [policy_name, schema] : GetGoogleUpdatePolicySchemas()) {
+    policy_names.push_back(policy_name);
+  }
+  names.emplace(kUpdaterPoliciesId,
+                policy::mojom::PolicyGroupNames::New(kUpdaterPoliciesName,
+                                                     std::move(policy_names)));
   return names;
 }
 

@@ -700,6 +700,15 @@ base::DictValue PolicyConversionsClient::ConvertUpdaterPolicies(
   return GetPolicyValues(updater_policies, nullptr, PoliciesSet(),
                          PoliciesSet(), updater_policy_schemas);
 }
+
+base::flat_map<std::string, mojom::PolicyPtr>
+PolicyConversionsClient::ConvertUpdaterPoliciesMojo(
+    const PolicyMap& updater_policies,
+    const std::optional<PolicyConversions::PolicyToSchemaMap>&
+        updater_policy_schemas) const {
+  return GetPolicyValuesMojo(updater_policies, nullptr, PoliciesSet(),
+                             PoliciesSet(), updater_policy_schemas);
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 std::u16string PolicyConversionsClient::GetPolicyMessage(
