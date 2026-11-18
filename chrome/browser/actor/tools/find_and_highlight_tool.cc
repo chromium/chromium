@@ -33,7 +33,7 @@ FindAndHighlightTool::FindAndHighlightTool(TaskId task_id,
 
 FindAndHighlightTool::~FindAndHighlightTool() = default;
 
-void FindAndHighlightTool::Validate(ToolCallback callback) {
+void FindAndHighlightTool::Validate(DeprecatedToolCallback callback) {
   CHECK(!query_.empty());
 
   if (!actor_surface_handle_.Get()) {
@@ -45,7 +45,7 @@ void FindAndHighlightTool::Validate(ToolCallback callback) {
   PostResponseTask(std::move(callback), MakeOkResult());
 }
 
-void FindAndHighlightTool::Invoke(ToolCallback callback) {
+void FindAndHighlightTool::Invoke(DeprecatedToolCallback callback) {
   ActorSurface* actor_surface = actor_surface_handle_.Get();
   if (!actor_surface || !actor_surface->GetWebContents()) {
     PostResponseTask(std::move(callback),
@@ -64,7 +64,7 @@ void FindAndHighlightTool::Invoke(ToolCallback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void FindAndHighlightTool::OnHighlightFinished(ToolCallback callback,
+void FindAndHighlightTool::OnHighlightFinished(DeprecatedToolCallback callback,
                                                bool success) {
   if (success) {
     PostResponseTask(std::move(callback), MakeOkResult());

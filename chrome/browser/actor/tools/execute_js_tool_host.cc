@@ -58,7 +58,7 @@ void ExecuteJsToolHost::TearDown() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void ExecuteJsToolHost::Validate(ToolCallback callback) {
+void ExecuteJsToolHost::Validate(DeprecatedToolCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
@@ -97,7 +97,7 @@ ExecuteJsToolHost::GetObservationDelayer(
   return nullptr;
 }
 
-void ExecuteJsToolHost::Invoke(ToolCallback callback) {
+void ExecuteJsToolHost::Invoke(DeprecatedToolCallback callback) {
   auto* frame = target_document_.AsRenderFrameHostIfValid();
   if (!frame) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -172,8 +172,9 @@ std::string ExecuteJsToolHost::JournalEvent() const {
   return DebugString();
 }
 
-void ExecuteJsToolHost::UpdateTaskBeforeInvoke(ActorTask& task,
-                                               ToolCallback callback) const {
+void ExecuteJsToolHost::UpdateTaskBeforeInvoke(
+    ActorTask& task,
+    DeprecatedToolCallback callback) const {
   task.AddActorSurface(actor_surface_handle_, /*stop_task_on_detach=*/true,
                        std::move(callback));
 }
@@ -204,7 +205,7 @@ void ExecuteJsToolHost::OnToolInvoked(mojom::ActionResultPtr result) {
   }
 }
 
-void ExecuteJsToolHost::PostErrorResult(ToolCallback tool_callback,
+void ExecuteJsToolHost::PostErrorResult(DeprecatedToolCallback tool_callback,
                                         mojom::ActionResultCode code,
                                         const std::string& message) {
   lifecycle_ = Lifecycle::kDone;

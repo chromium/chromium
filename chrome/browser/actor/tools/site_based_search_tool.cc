@@ -79,7 +79,7 @@ SiteBasedSearchTool::SiteBasedSearchTool(TaskId task_id,
 
 SiteBasedSearchTool::~SiteBasedSearchTool() = default;
 
-void SiteBasedSearchTool::Validate(ToolCallback callback) {
+void SiteBasedSearchTool::Validate(DeprecatedToolCallback callback) {
   CHECK(!query_.empty());
   CHECK(!document_identifier_.empty());
 
@@ -141,7 +141,7 @@ void SiteBasedSearchTool::Validate(ToolCallback callback) {
   PostResponseTask(std::move(callback), MakeOkResult());
 }
 
-void SiteBasedSearchTool::Invoke(ToolCallback callback) {
+void SiteBasedSearchTool::Invoke(DeprecatedToolCallback callback) {
   if (!actor_surface_handle_.Get()) {
     PostResponseTask(std::move(callback),
                      MakeResult(mojom::ActionResultCode::kTabWentAway));
@@ -177,8 +177,9 @@ SiteBasedSearchTool::GetObservationDelayer(
   return nullptr;
 }
 
-void SiteBasedSearchTool::UpdateTaskBeforeInvoke(ActorTask& task,
-                                                 ToolCallback callback) const {
+void SiteBasedSearchTool::UpdateTaskBeforeInvoke(
+    ActorTask& task,
+    DeprecatedToolCallback callback) const {
   task.AddActorSurface(actor_surface_handle_, /*stop_task_on_detach=*/true,
                        std::move(callback));
 }

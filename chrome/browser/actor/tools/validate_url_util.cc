@@ -25,9 +25,10 @@ mojom::ActionResultPtr UrlCheckToActionResult(MayActOnUrlBlockReason reason) {
 
 }  // namespace
 
-void ValidateUrlIsAcceptableNavigationDestination(const GURL& url,
-                                                  ToolDelegate& tool_delegate,
-                                                  ToolCallback callback) {
+void ValidateUrlIsAcceptableNavigationDestination(
+    const GURL& url,
+    ToolDelegate& tool_delegate,
+    DeprecatedToolCallback callback) {
   if (!url.is_valid()) {
     // URL is invalid.
     PostResponseTask(std::move(callback),

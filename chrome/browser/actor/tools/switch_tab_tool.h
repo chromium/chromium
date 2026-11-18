@@ -52,8 +52,8 @@ class SwitchTabTool : public Tool {
   ~SwitchTabTool() override;
 
   // actor::Tool:
-  void Validate(ToolCallback callback) override;
-  void Invoke(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(

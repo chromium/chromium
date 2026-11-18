@@ -17,9 +17,10 @@ class ToolDelegate;
 
 // Validates whether the URL is valid and acceptable to navigate to, invoking
 // the callback with the result.
-void ValidateUrlIsAcceptableNavigationDestination(const GURL& url,
-                                                  ToolDelegate& tool_delegate,
-                                                  ToolCallback callback);
+void ValidateUrlIsAcceptableNavigationDestination(
+    const GURL& url,
+    ToolDelegate& tool_delegate,
+    DeprecatedToolCallback callback);
 
 }  // namespace actor
 

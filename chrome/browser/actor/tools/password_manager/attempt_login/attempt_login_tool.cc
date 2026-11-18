@@ -147,7 +147,7 @@ AttemptLoginTool::AttemptLoginTool(
 
 AttemptLoginTool::~AttemptLoginTool() = default;
 
-void AttemptLoginTool::Validate(ToolCallback callback) {
+void AttemptLoginTool::Validate(DeprecatedToolCallback callback) {
   if (!base::FeatureList::IsEnabled(password_manager::features::kActorLogin)) {
     PostResponseTask(std::move(callback),
                      MakeResult(mojom::ActionResultCode::kToolUnknown));
@@ -157,7 +157,7 @@ void AttemptLoginTool::Validate(ToolCallback callback) {
   PostResponseTask(std::move(callback), MakeOkResult());
 }
 
-void AttemptLoginTool::Invoke(ToolCallback callback) {
+void AttemptLoginTool::Invoke(DeprecatedToolCallback callback) {
   ActorSurface* actor_surface = actor_surface_handle_.Get();
   if (!actor_surface) {
     PostResponseTask(std::move(callback),

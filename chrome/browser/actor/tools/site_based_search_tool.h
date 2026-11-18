@@ -34,8 +34,8 @@ class SiteBasedSearchTool : public Tool {
   ~SiteBasedSearchTool() override;
 
   // Tool:
-  void Validate(ToolCallback callback) override;
-  void Invoke(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   GURL JournalURL() const override;
@@ -43,7 +43,7 @@ class SiteBasedSearchTool : public Tool {
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
-                              ToolCallback callback) const override;
+                              DeprecatedToolCallback callback) const override;
   ActorSurfaceHandle GetTargetActorSurface() const override;
 
  private:

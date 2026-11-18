@@ -285,7 +285,7 @@ PageTool::PageTool(TaskId task_id,
 
 PageTool::~PageTool() = default;
 
-void PageTool::Validate(ToolCallback callback) {
+void PageTool::Validate(DeprecatedToolCallback callback) {
   bool validation_supported =
       base::FeatureList::IsEnabled(
           features::kGlicActorSplitValidateAndExecute) &&
@@ -349,7 +349,7 @@ void PageTool::Validate(ToolCallback callback) {
       // If the renderer connection drops (e.g. frame detached during
       // tool initialization), ensure the callback is invoked with
       // kFrameWentAway.
-      ToolCallback wrapped_callback =
+      DeprecatedToolCallback wrapped_callback =
           mojo::WrapCallbackWithDefaultInvokeIfNotRun(
               std::move(callback),
               MakeResult(mojom::ActionResultCode::kFrameWentAway));
@@ -375,13 +375,15 @@ void PageTool::Validate(ToolCallback callback) {
   // If the enterprise scan drops this callback (e.g. frame/content torn down
   // midscan and the warn dialog is destroyed), resolve as kFrameWentAway
   // instead of hanging the action indefinitely.
-  ToolCallback wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      std::move(callback), MakeResult(mojom::ActionResultCode::kFrameWentAway));
+  DeprecatedToolCallback wrapped_callback =
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          std::move(callback),
+          MakeResult(mojom::ActionResultCode::kFrameWentAway));
 
   checker.ValidateContentSentToRenderer(
       frame, text,
       base::BindOnce(
-          [](base::WeakPtr<PageTool> self, ToolCallback callback,
+          [](base::WeakPtr<PageTool> self, DeprecatedToolCallback callback,
              mojom::ToolInvocationPtr invocation, bool validation_supported,
              std::unique_ptr<AggregatedJournal::PendingAsyncEntry> trace_entry,
              EnterprisePolicyChecker::ContentValidationReason reason) {
@@ -428,7 +430,7 @@ void PageTool::Validate(ToolCallback callback) {
           std::move(invocation), validation_supported, std::move(trace_entry)));
 }
 
-void PageTool::OnInitializeToolComplete(ToolCallback callback,
+void PageTool::OnInitializeToolComplete(DeprecatedToolCallback callback,
                                         mojom::InitializeToolResultPtr result) {
   if (result->is_error_result()) {
     std::move(callback).Run(std::move(result->get_error_result()));
@@ -631,7 +633,7 @@ mojom::ToolInvocationPtr PageTool::CreateToolInvocation(
   return invocation;
 }
 
-void PageTool::Invoke(ToolCallback callback) {
+void PageTool::Invoke(DeprecatedToolCallback callback) {
   // Frame was validated in TimeOfUseValidation.
   CHECK(GetFrame());
   RenderFrameHost& frame = *GetFrame();

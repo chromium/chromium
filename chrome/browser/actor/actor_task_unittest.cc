@@ -230,9 +230,9 @@ TEST_F(ActorTaskTest, CustomToolInterruptsWithUserControl) {
 
   // 2. Perform an action using the fake tool.
   std::vector<std::unique_ptr<ToolRequest>> actions;
-  base::test::TestFuture<ToolCallback> on_invoke_future;
+  base::test::TestFuture<DeprecatedToolCallback> on_invoke_future;
   actions.push_back(std::make_unique<FakeToolRequest>(
-      base::BindLambdaForTesting([&](ToolCallback callback) {
+      base::BindLambdaForTesting([&](DeprecatedToolCallback callback) {
         task_->GetExecutionEngine().InterruptFromTool(
             /*retain_user_control=*/true);
         on_invoke_future.SetValue(std::move(callback));
@@ -603,7 +603,7 @@ TEST_F(ActorTaskTest, AdditionalTabObservations) {
 TEST_F(ActorTaskTest, CancelOngoingActions) {
   // Perform an action using FakeToolRequest.
   std::vector<std::unique_ptr<ToolRequest>> actions;
-  base::test::TestFuture<ToolCallback> on_invoke_future;
+  base::test::TestFuture<DeprecatedToolCallback> on_invoke_future;
   actions.push_back(
       std::make_unique<FakeToolRequest>(on_invoke_future.GetCallback(),
                                         /*on_destroy=*/base::DoNothing()));
@@ -693,12 +693,12 @@ TEST_F(ActorTaskTest, InterruptEdgeCases) {
 TEST_F(ActorTaskTest, MultipleActions) {
   // 1. Perform multiple actions using FakeToolRequest.
   std::vector<std::unique_ptr<ToolRequest>> actions;
-  base::test::TestFuture<ToolCallback> on_invoke_future_1;
+  base::test::TestFuture<DeprecatedToolCallback> on_invoke_future_1;
   actions.push_back(
       std::make_unique<FakeToolRequest>(on_invoke_future_1.GetCallback(),
                                         /*on_destroy=*/base::DoNothing()));
 
-  base::test::TestFuture<ToolCallback> on_invoke_future_2;
+  base::test::TestFuture<DeprecatedToolCallback> on_invoke_future_2;
   actions.push_back(
       std::make_unique<FakeToolRequest>(on_invoke_future_2.GetCallback(),
                                         /*on_destroy=*/base::DoNothing()));

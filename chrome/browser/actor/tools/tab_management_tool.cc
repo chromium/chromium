@@ -44,7 +44,7 @@ TabManagementTool::TabManagementTool(TaskId task_id,
 
 TabManagementTool::~TabManagementTool() = default;
 
-void TabManagementTool::Validate(ToolCallback callback) {
+void TabManagementTool::Validate(DeprecatedToolCallback callback) {
   if (action_ == kCreate) {
     if (window_id_.has_value()) {
       PostResponseTask(
@@ -56,7 +56,7 @@ void TabManagementTool::Validate(ToolCallback callback) {
   PostResponseTask(std::move(callback), MakeOkResult());
 }
 
-void TabManagementTool::Invoke(ToolCallback callback) {
+void TabManagementTool::Invoke(DeprecatedToolCallback callback) {
   callback_ = std::move(callback);
   CHECK(window_id_.has_value() || target_tab_.has_value());
 
@@ -154,8 +154,9 @@ TabManagementTool::GetObservationDelayer(
   return std::make_unique<ObservationDelayController>(task_id(), journal());
 }
 
-void TabManagementTool::UpdateTaskBeforeInvoke(ActorTask& task,
-                                               ToolCallback callback) const {
+void TabManagementTool::UpdateTaskBeforeInvoke(
+    ActorTask& task,
+    DeprecatedToolCallback callback) const {
   if (action_ == kClose) {
     CHECK(target_tab_.has_value());
     task.RemoveTab(*target_tab_);

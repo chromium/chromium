@@ -28,8 +28,8 @@ class FindAndHighlightTool : public Tool {
   ~FindAndHighlightTool() override;
 
   // Tool:
-  void Validate(ToolCallback callback) override;
-  void Invoke(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   GURL JournalURL() const override;
@@ -41,7 +41,7 @@ class FindAndHighlightTool : public Tool {
   const std::string& query() const { return query_; }
 
  private:
-  void OnHighlightFinished(ToolCallback callback, bool success);
+  void OnHighlightFinished(DeprecatedToolCallback callback, bool success);
 
   ActorSurfaceHandle actor_surface_handle_;
   std::string query_;

@@ -57,7 +57,7 @@ NavigateTool::NavigateTool(TaskId task_id,
 
 NavigateTool::~NavigateTool() = default;
 
-void NavigateTool::Validate(ToolCallback callback) {
+void NavigateTool::Validate(DeprecatedToolCallback callback) {
   ValidateUrlIsAcceptableNavigationDestination(url_, tool_delegate(),
                                                std::move(callback));
 }
@@ -70,7 +70,7 @@ mojom::ActionResultPtr NavigateTool::TimeOfUseValidation(
   return MakeOkResult();
 }
 
-void NavigateTool::Invoke(ToolCallback callback) {
+void NavigateTool::Invoke(DeprecatedToolCallback callback) {
   if (window_id_.has_value()) {
     create_tab_tool_ = std::make_unique<TabManagementTool>(
         task_id(), tool_delegate(), window_id_->id(),
@@ -143,7 +143,7 @@ void NavigateTool::UpdateTaskAfterInvoke(ActorTask& task,
                            .Then(std::move(callback)));
 }
 
-void NavigateTool::OnTabCreated(ToolCallback callback,
+void NavigateTool::OnTabCreated(DeprecatedToolCallback callback,
                                 mojom::ActionResultPtr result) {
   if (!IsOk(*result)) {
     std::move(callback).Run(std::move(result));

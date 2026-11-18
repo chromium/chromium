@@ -54,7 +54,7 @@ HistoryTool::HistoryTool(TaskId task_id,
 
 HistoryTool::~HistoryTool() = default;
 
-void HistoryTool::Validate(ToolCallback callback) {
+void HistoryTool::Validate(DeprecatedToolCallback callback) {
   // Get the navigation entry that would be navigated to.
   int offset = GetTargetOffset();
   content::NavigationEntry* entry =
@@ -111,7 +111,7 @@ mojom::ActionResultPtr HistoryTool::TimeOfUseValidation(
   return result;
 }
 
-void HistoryTool::Invoke(ToolCallback callback) {
+void HistoryTool::Invoke(DeprecatedToolCallback callback) {
   CHECK(web_contents());
   CHECK(!IsInvokeInProgress());
   CHECK(pending_navigations_.empty());

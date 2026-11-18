@@ -75,7 +75,7 @@ void FillInTabObservationMetadata(
   }
 }
 
-void OnValidatedAllUrls(ToolCallback overall_callback,
+void OnValidatedAllUrls(DeprecatedToolCallback overall_callback,
                         std::vector<mojom::ActionResultPtr> results) {
   for (auto& result : results) {
     // In the case of multiple errors, we arbitrarily return the first.
@@ -374,7 +374,8 @@ void LoadAndExtractContentTool::Cancel() {
   }
 }
 
-void LoadAndExtractContentTool::Validate(ToolCallback overall_callback) {
+void LoadAndExtractContentTool::Validate(
+    DeprecatedToolCallback overall_callback) {
   // TODO(b/478282022): Consider imposing a limit on the number of URLs.
   if (per_tab_state_.empty()) {
     journal().Log(GURL::EmptyGURL(), task_id(),
@@ -408,7 +409,7 @@ void LoadAndExtractContentTool::Validate(ToolCallback overall_callback) {
   }
 }
 
-void LoadAndExtractContentTool::Invoke(ToolCallback callback) {
+void LoadAndExtractContentTool::Invoke(DeprecatedToolCallback callback) {
   CHECK(!invoke_callback_);
   invoke_callback_ = std::move(callback);
 

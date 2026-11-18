@@ -295,7 +295,7 @@ AttemptOtpFillingTool::~AttemptOtpFillingTool() {
   }
 }
 
-void AttemptOtpFillingTool::Validate(ToolCallback callback) {
+void AttemptOtpFillingTool::Validate(DeprecatedToolCallback callback) {
   if (!GetMockOtpValue().empty()) {
     LogJournalEvent("AttemptOtpFillingTool::Validate",
                     JournalDetailsBuilder()
@@ -342,7 +342,7 @@ void AttemptOtpFillingTool::Validate(ToolCallback callback) {
 }
 
 void AttemptOtpFillingTool::OnUserDataProcessingConsentFetched(
-    ToolCallback callback,
+    DeprecatedToolCallback callback,
     base::TimeTicks start_time,
     bool gmail_otp_filling_enabled,
     bool within_cool_off_period,
@@ -421,7 +421,7 @@ void AttemptOtpFillingTool::OnUserDataProcessingConsentFetched(
 }
 
 void AttemptOtpFillingTool::OnGmailOtpOptInResponse(
-    ToolCallback callback,
+    DeprecatedToolCallback callback,
     webui::mojom::GmailOtpOptInResultPtr response) {
   // The awaited step has finished; see `pending_cancellation_event_` for more
   // details.
@@ -538,7 +538,7 @@ mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
   return action_result;
 }
 
-void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
+void AttemptOtpFillingTool::Invoke(DeprecatedToolCallback callback) {
   journal().Log(JournalURL(), task_id(), "AttemptOtpFillingTool::Invoke",
                 JournalDetailsBuilder()
                     .Add("trigger_fields_count", trigger_field_ids_.size())
@@ -632,7 +632,7 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
 }
 
 void AttemptOtpFillingTool::OnActorLoginFlowChecked(
-    ToolCallback callback,
+    DeprecatedToolCallback callback,
     ActorLoginFlowVerifier::Result result) {
   // The awaited step has finished; see `pending_cancellation_event_` for more
   // details.
@@ -686,7 +686,7 @@ void AttemptOtpFillingTool::OnActorLoginFlowChecked(
 }
 
 void AttemptOtpFillingTool::OnOtpRetrieved(
-    ToolCallback callback,
+    DeprecatedToolCallback callback,
     base::expected<std::string, one_time_tokens::OneTimeTokenRetrievalError>
         result) {
   // The awaited step has finished; see `pending_cancellation_event_` for more
@@ -814,7 +814,8 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void AttemptOtpFillingTool::OnOtpFilled(ToolCallback callback, bool success) {
+void AttemptOtpFillingTool::OnOtpFilled(DeprecatedToolCallback callback,
+                                        bool success) {
   // The awaited step has finished; see `pending_cancellation_event_` for more
   // details.
   pending_cancellation_event_.reset();
@@ -871,7 +872,7 @@ ActorSurfaceHandle AttemptOtpFillingTool::GetTargetActorSurface() const {
 }
 
 void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
-    ToolCallback callback,
+    DeprecatedToolCallback callback,
     std::string otp,
     webui::mojom::GmailOtpConfirmationResultPtr response) {
   // The awaited step has finished; see `pending_cancellation_event_` for more

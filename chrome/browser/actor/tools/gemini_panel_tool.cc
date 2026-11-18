@@ -52,7 +52,7 @@ GeminiPanelTool::GeminiPanelTool(TaskId task_id,
 
 GeminiPanelTool::~GeminiPanelTool() = default;
 
-void GeminiPanelTool::Validate(ToolCallback callback) {
+void GeminiPanelTool::Validate(DeprecatedToolCallback callback) {
   if (action_ == Action::kPrompt &&
       (!prompt_.has_value() || prompt_->empty())) {
     PostResponseTask(std::move(callback),
@@ -108,7 +108,7 @@ mojom::ActionResultPtr GeminiPanelTool::TimeOfUseValidation(
   return MakeOkResult();
 }
 
-void GeminiPanelTool::Invoke(ToolCallback callback) {
+void GeminiPanelTool::Invoke(DeprecatedToolCallback callback) {
   tabs::TabInterface* tab = actor_surface_handle_.GetTabHandle().Get();
   CHECK(tab);
   CHECK(actor_surface_handle_.Get());
@@ -156,11 +156,11 @@ void GeminiPanelTool::Invoke(ToolCallback callback) {
   }
 }
 
-void GeminiPanelTool::OnPromptSuccess(ToolCallback callback) {
+void GeminiPanelTool::OnPromptSuccess(DeprecatedToolCallback callback) {
   PostResponseTask(std::move(callback), MakeOkResult());
 }
 
-void GeminiPanelTool::OnPromptError(ToolCallback callback,
+void GeminiPanelTool::OnPromptError(DeprecatedToolCallback callback,
                                     glic::GlicInvokeError error) {
   PostResponseTask(std::move(callback),
                    MakeResult(mojom::ActionResultCode::kGeminiPanelInvokeFailed,

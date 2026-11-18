@@ -27,11 +27,11 @@ WaitTool::WaitTool(TaskId task_id,
 
 WaitTool::~WaitTool() = default;
 
-void WaitTool::Validate(ToolCallback callback) {
+void WaitTool::Validate(DeprecatedToolCallback callback) {
   PostResponseTask(std::move(callback), MakeOkResult());
 }
 
-void WaitTool::Invoke(ToolCallback callback) {
+void WaitTool::Invoke(DeprecatedToolCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&WaitTool::OnDelayFinished, weak_ptr_factory_.GetWeakPtr(),
@@ -54,7 +54,7 @@ std::unique_ptr<ObservationDelayController> WaitTool::GetObservationDelayer(
 }
 
 void WaitTool::UpdateTaskBeforeInvoke(ActorTask& task,
-                                      ToolCallback callback) const {
+                                      DeprecatedToolCallback callback) const {
   if (!observe_actor_surface_handle_.is_null()) {
     task.ObserveActorSurfaceOnce(observe_actor_surface_handle_);
   }
@@ -66,7 +66,7 @@ ActorSurfaceHandle WaitTool::GetTargetActorSurface() const {
   return observe_actor_surface_handle_;
 }
 
-void WaitTool::OnDelayFinished(ToolCallback callback) {
+void WaitTool::OnDelayFinished(DeprecatedToolCallback callback) {
   // TODO(crbug.com/409566732): Add more robust methods for detecting that the
   // page has settled.
   std::move(callback).Run(MakeOkResult());

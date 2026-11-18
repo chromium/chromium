@@ -40,11 +40,11 @@ class GeminiPanelTool : public Tool {
   ~GeminiPanelTool() override;
 
   // Tool:
-  void Validate(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
   mojom::ActionResultPtr TimeOfUseValidation(
       const optimization_guide::proto::AnnotatedPageContent* last_observation)
       override;
-  void Invoke(ToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   GURL JournalURL() const override;
@@ -59,8 +59,9 @@ class GeminiPanelTool : public Tool {
     kClose,
   };
 
-  void OnPromptSuccess(ToolCallback callback);
-  void OnPromptError(ToolCallback callback, glic::GlicInvokeError error);
+  void OnPromptSuccess(DeprecatedToolCallback callback);
+  void OnPromptError(DeprecatedToolCallback callback,
+                     glic::GlicInvokeError error);
 
   const Action action_;
   const ActorSurfaceHandle actor_surface_handle_;

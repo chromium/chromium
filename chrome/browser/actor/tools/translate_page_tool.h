@@ -31,11 +31,11 @@ class TranslatePageTool
   ~TranslatePageTool() override;
 
   // Tool:
-  void Validate(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
   mojom::ActionResultPtr TimeOfUseValidation(
       const optimization_guide::proto::AnnotatedPageContent* last_observation)
       override;
-  void Invoke(ToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
   void Cancel() override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
@@ -52,7 +52,7 @@ class TranslatePageTool
  private:
   ActorSurfaceHandle actor_surface_handle_;
   std::string target_language_;
-  ToolCallback invoke_callback_;
+  DeprecatedToolCallback invoke_callback_;
   base::ScopedObservation<
       translate::ContentTranslateDriver,
       translate::ContentTranslateDriver::TranslationObserver>

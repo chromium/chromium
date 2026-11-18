@@ -44,7 +44,7 @@ BookmarkManagementTool::BookmarkManagementTool(TaskId task_id,
 
 BookmarkManagementTool::~BookmarkManagementTool() = default;
 
-void BookmarkManagementTool::Validate(ToolCallback callback) {
+void BookmarkManagementTool::Validate(DeprecatedToolCallback callback) {
   if (url_.is_empty() || !url_.is_valid()) {
     PostResponseTask(
         std::move(callback),
@@ -67,7 +67,7 @@ void BookmarkManagementTool::Validate(ToolCallback callback) {
   PostResponseTask(std::move(callback), MakeOkResult());
 }
 
-void BookmarkManagementTool::Invoke(ToolCallback callback) {
+void BookmarkManagementTool::Invoke(DeprecatedToolCallback callback) {
   bookmarks::BookmarkModel* bookmark_model = GetBookmarkModel(tool_delegate());
   CHECK(bookmark_model);
   CHECK(bookmark_model->loaded());

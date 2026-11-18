@@ -31,20 +31,20 @@ class ExecuteJsToolHost : public Tool, content::WebContentsObserver {
   ~ExecuteJsToolHost() override;
 
   // actor::Tool implementation.
-  void Validate(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
   mojom::ActionResultPtr TimeOfUseValidation(
       const optimization_guide::proto::AnnotatedPageContent* last_observation)
       override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
-  void Invoke(ToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
   void Cancel() override;
   std::string DebugString() const override;
   GURL JournalURL() const override;
   std::string JournalEvent() const override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
-                              ToolCallback callback) const override;
+                              DeprecatedToolCallback callback) const override;
   ActorSurfaceHandle GetTargetActorSurface() const override;
 
  private:
@@ -58,7 +58,7 @@ class ExecuteJsToolHost : public Tool, content::WebContentsObserver {
       content::NavigationHandle* navigation_handle) override;
 
   void OnToolInvoked(mojom::ActionResultPtr result);
-  void PostErrorResult(ToolCallback tool_callback,
+  void PostErrorResult(DeprecatedToolCallback tool_callback,
                        mojom::ActionResultCode code,
                        const std::string& message = "");
   void OnToolTimeout();
@@ -68,7 +68,7 @@ class ExecuteJsToolHost : public Tool, content::WebContentsObserver {
   ActorSurfaceHandle actor_surface_handle_;
   const base::UnguessableToken target_document_id_;
   const mojom::ToolActionPtr action_;
-  ToolCallback tool_done_callback_;
+  DeprecatedToolCallback tool_done_callback_;
 
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
       target_document_render_frame_;

@@ -55,11 +55,11 @@ MediaControlTool::MediaControlTool(TaskId task_id,
 
 MediaControlTool::~MediaControlTool() = default;
 
-void MediaControlTool::Validate(ToolCallback callback) {
+void MediaControlTool::Validate(DeprecatedToolCallback callback) {
   PostResponseTask(std::move(callback), MakeOkResult());
 }
 
-void MediaControlTool::Invoke(ToolCallback callback) {
+void MediaControlTool::Invoke(DeprecatedToolCallback callback) {
   ActorSurface* actor_surface = actor_surface_handle_.Get();
   if (!actor_surface) {
     PostResponseTask(std::move(callback),

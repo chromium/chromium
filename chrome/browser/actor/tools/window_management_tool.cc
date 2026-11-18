@@ -89,7 +89,7 @@ WindowManagementTool::WindowManagementTool(Action action,
 
 WindowManagementTool::~WindowManagementTool() = default;
 
-void WindowManagementTool::Validate(ToolCallback callback) {
+void WindowManagementTool::Validate(DeprecatedToolCallback callback) {
   switch (action_) {
     case Action::kCreate:
       break;
@@ -117,7 +117,7 @@ void WindowManagementTool::Validate(ToolCallback callback) {
   std::move(callback).Run(MakeOkResult());
 }
 
-void WindowManagementTool::Invoke(ToolCallback callback) {
+void WindowManagementTool::Invoke(DeprecatedToolCallback callback) {
   // The callback is invoked from observing changes to the
   // BrowserWindowInterface instance.
   callback_ = std::move(callback);
@@ -264,8 +264,9 @@ WindowManagementTool::GetObservationDelayer(
   return nullptr;
 }
 
-void WindowManagementTool::UpdateTaskBeforeInvoke(ActorTask& task,
-                                                  ToolCallback callback) const {
+void WindowManagementTool::UpdateTaskBeforeInvoke(
+    ActorTask& task,
+    DeprecatedToolCallback callback) const {
   if (action_ == Action::kClose) {
     // If closing a window, ensure all acting tabs in this window are removed
     // from the acting set. In particular, this ensures the task isn't stopped

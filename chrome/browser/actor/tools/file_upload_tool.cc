@@ -164,7 +164,7 @@ mojom::ActionResultPtr OnValidatedAllUrls(
   return MakeOkResult(/*requires_page_stabilization=*/false);
 }
 
-void RunValidationCallback(ToolCallback callback,
+void RunValidationCallback(DeprecatedToolCallback callback,
                            std::vector<mojom::ActionResultPtr> results) {
   PostResponseTask(std::move(callback), OnValidatedAllUrls(std::move(results)));
 }
@@ -189,7 +189,7 @@ FileUploadTool::FileUploadTool(TaskId task_id,
 
 FileUploadTool::~FileUploadTool() = default;
 
-void FileUploadTool::Validate(ToolCallback callback) {
+void FileUploadTool::Validate(DeprecatedToolCallback callback) {
   if (!base::FeatureList::IsEnabled(kGlicActorFileUploadTool)) {
     PostResponseTask(std::move(callback),
                      MakeResult(mojom::ActionResultCode::kToolUnknown,
@@ -241,7 +241,7 @@ mojom::ActionResultPtr FileUploadTool::TimeOfUseValidation(
   return MakeOkResult(/*requires_page_stabilization=*/false);
 }
 
-void FileUploadTool::Invoke(ToolCallback callback) {
+void FileUploadTool::Invoke(DeprecatedToolCallback callback) {
   CHECK(!invoke_callback_);
 
   ActorSurface* const actor_surface = actor_surface_handle_.Get();
@@ -503,8 +503,9 @@ FileUploadTool::GetObservationDelayer(
       *rfh, task_id(), journal(), std::move(page_stability_config));
 }
 
-void FileUploadTool::UpdateTaskBeforeInvoke(ActorTask& task,
-                                            ToolCallback callback) const {
+void FileUploadTool::UpdateTaskBeforeInvoke(
+    ActorTask& task,
+    DeprecatedToolCallback callback) const {
   task.AddActorSurface(actor_surface_handle_, /*stop_task_on_detach=*/true,
                        std::move(callback));
 }

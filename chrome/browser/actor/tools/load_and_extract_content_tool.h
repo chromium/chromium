@@ -40,8 +40,8 @@ class LoadAndExtractContentTool : public Tool {
   ~LoadAndExtractContentTool() override;
 
   // actor::Tool:
-  void Validate(ToolCallback callback) override;
-  void Invoke(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
   void Cancel() override;
   void UpdateTaskAfterInvoke(ActorTask& task,
                              ToolResult result,
@@ -80,7 +80,7 @@ class LoadAndExtractContentTool : public Tool {
   mojom::ActionResultCode ToActionResultCode(
       LoadAndExtractContentTool::PerTabResultCode result_code);
 
-  ToolCallback invoke_callback_;
+  DeprecatedToolCallback invoke_callback_;
 
   SessionID window_id_;
 

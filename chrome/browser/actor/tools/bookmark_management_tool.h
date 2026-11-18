@@ -33,8 +33,8 @@ class BookmarkManagementTool : public Tool {
   ~BookmarkManagementTool() override;
 
   // Tool:
-  void Validate(ToolCallback callback) override;
-  void Invoke(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   ActorSurfaceHandle GetTargetActorSurface() const override;

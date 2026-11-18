@@ -34,7 +34,7 @@ SwitchTabTool::SwitchTabTool(TaskId task_id,
 
 SwitchTabTool::~SwitchTabTool() = default;
 
-void SwitchTabTool::Validate(ToolCallback callback) {
+void SwitchTabTool::Validate(DeprecatedToolCallback callback) {
   BrowserWindowInterface* browser = GetBrowser();
   mojom::ActionResultPtr window_result = ValidateBrowserWindow(browser);
   if (!IsOk(*window_result)) {
@@ -103,7 +103,7 @@ void SwitchTabTool::Validate(ToolCallback callback) {
                                                std::move(callback));
 }
 
-void SwitchTabTool::Invoke(ToolCallback callback) {
+void SwitchTabTool::Invoke(DeprecatedToolCallback callback) {
   CHECK(match_.has_value());
 
   // The tab may have been closed, or dragged into a different window, between

@@ -152,7 +152,7 @@ ChangePasswordTool::ChangePasswordTool(
 
 ChangePasswordTool::~ChangePasswordTool() = default;
 
-void ChangePasswordTool::Validate(ToolCallback callback) {
+void ChangePasswordTool::Validate(DeprecatedToolCallback callback) {
   if (!IsValidPasswordFieldTarget(current_password_field_) ||
       !IsValidPasswordFieldTarget(new_password_field_) ||
       !IsValidPasswordFieldTarget(confirm_new_password_field_)) {
@@ -225,7 +225,7 @@ mojom::ActionResultPtr ChangePasswordTool::TimeOfUseValidation(
   return MakeOkResult();
 }
 
-void ChangePasswordTool::Invoke(ToolCallback callback) {
+void ChangePasswordTool::Invoke(DeprecatedToolCallback callback) {
   CHECK(driver_);
   // Unset (null) or missing `FieldRendererId`s are ignored by the renderer;
   // `FillChangePasswordForm` fills whichever fields resolve to valid input
@@ -289,7 +289,7 @@ mojom::ActionResultPtr ChangePasswordTool::ExtractFieldIds(
 }
 
 void ChangePasswordTool::OnChangePasswordFormFilled(
-    ToolCallback callback,
+    DeprecatedToolCallback callback,
     // TODO(crbug.com/580856538): if a page has password inputs that do not
     // share the same <form> element (or one is inside a <form> and another is
     // unowned), `FillChangePasswordForm()` only returns `FormData` which

@@ -25,21 +25,21 @@ class WaitTool : public Tool {
   ~WaitTool() override;
 
   // actor::Tool
-  void Validate(ToolCallback callback) override;
-  void Invoke(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
-                              ToolCallback callback) const override;
+                              DeprecatedToolCallback callback) const override;
   ActorSurfaceHandle GetTargetActorSurface() const override;
 
   static void SetNoDelayForTesting();
 
  private:
-  void OnDelayFinished(ToolCallback callback);
+  void OnDelayFinished(DeprecatedToolCallback callback);
 
   // TODO(bokan): This could be removed in place of tests setting the wait
   // duration explicitly.

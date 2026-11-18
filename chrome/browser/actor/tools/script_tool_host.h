@@ -32,14 +32,14 @@ class ScriptToolHost : public Tool, content::WebContentsObserver {
   ~ScriptToolHost() override;
 
   // actor::Tool
-  void Validate(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
   mojom::ActionResultPtr TimeOfUseValidation(
       const optimization_guide::proto::AnnotatedPageContent* last_observation)
       override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
-  void Invoke(ToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
   void Cancel() override;
   void NotifyPaused() override;
   std::string DebugString() const override;
@@ -69,7 +69,7 @@ class ScriptToolHost : public Tool, content::WebContentsObserver {
   void TearDown();
   void OnToolInvokedInOldDocument(mojom::ActionResultPtr result);
   void OnResultReceivedFromNewDocument(const std::string& result);
-  void PostErrorResult(ToolCallback tool_callback,
+  void PostErrorResult(DeprecatedToolCallback tool_callback,
                        mojom::ActionResultCode code,
                        const std::string& message = "");
   void RecordMetrics(const mojom::ActionResult& result);
@@ -87,7 +87,7 @@ class ScriptToolHost : public Tool, content::WebContentsObserver {
   ActorSurfaceHandle actor_surface_handle_;
   const base::UnguessableToken target_document_id_;
   const mojom::ToolActionPtr action_;
-  ToolCallback tool_done_callback_;
+  DeprecatedToolCallback tool_done_callback_;
 
   // A reference to the target Document for the tool execution.
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>

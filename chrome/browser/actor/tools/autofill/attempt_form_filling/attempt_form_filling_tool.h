@@ -46,8 +46,8 @@ class AttemptFormFillingTool : public Tool,
       bool enqueued_click);
   ~AttemptFormFillingTool() override;
 
-  void Invoke(ToolCallback callback) override;
-  void Validate(ToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
   mojom::ActionResultPtr TimeOfUseValidation(
       const optimization_guide::proto::AnnotatedPageContent* last_observation)
       override;
@@ -75,21 +75,21 @@ class AttemptFormFillingTool : public Tool,
 
  private:
   void OnSuggestionsRetrieved(
-      ToolCallback invoke_callback,
+      DeprecatedToolCallback invoke_callback,
       base::expected<std::vector<autofill::ActorFormFillingRequest>,
                      autofill::ActorFormFillingError> suggestions_result);
   void OnCreditCardSuggestionRetrieved(
-      ToolCallback invoke_callback,
+      DeprecatedToolCallback invoke_callback,
       base::expected<autofill::ActorSuggestionId,
                      autofill::ActorFormFillingError> suggestion_id_result);
   void OnSuggestionsSelected(
-      ToolCallback invoke_callback,
+      DeprecatedToolCallback invoke_callback,
       webui::mojom::SelectAutofillSuggestionsDialogResponsePtr);
   // Directly fills the suggestions into the form without asking the user to
   // select a suggestion. Each entry in `suggestion_ids` corresponds to a
   // separate form filling request, in order.
   void DirectlyFillSuggestions(
-      ToolCallback invoke_callback,
+      DeprecatedToolCallback invoke_callback,
       base::span<const autofill::ActorSuggestionId> suggestion_ids);
   autofill::AutofillClient* GetAutofillClient();
   ActorSurfaceHandle actor_surface_handle_;

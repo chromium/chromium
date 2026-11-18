@@ -42,7 +42,7 @@ OpenUrlTool::OpenUrlTool(TaskId task_id,
 
 OpenUrlTool::~OpenUrlTool() = default;
 
-void OpenUrlTool::Validate(ToolCallback callback) {
+void OpenUrlTool::Validate(DeprecatedToolCallback callback) {
   if (!open_in_new_tab_) {
     // The follow-up `NavigateTool` validates the URL.
     PostResponseTask(std::move(callback), MakeOkResult());
@@ -63,7 +63,7 @@ mojom::ActionResultPtr OpenUrlTool::TimeOfUseValidation(
   return ValidateBrowserWindow(GetSurfaceBrowserWindow());
 }
 
-void OpenUrlTool::Invoke(ToolCallback callback) {
+void OpenUrlTool::Invoke(DeprecatedToolCallback callback) {
   if (!open_in_new_tab_) {
     EnqueueNavigation(actor_surface_handle_);
     PostResponseTask(std::move(callback),
@@ -101,7 +101,7 @@ void OpenUrlTool::UpdateTaskAfterInvoke(ActorTask& task,
                            .Then(std::move(callback)));
 }
 
-void OpenUrlTool::OnTabCreated(ToolCallback callback,
+void OpenUrlTool::OnTabCreated(DeprecatedToolCallback callback,
                                mojom::ActionResultPtr result) {
   if (!IsOk(*result)) {
     std::move(callback).Run(std::move(result));

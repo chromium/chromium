@@ -82,7 +82,7 @@ ScriptToolHost::~ScriptToolHost() {
   TearDown();
 }
 
-void ScriptToolHost::Validate(ToolCallback callback) {
+void ScriptToolHost::Validate(DeprecatedToolCallback callback) {
   // No browser-side validation yet.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
@@ -148,7 +148,7 @@ ScriptToolHost::GetObservationDelayer(
       *frame, task_id(), journal(), page_stability_config);
 }
 
-void ScriptToolHost::Invoke(ToolCallback callback) {
+void ScriptToolHost::Invoke(DeprecatedToolCallback callback) {
   auto* frame = target_document_.AsRenderFrameHostIfValid();
   CHECK(frame);
   CHECK(base::FeatureList::IsEnabled(blink::features::kWebMCP));
@@ -457,7 +457,7 @@ void ScriptToolHost::RenderFrameDeleted(content::RenderFrameHost* rfh) {
   }
 }
 
-void ScriptToolHost::PostErrorResult(ToolCallback tool_callback,
+void ScriptToolHost::PostErrorResult(DeprecatedToolCallback tool_callback,
                                      mojom::ActionResultCode code,
                                      const std::string& message) {
   lifecycle_ = Lifecycle::kDone;

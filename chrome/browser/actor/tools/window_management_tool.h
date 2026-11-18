@@ -44,8 +44,8 @@ class WindowManagementTool : public Tool, public BrowserCollectionObserver {
   ~WindowManagementTool() override;
 
   // actor::Tool:
-  void Validate(ToolCallback callback) override;
-  void Invoke(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   ActorSurfaceHandle GetTargetActorSurface() const override;
@@ -53,7 +53,7 @@ class WindowManagementTool : public Tool, public BrowserCollectionObserver {
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
-                              ToolCallback callback) const override;
+                              DeprecatedToolCallback callback) const override;
   void UpdateTaskAfterInvoke(ActorTask& task,
                              ToolResult result,
                              ToolResultCallback callback) const override;
@@ -85,7 +85,7 @@ class WindowManagementTool : public Tool, public BrowserCollectionObserver {
   // surface.
   ActorSurfaceHandle created_actor_surface_handle_;
 
-  ToolCallback callback_;
+  DeprecatedToolCallback callback_;
 
   // Subscription to the close event for the BrowserWindowInterface
   // corresponding to `window_id_`.

@@ -46,11 +46,11 @@ class NavigateTool : public Tool, content::WebContentsObserver {
   ~NavigateTool() override;
 
   // actor::Tool
-  void Validate(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
   mojom::ActionResultPtr TimeOfUseValidation(
       const optimization_guide::proto::AnnotatedPageContent* last_observation)
       override;
-  void Invoke(ToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
   void UpdateTaskAfterInvoke(ActorTask& task,
                              ToolResult result,
                              ToolResultCallback callback) const override;
@@ -69,7 +69,8 @@ class NavigateTool : public Tool, content::WebContentsObserver {
   // Called when `create_tab_tool_` finishes. On success, enqueues the new
   // tab's navigation to `url_`. The tab is added to the task in
   // `UpdateTaskAfterInvoke()`, before the navigation starts.
-  void OnTabCreated(ToolCallback callback, mojom::ActionResultPtr result);
+  void OnTabCreated(DeprecatedToolCallback callback,
+                    mojom::ActionResultPtr result);
   void NavigationHandleCallback(content::NavigationHandle& handle);
 
   GURL url_;
@@ -82,7 +83,7 @@ class NavigateTool : public Tool, content::WebContentsObserver {
   std::unique_ptr<TabManagementTool> create_tab_tool_;
 
   // Holds the callback to the Invoke method. Null before invoke is called.
-  ToolCallback invoke_callback_;
+  DeprecatedToolCallback invoke_callback_;
 
   // The ID of the navigation to `url_`, unset until the navigation is started,
   // after which this is set (asynchronously). Once set, this class observes the

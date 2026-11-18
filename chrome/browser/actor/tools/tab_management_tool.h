@@ -42,15 +42,15 @@ class TabManagementTool : public Tool, public TabListInterfaceObserver {
   ~TabManagementTool() override;
 
   // actor::Tool:
-  void Validate(ToolCallback callback) override;
-  void Invoke(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
-                              ToolCallback callback) const override;
+                              DeprecatedToolCallback callback) const override;
   void UpdateTaskAfterInvoke(ActorTask& task,
                              ToolResult result,
                              ToolResultCallback callback) const override;
@@ -77,7 +77,7 @@ class TabManagementTool : public Tool, public TabListInterfaceObserver {
 
   Action action_;
 
-  ToolCallback callback_;
+  DeprecatedToolCallback callback_;
 
   // Used for activate or close action. For the create action, this will be
   // updated to the newly created tab after `Invoke()` is called.

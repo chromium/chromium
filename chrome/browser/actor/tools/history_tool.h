@@ -61,11 +61,11 @@ class HistoryTool : public Tool, content::WebContentsObserver {
   ~HistoryTool() override;
 
   // actor::Tool
-  void Validate(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
   mojom::ActionResultPtr TimeOfUseValidation(
       const optimization_guide::proto::AnnotatedPageContent* last_observation)
       override;
-  void Invoke(ToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
@@ -107,7 +107,7 @@ class HistoryTool : public Tool, content::WebContentsObserver {
   bool starting_navigations_ = false;
 
   // Holds the callback to the Invoke method. Null before invoke is called.
-  ToolCallback invoke_callback_;
+  DeprecatedToolCallback invoke_callback_;
 
   // The unique ID of the navigation entry at the time of validation.
   int validated_entry_id_ = 0;

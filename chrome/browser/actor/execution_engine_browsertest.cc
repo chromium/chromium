@@ -1181,8 +1181,8 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, CollectsMultipleToolVotes) {
       "example.com", "/actor/two_clicks.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  base::test::TestFuture<ToolCallback> on_invoke_future1;
-  base::test::TestFuture<ToolCallback> on_invoke_future2;
+  base::test::TestFuture<DeprecatedToolCallback> on_invoke_future1;
+  base::test::TestFuture<DeprecatedToolCallback> on_invoke_future2;
 
   std::unique_ptr<ToolRequest> tool1 = std::make_unique<FakeToolRequest>(
       on_invoke_future1.GetCallback(), base::OnceClosure(),

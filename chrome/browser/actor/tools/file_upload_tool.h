@@ -57,11 +57,11 @@ class FileUploadTool : public Tool {
   ~FileUploadTool() override;
 
   // Tool:
-  void Validate(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
   mojom::ActionResultPtr TimeOfUseValidation(
       const optimization_guide::proto::AnnotatedPageContent* last_observation)
       override;
-  void Invoke(ToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
   void Cancel() override;
   std::string DebugString() const override;
   GURL JournalURL() const override;
@@ -70,7 +70,7 @@ class FileUploadTool : public Tool {
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
-                              ToolCallback callback) const override;
+                              DeprecatedToolCallback callback) const override;
   ActorSurfaceHandle GetTargetActorSurface() const override;
 
  private:
@@ -109,7 +109,7 @@ class FileUploadTool : public Tool {
   PageTarget target_;
   std::vector<FileUploadSource> files_;
 
-  ToolCallback invoke_callback_;
+  DeprecatedToolCallback invoke_callback_;
 
   // Download state. `downloaded_contents_` is indexed in parallel with
   // `files_`.

@@ -52,11 +52,11 @@ class AttemptOtpFillingTool : public Tool {
   ~AttemptOtpFillingTool() override;
 
   // Tool:
-  void Validate(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
   mojom::ActionResultPtr TimeOfUseValidation(
       const optimization_guide::proto::AnnotatedPageContent* last_observation)
       override;
-  void Invoke(ToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
 
   std::string DebugString() const override;
   std::string JournalEvent() const override;
@@ -67,24 +67,24 @@ class AttemptOtpFillingTool : public Tool {
 
  private:
   void OnUserDataProcessingConsentFetched(
-      ToolCallback callback,
+      DeprecatedToolCallback callback,
       base::TimeTicks start_time,
       bool gmail_otp_filling_enabled,
       bool within_cool_off_period,
       std::optional<one_time_tokens::UserDataProcessingConsentStates>
           consent_states);
-  void OnGmailOtpOptInResponse(ToolCallback callback,
+  void OnGmailOtpOptInResponse(DeprecatedToolCallback callback,
                                webui::mojom::GmailOtpOptInResultPtr response);
   void OnGmailOtpConfirmationResponse(
-      ToolCallback callback,
+      DeprecatedToolCallback callback,
       std::string otp,
       webui::mojom::GmailOtpConfirmationResultPtr response);
   void OnOtpRetrieved(
-      ToolCallback callback,
+      DeprecatedToolCallback callback,
       base::expected<std::string, one_time_tokens::OneTimeTokenRetrievalError>
           result);
-  void OnOtpFilled(ToolCallback callback, bool success);
-  void OnActorLoginFlowChecked(ToolCallback callback,
+  void OnOtpFilled(DeprecatedToolCallback callback, bool success);
+  void OnActorLoginFlowChecked(DeprecatedToolCallback callback,
                                ActorLoginFlowVerifier::Result result);
 
   void LogJournalEvent(std::string_view event_name,

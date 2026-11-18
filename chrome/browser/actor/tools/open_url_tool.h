@@ -51,11 +51,11 @@ class OpenUrlTool : public Tool {
   ~OpenUrlTool() override;
 
   // actor::Tool:
-  void Validate(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
   mojom::ActionResultPtr TimeOfUseValidation(
       const optimization_guide::proto::AnnotatedPageContent* last_observation)
       override;
-  void Invoke(ToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
   void UpdateTaskAfterInvoke(ActorTask& task,
                              ToolResult result,
                              ToolResultCallback callback) const override;
@@ -73,7 +73,8 @@ class OpenUrlTool : public Tool {
   // Called when `create_tab_tool_` finishes. On success, enqueues the new
   // tab's navigation to `url_`; the tab is added to the task in
   // `UpdateTaskAfterInvoke()`, before the navigation starts.
-  void OnTabCreated(ToolCallback callback, mojom::ActionResultPtr result);
+  void OnTabCreated(DeprecatedToolCallback callback,
+                    mojom::ActionResultPtr result);
 
   // Enqueues a follow-up action that navigates `target` to `url_`.
   void EnqueueNavigation(ActorSurfaceHandle target);

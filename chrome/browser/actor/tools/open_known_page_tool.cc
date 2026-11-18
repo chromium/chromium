@@ -43,7 +43,7 @@ OpenKnownPageTool::OpenKnownPageTool(TaskId task_id,
 
 OpenKnownPageTool::~OpenKnownPageTool() = default;
 
-void OpenKnownPageTool::Validate(ToolCallback callback) {
+void OpenKnownPageTool::Validate(DeprecatedToolCallback callback) {
   BrowserWindowInterface* browser = GetBrowser();
   mojom::ActionResultPtr window_result = ValidateBrowserWindow(browser);
   if (!IsOk(*window_result)) {
@@ -118,7 +118,7 @@ void OpenKnownPageTool::Validate(ToolCallback callback) {
 }
 
 void OpenKnownPageTool::OnHistoryMatches(
-    ToolCallback callback,
+    DeprecatedToolCallback callback,
     std::vector<PageMatch> history_matches) {
   BrowserWindowInterface* browser = GetBrowser();
   mojom::ActionResultPtr window_result = ValidateBrowserWindow(browser);
@@ -225,13 +225,14 @@ void OpenKnownPageTool::OnHistoryMatches(
   ValidateDestinationUrl(chosen_page->url, std::move(callback));
 }
 
-void OpenKnownPageTool::ValidateDestinationUrl(const GURL& url,
-                                               ToolCallback callback) {
+void OpenKnownPageTool::ValidateDestinationUrl(
+    const GURL& url,
+    DeprecatedToolCallback callback) {
   ValidateUrlIsAcceptableNavigationDestination(url, tool_delegate(),
                                                std::move(callback));
 }
 
-void OpenKnownPageTool::Invoke(ToolCallback callback) {
+void OpenKnownPageTool::Invoke(DeprecatedToolCallback callback) {
   BrowserWindowInterface* browser = GetBrowser();
   mojom::ActionResultPtr window_result = ValidateBrowserWindow(browser);
   if (!IsOk(*window_result)) {
@@ -300,8 +301,9 @@ OpenKnownPageTool::GetObservationDelayer(
   return nullptr;
 }
 
-void OpenKnownPageTool::UpdateTaskBeforeInvoke(ActorTask& task,
-                                               ToolCallback callback) const {
+void OpenKnownPageTool::UpdateTaskBeforeInvoke(
+    ActorTask& task,
+    DeprecatedToolCallback callback) const {
   // OpenKnownPageTool cannot rely on ActorTask::Act() to register the surface
   // because the target tab is not known until Validate() searches open tabs
   // and history. Register the target surface here before navigation starts.

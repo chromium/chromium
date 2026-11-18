@@ -32,7 +32,7 @@ TranslatePageTool::TranslatePageTool(TaskId task_id,
 
 TranslatePageTool::~TranslatePageTool() = default;
 
-void TranslatePageTool::Validate(ToolCallback callback) {
+void TranslatePageTool::Validate(DeprecatedToolCallback callback) {
   PostResponseTask(std::move(callback), MakeOkResult());
 }
 
@@ -63,7 +63,7 @@ mojom::ActionResultPtr TranslatePageTool::TimeOfUseValidation(
   return MakeOkResult();
 }
 
-void TranslatePageTool::Invoke(ToolCallback callback) {
+void TranslatePageTool::Invoke(DeprecatedToolCallback callback) {
   ActorSurface* actor_surface = actor_surface_handle_.Get();
   CHECK(actor_surface);
 

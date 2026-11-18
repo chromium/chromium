@@ -86,7 +86,7 @@ AttemptFormFillingTool::AttemptFormFillingTool(
 
 AttemptFormFillingTool::~AttemptFormFillingTool() = default;
 
-void AttemptFormFillingTool::Invoke(ToolCallback callback) {
+void AttemptFormFillingTool::Invoke(DeprecatedToolCallback callback) {
   // `service_fill_requests_` must have been set by TimeOfUseValidation() or
   // otherwise an error was returned by TimeOfUseValidation().
   CHECK(!service_fill_requests_.empty());
@@ -140,7 +140,7 @@ void AttemptFormFillingTool::Invoke(ToolCallback callback) {
   }
 }
 
-void AttemptFormFillingTool::Validate(ToolCallback callback) {
+void AttemptFormFillingTool::Validate(DeprecatedToolCallback callback) {
   if (!credit_card_opaque_token_.empty()) {
     const bool has_non_credit_card = std::ranges::any_of(
         tool_fill_requests_,
@@ -230,7 +230,7 @@ ActorSurfaceHandle AttemptFormFillingTool::GetTargetActorSurface() const {
 }
 
 void AttemptFormFillingTool::OnSuggestionsRetrieved(
-    ToolCallback invoke_callback,
+    DeprecatedToolCallback invoke_callback,
     base::expected<std::vector<ActorFormFillingRequest>, ActorFormFillingError>
         suggestions_result) {
   const int suggestions_count =
@@ -273,7 +273,7 @@ void AttemptFormFillingTool::OnSuggestionsRetrieved(
 }
 
 void AttemptFormFillingTool::OnCreditCardSuggestionRetrieved(
-    ToolCallback invoke_callback,
+    DeprecatedToolCallback invoke_callback,
     base::expected<ActorSuggestionId, ActorFormFillingError>
         suggestion_id_result) {
   form_fill_metrics::RecordOnSuggestionsRetrievedMetrics(
@@ -289,7 +289,7 @@ void AttemptFormFillingTool::OnCreditCardSuggestionRetrieved(
 }
 
 void AttemptFormFillingTool::DirectlyFillSuggestions(
-    ToolCallback invoke_callback,
+    DeprecatedToolCallback invoke_callback,
     base::span<const ActorSuggestionId> suggestion_ids) {
   if (!actor_surface_handle_.Get()) {
     std::move(invoke_callback)
@@ -329,7 +329,7 @@ void AttemptFormFillingTool::DirectlyFillSuggestions(
 }
 
 void AttemptFormFillingTool::OnSuggestionsSelected(
-    ToolCallback invoke_callback,
+    DeprecatedToolCallback invoke_callback,
     webui::mojom::SelectAutofillSuggestionsDialogResponsePtr dialog_response) {
   if (dialog_response->result->is_error_reason()) {
     std::move(invoke_callback)

@@ -16,7 +16,6 @@ class ToolResult;
 // TODO(crbug.com/574534362): Remove once all tools migrate off
 // mojom::ActionResult.
 using DeprecatedToolCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
-using ToolCallback = DeprecatedToolCallback;
 using ToolResultCallback = base::OnceCallback<void(ToolResult)>;
 
 // Helper to post a callback on the current sequence with the given response.

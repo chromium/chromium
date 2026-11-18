@@ -556,7 +556,7 @@ TEST_F(ExecutionEngineTest, MAYBE_CancelOngoingAction) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
 
-  base::test::TestFuture<ToolCallback> on_invoke_future;
+  base::test::TestFuture<DeprecatedToolCallback> on_invoke_future;
   base::test::TestFuture<void> on_destroy_future;
   std::unique_ptr<ToolRequest> request = std::make_unique<FakeToolRequest>(
       on_invoke_future.GetCallback(), on_destroy_future.GetCallback());
@@ -590,10 +590,10 @@ TEST_F(ExecutionEngineTest,
       web_contents(), GURL("http://localhost/"));
 
   std::unique_ptr<ToolRequest> request = std::make_unique<FakeToolRequest>(
-      base::BindLambdaForTesting([this](ToolCallback callback) {
+      base::BindLambdaForTesting([this](DeprecatedToolCallback callback) {
         task_->GetExecutionEngine().EnqueueFollowupAction(
             std::make_unique<FakeToolRequest>(
-                base::BindOnce([](ToolCallback followup_callback) {
+                base::BindOnce([](DeprecatedToolCallback followup_callback) {
                   std::move(followup_callback)
                       .Run(MakeOkResult(/*requires_page_stabilization=*/false));
                 }),
@@ -624,10 +624,10 @@ TEST_F(ExecutionEngineTest, MAYBE_FollowupActionSetsMessageWhenParentEmpty) {
       web_contents(), GURL("http://localhost/"));
 
   std::unique_ptr<ToolRequest> request = std::make_unique<FakeToolRequest>(
-      base::BindLambdaForTesting([this](ToolCallback callback) {
+      base::BindLambdaForTesting([this](DeprecatedToolCallback callback) {
         task_->GetExecutionEngine().EnqueueFollowupAction(
             std::make_unique<FakeToolRequest>(
-                base::BindOnce([](ToolCallback followup_callback) {
+                base::BindOnce([](DeprecatedToolCallback followup_callback) {
                   std::move(followup_callback)
                       .Run(MakeOkResultWithMessage(
                           /*requires_page_stabilization=*/false,
@@ -661,10 +661,10 @@ TEST_F(ExecutionEngineTest,
       web_contents(), GURL("http://localhost/"));
 
   std::unique_ptr<ToolRequest> request = std::make_unique<FakeToolRequest>(
-      base::BindLambdaForTesting([this](ToolCallback callback) {
+      base::BindLambdaForTesting([this](DeprecatedToolCallback callback) {
         task_->GetExecutionEngine().EnqueueFollowupAction(
             std::make_unique<FakeToolRequest>(
-                base::BindOnce([](ToolCallback followup_callback) {
+                base::BindOnce([](DeprecatedToolCallback followup_callback) {
                   std::move(followup_callback)
                       .Run(MakeOkResultWithMessage(
                           /*requires_page_stabilization=*/false,
@@ -698,10 +698,10 @@ TEST_F(ExecutionEngineTest,
       web_contents(), GURL("http://localhost/"));
 
   std::unique_ptr<ToolRequest> request = std::make_unique<FakeToolRequest>(
-      base::BindLambdaForTesting([this](ToolCallback callback) {
+      base::BindLambdaForTesting([this](DeprecatedToolCallback callback) {
         task_->GetExecutionEngine().EnqueueFollowupAction(
             std::make_unique<FakeToolRequest>(
-                base::BindOnce([](ToolCallback followup_callback) {
+                base::BindOnce([](DeprecatedToolCallback followup_callback) {
                   std::move(followup_callback)
                       .Run(MakeResult(mojom::ActionResultCode::kElementDisabled,
                                       /*requires_page_stabilization=*/false,
@@ -735,10 +735,10 @@ TEST_F(ExecutionEngineTest,
       web_contents(), GURL("http://localhost/"));
 
   std::unique_ptr<ToolRequest> request = std::make_unique<FakeToolRequest>(
-      base::BindLambdaForTesting([this](ToolCallback callback) {
+      base::BindLambdaForTesting([this](DeprecatedToolCallback callback) {
         task_->GetExecutionEngine().EnqueueFollowupAction(
             std::make_unique<FakeToolRequest>(
-                base::BindOnce([](ToolCallback followup_callback) {
+                base::BindOnce([](DeprecatedToolCallback followup_callback) {
                   std::move(followup_callback)
                       .Run(MakeResult(
                           mojom::ActionResultCode::kElementDisabled));
@@ -770,10 +770,10 @@ TEST_F(ExecutionEngineTest, MAYBE_FollowupActionPreservesParentMetadata) {
       web_contents(), GURL("http://localhost/"));
 
   std::unique_ptr<ToolRequest> request = std::make_unique<FakeToolRequest>(
-      base::BindLambdaForTesting([this](ToolCallback callback) {
+      base::BindLambdaForTesting([this](DeprecatedToolCallback callback) {
         task_->GetExecutionEngine().EnqueueFollowupAction(
             std::make_unique<FakeToolRequest>(
-                base::BindOnce([](ToolCallback followup_callback) {
+                base::BindOnce([](DeprecatedToolCallback followup_callback) {
                   std::move(followup_callback)
                       .Run(MakeOkResult(/*requires_page_stabilization=*/false));
                 }),
@@ -1040,7 +1040,7 @@ TEST_F(ExecutionEngineTest, MAYBE_LatencyInfoAndActionDurationHistogram) {
   const base::TimeDelta simulated_duration = base::Milliseconds(150);
   const base::TimeTicks action_start_time = base::TimeTicks::Now();
 
-  base::test::TestFuture<ToolCallback> on_invoke_future;
+  base::test::TestFuture<DeprecatedToolCallback> on_invoke_future;
 
   std::unique_ptr<ToolRequest> action = std::make_unique<FakeToolRequest>(
       on_invoke_future.GetCallback(), base::OnceClosure());

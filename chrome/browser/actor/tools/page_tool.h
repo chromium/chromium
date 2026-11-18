@@ -42,11 +42,11 @@ class PageTool : public Tool {
   ~PageTool() override;
 
   // actor::Tool
-  void Validate(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
   mojom::ActionResultPtr TimeOfUseValidation(
       const optimization_guide::proto::AnnotatedPageContent* last_observation)
       override;
-  void Invoke(ToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
   void Cancel() override;
   std::string DebugString() const override;
   GURL JournalURL() const override;
@@ -69,7 +69,7 @@ class PageTool : public Tool {
 
   content::RenderFrameHost* GetFrame() const;
 
-  void OnInitializeToolComplete(ToolCallback callback,
+  void OnInitializeToolComplete(DeprecatedToolCallback callback,
                                 mojom::InitializeToolResultPtr result);
 
   mojom::ToolInvocationPtr CreateToolInvocation(
@@ -83,7 +83,7 @@ class PageTool : public Tool {
       const optimization_guide::proto::AnnotatedPageContent* last_observation,
       content::RenderFrameHost* frame);
 
-  ToolCallback invoke_callback_;
+  DeprecatedToolCallback invoke_callback_;
   std::unique_ptr<PageToolRequest> request_;
   ActorSurfaceHandle actor_surface_handle_;
 

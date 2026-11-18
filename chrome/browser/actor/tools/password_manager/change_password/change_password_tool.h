@@ -38,11 +38,11 @@ class ChangePasswordTool : public Tool {
                      std::optional<PageTarget> confirm_button);
   ~ChangePasswordTool() override;
 
-  void Validate(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
   mojom::ActionResultPtr TimeOfUseValidation(
       const optimization_guide::proto::AnnotatedPageContent* last_observation)
       override;
-  void Invoke(ToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
@@ -55,7 +55,7 @@ class ChangePasswordTool : public Tool {
       const optimization_guide::proto::AnnotatedPageContent* last_observation,
       autofill::LocalFrameToken& target_frame_token);
   void OnChangePasswordFormFilled(
-      ToolCallback callback,
+      DeprecatedToolCallback callback,
       const std::optional<autofill::FormData>& form_data);
 
   ActorSurfaceHandle actor_surface_handle_;
