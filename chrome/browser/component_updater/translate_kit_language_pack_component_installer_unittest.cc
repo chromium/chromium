@@ -15,6 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
@@ -130,6 +131,47 @@ TEST_F(TranslateKitLanguagePackComponentTest, AllowCachedCopies) {
       pref_service(), on_device_translation::LanguagePackKey::kEn_Es,
       base::DoNothing());
   EXPECT_FALSE(policy.AllowCachedCopies());
+}
+
+TEST_F(TranslateKitLanguagePackComponentTest,
+       RegisterComponentsForUpdateRecordsInstalledPackCount) {
+  auto service = std::make_unique<MockComponentUpdateService>();
+  EXPECT_CALL(*service, GetComponentIDs()).Times(testing::AnyNumber());
+  EXPECT_CALL(*service, RegisterComponent(_))
+      .WillRepeatedly(testing::Return(true));
+
+  {
+    base::HistogramTester histogram_tester;
+    // Registering a pack without an installed path should not emit the metric.
+    pref_service()->SetBoolean(
+        on_device_translation::GetRegisteredFlagPrefName(
+            on_device_translation::GetLanguagePackComponentConfig(
+                on_device_translation::LanguagePackKey::kEn_Fr)),
+        true);
+    RegisterTranslateKitLanguagePackComponentsForUpdate(service.get(),
+                                                        pref_service());
+    histogram_tester.ExpectTotalCount(
+        "Translate.OnDeviceTranslation.InstalledLanguagePackCount", 0);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    pref_service()->SetFilePath(
+        on_device_translation::GetComponentPathPrefName(
+            on_device_translation::GetLanguagePackComponentConfig(
+                on_device_translation::LanguagePackKey::kEn_Es)),
+        install_dir().AppendASCII("en_es"));
+    pref_service()->SetFilePath(
+        on_device_translation::GetComponentPathPrefName(
+            on_device_translation::GetLanguagePackComponentConfig(
+                on_device_translation::LanguagePackKey::kEn_Ja)),
+        install_dir().AppendASCII("en_ja"));
+    RegisterTranslateKitLanguagePackComponentsForUpdate(service.get(),
+                                                        pref_service());
+    env().RunUntilIdle();
+    histogram_tester.ExpectUniqueSample(
+        "Translate.OnDeviceTranslation.InstalledLanguagePackCount", 2, 1);
+  }
 }
 
 TEST_F(TranslateKitLanguagePackComponentTest,

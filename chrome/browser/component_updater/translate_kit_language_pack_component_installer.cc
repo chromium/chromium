@@ -193,14 +193,26 @@ void RegisterTranslateKitLanguagePackComponent(
 void RegisterTranslateKitLanguagePackComponentsForUpdate(
     ComponentUpdateService* cus,
     PrefService* pref_service) {
+  int installed_pack_count = 0;
   for (const auto& [language_pack_key, config] :
        on_device_translation::kLanguagePackComponentConfigMap) {
+    if (!pref_service
+             ->GetFilePath(
+                 on_device_translation::GetComponentPathPrefName(*config))
+             .empty()) {
+      ++installed_pack_count;
+    }
     if (pref_service->GetBoolean(
             on_device_translation::GetRegisteredFlagPrefName(*config))) {
       RegisterTranslateKitLanguagePackComponent(
           cus, pref_service, language_pack_key, base::OnceClosure(),
           base::RepeatingClosure());
     }
+  }
+  if (installed_pack_count > 0) {
+    base::UmaHistogramExactLinear(
+        "Translate.OnDeviceTranslation.InstalledLanguagePackCount",
+        installed_pack_count, 50);
   }
 }
 

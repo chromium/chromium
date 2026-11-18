@@ -304,6 +304,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Translate.OnDeviceTranslation.InstalledLanguagePackCount"
+    units="packs" expires_after="2027-04-30">
+  <owner>jaeone@google.com</owner>
+  <owner>chrome-builtin-ai@google.com</owner>
+  <summary>
+    Records the number of installed TranslateKit language packs during startup
+    component registration on desktop and Android. Emitted only when at least
+    one language pack is installed on disk.
+  </summary>
+</histogram>
+
 <histogram name="Translate.OnDeviceTranslation.ModelFileMmapSuccess"
     enum="BooleanSuccess" expires_after="2027-02-07">
   <owner>danft@google.com</owner>
