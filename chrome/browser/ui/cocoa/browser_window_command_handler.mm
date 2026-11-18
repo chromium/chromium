@@ -113,7 +113,9 @@ remote_cocoa::NativeWidgetNSWindowBridge* FindBridgeForSender(
       ->host()
       ->ExecuteCommand(command, ui::mojom::WindowOpenDisposition::kCurrentTab,
                        /*is_before_first_responder=*/false, &was_executed);
-  CHECK(was_executed, base::NotFatalUntil::M162);
+  // TODO(crbug.com/585074884): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(was_executed);
 }
 
 - (void)commandDispatchUsingKeyModifiers:(id)sender window:(NSWindow*)window {
