@@ -85,6 +85,13 @@
       inset 0 0 0 1px var(--cr-focus-outline-color);
 }
 
+/* In the location bar the WebView has the location bar's bounds, so an outset
+ * ring would be clipped. Draw the 2px ring inside instead. */
+:host([unbounded-supported_]:not([dropdown-is-visible])) #inputWrapper:focus-within,
+:host([unbounded-supported_][is-logically-focused_]:not([dropdown-is-visible])) #inputWrapper {
+  box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
+}
+
 /* The compose button takes the focus ring's place while it has focus. With
  * the dropdown visible there is no focus ring, and #inputWrapper's box-shadow
  * is the popup's drop shadow, which stays. */
@@ -102,6 +109,11 @@
   :host([is-logically-focused_]:not([dropdown-is-visible])) #inputWrapper {
     outline: var(--cr-focus-outline-hcm);
     outline-offset: -1px;
+  }
+
+  :host([unbounded-supported_]:not([dropdown-is-visible])) #inputWrapper:focus-within,
+  :host([unbounded-supported_][is-logically-focused_]:not([dropdown-is-visible])) #inputWrapper {
+    outline-offset: -2px;
   }
 
   :host(:not([dropdown-is-visible]))
