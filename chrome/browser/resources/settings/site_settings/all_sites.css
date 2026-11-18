@@ -1,0 +1,60 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/md_select_lit.css.js
+ * #import=../settings_shared_lit.css.js
+ * #include=settings-shared-lit md-select-lit
+ * #css_wrapper_metadata_end */
+
+cr-dialog div[slot=title] {
+  line-height: 20px;
+}
+
+#sort {
+  align-items: center;
+  display: flex;
+  margin: 0 var(--cr-icon-button-margin-start);
+  margin-bottom: 8px;
+  padding: 0 var(--cr-section-padding);
+}
+
+#sortMethod {
+  margin-inline-start: 1em;
+}
+
+/* There is only one top-level heading for All Sites, so remove the
+ * additional leading padding used for lists. */
+.list-frame.without-heading {
+  padding-inline-start: var(--cr-section-padding);
+}
+
+#clearAllContainer {
+  align-items: center;
+  display: flex;
+  height: var(--cr-section-two-line-min-height);
+  justify-content: space-between;
+  margin: 0 var(--cr-icon-button-margin-start);
+  padding-inline-end: var(--cr-section-padding);
+  padding-inline-start: var(--cr-section-padding);
+}
+
+#clearAllButton cr-button {
+  white-space: nowrap;
+}
+
+.detail-list {
+  margin-top: 12px;
+}
+
+.detail {
+  align-items: center;
+  display: flex;
+  margin-top: 8px;
+}
+
+.detail cr-icon {
+  margin-inline-end: 16px;
+}

@@ -133,21 +133,6 @@ iron-icon.policy {
   margin-inline-end: var(--cr-controlled-by-spacing);
 }
 
-iron-list {
-  /* Text selection in an iron-list is problematic because the items are
-   * reused. The result is the selection happens somewhat arbitrarily.
-   * Add a |risk-selection| attribute to enabled selection in an
-   * iron-list. */
-  user-select: none;
-}
-
-iron-list[risk-selection] {
-  /* On short lists where selection is likely desired, we'll risk having
-   * text selection enabled. If the list is short enough that items are
-   * not actually reused, the bugs with selection are not evident. */
-  user-select: text;
-}
-
 .separator + cr-icon-button {
   margin-inline-start: var(--cr-icon-ripple-margin);
 }
@@ -386,10 +371,8 @@ h2.first {
   outline: none;
 }
 
-/* Prevent icon-button's ripples from fighting with potential scrollbars.
- * Also apply to all iron-lists to align the buttons across them all.*/
+/* Prevent icon-button's ripples from fighting with potential scrollbars. */
 [scrollable],
-iron-list,
 .list-item {
   --cr-icon-button-margin-end: 0;
 }

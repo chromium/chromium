@@ -89,6 +89,10 @@ IN_PROC_BROWSER_TEST_F(SettingsFocusTest, Menu) {
   RunTest("settings/settings_menu_interactive_ui_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsFocusTest, AllSites) {
+  RunTest("settings/all_sites_test.js", "runMochaSuite('AllSitesFocus')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsFocusTest, ChooserExceptionListEntry) {
   RunTest("settings/chooser_exception_list_entry_test.js",
           "runMochaSuite('ChooserExceptionListEntryFocus')");

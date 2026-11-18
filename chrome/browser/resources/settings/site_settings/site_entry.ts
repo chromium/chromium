@@ -298,11 +298,9 @@ export class SiteEntryElement extends SiteEntryElementBase {
   /**
    * Toggles open and closed the list of origins if there is more than one.
    */
-  private async toggleCollapsible_() {
+  private toggleCollapsible_() {
     this.expanded_ = !this.expanded_;
     this.$.originList.get();
-    await this.updateComplete;
-    this.fire('iron-resize');
   }
 
   protected onRemoveClick_(e: Event) {

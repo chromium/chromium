@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview |GlobalScrollTargetMixin| allows an element to be aware of
+ * @fileoverview |GlobalScrollTargetMixinLit| allows an element to be aware of
  * the global scroll target.
  *
  * |scrollTarget| will be populated async by |setGlobalScrollTarget|.
@@ -15,49 +15,41 @@
  */
 
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {routes} from './route.js';
 import type {Route, RouteObserverMixinInterface} from './router.js';
-import {RouteObserverMixin, Router} from './router.js';
+import {Router} from './router.js';
 
 let scrollTargetResolver = new PromiseResolver<HTMLElement>();
 
 type Constructor<T> = new (...args: any[]) => T;
 
-export const GlobalScrollTargetMixin = dedupingMixin(
-    <T extends Constructor<PolymerElement>>(superClass: T): T&
-    Constructor<GlobalScrollTargetMixinInterface> => {
-      const superClassBase = RouteObserverMixin(superClass) as unknown as T;
+export interface GlobalScrollTargetMixinLitInterface extends
+    RouteObserverMixinInterface {
+  scrollTarget: HTMLElement;
+  subpageScrollTarget: HTMLElement|null;
+  subpageRoute: Route;
+}
 
-      class GlobalScrollTargetMixin extends superClassBase {
+export const GlobalScrollTargetMixinLit = dedupingMixin(
+    <T extends Constructor<CrLitElement&RouteObserverMixinInterface>>(
+        superClass: T): T&Constructor<GlobalScrollTargetMixinLitInterface> => {
+      class GlobalScrollTargetMixinLit extends superClass implements
+          GlobalScrollTargetMixinLitInterface {
         static get properties() {
           return {
-            scrollTarget: Object,
-
-            /**
-             * Read only property for the scroll target that a subpage should
-             * use. It will be set/cleared based on the current route.
-             */
-            subpageScrollTarget: {
-              type: Object,
-              computed: 'getActiveTarget_(scrollTarget, active_)',
-            },
-
-            /**
-             * The |subpageScrollTarget| should only be set for this route.
-             */
-            subpageRoute: Object,
-
-            /** Whether the |subpageRoute| is active or not. */
-            active_: Boolean,
+            subpageScrollTarget: {type: Object},
           };
         }
 
-        declare scrollTarget: HTMLElement;
-        declare subpageScrollTarget: HTMLElement|null;
-        declare subpageRoute: Route;
-        declare private active_: boolean;
+        accessor subpageScrollTarget: HTMLElement|null =
+            document.documentElement;
+
+        scrollTarget: HTMLElement = document.documentElement;
+        subpageRoute: Route = routes.BASIC;
+        private active_: boolean = false;
 
         override connectedCallback() {
           super.connectedCallback();
@@ -66,51 +58,36 @@ export const GlobalScrollTargetMixin = dedupingMixin(
               Router.getInstance().getCurrentRoute() === this.subpageRoute;
           scrollTargetResolver.promise.then((scrollTarget: HTMLElement) => {
             this.scrollTarget = scrollTarget;
+            this.subpageScrollTarget = this.active_ ? this.scrollTarget : null;
           });
         }
 
-        // TODO(dpapad): Figure out why adding the |override| keyword here
-        // throws an error.
-        currentRouteChanged(route: Route) {
+        override currentRouteChanged(route: Route, oldRoute?: Route) {
+          super.currentRouteChanged(route, oldRoute);
           // Immediately set the scroll target to active when this page is
           // activated, but wait a task to remove the scroll target when the
-          // page is deactivated. This gives scroll handlers like iron-list a
-          // chance to handle scroll events that are fired as a result of the
-          // route changing.
+          // page is deactivated. This gives scroll handlers like
+          // cr-lazy-list a chance to handle scroll events that are fired as
+          // a result of the route changing.
           // TODO(crbug.com/40583428): Having this timeout can result some
           // jumpy behaviour in the scroll handlers. |this.active_| can be set
           // immediately when this bug is fixed.
           if (route === this.subpageRoute) {
             this.active_ = true;
-          } else {
+            this.subpageScrollTarget = this.scrollTarget;
+          } else if (this.active_) {
+            this.active_ = false;
             setTimeout(() => {
-              this.active_ = false;
+              if (!this.active_) {
+                this.subpageScrollTarget = null;
+              }
             });
           }
         }
-
-        /**
-         * Returns the target only when the route is active.
-         */
-        private getActiveTarget_(
-            target: HTMLElement|undefined,
-            active: boolean|undefined): HTMLElement|null|undefined {
-          if (target === undefined || active === undefined) {
-            return undefined;
-          }
-
-          return active ? target : null;
-        }
       }
 
-      return GlobalScrollTargetMixin;
+      return GlobalScrollTargetMixinLit;
     });
-
-export interface GlobalScrollTargetMixinInterface extends
-    RouteObserverMixinInterface {
-  scrollTarget: HTMLElement;
-  subpageRoute: Route;
-}
 
 /**
  * This should only be called once.
