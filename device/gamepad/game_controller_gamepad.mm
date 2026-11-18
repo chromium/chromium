@@ -32,20 +32,21 @@ constexpr uint16_t kSonyTouchDimensionY = 942;
 // is kernel-managed and can change at any instant, all CoreHaptics calls are
 // wrapped in @try/@catch.
 
-// Creates a new haptic player for a continuous vibration event.
-id<CHHapticPatternPlayer> CreateContinuousPlayer(double intensity,
-                                                 CHHapticEngine* engine) {
+// Creates a haptic player for a continuous vibration event without starting
+// it. The event intensity is 1.0: CHHapticDynamicParameterIDHapticIntensity-
+// Control multiplies the event intensity, so the requested magnitude is
+// always applied as a dynamic parameter against this fixed baseline.
+id<CHHapticPatternPlayer> CreateContinuousPlayer(CHHapticEngine* engine) {
   if (!engine) {
     return nil;
   }
 
   NSError* error = nil;
-  float float_intensity = static_cast<float>(std::clamp(intensity, 0.0, 1.0));
   float float_sharpness = kDefaultHapticSharpness;
 
   CHHapticEventParameter* intensity_param = [[CHHapticEventParameter alloc]
       initWithParameterID:CHHapticEventParameterIDHapticIntensity
-                    value:float_intensity];
+                    value:1.0f];
   CHHapticEventParameter* sharpness_param = [[CHHapticEventParameter alloc]
       initWithParameterID:CHHapticEventParameterIDHapticSharpness
                     value:float_sharpness];
@@ -66,9 +67,6 @@ id<CHHapticPatternPlayer> CreateContinuousPlayer(double intensity,
   id<CHHapticPatternPlayer> player = nil;
   @try {
     player = [engine createPlayerWithPattern:pattern error:&error];
-    if (player && ![player startAtTime:0 error:&error]) {
-      player = nil;
-    }
   } @catch (NSException* exception) {
     LOG(ERROR) << "CoreHaptics exception creating player: "
                << base::SysNSStringToUTF8(exception.reason);
@@ -99,33 +97,38 @@ void UpdateHapticPlayer(double intensity,
     return;
   }
 
-  if (player) {
-    NSError* error = nil;
-    NSArray* params = @[
-      [[CHHapticDynamicParameter alloc]
-          initWithParameterID:CHHapticDynamicParameterIDHapticIntensityControl
-                        value:float_intensity
-                 relativeTime:0],
-      [[CHHapticDynamicParameter alloc]
-          initWithParameterID:CHHapticDynamicParameterIDHapticSharpnessControl
-                        value:kDefaultHapticSharpness
-                 relativeTime:0]
-    ];
-
-    @try {
-      if ([player sendParameters:params atTime:0 error:&error]) {
-        return;
-      }
-      [player stopAtTime:0 error:nil];
-    } @catch (NSException* exception) {
-      LOG(ERROR) << "CoreHaptics exception: "
-                 << base::SysNSStringToUTF8(exception.reason);
+  bool needs_start = false;
+  if (!player) {
+    player = CreateContinuousPlayer(engine);
+    if (!player) {
+      return;
     }
-    player = nil;
-    return;
+    needs_start = true;
   }
 
-  player = CreateContinuousPlayer(intensity, engine);
+  NSError* error = nil;
+  NSArray* params = @[
+    [[CHHapticDynamicParameter alloc]
+        initWithParameterID:CHHapticDynamicParameterIDHapticIntensityControl
+                      value:float_intensity
+               relativeTime:0],
+    [[CHHapticDynamicParameter alloc]
+        initWithParameterID:CHHapticDynamicParameterIDHapticSharpnessControl
+                      value:kDefaultHapticSharpness
+               relativeTime:0]
+  ];
+
+  @try {
+    if ([player sendParameters:params atTime:0 error:&error] &&
+        (!needs_start || [player startAtTime:0 error:&error])) {
+      return;
+    }
+    [player stopAtTime:0 error:nil];
+  } @catch (NSException* exception) {
+    LOG(ERROR) << "CoreHaptics exception: "
+               << base::SysNSStringToUTF8(exception.reason);
+  }
+  player = nil;
 }
 
 void SetOptionalButton(Gamepad& pad,

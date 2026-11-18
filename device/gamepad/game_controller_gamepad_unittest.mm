@@ -16,6 +16,32 @@
 namespace device {
 namespace {
 
+// Reads the HapticIntensity event parameter baked into `pattern`.
+float GetEventIntensityFromPattern(CHHapticPattern* pattern) {
+  NSError* error = nil;
+  NSDictionary* dict = [pattern exportDictionaryAndReturnError:&error];
+  for (NSDictionary* entry in dict[CHHapticPatternKeyPattern]) {
+    NSDictionary* event = entry[CHHapticPatternKeyEvent];
+    for (NSDictionary* param in event[CHHapticPatternKeyEventParameters]) {
+      if ([param[CHHapticPatternKeyParameterID]
+              isEqual:CHHapticEventParameterIDHapticIntensity]) {
+        return [param[CHHapticPatternKeyParameterValue] floatValue];
+      }
+    }
+  }
+  return -1.0f;
+}
+
+float GetIntensityControlValue(NSArray<CHHapticDynamicParameter*>* params) {
+  for (CHHapticDynamicParameter* param in params) {
+    if ([param.parameterID
+            isEqual:CHHapticDynamicParameterIDHapticIntensityControl]) {
+      return param.value;
+    }
+  }
+  return -1.0f;
+}
+
 class GameControllerGamepadTest : public testing::Test {
  public:
   GameControllerGamepadTest() = default;
@@ -127,6 +153,66 @@ TEST_F(GameControllerGamepadTest,
 
   // Verify that haptics_started_ was set to false after the exception.
   EXPECT_FALSE(gamepad_.GetHapticsStartedForTesting());
+}
+
+// Regression test for crbug.com/582944910: CHHapticDynamicParameterID-
+// HapticIntensityControl multiplies the event intensity, so refreshing an
+// active effect at the same requested intensity must not attenuate it
+// (e.g. 0.2 * 0.2 = 0.04).
+TEST_F(GameControllerGamepadTest, RefreshingEffectKeepsRequestedIntensity) {
+  id mock_engine = OCMClassMock([CHHapticEngine class]);
+  id mock_player = OCMProtocolMock(@protocol(CHHapticPatternPlayer));
+
+  __block CHHapticPattern* captured_pattern = nil;
+  OCMStub([mock_engine
+              createPlayerWithPattern:[OCMArg checkWithBlock:^BOOL(
+                                                  CHHapticPattern* pattern) {
+                captured_pattern = pattern;
+                return YES;
+              }]
+                                error:[OCMArg anyObjectRef]])
+      .andReturn(mock_player);
+  OCMStub([mock_player startAtTime:0 error:[OCMArg anyObjectRef]])
+      .andReturn(YES);
+
+  __block NSArray<CHHapticDynamicParameter*>* sent_params = nil;
+  OCMStub([mock_player
+              sendParameters:[OCMArg checkWithBlock:^BOOL(NSArray* params) {
+                sent_params = params;
+                return YES;
+              }]
+                      atTime:0
+                       error:[OCMArg anyObjectRef]])
+      .andReturn(YES);
+
+  gamepad_.SetDefaultHapticEngineForTesting(mock_engine);
+  gamepad_.SetHapticsStartedForTesting(true);
+
+  constexpr double kRequestedIntensity = 0.2;
+  auto params = mojom::GamepadEffectParameters::New();
+  params->strong_magnitude = kRequestedIntensity;
+
+  // First playEffect creates the haptic player.
+  gamepad_.SetVibration(params.Clone());
+  ASSERT_TRUE(captured_pattern);
+  float event_intensity = GetEventIntensityFromPattern(captured_pattern);
+  ASSERT_GE(event_intensity, 0.0f);
+  ASSERT_TRUE(sent_params);
+  float initial_multiplier = GetIntensityControlValue(sent_params);
+  ASSERT_GE(initial_multiplier, 0.0f);
+  EXPECT_NEAR(event_intensity * initial_multiplier, kRequestedIntensity, 1e-5);
+
+  captured_pattern = nil;
+  sent_params = nil;
+
+  // Refreshing the still-active effect sends a dynamic intensity parameter,
+  // which CoreHaptics applies as a multiplier on the event intensity.
+  gamepad_.SetVibration(params.Clone());
+  ASSERT_TRUE(sent_params);
+  float multiplier = GetIntensityControlValue(sent_params);
+  ASSERT_GE(multiplier, 0.0f);
+
+  EXPECT_NEAR(event_intensity * multiplier, kRequestedIntensity, 1e-5);
 }
 
 }  // namespace
