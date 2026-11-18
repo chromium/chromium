@@ -56,6 +56,8 @@ import org.chromium.chrome.browser.ServiceTabLauncherJni;
 import org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProxy;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -321,6 +323,8 @@ public final class TabbedActivityLaunchCauseMetricsTest {
     public void testServiceWorkerTabLaunch() throws Throwable {
         final int count = 1 + histogramCountForValue(LaunchCauseMetrics.LaunchCause.NOTIFICATION);
         ServiceTabLauncherJni.setInstanceForTesting(mServiceTabLauncherJni);
+        Profile profile =
+                ThreadUtils.runOnUiThreadBlocking(ProfileManager::getLastUsedRegularProfile);
         mActivityTestRule
                 .getActivityTestRule()
                 .setActivity(
@@ -330,7 +334,7 @@ public final class TabbedActivityLaunchCauseMetricsTest {
                                 () -> {
                                     ServiceTabLauncher.launchTab(
                                             0,
-                                            false,
+                                            profile,
                                             new GURL("about:blank"),
                                             WindowOpenDisposition.NEW_FOREGROUND_TAB,
                                             "",

@@ -23,6 +23,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
@@ -64,7 +65,7 @@ public class ServiceTabLauncher {
      * Launches the browser activity and launches a tab for {@code url}.
      *
      * @param requestId Id of the request for launching this tab.
-     * @param incognito Whether the tab should be launched in incognito mode.
+     * @param profile The profile in which the tab should be launched.
      * @param url The URL which should be launched in a tab.
      * @param disposition The disposition requested by the navigation source.
      * @param referrerUrl URL of the referrer which is opening the page.
@@ -77,7 +78,7 @@ public class ServiceTabLauncher {
     @CalledByNative
     public static void launchTab(
             int requestId,
-            boolean incognito,
+            @JniType("Profile*") Profile profile,
             @JniType("GURL") GURL url,
             int disposition,
             @JniType("std::string") String referrerUrl,
@@ -86,6 +87,15 @@ public class ServiceTabLauncher {
             @Nullable ResourceRequestBody postData,
             @JniType("std::optional<url::Origin>") @Nullable Origin initiatorOrigin,
             boolean isRendererInitiated) {
+        // Non-primary off-the-record profiles (such as Ephemeral or Incognito Custom Tabs) are
+        // isolated to their hosting activity and must not launch tabs in the primary Incognito
+        // profile.
+        if (profile.isOffTheRecord() && !profile.isPrimaryOtrProfile()) {
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT, () -> onWebContentsForRequestAvailable(requestId, null));
+            return;
+        }
+
         // Open popup window in custom tab.
         // Note that this is used by PaymentRequestEvent.openWindow().
         // PaymentRequestService.openPaymentHandlerWindow() internally validates that the URL's
@@ -107,7 +117,7 @@ public class ServiceTabLauncher {
 
         dispatchLaunch(
                 requestId,
-                incognito,
+                profile.isOffTheRecord(),
                 url.getSpec(),
                 referrerUrl,
                 referrerPolicy,

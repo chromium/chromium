@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/singleton.h"
 #include "base/notimplemented.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
@@ -59,7 +60,7 @@ void ServiceTabLauncher::LaunchTab(content::BrowserContext* browser_context,
   CHECK_GE(request_id, 1, base::NotFatalUntil::M161);
 
   Java_ServiceTabLauncher_launchTab(
-      env, request_id, browser_context->IsOffTheRecord(), params.url,
+      env, request_id, Profile::FromBrowserContext(browser_context), params.url,
       static_cast<int32_t>(disposition), params.referrer.url.spec(),
       static_cast<int32_t>(params.referrer.policy), params.extra_headers,
       nullptr, params.initiator_origin, params.is_renderer_initiated);

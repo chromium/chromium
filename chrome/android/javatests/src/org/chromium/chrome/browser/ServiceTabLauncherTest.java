@@ -22,6 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -34,6 +35,9 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.webapps.TestFetchStorageCallback;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -104,6 +108,8 @@ public final class ServiceTabLauncherTest {
 
     private ChromeTabbedActivity launchTabAndWaitForActivity(
             String url, Origin initiatorOrigin, boolean isRendererInitiated) {
+        Profile profile =
+                ThreadUtils.runOnUiThreadBlocking(ProfileManager::getLastUsedRegularProfile);
         ChromeTabbedActivity activity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         ChromeTabbedActivity.class,
@@ -111,7 +117,7 @@ public final class ServiceTabLauncherTest {
                         () ->
                                 ServiceTabLauncher.launchTab(
                                         0,
-                                        false,
+                                        profile,
                                         new GURL(url),
                                         WindowOpenDisposition.NEW_FOREGROUND_TAB,
                                         "",
@@ -199,7 +205,7 @@ public final class ServiceTabLauncherTest {
                 () ->
                         ServiceTabLauncher.launchTab(
                                 0,
-                                false,
+                                ProfileManager.getLastUsedRegularProfile(),
                                 new GURL(targetUrl),
                                 WindowOpenDisposition.NEW_FOREGROUND_TAB,
                                 "",
@@ -245,7 +251,7 @@ public final class ServiceTabLauncherTest {
                 () ->
                         ServiceTabLauncher.launchTab(
                                 0,
-                                false,
+                                ProfileManager.getLastUsedRegularProfile(),
                                 new GURL(targetUrl),
                                 WindowOpenDisposition.NEW_FOREGROUND_TAB,
                                 "",
@@ -304,6 +310,72 @@ public final class ServiceTabLauncherTest {
         Assert.assertEquals(
                 "cross-site",
                 sWebServer.getLastRequest("/page.html").headerValue("Sec-Fetch-Site"));
+    }
+
+    /**
+     * Tests that a launch requested by a non-primary off-the-record profile (such as an Ephemeral
+     * or Incognito Custom Tab) is rejected and does not open a tab in the primary Incognito
+     * profile.
+     */
+    @Test
+    @MediumTest
+    public void testLaunchTabRejectsNonPrimaryOtrProfile() {
+        String initialUrl = sWebServer.setResponse("/initial.html", PAGE_BODY, null);
+        String targetUrl = sWebServer.setResponse("/non-primary-otr.html", PAGE_BODY, null);
+
+        ChromeTabbedActivity activity = launchTabAndWaitForActivity(initialUrl, null, false);
+        waitForTabLoaded(activity, initialUrl);
+
+        Origin initiatorOrigin = Origin.create(new GURL(INITIATOR_URL));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile regularProfile = ProfileManager.getLastUsedRegularProfile();
+                    Profile ephemeralCctProfile =
+                            regularProfile.getOrCreateOffTheRecordProfile(
+                                    OtrProfileId.createUnique("CCT:Ephemeral"));
+                    Profile incognitoCctProfile =
+                            regularProfile.getOrCreateOffTheRecordProfile(
+                                    OtrProfileId.createUniqueIncognitoCctId());
+
+                    ServiceTabLauncher.launchTab(
+                            42,
+                            ephemeralCctProfile,
+                            new GURL(targetUrl),
+                            WindowOpenDisposition.NEW_FOREGROUND_TAB,
+                            "",
+                            ReferrerPolicy.DEFAULT,
+                            "",
+                            null,
+                            initiatorOrigin,
+                            true);
+                    ServiceTabLauncher.launchTab(
+                            43,
+                            incognitoCctProfile,
+                            new GURL(targetUrl),
+                            WindowOpenDisposition.NEW_FOREGROUND_TAB,
+                            "",
+                            ReferrerPolicy.DEFAULT,
+                            "",
+                            null,
+                            initiatorOrigin,
+                            true);
+
+                    ProfileManager.destroyWhenAppropriate(ephemeralCctProfile);
+                    ProfileManager.destroyWhenAppropriate(incognitoCctProfile);
+                });
+
+        Mockito.verify(mServiceTabLauncherJni, Mockito.timeout(CHROME_LAUNCH_TIMEOUT_MS))
+                .onWebContentsForRequestAvailable(42, null);
+        Mockito.verify(mServiceTabLauncherJni, Mockito.timeout(CHROME_LAUNCH_TIMEOUT_MS))
+                .onWebContentsForRequestAvailable(43, null);
+        Assert.assertEquals(0, sWebServer.getRequestCount("/non-primary-otr.html"));
+        int incognitoTabCount =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                activity.getTabModelSelector()
+                                        .getModel(/* incognito= */ true)
+                                        .getCount());
+        Assert.assertEquals(0, incognitoTabCount);
     }
 
     /**
