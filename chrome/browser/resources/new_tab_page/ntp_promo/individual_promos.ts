@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import './ntp_promo_icons.html.js';
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -27,7 +28,9 @@ export interface IndividualPromosElement {
   };
 }
 
-export class IndividualPromosElement extends CrLitElement {
+const IndividualPromosElementBase = I18nMixinLit(CrLitElement);
+
+export class IndividualPromosElement extends IndividualPromosElementBase {
   static get is() {
     return 'individual-promos';
   }

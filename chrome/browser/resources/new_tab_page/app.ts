@@ -15,6 +15,7 @@ import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/h
 import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
 import {SearchboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import type {ClickInfo} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {browserProxyFactory as browserCommandProxyFactory, Command} from 'chrome://resources/js/browser_command.mojom-webui.js';
@@ -156,7 +157,7 @@ function recordShowBrowserPromosResult(result: ShowNtpPromosResult) {
 
 const PERMISSION_PROMPT_CSS_CLASS = 'permission-prompt-showing';
 
-const AppElementBase = HelpBubbleMixinLit(CrLitElement);
+const AppElementBase = HelpBubbleMixinLit(I18nMixinLit(CrLitElement));
 
 export interface AppElement {
   $: {

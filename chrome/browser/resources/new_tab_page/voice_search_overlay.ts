@@ -9,7 +9,7 @@ import {VoiceSearchQuerySource} from 'chrome://resources/cr_components/composebo
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {loadTimeData} from './i18n_setup.js';
+import {I18nMixinLit, loadTimeData} from './i18n_setup.js';
 import {recordEnumeration, recordVoiceAction, VoiceAction as Action, VoiceError as Error} from './metrics_utils.js';
 import {getCss} from './voice_search_overlay.css.js';
 import {getHtml} from './voice_search_overlay.html.js';
@@ -143,8 +143,10 @@ export interface VoiceSearchOverlayElement {
   };
 }
 
+const VoiceSearchOverlayElementBase = I18nMixinLit(CrLitElement);
+
 // Overlay that lats the user perform voice searches.
-export class VoiceSearchOverlayElement extends CrLitElement {
+export class VoiceSearchOverlayElement extends VoiceSearchOverlayElementBase {
   static get is() {
     return 'ntp-voice-search-overlay';
   }

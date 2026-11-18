@@ -41,15 +41,15 @@
       </div>
       <cr-icon-button iron-icon="${this.getCheckSmallIcon_()}"
           @click="${this.onDismissButtonClick_}"
-          title="$i18n{modulesHistoryDoneButton}">
+          title="${this.i18n('modulesHistoryDoneButton')}">
       </cr-icon-button>
     </a>
   `)}
   <div id="seeMoreButtonContainer">
     <a href="chrome://history/syncedTabs"
         @click="${this.onSeeMoreButtonClick_}"
-        aria-label="$i18n{modulesMostRelevantTabResumptionSeeMoreAcc}">
-      $i18n{modulesMostRelevantTabResumptionSeeMore}
+        aria-label="${this.i18n('modulesMostRelevantTabResumptionSeeMoreAcc')}">
+      ${this.i18n('modulesMostRelevantTabResumptionSeeMore')}
       <div id="hoverContainer"></div>
     </a>
   </div>

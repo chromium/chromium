@@ -1,6 +1,6 @@
 <ntp-module-header
     id="moduleHeader"
-    header-text="$i18n{modulesDriveTitleV2}"
+    header-text="${this.i18n('modulesDriveTitleV2')}"
     .menuItems="${this.getMenuItems_()}"
     more-actions-text="${this.i18nRecursive('',
                                   'modulesMoreActions',
@@ -12,8 +12,8 @@
     module-name="Drive"
     see-more-url="${this.showDriveModuleSeeMoreLink_ ?
         'https://drive.google.com' : ''}"
-    see-more-text="$i18n{modulesDriveSeeMore}"
-    see-more-aria-label="$i18n{modulesDriveSeeMoreAcc}"
+    see-more-text="${this.i18n('modulesDriveSeeMore')}"
+    see-more-aria-label="${this.i18n('modulesDriveSeeMoreAcc')}"
     .files="${this.files}">
 </ntp-file-suggestion>
 ${this.showInfoDialog_ ? html`

@@ -11,12 +11,12 @@
       src="modules/authentication/icons/microsoft_auth_light.svg">
   <div id="headingsAndButton">
     <div id="headings">
-      <h2 id="heading">$i18n{modulesMicrosoftAuthHeading}</h2>
-      <div id="subheading">$i18n{modulesMicrosoftAuthSubheading}</div>
+      <h2 id="heading">${this.i18n('modulesMicrosoftAuthHeading')}</h2>
+      <div id="subheading">${this.i18n('modulesMicrosoftAuthSubheading')}</div>
     </div>
     <cr-button role="link" class="action-button" id="signInButton"
         @click="${this.onSignInClick_}">
-      $i18n{modulesMicrosoftAuthSignIn}
+      ${this.i18n('modulesMicrosoftAuthSignIn')}
     </cr-button>
   </div>
 </div>

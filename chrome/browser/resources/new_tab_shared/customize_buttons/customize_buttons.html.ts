@@ -12,25 +12,26 @@ export function getHtml(this: CustomizeButtonsElement) {
   ${this.showWallpaperSearchButton ? html`
     <cr-button id="wallpaperSearchButton" class="customize-button"
         @click="${this.onWallpaperSearchClick_}"
-        title="$i18n{customizeThisPageWallpaperSearch}"
+        title="${this.i18n('customizeThisPageWallpaperSearch')}"
         aria-pressed="${this.showWallpaperSearch}">
       <cr-icon id="wallpaperSearchIcon" class="customize-icon"
           slot="prefix-icon" icon="ntp:sparkle-custom">
       </cr-icon>
       <div id="wallpaperSearchText" class="customize-text"
           ?hidden="${this.showWallpaperSearch}">
-        $i18n{wallpaperSearchButton}
+        ${this.i18n('wallpaperSearchButton')}
       </div>
     </cr-button>
   ` : ''}
   <cr-button id="customizeButton" class="customize-button"
-      @click="${this.onCustomizeClick_}" title="$i18n{customizeThisPage}"
+      @click="${this.onCustomizeClick_}"
+      title="${this.i18n('customizeThisPage')}"
       aria-pressed="${this.showCustomize}">
     <cr-icon class="customize-icon" slot="prefix-icon" icon="ntp:pencil-custom">
     </cr-icon>
     <div id="customizeText" class="customize-text"
         ?hidden="${!this.showCustomizeChromeText}">
-      $i18n{customizeButton}
+      ${this.i18n('customizeButton')}
     </div>
   </cr-button>
 </div>

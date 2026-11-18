@@ -1,16 +1,16 @@
 <div id="dialog" ?hidden="${this.isHidden_}" tabindex="-1"
-    lang="$i18n{language}" role="dialog" aria-modal="true"
+    lang="${this.i18n('language')}" role="dialog" aria-modal="true"
     @focusout="${this.onFocusout_}">
   <ntp-lens-form id="lensForm" @loading="${this.onFormLoading_}"
       @error="${this.onFormError_}">
   </ntp-lens-form>
   <div id="container">
     <cr-icon-button id="closeButton" class="icon-clear"
-        title="$i18n{lensSearchUploadDialogCloseButtonLabel}"
+        title="${this.i18n('lensSearchUploadDialogCloseButtonLabel')}"
         @click="${this.onCloseButtonClick_}"
         @keydown="${this.onCloseButtonKeydown_}">
     </cr-icon-button>
-    <div id="title">$i18n{lensSearchUploadDialogTitle}</div>
+    <div id="title">${this.i18n('lensSearchUploadDialogTitle')}</div>
     <div id="dragDropArea" @dragenter="${this.onDragenter_}"
         @dragover="${this.onDragover_}" @dragleave="${this.onDragleave_}"
         @drop="${this.onDrop_}">
@@ -27,31 +27,33 @@
               icon="ntp-lens-upload-dialog:drag-drop-illustration">
           </cr-icon>
           <div class="drag-drop-title">
-            <span id="dragText">$i18n{lensSearchUploadDialogDragTitle}</span>
+            <span id="dragText">${
+                this.i18n('lensSearchUploadDialogDragTitle')}</span>
             <span tabindex="0" role="button" id="uploadText"
                 @click="${this.onUploadFileClick_}"
                 @keydown="${this.onUploadFileKeydown_}"
                 @touchend="${this.onUploadFileTouchend_}">
-              $i18n{lensSearchUploadDialogUploadFileTitle}
+              ${this.i18n('lensSearchUploadDialogUploadFileTitle')}
             </span>
           </div>
         </div>
         <div id="urlUploadContainer">
           <div id="sectionDivider">
             <div class="divider-line"></div>
-            <div id="orLabel">$i18n{lensSearchUploadDialogOrText}</div>
+            <div id="orLabel">${this.i18n('lensSearchUploadDialogOrText')}</div>
             <div class="divider-line"></div>
           </div>
           <div id="inputContainer">
             <input id="inputBox" autocomplete="false" autocorrect="false"
-                placeholder="$i18n{lensSearchUploadDialogTextPlaceholder}"
+                placeholder="${
+                    this.i18n('lensSearchUploadDialogTextPlaceholder')}"
                 text="text" .value="${this.uploadUrl_}"
                 @input="${this.onInputBoxInput_}"
                 @keydown="${this.onUrlKeydown_}">
             <div id="inputSubmit" tabindex="0" role="button"
                 @click="${this.onInputSubmitClick_}"
                 @keydown="${this.onInputSubmitKeydown_}">
-              $i18n{lensSearchUploadDialogSearchButtonLabel}
+              ${this.i18n('lensSearchUploadDialogSearchButtonLabel')}
             </div>
           </div>
         </div>
@@ -60,7 +62,7 @@
       ${this.isDragging_ ? html`
         <div class="drag-drop-title-container">
           <div class="drag-drop-title">
-            $i18n{lensSearchUploadDialogDragDropTitle}
+            ${this.i18n('lensSearchUploadDialogDragDropTitle')}
           </div>
         </div>
       ` : ''}
@@ -69,7 +71,7 @@
         <div id="loadingContainer">
           <div class="spinner"></div>
           <div class="drag-drop-title">
-            $i18n{lensSearchUploadDialogLoadingText}
+            ${this.i18n('lensSearchUploadDialogLoadingText')}
           </div>
         </div>
       ` : ''}
@@ -79,15 +81,15 @@
           <cr-icon id="offlineImage" icon="ntp-lens-upload-dialog:offline">
           </cr-icon>
           <div id="offlineTitle" class="drag-drop-title">
-            $i18n{lensSearchUploadDialogOfflineText}
+            ${this.i18n('lensSearchUploadDialogOfflineText')}
           </div>
           <div id="offlineSubtitle">
-            $i18n{lensSearchUploadDialogOfflineSubtitleText}
+            ${this.i18n('lensSearchUploadDialogOfflineSubtitleText')}
           </div>
           <cr-button id="offlineRetryButton" class="action-button"
               @click="${this.onOfflineRetryButtonClick_}"
               @keydown="${this.onOfflineRetryButtonKeydown_}">
-            $i18n{lensSearchUploadDialogOfflineButtonLabel}
+            ${this.i18n('lensSearchUploadDialogOfflineButtonLabel')}
           </cr-button>
         </div>
       ` : ''}

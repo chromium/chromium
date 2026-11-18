@@ -19,12 +19,13 @@ export function getHtml(this: IndividualPromosElement) {
       <cr-icon id="actionIcon" icon="cr:chevron-right"></cr-icon>
       <cr-icon-button id="menuButton" iron-icon="cr:more-vert"
           @click="${this.onMenuButtonClick_}"
-          aria-label="$i18n{ntpPromoMenuA11yLabel}" title="$i18n{ntpPromoMenu}">
+          aria-label="${this.i18n('ntpPromoMenuA11yLabel')}"
+          title="${this.i18n('ntpPromoMenu')}">
       </cr-icon-button>
     </button>
     <cr-action-menu id="actionMenu">
       <button class="dropdown-item" @click="${this.onPromoDismissed_}">
-        $i18n{ntpPromoDismiss}
+        ${this.i18n('ntpPromoDismiss')}
       </button>
     </cr-action-menu>
   ` : ''}

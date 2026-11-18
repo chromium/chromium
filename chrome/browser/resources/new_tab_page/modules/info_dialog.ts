@@ -8,6 +8,8 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {I18nMixinLit} from '../i18n_setup.js';
+
 import {getCss} from './info_dialog.css.js';
 import {getHtml} from './info_dialog.html.js';
 
@@ -18,8 +20,10 @@ export interface InfoDialogElement {
   };
 }
 
+const InfoDialogElementBase = I18nMixinLit(CrLitElement);
+
 /** Info dialog that can be populated with custom text via slotting. */
-export class InfoDialogElement extends CrLitElement {
+export class InfoDialogElement extends InfoDialogElementBase {
   static get is() {
     return 'ntp-info-dialog';
   }

@@ -12,9 +12,9 @@
   <div id="undoToastMessage">${this.undoData_?.message || ''}</div>
   ${this.undoData_?.undo ? html `
     <cr-button id="undoButton"
-        aria-label="$i18n{undoDescription}"
+        aria-label="${this.i18n('undoDescription')}"
         @click="${this.onUndoButtonClick_}">
-      $i18n{undo}
+      ${this.i18n('undo')}
     </cr-button>
   ` : ''}
 </cr-toast>

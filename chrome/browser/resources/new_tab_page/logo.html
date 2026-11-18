@@ -14,7 +14,7 @@ ${this.showDoodle_ ? html`
             ?aria-hidden="${this.imageDoodleTabIndex_ === 0}"
             @load="${this.onImageLoad_}">
       </div>
-      <cr-button id="shareButton" title="$i18n{shareDoodle}"
+      <cr-button id="shareButton" title="${this.i18n('shareDoodle')}"
           @click="${this.onShareButtonClick_}">
         <cr-icon id="shareButtonIcon"
             icon="${this.webuiRoundedIconsEnabled_ ?

@@ -8,6 +8,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {CalendarEvent} from '../../calendar_data.mojom-webui.js';
+import {I18nMixinLit} from '../../i18n_setup.js';
 import {recordSmallCount} from '../../metrics_utils.js';
 import {WindowProxy} from '../../window_proxy.js';
 
@@ -21,10 +22,12 @@ export interface CalendarElement {
   };
 }
 
+const CalendarElementBase = I18nMixinLit(CrLitElement);
+
 /**
  * The calendar element for displaying the user's list of events. .
  */
-export class CalendarElement extends CrLitElement {
+export class CalendarElement extends CalendarElementBase {
   static get is() {
     return 'ntp-calendar';
   }

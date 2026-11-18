@@ -11,7 +11,7 @@ import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {loadTimeData} from '../i18n_setup.js';
+import {I18nMixinLit, loadTimeData} from '../i18n_setup.js';
 
 import {getCss} from './module_header.css.js';
 import {getHtml} from './module_header.html.js';
@@ -30,8 +30,10 @@ export interface ModuleHeaderElement {
   };
 }
 
+const ModuleHeaderElementBase = I18nMixinLit(CrLitElement);
+
 /** Element that displays a header inside a module.  */
-export class ModuleHeaderElement extends CrLitElement {
+export class ModuleHeaderElement extends ModuleHeaderElementBase {
   static get is() {
     return 'ntp-module-header';
   }

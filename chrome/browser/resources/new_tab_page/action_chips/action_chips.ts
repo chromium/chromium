@@ -10,6 +10,7 @@ import './icons.html.js';
 import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import {ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {getFaviconUrl} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -54,10 +55,12 @@ export interface ActionChipsElement {
   };
 }
 
+const ActionChipsElementBase = I18nMixinLit(CrLitElement);
+
 /**
  * The element for displaying Action Chips.
  */
-export class ActionChipsElement extends CrLitElement {
+export class ActionChipsElement extends ActionChipsElementBase {
   static get is() {
     return 'ntp-action-chips';
   }

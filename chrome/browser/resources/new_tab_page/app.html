@@ -49,7 +49,7 @@ import {SubmitButtonIconType} from 'chrome://resources/cr_components/composebox/
           @focusin="${this.onSearchboxContainerFocusin_}"
           @focusout="${this.onSearchboxContainerFocusout_}">
         <ntp-searchbox id="searchbox" ?is-dark="${this.isThemeDark_()}"
-            placeholder-text="$i18n{searchBoxPlaceholder}"
+            placeholder-text="${this.i18n('searchBoxPlaceholder')}"
             ?color-source-is-baseline="${this.colorSourceIsBaseline}"
             @open-composebox="${this.onOpenComposebox_}"
             @open-lens-search="${this.onOpenLensSearch_}"
@@ -110,9 +110,9 @@ import {SubmitButtonIconType} from 'chrome://resources/cr_components/composebox/
       ` : ''}
       ${this.lazyRender_ ? html`
         <cr-toast id="webstoreToast" duration="10000" hidden>
-          <div>$i18n{webstoreThemesToastMessage}</div>
+          <div>${this.i18n('webstoreThemesToastMessage')}</div>
           <cr-button @click="${this.onWebstoreToastButtonClick_}">
-            $i18n{webstoreThemesToastButtonText}
+            ${this.i18n('webstoreThemesToastButtonText')}
           </cr-button>
         </cr-toast>
       ` : ''}
@@ -146,9 +146,9 @@ import {SubmitButtonIconType} from 'chrome://resources/cr_components/composebox/
           <cr-toast id="undoToast" duration="10000">
             <div id="undoToastMessage">${this.undoToastMessage_ || ''}</div>
             <cr-button id="undoButton"
-                aria-label="$i18n{undoDescription}"
+                aria-label="${this.i18n('undoDescription')}"
                 @click="${this.onUndoButtonClick_}">
-              $i18n{undo}
+              ${this.i18n('undo')}
             </cr-button>
           </cr-toast>
         ` : ''}
@@ -186,7 +186,7 @@ import {SubmitButtonIconType} from 'chrome://resources/cr_components/composebox/
         ` : ''}
         ${this.showThemeAttribution_() ? html`
           <div id="themeAttribution">
-            <div>$i18n{themeCreatedBy}</div>
+            <div>${this.i18n('themeCreatedBy')}</div>
             <img src="${this.theme_!.backgroundImage!.attributionUrl!}">
           </div>
         ` : ''}

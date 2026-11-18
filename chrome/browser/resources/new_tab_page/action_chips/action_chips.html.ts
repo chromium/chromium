@@ -60,7 +60,7 @@ export function getHtml(this: ActionChipsElement) {
 </div>
 <cr-action-menu id="actionMenu">
   <button class="dropdown-item" @click="${this.onDisableSuggestionClick_}">
-    $i18n{disableSuggestion}
+    ${this.i18n('disableSuggestion')}
   </button>
 </cr-action-menu>
 <!--_html_template_end_-->`;

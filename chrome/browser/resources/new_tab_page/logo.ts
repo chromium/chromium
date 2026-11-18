@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './doodle_icons.html.js';
 
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -21,8 +22,10 @@ import {browserProxyFactory, DoodleImageType} from './new_tab_page.mojom-webui.j
 import {$$} from './utils.js';
 import {WindowProxy} from './window_proxy.js';
 
+const LogoElementBase = I18nMixinLit(CrLitElement);
+
 // Shows the Google logo or a doodle if available.
-export class LogoElement extends CrLitElement {
+export class LogoElement extends LogoElementBase {
   static get is() {
     return 'ntp-logo';
   }

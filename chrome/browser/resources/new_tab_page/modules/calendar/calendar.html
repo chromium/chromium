@@ -13,8 +13,8 @@ ${this.events.map((item, index) => html`
 `)}
 <div id="seeMore" class="row">
   <a href="${this.calendarLink}" @click="${this.onSeeMoreClick_}"
-      aria-label="$i18n{modulesCalendarSeeMoreAcc}">
-    $i18n{modulesCalendarSeeMore}
+      aria-label="${this.i18n('modulesCalendarSeeMoreAcc')}">
+    ${this.i18n('modulesCalendarSeeMore')}
     <div id="hoverContainer"></div>
   </a>
 </div>

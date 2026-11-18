@@ -11,6 +11,7 @@ import './doodle_icons.html.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -35,8 +36,10 @@ export interface DoodleShareDialogElement {
   };
 }
 
+const DoodleShareDialogElementBase = I18nMixinLit(CrLitElement);
+
 /** Dialog that lets the user share the doodle. */
-export class DoodleShareDialogElement extends CrLitElement {
+export class DoodleShareDialogElement extends DoodleShareDialogElementBase {
   static get is() {
     return 'ntp-doodle-share-dialog';
   }

@@ -12,7 +12,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {loadTimeData} from '../i18n_setup.js';
+import {I18nMixinLit, loadTimeData} from '../i18n_setup.js';
 import {recordBoolean, recordOccurrence, recordSmallCount, recordSparseValueWithPersistentHash} from '../metrics_utils.js';
 import type {ModuleIdName, PageCallbackRouter, PageHandlerInterface} from '../new_tab_page.mojom-webui.js';
 import {browserProxyFactory} from '../new_tab_page.mojom-webui.js';
@@ -79,8 +79,10 @@ function createModuleInstances(module: Module): ModuleInstance[] {
   });
 }
 
+const ModulesElementBase = I18nMixinLit(CrLitElement);
+
 /** Container for the NTP modules. */
-export class ModulesElement extends CrLitElement {
+export class ModulesElement extends ModulesElementBase {
   static get is() {
     return 'ntp-modules';
   }

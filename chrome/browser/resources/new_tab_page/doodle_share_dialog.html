@@ -2,22 +2,23 @@
   <div id="title" slot="title">${this.title}</div>
   <div slot="body">
     <div id="buttons">
-      <cr-button id="facebookButton" title="$i18n{facebook}"
+      <cr-button id="facebookButton" title="${this.i18n('facebook')}"
           @click="${this.onFacebookClick_}">
         <cr-icon icon="ntp-doodle:facebook"></cr-icon>
       </cr-button>
-      <cr-button id="twitterButton" title="$i18n{twitter}"
+      <cr-button id="twitterButton" title="${this.i18n('twitter')}"
           @click="${this.onTwitterClick_}">
         <cr-icon icon="ntp-doodle:twitter"></cr-icon>
       </cr-button>
-      <cr-button id="emailButton" title="$i18n{email}"
+      <cr-button id="emailButton" title="${this.i18n('email')}"
           @click="${this.onEmailClick_}">
         <cr-icon icon="ntp-doodle:mail"></cr-icon>
       </cr-button>
     </div>
-    <cr-input readonly label="$i18n{doodleLink}" id="url"
+    <cr-input readonly label="${this.i18n('doodleLink')}" id="url"
         .value="${this.url}">
-      <cr-icon-button id="copyButton" slot="suffix" title="$i18n{copyLink}"
+      <cr-icon-button id="copyButton" slot="suffix"
+          title="${this.i18n('copyLink')}"
           iron-icon="${this.webuiRoundedIconsEnabled_ ?
               'ntp-doodle:copy' : 'ntp-doodle:copy-old'}"
           @click="${this.onCopyClick_}">
@@ -27,7 +28,7 @@
   <div slot="button-container">
     <cr-button id="doneButton" class="action-button"
         @click="${this.onCloseClick_}">
-      $i18n{doneButton}
+      ${this.i18n('doneButton')}
     </cr-button>
   </div>
 </cr-dialog>

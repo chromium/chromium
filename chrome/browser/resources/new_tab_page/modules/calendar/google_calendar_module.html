@@ -1,8 +1,8 @@
 <ntp-module-header
     id="moduleHeader"
-    header-text="$i18n{modulesGoogleCalendarTitle}"
+    header-text="${this.i18n('modulesGoogleCalendarTitle')}"
     .menuItems="${this.getMenuItems_()}"
-    more-actions-text="$i18n{modulesGoogleCalendarMoreActions}"
+    more-actions-text="${this.i18n('modulesGoogleCalendarMoreActions')}"
     @disable-button-click="${this.onDisableButtonClick_}"
     @info-button-click="${this.onInfoButtonClick_}">
 </ntp-module-header>
