@@ -14,10 +14,13 @@
 
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/scoped_observation.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -27,11 +30,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_manager_service.h"
 #include "chrome/browser/ui/browser_manager_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -127,6 +133,26 @@ class ScopedMockBrowserWindow {
   base::RepeatingCallbackList<void(BrowserWindowInterface*)>
       browser_did_close_callbacks_;
   bool closed_ = false;
+};
+
+class TestBrowserCreatedObserver : public BrowserCollectionObserver {
+ public:
+  TestBrowserCreatedObserver(
+      ProfileBrowserCollection* collection,
+      base::RepeatingCallback<void(BrowserWindowInterface*)> callback)
+      : callback_(std::move(callback)) {
+    observation_.Observe(collection);
+  }
+
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
+    callback_.Run(browser);
+  }
+
+ private:
+  base::RepeatingCallback<void(BrowserWindowInterface*)> callback_;
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      observation_{this};
 };
 
 }  // namespace
@@ -432,6 +458,83 @@ TEST_F(PageContentExtractionTabStripModelObserverTest,
   window1.Close();
 
   EXPECT_TRUE(GetCachedContentForTab(replacement_tab_id).has_value());
+}
+
+TEST_F(PageContentExtractionTabStripModelObserverTest,
+       OnBrowserCreatedReentrantLazyCreationDoesNotDuplicateObservation) {
+  // Keep `window1` open before the re-entrant browser creation so the
+  // constructor's `ForEach` sees both `window1` and `window2`.
+  ScopedMockBrowserWindow window1(&profile_);
+  content::WebContents* contents1 = AppendTabWithUrl(
+      window1.tab_strip_model(), GURL("https://example.com/win1"));
+  const int64_t window1_tab_id =
+      service_->CacheContentForTab(contents1, "win1");
+  ASSERT_TRUE(GetCachedContentForTab(window1_tab_id).has_value());
+
+  // Register an earlier `BrowserCollectionObserver` that opens a tab and lazily
+  // creates `observer_` during `OnBrowserCreated` (reproducing both `ForEach`
+  // seeing `window1` + `window2` and the ongoing `OnBrowserCreated(window2)`
+  // dispatch reaching the newly appended `observer_`).
+  int on_browser_created_calls = 0;
+  TestBrowserCreatedObserver earlier_observer(
+      ProfileBrowserCollection::GetForProfile(&profile_),
+      base::BindLambdaForTesting([&](BrowserWindowInterface* browser) {
+        ++on_browser_created_calls;
+        if (!observer_) {
+          AppendTabWithUrl(browser->GetTabStripModel(),
+                           GURL("https://example.com/win2"));
+          observer_ =
+              std::make_unique<PageContentExtractionTabStripModelObserver>(
+                  &profile_, service_.get());
+        }
+      }));
+
+  {
+    ScopedMockBrowserWindow window2(&profile_);
+    EXPECT_EQ(on_browser_created_calls, 1);
+    ASSERT_NE(observer_, nullptr);
+    ASSERT_EQ(window2.tab_strip_model()->count(), 1);
+
+    // `observer_` should observe `window1` and `window2` once each, without
+    // duplicate `AddObserver` registration on `window2`.
+    EXPECT_EQ(TabStripModelObserver::CountObservedModels(observer_.get()), 2);
+
+    // Closing a single tab in `window2` should evict its cached entry.
+    const int64_t window2_tab_id = service_->CacheContentForTab(
+        window2.tab_strip_model()->GetWebContentsAt(0), "win2");
+    ASSERT_TRUE(GetCachedContentForTab(window2_tab_id).has_value());
+
+    window2.tab_strip_model()->CloseWebContentsAt(
+        0, TabCloseTypes::CLOSE_USER_GESTURE);
+    EXPECT_FALSE(GetCachedContentForTab(window2_tab_id).has_value());
+    EXPECT_TRUE(GetCachedContentForTab(window1_tab_id).has_value());
+  }
+
+  // Leaving `window2`'s scope destroys its `TabStripModel`, firing
+  // `OnTabStripModelDestroyed` and erasing it from
+  // `observed_tab_strip_models_` without leaving a dangling `raw_ptr`.
+  EXPECT_EQ(TabStripModelObserver::CountObservedModels(observer_.get()), 1);
+
+  // Opening a subsequent `window3` should attach cleanly and evict on tab
+  // close.
+  ScopedMockBrowserWindow window3(&profile_);
+  EXPECT_EQ(on_browser_created_calls, 2);
+  EXPECT_EQ(TabStripModelObserver::CountObservedModels(observer_.get()), 2);
+
+  content::WebContents* contents3 = AppendTabWithUrl(
+      window3.tab_strip_model(), GURL("https://example.com/win3"));
+  const int64_t window3_tab_id =
+      service_->CacheContentForTab(contents3, "win3");
+  ASSERT_TRUE(GetCachedContentForTab(window3_tab_id).has_value());
+
+  window3.tab_strip_model()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_USER_GESTURE);
+  EXPECT_FALSE(GetCachedContentForTab(window3_tab_id).has_value());
+  EXPECT_TRUE(GetCachedContentForTab(window1_tab_id).has_value());
+
+  // Resetting `observer_` while `window1` and `window3` are still alive should
+  // cleanly tear down when the observer dies before observed `TabStripModel`s.
+  observer_.reset();
 }
 
 }  // namespace page_content_annotations

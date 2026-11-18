@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_EXTRACTION_TAB_STRIP_MODEL_OBSERVER_H_
 
 #include "base/callback_list.h"
+#include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -52,6 +54,7 @@ class PageContentExtractionTabStripModelObserver final
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+  void OnTabStripModelDestroyed(TabStripModel* tab_strip_model) override;
 
  private:
   friend class PageContentExtractionTabStripModelObserverTest;
@@ -73,6 +76,9 @@ class PageContentExtractionTabStripModelObserver final
 
   base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
+
+  // Models currently observed by `this`, used to skip duplicate registration.
+  base::flat_set<raw_ptr<TabStripModel>> observed_tab_strip_models_;
 
   base::WeakPtrFactory<PageContentExtractionTabStripModelObserver>
       weak_ptr_factory_{this};

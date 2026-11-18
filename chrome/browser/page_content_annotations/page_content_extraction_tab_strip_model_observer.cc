@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -74,7 +75,18 @@ PageContentExtractionTabStripModelObserver::
 
 void PageContentExtractionTabStripModelObserver::OnBrowserCreated(
     BrowserWindowInterface* browser) {
-  browser->GetTabStripModel()->AddObserver(this);
+  TabStripModel* tab_strip_model = browser->GetTabStripModel();
+  CHECK(tab_strip_model);
+  // If an earlier `BrowserCollectionObserver` opens a tab inside
+  // `OnBrowserCreated()` and triggers lazy creation of this observer, the
+  // constructor's `ForEach()` attaches to `browser` before `BrowserCollection`
+  // finishes dispatching `OnBrowserCreated(browser)` to newly added observers.
+  // TODO(crbug.com/431671320): Remove this guard once `BrowserCollection` uses
+  // `EXISTING_ONLY` so observers added during `OnBrowserCreated()` dispatch are
+  // not re-notified for the same browser.
+  if (observed_tab_strip_models_.insert(tab_strip_model).second) {
+    tab_strip_model->AddObserver(this);
+  }
 }
 
 void PageContentExtractionTabStripModelObserver::OnTabStripModelChanged(
@@ -122,6 +134,11 @@ void PageContentExtractionTabStripModelObserver::OnTabStripModelChanged(
     case TabStripModelChange::kMoved:
       break;
   }
+}
+
+void PageContentExtractionTabStripModelObserver::OnTabStripModelDestroyed(
+    TabStripModel* tab_strip_model) {
+  observed_tab_strip_models_.erase(tab_strip_model);
 }
 
 void PageContentExtractionTabStripModelObserver::EvictFromCache(
