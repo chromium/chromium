@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<title>Hit-testing relatively positioned inline with culled inline</title>
+<script src="../resources/runner.js"></script>
+<style>
+#container {
+  width: 800px;
+  height: 400px;
+  overflow: auto;
+}
+#relpos {
+  position: relative;
+}
+</style>
+<body>
+<pre id="log"></pre>
+<pre id="container"><code id="relpos"><span id="culled"></span></code></pre>
+<script>
+const kLineCount = 500;
+let hitX = 0;
+let missX = 0;
+const testYs = [];
+
+function setup() {
+  const container = document.getElementById('container');
+  const relpos = document.getElementById('relpos');
+  const culled = document.getElementById('culled');
+
+  // Include one wider line so `#relpos`'s bounding box extends to the right of
+  // the shorter lines below, matching syntax-highlighted `<pre><code>` blocks
+  // (crbug.com/40744298).
+  culled.appendChild(document.createTextNode('0123456789'.repeat(6) + '\n'));
+
+  const targetSpans = [];
+  for (let i = 0; i < kLineCount; ++i) {
+    for (let j = 0; j < 3; ++j) {
+      const span = document.createElement('span');
+      span.textContent = '1234567';
+      culled.appendChild(span);
+      culled.appendChild(document.createTextNode(' '));
+      if (i >= kLineCount - 6 && i < kLineCount - 1 && j === 0) {
+        targetSpans.push(span);
+      }
+    }
+    culled.appendChild(document.createTextNode('\n'));
+  }
+
+  container.scrollTop = container.scrollHeight;
+  const relposBounds = relpos.getBoundingClientRect();
+  hitX = targetSpans[0].getBoundingClientRect().left + 2;
+  missX = relposBounds.right - 2;
+  for (const span of targetSpans) {
+    const y = span.getBoundingClientRect().top + 2;
+    if (document.elementFromPoint(hitX, y) !== span ||
+        document.elementFromPoint(missX, y) !== container) {
+      throw new Error('Unexpected hit-test target during setup');
+    }
+    testYs.push(y);
+  }
+}
+
+function test() {
+  // Query multiple distinct points so `HitTestCache` does not short-circuit.
+  for (const y of testYs) {
+    document.elementFromPoint(hitX, y);
+    document.elementFromPoint(missX, y);
+  }
+}
+
+setup();
+PerfTestRunner.measureRunsPerSecond({
+  description: 'Measures performance of hit-testing a multi-line relatively positioned inline containing culled inlines.',
+  run: test,
+  done: () => {
+    document.getElementById('container').style.display = 'none';
+  }
+});
+</script>
+</body>
