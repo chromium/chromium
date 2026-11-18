@@ -12,17 +12,22 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "ui/actions/action_id.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
 
+namespace actions {
+class ActionItem;
+}
+
 namespace page_actions {
 
 class PageActionController;
 class PageActionView;
+struct PageActionProperties;
 class PageActionPropertiesProviderInterface;
-struct PageActionViewParams;
 
 // PageActionContainerView is the parent view of all PageActionViews.
 class PageActionContainerView : public views::View {
@@ -49,6 +54,9 @@ class PageActionContainerView : public views::View {
   // nullptr if not found.
   PageActionView* GetPageActionView(actions::ActionId page_action_id);
 
+  // Returns whether `page_action_id` has a visible `PageActionView`.
+  bool IsPageActionVisible(actions::ActionId page_action_id) const;
+
   // Returns true if the first visible view inside this container is a chip.
   bool IsFirstVisibleViewChip() const;
 
@@ -59,6 +67,9 @@ class PageActionContainerView : public views::View {
   void ChildVisibilityChanged(views::View* child) override;
 
  private:
+  PageActionView* CreatePageActionView(actions::ActionItem* action_item,
+                                       const PageActionProperties& properties);
+
   // Invoked when the chip or anchored message state changes. We show the
   // anchored message (if any), then suggestion chips then all other page action
   // icons. Within its category, the page action is placed in its initial
@@ -73,7 +84,8 @@ class PageActionContainerView : public views::View {
 
   raw_ptr<views::FlexLayout> layout_ = nullptr;
   bool is_capsule_active_ = false;
-  int between_icon_spacing_ = 0;
+
+  PageActionViewParams view_params_;
 
   std::map<actions::ActionId, raw_ptr<PageActionView>> page_action_views_;
   std::map<actions::ActionId, size_t> page_action_view_initial_indices_;

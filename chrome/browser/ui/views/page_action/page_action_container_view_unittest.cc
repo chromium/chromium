@@ -285,5 +285,26 @@ TEST_F(PageActionContainerViewTest, IsFirstVisibleViewChip) {
   widget->Close();
 }
 
+TEST_F(PageActionContainerViewTest, IsPageActionVisible) {
+  actions::ActionItem* item = actions::ActionManager::Get().AddAction(
+      actions::ActionItem::Builder().SetActionId(kTestPageActionId).Build());
+  PageActionContainerView container(
+      {item}, TestPageActionPropertiesProvider(kTestProperties),
+      DefaultViewParams());
+
+  EXPECT_FALSE(container.IsPageActionVisible(kTestPageActionId));
+  static constexpr actions::ActionId kNonExistentActionId = 1;
+  EXPECT_FALSE(container.IsPageActionVisible(kNonExistentActionId));
+
+  PageActionModel model(kTestPageActionId);
+  auto pass_key = PageActionPassKey::PassKeyForTesting();
+  model.SetActionItemProperties(pass_key, item);
+  model.SetTabActive(pass_key, true);
+  model.SetShowRequested(pass_key, true);
+  container.GetPageActionView(kTestPageActionId)
+      ->OnPageActionModelChanged(model);
+  EXPECT_TRUE(container.IsPageActionVisible(kTestPageActionId));
+}
+
 }  // namespace
 }  // namespace page_actions

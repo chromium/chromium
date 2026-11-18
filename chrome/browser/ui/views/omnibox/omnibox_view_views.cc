@@ -659,8 +659,11 @@ void OmniboxViewViews::ApplyFocusRingToAimButton(bool force_focus) {
 }
 
 bool OmniboxViewViews::AimButtonVisible() const {
-  IconLabelBubbleView* aim_icon_view = GetAiModePageActionIconView();
-  return aim_icon_view && aim_icon_view->GetVisible();
+  if (!location_bar_view_ || !location_bar_view_->IsInitialized()) {
+    return false;
+  }
+  return location_bar_view_->page_action_container()->IsPageActionVisible(
+      kActionAiMode);
 }
 
 int OmniboxViewViews::GetTextWidth() const {

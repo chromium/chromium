@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_VIEW_PARAMS_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_VIEW_PARAMS_H_
 
+#include <optional>
+
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "ui/gfx/font_list.h"
 
 namespace page_actions {
 
@@ -16,7 +19,7 @@ struct PageActionViewParams {
   gfx::Insets icon_insets;
   int between_icon_spacing = 0;
   raw_ptr<IconLabelBubbleView::Delegate> icon_label_bubble_delegate = nullptr;
-  raw_ptr<const gfx::FontList> font_list = nullptr;
+  std::optional<gfx::FontList> font_list;
   // This is a temporary flag required while transitioning from the legacy
   // page actions framework to the new one.
   // If set to true, `PageActionContainer` will insert spacing on the right to

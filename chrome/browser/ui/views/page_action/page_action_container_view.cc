@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 
+#include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -19,6 +21,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/background.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -42,9 +45,9 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageActionContainerView,
 PageActionContainerView::PageActionContainerView(
     const std::vector<actions::ActionItem*>& action_items,
     const PageActionPropertiesProviderInterface& properties_provider,
-    const PageActionViewParams& params) {
+    const PageActionViewParams& params)
+    : view_params_(params) {
   SetProperty(views::kElementIdentifierKey, kPageActionContainerViewElementId);
-  between_icon_spacing_ = params.between_icon_spacing;
 
   layout_ = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout_->SetMainAxisAlignment(views::LayoutAlignment::kEnd);
@@ -62,35 +65,11 @@ PageActionContainerView::PageActionContainerView(
     const auto action_item_id = action_item->GetActionId().value();
     const auto& properties = properties_provider.GetProperties(action_item_id);
 
-    PageActionView* view = AddChildView(std::make_unique<PageActionView>(
-        action_item, params, properties.type, properties.element_identifier));
-
-    page_action_views_[action_item_id] = view;
-    page_action_state_changed_callbacks_.push_back(
-        view->AddChipVisibilityChangedCallback(base::BindRepeating(
-            &PageActionContainerView::OnPageActionStateChanged,
-            base::Unretained(this))));
-    page_action_state_changed_callbacks_.push_back(
-        view->AddAnchoredMessageVisibilityChangedCallback(base::BindRepeating(
-            &PageActionContainerView::OnPageActionStateChanged,
-            base::Unretained(this))));
-    page_action_state_changed_callbacks_.push_back(
-        view->AddVisibilityChangedCallback(base::BindRepeating(
-            &PageActionContainerView::OnPageActionStateChanged,
-            base::Unretained(this))));
-
     // Record the original index for the page action view so that even if it
     // become a suggestion chip (move to index 0) we can bring it back later at
     // the exact same initial index.
     page_action_view_initial_indices_[action_item_id] = initial_index++;
-
-    view->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(
-            params.hide_icon_on_space_constraint
-                ? views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero
-                : views::MinimumFlexSizeRule::kPreferredSnapToMinimum,
-            views::MaximumFlexSizeRule::kPreferred));
+    CreatePageActionView(action_item, properties);
   }
 }
 
@@ -106,6 +85,40 @@ PageActionView* PageActionContainerView::GetPageActionView(
     actions::ActionId action_id) {
   auto id_to_view = page_action_views_.find(action_id);
   return id_to_view != page_action_views_.end() ? id_to_view->second : nullptr;
+}
+
+bool PageActionContainerView::IsPageActionVisible(
+    actions::ActionId action_id) const {
+  auto it = page_action_views_.find(action_id);
+  return it != page_action_views_.end() && it->second->GetVisible();
+}
+
+PageActionView* PageActionContainerView::CreatePageActionView(
+    actions::ActionItem* action_item,
+    const PageActionProperties& properties) {
+  PageActionView* view = AddChildView(std::make_unique<PageActionView>(
+      action_item, view_params_, properties.type,
+      properties.element_identifier));
+
+  page_action_views_[action_item->GetActionId().value()] = view;
+  auto on_state_changed =
+      base::BindRepeating(&PageActionContainerView::OnPageActionStateChanged,
+                          base::Unretained(this));
+  page_action_state_changed_callbacks_.push_back(
+      view->AddChipVisibilityChangedCallback(on_state_changed));
+  page_action_state_changed_callbacks_.push_back(
+      view->AddAnchoredMessageVisibilityChangedCallback(on_state_changed));
+  page_action_state_changed_callbacks_.push_back(
+      view->AddVisibilityChangedCallback(on_state_changed));
+
+  view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(
+          view_params_.hide_icon_on_space_constraint
+              ? views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero
+              : views::MinimumFlexSizeRule::kPreferredSnapToMinimum,
+          views::MaximumFlexSizeRule::kPreferred));
+  return view;
 }
 
 void PageActionContainerView::OnPageActionStateChanged(PageActionView* view) {
@@ -212,8 +225,9 @@ void PageActionContainerView::UpdateBackgroundAndMargins() {
   } else {
     SetBackground(nullptr);
     layout_->SetInteriorMargin(gfx::Insets());
-    layout_->SetDefault(views::kMarginsKey,
-                        gfx::Insets::TLBR(0, 0, 0, between_icon_spacing_));
+    layout_->SetDefault(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(0, 0, 0, view_params_.between_icon_spacing));
     for (views::View* child : children()) {
       child->ClearProperty(views::kMarginsKey);
     }
