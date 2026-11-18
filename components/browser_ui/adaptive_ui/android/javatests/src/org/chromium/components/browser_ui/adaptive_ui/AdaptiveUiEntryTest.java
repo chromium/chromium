@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -62,6 +63,42 @@ public class AdaptiveUiEntryTest {
 
         assertTrue(entry.isSheetUserInitiated());
         assertEquals(UserCriticalFeature.ACCOUNT_PICKER, entry.getSheetUserCriticalFeature());
+    }
+
+    @Test
+    public void testBuilderSheetInitialStateDefaultsToFull() {
+        PropertyModel model = new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS).build();
+        AdaptiveUiEntry entry =
+                new AdaptiveUiEntry.Builder(model)
+                        .addAllowedContainer(AdaptiveUiContainer.BOTTOM_SHEET)
+                        .build();
+
+        assertEquals(SheetState.FULL, entry.getSheetInitialState());
+    }
+
+    @Test
+    public void testBuilderSetsSheetInitialStateHalf() {
+        PropertyModel model = new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS).build();
+        AdaptiveUiEntry entry =
+                new AdaptiveUiEntry.Builder(model)
+                        .addAllowedContainer(AdaptiveUiContainer.BOTTOM_SHEET)
+                        .setSheetInitialState(SheetState.HALF)
+                        .build();
+
+        assertEquals(SheetState.HALF, entry.getSheetInitialState());
+    }
+
+    @Test
+    public void testBuilderRejectsUnsupportedSheetInitialState() {
+        PropertyModel model = new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS).build();
+        AdaptiveUiEntry.Builder builder = new AdaptiveUiEntry.Builder(model);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> builder.setSheetInitialState(SheetState.PEEK));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> builder.setSheetInitialState(SheetState.HIDDEN));
     }
 
     @Test

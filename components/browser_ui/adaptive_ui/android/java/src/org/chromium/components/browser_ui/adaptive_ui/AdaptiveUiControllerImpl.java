@@ -160,6 +160,7 @@ public final class AdaptiveUiControllerImpl implements AdaptiveUiController {
                                 entry.getScope(),
                                 entry.isSheetUserInitiated(),
                                 entry.getSheetUserCriticalFeature(),
+                                entry.getSheetInitialState(),
                                 mBottomSheetController,
                                 onShown,
                                 onDismissed);

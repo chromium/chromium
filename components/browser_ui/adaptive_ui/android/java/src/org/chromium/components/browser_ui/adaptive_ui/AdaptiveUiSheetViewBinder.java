@@ -28,6 +28,8 @@ import java.util.Set;
  * <p>Event-time and {@code BottomSheetContent} metadata keys ({@link
  * AdaptiveUiProperties#SHEET_OPENED_ACCESSIBILITY_STRING_ID}, {@link
  * AdaptiveUiProperties#SHEET_CLOSED_ACCESSIBILITY_STRING_ID}, {@link
+ * AdaptiveUiProperties#SHEET_HALF_HEIGHT_RATIO}, {@link
+ * AdaptiveUiProperties#SHEET_FULL_HEIGHT_RATIO}, {@link
  * AdaptiveUiProperties#ON_PRIMARY_BUTTON_CLICKED}, {@link
  * AdaptiveUiProperties#ON_SECONDARY_BUTTON_CLICKED}, {@link
  * AdaptiveUiProperties#PRIMARY_BUTTON_KEEPS_OPEN}, {@link
@@ -48,6 +50,8 @@ final class AdaptiveUiSheetViewBinder {
                     AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION,
                     AdaptiveUiProperties.SHEET_OPENED_ACCESSIBILITY_STRING_ID,
                     AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
+                    AdaptiveUiProperties.SHEET_HALF_HEIGHT_RATIO,
+                    AdaptiveUiProperties.SHEET_FULL_HEIGHT_RATIO,
                     AdaptiveUiProperties.BACK_PRESS_HANDLER,
                     AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
                     AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,

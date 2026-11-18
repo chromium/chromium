@@ -29,6 +29,7 @@ import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -48,10 +49,14 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 @NullMarked
 final class AdaptiveUiSheetCoordinator
         implements AdaptiveUiControllerImpl.Presenter, BottomSheetContent {
+    // Matches the bottom sheet's default half height ratio, which isn't public.
+    private static final float DEFAULT_HALF_HEIGHT_RATIO = 0.75f;
+
     private final PropertyModel mModel;
     private final @AdaptiveUiScope int mScope;
     private final boolean mIsUserInitiated;
     private final @UserCriticalFeature int mUserCriticalFeature;
+    private final @SheetState int mInitialState;
     private final BottomSheetController mBottomSheetController;
     private final Runnable mOnShown;
     private final Callback<Integer> mOnDismissed;
@@ -126,6 +131,8 @@ final class AdaptiveUiSheetCoordinator
      * @param isUserInitiated Whether the sheet is triggered by an explicit user action.
      * @param userCriticalFeature The approved {@link UserCriticalFeature} for sheet precedence, or
      *     {@link UserCriticalFeature#NONE}.
+     * @param initialState The {@link SheetState} the sheet opens in: {@link SheetState#FULL} (sized
+     *     to its content) or {@link SheetState#HALF}.
      * @param bottomSheetController The window's {@link BottomSheetController} that shows the sheet.
      * @param onShown Runs once, when the {@link BottomSheetController} takes this content (the
      *     sheet starts opening). Not run again if the sheet is suppressed or re-queued and later
@@ -141,6 +148,7 @@ final class AdaptiveUiSheetCoordinator
             @AdaptiveUiScope int scope,
             boolean isUserInitiated,
             @UserCriticalFeature int userCriticalFeature,
+            @SheetState int initialState,
             BottomSheetController bottomSheetController,
             Runnable onShown,
             Callback<Integer> onDismissed) {
@@ -148,6 +156,7 @@ final class AdaptiveUiSheetCoordinator
         mScope = scope;
         mIsUserInitiated = isUserInitiated;
         mUserCriticalFeature = userCriticalFeature;
+        mInitialState = initialState;
         mBottomSheetController = bottomSheetController;
         mOnShown = onShown;
         mOnDismissed = onDismissed;
@@ -288,8 +297,32 @@ final class AdaptiveUiSheetCoordinator
     }
 
     @Override
+    public float getHalfHeightRatio() {
+        // The BottomSheetController opens the sheet in its lowest enabled state, so enabling the
+        // half state makes the sheet open at the half height.
+        if (mInitialState != SheetState.HALF) return HeightMode.DISABLED;
+        float halfRatio =
+                getCustomRatio(AdaptiveUiProperties.SHEET_HALF_HEIGHT_RATIO, HeightMode.DEFAULT);
+        // A half height above the full height would open the sheet above its full height.
+        assert (halfRatio == HeightMode.DEFAULT ? DEFAULT_HALF_HEIGHT_RATIO : halfRatio)
+                        <= getMaxResizeContentHeightRatio()
+                : "The half height ratio must not be above the full height ratio.";
+        return halfRatio;
+    }
+
+    @Override
     public float getFullHeightRatio() {
-        return HeightMode.WRAP_CONTENT;
+        // A WRAP_CONTENT full height disables the half state, so a half sheet resizes its content
+        // to the sheet height instead, which keeps the button bar on screen at the half height.
+        return mInitialState == SheetState.HALF
+                ? HeightMode.RESIZE_CONTENT
+                : HeightMode.WRAP_CONTENT;
+    }
+
+    @Override
+    public float getMaxResizeContentHeightRatio() {
+        // With RESIZE_CONTENT, this caps the full height of a half sheet.
+        return getCustomRatio(AdaptiveUiProperties.SHEET_FULL_HEIGHT_RATIO, MAX_HEIGHT_RATIO);
     }
 
     @Override
@@ -342,6 +375,13 @@ final class AdaptiveUiSheetCoordinator
     @Override
     public @StringRes int getSheetClosedAccessibilityStringId() {
         return getAccessibilityStringId(AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID);
+    }
+
+    /** Returns the ratio set for {@code key}, or {@code defaultRatio} if it's unset. */
+    private float getCustomRatio(ReadableFloatPropertyKey key, float defaultRatio) {
+        float ratio = mModel.get(key);
+        assert ratio >= 0f && ratio <= MAX_HEIGHT_RATIO : "Invalid sheet height ratio: " + ratio;
+        return ratio > 0f ? ratio : defaultRatio;
     }
 
     /** Returns the string ID set for {@code key}, or the generic description if it's unset. */

@@ -13,6 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -57,6 +58,29 @@ public class AdaptiveUiProperties {
      */
     public static final ReadableIntPropertyKey SHEET_CLOSED_ACCESSIBILITY_STRING_ID =
             new ReadableIntPropertyKey();
+
+    /**
+     * Optional half height of a bottom sheet opened at {@code SheetState.HALF} (see {@link
+     * AdaptiveUiEntry.Builder#setSheetInitialState}), as a ratio of the sheet container height in
+     * (0, 1]. Leaving this unset ({@code 0}) keeps the default bottom sheet half height of {@code
+     * 0.75}. Must not be above the full height ({@link #SHEET_FULL_HEIGHT_RATIO}, or {@code 1} if
+     * unset). Ignored by full-height sheets and dialogs.
+     */
+    public static final ReadableFloatPropertyKey SHEET_HALF_HEIGHT_RATIO =
+            new ReadableFloatPropertyKey();
+
+    /**
+     * Optional full height of a bottom sheet opened at {@code SheetState.HALF} (see {@link
+     * AdaptiveUiEntry.Builder#setSheetInitialState}), as a ratio of the sheet container height in
+     * (0, 1]. Leaving this unset ({@code 0}) keeps the default bottom sheet full height of {@code
+     * 1}. Must not be below the half height ({@link #SHEET_HALF_HEIGHT_RATIO}, or {@code 0.75} if
+     * unset). Ignored by full-height sheets and dialogs.
+     *
+     * <p>Also ignored on small screens: the bottom sheet disables the half state there, so the
+     * sheet opens at the full container height.
+     */
+    public static final ReadableFloatPropertyKey SHEET_FULL_HEIGHT_RATIO =
+            new ReadableFloatPropertyKey();
 
     /** Body description text displayed below the title. */
     public static final WritableObjectPropertyKey<@Nullable CharSequence> DESCRIPTION =
@@ -151,6 +175,8 @@ public class AdaptiveUiProperties {
                 DIALOG_CONTENT_DESCRIPTION,
                 SHEET_OPENED_ACCESSIBILITY_STRING_ID,
                 SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
+                SHEET_HALF_HEIGHT_RATIO,
+                SHEET_FULL_HEIGHT_RATIO,
                 DESCRIPTION,
                 SHOW_CLOSE_BUTTON,
                 FOOTER_MESSAGE,

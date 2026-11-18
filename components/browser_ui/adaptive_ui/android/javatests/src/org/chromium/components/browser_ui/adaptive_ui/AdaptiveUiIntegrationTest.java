@@ -233,6 +233,28 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
     }
 
     @Test
+    public void testSheetInitialStateHalf_SettlesAtHalfAndFullOnSmallScreen() {
+        AdaptiveUiEntry entry = newHalfSheetEntry();
+        assertEquals(Integer.valueOf(AdaptiveUiContainer.BOTTOM_SHEET), mController.show(entry));
+        settleSheet();
+        assertEquals(SheetState.HALF, mSheetController.getSheetState());
+        // RESIZE_CONTENT sizes the content to the sheet, so the button bar stays on screen.
+        assertTrue(
+                mSheetController.getCurrentSheetContent().getContentView().getHeight()
+                        <= mSheetController.getCurrentOffset());
+        mController.dismiss(entry, DismissReason.NAVIGATION);
+        mSheetSupport.endAllAnimations();
+
+        BottomSheetTestSupport.setSmallScreen(true);
+        entry = newHalfSheetEntry();
+        assertEquals(Integer.valueOf(AdaptiveUiContainer.BOTTOM_SHEET), mController.show(entry));
+        settleSheet();
+        assertEquals(SheetState.FULL, mSheetController.getSheetState());
+        mController.dismiss(entry, DismissReason.NAVIGATION);
+        mSheetSupport.endAllAnimations();
+    }
+
+    @Test
     public void testBackPress_HandlerFirstThenDismiss_SheetAndWindowDialog() {
         int[] sheetBackHandled = new int[1];
         OnBackPressedCallback sheetHandler = backHandler(sheetBackHandled);
@@ -499,6 +521,18 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
         return new AdaptiveUiEntry.Builder(model)
                 .setScope(scope)
                 .addAllowedContainer(container)
+                .setObserver(this)
+                .build();
+    }
+
+    private AdaptiveUiEntry newHalfSheetEntry() {
+        var model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, str(R.string.ok))
+                        .build();
+        return new AdaptiveUiEntry.Builder(model)
+                .addAllowedContainer(AdaptiveUiContainer.BOTTOM_SHEET)
+                .setSheetInitialState(SheetState.HALF)
                 .setObserver(this)
                 .build();
     }

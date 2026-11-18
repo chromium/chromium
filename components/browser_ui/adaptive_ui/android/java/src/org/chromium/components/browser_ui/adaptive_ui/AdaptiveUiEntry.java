@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.adaptive_ui;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -22,6 +23,7 @@ public class AdaptiveUiEntry {
     private final @Nullable AdaptiveUiObserver mObserver;
     private final boolean mIsSheetUserInitiated;
     private final @UserCriticalFeature int mSheetUserCriticalFeature;
+    private final @SheetState int mSheetInitialState;
 
     private AdaptiveUiEntry(
             @AdaptiveUiScope int scope,
@@ -29,13 +31,15 @@ public class AdaptiveUiEntry {
             PropertyModel propertyModel,
             @Nullable AdaptiveUiObserver observer,
             boolean isSheetUserInitiated,
-            @UserCriticalFeature int sheetUserCriticalFeature) {
+            @UserCriticalFeature int sheetUserCriticalFeature,
+            @SheetState int sheetInitialState) {
         mScope = scope;
         mAllowedContainers = allowedContainers;
         mPropertyModel = propertyModel;
         mObserver = observer;
         mIsSheetUserInitiated = isSheetUserInitiated;
         mSheetUserCriticalFeature = sheetUserCriticalFeature;
+        mSheetInitialState = sheetInitialState;
     }
 
     public @AdaptiveUiScope int getScope() {
@@ -75,6 +79,14 @@ public class AdaptiveUiEntry {
         return mSheetUserCriticalFeature;
     }
 
+    /**
+     * Optional, bottom sheet only: the {@link SheetState} the sheet opens in, either {@link
+     * SheetState#FULL} (default) or {@link SheetState#HALF}.
+     */
+    public @SheetState int getSheetInitialState() {
+        return mSheetInitialState;
+    }
+
     /** Builder for {@link AdaptiveUiEntry}. */
     public static class Builder {
         private final PropertyModel mPropertyModel;
@@ -83,6 +95,7 @@ public class AdaptiveUiEntry {
         private @Nullable AdaptiveUiObserver mObserver;
         private boolean mIsSheetUserInitiated;
         private @UserCriticalFeature int mSheetUserCriticalFeature = UserCriticalFeature.NONE;
+        private @SheetState int mSheetInitialState = SheetState.FULL;
 
         /**
          * Creates a builder for an {@link AdaptiveUiEntry}.
@@ -139,6 +152,27 @@ public class AdaptiveUiEntry {
         }
 
         /**
+         * Optional, bottom sheet only: sets the {@link SheetState} the sheet opens in.
+         *
+         * <p>{@link SheetState#FULL} (default) sizes the sheet to its content. {@link
+         * SheetState#HALF} opens the sheet at the half height, and the user can drag it to the full
+         * height. The half state is skipped on small screens, where the sheet opens at the full
+         * height. A half sheet's heights can be set with {@link
+         * AdaptiveUiProperties#SHEET_HALF_HEIGHT_RATIO} and {@link
+         * AdaptiveUiProperties#SHEET_FULL_HEIGHT_RATIO}.
+         *
+         * @param state {@link SheetState#FULL} or {@link SheetState#HALF}.
+         * @throws IllegalArgumentException for any other {@link SheetState}.
+         */
+        public Builder setSheetInitialState(@SheetState int state) {
+            if (state != SheetState.FULL && state != SheetState.HALF) {
+                throw new IllegalArgumentException("Unsupported initial sheet state: " + state);
+            }
+            mSheetInitialState = state;
+            return this;
+        }
+
+        /**
          * Builds the {@link AdaptiveUiEntry}.
          *
          * @throws IllegalStateException if no allowed container was set.
@@ -154,7 +188,8 @@ public class AdaptiveUiEntry {
                     mPropertyModel,
                     mObserver,
                     mIsSheetUserInitiated,
-                    mSheetUserCriticalFeature);
+                    mSheetUserCriticalFeature,
+                    mSheetInitialState);
         }
     }
 }
