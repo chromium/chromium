@@ -3,12 +3,17 @@
 <title>Completed display:none transitions finish instead of canceling</title>
 <link rel="help" href="https://drafts.csswg.org/css-transitions-2/#transition-lifecycle">
 <link rel="help" href="https://drafts.csswg.org/css-display-4/#display-animation">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/popover.html">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
 <script src="/web-animations/testcommon.js"></script>
 
 <style>
-  dialog.closing-test {
+  dialog.closing-test,
+  [popover].closing-test {
     opacity: 0;
     scale: 0.9;
     transition:
@@ -17,18 +22,21 @@
       overlay var(--dur) allow-discrete,
       scale var(--dur);
   }
-  dialog.closing-test[open] {
+  dialog.closing-test[open],
+  [popover].closing-test:popover-open {
     opacity: 1;
     scale: 1;
   }
-  dialog.closing-test::backdrop {
+  dialog.closing-test::backdrop,
+  [popover].closing-test::backdrop {
     opacity: 0;
     transition:
       display var(--dur) allow-discrete,
       opacity var(--dur),
       overlay var(--dur) allow-discrete;
   }
-  dialog.closing-test[open]::backdrop {
+  dialog.closing-test[open]::backdrop,
+  [popover].closing-test:popover-open::backdrop {
     opacity: 1;
   }
 
@@ -52,6 +60,14 @@
 
 <body>
 <script>
+const kExpectedClosingTransitions = [
+  '::backdrop:opacity',
+  ':display',
+  ':opacity',
+  ':overlay',
+  ':scale',
+];
+
 function keyForAnimation(anim) {
   return `${anim.effect.pseudoElement || ''}:${anim.transitionProperty}`;
 }
@@ -66,80 +82,81 @@ function createDialog(t, duration) {
   return dialog;
 }
 
-promise_test(async (t) => {
-  const dialog = createDialog(t, '50ms');
-  const transitionend = [];
-  const transitioncancel = [];
-  const finish = [];
-  const cancel = [];
+function createPopover(t, duration) {
+  const popover = document.createElement('div');
+  popover.popover = 'auto';
+  popover.className = 'closing-test';
+  popover.style.setProperty('--dur', duration);
+  popover.textContent = 'Popover content';
+  document.body.appendChild(popover);
+  t.add_cleanup(() => popover.remove());
+  return popover;
+}
 
-  dialog.addEventListener('transitionend', (e) => {
-    transitionend.push(`${e.pseudoElement}:${e.propertyName}`);
+function createEventRecorder(element) {
+  const state = {
+    transitionend: [],
+    transitioncancel: [],
+    finish: [],
+    cancel: [],
+  };
+  element.addEventListener('transitionend', (e) => {
+    state.transitionend.push(`${e.pseudoElement}:${e.propertyName}`);
   });
-  dialog.addEventListener('transitioncancel', (e) => {
-    transitioncancel.push(`${e.pseudoElement}:${e.propertyName}`);
+  element.addEventListener('transitioncancel', (e) => {
+    state.transitioncancel.push(`${e.pseudoElement}:${e.propertyName}`);
   });
+  return state;
+}
 
-  dialog.showModal();
-  await waitForAnimationFrames(2);
-
-  dialog.close();
-  const anims = dialog.getAnimations({ subtree: true });
-  assert_equals(anims.length, 5, 'Expected 5 closing transitions');
-
+function recordAnimationEvents(anims, state) {
   for (const anim of anims) {
     const key = keyForAnimation(anim);
-    anim.addEventListener('finish', () => finish.push(key));
-    anim.addEventListener('cancel', () => cancel.push(key));
+    anim.addEventListener('finish', () => state.finish.push(key));
+    anim.addEventListener('cancel', () => state.cancel.push(key));
   }
+}
 
-  await Promise.all(anims.map((a) => a.finished));
-  await waitForAnimationFrames(2);
-
-  const expected = [
-    '::backdrop:opacity',
-    ':display',
-    ':opacity',
-    ':overlay',
-    ':scale',
-  ];
-  assert_equals(getComputedStyle(dialog).display, 'none');
-  assert_array_equals(transitioncancel, [], 'No transitioncancel events');
-  assert_array_equals(cancel, [], 'No animation cancel events');
-  assert_array_equals(transitionend.sort(), expected, 'All transitionend events');
-  assert_array_equals(finish.sort(), expected, 'All animation finish events');
+function assertClosingTransitionsFinished(element, anims, state) {
+  assert_equals(getComputedStyle(element).display, 'none');
+  assert_array_equals(state.transitioncancel, [], 'No transitioncancel events');
+  assert_array_equals(state.cancel, [], 'No animation cancel events');
+  assert_array_equals(state.transitionend.slice().sort(),
+                      kExpectedClosingTransitions,
+                      'All transitionend events');
+  assert_array_equals(state.finish.slice().sort(),
+                      kExpectedClosingTransitions,
+                      'All animation finish events');
   for (const anim of anims) {
     assert_equals(anim.playState, 'finished',
                   `${keyForAnimation(anim)} should remain finished`);
   }
-}, 'Closing dialog allow-discrete transitions finish cleanly without canceling');
+}
 
-promise_test(async (t) => {
-  const dialog = createDialog(t, '100s');
-  const transitionend = [];
-  const transitioncancel = [];
-  const finish = [];
-  const cancel = [];
-
-  dialog.addEventListener('transitionend', (e) => {
-    transitionend.push(`${e.pseudoElement}:${e.propertyName}`);
-  });
-  dialog.addEventListener('transitioncancel', (e) => {
-    transitioncancel.push(`${e.pseudoElement}:${e.propertyName}`);
-  });
-
-  dialog.showModal();
+async function runNormalDismissTest(element, openFn, closeFn) {
+  const state = createEventRecorder(element);
+  openFn();
   await waitForAnimationFrames(2);
 
-  dialog.close();
-  const anims = dialog.getAnimations({ subtree: true });
+  closeFn();
+  const anims = element.getAnimations({ subtree: true });
   assert_equals(anims.length, 5, 'Expected 5 closing transitions');
+  recordAnimationEvents(anims, state);
 
-  for (const anim of anims) {
-    const key = keyForAnimation(anim);
-    anim.addEventListener('finish', () => finish.push(key));
-    anim.addEventListener('cancel', () => cancel.push(key));
-  }
+  await Promise.all(anims.map((a) => a.finished));
+  await waitForAnimationFrames(2);
+  assertClosingTransitionsFinished(element, anims, state);
+}
+
+async function runOnDemandFlushDismissTest(element, openFn, closeFn) {
+  const state = createEventRecorder(element);
+  openFn();
+  await waitForAnimationFrames(2);
+
+  closeFn();
+  const anims = element.getAnimations({ subtree: true });
+  assert_equals(anims.length, 5, 'Expected 5 closing transitions');
+  recordAnimationEvents(anims, state);
 
   await Promise.all(anims.map((a) => a.ready));
   await waitForAnimationFrames(1);
@@ -149,28 +166,74 @@ promise_test(async (t) => {
   for (const anim of anims) {
     anim.currentTime = 100000;
   }
-  assert_equals(getComputedStyle(dialog).display, 'none',
+  assert_equals(getComputedStyle(element).display, 'none',
                 'On-demand style update resolves display: none');
 
   await Promise.all(anims.map((a) => a.finished));
   await waitForAnimationFrames(2);
+  assertClosingTransitionsFinished(element, anims, state);
+}
 
-  const expected = [
-    '::backdrop:opacity',
-    ':display',
-    ':opacity',
-    ':overlay',
-    ':scale',
-  ];
-  assert_array_equals(transitioncancel, [], 'No transitioncancel events');
-  assert_array_equals(cancel, [], 'No animation cancel events');
-  assert_array_equals(transitionend.sort(), expected, 'All transitionend events');
-  assert_array_equals(finish.sort(), expected, 'All animation finish events');
-  for (const anim of anims) {
-    assert_equals(anim.playState, 'finished',
-                  `${keyForAnimation(anim)} should remain finished`);
-  }
+promise_test(async (t) => {
+  const dialog = createDialog(t, '50ms');
+  await runNormalDismissTest(dialog, () => dialog.showModal(),
+                             () => dialog.close());
+}, 'Closing dialog allow-discrete transitions finish cleanly without canceling');
+
+promise_test(async (t) => {
+  const dialog = createDialog(t, '100s');
+  await runOnDemandFlushDismissTest(dialog, () => dialog.showModal(),
+                                    () => dialog.close());
 }, 'On-demand style flush to display:none after transitions reach end does not cancel them');
+
+promise_test(async (t) => {
+  const popover = createPopover(t, '50ms');
+  await runNormalDismissTest(popover, () => popover.showPopover(),
+                             () => popover.hidePopover());
+}, 'Hiding popover allow-discrete transitions finish cleanly without canceling');
+
+promise_test(async (t) => {
+  const popover = createPopover(t, '100s');
+  await runOnDemandFlushDismissTest(popover, () => popover.showPopover(),
+                                    () => popover.hidePopover());
+}, 'On-demand style flush to display:none after popover transitions reach end does not cancel them');
+
+promise_test(async (t) => {
+  const popover = createPopover(t, '100ms');
+  const outside = document.createElement('button');
+  outside.style.cssText =
+      'position: fixed; left: 5px; top: 5px; width: 30px; height: 30px;';
+  document.body.appendChild(outside);
+  t.add_cleanup(() => outside.remove());
+
+  const state = createEventRecorder(popover);
+  let anims = [];
+
+  popover.showPopover();
+  await waitForAnimationFrames(2);
+
+  // Light dismiss runs immediately before dispatching `click`; capture the
+  // closing transitions synchronously on `click` while also establishing a live
+  // mouse position so BeginMainFrame hover recomputation exercises on-demand
+  // updates.
+  document.addEventListener('click', () => {
+    anims = popover.getAnimations({ subtree: true });
+    recordAnimationEvents(anims, state);
+  }, { once: true });
+
+  const actions = new test_driver.Actions();
+  await actions
+      .pointerMove(20, 20)
+      .pointerDown({ button: actions.ButtonType.LEFT })
+      .pointerUp({ button: actions.ButtonType.LEFT })
+      .send();
+
+  assert_equals(anims.length, 5,
+                'Expected 5 closing transitions on light dismiss');
+  await Promise.all(anims.map((a) => a.finished));
+  await waitForAnimationFrames(2);
+  assertClosingTransitionsFinished(popover, anims, state);
+}, 'Light-dismissing popover via pointer click finishes allow-discrete transitions without canceling');
 
 promise_test(async (t) => {
   const el = document.createElement('div');
