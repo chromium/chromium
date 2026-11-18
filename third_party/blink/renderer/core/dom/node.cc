@@ -3521,6 +3521,12 @@ DispatchEventResult Node::DispatchDOMActivateEvent(int detail,
 #if DCHECK_IS_ON()
   DCHECK(!EventDispatchForbiddenScope::IsEventDispatchForbidden());
 #endif
+  // Only listeners can observe DOMActivate, so don't dispatch it if there are
+  // none.
+  if (RuntimeEnabledFeatures::SkipDOMActivateWithoutListenersEnabled() &&
+      !GetDocument().HasListenerType(Document::kDOMActivateListener)) {
+    return DispatchEventResult::kNotCanceled;
+  }
   UIEvent& event = *UIEvent::Create();
   // DOMActivate inherits bubbles from the underlying event to prevent
   // activation behavior of parent elements from running when it doesn't bubble.

@@ -6906,6 +6906,8 @@ void Document::AddListenerTypeIfNeeded(const AtomicString& event_type,
     AddListenerType(kTransitionEndListener);
   } else if (event_type == event_type_names::kScroll) {
     AddListenerType(kScrollListener);
+  } else if (event_type == event_type_names::kDOMActivate) {
+    AddListenerType(kDOMActivateListener);
   } else if (event_type == event_type_names::kLoad) {
     if (Node* node = event_target.ToNode()) {
       if (IsA<HTMLStyleElement>(*node)) {

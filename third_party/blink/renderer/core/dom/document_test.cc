@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/node_with_index.h"
@@ -87,6 +88,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
@@ -465,6 +467,41 @@ TEST_F(DocumentTest, StyleVersion) {
   previous_style_version = GetDocument().StyleVersion();
   element->setAttribute(blink::html_names::kClassAttr, AtomicString("a b"));
   EXPECT_NE(previous_style_version, GetDocument().StyleVersion());
+}
+
+namespace {
+
+class CountingEventListener final : public NativeEventListener {
+ public:
+  void Invoke(ExecutionContext*, Event*) override { ++count_; }
+  int Count() const { return count_; }
+
+ private:
+  int count_ = 0;
+};
+
+}  // namespace
+
+// DOMActivate is dispatched only if the document may have a listener for it,
+// including one that came with an adopted node.
+TEST_F(DocumentTest, DOMActivateListenerType) {
+  SetHtmlInnerHTML("<button id='button'></button>");
+  auto* button = To<HTMLElement>(GetElementById("button"));
+  EXPECT_FALSE(GetDocument().HasListenerType(Document::kDOMActivateListener));
+  button->click();
+
+  Document* other_document =
+      GetDocument().implementation().createHTMLDocument();
+  Element* container = other_document->CreateRawElement(html_names::kDivTag);
+  auto* listener = MakeGarbageCollected<CountingEventListener>();
+  container->addEventListener(event_type_names::kDOMActivate, listener);
+  EXPECT_FALSE(GetDocument().HasListenerType(Document::kDOMActivateListener));
+
+  GetDocument().body()->AppendChild(container);
+  EXPECT_TRUE(GetDocument().HasListenerType(Document::kDOMActivateListener));
+  container->AppendChild(button);
+  button->click();
+  EXPECT_EQ(1, listener->Count());
 }
 
 // This tests that meta-theme-color can be found correctly.

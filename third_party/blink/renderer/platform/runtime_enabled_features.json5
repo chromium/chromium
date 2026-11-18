@@ -6485,6 +6485,13 @@
       status: "stable",
     },
     {
+      // Kill switch for not dispatching DOMActivate when there are no listeners
+      // for it. Nothing else handles it once activation behavior is cleaned up.
+      name: "SkipDOMActivateWithoutListeners",
+      status: "stable",
+      depends_on: ["CleanUpActivationBehavior"],
+    },
+    {
       // Improves performance of event dispatching by skipping the capture
       // phase if there are no capture listeners registered on the page.
       name: "SkipEventCapture",
