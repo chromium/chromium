@@ -2076,6 +2076,10 @@
       status: "experimental",
     },
     {
+      name: "CSSPropertyDescriptorsOptional",
+      status: "test",
+    },
+    {
       // For ::column pseudo-element for fragment styling.
       // https://github.com/flackr/carousel/blob/main/fragmentation/README.md
       name: "CSSPseudoColumn",

@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -83,6 +84,9 @@ std::optional<CSSSyntaxDefinition> PropertyRegistration::ConvertSyntax(
     const CSSValue* syntax_value) {
   // https://drafts.css-houdini.org/css-properties-values-api-1/#the-syntax-descriptor
   if (!syntax_value) {
+    if (RuntimeEnabledFeatures::CSSPropertyDescriptorsOptionalEnabled()) {
+      return CSSSyntaxDefinition::CreateUniversal();
+    }
     return {};
   }
   return CSSSyntaxStringParser(To<CSSStringValue>(*syntax_value).Value())
@@ -93,6 +97,9 @@ std::optional<bool> PropertyRegistration::ConvertInherits(
     const CSSValue* inherits_value) {
   // https://drafts.css-houdini.org/css-properties-values-api-1/#inherits-descriptor
   if (!inherits_value) {
+    if (RuntimeEnabledFeatures::CSSPropertyDescriptorsOptionalEnabled()) {
+      return true;
+    }
     return {};
   }
 
@@ -108,7 +115,10 @@ std::optional<const CSSValue*> PropertyRegistration::ConvertInitial(
     CSSParserLocalContext& local_context) {
   // https://drafts.css-houdini.org/css-properties-values-api-1/#initial-value-descriptor
   if (!initial_value) {
-    return syntax.IsUniversal() ? std::make_optional(nullptr) : std::nullopt;
+    return syntax.IsUniversal() || RuntimeEnabledFeatures::
+                                       CSSPropertyDescriptorsOptionalEnabled()
+               ? std::make_optional(nullptr)
+               : std::nullopt;
   }
   CSSVariableData* initial_variable_data =
       To<CSSUnparsedDeclarationValue>(*initial_value).VariableDataValue();
@@ -126,10 +136,12 @@ std::optional<const CSSValue*> PropertyRegistration::ConvertInitial(
       return {};
     }
   }
-  // For non-universal @property rules, the initial value is required for the
-  // the rule to be valid.
-  if (!initial && !syntax.IsUniversal()) {
-    return {};
+  if (!RuntimeEnabledFeatures::CSSPropertyDescriptorsOptionalEnabled()) {
+    // For non-universal @property rules, the initial value is required for the
+    // rule to be valid.
+    if (!initial && !syntax.IsUniversal()) {
+      return {};
+    }
   }
 
   return initial;
@@ -172,8 +184,16 @@ void PropertyRegistration::registerProperty(
     ExceptionState& exception_state) {
   // Bindings code ensures these are set.
   DCHECK(property_definition->hasName());
-  DCHECK(property_definition->hasInherits());
   DCHECK(property_definition->hasSyntax());
+
+  const bool descriptors_optional =
+      RuntimeEnabledFeatures::CSSPropertyDescriptorsOptionalEnabled();
+  // TODO(crbug.com/491802759): Replace with leading DCHECK() when bindings
+  // are updated.
+  if (!property_definition->hasInherits() && !descriptors_optional) {
+    exception_state.ThrowTypeError("Required member 'inherits' is undefined.");
+    return;
+  }
 
   String name = property_definition->name();
   if (!CSSVariableParser::IsValidVariableName(name)) {
@@ -226,18 +246,17 @@ void PropertyRegistration::registerProperty(
           "The initial value provided is not computationally independent.");
       return;
     }
-  } else {
-    if (!syntax_definition->IsUniversal()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kSyntaxError,
-          "An initial value must be provided if the syntax is not '*'");
-      return;
-    }
+  } else if (!syntax_definition->IsUniversal() && !descriptors_optional) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        "An initial value must be provided if the syntax is not '*'");
+    return;
   }
-  registry.RegisterProperty(atomic_name,
-                            *MakeGarbageCollected<PropertyRegistration>(
-                                atomic_name, *syntax_definition,
-                                property_definition->inherits(), initial));
+
+  const bool inherits = property_definition->getInheritsOr(true);
+  registry.RegisterProperty(
+      atomic_name, *MakeGarbageCollected<PropertyRegistration>(
+                       atomic_name, *syntax_definition, inherits, initial));
 
   document->GetStyleEngine().PropertyRegistryChanged();
 }

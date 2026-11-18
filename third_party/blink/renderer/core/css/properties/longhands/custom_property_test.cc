@@ -215,20 +215,25 @@ TEST_F(CustomPropertyTest, SupportsGuaranteedInvalid) {
   RegisterProperty(GetDocument(), "--universal", "*", "foo", true);
   RegisterProperty(GetDocument(), "--no-initial", "*", std::nullopt, true);
   RegisterProperty(GetDocument(), "--length", "<length>", "0px", true);
+  RegisterProperty(GetDocument(), "--length-no-initial", "<length>",
+                   std::nullopt, true);
 
   AtomicString unregistered_name("--unregistered");
   AtomicString universal_name("--universal");
   AtomicString no_initial_name("--no-initial");
   AtomicString length_name("--length");
+  AtomicString length_no_initial_name("--length-no-initial");
   CustomProperty unregistered(&unregistered_name, GetDocument());
   CustomProperty universal(&universal_name, GetDocument());
   CustomProperty no_initial_value(&no_initial_name, GetDocument());
   CustomProperty length(&length_name, GetDocument());
+  CustomProperty length_no_initial(&length_no_initial_name, GetDocument());
 
   EXPECT_TRUE(unregistered.SupportsGuaranteedInvalid());
   EXPECT_TRUE(universal.SupportsGuaranteedInvalid());
   EXPECT_TRUE(no_initial_value.SupportsGuaranteedInvalid());
   EXPECT_FALSE(length.SupportsGuaranteedInvalid());
+  EXPECT_TRUE(length_no_initial.SupportsGuaranteedInvalid());
 }
 
 TEST_F(CustomPropertyTest, HasInitialValue) {

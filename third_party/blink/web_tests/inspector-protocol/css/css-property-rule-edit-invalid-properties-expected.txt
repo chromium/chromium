@@ -1,10 +1,58 @@
-Test that property rules cannot be rendered invalid by edits
+Test property rule edits with invalid or omitted descriptors
 {
-    error : {
-        code : -32000
-        message : Failed applying edit #0: SyntaxError Style text is not valid.
-    }
     id : <number>
+    result : {
+        styles : [
+            [0] : {
+                cssProperties : [
+                    [0] : {
+                        disabled : false
+                        implicit : false
+                        name : syntax
+                        range : {
+                            endColumn : 35
+                            endLine : 1
+                            startColumn : 15
+                            startLine : 1
+                        }
+                        text : syntax: "<integer>";
+                        value : "<integer>"
+                    }
+                    [1] : {
+                        disabled : false
+                        implicit : false
+                        name : initial-value
+                        range : {
+                            endColumn : 53
+                            endLine : 1
+                            startColumn : 36
+                            startLine : 1
+                        }
+                        text : initial-value: 0;
+                        value : 0
+                    }
+                    [2] : {
+                        name : syntax
+                        value : "<integer>"
+                    }
+                    [3] : {
+                        name : initial-value
+                        value : 0
+                    }
+                ]
+                cssText : syntax: "<integer>"; initial-value: 0;
+                range : {
+                    endColumn : 53
+                    endLine : 1
+                    startColumn : 15
+                    startLine : 1
+                }
+                shorthandEntries : [
+                ]
+                styleSheetId : <string>
+            }
+        ]
+    }
     sessionId : <string>
 }
 {
@@ -16,11 +64,73 @@ Test that property rules cannot be rendered invalid by edits
     sessionId : <string>
 }
 {
-    error : {
-        code : -32000
-        message : Failed applying edit #0: SyntaxError Style text is not valid.
-    }
     id : <number>
+    result : {
+        styles : [
+            [0] : {
+                cssProperties : [
+                    [0] : {
+                        disabled : false
+                        implicit : false
+                        name : syntax
+                        parsedOk : false
+                        range : {
+                            endColumn : 31
+                            endLine : 1
+                            startColumn : 15
+                            startLine : 1
+                        }
+                        text : syntax: "<len>";
+                        value : "<len>"
+                    }
+                    [1] : {
+                        disabled : false
+                        implicit : false
+                        name : initial-value
+                        range : {
+                            endColumn : 49
+                            endLine : 1
+                            startColumn : 32
+                            startLine : 1
+                        }
+                        text : initial-value: 0;
+                        value : 0
+                    }
+                    [2] : {
+                        disabled : false
+                        implicit : false
+                        name : inherits
+                        range : {
+                            endColumn : 65
+                            endLine : 1
+                            startColumn : 50
+                            startLine : 1
+                        }
+                        text : inherits: true;
+                        value : true
+                    }
+                    [3] : {
+                        name : initial-value
+                        value : 0
+                    }
+                    [4] : {
+                        name : inherits
+                        value : true
+                    }
+                ]
+                cssText : syntax: "<len>"; initial-value: 0; inherits: true;
+                range : {
+                    endColumn : 65
+                    endLine : 1
+                    startColumn : 15
+                    startLine : 1
+                }
+                shorthandEntries : [
+                ]
+                styleSheetId : <string>
+            }
+        ]
+    }
     sessionId : <string>
 }
 {

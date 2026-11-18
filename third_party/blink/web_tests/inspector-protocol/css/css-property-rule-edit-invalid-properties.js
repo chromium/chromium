@@ -9,7 +9,7 @@
 </style>
 <span class="foo">test
   `,
-      'Test that property rules cannot be rendered invalid by edits');
+      'Test property rule edits with invalid or omitted descriptors');
 
   await dp.DOM.enable();
   await dp.CSS.enable();
@@ -27,38 +27,22 @@
   const {result: {cssPropertyRules}} =
       await dp.CSS.getMatchedStylesForNode({nodeId: nodes.get('body')});
   const {styleSheetId, range} = cssPropertyRules[0].style;
+  const {result: {text: originalText}} =
+      await dp.CSS.getStyleSheetText({styleSheetId});
 
-  {
-    const text = 'syntax: "<integer>"; initial-value: 0;';
+  async function applyEdit(text) {
     const edits = [{styleSheetId, range, text}];
     const result = await dp.CSS.setStyleTexts(
         {edits, nodeForPropertySyntaxValidation: nodes.get('div')});
     testRunner.log(result);
+    // Restore the original text so each edit starts from the same state.
+    await dp.CSS.setStyleSheetText({styleSheetId, text: originalText});
   }
 
-  {
-    const text = 'syntax: "<integer>"; initial-value: red; inherits: true;';
-    const edits = [{styleSheetId, range, text}];
-    const result = await dp.CSS.setStyleTexts(
-        {edits, nodeForPropertySyntaxValidation: nodes.get('div')});
-    testRunner.log(result);
-  }
-
-  {
-    const text = 'syntax: "<len>"; initial-value: 0; inherits: true;';
-    const edits = [{styleSheetId, range, text}];
-    const result = await dp.CSS.setStyleTexts(
-        {edits, nodeForPropertySyntaxValidation: nodes.get('div')});
-    testRunner.log(result);
-  }
-
-  {
-    const text = 'syntax: "<length>"; initial-value: 0; inherits: true;';
-    const edits = [{styleSheetId, range, text}];
-    const result = await dp.CSS.setStyleTexts(
-        {edits, nodeForPropertySyntaxValidation: nodes.get('div')});
-    testRunner.log(result);
-  }
+  await applyEdit('syntax: "<integer>"; initial-value: 0;');
+  await applyEdit('syntax: "<integer>"; initial-value: red; inherits: true;');
+  await applyEdit('syntax: "<len>"; initial-value: 0; inherits: true;');
+  await applyEdit('syntax: "<length>"; initial-value: 0; inherits: true;');
 
   testRunner.completeTest();
 });

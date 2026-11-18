@@ -27,122 +27,6 @@ Test reported issues for incorrect property rules
                 code : PropertyRuleIssue
                 details : {
                     propertyRuleIssueDetails : {
-                        propertyRuleIssueReason : InvalidInitialValue
-                        sourceCodeLocation : {
-                            columnNumber : 13
-                            lineNumber : 6
-                            url : inspector-protocol-page.html
-                        }
-                    }
-                }
-            }
-        }
-        sessionId : <string>
-    }
-    [2] : {
-        method : Audits.issueAdded
-        params : {
-            issue : {
-                code : PropertyRuleIssue
-                details : {
-                    propertyRuleIssueDetails : {
-                        propertyRuleIssueReason : InvalidSyntax
-                        propertyValue : "<lengthy>"
-                        sourceCodeLocation : {
-                            columnNumber : 5
-                            lineNumber : 11
-                            url : inspector-protocol-page.html
-                        }
-                    }
-                }
-            }
-        }
-        sessionId : <string>
-    }
-    [3] : {
-        method : Audits.issueAdded
-        params : {
-            issue : {
-                code : PropertyRuleIssue
-                details : {
-                    propertyRuleIssueDetails : {
-                        propertyRuleIssueReason : InvalidInherits
-                        sourceCodeLocation : {
-                            columnNumber : 13
-                            lineNumber : 15
-                            url : inspector-protocol-page.html
-                        }
-                    }
-                }
-            }
-        }
-        sessionId : <string>
-    }
-    [4] : {
-        method : Audits.issueAdded
-        params : {
-            issue : {
-                code : PropertyRuleIssue
-                details : {
-                    propertyRuleIssueDetails : {
-                        propertyRuleIssueReason : InvalidInherits
-                        propertyValue : red
-                        sourceCodeLocation : {
-                            columnNumber : 5
-                            lineNumber : 22
-                            url : inspector-protocol-page.html
-                        }
-                    }
-                }
-            }
-        }
-        sessionId : <string>
-    }
-    [5] : {
-        method : Audits.issueAdded
-        params : {
-            issue : {
-                code : PropertyRuleIssue
-                details : {
-                    propertyRuleIssueDetails : {
-                        propertyRuleIssueReason : InvalidSyntax
-                        sourceCodeLocation : {
-                            columnNumber : 13
-                            lineNumber : 24
-                            url : inspector-protocol-page.html
-                        }
-                    }
-                }
-            }
-        }
-        sessionId : <string>
-    }
-    [6] : {
-        method : Audits.issueAdded
-        params : {
-            issue : {
-                code : PropertyRuleIssue
-                details : {
-                    propertyRuleIssueDetails : {
-                        propertyRuleIssueReason : InvalidInherits
-                        sourceCodeLocation : {
-                            columnNumber : 13
-                            lineNumber : 24
-                            url : inspector-protocol-page.html
-                        }
-                    }
-                }
-            }
-        }
-        sessionId : <string>
-    }
-    [7] : {
-        method : Audits.issueAdded
-        params : {
-            issue : {
-                code : PropertyRuleIssue
-                details : {
-                    propertyRuleIssueDetails : {
                         propertyRuleIssueReason : InvalidName
                         sourceCodeLocation : {
                             columnNumber : 13
@@ -157,5 +41,216 @@ Test reported issues for incorrect property rules
     }
 ]
 [
+    [0] : {
+        origin : regular
+        propertyName : {
+            range : {
+                endColumn : 30
+                endLine : 10
+                startColumn : 12
+                startLine : 10
+            }
+            text : --incorrect-syntax
+        }
+        style : {
+            cssProperties : [
+                [0] : {
+                    disabled : false
+                    implicit : false
+                    name : syntax
+                    parsedOk : false
+                    range : {
+                        endColumn : 24
+                        endLine : 11
+                        startColumn : 4
+                        startLine : 11
+                    }
+                    text : syntax: "<lengthy>";
+                    value : "<lengthy>"
+                }
+                [1] : {
+                    disabled : false
+                    implicit : false
+                    name : inherits
+                    range : {
+                        endColumn : 20
+                        endLine : 12
+                        startColumn : 4
+                        startLine : 12
+                    }
+                    text : inherits: false;
+                    value : false
+                }
+                [2] : {
+                    disabled : false
+                    implicit : false
+                    name : initial-value
+                    range : {
+                        endColumn : 24
+                        endLine : 13
+                        startColumn : 4
+                        startLine : 13
+                    }
+                    text : initial-value: 100%;
+                    value : 100%
+                }
+                [3] : {
+                    name : inherits
+                    value : false
+                }
+                [4] : {
+                    name : initial-value
+                    value : 100%
+                }
+            ]
+            cssText :      syntax: "<lengthy>";     inherits: false;     initial-value: 100%;   
+            range : {
+                endColumn : 2
+                endLine : 14
+                startColumn : 32
+                startLine : 10
+            }
+            shorthandEntries : [
+            ]
+            styleSheetId : <string>
+        }
+        styleSheetId : <string>
+    }
+    [1] : {
+        origin : regular
+        propertyName : {
+            range : {
+                endColumn : 30
+                endLine : 19
+                startColumn : 12
+                startLine : 19
+            }
+            text : --invalid-inherits
+        }
+        style : {
+            cssProperties : [
+                [0] : {
+                    disabled : false
+                    implicit : false
+                    name : syntax
+                    range : {
+                        endColumn : 23
+                        endLine : 20
+                        startColumn : 4
+                        startLine : 20
+                    }
+                    text : syntax: "<number>";
+                    value : "<number>"
+                }
+                [1] : {
+                    disabled : false
+                    implicit : false
+                    name : initial-value
+                    range : {
+                        endColumn : 21
+                        endLine : 21
+                        startColumn : 4
+                        startLine : 21
+                    }
+                    text : initial-value: 0;
+                    value : 0
+                }
+                [2] : {
+                    disabled : false
+                    implicit : false
+                    name : inherits
+                    parsedOk : false
+                    range : {
+                        endColumn : 18
+                        endLine : 22
+                        startColumn : 4
+                        startLine : 22
+                    }
+                    text : inherits: red;
+                    value : red
+                }
+                [3] : {
+                    name : syntax
+                    value : "<number>"
+                }
+                [4] : {
+                    name : initial-value
+                    value : 0
+                }
+            ]
+            cssText :      syntax: "<number>";     initial-value: 0;     inherits: red;   
+            range : {
+                endColumn : 2
+                endLine : 23
+                startColumn : 32
+                startLine : 19
+            }
+            shorthandEntries : [
+            ]
+            styleSheetId : <string>
+        }
+        styleSheetId : <string>
+    }
+    [2] : {
+        origin : regular
+        propertyName : {
+            range : {
+                endColumn : 30
+                endLine : 15
+                startColumn : 12
+                startLine : 15
+            }
+            text : --missing-inherits
+        }
+        style : {
+            cssProperties : [
+                [0] : {
+                    disabled : false
+                    implicit : false
+                    name : syntax
+                    range : {
+                        endColumn : 23
+                        endLine : 16
+                        startColumn : 4
+                        startLine : 16
+                    }
+                    text : syntax: "<number>";
+                    value : "<number>"
+                }
+                [1] : {
+                    disabled : false
+                    implicit : false
+                    name : initial-value
+                    range : {
+                        endColumn : 21
+                        endLine : 17
+                        startColumn : 4
+                        startLine : 17
+                    }
+                    text : initial-value: 0;
+                    value : 0
+                }
+                [2] : {
+                    name : syntax
+                    value : "<number>"
+                }
+                [3] : {
+                    name : initial-value
+                    value : 0
+                }
+            ]
+            cssText :      syntax: "<number>";     initial-value: 0;   
+            range : {
+                endColumn : 2
+                endLine : 18
+                startColumn : 32
+                startLine : 15
+            }
+            shorthandEntries : [
+            ]
+            styleSheetId : <string>
+        }
+        styleSheetId : <string>
+    }
 ]
 

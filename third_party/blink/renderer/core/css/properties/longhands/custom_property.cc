@@ -272,7 +272,8 @@ bool CustomProperty::HasInitialValue() const {
 }
 
 bool CustomProperty::SupportsGuaranteedInvalid() const {
-  return !registration_ || registration_->Syntax().IsUniversal();
+  return !registration_ || registration_->Syntax().IsUniversal() ||
+         !registration_->Initial();
 }
 
 bool CustomProperty::HasUniversalSyntax() const {

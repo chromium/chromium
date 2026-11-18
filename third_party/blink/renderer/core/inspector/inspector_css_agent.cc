@@ -1972,7 +1972,15 @@ InspectorCSSAgent::CustomPropertiesForNode(Element* element) {
     return result;
   }
 
-  for (const AtomicString& var_name : style->GetVariableNames()) {
+  // GetVariableNames() is backed by a HashSet; sort so that the protocol
+  // output has a deterministic order.
+  Vector<AtomicString> variable_names = style->GetVariableNames();
+  std::sort(variable_names.begin(), variable_names.end(),
+            [](const AtomicString& a, const AtomicString& b) {
+              return CodeUnitCompareLessThan(a, b);
+            });
+
+  for (const AtomicString& var_name : variable_names) {
     const auto* registration =
         PropertyRegistration::From(document.GetExecutionContext(), var_name);
     if (!registration) {

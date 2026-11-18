@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -31,14 +32,20 @@ String CSSPropertyRule::cssText() const {
   builder.Append("@property ");
   SerializeIdentifier(property_rule_->GetName(), builder);
   builder.Append(" {");
-  if (const CSSValue* syntax = property_rule_->GetSyntax()) {
-    DCHECK(syntax->IsStringValue());
-    AppendDescriptorIfNotEmpty(builder, "syntax", syntax->CssText());
-  }
-  if (const CSSValue* inherits = property_rule_->Inherits()) {
-    DCHECK(*inherits == *CSSIdentifierValue::Create(CSSValueID::kTrue) ||
-           *inherits == *CSSIdentifierValue::Create(CSSValueID::kFalse));
-    AppendDescriptorIfNotEmpty(builder, "inherits", inherits->CssText());
+  if (RuntimeEnabledFeatures::CSSPropertyDescriptorsOptionalEnabled()) {
+    AppendDescriptorIfNotEmpty(builder, "syntax", SerializeString(syntax()));
+    AppendDescriptorIfNotEmpty(builder, "inherits",
+                               inherits() ? "true" : "false");
+  } else {
+    if (const CSSValue* syntax = property_rule_->GetSyntax()) {
+      DCHECK(syntax->IsStringValue());
+      AppendDescriptorIfNotEmpty(builder, "syntax", syntax->CssText());
+    }
+    if (const CSSValue* inherits = property_rule_->Inherits()) {
+      DCHECK(*inherits == *CSSIdentifierValue::Create(CSSValueID::kTrue) ||
+             *inherits == *CSSIdentifierValue::Create(CSSValueID::kFalse));
+      AppendDescriptorIfNotEmpty(builder, "inherits", inherits->CssText());
+    }
   }
   AppendDescriptorIfNotEmpty(builder, "initial-value",
                              property_rule_->GetInitialValue());
@@ -76,6 +83,9 @@ String CSSPropertyRule::syntax() const {
   if (const CSSValue* syntax = property_rule_->GetSyntax()) {
     return To<CSSStringValue>(*syntax).Value();
   }
+  if (RuntimeEnabledFeatures::CSSPropertyDescriptorsOptionalEnabled()) {
+    return "*";
+  }
   return g_null_atom;
 }
 
@@ -90,7 +100,7 @@ bool CSSPropertyRule::inherits() const {
         NOTREACHED();
     }
   }
-  return false;
+  return RuntimeEnabledFeatures::CSSPropertyDescriptorsOptionalEnabled();
 }
 
 String CSSPropertyRule::initialValue() const {

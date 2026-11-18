@@ -5,6 +5,8 @@
 dictionary PropertyDefinition {
     required DOMString name;
     DOMString syntax = "*";
-    required boolean inherits;
+    // TODO(crbug.com/491802759): Default to true here when
+    // CSSPropertyDescriptorsOptional is removed.
+    boolean inherits;
     DOMString initialValue;
 };

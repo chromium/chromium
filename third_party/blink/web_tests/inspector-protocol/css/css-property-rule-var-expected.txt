@@ -391,21 +391,21 @@ Pseudo element registered properties:
 [
     [0] : {
         range : {
-            endColumn : 17
-            endLine : 3
-            startColumn : 12
-            startLine : 3
-        }
-        text : --len
-    }
-    [1] : {
-        range : {
             endColumn : 19
             endLine : 8
             startColumn : 12
             startLine : 8
         }
         text : --color
+    }
+    [1] : {
+        range : {
+            endColumn : 17
+            endLine : 3
+            startColumn : 12
+            startLine : 3
+        }
+        text : --len
     }
 ]
 
