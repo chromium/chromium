@@ -406,6 +406,7 @@ android_library("javatests") {
     "java/src/org/chromium/chrome/browser/glic/actor_login/GlicActorLoginPermissionsFragmentRenderTest.java",
     "java/src/org/chromium/chrome/browser/glic/toolbar_button/GlicTaskMenuRenderTest.java",
     "java/src/org/chromium/chrome/browser/glic/toolbar_button/GlicToolbarButtonRenderTest.java",
+    "java/src/org/chromium/chrome/browser/glic/ui/GlicLoadingPlaceholderViewRenderTest.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicMicPermissionDialogRenderTest.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicPromoBottomSheetRenderTest.java",
   ]
