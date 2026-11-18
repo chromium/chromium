@@ -9,9 +9,10 @@
 #include <winevt.h>
 
 #include <memory>
-#include <unordered_map>
+#include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
@@ -89,11 +90,11 @@ constexpr const wchar_t* kEventLogValuePaths[] = {
     L"Event/System/EventRecordID", L"Event/System/TimeCreated/@SystemTime"};
 
 // Mapping from the string values of log levels to their integral values.
-const std::unordered_map<std::wstring, uint32_t>
-    kEventLogLevelStrToIntValueMap = {{L"Critical", 1},
-                                      {L"Error", 2},
-                                      {L"Warning", 3},
-                                      {L"Information", 4}};
+constexpr auto kEventLogLevelStrToIntValueMap =
+    base::MakeFixedFlatMap<std::wstring_view, uint32_t>({{L"Critical", 1},
+                                                         {L"Error", 2},
+                                                         {L"Warning", 3},
+                                                         {L"Information", 4}});
 
 // Helper class to read event log entries sequentially through the Windows
 // event logging API.
@@ -316,9 +317,9 @@ bool EventLogReader::ReadEventLogEntryFromEvent(
   if (!GetFormattedMessage(event_handle, EvtFormatMessageLevel, &level_str))
     return false;
 
-  if (kEventLogLevelStrToIntValueMap.find(level_str) !=
-      kEventLogLevelStrToIntValueMap.end()) {
-    log_entry->severity_level = kEventLogLevelStrToIntValueMap.at(level_str);
+  auto it = kEventLogLevelStrToIntValueMap.find(level_str);
+  if (it != kEventLogLevelStrToIntValueMap.end()) {
+    log_entry->severity_level = it->second;
   } else {
     log_entry->severity_level = 0;
   }
