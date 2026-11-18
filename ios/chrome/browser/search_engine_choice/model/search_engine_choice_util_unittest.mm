@@ -72,8 +72,8 @@ class SearchEngineChoiceUtilTest : public PlatformTest {
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         ios::RegionalCapabilitiesServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildRegionalCapabilitiesServiceWithFakeClient,
-                            country_codes::CountryId(country_code_)));
+        base::BindOnce(&BuildRegionalCapabilitiesServiceWithFakeClient,
+                       country_codes::CountryId(country_code_)));
     profile_ = std::move(builder).Build();
     template_url_service_ =
         ios::TemplateURLServiceFactory::GetForProfile(profile_.get());

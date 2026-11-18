@@ -63,7 +63,7 @@ class SettingsNavigationControllerTest : public PlatformTest {
         base::BindOnce(&password_manager::BuildPasswordStore<
                        password_manager::TestPasswordStore>));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     DiscoverFeedVisibilityBrowserAgent::CreateForBrowser(browser_.get());

@@ -61,7 +61,7 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
 
     ProfileIOS* profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));

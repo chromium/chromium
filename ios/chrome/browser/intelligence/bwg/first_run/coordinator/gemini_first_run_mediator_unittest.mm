@@ -50,7 +50,7 @@ class GeminiFirstRunMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindOnce(
@@ -61,7 +61,7 @@ class GeminiFirstRunMediatorTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         GeminiServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<FakeGeminiService>));
+        base::BindOnce(&std::make_unique<FakeGeminiService>));
 
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());

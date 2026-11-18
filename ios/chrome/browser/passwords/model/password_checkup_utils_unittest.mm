@@ -98,7 +98,7 @@ class PasswordCheckupUtilsTest : public PlatformTest {
             &password_manager::BuildPasswordStore<TestPasswordStore>));
     builder.AddTestingFactory(
         IOSChromeAffiliationServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<affiliations::FakeAffiliationService>));
     profile_ = std::move(builder).Build();
     store_ =

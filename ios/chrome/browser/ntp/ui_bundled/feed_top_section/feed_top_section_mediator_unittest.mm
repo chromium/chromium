@@ -45,7 +45,7 @@ class FeedTopSectionMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     fake_profile_ = std::move(builder).Build();
     fake_authentication_service_ = GetAuthenticationService();
     fake_pref_service_ = fake_profile_->GetPrefs();

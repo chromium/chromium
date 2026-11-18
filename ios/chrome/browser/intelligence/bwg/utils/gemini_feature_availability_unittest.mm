@@ -44,8 +44,8 @@ class GeminiFeatureAvailabilityTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
 
     if (can_use_model_execution.has_value()) {

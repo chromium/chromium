@@ -50,8 +50,8 @@ class FirstRunScreenProviderTest : public PlatformTest {
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         ios::RegionalCapabilitiesServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildRegionalCapabilitiesServiceWithFakeClient,
-                            country_codes::CountryId(country_code)));
+        base::BindOnce(&BuildRegionalCapabilitiesServiceWithFakeClient,
+                       country_codes::CountryId(country_code)));
     return std::move(builder).Build();
   }
 

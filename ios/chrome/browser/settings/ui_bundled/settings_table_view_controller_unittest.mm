@@ -94,7 +94,7 @@ class SettingsTableViewControllerTest
         base::BindOnce(
             &std::make_unique<feature_engagement::test::MockTracker>));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
@@ -109,7 +109,7 @@ class SettingsTableViewControllerTest
                        password_manager::TestPasswordStore>));
     builder.AddTestingFactory(
         ExtensionServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<FakeExtensionService>));
+        base::BindOnce(&std::make_unique<FakeExtensionService>));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     // Prepare mocks for PushNotificationClient dependency

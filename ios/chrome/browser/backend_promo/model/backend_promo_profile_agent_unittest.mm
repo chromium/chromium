@@ -44,7 +44,7 @@ class BackendPromoProfileAgentTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         BackendPromoServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<FakeBackendPromoService>));
+        base::BindOnce(&std::make_unique<FakeBackendPromoService>));
     profile_ = std::move(builder).Build();
 
     profile_state_ = [[ProfileState alloc] initWithAppState:nil];

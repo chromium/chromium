@@ -45,7 +45,7 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
   SyncErrorInfobarBannerOverlayMediatorTest() {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_ = std::move(builder).Build();
 
     // Create an InfoBarIOS with a MockSyncErrorInfobarDelegate.

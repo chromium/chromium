@@ -54,7 +54,7 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(TipsManagerIOSFactory::GetInstance(),
                               TipsManagerIOSFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();

@@ -104,11 +104,11 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
                               ios::HistoryServiceFactory::GetDefaultFactory());
 
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
 
     builder.AddTestingFactory(
         SessionSyncServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<testing::NiceMock<MockSessionSyncService>>));
     builder.AddTestingFactory(
         IOSChromeTabRestoreServiceFactory::GetInstance(),

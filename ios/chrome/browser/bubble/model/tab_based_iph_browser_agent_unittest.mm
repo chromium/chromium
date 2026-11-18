@@ -63,12 +63,12 @@ class TabBasedIPHBrowserAgentTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<
                 testing::NiceMock<feature_engagement::test::MockTracker>>));
     builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<send_tab_to_self::StubSendTabToSelfSyncService>));
     profile_ = std::move(builder).Build();
     ON_CALL(*mock_tracker(), WouldTriggerHelpUI(testing::Ref(

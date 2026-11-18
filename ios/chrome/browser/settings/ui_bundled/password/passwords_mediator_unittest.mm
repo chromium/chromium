@@ -147,7 +147,7 @@ class PasswordsMediatorTest : public BlockCleanupTest {
             &std::make_unique<affiliations::FakeAffiliationService>));
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<feature_engagement::test::MockTracker>));
     profile_ = std::move(builder).Build();
 

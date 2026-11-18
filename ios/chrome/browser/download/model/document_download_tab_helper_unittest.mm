@@ -40,7 +40,7 @@ class DocumentDownloadTabHelperTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(
         BrowserDownloadServiceFactory::GetInstance(),
         BrowserDownloadServiceFactory::GetDefaultFactory());

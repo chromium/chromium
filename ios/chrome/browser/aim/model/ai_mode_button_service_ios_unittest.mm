@@ -85,19 +85,18 @@ class AIModeButtonServiceIOSTest : public PlatformTest {
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &MockIOSChromeAimEligibilityService::CreateTestingProfileService));
     builder.AddTestingFactory(
         IOSChromeFaviconLoaderFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<NiceMock<MockFaviconLoader>>));
+        base::BindOnce(&std::make_unique<NiceMock<MockFaviconLoader>>));
     builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<NiceMock<favicon::MockFaviconService>>));
     builder.AddTestingFactory(
         ImageFetcherServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &std::make_unique<NiceMock<MockImageFetcherService>>));
+        base::BindOnce(&std::make_unique<NiceMock<MockImageFetcherService>>));
     profile_ = std::move(builder).Build();
 
     template_url_service_ =

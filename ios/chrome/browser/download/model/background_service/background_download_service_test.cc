@@ -100,7 +100,7 @@ class BackgroundDownloadServiceTest
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         BackgroundDownloadServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &BackgroundDownloadServiceTest::MakeBackgroundDowloadService,
             base::Unretained(this)));
     profile_ = std::move(builder).Build();

@@ -53,7 +53,7 @@ class ModelLedSuggestionsServiceImplTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateFakeOptimizationGuideService));
+        base::BindOnce(&CreateFakeOptimizationGuideService));
     profile_ = std::move(builder).Build();
 
     // Cache the fake service pointer for testing.

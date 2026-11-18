@@ -82,7 +82,7 @@ class BrowserLifecycleManagerTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateTestSyncService));
+        base::BindOnce(&CreateTestSyncService));
     test_profile_builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());

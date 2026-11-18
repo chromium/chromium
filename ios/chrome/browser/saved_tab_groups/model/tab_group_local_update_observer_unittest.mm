@@ -85,7 +85,7 @@ class TabGroupLocalUpdateObserverTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         TabGroupSyncServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<MockTabGroupSyncService>));
+        base::BindOnce(&std::make_unique<MockTabGroupSyncService>));
     builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());

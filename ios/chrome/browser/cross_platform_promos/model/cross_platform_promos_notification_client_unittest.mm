@@ -43,7 +43,7 @@ class CrossPlatformPromosNotificationClientTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         CrossPlatformPromosServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<MockCrossPlatformPromosService, ProfileIOS&>));
     profile_ = std::move(builder).Build();
 

@@ -43,7 +43,7 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
       : enabled_state_provider_(/*consent=*/false, /*enabled=*/false) {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
                               ios::HistoryServiceFactory::GetDefaultFactory());
     profile_manager_.AddProfileWithBuilder(std::move(builder));

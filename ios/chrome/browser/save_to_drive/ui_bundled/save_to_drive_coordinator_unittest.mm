@@ -67,10 +67,10 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());

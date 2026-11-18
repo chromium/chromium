@@ -58,7 +58,7 @@ class AddPasswordCoordinatorTest : public PlatformTest {
                        password_manager::TestPasswordStore>));
 
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncService));
+                              base::BindOnce(&CreateMockSyncService));
 
     builder.AddTestingFactory(
         IOSPasswordRequirementsServiceFactory::GetInstance(),

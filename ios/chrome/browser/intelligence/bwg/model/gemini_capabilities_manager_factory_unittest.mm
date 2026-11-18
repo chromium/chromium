@@ -34,7 +34,7 @@ class GeminiCapabilitiesManagerFactoryTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(
         GeminiServiceFactory::GetInstance(),
         base::BindOnce(&std::make_unique<FakeGeminiService>));

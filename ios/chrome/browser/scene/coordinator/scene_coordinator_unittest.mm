@@ -110,8 +110,8 @@ class SceneCoordinatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());

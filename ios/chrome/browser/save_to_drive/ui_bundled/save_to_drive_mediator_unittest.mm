@@ -85,10 +85,10 @@ class SaveToDriveMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     fake_system_identity_manager_ =
         FakeSystemIdentityManager::FromSystemIdentityManager(

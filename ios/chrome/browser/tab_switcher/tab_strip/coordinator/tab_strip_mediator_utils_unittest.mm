@@ -45,7 +45,7 @@ class TabStripMediatorUtilsTest : public PlatformTest {
     TestProfileIOS::Builder profile_builder;
     profile_builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<
                 testing::NiceMock<tab_groups::MockTabGroupSyncService>>));
     profile_builder.AddTestingFactory(

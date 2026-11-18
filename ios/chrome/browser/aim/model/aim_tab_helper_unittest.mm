@@ -33,7 +33,7 @@ class AimTabHelperTest : public PlatformTest {
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &MockIOSChromeAimEligibilityService::CreateTestingProfileService));
     profile_ = std::move(builder).Build();
 

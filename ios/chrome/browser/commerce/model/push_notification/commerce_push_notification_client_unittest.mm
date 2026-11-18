@@ -163,8 +163,8 @@ class CommercePushNotificationClientTest : public PlatformTest {
                               ios::BookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<
-                            testing::NiceMock<commerce::MockShoppingService>>));
+        base::BindOnce(&std::make_unique<
+                       testing::NiceMock<commerce::MockShoppingService>>));
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());

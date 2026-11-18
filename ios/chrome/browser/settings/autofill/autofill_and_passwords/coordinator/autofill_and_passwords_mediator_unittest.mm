@@ -43,11 +43,11 @@ class AutofillAndPasswordsMediatorTest : public PlatformTest {
     builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),
                               ios::WebDataServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
 
     profile_ = std::move(builder).Build();
     pref_service_ = profile_->GetPrefs();

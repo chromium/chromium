@@ -55,7 +55,7 @@ class PromosManagerCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_ = std::move(builder).Build();
 
     view_controller_ = [[UIViewController alloc] init];

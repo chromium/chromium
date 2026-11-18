@@ -69,7 +69,7 @@ class HttpsOnlyModeUpgradeTabHelperTest
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         HttpsUpgradeServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<FakeHttpsUpgradeService>));
+        base::BindOnce(&std::make_unique<FakeHttpsUpgradeService>));
 
     profile_ = std::move(builder).Build();
     web_state_.SetBrowserState(profile_.get());

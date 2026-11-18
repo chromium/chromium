@@ -91,8 +91,8 @@ class ConnectorsServiceTest : public PlatformTest {
     auto profile_builder = TestProfileIOS::Builder();
     profile_builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     profile_builder.SetUserCloudPolicyManager(std::move(cloud_policy_manager));
     profile_ = std::move(profile_builder).Build();
 

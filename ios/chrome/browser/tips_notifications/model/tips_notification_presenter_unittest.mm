@@ -47,7 +47,7 @@ class TipsNotificationPresenterTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncService));
+                              base::BindOnce(&CreateMockSyncService));
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(

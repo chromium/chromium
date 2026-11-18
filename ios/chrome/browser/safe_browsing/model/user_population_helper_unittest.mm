@@ -225,8 +225,8 @@ TEST_F(UserPopulationHelperTest, PopulatesSignedIn) {
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       IdentityManagerFactory::GetInstance(),
-      base::BindRepeating(&IdentityTestEnvironmentBrowserStateAdaptor::
-                              BuildIdentityManagerForTests));
+      base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                         BuildIdentityManagerForTests));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
 
   safe_browsing::ChromeUserPopulation population =
@@ -247,7 +247,7 @@ TEST_F(UserPopulationHelperTest, PopulatesSync) {
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                            base::BindRepeating(&CreateTestSyncService));
+                            base::BindOnce(&CreateTestSyncService));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
 
   syncer::TestSyncService* sync_service = static_cast<syncer::TestSyncService*>(

@@ -41,7 +41,7 @@ class TrustedVaultReauthenticationCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
     FakeSystemIdentityManager* system_identity_manager =

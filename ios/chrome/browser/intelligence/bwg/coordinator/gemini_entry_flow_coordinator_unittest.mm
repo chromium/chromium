@@ -61,10 +61,10 @@ class GeminiEntryFlowCoordinatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(&IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
@@ -78,7 +78,7 @@ class GeminiEntryFlowCoordinatorTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         GeminiServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<FakeGeminiService>));
+        base::BindOnce(&std::make_unique<FakeGeminiService>));
 
     scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));

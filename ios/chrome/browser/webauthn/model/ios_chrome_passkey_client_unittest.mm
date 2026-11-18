@@ -106,13 +106,13 @@ class IOSChromePasskeyClientTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncService));
+                              base::BindOnce(&CreateMockSyncService));
     builder.AddTestingFactory(
         IOSDeviceAuthorizationServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<webauthn::MockDeviceAuthorizationService>));
     profile_ = std::move(builder).Build();
 

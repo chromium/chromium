@@ -78,7 +78,7 @@ class KeyCommandsProviderTest : public PlatformTest {
     builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
                               ios::BookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_ = std::move(builder).Build();
     scene_state_ = [[SceneState alloc] init];
     LayoutGuideSceneAgent* layout_guide_scene_agent =

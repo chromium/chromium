@@ -159,12 +159,12 @@ class GeminiBrowserAgentTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetDefaultFactory());
     profile_builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<feature_engagement::test::MockTracker>));
     profile_builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     personal_profile_ =
         profile_manager_.AddProfileWithBuilder(std::move(profile_builder));
 

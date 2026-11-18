@@ -58,7 +58,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncService));
+                              base::BindOnce(&CreateMockSyncService));
     personal_profile_ =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
 

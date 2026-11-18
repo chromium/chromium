@@ -47,7 +47,7 @@ class UniversalOptOutTableViewControllerTest
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         ExtensionServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<FakeExtensionService>));
+        base::BindOnce(&std::make_unique<FakeExtensionService>));
     profile_ = std::move(builder).Build();
     profile_->GetPrefs()->SetBoolean(
         universal_optout::prefs::kUniversalOptOutEnabled, false);

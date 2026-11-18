@@ -227,12 +227,11 @@ class ClientSideDetectionHostIOSTest : public PlatformTest {
   ClientSideDetectionHostIOSTest()
       : profile_([]() {
           TestProfileIOS::Builder builder;
-          builder.AddTestingFactory(
-              SyncServiceFactory::GetInstance(),
-              base::BindRepeating(&CreateTestSyncService));
+          builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                                    base::BindOnce(&CreateTestSyncService));
           builder.AddTestingFactory(
               ClientSideDetectionServiceFactory::GetInstance(),
-              base::BindRepeating(&BuildMockClientSideDetectionService));
+              base::BindOnce(&BuildMockClientSideDetectionService));
           return std::move(builder).Build();
         }()),
         mock_service_(profile_->GetPrefs(), &test_opt_guide_) {
@@ -754,7 +753,7 @@ TEST_F(ClientSideDetectionHostIOSTest, OffTheRecordPreventsHostCreation) {
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       ClientSideDetectionServiceFactory::GetInstance(),
-      base::BindRepeating(&BuildMockClientSideDetectionService));
+      base::BindOnce(&BuildMockClientSideDetectionService));
   std::unique_ptr<TestProfileIOS> original_profile = std::move(builder).Build();
   ProfileIOS* otr_profile = original_profile->GetOffTheRecordProfile();
 

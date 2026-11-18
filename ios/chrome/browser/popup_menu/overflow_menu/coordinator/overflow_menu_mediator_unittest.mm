@@ -212,7 +212,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
 
     personal_profile_ =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
@@ -905,7 +905,7 @@ TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoShownForUserLevelPolicies) {
   builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
                             AuthenticationServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                            base::BindRepeating(&CreateTestSyncService));
+                            base::BindOnce(&CreateTestSyncService));
   TestProfileIOS* managed_profile = AddManagedProfileWithBuilder(
       profile_manager_, fake_system_identity, std::move(builder));
 

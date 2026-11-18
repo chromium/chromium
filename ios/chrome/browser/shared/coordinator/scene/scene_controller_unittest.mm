@@ -139,8 +139,8 @@ class SceneControllerTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),
         SendTabToSelfSyncServiceFactory::GetDefaultFactory());
@@ -169,7 +169,7 @@ class SceneControllerTest : public PlatformTest {
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
         tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.SetSharedURLLoaderFactory(
         test_loader_factory_.GetSafeWeakWrapper());
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));

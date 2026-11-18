@@ -109,7 +109,7 @@ void GridMediatorTestClass::SetUp() {
   builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
                             FakeTabRestoreService::GetTestingFactory());
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                            base::BindRepeating(&CreateMockSyncService));
+                            base::BindOnce(&CreateMockSyncService));
   builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
                             AuthenticationServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),

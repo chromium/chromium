@@ -72,8 +72,7 @@ void PassphraseTableViewControllerTest::SetUp() {
                             AuthenticationServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(
       SyncServiceFactory::GetInstance(),
-      base::BindRepeating(
-          &std::make_unique<NiceMock<syncer::MockSyncService>>));
+      base::BindOnce(&std::make_unique<NiceMock<syncer::MockSyncService>>));
   RegisterTestingFactories(builder);
   builder.SetPrefService(CreatePrefService());
   profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));

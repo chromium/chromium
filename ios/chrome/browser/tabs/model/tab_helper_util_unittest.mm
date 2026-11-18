@@ -61,7 +61,7 @@ class TabHelperUtilTest : public PlatformTest,
   TabHelperUtilTest() {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_ = std::move(builder).Build();
 
     web_state_.SetBrowserState(profile_.get());
@@ -83,7 +83,7 @@ class TabHelperUtilTest : public PlatformTest,
   void UseProfileWithEnterpriseProxyServices() {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(
         EnterpriseProxyServiceFactoryIOS::GetInstance(),
         base::BindOnce(&std::make_unique<testing::NiceMock<

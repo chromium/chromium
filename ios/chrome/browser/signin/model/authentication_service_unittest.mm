@@ -103,7 +103,7 @@ class AuthenticationServiceTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.SetPrefService(CreatePrefService());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncService));
+                              base::BindOnce(&CreateMockSyncService));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());

@@ -164,10 +164,10 @@ class DataProtectionTabHelperTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<FakeRealTimeUrlLookupService>));
+        base::BindOnce(&std::make_unique<FakeRealTimeUrlLookupService>));
     builder.AddTestingFactory(
         DataProtectionUrlLookupServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<
                 enterprise_data_protection::DataProtectionUrlLookupService>));
     builder.SetSharedURLLoaderFactory(

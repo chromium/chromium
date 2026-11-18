@@ -21,7 +21,7 @@ class CobrowseUtilTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &MockIOSChromeAimEligibilityService::CreateTestingProfileService));
     profile_ = std::move(builder).Build();
   }

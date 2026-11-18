@@ -53,7 +53,7 @@ TestProfileIOS::Builder CreateProfileBuilder() {
   builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
                             AuthenticationServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                            base::BindRepeating(&CreateTestSyncService));
+                            base::BindOnce(&CreateTestSyncService));
   return builder;
 }
 

@@ -36,7 +36,7 @@ class InProcessCategoryClassificationServiceFactoryTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         InProcessCategoryClassificationServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildTestInProcessClassificationService));
+        base::BindOnce(&BuildTestInProcessClassificationService));
     return std::move(builder).Build();
   }
 

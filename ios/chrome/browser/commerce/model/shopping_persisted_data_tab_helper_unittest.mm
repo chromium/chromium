@@ -69,10 +69,10 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncService));
+                              base::BindOnce(&CreateMockSyncService));
     builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
-        base::BindRepeating(&commerce::MockShoppingService::Build));
+        base::BindOnce(&commerce::MockShoppingService::Build));
 
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     profile_->GetPrefs()->SetBoolean(

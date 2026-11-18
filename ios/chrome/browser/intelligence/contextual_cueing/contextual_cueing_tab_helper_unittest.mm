@@ -374,30 +374,30 @@ class ContextualCueingTabHelperTest : public PlatformTest {
 
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(feature_engagement::TrackerFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestTracker));
+                              base::BindOnce(&CreateTestTracker));
     builder.AddTestingFactory(GeminiServiceFactory::GetInstance(),
-                              base::BindRepeating(&BuildFakeGeminiService));
+                              base::BindOnce(&BuildFakeGeminiService));
     builder.AddTestingFactory(
         InProcessCategoryClassificationServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildTestInProcessClassificationService));
+        base::BindOnce(&BuildTestInProcessClassificationService));
     builder.AddTestingFactory(
         OnDevicePageClassificationServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildTestPageClassificationService));
+        base::BindOnce(&BuildTestPageClassificationService));
     builder.AddTestingFactory(
         PageClassificationServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<FakePageClassificationService>));
+        base::BindOnce(&std::make_unique<FakePageClassificationService>));
     builder.AddTestingFactory(
         ContextualCueingCapTrackerServiceFactory::GetInstance(),
         ContextualCueingCapTrackerServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateFakeOptimizationGuideService));
+        base::BindOnce(&CreateFakeOptimizationGuideService));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(&IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
                               ios::HistoryServiceFactory::GetDefaultFactory());
     AddTestingFactories(builder);
@@ -618,10 +618,10 @@ TEST_F(ContextualCueingTabHelperTest,
   // Use a separate profile because `SetUp()` eagerly creates the services.
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(GeminiServiceFactory::GetInstance(),
-                            base::BindRepeating(&BuildFakeGeminiService));
+                            base::BindOnce(&BuildFakeGeminiService));
   builder.AddTestingFactory(
       InProcessCategoryClassificationServiceFactory::GetInstance(),
-      base::BindRepeating(&BuildTestInProcessClassificationService));
+      base::BindOnce(&BuildTestInProcessClassificationService));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   web::FakeWebState web_state;
   web_state.SetBrowserState(profile.get());
@@ -2818,9 +2818,8 @@ class ContextualCueingTabHelperPrivateInsightsTest
   }
 
   void AddTestingFactories(TestProfileIOS::Builder& builder) override {
-    builder.AddTestingFactory(
-        PrivateInsightsServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildMockPrivateInsightsService));
+    builder.AddTestingFactory(PrivateInsightsServiceFactory::GetInstance(),
+                              base::BindOnce(&BuildMockPrivateInsightsService));
   }
 
   // Simulates a committed navigation of `web_state_` to `url`.

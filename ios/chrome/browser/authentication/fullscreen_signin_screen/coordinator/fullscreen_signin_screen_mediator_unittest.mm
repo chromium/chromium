@@ -131,7 +131,7 @@ class FullscreenSigninScreenMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     // The profile must be registered with the profile manager so that the
     // identities on the device are attached to it.
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));

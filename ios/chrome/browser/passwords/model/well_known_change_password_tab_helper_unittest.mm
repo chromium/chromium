@@ -94,7 +94,7 @@ class WellKnownChangePasswordTabHelperTest : public PlatformTest {
 
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(IOSChromeAffiliationServiceFactory::GetInstance(),
-                              base::BindRepeating(&MakeMockAffiliationService));
+                              base::BindOnce(&MakeMockAffiliationService));
     builder.SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
     profile_ = std::move(builder).Build();

@@ -279,7 +279,7 @@ class MagicStackRankingModelTest : public PlatformTest {
     builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
                               ios::HistoryServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncService));
+                              base::BindOnce(&CreateMockSyncService));
     builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
@@ -292,13 +292,13 @@ class MagicStackRankingModelTest : public PlatformTest {
         ReadingListModelTestingFactoryWithFakeStorage({}));
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&BuildFeatureEngagementMockTracker));
+        base::BindOnce(&BuildFeatureEngagementMockTracker));
     builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
-        base::BindRepeating(&commerce::MockShoppingService::Build));
+        base::BindOnce(&commerce::MockShoppingService::Build));
     builder.AddTestingFactory(TipsManagerIOSFactory::GetInstance(),
                               TipsManagerIOSFactory::GetDefaultFactory());
 

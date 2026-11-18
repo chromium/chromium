@@ -76,10 +76,10 @@ class SafeBrowsingCoordinatorTest : public PlatformTest {
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(
         TailoredSecurityServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildMockTailoredSecurityService));
+        base::BindOnce(&BuildMockTailoredSecurityService));
     test_profile_builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateTestSyncService));
+        base::BindOnce(&CreateTestSyncService));
     profile_ = std::move(test_profile_builder).Build();
 
     client_ = std::make_unique<FakeSafeBrowsingClient>(profile_->GetPrefs());

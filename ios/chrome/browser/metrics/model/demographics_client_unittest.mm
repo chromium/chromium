@@ -26,7 +26,7 @@ class DemographicsClientTest : public PlatformTest {
   DemographicsClientTest() {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_manager_.AddProfileWithBuilder(std::move(builder));
   }
 

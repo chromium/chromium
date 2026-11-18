@@ -76,11 +76,11 @@ class EnhancedCalendarServiceImplTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateFakeOptimizationGuideService));
+        base::BindOnce(&CreateFakeOptimizationGuideService));
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(&IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     profile_ = std::move(builder).Build();
 
     fake_optimization_guide_service_ =

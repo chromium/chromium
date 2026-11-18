@@ -48,7 +48,7 @@ class ManageSyncSettingsCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<syncer::MockSyncService>));
+        base::BindOnce(&std::make_unique<syncer::MockSyncService>));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     FakeSystemIdentityManager* fake_system_identity_manager =

@@ -55,7 +55,7 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(
         IOSChromeFaviconLoaderFactory::GetInstance(),
         IOSChromeFaviconLoaderFactory::GetDefaultFactory());

@@ -102,7 +102,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
         tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(
         BringAndroidTabsToIOSServiceFactory::GetInstance(),
         KeyedServiceTestingFactoryIOS{});

@@ -23,7 +23,7 @@ class AuthenticationServiceObserverBridgeTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_ = std::move(builder).Build();
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
   }

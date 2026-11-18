@@ -57,7 +57,7 @@ class AimCobrowseJavaScriptFeatureTest : public PlatformTest {
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
-        base::BindRepeating([](ProfileIOS& profile) {
+        base::BindOnce([](ProfileIOS& profile) {
           auto service =
               std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
                   *profile.GetPrefs(),

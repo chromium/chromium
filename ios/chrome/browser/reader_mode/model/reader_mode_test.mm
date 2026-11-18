@@ -68,10 +68,9 @@ void ReaderModeTest::SetUp() {
                             base::BindOnce(&BuildSafeBrowsingClient));
   builder.AddTestingFactory(
       feature_engagement::TrackerFactory::GetInstance(),
-      base::BindRepeating(
-          &std::make_unique<feature_engagement::test::MockTracker>));
+      base::BindOnce(&std::make_unique<feature_engagement::test::MockTracker>));
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                            base::BindRepeating(&CreateTestSyncService));
+                            base::BindOnce(&CreateTestSyncService));
   profile_ = std::move(builder).Build();
 
   // Ensure that kOfferTranslateEnabled is enabled.

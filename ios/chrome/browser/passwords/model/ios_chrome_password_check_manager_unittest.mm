@@ -118,7 +118,7 @@ class IOSChromePasswordCheckManagerTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeBulkLeakCheckServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<MockBulkLeakCheckService>));
+        base::BindOnce(&std::make_unique<MockBulkLeakCheckService>));
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindOnce(

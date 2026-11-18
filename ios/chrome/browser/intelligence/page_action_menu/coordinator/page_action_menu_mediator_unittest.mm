@@ -103,19 +103,19 @@ class PageActionMenuMediatorTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         GeminiServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<FakeGeminiService>));
+        base::BindOnce(&std::make_unique<FakeGeminiService>));
 
     browser_state_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 

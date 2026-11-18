@@ -101,7 +101,7 @@ class PasswordManagerViewControllerTest
         base::BindOnce(
             &std::make_unique<affiliations::FakeAffiliationService>));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
 
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());

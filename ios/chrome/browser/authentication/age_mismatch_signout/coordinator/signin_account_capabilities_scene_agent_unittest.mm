@@ -68,8 +68,8 @@ class SigninAccountCapabilitiesSceneAgentTest : public PlatformTest {
                               SyncServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     app_state_ = OCMClassMock([AppState class]);

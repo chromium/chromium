@@ -59,16 +59,16 @@ class GeminiAvailabilityTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(&IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         GeminiServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<FakeGeminiService>));
+        base::BindOnce(&std::make_unique<FakeGeminiService>));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     fake_gemini_service_ = static_cast<FakeGeminiService*>(
         GeminiServiceFactory::GetForProfile(profile_));

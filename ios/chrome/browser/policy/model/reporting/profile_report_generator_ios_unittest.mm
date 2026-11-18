@@ -150,13 +150,13 @@ class ProfileReportGeneratorIOSTest
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         enterprise::ProfileIdServiceFactoryIOS::GetInstance(),
-        base::BindRepeating(&CreateProfileIdService));
+        base::BindOnce(&CreateProfileIdService));
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     if (affiliation == Affiliation::kAffiliated) {
       InitProfileAffiliation();
     }

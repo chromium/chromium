@@ -76,8 +76,8 @@ class ProfileSignalsCollectorIOSTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     builder.SetUserCloudPolicyManager(std::move(cloud_policy_manager));
 
     profile_ = std::move(builder).Build();

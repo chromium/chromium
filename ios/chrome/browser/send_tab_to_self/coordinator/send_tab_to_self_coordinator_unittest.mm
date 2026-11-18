@@ -65,10 +65,10 @@ class SendTabToSelfCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateTestSyncService));
+        base::BindOnce(&CreateTestSyncService));
     test_profile_builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<send_tab_to_self::StubSendTabToSelfSyncService>));
 
     profile_ =

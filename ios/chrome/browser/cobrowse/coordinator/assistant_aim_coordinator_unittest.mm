@@ -126,14 +126,14 @@ class AssistantAIMCoordinatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &MockIOSChromeAimEligibilityService::CreateTestingProfileService));
     // Services used by the tab helpers attached to the coordinator's WebState.
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_ = std::move(builder).Build();
     scene_state_ = [[SceneState alloc] init];
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);

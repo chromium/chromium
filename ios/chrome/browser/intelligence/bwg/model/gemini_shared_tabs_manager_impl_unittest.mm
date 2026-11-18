@@ -67,8 +67,8 @@ class GeminiSharedTabsManagerImplTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetDefaultFactory());
     profile_builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     personal_profile_ =
         profile_manager_.AddProfileWithBuilder(std::move(profile_builder));
 

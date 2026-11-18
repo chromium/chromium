@@ -53,7 +53,7 @@ class ManualFillAllPasswordCoordinatorTest : public PlatformTest {
                        password_manager::TestPasswordStore>));
 
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncService));
+                              base::BindOnce(&CreateMockSyncService));
     builder.AddTestingFactory(ReauthenticationServiceFactory::GetInstance(),
                               base::BindOnce(&CreateFakeReauthService));
 

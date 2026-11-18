@@ -359,7 +359,7 @@ class TaskOrchestratorProfileSwitchTest : public TaskOrchestratorTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     identity_ = [FakeSystemIdentity fakeIdentity1];
@@ -685,7 +685,7 @@ TEST_F(TaskOrchestratorTest, TestClearTasksForSceneDuringProfileSwitch) {
   builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
                             AuthenticationServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                            base::BindRepeating(&CreateTestSyncService));
+                            base::BindOnce(&CreateTestSyncService));
   TestProfileIOS* profile =
       profile_manager.AddProfileWithBuilder(std::move(builder));
 
@@ -763,7 +763,7 @@ FakeChangeProfileCommands* SwitchProfileForGoogleOneDeepLinkTask(
   builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
                             AuthenticationServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                            base::BindRepeating(&CreateTestSyncService));
+                            base::BindOnce(&CreateTestSyncService));
   TestProfileIOS* profile =
       profile_manager.AddProfileWithBuilder(std::move(builder));
 

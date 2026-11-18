@@ -133,8 +133,8 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
@@ -142,7 +142,7 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
                               PhotosServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         GeminiServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<FakeGeminiService>));
+        base::BindOnce(&std::make_unique<FakeGeminiService>));
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     std::unique_ptr<web::FakeWebState> web_state =

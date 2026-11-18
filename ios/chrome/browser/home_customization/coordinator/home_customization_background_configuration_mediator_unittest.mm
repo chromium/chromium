@@ -111,10 +111,10 @@ class HomeCustomizationBackgroundConfigurationMediatorTest
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(
         UserUploadedImageManagerFactory::GetInstance(),
-        base::BindRepeating(&CreateUserUploadedImageManager));
+        base::BindOnce(&CreateUserUploadedImageManager));
     test_profile_builder.AddTestingFactory(
         HomeBackgroundImageServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateBackgroundImageService));
+        base::BindOnce(&CreateBackgroundImageService));
     profile_ = std::move(test_profile_builder).Build();
 
     mock_image_fetcher_ = std::make_unique<image_fetcher::MockImageFetcher>();

@@ -94,8 +94,8 @@ class SaasUsageTabHelperTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         SaasUsageReportingControllerFactoryIOS::GetInstance(),
-        base::BindRepeating(&SaasUsageTabHelperTest::BuildMockController,
-                            base::Unretained(this)));
+        base::BindOnce(&SaasUsageTabHelperTest::BuildMockController,
+                       base::Unretained(this)));
     profile_ = std::move(builder).Build();
 
     web_state_.SetBrowserState(profile_.get());

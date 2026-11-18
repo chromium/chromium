@@ -136,7 +136,7 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),
                               ios::WebDataServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
@@ -145,10 +145,10 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
             &std::make_unique<affiliations::FakeAffiliationService>));
     builder.AddTestingFactory(
         GeminiServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<FakeGeminiService>));
+        base::BindOnce(&std::make_unique<FakeGeminiService>));
     builder.AddTestingFactory(
         IOSPersonalContextEligibilityServiceFactory::GetInstance(),
-        base::BindRepeating([](ProfileIOS&) {
+        base::BindOnce([](ProfileIOS&) {
           auto service = std::make_unique<
               testing::NiceMock<MockPersonalContextEligibilityService>>();
           ON_CALL(*service, GetEligibilityState())

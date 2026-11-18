@@ -83,12 +83,12 @@ class TabContextDecryptionTokenJavaScriptFeatureTest
     return {
         TestProfileIOS::TestingFactory{
             IdentityManagerFactory::GetInstance(),
-            base::BindRepeating(&IdentityTestEnvironmentBrowserStateAdaptor::
-                                    BuildIdentityManagerForTests)},
+            base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                               BuildIdentityManagerForTests)},
         TestProfileIOS::TestingFactory{
             TabContextSyncServiceFactory::GetInstance(),
-            base::BindRepeating(&std::make_unique<
-                                sync_tab_context::FakeTabContextSyncService>)},
+            base::BindOnce(&std::make_unique<
+                           sync_tab_context::FakeTabContextSyncService>)},
     };
   }
 

@@ -53,7 +53,7 @@ class IdleActionTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     main_browsing_data_remover_ = std::make_unique<FakeBrowsingDataRemover>();
     incognito_browsing_data_remover_ =

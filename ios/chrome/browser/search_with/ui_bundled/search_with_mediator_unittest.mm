@@ -59,7 +59,7 @@ class SearchWithMediatorTest : public PlatformTest {
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &MockIOSChromeAimEligibilityService::CreateTestingProfileService));
     profile_ = std::move(builder).Build();
     scene_state_ = [[SceneState alloc] init];

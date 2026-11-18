@@ -28,7 +28,7 @@ class ShareKitServiceFactoryTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<
                 ::testing::NiceMock<tab_groups::MockTabGroupSyncService>>));
     profile_ = std::move(builder).Build();

@@ -169,7 +169,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
-        base::BindRepeating(&commerce::MockShoppingService::Build));
+        base::BindOnce(&commerce::MockShoppingService::Build));
     test_profile_builder.AddTestingFactory(
         IOSChromeTabRestoreServiceFactory::GetInstance(),
         IOSChromeTabRestoreServiceFactory::GetDefaultFactory());
@@ -196,7 +196,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateTestSyncService));
+        base::BindOnce(&CreateTestSyncService));
     test_profile_builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),

@@ -99,7 +99,7 @@ class TabGroupsPanelCoordinatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<
                 ::testing::NiceMock<tab_groups::MockTabGroupSyncService>>));
     builder.AddTestingFactory(ShareKitServiceFactory::GetInstance(),

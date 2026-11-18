@@ -86,7 +86,7 @@ class UniversalOptOutEligibilityUtilsTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         UniversalOptOutServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &UniversalOptOutEligibilityUtilsTest::CreateOptOutServiceForProfile,
             base::Unretained(this), eligible));
     return std::move(builder).Build();

@@ -81,7 +81,7 @@ class AccountMenuCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<syncer::MockSyncService>));
+        base::BindOnce(&std::make_unique<syncer::MockSyncService>));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     Browser* browser = scene_state_.browserProviderInterface.currentBrowser;

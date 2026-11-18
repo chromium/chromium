@@ -301,7 +301,7 @@ TEST_F(ManualFillCardMediatorTest,
   // Create a REAL WebState via Profile.
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                            base::BindRepeating(&CreateTestSyncService));
+                            base::BindOnce(&CreateTestSyncService));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   web::WebState::CreateParams params(profile.get());
   auto web_state = web::WebState::Create(params);
@@ -341,7 +341,7 @@ TEST_F(ManualFillCardMediatorTest,
   // Create a REAL WebState.
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                            base::BindRepeating(&CreateTestSyncService));
+                            base::BindOnce(&CreateTestSyncService));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   web::WebState::CreateParams params(profile.get());
   auto web_state = web::WebState::Create(params);

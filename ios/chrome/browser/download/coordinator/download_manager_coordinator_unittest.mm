@@ -88,7 +88,7 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_ = std::move(builder).Build();
     scene_state_ = [[SceneState alloc] init];
     LayoutGuideSceneAgent* layout_guide_scene_agent =

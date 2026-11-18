@@ -84,7 +84,7 @@ class SessionMetricsProfileAgentTest : public PlatformTest {
         base::BindOnce(&std::make_unique<FakeProfileSessionDurationsService>));
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&BuildFeatureEngagementTestTracker));
+        base::BindOnce(&BuildFeatureEngagementTestTracker));
     profile_ = std::move(builder).Build();
 
     profile_state_ = [[ProfileState alloc] initWithAppState:nil];

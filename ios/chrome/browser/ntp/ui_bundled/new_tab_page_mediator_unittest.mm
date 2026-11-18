@@ -122,10 +122,10 @@ class NewTabPageMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateTestSyncService));
+        base::BindOnce(&CreateTestSyncService));
     test_profile_builder.AddTestingFactory(
         HomeBackgroundCustomizationServiceFactory::GetInstance(),
-        base::BindRepeating([](ProfileIOS& profile) {
+        base::BindOnce([](ProfileIOS& profile) {
           return std::make_unique<HomeBackgroundCustomizationService>(
               profile.GetPrefs(),
               UserUploadedImageManagerFactory::GetForProfile(profile),
@@ -134,10 +134,10 @@ class NewTabPageMediatorTest : public PlatformTest {
         }));
     test_profile_builder.AddTestingFactory(
         ImageFetcherServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<MockImageFetcherService>));
+        base::BindOnce(&std::make_unique<MockImageFetcherService>));
     test_profile_builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
-        base::BindRepeating([](ProfileIOS& profile) {
+        base::BindOnce([](ProfileIOS& profile) {
           return std::make_unique<
               testing::StrictMock<MockAimEligibilityService>>(
               *profile.GetPrefs(),

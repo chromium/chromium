@@ -135,7 +135,7 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
     builder.AddTestingFactory(ChildAccountServiceFactory::GetInstance(),
                               ChildAccountServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     return builder;
   }
 

@@ -733,9 +733,8 @@ TEST_F(ProxyServiceControllerTest, FactoryCreatesControllerForProfile) {
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       EnterpriseProxyServiceFactoryIOS::GetInstance(),
-      base::BindRepeating(
-          &std::make_unique<
-              NiceMock<enterprise_net::MockEnterpriseProxyService>>));
+      base::BindOnce(&std::make_unique<
+                     NiceMock<enterprise_net::MockEnterpriseProxyService>>));
   builder.AddTestingFactory(
       EnterpriseProxyErrorServiceFactoryIOS::GetInstance(),
       EnterpriseProxyErrorServiceFactoryIOS::GetDefaultFactory());

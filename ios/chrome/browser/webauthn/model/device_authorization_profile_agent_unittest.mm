@@ -79,11 +79,11 @@ class DeviceAuthorizationProfileAgentTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     builder.AddTestingFactory(
         IOSDeviceAuthorizationServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildMockDeviceAuthorizationService));
+        base::BindOnce(&BuildMockDeviceAuthorizationService));
     profile_ = std::move(builder).Build();
   }
 

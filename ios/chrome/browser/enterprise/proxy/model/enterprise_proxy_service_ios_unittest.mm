@@ -111,8 +111,8 @@ class EnterpriseProxyServiceIOSTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(&IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     builder.AddTestingFactory(
         EnterpriseNetworkAuthServiceFactoryIOS::GetInstance(),
         EnterpriseNetworkAuthServiceFactoryIOS::GetDefaultFactory());

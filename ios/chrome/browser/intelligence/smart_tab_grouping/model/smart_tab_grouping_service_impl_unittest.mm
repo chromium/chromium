@@ -53,11 +53,11 @@ class SmartTabGroupingServiceImplTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateFakeOptimizationGuideService));
+        base::BindOnce(&CreateFakeOptimizationGuideService));
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(&IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     profile_ = std::move(builder).Build();
 
     // Cache the fake service pointer for testing.

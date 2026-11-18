@@ -87,7 +87,7 @@ class IOSChromePasswordManagerClientTest : public PlatformTest {
         base::BindOnce(
             &MockReportingEventRouter::BuildMockReportingEventRouter));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_ = std::move(builder).Build();
     reporting_event_router_ = static_cast<MockReportingEventRouter*>(
         enterprise_connectors::IOSReportingEventRouterFactory::GetForProfile(

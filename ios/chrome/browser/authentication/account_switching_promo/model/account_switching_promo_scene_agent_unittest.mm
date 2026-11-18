@@ -115,19 +115,19 @@ class AccountSwitchingPromoSceneAgentTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(
         AccountPreviewDataServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<signin::TestAccountPreviewDataService>));
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<
                 testing::NiceMock<feature_engagement::test::MockTracker>>));
     builder.AddTestingFactory(
         PromosManagerFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<MockPromosManager>));
+        base::BindOnce(&std::make_unique<MockPromosManager>));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_];

@@ -37,7 +37,7 @@ void BookmarkIOSUnitTestSupport::SetUp() {
       AuthenticationServiceFactory::GetDefaultFactory());
   test_profile_builder.AddTestingFactory(
       SyncServiceFactory::GetInstance(),
-      base::BindRepeating(&CreateTestSyncService));
+      base::BindOnce(&CreateTestSyncService));
   test_profile_builder.AddTestingFactory(
       ios::BookmarkModelFactory::GetInstance(),
       ios::BookmarkModelFactory::GetDefaultFactory());

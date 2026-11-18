@@ -80,7 +80,7 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         TabGroupSyncServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<::testing::NiceMock<MockTabGroupSyncService>>));
     builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),

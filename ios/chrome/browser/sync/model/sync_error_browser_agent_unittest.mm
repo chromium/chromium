@@ -54,7 +54,7 @@ class SyncErrorBrowserAgentTest : public PlatformTest {
   SyncErrorBrowserAgentTest() {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_ = std::move(builder).Build();
 
     profile_state_ = [[ProfileState alloc] initWithAppState:nil];

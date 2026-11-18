@@ -943,7 +943,7 @@ TEST_F(ChromeWebClientTest, GetExtensionController) API_AVAILABLE(ios(18.4)) {
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       ExtensionServiceFactory::GetInstance(),
-      base::BindRepeating([](ProfileIOS& profile) {
+      base::BindOnce([](ProfileIOS& profile) {
         auto service = std::make_unique<ExtensionServiceImpl>(
             CHECK_DEREF(profile.GetPrefs()),
             web::ExtensionController::Create());
@@ -1028,7 +1028,7 @@ API_AVAILABLE(ios(18.4)) {
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       ExtensionServiceFactory::GetInstance(),
-      base::BindRepeating([](ProfileIOS& profile) {
+      base::BindOnce([](ProfileIOS& profile) {
         auto service = std::make_unique<ExtensionServiceImpl>(
             CHECK_DEREF(profile.GetPrefs()),
             web::ExtensionController::Create());

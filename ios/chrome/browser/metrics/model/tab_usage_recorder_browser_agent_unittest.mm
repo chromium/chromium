@@ -63,7 +63,7 @@ class TabUsageRecorderBrowserAgentTest : public PlatformTest {
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(
         ExtensionServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<FakeExtensionService>));
+        base::BindOnce(&std::make_unique<FakeExtensionService>));
     profile_ = std::move(test_profile_builder).Build();
     fake_startup_information_ = [[FakeStartupInformation alloc] init];
     fake_startup_information_.appLaunchTimer = base::ElapsedNoSleepTimer();

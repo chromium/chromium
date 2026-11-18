@@ -80,14 +80,14 @@ class PrivacyTableViewControllerTest
 
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindOnce(
             &std::make_unique<feature_engagement::test::MockTracker>));
     builder.AddTestingFactory(
         ExtensionServiceFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<FakeExtensionService>));
+        base::BindOnce(&std::make_unique<FakeExtensionService>));
     profile_ = std::move(builder).Build();
 
     test_sync_service()->SetSignedOut();

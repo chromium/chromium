@@ -33,7 +33,7 @@ class PriceAlertUtilTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_);
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];

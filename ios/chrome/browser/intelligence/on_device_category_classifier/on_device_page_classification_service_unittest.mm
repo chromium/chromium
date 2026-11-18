@@ -46,7 +46,7 @@ class OnDevicePageClassificationServiceTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         InProcessCategoryClassificationServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildTestInProcessClassificationService));
+        base::BindOnce(&BuildTestInProcessClassificationService));
     profile_ = std::move(builder).Build();
 
     in_process_service_ =

@@ -86,7 +86,7 @@ class PasswordCheckupCoordinatorTest
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     // Add reauthentication service.
     builder.AddTestingFactory(ReauthenticationServiceFactory::GetInstance(),
                               base::BindOnce(&CreateFakeReauthService));

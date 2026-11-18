@@ -56,7 +56,7 @@ class TabGroupSyncUtilTest : public PlatformTest {
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(
         TabGroupSyncServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<::testing::NiceMock<MockTabGroupSyncService>>));
     test_profile_builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),

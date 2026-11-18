@@ -67,8 +67,8 @@ class ReportGeneratorIOSTest : public PlatformTest,
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     builder.SetPolicyConnector(std::make_unique<ProfilePolicyConnectorMock>(
         CreateMockPolicyService(), &schema_registry_));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));

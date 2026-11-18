@@ -33,8 +33,8 @@ class CredentialProviderBrowserAgentTest : public PlatformTest {
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     test_profile_builder.AddTestingFactory(
         IOSPasskeyModelFactory::GetInstance(),
         base::BindOnce(&std::make_unique<webauthn::TestPasskeyModel>));

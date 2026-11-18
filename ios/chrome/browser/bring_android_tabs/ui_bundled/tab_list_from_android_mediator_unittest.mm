@@ -46,7 +46,7 @@ class TabListFromAndroidMediatorTest : public PlatformTest {
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_ = std::move(builder).Build();
   }
 

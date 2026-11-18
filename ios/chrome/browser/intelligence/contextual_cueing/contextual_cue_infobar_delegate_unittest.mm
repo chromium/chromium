@@ -60,11 +60,11 @@ class ContextualCueInfobarDelegateTest : public PlatformTest {
     PlatformTest::SetUp();
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(GeminiServiceFactory::GetInstance(),
-                              base::BindRepeating(&BuildFakeGeminiService));
+                              base::BindOnce(&BuildFakeGeminiService));
     builder.AddTestingFactory(feature_engagement::TrackerFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestTracker));
+                              base::BindOnce(&CreateTestTracker));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_ = std::move(builder).Build();
 
     auto* sync_service = static_cast<syncer::TestSyncService*>(

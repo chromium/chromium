@@ -30,7 +30,7 @@ class ManageAccountsMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_ = std::move(builder).Build();
     delegate_mock_ =
         OCMStrictProtocolMock(@protocol(ManageAccountsMediatorDelegate));

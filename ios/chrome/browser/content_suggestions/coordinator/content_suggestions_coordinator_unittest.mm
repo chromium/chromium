@@ -95,7 +95,7 @@ class ContentSuggestionsCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncService));
+                              base::BindOnce(&CreateMockSyncService));
     builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
@@ -109,14 +109,14 @@ class ContentSuggestionsCoordinatorTest : public PlatformTest {
         ReadingListModelTestingFactoryWithFakeStorage({}));
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<feature_engagement::test::MockTracker>));
     builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
-        base::BindRepeating(&commerce::MockShoppingService::Build));
+        base::BindOnce(&commerce::MockShoppingService::Build));
     builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
                               ios::BookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),

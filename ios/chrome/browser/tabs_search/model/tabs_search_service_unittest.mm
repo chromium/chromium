@@ -65,7 +65,7 @@ class TabsSearchServiceTest : public PlatformTest {
         IOSChromeTabRestoreServiceFactory::GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateTestSyncService));
+        base::BindOnce(&CreateTestSyncService));
     test_profile_builder.AddTestingFactory(
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());

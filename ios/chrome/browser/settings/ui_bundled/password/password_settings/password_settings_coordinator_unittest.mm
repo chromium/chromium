@@ -72,7 +72,7 @@ class PasswordSettingsCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(ReauthenticationServiceFactory::GetInstance(),
                               base::BindOnce(&CreateFakeReauthService));
 

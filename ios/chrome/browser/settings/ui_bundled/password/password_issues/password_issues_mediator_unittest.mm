@@ -141,7 +141,7 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
         base::BindOnce(
             &std::make_unique<affiliations::FakeAffiliationService>));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
+                              base::BindOnce(&CreateTestSyncService));
     profile_ = std::move(builder).Build();
 
     store_ =

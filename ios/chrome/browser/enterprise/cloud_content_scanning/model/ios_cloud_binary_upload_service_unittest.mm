@@ -61,12 +61,12 @@ class IOSCloudBinaryUploadServiceTest : public PlatformTest {
     // Install mock management service and identity manager.
     builder.AddTestingFactory(
         policy::BrowserManagementServiceFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<MockBrowserManagementService, ProfileIOS&>));
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(&IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     // Provide a policy connector to handle affiliation checks.
     builder.SetPolicyConnector(std::make_unique<ProfilePolicyConnector>());
     profile_ = std::move(builder).Build();

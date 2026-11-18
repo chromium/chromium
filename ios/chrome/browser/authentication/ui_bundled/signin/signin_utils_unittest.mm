@@ -73,7 +73,7 @@ class SigninUtilsTest : public PlatformTest {
                               base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(
+        base::BindOnce(
             &std::make_unique<feature_engagement::test::MockTracker>));
     feature_list_.InitAndDisableFeature(
         switches::kFullscreenSignInPromoUseDate);

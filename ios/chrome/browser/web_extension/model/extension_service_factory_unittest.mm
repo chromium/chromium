@@ -103,8 +103,8 @@ TEST_F(ExtensionServiceFactoryTest,
                             ExtensionServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(
       universal_optout::UniversalOptOutServiceFactory::GetInstance(),
-      base::BindRepeating(&ExtensionServiceFactoryTest::CreateOptOutService,
-                          base::Unretained(this), /*eligible=*/true));
+      base::BindOnce(&ExtensionServiceFactoryTest::CreateOptOutService,
+                     base::Unretained(this), /*eligible=*/true));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   EXPECT_EQ(ExtensionServiceFactory::GetForProfile(profile.get()), nullptr);
 }
@@ -122,8 +122,8 @@ TEST_F(ExtensionServiceFactoryTest,
                             ExtensionServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(
       universal_optout::UniversalOptOutServiceFactory::GetInstance(),
-      base::BindRepeating(&ExtensionServiceFactoryTest::CreateOptOutService,
-                          base::Unretained(this), /*eligible=*/true));
+      base::BindOnce(&ExtensionServiceFactoryTest::CreateOptOutService,
+                     base::Unretained(this), /*eligible=*/true));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   EXPECT_EQ(ExtensionServiceFactory::GetForProfile(profile.get()), nullptr);
 }
@@ -143,8 +143,8 @@ TEST_F(ExtensionServiceFactoryTest,
                             ExtensionServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(
       universal_optout::UniversalOptOutServiceFactory::GetInstance(),
-      base::BindRepeating(&ExtensionServiceFactoryTest::CreateOptOutService,
-                          base::Unretained(this), /*eligible=*/true));
+      base::BindOnce(&ExtensionServiceFactoryTest::CreateOptOutService,
+                     base::Unretained(this), /*eligible=*/true));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   EXPECT_EQ(ExtensionServiceFactory::GetForProfile(profile.get()), nullptr);
 }
@@ -167,8 +167,8 @@ TEST_F(ExtensionServiceFactoryTest, TestFactoryReturnsServiceWhenIneligible) {
                             ExtensionServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(
       universal_optout::UniversalOptOutServiceFactory::GetInstance(),
-      base::BindRepeating(&ExtensionServiceFactoryTest::CreateOptOutService,
-                          base::Unretained(this), /*eligible=*/false));
+      base::BindOnce(&ExtensionServiceFactoryTest::CreateOptOutService,
+                     base::Unretained(this), /*eligible=*/false));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   ExtensionService* service =
       ExtensionServiceFactory::GetForProfile(profile.get());
@@ -197,9 +197,8 @@ TEST_F(ExtensionServiceFactoryTest,
                             ExtensionServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(
       universal_optout::UniversalOptOutServiceFactory::GetInstance(),
-      base::BindRepeating(
-          &ExtensionServiceFactoryTest::CreateOptedInOptOutService,
-          base::Unretained(this), /*eligible=*/false));
+      base::BindOnce(&ExtensionServiceFactoryTest::CreateOptedInOptOutService,
+                     base::Unretained(this), /*eligible=*/false));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   ExtensionService* service =
       ExtensionServiceFactory::GetForProfile(profile.get());
@@ -232,8 +231,8 @@ TEST_F(ExtensionServiceFactoryTest,
                             ExtensionServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(
       universal_optout::UniversalOptOutServiceFactory::GetInstance(),
-      base::BindRepeating(&ExtensionServiceFactoryTest::CreateOptOutService,
-                          base::Unretained(this), /*eligible=*/true));
+      base::BindOnce(&ExtensionServiceFactoryTest::CreateOptOutService,
+                     base::Unretained(this), /*eligible=*/true));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   ExtensionService* service =
       ExtensionServiceFactory::GetForProfile(profile.get());
@@ -270,8 +269,8 @@ TEST_F(ExtensionServiceFactoryTest,
                             ExtensionServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(
       universal_optout::UniversalOptOutServiceFactory::GetInstance(),
-      base::BindRepeating(&ExtensionServiceFactoryTest::CreateOptOutService,
-                          base::Unretained(this), /*eligible=*/false));
+      base::BindOnce(&ExtensionServiceFactoryTest::CreateOptOutService,
+                     base::Unretained(this), /*eligible=*/false));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   ExtensionService* service =
       ExtensionServiceFactory::GetForProfile(profile.get());
@@ -318,8 +317,8 @@ TEST_F(ExtensionServiceFactoryTest,
                             ExtensionServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(
       universal_optout::UniversalOptOutServiceFactory::GetInstance(),
-      base::BindRepeating(&ExtensionServiceFactoryTest::CreateOptOutService,
-                          base::Unretained(this), /*eligible=*/true));
+      base::BindOnce(&ExtensionServiceFactoryTest::CreateOptOutService,
+                     base::Unretained(this), /*eligible=*/true));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   ExtensionService* service =
       ExtensionServiceFactory::GetForProfile(profile.get());
@@ -344,8 +343,8 @@ TEST_F(ExtensionServiceFactoryTest, TestFactoryRedirectedInIncognito) {
                             ExtensionServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(
       universal_optout::UniversalOptOutServiceFactory::GetInstance(),
-      base::BindRepeating(&ExtensionServiceFactoryTest::CreateOptOutService,
-                          base::Unretained(this), /*eligible=*/true));
+      base::BindOnce(&ExtensionServiceFactoryTest::CreateOptOutService,
+                     base::Unretained(this), /*eligible=*/true));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   ExtensionService* regular_service =
       ExtensionServiceFactory::GetForProfile(profile.get());
@@ -371,8 +370,8 @@ TEST_F(ExtensionServiceFactoryTest, TestFactoryReturnsNullOnIOS27OrLater) {
                             ExtensionServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(
       universal_optout::UniversalOptOutServiceFactory::GetInstance(),
-      base::BindRepeating(&ExtensionServiceFactoryTest::CreateOptOutService,
-                          base::Unretained(this), /*eligible=*/true));
+      base::BindOnce(&ExtensionServiceFactoryTest::CreateOptOutService,
+                     base::Unretained(this), /*eligible=*/true));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   EXPECT_EQ(ExtensionServiceFactory::GetForProfile(profile.get()), nullptr);
 }
@@ -397,8 +396,8 @@ TEST_F(ExtensionServiceFactoryTest,
                             ExtensionServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(
       universal_optout::UniversalOptOutServiceFactory::GetInstance(),
-      base::BindRepeating(&ExtensionServiceFactoryTest::CreateOptOutService,
-                          base::Unretained(this), /*eligible=*/false));
+      base::BindOnce(&ExtensionServiceFactoryTest::CreateOptOutService,
+                     base::Unretained(this), /*eligible=*/false));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   ExtensionService* service =
       ExtensionServiceFactory::GetForProfile(profile.get());
@@ -427,8 +426,8 @@ TEST_F(ExtensionServiceFactoryTest,
                             ExtensionServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(
       universal_optout::UniversalOptOutServiceFactory::GetInstance(),
-      base::BindRepeating(&ExtensionServiceFactoryTest::CreateOptOutService,
-                          base::Unretained(this), /*eligible=*/true));
+      base::BindOnce(&ExtensionServiceFactoryTest::CreateOptOutService,
+                     base::Unretained(this), /*eligible=*/true));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   ExtensionService* service =
       ExtensionServiceFactory::GetForProfile(profile.get());
@@ -459,8 +458,8 @@ TEST_F(ExtensionServiceFactoryTest,
                             ExtensionServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(
       universal_optout::UniversalOptOutServiceFactory::GetInstance(),
-      base::BindRepeating(&ExtensionServiceFactoryTest::CreateOptOutService,
-                          base::Unretained(this), /*eligible=*/false));
+      base::BindOnce(&ExtensionServiceFactoryTest::CreateOptOutService,
+                     base::Unretained(this), /*eligible=*/false));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   EXPECT_EQ(ExtensionServiceFactory::GetForProfile(profile.get()), nullptr);
 }
@@ -481,8 +480,8 @@ API_AVAILABLE(ios(18.4)) {
                             ExtensionServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(
       universal_optout::UniversalOptOutServiceFactory::GetInstance(),
-      base::BindRepeating(&ExtensionServiceFactoryTest::CreateOptOutService,
-                          base::Unretained(this), /*eligible=*/false));
+      base::BindOnce(&ExtensionServiceFactoryTest::CreateOptOutService,
+                     base::Unretained(this), /*eligible=*/false));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   ExtensionService* service =
       ExtensionServiceFactory::GetForProfile(profile.get());

@@ -69,8 +69,7 @@ class TabGroupCoordinatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &std::make_unique<tab_groups::FakeTabGroupSyncService>));
+        base::BindOnce(&std::make_unique<tab_groups::FakeTabGroupSyncService>));
     builder.AddTestingFactory(ShareKitServiceFactory::GetInstance(),
                               base::BindOnce(&BuildTestShareKitService));
     profile_ = std::move(builder).Build();

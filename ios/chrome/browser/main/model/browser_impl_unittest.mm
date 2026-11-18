@@ -27,7 +27,7 @@ class BrowserImplTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateTestSyncService));
+        base::BindOnce(&CreateTestSyncService));
     test_profile_builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
         tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());

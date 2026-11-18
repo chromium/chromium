@@ -94,8 +94,8 @@ class DataControlsTabHelperTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
+        base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                           BuildIdentityManagerForTests));
     builder.AddTestingFactory(
         enterprise_connectors::IOSReportingEventRouterFactory::GetInstance(),
         base::BindOnce(
@@ -1402,8 +1402,8 @@ TEST_F(DataControlsTabHelperTest,
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       IdentityManagerFactory::GetInstance(),
-      base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                              BuildIdentityManagerForTests));
+      base::BindOnce(&IdentityTestEnvironmentBrowserStateAdaptor::
+                         BuildIdentityManagerForTests));
   std::unique_ptr<TestProfileIOS> custom_profile = std::move(builder).Build();
   SetBulkDataEntryRule(custom_profile->GetPrefs());
 

@@ -101,20 +101,19 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateTestSyncService));
+        base::BindOnce(&CreateTestSyncService));
     test_profile_builder.AddTestingFactory(
         CollaborationServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildMockCollaborationService));
+        base::BindOnce(&BuildMockCollaborationService));
     test_profile_builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &std::make_unique<tab_groups::FakeTabGroupSyncService>));
+        base::BindOnce(&std::make_unique<tab_groups::FakeTabGroupSyncService>));
     test_profile_builder.AddTestingFactory(
         ShareKitServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildTestShareKitService));
+        base::BindOnce(&BuildTestShareKitService));
     test_profile_builder.AddTestingFactory(
         IOSChromeFaviconLoaderFactory::GetInstance(),
-        base::BindRepeating(&std::make_unique<TestFaviconLoader>));
+        base::BindOnce(&std::make_unique<TestFaviconLoader>));
 
     profile_ =
         profile_manager_.AddProfileWithBuilder(std::move(test_profile_builder));
