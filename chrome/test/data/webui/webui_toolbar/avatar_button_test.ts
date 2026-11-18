@@ -5,7 +5,7 @@
 import 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 import 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import type {AvatarButtonElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 import {AvatarToolbarButtonState, BrowserProxyImpl, ToolbarAppElement} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
@@ -320,5 +320,49 @@ suite('AvatarButtonTest', function() {
     avatar.$.button.click();
     assertEquals(
         1, testBrowserProxy.toolbarUIHandler.getCallCount('showAvatarMenu'));
+  });
+
+  // `#text` relies on `toolbar-chip-button`'s `::slotted(*)` reduced-motion
+  // rule (`toolbar_chip_button.css`) to suppress its 200ms transition.
+  test('RespectsReducedMotion', async function() {
+    const prefersReducedMotion =
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    avatar.state = {...avatar.state, text: ''};
+    await avatar.updateComplete;
+    await avatar.$.button.updateComplete;
+    // Flush the collapsed style while `initial-load` still suppresses
+    // transitions, so removing `initial-load` starts from the collapsed
+    // baseline instead of triggering a collapse transition at t=0.
+    avatar.$.text.getBoundingClientRect();
+    assertEquals(0, avatar.$.text.getAnimations().length);
+    avatar.classList.remove('initial-load');
+
+    // Await Lit microtasks rather than microtasksFinished() (setTimeout) so a
+    // slow frame cannot finish the 200ms transition before getAnimations().
+    avatar.state = {...avatar.state, text: 'Work Profile'};
+    await avatar.updateComplete;
+    await avatar.$.button.updateComplete;
+    const expandedWidth = avatar.$.text.getBoundingClientRect().width;
+    if (prefersReducedMotion) {
+      assertEquals(0, avatar.$.text.getAnimations().length);
+      assertGT(expandedWidth, 0);
+      assertEquals('1', getComputedStyle(avatar.$.text).opacity);
+    } else {
+      assertGT(avatar.$.text.getAnimations().length, 0);
+    }
+
+    for (const anim of avatar.$.text.getAnimations()) {
+      anim.finish();
+    }
+    avatar.state = {...avatar.state, text: ''};
+    await avatar.updateComplete;
+    await avatar.$.button.updateComplete;
+    avatar.$.text.getBoundingClientRect();
+    if (prefersReducedMotion) {
+      assertEquals(0, avatar.$.text.getAnimations().length);
+      assertEquals('0', getComputedStyle(avatar.$.text).opacity);
+    } else {
+      assertGT(avatar.$.text.getAnimations().length, 0);
+    }
   });
 });

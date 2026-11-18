@@ -68,7 +68,11 @@ IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, AppMenuButton) {
   RunTest("webui_toolbar/app_menu_button_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, AvatarButton) {
+IN_PROC_BROWSER_TEST_F(WebUiToolbarNoReducedMotionJsTest, AvatarButton) {
+  RunTest("webui_toolbar/avatar_button_test.js", "mocha.run();");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUiToolbarReducedMotionJsTest, AvatarButton) {
   RunTest("webui_toolbar/avatar_button_test.js", "mocha.run();");
 }
 

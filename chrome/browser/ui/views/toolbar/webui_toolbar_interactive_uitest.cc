@@ -7,6 +7,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -135,6 +136,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/range/range.h"
+#include "ui/gfx/switches.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
@@ -3727,6 +3729,9 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.test_name;
     });
 
+// Fixture for full WebUI toolbar (`features::kWebUIToolbar`) overflow tests.
+// Forces `--force-prefers-reduced-motion` until crbug.com/556290452 is
+// resolved; do not use for tests that expect animations.
 class WebUIToolbarFullyEnabledInteractiveUiTest
     : public WebUIToolbarWebViewTestBase {
  public:
@@ -3735,23 +3740,14 @@ class WebUIToolbarFullyEnabledInteractiveUiTest
   }
   ~WebUIToolbarFullyEnabledInteractiveUiTest() override = default;
 
-  // Disables animations in the WebUI toolbar of browser(). Returns true on
-  // success.
-  //
-  // Animations can make overflow tests flaky, since element bounds change while
-  // animating, making clicking on the overflow button tricky.
-  //
-  // TODO(crbug.com/556290452): Make overflow work correctly with animations,
-  // and add tests for overflow with animations enabled.
-  [[nodiscard]] bool DisableAnimations() {
-    return content::EvalJs(GetWebUIWebContents(), R"(
-      (async () => {
-        const {AnimationTracker} =
-            await import('chrome://webui-toolbar.top-chrome/lazy_load.js');
-        AnimationTracker.showAnimations = false;
-        return true;
-      })()
-    )") == true;
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebUIToolbarWebViewTestBase::SetUpCommandLine(command_line);
+    // Animations can make overflow tests flaky, since element bounds change
+    // while animating, making clicking on the overflow button tricky.
+    //
+    // TODO(crbug.com/556290452): Make overflow work correctly with animations,
+    // and add tests for overflow with animations enabled.
+    command_line->AppendSwitch(switches::kForcePrefersReducedMotion);
   }
 
   // Waits until the overflow button location is available, clicks it, and spins
@@ -4632,14 +4628,6 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
       toolbar_ui_api::mojom::PinnedToolbarAction::kShowDownloads);
   constexpr int kReadingList = static_cast<int>(
       toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowReadingList);
-
-  // Disable animations to avoid flakiness. This test pins the download action,
-  // and later opens the reading list side panel, showing the reading list
-  // action. Initially populating the container doesn't trigger animations, but
-  // adding an element later does, so the reading list button will likely be
-  // animated into the toolbar, changing element bounds while the test is
-  // checking overflow state and trying to click the overflow button.
-  ASSERT_TRUE(DisableAnimations());
 
   // Pin the download action so it appears in the toolbar.
   PinnedToolbarActionsModel::Get(browser()->GetProfile())
