@@ -1163,6 +1163,10 @@ void HTMLInputElement::ResetImpl() {
     UseCounter::Count(GetDocument(),
                       WebFeature::kHTMLInputElementResetIndeterminateCheckbox);
   }
+  if (RuntimeEnabledFeatures::InputDefaultIndeterminateAttributeEnabled()) {
+    setIndeterminate(FastHasAttribute(html_names::kDefaultindeterminateAttr));
+    dirty_indeterminateness_ = false;
+  }
   HTMLFormControlElementWithState::ResetImpl();
 }
 

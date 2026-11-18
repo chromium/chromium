@@ -179,4 +179,44 @@ for (const value of [false, true]) {
     }, `cloneNode() preserves dirty indeterminate=${value} with defaultIndeterminate=${defaultValue}`);
   }
 }
+
+for (const value of [false, true]) {
+  test(() => {
+    const form = document.createElement("form");
+    const input = createCheckbox();
+    form.appendChild(input);
+    input.defaultIndeterminate = !value;
+    input.indeterminate = !value;
+    input.defaultIndeterminate = value;
+    assert_equals(input.indeterminate, !value);
+
+    form.reset();
+    assert_equals(input.defaultIndeterminate, value);
+    assert_equals(input.indeterminate, value);
+
+    input.defaultIndeterminate = !value;
+    assert_equals(input.indeterminate, !value);
+  }, `Form reset restores indeterminate=${value} from the current default and clears its dirty state`);
+}
+
+test(() => {
+  const form = document.createElement("form");
+  const input = createCheckbox();
+  form.appendChild(input);
+  input.defaultChecked = true;
+  input.defaultIndeterminate = true;
+
+  input.click();
+  assert_false(input.checked);
+  assert_false(input.indeterminate);
+
+  form.reset();
+  assert_true(input.checked);
+  assert_true(input.indeterminate);
+
+  input.defaultChecked = false;
+  input.defaultIndeterminate = false;
+  assert_false(input.checked);
+  assert_false(input.indeterminate);
+}, "Form reset restores checkedness and indeterminateness after checkbox activation");
 </script>

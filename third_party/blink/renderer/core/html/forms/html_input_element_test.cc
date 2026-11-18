@@ -1218,7 +1218,19 @@ TEST_F(HTMLInputElementTest, SetCheckedForBindingClearsSuggestedValue) {
   EXPECT_EQ(WebAutofillState::kNotFilled, input.GetAutofillState());
 }
 
-TEST_F(HTMLInputElementTest, ResetIndeterminateCheckboxUseCounter) {
+class HTMLInputElementIndeterminateTest
+    : public HTMLInputElementTest,
+      public ::testing::WithParamInterface<bool> {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HTMLInputElementIndeterminateTest,
+                         ::testing::Bool());
+
+TEST_P(HTMLInputElementIndeterminateTest,
+       ResetIndeterminateCheckboxUseCounter) {
+  const bool defaultIndeterminateEnabled = GetParam();
+  ScopedInputDefaultIndeterminateAttributeForTest scoped_feature(
+      defaultIndeterminateEnabled);
   SetBodyContent("<form id=form><input id=test type=checkbox></form>");
   auto* form = To<HTMLFormElement>(GetElementById("form"));
   const auto feature = WebFeature::kHTMLInputElementResetIndeterminateCheckbox;
@@ -1232,9 +1244,10 @@ TEST_F(HTMLInputElementTest, ResetIndeterminateCheckboxUseCounter) {
   EXPECT_FALSE(GetDocument().IsUseCounted(feature));
   EXPECT_TRUE(TestElement().indeterminate());
 
+  // After reset, input will be indeterminate only if the feature is disabled.
   form->reset();
   EXPECT_TRUE(GetDocument().IsUseCounted(feature));
-  EXPECT_TRUE(TestElement().indeterminate());
+  EXPECT_EQ(!defaultIndeterminateEnabled, TestElement().indeterminate());
 }
 
 TEST_F(HTMLInputElementTest, DefaultIndeterminateAttributeEnabled) {
