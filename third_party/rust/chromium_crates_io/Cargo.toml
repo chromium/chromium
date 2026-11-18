@@ -29,7 +29,7 @@ flate2 = "1.1"
 font-types = "0.12.7"
 hex = "0.4"
 hmac-sha256 = "1.1.12"
-incremental-font-transfer = "0.10.0"
+incremental-font-transfer = "0.11.0"
 indexmap = "2.12.1"
 itertools = "0.14.0"
 jpeg-encoder = "=0.7.1"
@@ -48,7 +48,6 @@ rustc-demangle-capi = "0.1"
 serde = "1.0.219"
 serde_json = "1.0.149"
 shared-brotli-patch-decoder = "0.1.7"
-skrifa = "0.49.0"
 small_ctor = "0.1"
 smallvec = "1"
 static_assertions = "1"
@@ -71,7 +70,7 @@ version = "1"
 artifact = "bin"
 
 [dependencies.harfrust]
-version = "0.15.0"
+version = "0.16.0"
 features = [
     "icu",
 ]
@@ -149,8 +148,8 @@ version = "0.8.1"
 default-features = false
 
 [dependencies.read-fonts]
-version = "0.46.0"
-features = ["agl"]
+version = "0.47.0"
+features = ["agl", "type1"]
 
 [dependencies.rustfft]
 version = "6.4.1"
@@ -166,6 +165,10 @@ features = ["unbounded_depth", "float_roundtrip"]
 [dependencies.sfv]
 version = "0.16.1"
 default-features = false
+
+[dependencies.skrifa]
+version = "0.50.0"
+features = ["type1"]
 
 [dependencies.strum]
 version = "0.28.0"
@@ -223,6 +226,3 @@ features = ["std"]
 [dependencies.zune-jpeg]
 version = "=0.5.16-rc2"
 features = ["arith"]
-
-[patch.crates-io]
-harfrust = { path = "vendor/harfrust-v0_15" }
