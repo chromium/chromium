@@ -1,0 +1,75 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package web_app.proto;
+
+message SystemSourceData {
+  repeated string install_urls = 1;
+}
+
+message PolicySourceData {
+  repeated string install_urls = 1;
+  optional bool is_placeholder = 2;
+}
+
+message WebAppStoreSourceData {
+  repeated string install_urls = 1;
+  repeated string additional_policy_ids = 2;
+}
+
+message SyncSourceData {}
+
+message DefaultSourceData {
+  repeated string install_urls = 1;
+}
+
+message SubAppSourceData {
+  repeated string install_urls = 1;
+}
+
+message KioskSourceData {
+  repeated string install_urls = 1;
+  optional bool is_placeholder = 2;
+}
+
+message OemSourceData {
+  repeated string install_urls = 1;
+}
+
+message OneDriveIntegrationSourceData {
+  repeated string install_urls = 1;
+}
+
+message ApsDefaultSourceData {
+  repeated string install_urls = 1;
+}
+
+message IwaShimlessRmaSourceData {}
+message IwaPolicySourceData {}
+message IwaUserInstalledSourceData {}
+message UserInstalledSourceData {}
+
+// Per-source installation membership and configuration data for a WebApp.
+// Field numbers mirror deprecated `proto.Sources` (1..15, reserved 8).
+message ManagementData {
+  optional SystemSourceData system = 1;
+  optional PolicySourceData policy = 2;
+  optional WebAppStoreSourceData web_app_store = 3;
+  optional SyncSourceData sync = 4;
+  optional DefaultSourceData default_source = 5;
+  optional SubAppSourceData sub_app = 6;
+  optional KioskSourceData kiosk = 7;
+  reserved 8;
+  optional OemSourceData oem = 9;
+  optional OneDriveIntegrationSourceData one_drive_integration = 10;
+  optional ApsDefaultSourceData aps_default = 11;
+  optional IwaShimlessRmaSourceData iwa_shimless_rma = 12;
+  optional IwaPolicySourceData iwa_policy = 13;
+  optional IwaUserInstalledSourceData iwa_user_installed = 14;
+  optional UserInstalledSourceData user_installed = 15;
+}

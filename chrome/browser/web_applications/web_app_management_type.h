@@ -95,6 +95,33 @@ inline constexpr WebAppManagementTypes kUserDrivenInstallSources = {
     WebAppManagement::kIwaUserInstalled,
 };
 
+// Management types that store per-source `install_urls` in `ManagementData`.
+// All WebAppManagement::Types must be listed in either this constant or
+// `kSourcesWithoutInstallUrls` (located in the cc file).
+inline constexpr WebAppManagementTypes kSourcesWithInstallUrls = {
+    WebAppManagement::kSystem,
+    WebAppManagement::kKiosk,
+    WebAppManagement::kPolicy,
+    WebAppManagement::kOem,
+    WebAppManagement::kSubApp,
+    WebAppManagement::kWebAppStore,
+    WebAppManagement::kOneDriveIntegration,
+    WebAppManagement::kApsDefault,
+    WebAppManagement::kDefault,
+};
+
+// Management types that support placeholder installations (`is_placeholder` in
+// `ManagementData`).
+inline constexpr WebAppManagementTypes kSourcesWithPlaceholder = {
+    WebAppManagement::kKiosk,
+    WebAppManagement::kPolicy,
+};
+
+// Management types that store `additional_policy_ids` in `ManagementData`.
+inline constexpr WebAppManagementTypes kSourcesWithAdditionalPolicyIds = {
+    WebAppManagement::kWebAppStore,
+};
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_MANAGEMENT_TYPE_H_

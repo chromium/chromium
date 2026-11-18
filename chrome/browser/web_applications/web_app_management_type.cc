@@ -45,6 +45,32 @@ static_assert(base::Intersection(kUserUninstallableSources,
               "web_app::kUserUninstallableSources and "
               "web_app::kNotUserUninstallableSources");
 
+// WebAppManagement types that do not store per-source `install_urls` in
+// `ManagementData`. Counterpart to `kSourcesWithInstallUrls`.
+constexpr WebAppManagementTypes kSourcesWithoutInstallUrls = {
+    WebAppManagement::kIwaShimlessRma,
+    WebAppManagement::kIwaPolicy,
+    WebAppManagement::kSync,
+    WebAppManagement::kUserInstalled,
+    WebAppManagement::kIwaUserInstalled,
+};
+
+// When adding a new WebAppManagement::Type, mark whether it supports per-source
+// `install_urls` by adding it to `kSourcesWithInstallUrls` or
+// `kSourcesWithoutInstallUrls`.
+static_assert(base::Union(kSourcesWithInstallUrls,
+                          kSourcesWithoutInstallUrls) ==
+                  WebAppManagementTypes::All(),
+              "Each WebAppManagement::Type must be listed in either "
+              "web_app::kSourcesWithInstallUrls or "
+              "web_app::kSourcesWithoutInstallUrls");
+static_assert(base::Intersection(kSourcesWithInstallUrls,
+                                 kSourcesWithoutInstallUrls)
+                  .empty(),
+              "No WebAppManagement::Type may appear in both "
+              "web_app::kSourcesWithInstallUrls and "
+              "web_app::kSourcesWithoutInstallUrls");
+
 namespace WebAppManagement {
 std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type) {
   switch (type) {
