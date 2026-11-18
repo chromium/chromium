@@ -5,13 +5,14 @@
 #ifndef ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_METADATA_FETCHER_H_
 #define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_METADATA_FETCHER_H_
 
+#include <memory>
 #include <optional>
+#include <string>
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_http_result.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace nearby {
 namespace fastpair {
@@ -46,8 +47,6 @@ class DeviceMetadataFetcher {
   void OnFetchComplete(GetObservedDeviceCallback callback,
                        std::optional<std::string> response_body,
                        std::unique_ptr<FastPairHttpResult> http_result);
-  void OnJsonParsed(GetObservedDeviceCallback callback,
-                    data_decoder::DataDecoder::ValueOrError result);
 
   std::unique_ptr<HttpFetcher> http_fetcher_;
 

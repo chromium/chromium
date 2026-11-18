@@ -144,7 +144,6 @@ source_set("unit_tests") {
     "//device/bluetooth:mocks",
     "//net",
     "//net/traffic_annotation:test_support",
-    "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/device.h"
@@ -24,7 +25,6 @@
 #include "base/test/task_environment.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -96,7 +96,6 @@ class DeviceMetadataFetcherTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher_;
   raw_ptr<MockHttpFetcher> mock_http_fetcher_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(DeviceMetadataFetcherTest, ValidResponse) {
