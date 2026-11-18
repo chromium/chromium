@@ -197,6 +197,7 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -238,6 +239,7 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -283,6 +285,7 @@
           "7340",
           "--jobs=4"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -375,6 +378,7 @@
           "--dont-restore-color-profile-after-test",
           "--jobs=4"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -416,6 +420,7 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

@@ -667,6 +667,26 @@ ci.thin_tester(
             "mac_retina_amd_gpu_stable",
             "puppet_production",
         ],
+        # Temporarily move low-AMD-specificity suites to ci_only to reduce
+        # pending time on AMD 0x7340 bots while offline machines are recovered
+        # (crbug.com/587053573).
+        per_test_modifications = {
+            "gpu_process_launch_tests": targets.per_test_modification(
+                mixins = "ci_only",
+            ),
+            "hardware_accelerated_feature_tests": targets.per_test_modification(
+                mixins = "ci_only",
+            ),
+            "info_collection_tests": targets.per_test_modification(
+                mixins = "ci_only",
+            ),
+            "screenshot_sync_metal_passthrough_graphite_tests": targets.per_test_modification(
+                mixins = "ci_only",
+            ),
+            "trace_test": targets.per_test_modification(
+                mixins = "ci_only",
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
