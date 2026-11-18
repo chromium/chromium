@@ -45,7 +45,8 @@ IN_PROC_BROWSER_TEST_F(IFrameTest, InEmptyFrame) {
 // by an iframe, which is destroyed before the chooser is closed, does not
 // result in a use-after-free condition.
 // TODO(crbug.com/500416901, crbug.com/40904458): Fix and re-enable this test.
-#if defined(MEMORY_SANITIZER) && BUILDFLAG(IS_LINUX)
+#if (BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)) || \
+    (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
 #define MAYBE_FileChooserInDestroyedSubframe \
   DISABLED_FileChooserInDestroyedSubframe
 #else
