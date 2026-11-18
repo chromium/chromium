@@ -239,6 +239,9 @@ crbug.com/536066868 [ mac apple-angle-metal-renderer:-apple-m2 asan ] ContextLos
 
 crbug.com/545512647 [ mac apple-angle-metal-renderer:-apple-m2 asan ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ Failure ]
 
+# Gardener 2026-11-18 (M156 Pixel 6 Graphite failure)
+crbug.com/587238480 [ android android-pixel-6 graphite-enabled passthrough ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Failure ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################
