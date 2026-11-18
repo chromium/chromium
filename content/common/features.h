@@ -291,6 +291,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyDynamicTiering);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebOTPAssertionFeaturePolicy);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebUIInProcessResourceLoading);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebUIOptimizeLocalResourceLoaderConfig);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebUISyncDataPipeWrite);
 
 // Please keep features in alphabetical order.
 

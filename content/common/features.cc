@@ -982,6 +982,11 @@ BASE_FEATURE(kWebUIInProcessResourceLoading, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebUIOptimizeLocalResourceLoaderConfig,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Writes WebUI resource bytes synchronously into a payload-sized Mojo data
+// pipe when they fit in the pipe capacity, instead of streaming them through
+// `mojo::DataPipeProducer` on the `ThreadPool`.
+BASE_FEATURE(kWebUISyncDataPipeWrite, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables WebOTP calls in cross-origin iframes if allowed by Permissions
 // Policy.
 BASE_FEATURE(kWebOTPAssertionFeaturePolicy, base::FEATURE_DISABLED_BY_DEFAULT);

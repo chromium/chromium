@@ -4,18 +4,28 @@
 
 #include "content/common/web_ui_loading_util.h"
 
+#include <algorithm>
+#include <cstdint>
+#include <utility>
+
 #include "base/byte_size.h"
 #include "base/check.h"
+#include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/types/expected.h"
+#include "content/common/features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -87,8 +97,7 @@ bool SendData(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
     std::optional<net::HttpByteRange> requested_range,
     scoped_refptr<base::RefCountedMemory> bytes) {
-  // The use of MojoCreateDataPipeOptions below means we'll be using uint32_t
-  // for sizes / offsets.
+  // Mojo data pipe APIs use `uint32_t` for capacities, sizes, and offsets.
   if (!base::IsValueInRangeForNumericType<uint32_t>(bytes->size())) {
     CallOnError(std::move(client_remote), net::ERR_INSUFFICIENT_RESOURCES);
     return false;
@@ -147,18 +156,34 @@ std::pair<mojo::ScopedDataPipeConsumerHandle, size_t> GetPipe(
                   requested_range->first_byte_position() + 1;
   }
 
-  MojoCreateDataPipeOptions options;
-  options.struct_size = sizeof(MojoCreateDataPipeOptions);
-  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
-  options.element_num_bytes = 1;
+  const bool sync_write_enabled =
+      base::FeatureList::IsEnabled(features::kWebUISyncDataPipeWrite);
   // `0` means using the default capacity.
-  options.capacity_num_bytes = 0;
+  uint32_t capacity_num_bytes = 0;
+  if (sync_write_enabled) {
+    const uint32_t max_data_pipe_size =
+        network::GetDataPipeDefaultAllocationSize(
+            network::DataPipeAllocationSize::kLargerSizeIfPossible);
+    capacity_num_bytes = std::clamp(base::checked_cast<uint32_t>(output_size),
+                                    1u, max_data_pipe_size);
+  }
   mojo::ScopedDataPipeProducerHandle pipe_producer_handle;
   mojo::ScopedDataPipeConsumerHandle pipe_consumer_handle;
   MojoResult create_result = mojo::CreateDataPipe(
-      &options, pipe_producer_handle, pipe_consumer_handle);
+      capacity_num_bytes, pipe_producer_handle, pipe_consumer_handle);
+  if (create_result != MOJO_RESULT_OK && capacity_num_bytes > 0) {
+    // Retry with the default pipe capacity if a sized allocation fails.
+    create_result = mojo::CreateDataPipe(
+        /*capacity_num_bytes=*/0u, pipe_producer_handle, pipe_consumer_handle);
+  }
   if (create_result != MOJO_RESULT_OK) {
     return std::make_pair(mojo::ScopedDataPipeConsumerHandle(), 0);
+  }
+
+  if (sync_write_enabled &&
+      pipe_producer_handle->WriteAllData(base::span(*bytes).subspan(
+          output_offset, output_size)) == MOJO_RESULT_OK) {
+    return std::make_pair(std::move(pipe_consumer_handle), output_size);
   }
 
   auto producer =

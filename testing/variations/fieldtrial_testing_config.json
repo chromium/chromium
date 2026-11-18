@@ -21831,6 +21831,24 @@
             ]
         }
     ],
+    "WebUISyncDataPipeWrite": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebUISyncDataPipeWrite"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewAblateVerificationCaching": [
         {
             "platforms": [
