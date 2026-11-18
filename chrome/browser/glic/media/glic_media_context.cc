@@ -133,6 +133,13 @@ bool GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
         result.timing_information->originating_media_timestamps->size();
   }
 
+  if (result.is_final) {
+    // Justification: Glic.Media.TimestampRangeCount is an existing
+    // unsplit histogram (not split by Consumer/Enterprise provider).
+    base::UmaHistogramExactLinear("Glic.Media.TimestampRangeCount",
+                                  timestamp_count, 10);
+  }
+
   if (timestamp_count > 1) {
     // Continue transcribing, but discard this particular result.
     return true;
@@ -147,9 +154,6 @@ bool GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
   if (!result.is_final) {
     HandleNonFinalResult(transcript, std::move(new_chunk));
   } else {
-    // Record timestamp metric for final result.
-    base::UmaHistogramExactLinear("Glic.Media.TimestampRangeCount",
-                                  timestamp_count, 10);
     HandleFinalResult(transcript, std::move(new_chunk));
   }
 

@@ -514,19 +514,24 @@ TEST_F(GlicMediaContextTest, OnResult_FinalResultClearsNonFinal) {
 
 TEST_F(GlicMediaContextTest,
        OnResult_FinalResultWithTiming_MultipleMediaTimestamps) {
+  base::HistogramTester histogram_tester;
+
   // Add a final chunk using OnResult
   context()->OnResult(CreateSpeechRecognitionResult(
       "chunk one", true,
       {media::MediaTimestampRange(base::Seconds(0), base::Seconds(1))}));
+  histogram_tester.ExpectBucketCount("Glic.Media.TimestampRangeCount", 1, 1);
 
-  // Add another chunk with multiple timestamps.  It should return true but
-  // ignore the chunk.
+  // Add another chunk with multiple timestamps.  It should return true, record
+  // the timestamp range count, and ignore the chunk.
   EXPECT_TRUE(context()->OnResult(CreateSpeechRecognitionResult(
       "chunk two", true,
       {media::MediaTimestampRange(base::Seconds(1), base::Seconds(2)),
        media::MediaTimestampRange(base::Seconds(3), base::Seconds(4))})));
 
   EXPECT_EQ(GetTranscriptText(context()), "chunk one");
+  histogram_tester.ExpectBucketCount("Glic.Media.TimestampRangeCount", 2, 1);
+  histogram_tester.ExpectTotalCount("Glic.Media.TimestampRangeCount", 2);
 }
 
 TEST_F(GlicMediaContextTest,
