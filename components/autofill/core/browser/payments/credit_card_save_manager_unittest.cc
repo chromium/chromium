@@ -64,6 +64,7 @@
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/payments/wallet_reminder_notice_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/cardholder_name_fix_flow_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
@@ -296,6 +297,16 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 
+class MockWalletReminderNoticeManager
+    : public payments::WalletReminderNoticeManager {
+ public:
+  explicit MockWalletReminderNoticeManager(AutofillClient* client)
+      : WalletReminderNoticeManager(client) {}
+  ~MockWalletReminderNoticeManager() override = default;
+
+  MOCK_METHOD(void, ShowWalletReminderNotice, (FlowType), (override));
+};
+
 // A mock AutofillClient using the `MockPaymentsDataManager` and
 // `MockPaymentsAutofillClient`.
 class MockAutofillClient : public TestAutofillClient {
@@ -345,6 +356,9 @@ class CreditCardSaveManagerTest
         std::make_unique<MockVirtualCardEnrollmentManager>(
             &payments_data_manager(),
             &multiple_request_payments_network_interface(),
+            &autofill_client()));
+    payments_autofill_client().set_wallet_reminder_notice_manager(
+        std::make_unique<testing::NiceMock<MockWalletReminderNoticeManager>>(
             &autofill_client()));
     payments_autofill_client().SetLocalSaveCallbackOfferDecision(
         SaveCardOfferUserDecision::kAccepted);
@@ -566,6 +580,10 @@ class CreditCardSaveManagerTest
   multiple_request_payments_network_interface() {
     return *payments_autofill_client()
                 .GetMultipleRequestPaymentsNetworkInterface();
+  }
+  MockWalletReminderNoticeManager& wallet_reminder_notice_manager() {
+    return *static_cast<MockWalletReminderNoticeManager*>(
+        payments_autofill_client().GetWalletReminderNoticeManager());
   }
   TestStrikeDatabase& strike_database() {
     return *autofill_client().GetStrikeDatabase();
@@ -4026,6 +4044,9 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_UploadDetailsFails) {
 #endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(CreditCardSaveManagerTest, DuplicateMaskedCreditCard_NoUpload) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletReminderNotice};
+
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -4033,7 +4054,7 @@ TEST_F(CreditCardSaveManagerTest, DuplicateMaskedCreditCard_NoUpload) {
   ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
   FormSubmitted(address_form);
 
-  // Add a masked credit card whose |TypeAndLastFourDigits| matches what we will
+  // Add a masked credit card whose `TypeAndLastFourDigits` matches what we will
   // enter below.
   CreditCard credit_card(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111",
@@ -4055,9 +4076,61 @@ TEST_F(CreditCardSaveManagerTest, DuplicateMaskedCreditCard_NoUpload) {
   test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
   test_api(credit_card_form).field(4).set_value(u"123");
 
-  // Local save prompt should not be shown as there is already masked
-  // card with same |TypeAndLastFourDigits|.
+  // Local save prompt should not be shown as there is already a masked card
+  // with the same `TypeAndLastFourDigits`. Since no higher-priority flow is
+  // offered for the matched server card, the Wallet reminder notice is shown.
   EXPECT_CALL(payments_autofill_client(), ShowSaveCreditCardLocally).Times(0);
+  EXPECT_CALL(
+      wallet_reminder_notice_manager(),
+      ShowWalletReminderNotice(
+          payments::WalletReminderNoticeManager::FlowType::kChromeDownstream));
+
+  FormSubmitted(credit_card_form);
+
+  EXPECT_FALSE(credit_card_save_manager().CreditCardWasUploaded());
+}
+
+TEST_F(CreditCardSaveManagerTest,
+       DuplicateMaskedCreditCard_NoUpload_WalletReminderNoticeFlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillEnableWalletReminderNotice);
+
+  // Create, fill and submit an address form in order to establish a recent
+  // profile which can be selected for the upload request.
+  FormData address_form = CreateTestAddressFormData();
+  FormsSeen(std::vector<FormData>(1, address_form));
+  ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
+  FormSubmitted(address_form);
+
+  // Add a masked credit card whose `TypeAndLastFourDigits` matches what we will
+  // enter below.
+  CreditCard credit_card(CreditCard::RecordType::kMaskedServerCard, "a123");
+  test::SetCreditCardInfo(&credit_card, "Jane Doe", "1111",
+                          test::NextMonth().c_str(), test::NextYear().c_str(),
+                          "1", /*cvc=*/u"123");
+  credit_card.SetNetworkForMaskedCard(kVisaCard);
+  personal_data().test_payments_data_manager().AddServerCreditCard(credit_card);
+
+  // Set up our credit card form data.
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen(std::vector<FormData>(1, credit_card_form));
+
+  // Edit the data, and submit.
+  test_api(credit_card_form).field(0).set_value(u"Jane Doe");
+  test_api(credit_card_form).field(1).set_value(u"4111111111111111");
+  test_api(credit_card_form)
+      .field(2)
+      .set_value(ASCIIToUTF16(test::NextMonth()));
+  test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
+  test_api(credit_card_form).field(4).set_value(u"123");
+
+  // Local save prompt should not be shown as there is already a masked card
+  // with the same `TypeAndLastFourDigits`, and the Wallet reminder notice
+  // should not be shown when the flag is disabled.
+  EXPECT_CALL(payments_autofill_client(), ShowSaveCreditCardLocally).Times(0);
+  EXPECT_CALL(wallet_reminder_notice_manager(), ShowWalletReminderNotice)
+      .Times(0);
 
   FormSubmitted(credit_card_form);
 
