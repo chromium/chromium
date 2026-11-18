@@ -1486,18 +1486,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="Omnibox.CompanyEntityImageAblated" enum="Boolean"
-    expires_after="2025-08-04">
-  <owner>jennserrano@google.com</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    Records whether any company entity image was ablated. This histogram is
-    logged to once per autocomplete pass when there exists a suggestion of
-    entity type. Recorded after attempting to find matching domains between a
-    historical URL and a company entity website URI.
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.ContextMenu.AnimationShown.ContextualTasks"
     enum="Boolean" expires_after="2027-08-01">
   <owner>dhruvkathpalia@google.com</owner>

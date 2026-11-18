@@ -13,7 +13,6 @@
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -381,7 +380,6 @@ TEST_F(AutocompleteControllerTest, UpdateShownInSessionAgenticUpdate) {
 }
 
 TEST_F(AutocompleteControllerTest, RemoveCompanyEntityImage) {
-  base::HistogramTester histogram_tester;
   std::vector<AutocompleteMatch> matches;
   // To ablate entity image the historical match must be the first and the
   // company entity can be in any other slot.
@@ -396,15 +394,12 @@ TEST_F(AutocompleteControllerTest, RemoveCompanyEntityImage) {
 
   MaybeRemoveCompanyEntityImages();
   ASSERT_TRUE(ImageURLAndImageDominantColorIsEmpty(/*index=*/2));
-  histogram_tester.ExpectBucketCount("Omnibox.CompanyEntityImageAblated", true,
-                                     1);
 }
 
 TEST_F(AutocompleteControllerTest, CompanyEntityImageNotRemoved) {
   // History match is not the first suggestion. Entity's image should not be
   // removed.
   {
-    base::HistogramTester histogram_tester;
     std::vector<AutocompleteMatch> matches;
     matches.push_back(CreateCompanyEntityMatch(
         /*website_uri=*/"https://www.wellsfargo.com/"));
@@ -418,14 +413,11 @@ TEST_F(AutocompleteControllerTest, CompanyEntityImageNotRemoved) {
     MaybeRemoveCompanyEntityImages();
     // The entity's image_url should remain as is.
     ASSERT_FALSE(ImageURLAndImageDominantColorIsEmpty(/*index=*/0));
-    histogram_tester.ExpectBucketCount("Omnibox.CompanyEntityImageAblated",
-                                       false, 1);
   }
 
   // History match is the first suggestion, but there isn't a matching company
   // entity.
   {
-    base::HistogramTester histogram_tester;
     std::vector<AutocompleteMatch> matches;
     matches.push_back(CreateHistoryURLMatch(
         /*destination_url=*/"https://www.wellsfargo.com/"));
@@ -438,12 +430,9 @@ TEST_F(AutocompleteControllerTest, CompanyEntityImageNotRemoved) {
     MaybeRemoveCompanyEntityImages();
     // The entity's image_url should remain as is.
     ASSERT_FALSE(ImageURLAndImageDominantColorIsEmpty(/*index=*/1));
-    histogram_tester.ExpectBucketCount("Omnibox.CompanyEntityImageAblated",
-                                       false, 1);
   }
   // There is a company entity, but no history match.
   {
-    base::HistogramTester histogram_tester;
     std::vector<AutocompleteMatch> matches;
     matches.push_back(CreateSearchMatch());
     matches.push_back(
@@ -455,8 +444,6 @@ TEST_F(AutocompleteControllerTest, CompanyEntityImageNotRemoved) {
     MaybeRemoveCompanyEntityImages();
     // The entity's image_url should remain as is.
     ASSERT_FALSE(ImageURLAndImageDominantColorIsEmpty(/*index=*/1));
-    histogram_tester.ExpectBucketCount("Omnibox.CompanyEntityImageAblated",
-                                       false, 1);
   }
 }
 

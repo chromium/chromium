@@ -2958,7 +2958,6 @@ void AutocompleteController::MaybeRemoveCompanyEntityImages(
     return;
   }
 
-  bool image_ablated = false;
   if (!history_domain.empty()) {
     for (auto it = iter; it != result->matches_.end(); it++) {
       // Do not attempt to change image to search loupe if not an entity
@@ -2970,11 +2969,9 @@ void AutocompleteController::MaybeRemoveCompanyEntityImages(
       if (history_domain == GetDomain(*it)) {
         it->image_url = GURL();
         it->image_dominant_color.clear();
-        image_ablated = true;
       }
     }
   }
-  base::UmaHistogramBoolean("Omnibox.CompanyEntityImageAblated", image_ablated);
 }
 
 void AutocompleteController::MaybeCleanSuggestionsForKeywordMode(
