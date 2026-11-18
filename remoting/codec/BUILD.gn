@@ -4,12 +4,27 @@
 
 import("//remoting/remoting_options.gni")
 
+static_library("utils") {
+  sources = [
+    "utils.cc",
+    "utils.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+
+  deps = [
+    "//remoting/base:codec_utils",
+    "//third_party/libyuv",
+  ]
+}
+
 static_library("encoder") {
   sources = [
     "encoder_bitrate_filter.cc",
     "encoder_bitrate_filter.h",
-    "utils.cc",
-    "utils.h",
     "video_encoder_active_map.cc",
     "video_encoder_active_map.h",
     "webrtc_video_encoder.cc",
@@ -19,7 +34,10 @@ static_library("encoder") {
     "webrtc_video_encoder_vpx.h",
   ]
 
-  public_deps = [ "//third_party/libaom" ]
+  public_deps = [
+    ":utils",
+    "//third_party/libaom",
+  ]
 
   deps = [
     ":vpx_codec",
@@ -91,6 +109,7 @@ source_set("unit_tests") {
 
   deps = [
     ":encoder",
+    ":utils",
     "//base",
     "//base/test:test_support",
     "//remoting/base:codec_utils",
