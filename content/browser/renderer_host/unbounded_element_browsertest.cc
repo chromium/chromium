@@ -4106,6 +4106,7 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementWebUITest,
 
   RenderFrameHost* iframe = ChildFrameAt(primary_main_frame_host(), 0);
   ASSERT_TRUE(iframe);
+  WaitForHitTestData(iframe);
   EXPECT_FALSE(iframe->HasTransientUserActivation());
 
   // The privileged main frame opted the untrusted iframe in via permissions
