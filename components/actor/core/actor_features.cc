@@ -248,6 +248,8 @@ const base::FeatureParam<base::TimeDelta>
         base::Seconds(1)};
 // LINT.ThenChange(//ios/chrome/browser/intelligence/features/features.mm:kActorPageStabilityAutofillPredictionsTimeout)
 
+BASE_FEATURE(kActorStabilizeOncePerBundle, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Experiment with different tool execution delays and timeouts for Actor.
 BASE_FEATURE(kActorPageToolTimeout, base::FEATURE_ENABLED_BY_DEFAULT);
 

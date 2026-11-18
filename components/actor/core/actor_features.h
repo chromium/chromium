@@ -190,6 +190,11 @@ extern const base::FeatureParam<base::TimeDelta> kActorObservationDelayLcp;
 extern const base::FeatureParam<base::TimeDelta>
     kActorObservationDelayAutofillPredictionsTimeout;
 
+// When enabled, defers page stabilization across consecutive same-tab,
+// same-local-root page actions in a bundle and waits once at the end of the
+// bundle (or at a bundle boundary).
+BASE_DECLARE_FEATURE(kActorStabilizeOncePerBundle);
+
 // Tool execution delay and timeout parameters for Actor.
 BASE_DECLARE_FEATURE(kActorPageToolTimeout);
 extern const base::FeatureParam<base::TimeDelta> kActorPageToolTimeoutParam;
