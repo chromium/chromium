@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -34,15 +35,20 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/image_model_utils.h"
 #include "ui/color/color_variant.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/single_animated_image_container.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -73,6 +79,8 @@ PageActionView::PageActionView(actions::ActionItem* action_item,
       type_(type) {
   CHECK(action_item_->GetActionId().has_value());
   SetUpForAnimation(base::Milliseconds(600));
+  visibility_animation_.SetSlideDuration(base::Milliseconds(200));
+  visibility_animation_.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
 
   SetProperty(views::kElementIdentifierKey, element_identifier);
 
@@ -188,6 +196,7 @@ void PageActionView::OnNewActiveController(PageActionController* controller) {
     anchored_message_widget_->Close();
   }
   if (controller) {
+    base::AutoReset<bool> suppress(&suppress_visibility_animation_, true);
     controller->RegisterCallbacks(PassKey(),
                                   action_item_->GetActionId().value(), this);
 
@@ -206,7 +215,7 @@ void PageActionView::OnNewActiveController(PageActionController* controller) {
     SetAnchoredMessageExpandCallback(base::DoNothing());
     SetAnchoredMessageCollapseCallback(base::DoNothing());
     SetAnchoredMessageDowngradeCallback(base::DoNothing());
-    SetVisible(false);
+    HideImmediately();
   }
 }
 
@@ -215,8 +224,7 @@ void PageActionView::OnPageActionModelChanged(
   const bool visible = model.GetVisible();
   const bool declared_changed = (declared_visible_ != visible);
   declared_visible_ = visible;
-  SetEnabled(visible);
-  SetVisible(visible);
+  UpdateVisibility(model);
 
   if (declared_changed) {
     visibility_changed_callbacks_.Notify(this);
@@ -294,6 +302,115 @@ void PageActionView::HandleSuggestionChipTransition(
   }
 }
 
+void PageActionView::UpdateVisibility(const PageActionModelInterface& model) {
+  const bool visible = model.GetVisible();
+
+  if (visible) {
+    SetEnabled(true);
+    SetExitInputBlocked(false);
+
+    const bool should_animate_in = model.GetShouldAnimateVisibilityIn();
+    if (should_animate_in) {
+      visibility_animation_started_callback_.Run();
+    }
+
+    // Don't snap an entrance that's already running.
+    if (ShouldAnimateVisibility() && GetVisible() &&
+        !visibility_animation_.IsClosing() &&
+        !model.ShouldShowSuggestionChip()) {
+      return;
+    }
+    if (!ShouldAnimateVisibility() || !should_animate_in ||
+        model.ShouldShowSuggestionChip()) {
+      ResetVisibilityAnimation(1.0);
+      SetVisible(true);
+      return;
+    }
+    if (!GetVisible()) {
+      visibility_animation_.Reset(0.0);
+      SetVisible(true);
+    }
+    EnsureVisibilityAnimationLayer();
+    visibility_animation_.Show();
+    PreferredSizeChanged();
+    return;
+  }
+
+  // Chips hide immediately; sequenced collapse-then-exit is handled separately.
+  if (GetVisible() && !IsChipVisible() && ShouldAnimateVisibility() &&
+      model.GetShouldAnimateVisibilityOut() &&
+      visibility_animation_.GetCurrentValue() > 0.0) {
+    if (!visibility_animation_.is_animating()) {
+      visibility_animation_.Reset(1.0);
+    }
+    EnsureVisibilityAnimationLayer();
+    // Block input and focus without SetEnabled(false), which dims the icon.
+    SetExitInputBlocked(true);
+    visibility_animation_.Hide();
+    return;
+  }
+
+  HideImmediately();
+  SetEnabled(false);
+}
+
+bool PageActionView::ShouldAnimateVisibility() const {
+  return !suppress_visibility_animation_ &&
+         features::IsPageActionsElevatedToolbarEnabled() &&
+         !gfx::Animation::PrefersReducedMotion() &&
+         !gfx::ScopedAnimationDurationScaleMode::is_zero();
+}
+
+int PageActionView::ScaleWidthForVisibilityAnimation(int width) const {
+  if (!visibility_animation_.is_animating() || width <= 0) {
+    return width;
+  }
+  // Keep width >= 1 while animating so FlexLayout does not hide the view.
+  return visibility_animation_.CurrentValueBetween(1, width);
+}
+
+void PageActionView::EnsureVisibilityAnimationLayer() {
+  if (!layer()) {
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+  }
+  label()->SetSkipSubpixelRenderingOpacityCheck(true);
+  layer()->SetMasksToBounds(true);
+  layer()->SetOpacity(
+      static_cast<float>(visibility_animation_.GetCurrentValue()));
+}
+
+void PageActionView::FinishVisibilityAnimation() {
+  if (layer()) {
+    DestroyLayer();
+  }
+  label()->SetSkipSubpixelRenderingOpacityCheck(
+      animation_style() == AnimationStyle::kSlideAndCrossfade);
+  SetExitInputBlocked(false);
+}
+
+void PageActionView::SetExitInputBlocked(bool blocked) {
+  SetCanProcessEventsWithinSubtree(!blocked);
+  SetFocusBehavior(blocked ? FocusBehavior::NEVER
+                           : views::PlatformStyle::kDefaultFocusBehavior);
+  GetViewAccessibility().SetIsIgnored(blocked);
+}
+
+void PageActionView::ResetVisibilityAnimation(double value) {
+  const bool was_animating = visibility_animation_.is_animating();
+  visibility_animation_.Reset(value);
+  FinishVisibilityAnimation();
+  if (was_animating) {
+    PreferredSizeChanged();
+  }
+}
+
+void PageActionView::HideImmediately() {
+  declared_visible_ = false;
+  ResetVisibilityAnimation(0.0);
+  SetVisible(false);
+}
+
 void PageActionView::OnPageActionModelWillBeDeleted(
     const PageActionModelInterface& model) {
   current_controller_ = nullptr;
@@ -301,7 +418,7 @@ void PageActionView::OnPageActionModelWillBeDeleted(
   anchored_message_widget_ = nullptr;
   observation_.Reset();
   action_item_controller_subscription_ = {};
-  SetVisible(false);
+  HideImmediately();
 }
 
 views::BubbleAnchor PageActionView::GetBubbleAnchor() {
@@ -402,9 +519,41 @@ void PageActionView::NotifyClick(const ui::Event& event) {
   action_item_->InvokeAction(std::move(builder).Build());
 }
 
+void PageActionView::AnimationProgressed(const gfx::Animation* animation) {
+  if (animation == &visibility_animation_) {
+    if (layer()) {
+      layer()->SetOpacity(
+          static_cast<float>(visibility_animation_.GetCurrentValue()));
+    }
+    PreferredSizeChanged();
+    return;
+  }
+  IconLabelBubbleView::AnimationProgressed(animation);
+}
+
 void PageActionView::AnimationEnded(const gfx::Animation* animation) {
+  if (animation == &visibility_animation_) {
+    FinishVisibilityAnimation();
+    if (!declared_visible_) {
+      SetEnabled(false);
+      SetVisible(false);
+    } else {
+      // Invalidate layout cached on the final frame while is_animating() was
+      // still true.
+      PreferredSizeChanged();
+    }
+    return;
+  }
   IconLabelBubbleView::AnimationEnded(animation);
   NotifyIsChipShowingChange();
+}
+
+void PageActionView::AnimationCanceled(const gfx::Animation* animation) {
+  if (animation == &visibility_animation_) {
+    FinishVisibilityAnimation();
+    return;
+  }
+  IconLabelBubbleView::AnimationCanceled(animation);
 }
 
 void PageActionView::UpdateIconImage() {
@@ -521,8 +670,35 @@ const gfx::Insets PageActionView::GetInsetsForNonVectorIcon() const {
 void PageActionView::SetModel(PageActionModelInterface* model) {
   current_controller_ = nullptr;
   observation_.Reset();
+  HideImmediately();
   observation_.Observe(model);
   UpdateTooltipText();
+}
+
+views::ProposedLayout PageActionView::CalculateProposedLayout(
+    const views::SizeBounds& size_bounds) const {
+  if (!visibility_animation_.is_animating()) {
+    return IconLabelBubbleView::CalculateProposedLayout(size_bounds);
+  }
+
+  // Compute child positions against an unconstrained width so the icon slides
+  // in from the right instead of shrinking horizontally.
+  views::ProposedLayout layout = IconLabelBubbleView::CalculateProposedLayout(
+      views::SizeBounds(views::SizeBound(), size_bounds.height()));
+  layout.host_size.set_width(size_bounds.width().min_of(
+      ScaleWidthForVisibilityAnimation(layout.host_size.width())));
+  return layout;
+}
+
+gfx::Size PageActionView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size preferred_size =
+      IconLabelBubbleView::CalculatePreferredSize(available_size);
+  if (animation_style() == AnimationStyle::kSlideAndCrossfade) {
+    preferred_size.set_width(
+        ScaleWidthForVisibilityAnimation(preferred_size.width()));
+  }
+  return preferred_size;
 }
 
 gfx::Size PageActionView::GetMinimumSize() const {
@@ -535,6 +711,8 @@ gfx::Size PageActionView::GetMinimumSize() const {
     icon_preferred_size.Enlarge(icon_insets_.width(), icon_insets_.height());
   }
 
+  icon_preferred_size.set_width(
+      ScaleWidthForVisibilityAnimation(icon_preferred_size.width()));
   return icon_preferred_size;
 }
 
@@ -575,6 +753,10 @@ views::View* PageActionView::GetLabelForTesting() {
 
 gfx::SlideAnimation& PageActionView::GetSlideAnimationForTesting() {
   return slide_animation_;
+}
+
+gfx::SlideAnimation& PageActionView::GetVisibilityAnimationForTesting() {
+  return visibility_animation_;
 }
 
 void PageActionView::NotifyIsChipShowingChange() {
@@ -672,7 +854,7 @@ void PageActionView::OnAnchoredMessageClosed() {
 
 void PageActionView::UpdateTooltipText() {
   if (!observation_.IsObserving() || !observation_.GetSource() ||
-      !GetVisible()) {
+      !declared_visible_) {
     SetTooltipText(std::u16string());
     return;
   }
@@ -727,7 +909,8 @@ AnchoredMessageBubbleView* PageActionView::GetAnchoredMessageForTesting() {
 }
 
 void PageActionView::BeforeApplyLayout(const views::ProposedLayout& layout) {
-  if (!GetVisible() || !IsChipVisible() || chip_shown_metric_recorded_ ||
+  if (visibility_animation_.is_animating() || !GetVisible() ||
+      !IsChipVisible() || chip_shown_metric_recorded_ ||
       GetAnimationValue() != 1.0 || GetText().empty()) {
     return;
   }

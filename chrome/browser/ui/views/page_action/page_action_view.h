@@ -131,10 +131,16 @@ class PageActionView : public IconLabelBubbleView,
   bool ShouldShowSeparator() const override;
   bool ShouldUpdateInkDropOnClickCanceled() const override;
   void NotifyClick(const ui::Event& event) override;
+  views::ProposedLayout CalculateProposedLayout(
+      const views::SizeBounds& size_bounds) const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   bool IsBubbleShowing() const override;
   bool IsTriggerableEvent(const ui::Event& event) override;
+  void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
+  void AnimationCanceled(const gfx::Animation* animation) override;
 
   // views::LayoutDelegate:
   void BeforeApplyLayout(const views::ProposedLayout& layout) override;
@@ -149,6 +155,7 @@ class PageActionView : public IconLabelBubbleView,
 
   views::View* GetLabelForTesting();
   gfx::SlideAnimation& GetSlideAnimationForTesting();
+  gfx::SlideAnimation& GetVisibilityAnimationForTesting();
   AnchoredMessageBubbleView* GetAnchoredMessageForTesting();
   SkColor GetForegroundColorForTesting() const { return GetForegroundColor(); }
   SkColor GetBackgroundColorForTesting() const { return GetBackgroundColor(); }
@@ -198,6 +205,14 @@ class PageActionView : public IconLabelBubbleView,
   void CreateAndShowAnchoredMessage(const PageActionModelInterface& model);
 
   void UpdateAnimationState(const PageActionModelInterface& model);
+  void UpdateVisibility(const PageActionModelInterface& model);
+  bool ShouldAnimateVisibility() const;
+  int ScaleWidthForVisibilityAnimation(int width) const;
+  void EnsureVisibilityAnimationLayer();
+  void FinishVisibilityAnimation();
+  void SetExitInputBlocked(bool blocked);
+  void ResetVisibilityAnimation(double value);
+  void HideImmediately();
   void HandleSlideAndCrossfadeTransition(const PageActionModelInterface& model);
   void HandleSuggestionChipTransition(const PageActionModelInterface& model);
   void CloseWidgetDeferred(base::WeakPtr<views::Widget> widget_to_close);
@@ -253,6 +268,8 @@ class PageActionView : public IconLabelBubbleView,
   bool chip_shown_metric_recorded_ = false;
   // Logical visibility. GetVisible() can be overridden by layouts/animations.
   bool declared_visible_ = false;
+  bool suppress_visibility_animation_ = false;
+  gfx::SlideAnimation visibility_animation_{this};
 
   // Used to record click event histogram. It's initialized to base::DoNothing()
   // for testing purpose.
