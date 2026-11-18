@@ -4,11 +4,40 @@
 
 import {ChangePageOrigin} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+// <if expr="not is_macosx">
+// clang-format off
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
+// clang-format on
+// </if>
 
 const tests = [
+  // <if expr="not is_macosx">
+  // TODO(crbug.com/578762077): adjust this <if> preprocessor directive
+  // accordingly to include test for Mac once Mac gets its own shortcut.
+
   /**
-   * Test that the toolbar shows an option to download the edited PDF if
-   * available.
+   * Test the Ctrl + Alt + G shortcut for jumping to the page selector
+   * for non-Mac machines.
+   */
+  function testJumpToPageSelectorShortcut() {
+    keyDownOn(document.documentElement, 0, ['ctrl', 'alt'], 'g');
+    chrome.test.assertEq('pageSelector', getDeepActiveElement()?.id);
+
+    // Resets the focus to test the shortcut with 'G'
+    (document.activeElement! as HTMLElement).blur();
+    chrome.test.assertEq(document.body, getDeepActiveElement());
+
+    keyDownOn(document.documentElement, 0, ['ctrl', 'alt'], 'G');
+    chrome.test.assertEq('pageSelector', getDeepActiveElement()?.id);
+
+    chrome.test.succeed();
+  },
+  // </if>
+
+  /**
+   * Test that the PDF page selector input element behaves correctly
+   * for all types of input.
    */
   async function testPageSelector() {
     document.body.innerHTML = '';

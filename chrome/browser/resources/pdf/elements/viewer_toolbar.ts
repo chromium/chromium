@@ -46,6 +46,7 @@ import {record, UserAction} from '../metrics.js';
 
 import {getCss} from './viewer_toolbar.css.js';
 import {getHtml} from './viewer_toolbar.html.js';
+import type {ViewerPageSelectorElement} from './viewer_page_selector.js';
 // clang-format on
 
 declare global {
@@ -61,6 +62,7 @@ declare global {
 export interface ViewerToolbarElement {
   $: {
     sidenavToggle: HTMLButtonElement,
+    pageSelector: ViewerPageSelectorElement,
     menu: CrActionMenuElement,
     presentButton: HTMLButtonElement,
     twoPageViewButton: HTMLButtonElement,
@@ -249,6 +251,10 @@ export class ViewerToolbarElement extends CrLitElement {
   protected onSidenavToggleClick_() {
     record(UserAction.TOGGLE_SIDENAV);
     this.dispatchEvent(new CustomEvent('sidenav-toggle-click'));
+  }
+
+  selectPageSelector() {
+    this.$.pageSelector.select();
   }
 
   protected fitToButtonIcon_(): string {

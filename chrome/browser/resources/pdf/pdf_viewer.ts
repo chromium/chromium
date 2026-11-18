@@ -164,6 +164,13 @@ function hasCtrlModifierMaybeWithShift(e: KeyboardEvent): boolean {
   return hasCtrlModifier(e) && !e.altKey && !metaModifier;
 }
 
+// <if expr="not is_macosx">
+// Adjust the meta modifier and ctrl key if its use crop up in Mac.
+function hasCtrlAndAltModifiersOnly(e: KeyboardEvent): boolean {
+  return e.ctrlKey && e.altKey && !e.shiftKey && !e.metaKey;
+}
+// </if>
+
 const LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY: string = 'sidenavCollapsed';
 
 export const LOCAL_STORAGE_TWO_UP_VIEW_ENABLED_KEY: string = 'twoUpViewEnabled';
@@ -656,6 +663,19 @@ export class PdfViewerElement extends PdfViewerBaseElement {
           this.rotateClockwise();
         }
         return;
+      // <if expr="not is_macosx">
+      case 'g':
+      case 'G':
+        if (hasCtrlAndAltModifiersOnly(e)) {
+          // Guard to prevent this shortcut from triggering when #toolbar=0
+          // param is passed in the URL.
+          if (this.toolbarEnabled_) {
+            e.preventDefault();
+            this.$.toolbar.selectPageSelector();
+          }
+        }
+        return;
+      // </if>
       // <if expr="enable_pdf_ink2">
       case 'z':
       case 'Z':
