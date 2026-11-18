@@ -297,6 +297,13 @@
       <property name="ignoreComments" value="true"/>
       <property name="message" value="Use an @IntDef / @StringDef / @LongDef / custom class rather than an enum. See https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/java.md#Enums" />
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="RobolectricApplicationField"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="\bRuntimeEnvironment\.application\b"/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="RuntimeEnvironment.application is deprecated. Use RuntimeEnvironment.getApplication() instead."/>
+    </module>
   </module>
   <module name="RegexpMultiline">
     <property name="id" value="NoNonNull"/>

@@ -30,7 +30,7 @@ Bad:
 // Anti-pattern 1: Spying on Context in setup to assert singleton registration
 @Before
 public void setUp() {
-    mContext = spy(RuntimeEnvironment.application);
+    mContext = spy(RuntimeEnvironment.getApplication());
     ContextUtils.initApplicationContextForTests(mContext);
     ScreenOffBroadcastReceiver.getInstance();
     verify(mContext).registerReceiver(mReceiverCaptor.capture(), any(), any(), anyInt());
@@ -50,7 +50,7 @@ Good:
 // Setup: Initialize context without spies; do not verify singleton initialization
 @Before
 public void setUp() {
-    mContext = RuntimeEnvironment.application;
+    mContext = RuntimeEnvironment.getApplication();
     ContextUtils.initApplicationContextForTests(mContext);
     ScreenOffBroadcastReceiver.getInstance();
     BaseRobolectricTestRule.runAllBackgroundAndUi();

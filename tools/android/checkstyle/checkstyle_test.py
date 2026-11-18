@@ -806,6 +806,27 @@ class A {}
         )
 
     @java("""
+import android.content.Context;
+import org.robolectric.RuntimeEnvironment;
+class A {
+    Context mContext = RuntimeEnvironment.application;
+}
+""")
+    def test_RobolectricApplicationField(self):
+        self._check('RuntimeEnvironment.application is deprecated.')
+
+    @java("""
+import android.content.Context;
+import org.robolectric.RuntimeEnvironment;
+class A {
+    // RuntimeEnvironment.application is mentioned in a comment only.
+    Context mContext = RuntimeEnvironment.getApplication();
+}
+""")
+    def test_RobolectricApplicationField_good(self):
+        self._check()
+
+    @java("""
 import androidx.annotation.Nullable;
 import org.chromium.build.annotations.NullMarked;
 @NullMarked class MarkImportsAsUsed<T extends @Nullable Object> {}

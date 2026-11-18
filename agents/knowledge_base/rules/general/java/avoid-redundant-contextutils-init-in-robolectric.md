@@ -7,7 +7,7 @@ severity: nit
 **Rule.** In Android Robolectric JUnit tests running under
 BaseRobolectricTestRunner, do not manually call
 ContextUtils.initApplicationContextForTests(...) with the default application
-context (such as RuntimeEnvironment.application or
+context (such as RuntimeEnvironment.getApplication() or
 ApplicationProvider.getApplicationContext()). Access the application context
 directly via ContextUtils.getApplicationContext() or
 ApplicationProvider.getApplicationContext(), reserving
@@ -30,7 +30,7 @@ public class ScreenOffBroadcastReceiverTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         ContextUtils.initApplicationContextForTests(mContext);
     }
 }
