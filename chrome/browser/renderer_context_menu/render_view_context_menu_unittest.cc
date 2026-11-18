@@ -2958,30 +2958,38 @@ TEST_F(RenderViewContextMenuMenuSimplificationTest, LinkAndSelectionLayout) {
   features.InitAndEnableFeature(features::kGlicContextMenu);
   glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;
 
+  auto reset_ignore_missing_key = SetUpTranslateClient();
+
   content::ContextMenuParams params;
   params.selection_text = u"text";
   params.link_url = GURL("https://example.com");
   params.properties[prefs::kDefaultSearchProviderContextMenuAccessAllowed] = "";
-  SetUserSelectedDefaultSearchProvider("https://www.google.com", true);
   TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
                                  params);
   menu.SetBrowser(GetBrowser());
-  ChromeTranslateClient::CreateForWebContents(web_contents());
   menu.Init();
 
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_COPY));
+  EXPECT_TRUE(menu.IsItemPresent(IDC_PRINT));
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE));
+#endif
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
-  EXPECT_TRUE(menu.IsItemPresent(IDC_PRINT));
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
 
   const ui::SimpleMenuModel& model = menu.menu_model();
-  EXPECT_TRUE(HasSeparatorBetween(model, IDC_CONTENT_CONTEXT_COPY,
+  EXPECT_FALSE(HasSeparatorBetween(model, IDC_CONTENT_CONTEXT_COPY, IDC_PRINT));
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(HasSeparatorBetween(model, IDC_PRINT,
+                                   IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE));
+  EXPECT_TRUE(HasSeparatorBetween(model, IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
                                   IDC_CONTENT_CONTEXT_GLIC));
+#else
+  EXPECT_TRUE(HasSeparatorBetween(model, IDC_PRINT, IDC_CONTENT_CONTEXT_GLIC));
+#endif
   EXPECT_FALSE(HasSeparatorBetween(model, IDC_CONTENT_CONTEXT_GLIC,
                                    IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
-  EXPECT_TRUE(
-      HasSeparatorBetween(model, IDC_CONTENT_CONTEXT_SEARCHWEBFOR, IDC_PRINT));
 }
 
 TEST_F(RenderViewContextMenuMenuSimplificationTest,
@@ -3755,16 +3763,18 @@ class RenderViewContextMenuOrderTest : public RenderViewContextMenuPrefsTest {
 
   RenderViewContextMenuOrderTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{lens::features::kLensOverlay,
+        /*enabled_features=*/{features::kGlic, features::kGlicContextMenu,
+                              lens::features::kLensOverlay,
                               media::kContextMenuSearchForVideoFrame},
-        /*disabled_features=*/{
-            lens::features::kLensStandalone, features::kMenuSimplification,
-            features::kReadAnythingImprovedUi, features::kGlic,
-            sharing_hub::kDesktopScreenshots});
+        /*disabled_features=*/{lens::features::kLensStandalone,
+                               features::kMenuSimplification,
+                               features::kReadAnythingImprovedUi,
+                               sharing_hub::kDesktopScreenshots});
   }
 
   void SetUp() override {
     RenderViewContextMenuPrefsTest::SetUp();
+    scoped_glic_bypass_.emplace();
     translate::TranslateManager::SetIgnoreMissingKeyForTesting(true);
     NavigateAndCommit(GURL("https://www.example.com/"));
     SetUserSelectedDefaultSearchProvider("https://www.google.com",
@@ -3780,6 +3790,7 @@ class RenderViewContextMenuOrderTest : public RenderViewContextMenuPrefsTest {
   }
 
   void TearDown() override {
+    scoped_glic_bypass_.reset();
     translate::TranslateManager::SetIgnoreMissingKeyForTesting(false);
     RenderViewContextMenuPrefsTest::TearDown();
   }
@@ -3819,6 +3830,8 @@ class RenderViewContextMenuOrderTest : public RenderViewContextMenuPrefsTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::optional<glic::GlicEnabling::ScopedBypassEnablementChecksForTesting>
+      scoped_glic_bypass_;
 };
 
 TEST_F(RenderViewContextMenuOrderTest, PageMenu_Order) {
@@ -3829,8 +3842,9 @@ TEST_F(RenderViewContextMenuOrderTest, PageMenu_Order) {
   EXPECT_THAT(
       GetMenuItemsAndSeparators(menu->menu_model()),
       testing::ElementsAre(
-          IDC_BACK, IDC_FORWARD, IDC_RELOAD, kSeparatorId, IDC_SAVE_PAGE,
-          IDC_PRINT, IDC_ROUTE_MEDIA, IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+          IDC_BACK, IDC_FORWARD, IDC_RELOAD, kSeparatorId,
+          IDC_CONTENT_CONTEXT_GLIC, kSeparatorId, IDC_SAVE_PAGE, IDC_PRINT,
+          IDC_ROUTE_MEDIA, IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
           kSeparatorId, IDC_CONTENT_CONTEXT_GENERATE_QR_CODE, kSeparatorId,
           IDC_CONTENT_CONTEXT_TRANSLATE, kSeparatorId, IDC_VIEW_SOURCE,
           IDC_CONTENT_CONTEXT_INSPECTELEMENT));
@@ -3844,8 +3858,9 @@ TEST_F(RenderViewContextMenuOrderTest, SubframeMenu_Order) {
   EXPECT_THAT(
       GetMenuItemsAndSeparators(menu->menu_model()),
       testing::ElementsAre(
-          IDC_BACK, IDC_FORWARD, IDC_RELOAD, kSeparatorId, IDC_SAVE_PAGE,
-          IDC_PRINT, IDC_ROUTE_MEDIA, IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+          IDC_BACK, IDC_FORWARD, IDC_RELOAD, kSeparatorId,
+          IDC_CONTENT_CONTEXT_GLIC, kSeparatorId, IDC_SAVE_PAGE, IDC_PRINT,
+          IDC_ROUTE_MEDIA, IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
           kSeparatorId, IDC_CONTENT_CONTEXT_GENERATE_QR_CODE, kSeparatorId,
           IDC_CONTENT_CONTEXT_TRANSLATE, kSeparatorId, IDC_VIEW_SOURCE,
           IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE, IDC_CONTENT_CONTEXT_RELOADFRAME,
@@ -3959,8 +3974,8 @@ TEST_F(RenderViewContextMenuOrderTest, SelectedTextMenu_SearchTextOrder) {
   EXPECT_THAT(GetMenuItemsAndSeparators(menu->menu_model()),
               testing::ElementsAre(
                   IDC_CONTENT_CONTEXT_COPY, IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
-                  IDC_CONTENT_CONTEXT_SEARCHWEBFOR, IDC_PRINT,
-                  IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+                  IDC_CONTENT_CONTEXT_GLIC, IDC_CONTENT_CONTEXT_SEARCHWEBFOR,
+                  IDC_PRINT, IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
 #if !BUILDFLAG(IS_CHROMEOS)
                   IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
 #endif
@@ -3976,8 +3991,8 @@ TEST_F(RenderViewContextMenuOrderTest, SelectedTextMenu_UrlTextOrder) {
   EXPECT_THAT(GetMenuItemsAndSeparators(menu->menu_model()),
               testing::ElementsAre(
                   IDC_CONTENT_CONTEXT_COPY, IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
-                  IDC_CONTENT_CONTEXT_GOTOURL, IDC_PRINT,
-                  IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+                  IDC_CONTENT_CONTEXT_GLIC, IDC_CONTENT_CONTEXT_GOTOURL,
+                  IDC_PRINT, IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
 #if !BUILDFLAG(IS_CHROMEOS)
                   IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
 #endif
@@ -3991,20 +4006,21 @@ TEST_F(RenderViewContextMenuOrderTest, LinkAndSelectionMenu_Order) {
   params.selection_text = u"selected link text";
   std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
 
-  EXPECT_THAT(GetMenuItemsAndSeparators(menu->menu_model()),
-              testing::ElementsAre(
-                  IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
-                  IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
-                  IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
-                  IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, kSeparatorId,
-                  IDC_CONTENT_CONTEXT_SAVELINKAS,
-                  IDC_CONTENT_CONTEXT_COPYLINKLOCATION, kSeparatorId,
-                  IDC_CONTENT_CONTEXT_COPY, IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
-                  IDC_CONTENT_CONTEXT_SEARCHWEBFOR, IDC_PRINT,
+  EXPECT_THAT(
+      GetMenuItemsAndSeparators(menu->menu_model()),
+      testing::ElementsAre(
+          IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+          IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
+          IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
+          IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, kSeparatorId,
+          IDC_CONTENT_CONTEXT_SAVELINKAS, IDC_CONTENT_CONTEXT_COPYLINKLOCATION,
+          kSeparatorId, IDC_CONTENT_CONTEXT_COPY,
+          IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, IDC_CONTENT_CONTEXT_GLIC,
+          IDC_CONTENT_CONTEXT_SEARCHWEBFOR, IDC_PRINT,
 #if !BUILDFLAG(IS_CHROMEOS)
-                  IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
+          IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
 #endif
-                  kSeparatorId, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+          kSeparatorId, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
 TEST_F(RenderViewContextMenuOrderTest, EditableTextMenu_EmptySelectionOrder) {
@@ -4071,6 +4087,7 @@ TEST_F(RenderViewContextMenuOrderTest, EditableTextMenu_WithSelectionOrder) {
   expected.push_back(IDC_CONTENT_CONTEXT_SELECTALL);
   expected.push_back(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE);
   expected.push_back(kSeparatorId);
+  expected.push_back(IDC_CONTENT_CONTEXT_GLIC);
   expected.push_back(IDC_CONTENT_CONTEXT_SEARCHWEBFOR);
   expected.push_back(IDC_PRINT);
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -4322,7 +4339,31 @@ TEST_F(RenderViewContextMenuSimplifiedOrderTest, PageMenu_Order) {
       GetMenuItemsAndSeparators(menu->menu_model()),
       testing::ElementsAre(
           IDC_BACK, IDC_FORWARD, IDC_RELOAD, kSeparatorId, IDC_SAVE_PAGE,
-          IDC_PRINT, kSeparatorId, IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+          IDC_PRINT, kSeparatorId, IDC_CONTENT_CONTEXT_GLIC, kSeparatorId,
+          IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE, IDC_ROUTE_MEDIA,
+          IDC_CONTENT_CONTEXT_GENERATE_QR_CODE, IDC_CONTENT_CONTEXT_TRANSLATE,
+          kSeparatorId, IDC_VIEW_SOURCE, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
+TEST_F(RenderViewContextMenuSimplifiedOrderTest,
+       PageMenu_GlicSearchAboveSaveAndPrintOrder) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{features::kMenuSimplification,
+        {{features::kMenuSimplificationGlicSearchAboveSaveAndPrint.name,
+          "true"}}}},
+      {});
+
+  content::ContextMenuParams params = CreateParams(0);
+  params.page_url = GURL("https://www.example.com/");
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  EXPECT_THAT(
+      GetMenuItemsAndSeparators(menu->menu_model()),
+      testing::ElementsAre(
+          IDC_BACK, IDC_FORWARD, IDC_RELOAD, kSeparatorId,
+          IDC_CONTENT_CONTEXT_GLIC, kSeparatorId, IDC_SAVE_PAGE, IDC_PRINT,
+          kSeparatorId, IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
           IDC_ROUTE_MEDIA, IDC_CONTENT_CONTEXT_GENERATE_QR_CODE,
           IDC_CONTENT_CONTEXT_TRANSLATE, kSeparatorId, IDC_VIEW_SOURCE,
           IDC_CONTENT_CONTEXT_INSPECTELEMENT));
@@ -4337,11 +4378,11 @@ TEST_F(RenderViewContextMenuSimplifiedOrderTest, SubframeMenu_Order) {
       GetMenuItemsAndSeparators(menu->menu_model()),
       testing::ElementsAre(
           IDC_BACK, IDC_FORWARD, IDC_RELOAD, kSeparatorId, IDC_SAVE_PAGE,
-          IDC_PRINT, kSeparatorId, IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
-          IDC_ROUTE_MEDIA, IDC_CONTENT_CONTEXT_GENERATE_QR_CODE,
-          IDC_CONTENT_CONTEXT_TRANSLATE, kSeparatorId, IDC_VIEW_SOURCE,
-          IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE, IDC_CONTENT_CONTEXT_RELOADFRAME,
-          IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+          IDC_PRINT, kSeparatorId, IDC_CONTENT_CONTEXT_GLIC, kSeparatorId,
+          IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE, IDC_ROUTE_MEDIA,
+          IDC_CONTENT_CONTEXT_GENERATE_QR_CODE, IDC_CONTENT_CONTEXT_TRANSLATE,
+          kSeparatorId, IDC_VIEW_SOURCE, IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE,
+          IDC_CONTENT_CONTEXT_RELOADFRAME, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
 TEST_F(RenderViewContextMenuSimplifiedOrderTest, LinkMenu_Order) {
@@ -4407,8 +4448,9 @@ TEST_F(RenderViewContextMenuSimplifiedOrderTest,
   EXPECT_THAT(GetMenuItemsAndSeparators(menu->menu_model()),
               testing::ElementsAre(
                   IDC_CONTENT_CONTEXT_COPY, IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
-                  IDC_PRINT, kSeparatorId, IDC_CONTENT_CONTEXT_SEARCHWEBFOR,
-                  kSeparatorId, IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+                  IDC_PRINT, kSeparatorId, IDC_CONTENT_CONTEXT_GLIC,
+                  IDC_CONTENT_CONTEXT_SEARCHWEBFOR, kSeparatorId,
+                  IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
 #if !BUILDFLAG(IS_CHROMEOS)
                   IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
 #endif
@@ -4425,8 +4467,9 @@ TEST_F(RenderViewContextMenuSimplifiedOrderTest,
   EXPECT_THAT(GetMenuItemsAndSeparators(menu->menu_model()),
               testing::ElementsAre(
                   IDC_CONTENT_CONTEXT_COPY, IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
-                  IDC_PRINT, kSeparatorId, IDC_CONTENT_CONTEXT_GOTOURL,
-                  kSeparatorId, IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+                  IDC_PRINT, kSeparatorId, IDC_CONTENT_CONTEXT_GLIC,
+                  IDC_CONTENT_CONTEXT_GOTOURL, kSeparatorId,
+                  IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
 #if !BUILDFLAG(IS_CHROMEOS)
                   IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
 #endif
@@ -4442,20 +4485,21 @@ TEST_F(RenderViewContextMenuSimplifiedOrderTest, LinkAndSelectionMenu_Order) {
 
   EXPECT_THAT(
       GetMenuItemsAndSeparators(menu->menu_model()),
-      testing::ElementsAre(
-          IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
-          IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
-          IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
-          IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, kSeparatorId,
-          IDC_CONTENT_CONTEXT_SAVELINKAS, IDC_CONTENT_CONTEXT_COPYLINKLOCATION,
-          IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST, kSeparatorId,
-          IDC_CONTENT_CONTEXT_COPY, IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
-          kSeparatorId, IDC_CONTENT_CONTEXT_SEARCHWEBFOR, kSeparatorId,
-          IDC_PRINT,
+      testing::ElementsAre(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+                           IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
+                           IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
+                           IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
+                           kSeparatorId, IDC_CONTENT_CONTEXT_SAVELINKAS,
+                           IDC_CONTENT_CONTEXT_COPYLINKLOCATION,
+                           IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST,
+                           kSeparatorId, IDC_CONTENT_CONTEXT_COPY,
+                           IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, IDC_PRINT,
 #if !BUILDFLAG(IS_CHROMEOS)
-          IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
+                           IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
 #endif
-          kSeparatorId, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+                           kSeparatorId, IDC_CONTENT_CONTEXT_GLIC,
+                           IDC_CONTENT_CONTEXT_SEARCHWEBFOR, kSeparatorId,
+                           IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
 TEST_F(RenderViewContextMenuSimplifiedOrderTest,
@@ -4522,6 +4566,7 @@ TEST_F(RenderViewContextMenuSimplifiedOrderTest,
 #endif
   expected.push_back(IDC_CONTENT_CONTEXT_SELECTALL);
   expected.push_back(kSeparatorId);
+  expected.push_back(IDC_CONTENT_CONTEXT_GLIC);
   expected.push_back(IDC_CONTENT_CONTEXT_SEARCHWEBFOR);
   expected.push_back(kSeparatorId);
   expected.push_back(IDC_PRINT);
@@ -4632,6 +4677,8 @@ TEST_F(RenderViewContextMenuSimplifiedOrderTest,
   expected.push_back(IDC_CONTENT_PASTE_FROM_CLIPBOARD);
 #endif
   expected.push_back(IDC_CONTENT_CONTEXT_SELECTALL);
+  expected.push_back(kSeparatorId);
+  expected.push_back(IDC_CONTENT_CONTEXT_GLIC);
   expected.push_back(kSeparatorId);
   expected.push_back(IDC_PRINT);
 #if !BUILDFLAG(IS_CHROMEOS)

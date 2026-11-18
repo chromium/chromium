@@ -6501,6 +6501,9 @@ void RenderViewContextMenu::AppendRevisedTextSelectionSection() {
     // Link + Selection case
     AppendCopyItem();
     AppendLinkToTextItems();
+    AppendSaveToMemoryBanksItem();
+    AppendPrintItem();
+    AppendTranslateOrPartialTranslateItem();
 
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
 
@@ -6515,11 +6518,6 @@ void RenderViewContextMenu::AppendRevisedTextSelectionSection() {
     if (glic_item_shown_ || HasSearchProviderItem(menu_model_)) {
       menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     }
-
-    AppendSaveToMemoryBanksItem();
-    AppendPrintItem();
-
-    AppendTranslateOrPartialTranslateItem();
   } else {
     // Pure Selection case
     AppendCopyItem();
