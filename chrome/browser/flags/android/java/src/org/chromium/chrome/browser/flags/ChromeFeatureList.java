@@ -374,8 +374,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_TIPS_NOTIFICATIONS_V2 = "AndroidTipsNotificationsV2";
     public static final String ANDROID_TOOLBAR_CAPTURE_ON_DESKTOP =
             "AndroidToolbarCaptureOnDesktop";
-    public static final String ANDROID_UNIFIED_KEYBOARD_SHORTCUTS =
-            "AndroidUnifiedKeyboardShortcuts";
     public static final String ANDROID_VERTICAL_TABS = "AndroidVerticalTabs";
     public static final String ANDROID_WINDOW_MANAGEMENT_WEB_API = "AndroidWindowManagementWebApi";
     public static final String ANDROID_XR_IMMERSIVE_PLAYER = "AndroidXrImmersivePlayer";
@@ -1795,8 +1793,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_TIPS_NOTIFICATIONS, true);
     public static final MutableFlagWithSafeDefault sAndroidTipsNotificationsV2 =
             newMutableFlagWithSafeDefault(ANDROID_TIPS_NOTIFICATIONS_V2, false);
-    public static final MutableFlagWithSafeDefault sAndroidUnifiedKeyboardShortcuts =
-            newMutableFlagWithSafeDefault(ANDROID_UNIFIED_KEYBOARD_SHORTCUTS, false);
     public static final MutableFlagWithSafeDefault sAndroidZoomImmersive =
             newMutableFlagWithSafeDefault(ANDROID_ZOOM_IMMERSIVE, false);
     public static final MutableFlagWithSafeDefault sAutofillCardScanningBugfixes =

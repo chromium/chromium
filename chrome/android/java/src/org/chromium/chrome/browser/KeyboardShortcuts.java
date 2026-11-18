@@ -46,6 +46,7 @@ import org.chromium.device.gamepad.GamepadList;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
+import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.util.KeyEventUtils;
 
 import java.lang.annotation.Retention;
@@ -895,7 +896,7 @@ public class KeyboardShortcuts {
                 }
                 return true;
             case KeyEvent.KEYCODE_ESCAPE:
-                if (ChromeFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
+                if (UiAndroidFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
                     break;
                 }
                 if (event.getAction() != KeyEvent.ACTION_DOWN || event.getRepeatCount() != 0) {
@@ -911,7 +912,7 @@ public class KeyboardShortcuts {
 
                 break;
             case KeyEvent.KEYCODE_F6:
-                if (ChromeFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
+                if (UiAndroidFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
                     break;
                 }
                 int metaState = KeyboardUtils.getMetaState(event);
@@ -932,7 +933,7 @@ public class KeyboardShortcuts {
             case KeyEvent.KEYCODE_TAB:
             case KeyEvent.KEYCODE_PAGE_DOWN:
             case KeyEvent.KEYCODE_PAGE_UP:
-                if (ChromeFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
+                if (UiAndroidFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
                     break;
                 }
             // fall through
@@ -1179,7 +1180,7 @@ public class KeyboardShortcuts {
                 semanticMeaning,
                 KeyboardShortcuts.KeyboardShortcutsSemanticMeaning.MAX_VALUE + 1);
 
-        if (ChromeFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()
+        if (UiAndroidFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()
                 && !KeyEvent.isGamepadButton(keyCode)) {
             return false;
         }

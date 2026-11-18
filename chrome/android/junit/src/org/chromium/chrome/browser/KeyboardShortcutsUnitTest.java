@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.device.gamepad.GamepadList;
 import org.chromium.ui.base.DeviceInput;
+import org.chromium.ui.base.UiAndroidFeatures;
 
 /** Unit tests for {@link KeyboardShortcuts} redirection. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -316,7 +317,7 @@ public class KeyboardShortcutsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_UNIFIED_KEYBOARD_SHORTCUTS)
+    @EnableFeatures(UiAndroidFeatures.ANDROID_UNIFIED_KEYBOARD_SHORTCUTS)
     public void testUnifiedShortcutsEnabled_DefersKeyboardShortcuts() {
         assertNull(dispatchKeyEvent(KeyEvent.KEYCODE_ESCAPE));
         assertNull(dispatchKeyEvent(KeyEvent.KEYCODE_F6));
@@ -334,7 +335,7 @@ public class KeyboardShortcutsUnitTest {
 
     @Test
     @EnableFeatures({
-        ChromeFeatureList.ANDROID_UNIFIED_KEYBOARD_SHORTCUTS,
+        UiAndroidFeatures.ANDROID_UNIFIED_KEYBOARD_SHORTCUTS,
         BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU
     })
     public void testUnifiedShortcutsEnabled_PreservesGamepadAndSystemKeys() {

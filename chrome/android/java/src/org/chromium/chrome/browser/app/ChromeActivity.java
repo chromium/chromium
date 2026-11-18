@@ -2210,7 +2210,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (ChromeFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
+        if (UiAndroidFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
             if (mBrowserShortcutManager != null
                     && !(getCurrentFocus() instanceof ContentView)
                     && mBrowserShortcutManager.preHandleKeyEvent(event)
@@ -2227,7 +2227,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // Execute non-reserved browser shortcuts after focused Android Views and web content
         // decline the event.
-        if (ChromeFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()
+        if (UiAndroidFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()
                 && mBrowserShortcutManager != null
                 && mBrowserShortcutManager.handleKeyEvent(event)) {
             return true;
@@ -2248,7 +2248,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         // First evaluate hardware accelerators (e.g. Alt+G, user-customizable shortcuts,
         // or extensions shortcuts) that may have bypassed dispatchKeyEvent because the soft
         // keyboard (IME) is active and intercepting hardware keys.
-        if (ChromeFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
+        if (UiAndroidFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
             @KeyEventPreHandleResult
             int result = assumeNonNull(mBrowserShortcutManager).preHandleKeyEvent(event);
             if (result != KeyEventPreHandleResult.NOT_HANDLED) {
@@ -2423,7 +2423,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         var windowAndroid = getWindowAndroid();
         assumeNonNull(windowAndroid);
 
-        if (ChromeFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
+        if (UiAndroidFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
             mBrowserShortcutManager =
                     new BrowserShortcutManager(
                             windowAndroid,
