@@ -8,7 +8,11 @@
 #include "ash/system/media/media_notification_provider.h"
 #include "ash/system/media/media_tray.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/wm/window_pin_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/mock_callback.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,6 +29,7 @@
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_source.h"
@@ -38,6 +43,8 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
+#include "ui/base/base_window.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/views/test/button_test_api.h"
@@ -326,6 +333,43 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsCastStartTest,
 
   EXPECT_EQ(nullptr, item_view->footer_view_for_testing());
   EXPECT_TRUE(pip_button->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(GlobalMediaControlsCastStartTest,
+                       ShowDialogAshBlockedInLockedFullscreen) {
+  aura::Window* const window = browser()->GetWindow()->GetNativeWindow();
+  PinWindow(window, /*trusted=*/true);
+
+  auto* const status_area =
+      Shell::GetPrimaryRootWindowController()->shelf()->GetStatusAreaWidget();
+  auto* const service =
+      MediaNotificationServiceFactory::GetForProfile(GetProfile());
+  content::WebContents* const web_contents =
+      browser()->GetActiveTabInterface()->GetContents();
+
+  for (bool pinned_to_shelf : {true, false}) {
+    MediaTray::SetPinnedToShelf(pinned_to_shelf);
+
+    base::MockCallback<content::PresentationConnectionErrorCallback> error_cb;
+    EXPECT_CALL(error_cb,
+                Run(testing::Field(&blink::mojom::PresentationError::error_type,
+                                   blink::mojom::PresentationErrorType::
+                                       PRESENTATION_REQUEST_CANCELLED)));
+
+    auto context = std::make_unique<media_router::StartPresentationContext>(
+        content::PresentationRequest(
+            web_contents->GetPrimaryMainFrame()->GetGlobalId(),
+            {GURL("https://example.com")},
+            url::Origin::Create(GURL("https://example.com"))),
+        base::DoNothing(), error_cb.Get());
+
+    service->ShowDialogAsh(std::move(context));
+
+    EXPECT_EQ(nullptr, status_area->media_tray()->GetBubbleView());
+    EXPECT_FALSE(status_area->unified_system_tray()->IsBubbleShown());
+  }
+
+  UnpinWindow(window);
 }
 
 }  // namespace ash

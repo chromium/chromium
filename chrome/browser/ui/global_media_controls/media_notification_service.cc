@@ -57,6 +57,9 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/base/window_state_type.h"
+#include "ui/aura/window.h"
 #endif
 
 namespace mojom {
@@ -248,6 +251,17 @@ void MediaNotificationService::ShowDialogAsh(
   auto* web_contents = content::WebContents::FromRenderFrameHost(
       content::RenderFrameHost::FromID(
           context->presentation_request().render_frame_host_id));
+  // Do not open Ash tray bubbles (MediaTray or Quick Settings) from a
+  // trusted-pinned (locked fullscreen) window.
+  if (web_contents) {
+    if (aura::Window* const window = web_contents->GetTopLevelNativeWindow();
+        window && window->GetProperty(chromeos::kWindowStateTypeKey) ==
+                      chromeos::WindowStateType::kTrustedPinned) {
+      CancelRequest(std::move(context),
+                    "Presentation is not allowed in locked fullscreen.");
+      return;
+    }
+  }
   OnStartPresentationContextCreated(std::move(context));
   auto routes = media_router::WebContentsPresentationManager::Get(web_contents)
                     ->GetMediaRoutes();
