@@ -48,7 +48,6 @@ class TestLockRequest : public blink::mojom::LockRequest {
 
   void Granted(mojo::PendingAssociatedRemote<blink::mojom::LockHandle>
                    lock_handle) override {
-    remote_ = &lock_handle;
     granted_ = true;
     run_loop_.Quit();
   }
@@ -64,7 +63,6 @@ class TestLockRequest : public blink::mojom::LockRequest {
   bool GrantedCalled() const { return granted_; }
 
  private:
-  raw_ptr<mojo::PendingAssociatedRemote<blink::mojom::LockHandle>> remote_;
   mojo::AssociatedReceiver<blink::mojom::LockRequest> receiver_;
   base::RunLoop run_loop_;
   bool failed_ = false;
