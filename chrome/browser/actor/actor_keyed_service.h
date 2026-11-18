@@ -191,6 +191,13 @@ class ActorKeyedService : public KeyedService,
                       std::vector<std::unique_ptr<ToolRequest>>&& actions,
                       ActorTaskMetadata task_metadata,
                       PerformActionsCallback callback);
+  // Same as above, but also runs `on_actions_accepted` once the task accepts
+  // `actions`, right before the first of them starts. See `ActorTask::Act()`.
+  void PerformActions(TaskId task_id,
+                      std::vector<std::unique_ptr<ToolRequest>>&& actions,
+                      ActorTaskMetadata task_metadata,
+                      base::OnceClosure on_actions_accepted,
+                      PerformActionsCallback callback);
 
   // Stops a task by its ID, `stop_reason` determines the reason for the task
   // stopping.

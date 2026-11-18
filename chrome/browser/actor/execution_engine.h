@@ -217,10 +217,15 @@ class ExecutionEngine : public ToolDelegate,
   void FailCurrentTool(mojom::ActionResultCode reason) override;
 
   // Performs the given tool actions and invokes the callback when completed.
+  // `on_actions_accepted`, which may be null, runs once `actions` are accepted,
+  // right before the first of them starts. It doesn't run if `actions` are
+  // rejected because an action sequence is already in progress. If it stops or
+  // pauses the task, or destroys this engine, `actions` don't start.
   using ActCallback =
       base::OnceCallback<void(std::vector<ToolResultWithLatencyInfo>,
                               TabObservationStrategy)>;
   void Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
+           base::OnceClosure on_actions_accepted,
            ActCallback callback);
 
   // Invalidated anytime `action_sequence_` is reset.

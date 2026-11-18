@@ -12,12 +12,17 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/tools/fake_tool_request.h"
+#include "chrome/browser/actor/tools/tool_callbacks.h"
+#include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/actor/ui/test_support/mock_actor_ui_state_manager.h"
 #include "chrome/common/actor/action_result.h"
@@ -725,6 +730,68 @@ TEST_F(ActorKeyedServiceTest,
 
   actor_service->StopTask(task_id, ActorTask::StoppedReason::kTaskComplete);
   EXPECT_EQ(0u, actor_service->GetPendingTasksCount());
+}
+
+// `PerformActions()` rejects calls for an unknown task or without actions
+// without running their `on_actions_accepted`. Their results are delivered
+// asynchronously, which doesn't affect a later call that is accepted in the
+// meantime.
+TEST_F(ActorKeyedServiceTest,
+       PerformActionsOnActionsAcceptedNotRunForRejectedCalls) {
+  using PerformActionsFuture =
+      base::test::TestFuture<std::vector<ToolResultWithLatencyInfo>,
+                             TabObservationStrategy>;
+  auto* actor_service = ActorKeyedService::Get(profile());
+  TaskId task_id = actor_service->CreateTaskWithOptions(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), /*options=*/nullptr,
+      /*delegate=*/nullptr, ui_state_manager());
+
+  PerformActionsFuture empty_actions_result;
+  actor_service->PerformActions(
+      task_id, std::vector<std::unique_ptr<ToolRequest>>(), ActorTaskMetadata(),
+      base::MakeExpectedNotRunClosure(FROM_HERE),
+      empty_actions_result.GetCallback());
+
+  PerformActionsFuture unknown_task_result;
+  std::vector<std::unique_ptr<ToolRequest>> unknown_task_actions;
+  unknown_task_actions.push_back(std::make_unique<FakeToolRequest>(
+      base::BindOnce(
+          [](DeprecatedToolCallback) { ADD_FAILURE() << "Tool invoked"; }),
+      /*on_destroy=*/base::DoNothing()));
+  actor_service->PerformActions(
+      TaskId(task_id.value() + 1), std::move(unknown_task_actions),
+      ActorTaskMetadata(), base::MakeExpectedNotRunClosure(FROM_HERE),
+      unknown_task_result.GetCallback());
+
+  // These actions don't run on a tab, so they are accepted right away, before
+  // the rejected calls' results are delivered.
+  std::vector<std::unique_ptr<ToolRequest>> actions;
+  base::test::TestFuture<DeprecatedToolCallback> on_invoke_future;
+  actions.push_back(
+      std::make_unique<FakeToolRequest>(on_invoke_future.GetCallback(),
+                                        /*on_destroy=*/base::DoNothing()));
+  base::test::TestFuture<void> accepted;
+  PerformActionsFuture result;
+  actor_service->PerformActions(task_id, std::move(actions),
+                                ActorTaskMetadata(), accepted.GetCallback(),
+                                result.GetCallback());
+  EXPECT_TRUE(accepted.IsReady());
+  EXPECT_FALSE(empty_actions_result.IsReady());
+  EXPECT_FALSE(unknown_task_result.IsReady());
+
+  ASSERT_TRUE(on_invoke_future.Wait());
+  std::move(on_invoke_future.Take()).Run(MakeOkResult());
+  ASSERT_TRUE(result.Wait());
+  EXPECT_EQ(result.Get<0>()[0].tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kOk);
+  EXPECT_EQ(empty_actions_result.Get<0>()[0]
+                .tool_result.deprecated_action_result()
+                ->code,
+            mojom::ActionResultCode::kEmptyActionSequence);
+  EXPECT_EQ(unknown_task_result.Get<0>()[0]
+                .tool_result.deprecated_action_result()
+                ->code,
+            mojom::ActionResultCode::kTaskWentAway);
 }
 
 }  // namespace

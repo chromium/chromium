@@ -43,6 +43,12 @@ class ActorKeyedServiceProtoWrapper {
 
   void PerformActions(const optimization_guide::proto::Actions& actions,
                       PerformActionsCallback callback);
+  // Same as above, but also runs `on_actions_accepted` once the task accepts
+  // `actions`, right before the first of them starts. It never runs if
+  // `actions` are rejected or superseded. See `ActorTask::Act()`.
+  void PerformActions(const optimization_guide::proto::Actions& actions,
+                      base::OnceClosure on_actions_accepted,
+                      PerformActionsCallback callback);
 
   // Collects tab and window observations for `task_id` without executing any
   // actions.

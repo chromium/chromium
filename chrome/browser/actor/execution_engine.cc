@@ -1424,6 +1424,7 @@ void ExecutionEngine::FailCurrentTool(mojom::ActionResultCode reason) {
 }
 
 void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
+                          base::OnceClosure on_actions_accepted,
                           ActorTask::ActCallback callback) {
   TRACE_EVENT0("actor", "ExecutionEngine::Act");
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
@@ -1455,6 +1456,27 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
             mojom::ActionResultCode::kExecutionEngineExistingAction),
         TabObservationStrategy());
     return;
+  }
+
+  if (on_actions_accepted) {
+    // `on_actions_accepted` may stop or pause the task, or destroy it along
+    // with this engine. It runs before this engine takes `actions`, so doing
+    // that doesn't need to cancel actions that haven't started. In all those
+    // cases, `actions` must not start.
+    base::WeakPtr<ExecutionEngine> weak_this = weak_ptr_factory_.GetWeakPtr();
+    std::move(on_actions_accepted).Run();
+    if (!weak_this) {
+      return;
+    }
+    if (task_->GetState() != ActorTask::State::kActing) {
+      PostTaskForActCallback(
+          std::move(callback),
+          MakeResultVector(task_->IsUnderUserControl()
+                               ? mojom::ActionResultCode::kTaskPaused
+                               : mojom::ActionResultCode::kTaskWentAway),
+          TabObservationStrategy());
+      return;
+    }
   }
 
   act_callback_ = std::move(callback);

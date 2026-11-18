@@ -1042,6 +1042,17 @@ void ActorKeyedService::PerformActions(
     std::vector<std::unique_ptr<ToolRequest>>&& actions,
     ActorTaskMetadata task_metadata,
     PerformActionsCallback callback) {
+  PerformActions(task_id, std::move(actions), std::move(task_metadata),
+                 /*on_actions_accepted=*/base::OnceClosure(),
+                 std::move(callback));
+}
+
+void ActorKeyedService::PerformActions(
+    TaskId task_id,
+    std::vector<std::unique_ptr<ToolRequest>>&& actions,
+    ActorTaskMetadata task_metadata,
+    base::OnceClosure on_actions_accepted,
+    PerformActionsCallback callback) {
   TRACE_EVENT0("actor", "ActorKeyedService::PerformActions");
   auto* task = GetTask(task_id);
   if (!task) {
@@ -1076,7 +1087,7 @@ void ActorKeyedService::PerformActions(
   }
 
   task->Act(
-      std::move(actions),
+      std::move(actions), std::move(on_actions_accepted),
       base::BindOnce(&ActorKeyedService::OnActionsFinished,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

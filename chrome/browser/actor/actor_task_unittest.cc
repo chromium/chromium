@@ -730,6 +730,134 @@ TEST_F(ActorTaskTest, MultipleActions) {
             mojom::ActionResultCode::kOk);
 }
 
+// Returns a single action that is never expected to start.
+std::vector<std::unique_ptr<ToolRequest>> MakeActionsNotExpectedToStart(
+    ActorSurfaceHandle actor_surface_handle) {
+  std::vector<std::unique_ptr<ToolRequest>> actions;
+  actions.push_back(std::make_unique<FakeToolRequest>(
+      base::BindOnce(
+          [](DeprecatedToolCallback) { ADD_FAILURE() << "Tool invoked"; }),
+      /*on_destroy=*/base::DoNothing(), actor_surface_handle));
+  return actions;
+}
+
+// `on_actions_accepted` runs once the task has entered `kActing` for the
+// actions, before the first of them is invoked.
+TEST_F(ActorTaskTest, OnActionsAcceptedRunsBeforeFirstTool) {
+  std::vector<std::unique_ptr<ToolRequest>> actions;
+  base::test::TestFuture<DeprecatedToolCallback> on_invoke_future;
+  actions.push_back(
+      std::make_unique<FakeToolRequest>(on_invoke_future.GetCallback(),
+                                        /*on_destroy=*/base::DoNothing()));
+
+  bool accepted = false;
+  ActResultFuture future;
+  task_->Act(std::move(actions), base::BindLambdaForTesting([&] {
+               EXPECT_EQ(task_->GetState(), ActorTask::State::kActing);
+               EXPECT_FALSE(on_invoke_future.IsReady());
+               accepted = true;
+             }),
+             future.GetCallback());
+
+  ASSERT_TRUE(on_invoke_future.Wait());
+  EXPECT_TRUE(accepted);
+  std::move(on_invoke_future.Take()).Run(MakeOkResult());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get()[0].tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kOk);
+}
+
+// If `on_actions_accepted` stops the task, the actions don't start and the
+// call reports that the task went away.
+TEST_F(ActorTaskTest, OnActionsAcceptedCanStopTask) {
+  ActResultFuture future;
+  task_->Act(MakeActionsNotExpectedToStart(ActorSurfaceHandle::Null()),
+             base::BindLambdaForTesting(
+                 [&] { task_->Stop(ActorTask::StoppedReason::kTaskComplete); }),
+             future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get()[0].tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kTaskWentAway);
+  // Run pending tasks, in case the actions start asynchronously. This also
+  // deletes the stopped task, along with its UI event dispatcher.
+  task_ = nullptr;
+  mock_ui_event_dispatcher_ = nullptr;
+  task_environment_.FastForwardBy(base::Seconds(1));
+}
+
+// If `on_actions_accepted` pauses the task, the actions don't start and the
+// call reports that the task was paused.
+TEST_F(ActorTaskTest, OnActionsAcceptedCanPauseTask) {
+  ActResultFuture future;
+  task_->Act(
+      MakeActionsNotExpectedToStart(ActorSurfaceHandle::Null()),
+      base::BindLambdaForTesting([&] { task_->Pause(/*from_actor=*/true); }),
+      future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get()[0].tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kTaskPaused);
+  // Run pending tasks, in case the actions start asynchronously.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  ExpectState(ActorTask::State::kPausedByActor);
+}
+
+TEST_F(ActorTaskTest, OnActionsAcceptedNotRunWhenPausedOrStopped) {
+  task_->Pause(/*from_actor=*/true);
+  ActResultFuture paused_future;
+  task_->Act(MakeActionsNotExpectedToStart(ActorSurfaceHandle::Null()),
+             base::MakeExpectedNotRunClosure(FROM_HERE),
+             paused_future.GetCallback());
+  ASSERT_TRUE(paused_future.Wait());
+  EXPECT_EQ(paused_future.Get()[0].tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kTaskPaused);
+
+  task_->Resume();
+  task_->Stop(ActorTask::StoppedReason::kTaskComplete);
+  ActResultFuture stopped_future;
+  task_->Act(MakeActionsNotExpectedToStart(ActorSurfaceHandle::Null()),
+             base::MakeExpectedNotRunClosure(FROM_HERE),
+             stopped_future.GetCallback());
+  ASSERT_TRUE(stopped_future.Wait());
+  EXPECT_EQ(
+      stopped_future.Get()[0].tool_result.deprecated_action_result()->code,
+      mojom::ActionResultCode::kTaskWentAway);
+}
+
+TEST_F(ActorTaskTest, OnActionsAcceptedNotRunWhenAddingTabFails) {
+  ActResultFuture future;
+  // The handle resolves to no surface, so adding it fails.
+  task_->Act(
+      MakeActionsNotExpectedToStart(ActorSurfaceHandle::CreateForTesting()),
+      base::MakeExpectedNotRunClosure(FROM_HERE), future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get()[0].tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kTabWentAway);
+}
+
+// The execution engine rejects actions while it is still executing earlier
+// ones.
+TEST_F(ActorTaskTest, OnActionsAcceptedNotRunWhileOtherActionsInProgress) {
+  std::vector<std::unique_ptr<ToolRequest>> first_actions;
+  base::test::TestFuture<DeprecatedToolCallback> on_invoke_future;
+  first_actions.push_back(
+      std::make_unique<FakeToolRequest>(on_invoke_future.GetCallback(),
+                                        /*on_destroy=*/base::DoNothing()));
+  base::test::TestFuture<void> first_accepted;
+  ActResultFuture first_future;
+  task_->Act(std::move(first_actions), first_accepted.GetCallback(),
+             first_future.GetCallback());
+  ASSERT_TRUE(on_invoke_future.Wait());
+  EXPECT_TRUE(first_accepted.IsReady());
+
+  ActResultFuture second_future;
+  task_->Act(MakeActionsNotExpectedToStart(ActorSurfaceHandle::Null()),
+             base::MakeExpectedNotRunClosure(FROM_HERE),
+             second_future.GetCallback());
+  ASSERT_TRUE(second_future.Wait());
+  EXPECT_EQ(second_future.Get()[0].tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kExecutionEngineExistingAction);
+}
+
 class ActorTaskCompletionMetricsTest : public testing::Test {
  public:
   ActorTaskCompletionMetricsTest()
@@ -1195,6 +1323,50 @@ TEST_F(ActorTaskSurfaceTest, DroppingSurfaceWithoutTabAfterShutdown) {
   EXPECT_TRUE(watcher.IsDestroyed());
 
   headless.reset();
+}
+
+// A call whose tab is still being added is superseded by a later call, so only
+// the later call's `on_actions_accepted` runs.
+TEST_F(ActorTaskTest, OnActionsAcceptedNotRunWhenSuperseded) {
+  // The first call waits for its tab to be added, which completes
+  // asynchronously. Its actions never start, so the tab needs no WebContents.
+  tabs::MockTabInterface mock_tab;
+  ON_CALL(mock_tab, GetProfile)
+      .WillByDefault(::testing::Return(profile_.get()));
+  registry().OnTabCreated(mock_tab);
+  ActResultFuture first_future;
+  task_->Act(MakeActionsNotExpectedToStart(
+                 ActorSurfaceHandle::From(mock_tab.GetHandle())),
+             base::MakeExpectedNotRunClosure(FROM_HERE),
+             first_future.GetCallback());
+
+  // The second call has no tab to add, so it starts its actions right away.
+  // Not running actions on a tab keeps its WebContents from being captured,
+  // which would take a wake lock whose asynchronous D-Bus reply can arrive
+  // after the test ends.
+  std::vector<std::unique_ptr<ToolRequest>> second_actions;
+  base::test::TestFuture<DeprecatedToolCallback> on_invoke_future;
+  second_actions.push_back(
+      std::make_unique<FakeToolRequest>(on_invoke_future.GetCallback(),
+                                        /*on_destroy=*/base::DoNothing()));
+  base::test::TestFuture<void> second_accepted;
+  ActResultFuture second_future;
+  task_->Act(std::move(second_actions), second_accepted.GetCallback(),
+             second_future.GetCallback());
+
+  ASSERT_TRUE(on_invoke_future.Wait());
+  EXPECT_TRUE(second_accepted.IsReady());
+  std::move(on_invoke_future.Take()).Run(MakeOkResult());
+  ASSERT_TRUE(second_future.Wait());
+  EXPECT_EQ(second_future.Get()[0].tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kOk);
+
+  // The first call's tab addition was posted before anything the second call
+  // posted, so it has completed by now. Its actions still never start.
+  EXPECT_FALSE(first_future.IsReady());
+
+  // Stop the task while `mock_tab` is still alive.
+  task_->Stop(ActorTask::StoppedReason::kTaskComplete);
 }
 
 }  // namespace

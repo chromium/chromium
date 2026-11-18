@@ -35,6 +35,14 @@ ActorKeyedServiceProtoWrapper::~ActorKeyedServiceProtoWrapper() = default;
 void ActorKeyedServiceProtoWrapper::PerformActions(
     const optimization_guide::proto::Actions& actions,
     PerformActionsCallback callback) {
+  PerformActions(actions, /*on_actions_accepted=*/base::OnceClosure(),
+                 std::move(callback));
+}
+
+void ActorKeyedServiceProtoWrapper::PerformActions(
+    const optimization_guide::proto::Actions& actions,
+    base::OnceClosure on_actions_accepted,
+    PerformActionsCallback callback) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   TaskId task_id(actions.task_id());
   if (!actor_service_->GetTask(task_id)) {
@@ -68,6 +76,7 @@ void ActorKeyedServiceProtoWrapper::PerformActions(
 
   actor_service_->PerformActions(
       task_id, std::move(requests.value()), ActorTaskMetadata(actions),
+      std::move(on_actions_accepted),
       base::BindOnce(&ActorKeyedServiceProtoWrapper::OnPerformActionsFinished,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      task_id, start_time, skip_async_observation_information,

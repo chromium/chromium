@@ -226,6 +226,14 @@ class ActorTask : public base::SupportsUserData {
 
   void Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
            ActCallback callback);
+  // Same as above, but also runs `on_actions_accepted` once the execution
+  // engine accepts `actions`, right before the first of them starts. It never
+  // runs if `actions` are rejected (e.g. because the task is paused, stopped or
+  // already executing other actions, or a tab can't be added), or if a later
+  // call to `Act()` supersedes this one before `actions` start.
+  void Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
+           base::OnceClosure on_actions_accepted,
+           ActCallback callback);
 
   // Converts stopped_reason to the final state of the task.
   static State GetTaskStateFromStoppedReason(StoppedReason stopped_reason);
@@ -457,6 +465,7 @@ class ActorTask : public base::SupportsUserData {
   void UpdateVisibilityTimes();
 
   void DidEarlyAddTabs(std::vector<std::unique_ptr<ToolRequest>>&& actions,
+                       base::OnceClosure on_actions_accepted,
                        std::vector<mojom::ActionResultPtr> add_tab_results);
 
   State state_ = State::kCreated;

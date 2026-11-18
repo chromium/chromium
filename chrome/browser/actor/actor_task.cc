@@ -381,6 +381,13 @@ void ActorTask::SetState(State new_state) {
 
 void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
                     ActCallback callback) {
+  Act(std::move(actions), /*on_actions_accepted=*/base::OnceClosure(),
+      std::move(callback));
+}
+
+void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
+                    base::OnceClosure on_actions_accepted,
+                    ActCallback callback) {
   if (IsUnderUserControl()) {
     journal_->Log(GURL(), id(), "ActorTask::Act",
                   JournalDetailsBuilder().AddError("Task is paused").Build());
@@ -424,8 +431,12 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
     }
   }
 
-  did_add_tabs_callback_.Reset(base::BindOnce(
-      &ActorTask::DidEarlyAddTabs, GetWeakPtr(), std::move(actions)));
+  // Resetting `did_add_tabs_callback_` cancels the tab-adding step of an
+  // earlier call that hasn't started its actions yet, so that call's
+  // `on_actions_accepted` never runs.
+  did_add_tabs_callback_.Reset(base::BindOnce(&ActorTask::DidEarlyAddTabs,
+                                              GetWeakPtr(), std::move(actions),
+                                              std::move(on_actions_accepted)));
   auto add_tabs_barrier = base::BarrierCallback<mojom::ActionResultPtr>(
       actor_surfaces_to_add.size(), did_add_tabs_callback_.callback());
   for (const ActorSurfaceHandle& actor_surface_handle : actor_surfaces_to_add) {
@@ -861,6 +872,7 @@ void ActorTask::OnActorSurfaceWillDetach(
 
 void ActorTask::DidEarlyAddTabs(
     std::vector<std::unique_ptr<ToolRequest>>&& actions,
+    base::OnceClosure on_actions_accepted,
     std::vector<mojom::ActionResultPtr> add_tab_results) {
   // If any tabs failed to be added, return the first failing result and respond
   // with failure.
@@ -879,7 +891,7 @@ void ActorTask::DidEarlyAddTabs(
 
   action_tracker_for_metrics_->WillAct(actions);
 
-  execution_engine_->Act(std::move(actions),
+  execution_engine_->Act(std::move(actions), std::move(on_actions_accepted),
                          base::BindOnce(&ActorTask::OnFinishedAct,
                                         weak_ptr_factory_.GetWeakPtr()));
 }

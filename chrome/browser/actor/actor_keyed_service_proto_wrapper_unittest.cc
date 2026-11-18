@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -102,6 +103,51 @@ TEST_F(ActorKeyedServiceProtoWrapperTest,
             static_cast<int32_t>(mojom::ActionResultCode::kOk));
   EXPECT_FALSE(result.has_index_of_failed_action());
   EXPECT_GE(result.latency_information().latency_steps_size(), 1);
+}
+
+TEST_F(ActorKeyedServiceProtoWrapperTest,
+       PerformActionsRunsOnActionsAcceptedForAcceptedActions) {
+  TaskId task_id = CreateTask();
+
+  optimization_guide::proto::Actions actions;
+  actions.set_task_id(task_id.value());
+  actions.add_actions()->mutable_wait()->set_wait_time_ms(0);
+
+  base::test::TestFuture<void> accepted;
+  base::test::TestFuture<optimization_guide::proto::ActionsResult> future;
+  wrapper_.PerformActions(actions, accepted.GetCallback(),
+                          future.GetCallback());
+
+  EXPECT_EQ(future.Get().action_result(),
+            static_cast<int32_t>(mojom::ActionResultCode::kOk));
+  EXPECT_TRUE(accepted.IsReady());
+}
+
+TEST_F(ActorKeyedServiceProtoWrapperTest,
+       PerformActionsDoesNotRunOnActionsAcceptedForRejectedActions) {
+  // Unknown task.
+  optimization_guide::proto::Actions unknown_task_actions;
+  unknown_task_actions.set_task_id(9999);
+  unknown_task_actions.add_actions()->mutable_wait()->set_wait_time_ms(0);
+  base::test::TestFuture<optimization_guide::proto::ActionsResult>
+      unknown_task_future;
+  wrapper_.PerformActions(unknown_task_actions,
+                          base::MakeExpectedNotRunClosure(FROM_HERE),
+                          unknown_task_future.GetCallback());
+  EXPECT_EQ(unknown_task_future.Get().action_result(),
+            static_cast<int32_t>(mojom::ActionResultCode::kTaskWentAway));
+
+  // Actions that fail to convert.
+  optimization_guide::proto::Actions invalid_actions;
+  invalid_actions.set_task_id(CreateTask().value());
+  invalid_actions.add_actions()->mutable_click()->set_tab_id(1);
+  base::test::TestFuture<optimization_guide::proto::ActionsResult>
+      invalid_actions_future;
+  wrapper_.PerformActions(invalid_actions,
+                          base::MakeExpectedNotRunClosure(FROM_HERE),
+                          invalid_actions_future.GetCallback());
+  EXPECT_EQ(invalid_actions_future.Get().action_result(),
+            static_cast<int32_t>(mojom::ActionResultCode::kClickMissingTarget));
 }
 
 TEST_F(ActorKeyedServiceProtoWrapperTest,
