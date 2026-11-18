@@ -685,7 +685,7 @@ config("compiler") {
     }
   }
 
-  # C23/C++ compiler flags setup.
+  # C11/C++11 compiler flags setup.
   # ---------------------------
   if (is_linux || is_chromeos || is_android || current_os == "aix") {
     # Since builds use -std=c* and not -std=gnu*, _GNU_SOURCE will not be
@@ -695,9 +695,7 @@ config("compiler") {
   }
 
   if (is_win) {
-    # clang-cl doesn't accept /std:c23, so use /std:clatest, which maps to
-    # C23 with the current toolchain.
-    cflags_c += [ "/std:clatest" ]
+    cflags_c += [ "/std:c11" ]
     if (use_cxx23) {
       cflags_cc += [ "/std:c++23preview" ]
     } else {
@@ -710,7 +708,7 @@ config("compiler") {
       cflags_cc += [ "/Zc:__cplusplus" ]
     }
   } else {
-    cflags_c += [ "-std=c23" ]
+    cflags_c += [ "-std=c11" ]
 
     if (use_cxx23) {
       cflags_cc += [ "-std=c++23" ]
