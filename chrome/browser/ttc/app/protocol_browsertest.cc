@@ -35,6 +35,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/protobuf/src/google/protobuf/message_lite.h"
 #include "url/gurl.h"
 
 namespace ttc {
@@ -389,6 +390,47 @@ IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest,
   const history::VisitedURLInfo visit = visit_waiter.Wait();
   EXPECT_EQ(visit.visit_row.source, history::SOURCE_ACTOR);
   EXPECT_FALSE(visit.visit_row.consider_for_ntp_most_visited);
+}
+
+// TODO(amyasinghal): Also verify that ending the session sends a
+// CloseSessionRequest to the server.
+IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest, CloseVoiceInterfaceEndsSession) {
+  TestFuture<proto::ToolResponse> tool_response;
+  ON_CALL(*model_execution_session(), Send)
+      .WillByDefault(
+          [&tool_response](const google::protobuf::MessageLite& message) {
+            proto::TtcClientFrame frame;
+            CHECK(frame.ParseFromString(message.SerializeAsString()));
+            if (frame.has_tool_response() && !tool_response.IsReady()) {
+              tool_response.SetValue(frame.tool_response());
+            }
+          });
+
+  StartSessionAndConnectBackend();
+  RespondSessionStatus(proto::SessionStatusResponse::STATE_CONNECTED,
+                       "session_1");
+  ASSERT_EQ(session_controller()->GetSessionLifecycle(),
+            SessionLifecycle::kLive);
+
+  proto::TtcServerFrame tool_frame;
+  proto::ToolCall* tool_call =
+      tool_frame.mutable_tool_call_batch()->add_tool_calls();
+  tool_call->set_call_id("call_1");
+  tool_call->set_name("close_voice_interface");
+  SimulateResponse(tool_frame);
+
+  const proto::ToolResponse response = tool_response.Take();
+  EXPECT_EQ(response.call_id(), "call_1");
+  EXPECT_EQ(response.name(), "close_voice_interface");
+  EXPECT_EQ(response.response_json(), R"({"status":"ok"})");
+
+  ASSERT_NE(session_controller(), nullptr);
+  EXPECT_EQ(session_controller()->GetSessionLifecycle(),
+            SessionLifecycle::kFinished);
+  EXPECT_TRUE(ttc_service().is_session_active());
+
+  ASSERT_TRUE(WaitForServiceState(ServiceState::kSessionInactive));
+  EXPECT_EQ(session_controller(), nullptr);
 }
 
 }  // namespace ttc

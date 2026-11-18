@@ -2909,9 +2909,9 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
       actor_service->tool_registry().GetToolsByIds(expected_tool_ids);
   ASSERT_EQ(expected_tools.size(), expected_tool_ids.size());
 
-  // click_element, set_text, select_option, scroll_page, get_screenshot, and
-  // close_window where window tools are supported.
-  const size_t num_legacy_tools = window_tools_supported ? 6 : 5;
+  // click_element, set_text, select_option, scroll_page, get_screenshot,
+  // close_voice_interface, and close_window where window tools are supported.
+  const size_t num_legacy_tools = window_tools_supported ? 7 : 6;
   std::vector<ToolDefinition> tools = session_controller->GetToolDefinitions();
   ASSERT_EQ(tools.size(), expected_tools.size() + num_legacy_tools);
 
@@ -3061,8 +3061,18 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
             ToolDefinition::Verbalization::kStandard);
   EXPECT_TRUE(get_screenshot.parameters_json_schema.empty());
 
+  const ToolDefinition& close_voice_interface =
+      tools[expected_tools.size() + 5];
+  EXPECT_EQ(close_voice_interface.name, "close_voice_interface");
+  EXPECT_FALSE(close_voice_interface.description.empty());
+  EXPECT_EQ(close_voice_interface.behavior,
+            ToolDefinition::Behavior::kBlocking);
+  EXPECT_EQ(close_voice_interface.verbalization,
+            ToolDefinition::Verbalization::kSilentAction);
+  EXPECT_TRUE(close_voice_interface.parameters_json_schema.empty());
+
   if (window_tools_supported) {
-    const ToolDefinition& close_window = tools[expected_tools.size() + 5];
+    const ToolDefinition& close_window = tools[expected_tools.size() + 6];
     EXPECT_EQ(close_window.name,
               actor::CloseWindowToolRequest::kModelFacingName);
     EXPECT_FALSE(close_window.description.empty());
@@ -3073,6 +3083,52 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
     // definition this one takes no window_id.
     EXPECT_TRUE(close_window.parameters_json_schema.empty());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       CloseVoiceInterfaceEndsSession) {
+  ttc_service().StartSession();
+  SessionController* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "close_voice_interface";
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TRUE(response.Ok());
+  EXPECT_EQ(session_controller->GetSessionLifecycle(),
+            SessionLifecycle::kFinished);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !ttc_service().is_session_active(); }));
+}
+
+// Tool calls queued behind `close_voice_interface` are cancelled rather than
+// run against a finished session.
+IN_PROC_BROWSER_TEST_F(ToolControllerBatchBrowserTest,
+                       CloseVoiceInterfaceAbortsRestOfBatch) {
+  ToolRequest close_request;
+  close_request.name = "close_voice_interface";
+
+  base::test::TestFuture<ToolResponse> first_future;
+  base::test::TestFuture<ToolResponse> second_future;
+  base::test::TestFuture<ToolResponse> third_future;
+  std::vector<PendingToolCall> batch;
+  batch.emplace_back(MakeClickRequest(), first_future.GetCallback());
+  batch.emplace_back(std::move(close_request), second_future.GetCallback());
+  batch.emplace_back(MakeClickRequest(), third_future.GetCallback());
+  session_controller()->ProcessToolCallBatch(std::move(batch));
+
+  EXPECT_TRUE(first_future.Take().Ok());
+  EXPECT_TRUE(second_future.Take().Ok());
+  ToolResponse third_response = third_future.Take();
+  EXPECT_TOOL_ERROR(third_response,
+                    actor::mojom::ActionResultCode::kActionsCancelled);
+  EXPECT_EQ(1, GetClickCount());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !ttc_service().is_session_active(); }));
 }
 
 // get_pointer is behind kTtcGetPointer, off by default: the model is not

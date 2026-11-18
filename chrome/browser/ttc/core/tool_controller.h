@@ -94,6 +94,7 @@ class ToolController {
   void CloseCurrentTab(ToolResponseCallback callback);
   void CloseCurrentWindow(ToolResponseCallback callback);
   void CloseGeminiPanel(ToolResponseCallback callback);
+  void CloseVoiceInterface(ToolResponseCallback callback);
   void CreateNewTab(ToolResponseCallback callback);
   void CreateNewWindow(ToolResponseCallback callback);
   void FindAndHighlight(const base::DictValue& arguments,

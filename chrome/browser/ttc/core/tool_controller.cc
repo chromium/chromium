@@ -237,10 +237,11 @@ void ToolController::OnToolCallDone(ToolResponse response) {
   PendingToolCall tool_call = std::move(*in_flight_tool_call_);
   in_flight_tool_call_.reset();
 
-  // Queued calls may depend on a failed call, so they're dropped rather than
-  // run.
+  // Queued calls may depend on a failed call, or follow a call that ended the
+  // session, so they're dropped rather than run.
   std::vector<PendingToolCall> aborted_tool_calls;
-  if (!response.Ok()) {
+  if (!response.Ok() || session_controller_->GetSessionLifecycle() ==
+                            SessionLifecycle::kFinished) {
     for (PendingToolCall& aborted_tool_call : pending_tool_calls_) {
       session_controller_->GetJournal().Log(
           "TtcToolCallAborted", actor::JournalDetailsBuilder()
@@ -395,6 +396,11 @@ void ToolController::RunToolCall(const ToolRequest& tool_request,
     return;
   }
 
+  if (tool_request.name == "close_voice_interface") {
+    CloseVoiceInterface(std::move(callback));
+    return;
+  }
+
   if (tool_request.name == "get_pointer" && get_pointer_tool_) {
     get_pointer_tool_->Run(std::move(callback));
     return;
@@ -433,10 +439,10 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
       actor_service->tool_registry().GetToolsByIds(supported_tool_ids);
 
   // Tools defined below rather than taken from the registry: the legacy
-  // click_element, set_text, select_option, scroll_page and get_screenshot;
-  // close_window where window tools are supported; get_pointer behind its
-  // flag.
-  constexpr size_t kNumLocalTools = 7;
+  // click_element, set_text, select_option, scroll_page, get_screenshot, and
+  // close_voice_interface; close_window where window tools are supported;
+  // get_pointer behind its flag.
+  constexpr size_t kNumLocalTools = 8;
   std::vector<ToolDefinition> tools;
   tools.reserve(actor_tools.size() + kNumLocalTools);
   for (const actor::ToolDefinition* actor_tool : actor_tools) {
@@ -580,6 +586,17 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   get_screenshot.verbalization = ToolDefinition::Verbalization::kStandard;
   tools.push_back(std::move(get_screenshot));
 
+  ToolDefinition close_voice_interface;
+  close_voice_interface.name = "close_voice_interface";
+  close_voice_interface.description =
+      "Stop the current voice session and close the voice assistant. Use this "
+      "when the user asks to stop listening or says goodbye.";
+  // The tool takes no arguments, so its schema is left empty.
+  close_voice_interface.behavior = ToolDefinition::Behavior::kBlocking;
+  close_voice_interface.verbalization =
+      ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(close_voice_interface));
+
   if (SupportsWindowManagementTools()) {
     // Defined here rather than taken from the registry: the registry's
     // close_window takes a window_id, but the model has no window IDs. TTC
@@ -659,6 +676,11 @@ void ToolController::CloseGeminiPanel(ToolResponseCallback callback) {
             actor_surface_handle);
       },
       std::move(callback));
+}
+
+void ToolController::CloseVoiceInterface(ToolResponseCallback callback) {
+  session_controller_->EndSessionAsync();
+  std::move(callback).Run(ToolResponse::Success());
 }
 
 void ToolController::CreateNewTab(ToolResponseCallback callback) {
