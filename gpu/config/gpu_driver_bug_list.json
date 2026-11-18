@@ -24,19 +24,6 @@
       ]
     },
     {
-      "id": 23,
-      "cr_bugs": [243038],
-      "description": "Disable OES_standard_derivative on Intel Pineview M Gallium drivers",
-      "os": {
-        "type": "chromeos"
-      },
-      "vendor_id": "0x8086",
-      "device_id": ["0xa011", "0xa012"],
-      "disabled_extensions": [
-        "GL_OES_standard_derivatives"
-      ]
-    },
-    {
       "id": 31,
       "cr_bugs": [154715, 10068, 269829, 294779, 285292, 1018528, 179815, 179250, 229643, 230896, 163464, 233612, 289461, 369316, 678508],
       "description": "Always use virtualized contexts on Android",
@@ -187,7 +174,7 @@
         "type": "android"
       },
       "gl_version": {
-        "op": "<=",
+        "op": "=",
         "value": "3.0"
       },
       "gl_vendor": "Imagination.*",
@@ -349,19 +336,6 @@
       ]
     },
     {
-      "id": 135,
-      "description": "Screen flickers on 2009 iMacs",
-      "cr_bugs": [543324],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x1002",
-      "device_id": ["0x9440", "0x944a", "0x9488", "0x9490"],
-      "features": [
-        "disable_post_sub_buffers_for_onscreen_surfaces"
-      ]
-    },
-    {
       "id": 137,
       "description": "NVIDIA fails glReadPixels from incomplete cube map texture",
       "cr_bugs": [518889],
@@ -412,24 +386,6 @@
       },
       "features": [
         "webgl_or_caps_max_texture_size_limit_4096"
-      ]
-    },
-    {
-      "id": 157,
-      "description": "Testing fences was broken on Mali ES2 drivers for specific phone models",
-      "cr_bugs": [589814],
-      "os": {
-        "type": "android"
-      },
-      "machine_model_name": ["SM-G361H", "SM-G531H"],
-      "gl_vendor": "ARM.*",
-      "gl_renderer": "Mali.*",
-      "gl_version": {
-        "op": "<",
-        "value": "3.0"
-      },
-      "disabled_extensions": [
-        "EGL_KHR_fence_sync"
       ]
     },
     {
