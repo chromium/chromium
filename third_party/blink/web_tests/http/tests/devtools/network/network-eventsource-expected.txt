@@ -1,9 +1,0 @@
-Tests EventSource resource type and content.
-
-[page] got event: hello
-http://127.0.0.1:8000/devtools/network/resources/event-stream.asis
-resource.type: eventsource
-resource.content after requesting content: data: hello
-
-
-

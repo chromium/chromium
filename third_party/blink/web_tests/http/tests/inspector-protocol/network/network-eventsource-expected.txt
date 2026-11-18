@@ -1,0 +1,17 @@
+Tests EventSource resource type and content.
+
+[page] got event: hello
+http://127.0.0.1:8000/inspector-protocol/network/resources/event-stream.asis
+resource.type: EventSource
+eventSourceMessageReceived: {
+    data : hello
+    eventId :
+    eventName : message
+    requestId : <string>
+    timestamp : <number>
+}
+base64Encoded: false
+resource.content after requesting content: data: hello
+
+
+

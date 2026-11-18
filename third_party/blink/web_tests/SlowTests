@@ -720,8 +720,6 @@ crbug.com/1044715 [ Linux ] external/wpt/pointerevents/pointerevent_touch-action
 crbug.com/339686361 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?mouse [ Slow ]
 crbug.com/339686361 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Slow ]
 crbug.com/339686361 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?touch [ Slow ]
-crbug.com/1043396 [ Linux ] http/tests/devtools/network/network-eventsource.js [ Slow ]
-crbug.com/1043396 [ Release Win ] http/tests/devtools/network/network-eventsource.js [ Slow ]
 crbug.com/1043381 [ Release Win ] inspector-protocol/overlay/highlight-node-scroll.js [ Slow ]
 crbug.com/1043310 [ Release Win ] external/wpt/css/cssom-view/idlharness.html [ Slow ]
 crbug.com/1043454 [ Linux Release ] http/tests/devtools/console-xhr-logging-async.js [ Slow ]
