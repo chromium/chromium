@@ -65,6 +65,11 @@ PLATFORM_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kBusyLoopTime);
 
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kBusyLoopLessWhenCompositorGesture);
 
+// Killswitch. When enabled, MemoryPurgeManager sends MEMORY_PRESSURE_LEVEL_NONE
+// when the renderer is foregrounded after a background purge sent
+// MEMORY_PRESSURE_LEVEL_CRITICAL.
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kMemoryPurgeResetPressureOnForeground);
+
 }  // namespace scheduler
 }  // namespace blink
 

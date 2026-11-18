@@ -112,5 +112,8 @@ BASE_FEATURE(kBusyLoopLessWhenCompositorGesture,
 #endif
 );
 
+BASE_FEATURE(kMemoryPurgeResetPressureOnForeground,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace scheduler
 }  // namespace blink

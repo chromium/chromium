@@ -19,6 +19,7 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/scheduler/common/features.h"
 
 namespace blink {
 
@@ -155,6 +156,28 @@ void MemoryPurgeManager::OnRendererForegrounded() {
   backgrounded_purge_pending_ = false;
   did_purge_with_page_frozen_since_backgrounded_ = false;
   purge_timer_.Stop();
+
+  if (!did_purge_since_backgrounded_) {
+    return;
+  }
+  did_purge_since_backgrounded_ = false;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Nothing else lowers the level set by PerformMemoryPurge(). The browser only
+  // forwards system memory pressure on CastOS, and only when its level changes
+  // (see RenderProcessHostImpl::OnMemoryPressure()). Without this, the renderer
+  // stays at critical pressure indefinitely. On CastOS, a real pressure level
+  // cleared here is restored by the browser's next notification.
+  //
+  // On Android, renderers get system memory pressure directly through
+  // MemoryPressureListenerAndroid, which this would clear.
+  if (base::FeatureList::IsEnabled(
+          scheduler::kMemoryPurgeResetPressureOnForeground)) {
+    // In --single-process mode, `OnRendererForegrounded()` does not run on the
+    // main thread.
+    base::SetMemoryPressureLevelFromAnyThread(base::MEMORY_PRESSURE_LEVEL_NONE);
+  }
+#endif
 }
 
 void MemoryPurgeManager::RecordAreAllPagesFrozenMetric(std::string_view name) {
@@ -191,6 +214,7 @@ void MemoryPurgeManager::PerformMemoryPurge() {
     // thread.
     base::SetMemoryPressureLevelFromAnyThread(
         base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    did_purge_since_backgrounded_ = true;
   }
 
   if (AreAllPagesFrozen()) {

@@ -26,7 +26,9 @@ namespace blink {
 // 1. The renderer process being backgrounded.
 // 2. A page being frozen (e.g., added to the back-forward cache).
 //
-// This helps to reduce the memory footprint of backgrounded renderers.
+// This helps to reduce the memory footprint of backgrounded renderers. Except
+// on Android, MEMORY_PRESSURE_LEVEL_NONE is sent when the renderer is
+// foregrounded after a purge, so that stateful caches can grow again.
 class PLATFORM_EXPORT MemoryPurgeManager {
  public:
   explicit MemoryPurgeManager(
@@ -59,7 +61,9 @@ class PLATFORM_EXPORT MemoryPurgeManager {
   // Called when the renderer is backgrounded. May schedule a delayed purge.
   void OnRendererBackgrounded();
 
-  // Called when the renderer is foregrounded. Cancels any delayed purge.
+  // Called when the renderer is foregrounded. Cancels any delayed purge and, if
+  // a purge happened in this background session, sends
+  // MEMORY_PRESSURE_LEVEL_NONE.
   void OnRendererForegrounded();
 
   void SetPurgeDisabledForTesting(bool disabled) {
@@ -144,6 +148,11 @@ class PLATFORM_EXPORT MemoryPurgeManager {
   // limit purges triggered by OnPageFrozen to once per background session when
   // the `kMemoryPurgeOnFreezeLimit` feature is enabled.
   bool did_purge_with_page_frozen_since_backgrounded_ = false;
+
+  // True if PerformMemoryPurge() sent MEMORY_PRESSURE_LEVEL_CRITICAL since the
+  // last time the renderer was backgrounded. Used to send
+  // MEMORY_PRESSURE_LEVEL_NONE on foregrounding.
+  bool did_purge_since_backgrounded_ = false;
 
   base::OneShotTimer purge_timer_;
 

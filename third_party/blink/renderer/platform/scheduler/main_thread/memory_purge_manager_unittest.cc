@@ -4,19 +4,32 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/memory_purge_manager.h"
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/scheduler/common/features.h"
 
 namespace blink {
 
 namespace {
+
+// Whether OnRendererForegrounded() sends MEMORY_PRESSURE_LEVEL_NONE after a
+// purge. See MemoryPurgeManager::OnRendererForegrounded().
+constexpr bool kResetsPressureOnForeground =
+#if BUILDFLAG(IS_ANDROID)
+    false;
+#else
+    true;
+#endif
 
 class MemoryPurgeManagerTest : public testing::Test {
  public:
@@ -45,7 +58,17 @@ class MemoryPurgeManagerTest : public testing::Test {
     task_environment_.FastForwardBy(delta);
   }
 
+  // Number of memory pressure notifications received, at any level.
   unsigned MemoryPressureCount() const { return memory_pressure_count_; }
+
+  // Number of MEMORY_PRESSURE_LEVEL_NONE notifications received.
+  unsigned NoneMemoryPressureCount() const {
+    return none_memory_pressure_count_;
+  }
+
+  std::optional<base::MemoryPressureLevel> LastMemoryPressureLevel() const {
+    return last_memory_pressure_level_;
+  }
 
   base::MemoryPressureSource memory_pressure_source_;
 
@@ -55,10 +78,16 @@ class MemoryPurgeManagerTest : public testing::Test {
   MemoryPurgeManager memory_purge_manager_;
 
   unsigned memory_pressure_count_ = 0;
+  unsigned none_memory_pressure_count_ = 0;
+  std::optional<base::MemoryPressureLevel> last_memory_pressure_level_;
 
  private:
-  void OnMemoryPressureLevelUpdated(base::MemoryPressureLevel) {
+  void OnMemoryPressureLevelUpdated(base::MemoryPressureLevel level) {
     memory_pressure_count_++;
+    if (level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+      none_memory_pressure_count_++;
+    }
+    last_memory_pressure_level_ = level;
   }
 };
 
@@ -318,13 +347,21 @@ TEST_F(MemoryPurgeManagerTest, MemoryPurgeOnFreezeLimitEnabled) {
   }
 
   // Another freeze after foregrounding the renderer triggers a memory purge.
+  // Foregrounding after a purge also sends MEMORY_PRESSURE_LEVEL_NONE,
+  // delivered once OnPageResumed() lifts the suppression.
   memory_purge_manager_.SetRendererBackgrounded(false);
   memory_purge_manager_.OnPageResumed();
+  const unsigned reset_count =
+      base::FeatureList::IsEnabled(features::kMemoryPurgeOnFreeze) &&
+              kResetsPressureOnForeground
+          ? 1U
+          : 0U;
+  EXPECT_EQ(reset_count, NoneMemoryPressureCount());
   memory_purge_manager_.SetRendererBackgrounded(true);
   memory_purge_manager_.OnPageFrozen();
   FastForwardBy(base::Seconds(1));
   if (base::FeatureList::IsEnabled(features::kMemoryPurgeOnFreeze)) {
-    EXPECT_EQ(2U, MemoryPressureCount());
+    EXPECT_EQ(2U + reset_count, MemoryPressureCount());
   } else {
     EXPECT_EQ(0U, MemoryPressureCount());
   }
@@ -368,6 +405,117 @@ TEST_F(MemoryPurgeManagerTest, MemoryPurgeOnFreezeEnabled) {
   memory_purge_manager_.OnPageFrozen();
   FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1U, MemoryPressureCount());
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+// Verify that foregrounding the renderer after a background purge sends
+// MEMORY_PRESSURE_LEVEL_NONE.
+TEST_F(MemoryPurgeManagerTest, ForegroundAfterBackgroundPurgeResetsPressure) {
+  memory_purge_manager_.OnPageCreated();
+  memory_purge_manager_.SetRendererBackgrounded(true);
+  FastForwardBy(MemoryPurgeManager::kDefaultMaxTimeToPurgeAfterBackgrounded);
+  EXPECT_EQ(1U, MemoryPressureCount());
+  EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_CRITICAL, LastMemoryPressureLevel());
+
+  memory_purge_manager_.SetRendererBackgrounded(false);
+  EXPECT_EQ(2U, MemoryPressureCount());
+  EXPECT_EQ(1U, NoneMemoryPressureCount());
+  EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE, LastMemoryPressureLevel());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Verify that foregrounding the renderer before a background purge happened
+// does not send any memory pressure notification.
+TEST_F(MemoryPurgeManagerTest, ForegroundWithoutPurgeDoesNotResetPressure) {
+  if (!features::IsMemoryPurgeOnBackgroundingEnabled()) {
+    GTEST_SKIP();
+  }
+
+  memory_purge_manager_.OnPageCreated();
+  memory_purge_manager_.SetRendererBackgrounded(true);
+  FastForwardBy(base::Seconds(30));
+  EXPECT_EQ(0U, MemoryPressureCount());
+
+  memory_purge_manager_.SetRendererBackgrounded(false);
+  FastForwardBy(base::TimeDelta::Max());
+  EXPECT_EQ(0U, MemoryPressureCount());
+  EXPECT_FALSE(LastMemoryPressureLevel().has_value());
+}
+
+// Verify that the killswitch keeps the memory pressure level at critical after
+// foregrounding.
+TEST_F(MemoryPurgeManagerTest,
+       ForegroundAfterBackgroundPurgeResetPressureDisabled) {
+  if (!features::IsMemoryPurgeOnBackgroundingEnabled()) {
+    GTEST_SKIP();
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      scheduler::kMemoryPurgeResetPressureOnForeground);
+
+  memory_purge_manager_.OnPageCreated();
+  memory_purge_manager_.SetRendererBackgrounded(true);
+  FastForwardBy(MemoryPurgeManager::kDefaultMaxTimeToPurgeAfterBackgrounded);
+  EXPECT_EQ(1U, MemoryPressureCount());
+
+  memory_purge_manager_.SetRendererBackgrounded(false);
+  FastForwardBy(base::TimeDelta::Max());
+  EXPECT_EQ(1U, MemoryPressureCount());
+  EXPECT_EQ(0U, NoneMemoryPressureCount());
+  EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_CRITICAL, LastMemoryPressureLevel());
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+// Verify that when the purge happened with all pages frozen, the
+// MEMORY_PRESSURE_LEVEL_NONE sent on foregrounding is held by the suppression
+// and delivered on resume.
+TEST_F(MemoryPurgeManagerTest,
+       ForegroundAfterPurgeWithAllPagesFrozenResetsPressureOnResume) {
+  base::test::ScopedFeatureList feature_list{features::kMemoryPurgeOnFreeze};
+
+  memory_purge_manager_.SetPurgeDisabledForTesting(true);
+  memory_purge_manager_.OnPageCreated();
+  memory_purge_manager_.SetRendererBackgrounded(true);
+  memory_purge_manager_.OnPageFrozen();
+  FastForwardBy(MemoryPurgeManager::kFreezePurgeDelay);
+  EXPECT_EQ(1U, MemoryPressureCount());
+  EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_CRITICAL, LastMemoryPressureLevel());
+
+  // MEMORY_PRESSURE_LEVEL_NONE is recorded but not delivered while suppressed.
+  memory_purge_manager_.SetRendererBackgrounded(false);
+  EXPECT_EQ(1U, MemoryPressureCount());
+
+  // Resuming the page lifts the suppression and delivers
+  // MEMORY_PRESSURE_LEVEL_NONE.
+  memory_purge_manager_.OnPageResumed();
+  EXPECT_EQ(2U, MemoryPressureCount());
+  EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE, LastMemoryPressureLevel());
+
+  memory_purge_manager_.OnPageDestroyed(/* frozen=*/false);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Verify that a second background session purges again after
+// MEMORY_PRESSURE_LEVEL_NONE was sent on foregrounding.
+TEST_F(MemoryPurgeManagerTest, SecondBackgroundSessionPurgesAgain) {
+  if (!features::IsMemoryPurgeOnBackgroundingEnabled()) {
+    GTEST_SKIP();
+  }
+
+  memory_purge_manager_.OnPageCreated();
+  memory_purge_manager_.SetRendererBackgrounded(true);
+  FastForwardBy(MemoryPurgeManager::kDefaultMaxTimeToPurgeAfterBackgrounded);
+  EXPECT_EQ(1U, MemoryPressureCount());
+
+  memory_purge_manager_.SetRendererBackgrounded(false);
+  const unsigned reset_count = kResetsPressureOnForeground ? 1U : 0U;
+  EXPECT_EQ(reset_count, NoneMemoryPressureCount());
+
+  memory_purge_manager_.SetRendererBackgrounded(true);
+  FastForwardBy(MemoryPurgeManager::kDefaultMaxTimeToPurgeAfterBackgrounded);
+  EXPECT_EQ(2U + reset_count, MemoryPressureCount());
+  EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_CRITICAL, LastMemoryPressureLevel());
 }
 
 }  // namespace
