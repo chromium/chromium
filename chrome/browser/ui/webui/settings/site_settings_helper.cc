@@ -33,6 +33,7 @@
 #include "chrome/browser/glic/selection/inline_cue_blocklist_utils.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
+#include "chrome/browser/media/webrtc/media_stream_device_permissions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
@@ -378,6 +379,24 @@ std::string GetDisplayNameForPattern(Profile* profile,
     return GetDisplayNameForGURL(profile, url, /*hostname_only=*/false);
   }
   return pattern.ToString();
+}
+
+// Returns whether `origin` is allowed for the content settings `type` mic or
+// camera by the AudioCaptureAllowedUrls / VideoCaptureAllowedUrls policies.
+// These policies are not stored in HostContentSettingsMap (crbug.com/41014586).
+bool IsAllowedByMediaCapturePolicy(Profile* profile,
+                                   ContentSettingsType type,
+                                   const GURL& origin) {
+  switch (type) {
+    case ContentSettingsType::MEDIASTREAM_MIC:
+      return GetDevicePolicy(profile, origin, prefs::kAudioCaptureAllowed,
+                             prefs::kAudioCaptureAllowedUrls) == ALWAYS_ALLOW;
+    case ContentSettingsType::MEDIASTREAM_CAMERA:
+      return GetDevicePolicy(profile, origin, prefs::kVideoCaptureAllowed,
+                             prefs::kVideoCaptureAllowedUrls) == ALWAYS_ALLOW;
+    default:
+      return false;
+  }
 }
 
 // Returns exceptions constructed from the policy-set allowed URLs
@@ -1056,6 +1075,11 @@ void GetRawExceptionsForContentSettingsType(
         content_setting, /*is_embargoed=*/false, setting.metadata.expiration()};
   }
 
+  if (!permissions::PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
+          type)) {
+    return;
+  }
+
   permissions::PermissionDecisionAutoBlocker* auto_blocker =
       permissions::PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
           profile);
@@ -1069,18 +1093,47 @@ void GetRawExceptionsForContentSettingsType(
       continue;
     }
 
-    if (!permissions::PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
-            type)) {
+    const GURL origin(setting.primary_pattern.ToString());
+    if (!auto_blocker->IsEmbargoed(origin, type)) {
       continue;
     }
 
-    if (auto_blocker->IsEmbargoed(GURL(setting.primary_pattern.ToString()),
-                                  type)) {
-      all_patterns_settings[{setting.primary_pattern, setting.source}]
-                           [{setting.secondary_pattern, setting.incognito}] = {
-                               CONTENT_SETTING_BLOCK, /*is_embargoed=*/true,
-                               setting.metadata.expiration()};
+    // An explicit exception (from any provider, including wildcard patterns
+    // such as "https://[*.]example.com") can take precedence over the embargo.
+    // Any setting resolving to ASK (e.g. an ALLOW rule downgraded to ASK in
+    // incognito) leaves the embargo in effect. Embargoes are keyed on the
+    // requesting origin only, so for double-keyed types (e.g. STORAGE_ACCESS)
+    // only a rule that applies to all embedders (wildcard secondary pattern)
+    // overrides it. A default (wildcard, wildcard) BLOCK is not treated as an
+    // exception for the origin, so the embargo is still listed; a default
+    // ALLOW (e.g. from policy) does override it, as below.
+    content_settings::SettingInfo info;
+    const ContentSetting content_setting =
+        map->GetContentSetting(origin, origin, type, &info);
+    const bool rule_can_override_embargo =
+        info.primary_pattern.IsValid() &&
+        info.secondary_pattern == ContentSettingsPattern::Wildcard() &&
+        (info.primary_pattern != ContentSettingsPattern::Wildcard() ||
+         content_setting == CONTENT_SETTING_ALLOW);
+    // Permissions handled by PermissionContextBase only consult the embargo
+    // when the content setting resolves to ASK, so any other explicit value
+    // wins. Other embargo-enabled types (e.g. FEDERATED_IDENTITY_API) still
+    // apply the embargo on top of ALLOW, so only an explicit BLOCK wins there.
+    const bool setting_overrides_embargo =
+        content_setting == CONTENT_SETTING_BLOCK ||
+        (content_setting != CONTENT_SETTING_ASK &&
+         permissions::PermissionUtil::IsPermission(type));
+    const bool embargo_overridden =
+        rule_can_override_embargo && setting_overrides_embargo;
+    if (embargo_overridden ||
+        IsAllowedByMediaCapturePolicy(profile, type, origin)) {
+      continue;
     }
+
+    all_patterns_settings[{setting.primary_pattern, setting.source}]
+                         [{setting.secondary_pattern, setting.incognito}] = {
+                             CONTENT_SETTING_BLOCK, /*is_embargoed=*/true,
+                             setting.metadata.expiration()};
   }
 }
 
