@@ -2811,12 +2811,12 @@ public class CompositorViewHolder extends FrameLayout
 
             rectInPx.roundOut(mPixelRect);
 
-            // Don't let any zero sized rects through, they'll cause parent
-            // size errors in L.
-            if (mPixelRect.width() == 0) {
+            // Ensure the Rect has a valid size to prevent an exception in ExploreByTouchHelper. See
+            // crbug.com/559728348.
+            if (mPixelRect.width() <= 0) {
                 mPixelRect.right = mPixelRect.left + 1;
             }
-            if (mPixelRect.height() == 0) {
+            if (mPixelRect.height() <= 0) {
                 mPixelRect.bottom = mPixelRect.top + 1;
             }
             return mPixelRect;

@@ -1714,6 +1714,43 @@ public class CompositorViewHolderUnitTest {
     }
 
     @Test
+    public void testAccessibilityNode_negativeBoundsClampedToMinSize() {
+        mContext.getResources().getDisplayMetrics().density = 1.0f;
+
+        var virtualView = mock(VirtualView.class);
+        RectF dpRect = new RectF(50f, 30f, 40f, 20f);
+        doAnswer(
+                        invocation -> {
+                            ((RectF) invocation.getArgument(0)).set(dpRect);
+                            return null;
+                        })
+                .when(virtualView)
+                .getTouchTarget(any(RectF.class));
+        when(virtualView.getAccessibilityDescription()).thenReturn("test-node");
+        doAnswer(
+                        invocation -> {
+                            List<VirtualView> list = invocation.getArgument(0);
+                            list.add(virtualView);
+                            return null;
+                        })
+                .when(mLayoutManager)
+                .getVirtualViews(anyList());
+
+        mCompositorViewHolder.onAccessibilityModeChanged(true);
+        assertNotNull(mCompositorViewHolder.mAccessibilityView);
+
+        mCompositorViewHolder.mAccessibilityView.createAccessibilityNodeInfo();
+        var accessibilityProvider =
+                mCompositorViewHolder.mAccessibilityView.getAccessibilityNodeProvider();
+        assertNotNull(accessibilityProvider);
+        var nodeInfo = accessibilityProvider.createAccessibilityNodeInfo(0);
+        Rect actualRect = new Rect();
+        nodeInfo.getBoundsInScreen(actualRect);
+        Rect expectedRect = new Rect(50, 30, 51, 31);
+        assertEquals(expectedRect, actualRect);
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testSetSideUiStateProviderSupplier() {
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
