@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
+#import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_tab_helper.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/policy/model/reporting/saas_usage/saas_usage_tab_helper.h"
@@ -295,6 +296,40 @@ TEST_P(TabHelperUtilTest, EnterpriseProxyTabHelperOffTheRecord) {
   AttachTabHelpers(&web_state_, tab_helper_filter());
 
   EXPECT_FALSE(EnterpriseProxyTabHelper::FromWebState(&web_state_));
+}
+
+// Tests that `LocationBarBadgeTabHelper` is created only for standard
+// navigation tabs when location bar badge migration is enabled.
+TEST_P(TabHelperUtilTest,
+       LocationBarBadgeTabHelperCreatedForStandardNavigationWhenEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kLocationBarBadgeMigration);
+
+  AttachTabHelpers(&web_state_, tab_helper_filter());
+
+  switch (tab_helper_filter()) {
+    case TabHelperFilter::kEmpty:
+    case TabHelperFilter::kPrerender:
+      EXPECT_TRUE(LocationBarBadgeTabHelper::FromWebState(&web_state_));
+      break;
+    case TabHelperFilter::kReaderMode:
+    case TabHelperFilter::kLensOverlay:
+    case TabHelperFilter::kAssistantAim:
+    case TabHelperFilter::kGeminiWebModal:
+      EXPECT_FALSE(LocationBarBadgeTabHelper::FromWebState(&web_state_));
+      break;
+  }
+}
+
+// Tests that `LocationBarBadgeTabHelper` is not created when location bar badge
+// migration is disabled.
+TEST_P(TabHelperUtilTest, LocationBarBadgeTabHelperNotCreatedWhenDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kLocationBarBadgeMigration);
+
+  AttachTabHelpers(&web_state_, tab_helper_filter());
+
+  EXPECT_FALSE(LocationBarBadgeTabHelper::FromWebState(&web_state_));
 }
 
 INSTANTIATE_TEST_SUITE_P(,

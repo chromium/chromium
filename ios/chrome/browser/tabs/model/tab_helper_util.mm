@@ -82,6 +82,7 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h"
 #import "ios/chrome/browser/link_to_text/model/link_to_text_tab_helper.h"
+#import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_tab_helper.h"
 #import "ios/chrome/browser/metrics/model/pageload_foreground_duration_tab_helper.h"
 #import "ios/chrome/browser/mini_map/model/mini_map_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -341,6 +342,9 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       attacher.IsNotInTabHelperFilter());
   attacher.CreateWhen<AutofillTabHelper>(attacher.IsNotInTabHelperFilter());
 
+  attacher.CreateWhen<LocationBarBadgeTabHelper>(
+      attacher.IsForStandardNavigation() &&
+      IsLocationBarBadgeMigrationEnabled());
   attacher.CreateWhen<InfobarBadgeTabHelper>(
       attacher.IsForStandardNavigation());
 
