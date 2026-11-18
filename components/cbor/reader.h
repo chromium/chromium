@@ -13,16 +13,13 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
-#include "components/cbor/cbor_buildflags.h"
 #include "components/cbor/cbor_export.h"
 #include "components/cbor/values.h"
 
 // TODO(crbug.com/536539387): Once Crubit fixes -Wnullability-completeness, we
 // can include cbor_rust.h in reader.h instead of reader.cc and assign the
 // values of DecoderError directly from the Rust Tag enum.
-#if BUILDFLAG(USE_CBOR_RUST)
 // Included in reader.cc instead: #include "components/cbor/rust/cbor_rust.h"
-#endif
 
 // Concise Binary Object Representation (CBOR) decoder as defined by
 // https://tools.ietf.org/html/rfc7049. This decoder only accepts canonical CBOR
@@ -68,14 +65,10 @@ namespace cbor {
 
 CBOR_EXPORT BASE_DECLARE_FEATURE(kUseRustCborParser);
 
-// TODO(crbug.com/535682335): Remove `#if BUILDFLAG(USE_CBOR_RUST)` macros and
-// unconditionally use rust types once Cronet supports Crubit dependencies.
-#if BUILDFLAG(USE_CBOR_RUST)
 namespace rust {
 struct MapKey;
 struct Value;
 }  // namespace rust
-#endif
 
 class CBOR_EXPORT Reader {
  public:
@@ -142,8 +135,7 @@ class CBOR_EXPORT Reader {
     bool allow_invalid_utf8 = false;
 
     // Selects the CBOR parser to use. When unset, follows `kUseRustCborParser`
-    // and reports metrics to UMA. Setting this to true requires
-    // BUILDFLAG(USE_CBOR_RUST).
+    // and reports metrics to UMA.
     std::optional<bool> use_rust;
   };
 
@@ -224,11 +216,9 @@ class CBOR_EXPORT Reader {
 
   DecoderError GetErrorCode() { return error_code_; }
 
-#if BUILDFLAG(USE_CBOR_RUST)
   // Members of `Reader` to access the private `INVALID_UTF8` `Value` ctor.
   static Value ConvertRustMapKeyToCpp(const cbor::rust::MapKey& rust_key);
   static Value ConvertRustValueToCpp(const cbor::rust::Value& rust_val);
-#endif
 
   size_t num_bytes_remaining() const { return rest_.size(); }
 

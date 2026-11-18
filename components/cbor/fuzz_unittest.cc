@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "components/cbor/cbor_buildflags.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/writer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,7 +36,6 @@ std::optional<Value> ParseAndCompare(
   fill_config(cpp_config, false, &cpp_error);
   std::optional<Value> cpp_cbor = Reader::Read(input, cpp_config);
 
-#if BUILDFLAG(USE_CBOR_RUST)
   Reader::Config rust_config;
   Reader::DecoderError rust_error;
   fill_config(rust_config, true, &rust_error);
@@ -65,7 +63,6 @@ std::optional<Value> ParseAndCompare(
     // codes align perfectly.
     EXPECT_EQ(rust_error, cpp_error);
   }
-#endif
 
   if (config_ptr && config_ptr->error_code_out) {
     *config_ptr->error_code_out = cpp_error;
@@ -146,7 +143,6 @@ std::vector<uint8_t> SerializeCborValue(ValueView val) {
       Writer::Write(val, cpp_config);
   CHECK(serialized_cbor);
 
-#if BUILDFLAG(USE_CBOR_RUST)
   Writer::Config rust_config;
   rust_config.max_nesting_level = 999;
   rust_config.use_rust = true;
@@ -154,7 +150,6 @@ std::vector<uint8_t> SerializeCborValue(ValueView val) {
       Writer::Write(val, rust_config);
   CHECK(rust_serialized);
   CHECK(*rust_serialized == *serialized_cbor);
-#endif
 
   return *std::move(serialized_cbor);
 }

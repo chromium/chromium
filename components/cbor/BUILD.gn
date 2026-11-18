@@ -2,21 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
-import("//build/config/cronet/config.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 if (is_ios) {
   import("//build/config/ios/bundle_data_from_filelist.gni")
-}
-
-buildflag_header("buildflags") {
-  header = "cbor_buildflags.h"
-
-  # TODO(crbug.com/535682335): Remove `USE_CBOR_RUST` buildflag entirely,
-  # unconditionally enable Rust CBOR parser, and drop `is_cronet_build` check
-  # once Cronet supports Crubit dependencies.
-  flags = [ "USE_CBOR_RUST=!$is_cronet_build" ]
 }
 
 source_set("cbor_headers") {
@@ -30,10 +19,7 @@ source_set("cbor_headers") {
     "writer.h",
   ]
 
-  public_deps = [
-    ":buildflags",
-    "//base",
-  ]
+  public_deps = [ "//base" ]
 }
 
 source_set("cbor_rust_impl") {
@@ -47,17 +33,11 @@ source_set("cbor_rust_impl") {
   defines = [ "CBOR_IMPLEMENTATION" ]
 
   deps = [
-    ":buildflags",
     ":cbor_headers",
     "//base",
+    "//build/rust/crubit",
+    "//components/cbor/rust:cbor_rust_bindings",
   ]
-
-  if (!is_cronet_build) {
-    deps += [
-      "//build/rust/crubit",
-      "//components/cbor/rust:cbor_rust_bindings",
-    ]
-  }
 }
 
 component("cbor") {
@@ -69,7 +49,6 @@ component("cbor") {
   defines = [ "CBOR_IMPLEMENTATION" ]
 
   public_deps = [
-    ":buildflags",
     ":cbor_headers",
     "//base",
   ]
@@ -87,17 +66,14 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":buildflags",
     ":cbor",
     "//base",
     "//base/test:test_support",
+    "//components/cbor/rust:cbor_rust_unittests",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/fuzztest",
   ]
-  if (!is_cronet_build) {
-    deps += [ "//components/cbor/rust:cbor_rust_unittests" ]
-  }
   if (is_ios) {
     deps += [ ":unit_tests_bundle_data" ]
   }

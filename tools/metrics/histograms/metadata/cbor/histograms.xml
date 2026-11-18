@@ -33,8 +33,7 @@ chromium-metrics-reviews@google.com.
     cbor::Reader::Read() that leaves the choice of parser to the
     kUseRustCborParser feature. Both the C++ and the Rust parser report here, so
     the two can be compared across that feature's experiment groups. Calls that
-    select a parser themselves are not recorded, and neither is anything in
-    builds that do not include the Rust parser, as neither takes part in the
+    select a parser themselves are not recorded, as they do not take part in the
     experiment. This metric is also only reported for clients with
     high-resolution clocks.
   </summary>
@@ -50,8 +49,7 @@ chromium-metrics-reviews@google.com.
     the choice of parser to the kUseRustCborParser feature. Both the C++ and the
     Rust parser report here, so the two can be compared across that feature's
     experiment groups. Calls that select a parser themselves are not recorded,
-    and neither is anything in builds that do not include the Rust parser, as
-    neither takes part in the experiment.
+    as they do not take part in the experiment.
   </summary>
 </histogram>
 
@@ -65,8 +63,7 @@ chromium-metrics-reviews@google.com.
     that leaves the choice of parser to the kUseRustCborParser feature. Both the
     C++ and the Rust parser report here, so the two can be compared across that
     feature's experiment groups. Calls that select a parser themselves are not
-    recorded, and neither is anything in builds that do not include the Rust
-    parser, as neither takes part in the experiment.
+    recorded, as they do not take part in the experiment.
   </summary>
 </histogram>
 
@@ -105,8 +102,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the elapsed time for cbor::Writer::Write() (including C++-to-Rust
     value conversion when using the Rust writer), for both successful and failed
-    calls. Emitted once per call controlled by kUseRustCborWriter in builds with
-    the Rust writer enabled, on clients with high-resolution clocks.
+    calls. Emitted once per call controlled by kUseRustCborWriter, on clients
+    with high-resolution clocks.
   </summary>
 </histogram>
 
@@ -116,7 +113,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the output size in bytes of successful cbor::Writer::Write() calls
     (capped at 10MB). Emitted once per successful call controlled by
-    kUseRustCborWriter in builds with the Rust writer enabled.
+    kUseRustCborWriter.
   </summary>
 </histogram>
 
@@ -126,7 +123,7 @@ chromium-metrics-reviews@google.com.
   <owner>src/components/cbor/OWNERS</owner>
   <summary>
     Records whether cbor::Writer::Write() succeeded. Emitted once per call
-    controlled by kUseRustCborWriter in builds with the Rust writer enabled.
+    controlled by kUseRustCborWriter.
   </summary>
 </histogram>
 

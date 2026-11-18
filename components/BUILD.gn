@@ -1411,7 +1411,6 @@ if (use_blink) {
       "//components/autofill/core/common:test_support",
       "//components/bookmarks/test",
       "//components/cbor",
-      "//components/cbor:buildflags",
       "//components/discardable_memory/common",
       "//components/history/core/test",
       "//components/omnibox/browser",

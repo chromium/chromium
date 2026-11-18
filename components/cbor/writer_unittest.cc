@@ -16,7 +16,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "components/cbor/cbor_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -553,8 +552,6 @@ TEST_P(CBORWriterTest, OverlyNestedCBOR) {
   EXPECT_FALSE(DoWrite(Value(std::move(map)), 4).has_value());
 }
 
-#if BUILDFLAG(USE_CBOR_RUST)
-
 namespace {
 
 // `CBOR.Write.Duration` is only emitted on clients whose clock can measure it.
@@ -615,32 +612,9 @@ TEST_P(CBORWriterTest, MetricsNotRecordedWhenWriterIsSelectedExplicitly) {
   histograms.ExpectTotalCount("CBOR.Write.Size", 0);
 }
 
-#else
-
-TEST_P(CBORWriterTest, MetricsNotRecordedWithoutRustWriter) {
-  // Non-Rust builds never participate in the experiment.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kUseRustCborWriter);
-
-  base::HistogramTester histograms;
-
-  Writer::Config config;
-  ASSERT_TRUE(Writer::Write(Value(1), config).has_value());
-
-  histograms.ExpectTotalCount("CBOR.Write.Success", 0);
-  histograms.ExpectTotalCount("CBOR.Write.Duration", 0);
-  histograms.ExpectTotalCount("CBOR.Write.Size", 0);
-}
-
-#endif  // BUILDFLAG(USE_CBOR_RUST)
-
 INSTANTIATE_TEST_SUITE_P(,
                          CBORWriterTest,
-#if BUILDFLAG(USE_CBOR_RUST)
                          testing::Bool(),
-#else
-                         testing::Values(false),
-#endif
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "Rust" : "Cpp";
                          });

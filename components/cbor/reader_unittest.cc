@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
-#include "components/cbor/cbor_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1513,8 +1512,6 @@ TEST_P(CBORReaderTest, TestDefaultMaxNestingLevelBoundary) {
   VerifyDecoderError(depth_17, Reader::DecoderError::TOO_MUCH_NESTING);
 }
 
-#if BUILDFLAG(USE_CBOR_RUST)
-
 namespace {
 
 // Returns how many samples a single parse is expected to add to each
@@ -1633,39 +1630,11 @@ TEST_P(CBORReaderTest, MetricsNotRecordedWhenParserIsSelectedExplicitly) {
               testing::IsEmpty());
 }
 
-#else
-
-TEST_P(CBORReaderTest, MetricsNotRecordedWithoutRustParser) {
-  // Builds without the Rust parser never query `kUseRustCborParser`, so they
-  // take part in neither arm of the experiment and report nothing at all, even
-  // for a parse that leaves the parser choice to the feature.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kUseRustCborParser);
-
-  base::HistogramTester histograms;
-  const std::vector<uint8_t> valid_cbor = {0x01};  // Integer 1
-
-  Reader::Config config;
-  ASSERT_TRUE(Reader::Read(valid_cbor, config).has_value());
-
-  EXPECT_THAT(histograms.GetTotalCountsForPrefix("CBOR.Read."),
-              testing::IsEmpty());
-}
-
-#endif  // BUILDFLAG(USE_CBOR_RUST)
-
-#if BUILDFLAG(USE_CBOR_RUST)
 INSTANTIATE_TEST_SUITE_P(,
                          CBORReaderTest,
                          testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "Rust" : "Cpp";
                          });
-#else
-INSTANTIATE_TEST_SUITE_P(,
-                         CBORReaderTest,
-                         testing::Values(false),
-                         [](const auto&) { return "Cpp"; });
-#endif
 
 }  // namespace cbor

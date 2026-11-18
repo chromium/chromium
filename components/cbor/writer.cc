@@ -17,24 +17,14 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "components/cbor/cbor_buildflags.h"
 #include "components/cbor/constants.h"
 #include "components/cbor/experiment_metrics.h"
-#include "third_party/abseil-cpp/absl/functional/overload.h"
-
-#if BUILDFLAG(USE_CBOR_RUST)
 #include "components/cbor/rust/cbor_rust.h"
-#endif
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace cbor {
 
-BASE_FEATURE(kUseRustCborWriter,
-#if BUILDFLAG(USE_CBOR_RUST)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+BASE_FEATURE(kUseRustCborWriter, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -71,17 +61,11 @@ class [[nodiscard]] ScopedMetricsReporter {
 
 // Resolves `Writer::Config::use_rust`, defaulting to `kUseRustCborWriter`.
 bool ShouldUseRustWriter(std::optional<bool> use_rust) {
-  if (use_rust.has_value()) {
-    return *use_rust;
-  }
-#if BUILDFLAG(USE_CBOR_RUST)
-  return base::FeatureList::IsEnabled(kUseRustCborWriter);
-#else
-  return false;
-#endif
+  return use_rust.has_value()
+             ? *use_rust
+             : base::FeatureList::IsEnabled(kUseRustCborWriter);
 }
 
-#if BUILDFLAG(USE_CBOR_RUST)
 // Converts `node` (or map `key`) into a `cbor::rust::Value` / `MapKey`
 // borrowing string and byte payloads from `node`. The returned value must not
 // outlive `node`.
@@ -188,7 +172,6 @@ std::optional<cbor::rust::Value> ConvertCppValueToRust(
       },
   });
 }
-#endif
 
 }  // namespace
 
@@ -206,7 +189,6 @@ std::optional<std::vector<uint8_t>> Writer::Write(ValueView node,
     reporter.emplace(output_size);
   }
 
-#if BUILDFLAG(USE_CBOR_RUST)
   if (use_rust) {
     std::optional<cbor::rust::Value> rust_val = ConvertCppValueToRust(
         node, config.max_nesting_level, config.allow_invalid_utf8_for_testing);
@@ -217,9 +199,6 @@ std::optional<std::vector<uint8_t>> Writer::Write(ValueView node,
     output_size = out.size();
     return std::vector<uint8_t>(out.begin(), out.end());
   }
-#else
-  CHECK(!use_rust) << "CBOR Rust writer is statically disabled in this build";
-#endif
 
   std::vector<uint8_t> cbor;
   Writer writer(&cbor);

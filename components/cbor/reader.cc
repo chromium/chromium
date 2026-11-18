@@ -11,9 +11,6 @@
 // TODO(crbug.com/259749095): Call `cbor::rust::parse_with_config` directly
 // and remove `ParseResult` once Crubit supports returning generic `Result`
 // tuples (`Result<(Value, usize), Error>`) directly across FFI.
-// TODO(crbug.com/535682335): Remove `#if BUILDFLAG(USE_CBOR_RUST)` macros
-// throughout this file and unconditionally include rust headers/helpers once
-// Cronet supports Crubit dependencies.
 #include "components/cbor/reader.h"
 
 #include <math.h>
@@ -38,25 +35,14 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
-#include "components/cbor/cbor_buildflags.h"
 #include "components/cbor/constants.h"
 #include "components/cbor/experiment_metrics.h"
-
-#if BUILDFLAG(USE_CBOR_RUST)
 #include "components/cbor/rust/cbor_rust.h"
-#endif
 
 namespace cbor {
 
-BASE_FEATURE(kUseRustCborParser,
-#if BUILDFLAG(USE_CBOR_RUST)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+BASE_FEATURE(kUseRustCborParser, base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(USE_CBOR_RUST)
 #define ASSERT_DECODER_ERROR_EQ(cpp_err, rust_err)                   \
   static_assert(std::to_underlying(Reader::DecoderError::cpp_err) == \
                 std::to_underlying(cbor::rust::Error::Tag::rust_err))
@@ -78,7 +64,6 @@ ASSERT_DECODER_ERROR_EQ(OUT_OF_ORDER_OR_DUPLICATE_KEY,
                         OutOfOrderOrDuplicateKey);
 // LINT.ThenChange(//components/cbor/reader.h:DecoderError,//components/cbor/rust/reader.rs:Error)
 #undef ASSERT_DECODER_ERROR_EQ
-#endif
 
 namespace constants {
 const char kUnsupportedMajorType[] = "Unsupported major type.";
@@ -197,14 +182,9 @@ class [[nodiscard]] ScopedMetricsReporter {
 
 // Resolves `Reader::Config::use_rust`, defaulting to `kUseRustCborParser`.
 bool ShouldUseRustParser(std::optional<bool> use_rust) {
-  if (use_rust.has_value()) {
-    return *use_rust;
-  }
-#if BUILDFLAG(USE_CBOR_RUST)
-  return base::FeatureList::IsEnabled(kUseRustCborParser);
-#else
-  return false;
-#endif
+  return use_rust.has_value()
+             ? *use_rust
+             : base::FeatureList::IsEnabled(kUseRustCborParser);
 }
 
 }  // namespace
@@ -216,7 +196,6 @@ Reader::Reader(base::span<const uint8_t> data)
     : rest_(data), error_code_(DecoderError::CBOR_NO_ERROR) {}
 Reader::~Reader() = default;
 
-#if BUILDFLAG(USE_CBOR_RUST)
 // static
 Value Reader::ConvertRustMapKeyToCpp(const cbor::rust::MapKey& rust_key) {
   switch (rust_key.kind().tag) {
@@ -267,7 +246,6 @@ Value Reader::ConvertRustValueToCpp(const cbor::rust::Value& rust_val) {
   }
   NOTREACHED();
 }
-#endif
 
 // static
 std::optional<Value> Reader::Read(base::span<uint8_t const> data,
@@ -309,7 +287,6 @@ std::optional<Value> Reader::Read(base::span<uint8_t const> data,
     reporter.emplace(data.size(), error_code_out);
   }
 
-#if BUILDFLAG(USE_CBOR_RUST)
   if (use_rust) {
     cbor::rust::Config rust_config;
     rust_config.allow_invalid_utf8 = config.allow_invalid_utf8;
@@ -341,9 +318,6 @@ std::optional<Value> Reader::Read(base::span<uint8_t const> data,
 
     return ConvertRustValueToCpp(result->value);
   }
-#else
-  CHECK(!use_rust) << "CBOR Rust parser is statically disabled in this build";
-#endif
 
   Reader reader(data);
   std::optional<Value> value = reader.DecodeCompleteDataItem(

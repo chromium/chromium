@@ -9,7 +9,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/timer/lap_timer.h"
-#include "components/cbor/cbor_buildflags.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -236,15 +235,6 @@ std::vector<uint8_t> BuildHugeAndComplexWebBundlePayload() {
 class CBORReaderPerfTest : public testing::TestWithParam<bool> {
  protected:
   bool UseRust() const { return GetParam(); }
-
-  void SetUp() override {
-#if !BUILDFLAG(USE_CBOR_RUST)
-    if (UseRust()) {
-      GTEST_SKIP()
-          << "Rust CBOR parser is disabled in this build configuration.";
-    }
-#endif
-  }
 
   // Runs the CBOR reader performance benchmark for the current test case.
   void RunBenchmark(base::span<const uint8_t> payload,
