@@ -6,7 +6,6 @@ include_rules = [
   "+components/password_manager/core/common/password_manager_util.h",
   "+components/safe_browsing/buildflags.h",
   "+components/signin/public/base/signin_switches.h",
-  "+services/metrics/public",
   "+third_party/re2",
   # Allow inclusion of WebKit API files.
   "+third_party/blink/public/common",
@@ -21,7 +20,6 @@ specific_include_rules = {
     "+v8/include",
   ],
   ".*test.*": [
-    "+components/ukm",
     "+v8/include",
   ],
 }
