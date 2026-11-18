@@ -299,6 +299,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 1;
     case DISTANCE_ACTION_APP_MENU_SECONDARY_TITLE_VERTICAL_SPACING:
       return 2;
+    case DISTANCE_ACTION_APP_MENU_SEARCH_ICON_LABEL_SPACING:
+      return 20;
     case DISTANCE_ACTION_APP_MENU_MAX_WIDTH:
       return 800;
     case DISTANCE_ACTION_APP_MENU_DYNAMIC_SUBMENU_MAX_WIDTH:

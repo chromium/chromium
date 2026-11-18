@@ -2721,9 +2721,24 @@ TEST_F(ActionAppMenuWithSearchTest, SearchQueryShowsOnlyResults) {
   EXPECT_TRUE(GetSearchIcon(search_bar)->GetVisible());
 
   // Results are flat, full-width rows: no card insets, one line is kMedium.
+  const auto* provider = ChromeLayoutProvider::Get();
   EXPECT_EQ(result->GetHighlightInsets(), gfx::Insets());
-  EXPECT_EQ(result->height(), ChromeLayoutProvider::Get()->GetDistanceMetric(
+  EXPECT_EQ(result->height(), provider->GetDistanceMetric(
                                   DISTANCE_ACTION_APP_MENU_MEDIUM_ITEM_HEIGHT));
+  // The title starts after the icon and the search results' wider gap, so the
+  // row is as wide as that start, the title and the trailing padding.
+  const views::SubmenuView* const results_submenu = root->GetSubmenu();
+  const int title_start =
+      results_submenu->content_start() +
+      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE) +
+      provider->GetDistanceMetric(
+          DISTANCE_ACTION_APP_MENU_SEARCH_ICON_LABEL_SPACING);
+  EXPECT_EQ(
+      result->GetDimensions().standard_width,
+      title_start +
+          gfx::GetStringWidth(result->title(),
+                              *menu.GetLabelFontList(result->GetCommand())) +
+          results_submenu->trailing_padding());
 
   // The matched text is highlighted and not treated as a mnemonic.
   EXPECT_EQ(result->title(), u"Downloads");
@@ -3120,6 +3135,8 @@ TEST_F(ActionAppMenuWithSearchTest, SearchResultsPreserveCheckableItems) {
           browser_actions_->root_action_item());
   ASSERT_NE(always_show_action, nullptr);
   always_show_action->SetChecked(true);
+  always_show_action->SetImage(
+      ui::ImageModel::FromVectorIcon(kRocketLaunchIcon, ui::kColorIcon));
 
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
@@ -3156,6 +3173,14 @@ TEST_F(ActionAppMenuWithSearchTest, SearchResultsPreserveCheckableItems) {
   EXPECT_EQ(menu.GetSecondaryLabelFontList(always_show->GetCommand()),
             &views::TypographyProvider::Get().GetFont(
                 views::style::CONTEXT_LABEL, views::style::STYLE_BODY_5));
+  // The icon sits on the title line, not in the middle of the two lines.
+  views::ImageView* const icon_view = always_show->icon_view();
+  ASSERT_NE(icon_view, nullptr);
+  const int title_height =
+      menu.GetLabelFontList(always_show->GetCommand())->GetHeight();
+  EXPECT_EQ(icon_view->y(),
+            expected_margin + (title_height - icon_view->height()) / 2);
+  EXPECT_LT(icon_view->y(), (always_show->height() - icon_view->height()) / 2);
 
   views::MenuItemView* always_hide =
       root->GetMenuItemByID(kActionBookmarkBarSubmenuAlwaysHide);
@@ -3458,6 +3483,13 @@ TEST_F(ActionAppMenuWithSearchTest,
           kActionUpgradeDialog, browser_actions_->root_action_item());
   ASSERT_NE(upgrade_action, nullptr);
   upgrade_action->SetVisible(true);
+  // Give the search result an icon, so the results have an icon column.
+  actions::ActionItem* downloads_action =
+      actions::ActionManager::Get().FindAction(
+          kActionShowDownloadsPage, browser_actions_->root_action_item());
+  ASSERT_NE(downloads_action, nullptr);
+  downloads_action->SetImage(
+      ui::ImageModel::FromVectorIcon(kRocketLaunchIcon, ui::kColorIcon));
 
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
@@ -3498,6 +3530,13 @@ TEST_F(ActionAppMenuWithSearchTest,
   EXPECT_EQ(upgrade_item->parent(), header);
   EXPECT_EQ(search_row->parent(), header);
   EXPECT_EQ(header->GetIndexOf(search_row), search_row_index_at_open);
+  // The notification's text starts at the menu's shared label start. That
+  // keeps the normal gap after the icon column: the search results' wider gap
+  // applies to the result rows only.
+  ASSERT_GT(submenu->icon_area_width(), 0);
+  EXPECT_EQ(submenu->label_start(),
+            submenu->content_start() + submenu->icon_area_width() +
+                views::MenuConfig::instance().icon_label_spacing);
 
   views::test::ButtonTestApi(GetClearButton(search_bar))
       .NotifyDefaultMouseClick();

@@ -1018,6 +1018,9 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
         child_base->GetProperty(AppMenuActionItem::kContainerColorKey);
 
     if (showing_search_results_) {
+      // Search results leave a wider gap between the icon and the text.
+      menu_item->SetIconLabelSpacing(provider->GetDistanceMetric(
+          DISTANCE_ACTION_APP_MENU_SEARCH_ICON_LABEL_SPACING));
       menu_item->SetMenuItemBackground(views::MenuItemView::MenuItemBackground(
           container_color, /*top_radius=*/0, /*bottom_radius=*/0,
           /*horizontal_margin=*/0));

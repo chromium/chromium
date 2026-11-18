@@ -258,6 +258,9 @@ enum ChromeDistanceMetric {
   // Vertical spacing between the primary and secondary title in a two-line
   // Action App Menu item row.
   DISTANCE_ACTION_APP_MENU_SECONDARY_TITLE_VERTICAL_SPACING,
+  // Horizontal spacing between the leading icon and title in Action App Menu
+  // search result rows.
+  DISTANCE_ACTION_APP_MENU_SEARCH_ICON_LABEL_SPACING,
   // Maximum width for the Action App Menu.
   DISTANCE_ACTION_APP_MENU_MAX_WIDTH,
   // Maximum width for Action App Menu submenus containing user/web content
