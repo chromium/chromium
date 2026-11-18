@@ -1915,6 +1915,36 @@ TEST_F(ActorServiceTest, InterruptTaskRepliesObservationOfTab) {
   browser_list->RemoveBrowser(test_browser.get());
 }
 
+// Tests that `PauseTask` queued after `PerformActions` pauses the acting task,
+// even without an intervention delegate, holding the act's reply until
+// `ResumeTask`, which replies `kTaskPaused` with an observation of the tab.
+TEST_F(ActorServiceTest, PauseTaskAndResumeTask) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId task_id = CreateTask(service);
+  web::FakeWebState web_state;
+  service->AddControlledWebState(task_id, &web_state);
+
+  base::test::TestFuture<PerformActionsResult> future;
+  service->PerformActions(task_id, {MakeSuccessfulActorAction()}, "Update",
+                          /*added_writable_mainframe_origins=*/{},
+                          future.GetCallback());
+  service->PauseTask(task_id);
+  FlushCurrentSequence();
+  EXPECT_EQ(ActorTaskState::kPausedByUser, service->GetActiveTaskState());
+  EXPECT_FALSE(future.IsReady());
+
+  service->ResumeTask(task_id);
+  const PerformActionsResult& result = future.Get();
+  ASSERT_EQ(1u, result.action_results.size());
+  EXPECT_EQ(mojom::ActionResultCode::kTaskPaused,
+            result.action_results[0].tool_result.code());
+  ASSERT_EQ(1u, result.page_contexts.size());
+  ASSERT_NE(nullptr, result.page_contexts[0]);
+  EXPECT_EQ(web_state.GetUniqueIdentifier(), result.page_contexts[0]->tab_id);
+}
+
 // Tests that a task stopped while the observation that follows a confirmed
 // interrupt is in progress replies `kTaskWentAway`.
 TEST_F(ActorServiceMockTimeTest, InterruptTaskStoppedDuringObservation) {

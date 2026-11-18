@@ -84,11 +84,17 @@ ActorControlState ControlStateForTaskState(ActorTaskState task_state) {
     case ActorTaskState::kActing:
     case ActorTaskState::kReflecting:
     case ActorTaskState::kWaitingOnUser:
+    // TODO(crbug.com/582302821): Return the WebStates to the user while paused
+    // once the paused UI is ready.
+    case ActorTaskState::kPausedByUser:
       return ActorControlState::kActorControlled;
-    // TODO(crbug.com/580899072): Add all states and remove the default case.
-    default:
+    case ActorTaskState::kPausedByActor:
+    case ActorTaskState::kCancelled:
+    case ActorTaskState::kFinished:
+    case ActorTaskState::kFailed:
       return ActorControlState::kInactive;
   }
+  NOTREACHED();
 }
 
 // Posts `callback` with a single `code` result. Posted so that callers are
@@ -231,12 +237,24 @@ void ActorTask::Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
     return;
   }
   // TODO(crbug.com/503054406): Reject `Act()` in other invalid states (e.g.
-  // paused with `kTaskPaused`, `kWaitingOnUser`).
+  // `kWaitingOnUser`).
   if (HasPendingOperation()) {
     constexpr mojom::ActionResultCode kRejectionCode =
         mojom::ActionResultCode::kExecutionEngineExistingAction;
     LogActRejection(*journal_, task_id_, "ActorTask::Act", kRejectionCode);
     PostActReply(std::move(callback), kRejectionCode);
+    return;
+  }
+
+  // Held without executing the actions: the reply tells the caller the task
+  // was paused once the user resumes it.
+  if (state_ == ActorTaskState::kPausedByUser) {
+    pending_act_.emplace(std::move(callback));
+    return;
+  }
+  if (owes_pause_notice_) {
+    owes_pause_notice_ = false;
+    PostActReply(std::move(callback), mojom::ActionResultCode::kTaskPaused);
     return;
   }
 
@@ -248,7 +266,7 @@ void ActorTask::Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
 
   engine_->Act(std::move(actions),
                base::BindOnce(&ActorTask::OnActCompleted,
-                              weak_ptr_factory_.GetWeakPtr()));
+                              operation_weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool ActorTask::HasPendingOperation() const {
@@ -298,8 +316,10 @@ void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
   if (IsCompleted()) {
     return;
   }
-  // Cancel first so any `Act()` reply is posted before the state transition.
-  CancelOngoingActions(mojom::ActionResultCode::kTaskWentAway);
+  // The task stops, so its task-wide callbacks are cancelled too.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  // Replied first so that any reply is posted before the state transition.
+  CancelOngoingOperationAndReply();
   policy_deciders_.clear();
   SetInterventionDelegate(nil);
   navigation_confirmation_callback_.Reset();
@@ -324,13 +344,32 @@ void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
   std::move(on_stopped_).Run();
 }
 
-void ActorTask::Pause(bool from_actor) {
-  // TODO(crbug.com/567039302): Implement and test user-triggered pause.
-  // TODO(crbug.com/567040651): Implement and test actor-triggered pause.
+void ActorTask::Pause() {
+  if (!CanBePaused()) {
+    return;
+  }
+  owes_pause_notice_ = true;
+  CancelOngoingOperation();
+  SetState(ActorTaskState::kPausedByUser);
 }
 
 void ActorTask::Resume() {
-  // TODO(crbug.com/567039302): Implement and test.
+  if (state_ != ActorTaskState::kPausedByUser) {
+    return;
+  }
+  // Replies are posted before the state notification so that the caller sees
+  // the result before observers see the transition.
+  if (std::optional<PendingAct> held_act =
+          std::exchange(pending_act_, std::nullopt)) {
+    owes_pause_notice_ = false;
+    PostActReply(std::move(held_act->callback),
+                 mojom::ActionResultCode::kTaskPaused);
+  } else if (pending_interrupt_) {
+    owes_pause_notice_ = false;
+    PostInterruptReply(std::move(pending_interrupt_),
+                       InterruptResponse::kUserPaused);
+  }
+  SetState(ActorTaskState::kReflecting);
 }
 
 void ActorTask::SetInterventionDelegate(
@@ -345,9 +384,25 @@ void ActorTask::SetInterventionDelegate(
 void ActorTask::Interrupt(
     const InterruptRequest& request,
     ActorTaskResultCallback<InterruptResponse> on_response) {
-  if (!CanBeInterrupted() || HasPendingOperation()) {
+  if (IsCompleted() || HasPendingOperation()) {
     PostInterruptReply(std::move(on_response),
                        base::unexpected(ActorTaskError::kRejected));
+    return;
+  }
+  // Held without prompting: the reply tells the caller the task was paused
+  // once the user resumes it.
+  if (state_ == ActorTaskState::kPausedByUser) {
+    pending_interrupt_ = std::move(on_response);
+    return;
+  }
+  if (!CanBeInterrupted()) {
+    PostInterruptReply(std::move(on_response),
+                       base::unexpected(ActorTaskError::kRejected));
+    return;
+  }
+  if (owes_pause_notice_) {
+    owes_pause_notice_ = false;
+    PostInterruptReply(std::move(on_response), InterruptResponse::kUserPaused);
     return;
   }
   std::visit(
@@ -421,7 +476,7 @@ void ActorTask::ShowInterruptConfirmation(
   void (^completion)(void) =
       base::CallbackToBlock(base::BindPostTaskToCurrentDefault(
           base::BindOnce(&ActorTask::OnInterruptConfirmationResolved,
-                         weak_ptr_factory_.GetWeakPtr())));
+                         operation_weak_ptr_factory_.GetWeakPtr())));
 
   NSString* subtitle = confirmation.subtitle.empty()
                            ? nil
@@ -436,13 +491,31 @@ void ActorTask::ShowInterruptConfirmation(
 }
 
 void ActorTask::OnInterruptConfirmationResolved() {
-  // Only `Stop()` can move the task out of `kWaitingOnUser` before the user
-  // confirms, and `Stop()` invalidates the weak pointer, cancelling this call.
+  // Only `Stop()` and `Pause()` can move the task out of `kWaitingOnUser`
+  // before the user confirms, and both invalidate the weak pointer, cancelling
+  // this call.
   CHECK_EQ(state_, ActorTaskState::kWaitingOnUser);
   CHECK(pending_interrupt_);
   PostInterruptReply(std::move(pending_interrupt_),
                      InterruptResponse::kConfirmed);
   ExitWaitingOnUser(ActorTaskState::kReflecting);
+}
+
+bool ActorTask::CanBePaused() const {
+  switch (state_) {
+    case ActorTaskState::kInit:
+    case ActorTaskState::kActing:
+    case ActorTaskState::kReflecting:
+    case ActorTaskState::kWaitingOnUser:
+      return true;
+    case ActorTaskState::kPausedByActor:
+    case ActorTaskState::kPausedByUser:
+    case ActorTaskState::kCancelled:
+    case ActorTaskState::kFinished:
+    case ActorTaskState::kFailed:
+      return false;
+  }
+  NOTREACHED();
 }
 
 bool ActorTask::IsControllingWebState(web::WebState* web_state) const {
@@ -591,20 +664,28 @@ void ActorTask::SetState(ActorTaskState new_state) {
   }];
 }
 
-void ActorTask::CancelOngoingActions(mojom::ActionResultCode reason) {
-  // Invalidate first so `CancelOngoingAndPendingActions` does not call back.
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  engine_->CancelOngoingAndPendingActions(
-      ActorEngine::EngineResult::kCancelled);
-  scoped_web_state_observations_.RemoveAllObservations();
-  load_timeout_timer_.Stop();
+void ActorTask::CancelOngoingOperationAndReply() {
+  CancelOngoingOperation();
   if (std::optional<PendingAct> pending_act =
           std::exchange(pending_act_, std::nullopt)) {
-    PostActReply(std::move(pending_act->callback), reason);
+    PostActReply(std::move(pending_act->callback),
+                 mojom::ActionResultCode::kTaskWentAway);
   }
   if (pending_interrupt_) {
     PostInterruptReply(std::move(pending_interrupt_),
                        base::unexpected(ActorTaskError::kTaskWentAway));
+  }
+}
+
+void ActorTask::CancelOngoingOperation() {
+  // Invalidate first so `CancelOngoingAndPendingActions` does not call back.
+  operation_weak_ptr_factory_.InvalidateWeakPtrs();
+  engine_->CancelOngoingAndPendingActions(
+      ActorEngine::EngineResult::kCancelled);
+  scoped_web_state_observations_.RemoveAllObservations();
+  load_timeout_timer_.Stop();
+  if (pending_act_) {
+    pending_act_->deferred_results.reset();
   }
 }
 
@@ -633,9 +714,10 @@ bool ActorTask::ObserveLoadingWebStates() {
 void ActorTask::DeferActCompletion(std::vector<ActionResult> results) {
   pending_act_->deferred_results = std::move(results);
 
-  load_timeout_timer_.Start(FROM_HERE, kPageLoadTimeout,
-                            base::BindOnce(&ActorTask::OnPageLoadedTimeout,
-                                           weak_ptr_factory_.GetWeakPtr()));
+  load_timeout_timer_.Start(
+      FROM_HERE, kPageLoadTimeout,
+      base::BindOnce(&ActorTask::OnPageLoadedTimeout,
+                     operation_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ActorTask::FinishAct(std::vector<ActionResult> results) {

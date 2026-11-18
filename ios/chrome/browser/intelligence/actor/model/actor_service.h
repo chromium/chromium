@@ -55,9 +55,10 @@ struct TaskSourceInfo;
 // Ordering model. Callers observe a single timeline, and may call any method
 // from anywhere on the service's sequence, including from observer and
 // delegate callbacks:
-// - Commands (`PerformActions`, `InterruptTask`, `StopTask`, `StopAllTasks`)
-//   are enqueued and return immediately. They run in call order, each as its
-//   own task, so task logic never runs on the caller's stack.
+// - Commands (`PerformActions`, `PauseTask`, `ResumeTask`, `InterruptTask`,
+//   `StopTask`, `StopAllTasks`) are enqueued and return immediately. They run
+//   in call order, each as its own task, so task logic never runs on the
+//   caller's stack.
 // - Task setup (`CreateTask`, `AddControlledWebState`) applies immediately, so
 //   that the task is usable as soon as the call returns.
 // - Replies and notifications are posted, in the order of the effects that
@@ -103,7 +104,10 @@ class ActorService : public KeyedService {
   // task is still executing a previous request, it runs with a single
   // `mojom::ActionResultCode::kExecutionEngineExistingAction` result and
   // neither the request's target WebStates nor
-  // `added_writable_mainframe_origins` are added to the task.
+  // `added_writable_mainframe_origins` are added to the task. If the user
+  // paused the task since the last reply, it runs with a single
+  // `mojom::ActionResultCode::kTaskPaused` result without executing the
+  // actions, once the task resumes.
   // Unless the request is rejected or the task stops, `page_contexts` holds an
   // observation of the task's first live controlled WebState, if any, even if
   // an action failed.
@@ -114,9 +118,16 @@ class ActorService : public KeyedService {
       absl::flat_hash_set<url::Origin> added_writable_mainframe_origins,
       PerformActionsCallback callback);
 
-  // Pauses a task, cancelling in-progress actions and returning control of the
-  // WebState to the user.
-  void PauseTask(ActorTaskId task_id, bool from_actor);
+  // Enqueues a pause of a task from outside the actuation requests (e.g. by the
+  // user, or when the background task expires): in-progress actions are
+  // cancelled and the task transitions to `kPausedByUser`. The reply to the
+  // pending or next request waits until `ResumeTask()` or `StopTask()`.
+  void PauseTask(ActorTaskId task_id);
+
+  // Enqueues a resume of a task paused by `PauseTask()`. The held request, if
+  // any, is answered with a fresh observation and `kTaskPaused` for
+  // `PerformActions()` or `kUserPaused` for `InterruptTask()`.
+  void ResumeTask(ActorTaskId task_id);
 
   // Sets the intervention delegate for UI interaction on the given task.
   void SetTaskInterventionDelegate(ActorTaskId task_id,
@@ -133,7 +144,9 @@ class ActorService : public KeyedService {
   // once, asynchronously and never after `Shutdown()`: with the user's answer
   // and an observation of the task's tab, `kRejected` if the task cannot take
   // the interrupt, or `kTaskWentAway` if the task does not exist or stops
-  // first. When `callback` runs with an answer, the task has resumed.
+  // first. The answer is `kUserPaused` if the user paused the task since the
+  // last reply, once the task resumes. When `callback` runs with an answer, the
+  // task has resumed.
   void InterruptTask(ActorTaskId task_id,
                      InterruptRequest request,
                      ActorTaskResultCallback<InterruptTaskResult> callback);
@@ -240,7 +253,8 @@ class ActorService : public KeyedService {
   // Map of pending PageContext extractions ("observations"). Used to keep the
   // wrapper alive while the extraction is in progress.
   // TODO(crbug.com/568339898): Move tab observation into `ActorTask` so it is
-  // covered by `pending_act_`.
+  // covered by `pending_act_`. Until then, a pause during the observation is
+  // answered on the next request instead of this one.
   std::map<web::WebStateID, PageContextWrapper*> pending_observations_;
 
   // Posts `method` with `args` as a command. Commands run in call order, each
@@ -268,6 +282,8 @@ class ActorService : public KeyedService {
   void DoInterruptTask(ActorTaskId task_id,
                        InterruptRequest request,
                        ActorTaskResultCallback<InterruptTaskResult> callback);
+  void DoPauseTask(ActorTaskId task_id);
+  void DoResumeTask(ActorTaskId task_id);
   void DoStopTask(ActorTaskId task_id, ActorTaskStoppedReason reason);
 
   // Starts a PageContext extraction of `web_state` for the task `task_id`.
@@ -290,6 +306,8 @@ class ActorService : public KeyedService {
   // Runs `callback` with `response` and the observation of the tab
   // `web_state_id`, or with `kTaskWentAway` if the task stopped meanwhile.
   // TODO(crbug.com/568338837): Move the interrupt observation into `ActorTask`.
+  // Until then, a pause during the observation is answered on the next request
+  // instead of this one.
   void OnInterruptObservationComplete(
       ActorTaskId task_id,
       web::WebStateID web_state_id,

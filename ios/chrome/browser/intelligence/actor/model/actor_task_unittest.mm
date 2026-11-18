@@ -256,6 +256,9 @@ namespace actor {
 
 namespace {
 
+// Delay longer than the task's page load timeout.
+constexpr base::TimeDelta kPastPageLoadTimeout = base::Seconds(10);
+
 // Returns the provenance attributed to tasks created by these tests.
 TaskSourceInfo TestSource() {
   return TaskSourceInfo(TaskSourceInfo::Client::kTest, /*id=*/std::nullopt);
@@ -851,7 +854,8 @@ TEST_F(ActorTaskTest, StateTransitionsToReflectingBeforeDeferredCallback) {
 
   EXPECT_FALSE(callback_executed);
 
-  task_environment_.FastForwardBy(base::TimeDelta());
+  // Let the engine complete; the reply is deferred until the page loads.
+  FlushCurrentSequence();
   EXPECT_FALSE(callback_executed);
 
   // Stop loading to trigger the deferred callback.
@@ -891,7 +895,8 @@ TEST_F(ActorTaskTest, StateTransitionsToReflectingBeforeTimeoutCallback) {
 
   EXPECT_FALSE(callback_executed);
 
-  task_environment_.FastForwardBy(base::TimeDelta());
+  // Let the engine complete; the reply is deferred until the page loads.
+  FlushCurrentSequence();
   EXPECT_FALSE(callback_executed);
 
   // Directly trigger the page load timeout callback.
@@ -918,7 +923,7 @@ TEST_F(ActorTaskTest, ActReplyDeliveredAfterTaskDestroyed) {
   base::test::TestFuture<std::vector<ActionResult>> future;
   task_->Act(std::move(actions), "Performing actions", future.GetCallback());
   // Let the engine complete; the reply is deferred until the page loads.
-  task_environment_.FastForwardBy(base::TimeDelta());
+  FlushCurrentSequence();
   ASSERT_FALSE(future.IsReady());
 
   // Posts the reply, then destroys the task before it is delivered.
@@ -983,7 +988,7 @@ TEST_F(ActorTaskTest, StopDuringDeferredActCompletionRepliesTaskWentAway) {
              future.GetCallback());
 
   // Let the engine complete so the task defers the completion on the load.
-  task_environment_.FastForwardBy(base::TimeDelta());
+  FlushCurrentSequence();
   ASSERT_FALSE(future.IsReady());
 
   task_->Stop(ActorTaskStoppedReason::kStoppedByUser);
@@ -1070,7 +1075,7 @@ TEST_F(ActorTaskTest, ConcurrentActWhileDeferredPageLoadingIsRejected) {
 
   // Let the tool complete on the engine. The request is now waiting for the
   // page to finish loading.
-  task_environment_.FastForwardBy(base::TimeDelta());
+  FlushCurrentSequence();
   ASSERT_FALSE(first_future.IsReady());
 
   std::vector<std::unique_ptr<ActorToolRequest>> second_actions;
@@ -1110,7 +1115,7 @@ TEST_F(ActorTaskTest, InterruptWhileActPendingIsRejected) {
   task_->Act(std::move(actions), "Act", act_future.GetCallback());
   // Let the tool complete on the engine. The request is now waiting for the
   // page to finish loading.
-  task_environment_.FastForwardBy(base::TimeDelta());
+  FlushCurrentSequence();
   ASSERT_FALSE(act_future.IsReady());
   ASSERT_EQ(ActorTaskState::kActing, task_->GetState());
 
@@ -1823,14 +1828,14 @@ TEST_F(ActorTaskTest, InterruptRejectedWhenNotExecuting) {
       [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
 
-  SetTaskState(ActorTaskState::kPausedByUser);
+  SetTaskState(ActorTaskState::kPausedByActor);
   InterruptFuture paused_result;
   task_->Interrupt(MakeConfirmation("Ignored message"),
                    paused_result.GetCallback());
   ASSERT_FALSE(paused_result.Get().has_value());
   EXPECT_EQ(paused_result.Get().error(), ActorTaskError::kRejected);
   FlushCurrentSequence();
-  EXPECT_EQ(task_->GetState(), ActorTaskState::kPausedByUser);
+  EXPECT_EQ(task_->GetState(), ActorTaskState::kPausedByActor);
   EXPECT_FALSE(delegate.requestConfirmationCalled);
 
   SetTaskState(ActorTaskState::kCancelled);
@@ -1891,6 +1896,280 @@ TEST_F(ActorTaskTest, StopWhileInterruptedIgnoresSubsequentCompletion) {
   FlushCurrentSequence();
 
   EXPECT_EQ(task_->GetState(), ActorTaskState::kCancelled);
+}
+
+// Tests that pausing an acting task cancels its actions, keeps the WebStates
+// controlled and holds the reply until the user resumes, which replies
+// `kTaskPaused` and transitions to `kReflecting`, and that the next `Act` runs.
+TEST_F(ActorTaskTest, PauseWhileActingHoldsReplyUntilResume) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  ActorTabHelper::CreateForWebState(web_state.get());
+  ActorTabHelper* helper = ActorTabHelper::FromWebState(web_state.get());
+  AddControlledWebState(web_state->GetWeakPtr());
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  task_->Act(std::move(actions), "Act", future.GetCallback());
+  ASSERT_EQ(ActorTaskState::kActing, task_->GetState());
+
+  task_->Pause();
+  EXPECT_EQ(ActorTaskState::kPausedByUser, task_->GetState());
+  EXPECT_EQ(ActorControlState::kActorControlled, helper->GetControlState());
+
+  // Drain the cancelled engine work: it must not reply.
+  FlushCurrentSequence();
+  EXPECT_FALSE(future.IsReady());
+
+  task_->Resume();
+  ASSERT_EQ(1u, future.Get().size());
+  EXPECT_EQ(mojom::ActionResultCode::kTaskPaused,
+            future.Get()[0].tool_result.code());
+  EXPECT_EQ(ActorTaskState::kReflecting, task_->GetState());
+  EXPECT_EQ(ActorControlState::kActorControlled, helper->GetControlState());
+
+  // The held reply carried the pause notice, so the next `Act` executes.
+  std::vector<std::unique_ptr<ActorToolRequest>> next_actions;
+  next_actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> next_future;
+  task_->Act(std::move(next_actions), "Next", next_future.GetCallback());
+  EXPECT_EQ(ActorTaskState::kActing, task_->GetState());
+  ASSERT_TRUE(next_future.Wait());
+  for (const ActionResult& result : next_future.Get()) {
+    EXPECT_TRUE(result.tool_result.IsOk());
+  }
+}
+
+// Tests that an `Act` received while paused is held without executing, and
+// replied `kTaskPaused` once the user resumes.
+TEST_F(ActorTaskTest, ActWhilePausedIsHeldUntilResume) {
+  FakeActorTaskUpdatesObserver* observer =
+      [[FakeActorTaskUpdatesObserver alloc] init];
+  task_->AddObserver(observer);
+  task_->Pause();
+  ASSERT_EQ(ActorTaskState::kPausedByUser, task_->GetState());
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  task_->Act(std::move(actions), "Held", future.GetCallback());
+  FlushCurrentSequence();
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_FALSE(observer.willExecuteToolCalled);
+  EXPECT_EQ(ActorTaskState::kPausedByUser, task_->GetState());
+
+  task_->Resume();
+  ASSERT_EQ(1u, future.Get().size());
+  EXPECT_EQ(mojom::ActionResultCode::kTaskPaused,
+            future.Get()[0].tool_result.code());
+  FlushCurrentSequence();
+  EXPECT_FALSE(observer.willExecuteToolCalled);
+  EXPECT_EQ(ActorTaskState::kReflecting, task_->GetState());
+
+  task_->RemoveObserver(observer);
+}
+
+// Tests that after a pause and resume without a pending request, the next
+// `Act` is replied `kTaskPaused` without executing, and the following one runs.
+TEST_F(ActorTaskTest, ActAfterPauseAndResumeRepliesPausedOnce) {
+  task_->Pause();
+  task_->Resume();
+  ASSERT_EQ(ActorTaskState::kReflecting, task_->GetState());
+
+  std::vector<std::unique_ptr<ActorToolRequest>> first_actions;
+  first_actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> first_future;
+  task_->Act(std::move(first_actions), "First", first_future.GetCallback());
+  EXPECT_EQ(ActorTaskState::kReflecting, task_->GetState());
+  ASSERT_EQ(1u, first_future.Get().size());
+  EXPECT_EQ(mojom::ActionResultCode::kTaskPaused,
+            first_future.Get()[0].tool_result.code());
+
+  std::vector<std::unique_ptr<ActorToolRequest>> second_actions;
+  second_actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> second_future;
+  task_->Act(std::move(second_actions), "Second", second_future.GetCallback());
+  EXPECT_EQ(ActorTaskState::kActing, task_->GetState());
+  ASSERT_TRUE(second_future.Wait());
+  for (const ActionResult& result : second_future.Get()) {
+    EXPECT_TRUE(result.tool_result.IsOk());
+  }
+}
+
+// Tests that pausing while a confirmation is shown holds its reply, ignores a
+// late confirmation, and replies `kUserPaused` once the user resumes.
+TEST_F(ActorTaskTest, PauseWhileConfirmingRepliesUserPausedOnResume) {
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(delegate);
+  SetTaskState(ActorTaskState::kActing);
+  ResponseFuture response;
+  task_->Interrupt(MakeConfirmation("Please confirm"),
+                   RecordStateOnResponse(response));
+  ASSERT_TRUE(delegate.hasPendingUserIntervention);
+
+  task_->Pause();
+  EXPECT_EQ(ActorTaskState::kPausedByUser, task_->GetState());
+
+  // A confirmation answered after the pause is ignored.
+  [delegate runUserInterventionCompletion];
+  FlushCurrentSequence();
+  EXPECT_FALSE(response.IsReady());
+  EXPECT_EQ(ActorTaskState::kPausedByUser, task_->GetState());
+
+  task_->Resume();
+  EXPECT_EQ(ActorTaskState::kReflecting, response.Get<0>());
+  ASSERT_TRUE(response.Get<1>().has_value());
+  EXPECT_EQ(InterruptResponse::kUserPaused, response.Get<1>().value());
+}
+
+// Tests that an `Interrupt` received while paused is held without prompting,
+// and replied `kUserPaused` once the user resumes, and that the next one
+// prompts.
+TEST_F(ActorTaskTest, InterruptWhilePausedIsHeldUntilResume) {
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(delegate);
+  task_->Pause();
+
+  InterruptFuture result;
+  task_->Interrupt(MakeConfirmation("Please confirm"), result.GetCallback());
+  FlushCurrentSequence();
+  EXPECT_FALSE(result.IsReady());
+  EXPECT_FALSE(delegate.requestConfirmationCalled);
+
+  task_->Resume();
+  ASSERT_TRUE(result.Get().has_value());
+  EXPECT_EQ(InterruptResponse::kUserPaused, result.Get().value());
+  EXPECT_FALSE(delegate.requestConfirmationCalled);
+
+  // The held reply carried the pause notice, so the next `Interrupt` prompts.
+  InterruptFuture next_result;
+  task_->Interrupt(MakeConfirmation("Please confirm"),
+                   next_result.GetCallback());
+  EXPECT_TRUE(delegate.requestConfirmationCalled);
+  EXPECT_EQ(ActorTaskState::kWaitingOnUser, task_->GetState());
+}
+
+// Tests that stopping a paused task replies `kTaskWentAway` to the held `Act`
+// and ignores a later resume.
+TEST_F(ActorTaskTest, StopWhilePausedRepliesTaskWentAway) {
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  task_->Act(std::move(actions), "Act", future.GetCallback());
+  task_->Pause();
+
+  task_->Stop(ActorTaskStoppedReason::kStoppedByUser);
+  ASSERT_EQ(1u, future.Get().size());
+  EXPECT_EQ(mojom::ActionResultCode::kTaskWentAway,
+            future.Get()[0].tool_result.code());
+
+  task_->Resume();
+  FlushCurrentSequence();
+  EXPECT_EQ(ActorTaskState::kCancelled, task_->GetState());
+}
+
+// Tests that pausing a task paused by the actor or stopped is a no-op.
+TEST_F(ActorTaskTest, PauseIgnoredWhenNotPausable) {
+  SetTaskState(ActorTaskState::kPausedByActor);
+  task_->Pause();
+  EXPECT_EQ(ActorTaskState::kPausedByActor, task_->GetState());
+
+  task_->Stop(ActorTaskStoppedReason::kStoppedByUser);
+  task_->Pause();
+  EXPECT_EQ(ActorTaskState::kCancelled, task_->GetState());
+}
+
+// Tests that pausing a task paused by the user does not transition again.
+TEST_F(ActorTaskTest, PauseWhilePausedByUserIsIgnored) {
+  FakeActorTaskUpdatesObserver* observer =
+      [[FakeActorTaskUpdatesObserver alloc] init];
+  task_->AddObserver(observer);
+  task_->Pause();
+  FlushCurrentSequence();
+  ASSERT_TRUE(observer.didChangeStateCalled);
+  observer.didChangeStateCalled = NO;
+
+  task_->Pause();
+  FlushCurrentSequence();
+  EXPECT_FALSE(observer.didChangeStateCalled);
+  EXPECT_EQ(ActorTaskState::kPausedByUser, task_->GetState());
+
+  task_->RemoveObserver(observer);
+}
+
+// Tests that resuming a task that is not paused by the user is a no-op.
+TEST_F(ActorTaskTest, ResumeIgnoredWhenNotPaused) {
+  SetTaskState(ActorTaskState::kActing);
+  task_->Resume();
+  EXPECT_EQ(ActorTaskState::kActing, task_->GetState());
+}
+
+// Tests that pausing while the reply waits for a page to load cancels the
+// wait, and that resuming replies `kTaskPaused`.
+TEST_F(ActorTaskTest, PauseDuringDeferredActCompletionHoldsReply) {
+  std::unique_ptr<web::FakeWebState> web_state =
+      std::make_unique<web::FakeWebState>();
+  web_state->SetLoading(true);
+  AddControlledWebState(web_state->GetWeakPtr());
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  task_->Act(std::move(actions), "Act", future.GetCallback());
+  // Let the engine complete, so that the reply waits for the page load.
+  FlushCurrentSequence();
+  ASSERT_FALSE(future.IsReady());
+
+  task_->Pause();
+  // Neither the page load nor the load timeout must reply.
+  web_state->SetLoading(false);
+  task_environment_.FastForwardBy(kPastPageLoadTimeout);
+  EXPECT_FALSE(future.IsReady());
+
+  task_->Resume();
+  ASSERT_EQ(1u, future.Get().size());
+  EXPECT_EQ(mojom::ActionResultCode::kTaskPaused,
+            future.Get()[0].tool_result.code());
+}
+
+// Tests that after a pause and resume without a pending request, the next
+// `Interrupt` is replied `kUserPaused` without prompting, and the following
+// one prompts.
+TEST_F(ActorTaskTest, InterruptAfterPauseAndResumeRepliesUserPausedOnce) {
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(delegate);
+  task_->Pause();
+  task_->Resume();
+  ASSERT_EQ(ActorTaskState::kReflecting, task_->GetState());
+
+  InterruptFuture first_result;
+  task_->Interrupt(MakeConfirmation("Please confirm"),
+                   first_result.GetCallback());
+  ASSERT_TRUE(first_result.Get().has_value());
+  EXPECT_EQ(InterruptResponse::kUserPaused, first_result.Get().value());
+  EXPECT_FALSE(delegate.requestConfirmationCalled);
+
+  task_->Interrupt(MakeConfirmation("Please confirm"), base::DoNothing());
+  EXPECT_TRUE(delegate.requestConfirmationCalled);
+  EXPECT_EQ(ActorTaskState::kWaitingOnUser, task_->GetState());
+}
+
+// Tests that stopping a paused task replies `kTaskWentAway` to the held
+// `Interrupt`.
+TEST_F(ActorTaskTest, StopWhilePausedRepliesTaskWentAwayToHeldInterrupt) {
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(delegate);
+  task_->Pause();
+  InterruptFuture result;
+  task_->Interrupt(MakeConfirmation("Please confirm"), result.GetCallback());
+
+  task_->Stop(ActorTaskStoppedReason::kStoppedByUser);
+  ASSERT_FALSE(result.Get().has_value());
+  EXPECT_EQ(ActorTaskError::kTaskWentAway, result.Get().error());
 }
 
 // Tests that interrupting for user confirmation without an intervention
@@ -1991,11 +2270,13 @@ class ActorTaskToolInterruptTest : public ActorTaskTest {
                                                           hooks_);
   }
 
-  // Starts a single-action sequence. Returns once the tool is executing.
-  void StartActionAndWaitForExecuting() {
+  // Starts a single-action sequence replying to `callback`. Returns once the
+  // tool is executing.
+  void StartActionAndWaitForExecuting(
+      ActCallback callback = base::DoNothing()) {
     std::vector<std::unique_ptr<ActorToolRequest>> actions;
     actions.push_back(MakeSuccessfulActorToolRequest());
-    task_->Act(std::move(actions), "test update", base::DoNothing());
+    task_->Act(std::move(actions), "test update", std::move(callback));
     ASSERT_TRUE(base::test::RunUntil(
         [this]() { return !hooks_.validate_callback.is_null(); }));
     std::move(hooks_.validate_callback).Run(ToolExecutionResult::Ok());
@@ -2033,6 +2314,33 @@ TEST_F(ActorTaskToolInterruptTest, InterruptForToolIgnoredWhenNotExecuting) {
   FlushCurrentSequence();
 
   EXPECT_EQ(task_->GetState(), ActorTaskState::kPausedByUser);
+}
+
+// Tests that pausing while a tool waits on the user cancels the tool, ignores a
+// late uninterrupt from it, and holds the act's reply until the user resumes,
+// which replies `kTaskPaused`.
+TEST_F(ActorTaskToolInterruptTest,
+       PauseWhileToolWaitsOnUserHoldsReplyUntilResume) {
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  ASSERT_NO_FATAL_FAILURE(StartActionAndWaitForExecuting(future.GetCallback()));
+  task_->engine().InterruptFromTool();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return task_->GetState() == ActorTaskState::kWaitingOnUser; }));
+
+  task_->Pause();
+  EXPECT_EQ(ActorTaskState::kPausedByUser, task_->GetState());
+
+  // A tool answered after the pause is ignored.
+  task_->engine().UninterruptFromTool();
+  FlushCurrentSequence();
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_EQ(ActorTaskState::kPausedByUser, task_->GetState());
+
+  task_->Resume();
+  ASSERT_EQ(1u, future.Get().size());
+  EXPECT_EQ(mojom::ActionResultCode::kTaskPaused,
+            future.Get()[0].tool_result.code());
+  EXPECT_EQ(ActorTaskState::kReflecting, task_->GetState());
 }
 
 // Test that interrupting a task which has not started acting yet (kInit)
@@ -2329,7 +2637,7 @@ TEST_F(ActorTaskTest,
 
   // Run pending tasks so the tool finishes with kOk and enters
   // DeferActCompletion while `web_state` is still loading.
-  task_environment_.FastForwardBy(base::TimeDelta());
+  FlushCurrentSequence();
   EXPECT_FALSE(act_future.IsReady());
 
   // Simulate the navigation being blocked at the ShouldAllowResponse stage.
@@ -2355,6 +2663,66 @@ TEST_F(ActorTaskTest,
   EXPECT_EQ(mojom::ActionResultCode::kTriggeredNavigationBlocked,
             results[0].tool_result.code());
   EXPECT_EQ(ActorTaskState::kReflecting, task_->GetState());
+  actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
+                                  "{}");
+}
+
+// Tests that navigation gating registered before a pause still fails the act
+// after the user resumes the task.
+TEST_F(ActorTaskTest,
+       ShouldAllowResponse_BlocksDeferredAct_AfterPauseAndResume) {
+  const std::string mock_rules_json = R"json({
+    "navigation_blocked": [
+      {"from": "https://malicious.com", "to": "https://malicious.com"}
+    ]
+  })json";
+  actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
+                                  mock_rules_json);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  task_->AddControlledWebState(web_state.get());
+
+  task_->Pause();
+  task_->Resume();
+  ASSERT_EQ(ActorTaskState::kReflecting, task_->GetState());
+
+  // Consume the pause notice.
+  std::vector<std::unique_ptr<ActorToolRequest>> paused_actions;
+  paused_actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> paused_future;
+  task_->Act(std::move(paused_actions), "Paused", paused_future.GetCallback());
+  ASSERT_EQ(1u, paused_future.Get().size());
+  ASSERT_EQ(mojom::ActionResultCode::kTaskPaused,
+            paused_future.Get()[0].tool_result.code());
+
+  web_state->SetLoading(true);
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+  base::test::TestFuture<std::vector<ActionResult>> act_future;
+  task_->Act(std::move(actions), "Clicking link that triggers navigation",
+             act_future.GetCallback());
+  // Let the engine complete, so that the reply waits for the page load.
+  FlushCurrentSequence();
+  ASSERT_FALSE(act_future.IsReady());
+
+  NSURLResponse* response = [[NSURLResponse alloc]
+                initWithURL:[NSURL URLWithString:@"https://malicious.com"]
+                   MIMEType:@"text/html"
+      expectedContentLength:0
+           textEncodingName:nil];
+  const web::WebStatePolicyDecider::ResponseInfo response_info(
+      /*for_main_frame=*/true);
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      response_future;
+  web_state->ShouldAllowResponse(response, response_info,
+                                 response_future.GetCallback());
+  EXPECT_TRUE(response_future.Get().ShouldCancelNavigation());
+  web_state->SetLoading(false);
+
+  const std::vector<ActionResult>& results = act_future.Get();
+  ASSERT_EQ(1u, results.size());
+  EXPECT_EQ(mojom::ActionResultCode::kTriggeredNavigationBlocked,
+            results[0].tool_result.code());
   actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
                                   "{}");
 }

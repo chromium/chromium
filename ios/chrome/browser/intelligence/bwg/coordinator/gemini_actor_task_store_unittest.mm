@@ -8,6 +8,7 @@
 #import <optional>
 
 #import "base/memory/raw_ptr.h"
+#import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "base/types/expected.h"
@@ -674,10 +675,12 @@ TEST_F(GeminiActorTaskStoreTest, SelectSuggestionWithoutSuggestionsIsNoOp) {
   EXPECT_EQ(observer_.updateCount, update_count);
 }
 
-// Tests that cancelling a pending suggestion selection dismisses it without
-// invoking its completion, so that a new selection can be prompted.
+// Tests that cancelling a pending suggestion selection dismisses it and its
+// card without invoking its completion, so that a new selection can be
+// prompted without duplicating the card.
 TEST_F(GeminiActorTaskStoreTest, CancelSuggestionSelection) {
   AttachAndRegister();
+  const NSUInteger item_count = observer_.items.count;
   ActorFormSuggestion* suggestion = CreateCredentialSuggestion();
   __block BOOL completion_called = NO;
   [store_ actorTask:task_id_
@@ -687,6 +690,7 @@ TEST_F(GeminiActorTaskStoreTest, CancelSuggestionSelection) {
             completion_called = YES;
           }];
   ASSERT_NE(observer_.intervention, nil);
+  ASSERT_EQ(observer_.items.count, item_count + 1);
 
   [store_ actorTaskDidCancelSuggestionSelection:task_id_];
 
@@ -694,6 +698,7 @@ TEST_F(GeminiActorTaskStoreTest, CancelSuggestionSelection) {
   EXPECT_EQ(observer_.intervention, nil);
   EXPECT_EQ(observer_.suggestions, nil);
   EXPECT_EQ(observer_.suggestionsItem, nil);
+  EXPECT_EQ(observer_.items.count, item_count);
 
   [store_ actorTask:task_id_
       selectFromSuggestions:@[ suggestion ]
@@ -701,6 +706,7 @@ TEST_F(GeminiActorTaskStoreTest, CancelSuggestionSelection) {
   EXPECT_NE(observer_.intervention, nil);
   ASSERT_EQ(observer_.suggestions.count, 1u);
   EXPECT_EQ(observer_.suggestions.firstObject, suggestion);
+  EXPECT_EQ(observer_.items.count, item_count + 1);
 }
 
 // Tests that cancelling a suggestion selection leaves a pending user
@@ -857,6 +863,97 @@ TEST_F(GeminiActorTaskStoreTest, ConfirmationInterruptShowsInterventionCard) {
   EXPECT_EQ(actor_service_->GetActiveTaskState(), kWaitingOnUser);
   actor::FlushCurrentSequence();
   EXPECT_EQ(actor_service_->GetActiveTaskState(), kReflecting);
+}
+
+// Tests that pausing the task shows a card resuming the task, without adding a
+// worklog entry, and that tapping its button resumes the task.
+TEST_F(GeminiActorTaskStoreTest, PauseShowsResumeCard) {
+  AttachAndRegister();
+  const NSUInteger item_count = observer_.items.count;
+  actor_service_->PauseTask(task_id_);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer_.intervention != nil; }));
+  EXPECT_EQ(actor_service_->GetActiveTaskState(), kPausedByUser);
+
+  // Drain remaining notifications before checking that no entry is added.
+  actor::FlushCurrentSequence();
+  EXPECT_EQ(observer_.items.count, item_count);
+  EXPECT_EQ(observer_.intervention.type, ActuationInterventionType::kCard);
+  EXPECT_NSEQ(observer_.intervention.title, @"Task paused");
+  EXPECT_NSEQ(observer_.intervention.subtitle, @(kTaskTitle));
+  ASSERT_EQ(observer_.intervention.actions.count, 1u);
+  EXPECT_NSEQ(observer_.intervention.actions[0].title, @"Resume task");
+
+  [store_ resolveInterventionWithAction:observer_.intervention.actions[0]];
+  EXPECT_EQ(observer_.intervention, nil);
+  // The resume is enqueued as a command.
+  actor::FlushCurrentSequence();
+  EXPECT_EQ(actor_service_->GetActiveTaskState(), kReflecting);
+}
+
+// Tests that the resume card is discarded when the task is resumed from outside
+// the worklog.
+TEST_F(GeminiActorTaskStoreTest, ResumeFromServiceDiscardsResumeCard) {
+  AttachAndRegister();
+  actor_service_->PauseTask(task_id_);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer_.intervention != nil; }));
+
+  actor_service_->ResumeTask(task_id_);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer_.intervention == nil; }));
+  EXPECT_EQ(actor_service_->GetActiveTaskState(), kReflecting);
+}
+
+// Tests that the resume card is discarded when the paused task stops.
+TEST_F(GeminiActorTaskStoreTest, StopDiscardsResumeCard) {
+  AttachAndRegister();
+  actor_service_->PauseTask(task_id_);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer_.intervention != nil; }));
+
+  [store_ stopTask];
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer_.intervention == nil; }));
+  EXPECT_FALSE(observer_.state.actuationActive);
+}
+
+// Tests that stopping the task drops a pending suggestion selection and its
+// unanswered card without invoking its completion.
+TEST_F(GeminiActorTaskStoreTest, StopDiscardsPendingSuggestionCard) {
+  AttachAndRegister();
+  const NSUInteger item_count = observer_.items.count;
+  __block BOOL completion_called = NO;
+  [store_ actorTask:task_id_
+      selectFromSuggestions:@[ CreateCredentialSuggestion() ]
+          completionHandler:^(ActorFormSuggestion* selectedSuggestion,
+                              BOOL storePermission) {
+            completion_called = YES;
+          }];
+  ASSERT_NE(observer_.intervention, nil);
+  ASSERT_EQ(observer_.items.count, item_count + 1);
+
+  [store_ stopTask];
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer_.intervention == nil; }));
+  EXPECT_EQ(observer_.suggestions, nil);
+  EXPECT_EQ(observer_.items.count, item_count);
+  EXPECT_FALSE(completion_called);
+}
+
+// Tests that a store registering on a task already paused shows the resume
+// card.
+TEST_F(GeminiActorTaskStoreTest, RegisterOnPausedTaskShowsResumeCard) {
+  [store_ disconnect];
+  actor_service_->PauseTask(task_id_);
+  actor::FlushCurrentSequence();
+  ASSERT_EQ(actor_service_->GetActiveTaskState(), kPausedByUser);
+
+  store_ = [[GeminiActorTaskStore alloc] initWithTaskID:task_id_
+                                           actorService:actor_service_];
+  AttachAndRegister();
+  ASSERT_NE(observer_.intervention, nil);
+  EXPECT_NSEQ(observer_.intervention.title, @"Task paused");
 }
 
 // Tests that disconnecting with a pending intervention leaves the task waiting

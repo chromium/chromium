@@ -341,7 +341,7 @@ TEST_F(ActorProfileAgentTest, RecordsNothingWithoutActiveTasks) {
 }
 
 // Tests that a request's configuration fails rather than queues the task, and
-// that its expiration handler pauses the task.
+// that its expiration pauses the task, which ends the started background task.
 TEST_F(ActorProfileAgentBackgroundingTest,
        ConfigurationStrategyAndExpirationPausesTask) {
   [profile_state_ addAgent:agent_];
@@ -354,11 +354,17 @@ TEST_F(ActorProfileAgentBackgroundingTest,
       requests[0].configuration;
   EXPECT_EQ(BackgroundContinuedProcessingSubmissionStrategy::kFail,
             config.submissionStrategy);
+  BackgroundContinuedProcessingTaskContext* context = CreateContext();
+  requests[0].startedHandler(context);
 
   config.expirationHandler();
 
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return service()->GetActiveTaskState() ==
+           actor::ActorTaskState::kPausedByUser;
+  }));
+  EXPECT_TRUE(context.completed);
   EXPECT_NE(nullptr, WorkerForTask(task_id));
-  EXPECT_EQ(1u, service()->GetWeakTaskBackgroundWorkers().size());
 }
 
 // Tests that a request's configuration opts into the progress heartbeat at the

@@ -175,6 +175,9 @@ using InterruptRequest = std::variant<ConfirmationInterrupt>;
 enum class InterruptResponse {
   // The user confirmed a `ConfirmationInterrupt`.
   kConfirmed,
+  // The user paused the task since the last reply, so the interrupt went
+  // unanswered.
+  kUserPaused,
 };
 
 // Result of a successful `ActorService::InterruptTask()`.

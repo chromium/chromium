@@ -839,6 +839,77 @@ TEST_F(GeminiActuationHandlerTest,
   ExpectConfirmedResponse(future.Get());
 }
 
+// Tests that a confirmation held through a user pause is answered
+// `kTaskPaused`, with an observation, once the user resumes.
+TEST_F(GeminiActuationHandlerTest,
+       DispatchGeminiActuationRequest_Yield_Confirmation_UserPaused) {
+  GeminiActuationHandler* handler = CreateHandler();
+  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  base::test::TestFuture<GeminiActuationResponse*> future;
+  FakeActorTaskInterventionDelegate* delegate = DispatchConfirmationRequest(
+      handler, task_id, kConfirmationMessage, future);
+  ASSERT_TRUE(delegate.hasPendingUserIntervention);
+
+  actor_service_->PauseTask(task_id);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return actor_service_->GetActiveTaskState() ==
+           actor::ActorTaskState::kPausedByUser;
+  }));
+  EXPECT_FALSE(future.IsReady());
+  actor_service_->ResumeTask(task_id);
+
+  GeminiActuationResponse* response = future.Get();
+  ASSERT_NE(nil, response);
+  EXPECT_EQ(actor::mojom::ActionResultCode::kTaskPaused, response.resultCode);
+  EXPECT_EQ(nil, response.userResponse);
+  optimization_guide::proto::ActionsResult actions_result;
+  ASSERT_TRUE(
+      actions_result.ParseFromArray([response.serializedActionsResult bytes],
+                                    [response.serializedActionsResult length]));
+  EXPECT_EQ(static_cast<int32_t>(actor::mojom::ActionResultCode::kTaskPaused),
+            actions_result.action_result());
+  ASSERT_EQ(1, actions_result.tabs_size());
+  EXPECT_EQ(kFakeWebStateID, actions_result.tabs(0).id());
+}
+
+// Tests that actions held through a user pause are answered `kTaskPaused`, with
+// an observation and without a failed action index, once the task resumes.
+TEST_F(GeminiActuationHandlerTest,
+       DispatchGeminiActuationRequest_PerformActions_UserPaused) {
+  GeminiActuationHandler* handler = CreateHandler();
+  actor::ActorTaskId task_id = CreateTask(handler);
+  actor_service_->PauseTask(task_id);
+
+  GeminiActuationRequest* request =
+      [[GeminiActuationRequest alloc] initWithActionProtos:@[]
+                                                taskUpdate:@"Update"
+                                               yieldAction:nil];
+  base::test::TestFuture<GeminiActuationResponse*> future;
+  [handler dispatchActuationRequest:request
+                          forTaskID:task_id
+                    completionBlock:GetCompletionBlock(future)];
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return actor_service_->GetActiveTaskState() ==
+           actor::ActorTaskState::kPausedByUser;
+  }));
+  actor::FlushCurrentSequence();
+  EXPECT_FALSE(future.IsReady());
+
+  actor_service_->ResumeTask(task_id);
+  GeminiActuationResponse* response = future.Get();
+  ASSERT_NE(nil, response);
+  EXPECT_EQ(actor::mojom::ActionResultCode::kTaskPaused, response.resultCode);
+  optimization_guide::proto::ActionsResult actions_result;
+  ASSERT_TRUE(
+      actions_result.ParseFromArray([response.serializedActionsResult bytes],
+                                    [response.serializedActionsResult length]));
+  EXPECT_EQ(static_cast<int32_t>(actor::mojom::ActionResultCode::kTaskPaused),
+            actions_result.action_result());
+  EXPECT_FALSE(actions_result.has_index_of_failed_action());
+  ASSERT_EQ(1, actions_result.tabs_size());
+  EXPECT_EQ(kFakeWebStateID, actions_result.tabs(0).id());
+}
+
 // Tests that disconnecting ends a pending confirmation with `kTaskWentAway`.
 TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_Yield_Confirmation_Disconnect_Cancels) {

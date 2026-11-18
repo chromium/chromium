@@ -33,6 +33,12 @@ constexpr CGFloat kAccessoryIconSize = 24.0;
 // Masked password field to be displayed in credential selection card.
 NSString* const kMaskedPassword = @"••••••••";
 
+// TODO(crbug.com/573515833): Localize the strings.
+// Title of the intervention card shown while the user paused the task.
+NSString* const kTaskPausedCardTitle = @"Task paused";
+// Label of the intervention button resuming the task paused by the user.
+NSString* const kResumeTaskButtonText = @"Resume task";
+
 // Completion handler for suggestion selection interventions.
 using SuggestionSelectionCompletionHandler = void (
     ^)(ActorFormSuggestion* selectedSuggestion, BOOL shouldStorePermission);
@@ -274,6 +280,7 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
 
   // The initial task update follows the Gemini first step.
   [self appendTaskUpdate:taskUpdate toolType:std::nullopt];
+  [self showTaskPausedInterventionIfNeeded];
   [self publishState];
 }
 
@@ -281,6 +288,13 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
          didChangeState:(actor::ActorTaskState)newState
               fromState:(actor::ActorTaskState)oldState {
   _taskState = newState;
+  if (oldState == actor::ActorTaskState::kPausedByUser ||
+      actor::IsTerminalState(newState)) {
+    // The intervention is stale once the task resumes or ends.
+    [self cancelSuggestionSelection];
+    [self discardIntervention];
+  }
+  [self showTaskPausedInterventionIfNeeded];
   [self publishState];
 }
 
@@ -371,22 +385,10 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
                             subtitle:(NSString*)subtitle
                           buttonText:(NSString*)buttonText
                    completionHandler:(void (^)(void))completionHandler {
-  [self cancelSuggestionSelection];
-  [self discardIntervention];
-  if (completionHandler) {
-    _interventionCompletion = ^(InterventionActionIdentifier actionIdentifier) {
-      if (actionIdentifier == InterventionActionIdentifier::kContinue) {
-        completionHandler();
-      }
-    };
-  }
-
-  ActuationInterventionAction* action = [[ActuationInterventionAction alloc]
-      initWithIdentifier:InterventionActionIdentifier::kContinue
-                   title:buttonText];
-  _intervention = [ActuationInterventionData cardItemWithTitle:title
-                                                      subtitle:subtitle
-                                                        action:action];
+  [self showCardInterventionWithTitle:title
+                             subtitle:subtitle
+                           buttonText:buttonText
+                    completionHandler:completionHandler];
   [self publishState];
 }
 
@@ -433,6 +435,53 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
 }
 
 #pragma mark - Private
+
+// Replaces any pending intervention with a card showing `title`, `subtitle`
+// and a button labeled `buttonText` that calls `completionHandler`.
+- (void)showCardInterventionWithTitle:(NSString*)title
+                             subtitle:(NSString*)subtitle
+                           buttonText:(NSString*)buttonText
+                    completionHandler:(void (^)(void))completionHandler {
+  [self cancelSuggestionSelection];
+  [self discardIntervention];
+  if (completionHandler) {
+    _interventionCompletion = ^(InterventionActionIdentifier actionIdentifier) {
+      if (actionIdentifier == InterventionActionIdentifier::kContinue) {
+        completionHandler();
+      }
+    };
+  }
+
+  ActuationInterventionAction* action = [[ActuationInterventionAction alloc]
+      initWithIdentifier:InterventionActionIdentifier::kContinue
+                   title:buttonText];
+  _intervention = [ActuationInterventionData cardItemWithTitle:title
+                                                      subtitle:subtitle
+                                                        action:action];
+}
+
+// Shows the card resuming the task if it is paused by the user.
+- (void)showTaskPausedInterventionIfNeeded {
+  if (_taskState != actor::ActorTaskState::kPausedByUser) {
+    return;
+  }
+  // TODO(crbug.com/578069792): Show the input plate to send a message.
+  __weak __typeof(self) weakSelf = self;
+  [self showCardInterventionWithTitle:kTaskPausedCardTitle
+                             subtitle:_taskTitle
+                           buttonText:kResumeTaskButtonText
+                    completionHandler:^{
+                      [weakSelf resumeTask];
+                    }];
+}
+
+// Resumes the task paused by the user.
+- (void)resumeTask {
+  if (!_actorService) {
+    return;
+  }
+  _actorService->ResumeTask(_taskID);
+}
 
 // Replaces `_suggestionsEntry` with a card built for `suggestion`, updates
 // `_selectedSuggestion`, and publishes the new state.
@@ -502,13 +551,18 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   return entry;
 }
 
-// Drops any pending suggestion selection without calling its completion, and
-// returns whether one was pending (`_selectedSuggestion` is `nil` otherwise).
+// Drops any pending suggestion selection without calling its completion, along
+// with its unanswered card, and returns whether one was pending
+// (`_selectedSuggestion` is `nil` otherwise).
 - (BOOL)cancelSuggestionSelection {
   if (!_selectedSuggestion) {
     return NO;
   }
   _selectedSuggestion = nil;
+  // Removed so that the card is not duplicated if the prompt is retried.
+  if (_suggestionsEntry) {
+    [_entries removeObjectIdenticalTo:_suggestionsEntry];
+  }
   [self discardIntervention];
   return YES;
 }

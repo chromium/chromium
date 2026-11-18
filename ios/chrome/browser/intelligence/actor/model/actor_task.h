@@ -121,7 +121,10 @@ class ActorTask : public web::WebStateObserver,
   // - with the engine results once actions complete and pages finish loading;
   // - with a single `kTaskWentAway` result if the task stops;
   // - with a single `kExecutionEngineExistingAction` result if an operation
-  //   (`Act()` or `Interrupt()`) is pending.
+  //   (`Act()` or `Interrupt()`) is pending;
+  // - with a single `kTaskPaused` result, without executing the actions, if
+  //   the user paused the task since the last reply. While the task is paused,
+  //   the reply waits until the user resumes it.
   void Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
            const std::string& task_update,
            ActCallback callback);
@@ -136,11 +139,14 @@ class ActorTask : public web::WebStateObserver,
   // if the task is already stopped.
   virtual void Stop(ActorTaskStoppedReason stop_reason);
 
-  // Pauses execution (either initiated by the actor or the user), cancelling
-  // in-progress actions. Subsequent `Act()` calls are invalid while paused.
-  void Pause(bool from_actor);
+  // Pauses the task for the user, cancelling in-progress actions. The pending
+  // operation's reply, if any, waits until `Resume()`. No-op unless the task is
+  // in `kInit`, `kActing`, `kReflecting` or `kWaitingOnUser`.
+  void Pause();
 
-  // Resumes task execution from a paused state.
+  // Resumes the task paused by `Pause()`: answers the held operation, if any,
+  // with `kTaskPaused` or `kUserPaused` and transitions to `kReflecting`.
+  // No-op unless the task is in `kPausedByUser`.
   void Resume();
 
   // Sets the intervention delegate for UI interaction.
@@ -149,7 +155,9 @@ class ActorTask : public web::WebStateObserver,
   // Interrupts the task as described by `request` and prompts the user.
   // `on_response` is posted at most once: with the user's answer once the task
   // has resumed, `kRejected` if the task cannot take the interrupt, or
-  // `kTaskWentAway` if it stops first.
+  // `kTaskWentAway` if it stops first. The answer is `kUserPaused`, without
+  // prompting, if the user paused the task since the last reply; while the
+  // task is paused, it waits until the user resumes it.
   void Interrupt(const InterruptRequest& request,
                  ActorTaskResultCallback<InterruptResponse> on_response);
 
@@ -237,10 +245,14 @@ class ActorTask : public web::WebStateObserver,
   // task is completed.
   void SetState(ActorTaskState new_state);
 
-  // Cancels ongoing actions, timers, and observations, and replies to any
-  // pending `Act()` with `reason` and to any pending `Interrupt()` with
-  // `kTaskWentAway`.
-  void CancelOngoingActions(mojom::ActionResultCode reason);
+  // Cancels the pending operation, like `CancelOngoingOperation()`, and answers
+  // it with `kTaskWentAway`.
+  void CancelOngoingOperationAndReply();
+
+  // Cancels the engine work, page load wait and intervention prompt of the
+  // pending operation. Its reply stays pending until `Resume()` or
+  // `CancelOngoingOperationAndReply()` answers it.
+  void CancelOngoingOperation();
 
   // Called when the engine finishes executing the pending `Act()` actions.
   void OnActCompleted(std::vector<ActionResult> results);
@@ -309,6 +321,9 @@ class ActorTask : public web::WebStateObserver,
   // Handles the user confirming.
   void OnInterruptConfirmationResolved();
 
+  // Returns whether the task is in a state that can be paused.
+  bool CanBePaused() const;
+
   // The task state.
   ActorTaskState state_ = ActorTaskState::kInit;
 
@@ -360,11 +375,17 @@ class ActorTask : public web::WebStateObserver,
   base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
       scoped_web_state_observations_{this};
 
-  // The pending `Act()` request, if any.
+  // The pending `Act()` request, if any. At most one of `pending_act_` and
+  // `pending_interrupt_` is set, as the caller awaits a single reply however
+  // many actions it runs.
   std::optional<PendingAct> pending_act_;
 
   // Reply of the pending `Interrupt()`, if any.
   ActorTaskResultCallback<InterruptResponse> pending_interrupt_;
+
+  // Whether the user paused the task since the last reply. The next reply then
+  // tells the caller the task was paused, as the pages may have changed.
+  bool owes_pause_notice_ = false;
 
   // Run once by `Stop()`.
   base::OnceClosure on_stopped_;
@@ -392,7 +413,16 @@ class ActorTask : public web::WebStateObserver,
   // Origin Critic model.
   NavigationConfirmationCallback navigation_confirmation_callback_;
 
-  // Weak pointer factory.
+  // Weak pointer factory for callbacks scoped to the current operation (action
+  // completion, page load, interrupt confirmation). Invalidated when the
+  // operation is cancelled by a pause or a stop, so late callbacks of a
+  // cancelled operation are dropped.
+  base::WeakPtrFactory<ActorTask> operation_weak_ptr_factory_{this};
+
+  // Weak pointer factory for callbacks registered once for the task's lifetime
+  // (e.g. navigation gating per controlled WebState). Separate from
+  // `operation_weak_ptr_factory_` because they are not re-registered on resume,
+  // so they must survive a pause. Invalidated only when the task stops.
   base::WeakPtrFactory<ActorTask> weak_ptr_factory_{this};
 };
 

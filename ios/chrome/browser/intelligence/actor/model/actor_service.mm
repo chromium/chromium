@@ -230,10 +230,14 @@ void ActorService::PerformActions(
                  std::move(callback));
 }
 
-void ActorService::PauseTask(ActorTaskId task_id, bool from_actor) {
+void ActorService::PauseTask(ActorTaskId task_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/567039302): Implement and test. Must be enqueued as a
-  // command.
+  EnqueueCommand(&ActorService::DoPauseTask, task_id);
+}
+
+void ActorService::ResumeTask(ActorTaskId task_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnqueueCommand(&ActorService::DoResumeTask, task_id);
 }
 
 void ActorService::SetTaskInterventionDelegate(
@@ -446,6 +450,8 @@ void ActorService::DoPerformActions(
   }
 
   // Resolve and register target WebStates from requests before execution.
+  // TODO(crbug.com/568338837): Skip both for requests held while paused or
+  // replied `kTaskPaused`, as their actions are not executed.
   AddControlledWebStates(task, tool_requests);
 
   task->engine().AddWritableMainframeOrigins(added_writable_mainframe_origins);
@@ -554,6 +560,20 @@ void ActorService::OnInterruptObservationComplete(
       response, std::make_unique<TabObservationResponse>(
                     web_state_id, std::move(page_context_response),
                     /*web_state_exists=*/true)));
+}
+
+void ActorService::DoPauseTask(ActorTaskId task_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (ActorTask* task = FindActiveTask(task_id)) {
+    task->Pause();
+  }
+}
+
+void ActorService::DoResumeTask(ActorTaskId task_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (ActorTask* task = FindActiveTask(task_id)) {
+    task->Resume();
+  }
 }
 
 void ActorService::DoStopTask(ActorTaskId task_id,

@@ -172,7 +172,7 @@
 // Pauses the actor task identified by `taskId`, as its background task expired.
 - (void)backgroundTaskDidExpireForActorTask:(actor::ActorTaskId)taskId {
   if (_actorService) {
-    _actorService->PauseTask(taskId, /*from_actor=*/false);
+    _actorService->PauseTask(taskId);
   }
 }
 

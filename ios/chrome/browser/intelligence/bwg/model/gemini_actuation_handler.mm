@@ -173,9 +173,11 @@ void PopulateTabObservationFromResponse(
   }
 }
 
-// Returns the response for an accepted confirmation, carrying `observation` of
-// the actuated tab.
-GeminiActuationResponse* MakeConfirmedResponse(
+// Returns the response for an answered interrupt with `resultCode` and
+// `userResponse`, carrying `observation` of the actuated tab.
+GeminiActuationResponse* MakeObservedInterruptResponse(
+    actor::mojom::ActionResultCode resultCode,
+    NSString* userResponse,
     const actor::TabObservationResponse* observation) {
   if (!observation) {
     // TODO(crbug.com/510404682): Handle tab closure during task execution
@@ -183,23 +185,42 @@ GeminiActuationResponse* MakeConfirmedResponse(
     return MakeTabWentAwayResponse();
   }
   optimization_guide::proto::ActionsResult actions_result;
-  actions_result.set_action_result(
-      static_cast<int32_t>(actor::mojom::ActionResultCode::kOk));
+  actions_result.set_action_result(static_cast<int32_t>(resultCode));
   PopulateTabObservationFromResponse(actions_result.add_tabs(), *observation);
   return [[GeminiActuationResponse alloc]
-           initWithResultCode:actor::mojom::ActionResultCode::kOk
-                 userResponse:kConfirmationUserResponse
+           initWithResultCode:resultCode
+                 userResponse:userResponse
       serializedActionsResult:SerializeProtoToNSData(actions_result)];
 }
 
-// Returns the response for a successful confirmation interrupt.
+// Returns the response for an answered confirmation interrupt.
 GeminiActuationResponse* MakeConfirmationResponse(
     const actor::InterruptTaskResult& result) {
   switch (result.response) {
     case actor::InterruptResponse::kConfirmed:
-      return MakeConfirmedResponse(result.observation.get());
+      return MakeObservedInterruptResponse(actor::mojom::ActionResultCode::kOk,
+                                           kConfirmationUserResponse,
+                                           result.observation.get());
+    case actor::InterruptResponse::kUserPaused:
+      return MakeObservedInterruptResponse(
+          actor::mojom::ActionResultCode::kTaskPaused, /*userResponse=*/nil,
+          result.observation.get());
   }
   NOTREACHED();
+}
+
+// Returns whether `code` answers a `PerformActions` request as a whole, rather
+// than reporting the failure of one of its actions.
+bool IsWholeRequestResultCode(actor::mojom::ActionResultCode code) {
+  switch (code) {
+    case actor::mojom::ActionResultCode::kTaskPaused:
+    case actor::mojom::ActionResultCode::kTaskWentAway:
+    case actor::mojom::ActionResultCode::kExecutionEngineExistingAction:
+    case actor::mojom::ActionResultCode::kActionsBlockedByEnterprisePolicy:
+      return true;
+    default:
+      return false;
+  }
 }
 
 // Populates an `ActionsResult` proto from `result` and sets `outResultCode`.
@@ -223,7 +244,8 @@ optimization_guide::proto::ActionsResult ActionsResultFromPerformActionsResult(
   }
 
   actionsResult.set_action_result(static_cast<int32_t>(outResultCode));
-  if (failedActionIndex.has_value()) {
+  if (failedActionIndex.has_value() &&
+      !IsWholeRequestResultCode(outResultCode)) {
     actionsResult.set_index_of_failed_action(
         static_cast<int32_t>(*failedActionIndex));
   }
@@ -555,8 +577,8 @@ void ForwardNavigationConfirmation(
         // clarification once `ActorTask` supports it.
         // TODO(crbug.com/567096140): Interrupt and hand control to the user
         // once `ActorTask` supports takeover.
-        // TODO(crbug.com/567040651): Pause the task until the user resumes it
-        // once `ActorTask` supports pausing.
+        // TODO(crbug.com/567040651): Interrupt the task until the user resumes
+        // it.
         completionBlock(MakeUnsupportedYieldResponse());
         break;
       case GeminiYieldReason::kTaskComplete:
