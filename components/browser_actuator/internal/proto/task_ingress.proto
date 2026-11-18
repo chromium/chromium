@@ -33,7 +33,7 @@ message TaskIngressUpstreamPayload {
 }
 
 // Command sent from the Chrome client to initiate a new agentic task.
-// Next ID: 4
+// Next ID: 5
 message StartTaskCommand {
   // The feature use case for the task.
   TaskUseCase use_case = 1;
@@ -44,6 +44,10 @@ message StartTaskCommand {
 
   // Chrome Sync client GUID of the browser instance that initiated the task.
   string client_id = 3;
+
+  // Optional pre-created Chrome tab ID (ActorSurfaceId) for the task to claim
+  // at start. If 0 or omitted, Chrome creates a new surface for the task.
+  int32 tab_id = 4;
 }
 
 // Downstream payload packed inside ActuatorDownstreamTypedPayload.proto_payload

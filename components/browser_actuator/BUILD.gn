@@ -10,8 +10,9 @@ group("unit_tests") {
     "//components/browser_actuator/internal:unit_tests",
 
     # TODO(crbug.com/582773990): Build-graph anchor until C++ consumers depend
-    # on :task_ingress_proto.
+    # on :task_ingress_proto and :auto_password_change_proto.
     "//components/browser_actuator/internal/proto:task_ingress_proto",
     "//components/browser_actuator/public/profile_registry:unit_tests",
+    "//components/browser_actuator/public/proto:auto_password_change_proto",
   ]
 }
