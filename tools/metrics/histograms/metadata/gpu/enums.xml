@@ -1149,12 +1149,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 
 <!-- LINT.ThenChange(//gpu/command_buffer/service/graphite_shared_context.cc:InsertRecordingStatusUma) -->
 
-<enum name="HasDiscreteGpu">
-  <int value="0" label="No"/>
-  <int value="1" label="Yes"/>
-  <int value="2" label="Unknown"/>
-</enum>
-
 <enum name="IntelGpuGeneration">
   <int value="0" label="Not Intel"/>
   <int value="1" label="Unknown Intel"/>

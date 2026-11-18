@@ -1223,8 +1223,6 @@ void RecordDevicePerfInfoHistograms() {
   UMA_HISTOGRAM_ENUMERATION("GPU.D3D11FeatureLevel",
                             ConvertToHistogramD3D11FeatureLevel(
                                 device_perf_info->d3d11_feature_level));
-  UMA_HISTOGRAM_ENUMERATION("GPU.HasDiscreteGpu",
-                            device_perf_info->has_discrete_gpu);
 #endif  // BUILDFLAG(IS_WIN)
   UMA_HISTOGRAM_ENUMERATION("GPU.IntelGpuGeneration",
                             device_perf_info->intel_gpu_generation);
