@@ -42,7 +42,9 @@ LayerAnimationSequence::~LayerAnimationSequence() {
 }
 
 void LayerAnimationSequence::Start(LayerAnimationDelegate* delegate) {
-  CHECK(start_time_ != base::TimeTicks(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/586133398): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(start_time_ != base::TimeTicks());
 
   last_progressed_fraction_ = 0.0;
   if (elements_.empty())
