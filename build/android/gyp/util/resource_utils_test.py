@@ -74,20 +74,6 @@ int styleable SnackbarLayout_android_maxWidth 0
 int styleable SnackbarLayout_elevation 2
 '''
 
-# Test allowlist R.txt file. Note that AlternateErrorPagesEnabledTitle is
-# listed as an 'anim' and should thus be skipped. Similarly the string
-# 'ThisStringDoesNotAppear' should not be in the final result.
-_TEST_ALLOWLIST_R_TXT = r'''int anim AlternateErrorPagesEnabledTitle 0x7f0eeeee
-int string AllowedDomainsForAppsDesc 0x7f0c0105
-int string AlternateErrorPagesEnabledDesc 0x7f0c0107
-int string ThisStringDoesNotAppear 0x7f0fffff
-'''
-
-_TEST_R_TEXT_RESOURCES_IDS = {
-    0x7F0C0105: 'AllowedDomainsForAppsDesc',
-    0x7F0C0107: 'AlternateErrorPagesEnabledDesc',
-}
-
 # Names of string resources in _TEST_R_TXT, should be sorted!
 _TEST_R_TXT_STRING_RESOURCE_NAMES = sorted(
     [
@@ -114,21 +100,6 @@ class ResourceUtilsTest(unittest.TestCase):
             self.assertListEqual(
                 resource_utils.GetRTxtStringResourceNames(tmp_file),
                 _TEST_R_TXT_STRING_RESOURCE_NAMES,
-            )
-
-    def test_GenerateStringResourcesAllowList(self):
-        with build_utils.TempDir() as tmp_dir:
-            tmp_module_rtxt_file = _CreateTestFile(
-                tmp_dir, "test_R.txt", _TEST_R_TXT
-            )
-            tmp_allowlist_rtxt_file = _CreateTestFile(
-                tmp_dir, "test_allowlist_R.txt", _TEST_ALLOWLIST_R_TXT
-            )
-            self.assertDictEqual(
-                resource_utils.GenerateStringResourcesAllowList(
-                    tmp_module_rtxt_file, tmp_allowlist_rtxt_file
-                ),
-                _TEST_R_TEXT_RESOURCES_IDS,
             )
 
     def test_IsAndroidLocaleQualifier(self):

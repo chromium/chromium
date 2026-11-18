@@ -451,29 +451,6 @@ def GetRTxtStringResourceNames(r_txt_path):
     )
 
 
-def GenerateStringResourcesAllowList(module_r_txt_path, allowlist_r_txt_path):
-    """Generate a allowlist of string resource IDs.
-
-    Args:
-      module_r_txt_path: Input base module R.txt path.
-      allowlist_r_txt_path: Input allowlist R.txt path.
-    Returns:
-      A dictionary mapping numerical resource IDs to the corresponding
-      string resource names. The ID values are taken from string resources in
-      |module_r_txt_path| that are also listed by name in |allowlist_r_txt_path|.
-    """
-    allowlisted_names = {
-        entry.name
-        for entry in _ParseTextSymbolsFile(allowlist_r_txt_path)
-        if entry.resource_type == 'string'
-    }
-    return {
-        int(entry.value, 0): entry.name
-        for entry in _ParseTextSymbolsFile(module_r_txt_path)
-        if entry.resource_type == 'string' and entry.name in allowlisted_names
-    }
-
-
 class RJavaBuildOptions:
     """A class used to model the various ways to build an R.java file.
 

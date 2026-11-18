@@ -2892,11 +2892,6 @@ if (!is_robolectric && enable_java_templates) {
       }
       deps += _sanitizer_deps
       loadable_modules = _loadable_modules + _sanitizer_loadable_modules
-
-      if (defined(_allowlist_rtxt_path_path) && _is_bundle_module) {
-        # Used to write the file path to the target's .build_config.json only.
-        base_allowlist_rtxt_path = _allowlist_rtxt_path_path
-      }
     }
 
     if (_is_bundle_module) {
@@ -5029,10 +5024,6 @@ if (!is_robolectric && enable_java_templates) {
         args += [ "--warnings-as-errors" ]
       }
 
-      if (_enable_language_splits) {
-        args += [ "--base-allowlist-rtxt-path=@FileArg($_rebased_base_module_build_config:base_allowlist_rtxt_path)" ]
-        args += [ "--base-module-rtxt-path=@FileArg($_rebased_base_module_build_config:rtxt_path)" ]
-      }
       if (defined(invoker.validate_services) && invoker.validate_services) {
         args += [ "--validate-services" ]
       }

@@ -592,12 +592,6 @@ template("write_build_config") {
         } else {
           module_pathmap_path = ""
         }
-        if (defined(invoker.base_allowlist_rtxt_path)) {
-          base_allowlist_rtxt_path =
-              rebase_path(invoker.base_allowlist_rtxt_path, root_build_dir)
-        } else {
-          base_allowlist_rtxt_path = ""
-        }
       }
 
       if (defined(assets)) {
@@ -3780,9 +3774,6 @@ if (enable_java_templates) {
   #    resources for this target.
   #  module_pathmap_path: The path of the pathmap file generated when compiling
   #    the resources for the bundle module, if path shortening is enabled.
-  #  base_allowlist_rtxt_path: The path of the R.txt file containing the
-  #    list of string resources to keep in the base split APK for any bundle
-  #    that uses this target.
   #
   # For 'java_binary' and 'robolectric_binary' targets only. Ignored by others:
   #
@@ -4164,7 +4155,6 @@ if (enable_java_templates) {
                              [
                                "aar_path",
                                "annotation_processor_deps",
-                               "base_allowlist_rtxt_path",
                                "bytecode_rewriter_target",
                                "create_locales_java_list",
                                "direct_deps_only",

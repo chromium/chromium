@@ -23,7 +23,6 @@ import bundletool
 from util import build_utils
 from util import manifest_utils
 from util import protoresources
-from util import resource_utils
 import action_helpers  # build_utils adds //build to sys.path.
 
 # List of split dimensions recognized by this tool.
@@ -138,18 +137,6 @@ def _ParseArgs(args):
         '--split-dimensions', help="GN-list of split dimensions to support."
     )
     parser.add_argument(
-        '--base-module-rtxt-path',
-        help='Optional path to the base module\'s R.txt file, only used with '
-        'language split dimension.',
-    )
-    parser.add_argument(
-        '--base-allowlist-rtxt-path',
-        help='Optional path to an R.txt file, string resources '
-        'listed there _and_ in --base-module-rtxt-path will '
-        'be kept in the base bundle module, even if language'
-        ' splitting is enabled.',
-    )
-    parser.add_argument(
         '--rotation-config', help='Path to a RotationConfig.textproto'
     )
     parser.add_argument(
@@ -220,24 +207,6 @@ def _ParseArgs(args):
                     % (dim, ', '.join(x.lower() for x in _ALL_SPLIT_DIMENSIONS))
                 )
 
-    # As a special case, --base-allowlist-rtxt-path can be empty to indicate
-    # that the module doesn't need such a allowlist. That's because it is easier
-    # to check this condition here than through GN rules :-(
-    if options.base_allowlist_rtxt_path == '':
-        options.base_module_rtxt_path = None
-
-    # Check --base-module-rtxt-path and --base-allowlist-rtxt-path usage.
-    if options.base_module_rtxt_path:
-        if not options.base_allowlist_rtxt_path:
-            parser.error(
-                '--base-module-rtxt-path requires --base-allowlist-rtxt-path'
-            )
-        if 'language' not in options.split_dimensions:
-            parser.error(
-                '--base-module-rtxt-path is only valid with '
-                'language-based splits.'
-            )
-
     return options
 
 
@@ -250,7 +219,6 @@ def _GenerateBundleConfigJson(
     uncompressed_assets,
     compress_dex,
     split_dimensions,
-    base_master_resource_ids,
 ):
     """Generate a dictionary that can be written to a JSON BuildConfig.
 
@@ -259,8 +227,6 @@ def _GenerateBundleConfigJson(
         be stored uncompressed.
       compressed_dex: Boolean, whether to compress .dex.
       split_dimensions: list of split dimensions.
-      base_master_resource_ids: Optional list of 32-bit resource IDs to keep
-        inside the base module, even when split dimensions are enabled.
     Returns:
       A dictionary that can be written as a json file.
     """
@@ -313,29 +279,7 @@ def _GenerateBundleConfigJson(
         },
     }
 
-    if base_master_resource_ids:
-        data['master_resources'] = {
-            'resource_ids': list(base_master_resource_ids),
-        }
-
     return json.dumps(data, indent=2)
-
-
-def _GenerateBaseResourcesAllowList(
-    base_module_rtxt_path, base_allowlist_rtxt_path
-):
-    """Generate a allowlist of base master resource ids.
-
-    Args:
-      base_module_rtxt_path: Path to base module R.txt file.
-      base_allowlist_rtxt_path: Path to base allowlist R.txt file.
-    Returns:
-      list of resource ids.
-    """
-    ids_map = resource_utils.GenerateStringResourcesAllowList(
-        base_module_rtxt_path, base_allowlist_rtxt_path
-    )
-    return ids_map.keys()
 
 
 def _ConcatTextFiles(in_paths, out_path):
@@ -548,19 +492,12 @@ def main(args):
         concurrent.futures.ThreadPoolExecutor() as executor,
     ):
         tmp_bundle = tmp_bundle_file.name
-        base_master_resource_ids = None
-        if options.base_module_rtxt_path:
-            logging.info('Creating R.txt allowlist')
-            base_master_resource_ids = _GenerateBaseResourcesAllowList(
-                options.base_module_rtxt_path, options.base_allowlist_rtxt_path
-            )
 
         logging.info('Creating BundleConfig.pb.json')
         bundle_config = _GenerateBundleConfigJson(
             options.uncompressed_assets,
             options.compress_dex,
             split_dimensions,
-            base_master_resource_ids,
         )
 
         # Important: bundletool requires that the bundle config file is

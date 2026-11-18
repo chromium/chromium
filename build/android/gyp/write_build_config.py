@@ -1066,9 +1066,6 @@ def main():
                 'library_always_compress'
             )
             main_config['proto_resources_path'] = params['proto_resources_path']
-            main_config['base_allowlist_rtxt_path'] = params[
-                'base_allowlist_rtxt_path'
-            ]
             main_config['rtxt_path'] = params['rtxt_path']
             main_config['module_pathmap_path'] = params['module_pathmap_path']
 
