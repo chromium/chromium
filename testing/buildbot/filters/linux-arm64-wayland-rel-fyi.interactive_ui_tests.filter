@@ -1,10 +1,7 @@
 # TODO(https://crbug.com/493612000): Tests are flaky on linux-arm64-wayland-rel-fyi.
--SidePanelBookmarksTest.ShoppingList
 -WebAppInteractiveUiTest.FindBarFocusEvents
 -NotificationsApiTest.TestShouldDisplayPopupNotification
 -NotificationsApiTest.TestShouldDisplayFullscreen
--MenuItemViewTestInsertWithSubmenu1.InsertItemWithSubmenu1
--PerformanceInterventionInteractiveTest.SuggestTabsOnlyForLastActiveProfile
 -OmniboxViewViewsTest.SelectAllOnTabToFocus
 
 # TODO(https://crbug.com/547746068): Flaky on linux-arm64-wayland-rel-fyi.
