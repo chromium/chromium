@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_NET_TEST_ENTERPRISE_PROXY_BROWSERTEST_BASE_H_
 
 #include <cstddef>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -13,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
@@ -70,11 +72,16 @@ inline constexpr char kDestinationSubdomainHost[] =
     "sub.destination.example.com";
 inline constexpr char kSecondaryDestinationHost[] =
     "secondary-destination.example.com";
+inline constexpr char kPorOnlyDestinationHost[] = "por-only.example.com";
+inline constexpr char kAddedDestinationHost[] = "added.example.com";
+inline constexpr char kRetainedDestinationHost[] = "retained.example.com";
+inline constexpr char kRemovedDestinationHost[] = "removed.example.com";
 inline constexpr char kUnmatchedHost[] = "unmatched.foo.com";
 
 // CONNECT proxy hostnames served by `TestConnectProxy`.
 inline constexpr char kDefaultProxyHost[] = "proxy1.example.com";
 inline constexpr char kSecondaryProxyHost[] = "proxy2.example.com";
+inline constexpr char kTertiaryProxyHost[] = "proxy3.example.com";
 
 // Default managed account identity and OAuth2 scope/token constants.
 inline constexpr char kManagedUserEmail[] = "user@managed.com";
@@ -83,9 +90,9 @@ inline constexpr char kAuthScope[] = "cloud_secure_gateway";
 inline constexpr char kExpectedAccessToken[] = "access_token";
 
 // End-to-end browsertest fixture for Enterprise Proxy (`Secure Gateway`).
-// Uses the real `//net` stack with dedicated HTTPS servers (`pvd_server_`,
-// `default_proxy_server_`, and `origin_server_`) and realistic auth via
-// `TestAuthHelper`.
+// Uses the real `//net` stack with dedicated HTTPS servers (`pvd_server_` with
+// deferrable responses, `default_proxy_server_`, and `origin_server_`) and
+// realistic auth via `TestAuthHelper`.
 class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
  public:
   explicit EnterpriseProxyBrowserTestBase(const ManagementContext& context);
@@ -107,6 +114,10 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
   // (`TokenFetchError::kInvalidCredentials` -> `"sign_in_required"`).
   void InvalidatePrimaryAccountCredentials();
 
+  // Evicts any cached OAuth2 access token for `kSecureGatewayService` so the
+  // next challenge or authenticated PvD fetch triggers a fresh token request.
+  void EvictCachedProxyAccessToken();
+
   // Returns the number of OAuth2 access token fetch requests issued for
   // `cloud_secure_gateway`.
   size_t GetTokenFetchRequestCount() const;
@@ -116,6 +127,12 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
 
   // Sets the "ProxyProvisioningDomains" policy at the machine (device) scope.
   void SetMachineProxyProvisioningDomains(base::ListValue domains);
+
+  // Sets the "ProxyOverrideRules" policy at the user (cloud) scope.
+  void SetUserProxyOverrideRules(base::ListValue rules);
+
+  // Sets the "ProxySettings" policy at the user (cloud) scope.
+  void SetUserProxySettings(base::DictValue settings);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_ANDROID)
@@ -131,6 +148,13 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
                                 const std::string& proxy_host_port,
                                 const std::vector<std::string>& match_domains,
                                 bool require_auth = true);
+
+  std::string BuildMultiProxyPvdJson(
+      const std::string& domain_id,
+      const std::vector<std::pair<std::string, std::string>>& proxies,
+      const std::vector<std::string>& proxy_order,
+      const std::vector<std::string>& match_domains,
+      bool require_auth = true);
 
   enterprise_net::EnterpriseProxyService* GetEnterpriseProxyService();
   enterprise_net::EnterpriseProxyErrorService* GetEnterpriseProxyErrorService();
@@ -155,12 +179,24 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
     return *default_proxy_server_;
   }
 
+  // Configures a custom JSON payload for a specific PvD domain on
+  // `pvd_server_`.
+  void SetPvdJsonForDomain(const std::string& domain, std::string json);
+
   // Overrides the HTTP response for all `/.well-known/pvd` requests on
   // `pvd_server_` to simulate server errors, 404s, or malformed JSON.
   void SetPvdResponseOverride(
       net::HttpStatusCode code,
       const std::string& content = "",
       const std::string& content_type = "application/json");
+
+  // Controls deferring `/.well-known/pvd` HTTP responses on `pvd_server_` so
+  // tests can verify `NetworkService` pausing while `is_update_in_progress` is
+  // true across Mojo.
+  void SetDeferPvdResponses(bool defer);
+  size_t deferred_pvd_request_count() const;
+  void WaitForDeferredPvdRequests(size_t expected_count);
+  void ReleaseDeferredPvdResponses();
 
   // Convenience forwarders to `default_proxy_server()`.
   void SetRequireProxyAuth(bool require_auth);
@@ -181,6 +217,7 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
   // Server request telemetry accessors.
   net::test_server::HttpRequest::HeaderMap last_pvd_request_headers() const;
   size_t pvd_request_count() const;
+  size_t GetPvdRequestCountForDomain(const std::string& domain) const;
   size_t origin_request_count() const;
 
  private:
@@ -222,11 +259,24 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
       GUARDED_BY(server_lock_);
   std::string pvd_response_override_content_ GUARDED_BY(server_lock_);
   std::string pvd_response_override_content_type_ GUARDED_BY(server_lock_);
+  // Per-domain custom PvD JSON payloads set via `SetPvdJsonForDomain()`.
+  std::map<std::string, std::string> pvd_json_by_domain_
+      GUARDED_BY(server_lock_);
   // Headers from the most recent `/.well-known/pvd` request on `pvd_server_`.
   net::test_server::HttpRequest::HeaderMap last_pvd_request_headers_
       GUARDED_BY(server_lock_);
-  // Total `/.well-known/pvd` requests handled by `pvd_server_`.
+  // Total `/.well-known/pvd` requests handled by `pvd_server_` (overall and
+  // broken down by normalized `Host` header).
   size_t pvd_request_count_ GUARDED_BY(server_lock_) = 0;
+  std::map<std::string, size_t> pvd_request_count_by_domain_
+      GUARDED_BY(server_lock_);
+
+  // When true, `HandlePvdRequest()` holds `/.well-known/pvd` responses in
+  // flight until `ReleaseDeferredPvdResponses()` runs the queued callbacks.
+  bool defer_pvd_responses_ GUARDED_BY(server_lock_) = false;
+  std::vector<base::OnceClosure> deferred_pvd_release_callbacks_
+      GUARDED_BY(server_lock_);
+
   // Total `/simple.html` and `/direct.html` requests handled by
   // `origin_server_`.
   size_t origin_request_count_ GUARDED_BY(server_lock_) = 0;

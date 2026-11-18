@@ -10,6 +10,8 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/net/enterprise_proxy_error_service_factory.h"
@@ -23,6 +25,7 @@
 #include "components/enterprise/net/core/enterprise_proxy_error_service.h"
 #include "components/enterprise/net/core/enterprise_proxy_service.h"
 #include "components/policy/policy_constants.h"
+#include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -53,18 +56,11 @@ constexpr char kPvdConfigJsonTemplate[] = R"({
   "identifier": "%s",
   "expires": "Wed, 21 Oct 2026 07:28:00 GMT",
   "proxies": [
-    {
-      "protocol": "https-connect",
-      "identity": "proxy1",
-      "proxy": "%s",
-      "google_chrome": {
-        %s
-      }
-    }
+    %s
   ],
   "proxy-match": [
     {
-      "proxies": ["proxy1"],
+      "proxies": [%s],
       "domains": [%s]
     }
   ]
@@ -85,10 +81,53 @@ const std::vector<std::string>& GetOriginCertHostnames() {
       kDestinationHost,
       kDestinationSubdomainHost,
       kSecondaryDestinationHost,
+      kPorOnlyDestinationHost,
+      kAddedDestinationHost,
+      kRetainedDestinationHost,
+      kRemovedDestinationHost,
       kSeparateSiteHost,
       kUnmatchedHost,
   });
   return *kHostnames;
+}
+
+// `BasicHttpResponse` subclass that holds the HTTP response mid-flight on the
+// `EmbeddedTestServer`'s IO sequence until `release_callback` is invoked.
+class DeferredBasicHttpResponse : public net::test_server::BasicHttpResponse {
+ public:
+  using RegisterReleaseCallback =
+      base::OnceCallback<void(base::OnceClosure release_callback)>;
+
+  explicit DeferredBasicHttpResponse(
+      RegisterReleaseCallback register_release_callback)
+      : register_release_callback_(std::move(register_release_callback)) {}
+  ~DeferredBasicHttpResponse() override = default;
+
+  void SendResponse(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner =
+        base::SequencedTaskRunner::GetCurrentDefault();
+    base::OnceClosure send_on_io = base::BindOnce(
+        &net::test_server::HttpResponseDelegate::SendHeadersContentAndFinish,
+        delegate, code(), reason(), BuildHeaders(), std::string(content()));
+    std::move(register_release_callback_)
+        .Run(base::BindPostTask(std::move(io_task_runner),
+                                std::move(send_on_io)));
+  }
+
+ private:
+  RegisterReleaseCallback register_release_callback_;
+};
+
+std::string JoinQuotedStrings(const std::vector<std::string>& values) {
+  std::string joined;
+  for (size_t i = 0; i < values.size(); ++i) {
+    joined += base::StringPrintf("\"%s\"", values[i].c_str());
+    if (i + 1 < values.size()) {
+      joined += ", ";
+    }
+  }
+  return joined;
 }
 
 }  // namespace
@@ -103,7 +142,8 @@ EnterpriseProxyBrowserTestBase::EnterpriseProxyBrowserTestBase(
       auth_helper_(TestAuthHelper::Create()) {
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{enterprise_net::kEnableDynamicRouteFetching,
-                            enterprise_net::kEnterpriseProxyErrorHandling},
+                            enterprise_net::kEnterpriseProxyErrorHandling,
+                            kEnableProxyOverrideRules},
       /*disabled_features=*/{});
   management_context_mixin_ =
       ManagementContextMixin::Create(&mixin_host_, this, context);
@@ -152,6 +192,8 @@ void EnterpriseProxyBrowserTestBase::SetUpOnMainThread() {
 }
 
 void EnterpriseProxyBrowserTestBase::TearDownOnMainThread() {
+  SetDeferPvdResponses(false);
+  ReleaseDeferredPvdResponses();
   scoped_extra_domains_.reset();
   default_proxy_server_.reset();
   EXPECT_TRUE(origin_server_.ShutdownAndWaitUntilComplete());
@@ -196,6 +238,20 @@ void EnterpriseProxyBrowserTestBase::InvalidatePrimaryAccountCredentials() {
   auth_helper_->SimulateInvalidCredentials(primary.gaia);
 }
 
+void EnterpriseProxyBrowserTestBase::EvictCachedProxyAccessToken() {
+  signin::IdentityManager* identity_manager = GetIdentityManager();
+  if (!identity_manager) {
+    return;
+  }
+  CoreAccountInfo primary =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (!primary.IsEmpty()) {
+    identity_manager->RemoveAccessTokenFromCache(
+        primary.account_id, signin::OAuthConsumerId::kSecureGatewayService,
+        current_access_token_);
+  }
+}
+
 size_t EnterpriseProxyBrowserTestBase::GetTokenFetchRequestCount() const {
   return auth_helper_->GetTokenFetchRequestCount();
 }
@@ -214,6 +270,22 @@ void EnterpriseProxyBrowserTestBase::SetMachineProxyProvisioningDomains(
   policies.emplace(policy::key::kProxyProvisioningDomains,
                    base::Value(std::move(domains)));
   management_context_mixin_->SetCloudMachinePolicies(std::move(policies));
+}
+
+void EnterpriseProxyBrowserTestBase::SetUserProxyOverrideRules(
+    base::ListValue rules) {
+  base::flat_map<std::string, std::optional<base::Value>> policies;
+  policies.emplace(policy::key::kProxyOverrideRules,
+                   base::Value(std::move(rules)));
+  management_context_mixin_->SetCloudUserPolicies(std::move(policies));
+}
+
+void EnterpriseProxyBrowserTestBase::SetUserProxySettings(
+    base::DictValue settings) {
+  base::flat_map<std::string, std::optional<base::Value>> policies;
+  policies.emplace(policy::key::kProxySettings,
+                   base::Value(std::move(settings)));
+  management_context_mixin_->SetCloudUserPolicies(std::move(policies));
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -254,19 +326,39 @@ std::string EnterpriseProxyBrowserTestBase::BuildValidPvdJson(
     const std::string& proxy_host_port,
     const std::vector<std::string>& match_domains,
     bool require_auth) {
-  std::string domains_json;
-  for (size_t i = 0; i < match_domains.size(); ++i) {
-    domains_json += base::StringPrintf("\"%s\"", match_domains[i].c_str());
-    if (i + 1 < match_domains.size()) {
-      domains_json += ", ";
+  return BuildMultiProxyPvdJson(domain_id, {{"proxy1", proxy_host_port}},
+                                {"proxy1"}, match_domains, require_auth);
+}
+
+std::string EnterpriseProxyBrowserTestBase::BuildMultiProxyPvdJson(
+    const std::string& domain_id,
+    const std::vector<std::pair<std::string, std::string>>& proxies,
+    const std::vector<std::string>& proxy_order,
+    const std::vector<std::string>& match_domains,
+    bool require_auth) {
+  std::string_view auth_section = require_auth ? kDefaultAuthSectionJson : "";
+  std::string proxies_json;
+  for (size_t i = 0; i < proxies.size(); ++i) {
+    proxies_json += base::StringPrintf(
+        R"({
+      "protocol": "https-connect",
+      "identity": "%s",
+      "proxy": "%s",
+      "google_chrome": {
+        %s
+      }
+    })",
+        proxies[i].first.c_str(), proxies[i].second.c_str(),
+        std::string(auth_section).c_str());
+    if (i + 1 < proxies.size()) {
+      proxies_json += ",\n    ";
     }
   }
 
-  std::string_view auth_section = require_auth ? kDefaultAuthSectionJson : "";
-
-  return base::StringPrintf(
-      kPvdConfigJsonTemplate, domain_id.c_str(), proxy_host_port.c_str(),
-      std::string(auth_section).c_str(), domains_json.c_str());
+  return base::StringPrintf(kPvdConfigJsonTemplate, domain_id.c_str(),
+                            proxies_json.c_str(),
+                            JoinQuotedStrings(proxy_order).c_str(),
+                            JoinQuotedStrings(match_domains).c_str());
 }
 
 enterprise_net::EnterpriseProxyService*
@@ -326,6 +418,13 @@ EnterpriseProxyBrowserTestBase::CreateProxyServer(std::string hostname) {
   return proxy;
 }
 
+void EnterpriseProxyBrowserTestBase::SetPvdJsonForDomain(
+    const std::string& domain,
+    std::string json) {
+  base::AutoLock auto_lock(server_lock_);
+  pvd_json_by_domain_[domain] = std::move(json);
+}
+
 void EnterpriseProxyBrowserTestBase::SetPvdResponseOverride(
     net::HttpStatusCode code,
     const std::string& content,
@@ -334,6 +433,34 @@ void EnterpriseProxyBrowserTestBase::SetPvdResponseOverride(
   pvd_response_override_code_ = code;
   pvd_response_override_content_ = content;
   pvd_response_override_content_type_ = content_type;
+}
+
+void EnterpriseProxyBrowserTestBase::SetDeferPvdResponses(bool defer) {
+  base::AutoLock auto_lock(server_lock_);
+  defer_pvd_responses_ = defer;
+}
+
+size_t EnterpriseProxyBrowserTestBase::deferred_pvd_request_count() const {
+  base::AutoLock auto_lock(server_lock_);
+  return deferred_pvd_release_callbacks_.size();
+}
+
+void EnterpriseProxyBrowserTestBase::WaitForDeferredPvdRequests(
+    size_t expected_count) {
+  ASSERT_TRUE(base::test::RunUntil([this, expected_count]() {
+    return deferred_pvd_request_count() >= expected_count;
+  }));
+}
+
+void EnterpriseProxyBrowserTestBase::ReleaseDeferredPvdResponses() {
+  std::vector<base::OnceClosure> callbacks;
+  {
+    base::AutoLock auto_lock(server_lock_);
+    callbacks.swap(deferred_pvd_release_callbacks_);
+  }
+  for (auto& callback : callbacks) {
+    std::move(callback).Run();
+  }
 }
 
 void EnterpriseProxyBrowserTestBase::SetRequireProxyAuth(bool require_auth) {
@@ -356,6 +483,13 @@ EnterpriseProxyBrowserTestBase::last_pvd_request_headers() const {
 size_t EnterpriseProxyBrowserTestBase::pvd_request_count() const {
   base::AutoLock auto_lock(server_lock_);
   return pvd_request_count_;
+}
+
+size_t EnterpriseProxyBrowserTestBase::GetPvdRequestCountForDomain(
+    const std::string& domain) const {
+  base::AutoLock auto_lock(server_lock_);
+  auto it = pvd_request_count_by_domain_.find(domain);
+  return it != pvd_request_count_by_domain_.end() ? it->second : 0u;
 }
 
 size_t EnterpriseProxyBrowserTestBase::origin_request_count() const {
@@ -383,21 +517,48 @@ EnterpriseProxyBrowserTestBase::HandlePvdRequest(
       default_proxy_server_ ? default_proxy_server_->host_port_pair().ToString()
                             : std::string();
 
+  std::unique_ptr<net::test_server::BasicHttpResponse> response;
   {
     base::AutoLock auto_lock(server_lock_);
     ++pvd_request_count_;
+    ++pvd_request_count_by_domain_[domain];
     last_pvd_request_headers_ = request.headers;
 
+    if (defer_pvd_responses_) {
+      response = std::make_unique<DeferredBasicHttpResponse>(base::BindOnce(
+          [](EnterpriseProxyBrowserTestBase* self,
+             base::OnceClosure release_callback) {
+            {
+              base::AutoLock lock(self->server_lock_);
+              if (self->defer_pvd_responses_) {
+                self->deferred_pvd_release_callbacks_.push_back(
+                    std::move(release_callback));
+                return;
+              }
+            }
+            std::move(release_callback).Run();
+          },
+          base::Unretained(this)));
+    } else {
+      response = std::make_unique<net::test_server::BasicHttpResponse>();
+    }
+
     if (pvd_response_override_code_.has_value()) {
-      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(*pvd_response_override_code_);
       response->set_content(pvd_response_override_content_);
       response->set_content_type(pvd_response_override_content_type_);
       return response;
     }
+
+    auto custom_it = pvd_json_by_domain_.find(domain);
+    if (custom_it != pvd_json_by_domain_.end()) {
+      response->set_code(net::HttpStatusCode::HTTP_OK);
+      response->set_content_type("application/json");
+      response->set_content(custom_it->second);
+      return response;
+    }
   }
 
-  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_code(net::HttpStatusCode::HTTP_OK);
   response->set_content_type("application/json");
 

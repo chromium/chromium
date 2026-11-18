@@ -4,8 +4,11 @@
 
 #include "base/base64.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -19,13 +22,21 @@
 #include "components/enterprise/net/core/enterprise_proxy_service.h"
 #include "components/enterprise/net/core/features.h"
 #include "components/enterprise/net/core/prefs.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/proxy_config/proxy_prefs.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 namespace enterprise::test {
@@ -669,4 +680,444 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyPlatformManagedDeviceBrowserTest,
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_ANDROID)
+
+// Verifies across Mojo that `NetworkService` holds in-flight navigations paused
+// while `/.well-known/pvd` fetches are mid-flight:
+// - During initial policy load, an in-flight navigation waits for the PvD
+//   response instead of leaking directly, then routes via the proxy.
+// - During a runtime policy update that adds an OAuth-authenticated PvD domain
+//   (`use_oauth = true`) after cached tokens are evicted, Chrome acquires a
+//   fresh OAuth token while `NetworkService` is paused without deadlocking,
+//   sends `Authorization: Bearer` on `/.well-known/pvd`, and holds concurrent
+//   navigations until the updated routes arrive.
+IN_PROC_BROWSER_TEST_F(
+    EnterpriseProxyBrowserTest,
+    NetworkPauseHoldsNavigationDuringInitialAndRuntimeRefresh) {
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  enterprise_net::EnterpriseProxyService* service = GetEnterpriseProxyService();
+  ASSERT_TRUE(service);
+
+  // Initial policy load: defer the PvD response and verify an in-flight
+  // navigation is held paused until the PvD fetch finishes.
+  SetDeferPvdResponses(true);
+
+  base::ListValue initial_domains;
+  initial_domains.Append(
+      CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/false));
+  SetUserProxyProvisioningDomains(std::move(initial_domains));
+  ProfileNetworkContextServiceFactory::GetForContext(profile)
+      ->FlushProxyConfigMonitorForTesting();
+
+  WaitForDeferredPvdRequests(1);
+  EXPECT_TRUE(service->IsRefreshInProgress());
+
+  GURL initial_url = GetOriginURL(kDestinationHost, "/simple.html");
+  content::TestNavigationManager initial_nav(web_contents, initial_url);
+  web_contents->GetController().LoadURL(initial_url, content::Referrer(),
+                                        ui::PAGE_TRANSITION_TYPED,
+                                        /*extra_headers=*/std::string());
+
+  ASSERT_TRUE(initial_nav.WaitForLoaderStart());
+  profile->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
+
+  // While the PvD fetch is deferred, the navigation must not reach either the
+  // proxy or the origin server.
+  EXPECT_NE(initial_url, web_contents->GetLastCommittedURL());
+  EXPECT_FALSE(was_proxy_accessed());
+  EXPECT_EQ(0u, origin_request_count());
+
+  SetDeferPvdResponses(false);
+  ReleaseDeferredPvdResponses();
+
+  ASSERT_TRUE(initial_nav.WaitForNavigationFinished());
+  EXPECT_TRUE(initial_nav.was_successful());
+  EXPECT_EQ(initial_url, web_contents->GetLastCommittedURL());
+  EXPECT_TRUE(was_proxy_accessed());
+  EXPECT_TRUE(was_auth_header_received());
+  EXPECT_EQ(1u, origin_request_count());
+
+  // Runtime policy update: evict the cached OAuth token, defer PvD responses
+  // again, and switch to `kSecondaryPvdDomain` with `use_oauth = true`.
+  SetPvdJsonForDomain(
+      kSecondaryPvdDomain,
+      BuildValidPvdJson(kSecondaryPvdDomain,
+                        default_proxy_server().host_port_pair().ToString(),
+                        {kAddedDestinationHost}, /*require_auth=*/true));
+  EvictCachedProxyAccessToken();
+  ASSERT_TRUE(base::test::RunUntil(
+      [service]() { return !service->IsRefreshInProgress(); }));
+  SetDeferPvdResponses(true);
+  default_proxy_server().ResetStats();
+  const size_t token_fetches_before_refresh = GetTokenFetchRequestCount();
+
+  base::ListValue updated_domains;
+  updated_domains.Append(
+      CreateDomainPolicyEntry(kSecondaryPvdDomain, /*use_oauth=*/true));
+  SetUserProxyProvisioningDomains(std::move(updated_domains));
+  ProfileNetworkContextServiceFactory::GetForContext(profile)
+      ->FlushProxyConfigMonitorForTesting();
+
+  // Reaching `pvd_server_` proves token acquisition succeeded while
+  // `NetworkService` re-entered the pause (`IsRefreshInProgress() == true`).
+  ASSERT_TRUE(base::test::RunUntil([this]() {
+    return GetPvdRequestCountForDomain(kSecondaryPvdDomain) >= 1u &&
+           deferred_pvd_request_count() >= 1u;
+  }));
+  EXPECT_TRUE(service->IsRefreshInProgress());
+  EXPECT_GT(GetTokenFetchRequestCount(), token_fetches_before_refresh);
+
+  const net::test_server::HttpRequest::HeaderMap pvd_headers =
+      last_pvd_request_headers();
+  auto auth_it = pvd_headers.find("Authorization");
+  ASSERT_NE(auth_it, pvd_headers.end());
+  EXPECT_EQ(auth_it->second,
+            base::StringPrintf("Bearer %s", kExpectedAccessToken));
+
+  GURL added_url = GetOriginURL(kAddedDestinationHost, "/simple.html");
+  content::TestNavigationManager runtime_nav(web_contents, added_url);
+  web_contents->GetController().LoadURL(added_url, content::Referrer(),
+                                        ui::PAGE_TRANSITION_TYPED,
+                                        /*extra_headers=*/std::string());
+
+  ASSERT_TRUE(runtime_nav.WaitForLoaderStart());
+  profile->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
+  EXPECT_NE(added_url, web_contents->GetLastCommittedURL());
+  EXPECT_FALSE(was_proxy_accessed());
+  EXPECT_EQ(1u, origin_request_count());
+
+  SetDeferPvdResponses(false);
+  ReleaseDeferredPvdResponses();
+
+  ASSERT_TRUE(runtime_nav.WaitForNavigationFinished());
+  EXPECT_TRUE(runtime_nav.was_successful());
+  EXPECT_EQ(added_url, web_contents->GetLastCommittedURL());
+  EXPECT_TRUE(was_proxy_accessed());
+  EXPECT_TRUE(was_auth_header_received());
+  EXPECT_EQ(2u, origin_request_count());
+}
+
+// Verifies that if an in-flight navigation is paused behind a
+// `/.well-known/pvd` fetch that ultimately fails (HTTP 500), `NetworkService`
+// unpauses once the refresh completes and allows the navigation to fall back to
+// DIRECT.
+IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
+                       NetworkPauseFallsBackToDirectWhenPvdFetchFails) {
+  base::HistogramTester histograms;
+  SetDeferPvdResponses(true);
+  SetPvdResponseOverride(net::HttpStatusCode::HTTP_INTERNAL_SERVER_ERROR,
+                         "Internal Server Error", "text/plain");
+
+  base::ListValue domains;
+  domains.Append(CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/false));
+  SetUserProxyProvisioningDomains(std::move(domains));
+
+  ProfileNetworkContextServiceFactory::GetForContext(
+      chrome_test_utils::GetProfile(this))
+      ->FlushProxyConfigMonitorForTesting();
+
+  WaitForDeferredPvdRequests(1);
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
+  content::TestNavigationManager nav_manager(web_contents, destination_url);
+  web_contents->GetController().LoadURL(destination_url, content::Referrer(),
+                                        ui::PAGE_TRANSITION_TYPED,
+                                        /*extra_headers=*/std::string());
+
+  ASSERT_TRUE(nav_manager.WaitForLoaderStart());
+  chrome_test_utils::GetProfile(this)
+      ->GetDefaultStoragePartition()
+      ->FlushNetworkInterfaceForTesting();
+  EXPECT_NE(destination_url, web_contents->GetLastCommittedURL());
+  EXPECT_EQ(0u, origin_request_count());
+
+  SetDeferPvdResponses(false);
+  ReleaseDeferredPvdResponses();
+
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  EXPECT_TRUE(nav_manager.was_successful());
+  EXPECT_FALSE(was_proxy_accessed());
+  EXPECT_EQ(1u, origin_request_count());
+  enterprise_net::EnterpriseProxyService* service = GetEnterpriseProxyService();
+  ASSERT_TRUE(service);
+  ASSERT_TRUE(base::test::RunUntil(
+      [service]() { return !service->IsRefreshInProgress(); }));
+  EXPECT_GE(pvd_request_count(), 3u);
+  ASSERT_EQ(1u, service->GetProvisioningDomainConfigs().size());
+  EXPECT_EQ(
+      enterprise_net::ProvisioningDomainProxyConfig::State::kFailedTransient,
+      service->GetProvisioningDomainConfigs()[0].state);
+
+  chrome_test_utils::GetProfile(this)
+      ->GetDefaultStoragePartition()
+      ->FlushNetworkInterfaceForTesting();
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  // Note: `safe_browsing::NetworkContextService` creates a second per-profile
+  // `NetworkContext` that also observes `EnterpriseProxyService` and records 0
+  // paused requests while idle, so assert that the main `NetworkContext`
+  // recorded at least one paused request (`min >= 1`).
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "Net.ProxyResolution.DynamicRoutingPause.PausedRequestCount"),
+      testing::Contains(testing::Field(&base::Bucket::min, testing::Ge(1))));
+}
+
+// Verifies full 3-tier coexistence and precedence when `ProxyOverrideRules`
+// (POR), `ProxyProvisioningDomains` (PvD), and `ProxySettings` (PAC script) are
+// all configured simultaneously (`POR > PvD > PAC`):
+// - `/.well-known/pvd` fetches bypass the PAC proxy (`LOAD_BYPASS_PROXY`).
+// - Case #1 (`kPorOnlyDestinationHost`, matched by POR + PAC): routes via
+//   `por_proxy`.
+// - Case #2 (`kDestinationHost`, matched by POR + PvD + PAC): POR takes
+//   precedence over both PvD and PAC (`por_proxy`).
+// - Case #3 (`kSecondaryDestinationHost`, matched by PvD + PAC): PvD takes
+//   precedence over PAC (`default_proxy_server` with 407 auth).
+// - Case #4 (`kUnmatchedHost`, matched only by PAC): falls through POR and PvD
+//   to `pac_proxy`.
+IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
+                       ProxyPrecedencePorOverPvdOverPac) {
+  std::unique_ptr<TestConnectProxy> por_proxy =
+      CreateProxyServer(kSecondaryProxyHost);
+  ASSERT_TRUE(por_proxy);
+  por_proxy->SetRequireAuth(false);
+
+  std::unique_ptr<TestConnectProxy> pac_proxy =
+      CreateProxyServer(kTertiaryProxyHost);
+  ASSERT_TRUE(pac_proxy);
+  pac_proxy->SetRequireAuth(false);
+
+  // Scope the PAC script to the test and PvD hostnames so unrelated background
+  // requests (e.g. Gaia) do not touch `pac_proxy`.
+  const std::string pac_data_url = base::StringPrintf(
+      "data:application/x-ns-proxy-autoconfig,"
+      "function FindProxyForURL(url, host) {"
+      "  if (host == '%s' || host == '%s' || host == '%s' || host == '%s' ||"
+      "      host == '%s' || host == '%s') {"
+      "    return 'HTTPS %s';"
+      "  }"
+      "  return 'DIRECT';"
+      "}",
+      kPorOnlyDestinationHost, kDestinationHost, kSecondaryDestinationHost,
+      kUnmatchedHost, kTestPvdDomain, kSecondaryPvdDomain,
+      pac_proxy->host_port_pair().ToString().c_str());
+
+  base::DictValue proxy_settings;
+  proxy_settings.Set(policy::key::kProxyMode,
+                     ProxyPrefs::kPacScriptProxyModeName);
+  proxy_settings.Set(policy::key::kProxyPacUrl, pac_data_url);
+  SetUserProxySettings(std::move(proxy_settings));
+
+  const std::string por_proxy_spec =
+      base::StrCat({"HTTPS ", por_proxy->host_port_pair().ToString()});
+  base::ListValue por_rules;
+  por_rules.Append(
+      base::DictValue()
+          .Set("DestinationMatchers",
+               base::ListValue()
+                   .Append(base::StrCat({"https://", kPorOnlyDestinationHost}))
+                   .Append(base::StrCat({"https://", kDestinationHost})))
+          .Set("ProxyList", base::ListValue().Append(por_proxy_spec)));
+  SetUserProxyOverrideRules(std::move(por_rules));
+
+  base::ListValue pvd_domains;
+  pvd_domains.Append(
+      CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/false));
+  pvd_domains.Append(
+      CreateDomainPolicyEntry(kSecondaryPvdDomain, /*use_oauth=*/false));
+  SetUserProxyProvisioningDomains(std::move(pvd_domains));
+
+  WaitForDynamicRoutesReady();
+  ProfileNetworkContextServiceFactory::GetForContext(
+      chrome_test_utils::GetProfile(this))
+      ->FlushProxyConfigMonitorForTesting();
+
+  // `/.well-known/pvd` uses `LOAD_BYPASS_PROXY` and must not touch `pac_proxy`.
+  EXPECT_THAT(pac_proxy->tunneled_targets(), testing::IsEmpty());
+
+  auto reset_all_proxy_stats = [&]() {
+    por_proxy->ResetStats();
+    default_proxy_server().ResetStats();
+    pac_proxy->ResetStats();
+  };
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+
+  // Case #1: Matched by POR + PAC (`kPorOnlyDestinationHost`) -> `por_proxy`.
+  reset_all_proxy_stats();
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      web_contents, GetOriginURL(kPorOnlyDestinationHost, "/simple.html")));
+  EXPECT_TRUE(por_proxy->was_accessed());
+  EXPECT_FALSE(was_proxy_accessed());
+  EXPECT_FALSE(pac_proxy->was_accessed());
+
+  // Case #2: Matched by POR + PvD + PAC (`kDestinationHost`) -> POR wins.
+  reset_all_proxy_stats();
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      web_contents, GetOriginURL(kDestinationHost, "/simple.html")));
+  EXPECT_TRUE(por_proxy->was_accessed());
+  EXPECT_THAT(por_proxy->tunneled_targets(),
+              testing::Contains(testing::HasSubstr(kDestinationHost)));
+  EXPECT_FALSE(was_proxy_accessed());
+  EXPECT_FALSE(pac_proxy->was_accessed());
+
+  // Case #3: Matched by PvD + PAC (`kSecondaryDestinationHost`) -> PvD wins.
+  reset_all_proxy_stats();
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      web_contents, GetOriginURL(kSecondaryDestinationHost, "/simple.html")));
+  EXPECT_FALSE(por_proxy->was_accessed());
+  EXPECT_TRUE(was_proxy_accessed());
+  EXPECT_TRUE(was_auth_header_received());
+  EXPECT_THAT(default_proxy_server().tunneled_targets(),
+              testing::Contains(testing::HasSubstr(kSecondaryDestinationHost)));
+  EXPECT_FALSE(pac_proxy->was_accessed());
+
+  // Case #4: Matched only by PAC (`kUnmatchedHost`) -> falls back to PAC.
+  reset_all_proxy_stats();
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      web_contents, GetOriginURL(kUnmatchedHost, "/direct.html")));
+  EXPECT_FALSE(por_proxy->was_accessed());
+  EXPECT_FALSE(was_proxy_accessed());
+  EXPECT_TRUE(pac_proxy->was_accessed());
+  EXPECT_THAT(pac_proxy->tunneled_targets(),
+              testing::Contains(testing::HasSubstr(kUnmatchedHost)));
+}
+
+// Verifies "Venn diagram" dynamic route updates across policy refreshes:
+// - Policy v1 routes `[removed.example.com, retained.example.com]` via `proxy1`
+// - Policy v2 routes `[retained.example.com, added.example.com]` via `proxy2`
+// After the update, `removed` goes direct while `retained` and `added` route
+// through `proxy2`.
+IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
+                       DynamicRouteUpdateRemovesRetainsAndAddsRoutes) {
+  std::unique_ptr<TestConnectProxy> proxy2 =
+      CreateProxyServer(kSecondaryProxyHost);
+  ASSERT_TRUE(proxy2);
+
+  SetPvdJsonForDomain(
+      kTestPvdDomain,
+      BuildValidPvdJson(kTestPvdDomain,
+                        default_proxy_server().host_port_pair().ToString(),
+                        {kRemovedDestinationHost, kRetainedDestinationHost},
+                        /*require_auth=*/true));
+
+  base::ListValue v1_domains;
+  v1_domains.Append(
+      CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/false));
+  SetUserProxyProvisioningDomains(std::move(v1_domains));
+  WaitForDynamicRoutesReady();
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+
+  // Under v1: `kRemovedDestinationHost` and `kRetainedDestinationHost` use
+  // `proxy1`; `kAddedDestinationHost` is direct.
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      web_contents, GetOriginURL(kRemovedDestinationHost, "/simple.html")));
+  EXPECT_TRUE(was_proxy_accessed());
+  EXPECT_FALSE(proxy2->was_accessed());
+
+  default_proxy_server().ResetStats();
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      web_contents,
+      GetOriginURL(kRetainedDestinationHost, "/simple.html?v=1")));
+  EXPECT_TRUE(was_proxy_accessed());
+  EXPECT_FALSE(proxy2->was_accessed());
+
+  default_proxy_server().ResetStats();
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      web_contents, GetOriginURL(kAddedDestinationHost, "/direct.html")));
+  EXPECT_FALSE(was_proxy_accessed());
+  EXPECT_FALSE(proxy2->was_accessed());
+
+  // Update policy to v2 (`kSecondaryPvdDomain` -> `proxy2` for `retained` +
+  // `added`).
+  SetPvdJsonForDomain(
+      kSecondaryPvdDomain,
+      BuildValidPvdJson(kSecondaryPvdDomain,
+                        proxy2->host_port_pair().ToString(),
+                        {kRetainedDestinationHost, kAddedDestinationHost},
+                        /*require_auth=*/true));
+  base::ListValue v2_domains;
+  v2_domains.Append(
+      CreateDomainPolicyEntry(kSecondaryPvdDomain, /*use_oauth=*/false));
+  SetUserProxyProvisioningDomains(std::move(v2_domains));
+
+  enterprise_net::EnterpriseProxyService* service = GetEnterpriseProxyService();
+  ASSERT_TRUE(service);
+  ASSERT_TRUE(base::test::RunUntil([this, service]() {
+    return GetPvdRequestCountForDomain(kSecondaryPvdDomain) >= 1u &&
+           !service->IsRefreshInProgress() &&
+           service->GetProvisioningDomainConfigs().size() == 1u &&
+           service->GetProvisioningDomainConfigs()[0].state ==
+               enterprise_net::ProvisioningDomainProxyConfig::State::kValid;
+  }));
+  ProfileNetworkContextServiceFactory::GetForContext(
+      chrome_test_utils::GetProfile(this))
+      ->FlushProxyConfigMonitorForTesting();
+
+  // Navigate to a fresh path on `kRemovedDestinationHost` and verify it now
+  // connects directly without touching either proxy.
+  default_proxy_server().ResetStats();
+  proxy2->ResetStats();
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      web_contents, GetOriginURL(kRemovedDestinationHost, "/direct.html")));
+  EXPECT_FALSE(was_proxy_accessed());
+  EXPECT_FALSE(proxy2->was_accessed());
+
+  // Both `kRetainedDestinationHost` and `kAddedDestinationHost` now route via
+  // `proxy2`.
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      web_contents,
+      GetOriginURL(kRetainedDestinationHost, "/simple.html?v=2")));
+  EXPECT_FALSE(was_proxy_accessed());
+  EXPECT_TRUE(proxy2->was_accessed());
+  EXPECT_TRUE(proxy2->was_auth_header_received());
+
+  proxy2->ResetStats();
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      web_contents, GetOriginURL(kAddedDestinationHost, "/simple.html")));
+  EXPECT_FALSE(was_proxy_accessed());
+  EXPECT_TRUE(proxy2->was_accessed());
+}
+
+// Verifies multi-proxy failover: when a PvD routing rule specifies an ordered
+// list `["proxy1", "proxy2"]` and `proxy1` is unreachable, `//net` fails over
+// to `proxy2` and `EnterpriseProxyService` authenticates against `proxy2`.
+IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
+                       FailsOverToSecondaryProxyWhenPrimaryUnreachable) {
+  std::unique_ptr<TestConnectProxy> proxy2 =
+      CreateProxyServer(kSecondaryProxyHost);
+  ASSERT_TRUE(proxy2);
+
+  SetPvdJsonForDomain(
+      kTestPvdDomain,
+      BuildMultiProxyPvdJson(
+          kTestPvdDomain,
+          {{"proxy1", default_proxy_server().host_port_pair().ToString()},
+           {"proxy2", proxy2->host_port_pair().ToString()}},
+          {"proxy1", "proxy2"}, {kDestinationHost}, /*require_auth=*/true));
+
+  base::ListValue domains;
+  domains.Append(CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/false));
+  SetUserProxyProvisioningDomains(std::move(domains));
+  WaitForDynamicRoutesReady();
+
+  // Shut down primary `proxy1` before navigation so connection attempts fail.
+  ASSERT_TRUE(default_proxy_server().Shutdown());
+
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+
+  EXPECT_FALSE(was_proxy_accessed());
+  EXPECT_TRUE(proxy2->was_accessed());
+  EXPECT_TRUE(proxy2->was_auth_header_received());
+  EXPECT_EQ(1u, origin_request_count());
+}
+
 }  // namespace enterprise::test
