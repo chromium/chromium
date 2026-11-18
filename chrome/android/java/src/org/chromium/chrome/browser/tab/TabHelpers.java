@@ -62,9 +62,7 @@ public final class TabHelpers {
      * @param tab {@link Tab} to create helpers for.
      */
     static void initWebContentsHelpers(Tab tab) {
-
         TabWebContentsObserver.from(tab);
-        SwipeRefreshHandler.from(tab);
         AccessibilityTabHelper.from(tab);
         ContextualSearchTabHelper.from(tab);
         MediaSessionTabHelper.from(tab);
@@ -83,5 +81,16 @@ public final class TabHelpers {
                 DisplayCutoutTabHelper.from(tab);
             }
         }
+    }
+
+    /**
+     * Ensures helpers needed for a visible {@link Tab} are attached. Invoked on every
+     * hidden-to-shown transition in {@link TabImpl#show}, so all helpers registered here must be
+     * idempotent (e.g., {@code Helper.from(tab)}).
+     *
+     * @param tab {@link Tab} to ensure helpers for.
+     */
+    static void ensureShownTabHelpers(Tab tab) {
+        SwipeRefreshHandler.from(tab);
     }
 }

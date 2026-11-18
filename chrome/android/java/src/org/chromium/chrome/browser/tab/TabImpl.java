@@ -1425,6 +1425,7 @@ class TabImpl implements Tab {
             if (mNativeTabAndroid == 0) {
                 throw new IllegalStateException("TabImpl's native pointer is 0 when showing.");
             }
+            TabHelpers.ensureShownTabHelpers(this);
             // TODO(crbug.com/40199376): We should provide a timestamp that apporoximates the input
             // event timestamp. When presenting a Tablet UI, StripLayoutTab.handleClick does
             // receive a timestamp. When presenting a Phone UI

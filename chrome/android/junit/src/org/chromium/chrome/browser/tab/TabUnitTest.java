@@ -12,6 +12,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -73,6 +74,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.pdf.PdfUtils;
@@ -1647,6 +1649,27 @@ public class TabUnitTest {
                         /* pdfInfo= */ notNull());
         assertEquals(livePdfNativePage, mTab.getNativePage());
         assertFalse(mTab.getNativePage().isFrozen());
+    }
+
+    @Test
+    public void testShow_attachesSwipeRefreshHandler() {
+        setUpTabWithWebContents();
+
+        assertTrue(mTab.isHidden());
+        assertNull(SwipeRefreshHandler.get(mTab));
+
+        mTab.show(TabSelectionType.FROM_USER);
+
+        SwipeRefreshHandler swipeRefreshHandler = SwipeRefreshHandler.get(mTab);
+        assertNotNull(swipeRefreshHandler);
+        verify(mWebContents).setOverscrollRefreshHandler(swipeRefreshHandler);
+
+        mTab.hide(TabHidingType.CHANGED_TABS);
+        assertTrue(mTab.isHidden());
+
+        mTab.show(TabSelectionType.FROM_USER);
+        assertSame(swipeRefreshHandler, SwipeRefreshHandler.get(mTab));
+        verify(mWebContents).setOverscrollRefreshHandler(swipeRefreshHandler);
     }
 
     @Test
