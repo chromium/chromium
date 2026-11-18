@@ -47,8 +47,8 @@ class SelectionOverlayUntrustedUI
           receiver);
 
   // Binds the page handler that the page requested before the controller
-  // could accept it.
-  void BindPendingPageHandler();
+  // could accept it. Returns whether the page was ready.
+  bool BindPendingPageHandler();
 
   bool HasPendingPageHandlerForTesting() const {
     return pending_handler_receiver_.is_valid();

@@ -22,6 +22,29 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram
+    name="SmartSelection.InlineCue.ClickToOverlayRenderedTime.{PrewarmState}"
+    units="ms" expires_after="2027-03-30">
+  <owner>wusirui@google.com</owner>
+  <owner>naai-xfn@google.com</owner>
+  <summary>
+    Records the time from an inline cue chip click until the Smart Selection
+    overlay shows the page screenshot, {PrewarmState}. Recorded at most once per
+    click. Not recorded if the overlay closes or the tab is switched away before
+    the screenshot shows. Comparing the Ready and NotReady counts shows how
+    often the overlay prewarmed on chip hover was ready in time.
+  </summary>
+  <token key="PrewarmState">
+    <variant name="NotReady"
+        summary="when the overlay had not finished starting up before the
+                 click: the prewarmed overlay was still loading, or there was
+                 none"/>
+    <variant name="Ready"
+        summary="when the overlay prewarmed on chip hover had finished
+                 starting up before the click"/>
+  </token>
+</histogram>
+
 <histogram name="SmartSelection.Invocation.ByDocumentMimeType"
     enum="SmartSelectionDocumentMimeType" expires_after="2027-04-14">
   <owner>schwering@google.com</owner>

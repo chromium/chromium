@@ -14,6 +14,7 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
@@ -247,6 +248,7 @@ class SelectionOverlayController
       mojo::GenericPendingAssociatedReceiver channel) override;
   void OpenSettings() override;
   void OpenDogfoodFeedback() override;
+  void NotifyOverlayRendered() override;
 
  private:
   void OnScreenshotTaken(const SkBitmap& bitmap);
@@ -318,8 +320,9 @@ class SelectionOverlayController
   // Shows a usable prewarmed overlay while the screenshot is captured, instead
   // of loading a new one once the screenshot is here. Drops it otherwise.
   void MaybeAdoptPrewarmedOverlay();
-  // Binds the page handler that the adopted prewarmed page asked for.
-  void BindPendingPageHandler();
+  // Binds the page handler that the adopted prewarmed page asked for. Returns
+  // whether the page had already asked, i.e. it was ready.
+  bool BindPendingPageHandler();
   void Reset();
   void OnTextSurroundingSelectionAvailable(
       const base::UnguessableToken& region_id,
@@ -423,6 +426,10 @@ class SelectionOverlayController
     // True when `ShowImpl()` cleared `FocusManager::stored_focus_view_` during
     // cold screenshot capture and the overlay WebView has not taken focus yet.
     bool cleared_stored_focus = false;
+    // When the inline cue click requested the overlay, not when it appeared.
+    // The start of the click to overlay rendered latency; null once recorded.
+    base::TimeTicks show_requested_time;
+    bool prewarm_ready = false;
   };
   // Never null.
   std::unique_ptr<Session> session_ = std::make_unique<Session>(this);

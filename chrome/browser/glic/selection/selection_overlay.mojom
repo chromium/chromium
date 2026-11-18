@@ -127,6 +127,9 @@ interface SelectionOverlayPageHandler {
   // Opens the dogfood feedback URL in a new tab, dismissing the selection
   // overlay and closing this Mojo pipe.
   OpenDogfoodFeedback();
+
+  // Notifies the browser that the overlay screenshot has been rendered.
+  NotifyOverlayRendered();
 };
 
 // `chrome-untrusted://glic/selection-overlay/` WebUI page handler that receives

@@ -5,6 +5,7 @@
 #include "base/callback_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -2589,6 +2590,9 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
     return untrusted_ui->HasPendingPageHandlerForTesting();
   }));
 
+  base::HistogramTester histogram_tester;
+  base::StatisticsRecorder::HistogramWaiter rendered_waiter(
+      "SmartSelection.InlineCue.ClickToOverlayRenderedTime.Ready");
   gfx::Rect bounds = tab->GetContents()->GetViewBounds();
   bounds.Inset(20);
   controller->ShowWithSelection(tab->GetContents()->GetPrimaryMainFrame(),
@@ -2615,6 +2619,11 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
                     "Timeout waiting for adopted overlay to reach kOverlay"));
   EXPECT_FALSE(untrusted_ui->HasPendingPageHandlerForTesting());
   EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+  rendered_waiter.Wait();
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.InlineCue.ClickToOverlayRenderedTime.Ready", 1);
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.InlineCue.ClickToOverlayRenderedTime.NotReady", 0);
 }
 
 // The adopted page can bind while its tab is in the background; the overlay
@@ -2631,6 +2640,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
       PrewarmAndWait(controller, options);
   ASSERT_TRUE(prewarmed);
 
+  base::HistogramTester histogram_tester;
   gfx::Rect bounds = tab->GetContents()->GetViewBounds();
   bounds.Inset(20);
   controller->ShowWithSelection(tab->GetContents()->GetPrimaryMainFrame(),
@@ -2650,6 +2660,13 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
   EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
   // Initialization that landed while backgrounded still set up the blur.
   EXPECT_TRUE(controller->GetLensOverlayBlurLayerDelegateForTesting());
+  // The tab switch dropped the click time, so the render records no latency.
+  static_cast<selection::SelectionOverlayPageHandler*>(controller)
+      ->NotifyOverlayRendered();
+  EXPECT_TRUE(histogram_tester
+                  .GetTotalCountsForPrefix(
+                      "SmartSelection.InlineCue.ClickToOverlayRenderedTime.")
+                  .empty());
 }
 
 // Esc closes an adopted overlay that is shown while the screenshot is still
@@ -2720,6 +2737,9 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
                       /*hide_handles=*/true, /*skip_intro_animation=*/true));
   ASSERT_TRUE(prewarmed);
 
+  base::HistogramTester histogram_tester;
+  base::StatisticsRecorder::HistogramWaiter rendered_waiter(
+      "SmartSelection.InlineCue.ClickToOverlayRenderedTime.NotReady");
   gfx::Rect bounds = tab->GetContents()->GetViewBounds();
   bounds.Inset(20);
   controller->ShowWithSelection(
@@ -2734,6 +2754,12 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
                           SelectionOverlayController::State::kOverlay,
                           "Timeout waiting for overlay to reach kOverlay"));
   EXPECT_TRUE(controller->GetOverlayWebViewForTesting()->GetWebContents());
+  // A dropped prewarm means the overlay was not ready at click time.
+  rendered_waiter.Wait();
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.InlineCue.ClickToOverlayRenderedTime.NotReady", 1);
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.InlineCue.ClickToOverlayRenderedTime.Ready", 0);
 }
 
 // A prewarm adopted before its page loads binds the page's handler as soon as
@@ -2748,6 +2774,9 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
       /*hide_handles=*/true, /*skip_intro_animation=*/true);
   base::WeakPtr<content::WebContents> prewarmed = Prewarm(controller, options);
   ASSERT_TRUE(prewarmed);
+  base::HistogramTester histogram_tester;
+  base::StatisticsRecorder::HistogramWaiter rendered_waiter(
+      "SmartSelection.InlineCue.ClickToOverlayRenderedTime.NotReady");
 
   // In the same task, so the page can't have asked for its handler yet.
   gfx::Rect bounds = tab->GetContents()->GetViewBounds();
@@ -2768,6 +2797,12 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
                            ->GetAs<SelectionOverlayUntrustedUI>();
   ASSERT_TRUE(untrusted_ui);
   EXPECT_FALSE(untrusted_ui->HasPendingPageHandlerForTesting());
+  // Adopted while still loading, so the overlay was not ready at click time.
+  rendered_waiter.Wait();
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.InlineCue.ClickToOverlayRenderedTime.NotReady", 1);
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.InlineCue.ClickToOverlayRenderedTime.Ready", 0);
 }
 
 // With the panel closed, the toolbar entry point opens the overlay directly

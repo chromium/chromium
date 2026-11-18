@@ -34,7 +34,9 @@ export class SelectionOverlayBaseHandlerImpl extends
     browserProxyFactory.getInstance().handler.closePreselectionBubble();
   }
 
-  notifyOverlayInitialized(): void {}
+  notifyOverlayInitialized(): void {
+    browserProxyFactory.getInstance().handler.notifyOverlayRendered();
+  }
 
   addBackgroundBlur(): void {
     browserProxyFactory.getInstance().handler.addBackgroundBlur();

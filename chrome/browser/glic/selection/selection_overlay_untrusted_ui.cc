@@ -187,14 +187,15 @@ void SelectionOverlayUntrustedUI::CreatePageHandler(
   pending_page_ = page_remote.Unbind();
 }
 
-void SelectionOverlayUntrustedUI::BindPendingPageHandler() {
+bool SelectionOverlayUntrustedUI::BindPendingPageHandler() {
   if (!pending_handler_receiver_.is_valid()) {
-    return;
+    return false;
   }
   SelectionOverlayController& controller = GetSelectionOverlayController();
   CHECK(controller.CanBindOverlay(web_ui()->GetWebContents()));
   controller.BindOverlay(std::move(pending_handler_receiver_),
                          std::move(pending_page_));
+  return true;
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SelectionOverlayUntrustedUI)

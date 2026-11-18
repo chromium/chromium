@@ -12,6 +12,8 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -487,6 +489,8 @@ bool SelectionOverlayController::IsSidePanelOpen() const {
 }
 
 void SelectionOverlayController::TabDeactivated(tabs::TabInterface* tab) {
+  // Time spent in the background is not render latency, so drop the sample.
+  session_->show_requested_time = base::TimeTicks();
   if (state() == State::kBackground) {
     return;
   }
@@ -592,22 +596,21 @@ void SelectionOverlayController::MaybeAdoptPrewarmedOverlay() {
     return;
   }
   MaybeStartOverlayWebUI();
-  BindPendingPageHandler();
+  session_->prewarm_ready = BindPendingPageHandler();
 }
 
-void SelectionOverlayController::BindPendingPageHandler() {
+bool SelectionOverlayController::BindPendingPageHandler() {
   views::WebView* web_view = GetOverlayWebView();
   if (!web_view || !web_view->GetWebContents()) {
-    return;
+    return false;
   }
   content::WebUI* web_ui = web_view->GetWebContents()->GetWebUI();
   if (!web_ui || !web_ui->GetController()) {
-    return;
+    return false;
   }
-  if (auto* untrusted_ui =
-          web_ui->GetController()->GetAs<SelectionOverlayUntrustedUI>()) {
-    untrusted_ui->BindPendingPageHandler();
-  }
+  auto* untrusted_ui =
+      web_ui->GetController()->GetAs<SelectionOverlayUntrustedUI>();
+  return untrusted_ui && untrusted_ui->BindPendingPageHandler();
 }
 
 void SelectionOverlayController::BindOverlay(
@@ -809,6 +812,11 @@ void SelectionOverlayController::Show(mojom::TabContextOptionsPtr options,
 }
 
 void SelectionOverlayController::ShowImpl(mojom::TabContextOptionsPtr options) {
+  if (session_->entry_point == ::selection::EntryPoint::kInlineCue) {
+    // The chip click reaches here synchronously, after `CanStartSession()`, so
+    // this is the click time for accepted clicks only.
+    session_->show_requested_time = base::TimeTicks::Now();
+  }
   session_->options = std::move(options);
   if (IsSelectionOverlayPromptEnabled() && session_->entry_point.has_value()) {
     session_->metrics_logger.emplace(*session_->entry_point,
@@ -1772,6 +1780,21 @@ void SelectionOverlayController::OpenDogfoodFeedback() {
           },
           weak_factory_.GetWeakPtr(), url));
   Close();
+}
+
+void SelectionOverlayController::NotifyOverlayRendered() {
+  if (session_->show_requested_time.is_null()) {
+    return;
+  }
+  CHECK(session_->entry_point == ::selection::EntryPoint::kInlineCue);
+  // Recorded once per session; later calls from the renderer are ignored.
+  // Justification: Measures local overlay startup before any Glic provider is
+  // involved, and stays with the other SmartSelection.* metrics.
+  base::UmaHistogramTimes(
+      base::StrCat({"SmartSelection.InlineCue.ClickToOverlayRenderedTime.",
+                    session_->prewarm_ready ? "Ready" : "NotReady"}),
+      base::TimeTicks::Now() - session_->show_requested_time);
+  session_->show_requested_time = base::TimeTicks();
 }
 
 void SelectionOverlayController::Reset() {
