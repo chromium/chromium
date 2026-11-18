@@ -2757,6 +2757,11 @@
       <message name="IDS_DOWNLOADING" desc="The format for ETA during the update downloading stage">
         Downloading: <ph name="STATUS">$1<ex>Less than 1 minute left</ex></ph>
       </message>
+
+      <!-- Login authentication error -->
+      <message name="IDS_LOGIN_ERROR_AUTHENTICATING" desc="Couldn't sign in because password is invalid">
+        Sorry, your password could not be verified. Please try again.
+      </message>
     </messages>
   </release>
 </grit>

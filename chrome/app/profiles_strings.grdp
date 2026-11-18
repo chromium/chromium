@@ -589,11 +589,6 @@
         Sign out
       </message>
     </if>
-    <if expr="is_chromeos">
-      <message name="IDS_LOGIN_ERROR_AUTHENTICATING" desc="Couldn't sign in because password is invalid">
-        Sorry, your password could not be verified. Please try again.
-      </message>
-    </if>
   </if>
 
   <if expr="not is_android">
