@@ -132,6 +132,14 @@
     "expiry_milestone": 170
   },
   {
+    "name": "actor-throttle-offscreen-frame-rate",
+    "owners": [
+      "ritikagup@google.com",
+      "//chrome/browser/actor/OWNERS"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "actor-type-tool-observation-start-delay",
     "owners": [
       "yuhengh@google.com",

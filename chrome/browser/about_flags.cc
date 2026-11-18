@@ -10850,6 +10850,10 @@ const FeatureEntry kFeatureEntries[] = {
          actor::kActorTypeToolObservationStartDelay,
          kActorTypeToolObservationStartDelayVariations,
          "ActorTypeToolObservationStartDelay")},
+    {"actor-throttle-offscreen-frame-rate",
+     flag_descriptions::kActorThrottleOffscreenFrameRateName,
+     flag_descriptions::kActorThrottleOffscreenFrameRateDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(actor::kActorThrottleOffscreenFrameRate)},
 #if BUILDFLAG(IS_ANDROID)
     {"actor-silence-notifications-after-first-working",
      flag_descriptions::kActorSilenceNotificationsAfterFirstWorkingName,

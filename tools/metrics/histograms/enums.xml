@@ -17225,6 +17225,7 @@ from previous Chrome versions.
   <int value="642037198" label="SoleIntegration:disabled"/>
   <int value="642601306" label="ForceInitialSyncWhenDecryptionFails:enabled"/>
   <int value="642678255" label="ExoGamepadVibration:disabled"/>
+  <int value="642905079" label="ActorThrottleOffscreenFrameRate:disabled"/>
   <int value="643011347" label="EnableCertManagementUIV2Write:enabled"/>
   <int value="643068614"
       label="CrossOriginOpenerPolicyAccessReporting:enabled"/>
@@ -20995,6 +20996,7 @@ from previous Chrome versions.
   <int value="1750693293" label="AutofillPreventMixedFormsFilling:enabled"/>
   <int value="1750824169" label="OmniboxOnDeviceTailModel:disabled"/>
   <int value="1751127292" label="EncryptedClientHello:enabled"/>
+  <int value="1751908843" label="ActorThrottleOffscreenFrameRate:enabled"/>
   <int value="1752168018" label="enable-stale-while-revalidate"/>
   <int value="1752391215" label="GlicBackgroundTriggering:disabled"/>
   <int value="1752433105" label="MacCatapSystemAudioLoopbackCapture:disabled"/>

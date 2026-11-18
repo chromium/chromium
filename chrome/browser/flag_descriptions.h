@@ -1937,6 +1937,12 @@ inline constexpr char kActorStepProgressNotificationDescription[] =
     "Enables streaming Actor task step progress worklog notification updates "
     "on Android.";
 
+inline constexpr char kActorThrottleOffscreenFrameRateName[] =
+    "Actor throttle offscreen frame rate";
+inline constexpr char kActorThrottleOffscreenFrameRateDescription[] =
+    "Throttles frame delivery for offscreen-rendered pages on Android to "
+    "reduce background CPU and battery usage.";
+
 inline constexpr char kActorTypeToolObservationStartDelayName[] =
     "Actor type tool observation start delay";
 inline constexpr char kActorTypeToolObservationStartDelayDescription[] =

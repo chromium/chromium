@@ -195,6 +195,11 @@ extern const base::FeatureParam<base::TimeDelta> kActorClickDelayParam;
 BASE_DECLARE_FEATURE(kActorTypeToolEnterDelay);
 extern const base::FeatureParam<base::TimeDelta> kActorTypeToolEnterDelayParam;
 
+// Throttles frame delivery for offscreen-rendered pages on Android to
+// `kActorOffscreenFrameInterval`.
+BASE_DECLARE_FEATURE(kActorThrottleOffscreenFrameRate);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kActorOffscreenFrameInterval);
+
 }  // namespace actor
 
 #endif  // COMPONENTS_ACTOR_CORE_ACTOR_FEATURES_H_

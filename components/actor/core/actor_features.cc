@@ -265,4 +265,12 @@ const base::FeatureParam<base::TimeDelta> kActorTypeToolEnterDelayParam{
     &kActorTypeToolEnterDelay, "actor-type-tool-enter-delay",
     base::Milliseconds(600)};
 
+BASE_FEATURE(kActorThrottleOffscreenFrameRate,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kActorOffscreenFrameInterval,
+                   &kActorThrottleOffscreenFrameRate,
+                   base::Milliseconds(60));
+
 }  // namespace actor
