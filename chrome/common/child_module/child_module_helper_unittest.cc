@@ -56,7 +56,7 @@ TEST(ChildModuleHelperTest, GetRendererBinaryPath) {
   base::FilePath expected_path = modules_dir.AppendASCII("147.0.7727.51");
 #if BUILDFLAG(IS_WIN)
   expected_path = expected_path.Append(chrome::kRendererDll);
-#else
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   expected_path = expected_path.Append(chrome::kRendererProcessExecutableName);
 #endif
   EXPECT_EQ(GetRendererBinaryPath(modules_dir, version), expected_path);

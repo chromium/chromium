@@ -93,7 +93,9 @@ TEST(ChildModulePathsTest, CanonicalizeUserDataDir) {
   EXPECT_EQ(CanonicalizeUserDataDir(base::FilePath()), base::FilePath());
 }
 
-#else  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 TEST(ChildModulePathsTest, InitializeChildModuleRoot) {
   base::ScopedPathOverride user_data_dir_override(chrome::DIR_USER_DATA);
@@ -107,6 +109,6 @@ TEST(ChildModulePathsTest, InitializeChildModuleRoot) {
                 .AppendASCII(chrome::kChromeVersion));
 }
 
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 }  // namespace child_module

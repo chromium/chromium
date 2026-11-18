@@ -165,11 +165,6 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "base/files/file_util.h"
-#include "base/version.h"
-#include "chrome/browser/child_module/child_module_manager.h"
-#include "chrome/browser/child_module/child_module_paths.h"
-#include "chrome/browser/child_module/features.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
@@ -179,12 +174,9 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/child_module/child_module_helper.h"
-#include "chrome/common/chrome_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/child_process_host.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "media/base/picture_in_picture_events_info.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
@@ -192,6 +184,17 @@
 #else
 #include "base/system/sys_info.h"
 #endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#include "base/files/file_util.h"
+#include "base/version.h"
+#include "chrome/browser/child_module/child_module_manager.h"
+#include "chrome/browser/child_module/child_module_paths.h"
+#include "chrome/browser/child_module/features.h"
+#include "chrome/common/child_module/child_module_helper.h"
+#include "chrome/common/chrome_constants.h"
+#include "content/public/browser/child_process_host.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_tab_helper.h"

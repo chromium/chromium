@@ -70,9 +70,6 @@ class ApplicationAdvancedProtectionStatusDetector;
 }  // namespace safe_browsing
 
 #if !BUILDFLAG(IS_ANDROID)
-namespace child_module {
-class ChildModuleManager;
-}  // namespace child_module
 class ProfileLaunchObserver;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -97,6 +94,10 @@ class OnDeviceTranslationInstaller;
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+namespace child_module {
+class ChildModuleManager;
+}  // namespace child_module
+
 namespace scheduled_restart {
 class ScheduledRestartBubbleController;
 class ScheduledRestartManager;
@@ -247,10 +248,6 @@ class GlobalFeatures {
   GetUserDataFactoryForTesting();
 
 #if !BUILDFLAG(IS_ANDROID)
-  child_module::ChildModuleManager* child_module_manager() {
-    return child_module_manager_.get();
-  }
-
   // Prefer using ProfileLaunchObserver::GetInstance() over calling this method
   // directly.
   ProfileLaunchObserver* profile_launch_observer() {
@@ -259,6 +256,10 @@ class GlobalFeatures {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  child_module::ChildModuleManager* child_module_manager() {
+    return child_module_manager_.get();
+  }
+
   scheduled_restart::ScheduledRestartBubbleController*
   scheduled_restart_bubble_controller() {
     return scheduled_restart_bubble_controller_.get();
@@ -379,8 +380,6 @@ class GlobalFeatures {
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 #if !BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<child_module::ChildModuleManager> child_module_manager_;
-
   std::unique_ptr<on_device_translation::OnDeviceTranslationInstaller>
       on_device_translation_installer_;
 
@@ -393,6 +392,7 @@ class GlobalFeatures {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  std::unique_ptr<child_module::ChildModuleManager> child_module_manager_;
   std::unique_ptr<scheduled_restart::ScheduledRestartBubbleController>
       scheduled_restart_bubble_controller_;
   std::unique_ptr<scheduled_restart::ScheduledRestartManager>

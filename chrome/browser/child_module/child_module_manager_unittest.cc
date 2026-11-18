@@ -38,10 +38,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// TODO(crbug.com/558598893): Dynamic child module staging and FilePathWatcher
-// are not yet supported on macOS.
-#if !BUILDFLAG(IS_MAC)
-
 namespace {
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
@@ -359,10 +355,6 @@ TEST_F(ChildModuleManagerTest, GetModuleForUnknownProcessIdReturnsNullopt) {
                 .CopyAsOptional(),
             std::nullopt);
 }
-
-// Dynamic child module execution is not supported and not planned on ChromeOS,
-// as dynamic patching itself is not needed on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ChildModuleManagerTest,
        ReselectingModuleForReusedProcessUpdatesAndClearsAssociation) {
@@ -854,8 +846,4 @@ TEST_F(ChildModuleManagerTest,
   EXPECT_THAT(SelectModuleForNewHost(), Optional(ExpectedModule(kVersion)));
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 }  // namespace child_module
-
-#endif  // !BUILDFLAG(IS_MAC)

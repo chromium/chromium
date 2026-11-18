@@ -572,12 +572,10 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
-#include "chrome/browser/child_module/child_module_manager.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/digital_credentials/digital_identity_provider_desktop.h"
 #include "chrome/browser/direct_sockets/chrome_direct_sockets_delegate.h"
 #include "chrome/browser/glic/public/features.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/headless/headless_command_processor.h"
 #include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
 #include "chrome/browser/loader/features.h"
@@ -621,6 +619,11 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/child_module/child_module_manager.h"
+#include "chrome/browser/global_features.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/webui_url_constants.h"

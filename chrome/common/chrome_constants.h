@@ -46,10 +46,12 @@ inline constexpr base::FilePath::CharType kStatusTrayWindowClass[] =
 // App name used to build the Omnibox Everywhere AppUserModelId.
 inline constexpr wchar_t kOmniboxEverywhereAppName[] =
     L"app_search_with_chrome";
-#else
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 inline constexpr base::FilePath::CharType kRendererProcessExecutableName[] =
     FILE_PATH_LITERAL("chrome_renderer");
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 inline constexpr char kInitialProfile[] = "Default";
 inline constexpr char kMultiProfileDirPrefix[] = "Profile ";

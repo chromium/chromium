@@ -1566,7 +1566,6 @@ source_set("core") {
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/badging",
       "//chrome/browser/captive_portal",
-      "//chrome/browser/child_module",
       "//chrome/browser/device_api",
       "//chrome/browser/device_api:impl",
       "//chrome/browser/dictation",
@@ -1650,6 +1649,7 @@ source_set("core") {
     sources += [ "platform_util.cc" ]
     deps += [
       "//chrome/browser/browser_switcher",
+      "//chrome/browser/child_module",
       "//chrome/browser/default_browser",
       "//chrome/browser/ui/startup/default_browser_prompt",
       "//chrome/browser/ui/views/scheduled_restart",
@@ -5094,9 +5094,14 @@ source_set("core_unit_tests") {
     }
   } else {
     deps += [
-      "//chrome/browser/child_module",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/web_applications:web_applications_test_support",
+    ]
+  }
+
+  if (is_win || is_mac || is_linux) {
+    deps += [
+      "//chrome/browser/child_module",
       "//chrome/common/child_module",
     ]
   }

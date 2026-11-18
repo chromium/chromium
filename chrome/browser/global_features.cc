@@ -39,8 +39,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/background/glic/glic_background_mode_manager.h"
-#include "chrome/browser/child_module/child_module_manager.h"
-#include "chrome/browser/child_module/features.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_drag_api/desktop_tab_drag_impl/tab_drag_session_desktop_injector.h"
@@ -50,6 +48,8 @@
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/child_module/child_module_manager.h"
+#include "chrome/browser/child_module/features.h"
 #include "chrome/browser/default_browser/default_browser_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_registrar.h"
@@ -297,12 +297,14 @@ void GlobalFeatures::PreMainMessageLoopRun() {
       custom_form_control_script_index_->InitializeFromDirectory(directory);
     }
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   if (base::FeatureList::IsEnabled(child_module::features::kDynamicPatching)) {
     child_module_manager_ = std::make_unique<child_module::ChildModuleManager>(
         *g_browser_process->local_state());
   }
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_MAC)
   if (features::IsGlassFrameEnabled()) {
@@ -315,7 +317,6 @@ void GlobalFeatures::PreMainMessageLoopRun() {
 
 void GlobalFeatures::PostMainMessageLoopRun() {
 #if !BUILDFLAG(IS_ANDROID)
-  child_module_manager_.reset();
   smart_restart_manager_.reset();
   smart_restart_metrics_observer_.reset();
   profile_launch_observer_.reset();
@@ -324,6 +325,7 @@ void GlobalFeatures::PostMainMessageLoopRun() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   scheduled_restart_bubble_controller_.reset();
   scheduled_restart_manager_.reset();
+  child_module_manager_.reset();
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

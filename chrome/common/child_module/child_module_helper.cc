@@ -26,7 +26,7 @@ base::FilePath GetRendererBinaryPath(const base::FilePath& modules_dir,
       .AppendASCII(version.GetString())
 #if BUILDFLAG(IS_WIN)
       .Append(chrome::kRendererDll);
-#else
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       .Append(chrome::kRendererProcessExecutableName);
 #endif
 }

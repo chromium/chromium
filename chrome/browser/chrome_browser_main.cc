@@ -162,8 +162,6 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/publisher_host_factory_impl.h"
-#include "chrome/browser/child_module/child_module_paths.h"
-#include "chrome/browser/child_module/features.h"
 #include "chrome/browser/headless/chrome_browser_main_extra_parts_headless.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
@@ -208,6 +206,8 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/child_module/child_module_paths.h"
+#include "chrome/browser/child_module/features.h"
 #include "chrome/browser/headless/headless_mode_metrics.h"  // nogncheck
 #include "chrome/browser/headless/headless_mode_util.h"     // nogncheck
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
@@ -1299,7 +1299,7 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 
   CHECK(!user_data_dir_.empty(), base::NotFatalUntil::M162);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // Set chrome::DIR_CHILD_MODULE_ROOT before its consumers (e.g.,
   // ChildModuleManager) are created in PreMainMessageLoopRunImpl().
   if (base::FeatureList::IsEnabled(child_module::features::kDynamicPatching)) {

@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(!is_android)
+assert(is_win || is_mac || is_linux,
+       "Child module updates are only supported on desktop platforms.")
 
 source_set("child_module") {
   public = [
@@ -33,7 +34,8 @@ source_set("child_module") {
 
   if (is_win) {
     sources += [ "child_module_paths_win.cc" ]
-  } else {
+  }
+  if (is_mac || is_linux) {
     sources += [ "child_module_paths_stub.cc" ]
   }
 }
@@ -41,22 +43,27 @@ source_set("child_module") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "child_module_manager_unittest.cc",
-    "child_module_paths_unittest.cc",
-  ]
+  sources = [ "child_module_paths_unittest.cc" ]
 
   deps = [
     ":child_module",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser:browser_process",
     "//chrome/common:constants",
     "//chrome/common/child_module",
-    "//chrome/test:test_support",
-    "//components/prefs:test_support",
-    "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/558598893): Dynamic child module staging and FilePathWatcher
+  # are not yet supported on macOS.
+  if (is_win || is_linux) {
+    sources += [ "child_module_manager_unittest.cc" ]
+    deps += [
+      "//chrome/browser:browser_process",
+      "//chrome/test:test_support",
+      "//components/prefs:test_support",
+      "//content/test:test_support",
+    ]
+  }
 }

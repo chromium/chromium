@@ -2992,7 +2992,6 @@ test("unit_tests") {
       "//chrome/browser/apps/intent_helper:unit_tests",
       "//chrome/browser/autofill/actor:unit_tests",
       "//chrome/browser/background:unit_tests",
-      "//chrome/browser/child_module:unit_tests",
       "//chrome/browser/context_hub/record_replay:unit_tests",
       "//chrome/browser/contextual_cueing:unit_tests",
       "//chrome/browser/contextual_search:unit_tests",
@@ -3118,7 +3117,6 @@ test("unit_tests") {
       "//chrome/browser/ui/window_metadata:unit_tests",
       "//chrome/browser/user_education:unit_tests",
       "//chrome/browser/webapps/installable:unit_tests",
-      "//chrome/common/child_module:unit_tests",
       "//chrome/test/fuzzing:unit_tests",
       "//chrome/test/interaction:unit_tests",
       "//chrome/utility:unit_tests",
@@ -3453,8 +3451,10 @@ test("unit_tests") {
       "../browser/ui/webui/password_manager:mojo_bindings",
       "../browser/ui/webui/whats_new:mojo_bindings",
       "//chrome/browser/browser_switcher:unit_tests",
+      "//chrome/browser/child_module:unit_tests",
       "//chrome/browser/ui/webui/browser_switch:unit_tests",
       "//chrome/browser/ui/webui/whats_new:unit_tests",
+      "//chrome/common/child_module:unit_tests",
     ]
   }
 

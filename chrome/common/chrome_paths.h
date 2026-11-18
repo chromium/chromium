@@ -126,7 +126,7 @@ enum {
   DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,  // Directory where verified models
                                              // downloaded by the Optimization
                                              // Guide are stored.
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   DIR_CHILD_MODULE_ROOT,  // Directory in which child module versions (e.g.,
                           // dynamic patches) for the running browser are
                           // staged. Set by the browser process at startup if

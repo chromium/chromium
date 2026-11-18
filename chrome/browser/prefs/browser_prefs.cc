@@ -312,7 +312,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/ui/actor_ui_state_manager_prefs.h"
-#include "chrome/browser/child_module/child_module_manager.h"
 #include "chrome/browser/desktop_to_mobile_promos/promos_utils.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/gcm/gcm_product_util.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
@@ -540,6 +539,7 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
+#include "chrome/browser/child_module/child_module_manager.h"
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "chrome/browser/lifetime/scheduled_restart_manager.h"
 #endif
@@ -1891,7 +1891,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(first_run::kTosDialogBehavior, 0);
   registry->RegisterBooleanPref(lens::kLensCameraAssistedSearchEnabled, true);
 #else   // BUILDFLAG(IS_ANDROID)
-  child_module::ChildModuleManager::RegisterLocalStatePrefs(registry);
   gcm::RegisterPrefs(registry);
   headless::RegisterPrefs(registry);
   media_router::RegisterLocalStatePrefs(registry);
@@ -1917,6 +1916,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  child_module::ChildModuleManager::RegisterLocalStatePrefs(registry);
   scheduled_restart::ScheduledRestartManager::RegisterLocalStatePrefs(registry);
   WhatsNewUI::RegisterLocalStatePrefs(registry);
 #endif

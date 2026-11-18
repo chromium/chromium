@@ -358,6 +358,7 @@ source_set("impl") {
   if (is_win || is_mac || is_linux) {
     deps += [
       "//chrome/browser/browser_switcher",
+      "//chrome/browser/child_module",
       "//chrome/browser/ui/webui/whats_new",
     ]
   }
@@ -394,7 +395,6 @@ source_set("impl") {
   } else {
     deps += [
       "//chrome/browser/actor/ui",
-      "//chrome/browser/child_module",
       "//chrome/browser/desktop_to_mobile_promos:utils",
       "//chrome/browser/device_identity",
       "//chrome/browser/new_tab_page",
