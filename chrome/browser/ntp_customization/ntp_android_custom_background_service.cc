@@ -112,21 +112,37 @@ bool AreChromeColorsEquivalent(const sync_pb::ChromeColorInfo& a,
   return a.theme_color_id() == b.theme_color_id();
 }
 
+// Whether `a` and `b` describe the same custom background. Whether daily
+// refresh is enabled must match; two backgrounds with daily refresh then match
+// on the collection alone, whichever image and main color each device has
+// rotated to, since the rotation isn't synced. Mirrors
+// NtpBackgroundDataThemeCollection#isSameThemeAcrossDevices on the Java side.
+bool AreCustomBackgroundsEquivalent(const sync_pb::NtpCustomBackground& a,
+                                    const sync_pb::NtpCustomBackground& b) {
+  // Only whether the refresh timestamp is set matters, not its value.
+  const bool a_daily = a.refresh_timestamp_unix_epoch_seconds() != 0;
+  const bool b_daily = b.refresh_timestamp_unix_epoch_seconds() != 0;
+  if (a_daily != b_daily) {
+    return false;
+  }
+
+  if (a_daily) {
+    return a.collection_id() == b.collection_id();
+  }
+
+  return a.url() == b.url() && a.collection_id() == b.collection_id() &&
+         a.main_color() == b.main_color();
+}
+
 // Whether `a` and `b` describe the same theme, be it a Chrome color, a custom
 // background or the default theme. Compares only the fields
 // OnThemeChangedFromSync() acts on: attributions and resume token don't affect
-// which theme is applied; whether a refresh timestamp is set determines
-// `daily_refresh_enabled`, whereas its exact non-zero value doesn't.
+// which theme is applied.
 bool AreThemeSpecificsEquivalent(const sync_pb::ThemeAndroidSpecifics& a,
                                  const sync_pb::ThemeAndroidSpecifics& b) {
   return AreChromeColorsEquivalent(a.chrome_color_info(),
                                    b.chrome_color_info()) &&
-         a.ntp_background().url() == b.ntp_background().url() &&
-         a.ntp_background().collection_id() ==
-             b.ntp_background().collection_id() &&
-         (a.ntp_background().refresh_timestamp_unix_epoch_seconds() != 0) ==
-             (b.ntp_background().refresh_timestamp_unix_epoch_seconds() != 0) &&
-         a.ntp_background().main_color() == b.ntp_background().main_color();
+         AreCustomBackgroundsEquivalent(a.ntp_background(), b.ntp_background());
 }
 
 // Whether OnThemeChangedFromSync() resets to the default theme for

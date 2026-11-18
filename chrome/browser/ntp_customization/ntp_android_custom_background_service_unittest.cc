@@ -55,8 +55,9 @@ constexpr char kTestImageFileName[] = "test.png";
 // Valid theme color IDs (NtpThemeColorId.NTP_COLORS_BLUE and _AQUA).
 constexpr int kTestColorId = 1;
 constexpr int kOtherColorId = 2;
-// Any non-zero value marks a synced Chrome color as refreshed daily.
-constexpr int64_t kTestDailyRefreshTimestampMillis = 1234;
+// Any non-zero value marks a synced Chrome color or background as refreshed
+// daily.
+constexpr int64_t kTestDailyRefreshTimestamp = 1234;
 
 class MockThemeCollectionBridge : public NtpThemeCollectionBridge {
  public:
@@ -146,10 +147,16 @@ class NtpAndroidCustomBackgroundServiceTest : public testing::Test {
 
   sync_pb::ThemeAndroidSpecifics CreateTestThemeSpecifics(
       const std::string& url = kTestValidUrl,
-      const std::string& collection_id = kTestCollectionId) {
+      const std::string& collection_id = kTestCollectionId,
+      bool daily_refresh_enabled = false) {
     sync_pb::ThemeAndroidSpecifics specifics;
     specifics.mutable_ntp_background()->set_url(url);
     specifics.mutable_ntp_background()->set_collection_id(collection_id);
+    if (daily_refresh_enabled) {
+      specifics.mutable_ntp_background()
+          ->set_refresh_timestamp_unix_epoch_seconds(
+              kTestDailyRefreshTimestamp);
+    }
     return specifics;
   }
 
@@ -161,7 +168,7 @@ class NtpAndroidCustomBackgroundServiceTest : public testing::Test {
     if (daily_refresh_enabled) {
       specifics.mutable_chrome_color_info()
           ->set_last_daily_update_timestamp_unix_epoch_millis(
-              kTestDailyRefreshTimestampMillis);
+              kTestDailyRefreshTimestamp);
     }
     return specifics;
   }
@@ -194,6 +201,16 @@ class NtpAndroidCustomBackgroundServiceTest : public testing::Test {
       NtpAndroidCustomBackgroundService* service) {
     return InstallMockSyncedBridge<testing::StrictMock<MockSyncedThemeBridge>>(
         service);
+  }
+
+  // Selects kTestValidUrl of kTestCollectionId on this device, as the theme
+  // collection picker does once the image's color is known.
+  void SelectThemeCollectionImage(bool is_daily_refresh) {
+    service_->UpdateThemeCollectionPrefsWithColor(
+        GURL(kTestValidUrl), kTestCollectionId,
+        /*attribution_line_1=*/std::string(),
+        /*attribution_line_2=*/std::string(), /*attribution_action_url=*/GURL(),
+        SK_ColorBLUE, is_daily_refresh);
   }
 
   std::map<std::string, sync_pb::ThemeAndroidSpecifics> ReadAllSyncData() {
@@ -633,11 +650,7 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
   // below would rebuild the preference dictionary and lose the attribution.
   service_->OnThemeChangedFromSync(specifics);
 
-  service_->UpdateThemeCollectionPrefsWithColor(
-      GURL(kTestValidUrl), kTestCollectionId,
-      /*attribution_line_1=*/std::string(),
-      /*attribution_line_2=*/std::string(), /*attribution_action_url=*/GURL(),
-      SK_ColorBLUE, /*is_daily_refresh=*/false);
+  SelectThemeCollectionImage(/*is_daily_refresh=*/false);
 
   const base::DictValue& dict = GetCustomBackgroundDict();
   EXPECT_EQ(kTestAttribution1,
@@ -647,28 +660,71 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
-       OnThemeChangedFromSync_DailyRefreshTurnedOffForSameBackground_Applies) {
-  service_->UpdateThemeCollectionPrefsWithColor(
-      GURL(kTestValidUrl), kTestCollectionId,
-      /*attribution_line_1=*/std::string(),
-      /*attribution_line_2=*/std::string(), /*attribution_action_url=*/GURL(),
-      SK_ColorBLUE, /*is_daily_refresh=*/true);
-  ASSERT_TRUE(service_->GetCustomBackground().has_value());
-  ASSERT_TRUE(service_->GetCustomBackground()->daily_refresh_enabled);
+       OnThemeChangedFromSync_DailyBackgroundOtherImage_DoesNotNotifyBridge) {
+  SelectThemeCollectionImage(/*is_daily_refresh=*/true);
+
+  InstallStrictMockSyncedBridge(service_.get());
+
+  // Daily refresh rotates the image on each device, so a daily collection
+  // replayed by sync, or chosen on another device, is the same theme whichever
+  // image and main color it currently shows.
+  sync_pb::ThemeAndroidSpecifics specifics = CreateTestThemeSpecifics(
+      kTestValidUrl2, kTestCollectionId, /*daily_refresh_enabled=*/true);
+  specifics.mutable_ntp_background()->set_main_color(SK_ColorRED);
+  service_->OnThemeChangedFromSync(specifics);
+
+  const base::DictValue& dict = GetCustomBackgroundDict();
+  EXPECT_EQ(kTestValidUrl, *dict.FindString(kNtpCustomBackgroundURL));
+  EXPECT_EQ(SK_ColorBLUE,
+            static_cast<SkColor>(*dict.FindInt(kNtpCustomBackgroundMainColor)));
+  service_->SetSyncedThemeBridgeForTesting(nullptr);
+}
+
+TEST_F(
+    NtpAndroidCustomBackgroundServiceTest,
+    OnThemeChangedFromSync_SameBackgroundDailyRefreshChanged_NotifiesBridge) {
+  SelectThemeCollectionImage(/*is_daily_refresh=*/false);
 
   testing::StrictMock<MockSyncedThemeBridge>* mock_synced_bridge =
       InstallStrictMockSyncedBridge(service_.get());
-  EXPECT_CALL(*mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true));
 
-  sync_pb::ThemeAndroidSpecifics specifics = CreateTestThemeSpecifics();
-  specifics.mutable_ntp_background()->set_refresh_timestamp_unix_epoch_seconds(
-      0);
+  // Turning daily refresh on for the current image on another device.
+  sync_pb::ThemeAndroidSpecifics specifics = CreateTestThemeSpecifics(
+      kTestValidUrl, kTestCollectionId, /*daily_refresh_enabled=*/true);
   specifics.mutable_ntp_background()->set_main_color(SK_ColorBLUE);
+  EXPECT_CALL(*mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true));
   service_->OnThemeChangedFromSync(specifics);
+  std::optional<CustomBackground> bg = service_->GetCustomBackground();
+  ASSERT_TRUE(bg.has_value());
+  EXPECT_TRUE(bg->daily_refresh_enabled);
+  testing::Mock::VerifyAndClearExpectations(mock_synced_bridge);
+
+  // Turning it off again.
+  specifics.mutable_ntp_background()
+      ->clear_refresh_timestamp_unix_epoch_seconds();
+  EXPECT_CALL(*mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true));
+  service_->OnThemeChangedFromSync(specifics);
+  bg = service_->GetCustomBackground();
+  ASSERT_TRUE(bg.has_value());
+  EXPECT_FALSE(bg->daily_refresh_enabled);
+  service_->SetSyncedThemeBridgeForTesting(nullptr);
+}
+
+TEST_F(NtpAndroidCustomBackgroundServiceTest,
+       OnThemeChangedFromSync_DailyBackgroundOtherCollection_NotifiesBridge) {
+  SelectThemeCollectionImage(/*is_daily_refresh=*/true);
+
+  testing::StrictMock<MockSyncedThemeBridge>* mock_synced_bridge =
+      InstallStrictMockSyncedBridge(service_.get());
+
+  // Another collection is another theme, with daily refresh as well.
+  EXPECT_CALL(*mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true));
+  service_->OnThemeChangedFromSync(CreateTestThemeSpecifics(
+      kTestValidUrl, kTestCollectionIdA, /*daily_refresh_enabled=*/true));
 
   std::optional<CustomBackground> bg = service_->GetCustomBackground();
   ASSERT_TRUE(bg.has_value());
-  EXPECT_FALSE(bg->daily_refresh_enabled);
+  EXPECT_EQ(kTestCollectionIdA, bg->collection_id);
   service_->SetSyncedThemeBridgeForTesting(nullptr);
 }
 
