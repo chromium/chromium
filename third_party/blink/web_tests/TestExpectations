@@ -2091,6 +2091,7 @@ crbug.com/549563895 [ Debug Linux ] external/wpt/webdriver/tests/classic/new_win
 crbug.com/565447575 [ Debug Linux ] external/wpt/webdriver/tests/classic/perform_actions/navigation.py [ Failure Pass Timeout ]
 crbug.com/540619916 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/pointer_dblclick.py [ Failure ]
 crbug.com/547617167 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/pointer_modifier_click.py [ Failure ]
+crbug.com/587450809 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/pointer_pause_dblclick.py [ Failure Pass ]
 crbug.com/560925587 [ Debug Linux ] external/wpt/webdriver/tests/classic/perform_actions/user_prompts.py [ Crash Failure Pass Timeout ]
 crbug.com/428744357 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/wheel.py [ Failure Pass Timeout ]
 crbug.com/568343392 [ Linux ] external/wpt/webdriver/tests/classic/set_timeouts/user_prompts.py [ Failure Pass ]
