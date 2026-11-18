@@ -219,7 +219,8 @@ pub fn MojoGetMessageData<'a>(
     match MojoGetMessageDataInternal(message, handles) {
         GetMessageDataStatus::Success { bytes: (buffer, buffer_size), num_handles_written } => {
             GetMessageDataStatus::Success {
-                // SAFETY: `MojoGetMessageDataInternal` promises this call is safe
+                // SAFETY: `MojoGetMessageDataInternal` promises this call is
+                // safe
                 bytes: unsafe { std::slice::from_raw_parts(buffer, buffer_size) },
                 num_handles_written,
             }
@@ -243,8 +244,8 @@ pub fn MojoGetMessageDataMut<'a>(
     match MojoGetMessageDataInternal(message, handles) {
         GetMessageDataStatus::Success { bytes: (buffer, buffer_size), num_handles_written } => {
             GetMessageDataStatus::Success {
-                // SAFETY: `MojoGetMessageDataInternal` promises this call is safe,
-                // and we have a mutable reference to `message`.
+                // SAFETY: `MojoGetMessageDataInternal` promises this call is
+                // safe, and we have a mutable reference to `message`.
                 bytes: unsafe { std::slice::from_raw_parts_mut(buffer, buffer_size) },
                 num_handles_written,
             }
@@ -271,7 +272,7 @@ pub fn MojoGetMessageDataMut<'a>(
 /// In both cases, the lifetime of the slice is the same as that of `message`.
 fn MojoGetMessageDataInternal(
     message: &MessageHandle,
-    handles: Option<&mut [std::mem::MaybeUninit<UntypedHandle>]>,
+    mut handles: Option<&mut [std::mem::MaybeUninit<UntypedHandle>]>,
 ) -> GetMessageDataStatus<(*mut u8, usize)> {
     let flags = if handles.is_none() {
         GetMessageDataFlags::IGNORE_HANDLES
@@ -282,10 +283,10 @@ fn MojoGetMessageDataInternal(
 
     let mut buffer: *mut std::ffi::c_void = std::ptr::null_mut();
     let mut num_bytes: u32 = 0;
-    let (handles_ptr, mut num_handles) = match handles {
-        // SAFETY: This cast is sound because `MaybeUninit<UntypedHandle>` has the
-        // same memory layout as `UntypedHandle`, which has the same memory layout
-        // as `MojoHandle`.
+    let (handles_ptr, mut num_handles) = match handles.as_deref_mut() {
+        // SAFETY: This cast is sound because `MaybeUninit<UntypedHandle>` has
+        // the same memory layout as `UntypedHandle`, which has the same memory
+        // layout as `MojoHandle`.
         Some(slice) => (std::ptr::from_mut(slice).cast(), slice.len().try_into().unwrap()),
         None => (std::ptr::null_mut(), 0),
     };
@@ -310,6 +311,20 @@ fn MojoGetMessageDataInternal(
             // Will not panic if usize has at least 32 bits, which is true for
             // Chromium targets
             let buffer_size: usize = num_bytes.try_into().unwrap();
+            let num_handles_written: usize = num_handles.try_into().unwrap();
+            // Validate all the returned handles (nonzero, not pseudohandles)
+            if let Some(slice) = handles {
+                for handle_slot in &mut slice[..num_handles_written] {
+                    // SAFETY: `MojoGetMessageData` initialized the first
+                    // `num_handles_written` elements of `slice` with
+                    // `RawMojoHandle` values.
+                    let raw_handle: RawMojoHandle =
+                        unsafe { handle_slot.as_ptr().cast::<RawMojoHandle>().read() };
+                    // SAFETY: We just got this handle from Mojo, so it is live
+                    // and unowned.
+                    handle_slot.write(unsafe { UntypedHandle::wrap_raw_value(raw_handle) });
+                }
+            }
             // Mojo may return a null buffer if the payload is empty, but slices
             // must have a non-null pointer even when they're empty.
             let buffer: *mut u8 = if buffer.is_null() {
@@ -332,7 +347,7 @@ fn MojoGetMessageDataInternal(
             // is also writable.
             return GetMessageDataStatus::Success {
                 bytes: (buffer, buffer_size),
-                num_handles_written: num_handles.try_into().unwrap(),
+                num_handles_written,
             };
         }
         Err(MojoError::ResourceExhausted) => {

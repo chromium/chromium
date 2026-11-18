@@ -24,6 +24,7 @@ fn test_message_pipe() {
     // Create a new message pipe, which returns two interchangeable endpoint
     // handles.
     let (handle0, handle1) = mojo_ffi::message_pipe::MojoCreateMessagePipe().unwrap();
+    let (dummy_handle, _) = mojo_ffi::message_pipe::MojoCreateMessagePipe().unwrap();
 
     // Create a new message object. Initially, it has no payload.
     let mut message =
@@ -32,14 +33,14 @@ fn test_message_pipe() {
     let message_contents: u64 = 42424242;
     let message_bytes = message_contents.to_ne_bytes();
 
-    // Append our data payload (an 8-byte integer) to the message.
+    // Append our data payload (an 8-byte integer and a handle) to the message.
     // We use COMMIT_SIZE to indicate this is the final write, marking it ready
     // to be sent.
     let bytes_written = mojo_ffi::message::MojoAppendMessageData(
         &mut message,
         mojo_ffi::message::AppendMessageDataFlags::COMMIT_SIZE,
         &message_bytes,
-        vec![],
+        vec![dummy_handle],
     )
     .unwrap();
     assert_eq!(bytes_written, std::mem::size_of::<u64>());
@@ -51,8 +52,9 @@ fn test_message_pipe() {
     // Read the message from the second endpoint.
     let read_message = mojo_ffi::message_pipe::MojoReadMessage(&handle1).unwrap();
 
+    let mut read_handles = vec![std::mem::MaybeUninit::uninit()];
     // Extract the payload data from the received message object.
-    let data_status = mojo_ffi::message::MojoGetMessageData(&read_message, None);
+    let data_status = mojo_ffi::message::MojoGetMessageData(&read_message, Some(&mut read_handles));
     if let mojo_ffi::message::GetMessageDataStatus::Success { bytes, num_handles_written } =
         data_status
     {
@@ -60,13 +62,20 @@ fn test_message_pipe() {
         assert_eq!(bytes.len(), std::mem::size_of::<u64>());
         let read_contents = u64::from_ne_bytes(bytes.try_into().unwrap());
         assert_eq!(read_contents, message_contents);
-        assert_eq!(num_handles_written, 0);
+        assert_eq!(num_handles_written, 1);
+
+        // `MaybeUninit` skips drop handlers, so drop sent handles manually.
+        for _ in 0..num_handles_written {
+            let handle = read_handles.pop().unwrap();
+            // SAFETY: `MojoGetMessageData` promises the first
+            // `num_handles_written` entries are initialized.
+            drop(unsafe { handle.assume_init() });
+        }
     } else {
         panic!("MojoGetMessageData failed");
     }
 
-    // Handles and messages are safely closed/destroyed via their respective
-    // Drop implementations.
+    // Everything else is automatically dropped and closed.
 }
 
 #[gtest(RustSystemAPITestSuite, MojoSharedBufferTest)]
