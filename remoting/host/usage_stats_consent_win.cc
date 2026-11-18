@@ -21,6 +21,11 @@ namespace {
 const wchar_t kOmahaClientStateMedium[] = L"ClientStateMedium";
 const wchar_t kOmahaUsagestatsValue[] = L"usagestats";
 
+// Google Update stores its per-app state in the 32-bit registry view, so the
+// 64-bit host must access it explicitly via `KEY_WOW64_32KEY` (this flag is
+// ignored on 32-bit Windows).
+constexpr REGSAM kOmahaRegistryView = KEY_WOW64_32KEY;
+
 std::wstring GetClientState(const wchar_t* state_key) {
   return base::StrCat(
       {L"Software\\Google\\Update\\", state_key,
@@ -34,7 +39,8 @@ LONG ReadUsageStatsValue(const wchar_t* state_key, DWORD* usagestats_out) {
   // presubmit: allow wstring
   std::wstring client_state = GetClientState(state_key);
   base::win::RegKey key;
-  LONG result = key.Open(HKEY_LOCAL_MACHINE, client_state.c_str(), KEY_READ);
+  LONG result = key.Open(HKEY_LOCAL_MACHINE, client_state.c_str(),
+                         KEY_READ | kOmahaRegistryView);
   if (result != ERROR_SUCCESS) {
     return result;
   }
@@ -80,8 +86,8 @@ bool SetUsageStatsConsent(bool allowed) {
   // presubmit: allow wstring
   std::wstring client_state = GetClientState(kOmahaClientStateMedium);
   base::win::RegKey key;
-  LONG result =
-      key.Create(HKEY_LOCAL_MACHINE, client_state.c_str(), KEY_SET_VALUE);
+  LONG result = key.Create(HKEY_LOCAL_MACHINE, client_state.c_str(),
+                           KEY_SET_VALUE | kOmahaRegistryView);
   if (result == ERROR_SUCCESS) {
     result = key.WriteValue(kOmahaUsagestatsValue, value);
     if (result == ERROR_SUCCESS) {
