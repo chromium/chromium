@@ -422,10 +422,15 @@ bool IdentityDialogController::ShowFailureDialog(
   //   TODO: If the failure dialog is already being shown, notify user that
   //   sign-in attempt failed.
 
-  // Do not modify any member variables if the failure dialog is not shown
-  // because the caller may have destroyed this object.
+  // Do not access any member variables if the failure dialog is not shown
+  // because the caller may have destroyed this object. `ShowFailureDialog()` is
+  // not known to destroy `this` when returning true, but check `weak_this` as a
+  // preventative measure.
+  base::WeakPtr<IdentityDialogController> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   if (account_view_->ShowFailureDialog(rp_data, idp_for_display, rp_context,
-                                       rp_mode, idp_metadata)) {
+                                       rp_mode, idp_metadata) &&
+      weak_this) {
     DidInvokeShowUi();
     NotifyEmbedderOfResult(FederatedLoginResult::kAccountNotLoggedIn);
     return true;

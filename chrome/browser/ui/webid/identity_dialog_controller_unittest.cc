@@ -947,6 +947,46 @@ TEST_F(IdentityDialogControllerTest,
   }
 }
 
+// Tests that the controller does not access its members or notify the embedder
+// when it gets destroyed while showing the failure dialog, even if
+// `ShowFailureDialog()` returns true.
+TEST_F(IdentityDialogControllerTest,
+       ControllerDestroyedDuringShowFailureDialog) {
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  IdentityDialogController* controller_ptr = controller.get();
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  MockAccountSelectionView* mock_view_ptr = mock_view.get();
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+
+  base::MockCallback<
+      base::OnceCallback<void(content::webid::FederatedLoginResult)>>
+      embedder_callback;
+  content::webid::FederatedEmbedderLoginRequest::Set(
+      web_contents(), url::Origin::Create(GURL("https://idp.example")),
+      kAccountId, embedder_callback.Get());
+  base::ScopedClosureRunner remove_embedder_request(
+      base::BindOnce(&content::webid::FederatedEmbedderLoginRequest::Remove,
+                     base::Unretained(web_contents())));
+
+  // The view reports that the dialog was shown even though the controller was
+  // destroyed. The controller should report that the dialog was not shown and
+  // must not notify the embedder afterwards.
+  EXPECT_CALL(*mock_view_ptr, ShowFailureDialog).WillOnce([&controller]() {
+    controller.reset();
+    return true;
+  });
+  EXPECT_CALL(embedder_callback, Run).Times(0);
+  EXPECT_FALSE(controller_ptr->ShowFailureDialog(
+      content::RelyingPartyData(kTopFrameEtldPlusOne,
+                                /*iframe_for_display=*/u""),
+      kIdpEtldPlusOne, blink::mojom::RpContext::kSignIn,
+      blink::mojom::RpMode::kPassive, content::IdentityProviderMetadata(),
+      /*filtered_accounts=*/{},
+      /*dismiss_callback=*/base::DoNothing(),
+      /*login_callback=*/base::DoNothing()));
+  EXPECT_FALSE(controller);
+}
+
 TEST_F(IdentityDialogControllerTest, EmbedderNotifiedOfContinuation) {
   std::unique_ptr<IdentityDialogController> controller =
       std::make_unique<IdentityDialogController>(web_contents());
