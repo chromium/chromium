@@ -45,8 +45,9 @@
 # https://crrev.com/c/7539316, https://crrev.com/c/7763951,
 # https://crrev.com/c/7671607, https://crrev.com/c/7863615,
 # https://crrev.com/c/7893748, https://crrev.com/c/8132523,
-# https://crrev.com/c/8161746, https://crrev.com/c/8194052, and
-# https://crrev.com/c/8267284 on the bot.
+# https://crrev.com/c/8161746, https://crrev.com/c/8194052,
+# https://crrev.com/c/8267284, and https://crrev.com/c/8793351 on the bot.
+-PerformanceManagerBrowserTest.DetachSurfaceEmbedChildAfterEmbedderNavigation
 -SurfaceEmbedBrowserTest.FocusByClick
 -SurfaceEmbedBrowserTest.FocusByShiftTabKeyNoPreviousFocusableElement
 -SurfaceEmbedBrowserTest.FocusByTabKey
