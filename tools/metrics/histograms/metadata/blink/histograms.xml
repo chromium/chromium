@@ -3978,19 +3978,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.MobileMetrics.BadTapTargetRatioExtractionSucceed"
-    enum="Boolean" expires_after="2023-05-07">
-  <owner>kumagi@google.com</owner>
-  <owner>gaul@google.com</owner>
-  <owner>paint-dev@google.com</owner>
-  <summary>
-    Whether element extraction phase succeed without consuming entire 4ms time
-    budget in MobileFriendlinessChecker::ComputeBadTapTargetsRatio() evaluation.
-    This metric recorded at 5 seconds after first MainFrame's commit and
-    periodically every 1 minutes after that.
-  </summary>
-</histogram>
-
 <histogram name="Blink.ModelContext.DelayedToolCount" units="count"
     expires_after="2027-03-10">
   <owner>mfoltz@chromium.org</owner>
