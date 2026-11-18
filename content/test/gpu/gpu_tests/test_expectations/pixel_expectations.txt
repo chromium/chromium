@@ -455,8 +455,6 @@ crbug.com/40935289 crbug.com/581012244 [ angle-vulkan arm fuchsia web-engine-she
 crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_HEVC [ Failure ]
 crbug.com/519220175 [ angle-swiftshader fuchsia web-engine-shell ] Pixel_ReflectedDiv [ Failure ]
 
-# Flaky on Mac ASAN
-crbug.com/372055518 [ angle-metal asan mac ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
 
 
 # Win/AMD RX 7600 failures
@@ -478,7 +476,6 @@ crbug.com/402171652 [ win11 amd-0x7480 ] Pixel_DirectComposition_Video_VP9_BGRA 
 
 # Win11/GTX 1660 experimental flaky failures when going to 610.74
 crbug.com/543955581 [ win11 nvidia-0x2184 nvidia_ge_32.0.16.1074 ] Pixel_Video_Context_Loss_MP4 [ RetryOnFailure ]
-crbug.com/543955581 [ win11 nvidia-0x2184 nvidia_ge_32.0.16.1074 ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
 
 
 # Failures on all Mac and Windows bots running these tests
@@ -561,7 +558,6 @@ crbug.com/444653106 [ mac amd-0x7340 renderer-graphite-dawn-metal ] Pixel_CSSFil
 crbug.com/444653106 [ mac amd-0x7340 renderer-graphite-dawn-metal ] Pixel_CSSFilterEffects_NoOverlays [ Slow ]
 
 # Flaky all white image on multiple platforms
-crbug.com/510186413 [ linux ] Pixel_PaintWorkletTransform [ RetryOnFailure ]
 crbug.com/510186413 [ win ] Pixel_PaintWorkletTransform [ RetryOnFailure ]
 
 # Flakily loses DevTools websocket connection during browser startup.
@@ -583,7 +579,7 @@ crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] Pixel_Offscre
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
 
 # Flaky ServiceFontManager NOTREACHED crash on Mac Release builds
-crbug.com/579448963 [ mac no-asan release ] Pixel_WebGLGreenTriangle_NotInOverlay_AA_Alpha [ RetryOnFailure ]
+crbug.com/579448963 [ amd-0x67ef arch-x86_64 memory_ge_16gb no-asan no-clang-coverage release sonoma ] Pixel_WebGLGreenTriangle_NotInOverlay_AA_Alpha [ RetryOnFailure ]
 crbug.com/579448963 [ mac apple-angle-metal-renderer:-apple-m2 asan ] Pixel_WebGLGreenTriangle_NotInOverlay_AA_Alpha [ Failure ]
 
 crbug.com/582552066 [ android android-pixel-4 ] Pixel_Video_HEVC [ RetryOnFailure ]
