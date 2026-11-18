@@ -46,6 +46,22 @@ const ERROR_TIMEOUT_LONG_MS: number = 24000;
  */
 const ERROR_TIMEOUT_SHORT_MS: number = 9000;
 
+/**
+ * Minimum and maximum number of visible transcript lines before scrolling in
+ * audio-wave mode (see `:host([audio-wave-enabled]) #input` in
+ * `composebox_voice_search.css`).
+ */
+const MIN_TRANSCRIPT_LINES: number = 1;
+const MAX_TRANSCRIPT_LINES: number = 7;
+
+/**
+ * Top padding and line height in pixels of `#input` in audio-wave mode, used to
+ * compute the number of rendered transcript lines from `scrollHeight` (see
+ * `:host([audio-wave-enabled]) #input` in `composebox_voice_search.css`).
+ */
+const TRANSCRIPT_TOP_PADDING_PX: number = 20;
+const TRANSCRIPT_LINE_HEIGHT_PX: number = 24;
+
 // The set of controller states.
 enum State {
   // Initial state before voice recognition has been set up.
@@ -303,7 +319,7 @@ export class ComposeboxVoiceSearchElement extends
   accessor liveTranscriptEnabled: boolean = true;
   accessor manualSubmitIdleTimeout: number|undefined = undefined;
   accessor metricSource: string = '';
-  accessor transcriptLines: number = 1;
+  accessor transcriptLines: number = MIN_TRANSCRIPT_LINES;
   // Accept page callback router attribute asynchronously, so that the parent
   // and voice search component can share the same mojo connection and source of
   // truth (to avoid race conditions).
@@ -417,13 +433,18 @@ export class ComposeboxVoiceSearchElement extends
       if (input && this.audioWaveEnabled && this.liveTranscriptEnabled) {
         input.scrollTop = input.scrollHeight;
         const lines = !this.transcript_ ?
-            1 :
+            MIN_TRANSCRIPT_LINES :
             Math.min(
-                7, Math.max(1, Math.round((input.scrollHeight - 20) / 24)));
+                MAX_TRANSCRIPT_LINES,
+                Math.max(
+                    MIN_TRANSCRIPT_LINES,
+                    Math.round(
+                        (input.scrollHeight - TRANSCRIPT_TOP_PADDING_PX) /
+                        TRANSCRIPT_LINE_HEIGHT_PX)));
         this.transcriptLines = lines;
-        this.hasMultilineTranscript = lines > 1;
+        this.hasMultilineTranscript = lines > MIN_TRANSCRIPT_LINES;
       } else {
-        this.transcriptLines = 1;
+        this.transcriptLines = MIN_TRANSCRIPT_LINES;
         this.hasMultilineTranscript = false;
       }
     }
@@ -1059,7 +1080,7 @@ export class ComposeboxVoiceSearchElement extends
     this.errorMessage_ = '';
     this.detailedError = null;
     this.hasMultilineTranscript = false;
-    this.transcriptLines = 1;
+    this.transcriptLines = MIN_TRANSCRIPT_LINES;
     this.androidPreviousTranscript_ = '';
     this.androidRestartsWithoutResult_ = 0;
     WindowProxy.getInstance().clearTimeout(this.timerId_);
