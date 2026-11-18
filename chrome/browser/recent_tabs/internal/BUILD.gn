@@ -11,6 +11,7 @@ android_library("java") {
     ":*",
     "//chrome/android:chrome_all_java",
     "//chrome/browser/recent_tabs:helper_java",
+    "//chrome/browser/recent_tabs:junit",
   ]
 
   sources = [

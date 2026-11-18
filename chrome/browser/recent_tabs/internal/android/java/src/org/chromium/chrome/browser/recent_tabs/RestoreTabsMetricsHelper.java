@@ -23,6 +23,7 @@ public class RestoreTabsMetricsHelper {
         RestoreTabsOnFREPromoShowResult.NO_SYNCED_TABS,
         RestoreTabsOnFREPromoShowResult.NULL_PROFILE,
         RestoreTabsOnFREPromoShowResult.TAB_SYNC_DISABLED,
+        RestoreTabsOnFREPromoShowResult.TAB_GROUPS_NOT_READY,
         RestoreTabsOnFREPromoShowResult.NUM_ENTRIES
     })
     public @interface RestoreTabsOnFREPromoShowResult {
@@ -31,9 +32,10 @@ public class RestoreTabsMetricsHelper {
         int NO_SYNCED_TABS = 2;
         int NULL_PROFILE = 3;
         int TAB_SYNC_DISABLED = 4;
+        int TAB_GROUPS_NOT_READY = 5;
 
         // Be sure to also update enums.xml when updating these values.
-        int NUM_ENTRIES = 5;
+        int NUM_ENTRIES = 6;
     }
 
     // These values are persisted to logs. Entries should not be renumbered and

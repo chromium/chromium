@@ -2168,6 +2168,7 @@ chromium-metrics-reviews@google.com.
       label="No tabs were synced or synced tabs were not finished syncing"/>
   <int value="3" label="Promo was not shown due to a null profile"/>
   <int value="4" label="Tab sync was not enabled"/>
+  <int value="5" label="Synced tab groups had not loaded yet"/>
 </enum>
 
 <enum name="RestoreTabsOnFRERestoredTabsResult">
