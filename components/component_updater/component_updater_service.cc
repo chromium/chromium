@@ -36,6 +36,7 @@
 #include "components/component_updater/required_components_controller.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/update_client/cancellation.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/crx_cache.h"
 #include "components/update_client/crx_update_item.h"
@@ -452,7 +453,8 @@ void CrxUpdateService::StartOnDemandUpdate(const std::string& id,
 
 bool CrxUpdateService::Cancel(const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return update_client_->Cancel(id);
+  return update_client_->Cancel(
+      id, update_client::CancelMode::kDeletePartialDownload);
 }
 
 void CrxUpdateService::CheckForUpdates() {

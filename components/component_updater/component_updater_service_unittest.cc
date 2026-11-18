@@ -31,6 +31,7 @@
 #include "components/component_updater/timer_update_scheduler.h"
 #include "components/component_updater/update_scheduler.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/update_client/cancellation.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/test_installer.h"
@@ -43,6 +44,7 @@
 
 namespace component_updater {
 
+using CancelMode = ::update_client::CancelMode;
 using Configurator = ::update_client::Configurator;
 using Result = ::update_client::CrxInstaller::Result;
 using TestConfigurator = ::update_client::TestConfigurator;
@@ -112,7 +114,10 @@ class MockUpdateClient : public UpdateClient {
               (const, override));
   MOCK_METHOD(bool, IsUpdating, (const std::string& id), (const, override));
   MOCK_METHOD(void, Stop, (), (override));
-  MOCK_METHOD(bool, Cancel, (const std::string& id), (override));
+  MOCK_METHOD(bool,
+              Cancel,
+              (const std::string& id, CancelMode mode),
+              (override));
   MOCK_METHOD(void,
               SendPing,
               (const CrxComponent& crx_component,
@@ -749,7 +754,8 @@ TEST_F(ComponentUpdaterTest, PendingUnregistrationIsDrainedAfterProcessing) {
 
 TEST_F(ComponentUpdaterTest, Cancel) {
   const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-  EXPECT_CALL(update_client(), Cancel(id)).WillOnce(Return(true));
+  EXPECT_CALL(update_client(), Cancel(id, CancelMode::kDeletePartialDownload))
+      .WillOnce(Return(true));
   EXPECT_CALL(update_client(), Stop());
   EXPECT_CALL(scheduler(), Stop());
   EXPECT_TRUE(component_updater().Cancel(id));
@@ -869,8 +875,9 @@ TEST_F(ComponentUpdaterMeteredTest, MeteredConnectionStopsDownloads) {
   SetUpdateState(kComponent3, ComponentState::kUpdating);
 
   base::RunLoop run_loop;
-  EXPECT_CALL(update_client(), Cancel(kComponent1))
-      .WillOnce([&run_loop](const std::string&) {
+  EXPECT_CALL(update_client(),
+              Cancel(kComponent1, CancelMode::kDeletePartialDownload))
+      .WillOnce([&run_loop](const std::string&, CancelMode) {
         run_loop.Quit();
         return true;
       });
@@ -878,8 +885,8 @@ TEST_F(ComponentUpdaterMeteredTest, MeteredConnectionStopsDownloads) {
   // that is past its download are cancelled. All components are visited in
   // the single notification that cancels `kComponent1`, so quitting the loop
   // on that cancellation is enough to verify the two negative expectations.
-  EXPECT_CALL(update_client(), Cancel(kComponent2)).Times(0);
-  EXPECT_CALL(update_client(), Cancel(kComponent3)).Times(0);
+  EXPECT_CALL(update_client(), Cancel(kComponent2, _)).Times(0);
+  EXPECT_CALL(update_client(), Cancel(kComponent3, _)).Times(0);
 
   SetConnectionCost(net::NetworkChangeNotifier::CONNECTION_COST_METERED);
   run_loop.Run();
@@ -900,8 +907,9 @@ TEST_F(ComponentUpdaterMeteredTest, UnmeteredConnectionResumesStoppedDownload) {
     EXPECT_CALL(update_client(), Update(ElementsAre(kComponent1), _, _,
                                         /*is_foreground=*/true, _))
         .WillOnce(Return());
-    EXPECT_CALL(update_client(), Cancel(kComponent1))
-        .WillOnce([&cancel_loop](const std::string&) {
+    EXPECT_CALL(update_client(),
+                Cancel(kComponent1, CancelMode::kDeletePartialDownload))
+        .WillOnce([&cancel_loop](const std::string&, CancelMode) {
           cancel_loop.Quit();
           return true;
         });
@@ -958,14 +966,16 @@ TEST_F(ComponentUpdaterMeteredTest,
                                      update_client::Callback callback) {
           second_callback = std::move(callback);
         });
-    EXPECT_CALL(update_client(), Cancel(kComponent1))
-        .WillOnce([&second_callback, &cancel_loop](const std::string&) {
-          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE, base::BindOnce(std::move(second_callback),
-                                        update_client::Error::NONE));
-          cancel_loop.Quit();
-          return true;
-        });
+    EXPECT_CALL(update_client(),
+                Cancel(kComponent1, CancelMode::kDeletePartialDownload))
+        .WillOnce(
+            [&second_callback, &cancel_loop](const std::string&, CancelMode) {
+              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE, base::BindOnce(std::move(second_callback),
+                                            update_client::Error::NONE));
+              cancel_loop.Quit();
+              return true;
+            });
     EXPECT_CALL(update_client(), Update(ElementsAre(kComponent1), _, _,
                                         /*is_foreground=*/true, _))
         .WillOnce(
@@ -1095,8 +1105,9 @@ TEST_F(ComponentUpdaterMeteredTest,
   EXPECT_CALL(update_client(),
               Update(ElementsAre(kComponent3), _, _, /*is_foreground=*/true, _))
       .WillOnce(Return());
-  EXPECT_CALL(update_client(), Cancel(kComponent3))
-      .WillOnce([&cancel_loop](const std::string&) {
+  EXPECT_CALL(update_client(),
+              Cancel(kComponent3, CancelMode::kDeletePartialDownload))
+      .WillOnce([&cancel_loop](const std::string&, CancelMode) {
         cancel_loop.Quit();
         return true;
       });
@@ -1231,8 +1242,9 @@ TEST_F(ComponentUpdaterMeteredTest, DeferredForegroundUpdateStaysForeground) {
                                      update_client::Callback callback) {
           update_callback = std::move(callback);
         });
-    EXPECT_CALL(update_client(), Cancel(kComponent1))
-        .WillOnce([&update_callback](const std::string&) {
+    EXPECT_CALL(update_client(),
+                Cancel(kComponent1, CancelMode::kDeletePartialDownload))
+        .WillOnce([&update_callback](const std::string&, CancelMode) {
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE, base::BindOnce(std::move(update_callback),
                                         update_client::Error::NONE));
@@ -1348,8 +1360,9 @@ TEST_F(ComponentUpdaterMeteredTest,
                                update_client::Callback callback) {
         k2_callback = std::move(callback);
       });
-  EXPECT_CALL(update_client(), Cancel(kComponent2))
-      .WillOnce([&k2_callback, &cancel_loop](const std::string&) {
+  EXPECT_CALL(update_client(),
+              Cancel(kComponent2, CancelMode::kDeletePartialDownload))
+      .WillOnce([&k2_callback, &cancel_loop](const std::string&, CancelMode) {
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(std::move(k2_callback), update_client::Error::NONE));

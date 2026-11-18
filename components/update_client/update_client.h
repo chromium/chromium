@@ -144,9 +144,10 @@ enum class VerifierFormat;
 
 namespace update_client {
 
+enum class CancelMode;
 class Configurator;
-enum class Error;
 struct CrxUpdateItem;
+enum class Error;
 
 enum class ComponentState {
   kNew,            // The component has not yet been checked for updates.
@@ -425,7 +426,8 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
   // one CRX. These cases are usually associated with on-demand install
   // scenarios, which are triggered by user actions. Installs are never
   // queued up.
-  // Returns a closure that can be called to cancel the installation.
+  // Returns a closure that can be called to cancel the installation (deleting
+  // partial downloads).
   virtual base::RepeatingClosure Install(
       const std::string& id,
       CrxDataCallback crx_data_callback,
@@ -485,7 +487,10 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
   // download if in progress, or preventing it if queued). This is a best-effort
   // request; an update that is past the point where it can be cancelled runs to
   // completion. Returns true if an active or queued task for `id` was found.
-  virtual bool Cancel(const std::string& id) = 0;
+  // `mode` applies only to a download in progress (see `CancelMode`); if
+  // `Cancel()` is called again for the same update, only the first call's
+  // `mode` applies.
+  virtual bool Cancel(const std::string& id, CancelMode mode) = 0;
 
   // Perform a best-effort cleanup up of temporary download directories older
   // than the given time.

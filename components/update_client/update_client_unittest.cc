@@ -816,7 +816,8 @@ TEST_F(UpdateClientTest, CancelUnknownIdReturnsFalse) {
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManagerImpl>(config()),
           mock_update_checker_factory.GetFactory());
-  EXPECT_FALSE(update_client->Cancel("jebgalgnebhfojomionfpkfelancnnkf"));
+  EXPECT_FALSE(update_client->Cancel("jebgalgnebhfojomionfpkfelancnnkf",
+                                     CancelMode::kDeletePartialDownload));
 }
 
 // Cancelling the id of a queued update cancels that CRX only: the running
@@ -917,7 +918,8 @@ TEST_F(UpdateClientTest, CancelQueuedUpdate) {
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
       /*is_foreground=*/true, ExpectErrorThenQuit(second_loop, Error::NONE));
 
-  EXPECT_TRUE(update_client->Cancel("abagagagagagagagagagagagagagagag"));
+  EXPECT_TRUE(update_client->Cancel("abagagagagagagagagagagagagagagag",
+                                    CancelMode::kDeletePartialDownload));
 
   first_loop.Run();
   second_loop.Run();
@@ -1000,7 +1002,8 @@ TEST_F(UpdateClientTest, CancelDuringUpdateCheck) {
         .WillOnce([&update_client] {
           // Cancel the update during the update check.
           EXPECT_TRUE(
-              update_client->Cancel("jebgalgnebhfojomionfpkfelancnnkf"));
+              update_client->Cancel("jebgalgnebhfojomionfpkfelancnnkf",
+                                    CancelMode::kDeletePartialDownload));
         });
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
@@ -1114,8 +1117,10 @@ TEST_F(UpdateClientTest, CancelWithQueuedPingAndCheckTasks) {
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
       /*is_foreground=*/true, ExpectErrorThenQuit(check_loop, Error::NONE));
 
-  EXPECT_TRUE(update_client->Cancel("jebgalgnebhfojomionfpkfelancnnkf"));
-  EXPECT_TRUE(update_client->Cancel("abagagagagagagagagagagagagagagag"));
+  EXPECT_TRUE(update_client->Cancel("jebgalgnebhfojomionfpkfelancnnkf",
+                                    CancelMode::kDeletePartialDownload));
+  EXPECT_TRUE(update_client->Cancel("abagagagagagagagagagagagagagagag",
+                                    CancelMode::kDeletePartialDownload));
 
   update_loop.Run();
   ping_loop.Run();
@@ -1128,9 +1133,25 @@ TEST_F(UpdateClientTest, CancelWithQueuedPingAndCheckTasks) {
   EXPECT_EQ(static_cast<int>(ServiceError::CANCELLED), items.back().error_code);
 }
 
-// Cancelling the id of a running update cancels its download and the update
-// ends in an error state.
-TEST_F(UpdateClientTest, CancelRunningUpdateCancelsActiveDownload) {
+class UpdateClientCancelModeTest
+    : public UpdateClientTest,
+      public testing::WithParamInterface<CancelMode> {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         UpdateClientCancelModeTest,
+                         testing::Values(CancelMode::kDeletePartialDownload,
+                                         CancelMode::kKeepPartialDownload),
+                         [](const testing::TestParamInfo<CancelMode>& info) {
+                           return info.param ==
+                                          CancelMode::kDeletePartialDownload
+                                      ? "Delete"
+                                      : "Keep";
+                         });
+
+// Cancelling the id of a running update cancels its download, propagating the
+// first call's `CancelMode` to the downloader, and the update ends in an error
+// state.
+TEST_P(UpdateClientCancelModeTest, CancelRunningUpdateCancelsActiveDownload) {
   class DataCallbackMock {
    public:
     static void Callback(
@@ -1154,7 +1175,8 @@ TEST_F(UpdateClientTest, CancelRunningUpdateCancelsActiveDownload) {
   // A downloader that never completes on its own and expects to be cancelled.
   class MockCrxDownloader : public CrxDownloader {
    public:
-    MockCrxDownloader() = default;
+    explicit MockCrxDownloader(CancelMode expected_mode)
+        : expected_mode_(expected_mode) {}
 
    private:
     ~MockCrxDownloader() override = default;
@@ -1171,7 +1193,8 @@ TEST_F(UpdateClientTest, CancelRunningUpdateCancelsActiveDownload) {
                             base::WrapRefCounted(this), url);
     }
 
-    void Cancel(const GURL& url, CancelMode /*mode*/) {
+    void Cancel(const GURL& url, CancelMode mode) {
+      EXPECT_EQ(expected_mode_, mode);
       DownloadMetrics download_metrics;
       download_metrics.url = url;
       download_metrics.downloader = DownloadMetrics::kNone;
@@ -1186,6 +1209,8 @@ TEST_F(UpdateClientTest, CancelRunningUpdateCancelsActiveDownload) {
                                     base::Unretained(this), true, result,
                                     download_metrics));
     }
+
+    const CancelMode expected_mode_;
   };
 
   class MockPingManager : public MockPingManagerImpl {
@@ -1205,7 +1230,9 @@ TEST_F(UpdateClientTest, CancelRunningUpdateCancelsActiveDownload) {
     }
   };
 
-  SetMockCrxDownloader<MockCrxDownloader>();
+  config()->SetCrxDownloaderFactory(
+      base::MakeRefCounted<MockCrxDownloaderFactory>(
+          base::MakeRefCounted<MockCrxDownloader>(GetParam())));
   scoped_refptr<UpdateClient> update_client =
       base::MakeRefCounted<UpdateClientImpl>(
           config(), base::MakeRefCounted<MockPingManager>(config()),
@@ -1227,10 +1254,17 @@ TEST_F(UpdateClientTest, CancelRunningUpdateCancelsActiveDownload) {
                          item.state == ComponentState::kDownloading;
                 })))
         .Times(AtLeast(1))
-        .WillRepeatedly([&update_client] {
-          // Cancel the update during the download.
+        .WillRepeatedly([&update_client, mode = GetParam()] {
+          // Cancel the update during the download; a repeated call with a
+          // different mode must not override the first call's mode.
+          const CancelMode other_mode =
+              mode == CancelMode::kDeletePartialDownload
+                  ? CancelMode::kKeepPartialDownload
+                  : CancelMode::kDeletePartialDownload;
           EXPECT_TRUE(
-              update_client->Cancel("jebgalgnebhfojomionfpkfelancnnkf"));
+              update_client->Cancel("jebgalgnebhfojomionfpkfelancnnkf", mode));
+          EXPECT_TRUE(update_client->Cancel("jebgalgnebhfojomionfpkfelancnnkf",
+                                            other_mode));
         });
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
@@ -5484,7 +5518,8 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
   EXPECT_EQ(0u, items.size());
 }
 
-// Tests cancellation of an install before the component installer runs.
+// Tests cancellation of an install before the component installer runs, and
+// verifies that `Install()`'s cancel closure passes `kDeletePartialDownload`.
 TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
   class DataCallbackMock {
    public:
@@ -5544,8 +5579,11 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadComplete,
                                     base::Unretained(this), true, result,
                                     download_metrics));
-      return base::DoNothing();
+      EXPECT_CALL(cancel_callback_, Run(CancelMode::kDeletePartialDownload));
+      return cancel_callback_.Get();
     }
+
+    base::MockCallback<CancelCallback> cancel_callback_;
   };
 
   class MockPingManager : public MockPingManagerImpl {

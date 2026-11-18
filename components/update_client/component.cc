@@ -33,7 +33,6 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/update_client/action_runner.h"
-#include "components/update_client/cancellation.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/network.h"
 #include "components/update_client/op_download.h"
@@ -490,12 +489,10 @@ void Component::StateUpdating::DoHandle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto& component = Component::State::component();
   if (component.pipeline_.has_value()) {
-    // TODO(crbug.com/584520488): Pass the mode from Component::Cancel().
-    cancel_callback_ = base::BindOnce(
+    cancel_callback_ =
         std::move(component.pipeline_.value())
             .Run(base::BindOnce(&Component::StateUpdating::PipelineComplete,
-                                base::Unretained(this))),
-        CancelMode::kDeletePartialDownload);
+                                base::Unretained(this)));
     return;
   }
   component.error_category_ = component.pipeline_.error().category;

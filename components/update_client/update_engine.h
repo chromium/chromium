@@ -22,6 +22,7 @@
 #include "base/sequence_checker.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "components/update_client/cancellation.h"
 #include "components/update_client/component.h"
 #include "components/update_client/crx_cache.h"
 #include "components/update_client/crx_downloader.h"
@@ -83,8 +84,9 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
                 Callback update_callback);
 
   // Cancels the in-progress update of the CRX with `id` in every active update
-  // context. Other CRXs in those contexts are not affected.
-  void Cancel(const std::string& id);
+  // context. Other CRXs in those contexts are not affected (see
+  // `UpdateClient::Cancel()` for `mode`).
+  void Cancel(const std::string& id, CancelMode mode);
 
  private:
   friend class base::RefCountedThreadSafe<UpdateEngine>;

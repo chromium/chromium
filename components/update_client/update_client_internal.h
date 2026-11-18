@@ -12,13 +12,13 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "components/update_client/cancellation.h"
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/update_checker.h"
 #include "components/update_client/update_client.h"
@@ -62,7 +62,7 @@ class UpdateClientImpl : public UpdateClient {
                          CrxUpdateItem* update_item) const override;
   bool IsUpdating(const std::string& id) const override;
   void Stop() override;
-  bool Cancel(const std::string& id) override;
+  bool Cancel(const std::string& id, CancelMode mode) override;
   void SendPing(const CrxComponent& crx_component,
                 PingParams ping_params,
                 Callback callback) override;
@@ -98,10 +98,11 @@ class UpdateClientImpl : public UpdateClient {
   // are not allowed.
   std::set<scoped_refptr<Task>> tasks_;
 
-  // The ids that `Cancel()` was called for, keyed by the task they belong to.
-  // The cancellation is applied to the update engine once the task has
-  // started, since the engine does not know the task before that.
-  base::flat_map<scoped_refptr<Task>, base::flat_set<std::string>>
+  // The ids that `Cancel()` was called for (with the first requested mode),
+  // keyed by the task they belong to. The cancellation is applied to the update
+  // engine once the task has started, since the engine does not know the task
+  // before that.
+  base::flat_map<scoped_refptr<Task>, base::flat_map<std::string, CancelMode>>
       pending_cancellations_;
   scoped_refptr<PingManager> ping_manager_;
   scoped_refptr<UpdateEngine> update_engine_;

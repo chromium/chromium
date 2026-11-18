@@ -32,6 +32,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/update_client/activity_data_service.h"
+#include "components/update_client/cancellation.h"
 #include "components/update_client/network.h"
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/update_client.h"
@@ -86,7 +87,10 @@ class MockUpdateClient : public update_client::UpdateClient {
               (const, override));
   MOCK_METHOD(bool, IsUpdating, (const std::string& id), (const, override));
   MOCK_METHOD(void, Stop, (), (override));
-  MOCK_METHOD(bool, Cancel, (const std::string& id), (override));
+  MOCK_METHOD(bool,
+              Cancel,
+              (const std::string& id, update_client::CancelMode mode),
+              (override));
   MOCK_METHOD(void,
               SendPing,
               (const update_client::CrxComponent& crx_component,

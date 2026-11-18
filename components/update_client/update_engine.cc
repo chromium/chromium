@@ -28,6 +28,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "components/prefs/pref_service.h"
+#include "components/update_client/cancellation.h"
 #include "components/update_client/component.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/crx_cache.h"
@@ -184,18 +185,18 @@ base::RepeatingClosure UpdateEngine::InvokeOperation(
                    [](scoped_refptr<UpdateContext> context) {
                      context->is_cancelled = true;
                      for (const auto& entry : context->components) {
-                       entry.second->Cancel();
+                       entry.second->Cancel(CancelMode::kDeletePartialDownload);
                      }
                    },
                    update_context);
 }
 
-void UpdateEngine::Cancel(const std::string& id) {
+void UpdateEngine::Cancel(const std::string& id, CancelMode mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& [session_id, context] : update_contexts_) {
     auto it = context->components.find(id);
     if (it != context->components.end()) {
-      it->second->Cancel();
+      it->second->Cancel(mode);
     }
   }
 }

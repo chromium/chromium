@@ -27,6 +27,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/crx_file/id_util.h"
+#include "components/update_client/cancellation.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -134,7 +135,9 @@ class FakeUpdateClient : public update_client::UpdateClient {
 
   void Stop() override {}
 
-  bool Cancel(const std::string& id) override { return false; }
+  bool Cancel(const std::string& id, update_client::CancelMode mode) override {
+    return false;
+  }
 
   void SendPing(const update_client::CrxComponent& crx_component,
                 PingParams ping_params,

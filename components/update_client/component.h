@@ -25,6 +25,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "components/update_client/cancellation.h"
 #include "components/update_client/crx_cache.h"
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/pipeline.h"
@@ -99,13 +100,14 @@ class Component {
   // the update server has return a response containing an update.
   bool IsUpdateAvailable() const { return is_update_available_; }
 
-  // Cancels the update of this component. A component that is downloading or
-  // installing stops as soon as its pipeline can be interrupted. A component
-  // that has not started its update yet ends in `kUpdateError` with
-  // `ServiceError::CANCELLED` when it leaves `kChecking` or `kCanUpdate`.
-  void Cancel() {
+  // Cancels the update of this component (see `UpdateClient::Cancel()` for
+  // `mode`). A component that is downloading or installing stops as soon as its
+  // pipeline can be interrupted. A component that has not started its update
+  // yet ends in `kUpdateError` with `ServiceError::CANCELLED` when it leaves
+  // `kChecking` or `kCanUpdate`.
+  void Cancel(CancelMode mode) {
     is_cancelled_ = true;
-    state_->Cancel();
+    state_->Cancel(mode);
   }
 
   base::TimeDelta GetUpdateDuration() const;
@@ -185,9 +187,9 @@ class Component {
 
     ComponentState state() const { return state_; }
 
-    void Cancel() {
+    void Cancel(CancelMode mode) {
       if (cancel_callback_) {
-        std::move(cancel_callback_).Run();
+        std::move(cancel_callback_).Run(mode);
       }
     }
 
@@ -205,7 +207,7 @@ class Component {
     SEQUENCE_CHECKER(sequence_checker_);
 
     const ComponentState state_;
-    base::OnceClosure cancel_callback_;
+    CancelCallback cancel_callback_;
 
    private:
     virtual void DoHandle() = 0;
