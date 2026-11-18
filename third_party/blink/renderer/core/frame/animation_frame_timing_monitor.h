@@ -99,13 +99,11 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
                          LazySourceLocation* location);
   void Will(const probe::EvaluateScriptBlock&);
   void Did(const probe::EvaluateScriptBlock& probe_data) {
-    PopScriptEntryPoint(&probe_data.script_state, &probe_data);
+    PopScriptEntryPoint(&probe_data);
   }
   void Will(const probe::ExecuteScript&);
   void Did(const probe::ExecuteScript& probe_data) {
-    PopScriptEntryPoint(
-        ScriptState::ForCurrentRealm(probe_data.context->GetIsolate()),
-        &probe_data);
+    PopScriptEntryPoint(&probe_data);
   }
   void Will(const probe::RecalculateStyle&);
   void Did(const probe::RecalculateStyle&);
@@ -113,7 +111,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void Did(const probe::UpdateLayout&);
   void Will(const probe::InvokeCallback&);
   void Did(const probe::InvokeCallback& probe_data) {
-    PopScriptEntryPoint(&probe_data.script_state, &probe_data);
+    PopScriptEntryPoint(&probe_data);
   }
   void Will(const probe::FrameRelatedTask& probe) { probe.CaptureStartTime(); }
   void Did(const probe::FrameRelatedTask& probe);
@@ -167,7 +165,6 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   };
 
   ScriptTimingInfo* PopScriptEntryPoint(
-      ScriptState* script_state,
       const probe::ProbeBase* probe,
       base::TimeTicks end_time = base::TimeTicks());
   ScriptTimingInfo* PopScriptEntryPointInternal(
@@ -204,6 +201,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void ApplyTaskDuration(base::TimeDelta task_duration);
 
   std::optional<PendingScriptInfo> pending_script_info_;
+  WeakMember<ExecutionContext> pending_script_context_;
   HashMap<size_t, PendingScriptInfo> user_entry_points_;
   const Member<Client> client_;
   Member<CoreProbeSink> probe_sink_;

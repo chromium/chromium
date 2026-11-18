@@ -82,6 +82,8 @@ void AnimationFrameTimingMonitor::Shutdown() {
   current_frame_timing_info_.Clear();
   current_scripts_.clear();
   congestion_scripts_.clear();
+  pending_script_info_ = std::nullopt;
+  pending_script_context_ = nullptr;
   frame_handling_input_ = nullptr;
   task_attributed_window_ = nullptr;
   if (probe_sink_) {
@@ -332,6 +334,7 @@ void AnimationFrameTimingMonitor::OnWorkerTaskCompleted(
   }
   entry_point_depth_ = 0;
   pending_script_info_ = std::nullopt;
+  pending_script_context_ = nullptr;
   current_task_start_ = base::TimeTicks();
   // The worker has no rendering lifecycle, so the task simply returns to idle.
   state_ = State::kIdle;
@@ -444,14 +447,14 @@ void AnimationFrameTimingMonitor::OnMainThreadTaskCompleted(
         ScriptTimingInfo::InvokerType::kPromiseResolve) ||
        (pending_script_info_->invoker_type ==
         ScriptTimingInfo::InvokerType::kPromiseReject))) {
-    if (frame && !frame->IsDetached()) {
-      DCHECK(frame->DomWindow());
-      PopScriptEntryPoint(ToScriptStateForMainWorld(frame),
-                          /*probe_data=*/nullptr, end_time);
+    if (pending_script_context_ &&
+        !pending_script_context_->IsContextDestroyed()) {
+      PopScriptEntryPoint(/*probe=*/nullptr, end_time);
     }
   }
   entry_point_depth_ = 0;
   pending_script_info_ = std::nullopt;
+  pending_script_context_ = nullptr;
 
   if (RuntimeEnabledFeatures::LongTaskFromLongAnimationFrameEnabled() &&
       !task_longtask_reported_ && task_duration >= kLongTaskDuration) {
@@ -792,6 +795,7 @@ void AnimationFrameTimingMonitor::Trace(Visitor* visitor) const {
   visitor->Trace(conditional_marks_);
   visitor->Trace(conditional_measures_);
   visitor->Trace(window_to_conditional_mark_timestamps_);
+  visitor->Trace(pending_script_context_);
   visitor->Trace(frame_handling_input_);
   visitor->Trace(task_attributed_window_);
   visitor->Trace(congestion_scripts_);
@@ -818,9 +822,9 @@ bool AnimationFrameTimingMonitor::PushScriptEntryPoint(
     ScriptState* script_state) {
   entry_point_depth_++;
 
+  ExecutionContext* context = ToExecutionContext(script_state);
   if (script_state->World().IsMainWorld()) {
-    if (auto* window =
-            DynamicTo<LocalDOMWindow>(ToExecutionContext(script_state))) {
+    if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
       if (!task_attributed_window_) {
         task_attributed_window_ = window;
       } else if (task_attributed_window_ != window) {
@@ -833,7 +837,7 @@ bool AnimationFrameTimingMonitor::PushScriptEntryPoint(
   // monitor is enabled, this is the script entry point rather than a nested
   // script (entry_point_depth is 1), and the client wants long animation frame
   // timing reported.
-  if (!enabled_ || entry_point_depth_ != 1 ||
+  if (!enabled_ || entry_point_depth_ != 1 || !context ||
       !client_->ShouldReportLongAnimationFrameTiming()) {
     return false;
   }
@@ -842,24 +846,31 @@ bool AnimationFrameTimingMonitor::PushScriptEntryPoint(
   // top-level script entry point through so its scripts can be captured.
   if (!IsMainThread()) {
     CHECK(RuntimeEnabledFeatures::LongAnimationFrameWorkerEnabled());
+    pending_script_context_ = context;
     return true;
   }
 
   // On the main thread there's a potential long animation frame only when we're
   // in a visible window.
-  return script_state->World().IsMainWorld() &&
-         ToExecutionContext(script_state)->IsWindow();
+  if (script_state->World().IsMainWorld() && context->IsWindow()) {
+    pending_script_context_ = context;
+    return true;
+  }
+  return false;
 }
 
 ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPoint(
-    ScriptState* script_state,
     const probe::ProbeBase* probe,
     base::TimeTicks end_time) {
   if (!entry_point_depth_) {
     return nullptr;
   }
   entry_point_depth_--;
-  if (entry_point_depth_ > 0 || !pending_script_info_) {
+  if (entry_point_depth_ > 0) {
+    return nullptr;
+  }
+  ExecutionContext* context = pending_script_context_.Release();
+  if (!pending_script_info_) {
     return nullptr;
   }
   CHECK(probe || !end_time.is_null());
@@ -867,11 +878,6 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPoint(
   if (probe && end_time.is_null()) {
     end_time = probe->CaptureEndTime();
   }
-
-  // script_state can be null in situations such as the frame being in a
-  // provisional state.
-  ExecutionContext* context =
-      script_state ? ToExecutionContext(script_state) : nullptr;
 
   ScriptTimingInfo* timing_info =
       PopScriptEntryPointInternal(context, end_time, *pending_script_info_);
@@ -1159,8 +1165,7 @@ void AnimationFrameTimingMonitor::Did(
   }
   did_see_ui_events_ = true;
 
-  ScriptTimingInfo* info =
-      PopScriptEntryPoint(&probe_data.script_state, &probe_data);
+  ScriptTimingInfo* info = PopScriptEntryPoint(&probe_data);
   if (!info) {
     return;
   }
