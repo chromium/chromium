@@ -30,8 +30,9 @@ namespace {
 
 // Converts a site search policy entry `policy_dict` into a dictionary to be
 // saved to prefs, with fields corresponding to `TemplateURLData`.
-base::Value SiteSearchDictFromPolicyValue(const base::DictValue& policy_dict,
-                                          bool featured) {
+base::DictValue SiteSearchDictFromPolicyValue(
+    const base::DictValue& policy_dict,
+    bool featured) {
   base::DictValue dict;
 
   const std::string* name =
@@ -76,7 +77,7 @@ base::Value SiteSearchDictFromPolicyValue(const base::DictValue& policy_dict,
   dict.Set(DefaultSearchManager::kDateCreated, timestamp);
   dict.Set(DefaultSearchManager::kLastModified, timestamp);
 
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 void WarnIfNonHttpsUrl(const std::string& policy_name,
@@ -95,11 +96,11 @@ bool ShortcutAlreadySeen(
     const base::flat_set<std::string>& shortcuts_already_seen,
     PolicyErrorMap* errors,
     base::flat_set<std::string>* duplicated_shortcuts) {
-  if (shortcuts_already_seen.find(shortcut) == shortcuts_already_seen.end()) {
+  if (!shortcuts_already_seen.contains(shortcut)) {
     return false;
   }
 
-  if (duplicated_shortcuts->find(shortcut) == duplicated_shortcuts->end()) {
+  if (!duplicated_shortcuts->contains(shortcut)) {
     duplicated_shortcuts->insert(shortcut);
 
     // Only show an error message once per shortcut.
@@ -231,10 +232,11 @@ void SiteSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   CHECK(policy_value->is_list());
 
   base::ListValue providers;
+  providers.reserve(policy_value->GetList().size() + kMaxFeaturedProviders);
   for (const base::Value& item : policy_value->GetList()) {
     const base::DictValue& policy_dict = item.GetDict();
     const std::string& shortcut = *policy_dict.FindString(kShortcut);
-    if (ignored_shortcuts_.find(shortcut) == ignored_shortcuts_.end()) {
+    if (!ignored_shortcuts_.contains(shortcut)) {
       providers.Append(
           SiteSearchDictFromPolicyValue(policy_dict, /*featured=*/false));
       if (policy_dict.FindBool(kFeatured).value_or(false)) {
