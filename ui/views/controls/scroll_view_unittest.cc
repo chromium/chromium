@@ -3257,6 +3257,7 @@ static void ApplyScrollEvent(const ScrollViewTestApi& test_api,
                              ui::ScrollEvent& scroll_event) {
   EXPECT_FALSE(scroll_event.handled());
   EXPECT_FALSE(scroll_event.stopped_propagation());
+  const gfx::PointF initial_offset = test_api.CurrentOffset();
   scroll_view->OnScrollEvent(&scroll_event);
 
   // Check to see if the scroll event is handled by the scroll view.
@@ -3271,7 +3272,7 @@ static void ApplyScrollEvent(const ScrollViewTestApi& test_api,
     // and dispatch again. Simulate that.
     EXPECT_FALSE(scroll_event.handled());
     EXPECT_FALSE(scroll_event.stopped_propagation());
-    EXPECT_EQ(gfx::PointF(), test_api.CurrentOffset());
+    EXPECT_EQ(initial_offset, test_api.CurrentOffset());
 
     ui::MouseWheelEvent wheel(scroll_event);
     scroll_view->OnMouseEvent(&wheel);
@@ -3363,6 +3364,157 @@ TEST_F(WidgetScrollViewTest,
 
   // Check if the scroll view has been offset.
   EXPECT_EQ(gfx::PointF(10, 0), test_api.CurrentOffset());
+}
+
+TEST_F(WidgetScrollViewTest, TransposedScrollAxisLockDiagonalAndBoundary) {
+  ScrollView* scroll_view =
+      AddScrollViewWithContentSize(gfx::Size(kDefaultWidth * 5, 10));
+  scroll_view->SetTreatAllScrollEventsAsHorizontal(true);
+  views::test::RunScheduledLayout(scroll_view);
+  const bool composited =
+      base::FeatureList::IsEnabled(::features::kUiCompositorScrollWithLayers);
+  if (composited) {
+    WaitForCommit();
+  }
+
+  ScrollViewTestApi test_api(scroll_view);
+  base::TimeTicks t = base::TimeTicks::Now();
+
+  // Equal accelerated magnitudes (-10 vs 10) and larger |y_ordinal| (10 vs -7)
+  // must both select horizontal.
+  ui::ScrollEvent ordinal_check(ui::EventType::kScroll, gfx::Point(), t, 0,
+                                -10.0f, 10.0f, -7.0f, 10.0f, 2);
+  ApplyScrollEvent(test_api, scroll_view, ordinal_check);
+  EXPECT_EQ(gfx::PointF(composited ? 7.0f : 10.0f, 0),
+            test_api.CurrentOffset());
+
+  // At max_x, diagonal up-and-right frames (even when |y| > |x|) stay locked
+  // horizontal without pulling backward or flickering more_content_right().
+  const int max_x = test_api.GetScrollBar(HORIZONTAL)->GetMaxPosition();
+  ASSERT_GT(max_x, 0);
+  scroll_view->ScrollToOffset(gfx::PointF(max_x, 0));
+  if (composited) {
+    WaitForCommit();
+  }
+  t += base::Milliseconds(200);
+  for (const auto& [dx, dy] :
+       {std::pair{-10.0f, 9.0f}, {-8.0f, 12.0f}, {-7.0f, 11.0f}}) {
+    t += base::Milliseconds(16);
+    ui::ScrollEvent diagonal(ui::EventType::kScroll, gfx::Point(), t, 0, dx, dy,
+                             dx, dy, 2);
+    ApplyScrollEvent(test_api, scroll_view, diagonal);
+    EXPECT_EQ(gfx::PointF(max_x, 0), test_api.CurrentOffset());
+    EXPECT_FALSE(test_api.more_content_right()->GetVisible());
+  }
+}
+
+TEST_F(WidgetScrollViewTest, TransposedScrollAxisLockMomentumAndReset) {
+  ScrollView* scroll_view =
+      AddScrollViewWithContentSize(gfx::Size(kDefaultWidth * 5, 10));
+  scroll_view->SetTreatAllScrollEventsAsHorizontal(true);
+  ScrollViewTestApi test_api(scroll_view);
+
+  base::TimeTicks t = base::TimeTicks::Now();
+  auto send_scroll =
+      [&](float dx, float dy,
+          ui::EventMomentumPhase momentum = ui::EventMomentumPhase::NONE,
+          ui::ScrollEventPhase phase = ui::ScrollEventPhase::kNone) {
+        t += base::Milliseconds(16);
+        ui::ScrollEvent e(ui::EventType::kScroll, gfx::Point(), t, 0, dx, dy,
+                          dx, dy, 2, momentum, phase);
+        ApplyScrollEvent(test_api, scroll_view, e);
+      };
+
+  // Keep the horizontal lock across kEnd and BEGAN before INERTIAL_UPDATE.
+  send_scroll(-10.0f, 8.0f, ui::EventMomentumPhase::NONE,
+              ui::ScrollEventPhase::kBegan);
+  send_scroll(0.0f, 0.0f, ui::EventMomentumPhase::NONE,
+              ui::ScrollEventPhase::kEnd);
+  send_scroll(0.0f, 0.0f, ui::EventMomentumPhase::BEGAN);
+  send_scroll(-4.0f, 15.0f, ui::EventMomentumPhase::INERTIAL_UPDATE);
+  EXPECT_EQ(gfx::PointF(14, 0), test_api.CurrentOffset());
+
+  // Reset the prior lock on MAY_BEGIN, then keep the vertical lock across END
+  // before INERTIAL_UPDATE.
+  send_scroll(0.0f, 0.0f, ui::EventMomentumPhase::MAY_BEGIN);
+  send_scroll(6.0f, -10.0f);
+  send_scroll(0.0f, 0.0f, ui::EventMomentumPhase::END);
+  send_scroll(-15.0f, -4.0f, ui::EventMomentumPhase::INERTIAL_UPDATE);
+  EXPECT_EQ(gfx::PointF(28, 0), test_api.CurrentOffset());
+
+  // Inactivity timeout (> 150ms) resets the lock even on INERTIAL_UPDATE.
+  t += base::Milliseconds(200);
+  send_scroll(-10.0f, 0.0f, ui::EventMomentumPhase::INERTIAL_UPDATE);
+  EXPECT_EQ(gfx::PointF(38, 0), test_api.CurrentOffset());
+
+  // Reset on BLOCKED, kScrollFlingStart, and when toggling the mode off.
+  send_scroll(0.0f, 0.0f, ui::EventMomentumPhase::BLOCKED,
+              ui::ScrollEventPhase::kEnd);
+  send_scroll(0.0f, -10.0f);
+  ui::ScrollEvent fling(ui::EventType::kScrollFlingStart, gfx::Point(),
+                        t += base::Milliseconds(16), 0, 0.0f, 0.0f, 0.0f, 0.0f,
+                        2);
+  scroll_view->OnScrollEvent(&fling);
+  send_scroll(-10.0f, 0.0f);
+  scroll_view->SetTreatAllScrollEventsAsHorizontal(false);
+  scroll_view->SetTreatAllScrollEventsAsHorizontal(true);
+  send_scroll(0.0f, -10.0f);
+  send_scroll(-5.0f, 0.0f);
+  EXPECT_EQ(gfx::PointF(68, 0), test_api.CurrentOffset());
+
+  // When EnableScrollSynchronization() is active, ScrollEvents fall back to
+  // OnMouseWheel and keep the lock across EventMomentumPhase::END.
+  // Sync scrollbar state with the compositor-scrolled offset before fallback.
+  scroll_view->ScrollToOffset(test_api.CurrentOffset());
+  auto sync = scroll_view->EnableScrollSynchronization();
+  auto send_widget_scroll = [&](float dx, float dy,
+                                ui::EventMomentumPhase momentum) {
+    t += base::Milliseconds(16);
+    ui::ScrollEvent e(ui::EventType::kScroll, gfx::Point(), t, 0, dx, dy, dx,
+                      dy, 2, momentum);
+    widget()->OnScrollEvent(&e);
+  };
+  send_widget_scroll(0.0f, 0.0f, ui::EventMomentumPhase::MAY_BEGIN);
+  send_widget_scroll(-10.0f, 8.0f, ui::EventMomentumPhase::END);
+  send_widget_scroll(-4.0f, 15.0f, ui::EventMomentumPhase::END);
+  EXPECT_EQ(gfx::PointF(82, 0), test_api.CurrentOffset());
+}
+
+TEST_F(WidgetScrollViewTest, TransposedMouseWheelAxisLock) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(::features::kUiCompositorScrollWithLayers);
+
+  ScrollView* scroll_view =
+      AddScrollViewWithContentSize(gfx::Size(kDefaultWidth * 5, 10));
+  scroll_view->SetTreatAllScrollEventsAsHorizontal(true);
+  views::test::RunScheduledLayout(scroll_view);
+
+  ScrollViewTestApi test_api(scroll_view);
+  const int max_x = test_api.GetScrollBar(HORIZONTAL)->GetMaxPosition();
+  ASSERT_GT(max_x, 0);
+  scroll_view->ScrollToOffset(gfx::PointF(max_x, 0));
+
+  base::TimeTicks t = base::TimeTicks::Now();
+  auto send_wheel = [&](int dx, int dy, int dt_ms = 8) {
+    t += base::Milliseconds(dt_ms);
+    ui::MouseWheelEvent wheel(gfx::Vector2d(dx, dy), gfx::Point(), gfx::Point(),
+                              t, 0, 0);
+    scroll_view->OnMouseEvent(&wheel);
+  };
+
+  // Interleaved single-axis wheel events lock horizontal after the first pair,
+  // ignoring subsequent vertical events at max_x.
+  send_wheel(0, 30);
+  send_wheel(-30, 0);
+  send_wheel(0, 30);
+  EXPECT_EQ(gfx::PointF(max_x, 0), test_api.CurrentOffset());
+
+  // After timeout, pure vertical wheel events lock vertical and ignore
+  // smaller horizontal offsets.
+  send_wheel(0, 20, /*dt_ms=*/200);
+  send_wheel(0, 20);
+  send_wheel(-5, 0);
+  EXPECT_EQ(gfx::PointF(max_x - 40, 0), test_api.CurrentOffset());
 }
 
 TEST_F(WidgetScrollViewTest, UnboundedScrollViewUsesContentPreferredSize) {

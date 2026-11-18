@@ -12,6 +12,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "ui/color/color_variant.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/views/controls/focus_ring.h"
@@ -179,9 +180,7 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   ScrollBarMode GetVerticalScrollBarMode() const {
     return vertical_scroll_bar_mode_;
   }
-  bool GetTreatAllScrollEventsAsHorizontal() const {
-    return treat_all_scroll_events_as_horizontal_;
-  }
+  bool GetTreatAllScrollEventsAsHorizontal() const;
   void SetHorizontalScrollBarMode(ScrollBarMode horizontal_scroll_bar_mode);
   void SetVerticalScrollBarMode(ScrollBarMode vertical_scroll_bar_mode);
   void SetTreatAllScrollEventsAsHorizontal(
@@ -311,6 +310,7 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   friend class test::ScrollViewTestApi;
 
   class Viewport;
+  class ScrollTransposer;
 
   bool IsHorizontalScrollEnabled() const;
   bool IsVerticalScrollEnabled() const;
@@ -437,11 +437,6 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   ScrollBarMode horizontal_scroll_bar_mode_ = ScrollBarMode::kEnabled;
   ScrollBarMode vertical_scroll_bar_mode_ = ScrollBarMode::kEnabled;
 
-  // Causes vertical scroll events (e.g. scrolling with the mousewheel) as
-  // horizontal events, to make scrolling in horizontal-only scroll situations
-  // easier for the user.
-  bool treat_all_scroll_events_as_horizontal_ = false;
-
   // In Harmony, the indicator is a focus ring. Pre-Harmony, the indicator is a
   // different border painter.
   bool draw_focus_indicator_ = false;
@@ -485,6 +480,10 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   bool is_trailing_gradient_visible_ = false;
 
   int scroll_synchronizer_count_ = 0;
+
+  // Handles forcing and locking scroll events to the horizontal axis when
+  // `SetTreatAllScrollEventsAsHorizontal(true)` is active.
+  std::unique_ptr<ScrollTransposer> scroll_transposer_;
 };
 
 // When building with GCC this ensures that an instantiation of the
