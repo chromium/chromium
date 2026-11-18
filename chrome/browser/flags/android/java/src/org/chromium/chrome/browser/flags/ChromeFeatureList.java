@@ -1443,7 +1443,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabClosureCommittedMethodRefactor =
             newCachedFlag(TAB_CLOSURE_COMMITTED_METHOD_REFACTOR, false);
     public static final CachedFlag sTabGroupActionsSubmenus =
-            newCachedFlag(TAB_GROUP_ACTIONS_SUBMENUS, false);
+            newCachedFlag(
+                    TAB_GROUP_ACTIONS_SUBMENUS,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sTabSharingToolbarAndroid =
             newCachedFlag(
                     TAB_SHARING_TOOLBAR_ANDROID,

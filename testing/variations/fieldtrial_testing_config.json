@@ -6812,6 +6812,26 @@
             ]
         }
     ],
+    "CrossWindowTabGroupOperations": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261117",
+                    "params": {
+                        "remote_group_operations": "true"
+                    },
+                    "enable_features": [
+                        "CrossWindowTabGroupOperations",
+                        "TabGroupActionsSubmenus"
+                    ]
+                }
+            ]
+        }
+    ],
     "CustomizeChromeJourney": [
         {
             "platforms": [
