@@ -12,7 +12,6 @@
 namespace web {
 class WebStateID;
 }  // namespace web
-class TabGroup;
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
 
@@ -23,7 +22,6 @@ class TabGroup;
 
 // The fake consumer only keeps the identifiers of items for simplicity.
 @property(nonatomic, readonly) const std::vector<web::WebStateID>& items;
-@property(nonatomic, readonly) const std::vector<const TabGroup*>& groups;
 @property(nonatomic, strong) GridItemIdentifier* selectedItem;
 @property(nonatomic, assign) TabGridMode mode;
 @property(nonatomic, assign) BOOL multipleScenesAvailable;

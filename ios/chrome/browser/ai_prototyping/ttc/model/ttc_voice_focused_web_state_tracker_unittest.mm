@@ -10,6 +10,7 @@
 #import <utility>
 #import <vector>
 
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -44,12 +45,12 @@ class RecordingTrackerObserver
   }
 
   // Returns and clears the recorded active `WebState` changes.
-  std::vector<web::WebState*> TakeChanges() {
+  std::vector<raw_ptr<web::WebState>> TakeChanges() {
     return std::exchange(changes_, {});
   }
 
  private:
-  std::vector<web::WebState*> changes_;
+  std::vector<raw_ptr<web::WebState>> changes_;
   base::ScopedObservation<TtcVoiceFocusedWebStateTracker,
                           TtcVoiceFocusedWebStateTracker::Observer>
       observation_{this};

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -51,7 +52,7 @@ class TabSwitcherUtilsTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_regular_;
   std::unique_ptr<TestBrowser> browser_inactive_;
   std::unique_ptr<TestBrowser> browser_incognito_;
-  std::vector<Browser*> browsers_;
+  std::vector<raw_ptr<Browser>> browsers_;
   raw_ptr<BrowserList> browser_list_;
 };
 

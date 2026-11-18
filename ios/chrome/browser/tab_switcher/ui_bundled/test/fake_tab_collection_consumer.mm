@@ -14,7 +14,6 @@
 
 @implementation FakeTabCollectionConsumer {
   std::vector<web::WebStateID> _items;
-  std::vector<const TabGroup*> _groups;
 }
 
 - (void)setTabGridMode:(TabGridMode)mode {
@@ -23,10 +22,6 @@
 
 - (const std::vector<web::WebStateID>&)items {
   return _items;
-}
-
-- (const std::vector<const TabGroup*>&)groups {
-  return _groups;
 }
 
 - (void)setItemsRequireAuthentication:(BOOL)require {
@@ -53,7 +48,6 @@
         _items.push_back(item.tabSwitcherItem.identifier);
         break;
       case GridItemType::kGroup:
-        _groups.push_back(item.tabGroupItem.tabGroup);
         break;
       case GridItemType::kSuggestedActions:
         NOTREACHED();

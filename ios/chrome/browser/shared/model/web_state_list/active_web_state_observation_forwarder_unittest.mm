@@ -8,6 +8,7 @@
 #import <memory>
 #import <vector>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -36,7 +37,7 @@ class TestObserver : public web::WebStateObserver {
   }
 
  private:
-  std::vector<web::WebState*> invoker_web_states_;
+  std::vector<raw_ptr<web::WebState>> invoker_web_states_;
 };
 
 class ActiveWebStateObservationForwarderTest : public PlatformTest {

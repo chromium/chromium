@@ -208,7 +208,7 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
   std::vector<std::unique_ptr<web::NavigationItem>> navigation_items_;
 
   // All infobar managers created during tests, for ease of clean-up.
-  std::vector<infobars::InfoBarManager*> infobar_managers_;
+  std::vector<raw_ptr<infobars::InfoBarManager>> infobar_managers_;
   id mock_scene_commands_;
 };
 

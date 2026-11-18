@@ -68,9 +68,11 @@ TabsSearchService::TabsSearchService(
 
 TabsSearchService::TabsSearchBrowserResults::TabsSearchBrowserResults(
     Browser* browser,
-    const std::vector<web::WebState*> web_states,
-    const std::vector<const TabGroup*> tab_groups)
-    : browser(browser), web_states(web_states), tab_groups(tab_groups) {}
+    std::vector<raw_ptr<web::WebState>> web_states,
+    std::vector<raw_ptr<const TabGroup>> tab_groups)
+    : browser(browser),
+      web_states(std::move(web_states)),
+      tab_groups(std::move(tab_groups)) {}
 
 TabsSearchService::TabsSearchBrowserResults::~TabsSearchBrowserResults() =
     default;
@@ -218,7 +220,7 @@ void TabsSearchService::SearchWithinBrowsers(
   std::vector<TabsSearchBrowserResults> results;
 
   for (Browser* browser : browsers) {
-    std::vector<web::WebState*> matching_web_states;
+    std::vector<raw_ptr<web::WebState>> matching_web_states;
     WebStateList* webStateList = browser->GetWebStateList();
     for (int index = 0; index < webStateList->count(); ++index) {
       web::WebState* web_state = webStateList->GetWebStateAt(index);
@@ -232,7 +234,7 @@ void TabsSearchService::SearchWithinBrowsers(
       }
     }
 
-    std::vector<const TabGroup*> matching_tab_groups;
+    std::vector<raw_ptr<const TabGroup>> matching_tab_groups;
     for (const TabGroup* group : webStateList->GetGroups()) {
       std::u16string group_title = group->visual_data().title();
       if (query_search.Search(group_title, /*match_index=*/nullptr,
@@ -242,8 +244,9 @@ void TabsSearchService::SearchWithinBrowsers(
     }
 
     if (!matching_web_states.empty() || !matching_tab_groups.empty()) {
-      TabsSearchBrowserResults browser_results(browser, matching_web_states,
-                                               matching_tab_groups);
+      TabsSearchBrowserResults browser_results(browser,
+                                               std::move(matching_web_states),
+                                               std::move(matching_tab_groups));
       results.push_back(browser_results);
     }
   }

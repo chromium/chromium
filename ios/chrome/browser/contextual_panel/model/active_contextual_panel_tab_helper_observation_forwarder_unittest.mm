@@ -8,6 +8,7 @@
 #import <memory>
 #import <vector>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -40,7 +41,7 @@ class TestObserver : public ContextualPanelTabHelperObserver {
   }
 
  private:
-  std::vector<ContextualPanelTabHelper*> invoker_tab_helpers_;
+  std::vector<raw_ptr<ContextualPanelTabHelper>> invoker_tab_helpers_;
 };
 
 class ActiveContextualPanelTabHelperObservationForwarderTest

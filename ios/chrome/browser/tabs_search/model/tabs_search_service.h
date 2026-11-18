@@ -75,15 +75,15 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
   // `browser`.
   struct TabsSearchBrowserResults {
     TabsSearchBrowserResults(Browser*,
-                             const std::vector<web::WebState*>,
-                             const std::vector<const TabGroup*>);
+                             std::vector<raw_ptr<web::WebState>>,
+                             std::vector<raw_ptr<const TabGroup>>);
     ~TabsSearchBrowserResults();
 
     TabsSearchBrowserResults(const TabsSearchBrowserResults&);
 
     raw_ptr<Browser> browser;
-    const std::vector<web::WebState*> web_states;
-    const std::vector<const TabGroup*> tab_groups;
+    const std::vector<raw_ptr<web::WebState>> web_states;
+    const std::vector<raw_ptr<const TabGroup>> tab_groups;
   };
   // Searches through tabs in all the Browsers associated with `profile`
   // for WebStates with current titles or URLs matching `term`. The matching

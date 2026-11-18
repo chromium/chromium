@@ -8,6 +8,7 @@
 #import <string>
 
 #import "base/json/json_writer.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/gmock_expected_support.h"
@@ -138,7 +139,7 @@ std::unique_ptr<base::Value> ParseFormFillResult(id wk_result) {
 
 class TestChromeWebClient : public ChromeWebClient {
  public:
-  void SetFeatures(std::vector<web::JavaScriptFeature*> features) {
+  void SetFeatures(std::vector<raw_ptr<web::JavaScriptFeature>> features) {
     features_ = std::move(features);
   }
 
@@ -151,7 +152,7 @@ class TestChromeWebClient : public ChromeWebClient {
   }
 
  private:
-  std::vector<web::JavaScriptFeature*> features_;
+  std::vector<raw_ptr<web::JavaScriptFeature>> features_;
 };
 
 class PasswordControllerJsTest : public PlatformTest {
@@ -316,11 +317,11 @@ class PasswordControllerJsTest : public PlatformTest {
   }
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<web::JavaScriptFeature> fill_test_feature_;
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
-  std::unique_ptr<web::JavaScriptFeature> fill_test_feature_;
 };
 
 // IDs used in the Username and Password <input> elements.
