@@ -54,10 +54,6 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(
     kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableCardBenefitsForAmericanExpress);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableCardBenefitsForBmo);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableCardBenefitsSync);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableCardOnDeviceVerificationEnforcement);
@@ -68,8 +64,6 @@ BASE_DECLARE_FEATURE(
     kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableFlatRateCardBenefitsBlocklist);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableFlatRateCardBenefitsFromCurinos);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication);
 COMPONENT_EXPORT(AUTOFILL)

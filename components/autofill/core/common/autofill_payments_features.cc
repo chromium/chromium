@@ -137,26 +137,6 @@ BASE_FEATURE(kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
-// When enabled, card benefits offered by American Express will be shown in
-// Payments Autofill UI.
-BASE_FEATURE(kAutofillEnableCardBenefitsForAmericanExpress,
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
-// When enabled, card benefits offered by BMO will be shown in Payments Autofill
-// UI.
-BASE_FEATURE(kAutofillEnableCardBenefitsForBmo,
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-
 // When enabled, Chrome will show metadata along with other card information
 // when the virtual card is presented to users.
 BASE_FEATURE(kAutofillEnableCardBenefitsSync,
@@ -190,17 +170,6 @@ BASE_FEATURE(kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement,
 // blocklist.
 BASE_FEATURE(kAutofillEnableFlatRateCardBenefitsBlocklist,
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, flat rate card benefits sourced from Curinos will be shown in
-// Payments Autofill UI.
-BASE_FEATURE(kAutofillEnableFlatRateCardBenefitsFromCurinos,
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 // When enabled, server card retrieval will begin with a risk-based check
 // instead of jumping straight to CVC or biometric auth.
