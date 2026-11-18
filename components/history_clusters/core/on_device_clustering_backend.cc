@@ -326,8 +326,7 @@ OnDeviceClusteringBackend::GetClustersForUIOnBackgroundThread(
   // Apply any filtering after we've decided how to score clusters.
   std::unique_ptr<FilterClusterProcessor> filterer =
       std::make_unique<FilterClusterProcessor>(
-          clustering_request_source, filter_params,
-          engagement_score_provider_is_valid);
+          filter_params, engagement_score_provider_is_valid);
   filterer->ProcessClusters(&clusters);
 
   return calculate_triggerability

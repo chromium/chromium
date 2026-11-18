@@ -428,11 +428,6 @@ void ContextClustererHistoryServiceObserver::OnPersistedClusterIdReceived(
   cluster_it->second.persisted_cluster_id = persisted_cluster_id;
 
   if (!cluster_it->second.unpersisted_visits.empty()) {
-    base::UmaHistogramCounts100(
-        "History.Clusters.ContextClusterer."
-        "NumUnpersistedVisitsBeforeClusterPersisted",
-        cluster_it->second.unpersisted_visits.size());
-
     // Persist all visits we've seen so far.
     history_service_->AddVisitsToCluster(
         persisted_cluster_id, cluster_it->second.unpersisted_visits,

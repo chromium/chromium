@@ -52,11 +52,9 @@ class FileClusteringBackend : public ClusteringBackend {
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   // Gets the displayable variant of `clusters` that will be shown on the UI
-  // surface associated with `clustering_request_source` on background thread.
-  // This will filter persisted clusters using clusters from command line
-  // override file, as well as apply `filter_params`.
+  // on background thread. This will filter persisted clusters using clusters
+  // from command line override file, as well as apply `filter_params`.
   static std::vector<history::Cluster> GetClustersForUIOnBackgroundThread(
-      ClusteringRequestSource clustering_request_source,
       QueryClustersFilterParams filter_params,
       std::vector<history::Cluster> persisted_clusters);
 };

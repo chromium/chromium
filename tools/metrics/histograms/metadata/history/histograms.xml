@@ -22,25 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="ClusteringRequestSource">
-  <variant name="" summary="all requests"/>
-  <variant name=".AllKeywordCacheRefresh"
-      summary="only requests for the all-keyword-cache which occurs about
-               once every 2 hours but can vary if e.g. the user isn't
-               interacting with the omnibox"/>
-  <variant name=".NewTabPage"
-      summary="only requests for the Journeys module on load of the New Tab
-               Page"/>
-  <variant name=".ShortKeywordCacheRefresh"
-      summary="only requests for the short-keyword cache which occurs up to
-               once every 10 seconds but can vary if e.g. the user isn't
-               interacting with the omnibox"/>
-  <variant name=".WebUI"
-      summary="only requests for the Journeys this WebUI within History or
-               Side Panel, either query-less or query states, both on load
-               and on scroll"/>
-</variants>
-
 <variants name="HasCriticalActions">
   <variant name="WithCriticalActions"
       summary="results contained local visits and critical actions were
@@ -569,25 +550,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="History.Clusters.Backend.FilterClusterProcessor.NumClusters.{Segment}{Source}"
-    units="counts" expires_after="2024-06-02">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>1457319</component>
-  <summary>
-    Logs the number of clusters {Segment} each time {Source} invokes the
-    clustering backend with a functional filtering configuration. Note that the
-    max count is limited to the size of the initial batch sent to the clustering
-    backend.
-  </summary>
-  <token key="Segment">
-    <variant name="PostFilter" summary="after applying the filtering criteria"/>
-    <variant name="PreFilter" summary="before applying the filtering criteria"/>
-  </token>
-  <token key="Source" variants="ClusteringRequestSource"/>
-</histogram>
-
 <histogram name="History.Clusters.Backend.KeywordCache.AllKeywordsCount"
     units="count" expires_after="2025-07-13">
   <owner>manukh@chromium.org</owner>
@@ -787,40 +749,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="History.Clusters.Backend.UpdateClusterTriggerability.HadUnclusteredVisitsToCluster"
-    enum="Boolean" expires_after="2024-06-02">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>1457319</component>
-  <summary>
-    On navigation, context clusters are created, grown, and persisted.
-
-    On startup and every 1 hour afterwards, these context clusters have their
-    triggability calculated. Context clusters older than 2 hours are not updated
-    are not re-updated after the initial triggability is calculated. However, if
-    there are unclustered visits (due to visits from before the user had context
-    clustering enabled or synced visits without a cluster ID), they will also be
-    context clustered with their triggerability calculated as well.
-
-    When a user visits the Journeys WebUI, persisted clusters (both those with
-    and without triggerability calculated) are fetched. Clusters are then
-    augmented with appropriate metadata needed for displaying on the Journeys
-    WebUI (e.g. ranking, deduping, labeling).
-
-    When the keyword cache used to match omnibox inputs and show journey chips
-    or suggestions in the omnibox needs updating, context clusters (both those
-    with and without triggerability calculated) are fetched.
-
-    This histogram records whether there were unclustered visits left to cluster
-    in the first run of this task. When this trends to all false, this
-    additional step can get deleted.
-
-    Recorded for every batch of clusters to be updated; can be recorded more
-    than once every hour.
-  </summary>
-</histogram>
-
-<histogram
     name="History.Clusters.Backend.UpdateClusterTriggerability.{Segment}"
     units="ms" expires_after="2025-09-07">
   <owner>manukh@chromium.org</owner>
@@ -922,28 +850,6 @@ chromium-metrics-reviews@google.com.
                  existing visit already part of a cluster and needs to be
                  updated"/>
   </token>
-</histogram>
-
-<histogram
-    name="History.Clusters.ContextClusterer.NumUnpersistedVisitsBeforeClusterPersisted"
-    units="num unpersisted visits" expires_after="2024-06-02">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>1457319</component>
-  <summary>
-    When we decide a new visit belongs to a new cluster, we asyncly reserve a
-    new cluster ID and add the visit to the cluster. When subsequent visits
-    belong to the same cluster, we asyncly add those visits to the cluster. When
-    the latter occurs before the former completes, i.e. when there are multiple
-    visits done that belong in the same cluster before the cluster ID was
-    reserved, we queue those subsequent visits and only add them when the
-    cluster ID is reserved.
-
-    This histogram records the number of visits that were waiting to be
-    persisted while waiting for the persisted ID of the containg cluster to be
-    received. Recorded at most once per cluster that is generated via the
-    navigation graph.
-  </summary>
 </histogram>
 
 <histogram

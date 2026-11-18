@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/test/metrics/histogram_tester.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_types.h"
@@ -130,8 +129,7 @@ class FilterClusterProcessorTest : public ::testing::Test {
       QueryClustersFilterParams& filter_params,
       bool engagement_score_provider_is_valid = true) {
     auto cluster_processor = std::make_unique<FilterClusterProcessor>(
-        ClusteringRequestSource::kNewTabPage, filter_params,
-        engagement_score_provider_is_valid);
+        filter_params, engagement_score_provider_is_valid);
 
     std::vector<history::Cluster> clusters = GetTestClusters();
     cluster_processor->ProcessClusters(&clusters);
@@ -151,8 +149,7 @@ TEST_F(FilterClusterProcessorTest,
   filter_params.is_shown_on_prominent_ui_surfaces = true;
 
   auto cluster_processor = std::make_unique<FilterClusterProcessor>(
-      ClusteringRequestSource::kNewTabPage, filter_params,
-      /*engagement_score_provider_is_valid=*/true);
+      filter_params, /*engagement_score_provider_is_valid=*/true);
 
   std::vector<history::Cluster> clusters = GetTestClusters();
   std::ranges::for_each(clusters, [&](auto& cluster) {
@@ -169,8 +166,6 @@ TEST_F(FilterClusterProcessorTest,
 }
 
 TEST_F(FilterClusterProcessorTest, NoFunctionalFilter) {
-  base::HistogramTester histogram_tester;
-
   QueryClustersFilterParams params;
 
   EXPECT_THAT(GetTestClusterIdsThatPassFilter(params),
@@ -180,21 +175,9 @@ TEST_F(FilterClusterProcessorTest, NoFunctionalFilter) {
                           history::ClusterId(7), history::ClusterId(8),
                           history::ClusterId(9), history::ClusterId(10),
                           history::ClusterId(11), history::ClusterId(12)));
-
-  // Filter should not have been run, so expect these counts to be 0.
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
-      "NewTabPage",
-      0);
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
-      "NewTabPage",
-      0);
 }
 
 TEST_F(FilterClusterProcessorTest, OnlyVisitsConstraint) {
-  base::HistogramTester histogram_tester;
-
   QueryClustersFilterParams params;
   params.min_visits = 2;
 
@@ -204,20 +187,9 @@ TEST_F(FilterClusterProcessorTest, OnlyVisitsConstraint) {
                           history::ClusterId(6), history::ClusterId(7),
                           history::ClusterId(9), history::ClusterId(10),
                           history::ClusterId(11)));
-
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
-      "NewTabPage",
-      12, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
-      "NewTabPage",
-      9, 1);
 }
 
 TEST_F(FilterClusterProcessorTest, OnlyImageConstraint) {
-  base::HistogramTester histogram_tester;
-
   QueryClustersFilterParams params;
   params.min_visits_with_images = 2;
 
@@ -226,20 +198,9 @@ TEST_F(FilterClusterProcessorTest, OnlyImageConstraint) {
                           history::ClusterId(5), history::ClusterId(6),
                           history::ClusterId(7), history::ClusterId(9),
                           history::ClusterId(10)));
-
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
-      "NewTabPage",
-      12, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
-      "NewTabPage",
-      7, 1);
 }
 
 TEST_F(FilterClusterProcessorTest, OnlyCategoryAllowlistConstraint) {
-  base::HistogramTester histogram_tester;
-
   QueryClustersFilterParams params;
   params.categories_allowlist = {"category1", "category2"};
 
@@ -249,20 +210,9 @@ TEST_F(FilterClusterProcessorTest, OnlyCategoryAllowlistConstraint) {
                           history::ClusterId(7), history::ClusterId(8),
                           history::ClusterId(9), history::ClusterId(10),
                           history::ClusterId(11)));
-
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
-      "NewTabPage",
-      12, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
-      "NewTabPage",
-      9, 1);
 }
 
 TEST_F(FilterClusterProcessorTest, OnlyCategoryBlocklistConstraint) {
-  base::HistogramTester histogram_tester;
-
   QueryClustersFilterParams params;
   params.categories_blocklist = {"blocked"};
 
@@ -273,20 +223,9 @@ TEST_F(FilterClusterProcessorTest, OnlyCategoryBlocklistConstraint) {
                           history::ClusterId(7), history::ClusterId(8),
                           history::ClusterId(9), history::ClusterId(11),
                           history::ClusterId(12)));
-
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
-      "NewTabPage",
-      12, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
-      "NewTabPage",
-      11, 1);
 }
 
 TEST_F(FilterClusterProcessorTest, OnlySearchInitiated) {
-  base::HistogramTester histogram_tester;
-
   QueryClustersFilterParams params;
   params.is_search_initiated = true;
 
@@ -295,20 +234,9 @@ TEST_F(FilterClusterProcessorTest, OnlySearchInitiated) {
                           history::ClusterId(4), history::ClusterId(6),
                           history::ClusterId(9), history::ClusterId(10),
                           history::ClusterId(11)));
-
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
-      "NewTabPage",
-      12, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
-      "NewTabPage",
-      7, 1);
 }
 
 TEST_F(FilterClusterProcessorTest, OnlyRelatedSearches) {
-  base::HistogramTester histogram_tester;
-
   QueryClustersFilterParams params;
   params.has_related_searches = true;
 
@@ -317,20 +245,9 @@ TEST_F(FilterClusterProcessorTest, OnlyRelatedSearches) {
                           history::ClusterId(4), history::ClusterId(5),
                           history::ClusterId(7), history::ClusterId(9),
                           history::ClusterId(10), history::ClusterId(11)));
-
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
-      "NewTabPage",
-      12, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
-      "NewTabPage",
-      8, 1);
 }
 
 TEST_F(FilterClusterProcessorTest, OnlyShownOnProminentUiSurfacesNoEngagement) {
-  base::HistogramTester histogram_tester;
-
   QueryClustersFilterParams params;
   params.is_shown_on_prominent_ui_surfaces = true;
 
@@ -340,21 +257,10 @@ TEST_F(FilterClusterProcessorTest, OnlyShownOnProminentUiSurfacesNoEngagement) {
                           history::ClusterId(4), history::ClusterId(5),
                           history::ClusterId(6), history::ClusterId(7),
                           history::ClusterId(10), history::ClusterId(11)));
-
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
-      "NewTabPage",
-      12, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
-      "NewTabPage",
-      8, 1);
 }
 
 TEST_F(FilterClusterProcessorTest,
        OnlyShownOnProminentUiSurfacesWithEngagement) {
-  base::HistogramTester histogram_tester;
-
   QueryClustersFilterParams params;
   params.is_shown_on_prominent_ui_surfaces = true;
 
@@ -364,20 +270,9 @@ TEST_F(FilterClusterProcessorTest,
                           history::ClusterId(4), history::ClusterId(5),
                           history::ClusterId(6), history::ClusterId(10),
                           history::ClusterId(11)));
-
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
-      "NewTabPage",
-      12, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
-      "NewTabPage",
-      7, 1);
 }
 
 TEST_F(FilterClusterProcessorTest, FullFilter) {
-  base::HistogramTester histogram_tester;
-
   QueryClustersFilterParams params;
   params.min_visits = 2;
   params.min_visits_with_images = 2;
@@ -389,15 +284,6 @@ TEST_F(FilterClusterProcessorTest, FullFilter) {
 
   EXPECT_THAT(GetTestClusterIdsThatPassFilter(params),
               ElementsAre(history::ClusterId(2)));
-
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
-      "NewTabPage",
-      12, 1);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
-      "NewTabPage",
-      1, 1);
 }
 
 }  // namespace

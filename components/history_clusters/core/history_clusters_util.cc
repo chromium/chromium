@@ -399,25 +399,6 @@ bool IsTransitionUserVisible(int32_t transition) {
                                        ui::PAGE_TRANSITION_KEYWORD_GENERATED);
 }
 
-std::string GetHistogramNameSliceForRequestSource(
-    ClusteringRequestSource source) {
-  switch (source) {
-    case ClusteringRequestSource::kAllKeywordCacheRefresh:
-      return ".AllKeywordCacheRefresh";
-    case ClusteringRequestSource::kShortKeywordCacheRefresh:
-      return ".ShortKeywordCacheRefresh";
-    case ClusteringRequestSource::kJourneysPage:
-      // This is named WebUI for legacy purposes.
-      return ".WebUI";
-    case ClusteringRequestSource::kNewTabPage:
-      return ".NewTabPage";
-    // If you add something here, add to the ClusteringRequestSource variant at
-    // the top of history/histograms.xml.
-    default:
-      NOTREACHED();
-  }
-}
-
 bool IsUIRequestSource(ClusteringRequestSource source) {
   // This is done as a switch statement as a forcing function for new sources to
   // get added here.

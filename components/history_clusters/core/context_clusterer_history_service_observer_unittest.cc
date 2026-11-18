@@ -388,11 +388,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
         "History.Clusters.ContextClusterer.DbLatency.ReserveNextClusterId", 1);
     histogram_tester.ExpectTotalCount(
         "History.Clusters.ContextClusterer.DbLatency.AddVisitsToCluster", 1);
-
-    histogram_tester.ExpectUniqueSample(
-        "History.Clusters.ContextClusterer."
-        "NumUnpersistedVisitsBeforeClusterPersisted",
-        1, 1);
   }
 }
 
@@ -474,13 +469,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
       "History.Clusters.ContextClusterer.DbLatency.ReserveNextClusterId", 1);
   histogram_tester.ExpectTotalCount(
       "History.Clusters.ContextClusterer.DbLatency.AddVisitsToCluster", 1);
-
-  // Cluster ID was received before second visit so there are no visits that are
-  // considered unpersisted before the cluster was persisted.
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.ContextClusterer."
-      "NumUnpersistedVisitsBeforeClusterPersisted",
-      0);
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest,

@@ -96,16 +96,6 @@ void HistoryClustersServiceTaskUpdateClusterTriggerability::
       "GetAnnotatedVisitsToClusterLatency",
       base::TimeTicks::Now() - start_time);
 
-  // Records whether there were unclustered visits to cluster. This will inform
-  // whether the call to get annotated visits to cluster can be removed once
-  // this code path has launched.
-  if (!continuation_params_.is_continuation) {
-    base::UmaHistogramBoolean(
-        "History.Clusters.Backend.UpdateClusterTriggerability."
-        "HadUnclusteredVisitsToCluster",
-        annotated_visits.empty());
-  }
-
   if (weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
     weak_history_clusters_service_->NotifyDebugMessage(base::StringPrintf(
         "UPDATE CLUSTER TRIGGERABILITY TASK - UNCLUSTERED VISITS %zu:",

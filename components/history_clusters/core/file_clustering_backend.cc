@@ -248,14 +248,12 @@ void FileClusteringBackend::GetClustersForUI(
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FileClusteringBackend::GetClustersForUIOnBackgroundThread,
-                     clustering_request_source, std::move(filter_params),
-                     std::move(clusters)),
+                     std::move(filter_params), std::move(clusters)),
       base::BindOnce(std::move(callback)));
 }
 
 std::vector<history::Cluster>
 FileClusteringBackend::GetClustersForUIOnBackgroundThread(
-    ClusteringRequestSource clustering_request_source,
     QueryClustersFilterParams filter_params,
     std::vector<history::Cluster> persisted_clusters) {
   // Return if no persisted_clusters.
@@ -289,8 +287,7 @@ FileClusteringBackend::GetClustersForUIOnBackgroundThread(
 
   // Apply any filtering after we've patched clusters from file.
   auto filterer = std::make_unique<FilterClusterProcessor>(
-      clustering_request_source, filter_params,
-      /*engagement_score_provider_is_valid=*/true);
+      filter_params, /*engagement_score_provider_is_valid=*/true);
   filterer->ProcessClusters(&clusters_from_command_line);
   return clusters_from_command_line;
 }

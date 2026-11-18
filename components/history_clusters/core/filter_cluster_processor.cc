@@ -6,7 +6,6 @@
 
 #include <iterator>
 
-#include "base/metrics/histogram_functions.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/core/history_clusters_util.h"
@@ -31,11 +30,9 @@ bool IsFunctionalFilter(const QueryClustersFilterParams& filter_params) {
 }  // namespace
 
 FilterClusterProcessor::FilterClusterProcessor(
-    ClusteringRequestSource clustering_request_source,
     QueryClustersFilterParams& filter_params,
     bool engagement_score_provider_is_valid)
-    : clustering_request_source_(clustering_request_source),
-      should_run_filter_(IsFunctionalFilter(filter_params)),
+    : should_run_filter_(IsFunctionalFilter(filter_params)),
       filter_params_(filter_params),
       engagement_score_provider_is_valid_(engagement_score_provider_is_valid) {}
 FilterClusterProcessor::~FilterClusterProcessor() = default;
@@ -46,20 +43,10 @@ void FilterClusterProcessor::ProcessClusters(
     return;
   }
 
-  base::UmaHistogramCounts1000(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter" +
-          GetHistogramNameSliceForRequestSource(clustering_request_source_),
-      clusters->size());
-
   auto to_remove = std::ranges::remove_if(*clusters, [&](auto& cluster) {
     return !DoesClusterMatchFilter(cluster);
   });
   clusters->erase(to_remove.begin(), to_remove.end());
-
-  base::UmaHistogramCounts1000(
-      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter" +
-          GetHistogramNameSliceForRequestSource(clustering_request_source_),
-      clusters->size());
 }
 
 bool FilterClusterProcessor::DoesClusterMatchFilter(
