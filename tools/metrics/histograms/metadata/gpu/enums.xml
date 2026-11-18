@@ -1357,6 +1357,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="6" label="Vaapi"/>
   <int value="7" label="WebNNTensor"/>
   <int value="8" label="Vulkan"/>
+  <int value="9" label="External"/>
 </enum>
 
 <!-- LINT.ThenChange(//gpu/command_buffer/service/shared_image/compound_image_backing.h:SharedImageAccessStream) -->

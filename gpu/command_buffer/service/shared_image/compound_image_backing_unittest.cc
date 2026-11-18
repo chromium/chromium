@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -40,6 +41,7 @@
 #include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gl/gl_context_stub.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_share_group.h"
@@ -190,6 +192,20 @@ class TestBackingCopyStrategy : public SharedImageCopyStrategy {
   int copy_count_ = 0;
 };
 
+class TestImageBackingTrackingUpdate
+    : public TestImageBackingWithUnsupportedStream {
+ public:
+  using TestImageBackingWithUnsupportedStream::
+      TestImageBackingWithUnsupportedStream;
+
+  void Update(gfx::GpuFenceHandle in_fence) override { ++update_count_; }
+
+  int update_count() const { return update_count_; }
+
+ private:
+  int update_count_ = 0;
+};
+
 }  // namespace
 
 class CompoundImageBackingTest : public testing::Test {
@@ -300,12 +316,49 @@ class CompoundImageBackingTest : public testing::Test {
     backing->elements_[0].content_id_ = content_id;
   }
 
+  bool ElementHasLatestContent(CompoundImageBacking* backing,
+                               const SharedImageBacking* target)
+      NO_THREAD_SAFETY_ANALYSIS {
+    for (const auto& element : backing->elements_) {
+      if (element.backing.get() == target) {
+        return backing->HasLatestContent(element);
+      }
+    }
+    return false;
+  }
+
+  bool ElementHasAccessStream(CompoundImageBacking* backing,
+                              const SharedImageBacking* target,
+                              SharedImageAccessStream stream)
+      NO_THREAD_SAFETY_ANALYSIS {
+    for (const auto& element : backing->elements_) {
+      if (element.backing.get() == target) {
+        return element.access_streams.Has(stream);
+      }
+    }
+    return false;
+  }
+
+  size_t CountElementsWithAccessStream(CompoundImageBacking* backing,
+                                       SharedImageAccessStream stream)
+      NO_THREAD_SAFETY_ANALYSIS {
+    size_t count = 0;
+    for (const auto& element : backing->elements_) {
+      if (element.access_streams.Has(stream)) {
+        ++count;
+      }
+    }
+    return count;
+  }
+
   // Constructs a single-element CompoundImageBacking around `backing`.
   std::unique_ptr<CompoundImageBacking> WrapExternal(
       std::unique_ptr<SharedImageBacking> backing,
-      scoped_refptr<SharedImageFactoryRef> shared_image_factory = nullptr) {
+      scoped_refptr<SharedImageFactoryRef> shared_image_factory = nullptr,
+      bool has_external_access = false) {
     return CompoundImageBacking::CreateSingleElement(
-        std::move(backing), copy_manager_, std::move(shared_image_factory));
+        std::move(backing), copy_manager_, std::move(shared_image_factory),
+        has_external_access);
   }
 
   // Creates a compound backing wired to `shared_image_factory`, which is what
@@ -1733,6 +1786,212 @@ TEST_F(CompoundImageBackingCopyToGpuMemoryBufferTest,
         EXPECT_FALSE(success);
       }));
   EXPECT_TRUE(callback_ran);
+}
+
+// Regression test for crbug.com/575201181: calling Update() on a GPU-only
+// CompoundImageBacking must not invoke Update() on elements_[0] or promote an
+// unwritten initial element ahead of a dynamically allocated element that
+// initialized the image.
+TEST_F(CompoundImageBackingCopyToGpuMemoryBufferTest,
+       UpdateIgnoredForGpuOnlyCompoundBacking) {
+  copy_manager_ = base::MakeRefCounted<SharedImageCopyManager>();
+  auto owned_copy_strategy = std::make_unique<TestBackingCopyStrategy>();
+  auto* copy_strategy = owned_copy_strategy.get();
+  copy_manager_->AddStrategy(std::move(owned_copy_strategy));
+
+  auto owned_initial_backing = std::make_unique<TestImageBackingTrackingUpdate>(
+      Mailbox::Generate(),
+      SharedImageInfo(
+          viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(16, 16),
+          gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+          {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_GLES2_WRITE,
+           SHARED_IMAGE_USAGE_DISPLAY_READ},
+          "GpuOnlyInitial"),
+      kTestBackingSize, SharedImageAccessStream::kSkia);
+  auto* initial_backing = owned_initial_backing.get();
+  ASSERT_FALSE(initial_backing->IsCleared());
+
+  auto compound = WrapExternal(std::move(owned_initial_backing),
+                               GetDynamicAllocationFactoryRef(),
+                               /*has_external_access=*/false);
+  auto* compound_backing = compound.get();
+  EXPECT_EQ(CountElementsWithAccessStream(compound_backing,
+                                          SharedImageAccessStream::kExternal),
+            0u);
+  auto factory_rep =
+      manager_.Register(std::move(compound), &memory_type_tracker_);
+
+  // Force the dynamically allocated Skia element to refuse GL so subsequent GL
+  // access still targets `initial_backing` (elements_[0]).
+  test_factory_.SetUnsupportedAccessStreamForNextBacking(
+      SharedImageAccessStream::kGL);
+  auto skia_rep =
+      manager_.ProduceSkia(compound_backing->mailbox(), &memory_type_tracker_,
+                           nullptr, /*required_usages=*/{});
+  ASSERT_TRUE(skia_rep);
+
+  auto element_backings = GetAllElementBackings(compound_backing);
+  ASSERT_EQ(element_backings.size(), 2u);
+  auto* skia_backing = element_backings[1];
+  EXPECT_EQ(CountElementsWithAccessStream(compound_backing,
+                                          SharedImageAccessStream::kExternal),
+            0u);
+
+  // Write to the dynamically allocated Skia element and mark cleared.
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+  {
+    auto skia_write = skia_rep->BeginScopedWriteAccess(
+        &begin_semaphores, &end_semaphores,
+        SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    ASSERT_TRUE(skia_write);
+    skia_rep->SetCleared();
+  }
+  EXPECT_TRUE(compound_backing->IsCleared());
+  EXPECT_TRUE(skia_backing->IsCleared());
+  EXPECT_FALSE(initial_backing->IsCleared());
+  EXPECT_TRUE(ElementHasLatestContent(compound_backing, skia_backing));
+  EXPECT_FALSE(ElementHasLatestContent(compound_backing, initial_backing));
+
+  // An Update() call on this GPU-only compound must be ignored without calling
+  // initial_backing->Update() or promoting initial_backing to latest content.
+  compound_backing->Update(gfx::GpuFenceHandle());
+  EXPECT_EQ(initial_backing->update_count(), 0);
+  EXPECT_TRUE(ElementHasLatestContent(compound_backing, skia_backing));
+  EXPECT_FALSE(ElementHasLatestContent(compound_backing, initial_backing));
+  EXPECT_FALSE(initial_backing->IsCleared());
+
+  // Subsequent Skia read on `skia_backing` remains fast-path without copying
+  // from `initial_backing`.
+  {
+    auto skia_read =
+        skia_rep->BeginScopedReadAccess(&begin_semaphores, &end_semaphores);
+    EXPECT_TRUE(skia_read);
+  }
+  EXPECT_EQ(copy_strategy->copy_count(), 0);
+
+  // Subsequent GL read on `initial_backing` must still synchronize from
+  // `skia_backing` (and fail if the copy fails rather than exposing
+  // uninitialized memory).
+  auto gl_rep = manager_.ProduceGLTexturePassthrough(
+      compound_backing->mailbox(), &memory_type_tracker_);
+  ASSERT_TRUE(gl_rep);
+  copy_strategy->set_copies_succeed(false);
+  EXPECT_FALSE(gl_rep->BeginScopedAccess(
+      GLTextureImageRepresentationBase::kReadAccessMode,
+      SharedImageRepresentation::AllowUnclearedAccess::kNo));
+  EXPECT_EQ(copy_strategy->copy_count(), 1);
+  EXPECT_FALSE(initial_backing->IsCleared());
+
+  copy_strategy->set_copies_succeed(true);
+  {
+    auto gl_access = gl_rep->BeginScopedAccess(
+        GLTextureImageRepresentationBase::kReadAccessMode,
+        SharedImageRepresentation::AllowUnclearedAccess::kNo);
+    EXPECT_TRUE(gl_access);
+  }
+  EXPECT_EQ(copy_strategy->copy_count(), 2);
+  EXPECT_TRUE(initial_backing->IsCleared());
+
+  // Also verify GPU-only CompoundImageBacking::Create(..., SurfaceHandle)
+  // omits `kExternal` and ignores Update().
+  SharedImageInfo create_info(
+      viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(16, 16), gfx::ColorSpace(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+      {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_GLES2_WRITE},
+      "CreatedGpuOnly");
+  auto created =
+      CompoundImageBacking::Create(GetSharedImageFactory(), Mailbox::Generate(),
+                                   create_info, kNullSurfaceHandle);
+  ASSERT_TRUE(created);
+  auto* created_compound = static_cast<CompoundImageBacking*>(created.get());
+  EXPECT_EQ(CountElementsWithAccessStream(created_compound,
+                                          SharedImageAccessStream::kExternal),
+            0u);
+  auto created_rep =
+      manager_.Register(std::move(created), &memory_type_tracker_);
+  created_compound->Update(gfx::GpuFenceHandle());
+  EXPECT_FALSE(created_compound->IsCleared());
+}
+
+TEST_F(CompoundImageBackingCopyToGpuMemoryBufferTest,
+       ExternalAccessStreamRoutesUpdateToSingleGmbElement) {
+  auto owned_mappable_backing =
+      std::make_unique<TestImageBackingTrackingUpdate>(
+          Mailbox::Generate(),
+          SharedImageInfo(
+              viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(16, 16),
+              gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+              {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_GLES2_WRITE,
+               SHARED_IMAGE_USAGE_DISPLAY_READ,
+               SHARED_IMAGE_USAGE_CPU_WRITE_ONLY},
+              "MappableExternal"),
+          kTestBackingSize, SharedImageAccessStream::kGL);
+  owned_mappable_backing->SetCleared();
+  auto* mappable_backing = owned_mappable_backing.get();
+
+  auto compound = WrapExternal(std::move(owned_mappable_backing),
+                               GetDynamicAllocationFactoryRef(),
+                               /*has_external_access=*/true);
+  auto* compound_backing = compound.get();
+  auto factory_rep =
+      manager_.Register(std::move(compound), &memory_type_tracker_);
+  EXPECT_TRUE(compound_backing->IsCleared());
+  EXPECT_EQ(CountElementsWithAccessStream(compound_backing,
+                                          SharedImageAccessStream::kExternal),
+            1u);
+  EXPECT_TRUE(ElementHasAccessStream(compound_backing, mappable_backing,
+                                     SharedImageAccessStream::kExternal));
+
+  auto gl_rep = manager_.ProduceGLTexturePassthrough(
+      compound_backing->mailbox(), &memory_type_tracker_);
+  ASSERT_TRUE(gl_rep);
+  {
+    auto gl_write = gl_rep->BeginScopedAccess(
+        GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
+        SharedImageRepresentation::AllowUnclearedAccess::kNo);
+    ASSERT_TRUE(gl_write);
+  }
+  auto element_backings = GetAllElementBackings(compound_backing);
+  ASSERT_EQ(element_backings.size(), 2u);
+  auto* gl_backing = element_backings[1];
+  EXPECT_EQ(CountElementsWithAccessStream(compound_backing,
+                                          SharedImageAccessStream::kExternal),
+            1u);
+  EXPECT_FALSE(ElementHasAccessStream(compound_backing, gl_backing,
+                                      SharedImageAccessStream::kExternal));
+  EXPECT_TRUE(ElementHasLatestContent(compound_backing, gl_backing));
+  EXPECT_FALSE(ElementHasLatestContent(compound_backing, mappable_backing));
+
+  // External update forwards to the `kExternal` element and promotes it back to
+  // holding the latest content.
+  compound_backing->Update(gfx::GpuFenceHandle());
+  EXPECT_EQ(mappable_backing->update_count(), 1);
+  EXPECT_TRUE(ElementHasLatestContent(compound_backing, mappable_backing));
+
+  // After an explicit discard (e.g. WEBGPU_MAILBOX_DISCARD), Update() must not
+  // re-mark the backing or container cleared without an actual GPU clear.
+  compound_backing->SetClearedRect(gfx::Rect());
+  EXPECT_FALSE(mappable_backing->IsCleared());
+  EXPECT_FALSE(compound_backing->IsCleared());
+
+  compound_backing->Update(gfx::GpuFenceHandle());
+  EXPECT_EQ(mappable_backing->update_count(), 2);
+  EXPECT_FALSE(mappable_backing->IsCleared());
+  EXPECT_FALSE(compound_backing->IsCleared());
+
+  // Shared-memory + lazy GPU compound also assigns `kExternal` exclusively to
+  // the shared-memory element.
+  auto shm_compound = CreateCompoundBacking(
+      {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_GLES2_WRITE});
+  auto* shm_compound_ptr =
+      static_cast<CompoundImageBacking*>(shm_compound.get());
+  EXPECT_EQ(CountElementsWithAccessStream(shm_compound_ptr,
+                                          SharedImageAccessStream::kExternal),
+            1u);
+  EXPECT_TRUE(ElementHasAccessStream(shm_compound_ptr,
+                                     GetShmImageBacking(shm_compound_ptr),
+                                     SharedImageAccessStream::kExternal));
 }
 
 }  // namespace gpu

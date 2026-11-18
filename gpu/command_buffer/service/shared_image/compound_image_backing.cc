@@ -56,7 +56,10 @@
 namespace gpu {
 namespace {
 
-constexpr AccessStreamSet kMemoryStreamSet = {SharedImageAccessStream::kMemory};
+constexpr AccessStreamSet kMemoryAndExternalStreamSet = {
+    SharedImageAccessStream::kMemory, SharedImageAccessStream::kExternal};
+constexpr AccessStreamSet kExternalStreamSet = {
+    SharedImageAccessStream::kExternal};
 
 gfx::GpuMemoryBufferType GetNativeBufferType() {
 #if BUILDFLAG(IS_APPLE)
@@ -196,6 +199,10 @@ SharedImageUsageSet GetUsageFromAccessStream(SharedImageAccessStream stream,
       // to support this stream.
       return SHARED_IMAGE_USAGE_CPU_WRITE_ONLY | SHARED_IMAGE_USAGE_CPU_READ |
              SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE;
+    case SharedImageAccessStream::kExternal:
+      // External/GMB backings are only created at initialization time and
+      // cannot be dynamically allocated.
+      NOTREACHED();
     default:
       NOTREACHED();
   }
@@ -780,7 +787,7 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
 
   std::unique_ptr<SharedImageBacking> backing = CreateSingleElement(
       std::move(temp_backing), shared_image_factory->copy_manager(),
-      shared_image_factory->GetFactoryRef());
+      shared_image_factory->GetFactoryRef(), /*has_external_access=*/false);
 
   DVLOG_IF(1, !!backing) << "CreateSharedImage[" << backing->GetName()
                          << "] size=" << size.ToString()
@@ -822,7 +829,8 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
 
     backing = CreateSingleElement(std::move(temp_backing),
                                   shared_image_factory->copy_manager(),
-                                  shared_image_factory->GetFactoryRef());
+                                  shared_image_factory->GetFactoryRef(),
+                                  /*has_external_access=*/true);
 
     DVLOG_IF(1, !!backing) << "CreateSharedImageBackedByBuffer["
                            << backing->GetName() << "] size=" << size.ToString()
@@ -891,7 +899,7 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
 
   std::unique_ptr<SharedImageBacking> backing = CreateSingleElement(
       std::move(temp_backing), shared_image_factory->copy_manager(),
-      shared_image_factory->GetFactoryRef());
+      shared_image_factory->GetFactoryRef(), /*has_external_access=*/false);
 
   DVLOG_IF(1, !!backing) << "CreateSharedImagePixels[" << backing->GetName()
                          << "] with pixels size=" << size.ToString()
@@ -948,7 +956,8 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
 
     backing = CreateSingleElement(std::move(temp_backing),
                                   shared_image_factory->copy_manager(),
-                                  shared_image_factory->GetFactoryRef());
+                                  shared_image_factory->GetFactoryRef(),
+                                  /*has_external_access=*/true);
   }
 
   DVLOG_IF(1, !!backing) << "CreateSharedImageWithBuffer[" << backing->GetName()
@@ -1032,7 +1041,7 @@ CompoundImageBacking::CreateSharedMemoryInternal(
   }
 
   ElementHolder shm_element;
-  shm_element.access_streams = kMemoryStreamSet;
+  shm_element.access_streams = kMemoryAndExternalStreamSet;
   if (kAllowShmOverlays && si_info.usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
     shm_element.access_streams.Put(SharedImageAccessStream::kOverlay);
   }
@@ -1053,7 +1062,8 @@ CompoundImageBacking::CreateSharedMemoryInternal(
 std::unique_ptr<CompoundImageBacking> CompoundImageBacking::CreateSingleElement(
     std::unique_ptr<SharedImageBacking> backing,
     scoped_refptr<SharedImageCopyManager> copy_manager,
-    scoped_refptr<SharedImageFactoryRef> shared_image_factory) {
+    scoped_refptr<SharedImageFactoryRef> shared_image_factory,
+    bool has_external_access) {
   if (!backing) {
     return nullptr;
   }
@@ -1066,9 +1076,14 @@ std::unique_ptr<CompoundImageBacking> CompoundImageBacking::CreateSingleElement(
   std::optional<gfx::BufferUsage> buffer_usage = backing->buffer_usage();
 
   // Delegate access stream support checks to the inner backing via
-  // SupportsAccess() / Produce*() rather than pre-filtering streams here.
+  // SupportsAccess() / Produce*() rather than pre-filtering GPU streams here.
+  // External access (`kExternal`) is only present when backed by a GMB or
+  // mappable buffer.
   ElementHolder element;
-  element.access_streams = AccessStreamSet::All();
+  element.access_streams =
+      has_external_access
+          ? AccessStreamSet::All()
+          : base::Difference(AccessStreamSet::All(), kExternalStreamSet);
   element.backing = std::move(backing);
 
   return base::WrapUnique(new CompoundImageBacking(
@@ -1143,10 +1158,11 @@ void CompoundImageBacking::AddLazyGpuElement(
   AutoLock auto_lock(this);
   CHECK(gpu_backing_factory);
 
-  // Create placeholder for GPU-backed element (streams = all except kMemory).
+  // Create placeholder for GPU-backed element (streams = all except kMemory
+  // and kExternal, which belong exclusively to the shared-memory element).
   ElementHolder gpu_element;
   gpu_element.access_streams =
-      base::Difference(AccessStreamSet::All(), kMemoryStreamSet);
+      base::Difference(AccessStreamSet::All(), kMemoryAndExternalStreamSet);
 
   SharedImageBackingType factory_type = gpu_backing_factory->GetBackingType();
   gpu_element.create_callback = base::BindOnce(
@@ -1237,7 +1253,7 @@ bool CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
     // Encoded as SSDDAA:
     //   SS = src_type (SharedImageBackingType: 00..19)
     //   DD = dst_type (SharedImageBackingType: 00..19)
-    //   AA = stream   (SharedImageAccessStream: 00..08)
+    //   AA = stream   (SharedImageAccessStream: 00..09)
     const int32_t copy_info =
         static_cast<int32_t>(latest_content_element->GetBacking()->GetType()) *
             10000 +
@@ -1387,26 +1403,29 @@ SharedImageBackingType CompoundImageBacking::GetType() const {
 }
 
 void CompoundImageBacking::Update(gfx::GpuFenceHandle in_fence) {
-  // Update() synchronizes CPU-side writes (from Shared Memory or GMB) with the
-  // GPU. Hence it must target the backing which owns the CPU-mappable memory.
-  //
-  // Per this backing's design:
-  // 1. SharedMemoryImageBacking if present is the exclusive owner of CPU
-  // memory.
-  // 2. A SharedMemoryImageBacking or other CPU-mappable backing is always
-  // created only at initialization time. Hence it is guaranteed to be at
-  // elements_[0].
-  // 3. |elements_| always contains at least one element.
+  // Update() synchronizes CPU-side or external writes (from Shared Memory or
+  // GMB) with the GPU. Forward to the single element that owns the external
+  // access stream.
   AutoLock auto_lock(this);
-  CHECK(!elements_.empty());
-  auto& element = elements_[0];
-  CHECK(element.backing);
-  element.backing->Update(std::move(in_fence));
+  ElementHolder* external_element = nullptr;
+  for (auto& element : elements_) {
+    if (element.access_streams.Has(SharedImageAccessStream::kExternal)) {
+      CHECK(!external_element);
+      external_element = &element;
+    }
+  }
+  if (!external_element || !external_element->backing) {
+    DLOG(ERROR)
+        << "Attempted to Update() a SharedImage without external access";
+    return;
+  }
+
+  external_element->backing->Update(std::move(in_fence));
 
   // Incrementing the content ID marks this backing as the new "source
   // of truth." Subsequent access to other backings will trigger an
   // efficient copy from this element to ensure consistency.
-  element.content_id_ = ++latest_content_id_;
+  external_element->content_id_ = ++latest_content_id_;
 }
 
 bool CompoundImageBacking::CopyToGpuMemoryBuffer() {
@@ -2074,6 +2093,9 @@ GPU_GLES2_EXPORT std::ostream& operator<<(
       break;
     case gpu::SharedImageAccessStream::kVulkan:
       os << "kVulkan";
+      break;
+    case gpu::SharedImageAccessStream::kExternal:
+      os << "kExternal";
       break;
   }
   return os;

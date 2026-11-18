@@ -49,7 +49,8 @@ enum class SharedImageAccessStream {
   kVaapi,
   kWebNNTensor,
   kVulkan,
-  kMaxValue = kVulkan
+  kExternal,
+  kMaxValue = kExternal
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/enums.xml:SharedImageAccessStream)
 
@@ -60,7 +61,7 @@ GPU_GLES2_EXPORT std::ostream& operator<<(
 // Used to represent what access streams a backing can be used for.
 using AccessStreamSet = base::EnumSet<SharedImageAccessStream,
                                       SharedImageAccessStream::kSkia,
-                                      SharedImageAccessStream::kVulkan>;
+                                      SharedImageAccessStream::kMaxValue>;
 
 // A CompoundImageBacking is a specialized container that manages one or more
 // underlying SharedImageBacking instances of different types. It serves as a
@@ -350,11 +351,14 @@ class GPU_GLES2_EXPORT CompoundImageBacking
       scoped_refptr<SharedImageFactoryRef> shared_image_factory);
 
   // Creates a CompoundImageBacking with `backing` as its sole initial element.
-  // Returns nullptr if `backing` is null.
+  // `has_external_access` must be true only when `backing` is created from a
+  // GpuMemoryBufferHandle or mappable BufferUsage so it owns
+  // `SharedImageAccessStream::kExternal`. Returns nullptr if `backing` is null.
   static std::unique_ptr<CompoundImageBacking> CreateSingleElement(
       std::unique_ptr<SharedImageBacking> backing,
       scoped_refptr<SharedImageCopyManager> copy_manager,
-      scoped_refptr<SharedImageFactoryRef> shared_image_factory = nullptr);
+      scoped_refptr<SharedImageFactoryRef> shared_image_factory = nullptr,
+      bool has_external_access = false);
 
   // Creates a backing that contains a shared memory backing and GPU backing
   // provided by `gpu_backing_factory`.
