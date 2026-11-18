@@ -7,7 +7,6 @@
 -All/GetDisplayMediaHiDpiBrowserTest.Capture/3840x2160
 
 -All/PDFExtensionJSInk2Test.Ink2/*
--All/PDFExtensionJSInk2TextTest.Ink2TextBottomToolbar/*
 -All/SoftNavigationTest.LayoutShift/*
 -BackForwardCachePageLoadMetricsObserverBrowserTest.LayoutShiftNormalization_AfterBackForwardCacheRestore
 -LayoutInstabilityTest.*
@@ -31,7 +30,6 @@
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/Standard_Accept
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/Standard_Accept
 
--BackForwardCachePageLoadMetricsObserverBrowserTest.CumulativeLayoutShiftAfterBackForwardCacheRestore
 -CrElementsTest.CrLazyList
 -DevModeToggle/UserScriptsUITest.ToggleControls_UserScriptsAPIUsage/0
 -ExtensionWebRequestApiTest.ExtensionRequestRedirectToServer
