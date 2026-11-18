@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.ProfileTokenUtils;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
@@ -102,9 +103,8 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
             String actionId = IntentUtils.safeGetStringExtra(intent, EXTRA_ACTION_ID);
             String offerId = IntentUtils.safeGetStringExtra(intent, EXTRA_OFFER_ID);
             String clusterId = IntentUtils.safeGetStringExtra(intent, EXTRA_PRODUCT_CLUSTER_ID);
-            int notificationId = IntentUtils.safeGetIntExtra(intent, EXTRA_NOTIFICATION_ID, 0);
 
-            dismissNotification(notificationId);
+            dismissNotification(intent);
 
             if (TextUtils.isEmpty(destinationUrl)) {
                 Log.e(TAG, "No destination URL could be obtained from the Intent");
@@ -124,27 +124,55 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
                 return;
             }
 
-            // Handles "turn off alert" action button click.
+            // Handles "turn off alert" action button click. Finish immediately because this
+            // activity uses Theme.BrowserUI.NoDisplay and must call finish() before onResume()
+            // completes, whereas browser startup and Profile resolution may run asynchronously.
             ChromeBrowserInitializer.getInstance()
                     .runNowOrAfterFullBrowserStarted(
                             () -> {
-                                // TODO(339295368): Pass the Profile reference in the notification
-                                // message details, and load the correct Profile here.
-                                PriceDropNotificationManager priceDropNotificationManager =
-                                        PriceDropNotificationManagerFactory.create(
-                                                ProfileManager.getLastUsedRegularProfile());
-                                assert ACTION_ID_TURN_OFF_ALERT.equals(actionId)
-                                        : "Currently, only turn off alert action uses this.";
-                                priceDropNotificationManager.onNotificationActionClicked(
-                                        actionId,
-                                        destinationUrl,
-                                        offerId,
-                                        clusterId,
-                                        /* recordMetrics= */ false);
-                                // Finish immediately. Could be better to have a callback from
-                                // shopping backend.
-                                finish();
+                                if (ProfileTokenUtils.hasProfileToken(intent)) {
+                                    ProfileTokenUtils.retrieveProfileFromIntent(
+                                            intent,
+                                            (profile) ->
+                                                    turnOffAlert(
+                                                            profile,
+                                                            actionId,
+                                                            destinationUrl,
+                                                            offerId,
+                                                            clusterId));
+                                } else {
+                                    // TODO(crbug.com/585922618): Remove this fallback in M163
+                                    // once notifications posted before profile tokens were added
+                                    // have expired.
+                                    turnOffAlert(
+                                            ProfileManager.getLastUsedRegularProfile(),
+                                            actionId,
+                                            destinationUrl,
+                                            offerId,
+                                            clusterId);
+                                }
                             });
+            finish();
+        }
+
+        private static void turnOffAlert(
+                @Nullable Profile profile,
+                String actionId,
+                String destinationUrl,
+                String offerId,
+                @Nullable String clusterId) {
+            if (profile == null) {
+                return;
+            }
+            assert ACTION_ID_TURN_OFF_ALERT.equals(actionId)
+                    : "Currently, only turn off alert action uses this.";
+            PriceDropNotificationManagerFactory.create(profile)
+                    .onNotificationActionClicked(
+                            actionId,
+                            destinationUrl,
+                            offerId,
+                            clusterId,
+                            /* recordMetrics= */ false);
         }
     }
 
@@ -152,8 +180,7 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
     public static class DismissNotificationChromeActivity extends ChromeLauncherActivity {
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
-            int notificationId = IntentUtils.safeGetIntExtra(getIntent(), EXTRA_NOTIFICATION_ID, 0);
-            dismissNotification(notificationId);
+            dismissNotification(getIntent());
             super.onCreate(savedInstanceState);
             finish();
         }
@@ -342,8 +369,8 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
 
     @Override
     public Intent getNotificationClickIntent(String url, int notificationId) {
-        // TODO(339295368): Pass a Profile reference so the correct activity is reopened based on
-        // this notification being clicked.
+        // TODO(crbug.com/40254448): Route to a window for this Profile once
+        // ChromeLauncherActivity/IntentHandler honor profile tokens.
         Intent intent =
                 new Intent()
                         .setAction(Intent.ACTION_VIEW)
@@ -356,7 +383,7 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
         if (!ChromeFeatureList.sNotificationTrampolineNoNewTask.isEnabled()) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         }
-        IntentUtils.addTrustedIntentExtras(intent);
+        addProfileToIntent(intent);
         return intent;
     }
 
@@ -396,13 +423,24 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
             intent.putExtra(EXTRA_OFFER_ID, offerId);
             if (clusterId != null) intent.putExtra(EXTRA_PRODUCT_CLUSTER_ID, clusterId);
             intent.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
-            IntentUtils.addTrustedIntentExtras(intent);
+            addProfileToIntent(intent);
             if (!ChromeFeatureList.sNotificationTrampolineNoNewTask.isEnabled()) {
                 intent.addFlags(
                         Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             }
             return intent;
         }
+    }
+
+    /**
+     * Adds this Profile's token to {@code intent}, which also lets the notification's per-Profile
+     * tag be recovered when the intent is handled. Also scopes the intent's identity to the
+     * Profile, because PendingIntents that differ only in their extras are treated as the same
+     * PendingIntent, and the same offer can have a notification in more than one Profile.
+     */
+    private void addProfileToIntent(Intent intent) {
+        ProfileTokenUtils.addProfileToIntent(mProfile, intent);
+        ProfileTokenUtils.setProfileScopedIdentity(mProfile, intent);
     }
 
     @Override
@@ -549,8 +587,16 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
         }
     }
 
-    private static void dismissNotification(int notificationId) {
-        BaseNotificationManagerProxyFactory.create()
-                .cancel(PriceDropNotifier.NOTIFICATION_TAG, notificationId);
+    private static void dismissNotification(Intent intent) {
+        int notificationId = IntentUtils.safeGetIntExtra(intent, EXTRA_NOTIFICATION_ID, 0);
+        String notificationTag =
+                ProfileTokenUtils.getNotificationTagFromIntent(
+                        PriceDropNotifier.NOTIFICATION_TAG, intent);
+        if (notificationTag == null) {
+            // TODO(crbug.com/585922618): Remove this fallback in M163 once notifications posted
+            // before per-Profile notification tags were added have expired.
+            notificationTag = PriceDropNotifier.NOTIFICATION_TAG;
+        }
+        BaseNotificationManagerProxyFactory.create().cancel(notificationTag, notificationId);
     }
 }

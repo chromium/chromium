@@ -6,12 +6,17 @@ package org.chromium.chrome.browser.price_tracking;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -34,8 +39,10 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -46,12 +53,17 @@ import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl.DismissNotificationChromeActivity;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl.TrampolineActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.ProfileResolver;
+import org.chromium.chrome.browser.profiles.ProfileResolverJni;
+import org.chromium.chrome.browser.profiles.ProfileTokenUtils;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
@@ -64,6 +76,7 @@ import org.chromium.components.commerce.core.ManagementType;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.ui.test.util.MockitoHelper;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -76,6 +89,9 @@ public class PriceDropNotificationManagerUnitTest {
     private static final String TEST_URL = "www.test.com";
     private static final String OFFER_ID = "offer_id";
     private static final String PRODUCT_CLUSTER_ID = "cluster_id";
+    private static final byte[] PROFILE_TOKEN = "profile_token".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] OTHER_PROFILE_TOKEN =
+            "other_profile_token".getBytes(StandardCharsets.UTF_8);
     private static final int NOTIFICATION_ID = 123;
 
     private NotificationManagerProxy mMockNotificationManager;
@@ -87,6 +103,8 @@ public class PriceDropNotificationManagerUnitTest {
     @Mock private ShoppingService mMockShoppingService;
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
+    @Mock private ProfileResolver.Natives mProfileResolverJniMock;
+    @Mock private ChromeBrowserInitializer mChromeBrowserInitializer;
     @Mock private Profile mMockProfile;
     @Mock private BookmarkModel mBookmarkModel;
     @Captor private ArgumentCaptor<CommerceSubscription> mSubscriptionCaptor;
@@ -97,14 +115,27 @@ public class PriceDropNotificationManagerUnitTest {
         doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
 
         ShoppingServiceFactoryJni.setInstanceForTesting(mShoppingServiceFactoryJniMock);
-        doReturn(mMockShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
+        doReturn(mMockShoppingService)
+                .when(mShoppingServiceFactoryJniMock)
+                .getForProfile(mMockProfile);
+
+        ProfileResolverJni.setInstanceForTesting(mProfileResolverJniMock);
+        doReturn(PROFILE_TOKEN).when(mProfileResolverJniMock).tokenizeProfileToBytes(mMockProfile);
+
+        ChromeBrowserInitializer.setForTesting(mChromeBrowserInitializer);
+        doAnswer(
+                        invocation -> {
+                            invocation.<Runnable>getArgument(0).run();
+                            return null;
+                        })
+                .when(mChromeBrowserInitializer)
+                .runNowOrAfterFullBrowserStarted(any());
 
         mMockNotificationManager = spy(NotificationManagerProxyImpl.getInstance());
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
         mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create(mMockProfile);
         doReturn(true).when(mBookmarkModel).isBookmarkModelLoaded();
         BookmarkModel.setInstanceForTesting(mBookmarkModel);
-        ProfileManager.setLastUsedProfileForTesting(mMockProfile);
     }
 
     @After
@@ -119,6 +150,8 @@ public class PriceDropNotificationManagerUnitTest {
         assertEquals(
                 DismissNotificationChromeActivity.class.getName(),
                 intent.getComponent().getClassName());
+        assertTrue(ProfileTokenUtils.hasProfileToken(intent));
+        verifyNotificationTag(intent);
         int expectedFlags = Intent.FLAG_ACTIVITY_NEW_TASK;
         if (!ChromeFeatureList.sNotificationTrampolineNoNewTask.isEnabled()) {
             expectedFlags |= Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_MULTIPLE_TASK;
@@ -247,6 +280,165 @@ public class PriceDropNotificationManagerUnitTest {
                         turnOffAlertIntent,
                         PriceDropNotificationManagerImpl.EXTRA_NOTIFICATION_ID,
                         0));
+        assertTrue(ProfileTokenUtils.hasProfileToken(turnOffAlertIntent));
+        verifyNotificationTag(turnOffAlertIntent);
+    }
+
+    private void verifyNotificationTag(Intent intent) {
+        String expectedTag = PriceDropNotifier.getNotificationTag(mMockProfile);
+        assertTrue(expectedTag.startsWith(PriceDropNotifier.NOTIFICATION_TAG + ":"));
+        assertEquals(
+                expectedTag,
+                ProfileTokenUtils.getNotificationTagFromIntent(
+                        PriceDropNotifier.NOTIFICATION_TAG, intent));
+        Intent expectedIdentity = new Intent();
+        ProfileTokenUtils.setProfileScopedIdentity(mMockProfile, expectedIdentity);
+        assertEquals(expectedIdentity.getIdentifier(), intent.getIdentifier());
+    }
+
+    @Test
+    public void testNotificationTagIsPerProfile() {
+        Profile otherProfile = mock(Profile.class);
+        doReturn(OTHER_PROFILE_TOKEN)
+                .when(mProfileResolverJniMock)
+                .tokenizeProfileToBytes(otherProfile);
+        assertNotEquals(
+                PriceDropNotifier.getNotificationTag(mMockProfile),
+                PriceDropNotifier.getNotificationTag(otherProfile));
+    }
+
+    @Test
+    public void testTrampolineActivity_TurnOffAlert() {
+        doAnswer(
+                        invocation -> {
+                            invocation.<Callback<Profile>>getArgument(1).onResult(mMockProfile);
+                            return null;
+                        })
+                .when(mProfileResolverJniMock)
+                .resolveProfileFromBytes(aryEq(PROFILE_TOKEN), any());
+
+        Intent turnOffAlertIntent =
+                mPriceDropNotificationManager.getNotificationActionClickIntent(
+                        ACTION_ID_TURN_OFF_ALERT,
+                        TEST_URL,
+                        OFFER_ID,
+                        /* clusterId= */ null,
+                        NOTIFICATION_ID);
+        TrampolineActivity activity =
+                Robolectric.buildActivity(TrampolineActivity.class, turnOffAlertIntent)
+                        .create()
+                        .get();
+
+        verify(mProfileResolverJniMock).resolveProfileFromBytes(aryEq(PROFILE_TOKEN), any());
+        verify(mMockShoppingService, times(1))
+                .unsubscribe(mSubscriptionCaptor.capture(), MockitoHelper.anyCallback());
+        assertEquals(IdentifierType.OFFER_ID, mSubscriptionCaptor.getValue().idType);
+        assertEquals(OFFER_ID, mSubscriptionCaptor.getValue().id);
+        assertEquals(ManagementType.CHROME_MANAGED, mSubscriptionCaptor.getValue().managementType);
+        verify(mMockNotificationManager)
+                .cancel(PriceDropNotifier.getNotificationTag(mMockProfile), NOTIFICATION_ID);
+        assertTrue(activity.isFinishing());
+    }
+
+    @Test
+    public void testTrampolineActivity_AsyncProfileResolution_FinishesBeforeResume() {
+        AtomicReference<Callback<Profile>> profileCallbackRef = new AtomicReference<>();
+        doAnswer(
+                        invocation -> {
+                            profileCallbackRef.set(invocation.getArgument(1));
+                            return null;
+                        })
+                .when(mProfileResolverJniMock)
+                .resolveProfileFromBytes(aryEq(PROFILE_TOKEN), any());
+
+        Intent turnOffAlertIntent =
+                mPriceDropNotificationManager.getNotificationActionClickIntent(
+                        ACTION_ID_TURN_OFF_ALERT,
+                        TEST_URL,
+                        OFFER_ID,
+                        /* clusterId= */ null,
+                        NOTIFICATION_ID);
+        TrampolineActivity activity =
+                Robolectric.buildActivity(TrampolineActivity.class, turnOffAlertIntent)
+                        .create()
+                        .start()
+                        .resume()
+                        .get();
+
+        // TrampolineActivity uses Theme.BrowserUI.NoDisplay and must finish prior to onResume()
+        // completing even when Profile resolution completes asynchronously.
+        assertTrue(activity.isFinishing());
+        assertNotNull(profileCallbackRef.get());
+        verify(mMockShoppingService, never()).unsubscribe(any(), any());
+        verify(mMockNotificationManager)
+                .cancel(PriceDropNotifier.getNotificationTag(mMockProfile), NOTIFICATION_ID);
+
+        profileCallbackRef.get().onResult(mMockProfile);
+        verify(mMockShoppingService, times(1))
+                .unsubscribe(mSubscriptionCaptor.capture(), MockitoHelper.anyCallback());
+        assertEquals(IdentifierType.OFFER_ID, mSubscriptionCaptor.getValue().idType);
+        assertEquals(OFFER_ID, mSubscriptionCaptor.getValue().id);
+        assertEquals(ManagementType.CHROME_MANAGED, mSubscriptionCaptor.getValue().managementType);
+    }
+
+    @Test
+    public void testTrampolineActivity_NullProfile() {
+        doAnswer(
+                        invocation -> {
+                            invocation.<Callback<Profile>>getArgument(1).onResult(null);
+                            return null;
+                        })
+                .when(mProfileResolverJniMock)
+                .resolveProfileFromBytes(aryEq(PROFILE_TOKEN), any());
+
+        Intent turnOffAlertIntent =
+                mPriceDropNotificationManager.getNotificationActionClickIntent(
+                        ACTION_ID_TURN_OFF_ALERT,
+                        TEST_URL,
+                        OFFER_ID,
+                        /* clusterId= */ null,
+                        NOTIFICATION_ID);
+        TrampolineActivity activity =
+                Robolectric.buildActivity(TrampolineActivity.class, turnOffAlertIntent)
+                        .create()
+                        .get();
+
+        verify(mProfileResolverJniMock).resolveProfileFromBytes(aryEq(PROFILE_TOKEN), any());
+        verify(mMockShoppingService, never()).unsubscribe(any(), any());
+        assertTrue(activity.isFinishing());
+    }
+
+    @Test
+    public void testTrampolineActivity_NoProfileToken_FallsBackToLastUsedRegularProfile() {
+        // Notifications posted before profile tokens were added carry a trusted intent without a
+        // profile token.
+        ProfileManager.setLastUsedProfileForTesting(mMockProfile);
+        Intent legacyIntent =
+                new Intent(ContextUtils.getApplicationContext(), TrampolineActivity.class)
+                        .putExtra(PriceDropNotificationManagerImpl.EXTRA_DESTINATION_URL, TEST_URL)
+                        .putExtra(
+                                PriceDropNotificationManagerImpl.EXTRA_ACTION_ID,
+                                ACTION_ID_TURN_OFF_ALERT)
+                        .putExtra(PriceDropNotificationManagerImpl.EXTRA_OFFER_ID, OFFER_ID)
+                        .putExtra(
+                                PriceDropNotificationManagerImpl.EXTRA_NOTIFICATION_ID,
+                                NOTIFICATION_ID);
+        IntentUtils.addTrustedIntentExtras(legacyIntent);
+        assertFalse(ProfileTokenUtils.hasProfileToken(legacyIntent));
+
+        TrampolineActivity activity =
+                Robolectric.buildActivity(TrampolineActivity.class, legacyIntent).create().get();
+
+        verify(mProfileResolverJniMock, never()).resolveProfileFromBytes(any(), any());
+        verify(mProfileResolverJniMock, never()).resolveProfile(any(), any());
+        verify(mMockShoppingService, times(1))
+                .unsubscribe(mSubscriptionCaptor.capture(), MockitoHelper.anyCallback());
+        assertEquals(IdentifierType.OFFER_ID, mSubscriptionCaptor.getValue().idType);
+        assertEquals(OFFER_ID, mSubscriptionCaptor.getValue().id);
+        // Legacy notifications were posted with the unscoped tag.
+        verify(mMockNotificationManager)
+                .cancel(PriceDropNotifier.NOTIFICATION_TAG, NOTIFICATION_ID);
+        assertTrue(activity.isFinishing());
     }
 
     @Test
