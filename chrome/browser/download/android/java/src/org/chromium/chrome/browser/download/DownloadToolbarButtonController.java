@@ -38,10 +38,12 @@ import java.util.concurrent.TimeUnit;
  * in {@code chrome/browser/download/bubble/} as the behavioural reference.
  *
  * <p>The button is shown while any trackable item is active (in progress, pending or paused). Once
- * the last active item reaches a terminal state it stays visible for {@link #AUTO_HIDE_DELAY_MS}
- * within the current session, then hides. If every tracked item is removed before then, it hides
- * immediately. After a download completes the icon is drawn in the active colour for {@link
- * #ACTIVE_AFTER_COMPLETE_MS}, or until the user acts on the button via {@link #markActioned()}.
+ * the last active item completes or is interrupted it stays visible for {@link #AUTO_HIDE_DELAY_MS}
+ * within the current session, then hides; cancelled and failed items, which the download UI doesn't
+ * list ({@link DownloadStateModel#isListedWhenEnded}), don't keep it. If every tracked item is
+ * removed or stops being listed before then, it hides immediately. After a download completes the
+ * icon is drawn in the active colour for {@link #ACTIVE_AFTER_COMPLETE_MS}, or until the user acts
+ * on the button via {@link #markActioned()}.
  *
  * <p>Items are tracked regardless of profile, but the published state only reflects those the
  * window may surface ({@link DownloadStateModel#isVisibleInWindow}), so e.g. an incognito download
@@ -70,9 +72,9 @@ public class DownloadToolbarButtonController implements DownloadStateModel.Obser
             ObservableSuppliers.createNonNull(DownloadToolbarButtonState.HIDDEN);
 
     /**
-     * Items that ended during this session and have not been removed since, with their last
+     * Listed items that ended during this session and have not been removed since, with their last
      * reported data (which says which profile they belong to). While nothing is active these are
-     * what the lingering button surfaces; once all are removed it hides.
+     * what the lingering button surfaces; once all are gone it hides.
      */
     private final Map<ContentId, OfflineItem> mEndedItems = new HashMap<>();
 
@@ -158,25 +160,29 @@ public class DownloadToolbarButtonController implements DownloadStateModel.Obser
         ContentId id = assumeNonNull(item.id); // The model only reports trackable items.
         if (DownloadStateModel.isActive(item)) {
             // A resumed or retried item is active again rather than ended.
-            mEndedItems.remove(id);
-            if (mUnactionedCompletions.remove(id) && mUnactionedCompletions.isEmpty()) {
-                mHandler.removeCallbacks(mInactiveRunnable);
-            }
+            removeEndedItem(id);
             publishState();
             return;
         }
 
+        boolean wasActive = previous != null && DownloadStateModel.isActive(previous);
+        if (!DownloadStateModel.isListedWhenEnded(item)) {
+            // Cancelled or failed: nothing lists it, so it doesn't keep the button visible, e.g.
+            // an interrupted download cancelled from the Downloads page.
+            if (removeEndedItem(id) || wasActive) {
+                publishState();
+            }
+            return;
+        }
         // Only items observed active this session count as ended here; terminal updates for
         // anything else (e.g. a pre-existing download being opened) are not tracked.
-        boolean wasActive = previous != null && DownloadStateModel.isActive(previous);
         if (!wasActive) {
             return;
         }
         mEndedItems.put(id, item);
         if (item.state == OfflineItemState.COMPLETE) {
-            // Only a successful completion draws the icon in the active colour for a while. The
-            // other terminal states (CANCELLED, FAILED, INTERRUPTED) still keep the button visible
-            // via mEndedItems but do not call attention to themselves.
+            // Only a successful completion draws the icon in the active colour for a while. An
+            // interrupted download keeps the button visible but doesn't call attention to itself.
             mUnactionedCompletions.add(id);
             mHandler.removeCallbacks(mInactiveRunnable);
             mHandler.postDelayed(mInactiveRunnable, ACTIVE_AFTER_COMPLETE_MS);
@@ -187,14 +193,22 @@ public class DownloadToolbarButtonController implements DownloadStateModel.Obser
     @Override
     public void onItemRemoved(ContentId id, @Nullable OfflineItem previous) {
         boolean wasActive = previous != null && DownloadStateModel.isActive(previous);
-        boolean wasEnded = mEndedItems.remove(id) != null;
-        if (mUnactionedCompletions.remove(id) && mUnactionedCompletions.isEmpty()) {
-            mHandler.removeCallbacks(mInactiveRunnable);
-        }
+        boolean wasEnded = removeEndedItem(id);
         if (!wasActive && !wasEnded) {
             return;
         }
         publishState();
+    }
+
+    /**
+     * Removes {@code id} from the ended items, and from the un-actioned completions (a subset of
+     * them). Returns whether it was an ended item.
+     */
+    private boolean removeEndedItem(ContentId id) {
+        if (mUnactionedCompletions.remove(id) && mUnactionedCompletions.isEmpty()) {
+            mHandler.removeCallbacks(mInactiveRunnable);
+        }
+        return mEndedItems.remove(id) != null;
     }
 
     /**

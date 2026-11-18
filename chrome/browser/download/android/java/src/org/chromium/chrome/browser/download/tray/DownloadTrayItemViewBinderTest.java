@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.download.tray;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
@@ -89,5 +90,28 @@ public class DownloadTrayItemViewBinderTest {
         assertEquals(
                 "renamed.pdf",
                 mView.<TextView>findViewById(R.id.download_tray_item_title).getText().toString());
+    }
+
+    @Test
+    public void testBind_rowWithNothingToOpen_isNotClickableOrFocusable() {
+        PropertyModel model =
+                new PropertyModel.Builder(DownloadTrayItemProperties.ALL_KEYS)
+                        .with(DownloadTrayItemProperties.ON_OPEN, mOnOpen)
+                        .build();
+        PropertyModelChangeProcessor.create(model, mView, DownloadTrayItemViewBinder::bind);
+
+        // E.g. a recycled row now showing an interrupted download, which has no file to open.
+        model.set(DownloadTrayItemProperties.ON_OPEN, null);
+        assertFalse(mView.isClickable());
+        assertFalse(mView.isFocusable());
+        assertTrue(mView.isScreenReaderFocusable());
+        AccessibilityNodeInfoCompat rowInfo =
+                AccessibilityNodeInfoCompat.wrap(mView.createAccessibilityNodeInfo());
+        assertFalse(
+                rowInfo.getActionList().stream()
+                        .anyMatch(
+                                action ->
+                                        action.getId()
+                                                == AccessibilityNodeInfoCompat.ACTION_CLICK));
     }
 }

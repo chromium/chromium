@@ -2828,6 +2828,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_DOWNLOAD_TRAY_ITEM_STATUS_DONE" desc="When a download is finished, let the user know.">
         Done
       </message>
+      <message name="IDS_DOWNLOAD_TRAY_ITEM_STATUS_FAILED" desc="Status shown in the download tray for a download that stopped and can't continue without the user's help, e.g. because the device ran out of storage.">
+        Download failed
+      </message>
       <message name="IDS_DOWNLOAD_TRAY_HEADER" desc="Header text of the download tray, the popup listing recent downloads that opens from the download toolbar button.">
         Recent download history
       </message>

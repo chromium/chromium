@@ -253,6 +253,7 @@ android_resources("java_resources") {
     "java/res/color/error_icon_color_tint_list.xml",
     "java/res/drawable/dangerous_filled_24dp.xml",
     "java/res/drawable/ic_download_done_24dp.xml",
+    "java/res/drawable/ic_file_download_off_24dp.xml",
     "java/res/drawable/ic_incognito_download_message.xml",
     "java/res/layout/download_location_dialog.xml",
     "java/res/layout/download_location_preference.xml",

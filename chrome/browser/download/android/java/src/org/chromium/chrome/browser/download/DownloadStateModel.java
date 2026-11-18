@@ -41,24 +41,24 @@ import java.util.concurrent.TimeUnit;
  * DownloadMessageUiControllerImpl}. Items from all profiles are tracked.
  *
  * <p>Two sets of items are kept: the active ones, which drive the toolbar button and are reported
- * to observers, and the completed ones (including those already complete when the model was
- * created), which back the download tray's recent list via {@link #getRecentCompletedItems()} and
- * never affect the button.
+ * to observers, and the listed ended ones ({@link #isListedWhenEnded}), including those that ended
+ * before the model was created, which back the tray's recent list ({@link #getRecentEndedItems})
+ * and never affect the button.
  */
 @NullMarked
 public class DownloadStateModel implements OfflineContentProvider.Observer, Destroyable {
     /**
-     * How far back {@link #getRecentCompletedItems()} reaches, measured from when a download
-     * started as on desktop ({@code kShowItemInBubbleDuration} and {@code GetItemStartTime()} in
-     * {@code DownloadBubbleUpdateService}).
+     * How far back {@link #getRecentEndedItems} reaches, measured from when a download started as
+     * on desktop ({@code kShowItemInBubbleDuration} and {@code GetItemStartTime()} in {@code
+     * DownloadBubbleUpdateService}).
      */
-    @VisibleForTesting static final long RECENT_COMPLETED_WINDOW_MS = TimeUnit.HOURS.toMillis(24);
+    @VisibleForTesting static final long RECENT_WINDOW_MS = TimeUnit.HOURS.toMillis(24);
 
     /**
-     * The most items {@link #getRecentCompletedItems()} returns. Mirrors the desktop download
-     * bubble's {@code kDefaultMaxNumItemsToShow}.
+     * The most items {@link #getRecentEndedItems} returns. Mirrors the desktop download bubble's
+     * {@code kDefaultMaxNumItemsToShow}.
      */
-    @VisibleForTesting static final int MAX_RECENT_COMPLETED_ITEMS = 30;
+    @VisibleForTesting static final int MAX_RECENT_ITEMS = 30;
 
     /** Notified synchronously after the cache has been updated. */
     public interface Observer {
@@ -66,8 +66,8 @@ public class DownloadStateModel implements OfflineContentProvider.Observer, Dest
          * A trackable item was added or updated. Items already active when the initial {@link
          * OfflineContentProvider#getAllItems} snapshot arrives are reported here too, with a null
          * {@code previous}; observers added afterwards should read {@link
-         * DownloadStateModel#getActiveItems()}. Items already complete in the snapshot are not
-         * reported.
+         * DownloadStateModel#getActiveItems()}. Items that had already ended in the snapshot are
+         * not reported.
          *
          * @param item The latest data for the item.
          * @param previous The item's cached active data before this change, or null if it was not
@@ -94,10 +94,10 @@ public class DownloadStateModel implements OfflineContentProvider.Observer, Dest
             Collections.unmodifiableCollection(mActiveItems.values());
 
     /**
-     * Completed items keyed by id, holding the latest data for each, whether they completed during
-     * this session or were already complete in the initial snapshot.
+     * Listed ended items keyed by id, holding the latest data for each, whether they ended during
+     * this session or had already ended in the initial snapshot.
      */
-    private final Map<ContentId, OfflineItem> mCompletedItems = new HashMap<>();
+    private final Map<ContentId, OfflineItem> mEndedItems = new HashMap<>();
 
     /**
      * Ids reported by observer callbacks before the initial {@link
@@ -137,19 +137,25 @@ public class DownloadStateModel implements OfflineContentProvider.Observer, Dest
     }
 
     /**
-     * Returns up to {@link #MAX_RECENT_COMPLETED_ITEMS} completed items started within the last
-     * {@link #RECENT_COMPLETED_WINDOW_MS}, most recently started first, including ones that
-     * completed before this model was created.
+     * Returns up to {@link #MAX_RECENT_ITEMS} listed ended items a window may surface, started
+     * within the last {@link #RECENT_WINDOW_MS}, most recently started first. The cap applies per
+     * window, as desktop's does per profile, so other profiles' downloads can't crowd out the
+     * window's own.
+     *
+     * @param isIncognitoSelected Whether the window is showing incognito tabs; see {@link
+     *     #isVisibleInWindow}.
      */
-    public List<OfflineItem> getRecentCompletedItems() {
+    public List<OfflineItem> getRecentEndedItems(boolean isIncognitoSelected) {
         // Items that have aged past the window are never read again, so drop them here rather than
         // hold them for the rest of the session.
         long cutoffMs = recentCutoffMs();
-        mCompletedItems.values().removeIf(item -> item.creationTimeMs < cutoffMs);
-        List<OfflineItem> recent = new ArrayList<>(mCompletedItems.values());
+        mEndedItems.values().removeIf(item -> item.creationTimeMs < cutoffMs);
+        List<OfflineItem> recent = new ArrayList<>(mEndedItems.values());
+        // Filtered before capping, so the cap applies per window.
+        recent.removeIf(item -> !isVisibleInWindow(item, isIncognitoSelected));
         recent.sort((a, b) -> Long.compare(b.creationTimeMs, a.creationTimeMs));
-        if (recent.size() > MAX_RECENT_COMPLETED_ITEMS) {
-            recent.subList(MAX_RECENT_COMPLETED_ITEMS, recent.size()).clear();
+        if (recent.size() > MAX_RECENT_ITEMS) {
+            recent.subList(MAX_RECENT_ITEMS, recent.size()).clear();
         }
         return recent;
     }
@@ -160,7 +166,7 @@ public class DownloadStateModel implements OfflineContentProvider.Observer, Dest
         mCallbackController.destroy();
         mProvider.removeObserver(this);
         mActiveItems.clear();
-        mCompletedItems.clear();
+        mEndedItems.clear();
         mObservers.clear();
     }
 
@@ -179,6 +185,16 @@ public class DownloadStateModel implements OfflineContentProvider.Observer, Dest
         return isIncognitoSelected
                 && OtrProfileId.getPrimaryOtrProfileId()
                         .equals(OtrProfileId.deserializeWithoutVerify(item.otrProfileId));
+    }
+
+    /**
+     * Returns whether {@code item} ended in a state the download UI lists: completed, or
+     * interrupted and awaiting a retry. As on the Downloads page ({@code
+     * InvalidStateOfflineItemFilter}), cancelled and failed ones aren't.
+     */
+    public static boolean isListedWhenEnded(OfflineItem item) {
+        return item.state == OfflineItemState.COMPLETE
+                || item.state == OfflineItemState.INTERRUPTED;
     }
 
     /** Returns whether {@code item} is in progress, pending or paused. */
@@ -212,7 +228,7 @@ public class DownloadStateModel implements OfflineContentProvider.Observer, Dest
     @Override
     public void onItemRemoved(ContentId id) {
         recordUpdateBeforeSnapshot(id);
-        mCompletedItems.remove(id);
+        mEndedItems.remove(id);
         OfflineItem previous = mActiveItems.remove(id);
         for (Observer observer : mObservers) {
             observer.onItemRemoved(id, previous);
@@ -244,13 +260,12 @@ public class DownloadStateModel implements OfflineContentProvider.Observer, Dest
                 // Seeded items are reported like newly added ones, so observers need no separate
                 // initialization path.
                 onItemChanged(item);
-            } else if (item.state == OfflineItemState.COMPLETE
-                    && item.creationTimeMs >= recentCutoffMs) {
+            } else if (isListedWhenEnded(item) && item.creationTimeMs >= recentCutoffMs) {
                 // Kept for the tray's recent list only (so older history isn't held in memory),
-                // and deliberately not reported: observers treat reported completions as this
+                // and deliberately not reported: observers treat reported endings as this
                 // session's, e.g. for the button's post-completion window, which must not carry
                 // over across a restart.
-                mCompletedItems.put(assumeNonNull(item.id), item); // Checked by isTrackable().
+                mEndedItems.put(assumeNonNull(item.id), item); // Checked by isTrackable().
             }
         }
     }
@@ -260,11 +275,12 @@ public class DownloadStateModel implements OfflineContentProvider.Observer, Dest
             return;
         }
         ContentId id = assumeNonNull(item.id); // Checked by isTrackable().
-        if (item.state == OfflineItemState.COMPLETE) {
-            mCompletedItems.put(id, item);
+        if (isListedWhenEnded(item)) {
+            mEndedItems.put(id, item);
         } else {
-            // E.g. a completed item being re-downloaded is no longer a completion.
-            mCompletedItems.remove(id);
+            // E.g. a completed item being re-downloaded, or an interrupted one retried or
+            // cancelled, is no longer listed.
+            mEndedItems.remove(id);
         }
         OfflineItem previous =
                 isActive(item) ? mActiveItems.put(id, item) : mActiveItems.remove(id);
@@ -275,7 +291,7 @@ public class DownloadStateModel implements OfflineContentProvider.Observer, Dest
 
     /** Returns the earliest start time an item may have to count as recent. */
     private static long recentCutoffMs() {
-        return TimeUtils.currentTimeMillis() - RECENT_COMPLETED_WINDOW_MS;
+        return TimeUtils.currentTimeMillis() - RECENT_WINDOW_MS;
     }
 
     private static boolean isTrackable(OfflineItem item) {

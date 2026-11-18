@@ -190,7 +190,7 @@ public class DownloadTrayCoordinator implements DownloadTrayMediator.PopupContro
         list.setLayoutManager(new LinearLayoutManager(themedContext));
         // The adapter keeps each row's view bound to its model while the popup shows.
         mAdapter = new SimpleRecyclerViewAdapter(rows);
-        mAdapter.registerType(RowType.COMPLETED, this::buildRow, DownloadTrayItemViewBinder::bind);
+        mAdapter.registerType(RowType.ENDED, this::buildRow, DownloadTrayItemViewBinder::bind);
         list.setAdapter(mAdapter);
         return content;
     }

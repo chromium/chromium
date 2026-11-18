@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.download.tray;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -497,6 +498,47 @@ public class DownloadTrayMediatorTest {
         clearInvocations(mPopupController);
         mMediator.toggleFullTray();
         verify(mPopupController).dismiss();
+    }
+
+    @Test
+    public void testFullTray_listsInterruptedDownloadsUntilRetried() {
+        runToState("done", OfflineItemState.COMPLETE);
+        dismissAndWait();
+        runToState("interrupted", OfflineItemState.INTERRUPTED);
+        runToState("failed", OfflineItemState.FAILED);
+        runToState("cancelled", OfflineItemState.CANCELLED);
+
+        // As on the Downloads page, interrupted downloads are listed, failed and cancelled ones
+        // aren't. With no file to open, the row only says the download failed.
+        mMediator.toggleFullTray();
+        ModelList rows = captureFullTrayRows();
+        assertEquals(List.of("interrupted.pdf", "done.pdf"), titles(rows));
+        PropertyModel interrupted = rows.get(0).model;
+        assertEquals(
+                R.drawable.ic_file_download_off_24dp,
+                interrupted.get(DownloadTrayItemProperties.ICON));
+        assertEquals(
+                mActivity.getString(R.string.download_tray_item_status_failed),
+                interrupted.get(DownloadTrayItemProperties.DESCRIPTION));
+        assertNull(interrupted.get(DownloadTrayItemProperties.ON_OPEN));
+
+        // Retried, it leaves the tray.
+        mModel.onItemUpdated(
+                createItem("interrupted", OfflineItemState.IN_PROGRESS), /* updateDelta= */ null);
+        assertEquals(List.of("done.pdf"), titles(rows));
+    }
+
+    @Test
+    public void testFullTray_skipsDangerousDownloads() {
+        runToState("safe", OfflineItemState.COMPLETE);
+        OfflineItem dangerous = runToState("dangerous", OfflineItemState.COMPLETE);
+        dangerous.dangerType = DownloadDangerType.DANGEROUS_CONTENT;
+        mModel.onItemUpdated(dangerous, /* updateDelta= */ null);
+        dismissAndWait();
+
+        // Dangerous downloads have their own warning UI rather than a row.
+        mMediator.toggleFullTray();
+        assertEquals(List.of("safe.pdf"), titles(captureFullTrayRows()));
     }
 
     @Test

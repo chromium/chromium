@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -23,10 +24,11 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 class DownloadTrayItemProperties {
     /** View types of the rows in the download tray list. */
-    @IntDef({RowType.COMPLETED})
+    @IntDef({RowType.ENDED})
     @Retention(RetentionPolicy.SOURCE)
     @interface RowType {
-        int COMPLETED = 0;
+        /** A download that has completed or been interrupted. */
+        int ENDED = 0;
     }
 
     /** The file-type icon drawable resource. */
@@ -39,8 +41,8 @@ class DownloadTrayItemProperties {
     static final WritableObjectPropertyKey<CharSequence> DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
-    /** Invoked when the row is clicked, to open the download. */
-    static final WritableObjectPropertyKey<View.OnClickListener> ON_OPEN =
+    /** Invoked when the row is clicked, to open the download; null if there is nothing to open. */
+    static final WritableObjectPropertyKey<View.@Nullable OnClickListener> ON_OPEN =
             new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {ICON, TITLE, DESCRIPTION, ON_OPEN};

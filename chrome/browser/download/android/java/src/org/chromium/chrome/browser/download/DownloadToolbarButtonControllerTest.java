@@ -186,16 +186,11 @@ public class DownloadToolbarButtonControllerTest {
     }
 
     @Test
-    public void testAllTerminalStates_lingerThenHide() {
+    public void testListedTerminalStates_lingerThenHide() {
         onAllItemsRetrieved();
-        // Every outcome, successful or not, keeps the button for the window, matching desktop.
-        // Only a successful completion draws attention.
-        for (int state :
-                List.of(
-                        OfflineItemState.COMPLETE,
-                        OfflineItemState.CANCELLED,
-                        OfflineItemState.FAILED,
-                        OfflineItemState.INTERRUPTED)) {
+        // Completed and interrupted downloads, which the download UI lists, keep the button for
+        // the window, as on desktop. Only a successful completion draws attention.
+        for (int state : List.of(OfflineItemState.COMPLETE, OfflineItemState.INTERRUPTED)) {
             onItemAdded(createInProgressItem("a"));
             onItemUpdated(createItem("a", state));
             assertTrue("State " + state + " should linger", shouldShow());
@@ -210,6 +205,30 @@ public class DownloadToolbarButtonControllerTest {
             advanceTimeMs(1);
             assertFalse("State " + state + " should hide once the delay elapses", shouldShow());
         }
+    }
+
+    @Test
+    public void testUnlistedTerminalStates_hideImmediately() {
+        onAllItemsRetrieved();
+        // As on the Downloads page, cancelled and failed downloads aren't listed, so the button
+        // doesn't linger to surface them.
+        for (int state : List.of(OfflineItemState.CANCELLED, OfflineItemState.FAILED)) {
+            onItemAdded(createInProgressItem("a"));
+            onItemUpdated(createItem("a", state));
+            assertFalse("State " + state + " should not linger", shouldShow());
+        }
+    }
+
+    @Test
+    public void testInterruptedItemCancelled_stopsLingering() {
+        onAllItemsRetrieved();
+        onItemAdded(createInProgressItem("a"));
+        onItemUpdated(createItem("a", OfflineItemState.INTERRUPTED));
+        assertTrue(shouldShow());
+
+        // E.g. cancelled from the Downloads page, so no longer listed.
+        onItemUpdated(createItem("a", OfflineItemState.CANCELLED));
+        assertFalse(shouldShow());
     }
 
     @Test
@@ -439,11 +458,11 @@ public class DownloadToolbarButtonControllerTest {
         onItemRemoved("a");
         assertTrue("\"b\" still completed recently", state().isActive);
 
-        // Once the last recent completion is gone, a subsequent failure or cancellation within
-        // the window must not inherit its accent.
+        // Once the last recent completion is gone, a subsequent interruption within the window
+        // must not inherit its accent.
         onItemRemoved("b");
         onItemAdded(createInProgressItem("c"));
-        onItemUpdated(createItem("c", OfflineItemState.FAILED));
+        onItemUpdated(createItem("c", OfflineItemState.INTERRUPTED));
         assertEquals(IconState.COMPLETE, state().iconState);
         assertFalse(state().isActive);
     }

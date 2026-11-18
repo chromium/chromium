@@ -17,6 +17,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -37,13 +38,20 @@ class DownloadTrayItemViewBinder {
             TextView description = view.findViewById(R.id.download_tray_item_description);
             description.setText(model.get(DESCRIPTION));
         } else if (key == ON_OPEN) {
-            view.setOnClickListener(model.get(ON_OPEN));
+            View.@Nullable OnClickListener onOpen = model.get(ON_OPEN);
+            view.setOnClickListener(onOpen);
+            // A row with nothing to open, e.g. an interrupted download's, takes no keyboard focus;
+            // screen readers still read it as one item.
+            view.setClickable(onOpen != null);
+            view.setFocusable(onOpen != null);
             // Clicking the row opens the download, so announce "double-tap to open" rather than
-            // the generic "double-tap to activate".
+            // the generic "double-tap to activate". A row with nothing to open has no click action.
             ViewCompat.replaceAccessibilityAction(
                     view,
                     AccessibilityActionCompat.ACTION_CLICK,
-                    view.getContext().getString(R.string.open_downloaded_label),
+                    onOpen == null
+                            ? null
+                            : view.getContext().getString(R.string.open_downloaded_label),
                     null);
         }
     }

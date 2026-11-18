@@ -130,8 +130,7 @@ public class DownloadTrayCoordinatorTest {
     private View firstRow() {
         SimpleRecyclerViewAdapter adapter = shownAdapter();
         RecyclerView list = shownContent().findViewById(R.id.download_tray_list);
-        SimpleRecyclerViewAdapter.ViewHolder holder =
-                adapter.createViewHolder(list, RowType.COMPLETED);
+        SimpleRecyclerViewAdapter.ViewHolder holder = adapter.createViewHolder(list, RowType.ENDED);
         adapter.bindViewHolder(holder, 0);
         return holder.itemView;
     }

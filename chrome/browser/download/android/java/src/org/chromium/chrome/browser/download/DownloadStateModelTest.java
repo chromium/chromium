@@ -67,13 +67,21 @@ public class DownloadStateModelTest {
         return item;
     }
 
-    /** Creates a completed item that started {@code startedAgoMs} before now. */
-    private static OfflineItem createCompletedItem(String guid, long startedAgoMs) {
-        OfflineItem item = createItem(guid, OfflineItemState.COMPLETE);
+    /**
+     * Creates an item that started {@code startedAgoMs} before now and has ended in {@code state}.
+     */
+    private static OfflineItem createEndedItem(
+            String guid, @OfflineItemState int state, long startedAgoMs) {
+        OfflineItem item = createItem(guid, state);
         long nowMs = TimeUtils.currentTimeMillis();
         item.creationTimeMs = nowMs - startedAgoMs;
         item.completionTimeMs = nowMs;
         return item;
+    }
+
+    /** Creates a completed item that started {@code startedAgoMs} before now. */
+    private static OfflineItem createCompletedItem(String guid, long startedAgoMs) {
+        return createEndedItem(guid, OfflineItemState.COMPLETE, startedAgoMs);
     }
 
     private static List<ContentId> ids(List<OfflineItem> items) {
@@ -90,6 +98,11 @@ public class DownloadStateModelTest {
 
     private List<OfflineItem> activeItems() {
         return new ArrayList<>(mModel.getActiveItems());
+    }
+
+    /** Returns the recent ended items a regular window lists. */
+    private List<OfflineItem> recentItems() {
+        return mModel.getRecentEndedItems(/* isIncognitoSelected= */ false);
     }
 
     @Test
@@ -139,12 +152,15 @@ public class DownloadStateModelTest {
     }
 
     @Test
-    public void testSnapshot_seedsActiveItemsAsNewAndCompletedOnesSilently() {
+    public void testSnapshot_seedsActiveItemsAsNewAndEndedOnesSilently() {
         OfflineItem active = createItem("active", OfflineItemState.IN_PROGRESS);
         OfflineItem done = createCompletedItem("done", /* startedAgoMs= */ 0);
-        onAllItemsRetrieved(done, active, createItem("cancelled", OfflineItemState.CANCELLED));
+        OfflineItem interrupted =
+                createEndedItem("interrupted", OfflineItemState.INTERRUPTED, /* startedAgoMs= */ 1);
+        onAllItemsRetrieved(
+                done, active, interrupted, createItem("cancelled", OfflineItemState.CANCELLED));
         assertEquals(List.of(active), activeItems());
-        assertEquals(List.of(done), mModel.getRecentCompletedItems());
+        assertEquals(List.of(done, interrupted), recentItems());
         verify(mObserver).onItemChanged(active, null);
         verifyNoMoreInteractions(mObserver);
     }
@@ -159,7 +175,7 @@ public class DownloadStateModelTest {
                 createItem("completed", OfflineItemState.IN_PROGRESS),
                 createItem("removed", OfflineItemState.IN_PROGRESS));
         assertTrue(activeItems().isEmpty());
-        assertEquals(List.of(id("completed")), ids(mModel.getRecentCompletedItems()));
+        assertEquals(List.of(id("completed")), ids(recentItems()));
     }
 
     @Test
@@ -179,77 +195,100 @@ public class DownloadStateModelTest {
         mModel.destroy();
         verify(mProvider).removeObserver(mModel);
         assertTrue(activeItems().isEmpty());
-        assertTrue(mModel.getRecentCompletedItems().isEmpty());
+        assertTrue(recentItems().isEmpty());
 
         // The snapshot request is still outstanding; its late result must be dropped.
         onAllItemsRetrieved(
                 createItem("c", OfflineItemState.IN_PROGRESS),
                 createCompletedItem("d", /* startedAgoMs= */ 0));
         assertTrue(activeItems().isEmpty());
-        assertTrue(mModel.getRecentCompletedItems().isEmpty());
+        assertTrue(recentItems().isEmpty());
     }
 
     @Test
-    public void testRecentCompletedItems_withinWindowMostRecentFirst() {
+    public void testRecentEndedItems_withinWindowMostRecentFirst() {
         onAllItemsRetrieved(
                 createCompletedItem("older", TimeUnit.HOURS.toMillis(3)),
                 createCompletedItem("newest", TimeUnit.MINUTES.toMillis(5)),
-                createCompletedItem("tooOld", DownloadStateModel.RECENT_COMPLETED_WINDOW_MS + 1),
+                createCompletedItem("tooOld", DownloadStateModel.RECENT_WINDOW_MS + 1),
                 createCompletedItem("middle", TimeUnit.HOURS.toMillis(1)));
-        assertEquals(
-                List.of(id("newest"), id("middle"), id("older")),
-                ids(mModel.getRecentCompletedItems()));
+        assertEquals(List.of(id("newest"), id("middle"), id("older")), ids(recentItems()));
 
         // Items age out as time passes.
-        mFakeTime.advanceMillis(
-                DownloadStateModel.RECENT_COMPLETED_WINDOW_MS - TimeUnit.HOURS.toMillis(2));
-        assertEquals(List.of(id("newest"), id("middle")), ids(mModel.getRecentCompletedItems()));
+        mFakeTime.advanceMillis(DownloadStateModel.RECENT_WINDOW_MS - TimeUnit.HOURS.toMillis(2));
+        assertEquals(List.of(id("newest"), id("middle")), ids(recentItems()));
     }
 
     @Test
-    public void testRecentCompletedItems_cappedToNewest() {
+    public void testRecentEndedItems_cappedToNewest() {
         int extra = 3;
-        OfflineItem[] items =
-                new OfflineItem[DownloadStateModel.MAX_RECENT_COMPLETED_ITEMS + extra];
+        OfflineItem[] items = new OfflineItem[DownloadStateModel.MAX_RECENT_ITEMS + extra];
         for (int i = 0; i < items.length; i++) {
             // Item 0 is the oldest, so it and the next few are the ones dropped.
             items[i] = createCompletedItem("item" + i, TimeUnit.MINUTES.toMillis(items.length - i));
         }
         onAllItemsRetrieved(items);
 
-        List<ContentId> recent = ids(mModel.getRecentCompletedItems());
-        assertEquals(DownloadStateModel.MAX_RECENT_COMPLETED_ITEMS, recent.size());
+        List<ContentId> recent = ids(recentItems());
+        assertEquals(DownloadStateModel.MAX_RECENT_ITEMS, recent.size());
         assertEquals(id("item" + (items.length - 1)), recent.get(0));
         assertEquals(id("item" + extra), recent.get(recent.size() - 1));
     }
 
     @Test
-    public void testRecentCompletedItems_followSessionChanges() {
+    public void testRecentEndedItems_followSessionChanges() {
         mModel.onItemsAdded(
                 List.of(
                         createItem("a", OfflineItemState.IN_PROGRESS),
-                        createItem("b", OfflineItemState.IN_PROGRESS)));
-        // Only successful completions are listed.
+                        createItem("b", OfflineItemState.IN_PROGRESS),
+                        createItem("c", OfflineItemState.IN_PROGRESS)));
+        // Completed and interrupted downloads are listed; failed (and cancelled) ones aren't.
         mModel.onItemUpdated(
                 createCompletedItem("a", /* startedAgoMs= */ 0), /* updateDelta= */ null);
-        mModel.onItemUpdated(createItem("b", OfflineItemState.FAILED), /* updateDelta= */ null);
-        assertEquals(List.of(id("a")), ids(mModel.getRecentCompletedItems()));
+        mModel.onItemUpdated(
+                createEndedItem("b", OfflineItemState.INTERRUPTED, /* startedAgoMs= */ 1),
+                /* updateDelta= */ null);
+        mModel.onItemUpdated(createItem("c", OfflineItemState.FAILED), /* updateDelta= */ null);
+        assertEquals(List.of(id("a"), id("b")), ids(recentItems()));
+
+        // An interrupted download later cancelled, e.g. from the Downloads page, leaves the list.
+        mModel.onItemUpdated(createItem("b", OfflineItemState.CANCELLED), /* updateDelta= */ null);
+        assertEquals(List.of(id("a")), ids(recentItems()));
 
         // Later updates replace the data, e.g. after a rename.
         OfflineItem renamed = createCompletedItem("a", /* startedAgoMs= */ 0);
         renamed.title = "renamed";
         mModel.onItemUpdated(renamed, /* updateDelta= */ null);
-        assertEquals("renamed", mModel.getRecentCompletedItems().get(0).title);
+        assertEquals("renamed", recentItems().get(0).title);
 
         // A completion that becomes active again (e.g. re-downloaded) leaves the list until it
         // completes again; a removed one leaves it for good.
         mModel.onItemUpdated(
                 createItem("a", OfflineItemState.IN_PROGRESS), /* updateDelta= */ null);
-        assertTrue(mModel.getRecentCompletedItems().isEmpty());
+        assertTrue(recentItems().isEmpty());
         mModel.onItemUpdated(
                 createCompletedItem("a", /* startedAgoMs= */ 0), /* updateDelta= */ null);
         mModel.onItemRemoved(id("a"));
-        assertTrue(mModel.getRecentCompletedItems().isEmpty());
+        assertTrue(recentItems().isEmpty());
+    }
+
+    @Test
+    public void testRecentEndedItems_cappedPerWindow() {
+        // Many newer incognito downloads must not crowd a regular window's own out of its list.
+        OfflineItem[] items = new OfflineItem[DownloadStateModel.MAX_RECENT_ITEMS + 1];
+        items[0] = createCompletedItem("regular", TimeUnit.HOURS.toMillis(1));
+        for (int i = 1; i < items.length; i++) {
+            items[i] = createCompletedItem("incognito" + i, TimeUnit.MINUTES.toMillis(i));
+            items[i].isOffTheRecord = true;
+            items[i].otrProfileId = OtrProfileId.serialize(OtrProfileId.getPrimaryOtrProfileId());
+        }
+        onAllItemsRetrieved(items);
+
+        assertEquals(List.of(id("regular")), ids(recentItems()));
+        List<ContentId> incognitoWindow =
+                ids(mModel.getRecentEndedItems(/* isIncognitoSelected= */ true));
+        assertEquals(DownloadStateModel.MAX_RECENT_ITEMS, incognitoWindow.size());
+        assertFalse(incognitoWindow.contains(id("regular")));
     }
 
     @Test

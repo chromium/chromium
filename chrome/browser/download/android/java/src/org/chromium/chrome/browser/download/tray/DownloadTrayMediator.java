@@ -12,6 +12,7 @@ import android.util.ArrayMap;
 import android.util.ArraySet;
 import android.view.View;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.text.BidiFormatter;
 import androidx.core.text.TextDirectionHeuristicsCompat;
@@ -81,9 +82,9 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
 
     /**
      * Downloads this window saw complete that the user hasn't acted on, as desktop's {@code
-     * !WasActionedOn()}. Their data comes from {@link DownloadStateModel#getRecentCompletedItems()}
-     * when shown, so ones that have aged out of it count as actioned, as on desktop. These sets and
-     * maps hold at most a few dozen entries (bounded by that list), so array-backed ones suffice.
+     * !WasActionedOn()}. Their data comes from {@link DownloadStateModel#getRecentEndedItems} when
+     * shown, so ones that have aged out of it count as actioned, as on desktop. These sets and maps
+     * hold at most a few dozen entries (bounded by that list), so array-backed ones suffice.
      */
     private final Set<ContentId> mUnactionedIds = new ArraySet<>();
 
@@ -198,17 +199,17 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
     @Override
     public void onItemChanged(OfflineItem item, @Nullable OfflineItem previous) {
         ContentId id = assumeNonNull(item.id); // The model only reports items with ids.
-        boolean completed = item.state == OfflineItemState.COMPLETE && !isDangerous(item);
-        if (completed) {
+        boolean listed = DownloadStateModel.isListedWhenEnded(item) && !isDangerous(item);
+        boolean completed = listed && item.state == OfflineItemState.COMPLETE;
+        if (listed) {
             // A shown row follows its download, e.g. renamed from the Downloads page.
             ListItem shownRow = mShownRows.get(id);
             if (shownRow != null) {
                 updateRow(shownRow.model, item);
             }
         } else {
-            // No longer a completed download, e.g. retried or flagged as dangerous, so it is
-            // neither listed nor a reason to show the popup, as if removed.
-            dropCompletion(id);
+            // No longer listed, e.g. retried or flagged as dangerous, as if removed.
+            dropRow(id);
         }
 
         // The model only caches active downloads, so a null previous means it wasn't active.
@@ -239,7 +240,7 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
     @Override
     public void onItemRemoved(ContentId id, @Nullable OfflineItem previous) {
         // E.g. deleted from the Downloads page while its popup is showing.
-        dropCompletion(id);
+        dropRow(id);
         if (previous != null) {
             // An active download removed, e.g. cancelled, may leave nothing downloading.
             maybeShowPendingCompletions();
@@ -250,7 +251,7 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
      * Drops {@code id} from the un-actioned and pending completions and takes its row out of the
      * showing popup, closing it once nothing is left.
      */
-    private void dropCompletion(ContentId id) {
+    private void dropRow(ContentId id) {
         mUnactionedIds.remove(id);
         mPendingIds.remove(id);
         ListItem shownRow = mShownRows.remove(id);
@@ -289,36 +290,35 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
 
     /** Builds the completion popup's rows: the un-actioned completions this window shows. */
     private ModelList buildCompletionPopupRows(Map<ContentId, ListItem> rowsById) {
-        return buildRecentCompletedRows(mUnactionedIds::contains, rowsById);
+        return buildRecentRows(mUnactionedIds::contains, rowsById);
     }
 
     /**
-     * Builds the full tray's rows: all recent completions this window shows, acted on or not, as
-     * desktop's main view.
+     * Builds the full tray's rows: all recent completed and interrupted downloads this window
+     * shows, acted on or not, as desktop's main view.
      */
     private ModelList buildFullTrayRows(Map<ContentId, ListItem> rowsById) {
-        // Only completions are listed, so the model's cap on them also caps the tray, as desktop's
-        // kDefaultMaxNumItemsToShow.
-        return buildRecentCompletedRows(id -> true, rowsById);
+        // Only ended downloads are listed, so the model's cap on them also caps the tray, as
+        // desktop's kDefaultMaxNumItemsToShow.
+        return buildRecentRows(id -> true, rowsById);
     }
 
     /**
-     * Builds a row for each of the model's recent completions that this window shows and {@code
+     * Builds a row for each of the model's recent ended downloads that this window shows and {@code
      * shouldList} accepts, most recently started first, recording each row's download in {@code
      * rowsById}.
      */
-    private ModelList buildRecentCompletedRows(
+    private ModelList buildRecentRows(
             Predicate<ContentId> shouldList, Map<ContentId, ListItem> rowsById) {
-        List<OfflineItem> recent = mModel.getRecentCompletedItems();
-        markNoLongerRecentAsActioned(recent);
         // Re-checked as the window may have switched between regular and incognito since.
         boolean isIncognitoSelected = mIsIncognitoSelected.getAsBoolean();
+        List<OfflineItem> recent = mModel.getRecentEndedItems(isIncognitoSelected);
+        markNoLongerRecentAsActioned(recent, isIncognitoSelected);
         ModelList rows = new ModelList();
         for (OfflineItem item : recent) {
             ContentId id = assumeNonNull(item.id); // The model only keeps items with ids.
-            if (!shouldList.test(id)) continue;
-            if (!DownloadStateModel.isVisibleInWindow(item, isIncognitoSelected)) continue;
-            ListItem row = new ListItem(RowType.COMPLETED, createCompletedItemModel(item));
+            if (!shouldList.test(id) || isDangerous(item)) continue;
+            ListItem row = new ListItem(RowType.ENDED, createItemModel(item));
             rows.add(row);
             rowsById.put(id, row);
         }
@@ -326,15 +326,26 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
     }
 
     /**
-     * Marks un-actioned completions that are no longer in the model's {@code recent} list (started
-     * over 24 hours ago or past its cap) as actioned, as desktop does.
+     * Marks un-actioned completions that no window lists any more (started over 24 hours ago or
+     * past the cap) as actioned, as desktop does. The other window mode's list is checked too, to
+     * keep those remembered for it, e.g. incognito ones while regular tabs show.
+     *
+     * @param recent The window's recent list for {@code isIncognitoSelected}.
+     * @param isIncognitoSelected Whether the window is showing incognito tabs.
      */
-    private void markNoLongerRecentAsActioned(List<OfflineItem> recent) {
-        Set<ContentId> recentIds = new ArraySet<>();
-        for (OfflineItem item : recent) {
-            recentIds.add(assumeNonNull(item.id));
+    private void markNoLongerRecentAsActioned(
+            List<OfflineItem> recent, boolean isIncognitoSelected) {
+        if (mUnactionedIds.isEmpty()) {
+            return;
         }
-        mUnactionedIds.retainAll(recentIds);
+        Set<ContentId> listedIds = new ArraySet<>();
+        for (OfflineItem item : recent) {
+            listedIds.add(assumeNonNull(item.id));
+        }
+        for (OfflineItem item : mModel.getRecentEndedItems(!isIncognitoSelected)) {
+            listedIds.add(assumeNonNull(item.id));
+        }
+        mUnactionedIds.retainAll(listedIds);
     }
 
     private void onOpen(OfflineItem item) {
@@ -368,7 +379,7 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
         return DownloadUtils.shouldDisplayDownloadAsDangerous(item.dangerType, item.state);
     }
 
-    private PropertyModel createCompletedItemModel(OfflineItem item) {
+    private PropertyModel createItemModel(OfflineItem item) {
         PropertyModel row = new PropertyModel(DownloadTrayItemProperties.ALL_KEYS);
         updateRow(row, item);
         return row;
@@ -376,17 +387,36 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
 
     /** Fills {@code row} from {@code item}, e.g. after it was renamed while showing. */
     private void updateRow(PropertyModel row, OfflineItem item) {
-        row.set(DownloadTrayItemProperties.ICON, DownloadIconUtils.getIconForItem(item));
+        row.set(DownloadTrayItemProperties.ICON, getIcon(item));
         row.set(DownloadTrayItemProperties.TITLE, item.title);
-        row.set(DownloadTrayItemProperties.DESCRIPTION, getCompletedDescription(item));
-        row.set(DownloadTrayItemProperties.ON_OPEN, v -> onOpen(item));
+        row.set(DownloadTrayItemProperties.DESCRIPTION, getDescription(item));
+        // An interrupted download has no file to open; otherwise it's OfflineItemState.COMPLETE.
+        row.set(
+                DownloadTrayItemProperties.ON_OPEN,
+                item.state == OfflineItemState.INTERRUPTED ? null : v -> onOpen(item));
     }
 
     /**
-     * Returns the status line for a completed download, e.g. "4.30 MB • 3 minutes ago", as
-     * desktop's {@code BubbleStatusTextBuilder::GetCompletedStatusText}.
+     * Returns the row's icon: the file type's, or for an interrupted download the download-off
+     * icon, as desktop's {@code IconAndColorForDownloadOff()}.
      */
-    private String getCompletedDescription(OfflineItem item) {
+    private static @DrawableRes int getIcon(OfflineItem item) {
+        if (item.state == OfflineItemState.INTERRUPTED) {
+            return R.drawable.ic_file_download_off_24dp;
+        }
+        // OfflineItemState.COMPLETE.
+        return DownloadIconUtils.getIconForItem(item);
+    }
+
+    /**
+     * Returns the row's status line: "Download failed" for an interrupted download, otherwise e.g.
+     * "4.30 MB • 3 minutes ago", as desktop's {@code BubbleStatusTextBuilder}.
+     */
+    private String getDescription(OfflineItem item) {
+        if (item.state == OfflineItemState.INTERRUPTED) {
+            return mContext.getString(R.string.download_tray_item_status_failed);
+        }
+        // OfflineItemState.COMPLETE.
         long bytes = item.totalSizeBytes > 0 ? item.totalSizeBytes : item.receivedBytes;
         // Keep the size left-to-right (e.g. "4.30 MB", not "MB 4.30") in right-to-left locales, as
         // desktop does.
