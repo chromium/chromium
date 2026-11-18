@@ -280,8 +280,9 @@ void WindowMetadataController::SetWindowUserTitle(
   user_title_ = user_title;
   BrowserWindow::FromBrowser(browser_)->UpdateTitleBar();
   // See comment in Browser::OnTabGroupChanged
-  CHECK(!IsRelevantToAppSessionService(browser_->GetType()),
-        base::NotFatalUntil::M162);
+  // TODO(crbug.com/587038188): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!IsRelevantToAppSessionService(browser_->GetType()));
   SessionService* const session_service =
       SessionServiceFactory::GetForProfile(browser_->GetProfile());
   if (session_service) {
