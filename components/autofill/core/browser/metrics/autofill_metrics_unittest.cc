@@ -121,6 +121,7 @@ using ::testing::ElementsAre;
 using ::testing::HasSubstr;
 using ::testing::Matcher;
 using ::testing::NiceMock;
+using ::testing::Return;
 using ::testing::UnorderedPointwise;
 
 using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
@@ -2615,6 +2616,8 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(WebOTPPhoneCollectionMetricsTest,
        TestWebOTPPhoneCollectionMetricsState) {
   auto test_case = GetParam();
+  ON_CALL(autofill_driver(), DocumentUsedWebOtp)
+      .WillByDefault(Return(test_case.report_autofill_web_otp_metrics));
 
   if (!test_case.autocomplete_field.empty()) {
     FormData form;
@@ -2628,8 +2631,7 @@ TEST_P(WebOTPPhoneCollectionMetricsTest,
   }
 
   base::HistogramTester histogram_tester;
-  autofill_manager().ReportAutofillWebOTPMetrics(
-      test_case.report_autofill_web_otp_metrics);
+  autofill_client().GetAutofillDriverFactory().Delete(autofill_driver());
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.WebOTP.PhonePlusWebOTPPlusOTC"),
@@ -2638,6 +2640,8 @@ TEST_P(WebOTPPhoneCollectionMetricsTest,
 
 // Verify that proper PhoneCollectionMetricsState is logged to UKM.
 TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateLoggedToUKM) {
+  ON_CALL(autofill_driver(), DocumentUsedWebOtp).WillByDefault(Return(true));
+
   EXPECT_THAT(GetUkmEvents(test_ukm_recorder(),
                            ukm::builders::WebOTPImpact::kEntryName),
               UkmEventsAre({}));
@@ -2653,7 +2657,7 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateLoggedToUKM) {
 
   base::HistogramTester histogram_tester;
   SeeForm(form);
-  autofill_manager().ReportAutofillWebOTPMetrics(true);
+  autofill_client().GetAutofillDriverFactory().Delete(autofill_driver());
 
   EXPECT_THAT(
       GetUkmEvents(test_ukm_recorder(),

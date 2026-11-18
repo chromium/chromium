@@ -107,10 +107,6 @@ class MockAutofillManager : public AutofillManager {
   MOCK_METHOD(void, OnBeforeProcessParsedForms, (), (override));
   MOCK_METHOD(void, OnFormProcessed, (const FormStructure& form), (override));
   MOCK_METHOD(void,
-              ReportAutofillWebOTPMetrics,
-              (bool used_web_otp),
-              (override));
-  MOCK_METHOD(void,
               FillOrPreviewField,
               (mojom::ActionPersistence action_persistence,
                mojom::FieldActionType action_type,

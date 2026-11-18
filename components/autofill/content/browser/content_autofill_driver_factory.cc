@@ -14,7 +14,6 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/integrators/actor/autofill_annotations_provider_impl.h"
-#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/global_routing_id.h"
@@ -163,14 +162,6 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
 
   ContentAutofillDriver* driver = it->second.get();
   DCHECK(driver);
-
-  if (!render_frame_host->IsInLifecycleState(
-          content::RenderFrameHost::LifecycleState::kPrerendering)) {
-    // TODO: crbug.com/354043809 - Move out of CADF.
-    driver->GetAutofillManager().ReportAutofillWebOTPMetrics(
-        render_frame_host->DocumentUsedWebOTP());
-  }
-
   SetLifecycleStateAndNotifyObservers(*driver,
                                       LifecycleState::kPendingDeletion);
   driver_map_.erase(it);

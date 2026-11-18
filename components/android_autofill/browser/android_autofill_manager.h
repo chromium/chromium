@@ -70,8 +70,6 @@ class AndroidAutofillManager : public AutofillManager,
                           FillingProduct filling_product,
                           std::optional<FieldType> field_type_used) override;
 
-  void ReportAutofillWebOTPMetrics(bool used_web_otp) override {}
-
   CreditCardAccessManager* GetCreditCardAccessManager() override;
   const CreditCardAccessManager* GetCreditCardAccessManager() const override;
 

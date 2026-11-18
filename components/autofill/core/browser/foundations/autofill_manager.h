@@ -439,8 +439,6 @@ class AutofillManager
   // Invoked when the suggestions are actually hidden.
   virtual void OnSuggestionsHidden(SuggestionHidingReason reason);
 
-  virtual void ReportAutofillWebOTPMetrics(bool used_web_otp) = 0;
-
   // translate::TranslateDriver::LanguageDetectionObserver:
   void OnTranslateDriverDestroyed(
       translate::TranslateDriver* translate_driver) override;

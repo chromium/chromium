@@ -163,6 +163,8 @@ class BrowserAutofillManager : public AutofillManager {
   BrowserAutofillManager(const BrowserAutofillManager&) = delete;
   BrowserAutofillManager& operator=(const BrowserAutofillManager&) = delete;
 
+  // This calls into its owning AutofillDriver. That is known and accepted.
+  // See crbug.com/587056767 for pros and cons.
   ~BrowserAutofillManager() override;
 
   // Fills or previews the form corresponding to `form_id` with the information
@@ -327,13 +329,6 @@ class BrowserAutofillManager : public AutofillManager {
   virtual void LogAndRecordLoyaltyCardFill(const LoyaltyCard& loyalty_card,
                                            const FormGlobalId& form_id,
                                            const FieldGlobalId& field_id);
-
-  // Reports whether a document collects phone numbers, uses one time code, uses
-  // WebOTP. There are cases that the reporting is not expected:
-  //   1. some unit tests do not set necessary members,
-  //   |browser_autofill_manager_|
-  //   2. there is no form and WebOTP is not used
-  void ReportAutofillWebOTPMetrics(bool used_web_otp) override;
 
   TouchToFillPaymentMethodDelegate* touch_to_fill_payment_method_delegate() {
     return touch_to_fill_payment_method_delegate_.get();
@@ -702,6 +697,10 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillSuggestionTriggerSource trigger_source,
       FormGlobalId form_id,
       const FormFieldData& field);
+
+  // Reports whether a document collects phone numbers, uses one time code, uses
+  // WebOTP.
+  void ReportAutofillWebOtpMetrics();
 
   // Delegates to perform external processing (display, selection) on
   // our behalf.

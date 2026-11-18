@@ -1011,6 +1011,9 @@ BrowserAutofillManager::~BrowserAutofillManager() {
     ProcessFieldLogEventsInForm(form_structure);
   });
   client().GetSingleFieldFillRouter().CancelPendingQueries();
+
+  // This is bad: It calls a virtual function of BAM's owning AutofillDriver.
+  ReportAutofillWebOtpMetrics();
 }
 
 base::WeakPtr<AutofillManager> BrowserAutofillManager::GetWeakPtr() {
@@ -3662,7 +3665,10 @@ BrowserAutofillManager::GetEventFormLogger(const AutofillField& field) {
   NOTREACHED();
 }
 
-void BrowserAutofillManager::ReportAutofillWebOTPMetrics(bool used_web_otp) {
+void BrowserAutofillManager::ReportAutofillWebOtpMetrics() {
+#if !BUILDFLAG(IS_IOS)
+  const bool used_web_otp = driver().DocumentUsedWebOtp();
+
   // It's possible that a frame without any form uses WebOTP. e.g. a server may
   // send the verification code to a phone number that was collected beforehand
   // and uses the WebOTP API for authentication purpose without user manually
@@ -3693,6 +3699,7 @@ void BrowserAutofillManager::ReportAutofillWebOTPMetrics(bool used_web_otp) {
 
   base::UmaHistogramExactLinear("Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
                                 phone_collection_metric_state, kMaxValue + 1);
+#endif
 }
 
 void BrowserAutofillManager::ProcessFieldLogEventsInForm(
