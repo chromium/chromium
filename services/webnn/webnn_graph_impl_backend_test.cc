@@ -45,6 +45,15 @@
 #include "base/mac/mac_util.h"
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(WEBNN_USE_LITERT)
+#include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "services/webnn/public/cpp/in_process_context_provider.h"  // nogncheck
+#include "services/webnn/public/cpp/webgpu_context_properties.h"
+#include "third_party/litert/buildflags.h"  // nogncheck
+#endif                                      // BUILDFLAG(WEBNN_USE_LITERT)
+
 namespace webnn::test {
 
 namespace {
@@ -3946,5 +3955,197 @@ TEST_P(WebNNGraphImplBackendTest, NewGraphInputTensorIsZeroInitialized) {
                                     [](uint8_t byte) { return byte == 0; }));
   }
 }
+
+#if BUILDFLAG(WEBNN_USE_LITERT)
+// Verifies that requesting a `kGpu` context in `WebNNContextProviderInRenderer`
+// falls back cleanly to LiteRT CPU execution (rather than rejecting with
+// `kNotSupportedError`) when WebGPU adapter/device acquisition fails at runtime
+// or when ML Drift / Dawn is unavailable on the build platform.
+TEST(WebNNLiteRtInRendererTest, GpuFallsBackToCpuWhenWebGpuUnavailable) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {
+          webnn::mojom::features::kWebMachineLearningNeuralNetwork,
+          webnn::mojom::features::kWebNNLiteRTGpuInRenderer,
+      },
+      /*disabled_features=*/{});
+
+  base::test::TaskEnvironment task_environment;
+  bool helper_invoked = false;
+  mojo::ScopedMessagePipeHandle in_process_pipe =
+      webnn::CreateInProcessContextProvider(
+          /*weights_file_creator_pipe=*/mojo::ScopedMessagePipeHandle(),
+          task_environment.GetMainThreadTaskRunner(),
+          base::BindRepeating(
+              [](bool* helper_invoked,
+                 scoped_refptr<base::SingleThreadTaskRunner> worker_task_runner,
+                 WebGpuContextHelperOnceCallback callback) {
+                *helper_invoked = true;
+                worker_task_runner->PostTask(
+                    FROM_HERE, base::BindOnce(std::move(callback),
+                                              WebGpuContextProperties()));
+              },
+              &helper_invoked));
+  mojo::Remote<mojom::WebNNContextProvider> provider_remote(
+      mojo::PendingRemote<mojom::WebNNContextProvider>(
+          std::move(in_process_pipe), 0u));
+
+  base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
+  provider_remote->CreateWebNNContext(
+      mojom::CreateContextOptions::New(
+          mojom::Device::kGpu,
+          mojom::CreateContextOptions::PowerPreference::kDefault),
+      create_context_future.GetCallback());
+  mojom::CreateContextResultPtr create_context_result =
+      create_context_future.Take();
+  ASSERT_TRUE(create_context_result->is_success())
+      << create_context_result->get_error()->message;
+
+#if BUILDFLAG(BUILD_LITERT_WITH_ML_DRIFT) && BUILDFLAG(WEBNN_USE_DAWN)
+  EXPECT_TRUE(helper_invoked);
+#else
+  EXPECT_FALSE(helper_invoked);
+#endif
+  // `GetContextProperties(kCpu)` retains `kInt64` (unlike `kGpu`), confirming
+  // the context downgraded to LiteRT CPU execution.
+  EXPECT_TRUE(create_context_result->get_success()
+                  ->context_properties.data_type_limits.input.data_types.Has(
+                      OperandDataType::kInt64));
+
+  mojo::Remote<mojom::WebNNContext> webnn_context(
+      std::move(create_context_result->get_success()->context_remote));
+  ASSERT_TRUE(webnn_context.is_bound());
+
+  mojo::Remote<mojom::WebNNGraphBuilder> builder_remote;
+  webnn_context->CreateGraphBuilder(
+      builder_remote.BindNewPipeAndPassReceiver());
+  GraphInfoBuilder builder(builder_remote);
+  const std::vector<uint32_t> shape = {1, 2, 2, 1};
+  const OperandId input_id =
+      builder.BuildInput("input", shape, OperandDataType::kFloat32);
+  const OperandId output_id =
+      builder.BuildOutput("output", shape, OperandDataType::kFloat32);
+  builder.BuildClamp(input_id, output_id, /*min_value=*/0.0f,
+                     /*max_value=*/3.0f);
+
+  const std::array<float, 4> input_data = {-2.0f, 0.5f, 1.5f, 5.0f};
+  base::flat_map<std::string, base::span<const float>> named_inputs;
+  named_inputs.insert({"input", input_data});
+  base::flat_map<std::string, std::vector<float>> named_outputs =
+      BuildAndCompute(webnn_context, std::move(builder_remote),
+                      builder.TakeGraphInfo(), std::move(named_inputs));
+  VerifyFloatDataIsEqual(named_outputs["output"],
+                         std::array<float, 4>{0.0f, 0.5f, 1.5f, 3.0f});
+
+  // Wait for `WebNNContextImpl::OnDisconnect()` and `~WebNNContextImpl()` on
+  // the worker sequence to finish before resetting `provider_remote`, so
+  // `WebNNContextProviderInRenderer`'s `SelfOwnedReceiver` teardown does not
+  // destroy `context_impls_` while the context or tensor Mojo receivers are
+  // still bound.
+  base::RunLoop context_destroyed_loop;
+  base::RepeatingClosure destruction_callback =
+      context_destroyed_loop.QuitClosure();
+  WebNNContextImpl::SetDestructionCallbackForTesting(&destruction_callback);
+  webnn_context.reset();
+  context_destroyed_loop.Run();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  WebNNContextImpl::SetDestructionCallbackForTesting(nullptr);
+
+  provider_remote.reset();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  base::RunLoop provider_destroyed_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, provider_destroyed_loop.QuitClosure());
+  provider_destroyed_loop.Run();
+}
+
+// Verifies end-to-end `WebNNContextProvider` routing for `kGpu` when
+// `kWebNNLiteRTGpuInRenderer` is enabled across platforms with and without
+// ML Drift / Dawn or an active WebGPU helper.
+TEST(WebNNLiteRtInRendererTest, ContextProviderGpuRoutingWithFeatureEnabled) {
+  std::vector<base::test::FeatureRef> enabled_features = {
+      webnn::mojom::features::kWebMachineLearningNeuralNetwork,
+      webnn::mojom::features::kWebNNLiteRTGpuInRenderer,
+  };
+  std::vector<base::test::FeatureRef> disabled_features;
+#if BUILDFLAG(IS_WIN)
+  disabled_features.push_back(webnn::mojom::features::kWebNNOnnxRuntime);
+#endif
+#if BUILDFLAG(IS_APPLE)
+  disabled_features.push_back(webnn::mojom::features::kWebNNCoreML);
+#endif
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
+
+  WebNNTestEnvironment webnn_test_environment;
+  mojo::Remote<mojom::WebNNContextProvider> provider_remote;
+  webnn_test_environment.BindWebNNContextProvider(
+      provider_remote.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
+  provider_remote->CreateWebNNContext(
+      mojom::CreateContextOptions::New(
+          mojom::Device::kGpu,
+          mojom::CreateContextOptions::PowerPreference::kDefault),
+      create_context_future.GetCallback());
+  mojom::CreateContextResultPtr create_context_result =
+      create_context_future.Take();
+  ASSERT_TRUE(create_context_result->is_success())
+      << create_context_result->get_error()->message;
+
+  // The GPU-process `WebNNContextProviderImpl` should route `kGpu` to the
+  // in-renderer provider (`kFallbackToInProcess`) rather than creating a
+  // GPU-process context.
+  EXPECT_THAT(webnn_test_environment.GetContextBackendNames(),
+              testing::IsEmpty());
+
+  mojo::Remote<mojom::WebNNContext> webnn_context(
+      std::move(create_context_result->get_success()->context_remote));
+  ASSERT_TRUE(webnn_context.is_bound());
+
+  mojo::Remote<mojom::WebNNGraphBuilder> builder_remote;
+  webnn_context->CreateGraphBuilder(
+      builder_remote.BindNewPipeAndPassReceiver());
+  GraphInfoBuilder builder(builder_remote);
+  const std::vector<uint32_t> shape = {1, 2, 2, 1};
+  const OperandId input_id =
+      builder.BuildInput("input", shape, OperandDataType::kFloat32);
+  const OperandId output_id =
+      builder.BuildOutput("output", shape, OperandDataType::kFloat32);
+  builder.BuildClamp(input_id, output_id, /*min_value=*/0.0f,
+                     /*max_value=*/3.0f);
+
+  const std::array<float, 4> input_data = {-2.0f, 0.5f, 1.5f, 5.0f};
+  base::flat_map<std::string, base::span<const float>> named_inputs;
+  named_inputs.insert({"input", input_data});
+  base::flat_map<std::string, std::vector<float>> named_outputs =
+      BuildAndCompute(webnn_context, std::move(builder_remote),
+                      builder.TakeGraphInfo(), std::move(named_inputs));
+  VerifyFloatDataIsEqual(named_outputs["output"],
+                         std::array<float, 4>{0.0f, 0.5f, 1.5f, 3.0f});
+
+  // Wait for `WebNNContextImpl::OnDisconnect()` and `~WebNNContextImpl()` to
+  // finish before resetting `provider_remote`, so in-renderer teardown does
+  // not destroy `context_impls_` while Mojo receivers are still bound or race
+  // with `WebNNTestEnvironment` clearing its destruction callback.
+  base::RunLoop context_destroyed_loop;
+  base::RepeatingClosure destruction_callback =
+      context_destroyed_loop.QuitClosure();
+  WebNNContextImpl::SetDestructionCallbackForTesting(&destruction_callback);
+  webnn_context.reset();
+  context_destroyed_loop.Run();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  WebNNContextImpl::SetDestructionCallbackForTesting(nullptr);
+
+  provider_remote.reset();
+  webnn_test_environment.TearDown();
+  base::RunLoop drain_main_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, drain_main_loop.QuitClosure());
+  drain_main_loop.Run();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+}
+#endif  // BUILDFLAG(WEBNN_USE_LITERT)
 
 }  // namespace webnn::test

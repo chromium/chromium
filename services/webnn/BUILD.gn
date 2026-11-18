@@ -9,12 +9,14 @@ import("//services/webnn/features.gni")
 import("//third_party/litert/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/tflite/features.gni")
+import("//ui/gl/features.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "WEBNN_USE_TFLITE=$webnn_use_tflite",
     "WEBNN_USE_LITERT=$webnn_use_litert",
+    "WEBNN_USE_DAWN=$use_dawn",
     "WEBNN_USE_CHROME_ML_API=$webnn_use_chrome_ml_api",
     "WEBNN_ENABLE_TFLITE_PROFILER=$webnn_enable_tflite_profiler",
     "WEBNN_INSTALL_RUNTIME_IN_CHROME_INSTALLER=$webnn_install_runtime_in_chrome_installer",
@@ -82,6 +84,10 @@ source_set("webnn_service_base") {
       "//third_party/pthreadpool",
       "//third_party/xnnpack",
     ]
+  }
+
+  if (webnn_use_litert) {
+    deps += [ "//third_party/litert:buildflags" ]
   }
 
   if (is_win) {
@@ -332,6 +338,13 @@ source_set("tests") {
     "//testing/gtest",
     "//third_party/fp16",
   ]
+
+  if (webnn_use_litert) {
+    deps += [
+      "//services/webnn/public/cpp:in_process_context_provider",
+      "//third_party/litert:buildflags",
+    ]
+  }
 
   if (is_win) {
     deps += [

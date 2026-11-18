@@ -7,15 +7,18 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/task/thread_pool.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/mojom/features.mojom-features.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 
 #if BUILDFLAG(WEBNN_USE_LITERT)
 #include "services/webnn/tflite/context_impl_litert.h"  // nogncheck
+#include "third_party/litert/buildflags.h"              // nogncheck
 #endif
 
 namespace webnn {
@@ -37,8 +40,17 @@ WebNNContextProviderInRenderer::~WebNNContextProviderInRenderer() = default;
 void WebNNContextProviderInRenderer::CreateWebNNContext(
     mojom::CreateContextOptionsPtr options,
     CreateWebNNContextCallback callback) {
-  // Force the device to CPU for non-GPU requests (e.g. NPU).
-  if (options->device != mojom::Device::kGpu) {
+  bool can_use_webgpu = false;
+#if BUILDFLAG(WEBNN_USE_LITERT)
+#if BUILDFLAG(BUILD_LITERT_WITH_ML_DRIFT) && BUILDFLAG(WEBNN_USE_DAWN)
+  can_use_webgpu = base::FeatureList::IsEnabled(
+                       mojom::features::kWebNNLiteRTGpuInRenderer) &&
+                   !webgpu_context_helper_.is_null();
+#endif  // BUILDFLAG(BUILD_LITERT_WITH_ML_DRIFT) && BUILDFLAG(WEBNN_USE_DAWN)
+#endif  // BUILDFLAG(WEBNN_USE_LITERT)
+  // Fall back to CPU for non-GPU requests (e.g. NPU) or when in-renderer
+  // WebGPU execution is unavailable.
+  if (options->device != mojom::Device::kGpu || !can_use_webgpu) {
     options->device = mojom::Device::kCpu;
   }
   mojo::PendingRemote<mojom::WebNNContext> remote;
@@ -50,7 +62,7 @@ void WebNNContextProviderInRenderer::CreateWebNNContext(
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
 #if BUILDFLAG(WEBNN_USE_LITERT)
-  if (options->device == mojom::Device::kGpu && webgpu_context_helper_) {
+  if (options->device == mojom::Device::kGpu) {
     // Forward the WebGPU initialization request directly to the worker thread.
     // When WebGPU context initialization completes on the worker thread, the
     // callback executes directly on the worker thread without hopping back to
@@ -90,14 +102,10 @@ void WebNNContextProviderInRenderer::CreateContextOnWorker(
     WebGpuContextProperties webgpu_properties) {
   DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
   if (options->device == mojom::Device::kGpu && !webgpu_properties.IsValid()) {
-    main_task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback),
-            ToError<mojom::CreateContextResult>(
-                mojom::Error::Code::kNotSupportedError,
-                "Failed to obtain WebGPU context for LiteRT in renderer.")));
-    return;
+    // Fall back to LiteRT CPU execution when a WebGPU adapter/device cannot be
+    // acquired (e.g. on Linux X11 without Vulkan-GL interop, software/
+    // blocklisted GPUs, or Android AAPM).
+    options->device = mojom::Device::kCpu;
   }
 
   // Create the ContextImplLiteRt on the owning_task_runner and post the result
