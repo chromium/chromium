@@ -47,6 +47,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.TokenHolder;
 
@@ -59,6 +60,7 @@ public class TabSwitcherPaneCoordinatorFactory {
             new TokenHolder(this::onMessageManagerTokenStateChanged);
 
     private final Activity mActivity;
+    private final WindowAndroid mWindowAndroid;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final TabModelSelector mTabModelSelector;
@@ -87,6 +89,7 @@ public class TabSwitcherPaneCoordinatorFactory {
 
     /**
      * @param activity The {@link Activity} that hosts the pane.
+     * @param windowAndroid The {@link WindowAndroid} for the activity.
      * @param lifecycleDispatcher The lifecycle dispatcher for the activity.
      * @param profileProviderSupplier The supplier for profiles.
      * @param tabModelSelector For access to {@link TabModel}.
@@ -116,6 +119,7 @@ public class TabSwitcherPaneCoordinatorFactory {
      */
     TabSwitcherPaneCoordinatorFactory(
             Activity activity,
+            WindowAndroid windowAndroid,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabModelSelector tabModelSelector,
@@ -140,6 +144,7 @@ public class TabSwitcherPaneCoordinatorFactory {
             @Nullable TabSwitcherDragHandler tabSwitcherDragHandler,
             Supplier<TabWindowManager> tabWindowManagerSupplier) {
         mActivity = activity;
+        mWindowAndroid = windowAndroid;
         mLifecycleDispatcher = lifecycleDispatcher;
         mProfileProviderSupplier = profileProviderSupplier;
         mTabModelSelector = tabModelSelector;
@@ -198,6 +203,7 @@ public class TabSwitcherPaneCoordinatorFactory {
 
         return new TabSwitcherPaneCoordinator(
                 mActivity,
+                mWindowAndroid,
                 assertNonNull(mProfileProviderSupplier.get()),
                 createTabModelSupplier(isIncognito),
                 mTabContentManager,

@@ -75,6 +75,7 @@ import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -125,6 +126,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
     TabGridDialogCoordinator(
             Activity activity,
+            WindowAndroid windowAndroid,
             BrowserControlsStateProvider browserControlsStateProvider,
             BottomSheetController bottomSheetController,
             DataSharingTabManager dataSharingTabManager,
@@ -219,6 +221,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mMediator =
                     new TabGridDialogMediator(
                             activity,
+                            windowAndroid,
                             this,
                             mModel,
                             currentTabModelSupplier,

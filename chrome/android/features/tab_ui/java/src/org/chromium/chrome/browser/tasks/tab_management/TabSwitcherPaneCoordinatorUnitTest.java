@@ -115,7 +115,9 @@ import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -169,6 +171,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private PriceWelcomeMessageController mPriceWelcomeMessageController;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private TabWindowManager mTabWindowManager;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
 
     private final SettableNonNullObservableSupplier<Boolean> mHubSearchBoxVisibilitySupplier =
             ObservableSuppliers.createNonNull(false);
@@ -232,6 +236,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
         BookmarkModel.setInstanceForTesting(mBookmarkModel);
         mHubSearchBoxVisibilitySupplier.set(false);
+        when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardVisibilityDelegate);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
     }
@@ -257,6 +262,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         mCoordinator =
                 new TabSwitcherPaneCoordinator(
                         activity,
+                        mWindowAndroid,
                         mProfileProvider,
                         mTabModelSupplier,
                         mTabContentManager,

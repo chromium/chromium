@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.Supplier;
@@ -126,6 +127,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
      * @param activityTabProvider Gives access to the current tab.
      * @param tabModelSelector Gives access to the current set of {@link TabModel}.
      * @param activity The {@link Activity} that creates this surface.
+     * @param windowAndroid The {@link WindowAndroid} for the activity.
      * @param parentView The parent view of this UI.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} of the top
      *     controls.
@@ -148,6 +150,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
             ActivityTabProvider activityTabProvider,
             TabModelSelector tabModelSelector,
             Activity activity,
+            WindowAndroid windowAndroid,
             ViewGroup parentView,
             BrowserControlsStateProvider browserControlsStateProvider,
             ScrimManager scrimManager,
@@ -167,6 +170,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
                     var tabGroupUi =
                             TabGroupUiFactory.createTabGroupUi(
                                     activity,
+                                    windowAndroid,
                                     parentView,
                                     browserControlsStateProvider,
                                     scrimManager,

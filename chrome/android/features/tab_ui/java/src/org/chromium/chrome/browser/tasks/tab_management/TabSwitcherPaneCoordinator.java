@@ -106,6 +106,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -265,6 +266,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     /**
      * @param activity The {@link Activity} that hosts the pane.
+     * @param windowAndroid The {@link WindowAndroid} for the activity.
      * @param profileProvider The provider for profiles.
      * @param tabModelSupplier The supplier of the tab model for this pane.
      * @param tabContentManager For management of thumbnails.
@@ -298,6 +300,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      */
     public TabSwitcherPaneCoordinator(
             Activity activity,
+            WindowAndroid windowAndroid,
             ProfileProvider profileProvider,
             MonotonicObservableSupplier<TabModel> tabModelSupplier,
             TabContentManager tabContentManager,
@@ -381,6 +384,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                 mTabGridDialogCoordinator =
                                         new TabGridDialogCoordinator(
                                                 activity,
+                                                windowAndroid,
                                                 browserControlsStateProvider,
                                                 bottomSheetController,
                                                 dataSharingTabManager,

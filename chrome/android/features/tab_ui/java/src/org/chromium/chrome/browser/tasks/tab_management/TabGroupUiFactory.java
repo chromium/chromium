@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.Supplier;
@@ -39,6 +40,7 @@ public class TabGroupUiFactory {
     interface Factory {
         TabGroupUi createTabGroupUi(
                 Activity activity,
+                WindowAndroid windowAndroid,
                 ViewGroup parentView,
                 BrowserControlsStateProvider browserControlsStateProvider,
                 ScrimManager scrimManager,
@@ -62,6 +64,7 @@ public class TabGroupUiFactory {
      * Creates a {@link TabGroupUi} instance.
      *
      * @param activity The {@link Activity} that creates this surface.
+     * @param windowAndroid The {@link WindowAndroid} for the activity.
      * @param parentView The parent view of this UI.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} of the top
      *     controls.
@@ -85,6 +88,7 @@ public class TabGroupUiFactory {
     @SuppressWarnings("NullAway") // https://crbug.com/433562519
     public static TabGroupUi createTabGroupUi(
             Activity activity,
+            WindowAndroid windowAndroid,
             ViewGroup parentView,
             BrowserControlsStateProvider browserControlsStateProvider,
             ScrimManager scrimManager,
@@ -103,6 +107,7 @@ public class TabGroupUiFactory {
         if (sFactoryForTesting != null) {
             return sFactoryForTesting.createTabGroupUi(
                     activity,
+                    windowAndroid,
                     parentView,
                     browserControlsStateProvider,
                     scrimManager,
@@ -121,6 +126,7 @@ public class TabGroupUiFactory {
         }
         return new TabGroupUiCoordinator(
                 activity,
+                windowAndroid,
                 parentView,
                 browserControlsStateProvider,
                 scrimManager,

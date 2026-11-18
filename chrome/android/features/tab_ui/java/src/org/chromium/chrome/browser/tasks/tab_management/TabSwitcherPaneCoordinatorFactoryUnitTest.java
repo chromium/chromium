@@ -85,6 +85,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
@@ -110,6 +111,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
+    @Mock private WindowAndroid mWindowAndroid;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private ScrimManager mScrimManager;
     @Mock private SnackbarManager mSnackbarManager;
@@ -211,6 +213,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
         mFactory =
                 new TabSwitcherPaneCoordinatorFactory(
                         activity,
+                        mWindowAndroid,
                         mLifecycleDispatcher,
                         mProfileProviderSupplier,
                         mTabModelSelector,

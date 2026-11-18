@@ -65,6 +65,7 @@ import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -84,6 +85,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             ObservableSuppliers.createNonNull(false);
 
     private final Activity mActivity;
+    private final WindowAndroid mWindowAndroid;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final PropertyModel mModel;
     private final TabGroupUiToolbarView mToolbarView;
@@ -116,6 +118,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     /** Creates a new {@link TabGroupUiCoordinator} */
     public TabGroupUiCoordinator(
             Activity activity,
+            WindowAndroid windowAndroid,
             ViewGroup parentView,
             BrowserControlsStateProvider browserControlsStateProvider,
             ScrimManager scrimManager,
@@ -133,6 +136,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             Supplier<@Nullable ShareDelegate> shareDelegateSupplier) {
         try (TraceEvent e = TraceEvent.scoped("TabGroupUiCoordinator.constructor")) {
             mActivity = activity;
+            mWindowAndroid = windowAndroid;
             mBrowserControlsStateProvider = browserControlsStateProvider;
             mScrimManager = scrimManager;
             mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
@@ -176,6 +180,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         mTabGridDialogCoordinator =
                 new TabGridDialogCoordinator(
                         mActivity,
+                        mWindowAndroid,
                         mBrowserControlsStateProvider,
                         mBottomSheetController,
                         mDataSharingTabManager,

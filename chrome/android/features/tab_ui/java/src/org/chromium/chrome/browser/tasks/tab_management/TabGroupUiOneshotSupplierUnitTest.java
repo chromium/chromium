@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.Supplier;
@@ -69,6 +70,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private UndoBarThrottle mUndoBarThrottle;
+    @Mock private WindowAndroid mWindowAndroid;
 
     @Mock private Tab mTab;
     @Mock private TabModel mTabModel;
@@ -102,6 +104,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
                         mActivityTabProvider,
                         mTabModelSelector,
                         mActivity,
+                        mWindowAndroid,
                         mViewGroup,
                         mBrowserControlsStateProvider,
                         mScrimManager,
@@ -118,7 +121,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
                         mShareDelegateSupplier);
         when(mTabGroupUiFactory.createTabGroupUi(
                         any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(),
-                        any(), any(), any(), any(), any()))
+                        any(), any(), any(), any(), any(), any()))
                 .thenReturn(mTabGroupUi);
         TabGroupUiFactory.setFactoryForTesting(mTabGroupUiFactory);
     }
@@ -146,6 +149,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
         verify(mTabGroupUiFactory)
                 .createTabGroupUi(
                         mActivity,
+                        mWindowAndroid,
                         mViewGroup,
                         mBrowserControlsStateProvider,
                         mScrimManager,
@@ -178,6 +182,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
         verify(mTabGroupUiFactory)
                 .createTabGroupUi(
                         mActivity,
+                        mWindowAndroid,
                         mViewGroup,
                         mBrowserControlsStateProvider,
                         mScrimManager,

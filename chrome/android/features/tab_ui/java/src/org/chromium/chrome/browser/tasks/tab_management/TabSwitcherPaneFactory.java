@@ -51,6 +51,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -66,6 +67,7 @@ public class TabSwitcherPaneFactory {
      * Creates a {@link TabSwitcher} and {@link Pane} for the Hub.
      *
      * @param activity The {@link Activity} that hosts the pane.
+     * @param windowAndroid The {@link WindowAndroid} for the activity.
      * @param lifecycleDispatcher The lifecycle dispatcher for the activity.
      * @param profileProviderSupplier The supplier for profiles.
      * @param tabModelSelector For access to {@link TabModel}.
@@ -110,6 +112,7 @@ public class TabSwitcherPaneFactory {
      */
     public static Pair<TabSwitcher, Pane> createTabSwitcherPane(
             Activity activity,
+            WindowAndroid windowAndroid,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabModelSelector tabModelSelector,
@@ -173,6 +176,7 @@ public class TabSwitcherPaneFactory {
         TabSwitcherPaneCoordinatorFactory factory =
                 new TabSwitcherPaneCoordinatorFactory(
                         activity,
+                        windowAndroid,
                         lifecycleDispatcher,
                         profileProviderSupplier,
                         tabModelSelector,

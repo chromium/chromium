@@ -1366,6 +1366,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         Pair<TabSwitcher, Pane> result =
                 TabSwitcherPaneFactory.createTabSwitcherPane(
                         this,
+                        assertNonNull(getWindowAndroid()),
                         getLifecycleDispatcher(),
                         getProfileProviderSupplier(),
                         getTabModelSelector(),

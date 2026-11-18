@@ -2603,6 +2603,7 @@ public class ToolbarManager
                         mActivityTabProvider,
                         mTabModelSelector,
                         mActivity,
+                        mWindowAndroid,
                         tabGroupUiContainer.findViewById(R.id.bottom_container_slot),
                         mBrowserControlsSizer,
                         mScrimManager,

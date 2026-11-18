@@ -114,6 +114,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -245,6 +246,7 @@ public class TabGridDialogMediator
     private final Callback<@Nullable List<GroupMember>> mOnGroupMembersChanged =
             this::onGroupMembersChanged;
     private final Activity mActivity;
+    private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final DialogController mDialogController;
     private final PropertyModel mModel;
     private final NullableObservableSupplier<TabModel> mCurrentTabModelSupplier;
@@ -288,6 +290,7 @@ public class TabGridDialogMediator
 
     TabGridDialogMediator(
             Activity activity,
+            WindowAndroid windowAndroid,
             DialogController dialogController,
             PropertyModel model,
             NullableObservableSupplier<TabModel> currentTabModelSupplier,
@@ -304,6 +307,7 @@ public class TabGridDialogMediator
             Supplier<@Nullable TabBookmarker> tabBookmarkerSupplier,
             Supplier<@Nullable ShareDelegate> shareDelegateSupplier) {
         mActivity = activity;
+        mKeyboardVisibilityDelegate = windowAndroid.getKeyboardDelegate();
         mDialogController = dialogController;
         mModel = model;
         mCurrentTabModelSupplier = currentTabModelSupplier;
@@ -784,8 +788,7 @@ public class TabGridDialogMediator
     public void destroy() {
         removeTabModelObserver(assumeNonNull(mCurrentTabModelSupplier.get()));
         mCurrentTabModelSupplier.removeObserver(mOnTabModelChanged);
-        KeyboardVisibilityDelegate.getInstance()
-                .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
+        mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
         mHandler.removeCallbacks(mDeferredKeyboardHiddenRunnable);
         if (mTransitiveSharedGroupObserver != null) {
             mTransitiveSharedGroupObserver
@@ -1020,8 +1023,7 @@ public class TabGridDialogMediator
                         onKeyboardHidden();
                     }
                 };
-        KeyboardVisibilityDelegate.getInstance()
-                .addKeyboardVisibilityListener(mKeyboardVisibilityListener);
+        mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityListener);
 
         TextWatcher textWatcher =
                 new EmptyTextWatcher() {
@@ -1062,7 +1064,7 @@ public class TabGridDialogMediator
     private void onDeferredKeyboardHidden() {
         if (!mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED)) return;
         View decorView = mActivity.getWindow().getDecorView();
-        if (KeyboardVisibilityDelegate.getInstance().isKeyboardObscuring(decorView)) return;
+        if (mKeyboardVisibilityDelegate.isKeyboardObscuring(decorView)) return;
         onKeyboardHidden();
     }
 

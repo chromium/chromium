@@ -159,6 +159,7 @@ import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -229,6 +230,7 @@ public class TabGridDialogMediatorUnitTest {
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private TabGridContextMenuCoordinator mTabGridContextMenuCoordinator;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
+    @Mock private WindowAndroid mWindowAndroid;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
 
     private final View mView = new View(ContextUtils.getApplicationContext());
@@ -319,7 +321,7 @@ public class TabGridDialogMediatorUnitTest {
         when(mTabModel.getTabGroupTitle(any(Token.class))).thenReturn(UNSET_TAB_GROUP_TITLE);
 
         mActivity = Robolectric.buildActivity(TestActivity.class).get();
-        KeyboardVisibilityDelegate.setInstanceForTesting(mKeyboardVisibilityDelegate);
+        when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardVisibilityDelegate);
         mModel = spy(new PropertyModel(TabGridDialogProperties.ALL_KEYS));
         remakeMediator(
                 /* componentId= */ TabComponentId.TAB_GRID_DIALOG_IN_SWITCHER,
@@ -672,6 +674,29 @@ public class TabGridDialogMediatorUnitTest {
 
         assertFalse(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
         verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID), eq(CUSTOMIZED_DIALOG_TITLE));
+    }
+
+    @Test
+    public void onKeyboardObscuringChanged_UsesWindowKeyboardDelegateWhenGlobalInstanceReplaced() {
+        var windowKeyboardDelegate = new TestKeyboardVisibilityDelegate();
+        when(mWindowAndroid.getKeyboardDelegate()).thenReturn(windowKeyboardDelegate);
+        KeyboardVisibilityDelegate.setInstanceForTesting(new KeyboardVisibilityDelegate() {});
+        remakeMediator(
+                /* componentId= */ TabComponentId.TAB_GRID_DIALOG_IN_SWITCHER,
+                /* withAnimSource= */ true);
+        mMediator.initWithNative(LazyOneshotSupplier.fromValue(mTabListEditorController));
+
+        focusTitleAndEditText();
+        idlePastKeyboardShowSettleWindow();
+        windowKeyboardDelegate.notifyForTesting(false);
+
+        assertFalse(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
+        verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID), eq(CUSTOMIZED_DIALOG_TITLE));
+
+        mMediator.destroy();
+        mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, true);
+        windowKeyboardDelegate.notifyForTesting(false);
+        assertTrue(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
     }
 
     /** Focuses the title for TAB_GROUP_ID and edits it to CUSTOMIZED_DIALOG_TITLE. */
@@ -2273,6 +2298,7 @@ public class TabGridDialogMediatorUnitTest {
         mMediator =
                 new TabGridDialogMediator(
                         mActivity,
+                        mWindowAndroid,
                         mDialogController,
                         mModel,
                         mCurrentTabModelSupplier,
@@ -2444,5 +2470,11 @@ public class TabGridDialogMediatorUnitTest {
         verify(mMessagingBackendService)
                 .clearDirtyTabMessagesForGroup(
                         argThat(collaborationId -> collaborationId.equals(COLLABORATION_ID1)));
+    }
+
+    private static class TestKeyboardVisibilityDelegate extends KeyboardVisibilityDelegate {
+        void notifyForTesting(boolean isObscuring) {
+            notifyListeners(isObscuring);
+        }
     }
 }
