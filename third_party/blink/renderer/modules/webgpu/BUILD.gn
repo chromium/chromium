@@ -139,4 +139,9 @@ source_set("unit_tests") {
     "//third_party/blink/renderer/modules",
     "//third_party/blink/renderer/platform:test_support",
   ]
+
+  if (use_dawn) {
+    sources += [ "gpu_canvas_context_test.cc" ]
+    deps += [ "//third_party/dawn/src/dawn/wire" ]
+  }
 }

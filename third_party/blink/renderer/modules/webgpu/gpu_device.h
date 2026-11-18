@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_format.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -72,9 +73,9 @@ enum class GPUSingletonWarning {
   kCount,  // Must be last
 };
 
-class GPUDevice final : public EventTarget,
-                        public ExecutionContextClient,
-                        public DawnObject<wgpu::Device> {
+class MODULES_EXPORT GPUDevice final : public EventTarget,
+                                       public ExecutionContextClient,
+                                       public DawnObject<wgpu::Device> {
   DEFINE_WRAPPERTYPEINFO();
   USING_PRE_FINALIZER(GPUDevice, Dispose);
 

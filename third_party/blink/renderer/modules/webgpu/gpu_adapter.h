@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -24,7 +25,8 @@ class GPURequestAdapterOptions;
 class GPUSupportedFeatures;
 class GPUSupportedLimits;
 
-class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
+class MODULES_EXPORT GPUAdapter final : public ScriptWrappable,
+                                        DawnObject<wgpu::Adapter> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

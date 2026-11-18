@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_alpha_mode.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/union_base.h"
@@ -32,9 +33,10 @@ class V8UnionHTMLCanvasElementOrOffscreenCanvas;
 
 // A GPUCanvasContext does little by itself and basically just binds a canvas
 // and a GPUSwapChain together and forwards calls from one to the other.
-class GPUCanvasContext : public ScriptWrappable,
-                         public CanvasRenderingContext,
-                         public WebGPUSwapBufferProvider::Client {
+class MODULES_EXPORT GPUCanvasContext
+    : public ScriptWrappable,
+      public CanvasRenderingContext,
+      public WebGPUSwapBufferProvider::Client {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

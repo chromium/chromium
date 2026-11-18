@@ -2140,6 +2140,13 @@ static_library("test_support") {
     ]
   }
 
+  if (use_dawn) {
+    sources += [
+      "graphics/gpu/webgpu_native_test_support.cc",
+      "graphics/gpu/webgpu_native_test_support.h",
+    ]
+  }
+
   configs += [
     ":blink_platform_pch",
     "//third_party/blink/renderer:config",
@@ -2181,6 +2188,9 @@ static_library("test_support") {
     "//third_party/blink/renderer/modules",
     "//third_party/blink/renderer/platform/network:test_support",
   ]
+  if (use_dawn) {
+    deps += [ "//third_party/dawn/src/dawn/native" ]
+  }
   allow_circular_includes_from =
       [ "//third_party/blink/renderer/platform/loader:test_support" ]
 
@@ -2358,8 +2368,6 @@ source_set("blink_platform_unittests_sources") {
     "graphics/gpu/drawing_buffer_test.cc",
     "graphics/gpu/shared_gpu_context_test.cc",
     "graphics/gpu/webgl_image_conversion_test.cc",
-    "graphics/gpu/webgpu_native_test_support.cc",
-    "graphics/gpu/webgpu_native_test_support.h",
     "graphics/gpu/webgpu_shared_image_cache_test.cc",
     "graphics/graphics_context_test.cc",
     "graphics/image_decoder_wrapper_test.cc",

@@ -21,3 +21,9 @@ include_rules = [
     "+media/gfx/paint_canvas_video_renderer.h",
     "+services/metrics/public/cpp/ukm_builders.h",
 ]
+
+specific_include_rules = {
+    ".*_test\\.cc": [
+        "+components/viz/test/test_context_provider.h",
+    ],
+}
