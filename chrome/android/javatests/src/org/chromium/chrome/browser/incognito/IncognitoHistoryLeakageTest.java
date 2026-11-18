@@ -95,19 +95,25 @@ public class IncognitoHistoryLeakageTest {
      */
     private static List<HistoryItem> getBrowsingHistory(Tab tab) throws TimeoutException {
         final TestBrowsingHistoryObserver historyObserver = new TestBrowsingHistoryObserver();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Profile profile =
-                            (tab == null)
-                                    ? ProfileManager.getLastUsedRegularProfile()
-                                    : tab.getProfile();
-                    BrowsingHistoryBridge historyService = new BrowsingHistoryBridge(profile);
-                    historyService.setObserver(historyObserver);
-                    String historyQueryFilter = "";
-                    historyService.queryHistory(historyQueryFilter);
-                });
-        historyObserver.getQueryCallback().waitForCallback(0);
-        return historyObserver.getHistoryQueryResults();
+        BrowsingHistoryBridge historyService =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Profile profile =
+                                    (tab == null)
+                                            ? ProfileManager.getLastUsedRegularProfile()
+                                            : tab.getProfile();
+                            BrowsingHistoryBridge service = new BrowsingHistoryBridge(profile);
+                            service.setObserver(historyObserver);
+                            String historyQueryFilter = "";
+                            service.queryHistory(historyQueryFilter);
+                            return service;
+                        });
+        try {
+            historyObserver.getQueryCallback().waitForCallback(0);
+            return historyObserver.getHistoryQueryResults();
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(historyService::destroy);
+        }
     }
 
     /**
