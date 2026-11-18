@@ -388,6 +388,12 @@ std::vector<std::string> TranslateKitClient::TranslatorImpl::SplitSentences(
     return std::vector<std::string>{text};
   }
 
+  if (sentences.empty() && !text.empty()) {
+    // If the splitter emits zero sentences for non-empty text, fall back to
+    // translating the whole text as one chunk because an empty list signals a
+    // dropped service call to the browser.
+    return std::vector<std::string>{text};
+  }
   return sentences;
 }
 

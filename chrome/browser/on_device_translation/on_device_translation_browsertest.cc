@@ -949,6 +949,35 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   WaitForConsoleObserver(*console_observer);
 }
 
+// Tests that non-ASCII whitespace and C1 control input returns unchanged from
+// `translate()` and `translateStreaming()`.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
+                       NonAsciiWhitespaceIsNotTranslated) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+
+  NavigateToEmptyPage();
+
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      const translator = await Translator.create({
+        sourceLanguage: 'en',
+        targetLanguage: 'ja',
+      });
+      const input = '\u00A0\u3000 \u009F';
+      let streamed = '';
+      for await (const chunk of translator.translateStreaming(input)) {
+        streamed += chunk;
+      }
+      return ((await translator.translate(input)) === input &&
+              streamed === input)
+                 ? 'ok'
+                 : 'mismatch';
+  )"),
+            "ok");
+}
+
 // Tests the behavior of streaming translation.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, TranslateStreaming) {
   MockComponentManager mock_component_manager(GetTempDir());

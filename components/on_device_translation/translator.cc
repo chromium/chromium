@@ -4,13 +4,16 @@
 
 #include "components/on_device_translation/translator.h"
 
-#include <algorithm>
+#include <string_view>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversion_utils.h"
+#include "base/third_party/icu/icu_utf.h"
 #include "components/on_device_translation/features.h"
 #include "components/on_device_translation/metrics.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -24,13 +27,21 @@ namespace on_device_translation {
 
 namespace {
 
-bool IsTranslatableCharacter(char character) {
-  return !base::IsAsciiWhitespace(character) &&
-         !base::IsAsciiControl(character);
-}
-
-bool ContainsTranslatableContent(const std::string& input) {
-  return std::any_of(input.begin(), input.end(), IsTranslatableCharacter);
+// Returns whether `input` contains any character beyond Unicode whitespace and
+// control characters, including non-ASCII spaces such as U+00A0 and U+3000.
+bool ContainsTranslatableContent(std::string_view input) {
+  for (size_t index = 0; index < input.size(); ++index) {
+    base_icu::UChar32 code_point;
+    if (!base::ReadUnicodeCharacter(input, &index, &code_point)) {
+      // Leave invalid UTF-8 to the translation service.
+      return true;
+    }
+    if (!base::IsUnicodeWhitespace(code_point) &&
+        !base::IsUnicodeControl(code_point)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace

@@ -278,6 +278,19 @@ TEST_F(TranslateKitClientTest, SplitSentencesEmptyInput) {
   ASSERT_EQ(sentences.size(), 0u);
 }
 
+// Tests that `SplitSentences()` returns the original content when the library
+// emits zero sentences for non-empty text.
+TEST_F(TranslateKitClientTest, SplitSentencesNoSentenceFound) {
+  auto client = CreateClient(GetMockLibraryPath(), {{"en", "ja"}},
+                             {
+                                 {"0/dict.dat", "En to Ja - "},
+                             });
+  ASSERT_OK_AND_ASSIGN(auto* translator, client->GetTranslator("en", "ja"));
+  ASSERT_TRUE(translator);
+  // The mock library splits at each period and drops empty pieces.
+  EXPECT_THAT(translator->SplitSentences("..."), testing::ElementsAre("..."));
+}
+
 // Tests that the SplitSentences method returns the original content if the
 // library does not support sentence splitting.
 TEST_F(TranslateKitClientTest, SplitSentencesNotSupported) {
