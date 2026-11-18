@@ -10,10 +10,10 @@ your editor.
 
 * [Get clangd](#getting-clangd)
 * Make sure generated ninja files are up-to-date
-* Optional: build chrome normally to get generated headers
-* Generate compilation database (note: it's not regenerated automatically):
+* Generate compilation database and build generated headers (note: the
+  compilation database is not regenerated automatically):
 ```
-tools/clang/scripts/generate_compdb.py -p out/Default > compile_commands.json
+tools/clang/scripts/generate_compdb.py -p out/Default --build-headers > compile_commands.json
 ```
 
 *** note
@@ -74,10 +74,12 @@ gn gen out/Default
 ```
 
 2. Generate the compilation database, clangd needs it to know how to build a
-source file.
+source file. The `--build-headers` flag will also build any
+generated header files (e.g. from Mojo or JNI) without having
+to build all of `chrome`.
 
 ```
-tools/clang/scripts/generate_compdb.py -p out/Default > compile_commands.json
+tools/clang/scripts/generate_compdb.py -p out/Default --build-headers > compile_commands.json
 ```
 
 Note: the compilation database is not regenerated automatically. You need to
@@ -89,16 +91,25 @@ output's encoding to UTF-8 (otherwise Clangd will hit "YAML:1:4: error: Got
 empty plain scalar" while parsing it).
 
 ```
-tools/clang/scripts/generate_compdb.py -p out/Default | out-file -encoding utf8 compile_commands.json
+tools/clang/scripts/generate_compdb.py -p out/Default --build-headers | out-file -encoding utf8 compile_commands.json
 ```
 
-3. Optional: build chrome normally. This ensures generated headers exist and are
-up-to-date. clangd will still work without this step, but it may give errors or
-inaccurate results for files which depend on generated headers.
+3. Optional: You can also pass specific targets to `--build-headers`, which will
+only build the headers required (transitively) by that target:
+
+```
+tools/clang/scripts/generate_compdb.py -p out/Default --build-headers chrome > compile_commands.json
+```
+
+If you are already building `chrome` as a separate step, you can omit
+`--build-headers`:
 
 ```
 ninja -C out/Default chrome
 ```
+
+clangd will still work without building generated headers, but it may give
+errors or inaccurate results for files which depend on them.
 
 4. Use clangd in your favourite editor, see detailed [instructions](
 https://clangd.llvm.org/installation.html#editor-plugins).

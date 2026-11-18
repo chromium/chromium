@@ -186,18 +186,119 @@ def ProcessCompileDatabase(compile_db, filtered_args, target_os=None):
   return compile_db
 
 
-def GetNinjaPath():
-  ninja_executable = 'ninja.exe' if sys.platform == 'win32' else 'ninja'
+def GetChromiumSrcRoot():
+  """Returns the Chromium src/ root directory."""
+  # This file lives in //tools/clang/pylib/clang/, so 4 levels up is the
+  # Chromium src/ root directory.
   return os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
     '..',
     '..',
     '..',
     '..',
+  )
+
+
+def GetNinjaPath():
+  ninja_executable = 'ninja.exe' if sys.platform == 'win32' else 'ninja'
+  return os.path.join(
+    GetChromiumSrcRoot(),
     'third_party',
     'ninja',
     ninja_executable,
   )
+
+
+def GetAutoninjaPath():
+  autoninja_executable = (
+    'autoninja.bat' if sys.platform == 'win32' else 'autoninja'
+  )
+  autoninja_path = shutil.which(autoninja_executable)
+  if autoninja_path:
+    return autoninja_path
+  # If depot_tools is not on PATH, fall back to the vendored copy in
+  # //third_party/depot_tools.
+  autoninja_path = os.path.join(
+    GetChromiumSrcRoot(),
+    'third_party',
+    'depot_tools',
+    autoninja_executable,
+  )
+  if os.path.exists(autoninja_path):
+    return autoninja_path
+  return None
+
+
+_HEADER_DEPS_SUFFIXES = (
+  '.inputdeps',
+  '.inputdeps.stamp',
+  '.harddeps',
+  '.harddeps.stamp',
+)
+
+
+def GetInputDeps(path, targets=None, ninja_path=None):
+  """Returns the list of inputdeps/harddeps targets required by |targets|."""
+  if not ninja_path:
+    ninja_path = GetNinjaPath()
+    if not os.path.exists(ninja_path):
+      ninja_path = shutil.which('ninja')
+  if targets is None:
+    targets = []
+  inputs = subprocess.check_output(
+    [ninja_path, '-C', path, '-t', 'inputs'] + targets,
+    text=True,
+  )
+  return [
+    line for line in inputs.splitlines() if line.endswith(_HEADER_DEPS_SUFFIXES)
+  ]
+
+
+def _BuildTargets(path, targets):
+  """Builds |targets| in |path| with autoninja, splitting long command lines."""
+  autoninja_path = GetAutoninjaPath()
+  if not autoninja_path:
+    return
+  # On Windows, autoninja is invoked via autoninja.bat, which runs under
+  # cmd.exe and is subject to its 8191-character command-line limit. POSIX
+  # systems typically allow at least 256KB (ARG_MAX).
+  max_cmd_len = 7000 if sys.platform == 'win32' else 256000
+  base_cmd = [autoninja_path, '-C', path]
+  # Add +1 per argument to account for the separating space between arguments.
+  base_len = sum(len(arg) + 1 for arg in base_cmd)
+
+  chunk = []
+  chunk_len = base_len
+  for target in targets:
+    target_len = len(target) + 1
+    if chunk and chunk_len + target_len > max_cmd_len:
+      subprocess.check_call(base_cmd + chunk, stdout=sys.stderr)
+      chunk = []
+      chunk_len = base_len
+    chunk.append(target)
+    chunk_len += target_len
+  if chunk:
+    subprocess.check_call(base_cmd + chunk, stdout=sys.stderr)
+
+
+def BuildHeaders(path, targets=None):
+  """Builds the generated header dependencies of |targets| using autoninja.
+
+  Args:
+    path: The build directory to build generated header dependencies in.
+    targets: Additional targets to scope header dependencies to.
+  """
+  ninja_path = GetNinjaPath()
+  if not os.path.exists(ninja_path):
+    ninja_path = shutil.which('ninja')
+  print('Computing required header dependencies...', file=sys.stderr)
+  deps = GetInputDeps(path, targets, ninja_path=ninja_path)
+  if deps:
+    print(
+      f'Building {len(deps)} generated header dependencies...',
+      file=sys.stderr,
+    )
+    _BuildTargets(path, deps)
 
 
 # FIXME: This really should be a build target, rather than generated at runtime.

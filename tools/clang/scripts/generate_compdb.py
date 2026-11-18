@@ -43,10 +43,19 @@ def main(argv):
     + 'cross-compiling Windows from Linux or another host',
   )
   parser.add_argument(
+    '--build-headers',
+    action='store_true',
+    help='Build generated header dependencies of targets before '
+    + 'generating the compilation database.',
+  )
+  parser.add_argument(
     'targets', nargs='*', help='Additional targets to pass to ninja'
   )
 
   args = parser.parse_args()
+
+  if args.build_headers:
+    compile_db.BuildHeaders(args.p, args.targets)
 
   compdb_text = json.dumps(
     compile_db.ProcessCompileDatabase(
