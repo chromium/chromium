@@ -9172,6 +9172,9 @@ crbug.com/565513701 [ Win ] external/wpt/css/css-scroll-snap/scroll-snap-type-pa
 # TODO(crbug.com/568343392): Re-enable this test.
 crbug.com/568343392 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/reload/wait.py [ Failure Pass Timeout ]
 
+# Gardener 2026-11-18 (cherry-picked from crrev.com/c/8833544)
+crbug.com/587335371 [ Linux ] external/wpt/element-timing/css-generated-text.html [ Failure Pass ]
+
 # Gardener 2026-11-17 (M156 Skia roll pixel-diff suppressions)
 crbug.com/583971020 [ Mac ] fast/borders/border-radius-different-width-001-double.html [ Failure Pass ]
 crbug.com/583971020 [ Win ] fast/borders/border-radius-different-width-001-double.html [ Failure Pass ]
