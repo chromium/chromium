@@ -907,8 +907,16 @@ IN_PROC_BROWSER_TEST_F(TabDragControllerTest,
   EXPECT_FALSE(TabDragController::IsActive());
 }
 
+// TODO(crbug.com/587080543): Re-enable on Linux Wayland.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DetachToNewBrowserDragEndedDuringShow \
+  DISABLED_DetachToNewBrowserDragEndedDuringShow
+#else
+#define MAYBE_DetachToNewBrowserDragEndedDuringShow \
+  DetachToNewBrowserDragEndedDuringShow
+#endif
 IN_PROC_BROWSER_TEST_F(TabDragControllerTest,
-                       DetachToNewBrowserDragEndedDuringShow) {
+                       MAYBE_DetachToNewBrowserDragEndedDuringShow) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   if (!tab_strip->GetWidget()->IsMoveLoopSupported()) {
     return;
