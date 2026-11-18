@@ -2739,18 +2739,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.ParkableString.Decompression.ThroughputMBps"
-    units="MBps" expires_after="2025-02-10">
-  <owner>lizeb@chromium.org</owner>
-  <owner>thiabaud@google.com</owner>
-  <summary>
-    Original size of a compressed ParkableString, recorded at decompression
-    time.
-
-    This histogram was expired before 2024-03-19, be careful of missing data.
-  </summary>
-</histogram>
-
 <histogram name="Memory.ParkableString.DiskReadTime.5min" units="ms"
     expires_after="2025-06-22">
   <owner>lizeb@chromium.org</owner>

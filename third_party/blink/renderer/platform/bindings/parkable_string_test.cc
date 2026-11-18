@@ -879,8 +879,6 @@ TEST_P(ParkableStringTest, Compression) {
                                     1);
   histogram_tester.ExpectTotalCount(
       "Memory.ParkableString.Decompression.Latency", 2);
-  histogram_tester.ExpectTotalCount(
-      "Memory.ParkableString.Decompression.ThroughputMBps", 2);
 }
 
 TEST_P(ParkableStringTest, SynchronousCompression) {

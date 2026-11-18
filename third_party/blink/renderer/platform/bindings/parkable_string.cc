@@ -77,16 +77,9 @@ void RecordLatencyHistogram(const char* histogram_name,
       histogram_name, duration, base::Microseconds(500), base::Seconds(1), 100);
 }
 
-void RecordThroughputHistogram(const char* histogram_name,
-                               int throughput_mb_s) {
-  base::UmaHistogramCounts1000(histogram_name, throughput_mb_s);
-}
-
 void RecordStatistics(size_t size,
                       base::TimeDelta duration,
                       ParkingAction action) {
-  int throughput_mb_s =
-      base::ClampRound(size / duration.InSecondsF() / 1000000);
   int size_kb = static_cast<int>(size / 1000);
 
   switch (action) {
@@ -100,9 +93,6 @@ void RecordStatistics(size_t size,
     case ParkingAction::kUnparked:
       RecordLatencyHistogram("Memory.ParkableString.Decompression.Latency",
                              duration);
-      RecordThroughputHistogram(
-          "Memory.ParkableString.Decompression.ThroughputMBps",
-          throughput_mb_s);
       break;
     case ParkingAction::kRead:
       RecordLatencyHistogram("Memory.ParkableString.Read.Latency", duration);
