@@ -2589,6 +2589,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Symphonia.DemuxerFallbackContainer"
+    enum="MediaContainers" expires_after="2027-08-01">
+  <owner>jophba@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the container of media that SymphoniaDemuxer handed to FFmpegDemuxer
+    instead of demuxing, each time that happens. For the
+    FallbackSniffedContainerDisabled outcome of
+    Media.Audio.Symphonia.DemuxerInitResult, this is the container found at the
+    start of the stream. For the other fallback outcomes, it is the container
+    that Symphonia found.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Symphonia.DemuxerInitResult"
+    enum="SymphoniaDemuxerInitResult" expires_after="2027-08-01">
+  <owner>jophba@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the outcome of each SymphoniaDemuxer initialization: whether
+    Symphonia demuxed the media, fell back to FFmpegDemuxer (and why), or failed
+    with an error. SymphoniaDemuxer is only used when the kSymphoniaDemuxing
+    feature is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Symphonia.InitStatus" enum="SymphoniaInitStatus"
     expires_after="2027-08-01">
   <owner>jophba@chromium.org</owner>

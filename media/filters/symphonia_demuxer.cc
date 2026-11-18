@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "media/base/audio_decoder_config.h"
@@ -118,6 +119,11 @@ std::optional<container_names::MediaContainerName> SniffContainer(
   return container_names::DetermineContainer(data);
 }
 
+void RecordInitOutcome(SymphoniaDemuxer::InitOutcome outcome) {
+  base::UmaHistogramEnumeration("Media.Audio.Symphonia.DemuxerInitResult",
+                                outcome);
+}
+
 SymphoniaReadPacketResult ReadPacketOnBlockingSequence(
     const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
     SymphoniaDemuxerBridge* demuxer,
@@ -199,6 +205,8 @@ SymphoniaDemuxer::InitializeOnBlockingSequence(
     bool allow_fallback) {
   CHECK(blocking_task_runner->RunsTasksInCurrentSequence());
 
+  container_names::MediaContainerName container =
+      container_names::MediaContainerName::kContainerUnknown;
   if (allow_fallback) {
     // Determine the container from the start of the stream first, and only
     // probe with Symphonia if Symphonia demuxing is enabled for it.
@@ -207,15 +215,16 @@ SymphoniaDemuxer::InitializeOnBlockingSequence(
     const std::optional<container_names::MediaContainerName> sniffed =
         SniffContainer(*source_bridge);
     if (!sniffed) {
-      return base::unexpected(
-          PipelineStatus(DEMUXER_ERROR_COULD_NOT_OPEN,
-                         "Failed to read the start of the stream"));
+      return base::unexpected(InitFailure{
+          .status = PipelineStatus(DEMUXER_ERROR_COULD_NOT_OPEN,
+                                   "Failed to read the start of the stream")});
     }
-    if (!IsSymphoniaDemuxingEnabledForContainer(*sniffed)) {
-      return base::unexpected(
-          PipelineStatus(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED,
-                         "Unsupported container for Symphonia", "container",
-                         std::to_underlying(*sniffed)));
+    container = *sniffed;
+    if (!IsSymphoniaDemuxingEnabledForContainer(container)) {
+      return base::unexpected(InitFailure{
+          .status = PipelineStatus(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED,
+                                   "Unsupported container for Symphonia"),
+          .sniffed_container = container});
     }
   }
 
@@ -225,9 +234,11 @@ SymphoniaDemuxer::InitializeOnBlockingSequence(
   auto init_result = init_symphonia_demuxer(
       *source_bridge, /*hint_extension=*/"", /*hint_mime=*/"");
   if (init_result.status != SymphoniaDemuxerInitStatus::Ok) {
-    return base::unexpected(PipelineStatus(
-        DEMUXER_ERROR_COULD_NOT_OPEN, "Symphonia initialization failed: " +
-                                          std::string(init_result.error_str)));
+    return base::unexpected(InitFailure{
+        .status = PipelineStatus(DEMUXER_ERROR_COULD_NOT_OPEN,
+                                 "Symphonia initialization failed: " +
+                                     std::string(init_result.error_str)),
+        .sniffed_container = container});
   }
 
   return InitResult{
@@ -280,12 +291,15 @@ void SymphoniaDemuxer::OnInitializeDone(InitResultOrError result) {
   // Initialization failed: Symphonia demuxing is not enabled for the
   // container, or Symphonia could not read the container's headers.
   if (!result.has_value()) {
-    PipelineStatus status = std::move(result).error();
-    if (status == DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED) {
-      FailInitializationForFallback(status.message());
+    InitFailure failure = std::move(result).error();
+    if (failure.status == DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED) {
+      FailInitializationForFallback(
+          InitOutcome::kFallbackSniffedContainerDisabled,
+          failure.sniffed_container, failure.status.message());
       return;
     }
-    std::move(pending_init_cb_).Run(std::move(status));
+    RecordInitOutcome(InitOutcome::kError);
+    std::move(pending_init_cb_).Run(std::move(failure.status));
     return;
   }
 
@@ -297,8 +311,9 @@ void SymphoniaDemuxer::OnInitializeDone(InitResultOrError result) {
       SymphoniaFormatNameToContainerName(result->container_name);
   if (allow_fallback_ &&
       !IsSymphoniaDemuxingEnabledForContainer(probed_container)) {
-    FailInitializationForFallback("Symphonia demuxing is not enabled for " +
-                                  result->container_name);
+    FailInitializationForFallback(
+        InitOutcome::kFallbackProbedContainerDisabled, probed_container,
+        "Symphonia demuxing is not enabled for " + result->container_name);
     return;
   }
 
@@ -308,7 +323,9 @@ void SymphoniaDemuxer::OnInitializeDone(InitResultOrError result) {
       std::ranges::any_of(result->tracks, [](const SymphoniaTrackInfo& track) {
         return track.track_type == SymphoniaTrackType::Video;
       })) {
-    FailInitializationForFallback("Video tracks are not supported");
+    FailInitializationForFallback(InitOutcome::kFallbackVideoTrack,
+                                  probed_container,
+                                  "Video tracks are not supported");
     return;
   }
 
@@ -341,6 +358,7 @@ void SymphoniaDemuxer::OnInitializeDone(InitResultOrError result) {
   }
 
   if (streams_.empty()) {
+    RecordInitOutcome(InitOutcome::kError);
     std::move(pending_init_cb_)
         .Run(PipelineStatus(DEMUXER_ERROR_NO_SUPPORTED_STREAMS,
                             "No supported audio tracks found"));
@@ -349,6 +367,7 @@ void SymphoniaDemuxer::OnInitializeDone(InitResultOrError result) {
 
   // Publish the tracks, complete initialization, and start prefetching
   // packets.
+  RecordInitOutcome(InitOutcome::kSuccess);
   media_tracks_updated_cb_.Run(std::move(media_tracks));
   std::move(pending_init_cb_).Run(PIPELINE_OK);
   ReadFrameIfNeeded();
@@ -749,11 +768,18 @@ void SymphoniaDemuxer::OnDemuxerError(PipelineStatus status) {
   }
 }
 
-void SymphoniaDemuxer::FailInitializationForFallback(std::string_view reason) {
+void SymphoniaDemuxer::FailInitializationForFallback(
+    InitOutcome outcome,
+    container_names::MediaContainerName container,
+    std::string_view reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(allow_fallback_);
   CHECK(pending_init_cb_);
   CHECK(source_bridge_);
+
+  RecordInitOutcome(outcome);
+  base::UmaHistogramEnumeration(
+      "Media.Audio.Symphonia.DemuxerFallbackContainer", container);
 
   // Probing has finished, so no read is in flight on `blocking_task_runner_`.
   // Release `data_source_` without stopping it, so `Stop()` leaves it usable
@@ -766,7 +792,8 @@ void SymphoniaDemuxer::FailInitializationForFallback(std::string_view reason) {
       << GetDisplayName() << ": falling back to another demuxer: " << reason;
   std::move(pending_init_cb_)
       .Run(PipelineStatus(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED,
-                          std::string(reason)));
+                          std::string(reason), "container",
+                          std::to_underlying(container)));
 }
 
 }  // namespace media

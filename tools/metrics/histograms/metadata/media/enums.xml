@@ -2623,6 +2623,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//media/filters/symphonia_decoder_bridge.rs:SymphoniaDecodeStatus) -->
 
+<!-- LINT.IfChange(SymphoniaDemuxerInitResult) -->
+
+<enum name="SymphoniaDemuxerInitResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="FallbackSniffedContainerDisabled"/>
+  <int value="2" label="FallbackProbedContainerDisabled"/>
+  <int value="3" label="FallbackVideoTrack"/>
+  <int value="4" label="Error"/>
+</enum>
+
+<!-- LINT.ThenChange(//media/filters/symphonia_demuxer.h:SymphoniaDemuxerInitResult) -->
+
 <!-- LINT.IfChange(SymphoniaInitStatus) -->
 
 <enum name="SymphoniaInitStatus">

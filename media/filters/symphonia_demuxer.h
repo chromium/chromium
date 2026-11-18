@@ -79,6 +79,21 @@ struct SymphoniaTrackInfo;
 //   current demuxing position; TODO(crbug.com/583935964).
 class MEDIA_EXPORT SymphoniaDemuxer : public Demuxer {
  public:
+  // Outcome of `Initialize()`, recorded to the
+  // Media.Audio.Symphonia.DemuxerInitResult histogram. These values are
+  // persisted to logs. Entries should not be renumbered and numeric values
+  // should never be reused.
+  // LINT.IfChange(SymphoniaDemuxerInitResult)
+  enum class InitOutcome {
+    kSuccess = 0,
+    kFallbackSniffedContainerDisabled = 1,
+    kFallbackProbedContainerDisabled = 2,
+    kFallbackVideoTrack = 3,
+    kError = 4,
+    kMaxValue = kError,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:SymphoniaDemuxerInitResult)
+
   // If `allow_fallback` is true, initialization reports
   // `DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED` for media that Symphonia demuxing is
   // not enabled for (see `IsSymphoniaDemuxingEnabledForContainer()`) or that
@@ -133,10 +148,19 @@ class MEDIA_EXPORT SymphoniaDemuxer : public Demuxer {
     rust::Box<SymphoniaDemuxerBridge> demuxer_bridge;
   };
 
+  // Why initialization failed on the blocking task runner.
+  struct InitFailure {
+    // `DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED` means Symphonia demuxing is not
+    // enabled for `sniffed_container`.
+    PipelineStatus status;
+    // The container found at the start of the stream, or `kContainerUnknown`
+    // if the stream could not be read.
+    container_names::MediaContainerName sniffed_container =
+        container_names::MediaContainerName::kContainerUnknown;
+  };
+
   // The probe result, or why initialization failed.
-  // `DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED` means Symphonia demuxing is not
-  // enabled for the container at the start of the stream.
-  using InitResultOrError = base::expected<InitResult, PipelineStatus>;
+  using InitResultOrError = base::expected<InitResult, InitFailure>;
 
   // Runs on `blocking_task_runner`. Asks Symphonia to probe the container
   // read through `source_bridge`. If `allow_fallback` is true, first checks
@@ -172,9 +196,13 @@ class MEDIA_EXPORT SymphoniaDemuxer : public Demuxer {
   void OnDemuxerError(PipelineStatus status);
 
   // Completes initialization with `DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED` so that
-  // `DemuxerManager` falls back to FFmpegDemuxer. Releases `data_source_`
-  // without stopping it, so the fallback demuxer can read it.
-  void FailInitializationForFallback(std::string_view reason);
+  // `DemuxerManager` falls back to FFmpegDemuxer, and records `outcome` and
+  // `container` to UMA. Releases `data_source_` without stopping it, so the
+  // fallback demuxer can read it.
+  void FailInitializationForFallback(
+      InitOutcome outcome,
+      container_names::MediaContainerName container,
+      std::string_view reason);
 
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;

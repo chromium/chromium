@@ -26,6 +26,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -307,7 +308,24 @@ class SymphoniaDemuxerTest : public testing::Test, public ScopedFeatureState {
                        const std::vector<base::test::FeatureRef>& disabled)
       : ScopedFeatureState(enabled, disabled) {}
 
+  // Expects that initialization recorded `outcome` to UMA, and `container`
+  // as the fallback container if set.
+  void ExpectInitOutcome(SymphoniaDemuxer::InitOutcome outcome,
+                         std::optional<container_names::MediaContainerName>
+                             container = std::nullopt) {
+    histogram_tester_.ExpectUniqueSample(
+        "Media.Audio.Symphonia.DemuxerInitResult", outcome, 1);
+    if (container) {
+      histogram_tester_.ExpectUniqueSample(
+          "Media.Audio.Symphonia.DemuxerFallbackContainer", *container, 1);
+    } else {
+      histogram_tester_.ExpectTotalCount(
+          "Media.Audio.Symphonia.DemuxerFallbackContainer", 0);
+    }
+  }
+
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   base::ScopedTempDir temp_dir_;
   StrictMock<MockDemuxerHost> host_;
   NiceMock<MockMediaLog> media_log_;
@@ -344,6 +362,7 @@ TEST_F(SymphoniaDemuxerTest, InitializeWav) {
   EXPECT_EQ(demuxer_->GetContainerForMetrics(),
             container_names::MediaContainerName::kContainerWAV);
   EXPECT_GE(demuxer_->GetMemoryUsage(), 0);
+  ExpectInitOutcome(SymphoniaDemuxer::InitOutcome::kSuccess);
 }
 
 TEST_F(SymphoniaDemuxerTest, ReadsAllPacketsWav) {
@@ -423,12 +442,16 @@ TEST_F(SymphoniaDemuxerTest, InitializeFailsWithTruncatedHeader) {
   // container but can't read it, which is an error rather than a fallback.
   CreateDemuxerWithContents(std::string_view("RIFF\x04\0\0\0WAVE", 12));
   InitializeDemuxer(DEMUXER_ERROR_COULD_NOT_OPEN);
+  ExpectInitOutcome(SymphoniaDemuxer::InitOutcome::kError);
 }
 
 TEST_F(SymphoniaDemuxerTest, UnrecognizedContainerFallsBack) {
   CreateDemuxerWithContents("GARBAGE NOT MEDIA DATA");
   InitializeDemuxer(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED);
   EXPECT_EQ(media_tracks_, nullptr);
+  ExpectInitOutcome(
+      SymphoniaDemuxer::InitOutcome::kFallbackSniffedContainerDisabled,
+      container_names::MediaContainerName::kContainerUnknown);
 
   demuxer_->Stop();
   ExpectDataSourceNotStopped();
@@ -438,6 +461,8 @@ TEST_F(SymphoniaDemuxerTest, VideoTrackFallsBack) {
   CreateDemuxer("bear-320x240.webm");
   InitializeDemuxer(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED);
   EXPECT_EQ(media_tracks_, nullptr);
+  ExpectInitOutcome(SymphoniaDemuxer::InitOutcome::kFallbackVideoTrack,
+                    container_names::MediaContainerName::kContainerWEBM);
 
   demuxer_->Stop();
   ExpectDataSourceNotStopped();
@@ -454,6 +479,9 @@ TEST_F(SymphoniaDemuxerRiffDisabledTest, DisabledContainerFallsBack) {
   CreateDemuxer("sfx_s16le.wav");
   InitializeDemuxer(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED);
   EXPECT_EQ(media_tracks_, nullptr);
+  ExpectInitOutcome(
+      SymphoniaDemuxer::InitOutcome::kFallbackSniffedContainerDisabled,
+      container_names::MediaContainerName::kContainerWAV);
 
   demuxer_->Stop();
   ExpectDataSourceNotStopped();
@@ -492,6 +520,9 @@ TEST_F(SymphoniaDemuxerMp3OnlyTest, FallsBackForId3TaggedAdts) {
   // The ADTS data after the tag decides the container.
   CreateDemuxerWithContents(EmptyId3v2Tag() + ReadTestFile("sfx.adts"));
   InitializeDemuxer(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED);
+  ExpectInitOutcome(
+      SymphoniaDemuxer::InitOutcome::kFallbackSniffedContainerDisabled,
+      container_names::MediaContainerName::kContainerAAC);
 }
 
 TEST_F(SymphoniaDemuxerMp3OnlyTest, FallsBackWhenProbedContainerIsDisabled) {
@@ -506,6 +537,9 @@ TEST_F(SymphoniaDemuxerMp3OnlyTest, FallsBackWhenProbedContainerIsDisabled) {
   CreateDemuxerWithContents(EmptyId3v2Tag() + EmptyId3v2Tag() + flac);
   InitializeDemuxer(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED);
   EXPECT_EQ(media_tracks_, nullptr);
+  ExpectInitOutcome(
+      SymphoniaDemuxer::InitOutcome::kFallbackProbedContainerDisabled,
+      container_names::MediaContainerName::kContainerFLAC);
 }
 
 class SymphoniaDemuxerFlacOnlyTest : public SymphoniaDemuxerTest {
@@ -518,6 +552,7 @@ class SymphoniaDemuxerFlacOnlyTest : public SymphoniaDemuxerTest {
 TEST_F(SymphoniaDemuxerFlacOnlyTest, PlaysId3TaggedFlac) {
   CreateDemuxerWithContents(EmptyId3v2Tag() + ReadTestFile("sfx.flac"));
   InitializeDemuxer();
+  ExpectInitOutcome(SymphoniaDemuxer::InitOutcome::kSuccess);
 }
 
 TEST_F(SymphoniaDemuxerRiffDisabledTest,
@@ -526,6 +561,7 @@ TEST_F(SymphoniaDemuxerRiffDisabledTest,
   CreateDemuxer("sfx_s16le.wav");
   InitializeDemuxer();
   ExpectReadsAllPackets();
+  ExpectInitOutcome(SymphoniaDemuxer::InitOutcome::kSuccess);
 }
 
 TEST_F(SymphoniaDemuxerTest, PlaysAudioOfVideoFileWithoutFallback) {
@@ -541,6 +577,7 @@ TEST_F(SymphoniaDemuxerTest, UnrecognizedContainerFailsWithoutFallback) {
   allow_fallback_ = false;
   CreateDemuxerWithContents("GARBAGE NOT MEDIA DATA");
   InitializeDemuxer(DEMUXER_ERROR_COULD_NOT_OPEN);
+  ExpectInitOutcome(SymphoniaDemuxer::InitOutcome::kError);
 
   // Without a fallback, stopping the demuxer stops the data source as usual.
   demuxer_->Stop();
