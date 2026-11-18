@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "content/browser/btm/btm_service_impl.h"
 #include "content/browser/site_shard.h"
@@ -109,9 +110,17 @@ class CONTENT_EXPORT BrowserContextImpl {
     return background_sync_scheduler_.get();
   }
 
+  // Returns the `PrefetchService` of `this`, creating it if not yet created.
   PrefetchService* GetPrefetchService();
+  // Sets `prefetch_service` (e.g. a subclass of `PrefetchService` for testing)
+  // as the `PrefetchService` of `this`. `prefetch_service` must be non-null
+  // and for `this`, and this must be called before `GetPrefetchService()`
+  // creates the `PrefetchService` of `this`.
   void SetPrefetchServiceForTesting(
       std::unique_ptr<PrefetchService> prefetch_service);
+  // Called from the `PrefetchService` constructor, to record and `CHECK()` that
+  // at most one `PrefetchService` is created for `this` in its lifetime.
+  void SetIsPrefetchServiceCreated(base::PassKey<PrefetchService>);
 
 #if BUILDFLAG(IS_ANDROID)
   NavigationEntryScreenshotManager* GetNavigationEntryScreenshotManager();
@@ -224,6 +233,10 @@ class CONTENT_EXPORT BrowserContextImpl {
   std::unique_ptr<PermissionController> permission_controller_for_testing_;
   scoped_refptr<BackgroundSyncScheduler> background_sync_scheduler_;
   std::unique_ptr<PrefetchService> prefetch_service_;
+  // Whether a `PrefetchService` for `this` has ever been created. At most one
+  // `PrefetchService` is created for `this` in its lifetime, and it is owned
+  // by `prefetch_service_`.
+  bool is_prefetch_service_created_ = false;
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<NavigationEntryScreenshotManager>
       nav_entry_screenshot_manager_;

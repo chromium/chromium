@@ -387,7 +387,16 @@ void BrowserContextImpl::ResetFederatedPermissionContext() {
 
 void BrowserContextImpl::SetPrefetchServiceForTesting(
     std::unique_ptr<PrefetchService> prefetch_service) {
+  CHECK(prefetch_service);
+  CHECK_EQ(prefetch_service->GetBrowserContext(), self_.get());
+  CHECK(!prefetch_service_);
   prefetch_service_ = std::move(prefetch_service);
+}
+
+void BrowserContextImpl::SetIsPrefetchServiceCreated(
+    base::PassKey<PrefetchService>) {
+  CHECK(!is_prefetch_service_created_);
+  is_prefetch_service_created_ = true;
 }
 
 #if BUILDFLAG(IS_ANDROID)

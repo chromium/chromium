@@ -372,7 +372,10 @@ PrefetchService::PrefetchService(BrowserContext* browser_context)
           PrefetchTLSCanaryCheckURL(
               delegate_ ? delegate_->GetDefaultTLSCanaryCheckURL()
                         : GURL("")))),
-      scheduler_(std::make_unique<PrefetchScheduler>(this)) {}
+      scheduler_(std::make_unique<PrefetchScheduler>(this)) {
+  BrowserContextImpl::From(browser_context_)
+      ->SetIsPrefetchServiceCreated(base::PassKey<PrefetchService>());
+}
 
 PrefetchService::~PrefetchService() {  // NOLINT(modernize-use-equals-default)
   // This is to avoid notifying `PrefetchService::OnWillBeDestroyed()` in the
