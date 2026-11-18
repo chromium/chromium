@@ -15,6 +15,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.core.graphics.Insets;
@@ -45,10 +46,16 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
+import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerImpl;
@@ -83,6 +90,7 @@ import java.io.IOException;
 @MinAndroidSdkLevel(Build.VERSION_CODES.R)
 @EnableFeatures(ChromeFeatureList.DRAW_CUTOUT_EDGE_TO_EDGE)
 public class EdgeToEdgeInstrumentationTest {
+
     @Rule
     public final AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
@@ -658,6 +666,144 @@ public class EdgeToEdgeInstrumentationTest {
                             ((MarginLayoutParams) controlContainer.getLayoutParams()).topMargin,
                             is(systemTopInset));
                     Criteria.checkThat(toolbar.getPaddingTop(), is(0));
+                });
+    }
+
+    /**
+     * Verifies that showing StatusIndicator on a customized-background NTP exits full top
+     * edge-to-edge cleanly so StatusIndicator, TopControlsStacker, Toolbar, and NewTabPage top
+     * insets stay synchronized and restore when hidden.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/true",
+        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2
+    })
+    public void testTopEdgeToEdge_customNtpWithStatusIndicator() {
+        TabbedRootUiCoordinator.setDisableTopControlsAnimationsForTesting(true);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        NtpCustomizationConfigManager.getInstance()
+                                .onBackgroundDataChanged(
+                                        mActivity,
+                                        new NtpBackgroundDataColor(
+                                                mActivity,
+                                                PlatformType.ANDROID,
+                                                NtpThemeColorId.NTP_COLORS_BLUE,
+                                                /* isChromeColorDailyRefreshEnabled= */ false),
+                                        /* shouldNotifySyncedThemeManager= */ false));
+
+        mActivityTestRule.loadUrl("chrome-native://newtab/");
+        Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.getActivityTab());
+        NewTabPageTestUtils.waitForNtpLoaded(tab);
+        NewTabPage ntp = ThreadUtils.runOnUiThreadBlocking(() -> (NewTabPage) tab.getNativePage());
+
+        int systemTopInset =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mEdgeToEdgeController.getSystemTopInsetPx());
+        int toolbarHeightNoShadow =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+        int expectedBaseStartOffset =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.ntp_search_box_transition_start_offset);
+        assertTrue("Expected positive status bar top inset on phone", systemTopInset > 0);
+
+        View controlContainer = mActivity.findViewById(R.id.control_container);
+        View toolbarView = mActivity.findViewById(R.id.toolbar);
+        View ntpRootView = ntp.getView();
+        View ntpContentLayout = ntpRootView.findViewById(R.id.ntp_content);
+        StatusIndicatorCoordinator statusIndicatorCoordinator =
+                ((TabbedRootUiCoordinator) mActivity.getRootUiCoordinatorForTesting())
+                        .getStatusIndicatorCoordinatorForTesting();
+        assertNotNull(statusIndicatorCoordinator);
+
+        // 1. Initial customized NTP draws full top edge-to-edge.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mEdgeToEdgeController.isDrawingToTopEdge(), is(true));
+                    Criteria.checkThat(
+                            mEdgeToEdgeController.tabShouldDrawFullTopEdgeToEdge(), is(true));
+                    Criteria.checkThat(toolbarView.getPaddingTop(), is(systemTopInset));
+                    Criteria.checkThat(
+                            ntpContentLayout.getPaddingTop(),
+                            is(toolbarHeightNoShadow + systemTopInset));
+                    Criteria.checkThat(
+                            ntp.getNewTabPageCoordinator()
+                                    .getCurrentNtpFakeSearchBoxTransitionStartOffset(),
+                            is(expectedBaseStartOffset + systemTopInset));
+                    Criteria.checkThat(
+                            ((ViewGroup.MarginLayoutParams) controlContainer.getLayoutParams())
+                                    .topMargin,
+                            is(0));
+                    Criteria.checkThat(
+                            ((ViewGroup.MarginLayoutParams) ntpRootView.getLayoutParams())
+                                    .topMargin,
+                            is(0));
+                });
+
+        // 2. Showing StatusIndicator clears NTP/toolbar internal top padding while top scalp +
+        // StatusIndicator offset controlContainer and NTP root view.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        statusIndicatorCoordinator.show(
+                                "No connection", null, Color.BLACK, Color.WHITE, Color.WHITE));
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View statusIndicator = mActivity.findViewById(R.id.status_indicator);
+                    Criteria.checkThat(statusIndicator != null, is(true));
+                    Criteria.checkThat(statusIndicator.getVisibility(), is(View.VISIBLE));
+                    int indicatorHeight = statusIndicator.getHeight();
+                    Criteria.checkThat(indicatorHeight > 0, is(true));
+                    Criteria.checkThat(mEdgeToEdgeController.isDrawingToTopEdge(), is(false));
+                    Criteria.checkThat(
+                            mEdgeToEdgeController.tabShouldDrawFullTopEdgeToEdge(), is(false));
+                    Criteria.checkThat(
+                            Math.round(statusIndicator.getTranslationY()), is(systemTopInset));
+                    Criteria.checkThat(
+                            ((ViewGroup.MarginLayoutParams) controlContainer.getLayoutParams())
+                                    .topMargin,
+                            is(systemTopInset + indicatorHeight));
+                    Criteria.checkThat(
+                            ((ViewGroup.MarginLayoutParams) ntpRootView.getLayoutParams())
+                                    .topMargin,
+                            is(systemTopInset + indicatorHeight));
+                    Criteria.checkThat(toolbarView.getPaddingTop(), is(0));
+                    Criteria.checkThat(ntpContentLayout.getPaddingTop(), is(toolbarHeightNoShadow));
+                    Criteria.checkThat(
+                            ntp.getNewTabPageCoordinator()
+                                    .getCurrentNtpFakeSearchBoxTransitionStartOffset(),
+                            is(expectedBaseStartOffset));
+                });
+
+        // 3. Hiding StatusIndicator restores full top edge-to-edge on the NTP.
+        ThreadUtils.runOnUiThreadBlocking(() -> statusIndicatorCoordinator.hide());
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View statusIndicator = mActivity.findViewById(R.id.status_indicator);
+                    Criteria.checkThat(statusIndicator != null, is(true));
+                    Criteria.checkThat(statusIndicator.getVisibility(), is(View.GONE));
+                    Criteria.checkThat(mEdgeToEdgeController.isDrawingToTopEdge(), is(true));
+                    Criteria.checkThat(
+                            mEdgeToEdgeController.tabShouldDrawFullTopEdgeToEdge(), is(true));
+                    Criteria.checkThat(
+                            ((ViewGroup.MarginLayoutParams) controlContainer.getLayoutParams())
+                                    .topMargin,
+                            is(0));
+                    Criteria.checkThat(
+                            ((ViewGroup.MarginLayoutParams) ntpRootView.getLayoutParams())
+                                    .topMargin,
+                            is(0));
+                    Criteria.checkThat(toolbarView.getPaddingTop(), is(systemTopInset));
+                    Criteria.checkThat(
+                            ntpContentLayout.getPaddingTop(),
+                            is(toolbarHeightNoShadow + systemTopInset));
+                    Criteria.checkThat(
+                            ntp.getNewTabPageCoordinator()
+                                    .getCurrentNtpFakeSearchBoxTransitionStartOffset(),
+                            is(expectedBaseStartOffset + systemTopInset));
                 });
     }
 }

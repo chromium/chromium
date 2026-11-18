@@ -2658,6 +2658,21 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
+    @Config(qualifiers = "xlarge")
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void testTabShouldDrawFullTopEdgeToEdge_UnsupportedConfig() {
+        assertFalse(EdgeToEdgeUtils.isEdgelessTopInsetSupported(mActivity));
+        Tab customNtpTab =
+                createMockTab(
+                        JUnitTestGURLs.NTP_URL,
+                        /* isNativePage= */ true,
+                        /* supportsTopEdgeToEdge= */ true);
+        mTabProvider.set(customNtpTab);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertFalse(mEdgeToEdgeControllerImpl.tabShouldDrawFullTopEdgeToEdge());
+    }
+
+    @Test
     @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
     public void testTabShouldDrawFullTopEdgeToEdge_SwitchBetweenCustomNtpAndOptedInWebTab() {
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
@@ -2697,6 +2712,7 @@ public class EdgeToEdgeControllerTest {
 
         mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertTrue(mEdgeToEdgeControllerImpl.tabShouldDrawFullTopEdgeToEdge());
 
         // Verify setting the same value (false) is a no-op.
         clearInvocations(mInsetObserver, mChangeObserver);
@@ -2710,6 +2726,7 @@ public class EdgeToEdgeControllerTest {
         verify(mChangeObserver).onToEdgeChange(eq(BOTTOM_INSET), eq(false), eq(false));
         mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertFalse(mEdgeToEdgeControllerImpl.tabShouldDrawFullTopEdgeToEdge());
 
         // Hide status indicator — top inset should be consumed again on NTP.
         clearInvocations(mInsetObserver, mChangeObserver);
@@ -2718,6 +2735,102 @@ public class EdgeToEdgeControllerTest {
         verify(mChangeObserver).onToEdgeChange(eq(BOTTOM_INSET), eq(false), eq(false));
         mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertTrue(mEdgeToEdgeControllerImpl.tabShouldDrawFullTopEdgeToEdge());
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void testSetStatusIndicatorVisible_TopEdgeToEdge_CustomNtp() {
+        Tab customNtpTab =
+                createMockTab(
+                        JUnitTestGURLs.NTP_URL,
+                        /* isNativePage= */ true,
+                        /* supportsTopEdgeToEdge= */ true);
+        when(customNtpTab.getNativePage().supportsEdgeToEdgeOnBottom()).thenReturn(true);
+        mTabProvider.set(customNtpTab);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
+
+        // Verify isDrawingToTopEdge() and tabShouldDrawFullTopEdgeToEdge() update before any
+        // ChangeObserver or EdgeToEdgePadAdjuster invocation runs.
+        boolean[] expectedFullTopE2e = {true};
+        int[] calls = new int[2]; // [observerCalls, adjusterCalls]
+        EdgeToEdgeSupplier.ChangeObserver topScalpObserver =
+                (bottomInset, isDrawingToEdge, isPageOptedInToEdge) -> {
+                    calls[0]++;
+                    assertEquals(
+                            expectedFullTopE2e[0],
+                            mEdgeToEdgeControllerImpl.tabShouldDrawFullTopEdgeToEdge());
+                };
+        EdgeToEdgePadAdjuster padAdjuster =
+                new EdgeToEdgePadAdjuster() {
+                    @Override
+                    public void overrideBottomInset(int inset) {}
+
+                    @Override
+                    public void overrideTopInset(int inset) {
+                        calls[1]++;
+                        assertEquals(TOP_INSET, inset);
+                        assertEquals(
+                                expectedFullTopE2e[0],
+                                mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+                        assertEquals(
+                                expectedFullTopE2e[0],
+                                mEdgeToEdgeControllerImpl.tabShouldDrawFullTopEdgeToEdge());
+                    }
+
+                    @Override
+                    public void destroy() {}
+                };
+        mEdgeToEdgeControllerImpl.registerObserver(topScalpObserver);
+        mEdgeToEdgeControllerImpl.registerAdjuster(padAdjuster);
+        assertEquals(1, calls[1]);
+
+        // 1. Show status indicator on custom NTP: both states drop to false before callbacks.
+        calls[0] = 0;
+        calls[1] = 0;
+        expectedFullTopE2e[0] = false;
+        mEdgeToEdgeControllerImpl.setStatusIndicatorVisible(true);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertFalse(mEdgeToEdgeControllerImpl.tabShouldDrawFullTopEdgeToEdge());
+        assertTrue(calls[0] > 0 && calls[1] > 0);
+        verify(mTopInsetObserver, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), eq(false), anyInt());
+
+        // 2. Hide status indicator on custom NTP: both states return to true before callbacks.
+        calls[0] = 0;
+        calls[1] = 0;
+        expectedFullTopE2e[0] = true;
+        clearInvocations(mTopInsetObserver);
+        mEdgeToEdgeControllerImpl.setStatusIndicatorVisible(false);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertTrue(mEdgeToEdgeControllerImpl.tabShouldDrawFullTopEdgeToEdge());
+        assertTrue(calls[0] > 0 && calls[1] > 0);
+        verify(mTopInsetObserver, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), eq(true), anyInt());
+
+        // 3. Switch to custom NTP while status indicator is visible: top stays false until hidden.
+        expectedFullTopE2e[0] = false;
+        mEdgeToEdgeControllerImpl.onTabSwitched(
+                createMockTab(
+                        JUnitTestGURLs.HTTP_URL,
+                        /* isNativePage= */ false,
+                        /* supportsTopEdgeToEdge= */ false));
+        mEdgeToEdgeControllerImpl.setStatusIndicatorVisible(true);
+        calls[0] = 0;
+        calls[1] = 0;
+        mEdgeToEdgeControllerImpl.onTabSwitched(customNtpTab);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertFalse(mEdgeToEdgeControllerImpl.tabShouldDrawFullTopEdgeToEdge());
+        assertTrue(calls[0] > 0 && calls[1] > 0);
+
+        calls[0] = 0;
+        calls[1] = 0;
+        expectedFullTopE2e[0] = true;
+        mEdgeToEdgeControllerImpl.setStatusIndicatorVisible(false);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertTrue(mEdgeToEdgeControllerImpl.tabShouldDrawFullTopEdgeToEdge());
+        assertTrue(calls[0] > 0 && calls[1] > 0);
+
+        mEdgeToEdgeControllerImpl.unregisterAdjuster(padAdjuster);
+        mEdgeToEdgeControllerImpl.unregisterObserver(topScalpObserver);
     }
 
     @Test

@@ -69,8 +69,10 @@ public interface EdgeToEdgeController extends Destroyable, EdgeToEdgeSupplier, T
     boolean isPageOptedIntoEdgeToEdge();
 
     /**
-     * Returns whether the current tab supports drawing top edge-to-edge with no top scalp (e.g. a
-     * native page that supports top edge-to-edge).
+     * Returns whether the current tab should draw top edge-to-edge with no top scalp (e.g. a native
+     * page that supports top edge-to-edge). Returns false whenever {@link #isDrawingToTopEdge()} is
+     * false (such as on unsupported configurations or while the status indicator is visible so the
+     * top scalp is shown above the status indicator).
      */
     boolean tabShouldDrawFullTopEdgeToEdge();
 

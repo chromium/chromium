@@ -559,7 +559,7 @@ public class EdgeToEdgeControllerImpl
 
     @Override
     public boolean tabShouldDrawFullTopEdgeToEdge() {
-        return EdgeToEdgeUtils.tabShouldDrawFullTopEdgeToEdge(mCurrentTab);
+        return isDrawingToTopEdge() && EdgeToEdgeUtils.tabShouldDrawFullTopEdgeToEdge(mCurrentTab);
     }
 
     // BrowserControlsStateProvider.Observer

@@ -722,7 +722,10 @@ public class NewTabPage
 
                         @Override
                         public void overrideTopInset(@Px int inset) {
-                            onToEdgeChange(inset, inset > 0);
+                            onToEdgeChange(
+                                    inset,
+                                    shouldConsumeTopInset(
+                                            inset, mEdgeToEdgeControllerSupplier.get()));
                         }
 
                         @Override
@@ -740,6 +743,21 @@ public class NewTabPage
                 (systemTopInset, consumeTopInset, layoutType) ->
                         onToEdgeChange(systemTopInset, consumeTopInset);
         mTopInsetProvider.addObserver(mTopInsetChangeObserver);
+    }
+
+    /**
+     * Returns whether the NTP should consume {@code inset} via internal top padding. When top
+     * edge-to-edge is enabled, this requires {@link
+     * EdgeToEdgeController#tabShouldDrawFullTopEdgeToEdge()} so the NTP does not double-pad under
+     * the top scalp.
+     */
+    @VisibleForTesting
+    static boolean shouldConsumeTopInset(@Px int inset, @Nullable EdgeToEdgeController controller) {
+        return inset > 0
+                && controller != null
+                && controller.isDrawingToTopEdge()
+                && (!EdgeToEdgeUtils.isTopEdgeToEdgeEnabled()
+                        || controller.tabShouldDrawFullTopEdgeToEdge());
     }
 
     /**
@@ -782,15 +800,16 @@ public class NewTabPage
      *
      * @param systemTopInset The system's top inset, i.e., the height of the Status bar. While
      *     usually greater than zero, it can be zero in split-screen mode.
-     * @param consumeTopInset Whether the parent layout will consume the top inset.
+     * @param consumeTopInset Whether the NTP should consume the system top inset via internal top
+     *     padding (e.g. when full top edge-to-edge is active with no top scalp).
      */
     void onToEdgeChange(int systemTopInset, boolean consumeTopInset) {
-        // When consumeTopInset is false, it is possible: 1) the next Tab isn't NTP and 2) the next
-        // Tab is NTP while NTP should show regular toolbar. NewTabPageLayout should only be
-        // adjusted based on supportsEdgeToEdgeOnTop(), not the parent view's decision.
-        // However, consumeTopInset being false takes priority — if the parent is not consuming top
-        // insets (e.g. status indicator is visible), the NTP must not apply its own top inset
-        // either, since the content view already has the system top padding.
+        // Only pad NewTabPageLayout when both this NTP supports top edge-to-edge (customized
+        // background) and full top edge-to-edge is currently active — when consumeTopInset is false
+        // (e.g. status indicator is visible, or an opted-in web tab is active with the top scalp
+        // visible while this NTP's pad adjuster remains registered), either the content view
+        // already has system top padding or the top scalp handles the status bar inset via top
+        // controls margin.
         mNewTabPageCoordinator.onToEdgeChange(
                 systemTopInset, consumeTopInset && supportsEdgeToEdgeOnTop());
     }
