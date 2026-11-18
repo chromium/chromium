@@ -3353,7 +3353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TabPersistentStore.ShadowStoreType"
-    enum="PersistentStoreType" expires_after="2027-03-28">
+    enum="PersistentStoreType" expires_after="2027-05-02">
   <owner>mfiaz@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
@@ -4075,7 +4075,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TabStateStore.ShadowStoreCaughtUp" enum="Boolean"
-    expires_after="2027-03-28">
+    expires_after="2027-05-02">
   <owner>mfiaz@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>
