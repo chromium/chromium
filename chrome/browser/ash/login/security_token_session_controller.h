@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_SESSION_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_SESSION_CONTROLLER_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -139,7 +140,7 @@ class SecurityTokenSessionController
       extension_to_spkis_;
   base::flat_set<extensions::ExtensionId>
       extensions_missing_required_certificates_;
-  raw_ptr<views::Widget> fullscreen_notification_ = nullptr;
+  std::unique_ptr<views::Widget> fullscreen_notification_;
   base::OneShotTimer action_timer_;
   base::OneShotTimer session_activation_timer_;
   std::unique_ptr<chromeos::certificate_provider::CertificateProvider>

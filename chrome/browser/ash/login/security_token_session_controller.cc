@@ -16,6 +16,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
@@ -511,14 +512,16 @@ void SecurityTokenSessionController::ExtensionStopsProvidingCertificate() {
                      weak_ptr_factory_.GetWeakPtr()));
 
   if (!notification_seconds_.is_zero()) {
-    fullscreen_notification_ = views::DialogDelegate::CreateDialogWidget(
-        std::make_unique<SecurityTokenSessionRestrictionView>(
-            notification_seconds_,
-            base::BindOnce(&SecurityTokenSessionController::TriggerAction,
-                           weak_ptr_factory_.GetWeakPtr()),
-            behavior_,
-            gaia::ExtractDomainName(primary_user_->GetDisplayEmail())),
-        nullptr, nullptr);
+    auto view = std::make_unique<SecurityTokenSessionRestrictionView>(
+        notification_seconds_,
+        base::BindOnce(&SecurityTokenSessionController::TriggerAction,
+                       weak_ptr_factory_.GetWeakPtr()),
+        behavior_, gaia::ExtractDomainName(primary_user_->GetDisplayEmail()));
+    view->SetOwnershipOfNewWidget(
+        views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    fullscreen_notification_ =
+        base::WrapUnique(views::DialogDelegate::CreateDialogWidget(
+            std::move(view), nullptr, nullptr));
     fullscreen_notification_->Show();
   }
 }
