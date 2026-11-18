@@ -49,6 +49,8 @@
 
 namespace {
 
+using ::testing::_;
+
 class MockHistorySyncOptinHelperDelegate
     : public HistorySyncOptinHelper::Delegate {
  public:
@@ -198,8 +200,7 @@ IN_PROC_BROWSER_TEST_P(
   AccountInfo account_info = MakeAccountInfoAvailableAndSignIn();
   MockHistorySyncOptinHelperDelegate delegate;
 
-  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen(GetProfile(), testing::_))
-      .Times(1);
+  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen(GetProfile(), _)).Times(1);
 
   auto history_sync_optin_helper = HistorySyncOptinHelper::Create(
       identity_test_env()->identity_manager(), GetProfile(), account_info,
@@ -394,8 +395,7 @@ IN_PROC_BROWSER_TEST_P(
   history_sync_optin_helper->StartHistorySyncOptinFlow();
   testing::Mock::VerifyAndClearExpectations(&delegate);
 
-  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen(GetProfile(), testing::_))
-      .Times(1);
+  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen(GetProfile(), _)).Times(1);
   history_sync_optin_helper->GetAccountStateFetcherForTesting()
       ->EnforceTimeoutReachedForTesting();
 
@@ -436,8 +436,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // When sync becomes active, the flow resumes to showing the history sync
   // optin screen.
-  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen(GetProfile(), testing::_))
-      .Times(1);
+  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen(GetProfile(), _)).Times(1);
   GetTestSyncService()->SetMaxTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   GetTestSyncService()->FireStateChanged();
@@ -771,4 +770,27 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinHelperFreBrowserTest,
   UpdateAccountManagementInfo(account_info, /*is_managed=*/false);
 
   EXPECT_TRUE(flow_finished_future.Wait());
+}
+
+// Regression test for https://crbug.com/576705851. A sign-in started in the
+// first run experience continues in a browser, if the sign-in page leaves Gaia
+// (e.g. SAML). The sign-in celebration is a profile picker screen: in a
+// browser, the flow goes straight to the history sync screen.
+IN_PROC_BROWSER_TEST_F(HistorySyncOptinHelperFreBrowserTest,
+                       DoesNotTriggerSignInCelebrationInBrowser) {
+  GetTestSyncService()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+
+  MockHistorySyncOptinHelperDelegate delegate;
+  EXPECT_CALL(delegate, ShowSignInCelebration).Times(0);
+  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen(GetProfile(), _));
+
+  AccountInfo account_info = MakeAccountInfoAvailableAndSignIn();
+  auto history_sync_optin_helper = HistorySyncOptinHelper::Create(
+      identity_test_env()->identity_manager(), GetProfile(), account_info,
+      &delegate, HistorySyncOptinHelper::LaunchContext::kInBrowser,
+      signin_metrics::AccessPoint::kForYouFre);
+  history_sync_optin_helper->StartHistorySyncOptinFlow();
+
+  UpdateAccountManagementInfo(account_info, /*is_managed=*/false);
 }

@@ -105,6 +105,9 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_switches.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
@@ -115,6 +118,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_class_properties.h"
 
@@ -746,10 +750,13 @@ class FirstRunInteractiveUiBaseTest
         PressJsButton(kWebContentsId, button));
   }
 
+  // Simulates the completion of a sign-in on the Gaia page hosted by
+  // `signin_contents`, or by the profile picker if `signin_contents` is null.
   void SimulateSignIn(const std::string& account_email,
                       const std::string& account_given_name,
                       bool with_extended_info = true,
-                      bool with_gemini_capabilities = false) {
+                      bool with_gemini_capabilities = false,
+                      content::WebContents* signin_contents = nullptr) {
     enable_disclaimer_on_primary_account_change_resetter_ =
         enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
             profile());
@@ -818,9 +825,10 @@ class FirstRunInteractiveUiBaseTest
     // Kombucha note: This function waits on a `base::RunLoop`.
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 
-    content::WebContents* picker_contents =
-        ProfilePicker::GetWebViewForTesting()->GetWebContents();
-    DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(picker_contents);
+    if (!signin_contents) {
+      signin_contents = ProfilePicker::GetWebViewForTesting()->GetWebContents();
+    }
+    DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(signin_contents);
     CHECK(tab_helper);
     EXPECT_EQ(tab_helper->signin_access_point(),
               signin_metrics::AccessPoint::kForYouFre);
@@ -828,7 +836,7 @@ class FirstRunInteractiveUiBaseTest
     // This step also sets the primary account.
     {
       auto process_dice_header_delegate_impl =
-          ProcessDiceHeaderDelegateImpl::Create(web_contents());
+          ProcessDiceHeaderDelegateImpl::Create(signin_contents);
       process_dice_header_delegate_impl->CompleteChromeSignInAfterGaiaSignin(
           account_info.GetCoreAccountInfo());
     }
@@ -1348,6 +1356,48 @@ IN_PROC_BROWSER_TEST_P(FirstRunInteractiveUiTestWithSyncService,
   EXPECT_TRUE(incognito_browser->GetProfile()->IsOffTheRecord());
   EXPECT_EQ(test_profile,
             incognito_browser->GetProfile()->GetOriginalProfile());
+}
+
+// Regression test for crbug.com/576705851. If the sign-in page leaves Gaia
+// (e.g. SAML), the first run completes and the sign-in continues in a browser
+// tab. The post sign-in screens of the first run (e.g. the sign-in celebration)
+// do not exist there: the browser offers the history sync opt-in right after
+// the sign-in.
+IN_PROC_BROWSER_TEST_P(FirstRunInteractiveUiTestWithSyncService,
+                       SignInContinuedInBrowser) {
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      If([this] { return UsePreFirstRunRefreshedView(); },
+         Then(CompleteWelcomeStep())),
+      CompleteIntroStep(/*sign_in=*/true),
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GetSigninChromeSyncDiceUrl()));
+
+  // Navigate the sign-in page to a non-Gaia URL (simulating a SAML redirect).
+  content::WebContents* signin_contents = web_contents();
+  signin_contents->GetController().LoadURL(
+      GURL("https://signin.saml-provider.com/"), content::Referrer(),
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+  WaitForPickerClosed();
+  ASSERT_TRUE(proceed_future.Get());
+  ASSERT_EQ(browser()->GetTabStripModel()->GetActiveWebContents(),
+            signin_contents);
+
+  ConfigureTestSyncService(SyncServiceFactory::GetForProfile(profile()),
+                           syncer::SyncService::TransportState::ACTIVE);
+  SimulateSignIn(kTestEmail, kTestGivenName, /*with_extended_info=*/true,
+                 /*with_gemini_capabilities=*/false, signin_contents);
+
+  RunTestSequence(
+      InAnyContext(WaitForShow(SigninViewController::kHistorySyncOptinViewId)));
+  histogram_tester().ExpectUniqueSample("Signin.HistorySyncOptIn.Started",
+                                        signin_metrics::AccessPoint::kForYouFre,
+                                        1);
 }
 
 INSTANTIATE_TEST_SUITE_P(,
