@@ -569,7 +569,11 @@ bool IdentityDialogController::ShowNativeAppUi(
     return false;
   }
 
-  if (account_view_->ShowNativeAppUi(request_options)) {
+  // Preventative check: do not access any member variables if the native app
+  // UI is not initiated or if `ShowNativeAppUi()` destroyed this object.
+  base::WeakPtr<IdentityDialogController> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+  if (account_view_->ShowNativeAppUi(request_options) && weak_this) {
     DidInvokeShowUi();
     return true;
   }

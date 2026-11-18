@@ -1428,6 +1428,29 @@ TEST_F(IdentityDialogControllerTest, ShowNativeAppUiDismissed) {
   controller->OnDismiss(IdentityDialogController::DismissReason::kOther);
 }
 
+// Tests that the controller does not access its members when it gets destroyed
+// while initiating the native app UI, even if `ShowNativeAppUi()` returns true.
+TEST_F(IdentityDialogControllerTest, ControllerDestroyedDuringShowNativeAppUi) {
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  IdentityDialogController* controller_ptr = controller.get();
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  MockAccountSelectionView* mock_view_ptr = mock_view.get();
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+
+  // The view reports that the native app UI was initiated even though the
+  // controller was destroyed. The controller should report that the UI was not
+  // initiated.
+  EXPECT_CALL(*mock_view_ptr, ShowNativeAppUi).WillOnce([&controller]() {
+    controller.reset();
+    return true;
+  });
+  EXPECT_FALSE(controller_ptr->ShowNativeAppUi(
+      content::NativeAppRequestOptions(),
+      /*dismiss_callback=*/base::DoNothing(),
+      /*native_result_callback=*/base::DoNothing()));
+  EXPECT_FALSE(controller);
+}
+
 // Tests that a HaT survey about personalization and trust is launched when the
 // user accepts an account in FedCM and login succeeds.
 TEST_F(IdentityDialogControllerTest, PersonalizationAndTrustSurvey_Accept) {
