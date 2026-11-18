@@ -53,9 +53,13 @@ NtpMicrosoftAuthUntrustedUI::NtpMicrosoftAuthUntrustedUI(content::WebUI* web_ui)
       IDR_NEW_TAB_PAGE_UNTRUSTED_NTP_MICROSOFT_AUTH_SHARED_UI_MOJOM_WEBUI_JS);
   untrusted_source->AddResourcePath("msal_browser/msal-browser.min.js",
                                     IDR_MSAL_BROWSER_MSAL_BROWSER_MIN_JS);
+  // Deliberately per-file because this frame runs third-party MSAL code. Must
+  // list every script that the generated *.mojom-webui.js files import at
+  // runtime, such as mojo_browser_proxy.js.
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src 'self' "
+      "chrome-untrusted://resources/mojo/mojo_browser_proxy.js "
       "chrome-untrusted://resources/mojo/mojo/public/js/bindings.js "
       "chrome-untrusted://resources/mojo/mojo/public/mojom/base/"
       "time.mojom-webui.js "

@@ -391,4 +391,13 @@ source_set("browser_tests") {
       "//components/user_education/views",
     ]
   }
+
+  # The Microsoft modules and the NTPOutlookCardVisible policy are desktop-only.
+  if (!is_android) {
+    sources += [ "new_tab_page_microsoft_auth_browsertest.cc" ]
+    deps += [
+      "//chrome/browser/policy:test_support",
+      "//components/policy/core/common",
+    ]
+  }
 }
