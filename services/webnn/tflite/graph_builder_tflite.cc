@@ -8674,12 +8674,20 @@ auto GraphBuilderTflite::SerializeMatmul(const mojom::Matmul& matmul)
 }
 
 auto GraphBuilderTflite::SerializePad(const mojom::Pad& pad)
-    -> base::expected<OperatorOffset, std::string> {
+    -> base::expected<std::optional<OperatorOffset>, std::string> {
   CHECK_EQ(pad.beginning_padding.size(), pad.ending_padding.size());
   const OperandDescriptor& input_descriptor =
       GetOperand(pad.input_operand_id).descriptor;
   CHECK(context_properties_.data_type_limits.pad_input.Supports(
       input_descriptor));
+
+  // A scalar input would yield an empty [0, 2] paddings tensor, which LiteRT
+  // delegates (e.g. the ML Drift delegate) can't handle and may crash.
+  // Padding a scalar is a no-op, so emit an identity instead.
+  if (input_descriptor.Rank() == 0) {
+    return SerializeIdentityOperation(pad.input_operand_id,
+                                      pad.output_operand_id);
+  }
 
   std::vector<int32_t> paddings;
   paddings.resize(pad.beginning_padding.size() * 2);

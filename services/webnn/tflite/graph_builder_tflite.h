@@ -875,7 +875,7 @@ class GraphBuilderTflite final {
       const mojom::LstmCell& lstm_cell);
   base::expected<OperatorOffset, std::string> SerializeMatmul(
       const mojom::Matmul& matmul);
-  base::expected<OperatorOffset, std::string> SerializePad(
+  base::expected<std::optional<OperatorOffset>, std::string> SerializePad(
       const mojom::Pad& pad);
   base::expected<OperatorOffset, std::string> SerializePool2d(
       const mojom::Pool2d& pool2d);
