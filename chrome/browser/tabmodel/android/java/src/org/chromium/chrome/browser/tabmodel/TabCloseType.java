@@ -15,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({TabCloseType.SINGLE, TabCloseType.MULTIPLE, TabCloseType.ALL})
 @Retention(RetentionPolicy.SOURCE)
 @NullMarked
-@interface TabCloseType {
+public @interface TabCloseType {
     /** A single tab is closing. */
     int SINGLE = 0;
 
