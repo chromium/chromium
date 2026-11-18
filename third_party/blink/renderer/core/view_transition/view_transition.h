@@ -222,7 +222,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   CSSStyleSheet* UAStyleSheet() const;
 
   // CommitObserver overrides.
-  void WillCommitCompositorFrame() override;
+  void WillSnapshotCommitState() override;
 
   // Return non-root transitioning elements.
   VectorOf<Element> GetTransitioningElements() const {

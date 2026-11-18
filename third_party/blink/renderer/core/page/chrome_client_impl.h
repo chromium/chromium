@@ -95,7 +95,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void BeginLifecycleUpdates(LocalFrame& main_frame) override;
   void RegisterForCommitObservation(CommitObserver*) override;
   void UnregisterFromCommitObservation(CommitObserver*) override;
-  void WillCommitCompositorFrame() override;
+  void WillSnapshotCommitState() override;
   void RequestFrameWithoutVSyncFromRoot(LocalFrame& frame) override;
   bool StartDeferringCommits(LocalFrame& main_frame,
                              base::TimeDelta timeout,

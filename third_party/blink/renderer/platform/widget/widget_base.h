@@ -198,6 +198,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void DidObserveFirstScrollDelay(
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override;
+  void WillSnapshotCommitState() override;
   void WillCommitCompositorFrame() override;
   void DidCommitCompositorFrame(base::TimeTicks commit_start_time,
                                 base::TimeTicks commit_finish_time) override;

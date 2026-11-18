@@ -174,6 +174,14 @@ class CC_EXPORT LayerTreeHostDelegate {
   virtual void RequestNewLayerTreeFrameSink() = 0;
   virtual void DidInitializeLayerTreeFrameSink() = 0;
   virtual void DidFailToInitializeLayerTreeFrameSink() = 0;
+
+  // Called immediately before the commit state is snapshotted. Allows commit
+  // observers to update compositor animation state, but not run lifecycle
+  // updates.
+  virtual void WillSnapshotCommitState() {}
+
+  // Called after the commit state is snapshotted. Must not modify protected
+  // sequence state.
   virtual void WillCommit(const CommitState&) = 0;
   // Report that a commit to the impl thread has completed. The
   // commit_start_time is the time that the impl thread began processing the

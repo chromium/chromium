@@ -102,6 +102,7 @@ class PLATFORM_EXPORT LayerTreeView
   void RequestNewLayerTreeFrameSink() override;
   void DidInitializeLayerTreeFrameSink() override;
   void DidFailToInitializeLayerTreeFrameSink() override;
+  void WillSnapshotCommitState() override;
   void WillCommit(const cc::CommitState&) override;
   void DidCommit(int source_frame_number,
                  base::TimeTicks commit_start_time,

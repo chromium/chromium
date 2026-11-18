@@ -377,6 +377,12 @@ void LayerTreeView::DidFailToInitializeLayerTreeFrameSink() {
   }
 }
 
+void LayerTreeView::WillSnapshotCommitState() {
+  if (delegate_) {
+    delegate_->WillSnapshotCommitState();
+  }
+}
+
 void LayerTreeView::WillCommit(const cc::CommitState&) {
   if (!delegate_)
     return;
