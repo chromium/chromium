@@ -11,6 +11,7 @@
 #include "base/synchronization/lock_subtle.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
+#include "third_party/crubit/support/annotations.h"
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
 #include "base/compiler_specific.h"
@@ -25,7 +26,11 @@ class LockMetricTagList;
 // A convenient wrapper for an OS specific critical section.  The only real
 // intelligence in this class is in debug mode for the support for the
 // AssertAcquired() method.
-class LOCKABLE BASE_EXPORT Lock {
+//
+// `CRUBIT_NEVER_BITWISE_RELOCATABLE`, POSIX doesn't allow using a copy of a
+// `pthread_mutex_t`, and because a `ConditionVariable` stores a pointer into
+// the `Lock` that it uses.
+class CRUBIT_NEVER_BITWISE_RELOCATABLE LOCKABLE BASE_EXPORT Lock {
  public:
   static const LockMetricTag& GetBaseLockMetricTag();
   static const LockMetricTagList& GetBaseLockMetricTagList();
