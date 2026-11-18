@@ -114,6 +114,85 @@ TEST_F(LocalDomainsStorageTest, ShouldSharePhysicalDevicePrivateKey) {
   const PhysicalDeviceRecoveryFactorData retrieved =
       storage()->GetPhysicalDeviceRecoveryFactorData(test_gaia());
   EXPECT_EQ(retrieved.private_key_material(), "shared_private_key");
+
+  storage()->ReadDataFromDisk();
+  EXPECT_EQ(storage()
+                ->GetPhysicalDeviceRecoveryFactorData(test_gaia())
+                .private_key_material(),
+            "shared_private_key");
+}
+
+TEST_F(LocalDomainsStorageTest, ShouldUpdateAndClearPhysicalDevicePrivateKey) {
+  storage()->MutatePhysicalDeviceRecoveryFactorData(
+      test_gaia(), [](PhysicalDeviceRecoveryFactorData& data) {
+        data.set_private_key_material("initial_private_key");
+      });
+  storage()->MutatePhysicalDeviceRecoveryFactorData(
+      test_gaia(), [](PhysicalDeviceRecoveryFactorData& data) {
+        data.set_private_key_material("updated_private_key");
+      });
+  EXPECT_EQ(storage()
+                ->GetPhysicalDeviceRecoveryFactorData(test_gaia())
+                .private_key_material(),
+            "updated_private_key");
+
+  storage()->MutatePhysicalDeviceRecoveryFactorData(
+      test_gaia(), [](PhysicalDeviceRecoveryFactorData& data) {
+        data.clear_private_key_material();
+      });
+  EXPECT_FALSE(storage()
+                   ->GetPhysicalDeviceRecoveryFactorData(test_gaia())
+                   .has_private_key_material());
+
+  storage()->ReadDataFromDisk();
+  EXPECT_FALSE(storage()
+                   ->GetPhysicalDeviceRecoveryFactorData(test_gaia())
+                   .has_private_key_material());
+}
+
+TEST_F(LocalDomainsStorageTest,
+       ShouldClearPhysicalDevicePrivateKeyOnUserRemoval) {
+  PhysicalDeviceRecoveryFactorData factor_data;
+  factor_data.set_private_key_material("secret_private_key");
+
+  storage()->MutatePhysicalDeviceRecoveryFactorData(
+      test_gaia(),
+      [&](PhysicalDeviceRecoveryFactorData& data) { data = factor_data; });
+
+  storage()->ClearDataForUser(test_gaia());
+
+  EXPECT_FALSE(storage()
+                   ->GetPhysicalDeviceRecoveryFactorData(test_gaia())
+                   .has_private_key_material());
+
+  // Re-creating the user without setting a device key must not resurrect the
+  // cleared private key.
+  storage()->SetVaultKeys(test_gaia(), SecurityDomainId::kChromeSync,
+                          {{1, 2, 3}}, /*last_key_version=*/1);
+  EXPECT_FALSE(storage()
+                   ->GetPhysicalDeviceRecoveryFactorData(test_gaia())
+                   .has_private_key_material());
+}
+
+TEST_F(LocalDomainsStorageTest,
+       ShouldSupportEmptyPhysicalDevicePrivateKeyMaterial) {
+  PhysicalDeviceRecoveryFactorData factor_data;
+  factor_data.set_private_key_material("");
+
+  storage()->MutatePhysicalDeviceRecoveryFactorData(
+      test_gaia(),
+      [&](PhysicalDeviceRecoveryFactorData& data) { data = factor_data; });
+
+  const PhysicalDeviceRecoveryFactorData retrieved =
+      storage()->GetPhysicalDeviceRecoveryFactorData(test_gaia());
+  EXPECT_TRUE(retrieved.has_private_key_material());
+  EXPECT_EQ(retrieved.private_key_material(), "");
+
+  storage()->ReadDataFromDisk();
+  const PhysicalDeviceRecoveryFactorData reloaded =
+      storage()->GetPhysicalDeviceRecoveryFactorData(test_gaia());
+  EXPECT_TRUE(reloaded.has_private_key_material());
+  EXPECT_EQ(reloaded.private_key_material(), "");
 }
 
 TEST_F(LocalDomainsStorageTest,
@@ -301,11 +380,15 @@ TEST_F(LocalDomainsStorageDiskTest, ShouldWriteAndReadLocalDomainsDataOnDisk) {
     base::HistogramTester write_histogram_tester;
     storage->SetVaultKeys(kGaiaId, SecurityDomainId::kPasskeys, kKeys,
                           /*last_key_version=*/5);
+    storage->MutatePhysicalDeviceRecoveryFactorData(
+        kGaiaId, [](PhysicalDeviceRecoveryFactorData& data) {
+          data.set_private_key_material("secret_device_key");
+        });
     write_histogram_tester.ExpectUniqueSample("TrustedVault.FileWriteSuccess",
-                                              true, 1);
+                                              true, 2);
     write_histogram_tester.ExpectUniqueSample(
         "TrustedVault.FileWriteStatus",
-        TrustedVaultFileWriteStatusForUMA::kSuccess, 1);
+        TrustedVaultFileWriteStatusForUMA::kSuccess, 2);
   }
 
   ASSERT_TRUE(base::PathExists(local_domains_file_path()));
@@ -315,6 +398,7 @@ TEST_F(LocalDomainsStorageDiskTest, ShouldWriteAndReadLocalDomainsDataOnDisk) {
   ASSERT_TRUE(
       base::ReadFileToString(local_domains_file_path(), &on_disk_bytes));
   EXPECT_EQ(on_disk_bytes.find("user1"), std::string::npos);
+  EXPECT_EQ(on_disk_bytes.find("secret_device_key"), std::string::npos);
 
   auto reloaded_storage = LocalDomainsStorage::Create(base_dir(), encryptor());
   base::HistogramTester read_histogram_tester;
@@ -332,6 +416,9 @@ TEST_F(LocalDomainsStorageDiskTest, ShouldWriteAndReadLocalDomainsDataOnDisk) {
   EXPECT_EQ(
       reloaded_storage->GetLastKeyVersion(kGaiaId, SecurityDomainId::kPasskeys),
       5);
+  EXPECT_EQ(reloaded_storage->GetPhysicalDeviceRecoveryFactorData(kGaiaId)
+                .private_key_material(),
+            "secret_device_key");
 }
 
 TEST_F(LocalDomainsStorageDiskTest, ShouldClearDataOnVersionMismatch) {

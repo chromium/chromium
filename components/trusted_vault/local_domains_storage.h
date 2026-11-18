@@ -153,8 +153,9 @@ class LocalDomainsStorage : public StandaloneTrustedVaultStorage {
       trusted_vault_pb::UserDomainData* user,
       SecurityDomainId domain);
 
-  // Removes users matching `predicate` from `data_` and `vault_keys_` without
-  // writing to disk. Returns true if at least one user was removed.
+  // Removes users matching `predicate` from `data_`, `vault_keys_`, and
+  // `physical_device_private_keys_` without writing to disk. Returns true if at
+  // least one user was removed.
   bool RemoveUsersInMemory(
       base::FunctionRef<bool(const trusted_vault_pb::UserDomainData&)>
           predicate);
@@ -179,6 +180,7 @@ class LocalDomainsStorage : public StandaloneTrustedVaultStorage {
   std::map<std::pair<GaiaId, SecurityDomainId>,
            std::vector<crypto::ProcessBoundString>>
       vault_keys_;
+  std::map<GaiaId, crypto::ProcessBoundString> physical_device_private_keys_;
 };
 
 }  // namespace trusted_vault

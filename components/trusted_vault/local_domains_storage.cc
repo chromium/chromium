@@ -43,6 +43,13 @@ constexpr int kCurrentLocalDomainsDataVersion = 1;
 void SecureZeroSensitiveLocalDomainsData(
     trusted_vault_pb::LocalDomainsData& data) {
   for (trusted_vault_pb::UserDomainData& user : *data.mutable_user()) {
+    if (user.has_physical_device_data() &&
+        user.physical_device_data().has_private_key_material()) {
+      crypto::SecureZeroBuffer(
+          base::as_writable_byte_span(*user.mutable_physical_device_data()
+                                           ->mutable_private_key_material()));
+      user.mutable_physical_device_data()->clear_private_key_material();
+    }
     for (trusted_vault_pb::DomainData& domain_data :
          *user.mutable_domain_data()) {
       for (trusted_vault_pb::LocalTrustedVaultKey& key :
@@ -298,8 +305,14 @@ LocalDomainsStorage::~LocalDomainsStorage() = default;
 void LocalDomainsStorage::ReadDataFromDisk() {
   data_ = file_access_->ReadFromDisk();
   vault_keys_.clear();
+  physical_device_private_keys_.clear();
   for (const trusted_vault_pb::UserDomainData& user : data_->user()) {
     const GaiaId gaia_id(user.gaia_id());
+    if (user.has_physical_device_data() &&
+        user.physical_device_data().has_private_key_material()) {
+      physical_device_private_keys_.emplace(
+          gaia_id, user.physical_device_data().private_key_material());
+    }
     for (const trusted_vault_pb::DomainData& domain_data : user.domain_data()) {
       const SecurityDomainId domain =
           static_cast<SecurityDomainId>(domain_data.domain_id());
@@ -319,9 +332,18 @@ void LocalDomainsStorage::WriteToDisk() {
     const auto& [gaia_id, domain] = entry.first;
     return FindDomainData(FindUser(gaia_id), domain) != nullptr;
   }));
+  CHECK(std::ranges::all_of(
+      physical_device_private_keys_,
+      [this](const auto& entry) { return FindUser(entry.first) != nullptr; }));
   trusted_vault_pb::LocalDomainsData data_copy = *data_;
   for (trusted_vault_pb::UserDomainData& user : *data_copy.mutable_user()) {
     const GaiaId gaia_id(user.gaia_id());
+    if (const auto key_it = physical_device_private_keys_.find(gaia_id);
+        key_it != physical_device_private_keys_.end()) {
+      crypto::SecureString decrypted = key_it->second.secure_value();
+      user.mutable_physical_device_data()->set_private_key_material(
+          decrypted.data(), decrypted.size());
+    }
     for (trusted_vault_pb::DomainData& domain_data :
          *user.mutable_domain_data()) {
       const SecurityDomainId domain =
@@ -425,6 +447,9 @@ bool LocalDomainsStorage::RemoveUsersInMemory(
   std::erase_if(vault_keys_, [&](const auto& entry) {
     return FindUser(entry.first.first) == nullptr;
   });
+  std::erase_if(physical_device_private_keys_, [&](const auto& entry) {
+    return FindUser(entry.first) == nullptr;
+  });
   return true;
 }
 
@@ -500,18 +525,40 @@ void LocalDomainsStorage::ClearDataForUsersMarkedForDeletion(
 PhysicalDeviceRecoveryFactorData
 LocalDomainsStorage::GetPhysicalDeviceRecoveryFactorData(
     const GaiaId& gaia_id) const {
-  const auto* user = FindUser(gaia_id);
+  CHECK(data_.has_value());
+  const trusted_vault_pb::UserDomainData* user = FindUser(gaia_id);
   if (!user) {
     return PhysicalDeviceRecoveryFactorData();
   }
-  return user->physical_device_data();
+  PhysicalDeviceRecoveryFactorData result = user->physical_device_data();
+  const auto it = physical_device_private_keys_.find(gaia_id);
+  if (it != physical_device_private_keys_.end()) {
+    crypto::SecureString key_material = it->second.secure_value();
+    result.set_private_key_material(key_material.data(), key_material.size());
+  }
+  return result;
 }
 
 void LocalDomainsStorage::MutatePhysicalDeviceRecoveryFactorData(
     const GaiaId& gaia_id,
     base::FunctionRef<void(PhysicalDeviceRecoveryFactorData&)> mutator) {
+  PhysicalDeviceRecoveryFactorData factor_data =
+      GetPhysicalDeviceRecoveryFactorData(gaia_id);
+  mutator(factor_data);
+
+  if (factor_data.has_private_key_material()) {
+    physical_device_private_keys_.insert_or_assign(
+        gaia_id,
+        crypto::ProcessBoundString(factor_data.private_key_material()));
+    crypto::SecureZeroBuffer(base::as_writable_byte_span(
+        *factor_data.mutable_private_key_material()));
+    factor_data.clear_private_key_material();
+  } else {
+    physical_device_private_keys_.erase(gaia_id);
+  }
+
   MutateUser(gaia_id, [&](trusted_vault_pb::UserDomainData& user) {
-    mutator(*user.mutable_physical_device_data());
+    *user.mutable_physical_device_data() = factor_data;
   });
 }
 
