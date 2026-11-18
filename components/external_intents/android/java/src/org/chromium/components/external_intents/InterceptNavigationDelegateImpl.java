@@ -822,6 +822,9 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     }
 
     private void logBlockedNavigationToDevToolsConsole(GURL url) {
+        // Console messages go to the initiator's renderer, which may be cross-origin to
+        // the (post-redirect) URL; expose only the scheme.
+        String schemeString = url.getScheme() + ":";
         int resId =
                 assumeNonNull(mExternalNavHandler).canExternalAppHandleUrl(url)
                         ? R.string.blocked_navigation_warning
@@ -829,7 +832,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         assumeNonNull(mClient.getWebContents())
                 .addMessageToDevToolsConsole(
                         ConsoleMessageLevel.WARNING,
-                        ContextUtils.getApplicationContext().getString(resId, url.getSpec()));
+                        ContextUtils.getApplicationContext().getString(resId, schemeString));
     }
 
     public static void setResultCallbackForTesting(
