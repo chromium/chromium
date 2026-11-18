@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry_assignment.h"
@@ -180,6 +181,14 @@ void TreeScopeAdopter::MoveShadowTreeToNewDocument(
   }
 
   shadow_root.SetDocument(new_document);
+
+  // Disconnected shadow roots with dirty slot assignment are tracked by their
+  // document's SlotAssignmentEngine, for the recalc list. The old
+  // document's entry is weak and filtered out when stale.
+  if (!shadow_root.isConnected() && shadow_root.NeedsSlotAssignmentRecalc()) {
+    new_document.GetSlotAssignmentEngine().AddShadowRootNeedingRecalc(
+        shadow_root);
+  }
 
   // 2. If inclusiveDescendant is a shadow root and inclusiveDescendant's custom
   // element registry is a global custom element registry, then set

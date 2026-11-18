@@ -32,6 +32,11 @@ class ShadowRoot;
 //    AssignedNodes(), FlatTreeTraversal::TraverseSiblingsForHostChild() (and
 //    so all of FlatTreeTraversal), and Node::AssignedSlot().
 //
+// A recalc always covers every dirty shadow root that a side effect can read
+// (the "recalc list"): every dirty connected shadow root in the document, or,
+// for a disconnected shadow root, every dirty shadow root with the same
+// shadow-including root.
+//
 // Rules
 // -----
 // R1. No script and no event dispatch during recalc. This covers synchronous
@@ -103,7 +108,14 @@ class SlotAssignment final : public GarbageCollected<SlotAssignment> {
 
   bool NeedsAssignmentRecalc() const { return needs_assignment_recalc_; }
   void SetNeedsAssignmentRecalc();
+
+  // Lazy entry point: if this shadow root's assignment is dirty, recalculates
+  // its recalc list.
   void RecalcAssignment();
+
+  // Recalculates the assignment of every dirty shadow root in `roots`. All of
+  // `roots` must belong to the same document.
+  static void RecalcShadowRoots(const HeapVector<Member<ShadowRoot>>& roots);
 
  private:
   enum class SlotMutationType {
@@ -121,6 +133,9 @@ class SlotAssignment final : public GarbageCollected<SlotAssignment> {
   void DidRemoveSlotInternal(HTMLSlotElement&,
                              const AtomicString& slot_name,
                              SlotMutationType);
+
+  // Recalculates this shadow root's assignment, if it is dirty.
+  void RecalcOwnAssignment();
 
   HeapVector<Member<HTMLSlotElement>> slots_;
   Member<TreeOrderedMap> slot_map_;

@@ -228,16 +228,39 @@ void SlotAssignment::SetNeedsAssignmentRecalc() {
   SlotAssignmentRecalcInProgressScope::CheckNotActive(
       SlotAssignmentInvariant::kNoAssignmentDirtying);
   needs_assignment_recalc_ = true;
+  owner_->GetDocument().GetSlotAssignmentEngine().AddShadowRootNeedingRecalc(
+      *owner_);
   if (owner_->isConnected()) {
-    owner_->GetDocument().GetSlotAssignmentEngine().AddShadowRootNeedingRecalc(
-        *owner_);
     owner_->GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
   }
 }
 
 void SlotAssignment::RecalcAssignment() {
-  if (!needs_assignment_recalc_)
+  if (!needs_assignment_recalc_) {
     return;
+  }
+  SlotAssignment::RecalcShadowRoots(owner_->GetDocument()
+                                        .GetSlotAssignmentEngine()
+                                        .CollectShadowRootsToRecalc(*owner_));
+}
+
+// static
+void SlotAssignment::RecalcShadowRoots(
+    const HeapVector<Member<ShadowRoot>>& roots) {
+  for (const Member<ShadowRoot>& root : roots) {
+    root->GetSlotAssignment().RecalcOwnAssignment();
+  }
+}
+
+void SlotAssignment::RecalcOwnAssignment() {
+  // Every root in the recalc list is dirty when RecalcShadowRoots() starts,
+  // but a root can be clean by the time it is reached: a side effect of an
+  // earlier root can read it through the flat tree, which starts a nested
+  // recalc of the rest of the list (rule R6 in slot_assignment.h). The next
+  // CL removes nested recalc, and with it this case.
+  if (!needs_assignment_recalc_) {
+    return;
+  }
   // Recalc must not re-enter recalc, for this or any other shadow root (rule
   // R4 in slot_assignment.h).
   SlotAssignmentRecalcInProgressScope::CheckNotActive(
@@ -347,11 +370,9 @@ void SlotAssignment::RecalcAssignment() {
       }
     }
 
-    if (owner_->isConnected()) {
-      owner_->GetDocument()
-          .GetSlotAssignmentEngine()
-          .RemoveShadowRootNeedingRecalc(*owner_);
-    }
+    owner_->GetDocument()
+        .GetSlotAssignmentEngine()
+        .RemoveShadowRootNeedingRecalc(*owner_);
 
     // Defense in depth: script is not supposed to run here, but
     // DidRecalcAssignedNodes() still can (crbug.com/574469802) and add or
