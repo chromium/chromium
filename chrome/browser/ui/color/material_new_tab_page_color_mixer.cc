@@ -98,9 +98,48 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
 
   // Threads rail colors.
   mixer[kColorNewTabPageThreadsRailPrimaryFont] = {ui::kColorSysOnSurface};
+  mixer[kColorNewTabPageThreadsRailSecondaryFont] = {
+      ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorNewTabPageThreadsRailBrandPrimaryFont] = {
+      kColorNewTabPageThreadsRailPrimaryFont};
+  mixer[kColorNewTabPageThreadsRailBrandSecondaryFont] = {
+      kColorNewTabPageThreadsRailSecondaryFont};
   mixer[kColorNewTabPageThreadsRailBackground] = {ui::kColorSysBaseContainer};
-  mixer[kColorNewTabPageThreadsRailHoverBackground] =
-      ui::SetAlpha(ui::kColorSysOnSurface, 0.06f * SK_AlphaOPAQUE);
+  mixer[kColorNewTabPageThreadsRailFlyoutMenuBackground] = {
+      ui::kColorMenuBackground};
+  mixer[kColorNewTabPageThreadsRailContainerBackground] = {
+      ui::kColorSysBaseContainerElevated};
+  mixer[kColorNewTabPageThreadsRailSurfaceContainer] = {
+      ui::kColorSysBaseContainerElevated};
+  mixer[kColorNewTabPageThreadsRailSurfaceContainerHigh] = {
+      ui::kColorSysSurface2};
+  mixer[kColorNewTabPageThreadsRailSurfaceContainerHighest] = {
+      ui::kColorSysStateHoverBrightBlendProtection};
+  mixer[kColorNewTabPageThreadsRailPrimary] = {
+      ui::kColorButtonBackgroundProminent};
+  // Use `kColorPrimaryBackground` (`kColorSysSurface` in GM3) rather than
+  // `kColorTooltipBackground` because Ash/GTK invert `kColorTooltipBackground`
+  // while rail and Search tooltips pair this surface with `PrimaryFont`.
+  mixer[kColorNewTabPageThreadsRailTooltipContainer] = {
+      ui::kColorPrimaryBackground};
+  mixer[kColorNewTabPageThreadsRailHoverBackground] = {
+      ui::kColorSysStateHoverOnSubtle};
+  mixer[kColorNewTabPageThreadsRailMenuOpenBackground] = {
+      kColorNewTabPageThreadsRailHoverBackground};
+  mixer[kColorNewTabPageThreadsRailSelectedBackground] = {
+      kColorNewTabPageThreadsRailHoverBackground};
+  mixer[kColorNewTabPageThreadsRailDivider] = {ui::kColorSysNeutralOutline};
+  mixer[kColorNewTabPageThreadsRailScrim] = {ui::kColorSysStateScrim};
+  // In light mode, swap SurfaceVariant (base) and Surface2 (highlight) so the
+  // shimmer sweeps a lighter band across a darker bar, matching dark mode and
+  // Search's default loader direction.
+  mixer[kColorNewTabPageThreadsRailLoaderBase] = {
+      dark_mode ? ui::kColorSysSurface2 : ui::kColorSysSurfaceVariant};
+  mixer[kColorNewTabPageThreadsRailLoaderHighlight] = {
+      dark_mode ? ui::kColorSysSurfaceVariant : ui::kColorSysSurface2};
+  mixer[kColorNewTabPageThreadsRailScrollbarThumb] = {
+      ui::kColorOverlayScrollbarFill};
+  mixer[kColorNewTabPageThreadsRailUpdateDot] = {ui::kColorSysPrimary};
 
   mixer[kColorNewTabPageModuleBackground] = {ui::kColorSysBaseContainer};
   mixer[kColorNewTabPageModuleIconBackground] = {ui::kColorSysNeutralContainer};

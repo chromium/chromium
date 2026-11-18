@@ -910,16 +910,73 @@ suite('NewTabPageLeftHandSideTest', () => {
     assertEquals(0, windowProxy.getCallCount('navigate'));
   });
 
+  const TEST_THEME_CSS_VARS: Record<string, string> = {
+    '--color-new-tab-page-threads-rail-primary-font': 'rgba(31, 31, 31, 1)',
+    '--color-new-tab-page-threads-rail-secondary-font': 'rgba(94, 94, 94, 1)',
+    '--color-new-tab-page-threads-rail-background': 'rgba(241, 243, 244, 1)',
+    '--color-new-tab-page-threads-rail-flyout-menu-background':
+        'rgba(255, 255, 255, 1)',
+    '--color-new-tab-page-threads-rail-surface-container':
+        'rgba(255, 255, 255, 1)',
+    '--color-new-tab-page-threads-rail-surface-container-high':
+        'rgba(243, 246, 252, 1)',
+    '--color-new-tab-page-threads-rail-surface-container-highest':
+        'rgba(31, 31, 31, 0.06)',
+    '--color-new-tab-page-threads-rail-primary': 'rgba(11, 87, 208, 1)',
+    '--color-new-tab-page-threads-rail-tooltip-container':
+        'rgba(255, 255, 255, 1)',
+    '--color-new-tab-page-threads-rail-hover-background':
+        'rgba(31, 31, 31, 0.06)',
+    '--color-new-tab-page-threads-rail-selected-background':
+        'rgba(31, 31, 31, 0.12)',
+    '--color-new-tab-page-threads-rail-loader-base': 'rgba(235, 239, 247, 1)',
+    '--color-new-tab-page-threads-rail-loader-highlight':
+        'rgba(225, 227, 225, 1)',
+    '--color-new-tab-page-threads-rail-brand-primary-font':
+        'rgba(31, 31, 31, 1)',
+    '--color-new-tab-page-threads-rail-brand-secondary-font':
+        'rgba(94, 94, 94, 1)',
+    '--color-new-tab-page-threads-rail-menu-open-background':
+        'rgba(31, 31, 31, 0.08)',
+    '--color-new-tab-page-threads-rail-container-background':
+        'rgba(242, 242, 242, 1)',
+    '--color-new-tab-page-threads-rail-divider': 'rgba(199, 199, 199, 1)',
+    '--color-new-tab-page-threads-rail-scrim': 'rgba(0, 0, 0, 0.6)',
+    '--color-new-tab-page-threads-rail-scrollbar-thumb': 'rgba(0, 0, 0, 0.62)',
+    '--color-new-tab-page-threads-rail-update-dot': 'rgba(11, 87, 208, 1)',
+  };
+
+  const EXPECTED_THEME_PALETTE = {
+    primaryFont: 'rgba(31, 31, 31, 1)',
+    secondaryFont: 'rgba(94, 94, 94, 1)',
+    railBackground: 'rgba(241, 243, 244, 1)',
+    flyoutMenuBackground: 'rgba(255, 255, 255, 1)',
+    surfaceContainer: 'rgba(255, 255, 255, 1)',
+    surfaceContainerHigh: 'rgba(243, 246, 252, 1)',
+    surfaceContainerHighest: 'rgba(31, 31, 31, 0.06)',
+    primary: 'rgba(11, 87, 208, 1)',
+    tooltipContainer: 'rgba(255, 255, 255, 1)',
+    hoverBackgroundColor: 'rgba(31, 31, 31, 0.06)',
+    selectedBackgroundColor: 'rgba(31, 31, 31, 0.12)',
+    loaderBaseColor: 'rgba(235, 239, 247, 1)',
+    loaderHighlightColor: 'rgba(225, 227, 225, 1)',
+    brandPrimaryFont: 'rgba(31, 31, 31, 1)',
+    brandSecondaryFont: 'rgba(94, 94, 94, 1)',
+    menuOpenBackgroundColor: 'rgba(31, 31, 31, 0.08)',
+    containerBackground: 'rgba(242, 242, 242, 1)',
+    dividerColor: 'rgba(199, 199, 199, 1)',
+    scrimColor: 'rgba(0, 0, 0, 0.6)',
+    scrollbarThumbColor: 'rgba(0, 0, 0, 0.62)',
+    updateDotColor: 'rgba(11, 87, 208, 1)',
+  };
+
   test('posts NTP_LHS_SET_THEME message on theme change', async () => {
     await createLeftHandSide();
     await expandLeftHandSide();
     leftHandSide.isDark = true;
-    leftHandSide.style.setProperty(
-        '--color-new-tab-page-threads-rail-primary-font',
-        'rgba(31, 31, 31, 1)');
-    leftHandSide.style.setProperty(
-        '--color-new-tab-page-threads-rail-background',
-        'rgba(241, 243, 244, 1)');
+    for (const [prop, val] of Object.entries(TEST_THEME_CSS_VARS)) {
+      leftHandSide.style.setProperty(prop, val);
+    }
 
     ColorChangeUpdater.forDocument().eventTarget.dispatchEvent(
         new CustomEvent(COLOR_PROVIDER_CHANGED));
@@ -933,10 +990,7 @@ suite('NewTabPageLeftHandSideTest', () => {
     assertDeepEquals(
         {
           type: NtpLhsMessageType.NTP_LHS_SET_THEME,
-          theme: {
-            primaryFont: 'rgba(31, 31, 31, 1)',
-            railBackground: 'rgba(241, 243, 244, 1)',
-          },
+          theme: EXPECTED_THEME_PALETTE,
           isDark: true,
           iconSize: 20,
         },
@@ -948,12 +1002,9 @@ suite('NewTabPageLeftHandSideTest', () => {
     await createLeftHandSide();
     await expandLeftHandSide();
     leftHandSide.isDark = false;
-    leftHandSide.style.setProperty(
-        '--color-new-tab-page-threads-rail-primary-font',
-        'rgba(31, 31, 31, 1)');
-    leftHandSide.style.setProperty(
-        '--color-new-tab-page-threads-rail-background',
-        'rgba(241, 243, 244, 1)');
+    for (const [prop, val] of Object.entries(TEST_THEME_CSS_VARS)) {
+      leftHandSide.style.setProperty(prop, val);
+    }
 
     postLhsMessage({
       type: NtpLhsMessageType.NTP_LHS_READY,
@@ -970,10 +1021,7 @@ suite('NewTabPageLeftHandSideTest', () => {
     assertDeepEquals(
         {
           type: NtpLhsMessageType.NTP_LHS_SET_THEME,
-          theme: {
-            primaryFont: 'rgba(31, 31, 31, 1)',
-            railBackground: 'rgba(241, 243, 244, 1)',
-          },
+          theme: EXPECTED_THEME_PALETTE,
           isDark: false,
           iconSize: 20,
         },
