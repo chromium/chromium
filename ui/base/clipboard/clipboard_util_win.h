@@ -53,6 +53,20 @@ COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
 bool GetUrlInfos(IDataObject* data_object,
                  std::vector<ClipboardUrlInfo>& url_infos,
                  bool convert_filenames);
+
+// Parses a BookmarkListType clipboard payload. Accepts a JSON array of
+// objects with a required "url" string and an optional "title" string.
+// On success, appends each entry to url_infos as {GURL(url), title}.
+//
+// Example JSON payload:
+// [
+//   { "url": "https://chromium.org", "title": "Chromium Project" },
+//   { "url": "https://www.mozilla.org", "title": "Mozilla Home" }
+// ]
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
+void ParseBookmarkListData(const std::u16string& str,
+                           std::vector<ClipboardUrlInfo>& url_infos);
+
 // Only returns true if |*filenames| is not empty.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
 bool GetFilenames(IDataObject* data_object,

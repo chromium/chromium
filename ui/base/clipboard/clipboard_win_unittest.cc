@@ -974,4 +974,70 @@ TEST_F(ClipboardWinTest, ReadBitmapRejectsDibWithPixelDataPastEnd) {
   EXPECT_TRUE(WriteDibAndReadPng(std::move(dib)).empty());
 }
 
+TEST_F(ClipboardWinTest, WriteURLsMultipleEntries) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+
+  const std::vector<ClipboardUrlInfo> url_infos = {
+      {.url = GURL("https://a.example/1"), .title = u"First\nline"},
+      {.url = GURL("https://b.example/2"), .title = u"Second"},
+  };
+
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteURLs(url_infos);
+  }
+
+  EXPECT_TRUE(clipboard_test_util::IsFormatAvailable(
+      clipboard, ClipboardFormatType::MozUrlType(), ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr));
+  EXPECT_FALSE(clipboard_test_util::IsFormatAvailable(
+      clipboard, ClipboardFormatType::UrlType(), ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr));
+  EXPECT_EQ(
+      clipboard_test_util::ReadText(clipboard, ClipboardBuffer::kCopyPaste,
+                                    /*data_dst=*/nullptr),
+      u"https://a.example/1\r\nhttps://b.example/2");
+
+  std::u16string title;
+  std::string url;
+  clipboard_test_util::ReadBookmark(clipboard, /*data_dst=*/nullptr, &title,
+                                    &url);
+  EXPECT_EQ(url, "https://a.example/1");
+  EXPECT_EQ(title, u"First\nline");
+
+  std::vector<ClipboardUrlInfo> read_urls =
+      clipboard_test_util::ReadURLs(clipboard, /*data_dst=*/nullptr);
+  ASSERT_EQ(read_urls.size(), 2u);
+  EXPECT_EQ(read_urls[0].url, GURL("https://a.example/1"));
+  EXPECT_EQ(read_urls[0].title, u"First\nline");
+  EXPECT_EQ(read_urls[1].url, GURL("https://b.example/2"));
+  EXPECT_EQ(read_urls[1].title, u"Second");
+}
+
+TEST_F(ClipboardWinTest, WriteURLsKeepsCallerText) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+
+  const std::vector<ClipboardUrlInfo> url_infos = {
+      {.url = GURL("https://a.example/1"), .title = u"First"},
+      {.url = GURL("https://b.example/2"), .title = u"Second"},
+  };
+
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteURLs(url_infos);
+    writer.WriteText(u"custom");
+  }
+
+  EXPECT_EQ(
+      clipboard_test_util::ReadText(clipboard, ClipboardBuffer::kCopyPaste,
+                                    /*data_dst=*/nullptr),
+      u"custom");
+
+  std::vector<ClipboardUrlInfo> read_urls =
+      clipboard_test_util::ReadURLs(clipboard, /*data_dst=*/nullptr);
+  ASSERT_EQ(read_urls.size(), 2u);
+  EXPECT_EQ(read_urls[0].url, GURL("https://a.example/1"));
+  EXPECT_EQ(read_urls[1].url, GURL("https://b.example/2"));
+}
+
 }  // namespace ui

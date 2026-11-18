@@ -21,16 +21,19 @@
 #include <vector>
 
 #include "base/byte_size.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/i18n/encoding_detection.h"
 #include "base/i18n/icu_string_conversions.h"
+#include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -41,6 +44,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/optional_util.h"
+#include "base/values.h"
 #include "base/win/message_window.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
@@ -943,31 +947,61 @@ std::vector<ui::FileInfo> ClipboardWin::ReadFilenamesInternal(
 // platforms.
 void ClipboardWin::ReadURL(const std::optional<DataTransferEndpoint>& data_dst,
                            ReadUrlCallback callback) const {
+  ReadURLs(data_dst,
+           base::BindOnce(
+               [](ReadUrlCallback callback,
+                  std::vector<ClipboardUrlInfo> url_infos) {
+                 std::move(callback).Run(url_infos.empty()
+                                             ? ClipboardUrlInfo()
+                                             : std::move(url_infos.front()));
+               },
+               std::move(callback)));
+}
+
+// |data_dst| is not used. It's only passed to be consistent with other
+// platforms.
+void ClipboardWin::ReadURLs(const std::optional<DataTransferEndpoint>& data_dst,
+                            ReadUrlsCallback callback) const {
   RecordRead(ClipboardFormatMetric::kUrl);
 
-  ClipboardUrlInfo url_info;
+  std::vector<ClipboardUrlInfo> url_infos;
 
   // Acquire the clipboard.
   ScopedClipboard clipboard;
   if (!clipboard.Acquire(GetClipboardWindow())) {
-    std::move(callback).Run(std::move(url_info));
+    std::move(callback).Run(std::move(url_infos));
     return;
   }
 
-  HANDLE data = GetClipboardDataWithLimit(
-      ClipboardFormatType::UrlType().ToFormatEtc().cfFormat);
-  if (!data) {
-    std::move(callback).Run(std::move(url_info));
-    return;
+  // BookmarkListType holds every link of a multi-URL write.
+  if (HANDLE data = GetClipboardDataWithLimit(
+          ClipboardFormatType::BookmarkListType().ToFormatEtc().cfFormat)) {
+    if (const void* locked_data = ::GlobalLock(data)) {
+      std::u16string bookmark_list(static_cast<const char16_t*>(locked_data),
+                                   ::GlobalSize(data) / sizeof(char16_t));
+      ::GlobalUnlock(data);
+      TrimAfterNull(&bookmark_list);
+      clipboard_util::ParseBookmarkListData(bookmark_list, url_infos);
+    }
   }
 
-  std::u16string bookmark(static_cast<const char16_t*>(::GlobalLock(data)),
-                          ::GlobalSize(data) / sizeof(char16_t));
-  ::GlobalUnlock(data);
-  TrimAfterNull(&bookmark);
+  // Otherwise fall back to CFSTR_INETURLW, which holds a single URL.
+  if (url_infos.empty()) {
+    if (HANDLE data = GetClipboardDataWithLimit(
+            ClipboardFormatType::UrlType().ToFormatEtc().cfFormat)) {
+      if (const void* locked_data = ::GlobalLock(data)) {
+        std::u16string bookmark(static_cast<const char16_t*>(locked_data),
+                                ::GlobalSize(data) / sizeof(char16_t));
+        ::GlobalUnlock(data);
+        TrimAfterNull(&bookmark);
+        if (GURL url(base::UTF16ToUTF8(bookmark)); url.is_valid()) {
+          url_infos.emplace_back(std::move(url), std::u16string());
+        }
+      }
+    }
+  }
 
-  url_info.url = GURL(base::UTF16ToUTF8(bookmark));
-  std::move(callback).Run(std::move(url_info));
+  std::move(callback).Run(std::move(url_infos));
 }
 
 // static
@@ -1086,15 +1120,54 @@ void ClipboardWin::WriteFilenames(std::vector<ui::FileInfo> filenames) {
 }
 
 void ClipboardWin::WriteURLs(base::span<const ClipboardUrlInfo> url_infos) {
-  // TODO(crbug.com/563067141): Write all URLs. Only the first one is written
-  // for now.
-  const auto& url_info = url_infos.front();
-  // On Windows, CFSTR_INETURLW is expected to only contain the URL & not the
-  // title separated by a newline.
-  // https://docs.microsoft.com/en-us/windows/win32/shell/clipboard#cfstr_ineturl.
-  HGLOBAL glob = CreateGlobalData(base::UTF8ToUTF16(url_info.url.spec()));
+  CHECK(!url_infos.empty());
+  if (url_infos.size() == 1) {
+    // On Windows, CFSTR_INETURLW is expected to only contain the URL & not the
+    // title separated by a newline.
+    // https://docs.microsoft.com/en-us/windows/win32/shell/clipboard#cfstr_ineturl.
+    HGLOBAL glob =
+        CreateGlobalData(base::UTF8ToUTF16(url_infos.front().url.spec()));
+    WriteToClipboard(ClipboardFormatType::UrlType(), glob);
+    return;
+  }
 
-  WriteToClipboard(ClipboardFormatType::UrlType(), glob);
+  // CFSTR_INETURLW holds a single URL, so it is not written for several links.
+  // An application that prefers it would paste only the first one. The full
+  // list is written to MozUrlType and BookmarkListType instead.
+  std::u16string bookmarks;
+  base::ListValue bookmark_entries;
+  bookmark_entries.reserve(url_infos.size());
+  std::string text_urls;
+  for (const auto& url_info : url_infos) {
+    if (!bookmarks.empty()) {
+      bookmarks += u"\n";
+      text_urls += "\r\n";
+    }
+    base::StrAppend(
+        &bookmarks,
+        {base::UTF8ToUTF16(url_info.url.spec()), u"\n",
+         base::CollapseWhitespace(url_info.title,
+                                  /*trim_sequences_with_line_breaks=*/false)});
+
+    base::DictValue entry;
+    entry.Set("url", url_info.url.spec());
+    entry.Set("title", base::UTF16ToUTF8(url_info.title));
+    bookmark_entries.Append(std::move(entry));
+
+    text_urls += url_info.url.spec();
+  }
+
+  WriteToClipboard(ClipboardFormatType::MozUrlType(),
+                   CreateGlobalData(bookmarks));
+
+  base::Value bookmark_entries_value(std::move(bookmark_entries));
+  std::string bookmark_list_json;
+  if (base::JSONWriter::Write(bookmark_entries_value, &bookmark_list_json)) {
+    WriteToClipboard(ClipboardFormatType::BookmarkListType(),
+                     CreateGlobalData(base::UTF8ToUTF16(bookmark_list_json)));
+  }
+
+  WriteText(text_urls);
 }
 
 void ClipboardWin::WriteWebSmartPaste() {

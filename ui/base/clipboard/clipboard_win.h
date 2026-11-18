@@ -96,6 +96,8 @@ class ClipboardWin : public Clipboard, public ClipboardChangeNotifier {
                ReadPngCallback callback) const override;
   void ReadURL(const std::optional<DataTransferEndpoint>& data_dst,
                ReadUrlCallback callback) const override;
+  void ReadURLs(const std::optional<DataTransferEndpoint>& data_dst,
+                ReadUrlsCallback callback) const override;
   void WritePortableAndPlatformRepresentations(
       ClipboardBuffer buffer,
       const ObjectMap& objects,

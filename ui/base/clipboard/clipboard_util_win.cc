@@ -151,48 +151,6 @@ void SplitUrlAndTitle(const std::u16string& str,
   }
 }
 
-// Parses a BookmarkListType clipboard payload. Accepts a JSON array of
-// objects with a required "url" string and an optional "title" string.
-// On success, appends each entry to url_infos as {GURL(url), title}.
-//
-// Example JSON payload:
-// [
-//   { "url": "https://chromium.org", "title": "Chromium Project" },
-//   { "url": "https://www.mozilla.org", "title": "Mozilla Home" }
-// ]
-void ParseBookmarkListData(const std::u16string& str,
-                           std::vector<ClipboardUrlInfo>& url_infos) {
-  const std::string utf8_payload = base::UTF16ToUTF8(str);
-
-  std::optional<base::Value> json_payload =
-      base::JSONReader::Read(utf8_payload, base::JSON_PARSE_RFC);
-
-  if (json_payload && json_payload->is_list()) {
-    for (const base::Value& item : json_payload->GetList()) {
-      if (!item.is_dict()) {
-        continue;
-      }
-
-      const auto& dict = item.GetDict();
-      const std::string* url_str = dict.FindString("url");
-      if (!url_str) {
-        continue;
-      }
-      GURL url(*url_str);
-      if (!url.is_valid()) {
-        continue;
-      }
-
-      std::u16string title;
-      if (const std::string* title_str = dict.FindString("title")) {
-        title = base::UTF8ToUTF16(*title_str);
-      }
-
-      url_infos.emplace_back(std::move(url), std::move(title));
-    }
-  }
-}
-
 // Performs a case-insensitive search for a file path in a vector of existing
 // filepaths. Case-insensivity is needed for file systems such as Windows where
 // A.txt and a.txt are considered the same file name.
@@ -723,6 +681,40 @@ bool HasPlainText(IDataObject* data_object) {
   CHECK(data_object, base::NotFatalUntil::M163);
   return HasData(data_object, ClipboardFormatType::PlainTextType()) ||
          HasData(data_object, ClipboardFormatType::PlainTextAType());
+}
+
+void ParseBookmarkListData(const std::u16string& str,
+                           std::vector<ClipboardUrlInfo>& url_infos) {
+  const std::string utf8_payload = base::UTF16ToUTF8(str);
+
+  std::optional<base::Value> json_payload =
+      base::JSONReader::Read(utf8_payload, base::JSON_PARSE_RFC);
+
+  if (json_payload && json_payload->is_list()) {
+    const base::ListValue& list = json_payload->GetList();
+    for (const base::Value& item : list) {
+      if (!item.is_dict()) {
+        continue;
+      }
+
+      const auto& dict = item.GetDict();
+      const std::string* url_str = dict.FindString("url");
+      if (!url_str) {
+        continue;
+      }
+      GURL url(*url_str);
+      if (!url.is_valid()) {
+        continue;
+      }
+
+      std::u16string title;
+      if (const std::string* title_str = dict.FindString("title")) {
+        title = base::UTF8ToUTF16(*title_str);
+      }
+
+      url_infos.emplace_back(std::move(url), std::move(title));
+    }
+  }
 }
 
 bool GetUrlInfos(IDataObject* data_object,
