@@ -241,23 +241,18 @@ void AppDiscoveryMetrics::OnInstanceUpdate(
   // Instance is destroyed.
   if (instance_update.IsDestruction()) {
     instance_to_state_.erase(instance_update.InstanceId());
-    app_id_to_instance_ids_[instance_update.AppId()].erase(
-        instance_update.InstanceId());
 
-    // If the set is now empty, all instances of the app are closed.
-    // Remove app_id from the map and log app closed.
-    if (app_id_to_instance_ids_[instance_update.AppId()].empty()) {
-      app_id_to_instance_ids_.erase(instance_update.AppId());
+    auto it = app_id_to_instance_ids_.find(instance_update.AppId());
+    if (it != app_id_to_instance_ids_.end()) {
+      it->second.erase(instance_update.InstanceId());
+      // If the set is now empty, all instances of the app are closed.
+      // Remove app_id from the map and log app closed.
+      if (it->second.empty()) {
+        app_id_to_instance_ids_.erase(it);
+      }
     }
 
     return;
-  }
-
-  // First instance of the app requires set construction.
-  if (app_id_to_instance_ids_.find(instance_update.AppId()) ==
-      app_id_to_instance_ids_.end()) {
-    app_id_to_instance_ids_[instance_update.AppId()] =
-        std::set<base::UnguessableToken>();
   }
 
   app_id_to_instance_ids_[instance_update.AppId()].insert(
@@ -279,24 +274,22 @@ bool AppDiscoveryMetrics::ShouldRecordAppKMForAppId(const std::string& app_id) {
 bool AppDiscoveryMetrics::IsAnyAppInstanceActive(
     const std::string& app_id,
     std::optional<base::UnguessableToken> exclude_instance_id) {
-  bool is_any_instance_active = false;
-
   // App id not found.
-  if (app_id_to_instance_ids_.find(app_id) == app_id_to_instance_ids_.end()) {
+  auto it = app_id_to_instance_ids_.find(app_id);
+  if (it == app_id_to_instance_ids_.end()) {
     return false;
   }
 
-  for (const auto& instance_id : app_id_to_instance_ids_[app_id]) {
+  for (const auto& instance_id : it->second) {
     // Ignore excluded instance_id if it exists.
     if (IsStateActive(instance_to_state_[instance_id]) &&
         (!exclude_instance_id.has_value() ||
          exclude_instance_id.value() != instance_id)) {
-      is_any_instance_active = true;
-      break;
+      return true;
     }
   }
 
-  return is_any_instance_active;
+  return false;
 }
 
 void AppDiscoveryMetrics::RecordAppState(
@@ -387,10 +380,10 @@ void AppDiscoveryMetrics::RecordAppInactive(
 void AppDiscoveryMetrics::RecordAppClosed(
     const InstanceUpdate& instance_update) {
   CHECK(instance_update.IsDestruction(), base::NotFatalUntil::M161);
-  auto prev_instances = app_id_to_instance_ids_[instance_update.AppId()];
+  const auto it = app_id_to_instance_ids_.find(instance_update.AppId());
 
   // If instance_update is the only instance of the app.
-  if (prev_instances.size() == 1) {
+  if (it != app_id_to_instance_ids_.end() && it->second.size() == 1) {
     ASSIGN_OR_RETURN(
         std::string app_str_to_record,
         GetAppStringToRecord(instance_update.AppId(),
@@ -522,7 +515,8 @@ bool AppDiscoveryMetrics::IsAppListAtCapacity() {
 
 base::ListValue AppDiscoveryMetrics::BuildAppInstalledList() {
   base::ListValue installed_apps;
-  for (std::string app : apps_installed_) {
+  installed_apps.reserve(apps_installed_.size());
+  for (const std::string& app : apps_installed_) {
     installed_apps.Append(app);
   }
   return installed_apps;
