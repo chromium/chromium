@@ -463,17 +463,24 @@ void MLTensor::OnConnectionError() {
   remote_tensor_.reset();
   webnn_scoped_access_.reset();
 
-  for (const auto& resolver : pending_resolvers_) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
-                                     kTensorDestroyedError);
-  }
-  pending_resolvers_.clear();
+  // Rejecting a promise can run script synchronously (e.g. a debugger pause on
+  // an unhandled rejection), which may re-enter destroy(). Move all pending
+  // resolvers out of the members before rejecting any of them so a re-entrant
+  // call finds the members empty and cannot free a backing store that is still
+  // being iterated.
+  HeapHashSet<Member<ScriptPromiseResolver<DOMArrayBuffer>>> resolvers;
+  resolvers.swap(pending_resolvers_);
+  HeapHashSet<Member<ScriptPromiseResolver<IDLUndefined>>> byob_resolvers;
+  byob_resolvers.swap(pending_byob_resolvers_);
 
-  for (const auto& resolver : pending_byob_resolvers_) {
+  for (const auto& resolver : resolvers) {
     resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
                                      kTensorDestroyedError);
   }
-  pending_byob_resolvers_.clear();
+  for (const auto& resolver : byob_resolvers) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                     kTensorDestroyedError);
+  }
 }
 
 // MLTensor::ExportToGPUImpl creates a GPUBuffer on top of the shared

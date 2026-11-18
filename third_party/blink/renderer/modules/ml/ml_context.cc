@@ -487,11 +487,16 @@ void MLContext::OnLost(uint32_t custom_reason, const std::string& description) {
   CHECK_EQ(lost_property_->GetState(), LostProperty::kPending);
   lost_property_->Resolve(context_lost_info);
 
-  for (const auto& resolver : pending_resolvers_) {
+  // Rejecting a promise can run script synchronously (e.g. a debugger pause on
+  // an unhandled rejection). Move the pending resolvers out of the member
+  // before iterating so a re-entrant call cannot free the backing store under
+  // the live iterator.
+  HeapHashSet<Member<ScriptPromiseResolver<MLTensor>>> resolvers;
+  resolvers.swap(pending_resolvers_);
+  for (const auto& resolver : resolvers) {
     resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
                                      "Context is lost.");
   }
-  pending_resolvers_.clear();
 }
 
 gpu::SyncToken MLContext::GenerateVerifiedReleaseToken() {
