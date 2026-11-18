@@ -2841,6 +2841,19 @@ SVGDashArray* StyleBuilderConverter::ConvertStrokeDasharray(
 StyleViewTransitionGroup StyleBuilderConverter::ConvertViewTransitionGroup(
     StyleResolverState& state,
     const CSSValue& value) {
+  if (const auto* scoped_keyword =
+          DynamicTo<cssvalue::CSSScopedKeywordValue>(value)) {
+    state.SetHasTreeScopedReference();
+    const TreeScope* tree_scope = scoped_keyword->GetPopulatedTreeScope();
+    switch (scoped_keyword->GetValueID()) {
+      case CSSValueID::kNearest:
+        return StyleViewTransitionGroup::Nearest(tree_scope);
+      case CSSValueID::kContain:
+        return StyleViewTransitionGroup::Contain(tree_scope);
+      default:
+        NOTREACHED();
+    }
+  }
   if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
     switch (ident->GetValueID()) {
       case CSSValueID::kNearest:
@@ -2853,23 +2866,34 @@ StyleViewTransitionGroup StyleBuilderConverter::ConvertViewTransitionGroup(
         NOTREACHED();
     }
   }
-  return StyleViewTransitionGroup::Create(
-      ConvertCustomIdent(state, value)->GetName());
+  ScopedCSSName* name = ConvertCustomIdent(state, value);
+  return StyleViewTransitionGroup::Create(name->GetName(),
+                                          name->GetTreeScope());
 }
 
 StyleViewTransitionName* StyleBuilderConverter::ConvertViewTransitionName(
     StyleResolverState& state,
     const CSSValue& value) {
   state.SetHasTreeScopedReference();
+  if (const auto* scoped_keyword =
+          DynamicTo<cssvalue::CSSScopedKeywordValue>(value)) {
+    const TreeScope* tree_scope = scoped_keyword->GetPopulatedTreeScope();
+    switch (scoped_keyword->GetValueID()) {
+      case CSSValueID::kAuto:
+        return StyleViewTransitionName::Auto(tree_scope);
+      case CSSValueID::kMatchElement:
+        return StyleViewTransitionName::MatchElement(tree_scope);
+      default:
+        NOTREACHED();
+    }
+  }
   if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
     switch (ident->GetValueID()) {
       case CSSValueID::kNone:
         return nullptr;
       case CSSValueID::kAuto:
-        // TODO: tree scope for auto
         return StyleViewTransitionName::Auto(&state.GetDocument());
       case CSSValueID::kMatchElement:
-        // TODO: tree scope for match-element
         return StyleViewTransitionName::MatchElement(&state.GetDocument());
       default:
         NOTREACHED();

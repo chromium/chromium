@@ -15,11 +15,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "cc/view_transition/view_transition_request.h"
 #include "third_party/blink/public/common/frame/view_transition_state.h"
+#include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_options.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -32,6 +34,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -66,6 +69,8 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -3009,6 +3014,194 @@ TEST_P(ViewTransitionTest, ScopedViewTransitionDisplayLockedInDrawableCanvas) {
   UpdateAllLifecyclePhasesForTest();
   ASSERT_EQ(GetState(transition), State::kAnimating);
   EXPECT_FALSE(PaintedBackground(*pair));
+}
+
+TEST_P(ViewTransitionTest, ViewTransitionShadowRootsDisabledIgnoresOption) {
+  ScopedViewTransitionShadowRootsForTest disabled_flag(false);
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      #host {
+        width: 100px;
+        height: 100px;
+        contain: layout;
+      }
+    </style>
+    <div id="host"></div>
+    <div id="status"></div>
+  )HTML");
+
+  Element* host = GetDocument().getElementById(AtomicString("host"));
+  ASSERT_TRUE(host);
+  ShadowRoot& sr = host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  sr.SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #item {
+        width: 50px;
+        height: 50px;
+        view-transition-name: shadow-item;
+      }
+    </style>
+    <div id="item"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  // When ViewTransitionShadowRoots is disabled, bindings must not read the
+  // shadowRoots property on either Document or Element startViewTransition().
+  web_view_helper_->LocalMainFrame()->ExecuteScript(WebScriptSource(R"JS(
+    (() => {
+      const host = document.getElementById('host');
+      const throwingOptions = {
+        get shadowRoots() {
+          throw new Error('shadowRoots should not be read when disabled');
+        }
+      };
+      const docVt = document.startViewTransition(throwingOptions);
+      docVt.skipTransition();
+      const elVt = host.startViewTransition(throwingOptions);
+      elVt.skipTransition();
+      document.getElementById('status').textContent = 'ok';
+    })();
+  )JS"));
+  test::RunPendingTasks();
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("status"))->textContent(),
+            "ok");
+
+  // Even if ViewTransitionOptions has shadowRoots populated directly, C++ entry
+  // points must ignore it when the feature flag is disabled.
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+  auto noop_callback =
+      v8::Function::New(script_state->GetContext(),
+                        [](const v8::FunctionCallbackInfo<v8::Value>&) {})
+          .ToLocalChecked();
+  auto* options = ViewTransitionOptions::Create();
+  options->setUpdate(V8ViewTransitionCallback::Create(noop_callback));
+  options->setShadowRoots({&sr});
+
+  auto* transition = ViewTransitionSupplement::startViewTransition(
+      script_state, GetDocument(), options, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  ASSERT_EQ(GetState(transition), State::kAnimating);
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+
+  PseudoElement* vt_pseudo = GetDocument().documentElement()->GetPseudoElement(
+      kPseudoIdViewTransition);
+  ASSERT_TRUE(vt_pseudo);
+  EXPECT_FALSE(vt_pseudo->GetPseudoElement(kPseudoIdViewTransitionGroup,
+                                           AtomicString("shadow-item")));
+
+  FinishTransition();
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+}
+
+TEST_P(ViewTransitionTest,
+       ViewTransitionShadowRootsDetachedDuringTransitionGC) {
+  ScopedViewTransitionShadowRootsForTest enabled_flag(true);
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      :root { view-transition-name: none; }
+      ::view-transition-group(*) { animation-duration: 0s; }
+    </style>
+    <div id="host" style="width: 100px; height: 100px;"></div>
+  )HTML");
+
+  WeakPersistent<ShadowRoot> weak_detached_sr;
+  Persistent<DOMViewTransition> transition;
+  {
+    Element* host = GetDocument().getElementById(AtomicString("host"));
+    ASSERT_TRUE(host);
+    ShadowRoot& sr = host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+    sr.SetInnerHTMLWithoutTrustedTypes(R"HTML(
+      <style>
+        #item {
+          width: 50px;
+          height: 50px;
+          background: green;
+          view-transition-name: shadow-item;
+        }
+      </style>
+      <div id="item"></div>
+    )HTML");
+
+    // Also include an unreferenced detached ShadowRoot in shadowRoots so we can
+    // deterministically verify Oilpan retention while active and collection
+    // once the transition finishes.
+    Element* detached_host =
+        GetDocument().CreateRawElement(html_names::kDivTag);
+    ShadowRoot& detached_sr =
+        detached_host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+    weak_detached_sr = &detached_sr;
+
+    UpdateAllLifecyclePhasesForTest();
+
+    ScriptState* script_state = GetScriptState();
+    ScriptState::Scope scope(script_state);
+    auto remove_host_lambda =
+        [](const v8::FunctionCallbackInfo<v8::Value>& info) {
+          auto* doc =
+              static_cast<Document*>(info.DataV2().As<v8::External>()->Value(
+                  gin::kViewTransitionTestDocumentTag));
+          if (Element* h = doc->getElementById(AtomicString("host"))) {
+            h->remove();
+          }
+        };
+    auto remove_host_callback =
+        v8::Function::New(
+            script_state->GetContext(), remove_host_lambda,
+            v8::External::New(script_state->GetIsolate(), &GetDocument(),
+                              gin::kViewTransitionTestDocumentTag))
+            .ToLocalChecked();
+
+    auto* options = ViewTransitionOptions::Create();
+    options->setUpdate(V8ViewTransitionCallback::Create(remove_host_callback));
+    options->setShadowRoots({&sr, &detached_sr});
+
+    transition = ViewTransitionSupplement::startViewTransition(
+        script_state, GetDocument(), options, ASSERT_NO_EXCEPTION);
+  }
+
+  // Capture #item in `sr`, commit the capture so the update callback detaches
+  // #host while waiting for capture rects, and run Oilpan GC.
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(GetState(transition), State::kCapturing);
+  transition->GetViewTransitionForTest()->WillSnapshotCommitState();
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition), State::kWaitingForCaptureRects);
+  EXPECT_FALSE(GetDocument().getElementById(AtomicString("host")));
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_TRUE(weak_detached_sr);
+
+  // Finish capture directives to enter animating state and verify exit group
+  // was created for shadow-item.
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  ASSERT_EQ(GetState(transition), State::kAnimating);
+  UpdateAllLifecyclePhasesForTest();
+
+  {
+    PseudoElement* vt_pseudo =
+        GetDocument().documentElement()->GetPseudoElement(
+            kPseudoIdViewTransition);
+    ASSERT_TRUE(vt_pseudo);
+    EXPECT_TRUE(vt_pseudo->GetPseudoElement(kPseudoIdViewTransitionGroup,
+                                            AtomicString("shadow-item")));
+  }
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_TRUE(weak_detached_sr);
+
+  // Advance frames to let the 0s exit animation complete cleanly.
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetState(transition), State::kPendingDone);
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition), State::kFinished);
+
+  transition = nullptr;
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(weak_detached_sr);
 }
 
 }  // namespace blink

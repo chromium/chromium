@@ -16,7 +16,8 @@ DOMViewTransition* ScopedViewTransition::startViewTransition(
     V8ViewTransitionCallback* callback,
     ExceptionState& exception_state) {
   return ViewTransitionSupplement::StartViewTransitionForElement(
-      script_state, &element, callback, std::nullopt, exception_state);
+      script_state, &element, callback, std::nullopt, /*shadow_roots=*/nullptr,
+      exception_state);
 }
 
 DOMViewTransition* ScopedViewTransition::startViewTransition(
@@ -27,9 +28,11 @@ DOMViewTransition* ScopedViewTransition::startViewTransition(
   // The generated bindings class for view_transition_options.idl ensures that
   // hasUpdate() and hasTypes() both return true.
   CHECK(!options || (options->hasUpdate() && options->hasTypes()));
+  const HeapVector<Member<ShadowRoot>>* shadow_roots =
+      (options && options->hasShadowRoots()) ? &options->shadowRoots() : nullptr;
   return ViewTransitionSupplement::StartViewTransitionForElement(
       script_state, &element, options ? options->update() : nullptr,
-      options ? options->types() : std::nullopt, exception_state);
+      options ? options->types() : std::nullopt, shadow_roots, exception_state);
 }
 
 DOMViewTransition* ScopedViewTransition::startViewTransition(
@@ -37,7 +40,8 @@ DOMViewTransition* ScopedViewTransition::startViewTransition(
     Element& element,
     ExceptionState& exception_state) {
   return ViewTransitionSupplement::StartViewTransitionForElement(
-      script_state, &element, nullptr, std::nullopt, exception_state);
+      script_state, &element, nullptr, std::nullopt, /*shadow_roots=*/nullptr,
+      exception_state);
 }
 
 DOMViewTransition* ScopedViewTransition::activeViewTransition(

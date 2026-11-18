@@ -275,6 +275,26 @@ const CSSValue* StyleValueToCSSValue(
       }
       break;
     }
+    case CSSPropertyID::kViewTransitionGroup: {
+      if (const auto* ident =
+              DynamicTo<CSSIdentifierValue>(style_value.ToCSSValue());
+          ident && (ident->GetValueID() == CSSValueID::kNearest ||
+                    ident->GetValueID() == CSSValueID::kContain)) {
+        return MakeGarbageCollected<cssvalue::CSSScopedKeywordValue>(
+            ident->GetValueID());
+      }
+      break;
+    }
+    case CSSPropertyID::kViewTransitionName: {
+      if (const auto* ident =
+              DynamicTo<CSSIdentifierValue>(style_value.ToCSSValue());
+          ident && (ident->GetValueID() == CSSValueID::kAuto ||
+                    ident->GetValueID() == CSSValueID::kMatchElement)) {
+        return MakeGarbageCollected<cssvalue::CSSScopedKeywordValue>(
+            ident->GetValueID());
+      }
+      break;
+    }
     default:
       break;
   }

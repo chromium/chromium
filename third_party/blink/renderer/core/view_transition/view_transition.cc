@@ -146,11 +146,13 @@ ViewTransition* ViewTransition::CreateFromScript(
     Element* element,
     V8ViewTransitionCallback* callback,
     const std::optional<Vector<String>>& types,
+    const HeapVector<Member<ShadowRoot>>* shadow_roots,
     Delegate* delegate,
     ViewTransition* previously_active) {
   CHECK(element->GetExecutionContext());
-  return MakeGarbageCollected<ViewTransition>(
-      PassKey(), element, callback, types, delegate, previously_active);
+  return MakeGarbageCollected<ViewTransition>(PassKey(), element, callback,
+                                              types, shadow_roots, delegate,
+                                              previously_active);
 }
 
 ViewTransition* ViewTransition::CreateSkipped(
@@ -165,12 +167,14 @@ ViewTransition* ViewTransition::CreateSkipped(
   return transition;
 }
 
-ViewTransition::ViewTransition(PassKey,
-                               Element* element,
-                               V8ViewTransitionCallback* update_dom_callback,
-                               const std::optional<Vector<String>>& types,
-                               Delegate* delegate,
-                               ViewTransition* previously_active)
+ViewTransition::ViewTransition(
+    PassKey,
+    Element* element,
+    V8ViewTransitionCallback* update_dom_callback,
+    const std::optional<Vector<String>>& types,
+    const HeapVector<Member<ShadowRoot>>* shadow_roots,
+    Delegate* delegate,
+    ViewTransition* previously_active)
     : ExecutionContextLifecycleObserver(element->GetExecutionContext()),
       creation_type_(CreationType::kScript),
       document_(element->GetDocument()),
@@ -179,7 +183,8 @@ ViewTransition::ViewTransition(PassKey,
       delegate_(delegate),
       style_tracker_(
           MakeGarbageCollected<ViewTransitionStyleTracker>(*element,
-                                                           transition_token_)),
+                                                           transition_token_,
+                                                           shadow_roots)),
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
           element->GetExecutionContext(),
           *this,

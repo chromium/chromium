@@ -27,10 +27,12 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
@@ -361,23 +363,6 @@ float DevicePixelRatioFromDocument(Document& document) {
       .device_scale_factor;
 }
 
-Vector<AtomicString> GetDocumentScopedClassList(Element* element) {
-  auto class_list = element->ComputedStyleRef().ViewTransitionClass();
-  if (!class_list || class_list->GetNames().empty() ||
-      class_list->GetNames().front()->GetTreeScope() !=
-          element->GetDocument().GetTreeScope()) {
-    return Vector<AtomicString>();
-  }
-  Vector<AtomicString> result;
-  result.ReserveInitialCapacity(class_list->GetNames().size());
-  for (const auto& scoped_name : class_list->GetNames()) {
-    CHECK(scoped_name->GetTreeScope() == element->GetDocument().GetTreeScope());
-    result.emplace_back(scoped_name->GetName());
-  }
-
-  return result;
-}
-
 }  // namespace
 
 class ViewTransitionStyleTracker::ImageWrapperPseudoElement
@@ -433,15 +418,27 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     : document_(document),
       transition_token_(transition_token),
       generates_pseudo_element_tree_(generates_pseudo_element_tree),
-      device_pixel_ratio_(DevicePixelRatioFromDocument(document)) {}
+      device_pixel_ratio_(DevicePixelRatioFromDocument(document)) {
+  participating_tree_roots_.insert(&document);
+}
 
 ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     Element& element,
-    const blink::ViewTransitionToken& transition_token)
+    const blink::ViewTransitionToken& transition_token,
+    const HeapVector<Member<ShadowRoot>>* shadow_roots)
     : document_(element.GetDocument()),
       element_(element),
       transition_token_(transition_token),
       device_pixel_ratio_(DevicePixelRatioFromDocument(element.GetDocument())) {
+  participating_tree_roots_.insert(&element.GetTreeScope());
+  if (RuntimeEnabledFeatures::ViewTransitionShadowRootsEnabled() &&
+      shadow_roots) {
+    for (const Member<ShadowRoot>& shadow_root : *shadow_roots) {
+      if (shadow_root) {
+        participating_tree_roots_.insert(shadow_root.Get());
+      }
+    }
+  }
 }
 
 ViewTransitionStyleTracker::ViewTransitionStyleTracker(
@@ -451,6 +448,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
       state_(State::kCaptured),
       transition_token_(transition_state.transition_token),
       deserialized_(true) {
+  participating_tree_roots_.insert(&document);
   auto* supplement = document.GetViewTransitionsIfExists();
   CHECK(supplement);
   supplement->InitializeResourceIdSequence(
@@ -660,22 +658,48 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSS() {
   Vector<AtomicString> containing_group_stack;
 
   PaintLayer* paint_layer = nullptr;
-  TreeScope* tree_scope = nullptr;
   if (!element_ || element_ == document_->documentElement()) {
     paint_layer = document_->GetLayoutView()->PaintingLayer();
-    tree_scope = document_.Get();
-  } else {
-    if (auto* layout_object = element_->GetLayoutObject()) {
-      paint_layer = layout_object->EnclosingLayer();
-      tree_scope = &element_->GetTreeScope();
-    }
+  } else if (auto* layout_object = element_->GetLayoutObject()) {
+    paint_layer = layout_object->EnclosingLayer();
   }
   if (!paint_layer) {
     return;
   }
   AddTransitionElementsFromCSSRecursive(
-      paint_layer, tree_scope, containing_group_stack,
+      paint_layer, containing_group_stack,
       /*nearest_group_with_contain=*/g_null_atom);
+}
+
+bool ViewTransitionStyleTracker::IsParticipatingTreeScope(
+    const TreeScope* tree_scope) const {
+  return !tree_scope || participating_tree_roots_.Contains(tree_scope);
+}
+
+Vector<AtomicString> ViewTransitionStyleTracker::GetScopedClassList(
+    Element* element) const {
+  auto class_list = element->ComputedStyleRef().ViewTransitionClass();
+  if (!class_list || class_list->GetNames().empty()) {
+    return Vector<AtomicString>();
+  }
+
+  Vector<AtomicString> result;
+  result.ReserveInitialCapacity(class_list->GetNames().size());
+  for (const auto& scoped_name : class_list->GetNames()) {
+    if (IsParticipatingTreeScope(scoped_name->GetTreeScope())) {
+      result.emplace_back(scoped_name->GetName());
+    }
+  }
+  return result;
+}
+
+StyleViewTransitionGroup
+ViewTransitionStyleTracker::ResolveScopedViewTransitionGroup(
+    const StyleViewTransitionGroup& group) const {
+  if (group.IsNormal() || IsParticipatingTreeScope(group.GetTreeScope())) {
+    return group;
+  }
+  return StyleViewTransitionGroup::Normal();
 }
 
 AtomicString ViewTransitionStyleTracker::GenerateAutoName(
@@ -715,7 +739,6 @@ AtomicString ViewTransitionStyleTracker::GenerateAutoName(
 
 void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
     PaintLayer* root,
-    const TreeScope* tree_scope,
     Vector<AtomicString>& containing_group_stack,
     const AtomicString& nearest_group_with_contain) {
   // We want to call AddTransitionElements in the order in which
@@ -739,19 +762,27 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
     auto* node = root_object.GetNode();
     DCHECK(node);
     DCHECK(node->IsElementNode());
+    auto* element = To<Element>(node);
+
+    const Element* scope = OriginatingElement();
+    const bool is_in_flat_tree_scope =
+        scope &&
+        (scope->IsDocumentElement() ||
+         FlatTreeTraversal::ContainsIncludingPseudoElement(*scope, *element));
 
     // ATM this will be null if the scope of the view-transition-name comes from
     // e.g. devtools.
     auto* relevant_tree_scope = view_transition_name->GetTreeScope();
 
-    if (relevant_tree_scope == tree_scope || !relevant_tree_scope) {
+    if (is_in_flat_tree_scope &&
+        IsParticipatingTreeScope(relevant_tree_scope)) {
       switch (view_transition_name->GetType()) {
         case StyleViewTransitionName::Type::kAuto:
-          current_name = GenerateAutoName(*To<Element>(node), tree_scope,
+          current_name = GenerateAutoName(*element, relevant_tree_scope,
                                           /*allow_from_id=*/true);
           break;
         case StyleViewTransitionName::Type::kMatchElement:
-          current_name = GenerateAutoName(*To<Element>(node), tree_scope,
+          current_name = GenerateAutoName(*element, relevant_tree_scope,
                                           /*allow_from_id=*/false);
           break;
         case StyleViewTransitionName::Type::kCustom:
@@ -759,7 +790,7 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
           break;
       }
 
-      AddTransitionElement(DynamicTo<Element>(node), current_name,
+      AddTransitionElement(element, current_name,
                            containing_group_stack.empty()
                                ? g_null_atom
                                : containing_group_stack.back(),
@@ -775,6 +806,13 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
     containing_group_stack.push_back(current_name);
   }
 
+  const StyleViewTransitionGroup resolved_group =
+      ResolveScopedViewTransitionGroup(root_style.ViewTransitionGroup());
+  const AtomicString& child_nearest_group_with_contain =
+      (!current_name || resolved_group.IsNormal())
+          ? nearest_group_with_contain
+          : current_name;
+
   // Even if tree scopes don't match, we process children since light slotted
   // children can have outer tree scope.
   PaintLayerPaintOrderIterator child_iterator(root, kAllChildren);
@@ -788,10 +826,8 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
 
     // Note that both 'contain' and 'nearest' contain descendant names, per
     // https://www.w3.org/TR/css-view-transitions-2/#nearest-containing-group-name
-    AddTransitionElementsFromCSSRecursive(
-        child, tree_scope, containing_group_stack,
-        root_style.ViewTransitionGroup().IsNormal() ? nearest_group_with_contain
-                                                    : current_name);
+    AddTransitionElementsFromCSSRecursive(child, containing_group_stack,
+                                          child_nearest_group_with_contain);
   }
 
   if (current_name) {
@@ -903,10 +939,11 @@ bool ViewTransitionStyleTracker::HasContainmentBoundary(
   // There are several discrepancies between the element hierarchy and
   // layout hierarchy that need to be taken into account to ensure that we
   // properly scan the correct range.
+  const Element* scope_element = OriginatingElement();
   Node* root_node = root_object.GetNode();
   while (node != root_node) {
     if (Element* element = DynamicTo<Element>(node)) {
-      if (element != element_ &&
+      if (element != scope_element && element->GetComputedStyle() &&
           element->GetComputedStyle()->ViewTransitionScope() ==
               EViewTransitionScope::kAll) {
         return true;
@@ -1051,12 +1088,13 @@ bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
     element_data->is_document_element = element->IsDocumentElement();
     element_data->element_index = next_index++;
     element_data->old_snapshot_id = snapshot_id;
-    element_data->class_list = GetDocumentScopedClassList(element);
+    element_data->class_list = GetScopedClassList(element);
 
     // This is guaranteed to be in order if valid, as transition_names is
     // already sorted.
     element_data->containing_group_name = ComputeContainingGroupName(
-        name, element->ComputedStyleRef().ViewTransitionGroup());
+        name, ResolveScopedViewTransitionGroup(
+                  element->ComputedStyleRef().ViewTransitionGroup()));
 
     element_data->is_generated_name =
         !element->ComputedStyleRef().ViewTransitionName()->IsCustom();
@@ -1271,12 +1309,13 @@ bool ViewTransitionStyleTracker::Start() {
     element_data->target_element = element;
     element_data->is_document_element = element->IsDocumentElement();
     element_data->new_snapshot_id = snapshot_id;
-    element_data->class_list = GetDocumentScopedClassList(element);
+    element_data->class_list = GetScopedClassList(element);
 
     // The parent is guaranteed to be in the list already, as transition_names
     // is sorted by paint order.
     element_data->containing_group_name = ComputeContainingGroupName(
-        name, element->ComputedStyleRef().ViewTransitionGroup());
+        name, ResolveScopedViewTransitionGroup(
+                  element->ComputedStyleRef().ViewTransitionGroup()));
 
     element_data->is_generated_name =
         !element->ComputedStyleRef().ViewTransitionName()->IsCustom();
@@ -1375,6 +1414,7 @@ void ViewTransitionStyleTracker::EndTransition() {
 
   element_data_map_.clear();
   pending_transition_element_names_.clear();
+  participating_tree_roots_.clear();
   set_element_sequence_id_ = 0;
   view_transition_names_.clear();
   scope_tag_ = g_null_atom;
@@ -2461,6 +2501,7 @@ void ViewTransitionStyleTracker::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
   visitor->Trace(element_data_map_);
   visitor->Trace(pending_transition_element_names_);
+  visitor->Trace(participating_tree_roots_);
   visitor->Trace(ua_style_sheet_);
 }
 

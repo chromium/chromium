@@ -18,6 +18,7 @@
 
 namespace blink {
 class DOMViewTransition;
+class ShadowRoot;
 
 class CORE_EXPORT ViewTransitionSupplement
     : public GarbageCollected<ViewTransitionSupplement>,
@@ -49,6 +50,7 @@ class CORE_EXPORT ViewTransitionSupplement
       Element*,
       V8ViewTransitionCallback* callback,
       const std::optional<Vector<String>>& types,
+      const HeapVector<Member<ShadowRoot>>* shadow_roots,
       ExceptionState&);
 
   // Creates a ViewTransition to cache the state of a Document before a
@@ -133,10 +135,12 @@ class CORE_EXPORT ViewTransitionSupplement
   void InitializeResourceIdSequence(uint32_t next_local_id);
 
  private:
-  DOMViewTransition* StartTransition(Element& element,
-                                     V8ViewTransitionCallback* callback,
-                                     const std::optional<Vector<String>>& types,
-                                     ExceptionState& exception_state);
+  DOMViewTransition* StartTransition(
+      Element& element,
+      V8ViewTransitionCallback* callback,
+      const std::optional<Vector<String>>& types,
+      const HeapVector<Member<ShadowRoot>>* shadow_roots,
+      ExceptionState& exception_state);
   void StartTransition(Document& document,
                        const blink::ViewTransitionToken& transition_token,
                        mojom::blink::PageSwapEventParamsPtr,

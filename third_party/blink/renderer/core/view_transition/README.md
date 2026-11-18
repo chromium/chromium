@@ -19,16 +19,24 @@ The specification governing this feature is located in the following places:
 
 ## Code Structure
 
-A new method is exposed on window.document, called startViewTransition(). This is
-the main interface to getting a new transition object from JavaScript. It is
-specified in the `view_transition_supplement.idl` and is implemented in
-corresponding `.cc` and `.h` files.
+Same-document view transitions can be initiated from JavaScript via
+`Document.prototype.startViewTransition()` (specified in
+`view_transition_supplement.idl`) or as element-scoped transitions via
+`Element.prototype.startViewTransition()` (specified in
+`scoped_view_transition.idl`). Both accept an optional callback or a
+`ViewTransitionOptions` dictionary (`view_transition_options.idl`), which
+supports `update`, `types`, and `shadowRoots`.
 
-When called, `startViewTransition()` constructs a ViewTransition object which
-is specified in `view_transition.idl` and is implemented in corresponding
-`.cc` and `.h` files.
+When called, `startViewTransition()` constructs a `ViewTransition` object (with
+its script-facing wrapper in `dom_view_transition.idl` / `.cc` / `.h`) and a
+`ViewTransitionStyleTracker` (`view_transition_style_tracker.h` / `.cc`).
+`ViewTransitionStyleTracker::participating_tree_roots_` tracks the `TreeScope`s
+opted into the transition (the transition root's tree scope plus any
+`ShadowRoot`s provided in `ViewTransitionOptions.shadowRoots`) so that flat-tree
+descendants styled in those tree scopes participate in tag discovery, auto-name
+generation, `view-transition-class`, and `view-transition-group` resolution.
 
-The rest of the script interactions happen with this object.
+The rest of the script interactions happen with the `DOMViewTransition` object.
 
 ## Pseudo Element Tree
 

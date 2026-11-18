@@ -50,6 +50,7 @@ DOMViewTransition* ViewTransitionSupplement::StartViewTransitionForElement(
     Element* element,
     V8ViewTransitionCallback* callback,
     const std::optional<Vector<String>>& types,
+    const HeapVector<Member<ShadowRoot>>* shadow_roots,
     ExceptionState& exception_state) {
   DCHECK(script_state);
   if (!element) {
@@ -57,7 +58,7 @@ DOMViewTransition* ViewTransitionSupplement::StartViewTransitionForElement(
   }
 
   return element->GetDocument().GetViewTransitions().StartTransition(
-      *element, callback, types, exception_state);
+      *element, callback, types, shadow_roots, exception_state);
 }
 
 DOMViewTransition* ViewTransitionSupplement::startViewTransition(
@@ -65,8 +66,9 @@ DOMViewTransition* ViewTransitionSupplement::startViewTransition(
     Document& document,
     V8ViewTransitionCallback* callback,
     ExceptionState& exception_state) {
-  return StartViewTransitionForElement(script_state, document.documentElement(),
-                                       callback, std::nullopt, exception_state);
+  return StartViewTransitionForElement(
+      script_state, document.documentElement(), callback, std::nullopt,
+      /*shadow_roots=*/nullptr, exception_state);
 }
 
 DOMViewTransition* ViewTransitionSupplement::startViewTransition(
@@ -75,10 +77,12 @@ DOMViewTransition* ViewTransitionSupplement::startViewTransition(
     ViewTransitionOptions* options,
     ExceptionState& exception_state) {
   CHECK(!options || (options->hasUpdate() && options->hasTypes()));
+  const HeapVector<Member<ShadowRoot>>* shadow_roots =
+      (options && options->hasShadowRoots()) ? &options->shadowRoots() : nullptr;
   return StartViewTransitionForElement(
       script_state, document.documentElement(),
       options ? options->update() : nullptr,
-      options ? options->types() : std::nullopt, exception_state);
+      options ? options->types() : std::nullopt, shadow_roots, exception_state);
 }
 
 DOMViewTransition* ViewTransitionSupplement::startViewTransition(
@@ -88,7 +92,7 @@ DOMViewTransition* ViewTransitionSupplement::startViewTransition(
   return StartViewTransitionForElement(
       script_state, document.documentElement(),
       static_cast<V8ViewTransitionCallback*>(nullptr), std::nullopt,
-      exception_state);
+      /*shadow_roots=*/nullptr, exception_state);
 }
 
 // static
@@ -107,6 +111,7 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
     Element& element,
     V8ViewTransitionCallback* callback,
     const std::optional<Vector<String>>& types,
+    const HeapVector<Member<ShadowRoot>>* shadow_roots,
     ExceptionState& exception_state) {
   bool for_document = element.IsDocumentElement();
   Document& document = element.GetDocument();
@@ -150,7 +155,7 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
   }
 
   ViewTransition* transition = ViewTransition::CreateFromScript(
-      &element, callback, types, this, active_transition);
+      &element, callback, types, shadow_roots, this, active_transition);
   DCHECK(transition);
 
   if (for_document) {

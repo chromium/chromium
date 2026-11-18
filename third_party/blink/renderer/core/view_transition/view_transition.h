@@ -41,6 +41,7 @@ class DOMViewTransition;
 class Element;
 class LayoutObject;
 class PseudoElement;
+class ShadowRoot;
 class ViewTransitionPseudoElementBase;
 
 class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
@@ -76,6 +77,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
       Element*,
       V8ViewTransitionCallback*,
       const std::optional<Vector<String>>& types,
+      const HeapVector<Member<ShadowRoot>>* shadow_roots,
       Delegate*,
       ViewTransition* previously_active);
 
@@ -116,6 +118,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
                  Element*,
                  V8ViewTransitionCallback*,
                  const std::optional<Vector<String>>& types,
+                 const HeapVector<Member<ShadowRoot>>* shadow_roots,
                  Delegate*,
                  ViewTransition* previously_active);
   ViewTransition(PassKey,

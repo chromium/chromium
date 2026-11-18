@@ -7022,7 +7022,7 @@
       default_value: "nullptr",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/style_view_transition_name.h"],
-      keywords: ["none", "auto"],
+      keywords: ["none", "auto", "match-element"],
       // `auto` is an experimental keyword and currently behind the
       // CSSViewTransitionNameAuto flag. Since it is not fully supported yet,
       // it is not being exposed to devtools.
