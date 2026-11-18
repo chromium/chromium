@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "build/android_buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
@@ -179,7 +180,13 @@ class RestartAfterDelayApiTest : public ApiUnitTest {
   }
 };
 
-TEST_F(RestartAfterDelayApiTest, RestartAfterDelayTest) {
+// TODO(crbug.com/587399436): Crashes in batched runs on Desktop Android.
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#define MAYBE_RestartAfterDelayTest DISABLED_RestartAfterDelayTest
+#else
+#define MAYBE_RestartAfterDelayTest RestartAfterDelayTest
+#endif
+TEST_F(RestartAfterDelayApiTest, MAYBE_RestartAfterDelayTest) {
   RunRestartAfterDelayFunction("[-1]", "");
   ASSERT_FALSE(IsDelayedRestartTimerRunning());
 
