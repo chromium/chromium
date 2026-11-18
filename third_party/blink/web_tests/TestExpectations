@@ -8304,7 +8304,6 @@ crbug.com/477530170 http/tests/devtools/console/console-revoke-error-in-worker.j
 # Temporarily disable due to moving IgnoreListManager
 http/tests/devtools/bindings/ignore-listed-sourcemap-detach.js [ Failure Pass ]
 http/tests/devtools/sources/debugger-frameworks/frameworks-ignore-list-by-source-code.js [ Failure Pass ]
-http/tests/devtools/sources/debugger-frameworks/frameworks-ignore-list-patterns.js [ Failure Pass ]
 
 # Gardener 2026-02-02
 crbug.com/479874917 external/wpt/navigation-api/scroll-behavior/manual-scroll-fragment-does-not-exist.html [ Crash Failure Pass Timeout ]
