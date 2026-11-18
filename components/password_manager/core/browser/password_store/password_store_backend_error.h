@@ -20,6 +20,7 @@ namespace password_manager {
 // This should be kept in sync with PasswordStoreBackendErrorType in enums.xml.
 enum class PasswordStoreBackendErrorType {
   kUncategorized = 0,
+  kMinValue = kUncategorized,
   // An authentication error that prevents the password store from accessing
   // passwords, for which the resolution intent has been received.
   kAuthErrorResolvable = 1,

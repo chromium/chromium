@@ -69,6 +69,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/containers/enum_set.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -136,20 +137,20 @@ std::optional<PasswordStoreBackendError> GetErrorForErrorMessage(
     return std::nullopt;
   }
 
-  base::flat_set<PasswordStoreBackendErrorType> supported_error_types = {
-      PasswordStoreBackendErrorType::kAuthErrorResolvable,
-      PasswordStoreBackendErrorType::kAuthErrorUnresolvable,
-      PasswordStoreBackendErrorType::kKeyRetrievalRequired,
-      PasswordStoreBackendErrorType::kEmptySecurityDomain,
-      PasswordStoreBackendErrorType::kIrretrievableSecurityDomain,
-  };
+  static constexpr base::EnumSet<PasswordStoreBackendErrorType>
+      kSupportedErrorTypes = {
+          PasswordStoreBackendErrorType::kAuthErrorResolvable,
+          PasswordStoreBackendErrorType::kAuthErrorUnresolvable,
+          PasswordStoreBackendErrorType::kKeyRetrievalRequired,
+          PasswordStoreBackendErrorType::kEmptySecurityDomain,
+          PasswordStoreBackendErrorType::kIrretrievableSecurityDomain,
+      };
 
   if (account_store_backend_error.has_value() &&
-      supported_error_types.contains(
-          account_store_backend_error.value().type)) {
+      kSupportedErrorTypes.Has(account_store_backend_error.value().type)) {
     return account_store_backend_error;
   } else if (profile_store_backend_error.has_value() &&
-             supported_error_types.contains(
+             kSupportedErrorTypes.Has(
                  profile_store_backend_error.value().type)) {
     // This is possible only before the store split. This needs to be removed
     // after the profile store starts to be used only for non-syncing passwords.
