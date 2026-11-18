@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/process/kill.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/glic_webui.mojom.h"
@@ -73,6 +74,13 @@ class GlicWebClientManager : public content::WebContentsObserver {
 
   GlicWebClientManager();
   ~GlicWebClientManager() override;
+
+  // Maps a guest renderer `base::TerminationStatus` to the corresponding
+  // `ClientLoadErrorReason` (or `mojom::ClientLoadErrorReason` wire value).
+  static ClientLoadErrorReason ReasonForGuestProcessGone(
+      base::TerminationStatus status);
+  static mojom::ClientLoadErrorReason MojoReasonForGuestProcessGone(
+      base::TerminationStatus status);
 
   GlicWebClientManager(const GlicWebClientManager&) = delete;
   GlicWebClientManager& operator=(const GlicWebClientManager&) = delete;

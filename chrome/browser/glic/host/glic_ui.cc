@@ -111,7 +111,8 @@ class GlicPreloadHandler : public glic::mojom::GlicPreloadHandler,
     preload_page_->OnGuestMainPageLoaded();
   }
   void OnGuestProcessGone(base::TerminationStatus status) override {
-    preload_page_->OnGuestProcessGone();
+    preload_page_->OnGuestProcessGone(
+        GlicWebClientManager::MojoReasonForGuestProcessGone(status));
   }
   void OnWebClientStateChanged(mojom::WebClientState state) override {
     preload_page_->WebClientStateChanged(state);

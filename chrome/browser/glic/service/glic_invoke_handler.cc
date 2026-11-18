@@ -160,6 +160,16 @@ std::string_view ClientLoadErrorReasonToDiagnosticString(
       return "GUEST_HTTP_CLIENT_ERROR";
     case ClientLoadErrorReason::kGuestHttpServerError:
       return "GUEST_HTTP_SERVER_ERROR";
+    case ClientLoadErrorReason::kGuestProcessCrashed:
+      return "GUEST_PROCESS_CRASHED";
+    case ClientLoadErrorReason::kGuestProcessKilled:
+      return "GUEST_PROCESS_KILLED";
+    case ClientLoadErrorReason::kGuestProcessOom:
+      return "GUEST_PROCESS_OOM";
+    case ClientLoadErrorReason::kGuestProcessLaunchFailed:
+      return "GUEST_PROCESS_LAUNCH_FAILED";
+    case ClientLoadErrorReason::kGuestProcessIntegrityFailure:
+      return "GUEST_PROCESS_INTEGRITY_FAILURE";
   }
   NOTREACHED();
 }

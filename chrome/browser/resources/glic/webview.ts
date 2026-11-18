@@ -61,8 +61,6 @@ function isZoomChangeEvent(e: Event): e is Event&ZoomChangeEventData {
 
 // Calls from the webview to its owner.
 export interface WebviewDelegate {
-  // Called when there is an error during page load.
-  webviewError(reason: string): void;
   // Called when a page commits inside the webview.
   webviewPageCommit(pageType: GuestPageType, isApiAllowed: boolean): void;
   // Called when the webview redirects to an access error page.

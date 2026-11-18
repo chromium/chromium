@@ -242,8 +242,8 @@ export class GlicAppController implements WebviewDelegate {
         });
 
     this.browserProxy.preloadPageCallbackRouter.onGuestProcessGone.addListener(
-        () => {
-          this.webviewError('guest process gone');
+        (reason: ClientLoadErrorReason) => {
+          this.onGuestProcessGone(reason);
         });
 
     if (kShowErrorAllowed) {
@@ -264,11 +264,9 @@ export class GlicAppController implements WebviewDelegate {
     this.initializeIcons_();
   }
 
-  webviewError(reason: string): void {
-    console.warn(`webview exit. reason: ${reason}`);
-    this.setErrorState(
-        WebUiErrorReason.WEBVIEW_ERROR,
-        ClientLoadErrorReason.kGuestProcessGone);
+  onGuestProcessGone(reason: ClientLoadErrorReason): void {
+    console.warn(`guest process gone. reason: ${reason}`);
+    this.setErrorState(WebUiErrorReason.WEBVIEW_ERROR, reason);
   }
 
   onGuestNavigationStarted(): void {

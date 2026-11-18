@@ -288,6 +288,11 @@ TEST(GlicInvokeMetricsTest, InvokeTerminatedHasClientLoadErrorReason) {
       {ClientLoadErrorReason::kPendingProviderChange, 15},
       {ClientLoadErrorReason::kGuestHttpClientError, 16},
       {ClientLoadErrorReason::kGuestHttpServerError, 17},
+      {ClientLoadErrorReason::kGuestProcessCrashed, 18},
+      {ClientLoadErrorReason::kGuestProcessKilled, 19},
+      {ClientLoadErrorReason::kGuestProcessOom, 20},
+      {ClientLoadErrorReason::kGuestProcessLaunchFailed, 21},
+      {ClientLoadErrorReason::kGuestProcessIntegrityFailure, 22},
   };
   static_assert(std::size(kCases) ==
                 static_cast<size_t>(ClientLoadErrorReason::kMaxValue) + 1);

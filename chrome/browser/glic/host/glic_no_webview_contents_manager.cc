@@ -1128,7 +1128,7 @@ void GlicNoWebviewContentsManager::OnGuestProcessGone(
   guest_main_page_loaded_.Set(false);
   guest_state_.Set(GuestState::kLoading);
   SetErrorState(mojom::ErrorPanelType::kError,
-                ClientLoadErrorReason::kGuestProcessGone);
+                GlicWebClientManager::ReasonForGuestProcessGone(status));
 }
 
 void GlicNoWebviewContentsManager::OnWebClientCreated() {

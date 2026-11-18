@@ -277,6 +277,23 @@ class GlicInvokeBrowserTest : public GlicBrowserTestMixin<PlatformBrowserTest> {
     return base::ok();
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, child terminations only report TERMINATION_STATUS_OOM_PROTECTED
+  // or TERMINATION_STATUS_NORMAL_TERMINATION, both of which map to
+  // kGuestProcessGone.
+  static constexpr auto kDisconnectedClientErrorReason =
+      ClientLoadErrorReason::kGuestProcessGone;
+  static constexpr std::string_view kDisconnectedClientDiagnostic =
+      "stage=WAIT_FOR_CLIENT_READY;load_state_at_start=LOADING;"
+      "load_error=GUEST_PROCESS_GONE";
+#else
+  static constexpr auto kDisconnectedClientErrorReason =
+      ClientLoadErrorReason::kGuestProcessKilled;
+  static constexpr std::string_view kDisconnectedClientDiagnostic =
+      "stage=WAIT_FOR_CLIENT_READY;load_state_at_start=LOADING;"
+      "load_error=GUEST_PROCESS_KILLED";
+#endif
+
   // Waits for `instance`'s host to reach `expected_state` via `Host::Observer`.
   [[nodiscard]] TestResult<> WaitForClientLoadState(
       GlicInstanceImpl* instance,
@@ -3762,12 +3779,12 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   ASSERT_EQ(instance->host().client_load_state(), ClientLoadState::kError);
   if (IsNoWebviewEnabled()) {
     ASSERT_EQ(instance->host().client_load_error_reason(),
-              ClientLoadErrorReason::kGuestProcessGone);
+              kDisconnectedClientErrorReason);
   } else {
-    ASSERT_THAT(instance->host().client_load_error_reason(),
-                testing::Optional(
-                    testing::AnyOf(ClientLoadErrorReason::kGuestProcessGone,
-                                   ClientLoadErrorReason::kClientError)));
+    ASSERT_THAT(
+        instance->host().client_load_error_reason(),
+        testing::Optional(testing::AnyOf(kDisconnectedClientErrorReason,
+                                         ClientLoadErrorReason::kClientError)));
   }
 
   GlicHistogramTester histogram_tester;
@@ -3822,7 +3839,8 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeWebUiBrowserTest,
     process_gone.Wait();
   }
   // Ensure the WebUI renderer has processed the guest crash and buffered
-  // OnClientLoadFailed(kGuestProcessGone) on the unbound PageHandler pipe.
+  // OnClientLoadFailed(kGuestProcessKilled/kGuestProcessGone) on the unbound
+  // PageHandler pipe.
   ASSERT_TRUE(base::test::RunUntil([warmed]() {
     return content::EvalJs(warmed->active_web_contents(),
                            "!document.getElementById('errorPanel').hidden") ==
@@ -3879,7 +3897,8 @@ IN_PROC_BROWSER_TEST_F(
     process_gone.Wait();
   }
   // Ensure the WebUI renderer has processed the guest crash and buffered
-  // OnClientLoadFailed(kGuestProcessGone) on the unbound PageHandler pipe.
+  // OnClientLoadFailed(kGuestProcessKilled/kGuestProcessGone) on the unbound
+  // PageHandler pipe.
   ASSERT_TRUE(base::test::RunUntil([warmed]() {
     return content::EvalJs(warmed->active_web_contents(),
                            "!document.getElementById('errorPanel').hidden") ==
@@ -3971,12 +3990,12 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(instance->host().client_load_state(), ClientLoadState::kError);
   if (IsNoWebviewEnabled()) {
     EXPECT_EQ(instance->host().client_load_error_reason(),
-              ClientLoadErrorReason::kGuestProcessGone);
+              kDisconnectedClientErrorReason);
   } else {
-    EXPECT_THAT(instance->host().client_load_error_reason(),
-                testing::Optional(
-                    testing::AnyOf(ClientLoadErrorReason::kGuestProcessGone,
-                                   ClientLoadErrorReason::kClientError)));
+    EXPECT_THAT(
+        instance->host().client_load_error_reason(),
+        testing::Optional(testing::AnyOf(kDisconnectedClientErrorReason,
+                                         ClientLoadErrorReason::kClientError)));
   }
 
   GlicHistogramTester histogram_tester;
@@ -4030,13 +4049,11 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNeverReadyClientBrowserTest,
             GlicInvokeError::kClientLoadError);
   if (IsNoWebviewEnabled()) {
     EXPECT_EQ(diagnostics_future.Get<std::string>(),
-              "stage=WAIT_FOR_CLIENT_READY;load_state_at_start=LOADING;"
-              "load_error=GUEST_PROCESS_GONE");
+              kDisconnectedClientDiagnostic);
   } else {
     EXPECT_THAT(diagnostics_future.Get<std::string>(),
                 testing::AnyOf(
-                    "stage=WAIT_FOR_CLIENT_READY;load_state_at_start=LOADING;"
-                    "load_error=GUEST_PROCESS_GONE",
+                    kDisconnectedClientDiagnostic,
                     "stage=WAIT_FOR_CLIENT_READY;load_state_at_start=LOADING;"
                     "load_error=CLIENT_ERROR"));
   }

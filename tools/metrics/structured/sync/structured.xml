@@ -3733,6 +3733,11 @@
     <variant value="15">PENDING_PROVIDER_CHANGE</variant>
     <variant value="16">GUEST_HTTP_CLIENT_ERROR</variant>
     <variant value="17">GUEST_HTTP_SERVER_ERROR</variant>
+    <variant value="18">GUEST_PROCESS_CRASHED</variant>
+    <variant value="19">GUEST_PROCESS_KILLED</variant>
+    <variant value="20">GUEST_PROCESS_OOM</variant>
+    <variant value="21">GUEST_PROCESS_LAUNCH_FAILED</variant>
+    <variant value="22">GUEST_PROCESS_INTEGRITY_FAILURE</variant>
   </enum>
 
   <enum name="GlicEmbedderType">

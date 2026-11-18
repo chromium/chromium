@@ -228,7 +228,11 @@ enum class ClientLoadErrorReason {
   // 400 or above.
   kGuestLoadFailed = 8,
 
-  // The guest renderer process crashed or was killed.
+  // The guest renderer process exited with a normal or abnormal exit code not
+  // covered by a more specific kGuestProcess* value below (including foreground
+  // renderer terminations on Android, where waitpid() is unavailable and all
+  // bound child exits report TERMINATION_STATUS_OOM_PROTECTED). Before M160,
+  // also covered all guest process terminations.
   kGuestProcessGone = 9,
 
   // The web client loaded but reported a fatal error.
@@ -268,7 +272,26 @@ enum class ClientLoadErrorReason {
   // The guest navigation committed an HTTP 5xx response.
   kGuestHttpServerError = 17,
 
-  kMaxValue = kGuestHttpServerError,
+  // More guest process termination causes (see kGuestProcessGone), reported as
+  // kGuestProcessGone before M160.
+
+  // The guest renderer process crashed (e.g. segmentation fault or CHECK
+  // failure).
+  kGuestProcessCrashed = 18,
+
+  // The guest renderer process was killed by a signal or task manager.
+  kGuestProcessKilled = 19,
+
+  // The guest renderer process was terminated due to out-of-memory.
+  kGuestProcessOom = 20,
+
+  // The guest renderer process failed to launch.
+  kGuestProcessLaunchFailed = 21,
+
+  // The guest renderer process was terminated due to a code integrity failure.
+  kGuestProcessIntegrityFailure = 22,
+
+  kMaxValue = kGuestProcessIntegrityFailure,
 };
 // LINT.ThenChange(//tools/metrics/structured/sync/structured.xml,//chrome/browser/glic/host/glic_page_handler.cc:ToClientLoadErrorReason,//chrome/browser/glic/service/metrics/glic_structured_metrics_conversions.cc:ToStructuredClientLoadErrorReason,//chrome/browser/glic/service/glic_invoke_handler.cc:ClientLoadErrorReasonToDiagnosticString)
 

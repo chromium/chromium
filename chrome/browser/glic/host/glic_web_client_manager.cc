@@ -18,7 +18,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_sign_in_controller.h"
 #include "chrome/browser/glic/host/glic_guest_page_load_metrics_observer.h"
 #include "chrome/browser/glic/host/glic_web_client_handler.h"
@@ -713,6 +715,63 @@ void GlicWebClientManager::PrimaryMainFrameRenderProcessGone(
   }
   if (host_) {
     host_->UpdateNativeLoadingState();
+  }
+}
+
+// static
+ClientLoadErrorReason GlicWebClientManager::ReasonForGuestProcessGone(
+    base::TerminationStatus status) {
+  switch (status) {
+    case base::TERMINATION_STATUS_PROCESS_CRASHED:
+      return ClientLoadErrorReason::kGuestProcessCrashed;
+    case base::TERMINATION_STATUS_PROCESS_WAS_KILLED:
+      return ClientLoadErrorReason::kGuestProcessKilled;
+    case base::TERMINATION_STATUS_OOM:
+    case base::TERMINATION_STATUS_EVICTED_FOR_MEMORY:
+#if BUILDFLAG(IS_CHROMEOS)
+    case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
+#endif
+      return ClientLoadErrorReason::kGuestProcessOom;
+    case base::TERMINATION_STATUS_LAUNCH_FAILED:
+      return ClientLoadErrorReason::kGuestProcessLaunchFailed;
+#if BUILDFLAG(IS_WIN)
+    case base::TERMINATION_STATUS_INTEGRITY_FAILURE:
+      return ClientLoadErrorReason::kGuestProcessIntegrityFailure;
+#endif
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, ChildProcessLauncherHelper::GetTerminationInfo() maps every
+    // bound foreground renderer termination (crashes, kills, and OOMs alike) to
+    // TERMINATION_STATUS_OOM_PROTECTED because waitpid() is unavailable.
+    case base::TERMINATION_STATUS_OOM_PROTECTED:
+#endif
+    case base::TERMINATION_STATUS_NORMAL_TERMINATION:
+    case base::TERMINATION_STATUS_ABNORMAL_TERMINATION:
+    case base::TERMINATION_STATUS_STILL_RUNNING:
+    case base::TERMINATION_STATUS_MAX_ENUM:
+      return ClientLoadErrorReason::kGuestProcessGone;
+  }
+  return ClientLoadErrorReason::kGuestProcessGone;
+}
+
+// static
+mojom::ClientLoadErrorReason
+GlicWebClientManager::MojoReasonForGuestProcessGone(
+    base::TerminationStatus status) {
+  switch (ReasonForGuestProcessGone(status)) {
+    case ClientLoadErrorReason::kGuestProcessGone:
+      return mojom::ClientLoadErrorReason::kGuestProcessGone;
+    case ClientLoadErrorReason::kGuestProcessCrashed:
+      return mojom::ClientLoadErrorReason::kGuestProcessCrashed;
+    case ClientLoadErrorReason::kGuestProcessKilled:
+      return mojom::ClientLoadErrorReason::kGuestProcessKilled;
+    case ClientLoadErrorReason::kGuestProcessOom:
+      return mojom::ClientLoadErrorReason::kGuestProcessOom;
+    case ClientLoadErrorReason::kGuestProcessLaunchFailed:
+      return mojom::ClientLoadErrorReason::kGuestProcessLaunchFailed;
+    case ClientLoadErrorReason::kGuestProcessIntegrityFailure:
+      return mojom::ClientLoadErrorReason::kGuestProcessIntegrityFailure;
+    default:
+      NOTREACHED();
   }
 }
 

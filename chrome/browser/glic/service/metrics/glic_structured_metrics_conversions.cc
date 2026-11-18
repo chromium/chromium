@@ -52,6 +52,16 @@ ToStructuredClientLoadErrorReason(ClientLoadErrorReason reason) {
       return Reason::GUEST_HTTP_CLIENT_ERROR;
     case ClientLoadErrorReason::kGuestHttpServerError:
       return Reason::GUEST_HTTP_SERVER_ERROR;
+    case ClientLoadErrorReason::kGuestProcessCrashed:
+      return Reason::GUEST_PROCESS_CRASHED;
+    case ClientLoadErrorReason::kGuestProcessKilled:
+      return Reason::GUEST_PROCESS_KILLED;
+    case ClientLoadErrorReason::kGuestProcessOom:
+      return Reason::GUEST_PROCESS_OOM;
+    case ClientLoadErrorReason::kGuestProcessLaunchFailed:
+      return Reason::GUEST_PROCESS_LAUNCH_FAILED;
+    case ClientLoadErrorReason::kGuestProcessIntegrityFailure:
+      return Reason::GUEST_PROCESS_INTEGRITY_FAILURE;
   }
 }
 // LINT.ThenChange(//chrome/browser/glic/glic_enums.h:ClientLoadErrorReason)

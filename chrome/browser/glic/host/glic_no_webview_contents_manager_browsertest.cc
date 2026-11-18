@@ -328,10 +328,11 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
                                    StructuredErrorReason::CLIENT_ERROR));
 
   manager->OnGuestProcessGone(base::TERMINATION_STATUS_PROCESS_CRASHED);
-  EXPECT_THAT(GetRecordedClientLoadErrors(recorder),
-              testing::ElementsAre(StructuredErrorReason::GUEST_LOAD_FAILED,
-                                   StructuredErrorReason::CLIENT_ERROR,
-                                   StructuredErrorReason::GUEST_PROCESS_GONE));
+  EXPECT_THAT(
+      GetRecordedClientLoadErrors(recorder),
+      testing::ElementsAre(StructuredErrorReason::GUEST_LOAD_FAILED,
+                           StructuredErrorReason::CLIENT_ERROR,
+                           StructuredErrorReason::GUEST_PROCESS_CRASHED));
 
   manager->OnGuestNavigated(GURL("https://example.com/"),
                             /*is_api_allowed=*/true,
@@ -339,10 +340,11 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
                             /*is_initial_commit=*/true);
   // A web login page is shown to the user directly rather than as an error, so
   // it is not reported.
-  EXPECT_THAT(GetRecordedClientLoadErrors(recorder),
-              testing::ElementsAre(StructuredErrorReason::GUEST_LOAD_FAILED,
-                                   StructuredErrorReason::CLIENT_ERROR,
-                                   StructuredErrorReason::GUEST_PROCESS_GONE));
+  EXPECT_THAT(
+      GetRecordedClientLoadErrors(recorder),
+      testing::ElementsAre(StructuredErrorReason::GUEST_LOAD_FAILED,
+                           StructuredErrorReason::CLIENT_ERROR,
+                           StructuredErrorReason::GUEST_PROCESS_CRASHED));
 
   manager->OnGuestNavigated(GURL("https://example.com/"),
                             /*is_api_allowed=*/false,
@@ -350,10 +352,11 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
                             /*is_initial_commit=*/true);
   // A security interstitial page is shown to the user directly rather than as
   // an error, so it is not reported.
-  EXPECT_THAT(GetRecordedClientLoadErrors(recorder),
-              testing::ElementsAre(StructuredErrorReason::GUEST_LOAD_FAILED,
-                                   StructuredErrorReason::CLIENT_ERROR,
-                                   StructuredErrorReason::GUEST_PROCESS_GONE));
+  EXPECT_THAT(
+      GetRecordedClientLoadErrors(recorder),
+      testing::ElementsAre(StructuredErrorReason::GUEST_LOAD_FAILED,
+                           StructuredErrorReason::CLIENT_ERROR,
+                           StructuredErrorReason::GUEST_PROCESS_CRASHED));
 
   manager->OnGuestNavigated(GURL("https://example.com/"),
                             /*is_api_allowed=*/true,
@@ -362,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
   EXPECT_THAT(GetRecordedClientLoadErrors(recorder),
               testing::ElementsAre(StructuredErrorReason::GUEST_LOAD_FAILED,
                                    StructuredErrorReason::CLIENT_ERROR,
-                                   StructuredErrorReason::GUEST_PROCESS_GONE,
+                                   StructuredErrorReason::GUEST_PROCESS_CRASHED,
                                    StructuredErrorReason::DISABLED_BY_ADMIN));
 
   // A transient error does not replace a policy error, so it is not reported.
@@ -370,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
   EXPECT_THAT(GetRecordedClientLoadErrors(recorder),
               testing::ElementsAre(StructuredErrorReason::GUEST_LOAD_FAILED,
                                    StructuredErrorReason::CLIENT_ERROR,
-                                   StructuredErrorReason::GUEST_PROCESS_GONE,
+                                   StructuredErrorReason::GUEST_PROCESS_CRASHED,
                                    StructuredErrorReason::DISABLED_BY_ADMIN));
 }
 
@@ -1551,13 +1554,18 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
 
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   content::CrashTab(instance->host().web_client_contents());
+#if BUILDFLAG(IS_ANDROID)
+  constexpr auto kExpectedCrashReason =
+      ClientLoadErrorReason::kGuestProcessGone;
+#else
+  constexpr auto kExpectedCrashReason =
+      ClientLoadErrorReason::kGuestProcessKilled;
+#endif
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return std::ranges::contains(observer.reasons(),
-                                 ClientLoadErrorReason::kGuestProcessGone);
+    return std::ranges::contains(observer.reasons(), kExpectedCrashReason);
   }));
   EXPECT_EQ(instance->host().client_load_state(), ClientLoadState::kError);
-  EXPECT_EQ(instance->host().client_load_error_reason(),
-            ClientLoadErrorReason::kGuestProcessGone);
+  EXPECT_EQ(instance->host().client_load_error_reason(), kExpectedCrashReason);
 
   // Navigating to an in-page guest error (/sorry/) enters `kGuestError`, keeps
   // the host in `ClientLoadState::kError` with `kUnknown` as the active cause,

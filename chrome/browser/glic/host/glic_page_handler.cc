@@ -103,6 +103,16 @@ ClientLoadErrorReason ToClientLoadErrorReason(
       return ClientLoadErrorReason::kGuestHttpClientError;
     case mojom::ClientLoadErrorReason::kGuestHttpServerError:
       return ClientLoadErrorReason::kGuestHttpServerError;
+    case mojom::ClientLoadErrorReason::kGuestProcessCrashed:
+      return ClientLoadErrorReason::kGuestProcessCrashed;
+    case mojom::ClientLoadErrorReason::kGuestProcessKilled:
+      return ClientLoadErrorReason::kGuestProcessKilled;
+    case mojom::ClientLoadErrorReason::kGuestProcessOom:
+      return ClientLoadErrorReason::kGuestProcessOom;
+    case mojom::ClientLoadErrorReason::kGuestProcessLaunchFailed:
+      return ClientLoadErrorReason::kGuestProcessLaunchFailed;
+    case mojom::ClientLoadErrorReason::kGuestProcessIntegrityFailure:
+      return ClientLoadErrorReason::kGuestProcessIntegrityFailure;
   }
 }
 // LINT.ThenChange(//chrome/browser/glic/glic_enums.h:ClientLoadErrorReason)

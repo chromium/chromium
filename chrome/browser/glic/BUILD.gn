@@ -989,6 +989,7 @@ source_set("unit_tests") {
     "host/glic_pwc_policy_delegate_unittest.cc",
     "host/glic_url_loader_throttle_unittest.cc",
     "host/glic_warming_scheduler_unittest.cc",
+    "host/glic_web_client_manager_unittest.cc",
     "host/glic_web_client_responsiveness_monitor_unittest.cc",
     "host/glic_web_contents_warming_pool_unittest.cc",
     "host/glic_zoom_controller_unittest.cc",

@@ -47,7 +47,6 @@ export class FakeBrowserProxy implements BrowserProxy {
 }
 
 export class FakeWebviewDelegate implements WebviewDelegate {
-  webviewError(_reason: string) {}
   webviewPageCommit(_pageType?: GuestPageType, _isApiAllowed?: boolean) {}
   webviewDeniedByAdmin() {}
 }

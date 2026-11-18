@@ -58,8 +58,9 @@ interface PreloadPage {
   // enabled).
   OnGuestMainPageLoaded();
 
-  // Notifies the page when the guest process terminates unexpectedly.
-  OnGuestProcessGone();
+  // Notifies the page when the guest process terminates unexpectedly, and
+  // why.
+  OnGuestProcessGone(ClientLoadErrorReason reason);
 
   // Notifies the page when the web client state changes.
   WebClientStateChanged(WebClientState state);
@@ -251,6 +252,11 @@ enum ClientLoadErrorReason {
   [MinVersion=2] kPendingProviderChange = 15,
   [MinVersion=3] kGuestHttpClientError = 16,
   [MinVersion=3] kGuestHttpServerError = 17,
+  [MinVersion=4] kGuestProcessCrashed = 18,
+  [MinVersion=4] kGuestProcessKilled = 19,
+  [MinVersion=4] kGuestProcessOom = 20,
+  [MinVersion=4] kGuestProcessLaunchFailed = 21,
+  [MinVersion=4] kGuestProcessIntegrityFailure = 22,
 };
 
 // The result of `PrepareForClient()`.
