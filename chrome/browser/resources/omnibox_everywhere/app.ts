@@ -300,11 +300,12 @@ export class OmniboxEverywhereAppElement extends
       this.isPendingContextUpload_ = false;
       if (this.contextUploadOriginWasSearchbox_) {
         this.contextUploadOriginWasSearchbox_ = false;
-        // TODO(b/585172152): Preserve any query text typed in the searchbox
-        // when reverting a cancelled screenshot or file upload back to the
-        // searchbox.
+        const text = this.composebox?.input || '';
         this.setIsComposebox_(false);
         await this.updateComplete;
+        if (text) {
+          this.searchbox?.setInputText?.(text);
+        }
         this.searchbox?.focusInput?.();
         return;
       }

@@ -5128,6 +5128,40 @@ suite('OmniboxEverywhereContextMenuTest', () => {
       });
 
   test(
+      'onContextUploadCancelled preserves searchbox input text when ' +
+          'reverting from searchbox',
+      async () => {
+        const initialSearchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox');
+        assertTrue(!!initialSearchbox);
+        initialSearchbox.setInputText('example query');
+        await microtasksFinished();
+
+        testEverywherePage.openComposebox({
+          tool: ToolMode.kUnspecified,
+          model: ModelMode.kUnspecified,
+          tab: null,
+          fileToken: null,
+          fileInfo: null,
+          isPendingContextUpload: true,
+        });
+        await microtasksFinished();
+
+        const composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox');
+        assertTrue(!!composebox);
+        assertEquals('example query', composebox.input);
+
+        testEverywherePage.onContextUploadCancelled();
+        await microtasksFinished();
+
+        const restoredSearchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox');
+        assertTrue(!!restoredSearchbox);
+        assertEquals('example query', restoredSearchbox.getInputText());
+      });
+
+  test(
       'onContextUploadCancelled remains in composebox if initiated from ' +
           'composebox',
       async () => {
@@ -5209,8 +5243,14 @@ suite('OmniboxEverywhereContextMenuTest', () => {
         const rootStyle = document.documentElement.style;
         const darkTokens: Array<[string, string]> = [
           ['--color-new-tab-page-background', 'rgb(60, 60, 60)'],
-          ['--color-new-tab-page-most-visited-foreground', 'rgb(227, 227, 227)'],
-          ['--color-new-tab-page-add-shortcut-foreground', 'rgb(227, 227, 227)'],
+          [
+            '--color-new-tab-page-most-visited-foreground',
+            'rgb(227, 227, 227)',
+          ],
+          [
+            '--color-new-tab-page-add-shortcut-foreground',
+            'rgb(227, 227, 227)',
+          ],
           ['--color-sys-on-surface', 'rgb(227, 227, 227)'],
           ['--color-sys-on-surface-subtle', 'rgb(196, 199, 197)'],
           ['--color-sys-neutral-outline', 'rgb(68, 71, 70)'],
