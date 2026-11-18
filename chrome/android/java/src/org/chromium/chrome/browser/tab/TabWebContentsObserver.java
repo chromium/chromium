@@ -118,6 +118,14 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
     @Override
     public void cleanupWebContents(WebContents webContents) {
+        // Destroying the tab will destroy the webContents - don't unregister
+        // the observer before that happens as we need to continue observing
+        // events until the webContents is destroyed (eg page loads failing).
+        if (mTab.isDestroyed()) return;
+        stopObservingWebContents();
+    }
+
+    public void stopObservingWebContents() {
         if (mObserver != null) {
             mObserver.updateNotificationsForTab();
             mObserver.observe(null);
@@ -411,6 +419,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
         @Override
         public void viewportFitChanged(@WebContentsObserver.ViewportFitType int value) {
+            if (mTab.isDestroyed()) return;
             DisplayCutoutTabHelper.from(mTab).setViewportFit(value);
             DisplayCutoutTabHelper.from(mTab).setSafeAreaConstraint(value == ViewportFit.CONTAIN);
         }

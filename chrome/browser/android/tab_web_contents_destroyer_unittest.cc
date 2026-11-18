@@ -14,6 +14,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
+#include "components/tabs/public/async_web_contents_destroyer_data.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
@@ -78,6 +79,7 @@ TEST_F(TabWebContentsDestroyerTest, UnresponsiveRendererClosePageTimeout) {
 
   TabWebContentsDestroyer::DestroyWebContents(std::move(web_contents));
   EXPECT_FALSE(watcher.IsDestroyed());
+  EXPECT_TRUE(AsyncWebContentsDestroyerData::WillBeDestroyed(raw_web_contents));
 
   // 250ms is within the 500ms RenderFrameHostImpl unload timeout.
   task_environment()->FastForwardBy(base::Milliseconds(250));
@@ -98,6 +100,7 @@ TEST_F(TabWebContentsDestroyerTest, FallbackTimerExpiration) {
 
   TabWebContentsDestroyer::DestroyWebContents(std::move(web_contents));
   EXPECT_FALSE(watcher.IsDestroyed());
+  EXPECT_TRUE(AsyncWebContentsDestroyerData::WillBeDestroyed(raw_web_contents));
 
   // Disconnect the delegate so TabWebContentsDestroyer does not receive
   // CloseContents() from RenderFrameHostImpl's 500ms timeout. This isolates
@@ -123,6 +126,7 @@ TEST_F(TabWebContentsDestroyerTest, CloseContentsTriggersDeferredDestruction) {
 
   TabWebContentsDestroyer::DestroyWebContents(std::move(web_contents));
   EXPECT_FALSE(watcher.IsDestroyed());
+  EXPECT_TRUE(AsyncWebContentsDestroyerData::WillBeDestroyed(raw_web_contents));
 
   // Renderer responds to ClosePage or triggers window closure via
   // CloseContents.
@@ -167,6 +171,7 @@ TEST_F(TabWebContentsDestroyerTest, RenderProcessCrash) {
 
   TabWebContentsDestroyer::DestroyWebContents(std::move(web_contents));
   EXPECT_FALSE(watcher.IsDestroyed());
+  EXPECT_TRUE(AsyncWebContentsDestroyerData::WillBeDestroyed(raw_web_contents));
 
   // Simulating render process crash should immediately trigger
   // PrimaryMainFrameRenderProcessGone.
@@ -188,6 +193,7 @@ TEST_F(TabWebContentsDestroyerTest, ProfileDestruction) {
 
   TabWebContentsDestroyer::DestroyWebContents(std::move(web_contents));
   EXPECT_FALSE(watcher.IsDestroyed());
+  EXPECT_TRUE(AsyncWebContentsDestroyerData::WillBeDestroyed(raw_web_contents));
 
   // Destroying the observed profile should immediately destroy the WebContents.
   profile()->DestroyOffTheRecordProfile(otr_profile);

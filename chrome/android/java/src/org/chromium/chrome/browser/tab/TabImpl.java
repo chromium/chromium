@@ -1572,9 +1572,14 @@ class TabImpl implements Tab {
 
         onAlertStateChanged(TabAlert.NONE);
 
+        TabWebContentsObserver tabWebContentsObserver = TabWebContentsObserver.get(this);
+
         for (TabObserver observer : mObservers) observer.onDestroyed(this);
         mUserDataHost.destroy();
         @TabDestroyStatus int status = destroyWebContents(deleteNativeWebContents);
+        if (tabWebContentsObserver != null && status != TabDestroyStatus.FAST_SHUTDOWN) {
+            tabWebContentsObserver.stopObservingWebContents();
+        }
 
         mObservers.clear();
         mTabViewManager.destroy();

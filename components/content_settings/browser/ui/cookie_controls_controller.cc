@@ -31,6 +31,7 @@
 #include "components/content_settings/core/common/third_party_site_data_access_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/tabs/public/async_web_contents_destroyer_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -131,7 +132,8 @@ CookieControlsController::~CookieControlsController() = default;
 
 void CookieControlsController::OnUiClosing() {
   auto* web_contents = GetWebContents();
-  if (should_reload_ && web_contents && !web_contents->IsBeingDestroyed()) {
+  if (should_reload_ && web_contents && !web_contents->IsBeingDestroyed() &&
+      !tabs::AsyncWebContentsDestroyerData::WillBeDestroyed(web_contents)) {
     web_contents->GetController().Reload(content::ReloadType::NORMAL, true);
   }
   should_reload_ = false;

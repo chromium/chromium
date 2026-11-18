@@ -740,13 +740,7 @@ public class UrlOverridingTest {
             ChromeTabUtils.waitForInteractable(latestTabHolder.value);
         }
 
-        // When an intercepted initial navigation in a new tab launches an external intent,
-        // handleShouldCloseTab() can destroy the new tab before an async HTTP throttle check
-        // reaches WillProcessResponse() to notify onPageLoadFailed (crbug.com/446837985).
-        boolean expectFailCallback =
-                params.shouldFailNavigation
-                        && !(params.createsNewTab && params.shouldLaunchExternalIntent);
-        if (expectFailCallback) {
+        if (params.shouldFailNavigation) {
             failCallback.waitForCallback("Navigation didn't fail.", 0, 1, 20, TimeUnit.SECONDS);
         }
 
@@ -811,11 +805,7 @@ public class UrlOverridingTest {
                     Criteria.checkThat(
                             finishCallback.getCallCount(), Matchers.is(finalFinishTarget));
                 });
-        if (expectFailCallback) {
-            Assert.assertEquals(1, failCallback.getCallCount());
-        } else if (!params.shouldFailNavigation) {
-            Assert.assertEquals(0, failCallback.getCallCount());
-        }
+        Assert.assertEquals(params.shouldFailNavigation ? 1 : 0, failCallback.getCallCount());
 
         return lastResultValue.get();
     }

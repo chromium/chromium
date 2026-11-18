@@ -5,6 +5,7 @@ include_rules = [
   "+components/security_state/core",
   "+components/services/storage/public/cpp",
   "+components/sync_preferences",
+  "+components/tabs/public",
   "+components/url_formatter",
   "+content/public/browser",
   "+content/public/common",

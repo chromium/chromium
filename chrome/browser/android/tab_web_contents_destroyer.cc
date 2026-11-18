@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
+#include "components/tabs/public/async_web_contents_destroyer_data.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -47,6 +48,7 @@ TabWebContentsDestroyer::TabWebContentsDestroyer(
       profile_observation_.Observe(profile);
     }
   }
+  AsyncWebContentsDestroyerData::CreateForWebContents(web_contents_.get());
   web_contents_->SetDelegate(this);
   // The tab is closed: stop delivering input to it, and cancel any in-flight
   // touch sequence now, while all of its views are still alive and attached,

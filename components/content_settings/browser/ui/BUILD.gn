@@ -24,6 +24,7 @@ source_set("ui") {
     "//components/privacy_sandbox:features",
     "//components/site_engagement/content",
     "//components/strings",
+    "//components/tabs:public",
     "//components/vector_icons",
     "//content/public/browser",
     "//content/public/common",

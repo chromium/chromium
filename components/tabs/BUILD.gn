@@ -19,6 +19,7 @@ source_set("enum") {
 
 source_set("public") {
   sources = [
+    "public/async_web_contents_destroyer_data.h",
     "public/direct_child_walker.h",
     "public/pinned_tab_collection.h",
     "public/split_tab_collection.h",
@@ -52,6 +53,7 @@ source_set("public") {
 
 source_set("impl") {
   sources = [
+    "impl/async_web_contents_destroyer_data.cc",
     "impl/pinned_tab_collection.cc",
     "impl/split_tab_collection.cc",
     "impl/split_tab_data.cc",

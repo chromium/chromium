@@ -16,6 +16,7 @@ include_rules = [
   "+components/omnibox/composebox",
   "+components/page_content_annotations/content",
   "+components/session_proto_db",
+  "+components/tabs",
   "+components/webapk",
   "+device/vr/buildflags/buildflags.h",
   "+media/gpu",
