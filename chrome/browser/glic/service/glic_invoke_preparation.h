@@ -40,10 +40,24 @@ bool ShouldUseTrustFirstInlineFre(Profile* profile);
 // be skipped even when `options.fre_override` is `kUnspecified`.
 bool HasSpecialCaseWebFre(const GlicInvokeOptions& options);
 
-// Returns whether an invocation should open in Android native FRE mode.
-// Unconsented, eligible profiles get the native FRE when no entry point or
-// experiment asked for a specific web FRE.
-bool CanUseNativeFre(const GlicInvokeOptions& options, Profile* profile);
+// Routing decision for whether an Android invocation uses the native FRE.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(GlicNativeFreSelection)
+enum class NativeFreSelectionOutcome {
+  kNative = 0,
+  kWebFreOverride = 1,
+  kWebSpecialCase = 2,
+  kWebIneligibleOrDisabled = 3,
+  kAlreadyConsented = 4,
+  kMaxValue = kAlreadyConsented,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicNativeFreSelection)
+
+// Returns the Android native FRE routing outcome for an invocation.
+NativeFreSelectionOutcome GetNativeFreSelectionOutcome(
+    const GlicInvokeOptions& options,
+    Profile* profile);
 
 // Expands `options.tab_sharing` to pin all multi-selected tabs (plus the active
 // target tab) with `GlicPinTrigger::kInstanceCreation` when `options` describes

@@ -2342,6 +2342,24 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 
+<histogram name="Glic{GlicProvider}.Fre.Android.SelectionOutcome"
+    enum="GlicNativeFreSelection" expires_after="2027-05-01">
+  <owner>alexiswu@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <owner>glic+metrics@google.com</owner>
+  <summary>
+    Android only. Recorded when Chrome starts a Glic invocation for a profile
+    that has not accepted the FRE. Not recorded for an invocation that Chrome
+    rejects before it starts (for example, because another invocation is in
+    progress). Not recorded when Chrome shows an existing panel again without a
+    new invocation (for example, on a tab switch). An invocation on a panel that
+    is already open is recorded. Records if Chrome selected the native FRE, or
+    the reason why it selected the web FRE. Recorded for all clients, in or out
+    of the GlicNativeFreAndroid experiment. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
 <histogram name="Glic{GlicProvider}.Fre.Dismissed.InvocationSource"
     enum="GlicInvocationSource" expires_after="2027-04-11">
   <owner>erikchen@chromium.org</owner>

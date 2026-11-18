@@ -10,12 +10,14 @@
 #include "base/feature_list.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/strings/strcat.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
+#include "chrome/browser/glic/service/glic_invoke_preparation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/render_process_host.h"
@@ -113,6 +115,18 @@ void GlicInstanceCoordinatorMetrics::RecordActivateTabCandidateTabCount(
     size_t count) {
   GetMetricReporter().RecordCounts100(
       "ActivateTabWithConversation.CandidateTabCount", count);
+}
+
+void GlicInstanceCoordinatorMetrics::RecordNativeFreSelectionOutcome(
+    NativeFreSelectionOutcome outcome) {
+#if BUILDFLAG(IS_ANDROID)
+  // A consented profile gets no FRE, so there is no routing decision to record.
+  if (outcome == NativeFreSelectionOutcome::kAlreadyConsented) {
+    return;
+  }
+  GetMetricReporter().RecordEnumeration("Fre.Android.SelectionOutcome",
+                                        outcome);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void GlicInstanceCoordinatorMetrics::OnReleaseMemory(

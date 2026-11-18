@@ -29,6 +29,7 @@ class Host;
 class GlicInstance;
 class GlicInstanceImpl;
 class GlicMetricReporter;
+enum class NativeFreSelectionOutcome;
 
 // LINT.IfChange(GlicSwitchConversationTarget)
 enum class GlicSwitchConversationTarget {
@@ -81,6 +82,10 @@ class GlicInstanceCoordinatorMetrics {
 
   // Called when activating a tab with a conversation to record candidate count.
   void RecordActivateTabCandidateTabCount(size_t count);
+
+  // Records the native FRE routing outcome of an invocation for a profile
+  // that has not consented. Android only.
+  void RecordNativeFreSelectionOutcome(NativeFreSelectionOutcome outcome);
 
   // Called on memory release events to record memory footprint metrics.
   void OnReleaseMemory(base::MemoryLimit memory_limit);

@@ -35,6 +35,7 @@
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/test/scoped_command_line.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -254,40 +255,70 @@ TEST_F(GlicInvokePreparationTest, HasSpecialCaseWebFre) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(GlicInvokePreparationTest, CanUseNativeFre_QueriesFeatureLast) {
+TEST_F(GlicInvokePreparationTest,
+       GetNativeFreSelectionOutcome_PrecedenceAndTrialActivation) {
   GlicEnabling::ScopedBypassEnablementChecksForTesting bypass_enablement;
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       ::switches::kGlicDev);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kGlicNativeFreAndroid, {}}},
-      {features::kGlicMessageFirstFre, features::kGlicActionFirstFRE});
 
-  base::FieldTrial* trial =
-      base::FeatureList::GetFieldTrial(features::kGlicNativeFreAndroid);
-  ASSERT_TRUE(trial);
-  ASSERT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{features::kGlicNativeFreAndroid, {}}},
+        {features::kGlicMessageFirstFre, features::kGlicActionFirstFRE});
 
-  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
-  profile_.GetPrefs()->SetInteger(
-      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
-  EXPECT_FALSE(CanUseNativeFre(options, &profile_));
-  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+    base::FieldTrial* trial =
+        base::FeatureList::GetFieldTrial(features::kGlicNativeFreAndroid);
+    ASSERT_TRUE(trial);
+    ASSERT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
 
-  profile_.GetPrefs()->SetInteger(
-      prefs::kGlicCompletedFre,
-      static_cast<int>(prefs::FreStatus::kNotStarted));
+    GlicInvokeOptions override_options(mojom::InvocationSource::kUniversalCart);
+    override_options.fre_override = mojom::FreOverride::kTrustFirstInline;
 
-  GlicInvokeOptions override_options(mojom::InvocationSource::kOsButton);
-  override_options.fre_override = mojom::FreOverride::kTrustFirstInline;
-  EXPECT_FALSE(CanUseNativeFre(override_options, &profile_));
-  EXPECT_FALSE(CanUseNativeFre(
-      GlicInvokeOptions(mojom::InvocationSource::kUniversalCart), &profile_));
-  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+    profile_.GetPrefs()->SetInteger(
+        prefs::kGlicCompletedFre,
+        static_cast<int>(prefs::FreStatus::kCompleted));
+    EXPECT_EQ(GetNativeFreSelectionOutcome(override_options, &profile_),
+              NativeFreSelectionOutcome::kAlreadyConsented);
+    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
 
-  EXPECT_TRUE(CanUseNativeFre(options, &profile_));
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+    profile_.GetPrefs()->SetInteger(
+        prefs::kGlicCompletedFre,
+        static_cast<int>(prefs::FreStatus::kNotStarted));
+
+    EXPECT_EQ(GetNativeFreSelectionOutcome(override_options, &profile_),
+              NativeFreSelectionOutcome::kWebFreOverride);
+    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+
+    GlicInvokeOptions native_override_options(
+        mojom::InvocationSource::kUniversalCart);
+    native_override_options.fre_override = mojom::FreOverride::kNativeFre;
+    EXPECT_EQ(GetNativeFreSelectionOutcome(native_override_options, &profile_),
+              NativeFreSelectionOutcome::kNative);
+    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+
+    GlicInvokeOptions special_case_options(
+        mojom::InvocationSource::kUniversalCart);
+    EXPECT_EQ(GetNativeFreSelectionOutcome(special_case_options, &profile_),
+              NativeFreSelectionOutcome::kWebSpecialCase);
+    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+
+    GlicInvokeOptions default_options(mojom::InvocationSource::kOsButton);
+    EXPECT_EQ(GetNativeFreSelectionOutcome(default_options, &profile_),
+              NativeFreSelectionOutcome::kNative);
+    EXPECT_TRUE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+  }
+
+  {
+    base::test::ScopedFeatureList disabled_feature;
+    disabled_feature.InitWithFeatures(
+        {}, {features::kGlicNativeFreAndroid, features::kGlicMessageFirstFre,
+             features::kGlicActionFirstFRE});
+    GlicInvokeOptions default_options(mojom::InvocationSource::kOsButton);
+    EXPECT_EQ(GetNativeFreSelectionOutcome(default_options, &profile_),
+              NativeFreSelectionOutcome::kWebIneligibleOrDisabled);
+  }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

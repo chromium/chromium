@@ -13969,6 +13969,19 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Fre.UnexpectedWebFre">
+  <owner>alexiswu@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <description>
+    Logged each time the web client reports that it showed the opt-in screen
+    while Chrome shows the Android native FRE and waits for the user to accept
+    it, for a profile that has not consented. A report that arrives before the
+    native FRE opens (for example, from a warmed client) is not counted. Can be
+    logged more than once per panel open. Android only. Compare with
+    Glic.Fre.NativeFreTriggered (logged once per native FRE open).
+  </description>
+</action>
+
 <action name="Glic.Instance.Bind">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>

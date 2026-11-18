@@ -23,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -295,6 +296,12 @@ bool GlicInstanceMetrics::CanRecordOptInImpression() const {
 }
 
 void GlicInstanceMetrics::OnOptinImpression() {
+  // TODO(b/587079823): This misses impressions after a peek-expand, which
+  // resets `native_fre_state_`.
+  if (native_fre_state_ == NativeFreState::kWaitingForAccept &&
+      !GlicEnabling::HasConsentedForProfile(profile_)) {
+    base::RecordAction(base::UserMetricsAction("Glic.Fre.UnexpectedWebFre"));
+  }
   // Remembered for the FRE attempt even when the UMA impression is
   // suppressed or disabled.
   guest_reported_opt_in_impression_ = true;

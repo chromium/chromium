@@ -5132,4 +5132,29 @@ TEST_F(GlicInstanceMetricsTest, ContextUploadAndResponseRated) {
   histogram_tester_.ExpectBucketCount("Glic.Consumer.Response.Rated", false, 1);
 }
 
+TEST_F(GlicInstanceMetricsTest, NativeFre_UnexpectedWebImpressionLogsAction) {
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton,
+                  ShowOptions::ForSidePanel(mock_tab_));
+  metrics_.OnOptinImpression();
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.UnexpectedWebFre"), 0);
+
+  metrics_.OnOpen(mojom::InvocationSource::kFre, MakeNativeFreShowOptions());
+  metrics_.OnOptinImpression();
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.UnexpectedWebFre"), 1);
+
+  metrics_.OnNativeFreAccepted();
+  metrics_.OnOptinImpression();
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.UnexpectedWebFre"), 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       NativeFre_ConsentedAfterOpenSuppressesUnexpectedWebFre) {
+  metrics_.OnOpen(mojom::InvocationSource::kFre, MakeNativeFreShowOptions());
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
+  metrics_.OnOptinImpression();
+
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.UnexpectedWebFre"), 0);
+}
+
 }  // namespace glic

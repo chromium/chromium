@@ -158,11 +158,25 @@ bool HasSpecialCaseWebFre(const GlicInvokeOptions& options) {
   }
 }
 
-bool CanUseNativeFre(const GlicInvokeOptions& options, Profile* profile) {
-  return options.fre_override == mojom::FreOverride::kUnspecified &&
-         !GlicEnabling::HasConsentedForProfile(profile) &&
-         !HasSpecialCaseWebFre(options) &&
-         GlicEnabling::IsProfileEligibleForNativeFre(profile);
+NativeFreSelectionOutcome GetNativeFreSelectionOutcome(
+    const GlicInvokeOptions& options,
+    Profile* profile) {
+  if (GlicEnabling::HasConsentedForProfile(profile)) {
+    return NativeFreSelectionOutcome::kAlreadyConsented;
+  }
+  if (options.fre_override == mojom::FreOverride::kNativeFre) {
+    return NativeFreSelectionOutcome::kNative;
+  }
+  if (options.fre_override != mojom::FreOverride::kUnspecified) {
+    return NativeFreSelectionOutcome::kWebFreOverride;
+  }
+  if (HasSpecialCaseWebFre(options)) {
+    return NativeFreSelectionOutcome::kWebSpecialCase;
+  }
+  if (!GlicEnabling::IsProfileEligibleForNativeFre(profile)) {
+    return NativeFreSelectionOutcome::kWebIneligibleOrDisabled;
+  }
+  return NativeFreSelectionOutcome::kNative;
 }
 
 void MaybePopulateSelectedTabsToPin(

@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -31,11 +32,13 @@
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_cui_tracker.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/selection/selection_context.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/glic_invoke_handler.h"
+#include "chrome/browser/glic/service/glic_invoke_preparation.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_invoke_metrics.h"
@@ -67,7 +70,10 @@
 #include "components/metrics/structured/test/test_structured_metrics_recorder.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/feature_list.h"
+#include "base/metrics/field_trial.h"
+#else
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -3315,8 +3321,8 @@ class GlicInvokeNativeFreAndroidBrowserTest : public GlicInvokeBrowserTest {
  public:
   GlicInvokeNativeFreAndroidBrowserTest() {
     SetGlicPagePath("/glic/test_client/index.html");
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlicNativeFreAndroid},
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kGlicNativeFreAndroid, {}}},
         /*disabled_features=*/{features::kGlicMessageFirstFre,
                                features::kGlicActionFirstFRE});
   }
@@ -3331,6 +3337,7 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNativeFreAndroidBrowserTest,
   SetFRECompletion(GetProfile(), prefs::FreStatus::kNotStarted);
   ASSERT_TRUE(GlicEnabling::IsProfileEligibleForNativeFre(GetProfile()));
 
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<void> success_future;
   GlicInvokeOptions options(Target(*tab), mojom::InvocationSource::kOsButton);
   options.on_success = success_future.GetCallback();
@@ -3338,6 +3345,11 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNativeFreAndroidBrowserTest,
   coordinator().Invoke(std::move(options));
 
   EXPECT_TRUE(success_future.Wait());
+  histogram_tester.ExpectUniqueSample("Glic.Fre.Android.SelectionOutcome",
+                                      NativeFreSelectionOutcome::kNative, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.Fre.Android.SelectionOutcome",
+      NativeFreSelectionOutcome::kNative, 1);
   GlicInstanceImpl* instance = GetInstanceForTab(tab);
   ASSERT_TRUE(instance);
   ASSERT_OK(WaitForPanelWillOpenComplete(instance));
@@ -3350,12 +3362,29 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNativeFreAndroidBrowserTest,
       << invocation_log;
 }
 
+// A consented profile gets no FRE, so no outcome is recorded.
+IN_PROC_BROWSER_TEST_F(GlicInvokeNativeFreAndroidBrowserTest,
+                       ConsentedInvokeDoesNotLogSelectionOutcome) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kCompleted);
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(Target(*tab), mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_TRUE(success_future.Wait());
+  histogram_tester.ExpectTotalCount("Glic.Fre.Android.SelectionOutcome", 0);
+}
+
 IN_PROC_BROWSER_TEST_F(GlicInvokeNativeFreAndroidBrowserTest,
                        ExplicitFreOverrideIsPreserved) {
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   SetFRECompletion(GetProfile(), prefs::FreStatus::kNotStarted);
   ASSERT_TRUE(GlicEnabling::IsProfileEligibleForNativeFre(GetProfile()));
 
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<void> success_future;
   GlicInvokeOptions options(Target(*tab),
                             mojom::InvocationSource::kAnchoredContextualCue);
@@ -3365,6 +3394,9 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNativeFreAndroidBrowserTest,
   coordinator().Invoke(std::move(options));
 
   EXPECT_TRUE(success_future.Wait());
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Fre.Android.SelectionOutcome",
+      NativeFreSelectionOutcome::kWebFreOverride, 1);
   GlicInstanceImpl* instance = GetInstanceForTab(tab);
   ASSERT_TRUE(instance);
   ASSERT_OK(WaitForPanelWillOpenComplete(instance));
@@ -3383,6 +3415,7 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNativeFreAndroidBrowserTest,
   SetFRECompletion(GetProfile(), prefs::FreStatus::kNotStarted);
   ASSERT_TRUE(GlicEnabling::IsProfileEligibleForNativeFre(GetProfile()));
 
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<void> success_future;
   GlicInvokeOptions options(Target(*tab),
                             mojom::InvocationSource::kNavigationCapture);
@@ -3391,6 +3424,9 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNativeFreAndroidBrowserTest,
   coordinator().Invoke(std::move(options));
 
   EXPECT_TRUE(success_future.Wait());
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Fre.Android.SelectionOutcome",
+      NativeFreSelectionOutcome::kWebSpecialCase, 1);
   GlicInstanceImpl* instance = GetInstanceForTab(tab);
   ASSERT_TRUE(instance);
   ASSERT_OK(WaitForPanelWillOpenComplete(instance));
@@ -3401,6 +3437,45 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNativeFreAndroidBrowserTest,
           .ExtractString();
   EXPECT_NE(invocation_log.find("\"freOverride\": 0"), std::string::npos)
       << invocation_log;
+}
+
+// Rejected second invocation neither logs SelectionOutcome nor activates study.
+IN_PROC_BROWSER_TEST_F(
+    GlicInvokeNativeFreAndroidBrowserTest,
+    RejectedInvokeDoesNotLogSelectionOutcomeOrActivateStudy) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kNotStarted);
+
+  base::FieldTrial* trial =
+      base::FeatureList::GetFieldTrial(features::kGlicNativeFreAndroid);
+  ASSERT_TRUE(trial);
+  ASSERT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+
+  base::HistogramTester histogram_tester;
+  GlicInvokeOptions options1(Target(*tab),
+                             mojom::InvocationSource::kNavigationCapture);
+  options1.prompts = {"first prompt"};
+  coordinator().Invoke(std::move(options1));
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Fre.Android.SelectionOutcome",
+      NativeFreSelectionOutcome::kWebSpecialCase, 1);
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+
+  base::test::TestFuture<GlicInvokeError> error_future2;
+  GlicInvokeOptions options2(Target(*tab), mojom::InvocationSource::kOsButton);
+  options2.prompts = {"second prompt"};
+  options2.on_error = error_future2.GetCallback();
+  coordinator().Invoke(std::move(options2));
+
+  EXPECT_EQ(error_future2.Get(), GlicInvokeError::kInvokeInProgress);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Fre.Android.SelectionOutcome",
+      NativeFreSelectionOutcome::kWebSpecialCase, 1);
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+
+  EXPECT_TRUE(GlicEnabling::IsProfileEligibleForNativeFre(GetProfile()));
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

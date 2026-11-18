@@ -948,11 +948,6 @@ GlicInvocationHandle GlicInstanceCoordinatorImpl::InvokeInternal(
       profile_, instance->GetSharingManagerInternal(), target_for_pinning,
       auto_submit_passkey.has_value(), options);
 
-  // Route eligible profiles to Android native FRE.
-  if (CanUseNativeFre(options, profile_)) {
-    options.fre_override = mojom::FreOverride::kNativeFre;
-  }
-
   // Only invocations that send an invoke message to the web client conflict
   // with each other. Invocations that merely show the UI can safely run
   // simultaneously with any other invocation on the same instance. The toggle
@@ -976,6 +971,15 @@ GlicInvocationHandle GlicInstanceCoordinatorImpl::InvokeInternal(
         return nullptr;
       }
     }
+  }
+
+  // Route eligible profiles to Android native FRE. Keep after the rejections
+  // above: this logs, and can activate the Finch study.
+  const NativeFreSelectionOutcome fre_selection =
+      GetNativeFreSelectionOutcome(options, profile_);
+  metrics_.RecordNativeFreSelectionOutcome(fre_selection);
+  if (fre_selection == NativeFreSelectionOutcome::kNative) {
+    options.fre_override = mojom::FreOverride::kNativeFre;
   }
 
   auto handler = std::make_unique<GlicInvokeHandler>(
