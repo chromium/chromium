@@ -537,12 +537,13 @@ bool TwoQwacCertBinding::BindsTlsCert(base::span<const uint8_t> tls_cert_der) {
   // the digest algorithm is specified by header.hash_alg. Compute the digest of
   // the base64url-encoded cert and search for that in the list of bound cert
   // hashes.
-  std::string tls_cert_b64;
-  base::Base64UrlEncode(tls_cert_der, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &tls_cert_b64);
   std::vector<uint8_t> tls_cert_hash(
       crypto::hash::DigestSizeForHashKind(header_.hash_alg));
-  crypto::hash::Hash(header_.hash_alg, tls_cert_b64, tls_cert_hash);
+  crypto::hash::Hash(
+      header_.hash_alg,
+      base::Base64UrlEncode(tls_cert_der,
+                            base::Base64UrlEncodePolicy::OMIT_PADDING),
+      tls_cert_hash);
 
   return std::ranges::contains(header_.bound_cert_hashes, tls_cert_hash);
 }

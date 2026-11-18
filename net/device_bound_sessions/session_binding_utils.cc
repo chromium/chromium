@@ -36,14 +36,11 @@ namespace net::device_bound_sessions {
 namespace {
 
 std::string Base64UrlEncode(base::span<const uint8_t> data) {
-  std::string output;
-  base::Base64UrlEncode(data, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &output);
-  return output;
+  return base::Base64UrlEncode(data, base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 std::string Base64UrlEncode(std::string_view data) {
-  return Base64UrlEncode(base::as_byte_span(data));
+  return base::Base64UrlEncode(data, base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 std::optional<std::string> CombineHeaderAndPayload(

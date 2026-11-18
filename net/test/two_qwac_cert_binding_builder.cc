@@ -90,16 +90,15 @@ base::DictValue TwoQwacCertBindingBuilder::GenerateSigDHeaderValue() {
     // ETSI TS 119 182-1 clause 5.2.8.1: Each element of the "hashV" array
     // shall contain the base64url-encoded digest value of the
     // base64url-encoded data object.
-    std::string cert_b64;
-    base::Base64UrlEncode(bound_cert, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &cert_b64);
     std::vector<uint8_t> cert_hash(
         crypto::hash::DigestSizeForHashKind(hash_alg_));
-    crypto::hash::Hash(hash_alg_, cert_b64, cert_hash);
-    std::string hash_b64;
-    base::Base64UrlEncode(cert_hash, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &hash_b64);
-    hash_v.Append(hash_b64);
+    crypto::hash::Hash(
+        hash_alg_,
+        base::Base64UrlEncode(bound_cert,
+                              base::Base64UrlEncodePolicy::OMIT_PADDING),
+        cert_hash);
+    hash_v.Append(base::Base64UrlEncode(
+        cert_hash, base::Base64UrlEncodePolicy::OMIT_PADDING));
     pars.Append("");
   }
   sig_d.Set("pars", std::move(pars));
@@ -119,9 +118,8 @@ void TwoQwacCertBindingBuilder::GenerateHeader() {
 
   std::string header_string;
   ASSERT_TRUE(JSONStringValueSerializer(&header_string).Serialize(header));
-  header_b64_ = std::string();
-  base::Base64UrlEncode(
-      header_string, base::Base64UrlEncodePolicy::OMIT_PADDING, &*header_b64_);
+  header_b64_ = base::Base64UrlEncode(
+      header_string, base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 void TwoQwacCertBindingBuilder::GenerateSignature() {
@@ -161,9 +159,8 @@ void TwoQwacCertBindingBuilder::GenerateSignature() {
     ASSERT_TRUE(raw_sig.has_value());
     sig = *std::move(raw_sig);
   }
-  signature_b64_ = std::string();
-  base::Base64UrlEncode(sig, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &*signature_b64_);
+  signature_b64_ =
+      base::Base64UrlEncode(sig, base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 }  // namespace net

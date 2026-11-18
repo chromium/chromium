@@ -47,10 +47,8 @@ constexpr size_t kEcP256UncompressedPointLength =
     1 + 2 * kEcP256FieldElementLength;
 
 std::string Base64UrlEncode(base::span<const uint8_t> input) {
-  std::string output;
-  base::Base64UrlEncode(input, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &output);
-  return output;
+  return base::Base64UrlEncode(input,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 }  // namespace

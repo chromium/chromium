@@ -92,12 +92,9 @@ DnsHTTPAttempt::DnsHTTPAttempt(base::WeakPtr<ResolveContext> resolve_context,
     // Set url for a GET request
     std::string url_string;
     absl::flat_hash_map<std::string, std::string> parameters;
-    std::string encoded_query;
-    base::Base64UrlEncode(std::string_view(query_->io_buffer()->data(),
-                                           query_->io_buffer()->size()),
-                          base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &encoded_query);
-    parameters.emplace("dns", encoded_query);
+    parameters.emplace("dns", base::Base64UrlEncode(
+                                  query_->io_buffer()->span(),
+                                  base::Base64UrlEncodePolicy::OMIT_PADDING));
     uri_template::Expand(server_template, parameters, &url_string);
     url = GURL(url_string);
   }

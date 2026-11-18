@@ -87,10 +87,9 @@ TEST(ParseTlsCertificateBinding, InvalidSigAlg) {
 // Test failure when the JWS header isn't a JSON object.
 TEST(ParseTlsCertificateBinding, JwsHeaderNotObject) {
   std::string header = "[]";
-  std::string jws;
-  base::Base64UrlEncode(header, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &jws);
-  jws += "..";
+  std::string jws =
+      base::Base64UrlEncode(header, base::Base64UrlEncodePolicy::OMIT_PADDING) +
+      "..";
   auto cert_binding = TwoQwacCertBinding::Parse(jws);
   ASSERT_FALSE(cert_binding.has_value());
   EXPECT_EQ(cert_binding.error(), "header parsing error: JSON not a dict");
@@ -99,10 +98,9 @@ TEST(ParseTlsCertificateBinding, JwsHeaderNotObject) {
 // Test failure when the JWS header isn't JSON.
 TEST(ParseTlsCertificateBinding, JwsHeaderNotJson) {
   std::string header = "AAA";
-  std::string jws;
-  base::Base64UrlEncode(header, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &jws);
-  jws += "..";
+  std::string jws =
+      base::Base64UrlEncode(header, base::Base64UrlEncodePolicy::OMIT_PADDING) +
+      "..";
   auto cert_binding = TwoQwacCertBinding::Parse(jws);
   ASSERT_FALSE(cert_binding.has_value());
   EXPECT_EQ(cert_binding.error(), "header parsing error: JSON parsing error");
@@ -538,10 +536,9 @@ TEST(VerifyTwoQwacCertBinding, DerEncodedSignatureRejectedForES256) {
                                             *raw_sig);
   ASSERT_TRUE(der_sig.has_value());
 
-  std::string der_sig_b64;
-  base::Base64UrlEncode(*der_sig, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &der_sig_b64);
-  std::string jws = binding_builder.GetHeader() + ".." + der_sig_b64;
+  std::string jws = binding_builder.GetHeader() + ".." +
+                    base::Base64UrlEncode(
+                        *der_sig, base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   auto cert_binding = TwoQwacCertBinding::Parse(jws);
   ASSERT_TRUE(cert_binding.has_value());
