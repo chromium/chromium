@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/apps/app_dialog/app_pause_dialog_view.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/gfx/image/image_skia.h"

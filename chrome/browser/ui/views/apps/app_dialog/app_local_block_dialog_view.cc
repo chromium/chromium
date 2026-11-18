@@ -6,11 +6,11 @@
 
 #include <algorithm>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"

@@ -12021,6 +12021,65 @@ You can manage this account’s settings by installing the Family Link app on yo
       <message name="IDS_MULTI_CAPTURE_NOTIFICATION_BUTTON_TEXT" desc="Text for the notification button to reach the details view.">
         Details
       </message>
+
+      <!-- Extension/App uninstall prompt -->
+      <message name="IDS_ARC_APP_UNINSTALL_PROMPT_DATA_REMOVAL_WARNING" desc="Line in the content area of the ARC(App Runtime for Chrome) app uninstallation prompt. Tells the user that local data associated with the app will be removed from this device.">
+        Data associated with this app will be removed from this device.
+      </message>
+      <message name="IDS_EXTENSION_UNINSTALL_PROMPT_TITLE" desc="Titlebar of the extension or app uninstallation prompt window">
+        Confirm Removal
+      </message>
+
+      <!-- App uninstall prompt title -->
+      <message name="IDS_PROMPT_APP_UNINSTALL_TITLE" desc="Title text for uninstalling an app.">
+        Uninstall "<ph name="APP_NAME">$1<ex>Gmail Checker</ex></ph>"?
+      </message>
+
+      <!-- App uninstall prompt for non-Google -->
+      <message name="IDS_APP_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX_FOR_NON_GOOGLE" desc="Checkbox text to ask the user whether they want to remove associated data at uninstall time. Only used when uninstalling an app associated with a particular website.">
+        Also delete browsing data (<ph name="URL">$1<ex>pinterest.com</ex></ph>) which will sign you out of <ph name="DOMAIN">$2<ex>Pinterest.com</ex></ph>.<ph name="LEARN_MORE">$3<ex>Learn more</ex></ph>
+      </message>
+
+      <!-- App uninstall prompt for Google -->
+      <message name="IDS_APP_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX_FOR_GOOGLE" desc="Checkbox text to ask the user whether they want to remove associated data at uninstall time for Google hostnames. Only used when uninstalling an app associated with a Google hostname.">
+        Also delete browsing data (<ph name="URL">$1<ex>www.google.com</ex></ph>) which may sign you out of Google.com. <ph name="LEARN_MORE">$2<ex>Learn more</ex></ph>
+      </message>
+      <message name="IDS_APP_UNINSTALL_PROMPT_LEARN_MORE" desc="The label that the user can click to learn more about removing associated data at uninstall time.">
+        Learn more
+      </message>
+
+      <!-- App pause prompt -->
+      <message name="IDS_APP_PAUSE_PROMPT_TITLE" desc="Titlebar of the app pause prompt window">
+        <ph name="APP_NAME">$1<ex>Gmail Checker</ex></ph> is paused
+      </message>
+      <message name="IDS_APP_PAUSE_HEADING" desc="Tells the user the app will be paused.">
+        You reached the time limit your parent set for <ph name="APP_NAME">$1<ex>Google Photos</ex></ph>. You can use it for <ph name="TIME_LIMIT">$2<ex>2 hours and 30 minutes</ex></ph> tomorrow.
+      </message>
+      <message name="IDS_APP_PAUSE_HEADING_FOR_WEB_APPS" desc="Tells the user the app will be paused.">
+        You reached the time limit your parent set for <ph name="APP_NAME">$1<ex>Google Photos</ex></ph> Chrome app. You can use it for <ph name="TIME_LIMIT">$2<ex>2 hours and 30 minutes</ex></ph> tomorrow.
+      </message>
+
+      <!-- App block prompt -->
+      <message name="IDS_APP_BLOCK_PROMPT_TITLE" desc="Titlebar of the app block prompt window">
+        <ph name="APP_NAME">$1<ex>Gmail Checker</ex></ph> is blocked
+      </message>
+      <message name="IDS_APP_BLOCK_HEADING_FOR_CHILD" desc="Tells the child the app is blocked.">
+        <ph name="APP_NAME">$1<ex>Google Photos</ex></ph> is blocked by your parent. Ask your parent for permission to use this app.
+      </message>
+      <message name="IDS_APP_BLOCK_HEADING" desc="Tells the user the app is blocked.">
+        <ph name="APP_NAME">$1<ex>Google Photos</ex></ph> is blocked by admin. Ask admin for permission to use this app.
+      </message>
+
+      <!-- App local block prompt -->
+      <message name="IDS_APP_LOCAL_BLOCK_PROMPT_TITLE" desc="Titlebar of the app local block prompt window">
+        <ph name="APP_NAME">$1<ex>Google Photos</ex></ph> is blocked on your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>
+      </message>
+      <message name="IDS_APP_LOCAL_BLOCK_PROMPT_MULTIPLE_TITLE" desc="Titlebar of the app local block prompt window with multiple blocked apps.">
+        <ph name="APP_NAME">$1<ex>Google Photos</ex></ph> and a few more apps are blocked on your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>
+      </message>
+      <message name="IDS_APP_LOCAL_BLOCK_HEADING" desc="Tells the child that parent can unblock the app in the settings.">
+        Ask your parent to allow access in Settings
+      </message>
     </messages>
   </release>
 </grit>
