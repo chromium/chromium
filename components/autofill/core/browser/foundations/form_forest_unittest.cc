@@ -257,7 +257,7 @@ class FakeAutofillDriver : public TestAutofillDriver {
     driver->set_autofill_manager(
         std::make_unique<TestBrowserAutofillManager>(driver.get()));
     driver->SetParent(parent);
-    driver->SetLocalFrameToken(test::MakeLocalFrameToken());
+    driver->set_frame_token(test::MakeLocalFrameToken());
     if (parent && driver->origin() != parent->origin()) {
       parent->SetRemoteFrameToken(test::MakeRemoteFrameToken(),
                                   driver->GetFrameToken());

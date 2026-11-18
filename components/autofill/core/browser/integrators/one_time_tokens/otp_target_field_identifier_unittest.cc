@@ -43,8 +43,8 @@ class OtpTargetFieldIdentifierTest
     InitAutofillClient();
     CreateAutofillDriver();
     CreateAutofillDriver();
-    autofill_driver(0).SetLocalFrameToken(test::MakeLocalFrameToken());
-    autofill_driver(1).SetLocalFrameToken(test::MakeLocalFrameToken());
+    autofill_driver(0).set_frame_token(test::MakeLocalFrameToken());
+    autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
   }
 
   FormData AddForm(

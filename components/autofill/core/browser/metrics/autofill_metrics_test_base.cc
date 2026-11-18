@@ -178,7 +178,7 @@ void AutofillMetricsBaseTest::SetUpHelper() {
 
   CreateAutofillDriver();
   ActivateAutofillDriver(autofill_driver());
-  autofill_driver().SetLocalFrameToken(test::MakeLocalFrameToken());
+  autofill_driver().set_frame_token(test::MakeLocalFrameToken());
 
 #if !BUILDFLAG(IS_IOS)
   test_api(*autofill_manager().GetCreditCardAccessManager())

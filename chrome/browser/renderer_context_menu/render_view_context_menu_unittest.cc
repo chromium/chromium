@@ -1200,6 +1200,7 @@ class RenderViewContextMenuUsePasskeyFromAnotherDeviceTest
     field.set_host_frame(autofill_driver()->GetFrameToken());
 
     autofill::FormData form;
+    form.set_host_frame(autofill_driver()->GetFrameToken());
     form.set_renderer_id(autofill::test::MakeFormRendererId());
     form.set_url(get_url());
     form.set_fields({field});

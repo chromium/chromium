@@ -1373,8 +1373,8 @@ TEST_F(OmniboxAutofillDelegateFillingTest, FillOrPreviewCard_SubframeForm) {
   CreateAutofillDriver();  // Main frame (index 0)
   CreateAutofillDriver();  // Subframe (index 1)
 
-  autofill_driver(0).SetLocalFrameToken(test::MakeLocalFrameToken());
-  autofill_driver(1).SetLocalFrameToken(test::MakeLocalFrameToken());
+  autofill_driver(0).set_frame_token(test::MakeLocalFrameToken());
+  autofill_driver(1).set_frame_token(test::MakeLocalFrameToken());
 
   // Establish the subframe relationship.
   autofill_driver(1).SetParent(&autofill_driver(0));
@@ -1481,7 +1481,7 @@ TEST_F(OmniboxAutofillDelegateFillingTest, FillOrPreviewCard_SubframeForm) {
 TEST_F(OmniboxAutofillDelegateFillingTest, FillOrPreviewCard_MainFrameForm) {
   // Create only the main frame driver.
   CreateAutofillDriver();  // Main frame (index 0)
-  autofill_driver(0).SetLocalFrameToken(test::MakeLocalFrameToken());
+  autofill_driver(0).set_frame_token(test::MakeLocalFrameToken());
   autofill_driver(0).SetParent(nullptr);
   autofill_driver(0).SetIsEmbedded(false);
   autofill_driver(0).SetIsActive(true);

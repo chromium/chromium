@@ -57,7 +57,6 @@ class TestAutofillDriverTemplate : public T {
   ~TestAutofillDriverTemplate() override = default;
 
   // AutofillDriver:
-  LocalFrameToken GetFrameToken() const override { return frame_token_; }
   std::optional<LocalFrameToken> Resolve(FrameToken query) override {
     if (auto* local_frame_token = std::get_if<LocalFrameToken>(&query)) {
       return *local_frame_token;
@@ -160,10 +159,6 @@ class TestAutofillDriverTemplate : public T {
   // Methods unique to TestAutofillDriver that tests can use to specialize
   // functionality.
 
-  void SetLocalFrameToken(LocalFrameToken frame_token) {
-    frame_token_ = frame_token;
-  }
-
   void SetRemoteFrameToken(RemoteFrameToken remote_frame_token,
                            LocalFrameToken local_frame_token) {
     remote_frame_tokens_[remote_frame_token] = local_frame_token;
@@ -197,7 +192,6 @@ class TestAutofillDriverTemplate : public T {
 #endif
 
  private:
-  LocalFrameToken frame_token_;
   std::map<RemoteFrameToken, LocalFrameToken> remote_frame_tokens_;
   raw_ptr<TestAutofillDriverTemplate> parent_ = nullptr;
   bool is_active_ = true;
@@ -220,7 +214,8 @@ class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
   explicit TestAutofillDriver(TestAutofillClient* client);
   ~TestAutofillDriver() override;
 
-  // AutofillDriver
+  // AutofillDriver:
+  LocalFrameToken GetFrameToken() const override;
   TestAutofillClient& GetAutofillClient() override;
   AutofillManager& GetAutofillManager() override;
   ukm::SourceId GetPageUkmSourceId() const override;
@@ -234,6 +229,10 @@ class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
     autofill_manager_ = std::move(autofill_manager);
   }
 
+  void set_frame_token(LocalFrameToken frame_token) {
+    frame_token_ = frame_token;
+  }
+
   // Initializes UKM source from `url()`. This needs to be called in unittests
   // after calling Purge for ukm recorder to re-initialize sources.
   void InitializeUKMSources();
@@ -243,6 +242,7 @@ class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
   void set_url(GURL url) { url_ = std::move(url); }
 
  private:
+  LocalFrameToken frame_token_;
   raw_ref<TestAutofillClient> autofill_client_;
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
   GURL url_{"https://example.test"};

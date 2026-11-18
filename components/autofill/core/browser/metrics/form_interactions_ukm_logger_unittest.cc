@@ -233,7 +233,7 @@ TEST_F(FieldLogUkmMetricTest, AddressSubmittedFormLogEvents) {
                              {.label = u"Street", .name = u"street"},
                              {.label = u"Number", .name = u"number"},
                          }});
-  autofill_driver().SetLocalFrameToken(form.host_frame());
+  autofill_driver().set_frame_token(form.host_frame());
 
   std::vector<FieldType> field_types = {
       ADDRESS_HOME_STATE, ADDRESS_HOME_STREET_ADDRESS, NO_SERVER_DATA};

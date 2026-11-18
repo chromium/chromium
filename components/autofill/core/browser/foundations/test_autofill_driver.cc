@@ -16,6 +16,10 @@ TestAutofillDriver::TestAutofillDriver(TestAutofillClient* client)
 
 TestAutofillDriver::~TestAutofillDriver() = default;
 
+LocalFrameToken TestAutofillDriver::GetFrameToken() const {
+  return frame_token_;
+}
+
 TestAutofillClient& TestAutofillDriver::GetAutofillClient() {
   return *autofill_client_;
 }

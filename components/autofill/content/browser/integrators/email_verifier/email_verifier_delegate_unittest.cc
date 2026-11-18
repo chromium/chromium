@@ -204,7 +204,6 @@ class EmailVerifierDelegateTestBase
         std::make_unique<
             page_load_metrics::TestMetricsWebContentsObserverEmbedder>());
     NavigateAndCommit(GURL("https://a.test/"));
-    driver().SetLocalFrameToken(LocalFrameToken(*main_rfh()->GetFrameToken()));
     EmailVerifier::SetForFrameForTest(
         main_rfh(), std::make_unique<NiceMock<MockEmailVerifier>>());
 
