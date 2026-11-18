@@ -61,13 +61,26 @@ class VariationsServiceClient {
   // on platforms that support dedicated seed files should override this.
   virtual base::FilePath GetVariationsSeedFileDir();
 
+  // Returns true if a first-run variations seed is still pending in native
+  // staging storage. Platforms that keep the first-run seed in native staging
+  // storage until it has been durably stored (see
+  // `ClearNativeVariationsSeed()`) override this so a subsequent startup still
+  // imports the seed if the prior session flushed `kVariationsSeedDate` to
+  // Local State before the seed file write finished.
+  virtual bool HasPendingNativeVariationsSeed();
+
   // If a native variations service that directly fetches the seed from the
   // server is implemented, returns the SeedResponse from the native variations
-  // seed store, and removes the seed from the native storage given that we can
-  // assume that the returned seed would be stored into Chrome Prefs. Otherwise,
-  // returns nullptr. On first run, Desktop Chrome returns the seed from the
-  // installer initial preferences.
+  // seed store. The seed is removed from native storage either immediately or,
+  // if `HasPendingNativeVariationsSeed()` still returns true afterwards, later
+  // by `ClearNativeVariationsSeed()`. Otherwise, returns nullptr. On first run,
+  // Desktop Chrome returns the seed from the installer initial preferences.
   virtual std::unique_ptr<SeedResponse> TakeSeedFromNativeVariationsSeedStore();
+
+  // Removes the first-run seed from native staging storage. Called once a seed
+  // that was still pending after `TakeSeedFromNativeVariationsSeedStore()` has
+  // been durably stored or discarded. Does nothing by default.
+  virtual void ClearNativeVariationsSeed();
 
   // If an invalid command-line was specified by the user, flag an error to the
   // user and exit the process.

@@ -81,6 +81,10 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // |use_first_run_prefs|, if true (default), facilitates modifying Java
   // SharedPreferences ("first run prefs") on Android. If false,
   // SharedPreferences are not accessed.
+  // |on_initial_seed_consumed|, if not null, is run once |initial_seed| has
+  // been durably stored or discarded (immediately if |initial_seed| is null),
+  // so that the embedder can clear the storage the seed was staged in. If it is
+  // set and a seed is already stored, |initial_seed| is not imported again.
   VariationsSeedStore(PrefService* local_state,
                       std::unique_ptr<SeedResponse> initial_seed,
                       bool signature_verification_enabled_on_load,
@@ -89,7 +93,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
                       version_info::Channel channel,
                       const base::FilePath& seed_file_dir,
                       const EntropyProviders* entropy_providers = nullptr,
-                      bool use_first_run_prefs = true);
+                      bool use_first_run_prefs = true,
+                      base::OnceClosure on_initial_seed_consumed = {});
 
   VariationsSeedStore(const VariationsSeedStore&) = delete;
   VariationsSeedStore& operator=(const VariationsSeedStore&) = delete;
@@ -382,7 +387,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // In Chrome's case, it's important to set the first run seed as soon as
   // possible, because some clients query the seed store prefs directly rather
   // than accessing them via the seed store API: https://crbug.com/829527
-  void ImportInitialSeed(std::unique_ptr<SeedResponse> initial_seed);
+  // See the constructor comment for |on_seed_consumed|, which may be null.
+  void ImportInitialSeed(std::unique_ptr<SeedResponse> initial_seed,
+                         base::OnceClosure on_seed_consumed);
 
   // Reads the variations seed data from SeedReaderWriter into |seed_data|, and
   // returns the result of the load. If a pointer for the signature is provided,

@@ -33,8 +33,10 @@ class ChromeVariationsServiceClient
   network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   bool OverridesRestrictParameter(std::string* parameter) override;
   base::FilePath GetVariationsSeedFileDir() override;
+  bool HasPendingNativeVariationsSeed() override;
   std::unique_ptr<variations::SeedResponse>
   TakeSeedFromNativeVariationsSeedStore() override;
+  void ClearNativeVariationsSeed() override;
   bool IsEnterprise() override;
   std::optional<base::flat_set<std::string>> GetAllProfilesKeys(
       PrefService* local_state) override;

@@ -5,6 +5,7 @@
 #include "components/variations/seed_reader_writer.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/files/file.h"
@@ -655,6 +656,19 @@ void SeedReaderWriter::CommitPendingWrite() {
   }
 }
 
+void SeedReaderWriter::RunOrScheduleOnSuccessfulWrite(
+    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!callback) {
+    return;
+  }
+  if (!HasPendingWrite() && pending_background_writes_ == 0) {
+    std::move(callback).Run();
+    return;
+  }
+  on_successful_write_callbacks_.push_back(std::move(callback));
+}
+
 void SeedReaderWriter::StoreRawSeedForTesting(std::string seed_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldUseSeedFile()) {
@@ -686,9 +700,15 @@ bool SeedReaderWriter::IsEmpty() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldUseSeedFile()) {
     // Empty seeds are never purged from memory (see
-    // ShouldClearSeedDataFromMemory()), so `!stored_seed_info_.has_data()`
-    // means a non-empty seed was purged after being written to disk.
-    return stored_seed_info_.has_data() && stored_seed_info_.data().empty();
+    // ShouldClearSeedDataFromMemory()), so once `seed_purgeable_from_memory_`
+    // is true, `!stored_seed_info_.has_data()` means a non-empty seed was
+    // purged after being written to disk. Before
+    // AllowToPurgeSeedDataFromMemory() is called, all loaded seed data is in
+    // `stored_seed_info_.data()` (matching ReadSeedDataOnStartup()).
+    if (seed_purgeable_from_memory_) {
+      return stored_seed_info_.has_data() && stored_seed_info_.data().empty();
+    }
+    return stored_seed_info_.data().empty();
   }
   return local_state_->GetString(fields_prefs_->seed).empty();
 }
@@ -820,6 +840,14 @@ void SeedReaderWriter::OnSeedWriteComplete(bool write_success) {
   }
   if (ShouldClearSeedDataFromMemory()) {
     ClearSeedDataField(stored_seed_info_);
+  }
+  if (write_success && pending_background_writes_ == 0 && !HasPendingWrite() &&
+      !on_successful_write_callbacks_.empty()) {
+    std::vector<base::OnceClosure> callbacks =
+        std::exchange(on_successful_write_callbacks_, {});
+    for (base::OnceClosure& callback : callbacks) {
+      std::move(callback).Run();
+    }
   }
 }
 
@@ -963,7 +991,7 @@ void SeedReaderWriter::ReadSeedFile() {
     // to an empty string so we keep it in memory and don't read it from
     // disk.
     stored_seed_info_.set_data("");
-  } else if (MigrateFromLocalStateToSeedFile()) {
+  } else if (MigrateFromLocalStateToSeedFile(read_seed_info_result.error())) {
     // Export seed data from Local State to a seed file in the following cases.
     // 1. Seed file does not exist because this is the first time a client is
     // in the seed file experiment's treatment group.
@@ -978,18 +1006,38 @@ void SeedReaderWriter::ReadSeedFile() {
       seed_source == SeedSource::kSeedFile);
 }
 
-bool SeedReaderWriter::MigrateFromLocalStateToSeedFile() {
+bool SeedReaderWriter::MigrateFromLocalStateToSeedFile(
+    LoadSeedResult read_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::string seed_data =
+  const std::string seed_data =
       GetSeedDataFromLocalStatePref(local_state_, fields_prefs_->seed);
-  PermanentCountryVersion permanent_country_version =
+  const std::string session_country_code =
+      local_state_->GetString(fields_prefs_->session_country_code);
+  const std::string session_geo_level1 =
+      GetGeoLevel1Pref(*fields_prefs_, *local_state_);
+  const PermanentCountryVersion permanent_country_version =
       GetPermanentCountryVersion(local_state_,
                                  fields_prefs_->permanent_country_code_version);
-  // Schedule a write to the new seed file. If `seed_data` is empty, either
-  // because the Local State pref was empty or because it was corrupt and
-  // failed to decode/uncompress, this will result in an empty seed being
-  // written to the seed file, effectively resetting the seed file.
+  const bool has_local_state_data_to_migrate =
+      !seed_data.empty() || !session_country_code.empty() ||
+      !session_geo_level1.empty() || !permanent_country_version.country.empty();
+  if (!has_local_state_data_to_migrate &&
+      (read_error == LoadSeedResult::kFileNotFound ||
+       !base::PathExists(seed_writer_->path()))) {
+    // On a fresh install (or when neither the seed file nor Local State holds
+    // any seed data or country metadata), avoid scheduling an empty seed-file
+    // write that could race with an incoming first-run seed write. Clear any
+    // corrupt seed pref left in Local State and mark in-memory seed data as
+    // empty.
+    local_state_->ClearPref(fields_prefs_->seed);
+    stored_seed_info_.set_data("");
+    return false;
+  }
+
+  // Schedule a write to the new seed file. If `seed_data` is empty (for
+  // example, when migrating country metadata alone or resetting an unreadable
+  // existing seed file), an empty seed will be written to the seed file.
   migrating_from_old_source_ = true;
   ScheduleSeedFileWrite(ValidatedSeedInfo{
       .seed_data = seed_data,
@@ -998,9 +1046,8 @@ bool SeedReaderWriter::MigrateFromLocalStateToSeedFile() {
       .seed_date = local_state_->GetTime(fields_prefs_->seed_date),
       .client_fetch_time =
           local_state_->GetTime(fields_prefs_->client_fetch_time),
-      .session_country_code =
-          local_state_->GetString(fields_prefs_->session_country_code),
-      .session_geo_level1 = GetGeoLevel1Pref(*fields_prefs_, *local_state_),
+      .session_country_code = session_country_code,
+      .session_geo_level1 = session_geo_level1,
       .permanent_country_code = permanent_country_version.country,
       .permanent_country_version = permanent_country_version.version,
   });

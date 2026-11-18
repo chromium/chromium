@@ -15,6 +15,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
@@ -257,7 +258,8 @@ VariationsSeedStore::VariationsSeedStore(
     version_info::Channel channel,
     const base::FilePath& seed_file_dir,
     const EntropyProviders* entropy_providers,
-    bool use_first_run_prefs)
+    bool use_first_run_prefs,
+    base::OnceClosure on_initial_seed_consumed)
     : local_state_(local_state),
       safe_seed_store_(std::move(safe_seed_store)),
       signature_verification_enabled_on_load_(
@@ -274,7 +276,10 @@ VariationsSeedStore::VariationsSeedStore(
                                              entropy_providers,
                                              /*histogram_suffix=*/"Latest")) {
   if (initial_seed) {
-    ImportInitialSeed(std::move(initial_seed));
+    ImportInitialSeed(std::move(initial_seed),
+                      std::move(on_initial_seed_consumed));
+  } else if (on_initial_seed_consumed) {
+    std::move(on_initial_seed_consumed).Run();
   }
 }
 
@@ -645,8 +650,23 @@ void VariationsSeedStore::ClearPrefs(SeedType seed_type) {
 }
 
 void VariationsSeedStore::ImportInitialSeed(
-    std::unique_ptr<SeedResponse> initial_seed) {
+    std::unique_ptr<SeedResponse> initial_seed,
+    base::OnceClosure on_seed_consumed) {
+  // A non-null `on_seed_consumed` means the embedder keeps the first-run seed
+  // staged until it is durably stored, so the same seed is offered again if a
+  // prior session ended before `on_seed_consumed` ran. Skip re-importing it
+  // when a non-empty seed is already stored. Callers without the callback
+  // (e.g. Android WebView, which supplies a fresh seed on every startup) still
+  // overwrite the stored seed.
+  if (on_seed_consumed && !seed_reader_writer_->IsEmpty()) {
+    std::move(on_seed_consumed).Run();
+    return;
+  }
+
   if (initial_seed->data.empty()) {
+    if (on_seed_consumed) {
+      std::move(on_seed_consumed).Run();
+    }
     // Note: This is an expected case on non-first run starts.
     RecordFirstRunSeedImportResult(
         FirstRunSeedImportResult::kFailNoFirstRunSeed);
@@ -654,22 +674,39 @@ void VariationsSeedStore::ImportInitialSeed(
   }
 
   if (initial_seed->date.is_null()) {
+    if (on_seed_consumed) {
+      std::move(on_seed_consumed).Run();
+    }
     RecordFirstRunSeedImportResult(
         FirstRunSeedImportResult::kFailInvalidResponseDate);
     LOG(WARNING) << "Missing response date";
     return;
   }
 
-  auto done_callback =
-      base::BindOnce([](bool store_success, VariationsSeed seed) {
+  // `StoreSeedData()` runs `done_callback` synchronously here, so `self` is
+  // expected to be valid. If the store were gone, `on_seed_consumed` would be
+  // dropped without running, which leaves the staged seed in place for the
+  // next startup.
+  auto done_callback = base::BindOnce(
+      [](base::WeakPtr<VariationsSeedStore> self,
+         base::OnceClosure on_seed_consumed, bool store_success,
+         VariationsSeed seed) {
         if (store_success) {
           RecordFirstRunSeedImportResult(FirstRunSeedImportResult::kSuccess);
+          if (on_seed_consumed && self) {
+            self->seed_reader_writer_->RunOrScheduleOnSuccessfulWrite(
+                std::move(on_seed_consumed));
+          }
         } else {
+          if (on_seed_consumed) {
+            std::move(on_seed_consumed).Run();
+          }
           RecordFirstRunSeedImportResult(
               FirstRunSeedImportResult::kFailStoreFailed);
           LOG(WARNING) << "First run variations seed is invalid.";
         }
-      });
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(on_seed_consumed));
   StoreSeedData(std::move(done_callback), std::move(initial_seed->data),
                 std::move(initial_seed->signature),
                 std::move(initial_seed->country),

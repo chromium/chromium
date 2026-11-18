@@ -49,6 +49,11 @@ std::unique_ptr<variations::SeedResponse> GetVariationsFirstRunSeed() {
   return seed;
 }
 
+bool HasFirstRunSeed() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_VariationsSeedBridge_hasJavaPref(env);
+}
+
 void ClearJavaFirstRunPrefs() {
   JNIEnv* env = AttachCurrentThread();
   Java_VariationsSeedBridge_clearFirstRunPrefs(env);

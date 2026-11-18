@@ -194,14 +194,33 @@ class TestVariationsServiceClient : public VariationsServiceClient {
     should_delay_runtime_mutability_ = should_delay_runtime_mutability;
   }
 
+  bool HasPendingNativeVariationsSeed() override {
+    return has_pending_native_variations_seed_;
+  }
+
+  void set_has_pending_native_variations_seed(
+      bool has_pending_native_variations_seed) {
+    has_pending_native_variations_seed_ = has_pending_native_variations_seed;
+  }
+
   std::unique_ptr<SeedResponse> TakeSeedFromNativeVariationsSeedStore()
       override {
     take_seed_from_native_call_count_++;
-    return nullptr;
+    return std::move(native_seed_);
+  }
+
+  void set_native_seed(std::unique_ptr<SeedResponse> native_seed) {
+    native_seed_ = std::move(native_seed);
   }
 
   int take_seed_from_native_call_count() const {
     return take_seed_from_native_call_count_;
+  }
+
+  void ClearNativeVariationsSeed() override { clear_native_seed_call_count_++; }
+
+  int clear_native_seed_call_count() const {
+    return clear_native_seed_call_count_;
   }
  private:
   // VariationsServiceClient:
@@ -213,6 +232,9 @@ class TestVariationsServiceClient : public VariationsServiceClient {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   int rotate_uma_log_for_runtime_mutability_call_count_ = 0;
   int take_seed_from_native_call_count_ = 0;
+  int clear_native_seed_call_count_ = 0;
+  std::unique_ptr<SeedResponse> native_seed_;
+  bool has_pending_native_variations_seed_ = false;
   metrics::MetricsService::RotateUmaLogResult rotate_uma_log_result_ =
       metrics::MetricsService::RotateUmaLogResult::kSuccess;
   bool should_delay_runtime_mutability_ = false;
@@ -226,8 +248,10 @@ class TestVariationsService : public VariationsService {
       std::unique_ptr<web_resource::TestRequestAllowedNotifier> test_notifier,
       PrefService* local_state,
       metrics::MetricsStateManager* state_manager,
-      bool use_secure_url)
-      : VariationsService(std::make_unique<TestVariationsServiceClient>(),
+      bool use_secure_url,
+      std::unique_ptr<TestVariationsServiceClient> client =
+          std::make_unique<TestVariationsServiceClient>())
+      : VariationsService(std::move(client),
                           std::move(test_notifier),
                           local_state,
                           state_manager) {
@@ -4821,6 +4845,53 @@ TEST_F(VariationsServiceTest,
         &prefs_, GetMetricsStateManager(), true);
     EXPECT_EQ(service.client()->take_seed_from_native_call_count(), 0);
   }
+}
+
+TEST_F(VariationsServiceTest,
+       MaybeImportFirstRunSeedWhenPendingNativeSeedPresent) {
+  prefs_.SetTime(prefs::kVariationsSeedDate, base::Time::Now());
+
+  auto client = std::make_unique<TestVariationsServiceClient>();
+  client->set_has_pending_native_variations_seed(true);
+
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), /*use_secure_url=*/true,
+      std::move(client));
+  EXPECT_EQ(service.client()->take_seed_from_native_call_count(), 1);
+}
+
+// Verifies that a first-run seed that is still pending in native staging
+// storage after being taken is cleared through the client once it is consumed.
+// An empty seed is discarded right away, so the clear happens synchronously.
+TEST_F(VariationsServiceTest, ClearsPendingNativeSeedOnceConsumed) {
+  auto client = std::make_unique<TestVariationsServiceClient>();
+  client->set_has_pending_native_variations_seed(true);
+  client->set_native_seed(std::make_unique<SeedResponse>());
+
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), /*use_secure_url=*/true,
+      std::move(client));
+  EXPECT_EQ(service.client()->take_seed_from_native_call_count(), 1);
+  EXPECT_EQ(service.client()->clear_native_seed_call_count(), 1);
+}
+
+// Verifies that the client is not asked to clear native staging storage when
+// the seed was already removed from it by being taken.
+TEST_F(VariationsServiceTest, DoesNotClearNativeSeedWhenNotPending) {
+  auto client = std::make_unique<TestVariationsServiceClient>();
+  client->set_native_seed(std::make_unique<SeedResponse>());
+
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), /*use_secure_url=*/true,
+      std::move(client));
+  EXPECT_EQ(service.client()->take_seed_from_native_call_count(), 1);
+  EXPECT_EQ(service.client()->clear_native_seed_call_count(), 0);
 }
 
 }  // namespace variations

@@ -78,6 +78,7 @@ public class VariationsSeedBridge {
     }
 
     /** Returns the status of the variations first run fetch: was it successful or not. */
+    @CalledByNative
     public static boolean hasJavaPref() {
         return !TextUtils.isEmpty(
                 ContextUtils.getAppSharedPreferences()

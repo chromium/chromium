@@ -7,6 +7,7 @@
 
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
@@ -233,6 +234,12 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Commits any pending write to disk immediately.
   void CommitPendingWrite();
 
+  // Runs `callback` immediately if no seed-file write is scheduled or in flight
+  // on `file_task_runner_`; otherwise, queues `callback` to run on this
+  // sequence once no seed-file write remains scheduled or in flight and the
+  // final write completes successfully.
+  void RunOrScheduleOnSuccessfulWrite(base::OnceClosure callback);
+
   // Stores the seed without applying any extra processing or validation. This
   // is used to store invalid data for testing.
   void StoreRawSeedForTesting(std::string seed_data);
@@ -337,9 +344,10 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // in `local state_`, additionally clears it.
   void ReadSeedFile();
 
-  // Migrates the seed data from local state to a seed file. Returns true if the
-  // migration is successful.
-  bool MigrateFromLocalStateToSeedFile();
+  // Migrates the seed data and metadata from local state to a seed file.
+  // `read_error` is the error encountered when attempting to read the seed
+  // file. Returns true if non-empty seed data was migrated.
+  bool MigrateFromLocalStateToSeedFile(LoadSeedResult read_error);
 
   // Reads the seed data and signature from the seed file and calls
   // `done_callback` with the result.
@@ -440,6 +448,10 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Number of background file writes that have been scheduled on
   // `file_task_runner_` and have not yet finished writing to disk.
   int pending_background_writes_ = 0;
+
+  // Callbacks waiting until no seed-file write remains scheduled or in flight
+  // and the final background seed-file write completes successfully.
+  std::vector<base::OnceClosure> on_successful_write_callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

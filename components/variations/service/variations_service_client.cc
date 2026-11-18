@@ -89,10 +89,16 @@ base::FilePath VariationsServiceClient::GetVariationsSeedFileDir() {
   return base::FilePath();
 }
 
+bool VariationsServiceClient::HasPendingNativeVariationsSeed() {
+  return false;
+}
+
 std::unique_ptr<SeedResponse>
 VariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
   return nullptr;
 }
+
+void VariationsServiceClient::ClearNativeVariationsSeed() {}
 
 void VariationsServiceClient::ExitWithMessage(const std::string& message) {
   UNSAFE_TODO(puts(message.c_str()));

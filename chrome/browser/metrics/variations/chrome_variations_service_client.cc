@@ -28,6 +28,10 @@
 #include "components/version_info/version_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/variations/android/variations_seed_bridge.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/upgrade_detector/build_state.h"
 #endif
@@ -85,9 +89,23 @@ base::FilePath ChromeVariationsServiceClient::GetVariationsSeedFileDir() {
   return seed_file_dir;
 }
 
+bool ChromeVariationsServiceClient::HasPendingNativeVariationsSeed() {
+#if BUILDFLAG(IS_ANDROID)
+  return variations::android::HasFirstRunSeed();
+#else
+  return false;
+#endif
+}
+
 std::unique_ptr<variations::SeedResponse>
 ChromeVariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
   return ChromeFeatureListCreator::GetInstance()->TakeInitialSeed();
+}
+
+void ChromeVariationsServiceClient::ClearNativeVariationsSeed() {
+#if BUILDFLAG(IS_ANDROID)
+  variations::android::ClearJavaFirstRunPrefs();
+#endif
 }
 
 bool ChromeVariationsServiceClient::IsEnterprise() {

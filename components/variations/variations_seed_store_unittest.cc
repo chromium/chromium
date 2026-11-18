@@ -80,7 +80,8 @@ class TestVariationsSeedStore : public VariationsSeedStore {
       std::unique_ptr<const EntropyProviders> entropy_providers =
           std::make_unique<const MockEntropyProviders>(
               MockEntropyProviders::Results{
-                  .low_entropy = kAlwaysUseLastGroup}))
+                  .low_entropy = kAlwaysUseLastGroup}),
+      base::OnceClosure on_initial_seed_consumed = {})
       : VariationsSeedStore(
             local_state,
             std::move(initial_seed),
@@ -95,7 +96,8 @@ class TestVariationsSeedStore : public VariationsSeedStore {
             channel,
             seed_file_dir,
             entropy_providers.get(),
-            use_first_run_prefs) {}
+            use_first_run_prefs,
+            std::move(on_initial_seed_consumed)) {}
   ~TestVariationsSeedStore() override = default;
 
   void SetSerialNumberForTesting(std::string_view serial_number) {
@@ -1554,10 +1556,10 @@ TEST_P(StoreSeedDataSeedFilesGroupTest, StoreSeedData) {
 // Verifies that an imported initial seed is committed to the seed file without
 // waiting for the scheduled write.
 TEST_P(StoreSeedDataSeedFilesGroupTest, ImportInitialSeedCommitsPendingWrite) {
-  // The fixture's SeedReaderWriter writes an empty seed file on construction
-  // because no seed file exists yet. Wait for that write to land so that it
-  // can't race with the writes below.
+  // Ensure no background tasks from fixture setup remain in flight and that
+  // constructing an empty SeedReaderWriter did not create an empty seed file.
   file_writer_thread_.FlushForTesting();
+  ASSERT_FALSE(base::PathExists(temp_seed_file_path_));
 
   const std::string serialized_seed = SerializeSeed(CreateTestSeed());
   auto initial_seed = std::make_unique<SeedResponse>();
@@ -1576,8 +1578,7 @@ TEST_P(StoreSeedDataSeedFilesGroupTest, ImportInitialSeedCommitsPendingWrite) {
   // Run only the tasks that are ready, which excludes the delayed write timer.
   task_environment_.RunUntilIdle();
 
-  // The seed file must contain the imported seed, not the empty seed written
-  // when the seed file was first created.
+  // The seed file must contain the imported seed.
   std::string seed_file_data;
   ASSERT_TRUE(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));
   std::string uncompressed_contents;
@@ -1588,6 +1589,107 @@ TEST_P(StoreSeedDataSeedFilesGroupTest, ImportInitialSeedCommitsPendingWrite) {
   EXPECT_EQ(stored_seed_info.data(), serialized_seed);
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+// Verifies that `on_initial_seed_consumed` is not invoked synchronously when
+// `ImportInitialSeed()` commits a background seed-file write, and runs once
+// the background write finishes persisting the seed file to disk.
+TEST_P(StoreSeedDataSeedFilesGroupTest,
+       ImportInitialSeedDefersOnSeedConsumedUntilWriteCompletes) {
+  file_writer_thread_.FlushForTesting();
+  ASSERT_FALSE(base::PathExists(temp_seed_file_path_));
+
+  base::RunLoop consumed_loop;
+  bool consumed = false;
+  const std::string serialized_seed = SerializeSeed(CreateTestSeed());
+  auto initial_seed = std::make_unique<SeedResponse>();
+  initial_seed->data = serialized_seed;
+  initial_seed->signature = "signature";
+  initial_seed->country = "us";
+  initial_seed->date = base::Time::Now();
+  initial_seed->is_gzip_compressed = false;
+  base::OnceClosure on_seed_consumed =
+      base::BindLambdaForTesting([&consumed, &consumed_loop]() {
+        consumed = true;
+        consumed_loop.Quit();
+      });
+
+  TestVariationsSeedStore seed_store(
+      &prefs_, temp_dir_.GetPath(),
+      /*signature_verification_needed=*/false, std::move(initial_seed),
+      /*use_first_run_prefs=*/false, version_info::Channel::DEV,
+      std::make_unique<const MockEntropyProviders>(
+          MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup}),
+      std::move(on_seed_consumed));
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  EXPECT_FALSE(consumed);
+
+  consumed_loop.Run();
+  EXPECT_TRUE(consumed);
+
+  std::string seed_file_data;
+  ASSERT_TRUE(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));
+  std::string uncompressed_contents;
+  ASSERT_TRUE(SeedReaderWriter::UncompressFromSeedFileForTesting(
+      seed_file_data, &uncompressed_contents));
+  StoredSeedInfo stored_seed_info;
+  ASSERT_TRUE(stored_seed_info.ParseFromString(uncompressed_contents));
+  EXPECT_EQ(stored_seed_info.data(), serialized_seed);
+}
+
+// Verifies that if a non-empty seed file already landed on disk in an
+// interrupted first-run session before `on_seed_consumed` ran, a subsequent
+// startup skips re-importing the duplicate initial seed and immediately runs
+// `on_seed_consumed`.
+TEST_P(StoreSeedDataSeedFilesGroupTest,
+       ImportInitialSeedSkipsDuplicateWhenSeedAlreadyStored) {
+  file_writer_thread_.FlushForTesting();
+
+  VariationsSeed existing_seed = CreateTestSeed();
+  existing_seed.set_serial_number("existing_serial");
+  const std::string serialized_existing_seed = SerializeSeed(existing_seed);
+  StoredSeedInfo existing_seed_info;
+  existing_seed_info.set_data(serialized_existing_seed);
+  existing_seed_info.set_signature("existing_signature");
+  existing_seed_info.set_milestone(1);
+  ASSERT_TRUE(base::WriteFile(temp_seed_file_path_,
+                              SeedReaderWriter::CompressForSeedFileForTesting(
+                                  existing_seed_info.SerializeAsString())));
+
+  bool consumed = false;
+  VariationsSeed duplicate_seed = CreateTestSeed();
+  duplicate_seed.set_serial_number("new_serial");
+  auto initial_seed = std::make_unique<SeedResponse>();
+  initial_seed->data = SerializeSeed(duplicate_seed);
+  initial_seed->signature = "new_signature";
+  initial_seed->country = "us";
+  initial_seed->date = base::Time::Now();
+  initial_seed->is_gzip_compressed = false;
+  base::OnceClosure on_seed_consumed =
+      base::BindLambdaForTesting([&consumed]() { consumed = true; });
+
+  base::HistogramTester histogram_tester;
+  TestVariationsSeedStore seed_store(
+      &prefs_, temp_dir_.GetPath(),
+      /*signature_verification_needed=*/false, std::move(initial_seed),
+      /*use_first_run_prefs=*/true, version_info::Channel::DEV,
+      std::make_unique<const MockEntropyProviders>(
+          MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup}),
+      std::move(on_seed_consumed));
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  EXPECT_TRUE(consumed);
+  histogram_tester.ExpectTotalCount("Variations.FirstRunResult", 0);
+
+  std::string seed_file_data;
+  ASSERT_TRUE(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));
+  std::string uncompressed_contents;
+  ASSERT_TRUE(SeedReaderWriter::UncompressFromSeedFileForTesting(
+      seed_file_data, &uncompressed_contents));
+  StoredSeedInfo stored_seed_info;
+  ASSERT_TRUE(stored_seed_info.ParseFromString(uncompressed_contents));
+  EXPECT_EQ(stored_seed_info.data(), serialized_existing_seed);
+}
 
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -3653,6 +3755,7 @@ TEST_P(VariationsSeedStoreTestAllGroupsDates, UpdateSeedDateAndLogDayChange) {
 
 // Verifies that ImportInitialSeed() stores a valid gzip-compressed seed.
 TEST_F(VariationsSeedStoreTest, ImportInitialSeed_Success) {
+  bool consumed = false;
   const VariationsSeed test_seed = CreateTestSeed();
   auto initial_seed = std::make_unique<SeedResponse>();
   initial_seed->data = Gzip(SerializeSeed(test_seed));
@@ -3660,15 +3763,22 @@ TEST_F(VariationsSeedStoreTest, ImportInitialSeed_Success) {
   initial_seed->geo_level1 = "us-ca";
   initial_seed->date = base::Time::Now();
   initial_seed->is_gzip_compressed = true;
+  base::OnceClosure on_seed_consumed =
+      base::BindLambdaForTesting([&consumed]() { consumed = true; });
 
   TestingPrefServiceSimple prefs;
   VariationsSeedStore::RegisterPrefs(prefs.registry());
   base::HistogramTester histogram_tester;
-  TestVariationsSeedStore seed_store(&prefs,
-                                     /*seed_file_dir=*/base::FilePath(),
-                                     /*signature_verification_needed=*/false,
-                                     /*initial_seed=*/std::move(initial_seed),
-                                     /*use_first_run_prefs=*/false);
+  TestVariationsSeedStore seed_store(
+      &prefs,
+      /*seed_file_dir=*/base::FilePath(),
+      /*signature_verification_needed=*/false,
+      /*initial_seed=*/std::move(initial_seed),
+      /*use_first_run_prefs=*/false, version_info::Channel::UNKNOWN,
+      std::make_unique<const MockEntropyProviders>(
+          MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup}),
+      std::move(on_seed_consumed));
+  EXPECT_TRUE(consumed);
 
   EXPECT_EQ(SerializeSeedBase64(test_seed),
             prefs.GetString(prefs::kVariationsCompressedSeed));
@@ -3680,17 +3790,25 @@ TEST_F(VariationsSeedStoreTest, ImportInitialSeed_Success) {
 
 // Verifies that ImportInitialSeed() does not store a seed without data.
 TEST_F(VariationsSeedStoreTest, ImportInitialSeed_EmptyData) {
+  bool consumed = false;
   auto initial_seed = std::make_unique<SeedResponse>();
   initial_seed->date = base::Time::Now();
+  base::OnceClosure on_seed_consumed =
+      base::BindLambdaForTesting([&consumed]() { consumed = true; });
 
   TestingPrefServiceSimple prefs;
   VariationsSeedStore::RegisterPrefs(prefs.registry());
   base::HistogramTester histogram_tester;
-  TestVariationsSeedStore seed_store(&prefs,
-                                     /*seed_file_dir=*/base::FilePath(),
-                                     /*signature_verification_needed=*/false,
-                                     /*initial_seed=*/std::move(initial_seed),
-                                     /*use_first_run_prefs=*/false);
+  TestVariationsSeedStore seed_store(
+      &prefs,
+      /*seed_file_dir=*/base::FilePath(),
+      /*signature_verification_needed=*/false,
+      /*initial_seed=*/std::move(initial_seed),
+      /*use_first_run_prefs=*/false, version_info::Channel::UNKNOWN,
+      std::make_unique<const MockEntropyProviders>(
+          MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup}),
+      std::move(on_seed_consumed));
+  EXPECT_TRUE(consumed);
 
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
   histogram_tester.ExpectUniqueSample(
@@ -3700,17 +3818,25 @@ TEST_F(VariationsSeedStoreTest, ImportInitialSeed_EmptyData) {
 
 // Verifies that ImportInitialSeed() does not store a seed without a date.
 TEST_F(VariationsSeedStoreTest, ImportInitialSeed_NullDate) {
+  bool consumed = false;
   auto initial_seed = std::make_unique<SeedResponse>();
   initial_seed->data = SerializeSeed(CreateTestSeed());
+  base::OnceClosure on_seed_consumed =
+      base::BindLambdaForTesting([&consumed]() { consumed = true; });
 
   TestingPrefServiceSimple prefs;
   VariationsSeedStore::RegisterPrefs(prefs.registry());
   base::HistogramTester histogram_tester;
-  TestVariationsSeedStore seed_store(&prefs,
-                                     /*seed_file_dir=*/base::FilePath(),
-                                     /*signature_verification_needed=*/false,
-                                     /*initial_seed=*/std::move(initial_seed),
-                                     /*use_first_run_prefs=*/false);
+  TestVariationsSeedStore seed_store(
+      &prefs,
+      /*seed_file_dir=*/base::FilePath(),
+      /*signature_verification_needed=*/false,
+      /*initial_seed=*/std::move(initial_seed),
+      /*use_first_run_prefs=*/false, version_info::Channel::UNKNOWN,
+      std::make_unique<const MockEntropyProviders>(
+          MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup}),
+      std::move(on_seed_consumed));
+  EXPECT_TRUE(consumed);
 
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
   histogram_tester.ExpectUniqueSample(
@@ -3721,24 +3847,86 @@ TEST_F(VariationsSeedStoreTest, ImportInitialSeed_NullDate) {
 // Verifies that ImportInitialSeed() does not store a seed with an invalid
 // signature when signature verification is enabled.
 TEST_F(VariationsSeedStoreTest, ImportInitialSeed_InvalidSignature) {
+  bool consumed = false;
   auto initial_seed = std::make_unique<SeedResponse>();
   initial_seed->data = SerializeSeed(CreateTestSeed());
   initial_seed->signature = "invalid signature";
   initial_seed->date = base::Time::Now();
+  base::OnceClosure on_seed_consumed =
+      base::BindLambdaForTesting([&consumed]() { consumed = true; });
 
   TestingPrefServiceSimple prefs;
   VariationsSeedStore::RegisterPrefs(prefs.registry());
   base::HistogramTester histogram_tester;
-  TestVariationsSeedStore seed_store(&prefs,
-                                     /*seed_file_dir=*/base::FilePath(),
-                                     /*signature_verification_needed=*/true,
-                                     /*initial_seed=*/std::move(initial_seed),
-                                     /*use_first_run_prefs=*/false);
+  TestVariationsSeedStore seed_store(
+      &prefs,
+      /*seed_file_dir=*/base::FilePath(),
+      /*signature_verification_needed=*/true,
+      /*initial_seed=*/std::move(initial_seed),
+      /*use_first_run_prefs=*/false, version_info::Channel::UNKNOWN,
+      std::make_unique<const MockEntropyProviders>(
+          MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup}),
+      std::move(on_seed_consumed));
+  EXPECT_TRUE(consumed);
 
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
   histogram_tester.ExpectUniqueSample(
       "Variations.FirstRunResult", FirstRunSeedImportResult::kFailStoreFailed,
       1);
+}
+
+// Verifies that when `on_seed_consumed` is unset (e.g. Android WebView's
+// every-startup flow, which also disables `use_first_run_prefs`),
+// ImportInitialSeed() still overwrites an already-stored seed in Local State.
+TEST_F(VariationsSeedStoreTest,
+       ImportInitialSeed_OverwritesWhenFirstRunPrefsDisabled) {
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+
+  VariationsSeed old_seed = CreateTestSeed();
+  old_seed.set_serial_number("old_serial");
+  prefs.SetString(prefs::kVariationsCompressedSeed,
+                  SerializeSeedBase64(old_seed));
+
+  VariationsSeed new_seed = CreateTestSeed();
+  new_seed.set_serial_number("new_serial");
+  auto initial_seed = std::make_unique<SeedResponse>();
+  initial_seed->data = Gzip(SerializeSeed(new_seed));
+  initial_seed->country = "us";
+  initial_seed->date = base::Time::Now();
+  initial_seed->is_gzip_compressed = true;
+
+  base::HistogramTester histogram_tester;
+  TestVariationsSeedStore seed_store(&prefs,
+                                     /*seed_file_dir=*/base::FilePath(),
+                                     /*signature_verification_needed=*/false,
+                                     /*initial_seed=*/std::move(initial_seed),
+                                     /*use_first_run_prefs=*/false);
+
+  EXPECT_EQ(SerializeSeedBase64(new_seed),
+            prefs.GetString(prefs::kVariationsCompressedSeed));
+  histogram_tester.ExpectUniqueSample("Variations.FirstRunResult",
+                                      FirstRunSeedImportResult::kSuccess, 1);
+}
+
+// Verifies that `on_initial_seed_consumed` runs immediately when there is no
+// initial seed to import.
+TEST_F(VariationsSeedStoreTest, NullInitialSeedRunsOnInitialSeedConsumed) {
+  bool consumed = false;
+  TestingPrefServiceSimple prefs;
+  VariationsSeedStore::RegisterPrefs(prefs.registry());
+  base::HistogramTester histogram_tester;
+  TestVariationsSeedStore seed_store(
+      &prefs,
+      /*seed_file_dir=*/base::FilePath(),
+      /*signature_verification_needed=*/false,
+      /*initial_seed=*/nullptr,
+      /*use_first_run_prefs=*/false, version_info::Channel::UNKNOWN,
+      std::make_unique<const MockEntropyProviders>(
+          MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup}),
+      base::BindLambdaForTesting([&consumed]() { consumed = true; }));
+  EXPECT_TRUE(consumed);
+  histogram_tester.ExpectTotalCount("Variations.FirstRunResult", 0);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -3752,6 +3940,7 @@ TEST_F(VariationsSeedStoreTest, ImportFirstRunJavaSeed) {
   android::SetJavaFirstRunPrefsForTesting(
       test_seed_data, test_seed_signature, test_seed_country,
       test_seed_geo_level1, test_response_date, test_is_gzip_compressed);
+  EXPECT_TRUE(android::HasFirstRunSeed());
 
   auto seed = android::GetVariationsFirstRunSeed();
   EXPECT_EQ(test_seed_data, seed->data);
@@ -3762,6 +3951,7 @@ TEST_F(VariationsSeedStoreTest, ImportFirstRunJavaSeed) {
   EXPECT_EQ(test_is_gzip_compressed, seed->is_gzip_compressed);
 
   android::ClearJavaFirstRunPrefs();
+  EXPECT_FALSE(android::HasFirstRunSeed());
   seed = android::GetVariationsFirstRunSeed();
   EXPECT_EQ("", seed->data);
   EXPECT_EQ("", seed->signature);
@@ -3793,6 +3983,7 @@ TEST_P(VariationsSeedStoreFirstRunPrefsTest, FirstRunPrefsAllowed) {
   android::SetJavaFirstRunPrefsForTesting(
       test_seed_data, test_seed_signature, test_seed_country,
       test_seed_geo_level1, test_response_date, test_is_gzip_compressed);
+  absl::Cleanup cleanup = [] { android::ClearJavaFirstRunPrefs(); };
 
   const VariationsSeed test_seed = CreateTestSeed();
   const std::string seed_data = SerializeSeed(test_seed);

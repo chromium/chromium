@@ -308,19 +308,52 @@ bool IsFetchingEnabled() {
   return true;
 }
 
-// Returns the already downloaded first run seed, and clear the seed from the
-// native-side prefs. At this point, the seed has already been fetched from the
-// native seed storage, so it's no longer needed there. This is done regardless
-// if we fail or succeed below - since if we succeed, we're good to go and if we
-// fail, we probably don't want to keep around the bad content anyway.
+// Returns the already downloaded first-run seed from native staging storage if
+// no seed has been recorded in Local State yet, or if a first-run seed is still
+// pending in native staging storage (e.g. if a previous session flushed
+// `kVariationsSeedDate` to Local State before an asynchronous seed-file write
+// completed and the staging storage was cleared). Native staging storage is
+// cleared either immediately by `TakeSeedFromNativeVariationsSeedStore()` or
+// later by `ClearNativeVariationsSeed()`.
 std::unique_ptr<SeedResponse> MaybeImportFirstRunSeed(
     VariationsServiceClient* client,
     PrefService* local_state) {
-  if (!local_state->HasPrefPath(prefs::kVariationsSeedDate)) {
+  if (!local_state->HasPrefPath(prefs::kVariationsSeedDate) ||
+      client->HasPendingNativeVariationsSeed()) {
     DVLOG(1) << "Importing first run seed from native preferences.";
     return client->TakeSeedFromNativeVariationsSeedStore();
   }
   return nullptr;
+}
+
+// Creates the seed store, importing the first-run seed if there is one.
+// `client` must outlive the returned seed store.
+std::unique_ptr<VariationsSeedStore> CreateVariationsSeedStore(
+    VariationsServiceClient* client,
+    PrefService* local_state,
+    const EntropyProviders* entropy_providers) {
+  std::unique_ptr<SeedResponse> initial_seed =
+      MaybeImportFirstRunSeed(client, local_state);
+  // If the seed is still in native staging storage after being taken, the
+  // platform defers clearing it until the seed has been durably stored or
+  // discarded.
+  base::OnceClosure on_seed_consumed;
+  if (initial_seed && client->HasPendingNativeVariationsSeed()) {
+    on_seed_consumed =
+        base::BindOnce(&VariationsServiceClient::ClearNativeVariationsSeed,
+                       base::Unretained(client));
+  }
+  return std::make_unique<VariationsSeedStore>(
+      local_state, std::move(initial_seed),
+      /*signature_verification_enabled_on_load=*/
+      client->EnableSignatureVerificationOnLoad(),
+      /*signature_verification_enabled_on_receive=*/true,
+      std::make_unique<VariationsSafeSeedStore>(
+          local_state, client->GetVariationsSeedFileDir(),
+          client->GetChannelForVariations(), entropy_providers),
+      client->GetChannelForVariations(), client->GetVariationsSeedFileDir(),
+      entropy_providers, /*use_first_run_prefs=*/true,
+      std::move(on_seed_consumed));
 }
 
 // Checks if the given runtime mutable `study`/`experiment` has already been
@@ -475,20 +508,9 @@ VariationsService::VariationsService(
           /*enable_limited_entropy_mode=*/true)),
       field_trial_creator_(
           client_.get(),
-          std::make_unique<VariationsSeedStore>(
-              local_state,
-              MaybeImportFirstRunSeed(client_.get(), local_state),
-              /*signature_verification_enabled_on_load=*/
-              client_->EnableSignatureVerificationOnLoad(),
-              /*signature_verification_enabled_on_receive=*/true,
-              std::make_unique<VariationsSafeSeedStore>(
-                  local_state,
-                  client_.get()->GetVariationsSeedFileDir(),
-                  client_.get()->GetChannelForVariations(),
-                  entropy_providers_.get()),
-              client_.get()->GetChannelForVariations(),
-              client_.get()->GetVariationsSeedFileDir(),
-              entropy_providers_.get())) {
+          CreateVariationsSeedStore(client_.get(),
+                                    local_state,
+                                    entropy_providers_.get())) {
   DCHECK(client_);
   DCHECK(resource_request_allowed_notifier_);
 

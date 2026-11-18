@@ -20,6 +20,10 @@ namespace android {
 COMPONENT_EXPORT(VARIATIONS)
 std::unique_ptr<variations::SeedResponse> GetVariationsFirstRunSeed();
 
+// Returns whether a first-run seed is currently stored on the Java side of
+// Chrome for Android.
+COMPONENT_EXPORT(VARIATIONS) bool HasFirstRunSeed();
+
 // Clears first run seed preferences stored on the Java side of Chrome for
 // Android.
 COMPONENT_EXPORT(VARIATIONS) void ClearJavaFirstRunPrefs();

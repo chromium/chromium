@@ -120,7 +120,12 @@ ChromeFeatureListCreator::TakeInitialSeed() {
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<variations::SeedResponse> seed =
       variations::android::GetVariationsFirstRunSeed();
-  variations::android::ClearJavaFirstRunPrefs();
+  // A non-empty seed stays in the Java first-run prefs until
+  // ChromeVariationsServiceClient::ClearNativeVariationsSeed() is called, so
+  // that it is not lost if the process dies before it is durably stored.
+  if (seed->data.empty()) {
+    variations::android::ClearJavaFirstRunPrefs();
+  }
   return seed;
 #else
   return std::move(initial_seed_);
