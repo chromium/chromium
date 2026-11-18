@@ -380,9 +380,8 @@ public class ContactsPickerDialogTest
         mLastActionRecorded = ContactsPickerAction.NUM_ENTRIES;
 
         PickerCategoryView categoryView = mDialog.getCategoryViewForTesting();
-        View cancel = new View(mActivity);
         int callCount = onActionCallback.getCallCount();
-        categoryView.onClick(cancel);
+        ThreadUtils.runOnUiThreadBlocking(() -> categoryView.onClick(new View(mActivity)));
         onActionCallback.waitForCallback(callCount, 1);
         Assert.assertEquals(ContactsPickerAction.CANCEL, mLastActionRecorded);
 
