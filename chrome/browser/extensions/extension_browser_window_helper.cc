@@ -21,7 +21,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/app_tab_helper.h"
-#include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -62,17 +61,6 @@ bool ShouldCloseTabOnExtensionUnload(const Extension* extension,
   // have a URL of https://mail.google.com.
   if (AppTabHelper::FromWebContents(web_contents)->GetExtensionAppId() ==
       extension->id()) {
-    return true;
-  }
-
-  // Case 3: The root of this tab is the embedder, which hosts a top-level
-  // viewer that is a generic MIME handler for this extension. The tab
-  // exists only for that viewer, so close it on unload. An embedded
-  // handler does not qualify - the rest of the page is unrelated.
-  if (auto* stream_manager =
-          mime_handler::MimeHandlerStreamManager::FromWebContents(web_contents);
-      stream_manager &&
-      stream_manager->GetTopLevelHandlerExtensionId() == extension->id()) {
     return true;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

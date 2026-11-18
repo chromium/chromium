@@ -56,7 +56,11 @@ namespace mime_handler {
 // 4. Observing for content navigations and dispatching the content-frame
 //    handling to the stream delegate.
 // 5. Observing extension unload, so that streams never outlive their handler
-//    extension.
+//    extension, and so that the main frame of a top-level stream reloads its
+//    document for the next handler of the MIME type: the one a new load of
+//    the document would pick, such as another handler extension or the native
+//    handler. A top-level stream is for a document shown in a whole tab, such
+//    as `http://site.test/file.pdf`.
 // `MimeHandlerStreamManager` is scoped to the `content::WebContents` it tracks,
 // but it may also delete itself if all streams are no longer used.
 // `StreamContainer` objects are stored from
@@ -217,6 +221,9 @@ class MimeHandlerStreamManager
   // was buffered from. The registration means the handler gave the document up,
   // so it is made from the abort itself and can be true before any body is
   // available to replay.
+  // If the handler unloads before the fallback navigation starts, the reload
+  // for the next handler replaces the abort's registration, and then this
+  // returns false.
   // Cleared in `DidFinishNavigation()` / `FrameDeleted()`.
   bool IsPendingNativeFallback(content::FrameTreeNodeId frame_tree_node_id,
                                const GURL& response_url) const;
@@ -320,6 +327,11 @@ class MimeHandlerStreamManager
       content::RenderFrameHost* embedder_host,
       content::FrameTreeNodeId frame_tree_node_id);
 
+  // For testing only. Runs `callback` once the body of the next native
+  // fallback is ready, after the manager has handled it, even if the stream
+  // is gone by then.
+  void SetOnFallbackDataPipeForTesting(base::OnceClosure callback);
+
  protected:
   // Use `Create()` to create an instance instead.
   explicit MimeHandlerStreamManager(content::WebContents* contents);
@@ -364,6 +376,44 @@ class MimeHandlerStreamManager
   using StreamInfoMap =
       std::map<EmbedderHostInfo, std::unique_ptr<extensions::StreamInfo>>;
 
+  // The handlers that may take the document of a fallback navigation.
+  enum class AllowedHandlers {
+    // Only the native handler, because the handler extension gave the
+    // document up.
+    kNativeOnly,
+    // Any handler, picked as for a new navigation, because the handler
+    // extension unloaded.
+    kAny,
+  };
+
+  // `original_url` is the URL the cached body was buffered for; lookups must
+  // match it so a redirected re-navigation does not replay the body under a
+  // different committed URL.
+  struct PendingNativeFallback {
+    GURL original_url;
+    std::optional<CachedFallbackBody> response;
+    // The only navigation allowed to take `response` and clear the
+    // registration. Unset until the fallback navigation is started.
+    std::optional<int64_t> navigation_id;
+    AllowedHandlers allowed_handlers = AllowedHandlers::kNativeOnly;
+  };
+
+  // While a `ScopedDeferSelfDelete` is alive, `DeleteSelfIfNoStreams()` does
+  // not delete the manager; the last `ScopedDeferSelfDelete` to be destroyed
+  // runs it. A navigation started inside `LoadURLWithParams()` can finish
+  // before the call returns and leave nothing to track, but the manager must
+  // outlive the call.
+  class ScopedDeferSelfDelete {
+   public:
+    explicit ScopedDeferSelfDelete(MimeHandlerStreamManager& manager);
+    ScopedDeferSelfDelete(const ScopedDeferSelfDelete&) = delete;
+    ScopedDeferSelfDelete& operator=(const ScopedDeferSelfDelete&) = delete;
+    ~ScopedDeferSelfDelete();
+
+   private:
+    const base::WeakPtr<MimeHandlerStreamManager> manager_;
+  };
+
   // Mark an unclaimed stream info with the same frame tree node ID as
   // `embedder_host` as claimed by `embedder_host`. Returns a pointer to the
   // claimed stream info. Callers must ensure such a stream info exists with
@@ -375,18 +425,20 @@ class MimeHandlerStreamManager
   // deletes `this` if there are no remaining stream infos.
   void DeleteClaimedStreamInfo(content::RenderFrameHost* embedder_host);
 
-  // Destroys `iter`'s frame container (if any) and erases the entry.
+  // Destroys `iter`'s frame container (if any) and erases the entry, with the
+  // frame's native fallback if that still waits for the stream's body.
   // Returns the iterator to the next entry. Never deletes `this`; callers
   // that may empty the map must follow up with `DeleteSelfIfNoStreams()`.
   StreamInfoMap::iterator EraseStreamInfo(StreamInfoMap::iterator iter);
 
   // Deletes `this` if there are no remaining stream infos or pending
   // native-fallback registrations. Callers must not touch `this` afterwards.
+  // Does nothing while a `ScopedDeferSelfDelete` is alive.
   void DeleteSelfIfNoStreams();
 
   // Continues `AbortAndFallbackToNativeHandler()` once the body cache is
-  // ready. Drops the frame's fallback registration if the stream was deleted
-  // while waiting.
+  // ready. Does nothing if the stream was deleted while waiting, because
+  // `EraseStreamInfo()` dropped the fallback with it.
   void OnGotFallbackDataPipe(EmbedderHostInfo embedder_info,
                              base::WeakPtr<StreamContainer> stream,
                              mojo::ScopedDataPipeConsumerHandle body);
@@ -396,9 +448,18 @@ class MimeHandlerStreamManager
   // navigation replays; without one the navigation loads from the network.
   // Drops the frame's registration instead if the frame left `original_url`,
   // is no longer active, or the navigation does not start.
+  // `allowed_handlers` says which handlers may take the document. Callers
+  // must hold a `ScopedDeferSelfDelete`.
   void StartFallbackNavigation(EmbedderHostInfo embedder_info,
                                const GURL& original_url,
-                               std::optional<CachedFallbackBody> response);
+                               std::optional<CachedFallbackBody> response,
+                               AllowedHandlers allowed_handlers);
+
+  // Returns whether the embedder frame `embedder_host` should reload when the
+  // handler extension `extension_id` of its stream unloads for `reason`.
+  bool ShouldReloadEmbedderOnUnload(content::RenderFrameHost* embedder_host,
+                                    const ExtensionId& extension_id,
+                                    UnloadedExtensionReason reason) const;
 
   // Called when a RenderFrameHost in the observed WebContents is replaced or
   // deleted. If `old_host` is an extension host, deletes the associated stream.
@@ -437,31 +498,29 @@ class MimeHandlerStreamManager
   // Stores stream info by embedder host info.
   StreamInfoMap stream_infos_;
 
-  // `original_url` is the URL the cached body was buffered for; lookups must
-  // match it so a redirected re-navigation does not replay the body under a
-  // different committed URL.
-  struct PendingNativeFallback {
-    GURL original_url;
-    std::optional<CachedFallbackBody> response;
-    // The only navigation allowed to take `response` and clear the
-    // registration. Unset until the fallback navigation is started.
-    std::optional<int64_t> navigation_id;
-  };
-
   // Embedder frames marked for native-handler fallback whose pending
   // re-navigation has not yet completed, mapped to the stream's cached response
   // body (empty when no body was buffered or the body has already been
   // taken). Keyed by `FrameTreeNodeId` so two concurrent iframes handling the
   // same URL are distinguished, and so the registration survives cross-process
   // RFH swaps during the scoped re-navigation (the FTN persists across
-  // same-frame navigation; only RFHs within it are replaced).
+  // same-frame navigation; only RFHs within it are replaced). The reload of
+  // the main frame of a top-level stream whose handler unloaded is registered
+  // here too, with `AllowedHandlers::kAny`, so that the manager stays until the
+  // reload ends.
   base::flat_map<content::FrameTreeNodeId, PendingNativeFallback>
       pending_native_fallback_frames_;
 
   // Observes extension unload so that streams never outlive their handler
-  // extension.
+  // extension, and so that the main frame of a top-level stream reloads its
+  // document for the next handler.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};
+
+  base::OnceClosure on_fallback_data_pipe_for_testing_;
+
+  // Number of `ScopedDeferSelfDelete` objects alive.
+  size_t self_delete_deferrals_ = 0;
 
   // Needed to avoid use-after-free when setting up beforeunload API support.
   base::WeakPtrFactory<MimeHandlerStreamManager> weak_factory_{this};

@@ -5,6 +5,7 @@
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
@@ -29,6 +30,7 @@
 #include "content/public/test/render_frame_host_test_support.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/web_contents_observer_test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/mime_handler/generic_mime_handler_stream_delegate.h"
@@ -158,7 +160,8 @@ class MimeHandlerStreamManagerTest : public content::RenderViewHostTestHarness {
   // With `body_complete` false the body producer stays open, so the cache
   // keeps caching until `CloseBodyProducer()`.
   void SetUpStreamWithCachedBody(content::RenderFrameHost* embedder_host,
-                                 bool body_complete) {
+                                 bool body_complete,
+                                 bool embedded = true) {
     mojo::ScopedDataPipeProducerHandle producer;
     mojo::ScopedDataPipeConsumerHandle consumer;
     ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(64u, producer, consumer));
@@ -176,7 +179,7 @@ class MimeHandlerStreamManagerTest : public content::RenderViewHostTestHarness {
       ASSERT_TRUE(base::test::RunUntil([&] { return cache->is_complete(); }));
     }
 
-    auto stream = GenerateSampleStreamContainer(1);
+    auto stream = GenerateSampleStreamContainer(1, embedded);
     stream->SetBodyCache(std::move(cache));
     MimeHandlerStreamManager* manager = mime_handler_stream_manager();
     manager->AddStreamContainer(
@@ -244,7 +247,30 @@ class MimeHandlerStreamManagerTest : public content::RenderViewHostTestHarness {
         ->TriggerOnUnloaded(extension.get(), reason);
   }
 
+  // Unloads the extension with `extension_id` for `reason` and returns the
+  // frames in which the unload started a navigation.
+  std::vector<content::FrameTreeNodeId> UnloadAndGetReloadedFrames(
+      const ExtensionId& extension_id,
+      UnloadedExtensionReason reason) {
+    std::vector<content::FrameTreeNodeId> frames;
+    content::NavigationStartObserver observer(
+        web_contents(),
+        base::BindLambdaForTesting([&](content::NavigationHandle* handle) {
+          frames.push_back(handle->GetFrameTreeNodeId());
+        }));
+    TriggerOnExtensionUnloaded(extension_id, reason);
+    return frames;
+  }
+
   void CloseBodyProducer() { body_producer_.reset(); }
+
+  content::RenderFrameHost* SetUpTopLevelStream() {
+    content::RenderFrameHost* embedder_host =
+        NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+    SetUpSimpleStream(embedder_host, /*container_number=*/1,
+                      /*embedded=*/false);
+    return embedder_host;
+  }
 
  private:
   std::unique_ptr<TestExtensionsBrowserClient> extensions_browser_client_;
@@ -1544,7 +1570,7 @@ TEST_F(MimeHandlerStreamManagerTest,
   content::NavigationSimulator::CreateFromPending(
       web_contents()->GetController())
       ->Commit();
-  EXPECT_FALSE(manager->IsPendingNativeFallback(embedder_ftn, pdf_url));
+  EXPECT_FALSE(mime_handler_stream_manager());
 }
 
 TEST_F(MimeHandlerStreamManagerTest,
@@ -2174,7 +2200,9 @@ TEST_F(MimeHandlerStreamManagerTest,
 }
 
 // Unloading the handler extension erases its claimed stream; the manager
-// self-deletes once no streams remain.
+// self-deletes once no streams remain. TERMINATE (extension crash) is used
+// because any other unload reason reloads the document, and the pending reload
+// keeps the manager alive.
 TEST_F(MimeHandlerStreamManagerTest, UnloadErasesClaimedStream) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
@@ -2184,13 +2212,14 @@ TEST_F(MimeHandlerStreamManagerTest, UnloadErasesClaimedStream) {
                   ->GetTopLevelHandlerExtensionId()
                   .has_value());
 
-  TriggerOnExtensionUnloaded("extension_id1", UnloadedExtensionReason::DISABLE);
+  TriggerOnExtensionUnloaded("extension_id1",
+                             UnloadedExtensionReason::TERMINATE);
 
   EXPECT_FALSE(mime_handler_stream_manager());
 }
 
 // Unloading the handler extension erases its unclaimed stream too. TERMINATE
-// (extension crash) is handled like any other unload reason.
+// (extension crash) erases streams like any other unload reason.
 TEST_F(MimeHandlerStreamManagerTest, UnloadErasesUnclaimedStream) {
   auto stream_container = GenerateSampleStreamContainer(/*container_number=*/1);
   const ExtensionId extension_id = stream_container->extension_id();
@@ -2212,7 +2241,9 @@ TEST_F(MimeHandlerStreamManagerTest, UnloadErasesUnclaimedStream) {
 }
 
 // With streams from two extensions, unloading one erases only its stream and
-// the manager stays alive for the other.
+// the manager stays alive for the other. TERMINATE (extension crash) is used
+// because any other unload reason reloads the document, and the pending reload
+// would keep the manager alive.
 TEST_F(MimeHandlerStreamManagerTest, UnloadErasesOnlyUnloadedExtensionStream) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
@@ -2222,12 +2253,285 @@ TEST_F(MimeHandlerStreamManagerTest, UnloadErasesOnlyUnloadedExtensionStream) {
   SetUpSimpleStream(embedder_host, /*container_number=*/1, /*embedded=*/false);
   SetUpSimpleStream(child_host, /*container_number=*/2, /*embedded=*/true);
 
-  TriggerOnExtensionUnloaded("extension_id1", UnloadedExtensionReason::DISABLE);
+  TriggerOnExtensionUnloaded("extension_id1",
+                             UnloadedExtensionReason::TERMINATE);
 
   ASSERT_TRUE(mime_handler_stream_manager());
   EXPECT_FALSE(
       mime_handler_stream_manager()->GetStreamContainer(embedder_host));
   EXPECT_TRUE(mime_handler_stream_manager()->GetStreamContainer(child_host));
+}
+
+// Disabling the handler of a top-level stream should reload the document in
+// the tab's main frame, so that the next handler can show it. The stream
+// should not outlive the handler while the reload keeps the manager alive.
+TEST_F(MimeHandlerStreamManagerTest, UnloadReloadsMainFrameOnDisable) {
+  content::RenderFrameHost* embedder_host = SetUpTopLevelStream();
+
+  EXPECT_THAT(UnloadAndGetReloadedFrames("extension_id1",
+                                         UnloadedExtensionReason::DISABLE),
+              testing::ElementsAre(embedder_host->GetFrameTreeNodeId()));
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  ASSERT_TRUE(manager);
+  EXPECT_FALSE(manager->GetStreamContainer(embedder_host));
+}
+
+// Uninstalling the handler of a top-level stream should reload the main frame
+// as disabling does.
+TEST_F(MimeHandlerStreamManagerTest, UnloadReloadsMainFrameOnUninstall) {
+  content::RenderFrameHost* embedder_host = SetUpTopLevelStream();
+
+  EXPECT_THAT(UnloadAndGetReloadedFrames("extension_id1",
+                                         UnloadedExtensionReason::UNINSTALL),
+              testing::ElementsAre(embedder_host->GetFrameTreeNodeId()));
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  ASSERT_TRUE(manager);
+  EXPECT_FALSE(manager->GetStreamContainer(embedder_host));
+}
+
+// Updating the handler of a top-level stream should reload the main frame as
+// disabling does, so that the new version can show the document.
+TEST_F(MimeHandlerStreamManagerTest, UnloadReloadsMainFrameOnUpdate) {
+  content::RenderFrameHost* embedder_host = SetUpTopLevelStream();
+
+  EXPECT_THAT(UnloadAndGetReloadedFrames("extension_id1",
+                                         UnloadedExtensionReason::UPDATE),
+              testing::ElementsAre(embedder_host->GetFrameTreeNodeId()));
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  ASSERT_TRUE(manager);
+  EXPECT_FALSE(manager->GetStreamContainer(embedder_host));
+}
+
+// The main frame of a crashed handler is not expected to reload, like other
+// pages of a crashed extension.
+TEST_F(MimeHandlerStreamManagerTest,
+       UnloadDoesNotReloadMainFrameOfCrashedHandler) {
+  SetUpTopLevelStream();
+
+  EXPECT_THAT(UnloadAndGetReloadedFrames("extension_id1",
+                                         UnloadedExtensionReason::TERMINATE),
+              testing::IsEmpty());
+}
+
+// Unloading an extension that does not handle the top-level stream is not
+// expected to reload the main frame.
+TEST_F(MimeHandlerStreamManagerTest,
+       UnloadOfOtherExtensionDoesNotReloadMainFrame) {
+  SetUpTopLevelStream();
+
+  EXPECT_THAT(UnloadAndGetReloadedFrames("extension_id2",
+                                         UnloadedExtensionReason::DISABLE),
+              testing::IsEmpty());
+}
+
+// The handler of a top-level stream may change the tab's URL fragment, for
+// example from `#page=2` to `#page=3`. Unloading the handler should reload the
+// document at `#page=3`, so that the next handler opens it where the user was.
+TEST_F(MimeHandlerStreamManagerTest,
+       UnloadReloadsMainFrameAfterFragmentChange) {
+  const GURL pdf_url("https://original_url1#page=2");
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), pdf_url);
+  SetUpSimpleStream(embedder_host, /*container_number=*/1, /*embedded=*/false);
+  content::NavigationSimulator::CreateRendererInitiated(
+      pdf_url.Resolve("#page=3"), embedder_host)
+      ->CommitSameDocument();
+
+  std::vector<GURL> reloaded_urls;
+  content::NavigationStartObserver observer(
+      web_contents(),
+      base::BindLambdaForTesting([&](content::NavigationHandle* handle) {
+        reloaded_urls.push_back(handle->GetURL());
+      }));
+  TriggerOnExtensionUnloaded("extension_id1", UnloadedExtensionReason::DISABLE);
+
+  EXPECT_THAT(reloaded_urls, testing::ElementsAre(pdf_url.Resolve("#page=3")));
+}
+
+// A document of the handler extension itself, such as
+// `chrome-extension://<id>/file.pdf`, cannot load once the extension is gone.
+// Unloading the handler is not expected to reload it.
+TEST_F(MimeHandlerStreamManagerTest,
+       UnloadDoesNotReloadDocumentOfUnloadedExtension) {
+  const GURL document_url("chrome-extension://extension_id1/file.pdf");
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), document_url);
+  auto transferrable_loader = blink::mojom::TransferrableURLLoader::New();
+  transferrable_loader->url = GURL(kStreamUrl1);
+  transferrable_loader->head = network::mojom::URLResponseHead::New();
+  transferrable_loader->head->mime_type = kPdfMimeType;
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      std::make_unique<StreamContainer>(
+          /*tab_id=*/1, /*embedded=*/false, GURL(kHandlerUrl1), kExtensionId1,
+          std::move(transferrable_loader), document_url),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>(),
+      kFakeNavigationId);
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  ASSERT_EQ(manager->GetTopLevelHandlerExtensionId(), kExtensionId1);
+
+  EXPECT_THAT(UnloadAndGetReloadedFrames(kExtensionId1,
+                                         UnloadedExtensionReason::DISABLE),
+              testing::IsEmpty());
+}
+
+// After the handler calls AbortAndFallbackToNativeHandler() and the fallback
+// navigation has started, unloading the handler is not expected to reload: the
+// document should still go to the native handler.
+TEST_F(MimeHandlerStreamManagerTest, UnloadKeepsStartedNativeFallback) {
+  const GURL pdf_url(kOriginalUrl1);
+  content::RenderFrameHost* embedder_host = SetUpTopLevelStream();
+  mime_handler_stream_manager()
+      ->GetClaimedStreamInfoForTesting(embedder_host)
+      ->SetDidExtensionFinishNavigation();
+  mime_handler_stream_manager()->AbortAndFallbackToNativeHandler(embedder_host);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return web_contents()->GetController().GetPendingEntry(); }));
+
+  EXPECT_THAT(UnloadAndGetReloadedFrames("extension_id1",
+                                         UnloadedExtensionReason::DISABLE),
+              testing::IsEmpty());
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  ASSERT_TRUE(manager);
+  EXPECT_TRUE(manager->IsPendingNativeFallback(
+      embedder_host->GetFrameTreeNodeId(), pdf_url));
+}
+
+// Unloading the handler while its native fallback waits for the body, before
+// the fallback navigation starts, should replace the fallback with a reload
+// for the next handler. Without a body cache, the body wait ends at once, and
+// the reload should stay after that.
+TEST_F(MimeHandlerStreamManagerTest,
+       UnloadReplacesNativeFallbackWithoutBodyCache) {
+  content::RenderFrameHost* embedder_host = SetUpTopLevelStream();
+  mime_handler_stream_manager()
+      ->GetClaimedStreamInfoForTesting(embedder_host)
+      ->SetDidExtensionFinishNavigation();
+  base::test::TestFuture<void> body_ready;
+  mime_handler_stream_manager()->SetOnFallbackDataPipeForTesting(
+      body_ready.GetCallback());
+  mime_handler_stream_manager()->AbortAndFallbackToNativeHandler(embedder_host);
+  ASSERT_FALSE(web_contents()->GetController().GetPendingEntry());
+
+  EXPECT_THAT(UnloadAndGetReloadedFrames("extension_id1",
+                                         UnloadedExtensionReason::DISABLE),
+              testing::ElementsAre(embedder_host->GetFrameTreeNodeId()));
+  ASSERT_TRUE(body_ready.Wait());
+
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  ASSERT_TRUE(manager);
+  EXPECT_FALSE(manager->IsPendingNativeFallback(
+      embedder_host->GetFrameTreeNodeId(), GURL(kOriginalUrl1)));
+  // The reload still owns the frame's registration, so its end deletes the
+  // manager.
+  content::NavigationSimulator::CreateFromPending(
+      web_contents()->GetController())
+      ->Commit();
+  EXPECT_FALSE(mime_handler_stream_manager());
+}
+
+// Same as above, while the body is still loading. The body wait ends when the
+// unload erases the stream, and the reload should stay after that.
+TEST_F(MimeHandlerStreamManagerTest,
+       UnloadReplacesNativeFallbackWaitingForBody) {
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+  SetUpStreamWithCachedBody(embedder_host, /*body_complete=*/false,
+                            /*embedded=*/false);
+  mime_handler_stream_manager()->AbortAndFallbackToNativeHandler(embedder_host);
+  ASSERT_FALSE(web_contents()->GetController().GetPendingEntry());
+
+  EXPECT_THAT(UnloadAndGetReloadedFrames("extension_id1",
+                                         UnloadedExtensionReason::DISABLE),
+              testing::ElementsAre(embedder_host->GetFrameTreeNodeId()));
+
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  ASSERT_TRUE(manager);
+  EXPECT_FALSE(manager->IsPendingNativeFallback(
+      embedder_host->GetFrameTreeNodeId(), GURL(kOriginalUrl1)));
+  // The reload still owns the frame's registration, so its end deletes the
+  // manager.
+  content::NavigationSimulator::CreateFromPending(
+      web_contents()->GetController())
+      ->Commit();
+  EXPECT_FALSE(mime_handler_stream_manager());
+}
+
+// A native fallback that waits for the body of a stream that goes away can no
+// longer start. Its registration should go with the stream, so the manager
+// deletes itself when nothing else keeps it. A crashed handler's stream is
+// erased without a reload.
+TEST_F(MimeHandlerStreamManagerTest,
+       ErasedStreamDropsNativeFallbackWithoutBodyCache) {
+  content::RenderFrameHost* embedder_host = SetUpTopLevelStream();
+  mime_handler_stream_manager()
+      ->GetClaimedStreamInfoForTesting(embedder_host)
+      ->SetDidExtensionFinishNavigation();
+  mime_handler_stream_manager()->AbortAndFallbackToNativeHandler(embedder_host);
+
+  TriggerOnExtensionUnloaded("extension_id1",
+                             UnloadedExtensionReason::TERMINATE);
+
+  EXPECT_FALSE(mime_handler_stream_manager());
+}
+
+// Same as above, while the body is still loading.
+TEST_F(MimeHandlerStreamManagerTest,
+       ErasedStreamDropsNativeFallbackWaitingForBody) {
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+  SetUpStreamWithCachedBody(embedder_host, /*body_complete=*/false,
+                            /*embedded=*/false);
+  mime_handler_stream_manager()->AbortAndFallbackToNativeHandler(embedder_host);
+
+  TriggerOnExtensionUnloaded("extension_id1",
+                             UnloadedExtensionReason::TERMINATE);
+
+  EXPECT_FALSE(mime_handler_stream_manager());
+}
+
+// The reload for the next handler keeps the manager alive only until the
+// reload ends. A reload that commits without a new stream leaves nothing for
+// the manager to track.
+TEST_F(MimeHandlerStreamManagerTest, UnloadReloadCommitDeletesManager) {
+  SetUpTopLevelStream();
+  TriggerOnExtensionUnloaded("extension_id1", UnloadedExtensionReason::DISABLE);
+  ASSERT_TRUE(mime_handler_stream_manager());
+
+  content::NavigationSimulator::CreateFromPending(
+      web_contents()->GetController())
+      ->Commit();
+
+  EXPECT_FALSE(mime_handler_stream_manager());
+}
+
+// A reload that fails leaves nothing for the manager to track.
+TEST_F(MimeHandlerStreamManagerTest, UnloadReloadAbortDeletesManager) {
+  SetUpTopLevelStream();
+  TriggerOnExtensionUnloaded("extension_id1", UnloadedExtensionReason::DISABLE);
+  ASSERT_TRUE(mime_handler_stream_manager());
+
+  content::NavigationSimulator::CreateFromPending(
+      web_contents()->GetController())
+      ->Fail(net::ERR_ABORTED);
+
+  EXPECT_FALSE(mime_handler_stream_manager());
+}
+
+// A reload that another navigation replaces leaves nothing for the manager to
+// track.
+TEST_F(MimeHandlerStreamManagerTest,
+       UnloadReloadReplacedByOtherNavigationDeletesManager) {
+  SetUpTopLevelStream();
+  TriggerOnExtensionUnloaded("extension_id1", UnloadedExtensionReason::DISABLE);
+  ASSERT_TRUE(mime_handler_stream_manager());
+
+  content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://other.test/"), web_contents())
+      ->Start();
+
+  EXPECT_FALSE(mime_handler_stream_manager());
 }
 
 // MimeHandlerStreamManager host privilege status should be correctly revoked

@@ -41,9 +41,12 @@ TestMimeHandlerStreamManager::CreateForWebContents(
 
 void TestMimeHandlerStreamManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  base::WeakPtr<TestMimeHandlerStreamManager> weak_this =
+      weak_factory_.GetWeakPtr();
   MimeHandlerStreamManager::DidFinishNavigation(navigation_handle);
 
-  if (!on_navigation_finished_) {
+  // The base class deletes `this` once it no longer tracks anything.
+  if (!weak_this || !on_navigation_finished_) {
     return;
   }
 

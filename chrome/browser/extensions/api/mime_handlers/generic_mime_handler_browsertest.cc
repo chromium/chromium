@@ -21,20 +21,16 @@
 #include "chrome/browser/plugins/plugin_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/download/public/common/download_item.h"
-#include "components/javascript_dialogs/app_modal_dialog_controller.h"
-#include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/download_manager.h"
@@ -61,10 +57,15 @@
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "pdf/buildflags.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_extension_test_util.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace extensions {
 
@@ -700,166 +701,53 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
                     download::DownloadItem::COMPLETE));
 }
 
-// A generic MIME handler renders a top-level PDF as an embedded
-// cross-origin OOPIF. Disabling the extension closes its tab.
+// Frame tree of a top-level viewer:
+//   top-level frame: test.pdf, the page the browser generates to host the
+//                    viewer
+//     iframe: the viewer of `handler`, then of `next_handler`, then the
+//             built-in PDF viewer (with ENABLE_PDF)
 IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
-                       DisablingTopLevelHandlerClosesTab) {
-  const Extension* extension =
+                       UninstallingHandlerHandsDocumentToNextHandler) {
+  // The handler installed last takes the document. The `embeddable` fixture is
+  // only a second PDF handler here.
+  const Extension* next_handler = LoadExtension(
+      test_data_dir_.AppendASCII(kTestExtensionDir).AppendASCII("embeddable"));
+  ASSERT_TRUE(next_handler);
+  const Extension* handler =
       LoadExtension(test_data_dir_.AppendASCII(kTestExtensionDir));
-  ASSERT_TRUE(extension);
+  ASSERT_TRUE(handler);
 
-  // Tab 0 hosts the PDF viewer. Wait for handler.js to call
-  // chrome.test.succeed() so the top-level StreamInfo is claimed.
-  ResultCatcher catcher;
-  content::WebContents* pdf_web_contents = GetActiveWebContents();
-  ASSERT_TRUE(NavigateToURL(pdf_web_contents,
-                            embedded_test_server()->GetURL(kTestPdfPath)));
-  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
-
-  auto* manager =
-      mime_handler::MimeHandlerStreamManager::FromWebContents(pdf_web_contents);
-  ASSERT_TRUE(manager);
-  ASSERT_TRUE(manager->GetTopLevelHandlerExtensionId());
-  ASSERT_EQ(extension->id(), *manager->GetTopLevelHandlerExtensionId());
-
-  // Open a second tab so the viewer tab is not the last tab, which would
-  // be NTP-replaced (reusing its WebContents) rather than closed.
+  // First, open a PDF and check that `handler` shows it.
+  ASSERT_TRUE(OpenTestURL(embedded_test_server()->GetURL(kTestPdfPath)));
+  content::RenderFrameHost* viewer_frame = FindMimeHandlerExtensionFrame();
+  ASSERT_TRUE(viewer_frame);
+  EXPECT_EQ(handler->id(), viewer_frame->GetLastCommittedOrigin().host());
+  // Add a second tab so that the next step fails if Chrome closes the viewer's
+  // tab on unload. With only one tab, Chrome would load the New Tab page in
+  // that tab instead of closing it, and the reload may cancel that load.
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->ActivateTabAt(0);
 
-  content::WebContentsDestroyedWatcher destroyed_watcher(pdf_web_contents);
-  DisableExtension(extension->id());
-  destroyed_watcher.Wait();
-  EXPECT_TRUE(destroyed_watcher.IsDestroyed());
-}
+  // Second, uninstall `handler` and check that `next_handler` shows the
+  // document in the same tab.
+  UninstallExtension(handler->id());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    content::RenderFrameHost* next_viewer = FindMimeHandlerExtensionFrame();
+    return next_viewer &&
+           next_viewer->GetLastCommittedOrigin().host() == next_handler->id();
+  }));
 
-// Uninstalling the handler while the viewer tab is the browser's only tab
-// replaces that tab with the NTP instead of closing it, without crashing.
-// The single-tab case is distinct: the viewer's WebContents is reused for
-// the replacement navigation rather than destroyed. Regression test for
-// crbug.com/542646771.
-IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
-                       UninstallingTopLevelHandlerLastTabShowsNtp) {
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII(kTestExtensionDir));
-  ASSERT_TRUE(extension);
-
-  ResultCatcher catcher;
-  content::WebContents* pdf_web_contents = GetActiveWebContents();
-  ASSERT_TRUE(NavigateToURL(pdf_web_contents,
-                            embedded_test_server()->GetURL(kTestPdfPath)));
-  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
-
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-
-  content::TestNavigationObserver ntp_observer(pdf_web_contents);
-  UninstallExtension(extension->id());
-  ntp_observer.Wait();
-
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_FALSE(mime_handler::MimeHandlerStreamManager::FromWebContents(
-      pdf_web_contents));
-  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(),
-            pdf_web_contents->GetLastCommittedURL());
-}
-
-// Disabling the handler while the viewer tab has a beforeunload handler
-// shows the confirmation dialog instead of crashing, and accepting the
-// dialog closes the tab. Regression test for crbug.com/532002220.
-IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
-                       DisablingTopLevelHandlerWithBeforeUnloadShowsDialog) {
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII(kTestExtensionDir));
-  ASSERT_TRUE(extension);
-
-  ResultCatcher catcher;
-  content::WebContents* pdf_web_contents = GetActiveWebContents();
-  ASSERT_TRUE(NavigateToURL(pdf_web_contents,
-                            embedded_test_server()->GetURL(kTestPdfPath)));
-  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
-
-  // Register a beforeunload handler on the embedder main frame: its web
-  // process is unaffected by the extension unload, so the tab close is
-  // guaranteed to reach the handler and prompt.
-  ASSERT_TRUE(content::ExecJs(
-      pdf_web_contents->GetPrimaryMainFrame(),
-      "window.addEventListener('beforeunload', e => e.preventDefault());"));
-  content::PrepContentsForBeforeUnloadTest(pdf_web_contents);
-
-  // Open a second tab so the viewer tab is not the last tab, which would
-  // be NTP-replaced (reusing its WebContents) rather than closed.
-  ASSERT_TRUE(
-      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
-
-  content::WebContentsDestroyedWatcher destroyed_watcher(pdf_web_contents);
-  DisableExtension(extension->id());
-
-  // The stream must not outlive the extension, even while the tab close is
-  // blocked on the beforeunload prompt.
-  EXPECT_FALSE(mime_handler::MimeHandlerStreamManager::FromWebContents(
-      pdf_web_contents));
-
-  javascript_dialogs::AppModalDialogController* dialog =
-      ui_test_utils::WaitForAppModalDialog();
-  dialog->view()->AcceptAppModalDialog();
-  destroyed_watcher.Wait();
-  EXPECT_TRUE(destroyed_watcher.IsDestroyed());
-}
-
-// Rejecting the beforeunload dialog keeps the viewer tab open: the stream is
-// already gone by then, so the tab survives without the handler and can still
-// be closed normally afterwards.
-IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
-                       DisablingTopLevelHandlerWithBeforeUnloadCancelKeepsTab) {
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII(kTestExtensionDir));
-  ASSERT_TRUE(extension);
-
-  ResultCatcher catcher;
-  content::WebContents* pdf_web_contents = GetActiveWebContents();
-  ASSERT_TRUE(NavigateToURL(pdf_web_contents,
-                            embedded_test_server()->GetURL(kTestPdfPath)));
-  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
-
-  // Register a beforeunload handler on the embedder main frame: its web
-  // process is unaffected by the extension unload, so the tab close is
-  // guaranteed to reach the handler and prompt.
-  ASSERT_TRUE(content::ExecJs(
-      pdf_web_contents->GetPrimaryMainFrame(),
-      "window.addEventListener('beforeunload', e => e.preventDefault());"));
-  content::PrepContentsForBeforeUnloadTest(pdf_web_contents);
-
-  // Open a second tab so the viewer tab is not the last tab, which would
-  // be NTP-replaced (reusing its WebContents) rather than closed.
-  ASSERT_TRUE(
-      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
-
-  content::WebContentsDestroyedWatcher destroyed_watcher(pdf_web_contents);
-  DisableExtension(extension->id());
-
-  // The stream must not outlive the extension, even though the tab ends
-  // up staying open.
-  EXPECT_FALSE(mime_handler::MimeHandlerStreamManager::FromWebContents(
-      pdf_web_contents));
-
-  javascript_dialogs::AppModalDialogController* dialog =
-      ui_test_utils::WaitForAppModalDialog();
-  dialog->view()->CancelAppModalDialog();
-
-  // Round-trip through the embedder renderer; this pumps the UI loop, so
-  // an erroneous pending tab close would complete before the checks below.
-  ASSERT_TRUE(content::ExecJs(pdf_web_contents->GetPrimaryMainFrame(), "true"));
-  EXPECT_FALSE(destroyed_watcher.IsDestroyed());
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-
-  // The surviving tab still closes normally: the beforeunload prompt runs
-  // again and accepting it completes the close.
-  browser()->tab_strip_model()->CloseWebContentsAt(
-      0, TabCloseTypes::CLOSE_USER_GESTURE);
-  dialog = ui_test_utils::WaitForAppModalDialog();
-  dialog->view()->AcceptAppModalDialog();
-  destroyed_watcher.Wait();
-  EXPECT_TRUE(destroyed_watcher.IsDestroyed());
+#if BUILDFLAG(ENABLE_PDF)
+  // Finally, uninstall `next_handler` and check that the built-in PDF viewer
+  // shows the document.
+  UninstallExtension(next_handler->id());
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+  }));
+  EXPECT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+#endif  // BUILDFLAG(ENABLE_PDF)
 }
 
 // Verifies that every permissions policy feature is enabled on the
