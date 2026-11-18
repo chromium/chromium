@@ -24128,7 +24128,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Translate">
-  <owner>hamelphi@chromium.org</owner>
+  <owner>megjablon@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
   <summary>
     Metrics related to a Translate event. These metrics are described in
     TranslateEventProto.
