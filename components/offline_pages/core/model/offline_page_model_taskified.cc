@@ -34,6 +34,7 @@
 #include "components/offline_pages/core/offline_clock.h"
 #include "components/offline_pages/core/offline_page_archive_publisher.h"
 #include "components/offline_pages/core/offline_page_client_policy.h"
+#include "components/offline_pages/core/offline_page_item_utils.h"
 #include "components/offline_pages/core/offline_page_metadata_store.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #include "components/offline_pages/core/offline_store_utils.h"
@@ -366,8 +367,10 @@ void OfflinePageModelTaskified::OnCreateArchiveDone(
   // Don't record the original URL if it is identical to the final URL. This is
   // because some websites might route the redirect finally back to itself upon
   // the completion of certain action, i.e., authentication, in the middle.
-  if (skip_clearing_original_url_for_testing_ ||
-      save_page_params.original_url != offline_page.url) {
+  if (CanSaveURL(save_page_params.original_url) &&
+      (skip_clearing_original_url_for_testing_ ||
+       !EqualsIgnoringFragment(save_page_params.original_url,
+                               offline_page.url))) {
     offline_page.original_url_if_different = save_page_params.original_url;
   }
 

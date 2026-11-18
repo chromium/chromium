@@ -190,7 +190,12 @@ GURL OfflinePageUtils::GetOriginalURLFromWebContents(
       web_contents->GetController().GetLastCommittedEntry();
   if (!entry || entry->GetRedirectChain().size() <= 1)
     return GURL();
-  return entry->GetRedirectChain().front();
+  const GURL& original_url = entry->GetRedirectChain().front();
+  if (!OfflinePageModel::CanSaveURL(original_url) ||
+      EqualsIgnoringFragment(original_url, entry->GetURL())) {
+    return GURL();
+  }
+  return original_url;
 }
 
 // static

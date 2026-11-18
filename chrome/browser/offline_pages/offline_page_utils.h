@@ -107,8 +107,9 @@ class OfflinePageUtils {
   // custom tab.
   static bool CurrentlyShownInCustomTab(content::WebContents* web_contents);
 
-  // Returns original URL of the given web contents. Empty URL is returned if
-  // no redirect occurred.
+  // Returns the original HTTP/HTTPS URL of the given web contents if a
+  // redirect to a different URL (ignoring fragments) occurred; otherwise
+  // returns an empty URL.
   static GURL GetOriginalURLFromWebContents(content::WebContents* web_contents);
 
   // Checks for duplicates in all finished or ongoing downloads. Only pages and

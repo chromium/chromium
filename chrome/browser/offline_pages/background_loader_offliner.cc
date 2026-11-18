@@ -31,6 +31,7 @@
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/offline_page_client_policy.h"
 #include "components/offline_pages/core/offline_page_feature.h"
+#include "components/offline_pages/core/offline_page_item_utils.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/browser_context.h"
@@ -386,10 +387,12 @@ void BackgroundLoaderOffliner::StartSnapshot() {
 
   // Pass in the original URL if it's different from last committed
   // when redirects occur.
-  if (!request.original_url().is_empty()) {
-    params.original_url = request.original_url();
-  } else if (params.url != request.url()) {
-    params.original_url = request.url();
+  GURL original_url = !request.original_url().is_empty()
+                          ? request.original_url()
+                          : request.url();
+  if (OfflinePageModel::CanSaveURL(original_url) &&
+      !EqualsIgnoringFragment(original_url, params.url)) {
+    params.original_url = std::move(original_url);
   }
 
   offline_page_model_->SavePage(

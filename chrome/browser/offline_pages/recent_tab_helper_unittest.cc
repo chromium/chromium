@@ -107,6 +107,8 @@ class RecentTabHelperTest
   void FastForwardSnapshotController();
 
   void NavigateAndCommit(const GURL& url);
+  void NavigateAndCommitWithRedirect(const GURL& initial_url,
+                                     const GURL& final_url);
   void Reload();
 
   // Navigates to the URL and commit as if it has been typed in the address bar.
@@ -294,6 +296,19 @@ void RecentTabHelperTest::StartAndCommitNavigation(
 void RecentTabHelperTest::NavigateAndCommit(const GURL& url) {
   StartAndCommitNavigation(content::NavigationSimulator::CreateBrowserInitiated(
       url, web_contents()));
+}
+
+void RecentTabHelperTest::NavigateAndCommitWithRedirect(const GURL& initial_url,
+                                                        const GURL& final_url) {
+  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
+      initial_url, web_contents());
+  simulator->SetAutoAdvance(false);
+  simulator->SetKeepLoading(true);
+  simulator->Start();
+  RunUntilIdle();
+  simulator->Redirect(final_url);
+  RunUntilIdle();
+  simulator->Commit();
 }
 
 void RecentTabHelperTest::Reload() {
@@ -1013,6 +1028,44 @@ TEST_F(RecentTabHelperTest, NoSaveOfflinePageCacheForPost) {
   RunUntilIdle();
   EXPECT_EQ(1U, page_added_count());
   ASSERT_EQ(1U, GetAllPages().size());
+}
+
+TEST_F(RecentTabHelperTest, OriginalUrlRecordedForNonFragmentRedirect) {
+  const GURL kCrossSiteInitialUrl("http://other.site/redirect.html");
+  const GURL kSameSiteInitialUrl("http://sub.mystery.site/redirect.html");
+  const GURL kFinalUrl("http://mystery.site/foo.html");
+
+  // Cross-site redirects (e.g. URL shorteners) should still record
+  // original_url; cross-site isolation is enforced by redirecting on serve.
+  NavigateAndCommitWithRedirect(kCrossSiteInitialUrl, kFinalUrl);
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
+  FastForwardSnapshotController();
+  recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
+  RunUntilIdle();
+  ASSERT_EQ(1U, GetAllPages().size());
+  EXPECT_EQ(kFinalUrl, GetAllPages()[0].url);
+  EXPECT_EQ(kCrossSiteInitialUrl, GetAllPages()[0].original_url_if_different);
+
+  // Same-site redirects should record the initial URL as original_url.
+  NavigateAndCommitWithRedirect(kSameSiteInitialUrl, kFinalUrl);
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
+  FastForwardSnapshotController();
+  recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
+  RunUntilIdle();
+  ASSERT_EQ(1U, GetAllPages().size());
+  EXPECT_EQ(kFinalUrl, GetAllPages()[0].url);
+  EXPECT_EQ(kSameSiteInitialUrl, GetAllPages()[0].original_url_if_different);
+
+  // Fragment-only redirects should not record an original_url.
+  const GURL kFragmentUrl("http://mystery.site/foo.html#section");
+  NavigateAndCommitWithRedirect(kFinalUrl, kFragmentUrl);
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
+  FastForwardSnapshotController();
+  recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
+  RunUntilIdle();
+  ASSERT_EQ(1U, GetAllPages().size());
+  EXPECT_EQ(kFragmentUrl, GetAllPages()[0].url);
+  EXPECT_TRUE(GetAllPages()[0].original_url_if_different.is_empty());
 }
 
 }  // namespace offline_pages

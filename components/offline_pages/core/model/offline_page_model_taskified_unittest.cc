@@ -398,6 +398,35 @@ TEST_F(OfflinePageModelTaskifiedTest, SavePageSuccessfulWithSameOriginalUrl) {
   EXPECT_TRUE(saved_page_ptr->original_url_if_different.is_empty());
 }
 
+TEST_F(OfflinePageModelTaskifiedTest,
+       SavePageWithFragmentOrInvalidOriginalUrl) {
+  const GURL kTestUrl("http://example.com/page");
+  const GURL kTestUrlWithFragment("http://example.com/page#section");
+  auto archiver = BuildArchiver(kTestUrl, ArchiverResult::SUCCESSFULLY_CREATED);
+
+  // An original URL differing only by fragment should not be recorded as
+  // original_url_if_different.
+  int64_t offline_id1 = SavePageWithExpectedResult(
+      kTestUrl, kTestClientId1, kTestUrlWithFragment, kEmptyRequestOrigin,
+      std::move(archiver), SavePageResult::SUCCESS);
+  auto saved_page1 = store_test_util()->GetPageByOfflineId(offline_id1);
+  ASSERT_TRUE(saved_page1);
+  EXPECT_EQ(kTestUrl, saved_page1->url);
+  EXPECT_TRUE(saved_page1->original_url_if_different.is_empty());
+
+  // A non-HTTP/HTTPS original URL should not be recorded as
+  // original_url_if_different.
+  const GURL kTestUrl2("http://example.com/other");
+  archiver = BuildArchiver(kTestUrl2, ArchiverResult::SUCCESSFULLY_CREATED);
+  int64_t offline_id2 = SavePageWithExpectedResult(
+      kTestUrl2, kTestClientId1, GURL("about:blank"), kEmptyRequestOrigin,
+      std::move(archiver), SavePageResult::SUCCESS);
+  auto saved_page2 = store_test_util()->GetPageByOfflineId(offline_id2);
+  ASSERT_TRUE(saved_page2);
+  EXPECT_EQ(kTestUrl2, saved_page2->url);
+  EXPECT_TRUE(saved_page2->original_url_if_different.is_empty());
+}
+
 TEST_F(OfflinePageModelTaskifiedTest, SavePageSuccessfulWithRequestOrigin) {
   const GURL kTestUrl("http://example.com");
   auto archiver = BuildArchiver(kTestUrl, ArchiverResult::SUCCESSFULLY_CREATED);

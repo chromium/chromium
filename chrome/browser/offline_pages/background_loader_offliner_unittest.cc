@@ -435,6 +435,38 @@ TEST_F(BackgroundLoaderOfflinerTest, CompleteLoadingInitiatesSave) {
   EXPECT_EQ(Offliner::RequestStatus::UNKNOWN, request_status());
 }
 
+TEST_F(BackgroundLoaderOfflinerTest, RedirectPreservesOriginalUrl) {
+  base::Time creation_time = base::Time::Now();
+  const GURL kInitialUrl("http://other.example.com/start");
+  const GURL kCommittedUrl("http://www.tunafish.com/final");
+  SavePageRequest request(kRequestId, kInitialUrl, GetClientId(), creation_time,
+                          kUserRequested);
+  EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
+                                      progress_callback()));
+  offliner()->web_contents_tester()->NavigateAndCommit(kCommittedUrl);
+  CompleteLoading();
+  PumpLoop();
+  EXPECT_TRUE(SaveInProgress());
+  EXPECT_EQ(kCommittedUrl, model()->save_page_params().url);
+  EXPECT_EQ(kInitialUrl, model()->save_page_params().original_url);
+}
+
+TEST_F(BackgroundLoaderOfflinerTest, FragmentRedirectClearsOriginalUrl) {
+  base::Time creation_time = base::Time::Now();
+  const GURL kInitialUrl("http://www.tunafish.com/final");
+  const GURL kCommittedUrl("http://www.tunafish.com/final#section");
+  SavePageRequest request(kRequestId, kInitialUrl, GetClientId(), creation_time,
+                          kUserRequested);
+  EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
+                                      progress_callback()));
+  offliner()->web_contents_tester()->NavigateAndCommit(kCommittedUrl);
+  CompleteLoading();
+  PumpLoop();
+  EXPECT_TRUE(SaveInProgress());
+  EXPECT_EQ(kCommittedUrl, model()->save_page_params().url);
+  EXPECT_TRUE(model()->save_page_params().original_url.is_empty());
+}
+
 TEST_F(BackgroundLoaderOfflinerTest, CancelWhenLoading) {
   base::Time creation_time = base::Time::Now();
   SavePageRequest request(kRequestId, GURL(kHttpUrl), GetClientId(),

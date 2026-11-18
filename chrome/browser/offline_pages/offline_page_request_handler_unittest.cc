@@ -247,6 +247,7 @@ class OfflinePageURLLoaderBuilder : public TestURLLoaderClient::Observer {
                         bool is_outermost_main_frame);
 
   OfflinePageRequestHandlerTest* test() { return test_; }
+  const GURL& last_redirected_url() const { return last_redirected_url_; }
 
   void Quit() { std::move(quit_closure_).Run(); }
 
@@ -270,6 +271,7 @@ class OfflinePageURLLoaderBuilder : public TestURLLoaderClient::Observer {
   mojo::Remote<network::mojom::URLLoader> loader_;
   std::string mime_type_;
   std::string body_;
+  GURL last_redirected_url_;
   base::OnceClosure quit_closure_;
 };
 
@@ -349,6 +351,9 @@ class OfflinePageRequestHandlerTest : public testing::Test {
   const std::string& mime_type() const { return response_.mime_type; }
   bool is_offline_page_set_in_navigation_data() const {
     return is_offline_page_set_in_navigation_data_;
+  }
+  const GURL& last_redirected_url() const {
+    return interceptor_factory_.last_redirected_url();
   }
 
   bool is_connected_with_good_network() {
@@ -754,6 +759,7 @@ OfflinePageURLLoaderBuilder::OfflinePageURLLoaderBuilder(
 
 void OfflinePageURLLoaderBuilder::OnReceiveRedirect(
     const GURL& redirected_url) {
+  last_redirected_url_ = redirected_url;
   InterceptRequestInternal(redirected_url, "GET", net::HttpRequestHeaders(),
                            true);
 }
@@ -808,6 +814,7 @@ void OfflinePageURLLoaderBuilder::InterceptRequest(
 
   base::RunLoop loop;
   quit_closure_ = loop.QuitWhenIdleClosure();
+  last_redirected_url_ = GURL();
   InterceptRequestInternal(url, method, extra_headers, is_outermost_main_frame);
   loop.Run();
 }
@@ -1144,6 +1151,55 @@ TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageForUrlWithFragment) {
   ASSERT_TRUE(offline_page_tab_helper()->GetOfflinePageForTest());
   EXPECT_EQ(offline_id2,
             offline_page_tab_helper()->GetOfflinePageForTest()->offline_id);
+}
+
+TEST_F(OfflinePageRequestHandlerTest, RedirectOriginalUrlWithFragment) {
+  SimulateHasNetworkConnectivity(false);
+
+  const GURL test_url1(kTestUrl);
+  const GURL original_url("http://other.site/redirect");
+  int64_t offline_id =
+      SaveInternalPage(test_url1, original_url, base::FilePath(kFilename1),
+                       kFileSize1, std::string());
+
+  // Loading the original URL with a fragment should redirect to the final saved
+  // URL rather than serving the archive under the original URL.
+  GURL original_url_with_fragment(original_url.spec() + "#ref");
+  LoadPage(original_url_with_fragment);
+
+  EXPECT_EQ(test_url1, last_redirected_url());
+  ExpectOfflinePageServed(offline_id, kFileSize1);
+
+  // Public archives validated via stream_ should also close stream_ cleanly and
+  // redirect when matched via original_url with a fragment.
+  const GURL test_url2(kTestUrl2);
+  const std::string expected_data(MakeContentOfSize(2 * 1024));
+  base::FilePath temp_file_path = CreateFileWithContent(expected_data);
+  ArchiveValidator archive_validator;
+  archive_validator.Update(expected_data);
+  const std::string expected_digest = archive_validator.Finish();
+  const int expected_size = expected_data.length();
+  const GURL public_original_url("http://shortener.site/link");
+  int64_t public_offline_id =
+      SavePublicPage(test_url2, public_original_url, temp_file_path,
+                     expected_size, expected_digest);
+
+  LoadPage(GURL(public_original_url.spec() + "#ref"));
+  EXPECT_EQ(test_url2, last_redirected_url());
+  ExpectOfflinePageServed(public_offline_id, expected_size);
+  EXPECT_EQ(expected_data, data_received());
+
+  // When original_url only differs from the final URL by a fragment, serving
+  // should proceed directly without redirecting.
+  const GURL test_url3("http://test.org/page3");
+  GURL test_url3_with_fragment(test_url3.spec() + "#ref");
+  int64_t same_url_offline_id =
+      SaveInternalPage(test_url3, test_url3_with_fragment,
+                       base::FilePath(kFilename1), kFileSize1, std::string());
+  LoadPage(test_url3_with_fragment);
+
+  EXPECT_TRUE(last_redirected_url().is_empty());
+  ExpectOfflinePageServed(same_url_offline_id, kFileSize1);
 }
 
 TEST_F(OfflinePageRequestHandlerTest, LoadOtherPageOnDigestMismatch) {

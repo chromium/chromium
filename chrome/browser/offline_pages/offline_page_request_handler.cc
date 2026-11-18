@@ -28,6 +28,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/offline_clock.h"
+#include "components/offline_pages/core/offline_page_item_utils.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #include "components/offline_pages/core/request_header/offline_page_header.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -392,15 +393,28 @@ void OfflinePageRequestHandler::OnOfflinePagesAvailable(
 }
 
 void OfflinePageRequestHandler::OnTrustedOfflinePageFound() {
+  const OfflinePageItem& offline_page = GetCurrentOfflinePage();
+  if (!OfflinePageModel::CanSaveURL(offline_page.url)) {
+    OnFileValidationDone(FileValidationResult::FILE_VALIDATION_FAILED);
+    return;
+  }
+
   // If the match is for original URL, trigger the redirect.
-  // Note: If the offline page has same orginal URL and final URL, don't trigger
-  // the redirect. Some websites might route the redirect finally back to itself
-  // after intermediate redirects for authentication. Previously this case was
-  // not handled and some pages might be saved with same URLs. Though we fixed
-  // the problem, we still need to support those pages already saved with this
-  if (url_ == GetCurrentOfflinePage().original_url_if_different &&
-      url_ != GetCurrentOfflinePage().url) {
-    Redirect(GetCurrentOfflinePage().url);
+  // Note: If the offline page has same original URL and final URL (ignoring
+  // fragment), don't trigger the redirect. Some websites might route the
+  // redirect finally back to itself after intermediate redirects for
+  // authentication. Previously this case was not handled and some pages might
+  // be saved with same URLs. Though we fixed the problem, we still need to
+  // support those pages already saved with this.
+  if (!EqualsIgnoringFragment(url_, offline_page.url)) {
+    if (IsProcessingFileOrContentUrlIntent() ||
+        !OfflinePageModel::CanSaveURL(offline_page.original_url_if_different) ||
+        !EqualsIgnoringFragment(url_, offline_page.original_url_if_different)) {
+      OnFileValidationDone(FileValidationResult::FILE_VALIDATION_FAILED);
+      return;
+    }
+    stream_.reset();
+    Redirect(offline_page.url);
     return;
   }
 
