@@ -30,6 +30,12 @@ public interface AsyncTabParams {
     /** Returns the tab that would be reparenting through this {@link AsyncTabParams}. */
     @Nullable Tab getTabToReparent();
 
+    /** Returns the callback to run once tab reparenting has finished, if any. */
+    @Nullable Runnable getFinalizeCallback();
+
+    /** Detaches the tab to reparent from its source {@link TabModelSelector}, if still pending. */
+    void detachFromOriginalModel();
+
     /** Destroy any internal fields if it is necessary. */
     void destroy();
 }

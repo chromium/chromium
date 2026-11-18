@@ -371,9 +371,8 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             @TabCreationState int creationState = TabCreationState.LIVE_IN_FOREGROUND;
             if (isReparenting) {
                 loadUrlParams.destroyAdditionalNavigationParams();
-                TabReparentingParams params = (TabReparentingParams) asyncParams;
-                assert params != null;
-                tab = params.getTabToReparent();
+                AsyncTabParams params = assumeNonNull(asyncParams);
+                tab = assumeNonNull(params.getTabToReparent());
 
                 assert intent != null;
 
@@ -729,8 +728,8 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
         if (isReparenting) {
             creationState = TabCreationState.LIVE_IN_BACKGROUND;
 
-            TabReparentingParams params = (TabReparentingParams) assumeNonNull(asyncParams);
-            tab = params.getTabToReparent();
+            AsyncTabParams params = assumeNonNull(asyncParams);
+            tab = assumeNonNull(params.getTabToReparent());
             if (tab.isIncognito() != mIncognito) {
                 throw new IllegalStateException(
                         "Incognito state mismatch. TabState: "

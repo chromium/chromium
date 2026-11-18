@@ -73,7 +73,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
-import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -501,9 +500,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                                     /* compositorViewHolder= */ null,
                                     mWindowAndroid,
                                     mCustomTabDelegateFactory),
-                            params instanceof TabReparentingParams reparentingParams
-                                    ? reparentingParams.getFinalizeCallback()
-                                    : null);
+                            params.getFinalizeCallback());
         } else {
             // Clear any stale EXTRA_SKIP_LOAD_ON_REPARENTING (e.g. when a task is cold-relaunched
             // from Android Recents after the process was killed) so a newly created tab still
@@ -647,9 +644,8 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         }
 
         if (isHiddenTab) {
-            TabReparentingParams params =
-                    (TabReparentingParams)
-                            AsyncTabParamsManagerSingleton.getInstance().remove(tab.getId());
+            AsyncTabParams params =
+                    AsyncTabParamsManagerSingleton.getInstance().remove(tab.getId());
             ReparentingTask.from(tab)
                     .finish(
                             ReparentingDelegateFactory.createReparentingTaskDelegate(

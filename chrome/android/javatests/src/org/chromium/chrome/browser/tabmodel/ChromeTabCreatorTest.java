@@ -676,6 +676,14 @@ public class ChromeTabCreatorTest {
                     }
 
                     @Override
+                    public Runnable getFinalizeCallback() {
+                        return null;
+                    }
+
+                    @Override
+                    public void detachFromOriginalModel() {}
+
+                    @Override
                     public void destroy() {}
                 };
 

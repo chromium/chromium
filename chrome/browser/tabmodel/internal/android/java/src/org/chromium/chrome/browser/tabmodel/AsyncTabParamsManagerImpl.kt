@@ -17,9 +17,7 @@ class AsyncTabParamsManagerImpl internal constructor() : AsyncTabParamsManager {
 
   override fun add(tabId: Int, params: AsyncTabParams) {
     val previous = mAsyncTabParams[tabId]
-    if (previous !== params && previous is TabReparentingParams) {
-      previous.detachFromOriginalModel()
-    }
+    if (previous !== params) previous?.detachFromOriginalModel()
     mAsyncTabParams.put(tabId, params)
     if (!mAddedToIncognitoTabHostRegistry) {
       // Make sure async incognito tabs are taken into account when, for example,

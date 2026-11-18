@@ -64,7 +64,7 @@ public class TabReparentingParams implements AsyncTabParams {
         return mTabToReparent;
     }
 
-    /** Returns the callback to be used once Tab reparenting has finished, if any. */
+    @Override
     public @Nullable Runnable getFinalizeCallback() {
         if (mSourceSelector == null) return mFinalizeCallback;
         return () -> {
@@ -73,7 +73,7 @@ public class TabReparentingParams implements AsyncTabParams {
         };
     }
 
-    /** Detaches the tab from its source {@link TabModelSelector}, if still pending. */
+    @Override
     public void detachFromOriginalModel() {
         if (mSourceSelector == null) return;
         TabModelSelector selector = mSourceSelector.get();

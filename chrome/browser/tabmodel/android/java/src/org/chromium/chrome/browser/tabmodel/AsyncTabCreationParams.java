@@ -103,6 +103,14 @@ public class AsyncTabCreationParams implements AsyncTabParams {
     }
 
     @Override
+    public @Nullable Runnable getFinalizeCallback() {
+        return null;
+    }
+
+    @Override
+    public void detachFromOriginalModel() {}
+
+    @Override
     public void destroy() {
         if (mWebContents != null) mWebContents.destroy();
     }
