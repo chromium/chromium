@@ -95,8 +95,11 @@ void PopulateAutofillInformation(
 // not match any placeholder in the tree is dropped to prevent node ID
 // collisions. Also populates `apc`'s `screenshot_info` (`screenshot_size` and
 // `iframe_info`) for server-side screenshot redaction. If
-// `include_same_site_only` is true, cross-site frame content is redacted with
-// REASON_CROSS_SITE rather than grafted into the AnnotatedPageContent tree.
+// `include_same_site_only` is true, cross-site frame content (including
+// unresolved placeholders without an authoritative committed same-site
+// `WebFrame` in `web_frames_manager`) is recorded in `screenshot_info` (with
+// `url` and `security_origin` unset when unmapped) and redacted with
+// `REASON_CROSS_SITE` rather than grafted into the `AnnotatedPageContent` tree.
 // `web_frames_manager` must correspond to the content world used by the
 // `registrar`'s frame tokens (e.g., `kPageContentWorld`).
 void ResolveCrossSiteFrameContent(

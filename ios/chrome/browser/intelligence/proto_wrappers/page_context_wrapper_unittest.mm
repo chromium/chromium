@@ -33,6 +33,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
+#import "base/test/test_timeouts.h"
 #import "base/test/values_test_util.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -78,6 +79,7 @@
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -100,6 +102,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
 #import "url/origin.h"
+#import "url/url_constants.h"
 
 // TODO(crbug.com/458081684): Move away from all autofill dependencies once
 // the migration in ios/web is done for frame registration.
@@ -9857,6 +9860,230 @@ TEST_P(PageContextWrapperTest, ExtractPageContext_SameSiteOnly) {
     const auto& root_node = annotated_page_content.root_node();
     ASSERT_EQ(root_node.children_nodes_size(), 2);
   }
+}
+
+// Tests that when a same-site iframe is initially extracted/registered and then
+// navigated cross-site via `contentWindow.location`, a subsequent extraction
+// with `include_same_site_only` enabled redacts the navigated iframe, scrubs
+// its unverified `screenshot_info` URL and `security_origin`, and keeps an
+// un-navigated same-site sibling grafted.
+TEST_P(PageContextWrapperTest,
+       ExtractPageContext_SameSiteIframeNavigatedCrossSiteViaLocationRedacted) {
+  if (!IsRefactored()) {
+    GTEST_SKIP()
+        << "Frame grafter not supported for the non-refactored APC wrapper";
+  }
+
+  auto page_structure = HtmlPage(
+      "Main", Paragraph("Main frame text"),
+      Iframe(TestOrigin::kCrossA,
+             HtmlPage("Subdomain", Paragraph("Initial same-site text")),
+             "navigated_frame"),
+      Iframe(TestOrigin::kCrossA,
+             HtmlPage("SiblingSubdomain", Paragraph("Staying same-site text")),
+             "staying_frame"),
+      Iframe(TestOrigin::kCrossB,
+             HtmlPage("CrossSite", Paragraph("Cross-site target text")),
+             "cross_site_target"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  GURL subdomain_url = page_helper_->GetUrlForId("navigated_frame");
+  GURL cross_site_url = page_helper_->GetUrlForId("cross_site_target");
+  GURL resolved_cross_site_url =
+      xorigin_test_server_b_.GetURL("localhost", cross_site_url.path());
+  base::ReplaceSubstringsAfterOffset(&main_html, 0, cross_site_url.spec(),
+                                     resolved_cross_site_url.spec());
+
+  // Commit `about:blank` under a generous timeout so WebKit's processes are
+  // running before `LoadHtml`, whose fixed `kWaitForPageLoadTimeout` waits can
+  // expire on this cold start under coverage instrumentation. `LoadHtml` skips
+  // its own `about:blank` load once the navigation manager has an item.
+  web_state()->GetNavigationManager()->LoadURLWithParams(
+      web::NavigationManager::WebLoadParams(GURL(url::kAboutBlankURL)));
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_max_timeout(), /*run_message_loop=*/true, ^bool {
+        return web_state()->GetNavigationManager()->GetLastCommittedItem() &&
+               !web_state()->IsLoading();
+      }));
+
+  GURL main_url = test_server_.GetURL(kMainPagePath);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html), main_url,
+                      web_state());
+
+  auto* frames_manager =
+      web_state()->GetWebFramesManager(web::ContentWorld::kIsolatedWorld);
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, /*run_message_loop=*/true,
+      ^bool {
+        return frames_manager->GetAllWebFrames().size() == 4;
+      }));
+
+  PageContextWrapperConfigBuilder config_builder;
+  config_builder.SetGraftCrossOriginFrameContent(true);
+  config_builder.SetIncludeSameSiteOnly(true);
+  config_builder.SetUseRichExtraction(true);
+  PageContextWrapperConfig config = config_builder.Build();
+
+  // Run a throwaway extraction so the extractor assigns each iframe its remote
+  // token and starts registration, then wait until the parent frame has
+  // processed `registerAsChildFrameAck` (`FRAME_REGISTERED == 10`) for every
+  // iframe. Each iframe keeps its token across extractions, so the checked
+  // extraction below does not race the wrapper's short registration timeout,
+  // and no in-flight watchdog retry can re-register the navigated iframe's
+  // token to the cross-site document later.
+  ASSERT_TRUE(RunPageContextWrapperWithConfig(
+                  web_state(), config,
+                  ^(PageContextWrapper* wrapper) {
+                    wrapper.shouldGetAnnotatedPageContent = YES;
+                  })
+                  .has_value());
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_max_timeout(), /*run_message_loop=*/true, ^bool {
+        id all_registered = CallJavascript(
+            "(() => {"
+            "  if (!window.__gCrWeb?.hasRegisteredApi("
+            "          'remoteFrameRegistration')) {"
+            "    return false;"
+            "  }"
+            "  const api = "
+            "window.__gCrWeb.getRegisteredApi('remoteFrameRegistration');"
+            "  if (!api.hasProperty('registrationLogbook')) {"
+            "    return false;"
+            "  }"
+            "  const logbook = api.getProperty('registrationLogbook');"
+            "  const iframes = [...document.querySelectorAll('iframe')];"
+            "  return iframes.length === 3 && iframes.every(iframe => {"
+            "    const token = "
+            "iframe.getAttribute('__gCrChildFrameRemoteToken');"
+            "    return token && logbook.get(token) === 10;"
+            "  });"
+            "})()");
+        return [all_registered isEqual:@YES];
+      }));
+
+  PageContextWrapperCallbackResponse initial_response =
+      RunPageContextWrapperWithConfig(
+          web_state(), config, ^(PageContextWrapper* wrapper) {
+            wrapper.shouldGetAnnotatedPageContent = YES;
+          });
+  ASSERT_TRUE(initial_response.has_value());
+  const auto& initial_root =
+      initial_response.value()->annotated_page_content().root_node();
+  ASSERT_EQ(initial_root.children_nodes_size(), 4);
+  const auto& initial_iframe_node = initial_root.children_nodes(1);
+  EXPECT_TRUE(
+      initial_iframe_node.content_attributes().iframe_data().has_frame_data());
+  EXPECT_EQ(
+      initial_iframe_node.content_attributes().iframe_data().frame_data().url(),
+      subdomain_url.spec());
+  ASSERT_EQ(initial_iframe_node.children_nodes_size(), 1);
+
+  std::optional<autofill::RemoteFrameToken> navigated_remote_token =
+      DeserializeFrameIdAsRemoteFrameToken(
+          initial_iframe_node.content_attributes()
+              .iframe_data()
+              .frame_data()
+              .document_identifier()
+              .serialized_token());
+  ASSERT_TRUE(navigated_remote_token.has_value());
+  autofill::ChildFrameRegistrar* registrar =
+      autofill::ChildFrameRegistrar::FromWebState(web_state());
+  ASSERT_TRUE(registrar);
+  EXPECT_TRUE(registrar->LookupChildFrame(*navigated_remote_token).has_value());
+
+  // Navigate the first iframe cross-site via `contentWindow.location.replace`,
+  // leaving its DOM `src` attribute pointing to the initial same-site URL
+  // without pushing a subframe `WKBackForwardListItem` over `LoadHtml`'s item.
+  CallJavascript(base::StrCat({"window.frames[0].location.replace('",
+                               resolved_cross_site_url.spec(), "'); true;"}));
+
+  // Wait until the cross-site navigation commits and
+  // `WebFrameBecameUnavailable` evicts the initial frame mapping from
+  // `ChildFrameRegistrar`.
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, /*run_message_loop=*/true,
+      ^bool {
+        if (registrar->LookupChildFrame(*navigated_remote_token).has_value()) {
+          return false;
+        }
+        size_t cross_site_frame_count = 0;
+        for (web::WebFrame* frame : frames_manager->GetAllWebFrames()) {
+          if (!frame->IsMainFrame() &&
+              frame->GetUrl() == resolved_cross_site_url) {
+            ++cross_site_frame_count;
+          }
+        }
+        return cross_site_frame_count == 2;
+      }));
+
+  PageContextWrapperCallbackResponse second_response =
+      RunPageContextWrapperWithConfig(
+          web_state(), config, ^(PageContextWrapper* wrapper) {
+            wrapper.shouldGetAnnotatedPageContent = YES;
+            wrapper.shouldGetSnapshot = YES;
+          });
+  ASSERT_TRUE(second_response.has_value())
+      << "error=" << static_cast<int>(second_response.error());
+  const auto& second_context = *second_response.value();
+  EXPECT_TRUE(second_context.has_tab_screenshot());
+
+  const auto& annotated_page_content = second_context.annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+  ASSERT_EQ(root_node.children_nodes_size(), 4);
+
+  // 1. Navigated iframe must fail closed to `REASON_CROSS_SITE` with no grafted
+  // children despite its stale same-site DOM `src` attribute.
+  const auto& navigated_node = root_node.children_nodes(1);
+  EXPECT_EQ(navigated_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  EXPECT_FALSE(
+      navigated_node.content_attributes().iframe_data().has_frame_data());
+  EXPECT_EQ(navigated_node.content_attributes()
+                .iframe_data()
+                .redacted_frame_metadata()
+                .reason(),
+            optimization_guide::proto::
+                IframeData_RedactedFrameMetadata_Reason_REASON_CROSS_SITE);
+  EXPECT_EQ(navigated_node.children_nodes_size(), 0);
+
+  // 2. Un-navigated same-site sibling must remain grafted and unredacted.
+  const auto& staying_node = root_node.children_nodes(2);
+  EXPECT_TRUE(staying_node.content_attributes().iframe_data().has_frame_data());
+  EXPECT_FALSE(staying_node.content_attributes()
+                   .iframe_data()
+                   .has_redacted_frame_metadata());
+  ASSERT_EQ(staying_node.children_nodes_size(), 1);
+  ASSERT_EQ(staying_node.children_nodes(0).children_nodes_size(), 1);
+  ASSERT_EQ(
+      staying_node.children_nodes(0).children_nodes(0).children_nodes_size(),
+      1);
+  EXPECT_EQ(staying_node.children_nodes(0)
+                .children_nodes(0)
+                .children_nodes(0)
+                .content_attributes()
+                .text_data()
+                .text_content(),
+            "Staying same-site text");
+
+  // 3. `screenshot_info` must record both cross-site iframes (and not the
+  // same-site sibling), scrubbing `url` and `security_origin` on the unmapped
+  // navigated iframe while preserving committed metadata on the mapped one.
+  const auto& screenshot_info =
+      annotated_page_content.gemini_in_chrome_page_metadata().screenshot_info();
+  ASSERT_EQ(screenshot_info.iframe_info_size(), 2);
+
+  const auto& navigated_info = screenshot_info.iframe_info(0);
+  EXPECT_GT(navigated_info.bounding_box().width(), 0);
+  EXPECT_GT(navigated_info.bounding_box().height(), 0);
+  EXPECT_TRUE(navigated_info.bounding_box().is_screenshot_relative());
+  EXPECT_FALSE(navigated_info.has_url());
+  EXPECT_FALSE(navigated_info.has_security_origin());
+
+  const auto& mapped_cross_site_info = screenshot_info.iframe_info(1);
+  EXPECT_EQ(mapped_cross_site_info.url(), resolved_cross_site_url.spec());
+  EXPECT_FALSE(mapped_cross_site_info.security_origin().opaque());
+  EXPECT_EQ(mapped_cross_site_info.security_origin().value(),
+            url::Origin::Create(resolved_cross_site_url).Serialize());
 }
 
 // Tests that when `include_same_site_only` is disabled.

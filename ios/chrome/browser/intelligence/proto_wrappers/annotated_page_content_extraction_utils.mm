@@ -1032,11 +1032,11 @@ void PopulateAPCNodeFromContentTree(
                                             kRemoteFrameTokenKey)) {
           // If we have a remote token, it means the content is in another
           // frame (likely cross-origin) and we should register a placeholder.
-          // Populate the placeholder's basic frame metadata (like URL) so that
-          // post-processing can determine if it is cross-site.
-          // Note: This partial metadata will be replaced with full metadata
-          // when resolving placeholders via FrameGrafter, unless the frame is
-          // redacted.
+          // Populate best-effort placeholder `frame_data` for
+          // `include_same_site_only == false`; when `include_same_site_only` is
+          // true, `ResolveCrossSiteFrameContent` either replaces `url` and
+          // `security_origin` from an authoritative committed `WebFrame` or
+          // scrubs them and redacts the placeholder.
           if (std::optional<autofill::RemoteFrameToken> remote =
                   DeserializeFrameIdAsRemoteFrameToken(*token_string)) {
             // Derive the placeholder's initial security origin from its own
@@ -1045,8 +1045,8 @@ void PopulateAPCNodeFromContentTree(
             url::Origin placeholder_origin =
                 ExtractPlaceholderOrigin(*iframe_data, origin);
             // Populate iframe data before registering placeholder to ensure
-            // URL and security origin are available for screenshot_info and
-            // unresolved cross-site redaction.
+            // `frame_data` is marked present on the node, while preserving
+            // best-effort metadata when same-site gating is disabled.
             PopulateIframeData(*iframe_data, destination_node,
                                placeholder_origin, on_frame_extracted);
             grafter.RegisterPlaceholder(*remote, destination_node);
@@ -1313,44 +1313,43 @@ void ResolveCrossSiteFrameContent(
           return;
         }
 
-        // Check for an authoritative committed child WebFrame.
+        // Check for an authoritative committed child `WebFrame`. Never fall
+        // back to the placeholder's `frame_data.security_origin()`, which comes
+        // from the untrusted DOM `src` attribute (or parent origin) and stays
+        // stale across `contentWindow.location` or targeted navigations.
         web::WebFrame* child_frame =
             FindChildWebFrame(remote_token, registrar, web_frames_manager);
-
-        // Enrich the placeholder's frame data with committed origin and URL
-        // if available, preserving data: URL scrubbing.
+        auto* mutable_frame_data = placeholder->mutable_content_attributes()
+                                       ->mutable_iframe_data()
+                                       ->mutable_frame_data();
         if (child_frame) {
-          auto* mutable_frame_data = placeholder->mutable_content_attributes()
-                                         ->mutable_iframe_data()
-                                         ->mutable_frame_data();
+          // Enrich the placeholder's frame data with committed origin and URL
+          // if available, preserving `data:` URL scrubbing.
           if (child_frame->GetUrl().is_valid()) {
             if (child_frame->GetUrl().SchemeIs(url::kDataScheme)) {
               mutable_frame_data->set_url("data:");
             } else {
               mutable_frame_data->set_url(child_frame->GetUrl().spec());
             }
+          } else {
+            mutable_frame_data->clear_url();
           }
+          url::Origin committed_origin = child_frame->GetSecurityOrigin();
           optimization_guide::SecurityOriginSerializer::Serialize(
-              child_frame->GetSecurityOrigin(),
-              mutable_frame_data->mutable_security_origin());
-        }
+              committed_origin, mutable_frame_data->mutable_security_origin());
 
-        const auto& frame_data =
-            placeholder->content_attributes().iframe_data().frame_data();
-        url::Origin frame_origin;
-        if (child_frame) {
-          frame_origin = child_frame->GetSecurityOrigin();
-        } else if (frame_data.has_security_origin()) {
-          frame_origin = frame_data.security_origin().opaque()
-                             ? url::Origin()
-                             : url::Origin::Create(
-                                   GURL(frame_data.security_origin().value()));
-        }
-        // Compare origins using SchemefulSite to determine if the frame is
-        // cross-site. An opaque or invalid origin will not match the main
-        // frame's site, correctly classifying it as cross-site.
-        if (main_frame_site == net::SchemefulSite(frame_origin)) {
-          return;
+          // Only spare an un-grafted placeholder when backed by a committed
+          // same-site `WebFrame`. An opaque origin will not match.
+          if (main_frame_site == net::SchemefulSite(committed_origin)) {
+            return;
+          }
+        } else {
+          // Without an authoritative child `WebFrame`, scrub untrusted
+          // DOM-derived metadata before `RecordCrossSiteIframePlaceholder`
+          // copies `frame_data` into `ScreenshotInfo::IframeInfo` (matching
+          // Desktop's unset URL and origin when `iframe_rfh` is null).
+          mutable_frame_data->clear_url();
+          mutable_frame_data->clear_security_origin();
         }
 
         // Record the cross-site iframe for screenshot redaction before clearing

@@ -6,6 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/test/values_test_util.h"
 #import "base/values.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
@@ -57,6 +58,21 @@ optimization_guide::proto::ContentNode* AddChildWithGeometry(
     SetBoundingRect(*visible, geometry->mutable_visible_bounding_box());
   }
   return child;
+}
+
+// Adds a child `WebFrame` committed at `committed_url` to `frames_manager` and
+// maps `remote` to it in `registrar`.
+void RegisterCommittedChildFrame(web::FakeWebFramesManager* frames_manager,
+                                 autofill::ChildFrameRegistrar* registrar,
+                                 const autofill::RemoteFrameToken& remote,
+                                 const GURL& committed_url) {
+  autofill::LocalFrameToken local(base::UnguessableToken::Create());
+  auto fake_frame =
+      web::FakeWebFrame::Create(local.ToString(), /*is_main_frame=*/false,
+                                url::Origin::Create(committed_url));
+  fake_frame->set_url(committed_url);
+  frames_manager->AddWebFrame(std::move(fake_frame));
+  registrar->RegisterMapping(remote, local);
 }
 
 }  // namespace
@@ -220,15 +236,17 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest, EmptyGeometryIgnored) {
   EXPECT_FALSE(node.content_attributes().has_geometry());
 }
 
-// Tests that ResolveCrossSiteFrameContent redacts placeholders that are left
-// unresolved and are cross-site when `include_same_site_only` is true.
-// Same-site cross-origin placeholders are not redacted when
-// `include_same_site_only` is true.
+// Tests that `ResolveCrossSiteFrameContent` redacts un-grafted placeholders
+// backed by committed cross-site `WebFrame`s when `include_same_site_only` is
+// true, while sparing those backed by committed same-origin or same-site
+// cross-origin `WebFrame`s.
 TEST_F(AnnotatedPageContentExtractionUtilsTest,
-       UnresolvedPlaceholdersRedacted) {
+       UngraftedPlaceholdersWithCommittedFramesRedacted) {
+  auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+  web::FakeWebFramesManager* frames_manager_ptr = frames_manager.get();
   web::FakeWebState web_state;
   web_state.SetWebFramesManager(web::ContentWorld::kPageContentWorld,
-                                std::make_unique<web::FakeWebFramesManager>());
+                                std::move(frames_manager));
   web_state.SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
                                 std::make_unique<web::FakeWebFramesManager>());
   autofill::ChildFrameRegistrar::CreateForWebState(&web_state);
@@ -240,6 +258,13 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest,
       base::UnguessableToken::Create());
   autofill::RemoteFrameToken same_site_token(base::UnguessableToken::Create());
   autofill::RemoteFrameToken cross_site_token(base::UnguessableToken::Create());
+
+  RegisterCommittedChildFrame(frames_manager_ptr, registrar, same_origin_token,
+                              GURL("https://example.com/same-origin"));
+  RegisterCommittedChildFrame(frames_manager_ptr, registrar, same_site_token,
+                              GURL("https://sub.example.com/same-site"));
+  RegisterCommittedChildFrame(frames_manager_ptr, registrar, cross_site_token,
+                              GURL("https://different-domain.com/cross-site"));
 
   optimization_guide::proto::AnnotatedPageContent apc;
   apc.mutable_main_frame_data()->set_url("https://example.com");
@@ -260,7 +285,9 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest,
   same_origin_security_origin->set_value("https://example.com/same-origin");
   grafter.RegisterPlaceholder(same_origin_token, same_origin_placeholder);
 
-  // Create same-site cross-origin placeholder (not grafted).
+  // Create same-site cross-origin placeholder (not grafted) with a stale
+  // cross-site DOM `url`/`security_origin` to verify committed `WebFrame`
+  // metadata overrides it.
   optimization_guide::proto::ContentNode* same_site_placeholder =
       apc.mutable_root_node()->add_children_nodes();
   same_site_placeholder->mutable_content_attributes()->set_attribute_type(
@@ -269,11 +296,11 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest,
       same_site_placeholder->mutable_content_attributes()
           ->mutable_iframe_data()
           ->mutable_frame_data();
-  same_site_frame_data->set_url("https://sub.example.com/same-site");
+  same_site_frame_data->set_url("https://stale-cross-site.org/initial");
   auto* same_site_security_origin =
       same_site_frame_data->mutable_security_origin();
   same_site_security_origin->set_opaque(false);
-  same_site_security_origin->set_value("https://sub.example.com/same-site");
+  same_site_security_origin->set_value("https://stale-cross-site.org");
   grafter.RegisterPlaceholder(same_site_token, same_site_placeholder);
 
   // Create cross-site placeholder (not grafted).
@@ -305,10 +332,22 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest,
                    .iframe_data()
                    .has_redacted_frame_metadata());
 
-  // Same-site cross-origin placeholder should not be redacted.
+  // Same-site cross-origin placeholder should not be redacted and should carry
+  // the committed `WebFrame` URL and origin.
   EXPECT_TRUE(same_site_placeholder->content_attributes()
                   .iframe_data()
                   .has_frame_data());
+  EXPECT_EQ(same_site_placeholder->content_attributes()
+                .iframe_data()
+                .frame_data()
+                .url(),
+            "https://sub.example.com/same-site");
+  EXPECT_EQ(same_site_placeholder->content_attributes()
+                .iframe_data()
+                .frame_data()
+                .security_origin()
+                .value(),
+            "https://sub.example.com");
   EXPECT_FALSE(same_site_placeholder->content_attributes()
                    .iframe_data()
                    .has_redacted_frame_metadata());
@@ -770,6 +809,175 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest,
   EXPECT_EQ(info.bounding_box().width(), 300);
   EXPECT_EQ(info.bounding_box().height(), 200);
   EXPECT_TRUE(info.bounding_box().is_screenshot_relative());
+}
+
+// Tests that `ResolveCrossSiteFrameContent` fails closed when an unresolved
+// iframe placeholder cannot be mapped to a live `WebFrame` (whether its DOM
+// `sourceUrl` is same-site after frame eviction, `about:blank`, or a cross-site
+// URL) and clears stale DOM `sourceUrl` when a mapped cross-site `WebFrame` has
+// an empty `GetUrl()`.
+TEST_F(AnnotatedPageContentExtractionUtilsTest,
+       ResolveCrossSiteFrameContentRedactsAndScrubsUnmappedPlaceholders) {
+  struct TestCase {
+    const char* name;
+    const char* source_url;
+    bool register_and_evict_initial_frame;
+    const char* committed_origin_with_empty_url;
+  };
+  constexpr char kRemoteTokenHex[] = "00112233445566778899aabbccddeeff";
+  constexpr char kMainFrameUrl[] = "https://example.com/main";
+  constexpr int kViewportWidth = 400;
+  constexpr int kViewportHeight = 800;
+  constexpr gfx::Rect kIframeBounds(15, 40, 250, 150);
+  constexpr TestCase kTestCases[] = {
+      {.name = "SameSiteSourceUrlAfterFrameEviction",
+       .source_url = "https://example.com/initial-same-site",
+       .register_and_evict_initial_frame = true,
+       .committed_origin_with_empty_url = nullptr},
+      {.name = "AboutBlankSourceUrl",
+       .source_url = "about:blank",
+       .register_and_evict_initial_frame = false,
+       .committed_origin_with_empty_url = nullptr},
+      {.name = "CrossSiteSourceUrl",
+       .source_url = "https://stripe.com/embed",
+       .register_and_evict_initial_frame = false,
+       .committed_origin_with_empty_url = nullptr},
+      {.name = "MappedCrossSiteFrameWithInvalidUrlClearsStaleDomUrl",
+       .source_url = "https://stripe.com/stale-allowlist-candidate",
+       .register_and_evict_initial_frame = false,
+       .committed_origin_with_empty_url = "https://committed-cross-site.org"},
+  };
+
+  for (const TestCase& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.name);
+
+    optimization_guide::proto::AnnotatedPageContent apc;
+    apc.mutable_main_frame_data()->set_url(kMainFrameUrl);
+    apc.mutable_viewport_geometry()->set_x(0);
+    apc.mutable_viewport_geometry()->set_y(0);
+    apc.mutable_viewport_geometry()->set_width(kViewportWidth);
+    apc.mutable_viewport_geometry()->set_height(kViewportHeight);
+
+    url::Origin main_origin = url::Origin::Create(GURL(kMainFrameUrl));
+    FrameGrafter grafter;
+
+    base::Value root_json = base::test::ParseJson(R"(
+      {
+        "contentAttributes": {
+          "geometry": {
+            "outerBoundingBox": {"x": 0, "y": 0, "width": 400, "height": 800},
+            "visibleBoundingBox": {"x": 0, "y": 0, "width": 400, "height": 800}
+          }
+        },
+        "childrenNodes": [
+          {
+            "contentAttributes": {
+              "geometry": {
+                "outerBoundingBox": {
+                  "x": 15, "y": 40, "width": 250, "height": 150
+                },
+                "visibleBoundingBox": {
+                  "x": 15, "y": 40, "width": 250, "height": 150
+                }
+              },
+              "iframeData": {
+                "content": {
+                  "localFrameData": {}
+                }
+              }
+            }
+          }
+        ]
+      }
+    )");
+    ASSERT_TRUE(root_json.is_dict());
+    root_json.GetDict().SetByDottedPath(
+        "contentAttributes.attributeType",
+        static_cast<int>(optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT));
+    base::DictValue& child_dict =
+        root_json.GetDict().FindList("childrenNodes")->front().GetDict();
+    child_dict.SetByDottedPath(
+        "contentAttributes.attributeType",
+        static_cast<int>(optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME));
+    child_dict.SetByDottedPath(
+        "contentAttributes.iframeData.remoteFrameToken.value", kRemoteTokenHex);
+    base::DictValue* local_frame_data = child_dict.FindDictByDottedPath(
+        "contentAttributes.iframeData.content.localFrameData");
+    ASSERT_TRUE(local_frame_data);
+    local_frame_data->Set("sourceUrl", test_case.source_url);
+
+    PopulateAPCNodeFromContentTree(root_json.GetDict(), main_origin, grafter,
+                                   /*autofill_context=*/nullptr,
+                                   apc.mutable_root_node(),
+                                   base::NullCallback());
+
+    auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    web::FakeWebFramesManager* frames_manager_ptr = frames_manager.get();
+    web::FakeWebState web_state;
+    web_state.SetWebFramesManager(web::ContentWorld::kPageContentWorld,
+                                  std::move(frames_manager));
+    web_state.SetWebFramesManager(
+        web::ContentWorld::kIsolatedWorld,
+        std::make_unique<web::FakeWebFramesManager>());
+    autofill::ChildFrameRegistrar::CreateForWebState(&web_state);
+    autofill::ChildFrameRegistrar* registrar =
+        autofill::ChildFrameRegistrar::FromWebState(&web_state);
+
+    std::optional<autofill::RemoteFrameToken> remote_token =
+        DeserializeFrameIdAsRemoteFrameToken(kRemoteTokenHex);
+    ASSERT_TRUE(remote_token.has_value());
+    if (test_case.register_and_evict_initial_frame) {
+      autofill::LocalFrameToken initial_local_token(
+          base::UnguessableToken::Create());
+      GURL initial_url(test_case.source_url);
+      auto initial_frame = web::FakeWebFrame::Create(
+          initial_local_token.ToString(), /*is_main_frame=*/false,
+          url::Origin::Create(initial_url));
+      initial_frame->set_url(initial_url);
+      frames_manager_ptr->AddWebFrame(std::move(initial_frame));
+      registrar->RegisterMapping(*remote_token, initial_local_token);
+      frames_manager_ptr->RemoveWebFrame(initial_local_token.ToString());
+    } else if (test_case.committed_origin_with_empty_url) {
+      autofill::LocalFrameToken local_token(base::UnguessableToken::Create());
+      auto committed_frame = web::FakeWebFrame::Create(
+          local_token.ToString(), /*is_main_frame=*/false,
+          url::Origin::Create(GURL(test_case.committed_origin_with_empty_url)));
+      frames_manager_ptr->AddWebFrame(std::move(committed_frame));
+      registrar->RegisterMapping(*remote_token, local_token);
+    }
+
+    ResolveCrossSiteFrameContent(
+        grafter, registrar,
+        /*include_same_site_only=*/true, &apc,
+        web_state.GetWebFramesManager(web::ContentWorld::kPageContentWorld));
+
+    ASSERT_EQ(apc.root_node().children_nodes_size(), 1);
+    const auto& iframe_node = apc.root_node().children_nodes(0);
+    EXPECT_FALSE(
+        iframe_node.content_attributes().iframe_data().has_frame_data());
+    EXPECT_EQ(iframe_node.content_attributes()
+                  .iframe_data()
+                  .redacted_frame_metadata()
+                  .reason(),
+              optimization_guide::proto::
+                  IframeData_RedactedFrameMetadata_Reason_REASON_CROSS_SITE);
+
+    const auto& screenshot_info =
+        apc.gemini_in_chrome_page_metadata().screenshot_info();
+    ASSERT_EQ(screenshot_info.iframe_info_size(), 1);
+    const auto& info = screenshot_info.iframe_info(0);
+    EXPECT_FALSE(info.has_url());
+    if (test_case.committed_origin_with_empty_url) {
+      ASSERT_TRUE(info.has_security_origin());
+      EXPECT_FALSE(info.security_origin().opaque());
+      EXPECT_EQ(info.security_origin().value(),
+                test_case.committed_origin_with_empty_url);
+    } else {
+      EXPECT_FALSE(info.has_security_origin());
+    }
+    EXPECT_EQ(ToGfxRect(info.bounding_box()), kIframeBounds);
+    EXPECT_TRUE(info.bounding_box().is_screenshot_relative());
+  }
 }
 
 // Test that `TranslateIframeNodeGeometries` translates both same-origin iframe
