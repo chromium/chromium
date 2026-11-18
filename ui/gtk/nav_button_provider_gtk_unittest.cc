@@ -347,6 +347,131 @@ TEST(NavButtonProviderGtkTest, RoundingDoesNotExceedTopAreaHeight) {
   }
 }
 
+// Regression test for crbug.com/537790285: a `background-image` whose
+// intrinsic size exceeds the button but which `background-size` draws smaller
+// (as Breeze does with its 36px SVG assets drawn at 18px) must not be
+// stretched to fill the button.
+TEST(NavButtonProviderGtkTest, SmallerBackgroundSizeIsNotStretched) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath svg_path = temp_dir.GetPath().AppendASCII("bg.svg");
+  ASSERT_TRUE(base::WriteFile(
+      svg_path,
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"36\" height=\"36\">"
+      "<rect width=\"36\" height=\"36\" fill=\"#ff0000\"/></svg>"));
+
+  const std::string css =
+      "headerbar, headerbar.titlebar {"
+      "  min-height: 0;"
+      "  padding: 0;"
+      "  border: none;"
+      "}"
+      "headerbar button.titlebutton, headerbar button.titlebutton image {"
+      "  min-height: 0;"
+      "  min-width: 0;"
+      "  padding: 0;"
+      "  margin: 0;"
+      "  border: none;"
+      "  box-shadow: none;"
+      "  background: none;"
+      "}"
+      "headerbar button.titlebutton image {"
+      "  color: transparent;"
+      "}"
+      "headerbar button.titlebutton {"
+      "  min-height: 32px;"
+      "  min-width: 32px;"
+      "  background-image: url(\"file://" +
+      svg_path.value() +
+      "\");"
+      "  background-position: center;"
+      "  background-repeat: no-repeat;"
+      "  background-size: 18px 18px;"
+      "}";
+  base::ScopedClosureRunner remove_css = AddGlobalCssForTesting(css);
+
+  // At a `top_area_height` of 24, the 32px buttons are scaled down to 24px.
+  for (int size : {32, 24}) {
+    SCOPED_TRACE(size);
+    const ProviderOutput output = RedrawAndCollect(
+        /*top_area_height=*/size, /*maximized=*/false, /*active=*/true);
+    // The 18px image is centered, leaving a transparent border of `inset`.
+    const int inset = (size - 18) / 2;
+    for (DisplayType type : {DisplayType::kMinimize, DisplayType::kMaximize,
+                             DisplayType::kClose}) {
+      SCOPED_TRACE(static_cast<int>(type));
+      const SkBitmap& bitmap = output.images.at({type, ButtonState::kNormal});
+      ASSERT_EQ(bitmap.width(), size);
+      ASSERT_EQ(bitmap.height(), size);
+      EXPECT_EQ(SkColorGetA(bitmap.getColor(size / 2, size / 2)), 255u);
+      EXPECT_EQ(SkColorGetA(bitmap.getColor(inset - 2, size / 2)), 0u);
+      EXPECT_EQ(SkColorGetA(bitmap.getColor(size / 2, inset - 2)), 0u);
+    }
+  }
+}
+
+// A `background-image` drawn larger than the button (as Breeze GTK3 does with
+// its bitmaps when the buttons are scaled down) must be scaled to fit rather
+// than clipped.
+TEST(NavButtonProviderGtkTest, LargerBackgroundIsScaledToFit) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath svg_path = temp_dir.GetPath().AppendASCII("bg.svg");
+  // A red 40px square with a blue center, so that clipping would cut off the
+  // red edges.
+  ASSERT_TRUE(base::WriteFile(
+      svg_path,
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"40\" height=\"40\">"
+      "<rect width=\"40\" height=\"40\" fill=\"#ff0000\"/>"
+      "<rect x=\"8\" y=\"8\" width=\"24\" height=\"24\" fill=\"#0000ff\"/>"
+      "</svg>"));
+
+  const std::string css =
+      "headerbar, headerbar.titlebar {"
+      "  min-height: 0;"
+      "  padding: 0;"
+      "  border: none;"
+      "}"
+      "headerbar button.titlebutton, headerbar button.titlebutton image {"
+      "  min-height: 0;"
+      "  min-width: 0;"
+      "  padding: 0;"
+      "  margin: 0;"
+      "  border: none;"
+      "  box-shadow: none;"
+      "  background: none;"
+      "}"
+      "headerbar button.titlebutton image {"
+      "  color: transparent;"
+      "}"
+      "headerbar button.titlebutton {"
+      "  min-height: 32px;"
+      "  min-width: 32px;"
+      "  background-image: url(\"file://" +
+      svg_path.value() +
+      "\");"
+      "  background-position: center;"
+      "  background-repeat: no-repeat;"
+      "}";
+  base::ScopedClosureRunner remove_css = AddGlobalCssForTesting(css);
+
+  for (int size : {32, 24}) {
+    SCOPED_TRACE(size);
+    const ProviderOutput output = RedrawAndCollect(
+        /*top_area_height=*/size, /*maximized=*/false, /*active=*/true);
+    for (DisplayType type : {DisplayType::kMinimize, DisplayType::kMaximize,
+                             DisplayType::kClose}) {
+      SCOPED_TRACE(static_cast<int>(type));
+      const SkBitmap& bitmap = output.images.at({type, ButtonState::kNormal});
+      ASSERT_EQ(bitmap.width(), size);
+      ASSERT_EQ(bitmap.height(), size);
+      EXPECT_EQ(SkColorGetB(bitmap.getColor(size / 2, size / 2)), 255u);
+      EXPECT_EQ(SkColorGetR(bitmap.getColor(1, size / 2)), 255u);
+      EXPECT_EQ(SkColorGetR(bitmap.getColor(size / 2, 1)), 255u);
+    }
+  }
+}
+
 TEST(NavButtonProviderGtkTest,
      CachesIconsAcrossProvidersAndInvalidatesOnThemeChange) {
   if (GtkCheckVersion(4)) {

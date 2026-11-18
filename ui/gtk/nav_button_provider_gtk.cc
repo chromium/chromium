@@ -420,38 +420,7 @@ class NavButtonImageSource : public gfx::ImageSkiaSource {
     // be downsized when it would have clipped.  In GTK, the image is always
     // scaled to fit the drawing region (preserving aspect ratio).  Only add
     // "contain" if clipping would occur.
-    int bg_width = 0;
-    int bg_height = 0;
-    if (GtkCheckVersion(4)) {
-      auto* snapshot = gtk_snapshot_new();
-      gtk_snapshot_render_background(snapshot, button_context, 0, 0,
-                                     button_size_.width(),
-                                     button_size_.height());
-      if (auto* node = gtk_snapshot_free_to_node(snapshot)) {
-        if (GdkTexture* texture = GetTextureFromRenderNode(node)) {
-          bg_width = gdk_texture_get_width(texture);
-          bg_height = gdk_texture_get_height(texture);
-        }
-        gsk_render_node_unref(node);
-      }
-    } else {
-      cairo_pattern_t* cr_pattern = nullptr;
-      cairo_surface_t* cr_surface = nullptr;
-      GtkStyleContextGet(
-          button_context,
-          "background-image" /* GTK_STYLE_PROPERTY_BACKGROUND_IMAGE */,
-          &cr_pattern, nullptr);
-      if (cr_pattern) {
-        cairo_pattern_get_surface(cr_pattern, &cr_surface);
-        if (cr_surface &&
-            cairo_surface_get_type(cr_surface) == CAIRO_SURFACE_TYPE_IMAGE) {
-          bg_width = cairo_image_surface_get_width(cr_surface);
-          bg_height = cairo_image_surface_get_height(cr_surface);
-        }
-        cairo_pattern_destroy(cr_pattern);
-      }
-    }
-    if (bg_width > button_size_.width() || bg_height > button_size_.height()) {
+    if (BackgroundImageFillsButton(pixbuf_scale)) {
       ApplyCssToContext(button_context,
                         ".titlebutton { background-size: contain; }");
     }
@@ -521,6 +490,39 @@ class NavButtonImageSource : public gfx::ImageSkiaSource {
   bool HasRepresentationAtAllScales() const override { return true; }
 
  private:
+  // Returns whether the button's background image, drawn in an area of
+  // `button_size_`, reaches the edges of the area (so it is clipped or exactly
+  // fits).  This uses the size the image is drawn at, which respects
+  // `background-size` (e.g. Breeze draws its 36px SVG assets at 18px).
+  bool BackgroundImageFillsButton(int pixbuf_scale) const {
+    // Use a separate context: the CSS below must not affect the context used
+    // for rendering.  Measure only the background image, drawn once.
+    auto context = CreateButtonContext(frame_type_, type_, state_, maximized_,
+                                       active_, pixbuf_scale);
+    ApplyCssToContext(context,
+                      ".titlebutton {"
+                      "  background-color: transparent;"
+                      "  background-position: center;"
+                      "  background-repeat: no-repeat;"
+                      "  border: none;"
+                      "  box-shadow: none;"
+                      "  padding: 0;"
+                      "}");
+    cairo_surface_t* surface =
+        cairo_recording_surface_create(CAIRO_CONTENT_COLOR_ALPHA, nullptr);
+    cairo_t* cr = cairo_create(surface);
+    gtk_render_background(context, cr, 0, 0, button_size_.width(),
+                          button_size_.height());
+    cairo_destroy(cr);
+    double x = 0;
+    double y = 0;
+    double width = 0;
+    double height = 0;
+    cairo_recording_surface_ink_extents(surface, &x, &y, &width, &height);
+    cairo_surface_destroy(surface);
+    return width >= button_size_.width() || height >= button_size_.height();
+  }
+
   ui::FrameType frame_type_;
   ui::NavButtonProvider::FrameButtonDisplayType type_;
   ui::NavButtonProvider::ButtonState state_;

@@ -898,7 +898,7 @@ GdkTexture* GetTextureFromRenderNode(GskRenderNode* node) {
     case GSK_TEXTURE_NODE:
       return gsk_texture_node_get_texture(node);
     case GSK_TEXTURE_SCALE_NODE:
-      return gsk_texture_node_get_texture(node);
+      return gsk_texture_scale_node_get_texture(node);
     default:
       break;
   }
