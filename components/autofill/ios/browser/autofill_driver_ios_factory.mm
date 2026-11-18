@@ -53,6 +53,7 @@ AutofillDriverIOSFactory::~AutofillDriverIOSFactory() {
   for (auto& observer : AutofillDriverFactory::observers()) {
     observer.OnAutofillDriverFactoryDestroyed(*this);
   }
+  CHECK(driver_map_.empty(), base::NotFatalUntil::M164);
   if (web_state() && web_state()->IsRealized()) {
     // Only count the max number of drivers for realized web states because
     // unrealized web states do not have loaded frames which can heavily skew

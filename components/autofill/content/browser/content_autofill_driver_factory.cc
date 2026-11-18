@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -97,6 +98,7 @@ ContentAutofillDriverFactory::~ContentAutofillDriverFactory() {
   for (auto& observer : observers()) {
     observer.OnAutofillDriverFactoryDestroyed(*this);
   }
+  CHECK(driver_map_.empty(), base::NotFatalUntil::M164);
   base::UmaHistogramCounts1000("Autofill.NumberOfDriversPerFactory",
                                max_drivers_);
 }
