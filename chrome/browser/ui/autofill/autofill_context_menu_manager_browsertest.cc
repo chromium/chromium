@@ -47,8 +47,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
-#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
@@ -58,8 +56,6 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/personal_context/core/mock_personal_context_eligibility_service.h"
-#include "components/personal_context/core/personal_context_prefs.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
@@ -95,10 +91,6 @@ using ::testing::Return;
 MATCHER(NoPasswordManagerItemsAdded, "") {
   size_t count = 0;
   for (size_t i = 0; i < arg->GetItemCount(); ++i) {
-    if (arg->GetCommandIdAt(i) ==
-        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY) {
-      continue;
-    }
     if (arg->GetTypeAt(i) == ui::MenuModel::ItemType::TYPE_SEPARATOR) {
       continue;
     }
@@ -1021,190 +1013,6 @@ INSTANTIATE_TEST_SUITE_P(
         SelectPasswordFallbackMetricsTest::ParamType>& info) {
       return info.param.test_name;
     });
-
-class AtMemoryContextMenuManagerTest
-    : public BaseAutofillContextMenuManagerTest {
- public:
-  AtMemoryContextMenuManagerTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kAutofillAtMemory);
-  }
-
-  void SetUpOnMainThread() override {
-    BaseAutofillContextMenuManagerTest::SetUpOnMainThread();
-    autofill_client()->GetPrefs()->registry()->RegisterIntegerPref(
-        optimization_guide::prefs::kFindAndFillWithGeminiSettings,
-        std::to_underlying(optimization_guide::EnterprisePolicyValue::kAllow));
-    autofill_client()->GetPrefs()->SetBoolean(
-        personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
-        true);
-    ON_CALL(mock_personal_context_service_, GetEligibilityState())
-        .WillByDefault(Return(
-            personal_context::PersonalContextEligibilityState::kEligible));
-    autofill_client()->set_personal_context_eligibility_service(
-        &mock_personal_context_service_);
-  }
-
- protected:
-  NiceMock<personal_context::MockPersonalContextEligibilityService>
-      mock_personal_context_service_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Checks if the context menu model contains the AtMemory manual fallback
-// entries with correct UI strings. `arg` must be of type `ui::SimpleMenuModel`.
-testing::AssertionResult ContainsAtMemoryFallback(
-    const ui::SimpleMenuModel& arg) {
-  for (size_t i = 0; i < arg.GetItemCount(); i++) {
-    if (arg.GetCommandIdAt(i) ==
-        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY) {
-      std::u16string actual = arg.GetLabelAt(i);
-      std::u16string expected = l10n_util::GetStringUTF16(
-          IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY);
-      if (actual != expected) {
-        return testing::AssertionFailure() << actual << " != " << expected;
-      }
-      return testing::AssertionSuccess();
-    }
-  }
-  return testing::AssertionFailure() << "No AtMemory entry found";
-}
-
-IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest, AddAtMemoryFallback) {
-  autofill_context_menu_manager()->AppendItems();
-  ASSERT_TRUE(ContainsAtMemoryFallback(*menu_model()));
-}
-
-// Tests that when both password fallback and AtMemory fallback are eligible,
-// they are displayed in the same menu group with no separator between them,
-// followed by a separator at the end of the group.
-IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest,
-                       AtMemoryFallbackAndPasswordsFallbackInSameGroup) {
-  // Add a saved credential so "Select password" fallback item is shown.
-  auto* password_store =
-      ProfilePasswordStoreFactory::GetForProfile(
-          browser()->GetProfile(), ServiceAccessType::IMPLICIT_ACCESS)
-          .get();
-  password_manager::PasswordStoreWaiter add_waiter(password_store);
-  password_manager::PasswordForm form;
-  form.signon_realm = "http://test.com";
-  form.url = GURL(form.signon_realm);
-  form.username_value = u"username";
-  form.password_value = password_manager::PasswordString(u"password");
-  password_store->AddLogin(password_manager::FromPasswordForm(form));
-  add_waiter.WaitOrReturn();
-
-  autofill_context_menu_manager()->AppendItems();
-
-  // Find the positions of both fallback options in the context menu model.
-  std::optional<size_t> select_password_idx = menu_model()->GetIndexOfCommandId(
-      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD);
-  std::optional<size_t> at_memory_idx = menu_model()->GetIndexOfCommandId(
-      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY);
-
-  ASSERT_TRUE(select_password_idx);
-  ASSERT_TRUE(at_memory_idx);
-
-  // Verify that AtMemory immediately follows "Select password" (same group)
-  // and that the group is terminated with a separator.
-  EXPECT_EQ(*at_memory_idx, *select_password_idx + 1);
-  EXPECT_EQ(menu_model()->GetTypeAt(*at_memory_idx + 1),
-            ui::MenuModel::ItemType::TYPE_SEPARATOR);
-}
-
-// Tests that when the accessibility annotator is disabled for the profile,
-// AtMemory fallback is dropped.
-IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest,
-                       AtMemoryFallbackDroppedWhenProfileNotEligible) {
-  EXPECT_CALL(mock_personal_context_service_, GetEligibilityState())
-      .WillRepeatedly(Return(personal_context::PersonalContextEligibilityState::
-                                 kDisabledNotEligible));
-
-  autofill_context_menu_manager()->AppendItems();
-  ASSERT_FALSE(ContainsAtMemoryFallback(*menu_model()));
-}
-
-IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest,
-                       AtMemoryFallbackDroppedOnPasswordFields) {
-  content::ContextMenuParams params = CreateContextMenuParams();
-  params.form_control_type = blink::mojom::FormControlType::kInputPassword;
-  autofill_context_menu_manager()->set_params_for_testing(params);
-
-  autofill_context_menu_manager()->AppendItems();
-  ASSERT_FALSE(ContainsAtMemoryFallback(*menu_model()));
-}
-
-// Checks if the context menu model contains ONLY AtMemory manual fallback
-// entry.
-testing::AssertionResult ContainsOnlyAtMemoryFallback(
-    const ui::SimpleMenuModel& arg) {
-  if (arg.GetItemCount() != 2) {
-    return testing::AssertionFailure()
-           << "There should be exactly two entries; " << arg.GetItemCount()
-           << " found instead.";
-  }
-
-  if (arg.GetCommandIdAt(0) !=
-          IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY ||
-      arg.GetLabelAt(0) !=
-          l10n_util::GetStringUTF16(
-              IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY)) {
-    return testing::AssertionFailure()
-           << "First item is not '@memory' related.";
-  }
-  if (arg.GetTypeAt(1) != ui::MenuModel::ItemType::TYPE_SEPARATOR) {
-    return testing::AssertionFailure() << "";
-  }
-  return testing::AssertionSuccess();
-}
-
-IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest,
-                       AddAtMemoryFallback_ContentEditable) {
-  content::ContextMenuParams params = CreateContextMenuParams();
-  params.form_control_type = std::nullopt;
-  params.is_content_editable_for_autofill = true;
-  autofill_context_menu_manager()->set_params_for_testing(params);
-
-  autofill_context_menu_manager()->AppendItems();
-  ASSERT_TRUE(ContainsOnlyAtMemoryFallback(*menu_model()));
-}
-
-IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest,
-                       ExecuteAtMemoryFallbackCommand_ContentEditable) {
-  content::ContextMenuParams params = CreateContextMenuParams();
-  params.form_control_type = std::nullopt;
-  params.is_content_editable_for_autofill = true;
-  params.field_renderer_id = blink::DOMNodeIdType(123);
-  autofill_context_menu_manager()->set_params_for_testing(params);
-
-  autofill_context_menu_manager()->AppendItems();
-
-  EXPECT_CALL(
-      *driver(),
-      RendererShouldTriggerSuggestions(
-          FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
-                        FieldRendererId(123)},
-          AutofillSuggestionTriggerSource::kAtMemoryContextMenu));
-
-  autofill_context_menu_manager()->ExecuteCommand(
-      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY);
-}
-
-IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest,
-                       ExecuteAtMemoryFallbackCommand) {
-  autofill_context_menu_manager()->AppendItems();
-
-  EXPECT_CALL(
-      *driver(),
-      RendererShouldTriggerSuggestions(
-          FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
-                        FieldRendererId(0)},
-          AutofillSuggestionTriggerSource::kAtMemoryContextMenu));
-
-  autofill_context_menu_manager()->ExecuteCommand(
-      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY);
-}
 
 }  // namespace
 }  // namespace autofill

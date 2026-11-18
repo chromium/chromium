@@ -162,8 +162,7 @@ bool ContextMenuContentType::SupportsGroupInternal(int group) {
 #endif
 
     case ITEM_GROUP_AUTOFILL:
-      return params_.form_control_type.has_value() ||
-             params_.is_content_editable_for_autofill;
+      return params_.form_control_type.has_value();
 
     default:
       NOTREACHED();

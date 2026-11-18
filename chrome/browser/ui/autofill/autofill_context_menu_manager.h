@@ -70,10 +70,6 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // suggest.
   void MaybeAddAutofillManualFallbackItems();
 
-  // Adds the AtMemory manual fallback item if the feature is enabled. Returns
-  // true if the item was added, false otherwise.
-  bool MaybeAddAtMemoryItem();
-
   // Adds the passwords manual fallback context menu entries.
   //
   // The entries are displayed in the following order:

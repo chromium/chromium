@@ -25,15 +25,10 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
-#include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/content/browser/test_content_autofill_driver.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
-#include "components/autofill/core/common/aliases.h"
-#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/unique_ids.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/password_counter.h"
@@ -52,7 +47,6 @@
 #include "printing/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/menus/simple_menu_model.h"
@@ -63,17 +57,6 @@ namespace {
 constexpr char kTestUrl[] = "https://example.com/";
 constexpr char16_t kTestUsername[] = u"test_user@example.com";
 constexpr char16_t kTestPassword[] = u"test_password";
-
-class MockAutofillDriver : public autofill::TestContentAutofillDriver {
- public:
-  using autofill::TestContentAutofillDriver::TestContentAutofillDriver;
-
-  MOCK_METHOD(void,
-              RendererShouldTriggerSuggestions,
-              (const autofill::FieldGlobalId& field_id,
-               autofill::AutofillSuggestionTriggerSource trigger_source),
-              (override));
-};
 
 class MockPasswordAccessoryController : public PasswordAccessoryControllerImpl {
  public:
@@ -163,9 +146,7 @@ class ChromeSelectionDropdownMenuDelegateTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {chrome::android::kPrintSelectionMenu,
-         features::kAndroidDevToolsFrontend,
-         autofill::features::kAutofillAtMemory,
-         autofill::features::debug::kAtMemorySkipEnablementChecks},
+         features::kAndroidDevToolsFrontend},
         /*disabled_features=*/{});
   }
 
@@ -198,9 +179,6 @@ class ChromeSelectionDropdownMenuDelegateTest
     };
   }
 
-  MockAutofillDriver* autofill_driver() {
-    return autofill_driver_injector_[main_rfh()];
-  }
   autofill::TestContentAutofillClient* autofill_client() {
     return autofill_client_injector_[web_contents()];
   }
@@ -231,8 +209,6 @@ class ChromeSelectionDropdownMenuDelegateTest
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
       autofill_client_injector_;
-  autofill::TestAutofillDriverInjector<testing::NiceMock<MockAutofillDriver>>
-      autofill_driver_injector_;
   TestPasswordManagerClient password_manager_client_;
 };
 
@@ -323,11 +299,8 @@ class ChromeSelectionDropdownMenuDelegateFeatureDisabledTest
   ChromeSelectionDropdownMenuDelegateFeatureDisabledTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{
-            chrome::android::kPrintSelectionMenu,
-            features::kAndroidDevToolsFrontend,
-            autofill::features::kAutofillAtMemory,
-            autofill::features::debug::kAtMemorySkipEnablementChecks});
+        /*disabled_features=*/{chrome::android::kPrintSelectionMenu,
+                               features::kAndroidDevToolsFrontend});
   }
 
  private:
@@ -351,8 +324,6 @@ TEST_F(ChromeSelectionDropdownMenuDelegateFeatureDisabledTest,
   ASSERT_TRUE(model);
   EXPECT_FALSE(ContainsCommand(*model, IDC_PRINT));
   EXPECT_FALSE(ContainsCommand(*model, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
-  EXPECT_FALSE(
-      ContainsCommand(*model, IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY));
 }
 
 TEST_F(ChromeSelectionDropdownMenuDelegateTest,
@@ -370,110 +341,6 @@ TEST_F(ChromeSelectionDropdownMenuDelegateTest,
   EXPECT_TRUE(IsCommandEnabled(*model, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
   EXPECT_EQ(1000000,
             GetCommandOrder(*model, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
-}
-
-TEST_F(ChromeSelectionDropdownMenuDelegateTest,
-       GetSelectionPopupExtraItems_AtMemoryEditableField) {
-  ChromeSelectionDropdownMenuDelegate delegate;
-  content::ContextMenuParams params = CreateContextMenuParams();
-
-  std::unique_ptr<ui::MenuModel> model =
-      delegate.GetSelectionPopupExtraItems(*main_rfh(), params);
-
-  ASSERT_TRUE(model);
-  std::optional<size_t> at_memory_index =
-      FindCommandIndex(*model, IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY);
-  ASSERT_TRUE(at_memory_index.has_value());
-  EXPECT_TRUE(model->IsEnabledAt(*at_memory_index));
-  EXPECT_EQ(5, model->GetDisplayOrderAt(*at_memory_index));
-
-  // Verify the trailing separator immediately after @memory also has order 5.
-  ASSERT_LT(*at_memory_index + 1, model->GetItemCount());
-  EXPECT_EQ(ui::MenuModel::TYPE_SEPARATOR,
-            model->GetTypeAt(*at_memory_index + 1));
-  EXPECT_EQ(5, model->GetDisplayOrderAt(*at_memory_index + 1));
-
-  // Verify Inspect Element and its preceding separator still have order
-  // 1000000.
-  std::optional<size_t> inspect_index =
-      FindCommandIndex(*model, IDC_CONTENT_CONTEXT_INSPECTELEMENT);
-  ASSERT_TRUE(inspect_index.has_value());
-  EXPECT_EQ(1000000, model->GetDisplayOrderAt(*inspect_index));
-  ASSERT_GT(*inspect_index, 0u);
-  EXPECT_EQ(ui::MenuModel::TYPE_SEPARATOR,
-            model->GetTypeAt(*inspect_index - 1));
-  EXPECT_EQ(1000000, model->GetDisplayOrderAt(*inspect_index - 1));
-}
-
-TEST_F(ChromeSelectionDropdownMenuDelegateTest,
-       GetSelectionPopupExtraItems_AtMemoryContentEditable) {
-  ChromeSelectionDropdownMenuDelegate delegate;
-  content::ContextMenuParams params = CreateContextMenuParams(
-      /*form_control_type=*/std::nullopt, /*is_content_editable=*/true);
-
-  std::unique_ptr<ui::MenuModel> model =
-      delegate.GetSelectionPopupExtraItems(*main_rfh(), params);
-
-  ASSERT_TRUE(model);
-  EXPECT_TRUE(
-      ContainsCommand(*model, IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY));
-  EXPECT_TRUE(IsCommandEnabled(
-      *model, IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY));
-  EXPECT_EQ(5, GetCommandOrder(
-                   *model, IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY));
-}
-
-TEST_F(ChromeSelectionDropdownMenuDelegateTest,
-       GetSelectionPopupExtraItems_AtMemoryPasswordField) {
-  ChromeSelectionDropdownMenuDelegate delegate;
-  content::ContextMenuParams params =
-      CreateContextMenuParams(blink::mojom::FormControlType::kInputPassword);
-
-  std::unique_ptr<ui::MenuModel> model =
-      delegate.GetSelectionPopupExtraItems(*main_rfh(), params);
-
-  ASSERT_TRUE(model);
-  EXPECT_FALSE(
-      ContainsCommand(*model, IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY));
-}
-
-TEST_F(ChromeSelectionDropdownMenuDelegateTest,
-       GetSelectionPopupExtraItems_AtMemoryNonEditable) {
-  ChromeSelectionDropdownMenuDelegate delegate;
-  content::ContextMenuParams params = CreateContextMenuParams(
-      /*form_control_type=*/std::nullopt, /*is_content_editable=*/false,
-      /*selection_text=*/u"hello", /*is_editable=*/false);
-
-  std::unique_ptr<ui::MenuModel> model =
-      delegate.GetSelectionPopupExtraItems(*main_rfh(), params);
-
-  ASSERT_TRUE(model);
-  EXPECT_FALSE(
-      ContainsCommand(*model, IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY));
-}
-
-TEST_F(ChromeSelectionDropdownMenuDelegateTest,
-       GetSelectionPopupExtraItems_AtMemoryExecuteCommand) {
-  ChromeSelectionDropdownMenuDelegate delegate;
-  content::ContextMenuParams params = CreateContextMenuParams();
-  params.field_renderer_id = blink::DOMNodeIdType(42);
-
-  std::unique_ptr<ui::MenuModel> model =
-      delegate.GetSelectionPopupExtraItems(*main_rfh(), params);
-
-  ASSERT_TRUE(model);
-  std::optional<size_t> at_memory_index =
-      FindCommandIndex(*model, IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY);
-  ASSERT_TRUE(at_memory_index.has_value());
-
-  EXPECT_CALL(
-      *autofill_driver(),
-      RendererShouldTriggerSuggestions(
-          autofill::FieldGlobalId{autofill_driver()->GetFrameToken(),
-                                  autofill::FieldRendererId(42)},
-          autofill::AutofillSuggestionTriggerSource::kAtMemoryContextMenu));
-
-  model->ActivatedAt(*at_memory_index);
 }
 
 TEST_F(ChromeSelectionDropdownMenuDelegateTest,
@@ -518,8 +385,6 @@ TEST_F(ChromeSelectionDropdownMenuDelegateTest,
       delegate.GetSelectionPopupExtraItems(*main_rfh(), params);
 
   ASSERT_TRUE(model);
-  EXPECT_FALSE(
-      ContainsCommand(*model, IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY));
   std::optional<size_t> select_password_index = FindCommandIndex(
       *model, IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD);
   ASSERT_TRUE(select_password_index.has_value());
@@ -535,7 +400,7 @@ TEST_F(ChromeSelectionDropdownMenuDelegateTest,
 }
 
 TEST_F(ChromeSelectionDropdownMenuDelegateTest,
-       GetSelectionPopupExtraItems_SelectPasswordAndAtMemoryEditableField) {
+       GetSelectionPopupExtraItems_SelectPasswordEditableField) {
   ASSERT_TRUE(AddSavedPassword());
   ChromeSelectionDropdownMenuDelegate delegate;
   content::ContextMenuParams params = CreateContextMenuParams();
@@ -544,17 +409,11 @@ TEST_F(ChromeSelectionDropdownMenuDelegateTest,
       delegate.GetSelectionPopupExtraItems(*main_rfh(), params);
 
   ASSERT_TRUE(model);
-  std::optional<size_t> at_memory_index =
-      FindCommandIndex(*model, IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY);
   std::optional<size_t> select_password_index = FindCommandIndex(
       *model, IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD);
-  ASSERT_TRUE(at_memory_index.has_value());
   ASSERT_TRUE(select_password_index.has_value());
-  EXPECT_EQ(5, model->GetDisplayOrderAt(*at_memory_index));
   EXPECT_EQ(6, model->GetDisplayOrderAt(*select_password_index));
 
-  // Verify the trailing separator after both items uses the preceding item's
-  // order (6).
   ASSERT_LT(*select_password_index + 1, model->GetItemCount());
   EXPECT_EQ(ui::MenuModel::TYPE_SEPARATOR,
             model->GetTypeAt(*select_password_index + 1));

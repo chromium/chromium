@@ -620,7 +620,6 @@ if (!is_android) {
       "//components/password_manager/core/browser/password_store:password_store_interface",
       "//components/password_manager/core/browser/password_store:test_support",
       "//components/password_manager/core/common",
-      "//components/personal_context/core:test_support",
       "//components/signin/public/base",
       "//components/signin/public/identity_manager:test_support",
       "//components/strings:components_strings",

@@ -49,10 +49,6 @@ namespace android {
 
 namespace {
 
-// The display order for the At Memory menu item in the selection dropdown menu.
-// Placed at the very beginning of the selection dropdown menu.
-constexpr int kAtMemoryMenuItemOrder = 5;
-
 // The display order for the Select Password menu item in the selection
 // dropdown menu. Placed at the beginning of the selection dropdown menu.
 constexpr int kSelectPasswordMenuItemOrder = 6;
@@ -130,9 +126,6 @@ class ChromeSelectionDropdownMenuModel : public BaseSelectionDropdownMenuModel
     if (command_id == IDC_CONTENT_CONTEXT_INSPECTELEMENT) {
       return kInspectElementItemOrder;
     }
-    if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY) {
-      return kAtMemoryMenuItemOrder;
-    }
     if (command_id ==
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD) {
       return kSelectPasswordMenuItemOrder;
@@ -181,14 +174,6 @@ class ChromeSelectionDropdownMenuModel : public BaseSelectionDropdownMenuModel
     }
 #endif
 
-    if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY) {
-      auto* rfh = content::RenderFrameHost::FromID(rfh_id_);
-      if (rfh && rfh->IsRenderFrameLive()) {
-        autofill::ExecuteAtMemoryContextMenuCommand(*rfh, params_);
-      }
-      return;
-    }
-
     if (command_id ==
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD) {
       auto* rfh = content::RenderFrameHost::FromID(rfh_id_);
@@ -218,9 +203,6 @@ class ChromeSelectionDropdownMenuModel : public BaseSelectionDropdownMenuModel
       return true;
     }
 #endif
-    if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY) {
-      return true;
-    }
     if (command_id ==
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD) {
       return true;
@@ -260,9 +242,6 @@ class ChromeSelectionDropdownMenuModel : public BaseSelectionDropdownMenuModel
                  blink::mojom::FormControlType::kInputPassword;
     }
 #endif
-    if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY) {
-      return true;
-    }
     if (command_id ==
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD) {
       return true;
@@ -329,23 +308,11 @@ ChromeSelectionDropdownMenuDelegate::GetSelectionPopupExtraItems(
                                IDS_INSPECT_ELEMENT_ANDROID);
   }
 
-  const bool add_at_memory =
-      autofill::ShouldShowAtMemoryContextMenuItem(render_frame_host, params);
-  if (add_at_memory) {
-    model->AddItemWithStringId(IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY,
-                               IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY);
-  }
-
-  const bool add_select_password =
-      autofill::ShouldShowSelectPasswordContextMenuItem(render_frame_host,
-                                                        params);
-  if (add_select_password) {
+  if (autofill::ShouldShowSelectPasswordContextMenuItem(render_frame_host,
+                                                        params)) {
     model->AddItemWithStringId(
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
         IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD);
-  }
-
-  if (add_at_memory || add_select_password) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
@@ -382,10 +349,9 @@ void ChromeSelectionDropdownMenuDelegate::OnShowDropdownContextMenu(
     return;
   }
 
-  // Hide Autofill/@memory suggestions and the keyboard accessory so they do
-  // not overlap with the dropdown context menu.
-  // `HideSuggestions()` dismisses @memory and clears Autofill suggestions and
-  // keyboard listeners.
+  // Hide Autofill suggestions and the keyboard accessory so they do not overlap
+  // with the dropdown context menu.
+  // `HideSuggestions()` clears Autofill suggestions and keyboard listeners.
   // `ManualFillingController::Hide()` hides the accessory bar itself (which
   // stays visible in floating mode with a hardware keyboard when fallback
   // sources are available).
