@@ -72,7 +72,9 @@ void LayerAnimationSequence::Start(LayerAnimationDelegate* delegate) {
 
 void LayerAnimationSequence::Progress(base::TimeTicks now,
                                       LayerAnimationDelegate* delegate) {
-  CHECK(start_time_ != base::TimeTicks(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/586369962): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(start_time_ != base::TimeTicks());
   bool redraw_required = false;
 
   if (elements_.empty())
