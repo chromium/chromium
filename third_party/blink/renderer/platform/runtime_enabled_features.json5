@@ -3461,6 +3461,12 @@
       name: "FocusResetEvent",
       status: "experimental",
     },
+    // Offset adjust the focus ring's outer stroke radius.
+    // see http://crbug.com/556789070.
+    {
+      name: "FocusRingOffsetAdjustedOuterRadius",
+      status: "stable",
+    },
     {
       // Respects explicit outline colors for focus rings in dark mode and uses
       // an off-white default. https://issues.chromium.org/issues/480978106
