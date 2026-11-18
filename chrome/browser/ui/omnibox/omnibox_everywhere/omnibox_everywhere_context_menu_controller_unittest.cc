@@ -12,16 +12,21 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/feedback/public/feedback_source.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -30,6 +35,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search_engines/test_ai_mode_button_service.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
@@ -937,6 +943,81 @@ TEST_F(OmniboxEverywhereContextMenuControllerTest,
   ASSERT_TRUE(model);
   EXPECT_FALSE(
       model->GetIndexOfCommandId(CommandId::kShowShortcuts).has_value());
+}
+
+TEST_F(OmniboxEverywhereContextMenuControllerTest,
+       ContextMenuSendFeedbackGating) {
+  // Off by default when kOmniboxEverywhereDogfoodFeedback is disabled.
+  controller_->ShowOverflowMenu(gfx::Rect(0, 0, 20, 20),
+                                ui::mojom::MenuSourceType::kMouse,
+                                base::DoNothing());
+  const ui::SimpleMenuModel* model = controller_->model_for_testing();
+  ASSERT_TRUE(model);
+  EXPECT_FALSE(
+      model->GetIndexOfCommandId(CommandId::kSendFeedback).has_value());
+  EXPECT_FALSE(controller_->IsCommandIdEnabled(CommandId::kSendFeedback));
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kOmniboxEverywhereDogfoodFeedback);
+
+  controller_->ShowOverflowMenu(gfx::Rect(0, 0, 20, 20),
+                                ui::mojom::MenuSourceType::kMouse,
+                                base::DoNothing());
+  model = controller_->model_for_testing();
+  ASSERT_TRUE(model);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  std::optional<size_t> feedback_index =
+      model->GetIndexOfCommandId(CommandId::kSendFeedback);
+  ASSERT_TRUE(feedback_index.has_value());
+  ui::ImageModel icon = model->GetIconAt(*feedback_index);
+  EXPECT_TRUE(icon.IsVectorIcon());
+  EXPECT_EQ(icon.GetVectorIcon().vector_icon(), &vector_icons::kPetsIcon);
+  EXPECT_TRUE(controller_->IsCommandIdEnabled(CommandId::kSendFeedback));
+
+  // Right-click context menu must not include Send Feedback.
+  controller_->HandleContextMenu(content::ContextMenuParams());
+  ASSERT_TRUE(controller_->model_for_testing());
+  EXPECT_FALSE(controller_->model_for_testing()
+                   ->GetIndexOfCommandId(CommandId::kSendFeedback)
+                   .has_value());
+
+  // ExecuteCommand routes through ShowFeedbackPage with the OmniboxEverywhere
+  // feedback source.
+  {
+    base::test::ScopedFeatureList feedback_dialog_feature;
+    feedback_dialog_feature.InitAndEnableFeature(
+        features::kFeedbackDisabledDialog);
+    profile_.GetPrefs()->SetBoolean(::prefs::kUserFeedbackAllowed, false);
+    base::HistogramTester histogram_tester;
+    controller_->ExecuteCommand(CommandId::kSendFeedback, /*event_flags=*/0);
+    histogram_tester.ExpectUniqueSample(
+        "Feedback.NotAllowed.RequestSource",
+        feedback::kFeedbackSourceOmniboxEverywhere, 1);
+  }
+
+  // Hidden and disabled when CanShowFeedback() returns false.
+  {
+    base::test::ScopedFeatureList feedback_dialog_feature;
+    feedback_dialog_feature.InitAndDisableFeature(
+        features::kFeedbackDisabledDialog);
+    controller_->ShowOverflowMenu(gfx::Rect(0, 0, 20, 20),
+                                  ui::mojom::MenuSourceType::kMouse,
+                                  base::DoNothing());
+    model = controller_->model_for_testing();
+    ASSERT_TRUE(model);
+    EXPECT_FALSE(
+        model->GetIndexOfCommandId(CommandId::kSendFeedback).has_value());
+    EXPECT_FALSE(controller_->IsCommandIdEnabled(CommandId::kSendFeedback));
+  }
+
+  // Disabled when profile is null.
+  delegate_.set_profile(nullptr);
+  EXPECT_FALSE(controller_->IsCommandIdEnabled(CommandId::kSendFeedback));
+#else
+  EXPECT_FALSE(
+      model->GetIndexOfCommandId(CommandId::kSendFeedback).has_value());
+  EXPECT_FALSE(controller_->IsCommandIdEnabled(CommandId::kSendFeedback));
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 }  // namespace omnibox_everywhere

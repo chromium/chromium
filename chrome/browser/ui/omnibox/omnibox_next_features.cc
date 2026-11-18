@@ -142,6 +142,10 @@ BASE_FEATURE(kOmniboxEverywhereDeferStatusIcon, DISABLED);
 // WebContentsDelegate::PreHandleMouseEvent() on all platforms. If disabled,
 // it falls back to the legacy Aura pre-target handler and macOS HTCAPTION.
 BASE_FEATURE(kOmniboxEverywherePreHandleMouseDrag, ENABLED);
+// If enabled, shows the Send Feedback item in OmniboxEverywhere menus for
+// dogfooders/teamfooders (targeted via g/loomnibox-dogfood and
+// g/loomnibox-teamfood).
+BASE_FEATURE(kOmniboxEverywhereDogfoodFeedback, DISABLED);
 // If enabled, submitting a query with screenshots attached in Omnibox
 // Everywhere opens the result in a new browser window aligned with the
 // Omnibox Everywhere popup.

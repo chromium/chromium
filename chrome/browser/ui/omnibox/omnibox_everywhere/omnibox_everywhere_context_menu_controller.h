@@ -64,6 +64,7 @@ class OmniboxEverywhereContextMenuController
     kWritingDirectionLtr = 18,
     kWritingDirectionRtl = 19,
 #endif  // BUILDFLAG(IS_MAC)
+    kSendFeedback = 20,
   };
 
   class Delegate {

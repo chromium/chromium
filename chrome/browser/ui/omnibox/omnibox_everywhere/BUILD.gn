@@ -84,6 +84,8 @@ source_set("impl") {
     "omnibox_everywhere_context_menu_controller.cc",
     "omnibox_everywhere_controller.cc",
     "omnibox_everywhere_feature_promo_controller.cc",
+    "omnibox_everywhere_feedback.cc",
+    "omnibox_everywhere_feedback.h",
     "omnibox_everywhere_fre_controller.cc",
     "omnibox_everywhere_region_select_overlay.cc",
     "omnibox_everywhere_ui_manager.cc",
@@ -107,6 +109,7 @@ source_set("impl") {
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/background/omnibox_everywhere",
     "//chrome/browser/feature_engagement",
+    "//chrome/browser/feedback",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/new_tab_page/prefs",
     "//chrome/browser/profiles:profile_manager",
@@ -143,6 +146,7 @@ source_set("impl") {
     "//ui/strings:ui_strings",
     "//ui/views",
     "//ui/views/controls/webview",
+    "//url",
   ]
   if (is_mac) {
     deps += [ "//components/remote_cocoa/app_shim" ]
