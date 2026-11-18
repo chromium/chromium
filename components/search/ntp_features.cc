@@ -357,6 +357,9 @@ BASE_FEATURE(kNtpLazyLoadComposebox, base::FEATURE_DISABLED_BY_DEFAULT);
 // If enabled, the customizable widget platform will be rendered on the NTP.
 BASE_FEATURE(kNtpWidgetPlatform, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the Launchpad widget will be shown on the NTP.
+BASE_FEATURE(kNtpLaunchpadWidget, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kNtpModuleIgnoredCriteriaThreshold[] =
     "NtpModuleIgnoredCriteriaThreshold";
 const char kNtpModuleIgnoredHaTSDelayTimeParam[] =

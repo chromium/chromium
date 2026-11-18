@@ -10993,6 +10993,7 @@ from previous Chrome versions.
   <int value="-1212855900" label="enable-all-bookmarks-view"/>
   <int value="-1212273428" label="enable-experimental-app-list"/>
   <int value="-1212167260" label="disable-app-window-cycling"/>
+  <int value="-1212116001" label="NtpLaunchpadWidget:disabled"/>
   <int value="-1211135778" label="AppsCollections:disabled"/>
   <int value="-1210667312" label="OmniboxInspireMe:enabled"/>
   <int value="-1210522367" label="AndroidAppIntegrationModule:disabled"/>
@@ -14363,6 +14364,7 @@ from previous Chrome versions.
   <int value="-215048684" label="NtpComprehensiveThemeRealbox:disabled"/>
   <int value="-214859547" label="OmniboxActionsUISimplification:enabled"/>
   <int value="-214763255" label="AndroidHub:disabled"/>
+  <int value="-214641112" label="NtpLaunchpadWidget:enabled"/>
   <int value="-214618160" label="ESimPolicy:enabled"/>
   <int value="-214542348" label="TabStripMouseCloseResizeDelay:disabled"/>
   <int value="-213952444"

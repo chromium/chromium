@@ -7260,6 +7260,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "ntp-launchpad-widget",
+    "owners": [ "hannahrogers@google.com", "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "ntp-microsoft-authentication-module",
     "owners": [ "pauladedeji@google.com", "rtatum@google.com", "tiborg@chromium.org" ],
     "expiry_milestone": 150

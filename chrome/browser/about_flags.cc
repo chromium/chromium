@@ -7665,6 +7665,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpShortcutsRedesignDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpShortcutsRedesign)},
 
+    {"ntp-launchpad-widget", flag_descriptions::kNtpLaunchpadWidgetName,
+     flag_descriptions::kNtpLaunchpadWidgetDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpLaunchpadWidget)},
+
     {"ntp-widget-platform", flag_descriptions::kNtpWidgetPlatformName,
      flag_descriptions::kNtpWidgetPlatformDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpWidgetPlatform)},

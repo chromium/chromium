@@ -190,6 +190,18 @@ bool IsGoogleCalendarModuleEnabled(bool is_managed_profile, Profile* profile) {
   return IsFeatureEnabled(ntp_features::kNtpCalendarModule);
 }
 
+bool IsLaunchpadWidgetEnabled(Profile* profile) {
+  if (!IsProfileSignedIn(profile)) {
+    LogModuleEnablement(ntp_features::kNtpLaunchpadWidget, false,
+                        "not signed in");
+    return false;
+  }
+
+  // TODO(b/586620914): Check for pContext service availability.
+
+  return IsFeatureEnabled(ntp_features::kNtpLaunchpadWidget);
+}
+
 bool IsMostRelevantTabResumeModuleEnabled(Profile* profile) {
   if (!IsProfileSignedIn(profile)) {
     LogModuleEnablement(ntp_features::kNtpMostRelevantTabResumptionModule,

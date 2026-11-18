@@ -38,6 +38,7 @@ bool IsEnUSLocaleOnlyFeatureEnabled(const base::Feature& ntp_feature);
 bool IsFeatureEnabled(const base::Feature& feature);
 bool IsFeatureForceEnabled(const base::Feature& feature);
 bool IsGoogleCalendarModuleEnabled(bool is_managed_profile, Profile* profile);
+bool IsLaunchpadWidgetEnabled(Profile* profile);
 bool IsMicrosoftFilesModuleEnabledForProfile(Profile* profile);
 bool IsMostRelevantTabResumeModuleEnabled(Profile* profile);
 bool IsOutlookCalendarModuleEnabledForProfile(Profile* profile);

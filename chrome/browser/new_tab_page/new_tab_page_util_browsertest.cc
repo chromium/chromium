@@ -147,7 +147,7 @@ class NewTabPageUtilEnableFlagBrowserTest : public NewTabPageUtilBrowserTest {
   NewTabPageUtilEnableFlagBrowserTest() {
     features().InitWithFeatures(
         {ntp_features::kNtpChromeCartModule, ntp_features::kNtpDriveModule,
-         ntp_features::kNtpCalendarModule,
+         ntp_features::kNtpCalendarModule, ntp_features::kNtpLaunchpadWidget,
          ntp_features::kNtpMicrosoftAuthenticationModule,
          ntp_features::kNtpOutlookCalendarModule,
          ntp_features::kNtpSharepointModule},
@@ -159,11 +159,12 @@ class NewTabPageUtilDisableFlagBrowserTest : public NewTabPageUtilBrowserTest {
  public:
   NewTabPageUtilDisableFlagBrowserTest() {
     features().InitWithFeatures(
-        {}, {ntp_features::kNtpChromeCartModule, ntp_features::kNtpDriveModule,
-             ntp_features::kNtpCalendarModule,
-             ntp_features::kNtpMicrosoftAuthenticationModule,
-             ntp_features::kNtpOutlookCalendarModule,
-             ntp_features::kNtpSharepointModule});
+        {},
+        {ntp_features::kNtpChromeCartModule, ntp_features::kNtpDriveModule,
+         ntp_features::kNtpCalendarModule, ntp_features::kNtpLaunchpadWidget,
+         ntp_features::kNtpMicrosoftAuthenticationModule,
+         ntp_features::kNtpOutlookCalendarModule,
+         ntp_features::kNtpSharepointModule});
   }
 };
 
@@ -277,6 +278,29 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilEnableFlagBrowserTest,
                                              GetProfile()));
   CheckInternalsLog(std::string(ntp_features::kNtpCalendarModule.name) +
                     (GetParam() ? " disabled: account not managed"
+                                : " disabled: not signed in"));
+}
+
+IN_PROC_BROWSER_TEST_P(NewTabPageUtilBrowserTest, DisableLaunchpadWidgetByToT) {
+  EXPECT_FALSE(IsLaunchpadWidgetEnabled(GetProfile()));
+  CheckInternalsLog(std::string(ntp_features::kNtpLaunchpadWidget.name) +
+                    (GetParam() ? " disabled: default feature flag value"
+                                : " disabled: not signed in"));
+}
+
+IN_PROC_BROWSER_TEST_P(NewTabPageUtilEnableFlagBrowserTest,
+                       EnableLaunchpadWidgetByFlag) {
+  EXPECT_EQ(IsLaunchpadWidgetEnabled(GetProfile()), GetParam());
+  CheckInternalsLog(std::string(ntp_features::kNtpLaunchpadWidget.name) +
+                    (GetParam() ? " enabled: feature flag forced on"
+                                : " disabled: not signed in"));
+}
+
+IN_PROC_BROWSER_TEST_P(NewTabPageUtilDisableFlagBrowserTest,
+                       DisableLaunchpadWidgetByFlag) {
+  EXPECT_FALSE(IsLaunchpadWidgetEnabled(GetProfile()));
+  CheckInternalsLog(std::string(ntp_features::kNtpLaunchpadWidget.name) +
+                    (GetParam() ? " disabled: feature flag forced off"
                                 : " disabled: not signed in"));
 }
 

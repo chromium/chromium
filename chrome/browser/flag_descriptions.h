@@ -7076,6 +7076,10 @@ inline constexpr char kNtpFooterDescription[] =
     "Adds footer to New Tab Page that encapsulates customize buttons and "
     "background/theme attributions.";
 
+inline constexpr char kNtpLaunchpadWidgetName[] = "NTP Launchpad Widget";
+inline constexpr char kNtpLaunchpadWidgetDescription[] =
+    "Shows the Launchpad widget on the New Tab Page.";
+
 inline constexpr char kNtpMicrosoftAuthenticationModuleName[] =
     "NTP Microsoft Authentication Module";
 inline constexpr char kNtpMicrosoftAuthenticationModuleDescription[] =
