@@ -1355,7 +1355,9 @@ void NativeWidgetAura::OnKeyEvent(ui::KeyEvent* event) {
 
 void NativeWidgetAura::OnMouseEvent(ui::MouseEvent* event) {
   CHECK(window_, base::NotFatalUntil::M163);
-  CHECK(window_->IsVisible(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/585988129): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(window_->IsVisible());
   if (delegate_ && event->type() == ui::EventType::kMousewheel) {
     delegate_->OnMouseEvent(event);
     return;
