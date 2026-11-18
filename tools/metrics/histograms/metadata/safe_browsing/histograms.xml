@@ -1170,8 +1170,9 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>
     The size of an enterprise telemetry report {ProfileType}. This is recorded
     once for each send to Chrome Enterprise Reporting server, regardless of
-    whether it was successful. Sending attempts occur periodically (default
-    period is 5 minutes).
+    whether it was successful. Sending attempts occur periodically (every 5
+    minutes for a regular profile by default, and every 30 seconds for an
+    Enterprise Isolated Mode profile).
   </summary>
   <token key="ProfileType" variants="ExtensionTelemetryEnterpriseProfileType"/>
 </histogram>

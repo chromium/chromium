@@ -2006,6 +2006,15 @@ TEST_F(ExtensionTelemetryServiceIsolatedModeTest, IsNeverEnabledForESB) {
   EXPECT_FALSE(HasPersister());
 }
 
+TEST_F(ExtensionTelemetryServiceIsolatedModeTest,
+       UsesShortEnterpriseReportingInterval) {
+  SetEnterpriseReportingConfig(
+      /*enabled=*/true, {enterprise_connectors::kExtensionTelemetryEvent});
+  ASSERT_TRUE(IsTelemetryServiceEnabledForEnterprise());
+  EXPECT_EQ(telemetry_service_->GetEnterpriseTimerDelayForTesting(),
+            base::Seconds(30));
+}
+
 TEST_F(ExtensionTelemetryServiceIsolatedModeTest, CanBeEnabledForEnterprise) {
   EXPECT_FALSE(IsTelemetryServiceEnabledForEnterprise());
 

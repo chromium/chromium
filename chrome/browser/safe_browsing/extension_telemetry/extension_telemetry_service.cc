@@ -165,6 +165,24 @@ base::TimeDelta kOffstoreFileDataCollectionDurationLimitSeconds =
 // Interval for generating and send extension telemetry for enterprise
 base::TimeDelta kExtensionTelemetryEnterpriseReportingIntervalSeconds =
     base::Seconds(300);
+
+// Shorter interval for enterprise extension telemetry. See
+// `GetEnterpriseReportingInterval()`.
+base::TimeDelta kExtensionTelemetryEnterpriseShortReportingIntervalSeconds =
+    base::Seconds(30);
+
+// Returns how often enterprise extension telemetry reports are sent for
+// `profile`. Enterprise Isolated Mode sessions are often short, and enterprise
+// signals aren't persisted, so use the short interval to send them before the
+// profile is destroyed.
+base::TimeDelta GetEnterpriseReportingInterval(const Profile& profile) {
+  if (profile.IsEnterpriseIsolatedModeProfile() ||
+      base::FeatureList::IsEnabled(
+          kExtensionTelemetryEnterpriseShortReportingInterval)) {
+    return kExtensionTelemetryEnterpriseShortReportingIntervalSeconds;
+  }
+  return kExtensionTelemetryEnterpriseReportingIntervalSeconds;
+}
 #endif
 
 void RecordWhenFileWasPersisted(bool persisted_at_write_interval) {
@@ -686,13 +704,8 @@ void ExtensionTelemetryService::SetEnabledForEnterprise(bool enable) {
       SetUpOffstoreFileDataCollection();
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-      base::TimeDelta interval =
-          base::FeatureList::IsEnabled(
-              kExtensionTelemetryEnterpriseShortReportingInterval)
-              ? base::Seconds(30)
-              : kExtensionTelemetryEnterpriseReportingIntervalSeconds;
       enterprise_timer_.Start(
-          FROM_HERE, interval, this,
+          FROM_HERE, GetEnterpriseReportingInterval(*profile_), this,
           &ExtensionTelemetryService::CreateAndSendEnterpriseReport);
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
     } else {
