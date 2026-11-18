@@ -13,7 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ai/ai_manager.h"
+#include "chrome/browser/ai/features.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
 #include "chrome/browser/context_hub/test/test_image_caption_model_broker.h"
 #include "components/image_fetcher/core/mock_image_fetcher.h"

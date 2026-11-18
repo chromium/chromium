@@ -10,6 +10,16 @@ import("//services/on_device_model/on_device_model.gni")
 assert(build_with_model_execution)
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
+  public_deps = [ "//base" ]
+}
+
 source_set("ai") {
   sources = [
     "ai_context_bound_object.h",
@@ -26,8 +36,6 @@ source_set("ai") {
     "ai_summarizer.h",
     "ai_utils.h",
     "ai_writer.h",
-    "features.cc",
-    "features.h",
     "semantic_embedder_spaces.h",
   ]
   if (!is_android) {
@@ -41,6 +49,7 @@ source_set("ai") {
 
   configs += [ "//build/config/compiler:wglobal_constructors" ]
   public_deps = [
+    ":features",
     "//base",
     "//chrome/browser/actor",
     "//chrome/browser/glic",

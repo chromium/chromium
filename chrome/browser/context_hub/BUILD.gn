@@ -102,7 +102,7 @@ source_set("context_hub") {
   }
 
   deps = [
-    "//chrome/browser/ai",
+    "//chrome/browser/ai:features",
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/passage_embeddings",
@@ -173,7 +173,7 @@ source_set("unit_tests") {
     ":context_hub",
     ":test_support",
     "//base/test:test_support",
-    "//chrome/browser/ai",
+    "//chrome/browser/ai:features",
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/page_content_annotations",

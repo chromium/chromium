@@ -8,6 +8,11 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
+// Feature flag for enabling foundational models in the AI API, requires the
+// field param kModelVersionParam to specify the model version. Example:
+// --enable-features=AIApiFoundationalModel:model_version/v4
+BASE_DECLARE_FEATURE(kAIApiFoundationalModel);
+
 namespace features {
 
 BASE_DECLARE_FEATURE(kAILanguageModelOverrideConfiguration);

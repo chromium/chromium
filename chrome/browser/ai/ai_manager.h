@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -50,11 +49,6 @@ class SupportsUserData;
 namespace content {
 class RenderFrameHost;
 }  // namespace content
-
-// Feature flag for enabling foundational models in the AI API, requires the
-// field param kModelVersionParam to specify the model version. Example:
-// --enable-features=AIApiFoundationalModel:model_version/v4
-BASE_DECLARE_FEATURE(kAIApiFoundationalModel);
 
 // Owned by the host of the document / service worker via `SupportUserData`.
 // The browser-side implementation of `blink::mojom::AIManager`.

@@ -4,6 +4,13 @@
 
 #include "chrome/browser/ai/features.h"
 
+#include "base/feature_list.h"
+
+// Feature flag for enabling foundational models in the AI API, requires the
+// field param kModelVersionParam to specify the model version. Example:
+// --enable-features=AIApiFoundationalModel:model_version/v4
+BASE_FEATURE(kAIApiFoundationalModel, base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace features {
 
 BASE_FEATURE(kAILanguageModelOverrideConfiguration,

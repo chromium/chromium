@@ -22,7 +22,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ai/ai_manager.h"
+#include "chrome/browser/ai/features.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"

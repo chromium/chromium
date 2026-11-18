@@ -819,11 +819,6 @@ std::vector<AIManager::DecisionModelBackend> GetEnabledDecisionModelBackends() {
 
 }  // namespace
 
-// Feature flag for enabling foundational models in the AI API, requires the
-// field param kModelVersionParam to specify the model version. Example:
-// --enable-features=AIApiFoundationalModel:model_version/v4
-BASE_FEATURE(kAIApiFoundationalModel, base::FEATURE_DISABLED_BY_DEFAULT);
-
 AIManager::AIManager(content::BrowserContext* browser_context,
                      content::RenderFrameHost* rfh)
     : context_bound_object_set_(GetPriorityFromVisibility(rfh)),
