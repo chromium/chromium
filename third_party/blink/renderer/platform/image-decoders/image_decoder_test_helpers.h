@@ -34,7 +34,7 @@ inline void PrepareReferenceData(base::span<uint8_t> buffer) {
 }
 
 Vector<char> ReadFile(StringView file_name);
-Vector<char> ReadFile(const char* dir, const char* file_name);
+Vector<char> ReadFile(const StringView& dir, const char* file_name);
 
 scoped_refptr<SharedBuffer> ReadFileToSharedBuffer(StringView file_name);
 scoped_refptr<SharedBuffer> ReadFileToSharedBuffer(const char* dir,

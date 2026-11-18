@@ -27,12 +27,12 @@ Vector<char> ReadFile(StringView file_name) {
   return *data;
 }
 
-Vector<char> ReadFile(const char* dir, const char* file_name) {
+Vector<char> ReadFile(const StringView& dir, const char* file_name) {
   StringBuilder file_path;
-  if (UNSAFE_TODO(strncmp(dir, "web_tests/", 10)) == 0) {
+  if (dir.starts_with("web_tests/")) {
     file_path.Append(test::BlinkWebTestsDir());
     file_path.Append('/');
-    file_path.Append(UNSAFE_TODO(dir + 10));
+    file_path.Append(dir.substr(10));
   } else {
     file_path.Append(test::BlinkRootDir());
     file_path.Append('/');
