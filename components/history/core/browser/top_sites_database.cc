@@ -277,11 +277,17 @@ void TopSitesDatabase::ApplyDelta(const TopSitesDelta& delta) {
       return;
   }
 
-  for (const auto& added : delta.added)
-    SetSiteNoTransaction(added.url, added.rank);
+  for (const auto& added : delta.added) {
+    if (!SetSiteNoTransaction(added.url, added.rank)) {
+      return;
+    }
+  }
 
-  for (const auto& moved : delta.moved)
-    UpdateSiteRankNoTransaction(moved.url, moved.rank);
+  for (const auto& moved : delta.moved) {
+    if (!UpdateSiteRankNoTransaction(moved.url, moved.rank)) {
+      return;
+    }
+  }
 
   transaction.Commit();
 }
@@ -310,20 +316,19 @@ MostVisitedURLList TopSitesDatabase::GetSites() {
   return urls;
 }
 
-void TopSitesDatabase::SetSiteNoTransaction(const MostVisitedURL& url,
+bool TopSitesDatabase::SetSiteNoTransaction(const MostVisitedURL& url,
                                             int new_rank) {
   DCHECK(db_->HasActiveTransactions());
 
   int rank = GetURLRank(url);
   if (rank == kRankOfNonExistingURL) {
-    AddSite(url, new_rank);
+    return AddSite(url, new_rank);
   } else {
-    UpdateSiteRankNoTransaction(url, new_rank);
-    UpdateSite(url);
+    return UpdateSiteRankNoTransaction(url, new_rank) && UpdateSite(url);
   }
 }
 
-void TopSitesDatabase::AddSite(const MostVisitedURL& url, int new_rank) {
+bool TopSitesDatabase::AddSite(const MostVisitedURL& url, int new_rank) {
   DCHECK(db_->HasActiveTransactions());
 
   sql::Statement statement(
@@ -335,10 +340,10 @@ void TopSitesDatabase::AddSite(const MostVisitedURL& url, int new_rank) {
   statement.BindInt(1, kRankOfNewURL);
   statement.BindString16(2, url.title);
   if (!statement.Run())
-    return;
+    return false;
 
   // Update the new site's rank.
-  UpdateSiteRankNoTransaction(url, new_rank);
+  return UpdateSiteRankNoTransaction(url, new_rank);
 }
 
 bool TopSitesDatabase::UpdateSite(const MostVisitedURL& url) {
@@ -363,18 +368,15 @@ int TopSitesDatabase::GetURLRank(const MostVisitedURL& url) {
   return kRankOfNonExistingURL;
 }
 
-void TopSitesDatabase::UpdateSiteRankNoTransaction(const MostVisitedURL& url,
+bool TopSitesDatabase::UpdateSiteRankNoTransaction(const MostVisitedURL& url,
                                                    int new_rank) {
   DCHECK(db_->HasActiveTransactions());
 
   int prev_rank = GetURLRank(url);
   if (prev_rank == kRankOfNonExistingURL) {
     LOG(WARNING) << "Updating rank of an unknown URL: " << url.url.spec();
-    return;
+    return true;
   }
-
-  // TODO: consider returning early if any of the `Run()` calls below return
-  // false.
 
   // Shift the ranks.
   if (prev_rank == kRankOfNewURL) {
@@ -387,7 +389,9 @@ void TopSitesDatabase::UpdateSiteRankNoTransaction(const MostVisitedURL& url,
                                 "SET url_rank=url_rank+1 "
                                 "WHERE url_rank>=?"));
     shift_statement.BindInt(0, new_rank);
-    shift_statement.Run();
+    if (!shift_statement.Run()) {
+      return false;
+    }
   } else if (prev_rank > new_rank) {
     // From [new_rank, prev_rank), shift up.
     // Example: 3 -> 1
@@ -399,7 +403,9 @@ void TopSitesDatabase::UpdateSiteRankNoTransaction(const MostVisitedURL& url,
                                 "WHERE url_rank>=? AND url_rank<?"));
     shift_statement.BindInt(0, new_rank);
     shift_statement.BindInt(1, prev_rank);
-    shift_statement.Run();
+    if (!shift_statement.Run()) {
+      return false;
+    }
   } else if (prev_rank < new_rank) {
     // From (prev_rank, new_rank], shift down.
     // Example: 1 -> 3.
@@ -411,7 +417,9 @@ void TopSitesDatabase::UpdateSiteRankNoTransaction(const MostVisitedURL& url,
                                 "WHERE url_rank>? AND url_rank<=?"));
     shift_statement.BindInt(0, prev_rank);
     shift_statement.BindInt(1, new_rank);
-    shift_statement.Run();
+    if (!shift_statement.Run()) {
+      return false;
+    }
   }
 
   // Set the url's new_rank.
@@ -421,7 +429,7 @@ void TopSitesDatabase::UpdateSiteRankNoTransaction(const MostVisitedURL& url,
                                                        "WHERE url=?"));
   set_statement.BindInt(0, new_rank);
   set_statement.BindString(1, url.url.spec());
-  set_statement.Run();
+  return set_statement.Run();
 }
 
 bool TopSitesDatabase::RemoveURLNoTransaction(const MostVisitedURL& url) {

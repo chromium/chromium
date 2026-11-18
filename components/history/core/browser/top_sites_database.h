@@ -56,12 +56,12 @@ class TopSitesDatabase {
   // list of top sites, zero-based.
   // If the URL is not in the table, adds it. If it is, updates its rank and
   // shifts the ranks of other URLs if necessary. Should be called within an
-  // open transaction.
-  void SetSiteNoTransaction(const MostVisitedURL& url, int new_rank)
+  // open transaction. Returns false if a database statement fails.
+  bool SetSiteNoTransaction(const MostVisitedURL& url, int new_rank)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Adds a new URL to the database.
-  void AddSite(const MostVisitedURL& url, int new_rank)
+  // Adds a new URL to the database. Returns false on failure.
+  bool AddSite(const MostVisitedURL& url, int new_rank)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Updates title and redirects of a URL that's already in the database.
@@ -74,8 +74,8 @@ class TopSitesDatabase {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Sets the rank for a given URL. The URL must be in the database. Should be
-  // called within an open transaction.
-  void UpdateSiteRankNoTransaction(const MostVisitedURL& url, int new_rank)
+  // called within an open transaction. Returns false on failure.
+  bool UpdateSiteRankNoTransaction(const MostVisitedURL& url, int new_rank)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Removes the record for this URL. Returns false iff there is a failure in

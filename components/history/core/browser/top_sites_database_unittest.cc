@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
@@ -77,6 +79,64 @@ class TopSitesDatabaseTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   base::FilePath file_name_;
 };
+
+// Fail individual statements without SQLite rolling back the transaction for
+// us. ApplyDelta must discard all earlier changes in the same delta.
+class TopSitesDatabaseWriteFailureTest
+    : public TopSitesDatabaseTest,
+      public testing::WithParamInterface<std::string> {};
+
+TEST_P(TopSitesDatabaseWriteFailureTest, RollsBackDelta) {
+  TopSitesDatabase db;
+  ASSERT_TRUE(db.Init(file_name_));
+  MostVisitedURLList original = {
+      {kUrl0, u"first"}, {kUrl1, u"second"}, {kUrl2, u"third"}};
+  TopSitesDelta initial;
+  initial.added = {{original[0], 0}, {original[1], 1}, {original[2], 2}};
+  db.ApplyDelta(initial);
+  ASSERT_EQ(3u, db.GetSites().size());
+  // Use a supported constraint error rather than RAISE(), whose trigger error
+  // code is rejected by Chromium's SQL wrapper before error callbacks run.
+  ASSERT_TRUE(db.db_for_testing()->Execute(
+      "CREATE TEMP TABLE injected_failure(value INTEGER NOT NULL)"));
+  ASSERT_TRUE(db.db_for_testing()->Execute(GetParam()));
+
+  TopSitesDelta delta;
+  delta.deleted.push_back(original[0]);
+  delta.added = {{MostVisitedURL(GURL("https://new.test/"), u"new"), 0},
+                 {MostVisitedURL(kUrl1, u"changed"), 0}};
+  delta.moved = {{original[2], 0}, {original[1], 2}};
+  sql::test::ScopedErrorExpecter expecter;
+  expecter.ExpectError(sql::SqliteResultCode::kConstraintNotNull);
+  db.ApplyDelta(delta);
+  EXPECT_TRUE(expecter.SawExpectedErrors());
+
+  const auto actual = db.GetSites();
+  ASSERT_EQ(original.size(), actual.size());
+  for (size_t i = 0; i < original.size(); ++i) {
+    EXPECT_EQ(original[i].url, actual[i].url);
+    EXPECT_EQ(original[i].title, actual[i].title);
+    EXPECT_EQ(static_cast<int>(i), db.GetURLRankForTesting(original[i]));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    StatementFailures,
+    TopSitesDatabaseWriteFailureTest,
+    testing::Values(
+        "CREATE TEMP TRIGGER fail BEFORE INSERT ON top_sites "
+        "BEGIN INSERT INTO injected_failure VALUES(NULL); END",
+        "CREATE TEMP TRIGGER fail BEFORE UPDATE OF title ON top_sites "
+        "BEGIN INSERT INTO injected_failure VALUES(NULL); END",
+        "CREATE TEMP TRIGGER fail BEFORE UPDATE OF url_rank ON top_sites "
+        "WHEN OLD.url_rank = -1 "
+        "BEGIN INSERT INTO injected_failure VALUES(NULL); END",
+        "CREATE TEMP TRIGGER fail BEFORE UPDATE OF url_rank ON top_sites "
+        "WHEN NEW.url_rank > OLD.url_rank AND OLD.url_rank >= 0 "
+        "BEGIN INSERT INTO injected_failure VALUES(NULL); END",
+        "CREATE TEMP TRIGGER fail BEFORE UPDATE OF url_rank ON top_sites "
+        "WHEN OLD.title = 'third' AND NEW.url_rank = 0 "
+        "BEGIN INSERT INTO injected_failure VALUES(NULL); END"));
 
 // Version 1 is deprecated, the resulting schema should be current,
 // with no data.
