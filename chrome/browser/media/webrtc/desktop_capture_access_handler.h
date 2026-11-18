@@ -134,7 +134,7 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Returns true if the request is from a built-in feedback UI and
-  // `kUseSCContentSharingPicker` feature is enabled.
+  // `SCContentSharingPicker` is enabled.
   bool IsFeedbackRequestWithSckPicker(const GURL& origin) const;
 
   // Skips the screen capture request approval dialog in tests.

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_PICKER_UTILS_H_
 
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -16,5 +17,11 @@ gfx::ImageSkia ScaleBitmap(const SkBitmap& bitmap, gfx::Size size);
 content::DesktopMediaID::Type AsDesktopMediaIdType(DesktopMediaList::Type type);
 DesktopMediaList::Type AsDesktopMediaListType(
     content::DesktopMediaID::Type type);
+
+#if BUILDFLAG(IS_MAC)
+// Returns true if the built-in macOS screen-sharing picker
+// (SCContentSharingPicker) is supported on the current OS version and enabled.
+bool ShouldUseSCContentSharingPicker();
+#endif  // BUILDFLAG(IS_MAC)
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_PICKER_UTILS_H_

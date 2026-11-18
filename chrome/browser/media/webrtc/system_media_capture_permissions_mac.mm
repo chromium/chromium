@@ -4,8 +4,8 @@
 
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 
+#include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_stats_mac.h"
-#include "media/base/media_switches.h"
 
 namespace system_media_permissions {
 
@@ -22,12 +22,9 @@ SystemPermission CheckSystemScreenCapturePermission() {
 }
 
 bool ScreenCaptureNeedsSystemLevelPermissions() {
-  if (@available(macOS 15, *)) {
-    // The native picker does not require TCC, as macOS considers the user's
-    // direct interaction with the OS as conferring one-time permission.
-    return !base::FeatureList::IsEnabled(media::kUseSCContentSharingPicker);
-  }
-  return true;
+  // The native picker does not require TCC, as macOS considers the user's
+  // direct interaction with the OS as conferring one-time permission.
+  return !ShouldUseSCContentSharingPicker();
 }
 
 }  // namespace system_media_permissions

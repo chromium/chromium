@@ -6,6 +6,8 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/command_line.h"
+#include "base/feature_list.h"
+#include "base/mac/mac_util.h"
 #include "content/browser/media/capture/fake_screen_capture_picker_mac.h"
 #include "content/browser/media/capture/native_screen_capture_picker_mac.h"
 #include "media/base/media_switches.h"
@@ -16,7 +18,10 @@ namespace content {
 std::unique_ptr<NativeScreenCapturePicker>
 MaybeCreateNativeScreenCapturePicker() {
 #if BUILDFLAG(IS_MAC)
-  if (!base::FeatureList::IsEnabled(media::kUseSCContentSharingPicker)) {
+  // Keep OS version check in sync with ShouldUseSCContentSharingPicker() in
+  // chrome/browser/media/webrtc/desktop_media_picker_utils.cc.
+  if (base::mac::MacOSVersion() < 26'04'00 ||
+      !base::FeatureList::IsEnabled(media::kUseSCContentSharingPicker)) {
     return nullptr;
   }
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

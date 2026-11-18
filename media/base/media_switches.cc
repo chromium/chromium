@@ -1520,9 +1520,9 @@ BASE_FEATURE(kCastStreamingMacHardwareH264, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kMacAVFoundationPlayback, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use the built-in MacOS screen-sharing picker (SCContentSharingPicker). This
-// flag will only use the built-in picker on MacOS 15 Sequoia and later where it
-// is required to avoid recurring permission dialogs.
-BASE_FEATURE(kUseSCContentSharingPicker, base::FEATURE_DISABLED_BY_DEFAULT);
+// flag will only use the built-in picker on macOS 26.4 and later due to OS
+// issues in earlier versions.
+BASE_FEATURE(kUseSCContentSharingPicker, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_MAC)
 

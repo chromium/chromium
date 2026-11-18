@@ -13,6 +13,7 @@ specific_include_rules = {
     "+chrome/browser/media/webrtc/desktop_media_picker_controller.h",
     "+chrome/browser/media/webrtc/desktop_media_picker_factory.h",
     "+chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h",
+    "+chrome/browser/media/webrtc/desktop_media_picker_utils.h",
     "+third_party/webrtc/modules/desktop_capture/desktop_capturer.h",
   ],
   "inspect_ui\\.cc": [

@@ -7298,8 +7298,8 @@ inline constexpr char kUnexportableKeyDeletionDescription[] =
 inline constexpr char kUseSCContentSharingPickerName[] =
     "Use ScreenCaptureKit picker for stream selection";
 inline constexpr char kUseSCContentSharingPickerDescription[] =
-    "This feature opens a native picker in macOS 15+ to allow the selection "
-    "of a window or screen that will be captured.";
+    "This feature opens a native picker in macOS 26.4+ to allow the "
+    "selection of a window or screen that will be captured.";
 
 inline constexpr char kBlockRootWindowAccessibleNameChangeEventName[] =
     "Block Root Window Accessible Name Change Event";

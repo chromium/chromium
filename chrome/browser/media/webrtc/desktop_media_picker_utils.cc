@@ -8,11 +8,18 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "media/base/video_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/feature_list.h"
+#include "base/mac/mac_util.h"
+#include "media/base/media_switches.h"
+#endif
 
 gfx::ImageSkia ScaleBitmap(const SkBitmap& bitmap, gfx::Size size) {
   const gfx::Rect scaled_rect = media::ComputeLetterboxRegion(
@@ -81,3 +88,14 @@ DesktopMediaList::Type AsDesktopMediaListType(
   }
   NOTREACHED();
 }
+
+#if BUILDFLAG(IS_MAC)
+bool ShouldUseSCContentSharingPicker() {
+  // Enabled on macOS 26.4+ where OS-level replayd issues with
+  // SCContentSharingPicker have been resolved. Keep in sync with
+  // MaybeCreateNativeScreenCapturePicker() in
+  // content/browser/media/capture/native_screen_capture_picker.cc.
+  return base::mac::MacOSVersion() >= 26'04'00 &&
+         base::FeatureList::IsEnabled(media::kUseSCContentSharingPicker);
+}
+#endif  // BUILDFLAG(IS_MAC)

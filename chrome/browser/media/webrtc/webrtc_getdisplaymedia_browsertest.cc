@@ -396,10 +396,10 @@ class WebRtcScreenCaptureBrowserTestWithPicker
     }
 #elif BUILDFLAG(IS_MAC)
     if (!test_config_.should_prefer_current_tab &&
-        base::mac::MacOSVersion() < 15'00'00) {
+        base::mac::MacOSVersion() < 26'04'00) {
       // Automated desktop capture without system-level TCC permissions uses
-      // the fake native picker, which is only enabled on macOS 15.0+.
-      GTEST_SKIP() << "Skipping desktop capture tests on macOS < 15.0";
+      // the fake native picker, which is only enabled on macOS 26.4+.
+      GTEST_SKIP() << "Skipping desktop capture tests on macOS < 26.4";
     }
 #endif
   }
@@ -2888,9 +2888,9 @@ class GetDisplayMediaRestrictOwnAudioTest
     }
 #if BUILDFLAG(IS_MAC)
     // Automated screen capture without system-level TCC permissions uses the
-    // fake native picker, which is only enabled from macOS 15.0.
-    if (base::mac::MacOSVersion() < 15'00'00) {
-      GTEST_SKIP() << "Skipping test on macOS < 15.0...";
+    // fake native picker, which is only enabled from macOS 26.4.
+    if (base::mac::MacOSVersion() < 26'04'00) {
+      GTEST_SKIP() << "Skipping test on macOS < 26.4...";
     }
 #endif
   }

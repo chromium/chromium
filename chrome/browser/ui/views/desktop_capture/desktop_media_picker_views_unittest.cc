@@ -635,7 +635,22 @@ TEST_F(DesktopMediaPickerViewsTest, AccessibleBubbleFrameViewTitle) {
 }
 
 #if BUILDFLAG(IS_MAC)
-TEST_F(DesktopMediaPickerViewsTest, OnPermissionUpdateWithPermissions) {
+class DesktopMediaPickerViewsPermissionTest
+    : public DesktopMediaPickerViewsTest {
+ public:
+  DesktopMediaPickerViewsPermissionTest() {
+    // The permission pane and checker are only active when Chrome's built-in
+    // picker is used rather than macOS's native SCContentSharingPicker.
+    scoped_feature_list_.InitAndDisableFeature(
+        media::kUseSCContentSharingPicker);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(DesktopMediaPickerViewsPermissionTest,
+       OnPermissionUpdateWithPermissions) {
   test_api_.OnPermissionUpdate(true);
 
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
@@ -651,7 +666,8 @@ TEST_F(DesktopMediaPickerViewsTest, OnPermissionUpdateWithPermissions) {
   EXPECT_FALSE(test_api_.GetActivePane()->IsPermissionPaneVisible());
 }
 
-TEST_F(DesktopMediaPickerViewsTest, OnPermissionUpdateWithoutPermissions) {
+TEST_F(DesktopMediaPickerViewsPermissionTest,
+       OnPermissionUpdateWithoutPermissions) {
   test_api_.OnPermissionUpdate(false);
 
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
@@ -670,7 +686,8 @@ TEST_F(DesktopMediaPickerViewsTest, OnPermissionUpdateWithoutPermissions) {
 // A floating picker (one opened from a floating companion surface) stays
 // floating while the permission pane is merely visible, so that it remains
 // usable over fullscreen spaces.
-TEST_F(DesktopMediaPickerViewsTest, PermissionPaneKeepsPickerFloating) {
+TEST_F(DesktopMediaPickerViewsPermissionTest,
+       PermissionPaneKeepsPickerFloating) {
   views::Widget* const widget = GetPickerDialogView()->GetWidget();
   widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
   widget->SetActivationIndependence(true);
@@ -683,7 +700,8 @@ TEST_F(DesktopMediaPickerViewsTest, PermissionPaneKeepsPickerFloating) {
 
 // Clicking the button sends the user to System Settings, which a floating
 // picker would cover. The picker must get out of the way at that point.
-TEST_F(DesktopMediaPickerViewsTest, PermissionButtonLowersFloatingPicker) {
+TEST_F(DesktopMediaPickerViewsPermissionTest,
+       PermissionButtonLowersFloatingPicker) {
   views::Widget* const widget = GetPickerDialogView()->GetWidget();
   widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
   widget->SetActivationIndependence(true);
@@ -697,7 +715,8 @@ TEST_F(DesktopMediaPickerViewsTest, PermissionButtonLowersFloatingPicker) {
   EXPECT_EQ(ui::ZOrderLevel::kNormal, widget->GetZOrderLevel());
 }
 
-TEST_F(DesktopMediaPickerViewsTest, PermissionButtonKeepsNormalPickerZOrder) {
+TEST_F(DesktopMediaPickerViewsPermissionTest,
+       PermissionButtonKeepsNormalPickerZOrder) {
   views::Widget* const widget = GetPickerDialogView()->GetWidget();
   ASSERT_EQ(ui::ZOrderLevel::kNormal, widget->GetZOrderLevel());
 

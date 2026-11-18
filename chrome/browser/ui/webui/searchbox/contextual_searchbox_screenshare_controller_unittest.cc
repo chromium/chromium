@@ -731,8 +731,8 @@ using content::desktop_capture::ScopedNativePickerForTesting;
 
 TEST_F(ContextualSearchboxScreenshareControllerTest,
        StartScreenshare_NativePicker_Success) {
-  if (base::mac::MacOSMajorVersion() < 14) {
-    GTEST_SKIP() << "Native picker only supported on macOS 14+";
+  if (base::mac::MacOSVersion() < 26'04'00) {
+    GTEST_SKIP() << "Native picker only enabled on macOS 26.4+";
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -789,8 +789,8 @@ TEST_F(ContextualSearchboxScreenshareControllerTest,
 
 TEST_F(ContextualSearchboxScreenshareControllerTest,
        StartScreenshare_NativePicker_Cancelled) {
-  if (base::mac::MacOSMajorVersion() < 14) {
-    GTEST_SKIP() << "Native picker only supported on macOS 14+";
+  if (base::mac::MacOSVersion() < 26'04'00) {
+    GTEST_SKIP() << "Native picker only enabled on macOS 26.4+";
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -814,8 +814,8 @@ TEST_F(ContextualSearchboxScreenshareControllerTest,
 
 TEST_F(ContextualSearchboxScreenshareControllerTest,
        StartScreenshare_NativePicker_Error_FallsBackToDefaultPicker) {
-  if (base::mac::MacOSMajorVersion() < 14) {
-    GTEST_SKIP() << "Native picker only supported on macOS 14+";
+  if (base::mac::MacOSVersion() < 26'04'00) {
+    GTEST_SKIP() << "Native picker only enabled on macOS 26.4+";
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -910,9 +910,9 @@ TEST_F(ContextualSearchboxScreenshareControllerTest,
 
 TEST_F(ContextualSearchboxScreenshareControllerTest,
        CaptureRegionScreenshot_NativePicker_Success) {
-  if (base::mac::MacOSMajorVersion() < 14) {
+  if (base::mac::MacOSVersion() < 26'04'00) {
     GTEST_SKIP()
-        << "Native picker for region capture only supported on macOS 14+";
+        << "Native picker for region capture only enabled on macOS 26.4+";
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -971,9 +971,9 @@ TEST_F(ContextualSearchboxScreenshareControllerTest,
 
 TEST_F(ContextualSearchboxScreenshareControllerTest,
        CaptureRegionScreenshot_NativePicker_Cancelled) {
-  if (base::mac::MacOSMajorVersion() < 14) {
+  if (base::mac::MacOSVersion() < 26'04'00) {
     GTEST_SKIP()
-        << "Native picker for region capture only supported on macOS 14+";
+        << "Native picker for region capture only enabled on macOS 26.4+";
   }
 
   base::test::ScopedFeatureList scoped_feature_list;

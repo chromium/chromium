@@ -42,7 +42,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
-#include "media/base/media_switches.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 #endif
 
 namespace {
@@ -136,14 +136,14 @@ GlassFrameService::GlassFrameService(BrowserProcess& process)
   battery_saver_observation_.Observe(bsm_manager);
 
 #if BUILDFLAG(IS_MAC)
-  // When `kUseSCContentSharingPicker` is disabled, Chrome window capture on
-  // macOS uses `ViewsWidgetVideoCaptureDeviceMac` (Viz `FrameSink` capture)
-  // instead of `ScreenCaptureKitDeviceMac`. Because the glass frame is rendered
-  // by a native AppKit `NSGlassEffectView` behind the transparent
-  // `ui::Compositor` frame area, Viz `FrameSink` capture misses the glass
-  // background and renders the frame area as black. Observe window capture so
-  // we can fall back to the opaque frame while a window is being captured.
-  if (!base::FeatureList::IsEnabled(media::kUseSCContentSharingPicker)) {
+  // When `SCContentSharingPicker` is not used, Chrome window capture on macOS
+  // uses `ViewsWidgetVideoCaptureDeviceMac` (Viz `FrameSink` capture) instead
+  // of `ScreenCaptureKitDeviceMac`. Because the glass frame is rendered by a
+  // native AppKit `NSGlassEffectView` behind the transparent `ui::Compositor`
+  // frame area, Viz `FrameSink` capture misses the glass background and renders
+  // the frame area as black. Observe window capture so we can fall back to the
+  // opaque frame while a window is being captured.
+  if (!ShouldUseSCContentSharingPicker()) {
     media_stream_capture_observation_.Observe(
         MediaCaptureDevicesDispatcher::GetInstance()
             ->GetMediaStreamCaptureIndicator()

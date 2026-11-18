@@ -41,6 +41,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
 #include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
 #endif
 
@@ -688,6 +689,9 @@ TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceDlpNotRestricted) {
 
 #if BUILDFLAG(IS_MAC)
 TEST_F(DesktopCaptureAccessHandlerTest, FeedbackUIRequestWithPickerEnabled) {
+  if (base::mac::MacOSVersion() < 26'04'00) {
+    GTEST_SKIP() << "SCContentSharingPicker is only enabled on macOS 26.4+.";
+  }
   NavigateAndCommit(GURL("chrome://feedback/"));
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(media::kUseSCContentSharingPicker);
@@ -711,6 +715,30 @@ TEST_F(DesktopCaptureAccessHandlerTest, FeedbackUIRequestWithPickerEnabled) {
   EXPECT_TRUE(test_flags[0].picker_created);
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, request_result);
   EXPECT_EQ(fake_screen_id.ToString(), devices_result.video_device.value().id);
+}
+
+TEST_F(DesktopCaptureAccessHandlerTest,
+       FeedbackUIRequestOnPreMacOS26_4DoesNotUsePicker) {
+  if (base::mac::MacOSVersion() >= 26'04'00) {
+    GTEST_SKIP() << "Test verifies fallback behavior on macOS < 26.4.";
+  }
+  NavigateAndCommit(GURL("chrome://feedback/"));
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(media::kUseSCContentSharingPicker);
+
+  picker_factory_->SetTestFlags({});
+
+  blink::mojom::MediaStreamRequestResult request_result;
+  blink::mojom::StreamDevices devices_result;
+
+  ProcessGenerateStreamRequest({}, GURL("chrome://feedback/"), nullptr,
+                               &request_result, &devices_result);
+
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, request_result);
+  EXPECT_EQ(content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
+                                    webrtc::kFullDesktopScreenId)
+                .ToString(),
+            devices_result.video_device.value().id);
 }
 
 TEST_F(DesktopCaptureAccessHandlerTest, FeedbackUIRequestWithPickerDisabled) {

@@ -67,6 +67,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
+#include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -896,8 +897,7 @@ void DesktopCaptureAccessHandler::SetRequestApprovedForTest(bool approved) {
 bool DesktopCaptureAccessHandler::IsFeedbackRequestWithSckPicker(
     const GURL& origin) const {
 #if BUILDFLAG(IS_MAC)
-  return IsBuiltInFeedbackUI(origin) &&
-         base::FeatureList::IsEnabled(media::kUseSCContentSharingPicker);
+  return IsBuiltInFeedbackUI(origin) && ShouldUseSCContentSharingPicker();
 #else
   return false;
 #endif

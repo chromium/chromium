@@ -11,6 +11,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
@@ -28,7 +29,6 @@
 #include "chrome/grit/branded_strings.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_capture.h"
-#include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
@@ -39,7 +39,7 @@
 #include "ui/gfx/codec/png_codec.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 #endif
 
 namespace {
@@ -226,8 +226,7 @@ void ContextualSearchboxScreenshareController::StartScreenshareInternal(
   bool use_native_picker = false;
 #if BUILDFLAG(IS_MAC)
   use_native_picker =
-      base::mac::MacOSMajorVersion() >= 14 &&
-      base::FeatureList::IsEnabled(media::kUseSCContentSharingPicker) &&
+      ShouldUseSCContentSharingPicker() &&
       base::FeatureList::IsEnabled(kOmniboxEverywhereNativeScreenPicker);
 #endif
 
