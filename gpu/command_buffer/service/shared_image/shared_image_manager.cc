@@ -314,8 +314,14 @@ std::unique_ptr<DawnImageRepresentation> SharedImageManager::ProduceDawn(
     return nullptr;
   }
 
-  EnforceSharedImageUsage(backing, {SHARED_IMAGE_USAGE_WEBGPU_READ,
-                                    SHARED_IMAGE_USAGE_WEBGPU_WRITE});
+  if (!backing->usage().HasAny(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                               gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
+    LOG(ERROR) << "SharedImageManager::ProduceDawn with incorrect "
+                  "usage, client: "
+               << backing->debug_label();
+    return nullptr;
+  }
+
   auto representation =
       backing->ProduceDawn(this, tracker, device, backend_type,
                            std::move(view_formats), context_state);
