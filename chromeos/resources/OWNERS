@@ -1,0 +1,6 @@
+# Translation artifacts:
+per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS
+
+# Strings:
+per-file chromeos_strings.grd=*
+per-file recorder_strings.grdp=file://ash/webui/recorder_app_ui/OWNERS

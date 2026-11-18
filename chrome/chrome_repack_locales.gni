@@ -78,7 +78,7 @@ template("chrome_repack_locales") {
         "${root_gen_dir}/ash/strings/ash_strings_",
         "${root_gen_dir}/ash/webui/camera_app_ui/resources/strings/ash_camera_app_strings_",
         "${root_gen_dir}/chromeos/ash/experiences/settings_ui/resources/ash_settings_strings_",
-        "${root_gen_dir}/chromeos/strings/chromeos_strings_",
+        "${root_gen_dir}/chromeos/resources/chromeos_strings_",
         "${root_gen_dir}/remoting/resources/",
         "${root_gen_dir}/ui/chromeos/strings/ui_chromeos_strings_",
       ]
@@ -87,7 +87,7 @@ template("chrome_repack_locales") {
         "//ash/strings",
         "//ash/webui/camera_app_ui/resources/strings",
         "//chromeos/ash/experiences/settings_ui/resources:strings",
-        "//chromeos/strings",
+        "//chromeos/resources:strings",
         "//remoting/resources",
         "//ui/chromeos/strings",
       ]

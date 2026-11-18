@@ -153,7 +153,7 @@ std::string GetScreenshotName(const std::string& test_name,
 //   --browser-ui-tests-verify-pixels \
 //   --skia-gold-local-png-write-directory=/tmp/qa_pixel_test ; \
 // cp /tmp/qa_pixel_test/quick_answers.${SCREENSHOT_NAME}.${VARIANT}.png \
-//   ./chromeos/chromeos_strings_grd/${MESSAGE_ID}.png
+//   ./chromeos/resources/chromeos_strings_grd/${MESSAGE_ID}.png
 //
 // See //docs/translation_screenshots.md on how to upload it.
 class QuickAnswersPixelTestBase

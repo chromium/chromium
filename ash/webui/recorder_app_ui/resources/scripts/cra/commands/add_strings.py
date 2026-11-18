@@ -160,7 +160,7 @@ def cmd(ids: list[str]) -> int:
     print(
         "All strings added.\n"
         "Next steps:\n"
-        "  * In /chromeos/strings/recorder_strings.grdp,"
+        "  * In /chromeos/resources/recorder_strings.grdp,"
         " add description and the text to newly added entries.\n"
         "  * In core/i18n.ts, if any string use arguments ($1, $2, ...),"
         " move those ID from noArgStrings to withArgsStrings"

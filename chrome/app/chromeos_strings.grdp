@@ -7,7 +7,7 @@
     Please wait...
   </message>
 
-  <!-- ONC (Open Network Configuration) strings have moved to //chromeos/chromeos_strings.grd -->
+  <!-- ONC (Open Network Configuration) strings have moved to //chromeos/resources/chromeos_strings.grd -->
 
   <message name="IDS_CONTROLLED_SETTING_WITH_OWNER" desc="Text displayed in the controlled settings bubble when a setting's value can be edited only by the owner.">
     This setting is managed by the device owner, <ph name="OWNER_EMAIL">$1<ex>john@google.com</ex></ph>.

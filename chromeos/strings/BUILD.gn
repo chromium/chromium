@@ -2,22 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/locales.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/repack.gni")
-
-grit_strings("strings") {
-  source = "../chromeos_strings.grd"
-  inputs =
-      [ "//chromeos/recorder_strings.grdp" ] +
-      process_file_template(xtb_locales,
-                            [ "chromeos_strings_{{source_name_part}}.xtb" ])
-  outputs = [ "grit/chromeos_strings.h" ]
-  output_prefix = "chromeos_strings_"
+# Forwarding targets while callers are migrated to //chromeos/resources.
+source_set("strings_grit") {
+  public = [ "grit/chromeos_strings.h" ]
+  public_deps = [ "//chromeos/resources:strings_grit" ]
 }
 
-repack("chromeos_test_strings") {
-  sources = [ "$root_gen_dir/chromeos/strings/chromeos_strings_en-US.pak" ]
-  output = "$root_out_dir/chromeos_test_strings.pak"
-  deps = [ ":strings" ]
+group("strings") {
+  public_deps = [
+    ":strings_grit",
+    "//chromeos/resources:strings",
+  ]
+}
+
+# Use data_deps so GN propagates the repacked chromeos_test_strings.pak output
+# into test runtime_deps for Swarming isolates.
+group("chromeos_test_strings") {
+  public_deps = [ "//chromeos/resources:chromeos_test_strings" ]
+  data_deps = [ "//chromeos/resources:chromeos_test_strings" ]
 }

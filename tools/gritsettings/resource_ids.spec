@@ -970,7 +970,7 @@
   # END chrome/ miscellaneous section.
 
   # START chromeos/ section.
-  "chromeos/chromeos_strings.grd": {
+  "chromeos/resources/chromeos_strings.grd": {
     # Big alignment at start of section.
     "META": {"align": 100},
     "messages": [5700],
