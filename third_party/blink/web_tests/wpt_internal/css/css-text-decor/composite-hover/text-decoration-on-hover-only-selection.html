@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Text decorations that only apply on :hover are not rendered in selected text</title>
+<link rel="match" href="text-decoration-on-hover-only-selection-ref.html">
+<style>
+  div { text-decoration: underline blue; }
+  span:hover { text-decoration: underline green 3px; }
+  ::selection { color: white; background: black; }
+</style>
+<div id="target"><span>Selected text</span></div>
+<script>
+  getSelection().selectAllChildren(document.getElementById("target"));
+</script>

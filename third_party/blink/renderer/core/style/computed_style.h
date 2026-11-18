@@ -330,6 +330,16 @@ class ComputedStyle final : public ComputedStyleBase {
   CORE_EXPORT AppliedTextDecorationVector* EnsureAppliedTextDecorationsCache()
       const;
 
+  // Returns true if a text decoration with `line` and `color` is visible: it
+  // has lines, and a color that isn't transparent.
+  CORE_EXPORT static bool IsVisibleTextDecoration(TextDecorationLine line,
+                                                  const StyleColor& color);
+
+  // Returns true if `hover_style`, the precomputed :hover style of this box,
+  // changes its text decoration.
+  bool PrecomputedHoverChangesTextDecoration(
+      const ComputedStyle& hover_style) const;
+
  private:
   // TODO(sashab): Move these private members to the bottom of ComputedStyle.
   ALWAYS_INLINE ComputedStyle();
@@ -1939,7 +1949,12 @@ class ComputedStyle final : public ComputedStyleBase {
     }
     const ComputedStyle* hover_style =
         GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover);
-    return hover_style && hover_style->IsDecoratingBox();
+    // Hovering wouldn't show an invisible decoration (e.g. a transparent one),
+    // so the precomputed style only makes this a decorating box if its
+    // decoration is visible.
+    return hover_style &&
+           IsVisibleTextDecoration(hover_style->GetTextDecorationLine(),
+                                   hover_style->TextDecorationColor());
   }
 
   // Returns true if there are any text decorations.
@@ -1959,9 +1974,8 @@ class ComputedStyle final : public ComputedStyleBase {
     if (HasAppliedTextDecorations()) {
       for (const AppliedTextDecoration& decoration :
            std::views::reverse(AppliedTextDecorations())) {
-        // Skip decorations that only apply on hover (see
-        // IsDecoratingBoxIncludingPrecomputedHover()).
-        if (decoration.Lines() != TextDecorationLine::kNone) {
+        // Skip decorations that aren't in effect.
+        if (decoration.IsInEffect()) {
           return decoration;
         }
       }

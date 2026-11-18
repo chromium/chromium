@@ -57,6 +57,35 @@ TEST_F(AccessibilityTest, ColorValueSupportsCSSColorSyntax) {
   EXPECT_EQ(Color::FromRGBA(51, 102, 153, 128).Rgb(), ax_color->ColorValue());
 }
 
+TEST_F(AccessibilityTest, TextDecorationOnlyAppliedOnHover) {
+  ScopedCompositeHoverStyleForTest composite_hover_style(true);
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        #source:hover { text-decoration: underline; }
+      </style>
+      <div style="text-decoration: overline">
+        <span id="source">Text</span>
+      </div>
+  )HTML");
+
+  const AXObject* ax_source = GetAXObjectByElementId("source");
+  ASSERT_NE(nullptr, ax_source);
+  const AXObject* ax_text = ax_source->FirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, ax_text);
+  using ax::mojom::blink::TextDecorationStyle;
+  int32_t unused_text_style = 0;
+  TextDecorationStyle overline_style;
+  TextDecorationStyle unused_strikethrough_style;
+  TextDecorationStyle underline_style;
+  ax_text->GetTextStyleAndTextDecorationStyle(
+      &unused_text_style, &overline_style, &unused_strikethrough_style,
+      &underline_style);
+  // The underline that the <span> only applies once it is hovered isn't
+  // exposed until then.
+  EXPECT_EQ(TextDecorationStyle::kSolid, overline_style);
+  EXPECT_EQ(TextDecorationStyle::kNone, underline_style);
+}
+
 TEST_F(AccessibilityTest, TextOffsetInFormattingContextWithLayoutReplaced) {
   SetBodyInnerHTML(R"HTML(
       <p>

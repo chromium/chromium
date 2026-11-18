@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+  div { text-decoration: underline blue; }
+  ::selection { color: white; background: black; }
+</style>
+<div id="target"><span>Selected text</span></div>
+<script>
+  getSelection().selectAllChildren(document.getElementById("target"));
+</script>

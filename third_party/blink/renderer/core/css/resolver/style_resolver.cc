@@ -1582,15 +1582,10 @@ bool StyleResolver::ValidPrecomputedHoverDiff(
   // on/off for text-decorations on the compositor.
   TextDecorationLine hover_line = builder.GetTextDecorationLine();
   TextDecorationLine line = style.GetTextDecorationLine();
-  if (hover_line == TextDecorationLine::kNone ||
-      line == TextDecorationLine::kNone) {
-    return true;
-  }
-  const StyleColor& hover_color = builder.TextDecorationColor();
-  const StyleColor& color = style.TextDecorationColor();
-  if ((hover_color.IsAbsoluteColor() &&
-       hover_color.GetColor().IsFullyTransparent()) ||
-      (color.IsAbsoluteColor() && color.GetColor().IsFullyTransparent())) {
+  if (!ComputedStyle::IsVisibleTextDecoration(hover_line,
+                                              builder.TextDecorationColor()) ||
+      !ComputedStyle::IsVisibleTextDecoration(line,
+                                              style.TextDecorationColor())) {
     return true;
   }
   // At this point, we know the text-decoration will render both when hovered

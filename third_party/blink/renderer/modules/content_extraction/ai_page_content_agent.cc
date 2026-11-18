@@ -792,7 +792,7 @@ mojom::blink::AIPageContentTextSize GetTextSize(
 bool HasEmphasis(const ComputedStyle& style) {
   return style.GetFontWeight() != kNormalWeightValue ||
          style.GetFontStyle() != kNormalSlopeValue ||
-         style.HasAppliedTextDecorations() ||
+         style.TextDecorationsInEffect() != TextDecorationLine::kNone ||
          style.VerticalAlign() == EVerticalAlign::kSub ||
          style.VerticalAlign() == EVerticalAlign::kSuper;
 }

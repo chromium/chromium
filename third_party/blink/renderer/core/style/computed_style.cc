@@ -2204,10 +2204,49 @@ TextDecorationLine ComputedStyle::TextDecorationsInEffect() const {
   TextDecorationLine decorations = GetTextDecorationLine();
   if (const auto* base_decorations = BaseTextDecorationData()) {
     for (const AppliedTextDecoration& decoration : *base_decorations) {
-      decorations |= decoration.Lines();
+      if (decoration.IsInEffect()) {
+        decorations |= decoration.Lines();
+      }
     }
   }
   return decorations;
+}
+
+namespace {
+
+// Returns the decoration of the text-decoration properties of `style`.
+AppliedTextDecoration TextDecorationOf(const ComputedStyle& style) {
+  return AppliedTextDecoration(
+      style.GetTextDecorationLine(), style.TextDecorationStyle(),
+      style.VisitedDependentColor(GetCSSPropertyTextDecorationColor()),
+      style.GetTextDecorationThickness(), style.TextUnderlineOffset(),
+      style.GetTextDecorationInset(), style.BoxDecorationBreak());
+}
+
+}  // namespace
+
+// static
+bool ComputedStyle::IsVisibleTextDecoration(TextDecorationLine line,
+                                            const StyleColor& color) {
+  return line != TextDecorationLine::kNone &&
+         !(color.IsAbsoluteColor() && color.GetColor().IsFullyTransparent());
+}
+
+bool ComputedStyle::PrecomputedHoverChangesTextDecoration(
+    const ComputedStyle& hover_style) const {
+  // Nothing changes if neither style shows the decoration.
+  if (!IsVisibleTextDecoration(GetTextDecorationLine(),
+                               TextDecorationColor()) &&
+      !IsVisibleTextDecoration(hover_style.GetTextDecorationLine(),
+                               hover_style.TextDecorationColor())) {
+    return false;
+  }
+  if (GetTextDecorationLine() != hover_style.GetTextDecorationLine()) {
+    return true;
+  }
+  const Longhand& color = GetCSSPropertyTextDecorationColor();
+  return VisitedDependentColor(color) !=
+         hover_style.VisitedDependentColor(color);
 }
 
 AppliedTextDecorationVector* ComputedStyle::EnsureAppliedTextDecorationsCache()
@@ -2223,14 +2262,27 @@ AppliedTextDecorationVector* ComputedStyle::EnsureAppliedTextDecorationsCache()
       decorations->ReserveInitialCapacity(base_decorations->size() + 1u);
       *decorations = *base_decorations;
     }
-    // TODO(crbug.com/571157138): If only the precomputed :hover style adds the
-    // decoration, give it the lines of that style, transparent until the box
-    // is hovered.
-    decorations->emplace_back(
-        GetTextDecorationLine(), TextDecorationStyle(),
-        VisitedDependentColor(GetCSSPropertyTextDecorationColor()),
-        GetTextDecorationThickness(), TextUnderlineOffset(),
-        GetTextDecorationInset(), BoxDecorationBreak());
+    const ComputedStyle* hover_style =
+        GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover);
+    const bool is_current_visible =
+        IsVisibleTextDecoration(GetTextDecorationLine(), TextDecorationColor());
+    // If only the precomputed style shows the decoration (see
+    // `StyleResolver::ValidPrecomputedHoverDiff()`), the decoration is that of
+    // the precomputed style, transparent until it applies.
+    const bool use_precomputed_decoration =
+        !is_current_visible && hover_style &&
+        IsVisibleTextDecoration(hover_style->GetTextDecorationLine(),
+                                hover_style->TextDecorationColor());
+    AppliedTextDecoration decoration =
+        TextDecorationOf(use_precomputed_decoration ? *hover_style : *this);
+    if (use_precomputed_decoration) {
+      decoration.SetColor(Color::kTransparent);
+    }
+    if (hover_style && PrecomputedHoverChangesTextDecoration(*hover_style)) {
+      decoration.SetPrecomputedHoverState(
+          {.is_current_visible = is_current_visible});
+    }
+    decorations->push_back(decoration);
     EnsureCachedData().applied_text_decorations_ = decorations;
   }
 

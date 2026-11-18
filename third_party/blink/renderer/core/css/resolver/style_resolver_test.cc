@@ -5159,23 +5159,49 @@ TEST_F(StyleResolverTest, PrecomputeHoverTextDecoration) {
   )HTML");
 
   // The link is the decorating box of the decoration that its :hover style
-  // applies. The decoration has no lines until the link is hovered.
+  // applies. Until the link is hovered, the decoration has the lines of the
+  // :hover style, but it is transparent and isn't in effect.
   const ComputedStyle* style = GetElementById("link")->GetComputedStyle();
   EXPECT_FALSE(style->IsDecoratingBox());
   EXPECT_TRUE(style->IsDecoratingBoxIncludingPrecomputedHover());
   ASSERT_EQ(style->AppliedTextDecorations().size(), 1u);
-  EXPECT_EQ(style->AppliedTextDecorations()[0].Lines(),
-            TextDecorationLine::kNone);
+  const AppliedTextDecoration& decoration = style->AppliedTextDecorations()[0];
+  EXPECT_FALSE(decoration.IsInEffect());
+  EXPECT_EQ(decoration.Lines(), TextDecorationLine::kUnderline);
+  EXPECT_EQ(decoration.Style(), ETextDecorationStyle::kDotted);
+  EXPECT_EQ(decoration.GetColor(), Color::kTransparent);
   EXPECT_EQ(style->TextDecorationsInEffect(), TextDecorationLine::kNone);
   EXPECT_FALSE(style->LastAppliedTextDecoration());
 
-  // It propagates to the descendants, for which it has no lines either.
+  // It propagates to the descendants, for which it isn't in effect either.
   const ComputedStyle* span_style = GetElementById("span")->GetComputedStyle();
   EXPECT_EQ(span_style->AppliedTextDecorationData(),
             style->AppliedTextDecorationData());
   EXPECT_FALSE(span_style->IsDecoratingBoxIncludingPrecomputedHover());
   EXPECT_EQ(span_style->TextDecorationsInEffect(), TextDecorationLine::kNone);
   EXPECT_FALSE(span_style->LastAppliedTextDecoration());
+}
+
+TEST_F(StyleResolverTest, PrecomputeHoverTextDecorationNotInEffect) {
+  ScopedCompositeHoverStyleForTest precompute(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #link:hover { text-decoration: underline; }
+    </style>
+    <div style="text-decoration: overline">
+      <a id="link"><span id="span">Link</span></a>
+    </div>
+  )HTML");
+
+  // Until the link is hovered, only the decoration of the <div> is in effect.
+  const ComputedStyle* style = GetElementById("span")->GetComputedStyle();
+  ASSERT_EQ(style->AppliedTextDecorations().size(), 2u);
+  EXPECT_TRUE(style->AppliedTextDecorations()[0].IsInEffect());
+  EXPECT_FALSE(style->AppliedTextDecorations()[1].IsInEffect());
+  EXPECT_EQ(style->TextDecorationsInEffect(), TextDecorationLine::kOverline);
+  EXPECT_EQ(style->LastAppliedTextDecoration()->Lines(),
+            TextDecorationLine::kOverline);
 }
 
 TEST_F(StyleResolverTest, PrecomputeHoverTextDecorationOnlyIfAdded) {
@@ -5210,6 +5236,64 @@ TEST_F(StyleResolverTest, PrecomputeHoverTextDecorationOnlyIfAdded) {
       GetElementById("no-decoration")->GetComputedStyle();
   EXPECT_TRUE(style->GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover));
   EXPECT_FALSE(style->HasAppliedTextDecorations());
+}
+
+TEST_F(StyleResolverTest, PrecomputeHoverTextDecorationState) {
+  ScopedCompositeHoverStyleForTest precompute(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #t1 { text-decoration: underline red; }
+      #t1:hover { text-decoration-color: green; }
+      #t2 { text-decoration: underline transparent; }
+      #t2:hover { text-decoration: overline red; }
+      #t3 { text-decoration: underline transparent; }
+      #t3:hover { text-decoration: none; }
+      #t4 { text-decoration: underline red; }
+      #t4:hover { color: green; }
+      #t5:hover { text-decoration: underline transparent; }
+    </style>
+    <div id="t1"></div>
+    <div id="t2"></div>
+    <div id="t3"></div>
+    <div id="t4"></div>
+    <div id="t5"></div>
+  )HTML");
+
+  const AppliedTextDecoration& t1 =
+      GetElementById("t1")->GetComputedStyle()->AppliedTextDecorations()[0];
+  const AppliedTextDecoration& t2 =
+      GetElementById("t2")->GetComputedStyle()->AppliedTextDecorations()[0];
+  const AppliedTextDecoration& t3 =
+      GetElementById("t3")->GetComputedStyle()->AppliedTextDecorations()[0];
+  const ComputedStyle& t4_style = *GetElementById("t4")->GetComputedStyle();
+  const ComputedStyle& t5_style = *GetElementById("t5")->GetComputedStyle();
+
+  // The current style shows the decoration.
+  EXPECT_TRUE(t1.GetPrecomputedHoverState());
+  EXPECT_TRUE(t1.IsInEffect());
+  EXPECT_EQ(t1.GetColor(), Color::FromRGB(255, 0, 0));
+
+  // Only the :hover style shows the decoration, as the current one is
+  // transparent. The decoration is that of the :hover style (an overline, not
+  // the current underline), transparent until it applies.
+  EXPECT_FALSE(t2.IsInEffect());
+  EXPECT_EQ(t2.Lines(), TextDecorationLine::kOverline);
+  EXPECT_EQ(t2.GetColor(), Color::kTransparent);
+
+  // Neither style shows the decoration, so hovering doesn't change it. It
+  // remains that of the current style.
+  EXPECT_FALSE(t3.GetPrecomputedHoverState());
+  EXPECT_EQ(t3.Lines(), TextDecorationLine::kUnderline);
+
+  // The :hover style doesn't change the decoration.
+  ASSERT_TRUE(t4_style.GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover));
+  EXPECT_FALSE(t4_style.AppliedTextDecorations()[0].GetPrecomputedHoverState());
+
+  // Only the :hover style has a decoration, which is invisible.
+  ASSERT_TRUE(t5_style.GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover));
+  EXPECT_FALSE(t5_style.IsDecoratingBoxIncludingPrecomputedHover());
+  EXPECT_FALSE(t5_style.HasAppliedTextDecorations());
 }
 
 TEST_F(StyleResolverTest, PrecomputeHoverTextDecorationPropagation) {
@@ -5280,6 +5364,31 @@ TEST_F(StyleResolverTest, PrecomputeHoverTextDecorationInvalidation) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(link->GetComputedStyle()->HasAppliedTextDecorations());
   EXPECT_FALSE(span->GetComputedStyle()->HasAppliedTextDecorations());
+}
+
+TEST_F(StyleResolverTest, PrecomputeHoverTextDecorationStateInvalidation) {
+  ScopedCompositeHoverStyleForTest precompute(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #link { text-decoration: underline red; }
+      #link.green:hover { text-decoration-color: green; }
+    </style>
+    <a id="link"><span id="span">Text</span></a>
+  )HTML");
+
+  Element* span = GetElementById("span");
+  EXPECT_FALSE(span->GetComputedStyle()
+                   ->AppliedTextDecorations()[0]
+                   .GetPrecomputedHoverState());
+
+  // Only the precomputed :hover style of the link changes, but the state of
+  // the decoration still needs to propagate to the descendants.
+  GetElementById("link")->classList().Add(AtomicString("green"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(span->GetComputedStyle()
+                  ->AppliedTextDecorations()[0]
+                  .GetPrecomputedHoverState());
 }
 
 }  // namespace blink

@@ -4317,6 +4317,9 @@ void AXNodeObject::GetTextStyleAndTextDecorationStyle(
   }
 
   for (const auto& decoration : style.AppliedTextDecorations()) {
+    if (!decoration.IsInEffect()) {
+      continue;
+    }
     if (EnumHasFlags(decoration.Lines(), TextDecorationLine::kOverline)) {
       *text_style |= TextStyleFlag(ax::mojom::blink::TextStyle::kOverline);
       *text_overline_style =

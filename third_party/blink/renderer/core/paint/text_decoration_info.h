@@ -59,6 +59,9 @@ struct TextDecorationFragmentContext {
 CORE_EXPORT TextDecorationFragmentContext
 ComputeTextDecorationFragmentContext(const InlineCursor& cursor);
 
+// Returns the bounds of the underlines and overlines of text with `style` that
+// is `inline_size` long, ignoring the decorations that aren't in effect (see
+// `AppliedTextDecoration::IsInEffect()`).
 CORE_EXPORT std::optional<gfx::RectF> ComputeUnderOverDecorationBounds(
     const ComputedStyle& style,
     const UsedFont& font,

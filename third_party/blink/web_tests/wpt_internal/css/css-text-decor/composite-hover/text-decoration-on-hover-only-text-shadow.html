@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Text decorations that only apply on :hover cast no shadow</title>
+<link rel="match" href="text-decoration-on-hover-only-text-shadow-ref.html">
+<style>
+  div {
+    text-decoration: overline blue;
+    text-shadow: 4px 4px red;
+  }
+  span:hover { text-decoration: underline green 3px; }
+</style>
+<div><span>Text with a shadow</span></div>

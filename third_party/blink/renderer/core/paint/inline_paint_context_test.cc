@@ -555,6 +555,30 @@ TEST_F(InlinePaintContextPrecomputedHoverTest, NonCulledInlineDecoratingBox) {
   EXPECT_EQ(&context.DecoratingBoxes()[0].Style(), StyleOf("source"));
 }
 
+// Tests that the ink overflow of the text of a decorating box includes the
+// decoration that the box only applies once it is hovered.
+TEST_F(InlinePaintContextPrecomputedHoverTest, OnlyAppliedOnHoverInkOverflow) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    div {
+      font-family: Ahem;
+      font-size: 10px;
+      line-height: 1;
+      text-underline-offset: 10px;
+    }
+    #source:hover {
+      text-decoration: underline;
+    }
+    </style>
+    <div><span id="source">text</span></div>
+  )HTML");
+
+  // The underline is below the text.
+  const FragmentItem* text_item = TextCursor("source").CurrentItem();
+  EXPECT_GT(text_item->InkOverflowRect().Bottom(), text_item->Size().height);
+}
+
 TEST_F(InlinePaintContextPrecomputedHoverTest, StopPropagateTextDecorations) {
   // The `<rt>` element produces an inline box that stops propagations, and
   // applies its own decoration.

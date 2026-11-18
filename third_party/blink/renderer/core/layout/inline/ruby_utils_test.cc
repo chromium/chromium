@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/inline/ruby_utils.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_box_state.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
@@ -247,6 +248,31 @@ TEST_F(RubyBlockPositionCalculatorTest, PlaceLinesNestedRubyWithTextEmphasis) {
   // "second anno" touches its under emphasis below, and "base"'s over
   // emphasis above
   EXPECT_EQ(second_top, base_over_emphasis_bottom);
+}
+
+// A decoration that only applies on hover doesn't push the annotation away
+// until then.
+TEST_F(RubyBlockPositionCalculatorTest, DecorationOnlyAppliedOnHover) {
+  ScopedCompositeHoverStyleForTest composite_hover_style(true);
+  SetBodyContent(R"HTML(
+    <style>
+      #overline { text-decoration: overline 5px; }
+      #hover:hover { text-decoration: overline 5px; }
+    </style>
+    <ruby><span id="none">base</span><rt>a</rt></ruby><br>
+    <ruby><span id="overline">base</span><rt>a</rt></ruby><br>
+    <ruby><span id="hover">base</span><rt>a</rt></ruby>
+  )HTML");
+
+  // Returns how far above the base `id` its annotation is.
+  auto AnnotationOffsetOf = [&](const char* id) {
+    Element* base = GetElementById(id);
+    return base->GetBoundingClientRect()->top() -
+           base->nextElementSibling()->GetBoundingClientRect()->top();
+  };
+  // A decoration in effect pushes the annotation away.
+  ASSERT_GT(AnnotationOffsetOf("overline"), AnnotationOffsetOf("none"));
+  EXPECT_EQ(AnnotationOffsetOf("hover"), AnnotationOffsetOf("none"));
 }
 
 }  // namespace blink

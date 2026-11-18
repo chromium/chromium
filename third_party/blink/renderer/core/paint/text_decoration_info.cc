@@ -195,6 +195,12 @@ std::optional<gfx::RectF> ComputeUnderOverDecorationBounds(
       /*inline_context=*/nullptr, TextDecorationLine::kNone, Color());
   TextDecorationOffset decoration_offset(style);
   for (wtf_size_t i = 0; i < decoration_info.AppliedDecorationCount(); ++i) {
+    // Decorations that aren't in effect don't take space: these bounds are
+    // used to lay out ruby annotations, which mustn't move before the
+    // decorations apply, e.g. before their elements are hovered.
+    if (!decoration_info.AppliedDecoration(i).IsInEffect()) {
+      continue;
+    }
     const ResolvedDecoration decoration =
         decoration_info.ResolveDecorationAt(i);
     if (!decoration.HasFontData()) {

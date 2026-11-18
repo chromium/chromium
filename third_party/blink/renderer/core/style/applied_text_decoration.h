@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_APPLIED_TEXT_DECORATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_APPLIED_TEXT_DECORATION_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/text_decoration_inset.h"
@@ -20,6 +22,18 @@ class CORE_EXPORT AppliedTextDecoration {
   DISALLOW_NEW();
 
  public:
+  // Set if the element that applies the decoration has a precomputed :hover
+  // style (see `kPseudoIdPrecomputedHover`).
+  struct PrecomputedHoverState {
+    // True if the element's current style shows a visible decoration, so the
+    // decoration is in effect. False if the current style's decoration is not
+    // visible, so the decoration isn't in effect until the precomputed style
+    // applies.
+    bool is_current_visible = true;
+
+    bool operator==(const PrecomputedHoverState&) const = default;
+  };
+
   AppliedTextDecoration(TextDecorationLine,
                         ETextDecorationStyle,
                         Color,
@@ -46,6 +60,22 @@ class CORE_EXPORT AppliedTextDecoration {
     return static_cast<EBoxDecorationBreak>(box_decoration_break_);
   }
 
+  const std::optional<PrecomputedHoverState>& GetPrecomputedHoverState() const {
+    return precomputed_hover_state_;
+  }
+  void SetPrecomputedHoverState(PrecomputedHoverState hover_state) {
+    precomputed_hover_state_ = hover_state;
+  }
+
+  // Returns true if the decoration applies now, not only once the precomputed
+  // style applies (see `PrecomputedHoverState`). Otherwise, the decoration is
+  // hidden until then; if the precomputed style shows it, it has the lines of
+  // that style, transparent, so that ink overflow includes them.
+  bool IsInEffect() const {
+    return !precomputed_hover_state_ ||
+           precomputed_hover_state_->is_current_visible;
+  }
+
   bool operator==(const AppliedTextDecoration&) const;
 
  private:
@@ -56,6 +86,7 @@ class CORE_EXPORT AppliedTextDecoration {
   TextDecorationThickness thickness_;
   Length underline_offset_;
   TextDecorationInset decoration_inset_;
+  std::optional<PrecomputedHoverState> precomputed_hover_state_;
 };
 
 using AppliedTextDecorationVector = GCedHeapVector<AppliedTextDecoration, 1>;

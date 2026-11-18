@@ -1773,6 +1773,34 @@ TEST_F(AIPageContentAgentTest, TextEmphasis) {
   CheckTextEmphasis(strong_text, true);
 }
 
+TEST_F(AIPageContentAgentTest, TextEmphasisOnlyAppliedOnHover) {
+  ScopedCompositeHoverStyleForTest composite_hover_style(true);
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+        <body>
+          <style>span:hover { text-decoration: underline; }</style>
+          <p><span>Text</span></p>
+        </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& paragraph = *root.children_nodes[0];
+  CheckParagraphNode(paragraph);
+  ASSERT_EQ(paragraph.children_nodes.size(), 1u);
+
+  // The underline that the <span> only applies once it is hovered isn't
+  // emphasis until then.
+  const auto& text = *paragraph.children_nodes[0];
+  CheckTextNode(text, "Text");
+  CheckTextEmphasis(text, false);
+}
+
 TEST_F(AIPageContentAgentTest, TextColor) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
