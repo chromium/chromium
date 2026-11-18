@@ -8,12 +8,15 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "extensions/buildflags/buildflags.h"
@@ -28,8 +31,15 @@ namespace {
 class SupervisedUserURLFilterExtensionsTest
     : public ChromeRenderViewHostTestHarness {
  protected:
-  std::unique_ptr<TestingProfile> CreateTestingProfile() override {
-    return TestingProfile::Builder().SetIsSupervisedProfile().Build();
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    SupervisedUserTestEnvironment::EnableSupervisedAccount(
+        IdentityManagerFactory::GetForProfile(profile()));
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactories();
   }
 
   SupervisedUserUrlFilteringService& filtering_service() {
