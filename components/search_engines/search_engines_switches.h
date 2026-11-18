@@ -31,14 +31,6 @@ extern const char kForceSearchEngineChoiceScreen[];
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 extern const char kQuickenSiteSearchExpiryForTesting[];
 
-// When enabled, prefs-based search provider overrides are ignored and
-// prepopulated engines will always be the regional built-in ones. If a user
-// previously had an overridden search engine as DSE, this flag will cause that
-// engine to be ignored, and the default search engine will be picked from the
-// regional set instead.
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-BASE_DECLARE_FEATURE(kIgnoreSearchProviderOverrides);
-
 // Returns whether the feature to invalidate search engine choice on device
 // restore is enabled. Always returns true on iOS, and evaluates the feature
 // flag on other platforms.

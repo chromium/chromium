@@ -263,7 +263,6 @@ regional_capabilities::FunnelStage ToFunnelStage(
     case SearchEngineChoiceScreenConditions::kUnsupportedBrowserType:
 
     case SearchEngineChoiceScreenConditions::kHasCustomSearchEngine:
-    case SearchEngineChoiceScreenConditions::kSearchProviderOverride:
     case SearchEngineChoiceScreenConditions::kControlledByPolicy:
     case SearchEngineChoiceScreenConditions::kExtensionControlled:
     case SearchEngineChoiceScreenConditions::kSuppressedByOtherDialog:
@@ -596,13 +595,6 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
 
   if (status == ChoiceStatus::kManaged) {
     return SearchEngineChoiceScreenConditions::kManaged;
-  }
-
-  // Initially exclude users with this type of override. Consult b/302675777 for
-  // next steps.
-  if (!base::FeatureList::IsEnabled(switches::kIgnoreSearchProviderOverrides) &&
-      profile_prefs_->HasPrefPath(prefs::kSearchProviderOverrides)) {
-    return SearchEngineChoiceScreenConditions::kSearchProviderOverride;
   }
 
   if (!IsSearchEngineChoiceScreenAllowedByPolicy(policy_service) ||

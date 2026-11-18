@@ -15,8 +15,7 @@ namespace regional_capabilities {
 enum class SearchEngineChoiceScreenConditions {
   // The user has a custom search engine set.
   kHasCustomSearchEngine = 0,
-  // The user has a search provider list override.
-  kSearchProviderOverride = 1,
+  // kSearchProviderOverride = 1, // Deprecated
   // The user is not in the regional scope.
   kNotInRegionalScope = 2,
   // A policy sets the default search engine or disables search altogether.

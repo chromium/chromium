@@ -38,7 +38,6 @@
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
-#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/search_terms_data.h"
@@ -326,180 +325,6 @@ TEST_F(TemplateURLPrepopulateDataTest,
     // compare those.
     ASSERT_EQ(t_urls_1[i]->prepopulate_id, t_urls_2[i]->prepopulate_id);
   }
-}
-
-// Verifies that default search providers from the preferences file
-// override the built-in ones.
-TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrefs) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(switches::kIgnoreSearchProviderOverrides);
-
-  pref_service()->SetUserPref(prefs::kSearchProviderOverridesVersion,
-                              std::make_unique<base::Value>(1));
-  base::ListValue overrides;
-
-  // Set only the minimal required settings for a search provider configuration.
-  base::DictValue entry =
-      base::DictValue()
-          .Set("name", "foo")
-          .Set("keyword", "fook")
-          .Set("search_url", "http://foo.com/s?q={searchTerms}")
-          .Set("favicon_url", "http://foi.com/favicon.ico")
-          .Set("encoding", "UTF-8")
-          .Set("id", 1001);
-  overrides.Append(entry.Clone());
-  pref_service()->SetUserPref(prefs::kSearchProviderOverrides,
-                              std::move(overrides));
-
-  int version = TemplateURLPrepopulateData::GetDataVersion(pref_service());
-  EXPECT_EQ(1, version);
-
-  std::vector<std::unique_ptr<TemplateURLData>> t_urls =
-      prepopulate_data_resolver().GetPrepopulatedEngines();
-
-  ASSERT_EQ(1u, t_urls.size());
-  EXPECT_EQ(u"foo", t_urls[0]->short_name());
-  EXPECT_EQ(u"fook", t_urls[0]->keyword());
-  EXPECT_EQ("foo.com", GetHostFromTemplateURLData(*t_urls[0]));
-  EXPECT_EQ("foi.com", t_urls[0]->favicon_url.GetHost());
-  EXPECT_EQ(1u, t_urls[0]->input_encodings.size());
-  EXPECT_EQ(1001, t_urls[0]->prepopulate_id);
-  EXPECT_TRUE(t_urls[0]->suggestions_url.empty());
-  EXPECT_EQ(0u, t_urls[0]->alternate_urls.size());
-  EXPECT_TRUE(t_urls[0]->safe_for_autoreplace);
-  EXPECT_TRUE(t_urls[0]->date_created.is_null());
-  EXPECT_TRUE(t_urls[0]->last_modified.is_null());
-
-  // Test the optional settings too.
-  entry.Set("suggest_url", "http://foo.com/suggest?q={searchTerms}");
-  entry.Set("alternate_urls", base::ListValue().Append(
-                                  "http://foo.com/alternate?q={searchTerms}"));
-
-  overrides = base::ListValue().Append(entry.Clone());
-  pref_service()->SetUserPref(prefs::kSearchProviderOverrides,
-                              std::move(overrides));
-
-  t_urls = prepopulate_data_resolver().GetPrepopulatedEngines();
-  ASSERT_EQ(1u, t_urls.size());
-  EXPECT_EQ(u"foo", t_urls[0]->short_name());
-  EXPECT_EQ(u"fook", t_urls[0]->keyword());
-  EXPECT_EQ("foo.com", GetHostFromTemplateURLData(*t_urls[0]));
-  EXPECT_EQ("foi.com", t_urls[0]->favicon_url.GetHost());
-  EXPECT_EQ(1u, t_urls[0]->input_encodings.size());
-  EXPECT_EQ(1001, t_urls[0]->prepopulate_id);
-  EXPECT_EQ("http://foo.com/suggest?q={searchTerms}",
-            t_urls[0]->suggestions_url);
-  ASSERT_EQ(1u, t_urls[0]->alternate_urls.size());
-  EXPECT_EQ("http://foo.com/alternate?q={searchTerms}",
-            t_urls[0]->alternate_urls[0]);
-
-  // Test that subsequent providers are loaded even if an intermediate
-  // provider has an incomplete configuration.
-  overrides = base::ListValue().Append(entry.Clone());
-  entry.Set("id", 1002);
-  entry.Set("name", "bar");
-  entry.Set("keyword", "bark");
-  entry.Set("encoding", std::string());
-  overrides.Append(entry.Clone());
-  entry.Set("id", 1003);
-  entry.Set("name", "baz");
-  entry.Set("keyword", "bazk");
-  entry.Set("encoding", "UTF-8");
-  overrides.Append(entry.Clone());
-  pref_service()->SetUserPref(prefs::kSearchProviderOverrides,
-                              std::move(overrides));
-
-  t_urls = prepopulate_data_resolver().GetPrepopulatedEngines();
-  EXPECT_EQ(2u, t_urls.size());
-}
-
-TEST_F(TemplateURLPrepopulateDataTest,
-       ProvidersFromPrefsIgnoredWhenFlagEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(switches::kIgnoreSearchProviderOverrides);
-  base::HistogramTester histogram_tester;
-
-  pref_service()->SetUserPref(prefs::kSearchProviderOverridesVersion,
-                              std::make_unique<base::Value>(1));
-  base::ListValue overrides;
-  base::DictValue entry;
-  entry.Set("name", "foo");
-  entry.Set("keyword", "fook");
-  entry.Set("search_url", "http://foo.com/s?q={searchTerms}");
-  entry.Set("favicon_url", "http://foi.com/favicon.ico");
-  entry.Set("encoding", "UTF-8");
-  entry.Set("id", 1001);
-  overrides.Append(entry.Clone());
-  pref_service()->SetUserPref(prefs::kSearchProviderOverrides,
-                              std::move(overrides));
-
-  // Version should be the default one, not 1.
-  EXPECT_EQ(TemplateURLPrepopulateData::kCurrentDataVersion,
-            TemplateURLPrepopulateData::GetDataVersion(pref_service()));
-
-  // Engines should be the default ones, not from overrides.
-  std::vector<std::unique_ptr<TemplateURLData>> t_urls =
-      prepopulate_data_resolver().GetPrepopulatedEngines();
-  for (const auto& t_url : t_urls) {
-    EXPECT_NE(u"fook", t_url->keyword());
-  }
-
-  histogram_tester.ExpectUniqueSample("Search.SearchProviderOverrideStatus",
-                                      /*kIgnoredPref=*/3, 1);
-}
-
-TEST_F(TemplateURLPrepopulateDataTest, ClearProvidersFromPrefs) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(switches::kIgnoreSearchProviderOverrides);
-
-  OverrideCountryId(CountryId());
-  pref_service()->SetUserPref(prefs::kSearchProviderOverridesVersion,
-                              std::make_unique<base::Value>(1));
-
-  // Set only the minimal required settings for a search provider configuration.
-  base::DictValue entry =
-      base::DictValue()
-          .Set("name", "foo")
-          .Set("keyword", "fook")
-          .Set("search_url", "http://foo.com/s?q={searchTerms}")
-          .Set("favicon_url", "http://foi.com/favicon.ico")
-          .Set("encoding", "UTF-8")
-          .Set("id", 1001);
-  base::ListValue overrides = base::ListValue().Append(std::move(entry));
-  pref_service()->SetUserPref(prefs::kSearchProviderOverrides,
-                              std::move(overrides));
-
-  int version = TemplateURLPrepopulateData::GetDataVersion(pref_service());
-  EXPECT_EQ(1, version);
-
-  // This call removes the above search engine.
-  TemplateURLPrepopulateData::ClearPrepopulatedEnginesInPrefs(pref_service());
-
-  version = TemplateURLPrepopulateData::GetDataVersion(pref_service());
-  EXPECT_EQ(TemplateURLPrepopulateData::kCurrentDataVersion, version);
-
-  std::vector<std::unique_ptr<TemplateURLData>> t_urls =
-      prepopulate_data_resolver().GetPrepopulatedEngines();
-  ASSERT_FALSE(t_urls.empty());
-  for (size_t i = 0; i < t_urls.size(); ++i) {
-    EXPECT_NE(u"foo", t_urls[i]->short_name());
-    EXPECT_NE(u"fook", t_urls[i]->keyword());
-    EXPECT_NE("foi.com", t_urls[i]->favicon_url.GetHost());
-    EXPECT_NE("foo.com", GetHostFromTemplateURLData(*t_urls[i]));
-    EXPECT_NE(1001, t_urls[i]->prepopulate_id);
-  }
-
-  // Ensures the fallback URL is Google and has the optional fields filled.
-  std::unique_ptr<TemplateURLData> fallback_t_url =
-      prepopulate_data_resolver().GetFallbackSearch();
-  EXPECT_EQ(TemplateURLPrepopulateData::google.name,
-            fallback_t_url->short_name());
-  EXPECT_FALSE(fallback_t_url->suggestions_url.empty());
-  EXPECT_FALSE(fallback_t_url->image_url.empty());
-  EXPECT_FALSE(fallback_t_url->contextual_search_url.empty());
-  EXPECT_FALSE(fallback_t_url->image_url_post_params.empty());
-  EXPECT_EQ(TemplateURLPrepopulateData::google.type,
-            TemplateURL(*fallback_t_url).GetEngineType(SearchTermsData()));
 }
 
 // Verifies that built-in search providers are processed correctly.
@@ -943,15 +768,6 @@ TEST_F(TemplateURLPrepopulateDataTest,
   }
 }
 
-TEST_F(TemplateURLPrepopulateDataTest,
-       GetAllPrepopulatedEngines_EmptyWhenOverridesHonored) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(switches::kIgnoreSearchProviderOverrides);
-
-  OverrideCountryId(CountryId("US"));
-  EXPECT_TRUE(prepopulate_data_resolver().GetAllPrepopulatedEngines().empty());
-}
-
 TEST_F(TemplateURLPrepopulateDataTest, GetPrepopulatedEngineWithVariants) {
   constexpr int kTestEngineId = 9999;
   constexpr TemplateURLPrepopulateData::PrepopulatedEngine test_variant_a = {
@@ -1387,9 +1203,6 @@ struct UpdateRequirementsTestParams {
   KeywordTable::PrepopulatedEngineMigrationSet db_migration_state;
   std::string profile_country;
 
-  // TODO(crbug.com/530597465): Remove these test cases during cleanup.
-  std::optional<int> pref_override_version;
-
   bool is_engine_migration_enabled = false;
   bool is_shadow_variants_enabled = false;
 
@@ -1407,10 +1220,6 @@ std::ostream& operator<<(std::ostream& os,
      << ", db_version=" << value.db_version
      << ", db_migration_state=" << value.db_migration_state.ToString()
      << ", profile_country=" << value.profile_country;
-
-  if (value.pref_override_version.has_value()) {
-    os << ", pref_override_version=" << value.pref_override_version.value();
-  }
 
   os << ", is_engine_migration_enabled=" << value.is_engine_migration_enabled;
   os << ", is_shadow_variants_enabled=" << value.is_shadow_variants_enabled;
@@ -1432,11 +1241,6 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
     TemplateURLPrepopulateDataTest::SetUp();
     OverrideCountryCommandLine(GetParam().profile_country);
 
-    if (GetParam().pref_override_version.has_value()) {
-      pref_service()->SetInteger(prefs::kSearchProviderOverridesVersion,
-                                 GetParam().pref_override_version.value());
-    }
-
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
@@ -1451,8 +1255,6 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
     } else {
       disabled_features.push_back(switches::kPrepopulatedEnginesShadowVariants);
     }
-
-    disabled_features.push_back(switches::kIgnoreSearchProviderOverrides);
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
@@ -1535,16 +1337,6 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
             .profile_country = "DE",
             .expected_output = BuildMetadata(CountryId("DE"),
                                              kCurrentDataVersion, no_migration),
-        },
-        {
-            .test_case_name = "PrefOverride",
-            .db_country = "DE",
-            .db_version = kCurrentDataVersion,
-            .db_migration_state = no_migration,
-            .profile_country = "DE",
-            .pref_override_version = kCurrentDataVersion + 42,
-            .expected_output = BuildMetadata(
-                CountryId("DE"), kCurrentDataVersion + 42, no_migration),
         },
         UpdateRequirementsTestParams{
             .test_case_name = "UpToDateMetadataWithEngineMigration",

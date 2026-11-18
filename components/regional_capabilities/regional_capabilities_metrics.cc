@@ -52,8 +52,6 @@ std::string ToString(SearchEngineChoiceScreenConditions condition) {
   switch (condition) {
     case SearchEngineChoiceScreenConditions::kHasCustomSearchEngine:
       return "HasCustomSearchEngine";
-    case SearchEngineChoiceScreenConditions::kSearchProviderOverride:
-      return "SearchProviderOverride";
     case SearchEngineChoiceScreenConditions::kNotInRegionalScope:
       return "NotInRegionalScope";
     case SearchEngineChoiceScreenConditions::kControlledByPolicy:
@@ -112,7 +110,6 @@ bool IsEligible(SearchEngineChoiceScreenConditions condition) {
     case SearchEngineChoiceScreenConditions::kEligibleForRestore:
       return true;
     case SearchEngineChoiceScreenConditions::kHasCustomSearchEngine:
-    case SearchEngineChoiceScreenConditions::kSearchProviderOverride:
     case SearchEngineChoiceScreenConditions::kNotInRegionalScope:
     case SearchEngineChoiceScreenConditions::kControlledByPolicy:
     case SearchEngineChoiceScreenConditions::kExtensionControlled:

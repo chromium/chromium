@@ -26,12 +26,6 @@ class BrandcodedDefaultSettings {
 
   ~BrandcodedDefaultSettings();
 
-  // The following methods return non-zero value if the default value was
-  // provided for given setting.
-  // After the call return_value contains a list of default engines.
-  // |return_value[0]| is default one.
-  std::optional<base::ListValue> GetSearchProviderOverrides() const;
-
   bool GetHomepage(std::string* homepage) const;
   std::optional<bool> GetHomepageIsNewTab() const;
   std::optional<bool> GetShowHomeButton() const;

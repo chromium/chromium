@@ -46,8 +46,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search_engines/enterprise/enterprise_search_manager.h"
-#include "components/search_engines/search_engines_pref_names.h"
-#include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -258,16 +256,6 @@ void ProfileResetter::ResetDefaultSearchEngine() {
   if (template_url_service_->loaded()) {
     PrefService* prefs = profile_->GetPrefs();
     CHECK(prefs, base::NotFatalUntil::M163);
-    TemplateURLPrepopulateData::ClearPrepopulatedEnginesInPrefs(
-        profile_->GetPrefs());
-    std::optional<base::ListValue> search_engines(
-        master_settings_->GetSearchProviderOverrides());
-    if (search_engines.has_value()) {
-      // This Chrome distribution channel provides a custom search engine. We
-      // must reset to it.
-      prefs->SetList(prefs::kSearchProviderOverrides,
-                     std::move(search_engines).value());
-    }
 
     template_url_service_->RepairPrepopulatedSearchEngines();
     template_url_service_->RepairStarterPackEngines();

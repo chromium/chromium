@@ -111,14 +111,6 @@ DefaultSearchManager::DefaultSearchManager(
         kDefaultSearchProviderDataPrefName,
         base::BindRepeating(&DefaultSearchManager::OnDefaultSearchPrefChanged,
                             base::Unretained(this)));
-
-    if (!base::FeatureList::IsEnabled(
-            switches::kIgnoreSearchProviderOverrides)) {
-      pref_change_registrar_.Add(
-          prefs::kSearchProviderOverrides,
-          base::BindRepeating(&DefaultSearchManager::OnOverridesPrefChanged,
-                              base::Unretained(this)));
-    }
     TemplateURLPrepopulateData::RecordSearchProviderOverrideStatus(
         *pref_service_);
   }
@@ -339,21 +331,6 @@ void DefaultSearchManager::OnDefaultSearchPrefChanged() {
   // both before and after the above load.
   if (!source_was_fallback ||
       (GetDefaultSearchEngineSource() != FROM_FALLBACK)) {
-    NotifyObserver();
-  }
-}
-
-void DefaultSearchManager::OnOverridesPrefChanged() {
-  if (base::FeatureList::IsEnabled(switches::kIgnoreSearchProviderOverrides)) {
-    return;
-  }
-
-  LoadPrepopulatedFallbackSearch();
-
-  const TemplateURLData* effective_data = GetDefaultSearchEngine(nullptr);
-  if (effective_data && effective_data->prepopulate_id) {
-    // A user-selected, policy-selected or fallback pre-populated engine is
-    // active and may have changed with this event.
     NotifyObserver();
   }
 }

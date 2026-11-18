@@ -14,7 +14,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
@@ -27,7 +26,6 @@
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
-#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
@@ -77,39 +75,13 @@ enum class SearchProviderOverrideStatus {
   // template URL(s).
   kPrefHasValidUrls = 2,
 
-  // The feature `kIgnoreSearchProviderOverrides` is enabled and the pref
-  // `kSearchProviderOverrides` is present.
-  kIgnoredPref = 3,
+  // Deprecated: used when `kIgnoreSearchProviderOverrides` was enabled and the
+  // pref `kSearchProviderOverrides` was present.
+  kDeprecatedIgnoredPref = 3,
 
-  kMaxValue = kIgnoredPref
+  kMaxValue = kDeprecatedIgnoredPref,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:SearchProviderOverrideStatus)
-
-std::vector<std::unique_ptr<TemplateURLData>> GetOverriddenTemplateURLData(
-    PrefService& prefs) {
-  std::vector<std::unique_ptr<TemplateURLData>> t_urls;
-
-  const bool ignore_overrides =
-      base::FeatureList::IsEnabled(switches::kIgnoreSearchProviderOverrides);
-  if (!ignore_overrides) {
-    t_urls = GetOverriddenTemplateURLDataNoMetrics(prefs);
-  }
-
-  const bool has_pref = prefs.HasPrefPath(prefs::kSearchProviderOverrides);
-
-  SearchProviderOverrideStatus status = SearchProviderOverrideStatus::kNoPref;
-  if (ignore_overrides && has_pref) {
-    status = SearchProviderOverrideStatus::kIgnoredPref;
-  } else if (!t_urls.empty()) {
-    status = SearchProviderOverrideStatus::kPrefHasValidUrls;
-  } else if (has_pref) {
-    status = SearchProviderOverrideStatus::kEmptyPref;
-  }
-
-  base::UmaHistogramEnumeration("Search.SearchProviderOverrideStatus", status);
-
-  return t_urls;
-}
 
 std::unique_ptr<TemplateURLData> FindPrepopulatedEngineInternal(
     PrefService& prefs,
@@ -195,11 +167,6 @@ void RecordSearchProviderOverrideStatus(const PrefService& prefs) {
 }
 
 int GetDataVersion(PrefService* prefs) {
-  if (!base::FeatureList::IsEnabled(switches::kIgnoreSearchProviderOverrides) &&
-      prefs && prefs->HasPrefPath(prefs::kSearchProviderOverridesVersion)) {
-    return prefs->GetInteger(prefs::kSearchProviderOverridesVersion);
-  }
-
   return kCurrentDataVersion;
 }
 
@@ -207,14 +174,6 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
     PrefService& prefs,
     const std::vector<raw_ptr<const PrepopulatedEngine>>&
         regional_prepopulated_engines) {
-  // If there is a set of search engines in the preferences file, it overrides
-  // the built-in set.
-  std::vector<std::unique_ptr<TemplateURLData>> t_urls =
-      GetOverriddenTemplateURLData(prefs);
-  if (!t_urls.empty()) {
-    return t_urls;
-  }
-
   return base::ToVector(regional_prepopulated_engines,
                         &PrepopulatedEngineToTemplateURLData);
 }
@@ -290,19 +249,8 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
         regional_prepopulated_engines,
     const std::vector<raw_ptr<const PrepopulatedEngine>>& regional_variants,
     int prepopulated_id) {
-  // TODO(crbug.com/530597465): Refactor to better share code with
-  // `GetPrepopulatedEngine()` once the SearchProvidersOverride logic is
-  // removed.
-
-  // If there is a set of search engines in the preferences file, we look for
-  // the ID there first.
-  for (std::unique_ptr<TemplateURLData>& data :
-       GetOverriddenTemplateURLData(prefs)) {
-    if (data->prepopulate_id == prepopulated_id) {
-      return std::move(data);
-    }
-  }
-
+  // TODO(crbug.com/531675190): Refactor to better share code with
+  // `GetPrepopulatedEngine()`.
   if (auto* matched_engine = GetPrepopulatedEngineFromBuiltInData(
           prepopulated_id, regional_prepopulated_engines, regional_variants);
       matched_engine) {
@@ -318,19 +266,8 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
         regional_prepopulated_engines,
     const std::vector<raw_ptr<const PrepopulatedEngine>>& regional_variants,
     std::u16string_view keyword) {
-  // TODO(crbug.com/530597465): Refactor to better share code with
-  // `GetPrepopulatedEngine()` once the SearchProvidersOverride logic is
-  // removed.
-
-  // If there is a set of search engines in the preferences file, we look for
-  // the keyword there first.
-  for (std::unique_ptr<TemplateURLData>& data :
-       GetOverriddenTemplateURLData(prefs)) {
-    if (data->keyword() == keyword) {
-      return std::move(data);
-    }
-  }
-
+  // TODO(crbug.com/531675190): Refactor to better share code with
+  // `GetPrepopulatedEngine()`.
   if (auto* matched_engine = GetPrepopulatedEngineFromBuiltInData(
           keyword, regional_prepopulated_engines, regional_variants);
       matched_engine) {
@@ -343,12 +280,6 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
 std::vector<raw_ptr<const PrepopulatedEngine>> GetAllPrepopulatedEngines(
     const std::vector<raw_ptr<const PrepopulatedEngine>>&
         regional_prepopulated_engines) {
-  // TODO(crbug.com/530597465): Remove this check together with the
-  // SearchProvidersOverride logic.
-  if (!base::FeatureList::IsEnabled(switches::kIgnoreSearchProviderOverrides)) {
-    return {};
-  }
-
   std::vector<raw_ptr<const PrepopulatedEngine>> engines;
   base::flat_set<int> seen_ids;
 
@@ -374,14 +305,6 @@ std::vector<raw_ptr<const PrepopulatedEngine>> GetAllPrepopulatedEngines(
   }
 
   return engines;
-}
-
-void ClearPrepopulatedEnginesInPrefs(PrefService* prefs) {
-  if (!prefs)
-    return;
-
-  prefs->ClearPref(prefs::kSearchProviderOverrides);
-  prefs->ClearPref(prefs::kSearchProviderOverridesVersion);
 }
 
 std::unique_ptr<TemplateURLData> GetPrepopulatedFallbackSearch(

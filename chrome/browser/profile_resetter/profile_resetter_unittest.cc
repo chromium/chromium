@@ -105,36 +105,6 @@ const char kDistributionConfig[] =
     "  }"
     "}";
 
-const char kDistributionConfigWithSearch[] =
-    "{"
-    " \"homepage\" : \"http://www.foo.com\","
-    " \"homepage_is_newtabpage\" : false,"
-    " \"browser\" : {"
-    "   \"show_home_button\" : true"
-    "  },"
-    " \"session\" : {"
-    "   \"restore_on_startup\" : 4,"
-    "   \"startup_urls\" : [\"http://goo.gl\", \"http://foo.de\"]"
-    "  },"
-    " \"search_provider_overrides\" : ["
-    "    {"
-    "      \"name\" : \"first\","
-    "      \"keyword\" : \"firstkey\","
-    "      \"search_url\" : \"http://www.foo.com/s?q={searchTerms}\","
-    "      \"favicon_url\" : \"http://www.foo.com/favicon.ico\","
-    "      \"suggest_url\" : \"http://www.foo.com/s?q={searchTerms}\","
-    "      \"encoding\" : \"UTF-8\","
-    "      \"id\" : 1001"
-    "    }"
-    "  ],"
-    " \"extensions\" : {"
-    "   \"settings\" : {"
-    "     \"placeholder_for_id\": {"
-    "      }"
-    "    }"
-    "  }"
-    "}";
-
 const char kXmlConfig[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
     "<response protocol=\"3.0\" server=\"prod\">"
       "<app appid=\"{8A69D345-D564-463C-AFF1-A69D9E530F96}\" status=\"ok\">"
@@ -420,40 +390,6 @@ TEST_F(ProfileResetterTest, ResetNothing) {
   // The callback should be called even if there is nothing to reset.
   ResetAndWait(0);
 }
-
-class ProfileResetterTestWithIgnoreSearchProviderOverrides
-    : public base::test::WithFeatureOverride,
-      public ProfileResetterTest {
- public:
-  ProfileResetterTestWithIgnoreSearchProviderOverrides()
-      : base::test::WithFeatureOverride(
-            switches::kIgnoreSearchProviderOverrides) {}
-};
-
-TEST_P(ProfileResetterTestWithIgnoreSearchProviderOverrides,
-       ResetDefaultSearchEngineNonOrganic) {
-  ResetAndWait(ProfileResetter::DEFAULT_SEARCH_ENGINE,
-               kDistributionConfigWithSearch);
-
-  TemplateURLService* model =
-      TemplateURLServiceFactory::GetForProfile(profile());
-  const TemplateURL* default_engine = model->GetDefaultSearchProvider();
-  ASSERT_NE(static_cast<TemplateURL*>(nullptr), default_engine);
-
-  if (IsParamFeatureEnabled()) {
-    EXPECT_EQ(u"Google", default_engine->short_name());
-    EXPECT_EQ(u"google.com", default_engine->keyword());
-    EXPECT_NE(std::string::npos,
-              default_engine->url().find("{google:baseURL}"));
-  } else {
-    EXPECT_EQ(u"first", default_engine->short_name());
-    EXPECT_EQ(u"firstkey", default_engine->keyword());
-    EXPECT_EQ("http://www.foo.com/s?q={searchTerms}", default_engine->url());
-  }
-}
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    ProfileResetterTestWithIgnoreSearchProviderOverrides);
 
 TEST_F(ProfileResetterTest, ResetDefaultSearchEnginePartially) {
   // Search engine's logic is tested by
@@ -979,8 +915,7 @@ TEST_F(ConfigParserTest, InvalidResponseDeleteFromCallback) {
   run_loop.Run();
 }
 
-class ProfileResetterTestForSnapshots
-    : public ProfileResetterTestWithIgnoreSearchProviderOverrides {
+class ProfileResetterTestForSnapshots : public ProfileResetterTest {
  protected:
   void CheckSnapshots(std::string_view initial_prefs,
                       int expected_nonorganic_diff_fields,
@@ -1064,32 +999,13 @@ class ProfileResetterTestForSnapshots
   }
 };
 
-TEST_P(ProfileResetterTestForSnapshots, CheckSnapshots) {
+TEST_F(ProfileResetterTestForSnapshots, CheckSnapshots) {
   CheckSnapshots(kDistributionConfig,
                  /*expected_nonorganic_diff_fields=*/
                  ResettableSettingsSnapshot::ALL_FIELDS &
                      ~ResettableSettingsSnapshot::DSE_URL,
                  TemplateURLPrepopulateData::google.search_url);
 }
-
-TEST_P(ProfileResetterTestForSnapshots, CheckSnapshots_WithSearch) {
-  int expected_nonorganic_diff_fields;
-  std::string expected_search_url;
-
-  if (IsParamFeatureEnabled()) {
-    expected_nonorganic_diff_fields = ResettableSettingsSnapshot::ALL_FIELDS &
-                                      ~ResettableSettingsSnapshot::DSE_URL;
-    expected_search_url = TemplateURLPrepopulateData::google.search_url;
-  } else {
-    expected_nonorganic_diff_fields = ResettableSettingsSnapshot::ALL_FIELDS;
-    expected_search_url = "http://www.foo.com/s?q={searchTerms}";
-  }
-
-  CheckSnapshots(kDistributionConfigWithSearch, expected_nonorganic_diff_fields,
-                 expected_search_url);
-}
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ProfileResetterTestForSnapshots);
 
 TEST_F(ProfileResetterTest, FeedbackSerializationAsProtoTest) {
   // Reset to non organic defaults.

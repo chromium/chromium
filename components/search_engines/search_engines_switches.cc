@@ -30,8 +30,6 @@ const char kForceSearchEngineChoiceScreen[] =
 const char kQuickenSiteSearchExpiryForTesting[] =
     "quicken-site-search-expiry-for-testing";
 
-BASE_FEATURE(kIgnoreSearchProviderOverrides, base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsInvalidateSearchEngineChoiceOnDeviceRestoreDetectionEnabled() {
 #if BUILDFLAG(IS_IOS)
   return true;

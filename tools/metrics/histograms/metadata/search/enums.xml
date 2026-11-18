@@ -510,8 +510,9 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="HasCustomSearchEngine">
     Ineligible due to having a custom search engine set as DSE.
   </int>
-  <int value="1" label="SearchProviderOverride">
-    Ineligible due to having search provider overrides defined on the device.
+  <int value="1" label="(Obsolete) SearchProviderOverride">
+    Deprecated, used to refer to profiles with search provider overrides defined
+    on the device.
   </int>
   <int value="2" label="NotInRegionalScope">
     Ineligible due to the profile not being considered in scope for a choice
@@ -723,7 +724,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="kNoPref"/>
   <int value="1" label="kEmptyPref"/>
   <int value="2" label="kPrefHasValidUrls"/>
-  <int value="3" label="kIgnoredPref"/>
+  <int value="3" label="(Obsolete) kIgnoredPref"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/search_engines/template_url_prepopulate_data.cc:SearchProviderOverrideStatus) -->

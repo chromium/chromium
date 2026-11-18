@@ -218,9 +218,6 @@ class TemplateURLServiceTestBase : public testing::Test {
       bool safe_for_autoreplace,
       int prepopulate_id);
 
-  // Set custom search engine as default fallback through overrides pref.
-  void SetOverriddenEngines();
-
   // Helper methods to make calling TemplateURLServiceTestUtil methods less
   // visually noisy in the test code.
   void VerifyObserverCount(int expected_changed_count);
@@ -361,27 +358,6 @@ TemplateURLServiceTestBase::CreatePreloadedTemplateURL(
   data.last_visited = Time::FromTimeT(100);
   data.prepopulate_id = prepopulate_id;
   return std::make_unique<TemplateURL>(data);
-}
-
-// TODO(crbug.com/530597465): Remove this when cleaning up the feature.
-void TemplateURLServiceTestBase::SetOverriddenEngines() {
-  // Set custom search engine as default fallback through overrides.
-  base::DictValue entry;
-  entry.Set("name", "override_name");
-  entry.Set("keyword", "override_keyword");
-  entry.Set("search_url", "http://override.com/s?q={searchTerms}");
-  entry.Set("favicon_url", "http://override.com/favicon.ico");
-  entry.Set("encoding", "UTF-8");
-  entry.Set("id", 1001);
-  entry.Set("suggest_url", "http://override.com/suggest?q={searchTerms}");
-
-  base::ListValue overrides_list;
-  overrides_list.Append(std::move(entry));
-
-  auto* prefs = test_util()->profile()->GetTestingPrefService();
-  prefs->SetUserPref(prefs::kSearchProviderOverridesVersion, base::Value(1));
-  prefs->SetUserPref(prefs::kSearchProviderOverrides,
-                     base::Value(std::move(overrides_list)));
 }
 
 void TemplateURLServiceTestBase::VerifyObserverCount(
@@ -1386,75 +1362,6 @@ TEST_F(TemplateURLServiceTest, RepairPrepopulatedEnginesUpdatesSyncGuid) {
   EXPECT_EQ(initial_dse->sync_guid(), dse_guid);
   EXPECT_EQ(initial_dse->keyword(),
             model()->GetTemplateURLForGUID(dse_guid)->keyword());
-}
-
-// Checks that RepairPrepopulatedEngines correctly updates sync guid for default
-// search when search engines are overridden using pref.
-// TODO(crbug.com/530597465): Remove the test when cleaning up the feature.
-TEST_F(TemplateURLServiceTest,
-       RepairPrepopulatedEnginesWithOverridesUpdatesSyncGuid) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(switches::kIgnoreSearchProviderOverrides);
-  test_util()->ResetModel(false);  // Force-reset services with the flag.
-
-  SetOverriddenEngines();
-  test_util()->VerifyLoad();
-
-  // The synced DSE GUID should be empty until the user selects something or
-  // there is sync activity.
-  auto* prefs = test_util()->profile()->GetTestingPrefService();
-  ASSERT_TRUE(prefs);
-  EXPECT_TRUE(prefs->GetString(prefs::kDefaultSearchProviderGUID).empty());
-
-  TemplateURL* overridden_engine =
-      model()->GetTemplateURLForKeyword(u"override_keyword");
-  ASSERT_TRUE(overridden_engine);
-
-  EXPECT_EQ(overridden_engine, model()->GetDefaultSearchProvider());
-
-  // Add user provided default search engine.
-  TemplateURL* user_dse = AddKeywordWithDate(
-      "user_dse", "user_dse.com", "http://www.user_dse.com/s?q={searchTerms}",
-      std::string(), std::string(), std::string(), true);
-  model()->SetUserSelectedDefaultSearchProvider(user_dse);
-  EXPECT_EQ(user_dse, model()->GetDefaultSearchProvider());
-
-  // Check that user DSE guid is stored in kSyncedDefaultSearchProviderGUID.
-  EXPECT_EQ(user_dse->sync_guid(),
-            prefs->GetString(prefs::kDefaultSearchProviderGUID));
-
-  model()->RepairPrepopulatedSearchEngines();
-
-  // Check that overridden engine is returned as default after repair.
-  ASSERT_EQ(overridden_engine, model()->GetDefaultSearchProvider());
-  // Check that overridden_engine guid is stored in
-  // kSyncedDefaultSearchProviderGUID.
-  const std::string dse_guid =
-      prefs->GetString(prefs::kDefaultSearchProviderGUID);
-  EXPECT_EQ(overridden_engine->sync_guid(), dse_guid);
-  EXPECT_EQ(overridden_engine->keyword(),
-            model()->GetTemplateURLForGUID(dse_guid)->keyword());
-}
-
-// Checks that search engine overrides are ignored when the
-// kIgnoreSearchProviderOverrides flag is enabled.
-TEST_F(TemplateURLServiceTest, SearchProviderOverridesIgnoredWhenFlagEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(switches::kIgnoreSearchProviderOverrides);
-  test_util()->ResetModel(false);  // Force-reset services with the flag.
-
-  SetOverriddenEngines();
-  test_util()->VerifyLoad();
-
-  // The "override_keyword" engine should NOT be available.
-  TemplateURL* overridden_engine =
-      model()->GetTemplateURLForKeyword(u"override_keyword");
-  EXPECT_FALSE(overridden_engine);
-
-  // The default search provider should NOT be the overridden one.
-  const TemplateURL* default_provider = model()->GetDefaultSearchProvider();
-  ASSERT_TRUE(default_provider);
-  EXPECT_NE(u"override_keyword", default_provider->keyword());
 }
 
 // Checks that RepairPrepopulatedEngines correctly updates sync guid for default

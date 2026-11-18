@@ -93,8 +93,8 @@ class DefaultSearchManager
   static const char kDefaultSearchEngineMirrorCheckOutcomeMetric[];
 
   enum Source {
-    // Default search engine chosen either from prepopulated engines set for
-    // current country or overridden from kSearchProviderOverrides preference.
+    // Default search engine chosen from prepopulated engines set for current
+    // country.
     FROM_FALLBACK = 0,
     // User selected engine.
     FROM_USER,
@@ -207,11 +207,6 @@ class DefaultSearchManager
   // NotifyObserver() if the effective DSE might have changed.
   void OnDefaultSearchPrefChanged();
 
-  // Handles changes to kSearchProviderOverrides pref. Calls
-  // LoadPrepopulatedFallbackSearch() and NotifyObserver() if the effective DSE
-  // might have changed.
-  void OnOverridesPrefChanged();
-
   // Reads default search provider data from |pref_service_|, updating
   // |prefs_default_search_|, |default_search_mandatory_by_policy_|, and
   // |default_search_recommended_by_policy_|.
@@ -222,9 +217,8 @@ class DefaultSearchManager
   // session. Updates |saved_guest_search_|.
   void LoadSavedGuestSearch();
 
-  // Reads pre-populated search providers, which will be built-in or overridden
-  // by kSearchProviderOverrides. Updates |fallback_default_search_|. Invoke
-  // MergePrefsDataWithPrepopulated().
+  // Reads pre-populated search providers. Updates |fallback_default_search_|.
+  // Invokes MergePrefsDataWithPrepopulated().
   void LoadPrepopulatedFallbackSearch();
 
   // Invokes |change_observer_| if it is not NULL.
@@ -256,9 +250,8 @@ class DefaultSearchManager
 
   raw_ref<TemplateURLPrepopulateData::Resolver> prepopulate_data_resolver_;
 
-  // Default search engine provided by pre-populated data or by the
-  // |kSearchProviderOverrides| pref. This will be used when no other default
-  // search engine has been selected.
+  // Default search engine provided by pre-populated data. This will be used
+  // when no other default search engine has been selected.
   std::unique_ptr<TemplateURLData> fallback_default_search_;
 
   // Default search engine provided by extension (usings Settings Override API).

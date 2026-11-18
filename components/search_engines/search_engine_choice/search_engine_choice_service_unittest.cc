@@ -2201,12 +2201,6 @@ INSTANTIATE_TEST_SUITE_P(
          .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
          .expected_if_dynamic =
              ExpectHistogramUnique(FunnelStage::kNotEligible)},
-        {.test_suffix = "SearchProviderOverride",
-         .condition =
-             SearchEngineChoiceScreenConditions::kSearchProviderOverride,
-         .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
-         .expected_if_dynamic =
-             ExpectHistogramUnique(FunnelStage::kNotEligible)},
         {.test_suffix = "ControlledByPolicy",
          .condition = SearchEngineChoiceScreenConditions::kControlledByPolicy,
          .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
