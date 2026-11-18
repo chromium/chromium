@@ -16068,12 +16068,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <if expr="is_chromeos">
         <then>
-          <message name="IDS_WEBHID_SYSTEM_TRAY_ICON_EXTENSION_LIST" desc="Text for the WebHID pinned notification message.">
-            {NUM_EXTENSION, plural,
-            =1 {<ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph> is accessing HID devices}
-            =2 {Extensions accessing devices: <ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph>, <ph name="EXTENSION2">{2}<ex>Secure Shell</ex></ph>}
-            other {Extensions accessing devices: <ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph>, <ph name="EXTENSION2">{2}<ex>Secure Shell</ex></ph> +{3} more}}
-          </message>
           <message name="IDS_WEBUSB_SYSTEM_TRAY_ICON_EXTENSION_LIST" desc="Text for the WebUSB pinned notification message.">
             {NUM_EXTENSION, plural,
             =1 {<ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph> is accessing USB devices}

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/hid/hid_pinned_notification.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "chrome/browser/device_notifications/device_pinned_notification_renderer.h"
-#include "chrome/grit/generated_resources.h"
 
 HidPinnedNotification::HidPinnedNotification()
     : HidSystemTrayIcon(std::make_unique<DevicePinnedNotificationRenderer>(

@@ -12128,6 +12128,14 @@ You can manage this account’s settings by installing the Family Link app on yo
       <message name="IDS_PICTURE_IN_PICTURE_UNPIN_WINDOW_TEXT" desc="Text label of the unpin control button. Pressing the button snaps the Picture-in-Picture window to the edge of the screen again. The button appears in the Picture-in-Picture window when the window is pinned.">
         Unpin window
       </message>
+
+      <!-- WebHID pinned notification -->
+      <message name="IDS_WEBHID_SYSTEM_TRAY_ICON_EXTENSION_LIST" desc="Text for the WebHID pinned notification message.">
+        {NUM_EXTENSION, plural,
+            =1 {<ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph> is accessing HID devices}
+            =2 {Extensions accessing devices: <ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph>, <ph name="EXTENSION2">{2}<ex>Secure Shell</ex></ph>}
+            other {Extensions accessing devices: <ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph>, <ph name="EXTENSION2">{2}<ex>Secure Shell</ex></ph> +{3} more}}
+      </message>
     </messages>
   </release>
 </grit>

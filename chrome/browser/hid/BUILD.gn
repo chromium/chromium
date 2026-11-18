@@ -102,6 +102,7 @@ source_set("impl") {
       sources += [ "hid_pinned_notification.cc" ]
       deps += [
         "//ash/constants",
+        "//ash/strings",
         "//chrome/browser/ash/profiles",
         "//chromeos/ash/components/browser_context_helper",
         "//components/user_manager",
