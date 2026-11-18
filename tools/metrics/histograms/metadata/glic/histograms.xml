@@ -4368,6 +4368,22 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 
+<histogram name="Glic{GlicProvider}.Wayfinding.CueResult"
+    enum="GlicWayfindingCueResult" expires_after="2027-06-30">
+  <owner>parkstella@google.com</owner>
+  <owner>andreaxg@google.com</owner>
+  <summary>
+    Recorded on desktop when the user leaves a Glic side panel (via the panel's
+    close button or Esc, or by switching to a tab where Glic is not showing)
+    while kGlicAskGeminiWayfinding is enabled. Records whether the profile would
+    get the Ask Gemini Wayfinding cue, or why not. Toggling Glic closed via the
+    Ask Gemini button, closing the browser window, and programmatic closes (e.g.
+    a conversation switch or side panel replacement) are not recorded. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
 <histogram name="Glic{GlicProvider}.WebContentContextMenu.Enabled"
     enum="Boolean" expires_after="2027-04-11">
   <owner>basiaz@google.com</owner>

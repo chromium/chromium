@@ -1555,6 +1555,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic_warming_scheduler.cc:GlicWarmingSchedulerSchedulingMethod) -->
 
+<!-- LINT.IfChange(GlicWayfindingCueResult) -->
+
+<enum name="GlicWayfindingCueResult">
+  <int value="0" label="Would cue"/>
+  <int value="1" label="Not eligible"/>
+  <int value="2" label="Not enough time between cues"/>
+  <int value="3" label="Profile cap reached"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/service/glic_wayfinding_controller.h:GlicWayfindingCueResult) -->
+
 <!-- LINT.IfChange(GlicWebClientLifecycleEvent) -->
 
 <enum name="GlicWebClientLifecycleEvent">

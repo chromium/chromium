@@ -162,6 +162,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       std::to_underlying(mojom::InvocationSource::kUnsupported));
   registry->RegisterBooleanPref(prefs::kGlicWayfindingUsedSelfStartedOpen,
                                 false);
+  registry->RegisterIntegerPref(prefs::kGlicWayfindingCueCount, 0);
+  registry->RegisterTimePref(prefs::kGlicWayfindingLastCueTime, base::Time());
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kGlicLastCanActuateInBackground, false);
 #endif  // BUILDFLAG(IS_ANDROID)

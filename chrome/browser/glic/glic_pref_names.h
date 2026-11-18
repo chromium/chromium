@@ -261,6 +261,12 @@ inline constexpr char kGlicWayfindingFirstInvocationSource[] =
 inline constexpr char kGlicWayfindingUsedSelfStartedOpen[] =
     "glic.wayfinding.used_self_started_open";
 
+// How many times this profile has been cued by Ask Gemini Wayfinding, and
+// when the last cue was.
+inline constexpr char kGlicWayfindingCueCount[] = "glic.wayfinding.cue_count";
+inline constexpr char kGlicWayfindingLastCueTime[] =
+    "glic.wayfinding.last_cue_time";
+
 #if BUILDFLAG(IS_MAC)
 inline constexpr char kGlicUseAltOSIcon[] = "glic.use_alt_os_icon";
 #endif

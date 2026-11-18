@@ -150,11 +150,13 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
       this, profile_, enabling);
   onboarding_tracker_ =
       std::make_unique<GlicOnboardingTracker>(profile_, enabling);
-  wayfinding_controller_ = std::make_unique<GlicWayfindingController>(
-      profile_->GetPrefs(),
-      /*was_opened_before=*/!profile_->GetPrefs()
-          ->GetTime(prefs::kGlicLastInvokedTime)
-          .is_null());
+  if (base::FeatureList::IsEnabled(features::kGlicAskGeminiWayfinding)) {
+    wayfinding_controller_ = std::make_unique<GlicWayfindingController>(
+        profile_->GetPrefs(),
+        /*was_opened_before=*/!profile_->GetPrefs()
+            ->GetTime(prefs::kGlicLastInvokedTime)
+            .is_null());
+  }
   metrics_.StartPeriodicMetricsRecording();
 }
 
