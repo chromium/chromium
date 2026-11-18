@@ -668,11 +668,7 @@ TEST_F(ParkableImageTest, ManagerStatistics5min) {
   // actually write to disk).
   histogram_tester_.ExpectTotalCount(
       "Memory.ParkableImage.OnDiskFootprintKb.5min", 0);
-  histogram_tester_.ExpectTotalCount("Memory.ParkableImage.OnDiskSize.5min", 1);
   histogram_tester_.ExpectTotalCount("Memory.ParkableImage.TotalReadTime.5min",
-                                     1);
-  histogram_tester_.ExpectTotalCount("Memory.ParkableImage.TotalSize.5min", 1);
-  histogram_tester_.ExpectTotalCount("Memory.ParkableImage.TotalWriteTime.5min",
                                      1);
   histogram_tester_.ExpectTotalCount("Memory.ParkableImage.UnparkedSize.5min",
                                      1);

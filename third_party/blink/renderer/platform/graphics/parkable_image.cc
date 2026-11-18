@@ -338,7 +338,6 @@ void ParkableImageImpl::WriteToDiskInBackground(
       parkable_image->background_task_in_progress_ = false;
     } else {
       RecordWriteStatistics(parkable_image->on_disk_metadata_->size(), elapsed);
-      ParkableImageManager::Instance().RecordDiskWriteTime(elapsed);
     }
   }
 
