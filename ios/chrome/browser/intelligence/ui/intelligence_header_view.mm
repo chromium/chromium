@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/ui/intelligence_header_view.h"
 
+#import "base/apple/foundation_util.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/intelligence/ui/gradient_activity_indicator_view.h"
 #import "ios/chrome/browser/intelligence/ui/intelligence_header_item.h"
 #import "ios/chrome/browser/intelligence/ui/intelligence_ui_constants.h"
@@ -37,42 +39,99 @@ UIImage* DefaultLeadingLogo() {
 #endif
 }
 
-// Wires `button` to `item`'s action or menu and accessibility properties. The
-// action is added as a target rather than passed to the button initializer,
-// since the latter would override the configuration's image and title.
-void ConfigureButtonForItem(UIButton* button, IntelligenceHeaderItem* item) {
-  button.translatesAutoresizingMaskIntoConstraints = NO;
+// Returns whether a button built for `old_item` can be updated in place to
+// display `new_item`.
+bool CanReuseButton(IntelligenceHeaderItem* old_item,
+                    IntelligenceHeaderItem* new_item) {
+  return old_item && new_item && old_item.style == new_item.style &&
+         (old_item.menu == nil) == (new_item.menu == nil) &&
+         [old_item.identifier isEqualToString:new_item.identifier];
+}
+
+// Returns whether all buttons built for `old_items` can be updated in place to
+// display `new_items`. Matching count and styles also guarantees that grouping
+// is unchanged.
+bool CanReuseSecondaryButtons(NSArray<IntelligenceHeaderItem*>* old_items,
+                              NSArray<IntelligenceHeaderItem*>* new_items) {
+  if (old_items.count == 0 || old_items.count != new_items.count) {
+    return false;
+  }
+  for (NSUInteger i = 0; i < old_items.count; ++i) {
+    if (!CanReuseButton(old_items[i], new_items[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Applies `item`'s visual content, menu, and accessibility properties to
+// `button`. Shared by initial button creation and in-place reuse so the two
+// paths cannot drift apart.
+void ApplyItemToButton(UIButton* button, IntelligenceHeaderItem* item) {
+  UIButtonConfiguration* config = button.configuration;
+  switch (item.style) {
+    case IntelligenceHeaderItemStyle::kIcon:
+      config.image = item.icon;
+      button.configuration = config;
+      break;
+    case IntelligenceHeaderItemStyle::kCallToAction: {
+      config.title = item.title;
+      button.configuration = config;
+      UIFont* title_font = PreferredFontForTextStyle(UIFontTextStyleSubheadline,
+                                                     UIFontWeightSemibold);
+      SetConfigurationFont(button, title_font);
+      break;
+    }
+  }
   button.accessibilityLabel = item.title;
   button.accessibilityIdentifier = item.accessibilityIdentifier;
   if (item.menu) {
     button.menu = item.menu;
     button.showsMenuAsPrimaryAction = YES;
-  } else {
-    [button addAction:item.action
-        forControlEvents:UIControlEventPrimaryActionTriggered];
   }
 }
 
-// Creates an icon button styled by `buttonConfig` and wired to `item`.
-UIButton* CreateIconButton(UIButtonConfiguration* buttonConfig,
-                           IntelligenceHeaderItem* item) {
-  buttonConfig.image = item.icon;
-  UIButton* button = [UIButton buttonWithConfiguration:buttonConfig
+// Wires `button`'s initial Auto Layout state, tap action, and `item` content.
+// The action is added as a target rather than passed to the button initializer,
+// since the latter would override the configuration's image and title.
+void ConfigureButtonForItem(UIButton* button,
+                            IntelligenceHeaderItem* item,
+                            IntelligenceHeaderView* header) {
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  if (!item.menu) {
+    NSString* identifier = item.identifier;
+    __weak IntelligenceHeaderView* weak_header = header;
+    UIAction* action = [UIAction actionWithHandler:^(UIAction*) {
+      [weak_header.delegate headerView:weak_header
+          didTriggerItemWithIdentifier:identifier];
+    }];
+    [button addAction:action
+        forControlEvents:UIControlEventPrimaryActionTriggered];
+  }
+  ApplyItemToButton(button, item);
+}
+
+// Creates an icon button styled by `config` and wired to `item`.
+UIButton* CreateIconButton(UIButtonConfiguration* config,
+                           IntelligenceHeaderItem* item,
+                           IntelligenceHeaderView* header) {
+  UIButton* button = [UIButton buttonWithConfiguration:config
                                          primaryAction:nil];
-  ConfigureButtonForItem(button, item);
+  ConfigureButtonForItem(button, item, header);
   AddSquareConstraints(button, kInnerContentSize);
   return button;
 }
 
 // Creates a standalone white circular icon button with a drop shadow.
-UIButton* CreateCircularButton(IntelligenceHeaderItem* item) {
-  UIButtonConfiguration* buttonConfig =
+UIButton* CreateCircularButton(IntelligenceHeaderItem* item,
+                               IntelligenceHeaderView* header) {
+  UIButtonConfiguration* config =
       [UIButtonConfiguration filledButtonConfiguration];
-  buttonConfig.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
-  buttonConfig.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
-  buttonConfig.baseBackgroundColor = [UIColor colorNamed:kSolidWhiteColor];
+  config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  config.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
+  config.baseBackgroundColor = [UIColor colorNamed:kSolidWhiteColor];
 
-  UIButton* button = CreateIconButton(buttonConfig, item);
+  UIButton* button = CreateIconButton(config, item, header);
   button.layer.shadowColor = [UIColor blackColor].CGColor;
   button.layer.shadowOffset = CGSizeMake(0, kButtonShadowOffset);
   button.layer.shadowOpacity = kButtonShadowOpacity;
@@ -87,47 +146,48 @@ UIButton* CreateCircularButton(IntelligenceHeaderItem* item) {
 // Creates a blue capsule button displaying `item.title`. Its height matches the
 // icon buttons so all accessories stay vertically aligned; its width hugs the
 // title.
-UIButton* CreateCallToActionButton(IntelligenceHeaderItem* item) {
-  UIButtonConfiguration* buttonConfig =
+UIButton* CreateCallToActionButton(IntelligenceHeaderItem* item,
+                                   IntelligenceHeaderView* header) {
+  UIButtonConfiguration* config =
       [UIButtonConfiguration filledButtonConfiguration];
-  buttonConfig.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
-  buttonConfig.baseForegroundColor = [UIColor colorNamed:kSolidButtonTextColor];
-  buttonConfig.baseBackgroundColor = [UIColor colorNamed:kBlueColor];
-  buttonConfig.title = item.title;
-  buttonConfig.titleLineBreakMode = NSLineBreakByTruncatingTail;
-  buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(
+  config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  config.baseForegroundColor = [UIColor colorNamed:kSolidButtonTextColor];
+  config.baseBackgroundColor = [UIColor colorNamed:kBlueColor];
+  config.titleLineBreakMode = NSLineBreakByTruncatingTail;
+  config.contentInsets = NSDirectionalEdgeInsetsMake(
       0.0, kIntelligenceSpacingMedium, 0.0, kIntelligenceSpacingMedium);
-  UIButton* button = [UIButton buttonWithConfiguration:buttonConfig
+  UIButton* button = [UIButton buttonWithConfiguration:config
                                          primaryAction:nil];
-  UIFont* titleFont = PreferredFontForTextStyle(UIFontTextStyleSubheadline,
-                                                UIFontWeightSemibold);
-  SetConfigurationFont(button, titleFont);
-  ConfigureButtonForItem(button, item);
+  ConfigureButtonForItem(button, item, header);
   [button.heightAnchor constraintEqualToConstant:kInnerContentSize].active =
       YES;
   return button;
 }
 
 // Creates a standalone button rendered according to `item.style`.
-UIButton* CreateStandaloneButton(IntelligenceHeaderItem* item) {
+UIButton* CreateStandaloneButton(IntelligenceHeaderItem* item,
+                                 IntelligenceHeaderView* header) {
   switch (item.style) {
     case IntelligenceHeaderItemStyle::kIcon:
-      return CreateCircularButton(item);
+      return CreateCircularButton(item, header);
     case IntelligenceHeaderItemStyle::kCallToAction:
-      return CreateCallToActionButton(item);
+      return CreateCallToActionButton(item, header);
   }
+  NOTREACHED();
 }
 
 // Creates a gray capsule grouping one borderless icon button per item. Its
 // height matches the circular buttons so both styles stay vertically aligned.
-UIView* CreateGroupedCapsule(NSArray<IntelligenceHeaderItem*>* items) {
+UIView* CreateGroupedCapsule(NSArray<IntelligenceHeaderItem*>* items,
+                             IntelligenceHeaderView* header) {
   UIStackView* capsule = [[UIStackView alloc] init];
+  capsule.translatesAutoresizingMaskIntoConstraints = NO;
   for (IntelligenceHeaderItem* item in items) {
-    UIButtonConfiguration* buttonConfig =
+    UIButtonConfiguration* config =
         [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfig.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
-    buttonConfig.contentInsets = NSDirectionalEdgeInsetsZero;
-    [capsule addArrangedSubview:CreateIconButton(buttonConfig, item)];
+    config.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
+    config.contentInsets = NSDirectionalEdgeInsetsZero;
+    [capsule addArrangedSubview:CreateIconButton(config, item, header)];
   }
   capsule.backgroundColor = [UIColor colorNamed:kGrey100Color];
   capsule.layer.cornerRadius = kInnerContentSize / 2.0;
@@ -165,6 +225,7 @@ bool ShouldGroupItems(NSArray<IntelligenceHeaderItem*>* items) {
 
   UIStackView* _accessoryStackView;
   UIStackView* _contentStackView;
+  UIButton* _primaryButton;
 }
 
 #pragma mark - Public
@@ -225,13 +286,57 @@ bool ShouldGroupItems(NSArray<IntelligenceHeaderItem*>* items) {
 }
 
 - (void)setPrimaryItem:(IntelligenceHeaderItem*)primaryItem {
+  IntelligenceHeaderItem* previousItem = _primaryItem;
   _primaryItem = primaryItem;
-  [self updateAccessoryStack];
+  if (!primaryItem) {
+    [_primaryButton removeFromSuperview];
+    _primaryButton = nil;
+  } else if (CanReuseButton(previousItem, primaryItem)) {
+    ApplyItemToButton(_primaryButton, primaryItem);
+  } else {
+    [_primaryButton removeFromSuperview];
+    _primaryButton = CreateStandaloneButton(primaryItem, self);
+    [_accessoryStackView addArrangedSubview:_primaryButton];
+  }
+  _accessoryStackView.hidden =
+      (_accessoryStackView.arrangedSubviews.count == 0);
 }
 
 - (void)setSecondaryItems:(NSArray<IntelligenceHeaderItem*>*)secondaryItems {
+  NSArray<IntelligenceHeaderItem*>* previousItems = _secondaryItems;
   _secondaryItems = [secondaryItems copy];
-  [self updateAccessoryStack];
+  if (CanReuseSecondaryButtons(previousItems, _secondaryItems)) {
+    NSArray<UIView*>* buttonViews =
+        ShouldGroupItems(_secondaryItems)
+            ? base::apple::ObjCCastStrict<UIStackView>(
+                  _accessoryStackView.arrangedSubviews.firstObject)
+                  .arrangedSubviews
+            : _accessoryStackView.arrangedSubviews;
+    for (NSUInteger i = 0; i < _secondaryItems.count; ++i) {
+      ApplyItemToButton(base::apple::ObjCCastStrict<UIButton>(buttonViews[i]),
+                        _secondaryItems[i]);
+    }
+    return;
+  }
+
+  for (UIView* view in [_accessoryStackView.arrangedSubviews copy]) {
+    if (view != _primaryButton) {
+      [view removeFromSuperview];
+    }
+  }
+  if (ShouldGroupItems(_secondaryItems)) {
+    [_accessoryStackView
+        insertArrangedSubview:CreateGroupedCapsule(_secondaryItems, self)
+                      atIndex:0];
+  } else {
+    for (NSUInteger i = 0; i < _secondaryItems.count; ++i) {
+      [_accessoryStackView
+          insertArrangedSubview:CreateStandaloneButton(_secondaryItems[i], self)
+                        atIndex:i];
+    }
+  }
+  _accessoryStackView.hidden =
+      (_accessoryStackView.arrangedSubviews.count == 0);
 }
 
 #pragma mark - Private
@@ -318,30 +423,6 @@ bool ShouldGroupItems(NSArray<IntelligenceHeaderItem*>* items) {
                          : kIntelligenceSpacingTiny;
   _contentStackView.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
       vertical, 0.0, vertical, kIntelligenceSpacingLarge);
-}
-
-// Rebuilds the accessory buttons stack in deterministic order:
-// `[secondaryItems (leading), primaryItem (trailing)]`. Buttons are recreated
-// because their style depends on the composition of the secondary items.
-- (void)updateAccessoryStack {
-  for (UIView* view in _accessoryStackView.arrangedSubviews) {
-    [view removeFromSuperview];
-  }
-
-  if (ShouldGroupItems(_secondaryItems)) {
-    [_accessoryStackView
-        addArrangedSubview:CreateGroupedCapsule(_secondaryItems)];
-  } else {
-    for (IntelligenceHeaderItem* item in _secondaryItems) {
-      [_accessoryStackView addArrangedSubview:CreateStandaloneButton(item)];
-    }
-  }
-  if (_primaryItem) {
-    [_accessoryStackView
-        addArrangedSubview:CreateStandaloneButton(_primaryItem)];
-  }
-  _accessoryStackView.hidden =
-      (_accessoryStackView.arrangedSubviews.count == 0);
 }
 
 @end

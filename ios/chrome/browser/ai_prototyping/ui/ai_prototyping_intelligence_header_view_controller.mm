@@ -37,12 +37,7 @@ NSString* const kDefaultTitle = @"Input needed";
 NSString* const kDefaultSubtitle = @"Buy 3 tickets to Project Hail Mary";
 NSString* const kDefaultCallToActionTitle = @"View";
 NSString* const kPrimaryCallToActionTitle = @"Done";
-
-// Returns an action doing nothing.
-UIAction* NoOpAction() {
-  return [UIAction actionWithHandler:^(UIAction*){
-  }];
-}
+NSString* const kPrimaryItemIdentifier = @"primary";
 
 // Returns a label displaying `text` in `style`, colored with `colorName`.
 UILabel* Label(NSString* text, UIFontTextStyle style, NSString* colorName) {
@@ -67,19 +62,22 @@ UISegmentedControl* SegmentedControl(NSArray<NSString*>* items) {
 }
 
 // Returns an icon item displaying `symbol`.
-IntelligenceHeaderItem* IconItem(Symbol symbol, NSString* title) {
+IntelligenceHeaderItem* IconItem(NSString* identifier,
+                                 Symbol symbol,
+                                 NSString* title) {
   return [IntelligenceHeaderItem
-                 itemWithIcon:SymbolWithPointSize(symbol, kIconPointSize)
+           itemWithIdentifier:identifier
+                         icon:SymbolWithPointSize(symbol, kIconPointSize)
                         title:title
-      accessibilityIdentifier:nil
-                       action:NoOpAction()];
+      accessibilityIdentifier:nil];
 }
 
 // Returns a call-to-action item displaying `title`.
-IntelligenceHeaderItem* CallToActionItem(NSString* title) {
-  return [IntelligenceHeaderItem callToActionWithTitle:title
-                               accessibilityIdentifier:nil
-                                                action:NoOpAction()];
+IntelligenceHeaderItem* CallToActionItem(NSString* identifier,
+                                         NSString* title) {
+  return [IntelligenceHeaderItem callToActionWithIdentifier:identifier
+                                                      title:title
+                                    accessibilityIdentifier:nil];
 }
 
 }  // namespace
@@ -243,10 +241,12 @@ IntelligenceHeaderItem* CallToActionItem(NSString* title) {
     if (segment.hidden) {
       continue;
     }
+    NSString* identifier =
+        [NSString stringWithFormat:@"secondary-%@", @(index)];
     if (segment.selectedSegmentIndex == kSecondarySegmentIcon) {
       Symbol symbol = icons[index % std::size(icons)];
       NSString* title = [NSString stringWithFormat:@"Icon %@", @(index + 1)];
-      [items addObject:IconItem(symbol, title)];
+      [items addObject:IconItem(identifier, symbol, title)];
       continue;
     }
     // Number CTAs after the first one so they remain distinguishable.
@@ -256,7 +256,7 @@ IntelligenceHeaderItem* CallToActionItem(NSString* title) {
             ? callToActionTitle
             : [NSString stringWithFormat:@"%@ %@", callToActionTitle,
                                          @(callToActionCount)];
-    [items addObject:CallToActionItem(title)];
+    [items addObject:CallToActionItem(identifier, title)];
   }
   _headerView.secondaryItems = items;
   _headerView.primaryItem = [self selectedPrimaryItem];
@@ -266,9 +266,10 @@ IntelligenceHeaderItem* CallToActionItem(NSString* title) {
 - (IntelligenceHeaderItem*)selectedPrimaryItem {
   switch (_primarySegment.selectedSegmentIndex) {
     case kPrimarySegmentIcon:
-      return IconItem(SymbolXMark, @"Close");
+      return IconItem(kPrimaryItemIdentifier, SymbolXMark, @"Close");
     case kPrimarySegmentCallToAction:
-      return CallToActionItem(kPrimaryCallToActionTitle);
+      return CallToActionItem(kPrimaryItemIdentifier,
+                              kPrimaryCallToActionTitle);
     default:
       return nil;
   }

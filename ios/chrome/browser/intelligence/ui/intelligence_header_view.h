@@ -8,6 +8,17 @@
 #import <UIKit/UIKit.h>
 
 @class IntelligenceHeaderItem;
+@class IntelligenceHeaderView;
+
+// Delegate protocol receiving user interaction events from an
+// `IntelligenceHeaderView`.
+@protocol IntelligenceHeaderViewDelegate <NSObject>
+
+// Called when the user taps an action-backed accessory item with `identifier`.
+- (void)headerView:(IntelligenceHeaderView*)headerView
+    didTriggerItemWithIdentifier:(NSString*)identifier;
+
+@end
 
 // Vertical padding density of an `IntelligenceHeaderView`.
 enum class IntelligenceHeaderDensity {
@@ -41,6 +52,9 @@ enum class IntelligenceHeaderDensity {
 // (*) = Icon, [x] = Accessory button, ( [a] [b] ) = Grouped capsule,
 // [ Call to action ] = Blue text capsule
 @interface IntelligenceHeaderView : UIView
+
+// Delegate receiving accessory item tap events.
+@property(nonatomic, weak) id<IntelligenceHeaderViewDelegate> delegate;
 
 // Main title text.
 @property(nonatomic, copy) NSString* title;

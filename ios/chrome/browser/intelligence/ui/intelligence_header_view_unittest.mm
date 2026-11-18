@@ -6,6 +6,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/intelligence/ui/gradient_activity_indicator_view.h"
 #import "ios/chrome/browser/intelligence/ui/intelligence_header_item.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -13,6 +14,24 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+
+// Test double conforming to `IntelligenceHeaderViewDelegate` that records
+// triggered item identifiers.
+@interface FakeIntelligenceHeaderViewDelegate
+    : NSObject <IntelligenceHeaderViewDelegate>
+// Identifier most recently received via
+// `-headerView:didTriggerItemWithIdentifier:`.
+@property(nonatomic, copy) NSString* triggeredIdentifier;
+@end
+
+@implementation FakeIntelligenceHeaderViewDelegate
+
+- (void)headerView:(IntelligenceHeaderView*)headerView
+    didTriggerItemWithIdentifier:(NSString*)identifier {
+  _triggeredIdentifier = [identifier copy];
+}
+
+@end
 
 namespace {
 
@@ -31,7 +50,9 @@ NSString* const kMenuTitle = @"More options";
 NSString* const kMenuButtonId = @"IntelligenceHeaderMenuButtonId";
 NSString* const kHistoryTitle = @"History";
 NSString* const kHistoryButtonId = @"IntelligenceHeaderHistoryButtonId";
+NSString* const kResumeTitle = @"Resume";
 NSString* const kCallToActionTitle = @"View";
+NSString* const kUpdatedCallToActionTitle = @"Review";
 NSString* const kCallToActionButtonId =
     @"IntelligenceHeaderCallToActionButtonId";
 
@@ -41,15 +62,16 @@ UIAction* CreateNoOpAction() {
   }];
 }
 
-// Creates an icon `IntelligenceHeaderItem` with a no-op action.
+// Creates an icon `IntelligenceHeaderItem` using `accessibility_id` as its
+// identifier.
 IntelligenceHeaderItem* CreateIconItem(Symbol symbol,
                                        NSString* title,
                                        NSString* accessibility_id) {
   return [IntelligenceHeaderItem
-                 itemWithIcon:SymbolWithPointSize(symbol, kIconPointSize)
+           itemWithIdentifier:accessibility_id
+                         icon:SymbolWithPointSize(symbol, kIconPointSize)
                         title:title
-      accessibilityIdentifier:accessibility_id
-                       action:CreateNoOpAction()];
+      accessibilityIdentifier:accessibility_id];
 }
 
 class IntelligenceHeaderViewTest : public PlatformTest {
@@ -57,9 +79,12 @@ class IntelligenceHeaderViewTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     header_view_ = [[IntelligenceHeaderView alloc] initWithFrame:CGRectZero];
+    delegate_ = [[FakeIntelligenceHeaderViewDelegate alloc] init];
+    header_view_.delegate = delegate_;
   }
 
   IntelligenceHeaderView* header_view_;
+  FakeIntelligenceHeaderViewDelegate* delegate_;
 };
 
 // Tests default property values upon initialization.
@@ -141,22 +166,16 @@ TEST_F(IntelligenceHeaderViewTest, ResetClearsStateAndPreservesDensity) {
   EXPECT_EQ(FindViewById(header_view_, kMenuButtonId), nil);
 }
 
-// Tests that tapping an action-backed `primaryItem` invokes its `UIAction` and
+// Tests that tapping an identifier-backed `primaryItem` notifies `delegate` and
 // that a menu-backed item configures `showsMenuAsPrimaryAction`.
 TEST_F(IntelligenceHeaderViewTest, PrimaryAndMenuItemsConfigureButtons) {
-  __block BOOL close_tapped = NO;
-  UIAction* close_action = [UIAction actionWithHandler:^(UIAction*) {
-    close_tapped = YES;
-  }];
-  header_view_.primaryItem = [IntelligenceHeaderItem
-                 itemWithIcon:SymbolWithPointSize(SymbolXMark, kIconPointSize)
-                        title:kCloseTitle
-      accessibilityIdentifier:kCloseButtonId
-                       action:close_action];
+  header_view_.primaryItem =
+      CreateIconItem(SymbolXMark, kCloseTitle, kCloseButtonId);
 
   UIMenu* menu = [UIMenu menuWithChildren:@[ CreateNoOpAction() ]];
   header_view_.secondaryItems = @[ [IntelligenceHeaderItem
-                 itemWithIcon:SymbolWithPointSize(SymbolEllipsis,
+           itemWithIdentifier:kMenuButtonId
+                         icon:SymbolWithPointSize(SymbolEllipsis,
                                                   kIconPointSize)
                         title:kMenuTitle
       accessibilityIdentifier:kMenuButtonId
@@ -167,7 +186,7 @@ TEST_F(IntelligenceHeaderViewTest, PrimaryAndMenuItemsConfigureButtons) {
   EXPECT_NSEQ(close_button.accessibilityLabel, kCloseTitle);
   [close_button
       sendActionsForControlEvents:UIControlEventPrimaryActionTriggered];
-  EXPECT_TRUE(close_tapped);
+  EXPECT_NSEQ(delegate_.triggeredIdentifier, kCloseButtonId);
 
   UIButton* menu_button = FindViewById<UIButton>(header_view_, kMenuButtonId);
   ASSERT_NE(menu_button, nil);
@@ -194,9 +213,9 @@ TEST_F(IntelligenceHeaderViewTest, SecondaryItemsGrouping) {
   EXPECT_EQ(history_button.superview, menu_button.superview);
 
   IntelligenceHeaderItem* cta_item =
-      [IntelligenceHeaderItem callToActionWithTitle:kCallToActionTitle
-                            accessibilityIdentifier:kCallToActionButtonId
-                                             action:CreateNoOpAction()];
+      [IntelligenceHeaderItem callToActionWithIdentifier:kCallToActionButtonId
+                                                   title:kCallToActionTitle
+                                 accessibilityIdentifier:kCallToActionButtonId];
   header_view_.secondaryItems = @[ cta_item, menu_item ];
 
   UIButton* cta_button =
@@ -208,6 +227,116 @@ TEST_F(IntelligenceHeaderViewTest, SecondaryItemsGrouping) {
   // nested capsule wrapper.
   EXPECT_EQ(cta_button.superview, menu_button.superview);
   EXPECT_EQ(cta_button.superview.layer.cornerRadius, 0.0);
+}
+
+// Tests that updating an item's title or icon with the same identifier updates
+// the existing `UIButton` in place without recreating it.
+TEST_F(IntelligenceHeaderViewTest, SameIdentifierUpdatesButtonContentInPlace) {
+  header_view_.primaryItem =
+      [IntelligenceHeaderItem callToActionWithIdentifier:kCallToActionButtonId
+                                                   title:kCallToActionTitle
+                                 accessibilityIdentifier:kCallToActionButtonId];
+  header_view_.secondaryItems =
+      @[ CreateIconItem(SymbolClock, kHistoryTitle, kHistoryButtonId) ];
+
+  UIButton* cta_button =
+      FindViewById<UIButton>(header_view_, kCallToActionButtonId);
+  UIButton* icon_button =
+      FindViewById<UIButton>(header_view_, kHistoryButtonId);
+  ASSERT_NE(cta_button, nil);
+  ASSERT_NE(icon_button, nil);
+
+  UIImage* updated_icon = SymbolWithPointSize(SymbolPlus, kIconPointSize);
+  header_view_.primaryItem = [IntelligenceHeaderItem
+      callToActionWithIdentifier:kCallToActionButtonId
+                           title:kUpdatedCallToActionTitle
+         accessibilityIdentifier:kCallToActionButtonId];
+  header_view_.secondaryItems =
+      @[ [IntelligenceHeaderItem itemWithIdentifier:kHistoryButtonId
+                                               icon:updated_icon
+                                              title:kResumeTitle
+                            accessibilityIdentifier:kHistoryButtonId] ];
+
+  EXPECT_EQ(FindViewById<UIButton>(header_view_, kCallToActionButtonId),
+            cta_button);
+  EXPECT_NSEQ(cta_button.configuration.title, kUpdatedCallToActionTitle);
+  EXPECT_NSEQ(cta_button.accessibilityLabel, kUpdatedCallToActionTitle);
+
+  EXPECT_EQ(FindViewById<UIButton>(header_view_, kHistoryButtonId),
+            icon_button);
+  EXPECT_NSEQ(icon_button.configuration.image, updated_icon);
+  EXPECT_NSEQ(icon_button.accessibilityLabel, kResumeTitle);
+}
+
+// Tests that matching secondary items (including a refreshed `UIMenu`) update
+// their buttons in place, while changing secondary item count/grouping rebuilds
+// only the secondary buttons and leaves `primaryItem`'s button untouched.
+TEST_F(IntelligenceHeaderViewTest,
+       SecondaryMenuUpdatesInPlaceAndRebuildsPreservePrimaryButton) {
+  header_view_.primaryItem =
+      CreateIconItem(SymbolXMark, kCloseTitle, kCloseButtonId);
+  UIMenu* menu_v1 = [UIMenu menuWithChildren:@[ CreateNoOpAction() ]];
+  IntelligenceHeaderItem* history_item =
+      CreateIconItem(SymbolClock, kHistoryTitle, kHistoryButtonId);
+  IntelligenceHeaderItem* menu_item_v1 = [IntelligenceHeaderItem
+           itemWithIdentifier:kMenuButtonId
+                         icon:SymbolWithPointSize(SymbolEllipsis,
+                                                  kIconPointSize)
+                        title:kMenuTitle
+      accessibilityIdentifier:kMenuButtonId
+                         menu:menu_v1];
+  header_view_.secondaryItems = @[ history_item, menu_item_v1 ];
+
+  UIButton* close_button = FindViewById<UIButton>(header_view_, kCloseButtonId);
+  UIButton* history_button =
+      FindViewById<UIButton>(header_view_, kHistoryButtonId);
+  UIButton* menu_button = FindViewById<UIButton>(header_view_, kMenuButtonId);
+  ASSERT_NE(close_button, nil);
+  ASSERT_NE(history_button, nil);
+  ASSERT_NE(menu_button, nil);
+  UIView* grouped_capsule = menu_button.superview;
+  ASSERT_GT(grouped_capsule.layer.cornerRadius, 0.0);
+
+  // Updating content and passing a fresh `UIMenu` with the same count, styles,
+  // and identifiers updates both grouped buttons in place.
+  UIMenu* menu_v2 =
+      [UIMenu menuWithChildren:@[ CreateNoOpAction(), CreateNoOpAction() ]];
+  IntelligenceHeaderItem* updated_history_item = [IntelligenceHeaderItem
+           itemWithIdentifier:kHistoryButtonId
+                         icon:SymbolWithPointSize(SymbolPlus, kIconPointSize)
+                        title:kResumeTitle
+      accessibilityIdentifier:kHistoryButtonId];
+  IntelligenceHeaderItem* menu_item_v2 = [IntelligenceHeaderItem
+           itemWithIdentifier:kMenuButtonId
+                         icon:SymbolWithPointSize(SymbolEllipsis,
+                                                  kIconPointSize)
+                        title:kMenuTitle
+      accessibilityIdentifier:kMenuButtonId
+                         menu:menu_v2];
+  header_view_.secondaryItems = @[ updated_history_item, menu_item_v2 ];
+
+  EXPECT_EQ(FindViewById<UIButton>(header_view_, kHistoryButtonId),
+            history_button);
+  EXPECT_EQ(FindViewById<UIButton>(header_view_, kMenuButtonId), menu_button);
+  EXPECT_EQ(FindViewById<UIButton>(header_view_, kCloseButtonId), close_button);
+  EXPECT_NSEQ(history_button.accessibilityLabel, kResumeTitle);
+  EXPECT_NSEQ(menu_button.menu, menu_v2);
+  NSArray<UIView*>* expected_order = @[ history_button, menu_button ];
+  EXPECT_NSEQ(base::apple::ObjCCastStrict<UIStackView>(grouped_capsule)
+                  .arrangedSubviews,
+              expected_order);
+
+  // Switching from grouped (2 icons) to standalone (1 CTA) rebuilds only the
+  // secondary section while keeping `close_button` untouched.
+  header_view_.secondaryItems = @[ [IntelligenceHeaderItem
+      callToActionWithIdentifier:kCallToActionButtonId
+                           title:kCallToActionTitle
+         accessibilityIdentifier:kCallToActionButtonId] ];
+  UIButton* cta_button =
+      FindViewById<UIButton>(header_view_, kCallToActionButtonId);
+  ASSERT_NE(cta_button, nil);
+  EXPECT_EQ(cta_button.superview.layer.cornerRadius, 0.0);
+  EXPECT_EQ(FindViewById<UIButton>(header_view_, kCloseButtonId), close_button);
 }
 
 // Tests that condensed density produces a smaller fitting height than regular

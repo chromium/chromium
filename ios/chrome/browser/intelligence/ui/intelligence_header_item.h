@@ -15,13 +15,18 @@ enum class IntelligenceHeaderItemStyle {
   kCallToAction,
 };
 
-// View data object describing an accessory button in an
-// `IntelligenceHeaderView`. The button triggers `action` or presents `menu` on
-// tap; exactly one of them is non-nil.
+// Immutable view data object describing an accessory button in an
+// `IntelligenceHeaderView`. Items are matched across updates by `identifier`;
+// when `menu` is set the button presents `menu` on tap, otherwise tapping
+// notifies `IntelligenceHeaderViewDelegate` with `identifier`.
 @interface IntelligenceHeaderItem : NSObject
 
 // Visual style of the button, determined by the factory used.
 @property(nonatomic, assign, readonly) IntelligenceHeaderItemStyle style;
+
+// Non-empty stable identifier used to match buttons across updates and passed
+// to `IntelligenceHeaderViewDelegate` when an action-backed item is tapped.
+@property(nonatomic, copy, readonly) NSString* identifier;
 
 // Icon displayed in the button. Nil for
 // `IntelligenceHeaderItemStyle::kCallToAction` items.
@@ -35,31 +40,29 @@ enum class IntelligenceHeaderItemStyle {
 // Optional accessibility identifier of the button.
 @property(nonatomic, copy, readonly) NSString* accessibilityIdentifier;
 
-// Action triggered on tap. Nil when `menu` is set.
-@property(nonatomic, strong, readonly) UIAction* action;
-
-// Menu presented on tap. Nil when `action` is set.
+// Optional menu presented on tap instead of triggering the delegate action.
 @property(nonatomic, strong, readonly) UIMenu* menu;
 
-// Creates an `IntelligenceHeaderItemStyle::kIcon` item triggering `action` on
-// tap.
-+ (instancetype)itemWithIcon:(UIImage*)icon
-                       title:(NSString*)title
-     accessibilityIdentifier:(NSString*)accessibilityIdentifier
-                      action:(UIAction*)action;
+// Creates an `IntelligenceHeaderItemStyle::kIcon` item routing taps with
+// `identifier` to the header view's delegate.
++ (instancetype)itemWithIdentifier:(NSString*)identifier
+                              icon:(UIImage*)icon
+                             title:(NSString*)title
+           accessibilityIdentifier:(NSString*)accessibilityIdentifier;
 
 // Creates an `IntelligenceHeaderItemStyle::kIcon` item presenting `menu` on
 // tap.
-+ (instancetype)itemWithIcon:(UIImage*)icon
-                       title:(NSString*)title
-     accessibilityIdentifier:(NSString*)accessibilityIdentifier
-                        menu:(UIMenu*)menu;
++ (instancetype)itemWithIdentifier:(NSString*)identifier
+                              icon:(UIImage*)icon
+                             title:(NSString*)title
+           accessibilityIdentifier:(NSString*)accessibilityIdentifier
+                              menu:(UIMenu*)menu;
 
 // Creates an `IntelligenceHeaderItemStyle::kCallToAction` item displaying
-// `title` and triggering `action` on tap.
-+ (instancetype)callToActionWithTitle:(NSString*)title
-              accessibilityIdentifier:(NSString*)accessibilityIdentifier
-                               action:(UIAction*)action;
+// `title` and routing taps with `identifier` to the header view's delegate.
++ (instancetype)callToActionWithIdentifier:(NSString*)identifier
+                                     title:(NSString*)title
+                   accessibilityIdentifier:(NSString*)accessibilityIdentifier;
 
 + (instancetype)new NS_UNAVAILABLE;
 

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_controller.h"
 
+#import "base/notreached.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_intervention_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_suggestions_presenter.h"
@@ -29,6 +30,10 @@ constexpr CGFloat kHeaderButtonPointSize = 14.0;
 // TODO(crbug.com/573515833): Localize the string.
 NSString* const kPauseButtonTitle = @"Pause";
 
+// Identifiers of the accessory items in `_headerView`.
+NSString* const kCloseHeaderItemIdentifier = @"close";
+NSString* const kPauseHeaderItemIdentifier = @"pause";
+
 // Text used to measure the header as if it displayed a title and a subtitle.
 NSString* const kHeaderSizingPlaceholderText = @"Placeholder";
 
@@ -49,7 +54,8 @@ using intelligence::actor::kSpacingLarge;
 @interface ActuationWorklogViewController () <
     ActuationInterventionViewDelegate,
     ActuationWorklogCompactViewDelegate,
-    ActuationWorklogViewDelegate>
+    ActuationWorklogViewDelegate,
+    IntelligenceHeaderViewDelegate>
 @end
 
 @implementation ActuationWorklogViewController {
@@ -234,16 +240,6 @@ using intelligence::actor::kSpacingLarge;
 
 #pragma mark - Private
 
-// Handles close button tap to request stopping the active actuation task.
-- (void)stopActuationButtonTapped {
-  [self.mutator stopActuation];
-}
-
-// Handles pause button tap to request pausing the active actuation task.
-- (void)pauseActuationButtonTapped {
-  [self.mutator pauseActuation];
-}
-
 // Creates the primary button accessory of `_headerView` for
 // `_headerPrimaryAction`.
 - (IntelligenceHeaderItem*)createPrimaryItem {
@@ -257,37 +253,32 @@ using intelligence::actor::kSpacingLarge;
 
 // Creates the pause button accessory for `_headerView`.
 - (IntelligenceHeaderItem*)createPauseItem {
-  __weak __typeof(self) weakSelf = self;
-  UIAction* pauseAction = [UIAction actionWithHandler:^(UIAction*) {
-    [weakSelf pauseActuationButtonTapped];
-  }];
   // The mocks use the stop symbol for the pause button.
   return [IntelligenceHeaderItem
-                 itemWithIcon:SymbolWithPointSize(SymbolStopFill,
+           itemWithIdentifier:kPauseHeaderItemIdentifier
+                         icon:SymbolWithPointSize(SymbolStopFill,
                                                   kHeaderButtonPointSize)
                         title:kPauseButtonTitle
-      accessibilityIdentifier:kActuationHeaderPauseButtonAccessibilityIdentifier
-                       action:pauseAction];
+      accessibilityIdentifier:
+          kActuationHeaderPauseButtonAccessibilityIdentifier];
 }
 
 // Creates the close button accessory for `_headerView`.
 - (IntelligenceHeaderItem*)createCloseItem {
-  __weak __typeof(self) weakSelf = self;
-  UIAction* closeAction = [UIAction actionWithHandler:^(UIAction*) {
-    [weakSelf stopActuationButtonTapped];
-  }];
   return [IntelligenceHeaderItem
-                 itemWithIcon:SymbolWithPointSize(SymbolXMark,
+           itemWithIdentifier:kCloseHeaderItemIdentifier
+                         icon:SymbolWithPointSize(SymbolXMark,
                                                   kHeaderButtonPointSize)
                         title:l10n_util::GetNSString(IDS_CLOSE)
-      accessibilityIdentifier:kActuationHeaderCloseButtonAccessibilityIdentifier
-                       action:closeAction];
+      accessibilityIdentifier:
+          kActuationHeaderCloseButtonAccessibilityIdentifier];
 }
 
 // Creates the view hierarchy.
 - (void)setupSubviews {
   _headerView = [[IntelligenceHeaderView alloc] initWithFrame:CGRectZero];
   _headerView.accessibilityIdentifier = kActuationHeaderAccessibilityIdentifier;
+  _headerView.delegate = self;
   _headerView.loading = _actuationActive;
   _headerView.primaryItem = [self createPrimaryItem];
   _headerView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -433,6 +424,19 @@ using intelligence::actor::kSpacingLarge;
 - (void)interventionView:(ActuationInterventionView*)view
         didTriggerAction:(ActuationInterventionAction*)action {
   [self.mutator didTriggerInterventionAction:action];
+}
+
+#pragma mark - IntelligenceHeaderViewDelegate
+
+- (void)headerView:(IntelligenceHeaderView*)headerView
+    didTriggerItemWithIdentifier:(NSString*)identifier {
+  if ([identifier isEqualToString:kCloseHeaderItemIdentifier]) {
+    [self.mutator stopActuation];
+  } else if ([identifier isEqualToString:kPauseHeaderItemIdentifier]) {
+    [self.mutator pauseActuation];
+  } else {
+    NOTREACHED();
+  }
 }
 
 @end
