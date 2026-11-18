@@ -214,13 +214,15 @@ def LoadTypemaps(typemaps, langs):
           language_map.update(typemap)
           loaded_typemap[language] = language_map
 
-      # Read the declared modules from the _metadata.
-      if '_metadata' in typemaps:
-        for lang, names in typemaps['_metadata']['module_typemaps'].items():
-          if lang in langs:
-            if lang not in declared:
-              declared[lang] = []
-            declared[lang] += names
+        # Read the declared modules from the _metadata.
+        if '_metadata' in typemaps_content:
+          for lang, names in typemaps_content['_metadata'][
+            'module_typemaps'
+          ].items():
+            if lang in langs:
+              if lang not in declared:
+                declared[lang] = []
+              declared[lang] += names
 
   if 'c++' in loaded_typemap:
     # The fuzzer and JNI generator also use C++ typemappings.

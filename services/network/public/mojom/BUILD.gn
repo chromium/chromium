@@ -735,10 +735,6 @@ mojom("url_loader_base") {
           mojom = "network.mojom.CacheStorageSideDataWriterTag"
           cpp = "::network::CacheStorageSideDataWriterTag"
         },
-        {
-          mojom = "blink.mojom.FetchCacheStorageSideDataWriterTag"
-          cpp = "::network::CacheStorageSideDataWriterTag"
-        },
       ]
       traits_headers = [ "//services/network/public/cpp/cache_storage_side_data_writer_mojom_traits.h" ]
       traits_public_deps = [ "//services/network/public/cpp:cache_storage_side_data_writer_mojom_traits" ]

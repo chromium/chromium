@@ -33,10 +33,6 @@ mojom("test_mojom") {
           cpp = "::device::DeviceConfig"
         },
         {
-          mojom = "device_test.mojom.InputSourceType"
-          cpp = "::device::InputSourceType"
-        },
-        {
           mojom = "device_test.mojom.ControllerFrameData"
           cpp = "::device::ControllerFrameData"
         },
