@@ -64,6 +64,12 @@
   margin-bottom: var(--alignment-inset-bottom);
 }
 
+:host([unbounded-supported_]:not([dropdown-is-visible])) {
+  --cr-searchbox-width: 100%;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 :host(:not([dropdown-is-visible]):not([has-input-selection_]):not([is-logically-focused_])) #inputWrapper:hover:not(:focus-within) {
   cursor: text;
   background-color: var(--color-omnibox-results-background-hovered);
@@ -164,6 +170,20 @@
   min-height: var(--cr-searchbox-height);
   position: relative;
   width: 100%;
+}
+
+/* The user agent stylesheet sets visibility: hidden on
+ * [unbounded]:not(:unbounded). Keep #inputWrapper visible in the location bar
+ * while it is not popped out. */
+#inputWrapper[unbounded] {
+  visibility: visible;
+}
+
+:host([dropdown-is-visible]) #inputWrapper[unbounded] {
+  --cr-searchbox-shadow: var(--omnibox-webui-shadow);
+  inset-inline-start: calc(-1 * var(--alignment-inset-horizontal));
+  top: calc(-1 * var(--alignment-inset-top));
+  width: calc(100% + 2 * var(--alignment-inset-horizontal));
 }
 
 cr-searchbox-input::part(searchbox-input),

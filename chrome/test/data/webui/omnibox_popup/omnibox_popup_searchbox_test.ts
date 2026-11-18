@@ -8543,4 +8543,173 @@ suite('OmniboxPopupSearchboxTest', function() {
 
     document.body.style.margin = originalMargin;
   });
+
+  suite('Unbounded', () => {
+    type UnboundedPrototype = HTMLElement&{
+      showUnboundedElement?: () => Promise<void>,
+      hideUnboundedElement?: () => Promise<void>,
+    };
+    const proto = HTMLElement.prototype as UnboundedPrototype;
+    let originalShow: (() => Promise<void>)|undefined;
+    let originalHide: (() => Promise<void>)|undefined;
+    let calls: string[];
+    let unbounded: boolean;
+    let wrapper: HTMLElement;
+
+    setup(async () => {
+      calls = [];
+      unbounded = false;
+      originalShow = proto.showUnboundedElement;
+      originalHide = proto.hideUnboundedElement;
+      proto.showUnboundedElement = function() {
+        calls.push('show');
+        unbounded = true;
+        return Promise.resolve();
+      };
+      proto.hideUnboundedElement = function() {
+        calls.push('hide');
+        unbounded = false;
+        return Promise.resolve();
+      };
+      loadTimeData.overrideValues({useUnbounded: true});
+      await createSearchbox();
+    });
+
+    async function createSearchbox() {
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      searchbox = document.createElement('omnibox-popup-searchbox');
+      document.body.appendChild(searchbox);
+      await microtasksFinished();
+      wrapper = searchbox.$.inputWrapper;
+      // `:unbounded` may not parse without the Blink feature, so answer it
+      // from the stubs.
+      const originalMatches = wrapper.matches.bind(wrapper);
+      Object.defineProperty(wrapper, 'matches', {
+        value: (selector: string) =>
+            selector === ':unbounded' ? unbounded : originalMatches(selector),
+      });
+    }
+
+    async function assertDropdownStaysBounded() {
+      assertFalse(wrapper.hasAttribute('unbounded'));
+
+      searchbox.dropdownIsVisible = true;
+      await microtasksFinished();
+      searchbox.dropdownIsVisible = false;
+      await microtasksFinished();
+      assertDeepEquals([], calls);
+    }
+
+    teardown(() => {
+      searchbox.remove();
+      if (originalShow) {
+        proto.showUnboundedElement = originalShow;
+        proto.hideUnboundedElement = originalHide;
+      } else {
+        delete proto.showUnboundedElement;
+        delete proto.hideUnboundedElement;
+      }
+      loadTimeData.overrideValues({useUnbounded: false});
+    });
+
+    test('TogglingDropdownShowsAndHidesUnboundedElement', async () => {
+      assertTrue(wrapper.hasAttribute('unbounded'));
+
+      searchbox.dropdownIsVisible = true;
+      await microtasksFinished();
+      assertDeepEquals(['show'], calls);
+
+      searchbox.dropdownIsVisible = false;
+      await microtasksFinished();
+      assertDeepEquals(['show', 'hide'], calls);
+    });
+
+    test('LightDismissClosesDropdown', async () => {
+      searchbox.activeQueryId = 0;
+      searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+        queryId: 0,
+        input: 'test',
+        matches: [createSearchMatchForTesting({allowedToBeDefaultMatch: true})],
+      }));
+      await microtasksFinished();
+      assertTrue(searchbox.dropdownIsVisible);
+      assertTrue(!!searchbox.result);
+      assertEquals(0, searchbox.selectedMatchIndex);
+      assertTrue(unbounded);
+      testProxy.handler.reset();
+
+      wrapper.dispatchEvent(new ToggleEvent(
+          'beforetoggle', {oldState: 'open', newState: 'closed'}));
+      await microtasksFinished();
+      assertFalse(searchbox.dropdownIsVisible);
+      assertEquals(null, searchbox.result);
+      assertEquals(-1, searchbox.selectedMatchIndex);
+      assertEquals(-1, searchbox.selection.line);
+      assertEquals(1, testProxy.handler.getCallCount('stopAutocomplete'));
+      assertTrue(testProxy.handler.getArgs('stopAutocomplete')[0]);
+    });
+
+    test('VisibilityChangeReappliesUnboundedElement', async () => {
+      let visibilityState = 'hidden';
+      Object.defineProperty(document, 'visibilityState', {
+        configurable: true,
+        get: () => visibilityState,
+      });
+      try {
+        searchbox.dropdownIsVisible = true;
+        await microtasksFinished();
+        assertDeepEquals([], calls);
+        assertFalse(unbounded);
+
+        visibilityState = 'visible';
+        document.dispatchEvent(new Event('visibilitychange'));
+        await microtasksFinished();
+        assertDeepEquals(['show'], calls);
+        assertTrue(unbounded);
+      } finally {
+        Reflect.deleteProperty(document, 'visibilityState');
+      }
+    });
+
+    test('CloseWhileOpeningHidesUnboundedElement', async () => {
+      // `showUnboundedElement()` flips `:unbounded` synchronously while the
+      // surface opens asynchronously; closing before it settles rejects with
+      // `AbortError` and hides the element immediately.
+      let rejectShow: (reason?: unknown) => void;
+      proto.showUnboundedElement = function() {
+        calls.push('show');
+        unbounded = true;
+        return new Promise((_resolve, reject) => {
+          rejectShow = reject;
+        });
+      };
+      searchbox.dropdownIsVisible = true;
+      await microtasksFinished();
+      assertDeepEquals(['show'], calls);
+      assertTrue(unbounded);
+
+      searchbox.dropdownIsVisible = false;
+      rejectShow!(new DOMException('Aborted', 'AbortError'));
+      await microtasksFinished();
+      assertDeepEquals(['show', 'hide'], calls);
+      assertFalse(unbounded);
+    });
+
+    test('ParamOffLeavesDropdownBounded', async () => {
+      searchbox.remove();
+      loadTimeData.overrideValues({useUnbounded: false});
+      await createSearchbox();
+
+      await assertDropdownStaysBounded();
+    });
+
+    test('MissingApiLeavesDropdownBounded', async () => {
+      searchbox.remove();
+      delete proto.showUnboundedElement;
+      delete proto.hideUnboundedElement;
+      await createSearchbox();
+
+      await assertDropdownStaysBounded();
+    });
+  });
 });
