@@ -44,6 +44,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::RunOnceCallback;
+using base::test::RunOnceCallbackRepeatedly;
 using testing::_;
 using testing::AnyNumber;
 using testing::ElementsAre;
@@ -771,6 +772,108 @@ TEST_F(CertificateProvisioningServiceTest,
       std::make_unique<StrictMock<MockKeyUploadClient>>());
 
   VerifyIdledWithoutCache();
+}
+
+// Tests that when the temporary identity exists but its private key can no
+// longer be loaded (e.g. it was lost from the OS key store), the stale
+// temporary identity is deleted so that the next provisioning attempt starts
+// over with a new key instead of failing at the same point again.
+TEST_F(CertificateProvisioningServiceTest,
+       ConflictTemporaryKey_LoadKeyFails_DeletesIdentity_NextAttemptSucceeds) {
+  SetPolicyPref(true);
+  EXPECT_CALL(mock_store_, GetIdentity(kIdentityName, _))
+      .Times(2)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<1>(std::nullopt));
+
+  auto mocked_private_key = base::MakeRefCounted<StrictMock<MockPrivateKey>>();
+  {
+    testing::InSequence sequence;
+    // First attempt: the temporary identity conflicts, its key fails to load
+    // and it gets deleted.
+    EXPECT_CALL(mock_store_, CreatePrivateKey(kTempIdentityName, _))
+        .WillOnce(RunOnceCallback<1>(
+            base::unexpected(StoreError::kConflictingIdentity)));
+    EXPECT_CALL(mock_store_, GetIdentity(kTempIdentityName, _))
+        .WillOnce(
+            RunOnceCallback<1>(base::unexpected(StoreError::kLoadKeyFailed)));
+    EXPECT_CALL(mock_store_,
+                DeleteIdentities(ElementsAre(kTempIdentityName), _))
+        .WillOnce(RunOnceCallback<1>(std::nullopt));
+    // Second attempt: a new key is created.
+    EXPECT_CALL(mock_store_, CreatePrivateKey(kTempIdentityName, _))
+        .WillOnce(RunOnceCallback<1>(mocked_private_key));
+  }
+
+  auto fake_cert = LoadTestCert();
+  auto mock_client = std::make_unique<StrictMock<MockKeyUploadClient>>();
+  EXPECT_CALL(*mock_client,
+              CreateCertificate(testing::Eq(mocked_private_key), _, _))
+      .WillOnce(RunOnceCallback<2>(kSuccessUploadCode, fake_cert));
+  EXPECT_CALL(mock_store_,
+              CommitIdentity(kTempIdentityName, kIdentityName, fake_cert, _))
+      .WillOnce(RunOnceCallback<3>(std::nullopt));
+
+  // Creating the service with the policy enabled starts the first attempt,
+  // which runs to completion synchronously with the mock store and fails.
+  CreateProvisioningService(CreateContextDelegate(), std::move(mock_client));
+  ASSERT_TRUE(service_);
+
+  VerifyIdledWithoutCache();
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.Provisioning.Error",
+      ProvisioningError::kTemporaryIdentityLoadingFailed, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.Provisioning.Store.Error",
+      StoreError::kLoadKeyFailed, 1);
+
+  // The next identity request triggers a new attempt, which succeeds.
+  VerifySuccessState(mocked_private_key, fake_cert);
+}
+
+// Tests that the provisioning attempt stays in flight while the stale
+// temporary identity is being deleted: identity requests made meanwhile queue
+// up instead of starting a new attempt, and are answered once the deletion
+// completed.
+TEST_F(CertificateProvisioningServiceTest,
+       ConflictTemporaryKey_LoadKeyFails_WaitsForDeletion) {
+  SetPolicyPref(true);
+  EXPECT_CALL(mock_store_, GetIdentity(kIdentityName, _))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+  EXPECT_CALL(mock_store_, CreatePrivateKey(kTempIdentityName, _))
+      .WillOnce(RunOnceCallback<1>(
+          base::unexpected(StoreError::kConflictingIdentity)));
+  EXPECT_CALL(mock_store_, GetIdentity(kTempIdentityName, _))
+      .WillOnce(
+          RunOnceCallback<1>(base::unexpected(StoreError::kLoadKeyFailed)));
+
+  // Hold the deletion callback so that the attempt stays in flight.
+  base::OnceCallback<void(std::optional<StoreError>)> delete_callback;
+  EXPECT_CALL(mock_store_, DeleteIdentities(ElementsAre(kTempIdentityName), _))
+      .WillOnce(MoveArg<1>(&delete_callback));
+
+  // Creating the service with the policy enabled starts the attempt, which
+  // stalls on the held deletion callback.
+  CreateProvisioningService(
+      CreateContextDelegate(),
+      std::make_unique<StrictMock<MockKeyUploadClient>>());
+  ASSERT_TRUE(service_);
+  ASSERT_TRUE(delete_callback);
+  EXPECT_TRUE(service_->GetCurrentStatus().is_provisioning);
+
+  // A request made meanwhile queues up. It must not start a new attempt: the
+  // strict mock fails on any further store call.
+  base::test::TestFuture<std::optional<ClientIdentity>> pending_future;
+  service_->GetManagedIdentity(pending_future.GetCallback());
+  EXPECT_FALSE(pending_future.IsReady());
+
+  std::move(delete_callback).Run(std::nullopt);
+
+  ASSERT_TRUE(pending_future.IsReady());
+  EXPECT_FALSE(pending_future.Get().has_value());
+  VerifyIdledWithoutCache();
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.Provisioning.Error",
+      ProvisioningError::kTemporaryIdentityLoadingFailed, 1);
 }
 
 // Tests what happens when the CommitIdentity provisioning step fails.

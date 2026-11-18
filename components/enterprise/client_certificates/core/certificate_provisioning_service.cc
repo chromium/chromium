@@ -71,6 +71,8 @@ class CertificateProvisioningServiceImpl
   void OnTemporaryIdentityLoaded(
       StoreErrorOr<std::optional<ClientIdentity>> expected_temporary_identity);
 
+  void OnStaleTemporaryIdentityDeleted(std::optional<StoreError> error);
+
   void OnPrivateKeyCreated(
       StoreErrorOr<scoped_refptr<PrivateKey>> expected_private_key);
 
@@ -398,10 +400,33 @@ void CertificateProvisioningServiceImpl::OnTemporaryIdentityLoaded(
     StoreErrorOr<std::optional<ClientIdentity>> expected_temporary_identity) {
   if (!expected_temporary_identity.has_value()) {
     // At this point, we failed to create a new private key due to a conflict,
-    // and failed to get the conflicting identity; so just give up.
+    // and failed to get the conflicting identity; the current attempt fails.
     LOG_POLICY(ERROR, DEVICE_TRUST)
         << "Temporary identity loading failed: "
         << StoreErrorToString(expected_temporary_identity.error());
+
+    if (expected_temporary_identity.error() == StoreError::kLoadKeyFailed) {
+      // The temporary identity's private key can no longer be loaded, e.g. it
+      // was lost from the OS key store (key factories also report transient
+      // key store failures this way). Keeping the identity would make every
+      // subsequent attempt fail at this same point, so delete it: it has no
+      // certificate, so this only costs a key regeneration, and the next
+      // attempt starts over with a new key.
+      // TODO(crbug.com/585520234): If the failure was transient, the OS key
+      // still exists and is orphaned, as the stores only delete the metadata.
+      LOG_POLICY(INFO, DEVICE_TRUST)
+          << "Deleting the temporary identity so that the next provisioning "
+             "attempt creates a new key.";
+      // The attempt is only reported as failed once the deletion completed,
+      // so that the next attempt cannot start while the store is updated.
+      certificate_store_->DeleteIdentities(
+          {temporary_identity_name()},
+          base::BindOnce(&CertificateProvisioningServiceImpl::
+                             OnStaleTemporaryIdentityDeleted,
+                         provisioning_weak_factory_.GetWeakPtr()));
+      return;
+    }
+
     OnProvisioningError(ProvisioningError::kTemporaryIdentityLoadingFailed,
                         expected_temporary_identity.error());
     return;
@@ -423,6 +448,17 @@ void CertificateProvisioningServiceImpl::OnTemporaryIdentityLoaded(
                                     "key from temporary storage...";
   OnPrivateKeyCreated(
       std::move(expected_temporary_identity->value().private_key));
+}
+
+void CertificateProvisioningServiceImpl::OnStaleTemporaryIdentityDeleted(
+    std::optional<StoreError> error) {
+  if (error.has_value()) {
+    LOG_POLICY(ERROR, DEVICE_TRUST) << "Temporary identity deletion failed: "
+                                    << StoreErrorToString(error.value());
+  }
+  // The attempt fails with the key load error that caused the deletion.
+  OnProvisioningError(ProvisioningError::kTemporaryIdentityLoadingFailed,
+                      StoreError::kLoadKeyFailed);
 }
 
 void CertificateProvisioningServiceImpl::OnPrivateKeyCreated(
@@ -599,7 +635,8 @@ void CertificateProvisioningServiceImpl::OnProvisioningError(
   // The temporary key left behind by a failed attempt is intentionally kept:
   // provisioning is eventually consistent and a subsequent attempt resumes from
   // it (see OnPrivateKeyCreated's kConflictingIdentity handling), avoiding an
-  // unnecessary key regeneration. It is cleaned up if the policy is disabled.
+  // unnecessary key regeneration. It is cleaned up if the policy is disabled,
+  // or by `OnTemporaryIdentityLoaded()` if its key can no longer be loaded.
   OnFinishedProvisioning(/*success=*/false);
 }
 
