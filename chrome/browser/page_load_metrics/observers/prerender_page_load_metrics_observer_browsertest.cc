@@ -5,6 +5,7 @@
 #include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
 
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -44,8 +45,7 @@ class PrerenderPageLoadMetricsObserverBrowserTest
   PrerenderPageLoadMetricsObserverBrowserTest()
       : prerender_helper_(base::BindRepeating(
             &PrerenderPageLoadMetricsObserverBrowserTest::web_contents,
-            base::Unretained(this))) {
-  }
+            base::Unretained(this))) {}
   ~PrerenderPageLoadMetricsObserverBrowserTest() override = default;
 
   void SetUp() override {
@@ -333,8 +333,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
       0);
 }
 
+// TODO(crbug.com/587087468): Re-enable on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Activate_Embedder_DirectURLInput \
+  DISABLED_Activate_Embedder_DirectURLInput
+#else
+#define MAYBE_Activate_Embedder_DirectURLInput Activate_Embedder_DirectURLInput
+#endif
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
-                       Activate_Embedder_DirectURLInput) {
+                       MAYBE_Activate_Embedder_DirectURLInput) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
