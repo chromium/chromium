@@ -19,6 +19,8 @@ import '//resources/cr_elements/cr_shared_vars.css.js';
 
 import {CrLitElement, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {loadTimeData} from '../i18n_setup.js';
+
 import {getCss} from './settings_section.css.js';
 import {getHtml} from './settings_section.html.js';
 
@@ -48,11 +50,15 @@ export class SettingsSectionElement extends CrLitElement {
        * that emits a 'send-feedback' event.
        */
       showSendFeedbackButton: {type: Boolean},
+
+      settingsRefresh2026Enabled_: {type: Boolean},
     };
   }
 
   accessor pageTitle: string = '';
   accessor showSendFeedbackButton: boolean = false;
+  protected accessor settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
 
   /**
    * Get the value to which to set the aria-hidden attribute of the section
