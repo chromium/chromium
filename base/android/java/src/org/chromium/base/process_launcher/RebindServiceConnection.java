@@ -87,7 +87,8 @@ import java.util.concurrent.Executor;
                 bindFlags,
                 mHandler,
                 mExecutor,
-                instanceName);
+                instanceName,
+                /* allowBindFailure= */ false);
         if (mDeferredConnections >= mMaxDeferredConnections) {
             BindService.doUnbindService(ContextUtils.getApplicationContext(), this);
             mDeferredConnections = 0;

@@ -17,6 +17,7 @@ import androidx.annotation.RequiresApi;
 
 import org.chromium.base.BaseFeatureList;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -26,6 +27,8 @@ import java.util.concurrent.Executor;
 /** Class of static helper methods to call Context.bindService variants. */
 @NullMarked
 public final class BindService {
+    private static final String TAG = "BindService";
+
     private static @Nullable Method sBindServiceAsUserMethod;
     private static @Nullable BinderCallCounter sBinderCallCounter;
 
@@ -38,6 +41,8 @@ public final class BindService {
 
     // Note that handler is not guaranteed to be used, and client still need to correctly handle
     // callbacks on the UI thread.
+    // If |allowBindFailure| is true, any RuntimeException thrown when binding the service is
+    // caught, logged, and treated as a failure (returning false).
     static boolean doBindService(
             Context context,
             Intent intent,
@@ -45,7 +50,8 @@ public final class BindService {
             int flags,
             Handler handler,
             Executor executor,
-            @Nullable String instanceName) {
+            @Nullable String instanceName,
+            boolean allowBindFailure) {
         if (ScopedServiceBindingBatch.shouldBatchUpdate()) {
             BindingRequestQueue queue = ScopedServiceBindingBatch.getBindingRequestQueue();
             // This should never be null because shouldBatchUpdate() checks that the feature is
@@ -61,6 +67,26 @@ public final class BindService {
         if (sBinderCallCounter != null) {
             sBinderCallCounter.mBindServiceCount++;
         }
+        try {
+            return doBindServiceInternal(
+                    context, intent, connection, flags, handler, executor, instanceName);
+        } catch (RuntimeException e) {
+            if (allowBindFailure) {
+                Log.e(TAG, "Failed to bind service.", e);
+                return false;
+            }
+            throw e;
+        }
+    }
+
+    private static boolean doBindServiceInternal(
+            Context context,
+            Intent intent,
+            ServiceConnection connection,
+            int flags,
+            Handler handler,
+            Executor executor,
+            @Nullable String instanceName) {
         if (instanceName != null) {
             return context.bindIsolatedService(intent, flags, instanceName, executor, connection);
         }

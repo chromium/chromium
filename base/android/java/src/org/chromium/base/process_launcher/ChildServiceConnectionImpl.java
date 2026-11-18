@@ -31,6 +31,7 @@ import java.util.concurrent.Executor;
     private final Executor mExecutor;
     private @Nullable ChildServiceConnectionDelegate mDelegate;
     private final @Nullable String mInstanceName;
+    private final boolean mAllowBindFailure;
     private boolean mBound;
 
     /* package */ ChildServiceConnectionImpl(
@@ -40,7 +41,8 @@ import java.util.concurrent.Executor;
             Handler handler,
             Executor executor,
             ChildServiceConnectionDelegate delegate,
-            @Nullable String instanceName) {
+            @Nullable String instanceName,
+            boolean allowBindFailure) {
         mContext = context;
         mBindIntent = bindIntent;
         mBindFlags = bindFlags;
@@ -48,6 +50,7 @@ import java.util.concurrent.Executor;
         mExecutor = executor;
         mDelegate = delegate;
         mInstanceName = instanceName;
+        mAllowBindFailure = allowBindFailure;
     }
 
     @Override
@@ -62,7 +65,8 @@ import java.util.concurrent.Executor;
                             mBindFlags,
                             mHandler,
                             mExecutor,
-                            mInstanceName);
+                            mInstanceName,
+                            mAllowBindFailure);
         } finally {
             TraceEvent.end("ChildServiceConnectionImpl.bindServiceConnection");
         }

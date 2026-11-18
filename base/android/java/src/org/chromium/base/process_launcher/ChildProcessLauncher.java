@@ -211,15 +211,8 @@ public class ChildProcessLauncher {
                 setupConnection();
                 return true;
             }
-            if (!allocateAndSetupConnection(
-                            serviceCallback,
-                            setupConnection,
-                            queueIfNoFreeConnection,
-                            initialBindingState)
-                    && !queueIfNoFreeConnection) {
-                return false;
-            }
-            return true;
+            return allocateAndSetupConnection(
+                    serviceCallback, setupConnection, queueIfNoFreeConnection, initialBindingState);
         } finally {
             TraceEvent.end("ChildProcessLauncher.start");
         }
@@ -250,8 +243,8 @@ public class ChildProcessLauncher {
                         initialBindingState);
 
         if (mConnection == null) {
-            if (!queueIfNoFreeConnection) {
-                Log.d(TAG, "Failed to allocate a child connection (no queuing).");
+            if (!queueIfNoFreeConnection || mConnectionAllocator.isFreeConnectionAvailable()) {
+                Log.d(TAG, "Failed to allocate a child connection.");
                 return false;
             }
             mConnectionAllocator.queueAllocation(
@@ -261,7 +254,7 @@ public class ChildProcessLauncher {
                                     setupConnection,
                                     queueIfNoFreeConnection,
                                     initialBindingState));
-            return false;
+            return true;
         }
 
         if (setupConnection) {

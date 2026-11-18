@@ -315,6 +315,7 @@ public class ChildProcessConnection {
             Bundle serviceBundle,
             @Nullable String instanceName,
             boolean independentFallback,
+            boolean allowBindFailure,
             boolean isSandboxedForHistograms) {
         this(
                 context,
@@ -326,6 +327,7 @@ public class ChildProcessConnection {
                 /* connectionFactory= */ null,
                 instanceName,
                 independentFallback,
+                allowBindFailure,
                 isSandboxedForHistograms);
     }
 
@@ -340,6 +342,7 @@ public class ChildProcessConnection {
             @Nullable ChildServiceConnectionFactory connectionFactory,
             @Nullable String instanceName,
             boolean independentFallback,
+            boolean allowBindFailure,
             boolean isSandboxedForHistograms) {
         mLauncherHandler = new Handler();
         mLauncherExecutor =
@@ -376,7 +379,8 @@ public class ChildProcessConnection {
                                     mLauncherHandler,
                                     mLauncherExecutor,
                                     delegate,
-                                    instanceName);
+                                    instanceName,
+                                    allowBindFailure);
                         }
                     };
         }
@@ -508,9 +512,10 @@ public class ChildProcessConnection {
 
     // This is the same as start, but returns a boolean whether bind succeeded. Also on failure,
     // no method is called on |serviceCallback| so the allocation can be tried again. This is
-    // package private and is meant to be used by Android10WorkaroundAllocatorImpl. See comment
-    // there for details.
+    // package private and is meant to be used by Android10WorkaroundAllocatorImpl and
+    // VariableSizeAllocatorImpl when |allowBindFailure| is true.
     boolean tryStart(@ChildBindingState int initialBindingState, ServiceCallback serviceCallback) {
+        assert initialBindingState != ChildBindingState.UNBOUND;
         try {
             TraceEvent.begin("ChildProcessConnection.tryStart");
             assert isRunningOnLauncherThread();

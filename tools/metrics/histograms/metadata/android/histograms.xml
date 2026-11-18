@@ -1818,6 +1818,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.ChildProcessLauncher.SandboxedGpuBindSuccess"
+    enum="BooleanSuccess" expires_after="2027-05-16">
+  <owner>boliu@chromium.org</owner>
+  <owner>kbr@chromium.org</owner>
+  <summary>
+    Records whether binding a sandboxed GPU process succeeded. Recorded in
+    ChildProcessLauncherHelperImpl on every attempt to launch a sandboxed GPU
+    process.
+  </summary>
+</histogram>
+
 <histogram name="Android.ChildProcessRanking.{RankType}.Count" units="count"
     expires_after="2026-12-06">
   <owner>kawasin@google.com</owner>

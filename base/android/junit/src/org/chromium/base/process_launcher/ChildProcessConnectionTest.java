@@ -221,6 +221,7 @@ public class ChildProcessConnectionTest {
                 mServiceConnectionFactory,
                 /* instanceName= */ null,
                 /* independentFallback= */ false,
+                /* allowBindFailure= */ false,
                 /* isSandboxedForHistograms= */ false);
     }
 
@@ -902,7 +903,8 @@ public class ChildProcessConnectionTest {
                         handler,
                         Runnable::run,
                         delegate,
-                        /* instanceName= */ "test");
+                        /* instanceName= */ "test",
+                        /* allowBindFailure= */ false);
 
         // Rebinding before bindServiceConnection() should be a no-op.
         connection.rebindService(Context.BIND_IMPORTANT, /* urgent= */ false);

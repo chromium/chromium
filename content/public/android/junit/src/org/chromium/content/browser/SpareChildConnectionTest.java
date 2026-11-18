@@ -70,6 +70,7 @@ public class SpareChildConnectionTest {
                 Bundle serviceBundle,
                 String instanceName,
                 boolean independentFallback,
+                boolean allowBindFailure,
                 boolean isSandboxedForHistograms) {
             // We expect to create only one connection after calling reset().
             assertThat(mConnection).isNull();

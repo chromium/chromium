@@ -36,6 +36,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryLoader.MultiProcessMediator;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.ChildProcessLauncher;
@@ -469,7 +470,29 @@ public final class ChildProcessLauncherHelperImpl {
                         binderCallback,
                         isSpareRenderer,
                         isForOutermostMainFrame);
-        helper.start();
+        boolean started = helper.start();
+        if (serviceType == ServiceType.SANDBOXED_GPU) {
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.ChildProcessLauncher.SandboxedGpuBindSuccess", started);
+            if (!started) {
+                Log.w(
+                        TAG,
+                        "Failed to bind sandboxed GPU process, falling back to privileged"
+                                + " process.");
+                helper =
+                        new ChildProcessLauncherHelperImpl(
+                                nativePointer,
+                                commandLine,
+                                filesToBeMapped,
+                                ServiceType.PRIVILEGED,
+                                reducePriorityOnBackground,
+                                canUseWarmUpConnection,
+                                binderCallback,
+                                isSpareRenderer,
+                                isForOutermostMainFrame);
+                helper.start();
+            }
+        }
 
         if (serviceType == ServiceType.SANDBOXED && !sCheckedServiceGroupImportance) {
             sCheckedServiceGroupImportance = true;
@@ -689,6 +712,7 @@ public final class ChildProcessLauncherHelperImpl {
                                     bindToCaller,
                                     bindAsExternalService,
                                     retryOnTimeout,
+                                    /* allowBindFailure= */ true,
                                     /* isSandboxedForHistograms= */ true,
                                     ChildConnectionAllocator.MAX_VARIABLE_ALLOCATED);
                 }
@@ -881,12 +905,14 @@ public final class ChildProcessLauncherHelperImpl {
                 });
     }
 
-    private void start() {
-        mLauncher.start(
-                /* setupConnection= */ true,
-                /* queueIfNoFreeConnection= */ true,
-                getBindingStateFromImportance());
+    private boolean start() {
+        boolean started =
+                mLauncher.start(
+                        /* setupConnection= */ true,
+                        /* queueIfNoFreeConnection= */ mServiceType != ServiceType.SANDBOXED_GPU,
+                        getBindingStateFromImportance());
         mStartTimeMs = System.currentTimeMillis();
+        return started;
     }
 
     private @ChildBindingState int getBindingStateFromImportance() {

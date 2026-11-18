@@ -80,6 +80,7 @@ public abstract class ChildConnectionAllocator {
                 Bundle serviceBundle,
                 @Nullable String instanceName,
                 boolean independentFallback,
+                boolean allowBindFailure,
                 boolean isSandboxedForHistograms);
     }
 
@@ -95,6 +96,7 @@ public abstract class ChildConnectionAllocator {
                 Bundle serviceBundle,
                 @Nullable String instanceName,
                 boolean independentFallback,
+                boolean allowBindFailure,
                 boolean isSandboxedForHistograms) {
             return new ChildProcessConnection(
                     context,
@@ -105,6 +107,7 @@ public abstract class ChildConnectionAllocator {
                     serviceBundle,
                     instanceName,
                     independentFallback,
+                    allowBindFailure,
                     isSandboxedForHistograms);
         }
     }
@@ -249,6 +252,7 @@ public abstract class ChildConnectionAllocator {
                 bindToCaller,
                 bindAsExternalService,
                 /* independentFallback= */ false,
+                /* allowBindFailure= */ false,
                 maxAllocated,
                 isSandboxedForHistograms);
     }
@@ -257,7 +261,9 @@ public abstract class ChildConnectionAllocator {
      * Creates a variable-sized allocator for non-zygote isolated services where {@code
      * serviceClassName + "0"} is the primary service and (when {@code fallbackToNextSlot} is true)
      * {@code serviceClassName + "1"} acts purely as an independent per-launch retry target without
-     * affecting {@code sAlwaysFallback} or applying app zygote workarounds.
+     * affecting {@code sAlwaysFallback} or applying app zygote workarounds. If {@code
+     * allowBindFailure} is true, binding exceptions are caught and {@link #allocate} returns null
+     * on bind failure instead of crashing or notifying {@code onChildProcessDied}.
      */
     public static ChildConnectionAllocator createNonZygoteVariableSize(
             Context context,
@@ -268,6 +274,7 @@ public abstract class ChildConnectionAllocator {
             boolean bindToCaller,
             boolean bindAsExternalService,
             boolean retryOnTimeout,
+            boolean allowBindFailure,
             boolean isSandboxedForHistograms,
             int maxAllocated) {
         checkServiceExists(context, packageName, serviceClassName);
@@ -287,6 +294,7 @@ public abstract class ChildConnectionAllocator {
                 bindToCaller,
                 bindAsExternalService,
                 /* independentFallback= */ true,
+                allowBindFailure,
                 maxAllocated,
                 isSandboxedForHistograms);
     }
@@ -333,6 +341,7 @@ public abstract class ChildConnectionAllocator {
                 bindToCaller,
                 bindAsExternalService,
                 /* independentFallback= */ false,
+                /* allowBindFailure= */ false,
                 maxAllocated,
                 /* isSandboxedForHistograms= */ false);
     }
@@ -377,7 +386,8 @@ public abstract class ChildConnectionAllocator {
     }
 
     /**
-     * @return a bound connection, or null if there are no free slots.
+     * @return a bound connection, or null if there are no free slots or binding failed when
+     *     allowed.
      */
     public @Nullable ChildProcessConnection allocate(
             Context context,
@@ -479,6 +489,8 @@ public abstract class ChildConnectionAllocator {
 
     /** May return -1 if size is not fixed. */
     public abstract int getMaxNumberOfAllocations();
+
+    public abstract boolean isFreeConnectionAvailable();
 
     @VisibleForTesting
     public abstract boolean anyConnectionAllocated();
@@ -586,6 +598,7 @@ public abstract class ChildConnectionAllocator {
                             serviceBundle,
                             /* instanceName= */ null,
                             /* independentFallback= */ true,
+                            /* allowBindFailure= */ false,
                             mIsSandboxedForHistograms);
             mChildProcessConnections[slot] = connection;
             if (mFallbackSlots != null) {
@@ -629,9 +642,9 @@ public abstract class ChildConnectionAllocator {
             }
         }
 
-        @VisibleForTesting
+        @Override
         public boolean isFreeConnectionAvailable() {
-            return !mFreeConnectionIndices.isEmpty();
+            return mFreeConnectionIndices.size() >= (mFallbackSlots != null ? 2 : 1);
         }
 
         @Override
@@ -674,6 +687,7 @@ public abstract class ChildConnectionAllocator {
         // Keep these three lines stable to reduce downstream merge conflicts.
 
         private final boolean mIndependentFallback;
+        private final boolean mAllowBindFailure;
         private final int mMaxAllocated;
         private final ArraySet<ChildProcessConnection> mAllocatedConnections = new ArraySet<>();
         private int mNextInstance;
@@ -688,6 +702,7 @@ public abstract class ChildConnectionAllocator {
                 boolean bindToCaller,
                 boolean bindAsExternalService,
                 boolean independentFallback,
+                boolean allowBindFailure,
                 int maxAllocated,
                 boolean isSandboxedForHistograms) {
             super(
@@ -701,6 +716,7 @@ public abstract class ChildConnectionAllocator {
                     isSandboxedForHistograms);
             assert maxAllocated > 0;
             mIndependentFallback = independentFallback;
+            mAllowBindFailure = allowBindFailure;
             mMaxAllocated = maxAllocated;
         }
 
@@ -710,6 +726,9 @@ public abstract class ChildConnectionAllocator {
                 Bundle serviceBundle,
                 ChildProcessConnection.ServiceCallback serviceCallback,
                 @ChildBindingState int initialBindingState) {
+            if (mAllowBindFailure) {
+                return tryAllocate(context, serviceBundle, serviceCallback, initialBindingState);
+            }
             ChildProcessConnection connection = allocate(context, serviceBundle);
             if (connection == null) return null;
             mAllocatedConnections.add(connection);
@@ -760,6 +779,7 @@ public abstract class ChildConnectionAllocator {
                             serviceBundle,
                             instanceName,
                             mIndependentFallback,
+                            mAllowBindFailure,
                             mIsSandboxedForHistograms);
             assert connection != null;
             return connection;
@@ -778,6 +798,11 @@ public abstract class ChildConnectionAllocator {
         @Override
         public int getMaxNumberOfAllocations() {
             return -1;
+        }
+
+        @Override
+        public boolean isFreeConnectionAvailable() {
+            return mAllocatedConnections.size() < mMaxAllocated;
         }
 
         @Override
@@ -833,6 +858,7 @@ public abstract class ChildConnectionAllocator {
                             bindToCaller,
                             bindAsExternalService,
                             /* independentFallback= */ false,
+                            /* allowBindFailure= */ false,
                             maxAllocated,
                             isSandboxedForHistograms);
             mNonZygoteAllocator =
@@ -845,6 +871,7 @@ public abstract class ChildConnectionAllocator {
                             bindToCaller,
                             bindAsExternalService,
                             /* independentFallback= */ false,
+                            /* allowBindFailure= */ false,
                             maxAllocated,
                             isSandboxedForHistograms);
         }
@@ -877,6 +904,11 @@ public abstract class ChildConnectionAllocator {
         @Override
         public int getMaxNumberOfAllocations() {
             return -1;
+        }
+
+        @Override
+        public boolean isFreeConnectionAvailable() {
+            return mNonZygoteAllocator.isFreeConnectionAvailable();
         }
 
         @Override
