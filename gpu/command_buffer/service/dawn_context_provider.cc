@@ -636,6 +636,12 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
 
   std::optional<error::ContextLostReason> GetResetStatus() const;
 
+  void SetErrorExitCallback(
+      base::RepeatingCallback<void(std::string_view)> callback) {
+    base::AutoLock auto_lock(context_lost_lock_);
+    error_exit_cb_ = std::move(callback);
+  }
+
   std::unique_ptr<GraphiteSharedContext> CreateGraphiteSharedContext(
       const skgpu::graphite::ContextOptions& options,
       GpuProcessShmCount* use_shader_cache_shm_count,
@@ -817,6 +823,8 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   mutable base::Lock context_lost_lock_;
   std::optional<error::ContextLostReason> context_lost_reason_
       GUARDED_BY(context_lost_lock_);
+  base::RepeatingCallback<void(std::string_view)> error_exit_cb_
+      GUARDED_BY(context_lost_lock_);
 
   THREAD_CHECKER(main_thread_checker_);
 };
@@ -834,6 +842,7 @@ DawnSharedContext::~DawnSharedContext() {
           ->UnregisterDumpProvider(this);
     }
     device_.SetLoggingCallback([](wgpu::LoggingType, wgpu::StringView) {});
+    SetErrorExitCallback({});
 
     // Destroy GraphiteSharedContext and skgpu::graphite::Context before
     // device_, on which skgpu::graphite::Context is created.
@@ -1160,9 +1169,17 @@ std::optional<error::ContextLostReason> DawnSharedContext::GetResetStatus()
 }
 
 void DawnSharedContext::MarkContextLost(error::ContextLostReason reason) {
-  base::AutoLock auto_lock(context_lost_lock_);
-  if (!context_lost_reason_.has_value()) {
-    context_lost_reason_ = reason;
+  base::RepeatingCallback<void(std::string_view)> error_exit_cb;
+  {
+    base::AutoLock auto_lock(context_lost_lock_);
+    if (!context_lost_reason_.has_value()) {
+      context_lost_reason_ = reason;
+    }
+    error_exit_cb = error_exit_cb_;
+  }
+  if (error_exit_cb) {
+    error_exit_cb.Run(base::StringPrintf("Dawn context lost with reason: %d",
+                                         static_cast<int>(reason)));
   }
 }
 
@@ -1445,6 +1462,11 @@ bool DawnContextProvider::SupportsFeature(wgpu::FeatureName feature) {
 std::optional<error::ContextLostReason> DawnContextProvider::GetResetStatus()
     const {
   return dawn_shared_context_->GetResetStatus();
+}
+
+void DawnContextProvider::SetErrorExitCallback(
+    base::RepeatingCallback<void(std::string_view)> callback) {
+  dawn_shared_context_->SetErrorExitCallback(std::move(callback));
 }
 
 GraphiteSharedContext* DawnContextProvider::GetGraphiteSharedContext() const {

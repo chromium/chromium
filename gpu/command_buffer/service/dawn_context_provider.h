@@ -7,7 +7,9 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
+#include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -111,6 +113,12 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   bool SupportsFeature(wgpu::FeatureName feature);
 
   std::optional<error::ContextLostReason> GetResetStatus() const;
+
+  // Registers a callback invoked synchronously in MarkContextLost() to
+  // terminate the GPU process immediately rather than continuing in a corrupted
+  // state.
+  void SetErrorExitCallback(
+      base::RepeatingCallback<void(std::string_view)> callback);
 
  private:
   explicit DawnContextProvider(

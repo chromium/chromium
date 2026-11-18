@@ -618,7 +618,10 @@ test("gpu_unittests") {
   }
 
   if (skia_use_dawn) {
-    sources += [ "command_buffer/service/graphite_shared_context_unittest.cc" ]
+    sources += [
+      "command_buffer/service/dawn_context_provider_unittest.cc",
+      "command_buffer/service/graphite_shared_context_unittest.cc",
+    ]
 
     if (is_win) {
       sources += [ "ipc/service/dawn_texture_solid_color_pool_unittest.cc" ]

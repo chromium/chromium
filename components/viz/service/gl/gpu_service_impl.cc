@@ -272,6 +272,10 @@ GpuServiceImpl::GpuServiceImpl(
     dawn_context_provider_ = std::move(init_params.dawn_context_provider);
 
     if (dawn_context_provider_) {
+      if (!in_host_process()) {
+        dawn_context_provider_->SetErrorExitCallback(
+            base::BindRepeating(&RestartGpuProcessForContextLoss));
+      }
       // GpuServiceImpl holds the instance of DawnContextProvider, so it
       // outlives the DawnContextProvider.
       if (features::SkiaGraphiteUsesPersistentCache()) {
