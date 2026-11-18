@@ -1208,8 +1208,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // Test that the view bounds for an out-of-process iframe are set and updated
 // correctly, including accounting for local frame offsets in the parent and
 // scroll positions.
-// TODO(crbug.com/515693421): Flaky on Linux ASan.
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/515693421): Flaky on Linux ASan and Fuchsia
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_ViewBoundsInNestedFrameTest DISABLED_ViewBoundsInNestedFrameTest
 #else
 #define MAYBE_ViewBoundsInNestedFrameTest ViewBoundsInNestedFrameTest
