@@ -1911,6 +1911,10 @@ def main():
             '-DCOMPILER_RT_ENABLE_WATCHOS=ON',
             '-DCOMPILER_RT_ENABLE_TVOS=ON',
             '-DCOMPILER_RT_ENABLE_XROS=ON',
+            # By default in builtin-config-ix.cmake, these are only compiled
+            # if we're building on a mac, but we support building these on any
+            # platform.
+            '-DCOMPILER_RT_HAS_AARCH64_SME=ON',
           ]
         ),
         'DARWIN_ios_ARCHS=arm64',
