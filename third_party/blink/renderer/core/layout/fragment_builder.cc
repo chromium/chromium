@@ -541,20 +541,33 @@ void FragmentBuilder::PropagateFromFragment(
     return;
   }
 
-  if (child.HasAnchorsToPropagate()) {
-    // This child either is an anchor, or has anchors inside (or both). They are
-    // to be propagated as soon as the container size is known.
-    PropagateChildAnchors(child, child_offset + relative_offset);
+  // A scroll-marker-group may be added to a builder before the originating
+  // scrollable container is added. Note that they may not even be added to the
+  // same builder (due to out-of-flow positioning). This means that what it
+  // propagates is not correct (not populated yet, or stale data from previous
+  // layout). Therefore we need to bypass any propagation that ignores layout
+  // containment (which may involve propagation of descendant objects). This
+  // isn't ideal, since there may be relevant things inside a
+  // scroll-marker-group, such as snap areas or anchors. But it's unfortunately
+  // dangerous.
+  const bool allow_propagation_beyond_layout_containment =
+      !layout_object_->IsScrollMarkerGroup();
+  if (allow_propagation_beyond_layout_containment) {
+    if (child.HasAnchorsToPropagate()) {
+      // This child either is an anchor, or has anchors inside (or both). They
+      // are to be propagated as soon as the container size is known.
+      PropagateChildAnchors(child, child_offset + relative_offset);
 
-    has_running_anchor_transform_animation_ =
-        has_running_anchor_transform_animation_ ||
-        child.HasRunningAnchorTransformAnimation();
+      has_running_anchor_transform_animation_ =
+          has_running_anchor_transform_animation_ ||
+          child.HasRunningAnchorTransformAnimation();
+    }
+
+    PropagateStickyDescendants(child);
+    PropagateSnapAreas(child);
+    PropagateScrollInitialTarget(child);
+    PropagateNamedTriggers(child);
   }
-
-  PropagateStickyDescendants(child);
-  PropagateSnapAreas(child);
-  PropagateScrollInitialTarget(child);
-  PropagateNamedTriggers(child);
 
   // Propagate info about OOF descendants if necessary. This part must be
   // skipped when adding OOF children to fragmentainers, as propagation is
