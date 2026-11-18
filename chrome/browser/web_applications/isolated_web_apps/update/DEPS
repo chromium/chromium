@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "isolated_web_app_update_notification_service\\.cc": [
+    "+ash/strings/grit/ash_strings.h",
+  ],
+}

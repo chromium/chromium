@@ -200,6 +200,7 @@ source_set("isolated_web_apps") {
     ]
     deps += [
       "//ash/constants",
+      "//ash/strings",
       "//chrome/app:generated_resources",
       "//chrome/browser:browser_process",
       "//chrome/browser/ash/app_mode/isolated_web_app:policy_util",

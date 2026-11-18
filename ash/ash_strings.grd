@@ -12144,6 +12144,17 @@ You can manage this account’s settings by installing the Family Link app on yo
             =2 {Extensions accessing devices: <ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph>, <ph name="EXTENSION2">{2}<ex>Secure Shell</ex></ph>}
             other {Extensions accessing devices: <ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph>, <ph name="EXTENSION2">{2}<ex>Secure Shell</ex></ph> +{3} more}}
       </message>
+
+      <!-- Isolated Web Apps pending update notification. -->
+      <message name="IDS_IWA_UPDATE_PENDING_NOTIFICATION_TITLE" desc="Title for the notification shown when an Isolated Web App update has been downloaded and is waiting for the app to restart.">
+        Update available for <ph name="APP_NAME">$1<ex>App Name</ex></ph>
+      </message>
+      <message name="IDS_IWA_UPDATE_PENDING_NOTIFICATION_MESSAGE" desc="Body text for the notification informing the user that an Isolated Web App update is ready to be applied by restarting the app, and warning about potential unsaved data loss.">
+        A new version (<ph name="VERSION">$1<ex>1.2.0</ex></ph>) is ready. Restart the app to apply the update. Unsaved data may be lost.
+      </message>
+      <message name="IDS_IWA_UPDATE_PENDING_NOTIFICATION_RESTART_BUTTON" meaning="button label" desc="Button label on the notification to restart the Isolated Web App and apply the pending update.">
+        Restart app
+      </message>
     </messages>
   </release>
 </grit>
