@@ -86,8 +86,8 @@ class GPU_GLES2_EXPORT RasterDecoder : public DecoderContext,
   gles2::Outputter* outputter() const override;
   bool log_commands() const { return log_commands_; }
 
-  virtual gpu::ContextResult Initialize(
-      bool lose_context_when_out_of_memory) = 0;
+  // Out-of-memory errors always lose the context.
+  virtual gpu::ContextResult Initialize() = 0;
 
   virtual int DecoderIdForTest() = 0;
   virtual ServiceTransferCache* GetTransferCacheForTest() = 0;

@@ -378,8 +378,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
               task_executor_->shared_image_manager(), context_state_,
               /*is_privileged=*/true);
 
-      auto result =
-          raster_decoder->Initialize(/*lose_context_when_out_of_memory=*/true);
+      auto result = raster_decoder->Initialize();
       if (result != gpu::ContextResult::kSuccess) {
         DestroyOnGpuThread();
         DLOG(ERROR) << "Failed to initialize decoder.";

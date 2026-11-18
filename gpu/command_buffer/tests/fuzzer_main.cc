@@ -432,8 +432,7 @@ class CommandBufferSetup {
         shared_image_manager_.get(), context_state_, /*is_privileged=*/true);
     decoder_->GetLogger()->set_log_synthesized_gl_errors(false);
 
-    auto result =
-        decoder_->Initialize(/*lose_context_when_out_of_memory=*/true);
+    auto result = decoder_->Initialize();
     if (result != gpu::ContextResult::kSuccess) {
       return false;
     }

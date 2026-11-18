@@ -492,7 +492,7 @@ class RasterDecoderImpl final : public RasterDecoder,
   ~RasterDecoderImpl() override;
 
   // RasterDecoder implementation.
-  ContextResult Initialize(bool lose_context_when_out_of_memory) override;
+  ContextResult Initialize() override;
   int GetRasterDecoderId() const override;
   int DecoderIdForTest() override;
   ServiceTransferCache* GetTransferCacheForTest() override;
@@ -896,9 +896,6 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   gles2::GLES2Util util_;
 
-  // An optional behaviour to lose the context when OOM.
-  bool lose_context_when_out_of_memory_ = false;
-
   std::unique_ptr<gles2::GPUTracer> gpu_tracer_;
   static constexpr int gpu_trace_level_ = 2;
   bool gpu_trace_commands_ = false;
@@ -1053,8 +1050,7 @@ base::WeakPtr<DecoderContext> RasterDecoderImpl::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-ContextResult RasterDecoderImpl::Initialize(
-    bool lose_context_when_out_of_memory) {
+ContextResult RasterDecoderImpl::Initialize() {
   TRACE_EVENT0("gpu", "RasterDecoderImpl::Initialize");
   DCHECK(shared_context_state_->IsCurrent(nullptr));
 
@@ -1069,8 +1065,6 @@ ContextResult RasterDecoderImpl::Initialize(
   // Create GPU Tracer for timing values.
   gpu_tracer_ = std::make_unique<gles2::GPUTracer>(
       this, shared_context_state_->GrContextIsGL());
-
-  lose_context_when_out_of_memory_ = lose_context_when_out_of_memory;
 
   CHECK_GL_ERROR();
 
@@ -1684,7 +1678,7 @@ void RasterDecoderImpl::OnContextLostError() {
 }
 
 void RasterDecoderImpl::OnOutOfMemoryError() {
-  if (lose_context_when_out_of_memory_ && !WasContextLost()) {
+  if (!WasContextLost()) {
     if (!shared_context_state_->CheckResetStatus(/*needs_gl=*/false)) {
       MarkContextLost(error::kOutOfMemory);
     }

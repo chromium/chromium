@@ -296,8 +296,7 @@ class RasterDecoderOOPTest : public testing::Test, public DecoderClient {
         this, command_buffer_service_.get(), &outputter_, gpu_feature_info_,
         GpuPreferences(), /*memory_tracker=*/nullptr, &shared_image_manager_,
         context_state_, /*is_privileged=*/true);
-    CHECK_EQ(decoder->Initialize(/*lose_context_when_out_of_memory=*/false),
-             ContextResult::kSuccess);
+    CHECK_EQ(decoder->Initialize(), ContextResult::kSuccess);
     return decoder;
   }
 
@@ -1247,8 +1246,7 @@ TEST_F(RasterDecoderOOPTest, MakeCurrentAndDestroyWithGrContextTypeNone) {
       this, &command_buffer_service, &outputter_, gpu_feature_info_,
       GpuPreferences(), /*memory_tracker=*/nullptr, &shared_image_manager_,
       none_context_state, /*is_privileged=*/true);
-  ASSERT_EQ(decoder->Initialize(/*lose_context_when_out_of_memory=*/false),
-            ContextResult::kSuccess);
+  ASSERT_EQ(decoder->Initialize(), ContextResult::kSuccess);
 
   // Simulate another GL context becoming current on the thread before
   // RasterDecoder is destroyed.

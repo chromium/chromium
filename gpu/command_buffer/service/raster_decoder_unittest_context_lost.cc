@@ -27,7 +27,6 @@ class RasterDecoderOOMTest : public RasterDecoderManualInitTest {
   void Init(bool has_robustness) {
     InitState init;
     init.gl_version = "OpenGL ES 3.0";
-    init.lose_context_when_out_of_memory = true;
     if (has_robustness) {
       init.extensions.push_back("GL_EXT_robustness");
     }
