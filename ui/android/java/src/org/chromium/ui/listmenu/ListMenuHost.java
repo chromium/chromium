@@ -11,6 +11,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.PopupWindow;
@@ -71,6 +72,7 @@ public class ListMenuHost
     private final View mView;
     private final boolean mMenuVerticalOverlapAnchor;
     private final boolean mMenuHorizontalOverlapAnchor;
+    private final OnClickListener mHostClickListener = (view) -> showMenu();
 
     private int mMenuMaxWidth;
     private int mMenuMaxHeight;
@@ -83,6 +85,7 @@ public class ListMenuHost
     private final ObserverList<PopupMenuShownListener> mPopupListeners = new ObserverList<>();
     private boolean mTryToFitLargestItem;
     private boolean mKeepSoftInputVisible;
+    private boolean mHasHostClickListener;
     private final boolean mPositionedAtStart;
     private final boolean mPositionedAtEnd;
 
@@ -136,14 +139,21 @@ public class ListMenuHost
      * responses. The menu will not show or work without the delegate.
      *
      * @param delegate The {@link ListMenuDelegate} to use for menu creation and selection handling.
-     * @param overrideOnClickListener Whether to override the click listener which can trigger the
-     *     popup menu.
+     * @param overrideOnClickListener Whether to override the click listener on the anchor view to
+     *     trigger the popup menu. When {@code true}, asserts that the anchor view does not already
+     *     have an external {@link OnClickListener} set; pass {@code false} or clear the listener
+     *     first when managing clicks externally. Only {@link ListMenuButton} anchors track listener
+     *     changes made after the host installs its own listener.
      */
     public void setDelegate(@Nullable ListMenuDelegate delegate, boolean overrideOnClickListener) {
         dismiss();
         mDelegate = delegate;
         if (overrideOnClickListener) {
-            mView.setOnClickListener((view) -> showMenu());
+            assert !mView.hasOnClickListeners() || mHasHostClickListener
+                    : "Cannot override external OnClickListener; pass"
+                            + " overrideOnClickListener=false.";
+            mHasHostClickListener = true;
+            mView.setOnClickListener(mHostClickListener);
         }
     }
 
@@ -456,6 +466,11 @@ public class ListMenuHost
      */
     public HierarchicalMenuController<AnchoredPopupWindow> getHierarchicalMenuController() {
         return getHierarchicalMenuControllerInternal();
+    }
+
+    // Updates click-listener ownership when a ListMenuButton's OnClickListener changes.
+    /* package */ void onClickListenerSet(@Nullable OnClickListener listener) {
+        mHasHostClickListener = listener == mHostClickListener;
     }
 
     public static void setMenuChangedListenerForTesting(PopupMenuHelper listener) {

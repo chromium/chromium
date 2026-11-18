@@ -191,7 +191,7 @@ public class ExtensionsMenuCoordinator
                         return MenuBuilderHelper.getRectProvider(mExtensionsMenuButton);
                     }
                 },
-                /* overrideOnClickListener= */ true);
+                /* overrideOnClickListener= */ false);
 
         // Menu mediator is created when menu is triggered.
         mExtensionsMenuButton.setOnClickListener(

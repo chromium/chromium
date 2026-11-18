@@ -176,7 +176,7 @@ public class RecentActivityListCoordinator {
 
             menuView.setMenuMaxWidth(
                     view.getResources().getDimensionPixelSize(R.dimen.recent_activity_menu_width));
-            menuView.setDelegate(listMenuDelegate);
+            menuView.setDelegate(listMenuDelegate, /* overrideOnClickListener= */ false);
             menuView.tryToFitLargestItem(true);
             menuView.showMenu();
         };

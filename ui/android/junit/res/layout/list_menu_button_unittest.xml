@@ -34,4 +34,12 @@ found in the LICENSE file.
       android:src="@android:drawable/btn_default"
       app:menuPositionedAtEnd="true" />
 
+  <org.chromium.ui.listmenu.ListMenuButton
+      android:id="@+id/button_with_on_click"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:background="@null"
+      android:onClick="onClickHandler"
+      android:src="@android:drawable/btn_default" />
+
 </LinearLayout>

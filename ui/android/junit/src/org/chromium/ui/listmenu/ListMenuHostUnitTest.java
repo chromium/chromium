@@ -4,6 +4,7 @@
 
 package org.chromium.ui.listmenu;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -32,6 +33,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.ui.R;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.widget.AnchoredPopupWindow;
@@ -198,6 +200,79 @@ public class ListMenuHostUnitTest {
                 "Popup menu should have content view from ViewBuilder with non-Activity context",
                 mSpyPopupMenu.getContentView());
         dismissMenu(button);
+    }
+
+    @Test
+    public void testSetDelegate_withExternalClickListenerOnPlainView_asserts() {
+        // Attach an external click listener to a plain View before binding ListMenuHost.
+        View anchorView = new View(mActivity);
+        anchorView.setOnClickListener(v -> {});
+        ListMenuHost host = new ListMenuHost(anchorView, /* attrs= */ null);
+
+        // Verify that requesting click-listener override asserts instead of clobbering it.
+        assertThrows(
+                AssertionError.class,
+                () -> host.setDelegate(mMenuDelegate, /* overrideOnClickListener= */ true));
+    }
+
+    @Test
+    public void testSetDelegate_withoutOverridingExternalClickListenerOnPlainView_keepsListener() {
+        // Attach an external click listener to a plain View and bind with override disabled.
+        CallbackHelper externalClickHelper = new CallbackHelper();
+        View anchorView = new View(mActivity);
+        anchorView.setOnClickListener(v -> externalClickHelper.notifyCalled());
+        ListMenuHost host = new ListMenuHost(anchorView, /* attrs= */ null);
+        host.setDelegate(mMenuDelegate, /* overrideOnClickListener= */ false);
+
+        // Verify clicking the view still invokes the external listener and does not open the menu.
+        anchorView.performClick();
+        assertEquals(1, externalClickHelper.getCallCount());
+        assertFalse(host.isMenuShowing());
+    }
+
+    @Test
+    public void testSetDelegate_calledRepeatedlyWithOverrideOnPlainView_doesNotAssert() {
+        // Attach a plain View to the activity window and bind the host delegate twice with
+        // override enabled.
+        View anchorView = new View(mActivity);
+        ((FrameLayout) mActivity.findViewById(android.R.id.content)).addView(anchorView);
+        ListMenuHost host = new ListMenuHost(anchorView, /* attrs= */ null);
+        host.setDelegate(mMenuDelegate, /* overrideOnClickListener= */ true);
+        host.setDelegate(mMenuDelegate, /* overrideOnClickListener= */ true);
+
+        // Verify the host recognizes its own click listener and opens the menu on click.
+        anchorView.performClick();
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(host.isMenuShowing());
+        host.dismiss();
+    }
+
+    @Test
+    public void testSetDelegate_afterClearingClickListenerOnPlainView_doesNotAssert() {
+        // Set and then clear an external click listener on a plain View before binding.
+        View anchorView = new View(mActivity);
+        anchorView.setOnClickListener(v -> {});
+        anchorView.setOnClickListener(null);
+        ListMenuHost host = new ListMenuHost(anchorView, /* attrs= */ null);
+
+        // Verify binding with override succeeds both initially and after clearing again.
+        host.setDelegate(mMenuDelegate, /* overrideOnClickListener= */ true);
+        anchorView.setOnClickListener(null);
+        host.setDelegate(mMenuDelegate, /* overrideOnClickListener= */ true);
+        assertTrue(anchorView.hasOnClickListeners());
+    }
+
+    @Test
+    public void testSetDelegate_nullDelegateWithOverrideOnPlainView_doesNotAssert() {
+        // Bind a valid delegate with override, clear the delegate with override, then rebind.
+        View anchorView = new View(mActivity);
+        ListMenuHost host = new ListMenuHost(anchorView, /* attrs= */ null);
+        host.setDelegate(mMenuDelegate, /* overrideOnClickListener= */ true);
+        host.setDelegate(/* delegate= */ null, /* overrideOnClickListener= */ true);
+        host.setDelegate(mMenuDelegate, /* overrideOnClickListener= */ true);
+
+        // Verify none of the transitions asserted and the host listener remains installed.
+        assertTrue(anchorView.hasOnClickListeners());
     }
 
     private void showMenuForButton(ListMenuButton button) {

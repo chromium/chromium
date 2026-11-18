@@ -64,8 +64,10 @@ public class ListMenuButton extends ChromeImageButton {
 
     /**
      * Sets the delegate this menu will rely on for populating the popup menu and handling selection
-     * responses. The OnClickListener will be overridden by default to show menu. The menu will not
-     * show or work without the delegate.
+     * responses. Overrides the {@link OnClickListener} to show the menu and asserts that no
+     * external {@link OnClickListener} is already set; use {@link #setDelegate(ListMenuDelegate,
+     * boolean)} with {@code false} when a custom click listener is used. The menu will not show or
+     * work without the delegate.
      *
      * @param delegate The {@link ListMenuDelegate} to use for menu creation and selection handling.
      */
@@ -79,7 +81,8 @@ public class ListMenuButton extends ChromeImageButton {
      *
      * @param delegate The {@link ListMenuDelegate} to use for menu creation and selection handling.
      * @param overrideOnClickListener Whether to override the click listener which can trigger the
-     *     popup menu.
+     *     popup menu. When {@code true}, asserts that no external {@link OnClickListener} is
+     *     already set.
      */
     public void setDelegate(@Nullable ListMenuDelegate delegate, boolean overrideOnClickListener) {
         mListMenuHost.setDelegate(delegate, overrideOnClickListener);
@@ -234,6 +237,16 @@ public class ListMenuButton extends ChromeImageButton {
             return performLongClick();
         }
         return super.onGenericMotionEvent(event);
+    }
+
+    @Override
+    public void setOnClickListener(@Nullable OnClickListener listener) {
+        super.setOnClickListener(listener);
+        // May be invoked from View's constructor (e.g. XML android:onClick) before mListMenuHost
+        // is initialized.
+        if (mListMenuHost != null) {
+            mListMenuHost.onClickListenerSet(listener);
+        }
     }
 
     public void setAttachedToWindowForTesting() {

@@ -169,11 +169,14 @@ public class RecentActivityListCoordinatorUnitTest {
 
     @Test
     public void testMenuButtonClick_DoesNotCrash() {
+        // Click the recent activity menu button twice to verify neither click trips ListMenuHost's
+        // external click-listener assert or crashes.
         mCoordinator.requestShowUI();
         View contentView = mBottomSheetContentCaptor.getValue().getContentView();
         mActivity.setContentView(contentView);
         View menuButton = contentView.findViewById(R.id.recent_activity_menu_button);
         Assert.assertNotNull(menuButton);
+        menuButton.performClick();
         menuButton.performClick();
     }
 }
