@@ -166,8 +166,9 @@ chromium-metrics-reviews@google.com.
     process for an execution provider that compiles into an EPContext model
     (defense-in-depth at the Compiler-to-GPU trust boundary). Emitted once per
     validated model, whether it is accepted or rejected. A model is accepted
-    only if it carries at most one node, which must be an EPContext node; it has
-    no nodes when constant folding reduces the whole graph to initializers.
+    only if it carries at most one node, which must be an EPContext node that
+    sets embed_mode to 1; it has no nodes when constant folding reduces the
+    whole graph to initializers.
   </summary>
 </histogram>
 

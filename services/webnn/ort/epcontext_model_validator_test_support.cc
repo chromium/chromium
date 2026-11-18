@@ -41,7 +41,10 @@ void AppendStrField(Bytes& out, uint32_t field, std::string_view text) {
   AppendLenField(out, field, base::as_byte_span(text));
 }
 
-Bytes BuildAttribute(std::string_view name, base::span<const uint8_t> value) {
+}  // namespace
+
+Bytes BuildStringAttribute(std::string_view name,
+                           base::span<const uint8_t> value) {
   Bytes attr;
   AppendStrField(attr, /*field=*/1, name);  // name
   AppendTag(attr, /*field=*/20, /*wire=*/0);
@@ -50,22 +53,40 @@ Bytes BuildAttribute(std::string_view name, base::span<const uint8_t> value) {
   return attr;
 }
 
-}  // namespace
+Bytes BuildIntAttribute(std::string_view name,
+                        std::optional<int64_t> value,
+                        bool with_type) {
+  Bytes attr;
+  AppendStrField(attr, /*field=*/1, name);  // name
+  if (with_type) {
+    AppendTag(attr, /*field=*/20, /*wire=*/0);
+    AppendVarint(attr, 2);  // type = INT
+  }
+  if (value.has_value()) {
+    AppendTag(attr, /*field=*/3, /*wire=*/0);  // i
+    AppendVarint(attr, static_cast<uint64_t>(*value));
+  }
+  return attr;
+}
 
-Bytes BuildNode(std::string_view op_type, std::string_view domain) {
+Bytes BuildNode(std::string_view op_type,
+                std::string_view domain,
+                const std::vector<Bytes>& attributes) {
   Bytes node;
   AppendStrField(node, /*field=*/4, op_type);  // op_type
   AppendStrField(node, /*field=*/7, domain);   // domain
+  for (const Bytes& attr : attributes) {
+    AppendLenField(node, /*field=*/5, attr);  // attribute
+  }
   return node;
 }
 
 Bytes BuildEpContextNode(base::span<const uint8_t> blob) {
-  Bytes node = BuildNode("EPContext", "com.microsoft");
+  std::vector<Bytes> attributes = {BuildIntAttribute("embed_mode", 1)};
   if (!blob.empty()) {
-    Bytes attr = BuildAttribute("ep_cache_context", blob);
-    AppendLenField(node, /*field=*/5, attr);  // attribute
+    attributes.push_back(BuildStringAttribute("ep_cache_context", blob));
   }
-  return node;
+  return BuildNode("EPContext", "com.microsoft", attributes);
 }
 
 Bytes BuildGraph(const std::vector<Bytes>& nodes) {

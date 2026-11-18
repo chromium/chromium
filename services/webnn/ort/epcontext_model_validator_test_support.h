@@ -6,6 +6,7 @@
 #define SERVICES_WEBNN_ORT_EPCONTEXT_MODEL_VALIDATOR_TEST_SUPPORT_H_
 
 #include <cstdint>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -18,11 +19,24 @@ namespace webnn::ort {
 
 using Bytes = std::vector<uint8_t>;
 
-// Builds a NodeProto with the given op_type and domain and no attributes.
-Bytes BuildNode(std::string_view op_type, std::string_view domain);
+// Builds a STRING AttributeProto.
+Bytes BuildStringAttribute(std::string_view name,
+                           base::span<const uint8_t> value);
 
-// Builds an EPContext (com.microsoft) NodeProto, optionally carrying an
-// `ep_cache_context` attribute with the given blob bytes.
+// Builds an INT AttributeProto. `i` is omitted if `value` is std::nullopt, and
+// `type` is omitted if `with_type` is false.
+Bytes BuildIntAttribute(std::string_view name,
+                        std::optional<int64_t> value,
+                        bool with_type = true);
+
+// Builds a NodeProto with the given op_type, domain and attributes.
+Bytes BuildNode(std::string_view op_type,
+                std::string_view domain,
+                const std::vector<Bytes>& attributes = {});
+
+// Builds an EPContext (com.microsoft) NodeProto with `embed_mode` set to 1,
+// optionally carrying an `ep_cache_context` attribute with the given blob
+// bytes.
 Bytes BuildEpContextNode(base::span<const uint8_t> blob = {});
 
 // Builds a GraphProto containing the given nodes verbatim.

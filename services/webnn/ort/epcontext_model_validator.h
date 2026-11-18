@@ -28,7 +28,8 @@ enum class EpContextModelResult {
   kDuplicateGraph = 3,
   kNonEpContextNode = 4,
   kWrongNodeCount = 5,
-  kMaxValue = kWrongNodeCount,
+  kBadEmbedMode = 6,
+  kMaxValue = kBadEmbedMode,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webnn/enums.xml:WebNNOrtEpContextModelResult)
 
@@ -41,12 +42,14 @@ enum class EpContextModelResult {
 // reduces the whole graph to initializers; the outputs are then returned
 // straight from those initializers and no kernel runs. This parses the ONNX
 // envelope and confirms that shape, rejecting any model with several nodes, a
-// stray non-EPContext node, or malformed protobuf.
+// stray non-EPContext node, or malformed protobuf. The node must also set
+// `embed_mode` to 1, so that the EP never treats `ep_cache_context` as a file
+// path.
 //
 // The node's blob is intentionally not inspected here: the execution provider
 // and its backend validate its contents. This structural check just ensures
 // the Compiler cannot smuggle extra ONNX nodes past the boundary for ORT to
-// run.
+// run, or make the EP open a file through `ep_cache_context`.
 COMPONENT_EXPORT(WEBNN_SERVICE)
 EpContextModelResult ValidateEpContextModel(
     base::span<const uint8_t> model_data);

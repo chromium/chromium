@@ -32,9 +32,17 @@ namespace {
 
 constexpr std::string_view kHistogramName = "WebNN.ORT.EpContextModelResult";
 
-// The validator only checks the ONNX graph shape: at most one node, which must
-// be an EPContext (com.microsoft) node. The node's blob is left to the
-// execution provider to validate, so its contents are irrelevant here.
+// Validates a model whose single EPContext node carries `attributes`.
+EpContextModelResult ValidateEpContextNodeWith(
+    const std::vector<Bytes>& attributes) {
+  return ValidateEpContextModel(
+      BuildModel({BuildNode("EPContext", "com.microsoft", attributes)}));
+}
+
+// The validator checks the ONNX graph shape: at most one node, which must be an
+// EPContext (com.microsoft) node with `embed_mode` set to 1. The node's blob is
+// left to the execution provider to validate, so its contents are irrelevant
+// here.
 
 TEST(WebNNEpContextModelValidatorTest, AcceptsEpContextNodeWithBlob) {
   // The ep_cache_context attribute is skipped, not inspected, so its bytes are
@@ -118,6 +126,63 @@ TEST(WebNNEpContextModelValidatorTest, RejectsTruncatedModel) {
   EXPECT_EQ(ValidateEpContextModel(model), EpContextModelResult::kMalformed);
 }
 
+TEST(WebNNEpContextModelValidatorTest, AcceptsEmbedModeAfterEpCacheContext) {
+  const Bytes blob = {1, 2, 3, 4};
+  EXPECT_EQ(
+      ValidateEpContextNodeWith({BuildStringAttribute("ep_cache_context", blob),
+                                 BuildIntAttribute("embed_mode", 1)}),
+      EpContextModelResult::kAccepted);
+}
+
+TEST(WebNNEpContextModelValidatorTest, RejectsMissingEmbedMode) {
+  EXPECT_EQ(ValidateEpContextNodeWith({}), EpContextModelResult::kBadEmbedMode);
+}
+
+TEST(WebNNEpContextModelValidatorTest, RejectsEmbedModeNotOne) {
+  EXPECT_EQ(ValidateEpContextNodeWith({BuildIntAttribute("embed_mode", 0)}),
+            EpContextModelResult::kBadEmbedMode);
+  EXPECT_EQ(ValidateEpContextNodeWith({BuildIntAttribute("embed_mode", 2)}),
+            EpContextModelResult::kBadEmbedMode);
+}
+
+TEST(WebNNEpContextModelValidatorTest, RejectsNonIntEmbedMode) {
+  EXPECT_EQ(ValidateEpContextNodeWith({BuildStringAttribute(
+                "embed_mode", base::as_byte_span(std::string_view("1")))}),
+            EpContextModelResult::kBadEmbedMode);
+  EXPECT_EQ(ValidateEpContextNodeWith(
+                {BuildIntAttribute("embed_mode", 1, /*with_type=*/false)}),
+            EpContextModelResult::kBadEmbedMode);
+}
+
+TEST(WebNNEpContextModelValidatorTest, RejectsEmbedModeWithoutValue) {
+  // ORT reads a missing `i` of an INT attribute as 0.
+  EXPECT_EQ(ValidateEpContextNodeWith(
+                {BuildIntAttribute("embed_mode", std::nullopt)}),
+            EpContextModelResult::kBadEmbedMode);
+}
+
+TEST(WebNNEpContextModelValidatorTest, RejectsDuplicateEmbedMode) {
+  EXPECT_EQ(ValidateEpContextNodeWith({BuildIntAttribute("embed_mode", 1),
+                                       BuildIntAttribute("embed_mode", 0)}),
+            EpContextModelResult::kBadEmbedMode);
+}
+
+TEST(WebNNEpContextModelValidatorTest, RejectsRepeatedFieldInEmbedMode) {
+  // Protobuf would keep the trailing value of each field.
+  const std::vector<Bytes> trailing_fields = {
+      {0x0A, 0x01, 'x'},   // name = "x"
+      {0xA0, 0x01, 0x03},  // type = STRING
+      {0x18, 0x00},        // i = 0
+  };
+  for (const auto& trailing_field : trailing_fields) {
+    Bytes attribute = BuildIntAttribute("embed_mode", 1);
+    attribute.insert(attribute.end(), trailing_field.begin(),
+                     trailing_field.end());
+    EXPECT_EQ(ValidateEpContextNodeWith({attribute}),
+              EpContextModelResult::kMalformed);
+  }
+}
+
 // Loads compiled models the way the GPU process does, so tests can observe the
 // pipe and the reply.
 class FakeModelLoader : public mojom::WebNNModelLoader {
@@ -189,6 +254,18 @@ TEST_F(WebNNCompiledModelLoadingTest, RejectsInvalidEpContextModel) {
               testing::StartsWith("Rejected compiled model: "));
   histogram_tester_.ExpectUniqueSample(
       kHistogramName, EpContextModelResult::kNonEpContextNode, 1);
+}
+
+TEST_F(WebNNCompiledModelLoadingTest, RejectsEpContextModelWithoutEmbedMode) {
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  EXPECT_EQ(Load(kOpenVINOExecutionProvider,
+                 BuildModel({BuildNode("EPContext", "com.microsoft")})),
+            std::nullopt);
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              testing::StartsWith("Rejected compiled model: "));
+  histogram_tester_.ExpectUniqueSample(kHistogramName,
+                                       EpContextModelResult::kBadEmbedMode, 1);
 }
 
 TEST_F(WebNNCompiledModelLoadingTest, SkipsValidationForFullGraphEp) {

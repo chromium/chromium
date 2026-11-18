@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_view_util.h"
 #include "services/webnn/public/cpp/execution_providers_info.h"
 
 // Implementation of ValidateEpContextModel; see the header for what it checks
@@ -84,9 +85,10 @@ bool ReadTag(Reader& reader, uint32_t& field, uint32_t& wire) {
   return field != 0 && field <= kMaxFieldNumber;
 }
 
-// Skips one field with the given wire type. The ONNX Model/Graph/Node messages
-// walked here only ever carry varint (wire 0) and length-delimited (wire 2)
-// fields; any other wire type (fixed32/64, groups) means malformed input.
+// Skips one field with the given wire type. The ONNX messages walked here carry
+// only varint (wire 0) and length-delimited (wire 2) fields, except FLOAT
+// attribute values (fixed32), which EPContext nodes never have. Any other wire
+// type is rejected as malformed.
 bool SkipField(Reader& reader, uint32_t wire_type) {
   if (wire_type == 0) {  // varint
     uint64_t ignored = 0;
@@ -107,37 +109,112 @@ bool SpanEquals(base::span<const uint8_t> bytes, std::string_view text) {
 constexpr uint32_t kModelProtoGraph = 7;
 constexpr uint32_t kGraphProtoNode = 1;
 constexpr uint32_t kNodeProtoOpType = 4;
+constexpr uint32_t kNodeProtoAttribute = 5;
 constexpr uint32_t kNodeProtoDomain = 7;
+constexpr uint32_t kAttributeProtoName = 1;
+constexpr uint32_t kAttributeProtoI = 3;
+constexpr uint32_t kAttributeProtoType = 20;
 
-// Returns whether `node` is an EPContext (com.microsoft) NodeProto, reading
-// only op_type and domain, or std::nullopt if it is malformed.
-//
-// TODO(crbug.com/574079183): Require an explicit `embed_mode` attribute equal
-// to 1. With embed_mode=0, `ep_cache_context` is a file path the EP opens.
-std::optional<bool> IsEpContextNode(base::span<const uint8_t> node) {
-  Reader reader(node);
-  base::span<const uint8_t> op_type;
-  base::span<const uint8_t> domain;
+// AttributeProto::AttributeType::INT.
+constexpr uint64_t kAttributeTypeInt = 2;
+
+// The AttributeProto fields needed to check an integer attribute.
+struct IntAttribute {
+  std::string_view name;
+  std::optional<uint64_t> type;
+  std::optional<uint64_t> i;
+};
+
+// Parses `attribute`, or returns std::nullopt if it is malformed. Protobuf
+// keeps the last value of a field that appears more than once; such input is
+// rejected instead, so the value read here cannot differ from the one ORT
+// reads.
+std::optional<IntAttribute> ParseIntAttribute(
+    base::span<const uint8_t> attribute) {
+  Reader reader(attribute);
+  IntAttribute result;
+  bool saw_name = false;
   while (reader.remaining() != 0) {
     uint32_t field = 0;
     uint32_t wire = 0;
     if (!ReadTag(reader, field, wire)) {
       return std::nullopt;
     }
-    if (field == kNodeProtoOpType && wire == 2) {
-      if (!ReadLengthDelimited(reader, op_type)) {
+    if (field == kAttributeProtoName && wire == 2) {
+      base::span<const uint8_t> name;
+      if (saw_name || !ReadLengthDelimited(reader, name)) {
         return std::nullopt;
       }
-    } else if (field == kNodeProtoDomain && wire == 2) {
-      if (!ReadLengthDelimited(reader, domain)) {
+      result.name = base::as_string_view(name);
+      saw_name = true;
+    } else if ((field == kAttributeProtoType || field == kAttributeProtoI) &&
+               wire == 0) {
+      std::optional<uint64_t>& value =
+          field == kAttributeProtoType ? result.type : result.i;
+      uint64_t parsed = 0;
+      if (value.has_value() || !ReadVarint(reader, parsed)) {
         return std::nullopt;
       }
+      value = parsed;
     } else if (!SkipField(reader, wire)) {
       return std::nullopt;
     }
   }
-  return SpanEquals(op_type, "EPContext") &&
-         SpanEquals(domain, "com.microsoft");
+  return result;
+}
+
+// Checks that `node` is an EPContext (com.microsoft) NodeProto with an explicit
+// `embed_mode` of 1. Otherwise the EP may open `ep_cache_context` as a file
+// path.
+EpContextModelResult ValidateEpContextNode(base::span<const uint8_t> node) {
+  Reader reader(node);
+  base::span<const uint8_t> op_type;
+  base::span<const uint8_t> domain;
+  bool saw_embed_mode = false;
+  bool embed_mode_is_one = false;
+  while (reader.remaining() != 0) {
+    uint32_t field = 0;
+    uint32_t wire = 0;
+    if (!ReadTag(reader, field, wire)) {
+      return EpContextModelResult::kMalformed;
+    }
+    if (field == kNodeProtoOpType && wire == 2) {
+      if (!ReadLengthDelimited(reader, op_type)) {
+        return EpContextModelResult::kMalformed;
+      }
+    } else if (field == kNodeProtoDomain && wire == 2) {
+      if (!ReadLengthDelimited(reader, domain)) {
+        return EpContextModelResult::kMalformed;
+      }
+    } else if (field == kNodeProtoAttribute && wire == 2) {
+      base::span<const uint8_t> bytes;
+      if (!ReadLengthDelimited(reader, bytes)) {
+        return EpContextModelResult::kMalformed;
+      }
+      std::optional<IntAttribute> attribute = ParseIntAttribute(bytes);
+      if (!attribute.has_value()) {
+        return EpContextModelResult::kMalformed;
+      }
+      if (attribute->name == "embed_mode") {
+        if (saw_embed_mode) {
+          return EpContextModelResult::kBadEmbedMode;
+        }
+        saw_embed_mode = true;
+        embed_mode_is_one =
+            attribute->type == kAttributeTypeInt && attribute->i == 1u;
+      }
+    } else if (!SkipField(reader, wire)) {
+      return EpContextModelResult::kMalformed;
+    }
+  }
+  if (!SpanEquals(op_type, "EPContext") ||
+      !SpanEquals(domain, "com.microsoft")) {
+    return EpContextModelResult::kNonEpContextNode;
+  }
+  if (!embed_mode_is_one) {
+    return EpContextModelResult::kBadEmbedMode;
+  }
+  return EpContextModelResult::kAccepted;
 }
 
 // Walks a GraphProto, counting its nodes. Any node that is not an EPContext
@@ -161,12 +238,9 @@ EpContextModelResult ParseGraph(base::span<const uint8_t> graph,
       if (!ReadLengthDelimited(reader, node)) {
         return EpContextModelResult::kMalformed;
       }
-      std::optional<bool> is_ep_context = IsEpContextNode(node);
-      if (!is_ep_context.has_value()) {
-        return EpContextModelResult::kMalformed;
-      }
-      if (!*is_ep_context) {
-        return EpContextModelResult::kNonEpContextNode;
+      EpContextModelResult node_result = ValidateEpContextNode(node);
+      if (node_result != EpContextModelResult::kAccepted) {
+        return node_result;
       }
       ++node_count;
     } else if (!SkipField(reader, wire)) {
@@ -190,6 +264,8 @@ std::string_view ResultToString(EpContextModelResult result) {
       return "non-EPContext node";
     case EpContextModelResult::kWrongNodeCount:
       return "expected at most one EPContext node";
+    case EpContextModelResult::kBadEmbedMode:
+      return "EPContext node must set embed_mode to 1";
   }
   NOTREACHED();
 }

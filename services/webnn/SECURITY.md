@@ -48,6 +48,8 @@ the EP's precompiled blob, and the validator
 - It must contain exactly one graph.
 - The graph must contain at most one node.
 - That node, if present, must be an EPContext (`com.microsoft`) node.
+- That node must set `embed_mode` to 1, so the execution provider never
+  treats `ep_cache_context` as a file path.
 
 A graph with no nodes is expected when every output depends only on
 constants: ORT's constant folding, run in the Compiler before graph
@@ -60,10 +62,11 @@ including constant folding, stay disabled in the GPU process.
 This is intentional. A model of this shape passing straight through the
 validator is the expected outcome, not a gap. The check exists only to
 stop a compromised Compiler from smuggling extra ONNX nodes past the
-boundary for ORT to run in the GPU process. The EPContext node's opaque
-blob is deliberately not parsed here; it is in a vendor-specific format,
-and validating it is the responsibility of the execution provider and
-its backend.
+boundary for ORT to run in the GPU process, or from making the execution
+provider open a file through `ep_cache_context`. The EPContext node's
+opaque blob is deliberately not parsed here; it is in a vendor-specific
+format, and validating it is the responsibility of the execution
+provider and its backend.
 
 Validation is per execution provider, selected by `compiled_model_format`
 in `public/cpp/execution_providers_info.h`. Only execution providers
