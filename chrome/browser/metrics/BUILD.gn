@@ -208,7 +208,7 @@ source_set("metrics") {
     ]
   }
 
-  if (is_linux || is_win || is_mac || is_chromeos) {
+  if (is_linux || is_win || is_mac || is_chromeos || is_android) {
     public += [ "structured/chrome_structured_metrics_delegate.h" ]
     public_deps += [
       "//components/metrics/structured:events",
@@ -501,7 +501,7 @@ source_set("impl") {
     ]
   }
 
-  if (is_linux || is_win || is_mac || is_chromeos) {
+  if (is_linux || is_win || is_mac || is_chromeos || is_android) {
     sources += [ "structured/chrome_structured_metrics_delegate.cc" ]
   }
 

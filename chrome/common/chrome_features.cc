@@ -186,8 +186,16 @@ BASE_FEATURE(kPreinstalledWebAppAlwaysMigrateForTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Controls the enablement of structured metrics on Windows, Linux, and Mac.
-BASE_FEATURE(kChromeStructuredMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
+// Controls the enablement of structured metrics on Windows, Linux, Mac, and
+// Android. Disabled by default on Android while it is being rolled out there;
+// enabled everywhere else.
+BASE_FEATURE(kChromeStructuredMetrics,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Enables the chrome://craft page.

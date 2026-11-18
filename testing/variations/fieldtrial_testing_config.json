@@ -5007,6 +5007,21 @@
             ]
         }
     ],
+    "ChromeStructuredMetricsAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ChromeStructuredMetrics"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeWallpaperSearchLaunch": [
         {
             "platforms": [

@@ -597,7 +597,7 @@ void ChromeMetricsServiceClient::RegisterPrefs(PrefRegistrySimple* registry) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_MAC)
+    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   metrics::structured::StructuredMetricsService::RegisterPrefs(registry);
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -605,7 +605,7 @@ void ChromeMetricsServiceClient::RegisterPrefs(PrefRegistrySimple* registry) {
       registry);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
-        // \ BUILDFLAG(IS_MAC)
+        // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -793,7 +793,7 @@ void ChromeMetricsServiceClient::Initialize() {
         this, local_state, g_browser_process->shared_url_loader_factory());
   }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   metrics::structured::Recorder::GetInstance()->SetUiTaskRunner(
       base::SequencedTaskRunner::GetCurrentDefault());
 #endif
@@ -1736,7 +1736,8 @@ void ChromeMetricsServiceClient::CreateStructuredMetricsService() {
   recorder =
       std::make_unique<metrics::structured::AshStructuredMetricsRecorder>(
           cros_system_profile_provider_.get());
-#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_ANDROID)
 
   // Make sure that Structured Metrics recording delegates have been created
   // before the service is created. This is handled in other places for ChromeOS
@@ -1750,8 +1751,9 @@ void ChromeMetricsServiceClient::CreateStructuredMetricsService() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Only create the Structured Metrics Service if there is a recorder. It will
-  // not be created on Windows, Mac, and Linux if the kChromeStructuredMetrics
-  // feature is disabled. It will always be created on ChromeOS.
+  // not be created on Windows, Mac, Linux, and Android if the
+  // kChromeStructuredMetrics feature is disabled. It will always be created on
+  // ChromeOS.
   if (recorder) {
     structured_metrics_service_ =
         std::make_unique<metrics::structured::StructuredMetricsService>(

@@ -16,7 +16,7 @@ source_set("structured") {
 
   if (is_chromeos) {
     deps += [ "//components/metrics/structured:external_metrics" ]
-  } else if (is_win || is_linux || is_mac) {
+  } else if (is_win || is_linux || is_mac || is_android) {
     sources += [
       "chrome_event_storage.cc",
       "chrome_event_storage.h",
@@ -45,7 +45,7 @@ static_library("test_support") {
   ]
 }
 
-if (is_win || is_linux || is_mac) {
+if (is_win || is_linux || is_mac || is_android) {
   source_set("unit_tests") {
     testonly = true
 
