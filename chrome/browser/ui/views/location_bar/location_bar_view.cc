@@ -515,7 +515,6 @@ void LocationBarView::Init() {
       .between_icon_spacing = kBetweenIconSpacing,
       .icon_label_bubble_delegate = this,
       .font_list = page_action_font_list,
-      .should_bridge_containers = false,
       .hide_icon_on_space_constraint = false};
   page_action_container_ =
       AddChildView(std::make_unique<page_actions::PageActionContainerView>(

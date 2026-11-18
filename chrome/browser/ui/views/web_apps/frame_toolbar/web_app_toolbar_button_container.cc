@@ -221,9 +221,6 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
       .icon_insets = PageActionIconInsetsFromSize(page_action_icon_size),
       .between_icon_spacing = page_action_between_icon_spacing,
       .icon_label_bubble_delegate = this,
-      // The toolbar button container already sets spacing between child
-      // views.
-      .should_bridge_containers = false,
       // On space constraint, the page action should get hidden.
       .hide_icon_on_space_constraint = true,
   };

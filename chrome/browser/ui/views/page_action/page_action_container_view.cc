@@ -54,11 +54,11 @@ PageActionContainerView::PageActionContainerView(
   layout_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
   // Add `params.between_icon_spacing` dip after each child, except for the last
-  // item, unless we need to bridge this container with icons to the right.
+  // item.
   layout_
       ->SetDefault(views::kMarginsKey,
                    gfx::Insets().set_right(params.between_icon_spacing))
-      .SetIgnoreDefaultMainAxisMargins(!params.should_bridge_containers);
+      .SetIgnoreDefaultMainAxisMargins(true);
 
   size_t initial_index = 0;
   for (actions::ActionItem* action_item : action_items) {
