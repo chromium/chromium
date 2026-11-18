@@ -49,7 +49,9 @@ class View;
 
 // TabStripCollectionController provides APIs for the views to integrate with
 // rest of the browser.
-class TabStripCollectionController : public TabContextMenuController::Delegate {
+class TabStripCollectionController
+    : public TabContextMenuController::Delegate,
+      public TabCollectionAnimatingLayoutManager::Controller {
  public:
   TabStripCollectionController(TabStripModel* model,
                                BrowserView* browser_view,
@@ -174,7 +176,11 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   [[nodiscard]] base::AutoReset<bool> ScopedAnimateLayout();
-  bool ShouldAnimateLayout() const;
+
+  // TabCollectionAnimatingLayoutManager::Controller:
+  bool IsDragging() const override;
+  bool IsViewDragging(const views::View& child_view) const override;
+  bool ShouldAnimateLayout() const override;
 
  private:
   // TabContextMenuController::Delegate:

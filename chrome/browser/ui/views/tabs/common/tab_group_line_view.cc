@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_collection_z_order_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
@@ -174,7 +175,12 @@ SkPath TabGroupLineView::GetOffsetOverlinePath(const TabView& tab_view,
 
 bool TabGroupLineView::IsViewDragging(const views::View* view) const {
   CHECK(view);
-  return tab_group_view_->IsViewDragging(*view);
+  if (!tab_group_view_->collection_node() ||
+      !tab_group_view_->collection_node()->GetController()) {
+    return false;
+  }
+  return tab_group_view_->collection_node()->GetController()->IsViewDragging(
+      *view);
 }
 
 std::optional<SkPath> TabGroupLineView::GetActiveTabOverlinePath(

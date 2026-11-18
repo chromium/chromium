@@ -98,13 +98,10 @@ class TabGroupView : public TabCollectionZOrderManager,
   HorizontalTabClosingHelper* GetTabClosingHelper() const override;
 
   // TabCollectionAnimatingLayoutManager::Delegate:
-  bool IsDragging() const override;
-  bool IsViewDragging(const views::View& child_view) const override;
   bool ShouldAnimateOpacityForAddAndRemove(
       const views::View& child_view) const override;
   bool ShouldSnapToTarget(const views::View& child_view) const override;
   void OnAnimationEnded() override;
-  bool ShouldAnimateLayout() override;
 
   bool IsCollapsed() const;
 

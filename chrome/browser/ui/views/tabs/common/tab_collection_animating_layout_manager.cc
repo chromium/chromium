@@ -131,15 +131,6 @@ void SortChildLayoutsByMidpointX(
 
 }  // namespace
 
-bool TabCollectionAnimatingLayoutManager::Delegate::IsDragging() const {
-  return false;
-}
-
-bool TabCollectionAnimatingLayoutManager::Delegate::IsViewDragging(
-    const views::View& child_view) const {
-  return false;
-}
-
 bool TabCollectionAnimatingLayoutManager::Delegate::ShouldSnapToTarget(
     const views::View& child_view) const {
   return false;
@@ -151,10 +142,6 @@ bool TabCollectionAnimatingLayoutManager::Delegate::
 }
 
 void TabCollectionAnimatingLayoutManager::Delegate::OnAnimationEnded() {}
-
-bool TabCollectionAnimatingLayoutManager::Delegate::ShouldAnimateLayout() {
-  return true;
-}
 
 TabCollectionAnimatingLayoutManager::AnimationCoordinator::AnimationCoordinator(
     views::View& view)
@@ -304,11 +291,13 @@ bool TabCollectionAnimatingLayoutManager::AnimationCoordinator::
 TabCollectionAnimatingLayoutManager::TabCollectionAnimatingLayoutManager(
     std::unique_ptr<LayoutManagerBase> target_layout_manager,
     Delegate& delegate,
+    Controller& controller,
     AnimationCoordinator& animation_coordinator,
     AnimationAxis animation_axis,
     bool animate_host_size)
     : target_layout_manager_(
           CHECK_DEREF(AddOwnedLayout(std::move(target_layout_manager)))),
+      controller_(controller),
       animation_coordinator_(animation_coordinator),
       delegate_(delegate),
       animation_axis_(animation_axis),
@@ -325,7 +314,7 @@ bool TabCollectionAnimatingLayoutManager::OnViewAdded(views::View* host,
   // Do not attempt to animate opacity for views reparented from another
   // collection.
   if (!view->GetProperty(kPreviousCollectionBounds) &&
-      !delegate_->IsViewDragging(*view) &&
+      !controller_->IsViewDragging(*view) &&
       delegate_->ShouldAnimateOpacityForAddAndRemove(*view)) {
     // Added views should animate opacity from invisible to fully opaque.
     AcquireLayoutAnimationLayer(view);
@@ -362,7 +351,7 @@ gfx::Size TabCollectionAnimatingLayoutManager::GetPreferredSize(
   // layout manager.
   gfx::Size target_preferred_size =
       target_layout_manager_->GetPreferredSize(host);
-  if (animate_host_size_ && is_animating_ && !delegate_->IsDragging()) {
+  if (animate_host_size_ && is_animating_ && !controller_->IsDragging()) {
     if (IsVerticalOrWrappingVertically()) {
       target_preferred_size.set_height(current_layout_content_size_);
     } else {
@@ -383,7 +372,7 @@ gfx::Size TabCollectionAnimatingLayoutManager::GetPreferredSize(
   // layout manager.
   gfx::Size target_preferred_size =
       target_layout_manager_->GetPreferredSize(host, available_size);
-  if (animate_host_size_ && is_animating_ && !delegate_->IsDragging()) {
+  if (animate_host_size_ && is_animating_ && !controller_->IsDragging()) {
     if (IsVerticalOrWrappingVertically()) {
       target_preferred_size.set_height(current_layout_content_size_);
     } else {
@@ -703,7 +692,7 @@ bool TabCollectionAnimatingLayoutManager::RecalculateTarget() {
   const bool started_in_current_turn =
       is_animating_ && animation_coordinator_->current_offset() ==
                            animation_coordinator_->starting_offset();
-  if ((!delegate_->ShouldAnimateLayout() && !started_in_current_turn) ||
+  if ((!controller_->ShouldAnimateLayout() && !started_in_current_turn) ||
       cross_axis_changed) {
     current_layout_ = new_target;
     SetStartingLayout(new_target);
@@ -763,7 +752,7 @@ void TabCollectionAnimatingLayoutManager::AnimateAndReparentView(
   // Ensure `kPreviousCollectionBounds` metadata is set before adding
   // `view_to_reparent` to ensure view-added lifecycle hooks have the necessary
   // information to determine whether the view was reparented or newly-added.
-  if (!delegate_->IsViewDragging(*view_to_reparent) &&
+  if (!controller_->IsViewDragging(*view_to_reparent) &&
       !previous_bounds_in_screen.IsEmpty()) {
     AcquireLayoutAnimationLayer(view_to_reparent.get());
     const views::View* top_host = GetTopLevelAnimatingHostView(host_view());
@@ -801,7 +790,7 @@ TabCollectionAnimatingLayoutManager::GetHostAnimationOffsets(
   const auto* parent_layout_manager =
       GetParentAnimatingLayoutManager(host_view());
   if (!parent_layout_manager || !parent_layout_manager->is_animating_ ||
-      parent_layout_manager->delegate_->IsViewDragging(*host_view())) {
+      parent_layout_manager->controller_->IsViewDragging(*host_view())) {
     return {};
   }
   auto start_it =
@@ -876,7 +865,7 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
     if (target_it != target_view_layout_map_.end()) {
       views::ChildLayout interpolated_child = target_it->second;
 
-      if (delegate_->IsViewDragging(*child_view)) {
+      if (controller_->IsViewDragging(*child_view)) {
         // Always use the target bounds for dragging views. The drag target
         // should handle layout and animations as needed.
         // In the case a drag starts on a view mid-animation ensure it snaps to

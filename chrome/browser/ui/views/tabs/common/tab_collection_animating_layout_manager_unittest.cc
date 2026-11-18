@@ -33,16 +33,22 @@ namespace {
 class MockAnimatingLayoutManagerDelegate
     : public TabCollectionAnimatingLayoutManager::Delegate {
  public:
-  MockAnimatingLayoutManagerDelegate() {
-    ON_CALL(*this, ShouldAnimateLayout).WillByDefault(testing::Return(true));
-  }
-  MOCK_METHOD(bool, IsViewDragging, (const views::View&), (const, override));
   MOCK_METHOD(bool,
               ShouldAnimateOpacityForAddAndRemove,
               (const views::View&),
               (const, override));
   MOCK_METHOD(void, OnAnimationEnded, (), (override));
-  MOCK_METHOD(bool, ShouldAnimateLayout, (), (override));
+};
+
+class MockAnimatingLayoutManagerController
+    : public TabCollectionAnimatingLayoutManager::Controller {
+ public:
+  MockAnimatingLayoutManagerController() {
+    ON_CALL(*this, ShouldAnimateLayout).WillByDefault(testing::Return(true));
+  }
+  MOCK_METHOD(bool, IsDragging, (), (const, override));
+  MOCK_METHOD(bool, IsViewDragging, (const views::View&), (const, override));
+  MOCK_METHOD(bool, ShouldAnimateLayout, (), (const, override));
 };
 
 class TestLayoutManager : public views::LayoutManagerBase {
@@ -155,11 +161,13 @@ class TabCollectionAnimatingLayoutManagerTest
     animation_coordinator_->SetView(nullptr);
     layout_manager_delegate_ = std::make_unique<
         testing::NiceMock<MockAnimatingLayoutManagerDelegate>>();
+    layout_manager_controller_ = std::make_unique<
+        testing::NiceMock<MockAnimatingLayoutManagerController>>();
     layout_manager_ = host_view_->SetLayoutManager(
         std::make_unique<TabCollectionAnimatingLayoutManager>(
             std::make_unique<TestLayoutManager>(animation_axis()),
-            *layout_manager_delegate_.get(), *animation_coordinator_,
-            animation_axis()));
+            *layout_manager_delegate_, *layout_manager_controller_,
+            *animation_coordinator_, animation_axis()));
     widget_->Show();
   }
   void TearDown() override {
@@ -167,6 +175,7 @@ class TabCollectionAnimatingLayoutManagerTest
     host_view_ = nullptr;
     widget_.reset();
     animation_coordinator_.reset();
+    layout_manager_controller_.reset();
     layout_manager_delegate_.reset();
     animation_mode_.reset();
     views::ViewsTestBase::TearDown();
@@ -182,6 +191,9 @@ class TabCollectionAnimatingLayoutManagerTest
   }
   MockAnimatingLayoutManagerDelegate* layout_manager_delegate() {
     return layout_manager_delegate_.get();
+  }
+  MockAnimatingLayoutManagerController* layout_manager_controller() {
+    return layout_manager_controller_.get();
   }
   TabCollectionAnimatingLayoutManager::AnimationCoordinator&
   animation_coordinator() {
@@ -207,6 +219,8 @@ class TabCollectionAnimatingLayoutManagerTest
       render_mode_lock_;
   std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> animation_mode_;
   std::unique_ptr<MockAnimatingLayoutManagerDelegate> layout_manager_delegate_;
+  std::unique_ptr<MockAnimatingLayoutManagerController>
+      layout_manager_controller_;
   std::unique_ptr<TabCollectionAnimatingLayoutManager::AnimationCoordinator>
       animation_coordinator_;
   std::unique_ptr<views::Widget> widget_;
@@ -272,7 +286,8 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
   // Setup the layout manager and initial child views.
   SetLayoutManager(std::make_unique<TabCollectionAnimatingLayoutManager>(
       std::make_unique<TestLayoutManager>(animation_axis()),
-      *layout_manager_delegate(), animation_coordinator(), animation_axis(),
+      *layout_manager_delegate(), *layout_manager_controller(),
+      animation_coordinator(), animation_axis(),
       /*animate_host_size=*/true));
 
   widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
@@ -358,7 +373,8 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
   auto* second_layout_manager = second_host->SetLayoutManager(
       std::make_unique<TabCollectionAnimatingLayoutManager>(
           std::make_unique<TestLayoutManager>(animation_axis()),
-          second_delegate, animation_coordinator(), animation_axis()));
+          second_delegate, *layout_manager_controller(),
+          animation_coordinator(), animation_axis()));
 
   widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
   second_host->SetBounds(0, 0, 100, 100);
@@ -434,7 +450,8 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
   auto* second_layout_manager = second_host->SetLayoutManager(
       std::make_unique<TabCollectionAnimatingLayoutManager>(
           std::make_unique<TestLayoutManager>(animation_axis()),
-          second_delegate, animation_coordinator(), animation_axis()));
+          second_delegate, *layout_manager_controller(),
+          animation_coordinator(), animation_axis()));
 
   widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
   second_host->SetBounds(0, 0, 100, 100);
@@ -498,7 +515,8 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
   second_host->SetLayoutManager(
       std::make_unique<TabCollectionAnimatingLayoutManager>(
           std::make_unique<TestLayoutManager>(animation_axis()),
-          second_delegate, animation_coordinator(), animation_axis()));
+          second_delegate, *layout_manager_controller(),
+          animation_coordinator(), animation_axis()));
 
   widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
   second_host->SetBounds(0, 0, 100, 100);
@@ -569,7 +587,8 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
   auto* group_layout_manager = group_view->SetLayoutManager(
       std::make_unique<TabCollectionAnimatingLayoutManager>(
           std::make_unique<TestLayoutManager>(animation_axis()), group_delegate,
-          animation_coordinator(), animation_axis()));
+          *layout_manager_controller(), animation_coordinator(),
+          animation_axis()));
 
   group_view->AddChildView(std::make_unique<views::View>());
   auto* stationary_tab =
@@ -652,7 +671,8 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
   auto* group_layout_manager = group_view->SetLayoutManager(
       std::make_unique<TabCollectionAnimatingLayoutManager>(
           std::make_unique<TestLayoutManager>(animation_axis()), group_delegate,
-          animation_coordinator(), animation_axis()));
+          *layout_manager_controller(), animation_coordinator(),
+          animation_axis()));
   group_view->AddChildView(std::make_unique<views::View>());
 
   host_view()->InvalidateLayout();
@@ -765,7 +785,8 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
                                   AnimationAxis::kHorizontal
               ? std::make_unique<FixedHeightTestLayoutManager>(animation_axis())
               : std::make_unique<TestLayoutManager>(animation_axis()),
-          group_delegate, animation_coordinator(), animation_axis()));
+          group_delegate, *layout_manager_controller(), animation_coordinator(),
+          animation_axis()));
   auto* header = group_view->AddChildView(std::make_unique<views::View>());
 
   const gfx::Rect previous_bounds_in_screen = leading_tab->GetBoundsInScreen();
@@ -815,7 +836,7 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest, ShouldAnimateLayout) {
   if (!IsAnimationDurationEnabled()) {
     GTEST_SKIP();
   }
-  ON_CALL(*layout_manager_delegate(), ShouldAnimateLayout)
+  ON_CALL(*layout_manager_controller(), ShouldAnimateLayout)
       .WillByDefault(testing::Return(false));
 
   widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
@@ -830,7 +851,7 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest, ShouldAnimateLayout) {
   EXPECT_FALSE(layout_manager()->is_animating());
 
   // Once `ShouldAnimateLayout()` is true, a new layout starts an animation.
-  ON_CALL(*layout_manager_delegate(), ShouldAnimateLayout)
+  ON_CALL(*layout_manager_controller(), ShouldAnimateLayout)
       .WillByDefault(testing::Return(true));
 
   host_view()->AddChildView(std::make_unique<views::View>());
@@ -921,7 +942,8 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
       std::make_unique<TabCollectionAnimatingLayoutManager>(
           std::make_unique<TestLayoutManager>(
               TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal),
-          sibling_delegate, animation_coordinator(),
+          sibling_delegate, *layout_manager_controller(),
+          animation_coordinator(),
           TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal));
   sibling_host->SetBounds(0, 0, 100, 100);
   views::test::RunScheduledLayout(sibling_host.get());
@@ -934,14 +956,15 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
   auto* group_view = host_view()->AddChildView(std::make_unique<views::View>());
   SetLayoutManager(std::make_unique<TabCollectionAnimatingLayoutManager>(
       std::make_unique<ParentContainerLayoutManager>(&target_calculation_order),
-      *layout_manager_delegate(), animation_coordinator(),
+      *layout_manager_delegate(), *layout_manager_controller(),
+      animation_coordinator(),
       TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal));
 
   auto* group_layout_manager = group_view->SetLayoutManager(
       std::make_unique<TabCollectionAnimatingLayoutManager>(
           std::make_unique<ProportionalGroupLayoutManager>(
               &target_calculation_order),
-          group_delegate, animation_coordinator(),
+          group_delegate, *layout_manager_controller(), animation_coordinator(),
           TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal));
 
   auto* child1 = group_view->AddChildView(std::make_unique<views::View>());
@@ -1100,13 +1123,13 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
   // Non-animating retarget (e.g. while a focus transition drives the layout):
   // `RecalculateTarget()` snaps via `InterpolateLayout(1.0)` and must not snap
   // the externally held layer back to opaque.
-  ON_CALL(*layout_manager_delegate(), ShouldAnimateLayout)
+  ON_CALL(*layout_manager_controller(), ShouldAnimateLayout)
       .WillByDefault(testing::Return(false));
   child->SetPreferredSize(gfx::Size(40, 40));
   widget()->LayoutRootViewIfNecessary();
   ASSERT_FALSE(layout_manager()->is_animating());
   EXPECT_EQ(child->layer()->opacity(), 0.5f);
-  ON_CALL(*layout_manager_delegate(), ShouldAnimateLayout)
+  ON_CALL(*layout_manager_controller(), ShouldAnimateLayout)
       .WillByDefault(testing::Return(true));
 
   // Animating: the child is a "moved" view for the duration of a bounds

@@ -98,21 +98,29 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase {
 
   class Delegate {
    public:
-    virtual bool IsDragging() const;
-    virtual bool IsViewDragging(const views::View& child_view) const;
     virtual bool ShouldSnapToTarget(const views::View& child_view) const;
     virtual bool ShouldAnimateOpacityForAddAndRemove(
         const views::View& child_view) const;
     virtual void OnAnimationEnded();
-    virtual bool ShouldAnimateLayout();
 
    protected:
     virtual ~Delegate() = default;
   };
 
+  class Controller {
+   public:
+    virtual bool IsDragging() const = 0;
+    virtual bool IsViewDragging(const views::View& child_view) const = 0;
+    virtual bool ShouldAnimateLayout() const = 0;
+
+   protected:
+    virtual ~Controller() = default;
+  };
+
   TabCollectionAnimatingLayoutManager(
       std::unique_ptr<LayoutManagerBase> target_layout_manager,
       Delegate& delegate,
+      Controller& controller,
       AnimationCoordinator& animation_coordinator,
       AnimationAxis animation_axis = AnimationAxis::kVertical,
       bool animate_host_size = false);
@@ -294,6 +302,10 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase {
 
   // The layout manager that defines the goal state.
   const raw_ref<LayoutManagerBase> target_layout_manager_;
+
+  // Controller providing drag and animation policy state for this layout
+  // manager.
+  const raw_ref<Controller> controller_;
 
   // Shared animation coordinator driving this layout manager.
   const raw_ref<AnimationCoordinator> animation_coordinator_;

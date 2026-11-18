@@ -69,12 +69,9 @@ class UnpinnedTabContainerView
   };
 
   // TabCollectionAnimatingLayoutManager::Delegate:
-  bool IsDragging() const override;
-  bool IsViewDragging(const views::View& child_view) const override;
   bool ShouldSnapToTarget(const views::View& child_view) const override;
   bool ShouldAnimateOpacityForAddAndRemove(
       const views::View& child_view) const override;
-  bool ShouldAnimateLayout() override;
 
   // DraggedTabsContainer:
   DraggedTabsContainer& GetTabDragTarget(

@@ -164,6 +164,7 @@ UnpinnedTabContainerView::UnpinnedTabContainerView(
                                         TabCollectionAnimatingLayoutManager>(
           CreateUnpinnedTabContainerViewLayout(orientation_),
           /*delegate=*/*this,
+          *collection_node_->GetController(),
           collection_node->GetController()->animation_coordinator(),
           /*animation_axis=*/
           orientation_ == TabStripOrientation::kHorizontal
@@ -371,21 +372,6 @@ UnpinnedTabContainerView::GetLinkDropIndex(const gfx::Point& loc_in_container) {
                                                   std::nullopt);
 }
 
-bool UnpinnedTabContainerView::IsDragging() const {
-  if (!collection_node_ || !collection_node_->GetController()) {
-    return false;
-  }
-  return GetDragHandler().IsDragging();
-}
-
-bool UnpinnedTabContainerView::IsViewDragging(
-    const views::View& child_view) const {
-  if (!collection_node_ || !collection_node_->GetController()) {
-    return false;
-  }
-  return GetDragHandler().IsViewDragging(child_view);
-}
-
 bool UnpinnedTabContainerView::ShouldAnimateOpacityForAddAndRemove(
     const views::View& child_view) const {
   if (orientation_ == TabStripOrientation::kHorizontal) {
@@ -398,13 +384,6 @@ bool UnpinnedTabContainerView::ShouldAnimateOpacityForAddAndRemove(
 bool UnpinnedTabContainerView::ShouldSnapToTarget(
     const views::View& child_view) const {
   return views::IsViewClass<SplitTabView>(&child_view);
-}
-
-bool UnpinnedTabContainerView::ShouldAnimateLayout() {
-  if (!collection_node_) {
-    return false;
-  }
-  return collection_node_->GetController()->ShouldAnimateLayout();
 }
 
 gfx::Size UnpinnedTabContainerView::GetTargetPreferredSize() const {
@@ -539,7 +518,8 @@ DraggedTabsContainer& UnpinnedTabContainerView::GetTabDragTarget(
   const views::ProposedLayout& target_layout = layout_manager_->target_layout();
   const bool is_horizontal = orientation_ == TabStripOrientation::kHorizontal;
   for (const views::ChildLayout& layout : target_layout.child_layouts) {
-    if (!layout.visible || IsViewDragging(*layout.child_view)) {
+    if (!layout.visible ||
+        GetDragHandler().IsViewDragging(*layout.child_view)) {
       continue;
     }
     auto* group_view = views::AsViewClass<TabGroupView>(layout.child_view);

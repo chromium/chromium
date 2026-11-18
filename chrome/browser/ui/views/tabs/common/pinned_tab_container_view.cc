@@ -55,6 +55,7 @@ PinnedTabContainerView::PinnedTabContainerView(
                                         TabCollectionAnimatingLayoutManager>(
           CreatePinnedTabContainerViewLayout(orientation_),
           *this,
+          *collection_node_->GetController(),
           collection_node->GetController()->animation_coordinator(),
           orientation_ == TabStripOrientation::kHorizontal
               ? TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal
@@ -95,21 +96,6 @@ PinnedTabContainerView::LayoutManager::PinnedTabContainerView() const {
   return static_cast<const class PinnedTabContainerView&>(*host_view());
 }
 
-bool PinnedTabContainerView::IsDragging() const {
-  if (!collection_node_ || !collection_node_->GetController()) {
-    return false;
-  }
-  return GetDragHandler().IsDragging();
-}
-
-bool PinnedTabContainerView::IsViewDragging(
-    const views::View& child_view) const {
-  if (!collection_node_ || !collection_node_->GetController()) {
-    return false;
-  }
-  return GetDragHandler().IsViewDragging(child_view);
-}
-
 bool PinnedTabContainerView::ShouldAnimateOpacityForAddAndRemove(
     const views::View& child_view) const {
   if (orientation_ == TabStripOrientation::kHorizontal) {
@@ -122,13 +108,6 @@ bool PinnedTabContainerView::ShouldAnimateOpacityForAddAndRemove(
 bool PinnedTabContainerView::ShouldSnapToTarget(
     const views::View& child_view) const {
   return views::IsViewClass<SplitTabView>(&child_view);
-}
-
-bool PinnedTabContainerView::ShouldAnimateLayout() {
-  if (!collection_node_) {
-    return false;
-  }
-  return collection_node_->GetController()->ShouldAnimateLayout();
 }
 
 std::optional<BrowserRootView::DropIndex>

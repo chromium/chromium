@@ -111,6 +111,7 @@ TabGroupView::TabGroupView(TabCollectionNode* collection_node)
                                         TabCollectionAnimatingLayoutManager>(
           CreateTabGroupViewLayout(orientation_),
           *this,
+          *collection_node_->GetController(),
           collection_node->GetController()->animation_coordinator(),
           orientation_ == TabStripOrientation::kHorizontal
               ? TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal
@@ -274,20 +275,6 @@ std::unique_ptr<views::Widget> TabGroupView::ShowGroupEditorBubble(
       stop_context_menu_propagation);
 }
 
-bool TabGroupView::IsDragging() const {
-  if (!collection_node_ || !collection_node_->GetController()) {
-    return false;
-  }
-  return GetDragHandler().IsDragging();
-}
-
-bool TabGroupView::IsViewDragging(const views::View& child_view) const {
-  if (!collection_node_ || !collection_node_->GetController()) {
-    return false;
-  }
-  return GetDragHandler().IsViewDragging(child_view);
-}
-
 bool TabGroupView::ShouldAnimateOpacityForAddAndRemove(
     const views::View& child_view) const {
   if (orientation_ == TabStripOrientation::kHorizontal) {
@@ -313,13 +300,6 @@ void TabGroupView::OnAnimationEnded() {
   if (tab_group_visual_data_.is_collapsed()) {
     UpdateChildVisibilityForCollapseState(true);
   }
-}
-
-bool TabGroupView::ShouldAnimateLayout() {
-  if (!collection_node_) {
-    return false;
-  }
-  return collection_node_->GetController()->ShouldAnimateLayout();
 }
 
 bool TabGroupView::IsValid() const {
@@ -400,7 +380,8 @@ void TabGroupView::OnDataChanged() {
 
   // If the tab group is not collapsed (or if we are not animating the collapse)
   // update child visibility immediately.
-  if (!tab_group_visual_data_.is_collapsed() || !ShouldAnimateLayout()) {
+  if (!tab_group_visual_data_.is_collapsed() ||
+      !collection_node_->GetController()->ShouldAnimateLayout()) {
     UpdateChildVisibilityForCollapseState(
         tab_group_visual_data_.is_collapsed());
   }

@@ -1142,6 +1142,15 @@ base::AutoReset<bool> TabStripCollectionController::ScopedAnimateLayout() {
   return base::AutoReset<bool>(&is_animating_layout_change_, true);
 }
 
+bool TabStripCollectionController::IsDragging() const {
+  return drag_handler_->IsDragging();
+}
+
+bool TabStripCollectionController::IsViewDragging(
+    const views::View& child_view) const {
+  return drag_handler_->IsViewDragging(child_view);
+}
+
 bool TabStripCollectionController::ShouldAnimateLayout() const {
   if (StartupBrowserCreator::InSynchronousProfileLaunch()) {
     return false;
