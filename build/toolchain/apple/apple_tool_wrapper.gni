@@ -20,6 +20,14 @@ declare_args() {
 
   # Maximum number of wrapped steps that run at once.
   apple_tool_wrapper_jobs = 6
+
+  # Files that every wrapped `swift` step depends on, for example a tool
+  # that an `action()` builds. Only used when `apple_tool_wrapper` is set.
+  # Paths are relative to `root_build_dir`, because args files can't use
+  # `$root_build_dir`. They become implicit inputs of the `swift` tool and
+  # are passed to the wrapper as `--input <path>`. A target in the default
+  # toolchain must build each one.
+  apple_tool_wrapper_swift_inputs = []
 }
 
 # Wrapper contract
@@ -38,7 +46,8 @@ declare_args() {
 #   swift
 #     Hook:   tool("swift") in //build/toolchain/apple/toolchain.gni
 #     Script: //build/toolchain/apple/swiftc.py
-#     --input/--output: no (parse <args>)
+#     --input: `apple_tool_wrapper_swift_inputs`, if any
+#     --output: no (parse <args>)
 #
 #   compile_xcassets
 #     Hook:   tool("compile_xcassets") in //build/toolchain/apple/toolchain.gni

@@ -914,8 +914,22 @@ template("single_apple_toolchain") {
           command = "$_env_vars $python_path $_tool $_swiftc_args"
         } else {
           _wrapper = rebase_path(apple_tool_wrapper_script, root_build_dir)
+          _wrapper_args = ""
+          if (apple_tool_wrapper != "") {
+            # Implicit inputs of every Swift step, such as a macro server
+            # that another target builds. Paths are relative to
+            # `root_build_dir`, which all toolchains share, so every
+            # toolchain's Swift steps wait for the same file.
+            inputs = []
+            foreach(_input, apple_tool_wrapper_swift_inputs) {
+              _path = "$root_build_dir/$_input"
+              inputs += [ _path ]
+              _wrapper_args += " --input " + rebase_path(_path, root_build_dir)
+            }
+          }
           command = "$_env_vars ${apple_tool_wrapper_env}$python_path " +
-                    "$_wrapper --tool=swift -- $_tool $_swiftc_args"
+                    "$_wrapper --tool=swift$_wrapper_args -- $_tool " +
+                    "$_swiftc_args"
           if (apple_tool_wrapper != "") {
             pool = apple_tool_wrapper_pool
           }
