@@ -15,6 +15,16 @@
 
 namespace blink {
 
+namespace {
+
+// Pushes `value` into `queue` under the queue's lock.
+std::optional<int> LockAndPush(FrameQueue<int>& queue, int value) {
+  base::AutoLock locker(queue.GetLock());
+  return queue.PushLocked(value);
+}
+
+}  // namespace
+
 class FrameQueueTest : public testing::Test {
  public:
   FrameQueueTest() : io_task_runner_(Platform::Current()->GetIOTaskRunner()) {}
@@ -30,7 +40,7 @@ TEST_F(FrameQueueTest, PushPopMatches) {
   scoped_refptr<FrameQueue<int>> queue =
       base::MakeRefCounted<FrameQueue<int>>(kMaxSize);
   for (int i = 0; i < kMaxSize; ++i)
-    queue->Push(i);
+    LockAndPush(*queue, i);
   for (int i = 0; i < kMaxSize; ++i) {
     std::optional<int> element = queue->Pop();
     EXPECT_TRUE(element.has_value());
@@ -42,17 +52,17 @@ TEST_F(FrameQueueTest, PushReturnsReplacedElement) {
   const int kMaxSize = 2;
   scoped_refptr<FrameQueue<int>> queue =
       base::MakeRefCounted<FrameQueue<int>>(kMaxSize);
-  std::optional<int> replaced = queue->Push(1);
+  std::optional<int> replaced = LockAndPush(*queue, 1);
   EXPECT_FALSE(replaced.has_value());
 
-  replaced = queue->Push(2);
+  replaced = LockAndPush(*queue, 2);
   EXPECT_FALSE(replaced.has_value());
 
-  replaced = queue->Push(3);
+  replaced = LockAndPush(*queue, 3);
   EXPECT_TRUE(replaced.has_value());
   EXPECT_EQ(replaced.value(), 1);
 
-  replaced = queue->Push(4);
+  replaced = LockAndPush(*queue, 4);
   EXPECT_TRUE(replaced.has_value());
   EXPECT_EQ(replaced.value(), 2);
 }
@@ -70,7 +80,7 @@ TEST_F(FrameQueueTest, QueueDropsOldElements) {
   scoped_refptr<FrameQueue<int>> queue =
       base::MakeRefCounted<FrameQueue<int>>(kMaxSize);
   for (int i = 0; i < kNumInsertions; ++i)
-    queue->Push(i);
+    LockAndPush(*queue, i);
   for (int i = 0; i < kMaxSize; ++i) {
     std::optional<int> element = queue->Pop();
     EXPECT_TRUE(element.has_value());
@@ -123,7 +133,7 @@ TEST_F(FrameQueueTest, PushValuesInOrderOnSeparateThread) {
             EXPECT_TRUE(queue);
             start_event->Signal();
             for (int i = 0; i < kNumElements; ++i)
-              queue->Push(i);
+              LockAndPush(*queue, i);
             end_event->Signal();
           },
           std::move(queue1), CrossThreadUnretained(&start_event),

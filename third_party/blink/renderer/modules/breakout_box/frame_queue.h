@@ -24,13 +24,6 @@ class FrameQueue : public ThreadSafeRefCounted<FrameQueue<NativeFrameType>> {
 
   base::Lock& GetLock() const { return lock_; }
 
-  std::optional<NativeFrameType> Push(NativeFrameType frame) {
-    TRACE_EVENT_INSTANT("mediastream", "FrameQueue::Push", "this",
-                        static_cast<void*>(this));
-    base::AutoLock locker(GetLock());
-    return PushLocked(std::move(frame));
-  }
-
   std::optional<NativeFrameType> PushLocked(NativeFrameType frame)
       EXCLUSIVE_LOCKS_REQUIRED(GetLock()) {
     total_frames_++;
