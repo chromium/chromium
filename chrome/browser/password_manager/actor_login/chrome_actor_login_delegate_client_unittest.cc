@@ -142,6 +142,17 @@ class ChromeActorLoginDelegateClientTest
 #endif
 };
 
+// A headless actor page has no tab, so its task is never in focus.
+TEST_F(ChromeActorLoginDelegateClientTest, NoTab_NotInFocus) {
+  std::unique_ptr<content::WebContents> headless_contents =
+      CreateTestWebContents();
+  ChromeActorLoginDelegateClient::CreateForWebContents(headless_contents.get());
+
+  EXPECT_FALSE(
+      ChromeActorLoginDelegateClient::FromWebContents(headless_contents.get())
+          ->IsTaskInFocus());
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeActorLoginDelegateClientTest,
        Android_FeatureDisabled_TabActivated) {

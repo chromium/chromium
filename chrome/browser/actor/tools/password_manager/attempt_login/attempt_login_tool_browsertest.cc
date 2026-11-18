@@ -9,8 +9,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/tools/password_manager/attempt_login/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/actor/tools/wait_tool.h"
@@ -861,6 +863,36 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
   select_creds.Take().Run();
   ExpectErrorResult(result,
                     mojom::ActionResultCode::kLoginPageChangedDuringSelection);
+}
+
+// Verifies that when AttemptLogin requires device reauth on a headless page,
+// which the user can't focus, the tool fails instead of waiting for focus.
+IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
+                       DeviceReauthRequiredOnHeadlessPageFails) {
+  ScopedHeadlessActorSurface headless =
+      actor_keyed_service().CreateHeadlessActorSurface();
+  ActorSurface* headless_surface = headless.actor_surface_handle().Get();
+  ASSERT_TRUE(headless_surface);
+
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(headless_surface->GetWebContents(), url));
+
+  actor_login::Credential persisted_cred = MakeTestCredential(
+      u"username", url, /*immediately_available_to_login=*/true);
+  persisted_cred.has_persistent_permission = true;
+  mock_login_service().SetCredentials(std::vector{persisted_cred});
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kErrorDeviceReauthRequired);
+
+  std::unique_ptr<ToolRequest> action =
+      std::make_unique<AttemptLoginToolRequest>(
+          headless_surface->GetHandle(), /*password_button=*/std::nullopt,
+          /*sign_in_with_google_button=*/std::nullopt);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kLoginDeviceReauthRequired);
 }
 
 #if BUILDFLAG(IS_ANDROID)

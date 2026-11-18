@@ -499,6 +499,15 @@ void AttemptLoginTool::OnAttemptLogin(
       return;
     }
 
+    if (!actor_surface_handle_.Get()->IsTab()) {
+      // If the page is headless, the user can't focus it, so waiting for focus
+      // would never end. Report that reauth is required instead.
+      PostResponseTask(
+          std::move(invoke_callback_),
+          MakeResult(mojom::ActionResultCode::kLoginDeviceReauthRequired));
+      return;
+    }
+
     credential_awaiting_task_focus_ = {selected_credential,
                                        should_store_permission};
     ObserveTabToAwaitFocus();

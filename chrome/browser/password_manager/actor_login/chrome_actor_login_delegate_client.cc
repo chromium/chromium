@@ -147,12 +147,13 @@ ChromeActorLoginDelegateClient::CreateSiwgController(
 }
 
 bool ChromeActorLoginDelegateClient::IsTaskInFocus() {
-  // This `WebContents` comes from the `TabInterface` that
-  // `ActorLoginService` is invoked with, so we know the `WebContents` is
-  // attached to a tab.
   tabs::TabInterface* tab_interface =
-      tabs::TabInterface::GetFromContents(&GetWebContents());
-  CHECK(tab_interface);
+      tabs::TabInterface::MaybeGetFromContents(&GetWebContents());
+  // If the page is headless, it doesn't have a tab and the user can't see or
+  // focus it.
+  if (!tab_interface) {
+    return false;
+  }
 // TODO(crbug.com/482430429): Reconsider the use of BrowserWindowInterface on
 // Android.
 #if BUILDFLAG(IS_ANDROID)
