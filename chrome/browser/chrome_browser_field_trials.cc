@@ -388,6 +388,12 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(chrome::android::kBookmarksBarNTP);
   feature_overrides.EnableFeature(chrome::android::kFlyoutInBookmarksBar);
 
+  // Enables the desktop bookmark layout launched on desktop Android.
+  // TODO(crbug.com/587080894): Remove when this is enabled by default for
+  // all form factors.
+  feature_overrides.EnableFeature(
+      chrome::android::kAndroidDesktopBookmarkLayout);
+
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
