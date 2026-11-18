@@ -198,7 +198,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSLensOverlayEntrypointTipFeature,
     &kIPHiOSLensOverlayEscapeHatchTipFeature,
     &kIPHiOSNewIAPromoFeature,
-    &kIPHiOSOneTimeDefaultBrowserNotificationFeature,
     &kIPHiOSOverflowMenuCustomizationFeature,
     &kIPHIOSPageActionMenu,
     &kIPHiOSPageInfoRevampFeature,

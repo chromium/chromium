@@ -558,23 +558,6 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
                     /*window=*/2, /*storage=*/2));
     config.storage_type = StorageType::DEVICE;
     return config;
-  } else if (kIPHiOSOneTimeDefaultBrowserNotificationFeature.name ==
-             feature->name) {
-    FeatureConfig config;
-    config.valid = true;
-    config.availability = kAlwaysAvailable;
-    config.session_rate = kNoRestrictions;
-    config.storage_type = StorageType::DEVICE;
-    config.trigger = EventConfig(
-        "one_time_default_browser_notification_trigger", Comparator(EQUAL, 0),
-        /*window=*/kMaxWindowPeriod, /*storage=*/kMaxStoragePeriod);
-    config.event_configs.insert(
-        EventConfig(events::kDefaultBrowserPromosGroupTrigger,
-                    Comparator(EQUAL, 0), /*window=*/14, /*storage=*/360));
-    config.event_configs.insert(EventConfig(events::kIOSDefaultBrowserFREShown,
-                                            Comparator(EQUAL, 0), /*window=*/7,
-                                            /*storage=*/365));
-    return config;
   } else if (kIPHiOSActiveDaysTrackingFeature.name == feature->name) {
     FeatureConfig config;
     config.valid = true;

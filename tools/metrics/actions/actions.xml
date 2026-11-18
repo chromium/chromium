@@ -635,8 +635,6 @@ should be able to be added at any place in this file.
   <variant name="_iOSLensPromoDesktop"
       summary="For iOSLensPromoDesktop feature"/>
   <variant name="_iOSNewIAPromoFeature" summary="For New IA promo on startup."/>
-  <variant name="_iOSOneTimeDefaultBrowserNotification"
-      summary="For iOSOneTimeDefaultBrowserNotification feature"/>
   <variant name="_iOSOverflowMenuCustomization"
       summary="For iOSOverflowMenuCustomization feature"/>
   <variant name="_IOSPageActionMenu" summary="For IOSPageActionMenu IPH"/>

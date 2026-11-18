@@ -369,8 +369,6 @@ DEFINE_VARIATION_PARAM(kIPHiOSDefaultBrowserBannerPromoFeature,
                        "IPH_iOSDefaultBrowserBannerPromoFeature");
 DEFINE_VARIATION_PARAM(kIPHiOSDefaultBrowserOffCyclePromoFeature,
                        "IPH_iOSDefaultBrowserOffCyclePromo");
-DEFINE_VARIATION_PARAM(kIPHiOSOneTimeDefaultBrowserNotificationFeature,
-                       "IPH_iOSOneTimeDefaultBrowserNotification");
 DEFINE_VARIATION_PARAM(kIPHiOSReminderNotificationsOverflowMenuBubbleFeature,
                        "IPH_iOSReminderNotificationsOverflowMenuBubbleFeature");
 DEFINE_VARIATION_PARAM(

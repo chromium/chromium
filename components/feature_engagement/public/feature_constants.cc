@@ -991,10 +991,6 @@ BASE_FEATURE(kIPHiOSBackgroundNewBadge,
              "IPH_iOSBackgroundNewBadge",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIPHiOSOneTimeDefaultBrowserNotificationFeature,
-             "IPH_iOSOneTimeDefaultBrowserNotification",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kIPHiOSAIHubNewBadge,
              "IPH_iOSAIHubNewBadge",
              base::FEATURE_ENABLED_BY_DEFAULT);
