@@ -8,16 +8,16 @@ import type {CommerceInternalsAppElement} from './app.js';
 
 export function getHtml(this: CommerceInternalsAppElement) {
   return html`
-  <h1>Commerce Internals</h1>
-  <h2>Shopping feature eligibility</h2>
-  <commerce-internals-eligibility-list></commerce-internals-eligibility-list>
-  <h2>Subscriptions</h2>
-  <subscription-list></subscription-list>
-  <h2>Utilities</h2>
-  <div class="utils">
-    <a href="view_product.html">Product URL Viewer</a>
-    <button @click="${this.onResetPriceTrackingEmailPreferenceClick_}">
-      Reset price tracking email preference
-    </button>
-  </div>`;
+<h1>Commerce Internals</h1>
+<h2>Shopping feature eligibility</h2>
+<commerce-internals-eligibility-list></commerce-internals-eligibility-list>
+<h2>Subscriptions</h2>
+<subscription-list></subscription-list>
+<h2>Utilities</h2>
+<div class="utils">
+  <a href="view_product.html">Product URL Viewer</a>
+  <button @click="${this.onResetPriceTrackingEmailPreferenceClick_}">
+    Reset price tracking email preference
+  </button>
+</div>`;
 }

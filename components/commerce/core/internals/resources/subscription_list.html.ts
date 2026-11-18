@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SubscriptionListElement} from './subscription_list.js';
 
 export function getHtml(this: SubscriptionListElement) {
-  // clang-format off
   return html`
 ${this.subscriptions_.length > 0 ? html`
   <table class="list">
@@ -37,11 +36,15 @@ ${this.subscriptions_.length > 0 ? html`
                 ${productInfo.info.productUrl ? html`
                   <a href="${productInfo.info.productUrl}" target="_blank">
                     ${productInfo.info.title}
-                  </a>` : html`${productInfo.info.title}`}
+                  </a>
+                ` : html`
+                  ${productInfo.info.title}
+                `}
                 ${productInfo.info.imageUrl ? html`
                   <a href="${productInfo.info.imageUrl}" target="_blank">
                     (image)
-                  </a>` : ''}
+                  </a>
+                ` : ''}
               </td>
             </tr>
           `)}
@@ -49,6 +52,7 @@ ${this.subscriptions_.length > 0 ? html`
       `)}
     </tbody>
   </table>
-` : html`<div>No subscriptions found.</div>`}`;
-  // clang-format on
+` : html`
+  <div>No subscriptions found.</div>
+`}`;
 }

@@ -8,7 +8,6 @@ import {OptionalPolicyColumn} from './policy_columns.js';
 import type {PolicyTableElement} from './policy_table.js';
 
 export function getHtml(this: PolicyTableElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="policy-table" role="table" aria-labelledby="policy-header">
   <h2 class="header" id="policy-header">
@@ -25,71 +24,57 @@ export function getHtml(this: PolicyTableElement) {
   </p>
   <div class="main">
     <div class="header row" role="row">
-      <policy-table-header-cell
-        class="name"
-        field="name"
-        header-title="$i18n{headerName}"
-        .sortedColumn="${this.mostRecentSortedColumn}"
-        .sortAscending="${this.sortAscending}"
-        @sort-changed="${this.onSortChanged}">
+      <policy-table-header-cell class="name" field="name"
+          header-title="$i18n{headerName}"
+          .sortedColumn="${this.mostRecentSortedColumn}"
+          .sortAscending="${this.sortAscending}"
+          @sort-changed="${this.onSortChanged}">
       </policy-table-header-cell>
-      <policy-table-header-cell
-        class="value"
-        header-title="$i18n{headerValue}"
-        no-sort
-        ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.VALUE)}">
+      <policy-table-header-cell class="value" header-title="$i18n{headerValue}"
+          no-sort
+          ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.VALUE)}">
       </policy-table-header-cell>
-      <policy-table-header-cell
-        class="source"
-        field="source"
-        header-title="$i18n{headerSource}"
-        .sortedColumn="${this.mostRecentSortedColumn}"
-        .sortAscending="${this.sortAscending}"
-        @sort-changed="${this.onSortChanged}"
-        ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.SOURCE)}">
+      <policy-table-header-cell class="source" field="source"
+          header-title="$i18n{headerSource}"
+          .sortedColumn="${this.mostRecentSortedColumn}"
+          .sortAscending="${this.sortAscending}"
+          @sort-changed="${this.onSortChanged}"
+          ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.SOURCE)}">
       </policy-table-header-cell>
-      <policy-table-header-cell
-        class="scope"
-        field="scope"
-        header-title="$i18n{headerScope}"
-        .sortedColumn="${this.mostRecentSortedColumn}"
-        .sortAscending="${this.sortAscending}"
-        @sort-changed="${this.onSortChanged}"
-        ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.SCOPE)}">
+      <policy-table-header-cell class="scope" field="scope"
+          header-title="$i18n{headerScope}"
+          .sortedColumn="${this.mostRecentSortedColumn}"
+          .sortAscending="${this.sortAscending}"
+          @sort-changed="${this.onSortChanged}"
+          ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.SCOPE)}">
       </policy-table-header-cell>
-      <policy-table-header-cell
-        class="level"
-        field="level"
-        header-title="$i18n{headerLevel}"
-        .sortedColumn="${this.mostRecentSortedColumn}"
-        .sortAscending="${this.sortAscending}"
-        @sort-changed="${this.onSortChanged}"
-        ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.LEVEL)}">
+      <policy-table-header-cell class="level" field="level"
+          header-title="$i18n{headerLevel}"
+          .sortedColumn="${this.mostRecentSortedColumn}"
+          .sortAscending="${this.sortAscending}"
+          @sort-changed="${this.onSortChanged}"
+          ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.LEVEL)}">
       </policy-table-header-cell>
-      <policy-table-header-cell
-        class="status"
-        field="status"
-        header-title="$i18n{headerStatus}"
-        .sortedColumn="${this.mostRecentSortedColumn}"
-        .sortAscending="${this.sortAscending}"
-        @sort-changed="${this.onSortChanged}"
-        ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.STATUS)}">
+      <policy-table-header-cell class="status" field="status"
+          header-title="$i18n{headerStatus}"
+          .sortedColumn="${this.mostRecentSortedColumn}"
+          .sortAscending="${this.sortAscending}"
+          @sort-changed="${this.onSortChanged}"
+          ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.STATUS)}">
       </policy-table-header-cell>
       <div class="toggle" role="columnheader"></div>
     </div>
     ${this.sortedPolicies.map(policy => html`
-      <policy-row
-        .policy="${policy}"
-        .visibleColumns="${this.visibleColumns}"
-        class="policy-data"
-        ?hidden="${this.isPolicyHidden(policy)}">
+      <policy-row .policy="${policy}" .visibleColumns="${this.visibleColumns}"
+          class="policy-data" ?hidden="${this.isPolicyHidden(policy)}">
       </policy-row>
     `)}
     <div class="no-policy" ?hidden="${this.hasVisiblePolicies()}">
       $i18n{noPoliciesSet}
     </div>
     ${this.dataModel?.name === 'Policy Precedence' &&
-      this.dataModel?.precedenceOrder ? html`
+            this.dataModel?.precedenceOrder ?
+        html`
       <policy-precedence-row
           .precedenceOrder="${this.dataModel.precedenceOrder}"
           class="policy-precedence-data">
@@ -98,5 +83,4 @@ export function getHtml(this: PolicyTableElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -4,9 +4,7 @@
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {
-  PromotionBannerSectionContainerElement,
-} from './promotion_banner_section_container.js';
+import type {PromotionBannerSectionContainerElement} from './promotion_banner_section_container.js';
 
 export function getHtml(this: PromotionBannerSectionContainerElement) {
   return html`<!--_html_template_start_-->
@@ -16,8 +14,8 @@ export function getHtml(this: PromotionBannerSectionContainerElement) {
         aria-hidden="true">
       <picture>
         <source
-          srcset="chrome://resources/images/dark/promotion_banner_dark.svg"
-          media="(prefers-color-scheme: dark)">
+            srcset="chrome://resources/images/dark/promotion_banner_dark.svg"
+            media="(prefers-color-scheme: dark)">
         <img src="chrome://resources/images/promotion_banner_light.svg" alt="">
       </picture>
     </div>

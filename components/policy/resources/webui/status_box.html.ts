@@ -7,7 +7,6 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {StatusBoxElement} from './status_box.js';
 
 export function getHtml(this: StatusBoxElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="status-box-fields">
   <h3 class="status-box-heading">${this.getHeading()}</h3>
@@ -56,5 +55,4 @@ export function getHtml(this: StatusBoxElement) {
   `)}
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

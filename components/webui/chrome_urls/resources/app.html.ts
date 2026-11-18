@@ -7,18 +7,24 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ChromeUrlsAppElement} from './app.js';
 
 export function getHtml(this: ChromeUrlsAppElement) {
-  // clang-format off
   return html`
 <h2>List of Chrome URLs</h2>
 <ul>
   ${this.webuiUrlInfos_.map(info => html`
-    ${this.isChromeUrlsUrl_(info) ?
-      html`<li><a href="#">chrome://chrome-urls</a></li>` :
-      html`${info.enabled ?
-        html`<li><a href="${info.url}">${info.url}</a></li>` :
-        html`<li>${info.url}</li>`
-      }`
-    }`)}
+    ${this.isChromeUrlsUrl_(info) ? html`
+      <li>
+        <a href="#">chrome://chrome-urls</a>
+      </li>
+    ` : html`
+      ${info.enabled ? html`
+        <li>
+          <a href="${info.url}">${info.url}</a>
+        </li>
+      ` : html`
+        <li>${info.url}</li>
+      `}
+    `}
+  `)}
 </ul>
 ${this.internalUrlInfos_.length ? html`
   <h2 id="internal-debugging-pages">Internal Debugging Page URLs</h2>
@@ -32,11 +38,16 @@ ${this.internalUrlInfos_.length ? html`
   </cr-button>
   <ul>
     ${this.internalUrlInfos_.map(info => html`
-      ${this.isInternalUiEnabled_(info) ?
-        html`<li><a href="${info.url}">${info.url}</a></li>` :
-        html`<li>${info.url}</li>`
-      }`)}
-  </ul>` : ''}
+      ${this.isInternalUiEnabled_(info) ? html`
+        <li>
+          <a href="${info.url}">${info.url}</a>
+        </li>
+      ` : html`
+        <li>${info.url}</li>
+      `}
+    `)}
+  </ul>
+` : ''}
 ${this.commandUrls_.length ? html`
   <h2>Command URLs for Debug</h2>
   <p>
@@ -45,6 +56,9 @@ ${this.commandUrls_.length ? html`
     address bar if you need them.
   </p>
   <ul>
-    ${this.commandUrls_.map(url => html`<li>${url}</li>`)}
-  </ul>` : ''}`;
+    ${this.commandUrls_.map(url => html`
+      <li>${url}</li>
+    `)}
+  </ul>
+` : ''}`;
 }

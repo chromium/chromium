@@ -8,24 +8,21 @@ import {OptionalPolicyColumn} from './policy_columns.js';
 import type {PolicyConflictElement} from './policy_conflict.js';
 
 export function getHtml(this: PolicyConflictElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
-<div class="policy conflict row" role="row"
-    ?hidden="${!this.showCompactRow()}">
+<div class="policy conflict row" role="row" ?hidden="${!this.showCompactRow()}">
   <div class="name" role="rowheader">${this.getRowLabelText()}</div>
   <div class="value" role="cell">${this.getFormattedValue()}</div>
   <div class="source" role="cell">${this.getSourceText()}</div>
   <div class="scope" role="cell">${this.getScopeText()}</div>
   <div class="level" role="cell">${this.getLevelText()}</div>
   <div class="messages" role="cell"
-      ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.STATUS)}"></div>
+      ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.STATUS)}">
+  </div>
   <div class="copy" role="cell">
     <a is="action-link" class="copy-value link" role="button"
-        @click="${this.onCopyClick}"
-        title="${this.getCopyLabel()}"
+        @click="${this.onCopyClick}" title="${this.getCopyLabel()}"
         aria-label="${this.getCopyLabel()}">
-      <img src="${this.getCopyIconSrc()}"
-          alt="" aria-hidden="true">
+      <img src="${this.getCopyIconSrc()}" alt="" aria-hidden="true">
     </a>
   </div>
 </div>
@@ -36,11 +33,9 @@ export function getHtml(this: PolicyConflictElement) {
     <div class="value" role="cell">${this.getFormattedValue()}</div>
     <div class="copy" role="cell">
       <a is="action-link" class="copy-value link" role="button"
-          @click="${this.onCopyClick}"
-          title="${this.getCopyLabel()}"
+          @click="${this.onCopyClick}" title="${this.getCopyLabel()}"
           aria-label="${this.getCopyLabel()}">
-        <img src="${this.getCopyIconSrc()}"
-            alt="" aria-hidden="true">
+        <img src="${this.getCopyIconSrc()}" alt="" aria-hidden="true">
       </a>
     </div>
   </div>
@@ -58,5 +53,4 @@ export function getHtml(this: PolicyConflictElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }
