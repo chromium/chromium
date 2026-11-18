@@ -687,7 +687,9 @@ void LayerAnimationElement::Start(LayerAnimationDelegate* delegate,
 
 bool LayerAnimationElement::Progress(base::TimeTicks now,
                                      LayerAnimationDelegate* delegate) {
-  CHECK(requested_start_time_ != base::TimeTicks(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/586349389): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(requested_start_time_ != base::TimeTicks());
   CHECK(!first_frame_, base::NotFatalUntil::M163);
 
   bool need_draw;
