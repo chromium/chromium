@@ -1314,6 +1314,16 @@ void OmniboxPopupFullPresenter::OnViewBoundsChanged(
   UpdatePopupOcclusion();
 }
 
+void OmniboxPopupFullPresenter::OnViewHierarchyChanged(
+    views::View* observed_view,
+    const views::ViewHierarchyChangedDetails& details) {
+  // Immersive fullscreen moves the top container into an overlay and back,
+  // which changes whether the occluding views draw above the location bar.
+  if (details.is_add && details.child == observed_view) {
+    UpdatePopupOcclusion();
+  }
+}
+
 void OmniboxPopupFullPresenter::OnViewIsDeleting(views::View* observed_view) {
 #if BUILDFLAG(IS_CHROMEOS)
   if (top_container_observation_.IsObservingSource(observed_view)) {
@@ -1334,15 +1344,16 @@ void OmniboxPopupFullPresenter::UpdatePopupOcclusion() {
   }
   gfx::Rect clip;
   // Only clip while the popup is collapsed. Once suggestions open, the strip
-  // collapses and the popup should paint in full. The widget comparison skips
-  // macOS immersive fullscreen, where the location bar sits in an overlay
-  // widget above the strip and tray.
-  if (IsPopupCollapsed()) {
+  // collapses and the popup should paint in full. The occluding views are
+  // children of the browser view, so they only draw above the location bar
+  // while the top container is there too. Immersive fullscreen moves it into
+  // an overlay above them (an overlay view on ChromeOS, an overlay widget on
+  // macOS).
+  if (IsPopupCollapsed() && IsTopContainerInBrowserView()) {
     const gfx::Rect popup_bounds = GetWidget()->GetWindowBoundsInScreen();
-    views::Widget* location_bar_widget = delegate().GetLocationBarWidget();
     gfx::Rect covered;
     for (views::View* view : occluding_view_observations_.sources()) {
-      if (view->IsDrawn() && view->GetWidget() == location_bar_widget) {
+      if (view->IsDrawn()) {
         gfx::Rect intersection = view->GetBoundsInScreen();
         intersection.Intersect(popup_bounds);
         covered.Union(intersection);
@@ -1366,6 +1377,17 @@ void OmniboxPopupFullPresenter::UpdatePopupOcclusion() {
   // `aura::WindowTargeter::GetHitTestRects()` on Aura and
   // `ResultsViewTargeterDelegate::TargetForRect()` on macOS).
   layer->SetClipRect(clip);
+}
+
+bool OmniboxPopupFullPresenter::IsTopContainerInBrowserView() {
+  views::Widget* browser_widget = GetBrowserWidget();
+  if (!browser_widget) {
+    return false;
+  }
+  BrowserView* browser_view = BrowserView::GetBrowserViewForNativeWindow(
+      browser_widget->GetNativeWindow());
+  return browser_view && browser_view->top_container() &&
+         browser_view->top_container()->parent() == browser_view;
 }
 
 void OmniboxPopupFullPresenter::KeepBrowserPaintingAsActiveAcrossHandoff() {
