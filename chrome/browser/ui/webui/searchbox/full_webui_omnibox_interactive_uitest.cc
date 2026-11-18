@@ -137,6 +137,7 @@
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
+#include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -9348,6 +9349,32 @@ class FullWebUIOmniboxDragInteractiveTest
     });
   }
 
+  // Checks that the drag that `StartDraggingFromWebUIInput()` started carries
+  // what the native omnibox drags for `selected_text`: a selection that starts
+  // at the start of the omnibox's text and isn't all of the page's unedited
+  // text. The native omnibox gets the URL to drag for it, if any, from the
+  // autocomplete classifier. The WebUI omnibox can't use the classifier while
+  // a drag starts, and parses the text instead.
+  auto CheckDragMatchesNativeOmnibox(const std::string& selected_text) {
+    return Do([this, selected_text]() {
+      OmniboxClient* const client = GetOmniboxControllerForTest()->client();
+      std::u16string text = base::UTF8ToUTF16(selected_text);
+      GURL url;
+      bool write_url = false;
+      // What `OmniboxViewViews::OnWriteDragData()` gets from
+      // `OmniboxEditModel::AdjustTextForCopy()` once
+      // `OmniboxViewViews::OnMouseDragged()` has closed the popup.
+      omnibox::AdjustTextForCopy(
+          /*sel_min=*/0, &text, /*has_user_modified_text=*/true,
+          /*is_keyword_selected=*/false, /*current_popup_match=*/std::nullopt,
+          client->GetNavigationEntryURL(), client->GetAutocompleteClassifier(),
+          client->GetPageClassification(/*is_prefetch=*/false),
+          client->GetContextualTasksInnerFrameURL(), &url, &write_url);
+      EXPECT_EQ(text, drag_drop_client_->dragged_text());
+      EXPECT_EQ(write_url ? url : GURL(), drag_drop_client_->dragged_url());
+    });
+  }
+
   // Has the drag deliver a drop of its text to the WebUI input, past the end
   // of its text, where any small layout shift still lands, unlike a character
   // boundary. The drag then ends with `drop_result`. `key_modifiers` are the
@@ -9607,8 +9634,9 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxDragInteractiveTest,
                   ReleaseDraggingMouse(), ResetDragDropClient());
 }
 
-// Verifies that, like in the native omnibox, dragging only part of the page's
-// URL out of the omnibox drags that text rather than the URL.
+// Verifies that, like in the native omnibox, dragging part of the page's URL
+// that doesn't start at its start out of the omnibox drags that text rather
+// than a URL.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxDragInteractiveTest, DragPartOfUrlOut) {
   ASSERT_TRUE(embedded_https_test_server().Start());
   const GURL url = embedded_https_test_server().GetURL("/title1.html");
@@ -9626,6 +9654,77 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxDragInteractiveTest, DragPartOfUrlOut) {
       }),
       StartDraggingFromWebUIInput(start + 2), CheckDraggedText(u"title1"),
       ReleaseDraggingMouse(), ResetDragDropClient());
+}
+
+// Verifies that, like in the native omnibox, dragging part of the page's URL
+// that starts at its start and has all of its host out of the omnibox drags
+// the URL that this text stands for, which a drop target can also link to.
+// The URL has the scheme of the page, which the omnibox doesn't show.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxDragInteractiveTest, DragStartOfUrlOut) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  const GURL url = embedded_https_test_server().GetURL("/title1.html");
+  // Steady-state display text strips the https:// scheme.
+  const std::string display_url = url.spec().substr(strlen("https://"));
+  // The host and the port of the URL.
+  const std::string host_port = display_url.substr(0, display_url.find('/'));
+
+  RunTestSequence(OpenTabAndFocusOmniboxOnUrl(url, display_url),
+                  SelectWebUIText(0, host_port.length()), SetUpDragDropClient(),
+                  Do([this]() {
+                    drag_drop_client_->SetDrop(ui::mojom::DragOperation::kCopy);
+                  }),
+                  StartDraggingFromWebUIInput(2),
+                  CheckDraggedUrl(url.GetWithEmptyPath()),
+                  CheckDragMatchesNativeOmnibox(host_port),
+                  ReleaseDraggingMouse(), ResetDragDropClient());
+}
+
+// Verifies that, like in the native omnibox, dragging the user's text out of
+// the omnibox drags a URL if the text stands for one on the host of the page,
+// here the URL of another page of its site, with the scheme of the page.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxDragInteractiveTest,
+                       DragTypedUrlOnPageHostOut) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  const GURL url = embedded_https_test_server().GetURL("/title1.html");
+  // Steady-state display text strips the https:// scheme.
+  const std::string display_url = url.spec().substr(strlen("https://"));
+  const GURL typed_url = embedded_https_test_server().GetURL("/title2.html");
+  const std::string text = typed_url.spec().substr(strlen("https://"));
+
+  RunTestSequence(OpenTabAndFocusOmniboxOnUrl(url, display_url),
+                  InputWebUIText(text), SelectWebUIText(0, text.length()),
+                  SetUpDragDropClient(), Do([this]() {
+                    drag_drop_client_->SetDrop(ui::mojom::DragOperation::kCopy);
+                  }),
+                  StartDraggingFromWebUIInput(2), CheckDraggedUrl(typed_url),
+                  CheckDragMatchesNativeOmnibox(text), ReleaseDraggingMouse(),
+                  ResetDragDropClient(),
+                  // The omnibox keeps the user's text.
+                  InAnyContext(CheckJsResultAt(kPopupWebView, kWebUIInput,
+                                               "(el) => el.value", text)),
+                  CheckUserInputInProgress(true));
+}
+
+// Verifies that, like in the native omnibox, dragging the user's text out of
+// the omnibox drags the text itself if it stands for a URL on another host
+// than the page's, here on "localhost" rather than "127.0.0.1".
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxDragInteractiveTest,
+                       DragTypedUrlOnOtherHostOutDragsText) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  const GURL url = embedded_https_test_server().GetURL("/title1.html");
+  // Steady-state display text strips the https:// scheme.
+  const std::string display_url = url.spec().substr(strlen("https://"));
+  const std::string text =
+      base::StrCat({"localhost:", url.port(), "/title1.html"});
+
+  RunTestSequence(
+      OpenTabAndFocusOmniboxOnUrl(url, display_url), InputWebUIText(text),
+      SelectWebUIText(0, text.length()), SetUpDragDropClient(), Do([this]() {
+        drag_drop_client_->SetDrop(ui::mojom::DragOperation::kCopy);
+      }),
+      StartDraggingFromWebUIInput(2), CheckDraggedText(base::UTF8ToUTF16(text)),
+      CheckDragMatchesNativeOmnibox(text), ReleaseDraggingMouse(),
+      ResetDragDropClient());
 }
 
 // Verifies that, like in the native omnibox, dropping text dragged out of the

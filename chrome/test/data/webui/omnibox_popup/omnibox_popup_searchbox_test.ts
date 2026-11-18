@@ -7661,44 +7661,135 @@ suite('OmniboxPopupSearchboxTest', function() {
          'http://www.example.com/path', dataTransfer.getData('text/uri-list'));
    });
 
-   // Dragging anything but all of the page's unedited URL drags the selected
-   // text, which Blink writes to the drag.
-   //
-   // This intentionally differs from the native omnibox for "example.com" and
-   // for the user's text below. The native omnibox classifies selected text
-   // that starts at the start of the input and, if it's an http(s) URL on the
-   // page's host, drags that URL, e.g. "https://example.com/", which the drop
-   // target can also link to (see `OmniboxEditModel::AdjustTextForCopy()`).
-   // The page doesn't, since the classifier is in the browser and the drag
-   // data has to be written during `dragstart`.
-   // TODO(crbug.com/586657837): Drag the URL for such text too, but without an
-   // IPC on every selection change.
-   test('DragStartOfOtherTextDragsText', async () => {
-     async function assertDragsText(state: Partial<OmniboxInputState>) {
-       callbackRouter.setInputState(createDefaultOmniboxInputState({
-         text: 'example.com/path',
-         permanentDisplayText: 'example.com/path',
-         fullUrl: 'https://example.com/path',
-         dragUrl: 'https://example.com/path',
-         isFocused: true,
-         selection: {start: 0, end: 16},
-         ...state,
-       }));
-       await microtasksFinished();
-       const dataTransfer = dispatchDragEvent('dragstart').dataTransfer!;
-       assertEquals('', dataTransfer.getData('text/plain'));
-       assertEquals('', dataTransfer.getData('text/uri-list'));
-       dispatchDragEvent('dragend');
+   // Sets an input state for a page at "https://example.com/path", whose URL
+   // the input shows elided and selected, with `state` applied on top. If
+   // `selection` is given, then selects that range of the input's text, like
+   // the user with the keyboard: unlike a partial selection from the browser,
+   // which unelides the URL, that leaves the URL elided. Finally starts a drag
+   // of the selected text and returns the data that the page writes to it.
+   async function dragFromExamplePage(
+       state: Partial<OmniboxInputState>,
+       selection?: {start: number, end: number}): Promise<DataTransfer> {
+     callbackRouter.setInputState(createDefaultOmniboxInputState({
+       text: 'example.com/path',
+       permanentDisplayText: 'example.com/path',
+       fullUrl: 'https://example.com/path',
+       dragUrl: 'https://example.com/path',
+       isFocused: true,
+       selection: {start: 0, end: 16},
+       ...state,
+     }));
+     await microtasksFinished();
+     if (selection) {
+       input.setSelectionRange(selection.start, selection.end);
+     }
+     const dataTransfer = dispatchDragEvent('dragstart').dataTransfer!;
+     dispatchDragEvent('dragend');
+     return dataTransfer;
+   }
+
+   // Like the native omnibox, dragging other text that starts at the start of
+   // the input and stands for a URL on the host of the page drags that URL,
+   // which has the scheme of the page if the text has none.
+   test('DragStartOfUrlOnPageHostDragsUrl', async () => {
+     async function assertDragsUrl(
+         url: string, state: Partial<OmniboxInputState>,
+         selection?: {start: number, end: number}) {
+       const dataTransfer = await dragFromExamplePage(state, selection);
+       assertEquals(url, dataTransfer.getData('text/plain'));
+       assertEquals(url, dataTransfer.getData('text/uri-list'));
      }
 
-     // Part of the URL.
-     await assertDragsText({selection: {start: 0, end: 11}});
-     // The user's own text, even if it's the same as the URL's.
-     await assertDragsText({userInputInProgress: true});
+     // Part of the elided URL: its host, and part of its path too.
+     await assertDragsUrl('https://example.com/', {}, {start: 0, end: 11});
+     assertEquals('example.com/path', input.value);
+     await assertDragsUrl('https://example.com/pa', {}, {start: 0, end: 14});
+     // Part of the unelided URL, which has the scheme.
+     await assertDragsUrl(
+         'https://example.com/', {selection: {start: 0, end: 19}});
+     assertEquals('https://example.com/path', input.value);
+     // The user's own text, even if it's the same as the URL's, also with
+     // whitespace around it.
+     await assertDragsUrl(
+         'https://example.com/path', {userInputInProgress: true});
+     await assertDragsUrl('https://example.com/path', {
+       text: ' example.com/path ',
+       userInputInProgress: true,
+       selection: {start: 0, end: 18},
+     });
      // Other text, e.g. of a match.
+     await assertDragsUrl('https://example.com/other', {
+       text: 'example.com/other',
+       selection: {start: 0, end: 17},
+     });
+     // Text with a scheme other than the page's, and a port. The URL is
+     // canonical, like one that the browser writes.
+     await assertDragsUrl('http://example.com:8080/A%20b', {
+       text: 'HTTP://Example.com:8080/A b',
+       userInputInProgress: true,
+       selection: {start: 0, end: 27},
+     });
+     // A host that isn't ASCII, for an HTTP page, whose unelided URL has no
+     // scheme either.
+     await assertDragsUrl('http://www.xn--bcher-kva.example/', {
+       text: 'bücher.example/buch',
+       permanentDisplayText: 'bücher.example/buch',
+       fullUrl: 'www.bücher.example/buch',
+       dragUrl: 'http://www.xn--bcher-kva.example/buch',
+       selection: {start: 0, end: 18},
+     });
+     assertEquals('www.bücher.example/buch', input.value);
+   });
+
+   // Dragging any other text drags the selected text, which Blink writes to
+   // the drag.
+   test('DragStartOfOtherTextDragsText', async () => {
+     async function assertDragsText(
+         state: Partial<OmniboxInputState>,
+         selection?: {start: number, end: number}) {
+       const dataTransfer = await dragFromExamplePage(state, selection);
+       assertEquals('', dataTransfer.getData('text/plain'));
+       assertEquals('', dataTransfer.getData('text/uri-list'));
+     }
+
+     // Text that doesn't start at the start of the input.
+     await assertDragsText({}, {start: 4, end: 16});
+     // Only part of the host.
+     await assertDragsText({}, {start: 0, end: 10});
+     // A URL on another host, e.g. of a match, or on a subdomain.
      await assertDragsText({text: 'example.org/path'});
-     // No URL to drag.
+     await assertDragsText({
+       text: 'www.example.com/path',
+       userInputInProgress: true,
+       selection: {start: 0, end: 20},
+     });
+     // A search query.
+     await assertDragsText({
+       text: 'example.com reviews',
+       userInputInProgress: true,
+       selection: {start: 0, end: 19},
+     });
+     // Text that a username or a password makes a URL on the host.
+     await assertDragsText(
+         {text: 'user@example.com', userInputInProgress: true});
+     await assertDragsText({
+       text: 'mailto:user@example.com',
+       userInputInProgress: true,
+       selection: {start: 0, end: 23},
+     });
+     // Part of the URL of a page that isn't an HTTP(S) page.
+     await assertDragsText(
+         {
+           text: 'chrome://settings/help',
+           permanentDisplayText: 'chrome://settings/help',
+           fullUrl: 'chrome://settings/help',
+           dragUrl: 'chrome://settings/help',
+           selection: {start: 0, end: 22},
+         },
+         {start: 0, end: 17});
+     // No URL of the page to drag, or to compare the text with.
      await assertDragsText({dragUrl: ''});
+     await assertDragsText({dragUrl: ''}, {start: 0, end: 11});
    });
 
    test('DropOnSelfMovesText', async () => {

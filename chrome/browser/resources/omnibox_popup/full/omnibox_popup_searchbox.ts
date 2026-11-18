@@ -122,6 +122,34 @@ function getTextToDrop(dataTransfer: DataTransfer|null): string|null {
 }
 
 /**
+ * Returns the URL that `text` stands for if it's an HTTP(S) URL on the host of
+ * `pageUrl`, the HTTP(S) URL of the page, and an empty string otherwise. The
+ * URL has the scheme of the page if `text` has none.
+ *
+ * This stands in for the browser's `AutocompleteClassifier`, which
+ * `omnibox::AdjustTextForCopy()` gets such a URL from: the page has to write
+ * the data of a drag during `dragstart`, so it can't ask the browser then.
+ * Parsing the text of a URL gives the same URL as classifying it. Unlike the
+ * classifier, this also takes a host without a dot for a URL if the user
+ * hasn't typed that host before. And it leaves out a URL with a username or a
+ * password, as text with another scheme parses as one, e.g.
+ * "mailto:user@example.com".
+ */
+function getUrlOnHostOfPage(text: string, pageUrl: string): string {
+  const page = URL.parse(pageUrl);
+  if (!page || !['http:', 'https:'].includes(page.protocol)) {
+    return '';
+  }
+  text = text.trim();
+  const url = URL.parse(
+      /^https?:\/\//i.test(text) ? text : `${page.protocol}//${text}`);
+  if (!url || url.hostname !== page.hostname || url.username || url.password) {
+    return '';
+  }
+  return url.href;
+}
+
+/**
  * The longest time (in milliseconds) that the collapsed focus ring is hidden
  * while waiting for the zero-prefix suggestions that focusing queried (see
  * `zpsPending_`). Covers the round trip to the browser when the suggestions
@@ -439,6 +467,7 @@ export class OmniboxPopupSearchboxElement extends
   // The URL to drag when all of the unedited permanent text is dragged out of
   // the input, or empty if there is none. Unlike `fullUrl_`, which is formatted
   // for display, e.g. without "http://", this is the URL of the page itself.
+  // Other dragged text can stand for a URL on its host. See `getUrlToDrag_()`.
   private dragUrl_: string = '';
   protected accessor aimButtonIconOnly_: boolean = false;
   // Set by the browser, like the Views omnibox's text input type.
@@ -1287,10 +1316,7 @@ export class OmniboxPopupSearchboxElement extends
       selection: {start: Math.min(start, end), end: Math.max(start, end)},
     };
     if (e.dataTransfer) {
-      // Like `OmniboxViewViews::OnWriteDragData()`, if all of the unedited
-      // text is selected, drag the URL of the page rather than the text shown
-      // for it, which may be elided.
-      const url = this.isPermanentTextAllSelected_() ? this.dragUrl_ : '';
+      const url = this.getUrlToDrag_();
       if (url) {
         e.dataTransfer.setData('text/plain', url);
         e.dataTransfer.setData('text/uri-list', url);
@@ -1302,6 +1328,26 @@ export class OmniboxPopupSearchboxElement extends
     // Like `OmniboxViewViews::OnMouseDragged()`, close the dropdown, since the
     // user may want to drop the text on something that it covers.
     this.clearAutocompleteMatches();
+  }
+
+  /**
+   * Returns the URL to drag in place of the selected text, or an empty string
+   * to drag the text itself. Like `OmniboxViewViews::OnWriteDragData()`, if all
+   * of the unedited text is selected, that's the URL of the page rather than
+   * the text shown for it, which may be elided. For any other selection that
+   * starts at the start of the text, it's the URL that the selected text
+   * stands for, if that URL is on the host of the page.
+   */
+  private getUrlToDrag_(): string {
+    if (this.isPermanentTextAllSelected_()) {
+      return this.dragUrl_;
+    }
+    const input = this.getInputElement().inputElement;
+    if (input.selectionStart !== 0) {
+      return '';
+    }
+    return getUrlOnHostOfPage(
+        input.value.substring(0, input.selectionEnd ?? 0), this.dragUrl_);
   }
 
   private onDragEnd_() {
