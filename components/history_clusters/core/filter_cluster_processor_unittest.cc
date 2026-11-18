@@ -190,10 +190,6 @@ TEST_F(FilterClusterProcessorTest, NoFunctionalFilter) {
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
       "NewTabPage",
       0);
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      0);
 }
 
 TEST_F(FilterClusterProcessorTest, OnlyVisitsConstraint) {
@@ -217,14 +213,6 @@ TEST_F(FilterClusterProcessorTest, OnlyVisitsConstraint) {
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
       "NewTabPage",
       9, 1);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotFiltered, 9);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotEnoughVisits, 3);
 }
 
 TEST_F(FilterClusterProcessorTest, OnlyImageConstraint) {
@@ -247,14 +235,6 @@ TEST_F(FilterClusterProcessorTest, OnlyImageConstraint) {
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
       "NewTabPage",
       7, 1);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotFiltered, 7);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotEnoughImages, 5);
 }
 
 TEST_F(FilterClusterProcessorTest, OnlyCategoryAllowlistConstraint) {
@@ -278,14 +258,6 @@ TEST_F(FilterClusterProcessorTest, OnlyCategoryAllowlistConstraint) {
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
       "NewTabPage",
       9, 1);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotFiltered, 9);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNoCategoryMatch, 3);
 }
 
 TEST_F(FilterClusterProcessorTest, OnlyCategoryBlocklistConstraint) {
@@ -310,14 +282,6 @@ TEST_F(FilterClusterProcessorTest, OnlyCategoryBlocklistConstraint) {
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
       "NewTabPage",
       11, 1);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotFiltered, 11);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kHasBlockedCategory, 1);
 }
 
 TEST_F(FilterClusterProcessorTest, OnlySearchInitiated) {
@@ -340,14 +304,6 @@ TEST_F(FilterClusterProcessorTest, OnlySearchInitiated) {
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
       "NewTabPage",
       7, 1);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotFiltered, 7);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotSearchInitiated, 5);
 }
 
 TEST_F(FilterClusterProcessorTest, OnlyRelatedSearches) {
@@ -370,14 +326,6 @@ TEST_F(FilterClusterProcessorTest, OnlyRelatedSearches) {
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
       "NewTabPage",
       8, 1);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotFiltered, 8);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNoRelatedSearches, 4);
 }
 
 TEST_F(FilterClusterProcessorTest, OnlyShownOnProminentUiSurfacesNoEngagement) {
@@ -401,22 +349,6 @@ TEST_F(FilterClusterProcessorTest, OnlyShownOnProminentUiSurfacesNoEngagement) {
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
       "NewTabPage",
       8, 1);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotFiltered, 8);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotEnoughInterestingVisits, 0);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kSingleVisit, 3);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotContentVisible, 1);
 }
 
 TEST_F(FilterClusterProcessorTest,
@@ -441,22 +373,6 @@ TEST_F(FilterClusterProcessorTest,
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
       "NewTabPage",
       7, 1);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotFiltered, 7);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotEnoughInterestingVisits, 3);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kSingleVisit, 3);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotContentVisible, 1);
 }
 
 TEST_F(FilterClusterProcessorTest, FullFilter) {
@@ -482,46 +398,6 @@ TEST_F(FilterClusterProcessorTest, FullFilter) {
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
       "NewTabPage",
       1, 1);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotFiltered, 1);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotEnoughVisits, 3);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotEnoughImages, 5);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNoCategoryMatch, 3);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotSearchInitiated, 5);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNoRelatedSearches, 4);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotEnoughInterestingVisits, 3);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kSingleVisit, 3);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kNotContentVisible, 1);
-  histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
-      "NewTabPage",
-      ClusterFilterReason::kHasBlockedCategory, 1);
 }
 
 }  // namespace

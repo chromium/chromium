@@ -13,25 +13,6 @@ namespace history_clusters {
 enum class ClusteringRequestSource;
 struct QueryClustersFilterParams;
 
-// The reasons why a cluster can be filtered via this processor.
-enum class ClusterFilterReason {
-  kNotFiltered = 0,
-  kNotEnoughImages = 1,
-  kNoCategoryMatch = 2,
-  kNotSearchInitiated = 3,
-  kNoRelatedSearches = 4,
-  kNotEnoughInterestingVisits = 5,
-  kSingleVisit = 6,
-  kNotContentVisible = 7,
-  kHasBlockedCategory = 8,
-  kNotEnoughVisits = 9,
-
-  // Add above here and make sure to keep `ClusterFilterReason` up to date in
-  // enums.xml.
-
-  kMaxValue = kNotEnoughVisits
-};
-
 // A cluster processor that removes clusters that do not match the filter.
 class FilterClusterProcessor : public ClusterProcessor {
  public:

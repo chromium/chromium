@@ -16,15 +16,6 @@ namespace history_clusters {
 
 namespace {
 
-void RecordClusterFilterReasonHistogram(
-    ClusteringRequestSource clustering_request_source,
-    ClusterFilterReason reason) {
-  base::UmaHistogramEnumeration(
-      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason" +
-          GetHistogramNameSliceForRequestSource(clustering_request_source),
-      reason);
-}
-
 // Returns whether `filter_params` is a filter that would actually filter
 // clusters out.
 bool IsFunctionalFilter(const QueryClustersFilterParams& filter_params) {
@@ -124,36 +115,24 @@ bool FilterClusterProcessor::DoesClusterMatchFilter(
 
   bool matches_filter = true;
   if (num_visits < filter_params_->min_visits) {
-    RecordClusterFilterReasonHistogram(clustering_request_source_,
-                                       ClusterFilterReason::kNotEnoughVisits);
     matches_filter = false;
   }
   if (num_visits_with_images < filter_params_->min_visits_with_images) {
-    RecordClusterFilterReasonHistogram(clustering_request_source_,
-                                       ClusterFilterReason::kNotEnoughImages);
     matches_filter = false;
   }
   if (!filter_params_->categories_allowlist.empty() &&
       num_visits_in_allowed_categories <
           GetConfig().number_interesting_visits_filter_threshold) {
-    RecordClusterFilterReasonHistogram(clustering_request_source_,
-                                       ClusterFilterReason::kNoCategoryMatch);
     matches_filter = false;
   }
   if (!filter_params_->categories_blocklist.empty() &&
       has_visits_in_blocked_categories) {
-    RecordClusterFilterReasonHistogram(
-        clustering_request_source_, ClusterFilterReason::kHasBlockedCategory);
     matches_filter = false;
   }
   if (filter_params_->is_search_initiated && !is_search_initiated) {
-    RecordClusterFilterReasonHistogram(
-        clustering_request_source_, ClusterFilterReason::kNotSearchInitiated);
     matches_filter = false;
   }
   if (filter_params_->has_related_searches && !has_related_searches) {
-    RecordClusterFilterReasonHistogram(clustering_request_source_,
-                                       ClusterFilterReason::kNoRelatedSearches);
     matches_filter = false;
   }
   if (filter_params_->is_shown_on_prominent_ui_surfaces) {
@@ -162,28 +141,16 @@ bool FilterClusterProcessor::DoesClusterMatchFilter(
     if (engagement_score_provider_is_valid_ &&
         num_interesting_visits <
             GetConfig().number_interesting_visits_filter_threshold) {
-      RecordClusterFilterReasonHistogram(
-          clustering_request_source_,
-          ClusterFilterReason::kNotEnoughInterestingVisits);
       matches_filter = false;
     }
     if (num_visits <= 1) {
-      RecordClusterFilterReasonHistogram(clustering_request_source_,
-                                         ClusterFilterReason::kSingleVisit);
       matches_filter = false;
     }
     if (!is_content_visible) {
-      RecordClusterFilterReasonHistogram(
-          clustering_request_source_, ClusterFilterReason::kNotContentVisible);
       matches_filter = false;
     }
 
     cluster.should_show_on_prominent_ui_surfaces = matches_filter;
-  }
-
-  if (matches_filter) {
-    RecordClusterFilterReasonHistogram(clustering_request_source_,
-                                       ClusterFilterReason::kNotFiltered);
   }
 
   return matches_filter;
