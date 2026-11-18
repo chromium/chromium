@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_ui.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -23,6 +24,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
@@ -30,6 +32,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/net_errors.h"
+#include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1014,4 +1018,105 @@ TEST_F(DrivePickerHostUIConsentVerificationTest,
   EXPECT_FALSE(identity_test_env()->IsAccessTokenRequestPending());
   EXPECT_NE(ConsentPref(),
             static_cast<int>(contextual_search::DriveConsentState::kConsent));
+}
+
+TEST_F(DrivePickerHostUITest, ConsentKitLoadResult_RecordsOncePerLoad) {
+  content::TestWebUI test_web_ui;
+  test_web_ui.set_web_contents(web_contents());
+  DrivePickerHostUI controller(&test_web_ui);
+  testing::NiceMock<MockDrivePickerBridge> mock_bridge;
+  controller.SetBridge(mock_bridge.BindAndGetRemote());
+
+  identity_consent::IframeMessage rendered;
+  rendered.set_event(identity_consent::Event::UI_RENDERED_EVENT);
+  base::HistogramTester histogram_tester;
+
+  // ConsentKit renders after the untrusted page timed out, so only the timeout
+  // counts.
+  controller.LoadConsentKitUrl(GURL("https://consent.google.com/landing"));
+  controller.OnShowErrorDialog();
+  controller.OnConsentKitIframeMessage(mojo_base::ProtoWrapper(rendered));
+
+  // "Try again" starts a new load, which renders in time.
+  controller.OnHideErrorDialog();
+  controller.OnConsentKitIframeMessage(mojo_base::ProtoWrapper(rendered));
+
+  histogram_tester.ExpectBucketCount(
+      "ContextualSearch.Drive.ConsentKitLoadResult",
+      DrivePickerHostUI::ConsentKitLoadResult::kTimeoutBeforeResponse, 1);
+  histogram_tester.ExpectBucketCount(
+      "ContextualSearch.Drive.ConsentKitLoadResult",
+      DrivePickerHostUI::ConsentKitLoadResult::kRendered, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualSearch.Drive.ConsentKitLoadResult", 2);
+}
+
+TEST_F(DrivePickerHostUITest, ConsentKitLoadResult_RecordsTimeoutReason) {
+  content::TestWebUI test_web_ui;
+  test_web_ui.set_web_contents(web_contents());
+  DrivePickerHostUI controller(&test_web_ui);
+  testing::NiceMock<MockDrivePickerBridge> mock_bridge;
+  controller.SetBridge(mock_bridge.BindAndGetRemote());
+
+  // Stands in for the untrusted page, which loads ConsentKit in a child frame.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com"));
+  auto append_frame = [this] {
+    return content::RenderFrameHostTester::For(
+               web_contents()->GetPrimaryMainFrame())
+        ->AppendChild("consent_kit");
+  };
+  const GURL consent_kit_url("https://consent.google.com/landing");
+  base::HistogramTester histogram_tester;
+
+  // An aborted navigation, like when "Try again" replaces the frame, means
+  // ConsentKit still hasn't responded.
+  controller.LoadConsentKitUrl(consent_kit_url);
+  auto aborted = content::NavigationSimulator::CreateRendererInitiated(
+      consent_kit_url, append_frame());
+  aborted->Start();
+  aborted->AbortFromRenderer();
+  controller.OnShowErrorDialog();
+
+  // A redirect that the untrusted page's CSP blocks, e.g. to sign in, is a
+  // network error. A navigation to another origin doesn't count.
+  controller.OnHideErrorDialog();
+  auto blocked = content::NavigationSimulator::CreateRendererInitiated(
+      consent_kit_url, append_frame());
+  blocked->Redirect(GURL("https://accounts.google.com/signin"));
+  blocked->Fail(net::ERR_BLOCKED_BY_CSP);
+  blocked->CommitErrorPage();
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://docs.google.com/picker"), append_frame());
+  controller.OnShowErrorDialog();
+
+  // An HTTP error. A same-document navigation afterwards doesn't count.
+  controller.OnHideErrorDialog();
+  auto http_error = content::NavigationSimulator::CreateRendererInitiated(
+      consent_kit_url, append_frame());
+  http_error->SetResponseHeaders(net::HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 500 Internal Server Error\r\n\r\n"));
+  http_error->Commit();
+  content::NavigationSimulator::CreateRendererInitiated(
+      GURL(consent_kit_url.spec() + "#retry"),
+      http_error->GetFinalRenderFrameHost())
+      ->CommitSameDocument();
+  controller.OnShowErrorDialog();
+
+  // ConsentKit's page commits, but ConsentKit sends nothing.
+  controller.OnHideErrorDialog();
+  content::NavigationSimulator::NavigateAndCommitFromDocument(consent_kit_url,
+                                                              append_frame());
+  controller.OnShowErrorDialog();
+
+  for (auto result :
+       {DrivePickerHostUI::ConsentKitLoadResult::kTimeoutBeforeResponse,
+        DrivePickerHostUI::ConsentKitLoadResult::kTimeoutNetError,
+        DrivePickerHostUI::ConsentKitLoadResult::kTimeoutHttpError,
+        DrivePickerHostUI::ConsentKitLoadResult::kTimeoutAfterCommit}) {
+    histogram_tester.ExpectBucketCount(
+        "ContextualSearch.Drive.ConsentKitLoadResult", result, 1);
+  }
+  histogram_tester.ExpectTotalCount(
+      "ContextualSearch.Drive.ConsentKitLoadResult", 4);
 }
