@@ -660,6 +660,7 @@ source_set("unit_tests") {
   }
   if (is_win) {
     sources += [
+      "cloud/cloud_policy_util_unittest.cc",
       "policy_loader_win_unittest.cc",
       "scoped_critical_policy_section_unittest.cc",
     ]
