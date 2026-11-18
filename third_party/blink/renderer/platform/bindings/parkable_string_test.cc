@@ -359,7 +359,7 @@ TEST_P(ParkableStringTest, DecompressUtf16String) {
   }
 
   String large_string = String(data);
-  String copy = String(large_string.Impl()->IsolatedCopy());
+  String copy = String(data);
   ParkableString parkable(large_string.ReleaseImpl());
   large_string = String();
   EXPECT_FALSE(parkable.Is8Bit());
@@ -430,7 +430,7 @@ TEST_P(ParkableStringTest, Park) {
 
 TEST_P(ParkableStringTest, EqualityNoUnparking) {
   String large_string = MakeLargeString();
-  String copy = String(large_string.Impl()->IsolatedCopy());
+  String copy = MakeLargeString();
   EXPECT_NE(large_string.Impl(), copy.Impl());
 
   ParkableString parkable(large_string.Impl());
@@ -539,7 +539,7 @@ TEST_P(ParkableStringTest, AbortedParkingRetainsCompressedData) {
 
 TEST_P(ParkableStringTest, Unpark) {
   ParkableString parkable(MakeLargeString().Impl());
-  String unparked_copy = String(parkable.ToString().Impl()->IsolatedCopy());
+  String unparked_copy = MakeLargeString();
   EXPECT_TRUE(parkable.may_be_parked());
   EXPECT_FALSE(parkable.Impl()->is_parked());
   EXPECT_TRUE(ParkAndWait(parkable));
@@ -553,7 +553,7 @@ TEST_P(ParkableStringTest, Unpark) {
 TEST_P(ParkableStringTest, BackgroundUnparkFromMemory) {
   // Memory parked strings can be unparked on a background thread.
   ParkableString parkable(MakeLargeString().Impl());
-  String unparked_copy = String(parkable.ToString().Impl()->IsolatedCopy());
+  String unparked_copy = MakeLargeString();
   EXPECT_TRUE(ParkAndWait(parkable));
   ParkableStringImpl* impl = parkable.Impl();
   // Check that the string was added to the correct StringMap.
@@ -589,7 +589,7 @@ TEST_P(ParkableStringTest, BackgroundUnparkFromMemory) {
 TEST_P(ParkableStringTest, BackgroundUnparkFromDisk) {
   // On disk strings can be unparked on a background thread.
   ParkableString parkable(MakeLargeString().Impl());
-  String unparked_copy = String(parkable.ToString().Impl()->IsolatedCopy());
+  String unparked_copy = MakeLargeString();
   EXPECT_TRUE(ParkAndWait(parkable));
   ParkableStringImpl* impl = parkable.Impl();
 

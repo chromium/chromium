@@ -155,7 +155,7 @@ class ModuleScriptTest : public ::testing::Test, public ModuleTestBase {
     return ModuleScriptCreationParams(
         KURL("https://fox.url/script.js"), KURL("https://fox.url/"),
         ScriptSourceLocationType::kInline, ResolvedModuleType::kJavaScript,
-        ParkableString(source_text.Impl()->IsolatedCopy()), cache_handler,
+        ParkableString(source_text.Impl()), cache_handler,
         network::mojom::ReferrerPolicy::kDefault, /*source_map_url=*/String(),
         /*script_streamer=*/nullptr,
         ScriptStreamer::NotStreamingReason::kStreamingDisabled,

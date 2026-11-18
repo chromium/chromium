@@ -179,12 +179,6 @@ uint32_t StringImpl::ComputeAsciiFlags() const {
   return new_flags;
 }
 
-#if DCHECK_IS_ON()
-std::string StringImpl::AsciiForDebugging() const {
-  return String(IsolatedCopy()->Substring(0, 128)).Ascii();
-}
-#endif
-
 scoped_refptr<StringImpl> StringImpl::CreateUninitialized(
     size_t length,
     base::span<LChar>& data) {

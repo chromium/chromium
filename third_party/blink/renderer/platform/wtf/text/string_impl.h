@@ -463,10 +463,6 @@ class WTF_EXPORT StringImpl {
     });
   }
 
-  // It is no longer required to create isolated copies for thread-safety
-  // purposes.
-  scoped_refptr<StringImpl> IsolatedCopy() const;
-
   scoped_refptr<StringImpl> Substring(size_type pos,
                                       size_type len = npos) const;
 
@@ -708,10 +704,6 @@ class WTF_EXPORT StringImpl {
   // Calculates the kContainsOnlyAscii and kIsLowerAscii flags. Returns
   // a bitfield with those 2 values.
   uint32_t ComputeAsciiFlags() const;
-
-#if DCHECK_IS_ON()
-  std::string AsciiForDebugging() const;
-#endif
 
   static size_type highest_static_string_length_;
 
@@ -1172,12 +1164,6 @@ static inline int CodeUnitCompare(const StringImpl* string1,
     return -CodeUnitCompare(string2->Span8(), string1->Span16());
   }
   return CodeUnitCompare(string1->Span16(), string2->Span16());
-}
-
-inline scoped_refptr<StringImpl> StringImpl::IsolatedCopy() const {
-  if (Is8Bit())
-    return Create(Span8());
-  return Create(Span16());
 }
 
 template <typename BufferType>
