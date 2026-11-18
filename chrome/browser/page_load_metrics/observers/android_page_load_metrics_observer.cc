@@ -10,16 +10,21 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/time/time.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/browser_process.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
+#include "ui/android/window_android.h"
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/AppIntentMetricsHelper_jni.h"
 #include "chrome/browser/page_load_metrics/jni_headers/PageLoadMetrics_jni.h"
 
 AndroidPageLoadMetricsObserver::AndroidPageLoadMetricsObserver() {
@@ -51,6 +56,25 @@ AndroidPageLoadMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
   ReportNewNavigation(navigation_handle->GetNavigationId());
+  return CONTINUE_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+AndroidPageLoadMetricsObserver::OnCommit(
+    content::NavigationHandle* navigation_handle) {
+  if (IsPrerendering() || !GetDelegate().StartedInForeground()) {
+    return CONTINUE_OBSERVING;
+  }
+  // Recorded here, not with the buffered metrics, which can be flushed (and
+  // latched) by OnHidden() or FlushMetricsOnAppEnterBackground() before commit.
+  const int app_intent_category =
+      QueryAppIntentCategory(navigation_handle->GetWebContents(),
+                             GetDelegate().IsFirstNavigationInWebContents());
+  if (app_intent_category > 0) {
+    ukm::builders::PageLoad(GetDelegate().GetPageUkmSourceId())
+        .SetExternalAppIntentCategory(app_intent_category)
+        .Record(ukm::UkmRecorder::Get());
+  }
   return CONTINUE_OBSERVING;
 }
 
@@ -358,6 +382,30 @@ void AndroidPageLoadMetricsObserver::ReportFirstInputDelay(
       static_cast<int64_t>(first_input_delay.InMilliseconds()));
 }
 
+int AndroidPageLoadMetricsObserver::QueryAppIntentCategory(
+    content::WebContents* web_contents,
+    bool is_first_navigation) {
+  if (!web_contents) {
+    return 0;
+  }
+  TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents);
+  if (!tab_android) {
+    return 0;
+  }
+  base::android::ScopedJavaLocalRef<jobject> j_tab =
+      tab_android->GetJavaObject();
+  if (!j_tab) {
+    return 0;
+  }
+  ui::WindowAndroid* window_android = web_contents->GetTopLevelNativeWindow();
+  base::android::ScopedJavaLocalRef<jobject> j_window =
+      window_android ? window_android->GetJavaObject() : nullptr;
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return page_load_metrics::Java_AppIntentMetricsHelper_getAppIntentCategory(
+      env, j_window, j_tab, is_first_navigation);
+}
+
 bool AndroidPageLoadMetricsObserver::IsPrerendering() {
   // So that the isPrerendering argument works to realize STOP_OBSERVING on
   // OnPrerenderStart().
@@ -365,4 +413,5 @@ bool AndroidPageLoadMetricsObserver::IsPrerendering() {
          page_load_metrics::PrerenderingState::kNoPrerendering;
 }
 
+DEFINE_JNI(AppIntentMetricsHelper)
 DEFINE_JNI(PageLoadMetrics)

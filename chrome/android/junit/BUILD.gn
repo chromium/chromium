@@ -1840,6 +1840,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/night_mode/GlobalNightModeStateControllerTest.java",
       "src/org/chromium/chrome/browser/night_mode/GlobalNightModeStateProviderHolderTest.java",
       "src/org/chromium/chrome/browser/night_mode/NightModeUtilsTest.java",
+      "src/org/chromium/chrome/browser/page_load_metrics/AppIntentMetricsHelperTest.java",
       "src/org/chromium/chrome/browser/payments/AddressEditorTest.java",
       "src/org/chromium/chrome/browser/payments/ContactEditorTest.java",
       "src/org/chromium/chrome/browser/payments/PaymentErrorStringsTest.java",

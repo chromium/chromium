@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "net/base/ip_endpoint.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -66,6 +67,12 @@ class TestAndroidPageLoadMetricsObserver
 
   int64_t reported_dns_start_ms() const { return reported_dns_start_ms_; }
 
+  void set_app_intent_category(int category) {
+    app_intent_category_ = category;
+  }
+
+  bool last_is_first_navigation() const { return last_is_first_navigation_; }
+
  protected:
   void ReportNetworkQualityEstimate(
       net::EffectiveConnectionType connection_type,
@@ -100,6 +107,12 @@ class TestAndroidPageLoadMetricsObserver
     reported_dns_start_ms_ = dns_start_ms;
   }
 
+  int QueryAppIntentCategory(content::WebContents* web_contents,
+                             bool is_first_navigation) override {
+    last_is_first_navigation_ = is_first_navigation;
+    return is_first_navigation ? app_intent_category_ : 0;
+  }
+
  private:
   net::EffectiveConnectionType reported_connection_type_ =
       net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
@@ -110,6 +123,8 @@ class TestAndroidPageLoadMetricsObserver
   base::TimeTicks reported_navigation_start_tick_load_;
   int64_t reported_load_event_start_ms_ = 0;
   int64_t reported_dns_start_ms_ = 0;
+  int app_intent_category_ = 0;
+  bool last_is_first_navigation_ = false;
 };
 
 class AndroidPageLoadMetricsObserverTest
@@ -128,6 +143,14 @@ class AndroidPageLoadMetricsObserverTest
   }
 
   TestAndroidPageLoadMetricsObserver* observer() const { return observer_ptr_; }
+
+  void ResetObserverForNextNavigation(int app_intent_category) {
+    auto observer = std::make_unique<TestAndroidPageLoadMetricsObserver>(
+        &mock_network_quality_tracker_);
+    observer->set_app_intent_category(app_intent_category);
+    observer_ptr_ = observer.get();
+    observer_ = std::move(observer);
+  }
 
   base::TimeTicks GetNavigationStart() const { return navigation_start_; }
 
@@ -231,4 +254,67 @@ TEST_F(AndroidPageLoadMetricsObserverTest, LoadEvents) {
   EXPECT_EQ(20, observer()->reported_first_contentful_paint_ms());
   EXPECT_EQ(GetNavigationStart(),
             observer()->reported_navigation_start_tick_fcp());
+}
+
+TEST_F(AndroidPageLoadMetricsObserverTest,
+       ExternalAppIntentCategoryRecordedOnFirstForegroundLoadOnly) {
+  SetNetworkQualityMock();
+  observer()->set_app_intent_category(1 /* CAMERA */);
+
+  NavigateAndCommit(GURL("https://www.example.com"));
+  EXPECT_TRUE(observer()->last_is_first_navigation());
+
+  // The second navigation commits in the same WebContents, where
+  // IsFirstNavigationInWebContents() is false.
+  ResetObserverForNextNavigation(1 /* CAMERA */);
+  NavigateAndCommit(GURL("https://www.example.com/next"));
+  EXPECT_FALSE(observer()->last_is_first_navigation());
+  tester()->SimulateAppEnterBackground();
+
+  auto entries = tester()->test_ukm_recorder().GetEntriesByName(
+      ukm::builders::PageLoad::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entries[0], ukm::builders::PageLoad::kExternalAppIntentCategoryName, 1);
+}
+
+TEST_F(AndroidPageLoadMetricsObserverTest,
+       ExternalAppIntentCategoryNotRecordedWhenNoneOrBackground) {
+  SetNetworkQualityMock();
+  observer()->set_app_intent_category(0 /* NONE */);
+  NavigateAndCommit(GURL("https://www.example.com"));
+  tester()->SimulateAppEnterBackground();
+  EXPECT_TRUE(tester()
+                  ->test_ukm_recorder()
+                  .GetEntriesByName(ukm::builders::PageLoad::kEntryName)
+                  .empty());
+
+  ResetObserverForNextNavigation(5 /* MESSAGING */);
+  web_contents()->WasHidden();
+  NavigateAndCommit(GURL("https://www.example.com/bg"));
+  tester()->SimulateAppEnterBackground();
+  EXPECT_TRUE(tester()
+                  ->test_ukm_recorder()
+                  .GetEntriesByName(ukm::builders::PageLoad::kEntryName)
+                  .empty());
+}
+
+TEST_F(AndroidPageLoadMetricsObserverTest,
+       ExternalAppIntentCategoryRecordedWhenHiddenBeforeCommit) {
+  SetNetworkQualityMock();
+  observer()->set_app_intent_category(2 /* EMAIL */);
+
+  // Hiding the tab before commit flushes the buffered metrics early. The
+  // category must still be recorded once the navigation commits.
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://www.example.com"), web_contents());
+  navigation->Start();
+  web_contents()->WasHidden();
+  navigation->Commit();
+
+  auto entries = tester()->test_ukm_recorder().GetEntriesByName(
+      ukm::builders::PageLoad::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entries[0], ukm::builders::PageLoad::kExternalAppIntentCategoryName, 2);
 }

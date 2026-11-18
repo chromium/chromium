@@ -249,6 +249,19 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="30" label="R"/>
 </enum>
 
+<!-- LINT.IfChange(AndroidExternalAppIntentCategory) -->
+
+<enum name="AndroidExternalAppIntentCategory">
+  <int value="0" label="None"/>
+  <int value="1" label="Camera"/>
+  <int value="2" label="Email"/>
+  <int value="3" label="Navigation"/>
+  <int value="4" label="Gallery"/>
+  <int value="5" label="Messaging"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/page_load_metrics/AppIntentMetricsHelper.java:AndroidExternalAppIntentCategory) -->
+
 <enum name="AndroidMultiWindowActivityType">
   <int value="0" label="Enter"/>
   <int value="1" label="Exit"/>

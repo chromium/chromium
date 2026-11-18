@@ -17226,6 +17226,20 @@ be describing additional metrics about the same event.
       found when switching to the PageTiming.TotalForegroundDuration field.
     </summary>
   </metric>
+  <metric name="ExternalAppIntentCategory"
+      enum="AndroidExternalAppIntentCategory">
+    <summary>
+      (Android only) Records the broad external Android application category
+      (Camera, Email, Navigation, Gallery, or Messaging) when a foreground page
+      load was initiated via a Custom Tab or the initial navigation of an
+      external Android Intent. Not recorded for internal browser navigations or
+      apps outside these categories. The category is a best-effort guess, not
+      exact app category metadata: it comes from the launching app's package
+      name (a fixed list of known apps, plus matching the last dot-separated
+      word of the name), which is read from intent extras and referrers,
+      including ones the launching app sets itself and Android does not verify.
+    </summary>
+  </metric>
   <metric name="HourOfDay">
     <summary>
       The hour of the day when the page load was initiated. The time is measured
