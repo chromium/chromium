@@ -638,7 +638,9 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
   }
 
   void OnShortPress(const MotionEvent& e) override {
-    CHECK(!IsDoubleTapInProgress(), base::NotFatalUntil::M163);
+    // TODO(crbug.com/585929232): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(!IsDoubleTapInProgress());
     GestureEventDetails short_press_details =
         CreateTouchGestureDetails(EventType::kGestureShortPress);
     Send(CreateGesture(short_press_details, e));
