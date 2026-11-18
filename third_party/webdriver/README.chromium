@@ -2,7 +2,7 @@ Name: WebDriver
 Short Name: selenium
 URL: https://github.com/SeleniumHQ/selenium/tree/trunk/py
 Version: N/A
-Revision: 07c3d0845c26f6ebb13e7dbd15f80519f1f383d7
+Revision: 6c27287a2ab0e98d552525e1dfa3af740b7ccddb
 Update Mechanism: Autoroll
 Security Critical: no
 Shipped: no
