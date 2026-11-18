@@ -3797,10 +3797,7 @@ public class LocationBarMediator
                         && ComposeboxQueryControllerBridge.isFuseboxEligibleForProfile(
                                 assumeNonNull(mProfileSupplier.get()));
         mAiModeButtonUiConfig = config;
-        ChipView activationChip = mLocationBarLayout.getActivationChip();
-        activationChip.setText(config != null ? config.text : "");
-        activationChip.setContentDescription(config != null ? config.a11yLabel : null);
-        activationChip.setTooltipText(config != null ? config.tooltip : null);
+        mLocationBarLayout.getActivationChip().setText(config != null ? config.text : "");
         updateActivationChip();
         updateAlwaysShowAiModeCallback();
     }
@@ -3813,6 +3810,7 @@ public class LocationBarMediator
     /* package */ void updateActivationChip() {
         @AiModeButtonState int state = computeAiModeButtonState();
         mLocationBarLayout.setAiModeButtonState(state);
+        updateAiModeButtonLabels(state);
         mActivationChipVisibilitySupplier.set(state != AiModeButtonState.HIDDEN);
         updateUrlBarAccessibilityOrder(state != AiModeButtonState.HIDDEN);
         updateActivationChipCompact();
@@ -3865,6 +3863,31 @@ public class LocationBarMediator
     private boolean hasTextOrAttachments() {
         return !TextUtils.isEmpty(mUrlCoordinator.getTextWithAutocomplete())
                 || mFuseboxCoordinator.getHasAttachmentsSupplier().get();
+    }
+
+    /**
+     * Updates the AI Mode button's accessibility label and tooltip to describe its click action.
+     */
+    private void updateAiModeButtonLabels(@AiModeButtonState int state) {
+        @Nullable String label;
+        @Nullable String tooltip;
+        switch (state) {
+            case AiModeButtonState.VISIBLE_SEND -> {
+                label = mResourceProvider.getString(R.string.ntp_compose_send_a11y_label);
+                tooltip = label;
+            }
+            case AiModeButtonState.VISIBLE_ACTIVE -> {
+                label = mResourceProvider.getString(R.string.ntp_compose_exit_a11y_label);
+                tooltip = label;
+            }
+            default -> {
+                label = mAiModeButtonUiConfig != null ? mAiModeButtonUiConfig.a11yLabel : null;
+                tooltip = mAiModeButtonUiConfig != null ? mAiModeButtonUiConfig.tooltip : null;
+            }
+        }
+        ChipView activationChip = mLocationBarLayout.getActivationChip();
+        activationChip.setContentDescription(label);
+        activationChip.setTooltipText(tooltip);
     }
 
     /* package */ void onActivationChipSelectionChanged(boolean selected) {

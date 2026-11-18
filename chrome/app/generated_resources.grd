@@ -8106,10 +8106,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_ENTRYPOINT_A11Y_LABEL" desc="The accessibility label for the compose entrypoint in the searchbox on the New Tab Page.">
         Ask AI Mode in Google Search
       </message>
-      <message name="IDS_NTP_COMPOSE_EXIT_A11Y_LABEL" desc="The accessibility label for the AI Mode button in a searchbox (Omnibox, Realbox) to exit AI Mode search.">
+      <message name="IDS_NTP_COMPOSE_EXIT_A11Y_LABEL" desc="The accessibility label for the AI Mode button in a searchbox (Omnibox, Realbox) to exit AI Mode search." formatter_data="android_java">
         Exit AI Mode
       </message>
-      <message name="IDS_NTP_COMPOSE_SEND_A11Y_LABEL" desc="The accessibility label for the AI Mode button in a searchbox (Omnibox, Realbox) to submit the query.">
+      <message name="IDS_NTP_COMPOSE_SEND_A11Y_LABEL" desc="The accessibility label for the AI Mode button in a searchbox (Omnibox, Realbox) to submit the query." formatter_data="android_java">
         Ask in AI Mode
       </message>
       <message name="IDS_NTP_COMPOSE_PLACEHOLDER_TEXT" desc="The placeholder for the input in the compose box.">

@@ -6230,6 +6230,25 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_STATEFUL_AI_MODE_BUTTON)
+    public void testAiModeButtonLabels_describeClickAction() {
+        mAiModeButtonUiConfigSupplier.set(createTestAiModeButtonUiConfig());
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        AutocompleteInput input = beginPopoverInputForAiModeButton();
+        clearInvocations(mActivationChip);
+
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        String exitLabel = mContext.getString(R.string.ntp_compose_exit_a11y_label);
+        verify(mActivationChip).setContentDescription(exitLabel);
+        verify(mActivationChip).setTooltipText(exitLabel);
+
+        mHasAttachmentsSupplier.set(true);
+        String sendLabel = mContext.getString(R.string.ntp_compose_send_a11y_label);
+        verify(mActivationChip).setContentDescription(sendLabel);
+        verify(mActivationChip).setTooltipText(sendLabel);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_STATEFUL_AI_MODE_BUTTON)
     public void testAiModeButtonClicked_active_switchesToSearch() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         AutocompleteInput input = beginPopoverInputForAiModeButton();
