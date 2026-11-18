@@ -171,7 +171,7 @@ class PrePrefetchServiceCore {
         // would delay this request and nullify the benefit of PrePrefetch.
         // Instead, we fail the current request quickly and asynchronously
         // trigger pre-calculation for future requests.
-        PostTaskToPreCalculateHeaders(key);
+        PostPreCalculateHeadersToUIThread(key);
       }
       RecordPrePrefetchStartResultHistogram(
           PrePrefetchStartResult::kFailedPreCalculatedHeadersNotMatched);
@@ -207,7 +207,7 @@ class PrePrefetchServiceCore {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  void PostTaskToGetNewURLLoaderFactory() {
+  void PostGetNewURLLoaderFactoryToUIThread() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (g_should_prohibit_url_loader_factory_refresh_for_testing.load()) {
       CHECK_IS_TEST();
@@ -239,11 +239,11 @@ class PrePrefetchServiceCore {
     factory_.reset();
     factory_.Bind(std::move(factory));
     factory_.set_disconnect_handler(base::BindRepeating(
-        &PrePrefetchServiceCore::PostTaskToGetNewURLLoaderFactory,
+        &PrePrefetchServiceCore::PostGetNewURLLoaderFactoryToUIThread,
         weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void PostTaskToPreCalculateHeaders(
+  void PostPreCalculateHeadersToUIThread(
       const PrePrefetchPreCalculatedHeadersKey& key) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // Avoid posting multiple tasks before the previous one has completed by
