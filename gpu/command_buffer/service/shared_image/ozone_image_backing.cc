@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/debug/crash_logging.h"
@@ -43,6 +44,7 @@
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/buildflags.h"
+#include "ui/gl/scoped_make_current.h"
 #include "ui/gl/scoped_make_current_unsafe.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -540,7 +542,16 @@ bool OzoneImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
   if (context_state_->context_lost()) {
     return false;
   }
-  DCHECK(context_state_->IsCurrent(nullptr));
+
+  std::optional<ui::ScopedMakeCurrent> scoped_make_current;
+  if (!context_state_->IsCurrent(nullptr)) {
+    scoped_make_current.emplace(context_state_->context(),
+                                context_state_->surface());
+    if (!scoped_make_current->IsContextCurrent()) {
+      return false;
+    }
+  }
+  context_state_->set_need_context_state_reset(true);
 
 #if BUILDFLAG(USE_DAWN)
   if (context_state_->IsGraphiteDawn()) {
@@ -595,7 +606,16 @@ bool OzoneImageBacking::ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) {
   if (context_state_->context_lost()) {
     return false;
   }
-  CHECK(context_state_->IsCurrent(nullptr));
+
+  std::optional<ui::ScopedMakeCurrent> scoped_make_current;
+  if (!context_state_->IsCurrent(nullptr)) {
+    scoped_make_current.emplace(context_state_->context(),
+                                context_state_->surface());
+    if (!scoped_make_current->IsContextCurrent()) {
+      return false;
+    }
+  }
+  context_state_->set_need_context_state_reset(true);
 
 #if BUILDFLAG(USE_DAWN)
   if (context_state_->IsGraphiteDawn()) {

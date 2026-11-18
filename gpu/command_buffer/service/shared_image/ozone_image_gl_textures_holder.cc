@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image/ozone_image_gl_textures_holder.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
@@ -91,6 +92,16 @@ OzoneImageGLTexturesHolder::CreateAndInitTexturesHolder(
   if (!holder->CreateAndStoreTexture(backing, std::move(pixmap))) {
     holder.reset();
   }
+  return holder;
+}
+
+// static
+scoped_refptr<OzoneImageGLTexturesHolder>
+OzoneImageGLTexturesHolder::CreateForTesting(
+    std::vector<scoped_refptr<gles2::TexturePassthrough>> textures) {
+  scoped_refptr<OzoneImageGLTexturesHolder> holder =
+      base::WrapRefCounted(new OzoneImageGLTexturesHolder());
+  holder->textures_ = std::move(textures);
   return holder;
 }
 
