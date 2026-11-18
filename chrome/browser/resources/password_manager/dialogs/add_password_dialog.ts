@@ -237,16 +237,20 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
    * Helper function that checks whether the entered url is valid.
    */
   protected onWebsiteInput_() {
-    this.website_ = this.$.websiteInput.value;
+    const website = this.$.websiteInput.value;
+    this.website_ = website;
     this.isWebsiteBlurred_ = false;
-    if (this.website_.length === 0) {
+    if (website.length === 0) {
       this.domainInfo_ = null;
       this.isWebsiteRejected_ = false;
       return;
     }
     PasswordManagerImpl.getInstance()
-        .getDomainInfo(this.website_)
+        .getDomainInfo(website)
         .then(domainInfo => {
+          if (this.website_ !== website) {
+            return;
+          }
           this.domainInfo_ = domainInfo;
           this.isWebsiteRejected_ = !domainInfo;
         });

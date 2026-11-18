@@ -433,6 +433,51 @@ suite('AddPasswordDialogTest', function() {
     assertTrue(dialog.$.addButton.disabled);
   });
 
+  test('stale lookup reply does not overwrite newer website', async function() {
+    const dialog = document.createElement('add-password-dialog');
+    document.body.appendChild(dialog);
+    await microtasksFinished();
+
+    const firstLookup = new PromiseResolver<DomainInfo|null>();
+    const secondLookup = new PromiseResolver<DomainInfo|null>();
+    passwordManager.getDomainInfo = (url: string) =>
+        url === 'invalid' ? firstLookup.promise : secondLookup.promise;
+
+    await setValue(dialog.$.websiteInput, 'invalid');
+    await setValue(dialog.$.websiteInput, 'example.com');
+
+    secondLookup.resolve(createDomainInfo('example.com'));
+    await microtasksFinished();
+    assertFalse(dialog.$.websiteInput.invalid);
+
+    firstLookup.resolve(null);
+    await microtasksFinished();
+    assertFalse(dialog.$.websiteInput.invalid);
+    assertEquals('', dialog.$.websiteInput.errorMessage);
+  });
+
+  test('stale lookup reply ignored after website is cleared', async function() {
+    passwordManager.data.passwords = [
+      createPasswordEntry({url: 'example.com', username: 'test'}),
+    ];
+    const dialog = document.createElement('add-password-dialog');
+    document.body.appendChild(dialog);
+    await microtasksFinished();
+
+    const lookup = new PromiseResolver<DomainInfo|null>();
+    passwordManager.getDomainInfo = () => lookup.promise;
+
+    await setValue(dialog.$.usernameInput, 'test');
+    await setValue(dialog.$.websiteInput, 'example.com');
+    await setValue(dialog.$.websiteInput, '');
+
+    lookup.resolve(createDomainInfo('example.com'));
+    await microtasksFinished();
+    assertFalse(dialog.$.websiteInput.invalid);
+    assertFalse(dialog.$.usernameInput.invalid);
+    assertTrue(dialog.$.viewExistingPasswordLink.hidden);
+  });
+
   test('error when leaving password blank', async function() {
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
