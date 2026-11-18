@@ -117,10 +117,6 @@ BASE_DECLARE_FEATURE(kIosCleanupHangingPasswordFormExtractionRequests);
 // milliseconds before the form extraction request times out.
 extern const base::FeatureParam<int>
     kIosPasswordFormExtractionRequestsTimeoutMs;
-
-// Enables password generation bottom sheet to be displayed (on iOS) when a user
-// is signed-in and taps on a new password field.
-BASE_DECLARE_FEATURE(kIOSProactivePasswordGenerationBottomSheet);
 #endif  // BUILDFLAG(IS_IOS)
 
 // Marks all submitted credentials as leaked, useful for testing of a password

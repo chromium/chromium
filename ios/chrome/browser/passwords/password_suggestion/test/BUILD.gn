@@ -9,7 +9,6 @@ source_set("eg2_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",

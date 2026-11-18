@@ -33,7 +33,6 @@
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
-#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/personal_context/first_run/personal_context_first_run_service.h"
@@ -488,12 +487,9 @@ void AutofillBottomSheetTabHelper::AttachPasswordListeners(
 void AutofillBottomSheetTabHelper::AttachPasswordGenerationListeners(
     const std::vector<autofill::FieldRendererId>& renderer_ids,
     const std::string& frame_id) {
-  // Verify that the proactive password generation bottom sheet feature is
-  // enabled and that it hasn't been dismissed too many times.
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSProactivePasswordGenerationBottomSheet) ||
-      HasReachedPasswordGenerationDismissLimit()) {
+  // Verify that the proactive password generation bottom sheet hasn't been
+  // dismissed too many times.
+  if (HasReachedPasswordGenerationDismissLimit()) {
     return;
   }
 
@@ -577,13 +573,6 @@ void AutofillBottomSheetTabHelper::DetachPasswordListenersForAllFrames(
 
 void AutofillBottomSheetTabHelper::
     DetachPasswordGenerationListenersForAllFrames() {
-  // Verify that the password generation bottom sheet feature is enabled.
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSProactivePasswordGenerationBottomSheet)) {
-    return;
-  }
-
   for (auto& registered_renderer_ids :
        registered_password_generation_renderer_ids_) {
     DetachListenersForFrame(registered_renderer_ids.first,

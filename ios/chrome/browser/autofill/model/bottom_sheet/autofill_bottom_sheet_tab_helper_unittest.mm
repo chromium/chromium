@@ -26,7 +26,6 @@
 #import "components/autofill/ios/common/features.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
-#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/personal_context/first_run/test_personal_context_first_run_service.h"
 #import "ios/chrome/browser/autofill/model/autofill_ai_save_entity_prompt_model.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
@@ -447,9 +446,6 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
 // proactive password generation bottom sheet.
 TEST_F(AutofillBottomSheetTabHelperTest,
        ShowProactivePasswordGenerationBottomSheet) {
-  scoped_feature_list_.InitAndEnableFeature(
-      password_manager::features::kIOSProactivePasswordGenerationBottomSheet);
-
   // Using LoadHtml to fake a real page load. This instantiates the main
   // web::WebFrame and sets up the JS features needed by AttachListeners.
   web::test::LoadHtml(@"<html><body></body></html>", web_state_.get());

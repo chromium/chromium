@@ -9,7 +9,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
-#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
@@ -28,7 +27,6 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_traits_overrider.h"
-#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
 #import "net/base/apple/url_conversions.h"
@@ -109,13 +107,6 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
   // The test may leave stored crendentials behind so clear them.
   [PasswordSettingsAppInterface clearPasswordStores];
   [super tearDownHelper];
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      password_manager::features::kIOSProactivePasswordGenerationBottomSheet);
-  return config;
 }
 
 #pragma mark - Helper methods

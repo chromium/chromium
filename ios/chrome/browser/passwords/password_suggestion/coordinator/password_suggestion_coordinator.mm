@@ -12,7 +12,6 @@
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/common/password_generation_util.h"
-#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/ios/constants.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/prefs/pref_service.h"
@@ -297,11 +296,6 @@ constexpr char kUmaActionPrefix[] =
 // Increments the password generation bottom sheet dismiss count
 // preference.
 - (void)incrementDismissCount {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSProactivePasswordGenerationBottomSheet)) {
-    return;
-  }
   if (!self.profile) {
     return;
   }
@@ -326,11 +320,6 @@ constexpr char kUmaActionPrefix[] =
 // Resets the proactive password generation bottom sheet dismiss count to 0 when
 // a generated password suggestion is accepted.
 - (void)resetPasswordGenerationBottomSheetDismissCount {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSProactivePasswordGenerationBottomSheet)) {
-    return;
-  }
   web::WebState* webState = [self activeWebState];
   if (!webState) {
     return;
@@ -407,15 +396,9 @@ constexpr char kUmaActionPrefix[] =
   return ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
 }
 
-// Refocuses the field that was blurred to show the payments suggestion
+// Refocuses the field that was blurred to show the password generation
 // bottom sheet, if deemed needed.
 - (void)refocusIfNeeded {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSProactivePasswordGenerationBottomSheet)) {
-    return;
-  }
-
   web::WebState* webState = [self activeWebState];
   if (!webState) {
     return;

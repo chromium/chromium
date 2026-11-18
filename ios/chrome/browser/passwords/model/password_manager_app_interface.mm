@@ -17,7 +17,9 @@
 #import "components/password_manager/core/browser/password_string.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -206,6 +208,13 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
         return credential->username_value == usernameStr &&
                credential->password_value == passwordStr;
       });
+}
+
++ (void)disableProactivePasswordGenerationBottomSheet {
+  chrome_test_util::GetOriginalProfile()->GetPrefs()->SetInteger(
+      prefs::kIosPasswordGenerationBottomSheetDismissCount,
+      AutofillBottomSheetTabHelper::
+          kPasswordGenerationBottomSheetMaxDismissCount);
 }
 
 @end

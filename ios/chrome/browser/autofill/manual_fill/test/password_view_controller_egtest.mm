@@ -8,7 +8,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/webauthn/ios/features.h"
@@ -21,6 +20,7 @@
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/test/credential_suggestion_bottom_sheet_app_interface.h"
+#import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/browser/passwords/password_suggestion/public/password_suggestion_constants.h"
 #import "ios/chrome/browser/settings/manage_sync/public/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_constants.h"
@@ -280,6 +280,11 @@ void CheckKeyboardIsUpAndNotCovered() {
   _HTTPSServer = nil;
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   self.URL = self.testServer->GetURL(kFormHTMLFile);
+
+  // Disable the proactive password generation bottom sheet; it is tested in its
+  // own suite in password_suggestion_egtest.mm.
+  [PasswordManagerAppInterface disableProactivePasswordGenerationBottomSheet];
+
   [self loadLoginPage];
   [AutofillAppInterface saveExamplePasswordFormToProfileStore];
   [ChromeEarlGrey loadURL:self.URL];
@@ -309,17 +314,14 @@ void CheckKeyboardIsUpAndNotCovered() {
       [MetricsAppInterface releaseUserActionTester]);
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface releaseHistogramTester]);
+  [ChromeEarlGrey clearUserPrefWithName:
+                      prefs::kIosPasswordGenerationBottomSheetDismissCount];
   _HTTPSServer = nil;
   [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-
-  // The proactive password generation bottom sheet isn't tested here, it
-  // is tested in its own suite in password_suggestion_egtest.mm.
-  config.features_disabled.push_back(
-      password_manager::features::kIOSProactivePasswordGenerationBottomSheet);
 
   if ([self
           isRunningTest:

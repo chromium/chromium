@@ -114,10 +114,6 @@ BASE_FEATURE(kIosCleanupHangingPasswordFormExtractionRequests,
 const base::FeatureParam<int> kIosPasswordFormExtractionRequestsTimeoutMs = {
     &kIosCleanupHangingPasswordFormExtractionRequests,
     /*name=*/"period-ms", /*default_value=*/250};
-
-BASE_FEATURE(kIOSProactivePasswordGenerationBottomSheet,
-             "kIOSProactivePasswordGenerationBottomSheet",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

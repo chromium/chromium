@@ -50,6 +50,12 @@
 // Returns the number of stored credentials.
 + (int)storedCredentialsCount;
 
+// Disables the proactive password generation bottom sheet by setting its
+// dismiss count pref to the maximum allowed value. Note that accepting a
+// generated password resets the dismiss count, which re-enables the proactive
+// bottom sheet; call this again after accepting if the test continues.
++ (void)disableProactivePasswordGenerationBottomSheet;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_PASSWORD_MANAGER_APP_INTERFACE_H_

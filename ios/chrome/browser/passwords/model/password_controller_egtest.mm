@@ -221,6 +221,10 @@ void LoginOnUff() {
   // enabled by default.
   [CredentialSuggestionBottomSheetAppInterface setDismissCount:0];
 
+  // Disable the proactive password generation bottom sheet; it is tested in its
+  // own suite in password_suggestion_egtest.mm.
+  [PasswordManagerAppInterface disableProactivePasswordGenerationBottomSheet];
+
   // Clear credentials and autofill profile before starting the test in case
   // there are some left over from a previous test case.
   GREYAssertTrue([PasswordManagerAppInterface clearCredentials],
@@ -246,6 +250,8 @@ void LoginOnUff() {
                  @"Clearing credentials wasn't done.");
   [AutofillAppInterface clearProfilesStore];
   [CredentialSuggestionBottomSheetAppInterface setDismissCount:0];
+  [ChromeEarlGrey clearUserPrefWithName:
+                      prefs::kIosPasswordGenerationBottomSheetDismissCount];
   [super tearDownHelper];
 }
 
@@ -276,10 +282,6 @@ void LoginOnUff() {
         password_manager::features::kMarkAllCredentialsAsLeaked);
   }
 
-  // The proactive password generation bottom sheet isn't tested here, it
-  // is tested in its own suite in password_suggestion_egtest.mm.
-  config.features_disabled.push_back(
-      password_manager::features::kIOSProactivePasswordGenerationBottomSheet);
   return config;
 }
 

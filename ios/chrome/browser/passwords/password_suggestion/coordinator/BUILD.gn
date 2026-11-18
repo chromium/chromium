@@ -10,7 +10,6 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//components/autofill/core/common",
-    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/ios",
     "//components/password_manager/ios:password_manager_feature_header",
     "//components/prefs",

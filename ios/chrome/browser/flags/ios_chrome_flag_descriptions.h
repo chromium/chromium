@@ -1188,12 +1188,6 @@ inline constexpr char kIOSPasswordManagerSortAndFilterName[] =
 inline constexpr char kIOSPasswordManagerSortAndFilterDescription[] =
     "Enables sorting and credential filter chips in the Password Manager UI.";
 
-inline constexpr char kIOSProactivePasswordGenerationBottomSheetName[] =
-    "IOS Proactive Password Generation Bottom Sheet";
-inline constexpr char kIOSProactivePasswordGenerationBottomSheetDescription[] =
-    "Enables the display of the proactive password generation bottom sheet on "
-    "IOS.";
-
 inline constexpr char kIOSProvidesAppNotificationSettingsName[] =
     "IOS Provides App Notification Settings";
 inline constexpr char kIOSProvidesAppNotificationSettingsDescription[] =
