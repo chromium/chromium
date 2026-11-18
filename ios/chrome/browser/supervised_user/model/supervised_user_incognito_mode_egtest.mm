@@ -4,11 +4,14 @@
 
 #import "base/feature_list.h"
 #import "base/strings/strcat.h"
+#import "components/omnibox/browser/aim_eligibility_service_features.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_matchers.h"
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -57,6 +60,11 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kChromeNextIa);
+  if ([self isRunningTest:@selector(testNTPQuickActionsIncognitoHidden)]) {
+    config.features_enabled.push_back(kAIMNTPEntrypointTablet);
+    config.features_disabled.push_back(kAimButtonRefactor);
+    config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
+  }
   return config;
 }
 
@@ -322,6 +330,31 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
   // The user should stay on the new tab page.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests that the NTP Quick Actions Incognito button is hidden on signin for
+// supervised users and re-enabled on signout.
+- (void)testNTPQuickActionsIncognitoHidden {
+  id<GREYMatcher> aimButton =
+      grey_accessibilityID(kNTPAIMQuickActionIdentifier);
+  id<GREYMatcher> incognitoButton =
+      grey_accessibilityID(kNTPIncognitoQuickActionIdentifier);
+
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:aimButton];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:incognitoButton];
+
+  [self signInWithSupervisedAccount];
+
+  [ChromeEarlGrey
+      waitForNotSufficientlyVisibleElementWithMatcher:incognitoButton];
+  [[EarlGrey selectElementWithMatcher:aimButton]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [SigninEarlGrey signOut];
+
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:incognitoButton];
+  [[EarlGrey selectElementWithMatcher:aimButton]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

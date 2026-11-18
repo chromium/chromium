@@ -30,6 +30,7 @@
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
 #import "components/omnibox/common/omnibox_features.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
@@ -596,6 +597,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
 
   self.templateURLService->Load();
   [self updateModuleVisibilityForConsumer];
+  [self updateIncognitoAvailability];
   [self.headerConsumer
       setVoiceSearchIsEnabled:ios::provider::IsVoiceSearchEnabled()];
 
@@ -815,6 +817,9 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
       preferenceName == ntp_tiles::prefs::kMagicStackHomeModuleEnabled) {
     [self updateModuleVisibilityForConsumer];
     [self.NTPContentDelegate updateModuleVisibility];
+  } else if (preferenceName ==
+             policy::policy_prefs::kIncognitoModeAvailability) {
+    [self updateIncognitoAvailability];
   }
 }
 
@@ -1000,6 +1005,11 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
       _prefService->GetBoolean(ntp_tiles::prefs::kMagicStackHomeModuleEnabled);
 }
 
+// Updates the consumer with whether incognito mode is disabled.
+- (void)updateIncognitoAvailability {
+  self.consumer.incognitoDisabled = IsIncognitoModeDisabled(_prefService);
+}
+
 // Starts observing some prefs.
 - (void)startObservingPrefs {
   _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
@@ -1012,6 +1022,11 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
       _prefChangeRegistrar.get());
   _prefObserverBridge->ObserveChangesForPreference(
       ntp_tiles::prefs::kMagicStackHomeModuleEnabled,
+      _prefChangeRegistrar.get());
+
+  // Observe incognito availability policy/parental control changes.
+  _prefObserverBridge->ObserveChangesForPreference(
+      policy::policy_prefs::kIncognitoModeAvailability,
       _prefChangeRegistrar.get());
 }
 

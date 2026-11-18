@@ -10,8 +10,11 @@
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "base/values.h"
 #import "components/commerce/core/mock_shopping_service.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/sync/test/test_sync_service.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
@@ -48,6 +51,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_focus/omnibox_focus_browser_agent.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_focus/omnibox_state_provider.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -1050,5 +1054,40 @@ TEST_F(NewTabPageCoordinatorTest,
                                         HomeCustomizationEntrypoint::kPromo, 1);
 
   OCMStub([snackbar_commands_handler_mock_ dismissAllSnackbars]);
+  [coordinator_ stop];
+}
+
+// Tests that `openIncognitoSearch` is ignored and `NTPViewController`'s
+// `incognitoDisabled` tracks policy updates.
+TEST_F(NewTabPageCoordinatorTest, OpenIncognitoSearchIgnoredWhenDisabled) {
+  static_cast<TestProfileIOS*>(GetProfile())
+      ->GetTestingPrefService()
+      ->SetSupervisedUserPref(
+          policy::policy_prefs::kIncognitoModeAvailability,
+          base::Value(static_cast<int>(IncognitoModePrefs::kDisabled)));
+  CreateCoordinator(/*off_the_record=*/false);
+  SetupCommandHandlerMocks();
+  [coordinator_ start];
+  [coordinator_ didNavigateToNTPInWebState:active_web_state()];
+
+  EXPECT_TRUE(coordinator_.NTPViewController.incognitoDisabled);
+
+  base::UserActionTester user_action_tester;
+  OCMReject([application_handler_mock_ openURLInNewTab:[OCMArg any]]);
+  id<NewTabPageShortcutsHandler> shortcuts_handler =
+      static_cast<id<NewTabPageShortcutsHandler>>(coordinator_);
+  [shortcuts_handler openIncognitoSearch];
+
+  histogram_tester_->ExpectTotalCount("IOS.NTP.Click", 0);
+  histogram_tester_->ExpectTotalCount("IOS.Home.Click", 0);
+  EXPECT_EQ(0,
+            user_action_tester.GetActionCount(kNTPIncognitoButtonTappedAction));
+
+  static_cast<TestProfileIOS*>(GetProfile())
+      ->GetTestingPrefService()
+      ->RemoveSupervisedUserPref(
+          policy::policy_prefs::kIncognitoModeAvailability);
+  EXPECT_FALSE(coordinator_.NTPViewController.incognitoDisabled);
+
   [coordinator_ stop];
 }

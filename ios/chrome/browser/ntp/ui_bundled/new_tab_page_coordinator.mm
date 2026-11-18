@@ -1105,8 +1105,6 @@
     (NewTabPageViewController*)NTPViewController {
   NTPViewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
-  NTPViewController.incognitoDisabled =
-      IsIncognitoModeDisabled(self.prefService);
   NTPViewController.mutator = self.NTPMediator;
   NTPViewController.feedHeaderViewController = self.feedHeaderViewController;
   NTPViewController.headerView = self.headerView;
@@ -2762,6 +2760,9 @@
 }
 
 - (void)openIncognitoSearch {
+  if (IsIncognitoModeDisabled(self.prefService)) {
+    return;
+  }
   RecordHomeAction(IOSHomeActionType::kQuickActionIncognito,
                    [self isStartSurface]);
   [self.NTPMetricsRecorder recordIncognitoTapped];

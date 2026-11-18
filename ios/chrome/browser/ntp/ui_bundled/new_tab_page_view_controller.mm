@@ -257,6 +257,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
       [[NewTabPageQuickActionsViewController alloc] init];
   _quickActionsViewController.layoutGuideCenter = self.layoutGuideCenter;
   _quickActionsViewController.NTPShortcutsHandler = self.NTPShortcutsHandler;
+  _quickActionsViewController.incognitoDisabled = self.incognitoDisabled;
   [_quickActionsViewController setAIMTitle:_aimTitle
                                       icon:_aimIcon
                         accessibilityLabel:_aimAccessibilityLabel];
@@ -1038,6 +1039,14 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     [self updateFeedTopSectionHierarchy];
     [self updateNTPLayout];
   }
+}
+
+- (void)setIncognitoDisabled:(BOOL)incognitoDisabled {
+  if (_incognitoDisabled == incognitoDisabled) {
+    return;
+  }
+  _incognitoDisabled = incognitoDisabled;
+  _quickActionsViewController.incognitoDisabled = incognitoDisabled;
 }
 
 #pragma mark - UIScrollViewDelegate

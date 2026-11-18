@@ -20,6 +20,10 @@
 // Handles the actions for the NTP shortcuts, like Lens or voice search.
 @property(nonatomic, weak) id<NewTabPageShortcutsHandler> NTPShortcutsHandler;
 
+// Whether incognito is disabled (e.g. by enterprise policy or parental
+// controls).
+@property(nonatomic, assign) BOOL incognitoDisabled;
+
 // Sets icon, title, and accessibility label for the AIM button.
 - (void)setAIMTitle:(NSString*)title
                   icon:(UIImage*)icon

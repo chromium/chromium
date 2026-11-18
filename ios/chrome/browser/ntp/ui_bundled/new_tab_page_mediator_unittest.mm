@@ -10,16 +10,19 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/values.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/feed/core/v2/public/common_enums.h"
 #import "components/image_fetcher/core/mock_image_fetcher.h"
 #import "components/omnibox/browser/mock_aim_eligibility_service.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/subscription_eligibility/subscription_eligibility_service.h"
 #import "components/sync/protocol/theme_types.pb.h"
 #import "components/sync/test/test_sync_service.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/aim/model/ai_mode_button_service_ios.h"
 #import "ios/chrome/browser/aim/model/ai_mode_button_service_ios_factory.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
@@ -46,6 +49,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -670,4 +674,40 @@ TEST_F(NewTabPageMediatorTest, TestRestoreNTPScrollPosition) {
   [mediator_ restoreNTPScrollPositionForWebState:web_state.get()];
 
   EXPECT_OCMOCK_VERIFY(scroll_consumer);
+}
+
+// Tests that the consumer receives incognito availability updates on setup and
+// when `kIncognitoModeAvailability` changes.
+TEST_F(NewTabPageMediatorTest, TestIncognitoAvailabilityPrefUpdates) {
+  CreateMediator(/*with_aim_eligibility_service=*/false);
+
+  id ntp_consumer = OCMProtocolMock(@protocol(NewTabPageConsumer));
+  mediator_.consumer = ntp_consumer;
+
+  OCMExpect([ntp_consumer setIncognitoDisabled:NO]);
+  [mediator_ setUp];
+  EXPECT_OCMOCK_VERIFY(ntp_consumer);
+
+  OCMExpect([ntp_consumer setIncognitoDisabled:YES]);
+  profile_->GetTestingPrefService()->SetSupervisedUserPref(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      base::Value(static_cast<int>(IncognitoModePrefs::kDisabled)));
+  EXPECT_OCMOCK_VERIFY(ntp_consumer);
+
+  OCMExpect([ntp_consumer setIncognitoDisabled:NO]);
+  profile_->GetTestingPrefService()->RemoveSupervisedUserPref(
+      policy::policy_prefs::kIncognitoModeAvailability);
+  EXPECT_OCMOCK_VERIFY(ntp_consumer);
+
+  OCMExpect([ntp_consumer setIncognitoDisabled:NO]);
+  profile_->GetTestingPrefService()->SetManagedPref(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      base::Value(static_cast<int>(IncognitoModePrefs::kForced)));
+  EXPECT_OCMOCK_VERIFY(ntp_consumer);
+
+  OCMExpect([ntp_consumer setIncognitoDisabled:YES]);
+  profile_->GetTestingPrefService()->SetManagedPref(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      base::Value(static_cast<int>(IncognitoModePrefs::kDisabled)));
+  EXPECT_OCMOCK_VERIFY(ntp_consumer);
 }

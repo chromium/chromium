@@ -74,6 +74,7 @@
 @property(nonatomic, assign) BOOL mostVisitedVisible;
 @property(nonatomic, assign) BOOL magicStackVisible;
 @property(nonatomic, assign) BOOL feedTopSectionVisible;
+@property(nonatomic, assign) BOOL incognitoDisabled;
 
 // Sets the feed view controller to embed in the redesign bottom sheet.
 - (void)setFeedViewController:(UIViewController*)feedViewController;

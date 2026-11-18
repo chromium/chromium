@@ -23,6 +23,12 @@
 // Whether the Feed Top Section (promos) is visible on the NTP.
 @property(nonatomic, assign) BOOL feedTopSectionVisible;
 
+// Whether incognito is disabled (e.g. by enterprise policy or parental
+// controls).
+// TODO(crbug.com/585514981): Replace with `-setIncognitoAllowed:` and remove
+// duplicate property declarations from the NTP view controllers.
+@property(nonatomic, assign) BOOL incognitoDisabled;
+
 // Collection of trait-specific override values for customizing NTP appearance
 @property(nonatomic, readonly) id<UITraitOverrides> traitOverrides;
 

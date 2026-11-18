@@ -310,6 +310,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
         [[NewTabPageQuickActionsViewController alloc] init];
     _quickActionsViewController.layoutGuideCenter = self.layoutGuideCenter;
     _quickActionsViewController.NTPShortcutsHandler = self.NTPShortcutsHandler;
+    _quickActionsViewController.incognitoDisabled = self.incognitoDisabled;
 
     AimButtonRefactorArm arm = GetAimButtonRefactorArm();
     if (arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
@@ -1038,6 +1039,14 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   if (_bottomSheetViewController) {
     _bottomSheetViewController.feedTopSectionVisible = feedTopSectionVisible;
   }
+}
+
+- (void)setIncognitoDisabled:(BOOL)incognitoDisabled {
+  if (_incognitoDisabled == incognitoDisabled) {
+    return;
+  }
+  _incognitoDisabled = incognitoDisabled;
+  _quickActionsViewController.incognitoDisabled = incognitoDisabled;
 }
 
 - (void)handleFeedTopSectionClosed {

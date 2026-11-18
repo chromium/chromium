@@ -93,6 +93,14 @@ constexpr CGFloat kCompactButtonWidth = 80.0;
   }
 }
 
+- (void)setIncognitoDisabled:(BOOL)incognitoDisabled {
+  if (_incognitoDisabled == incognitoDisabled) {
+    return;
+  }
+  _incognitoDisabled = incognitoDisabled;
+  [self updateButtonVisibility];
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -215,8 +223,8 @@ constexpr CGFloat kCompactButtonWidth = 80.0;
       UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class
     ]
                        withAction:@selector(updateButtonStackConstraints)];
-    [self updateButtonVisibility];
   }
+  [self updateButtonVisibility];
 }
 
 // Creates a horizontal stack view for the Quick Action buttons.
@@ -236,8 +244,16 @@ constexpr CGFloat kCompactButtonWidth = 80.0;
   return stackView;
 }
 
-// Updates the visibility of the AI Quick Action buttons based on eligibility.
+// Updates the visibility of the Quick Action buttons based on eligibility and
+// policy.
 - (void)updateButtonVisibility {
+  if (self.incognitoDisabled) {
+    // Deactivate the fixed width constraint before hiding so `UIStackView`'s
+    // hiding constraint does not transiently conflict with it.
+    _incognitoSearchButtonWidthConstraint.active = NO;
+  }
+  _incognitoSearchButton.hidden = self.incognitoDisabled;
+
   AimButtonRefactorArm arm = GetAimButtonRefactorArm();
   if (arm == AimButtonRefactorArm::kImageGenerationQuickAction) {
     _aimImageGenerationButton.hidden = !_aimImageGenerationAllowed;
@@ -272,7 +288,8 @@ constexpr CGFloat kCompactButtonWidth = 80.0;
       !showAllButtonTitles && !_aimImageGenerationButton.isHidden;
   _aimAttachImageButtonWidthConstraint.active =
       !showAllButtonTitles && !_aimAttachImageButton.isHidden;
-  _incognitoSearchButtonWidthConstraint.active = !showAllButtonTitles;
+  _incognitoSearchButtonWidthConstraint.active =
+      !showAllButtonTitles && !_incognitoSearchButton.isHidden;
 
   _buttonStackView.distribution = showAllButtonTitles
                                       ? UIStackViewDistributionFillEqually
