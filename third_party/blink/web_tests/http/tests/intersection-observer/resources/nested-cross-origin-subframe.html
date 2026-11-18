@@ -9,7 +9,7 @@ var entries = [];
 var target = document.getElementById('target');
 var scroller = document.scrollingElement;
 var nextStep;
-var waiting_for_ack = false;
+var ack_count = 0;
 
 function clientRectToJson(rect) {
   if (!rect)
@@ -114,15 +114,22 @@ function step3() {
 function handleMessage(event)
 {
   port = event.source;
-  // The ACKs serve the purpose to create an extra full postMessage round trip
-  // delay before taking IntersectionObserver records. This accounts for a
-  // race condition that exists when this is an out-of-process iframe: the
-  // postMessage can trigger takeRecords before new intersections have been
-  // calculated. requestAnimationFrame() is not available here because of
-  // frame throttling in the same-process scenario.
+  // Each cross-origin iframe boundary requires a BeginMainFrame + IPC hop
+  // (SetViewportIntersectionFromParent -> ScheduleAnimation) to propagate
+  // viewport intersections. With two nested cross-origin iframes, wait for at
+  // least 2 ACK round-trips (3 top-frame rAF cycles), and if an entry is
+  // expected (all steps except step1), continue until Process C has computed it.
   if (event.data.hasOwnProperty('ACK')) {
+    ack_count++;
+    entries = entries.concat(observer.takeRecords());
+    if (ack_count < 2 || (nextStep != step1 && entries.length == 0)) {
+      port.postMessage({ ACK: 1 }, "*");
+      return;
+    }
+    ack_count = 0;
     nextStep();
   } else {
+    ack_count = 0;
     port.postMessage({ ACK: 1 }, "*");
   }
 }
