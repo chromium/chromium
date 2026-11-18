@@ -59,8 +59,12 @@ class MEDIA_EXPORT DemuxerManager {
     virtual void OnError(PipelineStatus status) = 0;
 
     // Used for controlling the client when a demuxer swap happens.
+    // `StopForDemuxerReset()` is called first, then
+    // `RestartForDemuxerChange()` once the old demuxer is freed. `is_hls` is
+    // true when switching to the HLS demuxer, and false when falling back from
+    // SymphoniaDemuxer to FFmpegDemuxer on the same data source.
     virtual void StopForDemuxerReset() = 0;
-    virtual void RestartForHls() = 0;
+    virtual void RestartForDemuxerChange(bool is_hls) = 0;
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
     virtual base::SequenceBound<HlsDataSourceProvider>
@@ -175,8 +179,18 @@ class MEDIA_EXPORT DemuxerManager {
                                 const std::vector<uint8_t>& init_data);
   void OnChunkDemuxerOpened();
   void OnProgress();
-  void RestartClientForHLS();
-  void FreeResourcesAfterMediaThreadWait(base::OnceClosure cb);
+  void RestartForDemuxerChange(bool is_hls);
+
+  // Frees the demuxer, and the data source if `free_data_source` is true, once
+  // the media thread is done with them, then runs `cb`.
+  void FreeResourcesAfterMediaThreadWait(bool free_data_source,
+                                         base::OnceClosure cb);
+
+#if BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER) && BUILDFLAG(ENABLE_FFMPEG)
+  // Frees the demuxer, keeping the data source, then restarts the client with
+  // FFmpegDemuxer.
+  void FallBackFromSymphoniaDemuxer(PipelineStatus error);
+#endif  // BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER) && BUILDFLAG(ENABLE_FFMPEG)
 
   void DemuxerRequestsSeek(base::TimeDelta time);
 
@@ -218,6 +232,12 @@ class MEDIA_EXPORT DemuxerManager {
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
   bool hls_fallback_ = false;
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
+
+#if BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
+  // Set when SymphoniaDemuxer reported that it can't play the media, so that
+  // the restarted pipeline uses FFmpegDemuxer instead.
+  bool symphonia_fallback_ = false;
+#endif  // BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
 
   // Are we allowed to switch demuxer mid-stream when fallback error codes
   // are encountered

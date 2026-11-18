@@ -1086,11 +1086,12 @@ void PipelineImpl::RendererWrapper::OnPipelineError(PipelineStatus error) {
     return;
   }
 
-  // PIPELINE_ERROR_HARDWARE_CONTEXT_RESET and DEMUXER_ERROR_DETECTED_HLS are
-  // not fatal errors. They are just signals to restart or reconfig the
-  // pipeline.
+  // PIPELINE_ERROR_HARDWARE_CONTEXT_RESET, DEMUXER_ERROR_DETECTED_HLS and
+  // DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED are not fatal errors. They are just
+  // signals to restart or reconfig the pipeline.
   if (error != PIPELINE_ERROR_HARDWARE_CONTEXT_RESET &&
-      error != DEMUXER_ERROR_DETECTED_HLS) {
+      error != DEMUXER_ERROR_DETECTED_HLS &&
+      error != DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED) {
     status_ = error;
   }
 

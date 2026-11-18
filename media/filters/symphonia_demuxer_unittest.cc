@@ -16,6 +16,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -70,7 +71,8 @@ class UnknownSizeFileDataSource : public FileDataSource {
 
 // A `FileDataSource` that can hold reads until `Abort()` or `Stop()`, like a
 // slow network source. This makes races between in-flight blocking work and
-// teardown deterministic.
+// teardown deterministic. It also records whether it was stopped, since
+// `FileDataSource::Stop()` itself does nothing.
 class BlockingFileDataSource : public FileDataSource {
  public:
   // Holds every read issued after this call. Runs `on_read_held` when the first
@@ -125,8 +127,17 @@ class BlockingFileDataSource : public FileDataSource {
   }
 
   void Stop() override {
+    {
+      base::AutoLock lock(lock_);
+      stopped_ = true;
+    }
     ReleaseHeldRead();
     FileDataSource::Stop();
+  }
+
+  bool stopped() {
+    base::AutoLock lock(lock_);
+    return stopped_;
   }
 
  private:
@@ -148,6 +159,7 @@ class BlockingFileDataSource : public FileDataSource {
   bool fail_reads_ GUARDED_BY(lock_) = false;
   base::OnceClosure on_read_held_ GUARDED_BY(lock_);
   DataSource::ReadCB held_read_cb_ GUARDED_BY(lock_);
+  bool stopped_ GUARDED_BY(lock_) = false;
 };
 
 }  // namespace
@@ -691,24 +703,28 @@ constexpr bool kSymphoniaDemuxingStates[] = {true};
 
 }  // namespace
 
-// Tests `DemuxerManager` demuxer selection with `kSymphoniaDemuxing` enabled
-// (param true) or disabled (param false).
-class SymphoniaDemuxerManagerTest : public testing::TestWithParam<bool>,
-                                    public ScopedSymphoniaDemuxingState {
- public:
-  SymphoniaDemuxerManagerTest() : ScopedSymphoniaDemuxingState(GetParam()) {}
-
+// Shared setup for tests of `DemuxerManager` demuxer selection. Like in
+// `WebMediaPlayerImpl`, the demuxer is created on the main thread and driven on
+// a separate media sequence.
+class SymphoniaDemuxerManagerTestBase : public ScopedSymphoniaDemuxingState {
  protected:
-  // Has a `DemuxerManager` create a demuxer for `filename`, checks its type,
-  // initializes it on the media sequence, and stops it. Expectations on
-  // `client_` must be set first.
-  void CreateInitializeAndStopDemuxer(std::string_view filename) {
-    DemuxerManager manager(&client_, url::Origin(), media_task_runner_,
-                           &media_log_, /*demuxer_override=*/nullptr);
-    auto data_source = std::make_unique<FileDataSource>();
-    ASSERT_TRUE(data_source->Initialize(GetTestDataFilePath(filename)));
-    manager.SetDataSource(std::move(data_source));
+  explicit SymphoniaDemuxerManagerTestBase(bool symphonia_enabled)
+      : ScopedSymphoniaDemuxingState(symphonia_enabled) {}
 
+  // Creates `manager_`, which reads `filename`, and returns it.
+  DemuxerManager& CreateManager(std::string_view filename = "sfx_s16le.wav") {
+    manager_ = std::make_unique<DemuxerManager>(&client_, url::Origin(),
+                                                media_task_runner_, &media_log_,
+                                                /*demuxer_override=*/nullptr);
+    auto data_source = std::make_unique<BlockingFileDataSource>();
+    CHECK(data_source->Initialize(GetTestDataFilePath(filename)));
+    data_source_ = data_source.get();
+    manager_->SetDataSource(std::move(data_source));
+    return *manager_;
+  }
+
+  // Has `manager` create a demuxer for progressive playback, and returns it.
+  Demuxer* CreateDemuxer(DemuxerManager& manager) {
     Demuxer* demuxer = nullptr;
     PipelineStatus status = manager.CreateDemuxer(
         /*load_media_source=*/false, DataSource::METADATA,
@@ -718,23 +734,21 @@ class SymphoniaDemuxerManagerTest : public testing::TestWithParam<bool>,
               demuxer = created_demuxer;
               return PipelineStatus(PIPELINE_OK);
             }));
-    ASSERT_EQ(status, PIPELINE_OK);
-    ASSERT_NE(demuxer, nullptr);
-    EXPECT_EQ(manager.GetDemuxerType(), GetParam()
-                                            ? DemuxerType::kSymphoniaDemuxer
-                                            : DemuxerType::kFFmpegDemuxer);
+    CHECK_EQ(status, PIPELINE_OK);
+    CHECK(demuxer);
+    return demuxer;
+  }
 
-    base::test::TestFuture<PipelineStatus> init_status;
+  PipelineStatus InitializeOnMediaSequence(Demuxer* demuxer) {
+    base::test::TestFuture<PipelineStatus> status;
     media_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&Demuxer::Initialize, base::Unretained(demuxer), &host_,
-                       init_status.GetSequenceBoundCallback()));
-    EXPECT_EQ(init_status.Get(), PIPELINE_OK);
+                       status.GetSequenceBoundCallback()));
+    return status.Take();
+  }
 
-    // The demuxer's tracks reach the client through `DemuxerManager` on the
-    // main thread.
-    tracks_added_.Run();
-
+  void StopOnMediaSequence(Demuxer* demuxer) {
     base::test::TestFuture<void> stopped;
     media_task_runner_->PostTaskAndReply(
         FROM_HERE, base::BindOnce(&Demuxer::Stop, base::Unretained(demuxer)),
@@ -743,13 +757,42 @@ class SymphoniaDemuxerManagerTest : public testing::TestWithParam<bool>,
   }
 
   base::test::TaskEnvironment task_environment_;
-  // Like in `WebMediaPlayerImpl`, the demuxer is created on the main thread
-  // and driven on a separate media sequence.
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner({});
   NiceMock<MockMediaLog> media_log_;
   NiceMock<MockDemuxerHost> host_;
   NiceMock<MockDemuxerManagerClient> client_;
+  std::unique_ptr<DemuxerManager> manager_;
+  // The data source made by `CreateManager()`, owned by `manager_`.
+  raw_ptr<BlockingFileDataSource> data_source_ = nullptr;
+};
+
+// Tests `DemuxerManager` demuxer selection with `kSymphoniaDemuxing` enabled
+// (param true) or disabled (param false).
+class SymphoniaDemuxerManagerTest : public testing::TestWithParam<bool>,
+                                    public SymphoniaDemuxerManagerTestBase {
+ public:
+  SymphoniaDemuxerManagerTest() : SymphoniaDemuxerManagerTestBase(GetParam()) {}
+
+ protected:
+  // Creates a demuxer for `filename`, checks its type, initializes it on the
+  // media sequence, waits for `tracks_added_`, and stops it. Expectations on
+  // `client_` must be set first.
+  void CreateInitializeAndStopDemuxer(std::string_view filename) {
+    DemuxerManager& manager = CreateManager(filename);
+    Demuxer* demuxer = CreateDemuxer(manager);
+    EXPECT_EQ(manager.GetDemuxerType(), GetParam()
+                                            ? DemuxerType::kSymphoniaDemuxer
+                                            : DemuxerType::kFFmpegDemuxer);
+    EXPECT_EQ(InitializeOnMediaSequence(demuxer), PIPELINE_OK);
+
+    // The demuxer's tracks reach the client through `DemuxerManager` on the
+    // main thread.
+    tracks_added_.Run();
+
+    StopOnMediaSequence(demuxer);
+  }
+
   // Quit once the expected `AddTrack()` calls have happened.
   base::RunLoop tracks_added_;
 };
@@ -787,5 +830,117 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return info.param ? "SymphoniaEnabled"
                                              : "SymphoniaDisabled";
                          });
+
+#if BUILDFLAG(ENABLE_FFMPEG)
+// Tests how `DemuxerManager` handles `DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED`
+// from SymphoniaDemuxer.
+class SymphoniaDemuxerManagerFallbackTest
+    : public testing::Test,
+      public SymphoniaDemuxerManagerTestBase {
+ public:
+  SymphoniaDemuxerManagerFallbackTest()
+      : SymphoniaDemuxerManagerTestBase(/*symphonia_enabled=*/true) {}
+};
+
+TEST_F(SymphoniaDemuxerManagerFallbackTest, FallsBackToFFmpegDemuxer) {
+  DemuxerManager& manager = CreateManager();
+  Demuxer* demuxer = CreateDemuxer(manager);
+  ASSERT_EQ(manager.GetDemuxerType(), DemuxerType::kSymphoniaDemuxer);
+  ASSERT_EQ(InitializeOnMediaSequence(demuxer), PIPELINE_OK);
+  testing::Mock::VerifyAndClearExpectations(&client_);
+
+  // Like the pipeline, stop the demuxer on the media sequence when the client
+  // stops for the demuxer reset.
+  EXPECT_CALL(client_, StopForDemuxerReset()).WillOnce([&] {
+    media_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&Demuxer::Stop, base::Unretained(demuxer)));
+  });
+  base::test::TestFuture<void> restarted;
+  EXPECT_CALL(client_, RestartForDemuxerChange(/*is_hls=*/false))
+      .WillOnce(RunClosure(restarted.GetRepeatingCallback()));
+  manager.OnPipelineError(PipelineStatus(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED));
+  ASSERT_TRUE(restarted.Wait());
+  EXPECT_FALSE(manager.GetDemuxerType().has_value());
+  testing::Mock::VerifyAndClearExpectations(&client_);
+
+  // Like `WebMediaPlayerImpl::RestartForDemuxerChange()`, create the demuxer
+  // again. FFmpegDemuxer reads the same data source.
+  base::test::TestFuture<void> track_added;
+  EXPECT_CALL(client_,
+              AddTrack(Property(&MediaTrack::type, MediaTrack::Type::kAudio)))
+      .WillOnce(RunClosure(track_added.GetRepeatingCallback()));
+  demuxer = CreateDemuxer(manager);
+  EXPECT_EQ(manager.GetDemuxerType(), DemuxerType::kFFmpegDemuxer);
+  EXPECT_EQ(InitializeOnMediaSequence(demuxer), PIPELINE_OK);
+  ASSERT_TRUE(track_added.Wait());
+
+  StopOnMediaSequence(demuxer);
+}
+
+TEST_F(SymphoniaDemuxerManagerFallbackTest,
+       StopsDataSourceWhenFallbackIsDisallowed) {
+  DemuxerManager& manager = CreateManager();
+  Demuxer* demuxer = CreateDemuxer(manager);
+  ASSERT_EQ(InitializeOnMediaSequence(demuxer), PIPELINE_OK);
+  testing::Mock::VerifyAndClearExpectations(&client_);
+
+  // With no fallback, DemuxerManager reports the error and stops the data
+  // source, since no other demuxer will take it over.
+  EXPECT_CALL(client_,
+              OnError(PipelineStatus(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED)));
+  EXPECT_CALL(client_, RestartForDemuxerChange(_)).Times(0);
+  manager.DisallowFallback();
+  manager.OnPipelineError(PipelineStatus(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED));
+  EXPECT_TRUE(data_source_->stopped());
+
+  StopOnMediaSequence(demuxer);
+}
+
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+// An HLS manifest without an .m3u8 extension can fall back twice: from
+// SymphoniaDemuxer to FFmpegDemuxer, which detects HLS, and then to the HLS
+// demuxer.
+TEST_F(SymphoniaDemuxerManagerFallbackTest, FallsBackTwiceForHlsManifest) {
+  DemuxerManager& manager = CreateManager("hls/mp_ts_avc1.hls");
+  Demuxer* demuxer = CreateDemuxer(manager);
+  ASSERT_EQ(manager.GetDemuxerType(), DemuxerType::kSymphoniaDemuxer);
+  testing::Mock::VerifyAndClearExpectations(&client_);
+
+  // Fall back from SymphoniaDemuxer to FFmpegDemuxer, keeping the data source.
+  EXPECT_CALL(client_, StopForDemuxerReset()).WillOnce([&] {
+    media_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&Demuxer::Stop, base::Unretained(demuxer)));
+  });
+  base::test::TestFuture<void> restarted_for_ffmpeg;
+  EXPECT_CALL(client_, RestartForDemuxerChange(/*is_hls=*/false))
+      .WillOnce(RunClosure(restarted_for_ffmpeg.GetRepeatingCallback()));
+  manager.OnPipelineError(PipelineStatus(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED));
+  ASSERT_TRUE(restarted_for_ffmpeg.Wait());
+  testing::Mock::VerifyAndClearExpectations(&client_);
+
+  demuxer = CreateDemuxer(manager);
+  ASSERT_EQ(manager.GetDemuxerType(), DemuxerType::kFFmpegDemuxer);
+  PipelineStatus status = InitializeOnMediaSequence(demuxer);
+  ASSERT_EQ(status, DEMUXER_ERROR_DETECTED_HLS);
+
+  // Fall back from FFmpegDemuxer to the HLS demuxer, which frees the data
+  // source.
+  EXPECT_CALL(client_, StopForDemuxerReset()).WillOnce([&] {
+    media_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&Demuxer::Stop, base::Unretained(demuxer)));
+  });
+  base::test::TestFuture<void> restarted_for_hls;
+  EXPECT_CALL(client_, RestartForDemuxerChange(/*is_hls=*/true))
+      .WillOnce(RunClosure(restarted_for_hls.GetRepeatingCallback()));
+  data_source_ = nullptr;
+  manager.OnPipelineError(std::move(status));
+  ASSERT_TRUE(restarted_for_hls.Wait());
+  testing::Mock::VerifyAndClearExpectations(&client_);
+
+  CreateDemuxer(manager);
+  EXPECT_EQ(manager.GetDemuxerType(), DemuxerType::kManifestDemuxer);
+}
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
+#endif  // BUILDFLAG(ENABLE_FFMPEG)
 
 }  // namespace media

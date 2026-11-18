@@ -46,7 +46,7 @@ class MockDemuxerManagerClient : public DemuxerManager::Client {
   MOCK_METHOD(void, OnProgress, (), (override));
   MOCK_METHOD(void, OnError, (PipelineStatus), (override));
   MOCK_METHOD(void, StopForDemuxerReset, (), (override));
-  MOCK_METHOD(void, RestartForHls, (), (override));
+  MOCK_METHOD(void, RestartForDemuxerChange, (bool is_hls), (override));
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
   MOCK_METHOD(base::SequenceBound<HlsDataSourceProvider>,
               GetHlsDataSourceProvider,
