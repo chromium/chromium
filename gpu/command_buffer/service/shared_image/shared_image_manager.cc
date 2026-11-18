@@ -379,11 +379,13 @@ SharedImageManager::ProduceWebNNTensor(const Mailbox& mailbox,
   // WebNN tensors are accessed across threads on the WebNN worker task runner,
   // so the backing must have WEBNN_SHARED_TENSOR usage to ensure thread safety
   // and prevent lazy materialization of non-thread-safe backings off-thread.
-  if (!backing->usage().Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR)) {
-    LOG(ERROR) << "SharedImageManager::ProduceWebNNTensor: Trying to produce a "
-                  "WebNN tensor representation from a backing without "
-                  "WEBNN_SHARED_TENSOR usage: "
-               << backing->GetName();
+  if (!backing->usage().HasAll(gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR |
+                               gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                               gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+                               gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER)) {
+    LOG(ERROR) << "SharedImageManager::ProduceWebNNTensor with incorrect "
+                  "usage, backing: "
+               << backing->GetName() << " client: " << backing->debug_label();
     return nullptr;
   }
 
