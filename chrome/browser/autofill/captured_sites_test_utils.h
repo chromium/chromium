@@ -148,9 +148,6 @@ class WebPageReplayServerWrapper {
   bool Stop();
 
  private:
-  bool RunWebPageReplayCmdAndWaitForExit(
-      const std::vector<std::string>& args,
-      const base::TimeDelta& timeout = base::Seconds(5));
   bool RunWebPageReplayCmd(const std::vector<std::string>& args);
 
   std::string cmd_name() { return start_as_replay_ ? "replay" : "record"; }

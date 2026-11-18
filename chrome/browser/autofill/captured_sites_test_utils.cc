@@ -829,21 +829,6 @@ bool WebPageReplayServerWrapper::Stop() {
   return true;
 }
 
-bool WebPageReplayServerWrapper::RunWebPageReplayCmdAndWaitForExit(
-    const std::vector<std::string>& args,
-    const base::TimeDelta& timeout) {
-  int exit_code;
-
-  if (RunWebPageReplayCmd(args) && web_page_replay_server_.IsValid() &&
-      web_page_replay_server_.WaitForExitWithTimeout(timeout, &exit_code) &&
-      exit_code == 0) {
-    return true;
-  }
-
-  ADD_FAILURE() << "Failed to run WPR command: '" << cmd_name() << "'!";
-  return false;
-}
-
 bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
     const std::vector<std::string>& args) {
   // Allow the function to block. Otherwise the subsequent call to
