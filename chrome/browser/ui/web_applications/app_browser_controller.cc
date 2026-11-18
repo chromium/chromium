@@ -495,6 +495,7 @@ std::vector<actions::ActionId> AppBrowserController::GetTitleBarPageActions()
       kActionShowFileSystemAccess,
       kActionShowCookieControls,
       kActionShowAddressesBubbleOrPage,
+      kActionShowPaymentsBubbleOrPage,
   };
 
 #if DCHECK_IS_ON()

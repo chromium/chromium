@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -37,6 +36,7 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
+#include "components/autofill/core/common/autofill_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -131,6 +131,7 @@ class BrowserFrameViewBrowserTest : public extensions::ExtensionBrowserTest {
       nullptr;
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_ =
       nullptr;
+  autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
   autofill::TestAutofillManagerInjector<TestAutofillManager>
       autofill_manager_injector_;
 
@@ -422,9 +423,8 @@ class SaveCardOfferObserver
   base::RunLoop run_loop_;
 };
 
-// TODO(crbug.com/40866991): Test is flaky.
-// Tests that hosted app frames reflect the theme color set by HTML meta tags.
-IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest, DISABLED_SaveCardIcon) {
+// Tests that the save card page action icon is shown in hosted app frames.
+IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest, SaveCardIcon) {
   InstallAndLaunchBookmarkApp(embedded_test_server()->GetURL(
       "/autofill/credit_card_upload_form_address_and_cc.html"));
   ASSERT_TRUE(autofill_manager_injector_[web_contents_]->WaitForFormsSeen(1));
@@ -436,17 +436,16 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest, DISABLED_SaveCardIcon) {
   nav_observer.Wait();
   offer_observer.Wait();
 
+  // Web app windows always host page actions in the Views-based
+  // WebAppFrameToolbarView, even when the WebUI location bar is enabled for
+  // tabbed browser windows.
+  auto* icon = static_cast<page_actions::PageActionView*>(
+      app_browser_view_->toolbar_button_provider()->GetPageActionViewInterface(
+          kActionShowPaymentsBubbleOrPage));
+  ASSERT_TRUE(icon);
+  EXPECT_TRUE(GetAppFrameView()->Contains(icon));
   page_actions::PageActionTestAccessor page_action_accessor(
       app_browser_view_->browser(), kActionShowPaymentsBubbleOrPage);
-  // TODO(crbug.com/562475756): In WebUI, the page action is rendered in the
-  // WebUI DOM rather than as a views::View descendant of BrowserFrameView.
-  if (!features::IsWebUILocationBarEnabled()) {
-    auto* icon = static_cast<page_actions::PageActionView*>(
-        app_browser_view_->toolbar_button_provider()
-            ->GetPageActionViewInterface(kActionShowPaymentsBubbleOrPage));
-    ASSERT_TRUE(icon);
-    EXPECT_TRUE(GetAppFrameView()->Contains(icon));
-  }
   EXPECT_TRUE(page_action_accessor.GetVisible());
 }
 
