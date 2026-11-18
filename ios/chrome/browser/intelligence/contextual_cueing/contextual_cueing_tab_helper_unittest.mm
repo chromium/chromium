@@ -3197,4 +3197,190 @@ TEST_F(ContextualCueingTabHelperPrivateInsightsTest, ChipLogsShownAndClicked) {
   EXPECT_EQ(clicked_event.cue_id(), shown_event.cue_id());
 }
 
+namespace {
+
+// Builds a `TestProfileIOS` with lazy classification service factories (without
+// eagerly calling `GetForProfile()`) and a Gemini-eligible signed-in user.
+std::unique_ptr<TestProfileIOS> BuildLazyClassifierTestProfile(
+    bool consented,
+    bool history_sync_enabled) {
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(GeminiServiceFactory::GetInstance(),
+                            base::BindRepeating(&BuildFakeGeminiService));
+  builder.AddTestingFactory(
+      InProcessCategoryClassificationServiceFactory::GetInstance(),
+      base::BindRepeating(&BuildTestInProcessClassificationService));
+  builder.AddTestingFactory(
+      OnDevicePageClassificationServiceFactory::GetInstance(),
+      base::BindRepeating(&BuildTestPageClassificationService));
+  builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                            base::BindRepeating(&CreateTestSyncService));
+  builder.AddTestingFactory(
+      IdentityManagerFactory::GetInstance(),
+      base::BindRepeating(&IdentityTestEnvironmentBrowserStateAdaptor::
+                              BuildIdentityManagerForTests));
+  std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
+
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile.get()));
+  sync_service->GetUserSettings()->SetSelectedTypes(
+      history_sync_enabled, history_sync_enabled
+                                ? syncer::UserSelectableTypeSet::All()
+                                : syncer::UserSelectableTypeSet());
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile.get());
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "user@gmail.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_can_use_model_execution_features(true);
+  mutator.set_can_use_gemini_in_chrome(true);
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  profile->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, consented);
+  return profile;
+}
+
+}  // namespace
+
+// Tests that `ContextualCueingTabHelper` immediately warms up
+// `InProcessCategoryClassificationService` on creation when the user is
+// eligible and consented, even on an ineligible URL like `chrome://newtab/`,
+// without instantiating `OnDevicePageClassificationService`.
+TEST_F(ContextualCueingTabHelperTest,
+       WarmsUpOnDeviceClassifierOnCreationWhenEligible) {
+  std::unique_ptr<TestProfileIOS> profile = BuildLazyClassifierTestProfile(
+      /*consented=*/true, /*history_sync_enabled=*/true);
+  ASSERT_FALSE(
+      InProcessCategoryClassificationServiceFactory::GetForProfileIfExists(
+          profile.get()));
+
+  web::FakeWebState web_state;
+  web_state.SetBrowserState(profile.get());
+  web_state.SetCurrentURL(GURL("chrome://newtab/"));
+  ContextualCueingTabHelper::CreateForWebState(&web_state);
+
+  EXPECT_TRUE(
+      InProcessCategoryClassificationServiceFactory::GetForProfileIfExists(
+          profile.get()));
+  EXPECT_FALSE(OnDevicePageClassificationServiceFactory::GetForProfileIfExists(
+      profile.get()));
+}
+
+// Tests that `InProcessCategoryClassificationService` is not instantiated for
+// unconsented users, and warms up immediately when the user grants Helios
+// consent (`prefs::kIOSBwgConsent`) and enables History Sync.
+TEST_F(ContextualCueingTabHelperTest,
+       WarmsUpOnDeviceClassifierUponHeliosConsentAndHistorySync) {
+  std::unique_ptr<TestProfileIOS> profile = BuildLazyClassifierTestProfile(
+      /*consented=*/false, /*history_sync_enabled=*/false);
+  web::FakeWebState web_state;
+  web_state.SetBrowserState(profile.get());
+  web_state.SetCurrentURL(GURL("chrome://newtab/"));
+  ContextualCueingTabHelper::CreateForWebState(&web_state);
+
+  EXPECT_FALSE(
+      InProcessCategoryClassificationServiceFactory::GetForProfileIfExists(
+          profile.get()));
+
+  // Helios FRE accepted while History Sync is still off: still not created.
+  profile->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+  EXPECT_FALSE(
+      InProcessCategoryClassificationServiceFactory::GetForProfileIfExists(
+          profile.get()));
+
+  // Enabling History Sync immediately warms up model registration.
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile.get()));
+  sync_service->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/true, syncer::UserSelectableTypeSet::All());
+  sync_service->FireStateChanged();
+  EXPECT_TRUE(
+      InProcessCategoryClassificationServiceFactory::GetForProfileIfExists(
+          profile.get()));
+}
+
+// Tests that when History Sync is already enabled, granting Helios consent
+// (`prefs::kIOSBwgConsent`) immediately warms up
+// `InProcessCategoryClassificationService` via
+// `OnSuggestionsPreferenceChanged()`.
+TEST_F(ContextualCueingTabHelperTest,
+       WarmsUpOnDeviceClassifierUponHeliosConsentWhenHistorySyncEnabled) {
+  std::unique_ptr<TestProfileIOS> profile = BuildLazyClassifierTestProfile(
+      /*consented=*/false, /*history_sync_enabled=*/true);
+  web::FakeWebState web_state;
+  web_state.SetBrowserState(profile.get());
+  web_state.SetCurrentURL(GURL("chrome://newtab/"));
+  ContextualCueingTabHelper::CreateForWebState(&web_state);
+
+  EXPECT_FALSE(
+      InProcessCategoryClassificationServiceFactory::GetForProfileIfExists(
+          profile.get()));
+
+  profile->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
+  EXPECT_TRUE(
+      InProcessCategoryClassificationServiceFactory::GetForProfileIfExists(
+          profile.get()));
+}
+
+// Tests that disabling History Sync mid-session invalidates an active cue and
+// clears classification state.
+TEST_F(ContextualCueingTabHelperTest, DisablingHistorySyncDismissesActiveCue) {
+  const GURL test_url("https://example.com/store/item123");
+  web_state_->SetCurrentURL(test_url);
+
+  fake_page_classification_service_->SetCannedCategories(
+      std::vector<page_content_annotations::Category>{
+          {page_content_annotations::CategoryType::kShopping, 0.85f}});
+  auto response = CreateTestCueResponse("Buy Boots", "Shop Deals");
+  fake_opt_guide_service_->SetResponse(
+      optimization_guide::ModelBasedCapabilityKey::kContextualCueing, response,
+      "optimization_guide.proto.ContextualCueingResponse");
+
+  ContextualCueingTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper = ContextualCueingTabHelper::FromWebState(web_state_.get());
+  TestCueingObserver observer;
+  tab_helper->AddObserver(&observer);
+
+  tab_helper->PageLoaded(web_state_.get(),
+                         web::PageLoadCompletionStatus::SUCCESS);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return tab_helper->GetContextualCue().has_value(); }));
+  EXPECT_EQ(observer.invalidated_call_count_, 0);
+
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile_.get()));
+  sync_service->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+  sync_service->FireStateChanged();
+
+  EXPECT_FALSE(tab_helper->GetContextualCue().has_value());
+  EXPECT_FALSE(tab_helper->GetCategories().has_value());
+  EXPECT_EQ(observer.invalidated_call_count_, 1);
+
+  tab_helper->RemoveObserver(&observer);
+}
+
+// Tests that `InProcessCategoryClassificationService` is not warmed up when
+// `PageClassificationMode` is `kVerticalsOnly`.
+TEST_F(ContextualCueingTabHelperTest,
+       DoesNotWarmUpOnDeviceClassifierInVerticalsOnlyMode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{kGeminiContextualSuggestionsCues, CreateCuesFeatureParams()},
+       {kPageActionMenu, {}},
+       {kPageClassification,
+        {{kPageClassificationModeParam, "verticals_only"}}}},
+      {});
+
+  std::unique_ptr<TestProfileIOS> profile = BuildLazyClassifierTestProfile(
+      /*consented=*/true, /*history_sync_enabled=*/true);
+  web::FakeWebState web_state;
+  web_state.SetBrowserState(profile.get());
+  ContextualCueingTabHelper::CreateForWebState(&web_state);
+
+  EXPECT_FALSE(
+      InProcessCategoryClassificationServiceFactory::GetForProfileIfExists(
+          profile.get()));
+}
+
 }  // namespace contextual_cueing
