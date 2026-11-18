@@ -8,6 +8,8 @@
 
 #include <array>
 #include <memory>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -16,10 +18,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/activity_log/activity_action_constants.h"
 #include "chrome/browser/extensions/activity_log/activity_log_task_runner.h"
@@ -28,21 +34,29 @@
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/api_activity_monitor.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/buildflags/buildflags.h"
@@ -54,6 +68,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -541,15 +556,12 @@ TEST_F(ActivityLogTest, UninstalledExtension) {
   ASSERT_TRUE(GetDatabaseEnabled());
 
   // Write some API calls
-  scoped_refptr<Action> action = new Action(extension->id(),
-                                            base::Time::Now(),
-                                            Action::ACTION_API_CALL,
-                                            "tabs.testMethod");
+  scoped_refptr<Action> action =
+      new Action(extension->id(), base::Time::Now(), Action::ACTION_API_CALL,
+                 "tabs.testMethod");
   activity_log->LogAction(action);
-  action = new Action(extension->id(),
-                      base::Time::Now(),
-                      Action::ACTION_DOM_ACCESS,
-                      "document.write");
+  action = new Action(extension->id(), base::Time::Now(),
+                      Action::ACTION_DOM_ACCESS, "document.write");
   action->set_page_url(GURL("http://www.google.com"));
 
   activity_log->OnExtensionUninstalled(
@@ -613,8 +625,8 @@ class ActivityLogTestWithoutSwitch : public ActivityLogTest {
 };
 
 TEST_F(ActivityLogTestWithoutSwitch, TestShouldLog) {
-  static_cast<TestExtensionSystem*>(
-      ExtensionSystem::Get(profile()))->SetReady();
+  static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()))
+      ->SetReady();
   ActivityLog* activity_log = ActivityLog::GetInstance(profile());
   scoped_refptr<const Extension> empty_extension =
       ExtensionBuilder("Test").Build();
@@ -790,6 +802,271 @@ TEST_F(ActivityLogTestWithoutSwitch, TelemetryShouldLog) {
   subscription = {};
   EXPECT_FALSE(activity_log->ShouldLog(kExtensionId, Action::ACTION_API_CALL,
                                        "scripting.executeScript"));
+}
+
+class ActivityLogIsolatedModeTest : public ActivityLogTest,
+                                    public ActivityLog::Observer {
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(profile_manager_.SetUp());
+    ActivityLogTest::SetUp();
+    ASSERT_TRUE(isolated_profile()->IsEnterpriseIsolatedModeProfile());
+
+    // Observers are only notified while the ActivityLog has listeners.
+    ActivityLog* activity_log = ActivityLog::GetInstance(profile());
+    activity_log->SetHasListeners(true);
+    activity_log_observation_.Observe(activity_log);
+  }
+
+  void TearDown() override {
+    activity_log_observation_.Reset();
+    // The tabs must be destroyed before their profiles.
+    window_controllers_.clear();
+    tabs_.clear();
+    ActivityLogTest::TearDown();
+  }
+
+  std::unique_ptr<TestingProfile> CreateTestingProfile() override {
+    profile_ =
+        profile_manager_.CreateTestingProfile("profile", GetTestingFactories());
+    return nullptr;
+  }
+
+  content::BrowserContext* GetBrowserContext() override { return profile_; }
+
+  void DestroyBrowserContext() override {
+    // Run the tasks that the RenderProcessHost teardown may have posted while
+    // the profile is still alive.
+    base::RunLoop().RunUntilIdle();
+    profile_ = nullptr;
+    profile_manager_.DeleteAllTestingProfiles();
+  }
+
+  void OnExtensionActivity(scoped_refptr<Action> action) override {
+    actions_.push_back(std::move(action));
+  }
+
+  Profile* isolated_profile() {
+    return profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  }
+
+  scoped_refptr<Action> WaitForAction() {
+    if (!base::test::RunUntil([&] { return !actions_.empty(); })) {
+      return nullptr;
+    }
+    return actions_.front();
+  }
+
+  content::WebContents* CreateTab(Profile* profile, const GURL& url = GURL()) {
+    std::unique_ptr<content::WebContents> contents =
+        content::WebContentsTester::CreateTestWebContents(profile, nullptr);
+    sessions::SessionTabHelper::CreateForWebContents(
+        contents.get(), sessions::SessionTabHelper::DelegateLookup());
+    if (url.is_valid()) {
+      content::WebContentsTester::For(contents.get())->NavigateAndCommit(url);
+    }
+    window_controllers_.push_back(
+        std::make_unique<MockWindowController>(profile, contents.get()));
+    tabs_.push_back(std::move(contents));
+    return tabs_.back().get();
+  }
+
+  static void ExecuteScript(Profile* source, content::WebContents* tab) {
+    activity_monitor::OnApiFunctionCalled(
+        source, kExtensionId, "scripting.executeScript",
+        base::ListValue().Append(base::DictValue().Set(
+            "target",
+            base::DictValue().Set("tabId", ExtensionTabUtil::GetTabId(tab)))));
+  }
+
+  void InjectContentScript(content::WebContents* tab) {
+    scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
+    ExtensionRegistry::Get(profile())->AddEnabled(extension);
+    ActivityLog::GetInstance(profile())->OnScriptsExecuted(
+        tab, {{extension->id(), {"script"}}}, GURL("https://example.com"));
+  }
+
+  static void LogDomAction(Profile* context, const GURL& url) {
+    ExtensionsBrowserClient::Get()->AddDOMActionToActivityLog(
+        context, kExtensionId, "Document.cookie", base::ListValue(), url,
+        std::u16string(), DomActionType::GETTER);
+  }
+
+ private:
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_;
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
+  raw_ptr<TestingProfile> profile_ = nullptr;
+  std::vector<std::unique_ptr<content::WebContents>> tabs_;
+  std::vector<std::unique_ptr<MockWindowController>> window_controllers_;
+  std::vector<scoped_refptr<Action>> actions_;
+  base::ScopedObservation<ActivityLog, ActivityLog::Observer>
+      activity_log_observation_{this};
+};
+
+TEST_F(ActivityLogIsolatedModeTest, CloneCopiesIsolatedMode) {
+  auto action = base::MakeRefCounted<Action>(kExtensionId, base::Time::Now(),
+                                             Action::ACTION_DOM_ACCESS,
+                                             "Document.cookie");
+  action->set_isolated_mode(true);
+
+  EXPECT_TRUE(action->Clone()->isolated_mode());
+}
+
+TEST_F(ActivityLogIsolatedModeTest,
+       IsolatedModeFlagSetForIsolatedModeTargetTabFromRegularProfile) {
+  content::WebContents* tab =
+      CreateTab(isolated_profile(), GURL("https://example.com"));
+
+  ExecuteScript(profile(), tab);
+
+  scoped_refptr<Action> action = WaitForAction();
+  ASSERT_TRUE(action);
+  ASSERT_TRUE(action->arg_url().is_valid());
+  EXPECT_TRUE(action->isolated_mode());
+}
+
+TEST_F(ActivityLogIsolatedModeTest,
+       IsolatedModeFlagSetForIsolatedModeTargetTabWithoutUrl) {
+  content::WebContents* tab = CreateTab(isolated_profile());
+  ASSERT_FALSE(tab->GetURL().is_valid());
+
+  ExecuteScript(profile(), tab);
+
+  scoped_refptr<Action> action = WaitForAction();
+  ASSERT_TRUE(action);
+  EXPECT_TRUE(action->isolated_mode());
+}
+
+TEST_F(ActivityLogIsolatedModeTest, IsolatedModeFlagNotSetForRegularTargetTab) {
+  content::WebContents* tab = CreateTab(profile(), GURL("https://example.com"));
+
+  ExecuteScript(profile(), tab);
+
+  scoped_refptr<Action> action = WaitForAction();
+  ASSERT_TRUE(action);
+  ASSERT_TRUE(action->arg_url().is_valid());
+  EXPECT_FALSE(action->isolated_mode());
+}
+
+TEST_F(ActivityLogIsolatedModeTest,
+       IsolatedModeFlagSetForTabListWithIsolatedModeTab) {
+  content::WebContents* isolated_tab =
+      CreateTab(isolated_profile(), GURL("https://example.com"));
+  content::WebContents* regular_tab =
+      CreateTab(profile(), GURL("https://example.org"));
+
+  activity_monitor::OnApiFunctionCalled(
+      profile(), kExtensionId, "tabs.remove",
+      base::ListValue().Append(
+          base::ListValue()
+              .Append(ExtensionTabUtil::GetTabId(regular_tab))
+              .Append(ExtensionTabUtil::GetTabId(isolated_tab))
+              .Append(ExtensionTabUtil::GetTabId(regular_tab))));
+
+  scoped_refptr<Action> action = WaitForAction();
+  ASSERT_TRUE(action);
+  EXPECT_TRUE(action->isolated_mode());
+}
+
+TEST_F(ActivityLogIsolatedModeTest,
+       IsolatedModeFlagSetForEventOnIsolatedModeTab) {
+  content::WebContents* tab =
+      CreateTab(isolated_profile(), GURL("https://example.com"));
+
+  activity_monitor::OnApiEventDispatched(
+      profile(), kExtensionId, "tabs.onUpdated",
+      base::ListValue().Append(ExtensionTabUtil::GetTabId(tab)));
+
+  scoped_refptr<Action> action = WaitForAction();
+  ASSERT_TRUE(action);
+  EXPECT_TRUE(action->isolated_mode());
+}
+
+TEST_F(ActivityLogIsolatedModeTest,
+       IsolatedModeFlagSetForApiCallFromIsolatedModeProfile) {
+  activity_monitor::OnApiFunctionCalled(isolated_profile(), kExtensionId,
+                                        "tabs.query", base::ListValue());
+
+  scoped_refptr<Action> action = WaitForAction();
+  ASSERT_TRUE(action);
+  EXPECT_TRUE(action->isolated_mode());
+}
+
+TEST_F(ActivityLogIsolatedModeTest,
+       IsolatedModeFlagNotSetForApiCallFromOtherOffTheRecordProfile) {
+  Profile* other_otr_profile = profile()->GetOffTheRecordProfile(
+      Profile::OTRProfileID::CreateUniqueForTesting(),
+      /*create_if_needed=*/true);
+  ASSERT_TRUE(other_otr_profile->IsOffTheRecord());
+  ASSERT_FALSE(other_otr_profile->IsEnterpriseIsolatedModeProfile());
+
+  activity_monitor::OnApiFunctionCalled(other_otr_profile, kExtensionId,
+                                        "tabs.query", base::ListValue());
+
+  scoped_refptr<Action> action = WaitForAction();
+  ASSERT_TRUE(action);
+  EXPECT_FALSE(action->isolated_mode());
+}
+
+TEST_F(ActivityLogIsolatedModeTest,
+       IsolatedModeFlagSetForWebRequestFromIsolatedModeProfile) {
+  activity_monitor::OnWebRequestApiUsed(
+      isolated_profile(), kExtensionId, GURL("https://example.com"),
+      /*is_incognito=*/true, "onBeforeRequest", base::DictValue());
+
+  scoped_refptr<Action> action = WaitForAction();
+  ASSERT_TRUE(action);
+  EXPECT_TRUE(action->isolated_mode());
+}
+
+TEST_F(ActivityLogIsolatedModeTest,
+       IsolatedModeFlagSetForIsolatedModeContentScript) {
+  content::WebContents* tab = CreateTab(isolated_profile());
+
+  InjectContentScript(tab);
+
+  scoped_refptr<Action> action = WaitForAction();
+  ASSERT_TRUE(action);
+  EXPECT_TRUE(action->isolated_mode());
+}
+
+TEST_F(ActivityLogIsolatedModeTest,
+       IsolatedModeFlagNotSetForOtherOffTheRecordContentScript) {
+  Profile* other_otr_profile = profile()->GetOffTheRecordProfile(
+      Profile::OTRProfileID::CreateUniqueForTesting(),
+      /*create_if_needed=*/true);
+  content::WebContents* tab = CreateTab(other_otr_profile);
+
+  InjectContentScript(tab);
+
+  scoped_refptr<Action> action = WaitForAction();
+  ASSERT_TRUE(action);
+  ASSERT_TRUE(action->page_incognito());
+  EXPECT_FALSE(action->isolated_mode());
+}
+
+TEST_F(ActivityLogIsolatedModeTest,
+       IsolatedModeFlagSetForIsolatedModeDomActionWithoutUrl) {
+  LogDomAction(isolated_profile(), GURL());
+
+  scoped_refptr<Action> action = WaitForAction();
+  ASSERT_TRUE(action);
+  EXPECT_TRUE(action->isolated_mode());
+}
+
+TEST_F(ActivityLogIsolatedModeTest,
+       IsolatedModeFlagNotSetForOtherOffTheRecordDomAction) {
+  Profile* other_otr_profile = profile()->GetOffTheRecordProfile(
+      Profile::OTRProfileID::CreateUniqueForTesting(),
+      /*create_if_needed=*/true);
+
+  LogDomAction(other_otr_profile, GURL("https://example.com"));
+
+  scoped_refptr<Action> action = WaitForAction();
+  ASSERT_TRUE(action);
+  ASSERT_TRUE(action->page_incognito());
+  EXPECT_FALSE(action->isolated_mode());
 }
 
 }  // namespace extensions

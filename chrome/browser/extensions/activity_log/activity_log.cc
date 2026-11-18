@@ -273,13 +273,22 @@ class ApiInfoDatabase {
   friend struct base::DefaultSingletonTraits<ApiInfoDatabase>;
 };
 
+// Returns true if `context` is an Enterprise Isolated Mode profile.
+bool IsIsolatedModeContext(content::BrowserContext* context) {
+  return Profile::FromBrowserContext(context)
+      ->IsEnterpriseIsolatedModeProfile();
+}
+
 // Gets the URL for a given tab ID.  Helper method for ExtractUrls.  Returns
 // true if able to perform the lookup.  The URL is stored to *url, and
 // *is_incognito is set to indicate whether the URL is for an incognito tab.
+// *is_isolated_mode is set to true if the tab belongs to an Enterprise
+// Isolated Mode profile, and is left unchanged otherwise.
 bool GetUrlForTabId(int tab_id,
                     Profile* profile,
                     GURL* url,
-                    bool* is_incognito) {
+                    bool* is_incognito,
+                    bool* is_isolated_mode) {
   content::WebContents* contents = nullptr;
   WindowController* window = nullptr;
   bool found =
@@ -290,6 +299,9 @@ bool GetUrlForTabId(int tab_id,
   if (found && window) {
     *url = contents->GetURL();
     *is_incognito = window->profile()->IsOffTheRecord();
+    if (window->profile()->IsEnterpriseIsolatedModeProfile()) {
+      *is_isolated_mode = true;
+    }
     return true;
   } else {
     return false;
@@ -339,6 +351,10 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
 
   GURL arg_url;
   bool arg_incognito = action->page_incognito();
+  // Whether a target tab belongs to an Enterprise Isolated Mode profile. A tab
+  // that no longer exists can't be looked up, so the action then only has the
+  // flag of its source profile.
+  bool arg_isolated_mode = false;
 
   switch (api_info->arg_url_transform) {
     case Transformation::kNone: {
@@ -381,7 +397,8 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
       if (args_list[url_index].is_int()) {
         tab_id = args_list[url_index].GetInt();
         // Single tab ID to translate.
-        GetUrlForTabId(tab_id, profile, &arg_url, &arg_incognito);
+        GetUrlForTabId(tab_id, profile, &arg_url, &arg_incognito,
+                       &arg_isolated_mode);
         if (arg_url.is_valid())
           args_list[url_index] = base::Value(kArgUrlPlaceholder);
       } else if (args_list[url_index].is_list()) {
@@ -393,8 +410,10 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
           if (!tab_list[i].is_int())
             continue;
           tab_id = tab_list[i].GetInt();
-          if (!GetUrlForTabId(tab_id, profile, &arg_url, &arg_incognito))
+          if (!GetUrlForTabId(tab_id, profile, &arg_url, &arg_incognito,
+                              &arg_isolated_mode)) {
             continue;
+          }
           if (!arg_incognito)
             tab_list[i] = base::Value(arg_url.spec());
           extracted_index = i;
@@ -412,8 +431,8 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
         std::optional<int> tab_id =
             args_list[url_index].GetDict().FindIntByDottedPath(
                 api_info->arg_url_dict_path);
-        if (tab_id &&
-            GetUrlForTabId(*tab_id, profile, &arg_url, &arg_incognito)) {
+        if (tab_id && GetUrlForTabId(*tab_id, profile, &arg_url, &arg_incognito,
+                                     &arg_isolated_mode)) {
           args_list[url_index].GetDict().SetByDottedPath(
               api_info->arg_url_dict_path, kArgUrlPlaceholder);
         }
@@ -428,6 +447,9 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
   if (arg_url.is_valid()) {
     action->set_arg_incognito(arg_incognito);
     action->set_arg_url(arg_url);
+  }
+  if (arg_isolated_mode) {
+    action->set_isolated_mode(true);
   }
 }
 
@@ -471,6 +493,7 @@ void LogApiActivity(content::BrowserContext* browser_context,
   auto action = base::MakeRefCounted<Action>(extension_id, base::Time::Now(),
                                              type, activity_name);
   action->set_args(args.Clone());
+  action->set_isolated_mode(IsIsolatedModeContext(browser_context));
   activity_log->LogAction(action);
 }
 
@@ -514,6 +537,7 @@ void LogWebRequestActivity(content::BrowserContext* browser_context,
       extension_id, base::Time::Now(), Action::ACTION_WEB_REQUEST, api_call);
   action->set_page_url(url);
   action->set_page_incognito(is_incognito);
+  action->set_isolated_mode(IsIsolatedModeContext(browser_context));
   action->mutable_other().Set(activity_log_constants::kActionWebRequest,
                               std::move(details));
   activity_log->LogAction(action);
@@ -858,6 +882,8 @@ void ActivityLog::OnScriptsExecuted(content::WebContents* web_contents,
       action->set_page_title(base::UTF16ToUTF8(web_contents->GetTitle()));
       action->set_page_incognito(
           web_contents->GetBrowserContext()->IsOffTheRecord());
+      action->set_isolated_mode(
+          IsIsolatedModeContext(web_contents->GetBrowserContext()));
 
       const prerender::NoStatePrefetchManager* no_state_prefetch_manager =
           prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(

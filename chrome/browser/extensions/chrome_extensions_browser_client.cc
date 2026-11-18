@@ -244,6 +244,10 @@ void AddActionToExtensionActivityLog(content::BrowserContext* browser_context,
   if (action->page_url().is_valid() || !action->page_title().empty()) {
     action->set_page_incognito(browser_context->IsOffTheRecord());
   }
+  // Unlike page_incognito, mark the actions of an Enterprise Isolated Mode
+  // profile even if they have no URL or title.
+  action->set_isolated_mode(Profile::FromBrowserContext(browser_context)
+                                ->IsEnterpriseIsolatedModeProfile());
   ActivityLog::GetInstance(browser_context)->LogAction(action);
 }
 

@@ -74,6 +74,7 @@ scoped_refptr<Action> Action::Clone() const {
   clone->set_page_incognito(page_incognito());
   clone->set_arg_url(arg_url());
   clone->set_arg_incognito(arg_incognito());
+  clone->set_isolated_mode(isolated_mode());
   if (other())
     clone->set_other(other()->Clone());
   return clone;
