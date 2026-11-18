@@ -70,6 +70,10 @@ void WaylandBubble::Hide() {
   }
   WaylandWindow::Hide();
   subsurface.reset();
+  // The window lost its wl_subsurface role, so it is no longer configured, see
+  // IsSurfaceConfigured(). Notify the observers as AddToParentAsSubsurface()
+  // does when it gets the role, and as XdgSurface does when it is destroyed.
+  connection()->window_manager()->NotifyWindowConfigured(this);
   auto weak_this = AsWeakPtr();
   Deactivate();
   if (!weak_this) {
