@@ -6,13 +6,13 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/ui/cocoa/group_menu_util.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -149,6 +149,7 @@ TabMenuBridge::TabMenuBridge(NSMenuItem* menu_item) : menu_item_(menu_item) {
 
 TabMenuBridge::~TabMenuBridge() {
   [menu_item_.submenu setDelegate:nil];
+  tab_ui_subscriptions_.clear();
   if (model_) {
     model_->RemoveObserver(this);
   }
@@ -160,6 +161,7 @@ void TabMenuBridge::SetTabStripModel(TabStripModel* model) {
     return;
   }
 
+  tab_ui_subscriptions_.clear();
   if (model_) {
     model_->RemoveObserver(this);
   }
@@ -168,6 +170,9 @@ void TabMenuBridge::SetTabStripModel(TabStripModel* model) {
 
   if (model_) {
     model_->AddObserver(this);
+    for (tabs::TabInterface* tab : *model_) {
+      StartObservingTab(tab);
+    }
     AddDynamicItemsFromModel();
   } else {
     RemoveMenuItems(DynamicMenuItems());
@@ -236,6 +241,44 @@ void TabMenuBridge::AddDynamicItemsFromModel() {
   RemoveMenuItems(recyclable_items);
 }
 
+void TabMenuBridge::StartObservingTab(tabs::TabInterface* tab) {
+  if (!tab) {
+    return;
+  }
+  if (TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab)) {
+    tab_ui_subscriptions_[tab->GetHandle()] =
+        tab_ui_helper->AddTabUIChangeCallback(base::BindRepeating(
+            &TabMenuBridge::UpdateMenuItemForTab, base::Unretained(this), tab));
+  }
+}
+
+void TabMenuBridge::StopObservingTab(tabs::TabInterface* tab) {
+  if (!tab) {
+    return;
+  }
+  tab_ui_subscriptions_.erase(tab->GetHandle());
+}
+
+void TabMenuBridge::UpdateMenuItemForTab(tabs::TabInterface* tab) {
+  CHECK(model_, base::NotFatalUntil::M162);
+
+  if (!force_rebuild_menu_ && ![menu_listener_ isMenuOpen]) {
+    [menu_listener_ setRebuildMenu:YES];
+    return;
+  }
+
+  auto it = tab_to_menu_item_.find(tab);
+  if (it == tab_to_menu_item_.end()) {
+    // If a UI change callback fires before this observer has observed a newly
+    // added tab, it will not be in the map yet. Early-out safely here; the
+    // item will be created when we process the addition notification.
+    return;
+  }
+
+  NSMenuItem* item = it->second;
+  UpdateItemForWebContents(item, tab->GetContents(), model_);
+}
+
 void TabMenuBridge::OnDynamicItemChosen(NSMenuItem* item) {
   if (!model_) {
     return;
@@ -263,6 +306,16 @@ void TabMenuBridge::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   CHECK(tab_strip_model, base::NotFatalUntil::M162);
   CHECK_EQ(tab_strip_model, model_, base::NotFatalUntil::M162);
+
+  if (change.type() == TabStripModelChange::kInserted) {
+    for (const auto& inserted_tab : change.GetInsert()->contents) {
+      StartObservingTab(inserted_tab.tab);
+    }
+  } else if (change.type() == TabStripModelChange::kRemoved) {
+    for (const auto& removed_tab : change.GetRemove()->contents) {
+      StopObservingTab(removed_tab.tab);
+    }
+  }
 
   if (!force_rebuild_menu_ && ![menu_listener_ isMenuOpen]) {
     [menu_listener_ setRebuildMenu:YES];
@@ -295,35 +348,8 @@ void TabMenuBridge::OnTabStripModelChanged(
   AddDynamicItemsFromModel();
 }
 
-void TabMenuBridge::OnTabChangedAt(tabs::TabInterface* tab,
-                                   TabChangeType change_type) {
-  CHECK(model_, base::NotFatalUntil::M162);
-
-  // Ignore loading state changes - they happen very often during page load and
-  // are used to drive the load spinner, which is not interesting to this menu.
-  if (change_type == TabChangeType::kLoadingOnly) {
-    return;
-  }
-
-  if (!force_rebuild_menu_ && ![menu_listener_ isMenuOpen]) {
-    [menu_listener_ setRebuildMenu:YES];
-    return;
-  }
-
-  auto it = tab_to_menu_item_.find(tab);
-  if (it == tab_to_menu_item_.end()) {
-    // If OnTabChangedAt fires before this observer has observed a newly added
-    // tab, it will not be in the map yet. Early-out safely here; the item will
-    // be created when we process the addition notification.
-    return;
-  }
-
-  NSMenuItem* item = it->second;
-  UpdateItemForWebContents(item, tab->GetContents(), model_);
-}
-
 void TabMenuBridge::OnTabAudioChanged(tabs::TabInterface* tab) {
-  OnTabChangedAt(tab, TabChangeType::kAll);
+  UpdateMenuItemForTab(tab);
 }
 
 // If a tab group is changed, update group indicator for each tab.
@@ -355,6 +381,7 @@ void TabMenuBridge::TabGroupedStateChanged(
 }
 
 void TabMenuBridge::OnTabStripModelDestroyed(TabStripModel* model) {
+  tab_ui_subscriptions_.clear();
   model_->RemoveObserver(this);
   model_ = nullptr;
   menu_item_to_tab_.clear();

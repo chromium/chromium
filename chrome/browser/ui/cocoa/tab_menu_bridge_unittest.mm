@@ -16,7 +16,6 @@
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -124,9 +123,9 @@ class TabMenuBridgeTest : public ::testing::Test {
       content::WebContentsTester::For(contents)->SetTitle(
           base::UTF8ToUTF16(new_name));
       // The way WebContentsTester updates the title avoids the usual
-      // notification mechanism for TabStripModel, so manually synthesize the
-      // update notification here.
-      model()->UpdateWebContentsState(contents, TabChangeType::kAll);
+      // notification mechanism, so manually synthesize the update notification
+      // here.
+      TabUIHelper::From(model()->GetTabAtIndex(index))->TitleWasSet(nullptr);
     }
   }
 
@@ -255,6 +254,9 @@ TEST_F(TabMenuBridgeTest, TracksModelUpdates) {
   ReplaceModelTabNamed("Tab 4", "Tab 5");
   ASSERT_NE(GetModelWebContentsAt(0), old_contents);
   ExpectDynamicTabsInMenuAre({"Tab 5", "Tab 3", "Tab 2"});
+
+  tab_strip_model->MoveWebContentsAt(0, 2, false);
+  ExpectDynamicTabsInMenuAre({"Tab 3", "Tab 2", "Tab 5"});
 }
 
 // Tests that dynamic menu items added by the bridge are removed on
@@ -315,8 +317,7 @@ TEST_F(TabMenuBridgeTest, SwappingBridgeRecreatesMenu) {
 
   // Simulate one of the tabs in the model being updated - if the computed
   // indexes are wrong, this call will DCHECK.
-  model2->UpdateWebContentsState(model2->GetWebContentsAt(0),
-                                 TabChangeType::kAll);
+  TabUIHelper::From(model2->GetTabAtIndex(0))->TitleWasSet(nullptr);
 
   model2->CloseAllTabs();
 

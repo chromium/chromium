@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -59,6 +60,9 @@ class TabMenuBridge : public TabStripModelObserver {
   // These methods are used manage the dynamic menu items.
   NSMutableArray* DynamicMenuItems();
   void AddDynamicItemsFromModel();
+  void StartObservingTab(tabs::TabInterface* tab);
+  void StopObservingTab(tabs::TabInterface* tab);
+  void UpdateMenuItemForTab(tabs::TabInterface* tab);
 
   // This method exists to be called back into from the Cocoa part of this
   // bridge class (TabMenuListener).
@@ -69,8 +73,6 @@ class TabMenuBridge : public TabStripModelObserver {
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void OnTabChangedAt(tabs::TabInterface* tab,
-                      TabChangeType change_type) override;
   void OnTabAudioChanged(tabs::TabInterface* tab) override;
   void OnTabGroupChanged(const TabGroupChange& change) override;
   void TabGroupedStateChanged(TabStripModel* tab_strip_model,
@@ -95,6 +97,9 @@ class TabMenuBridge : public TabStripModelObserver {
 
   // Maps each TabInterface to the NSMenuItem that was created for it.
   std::map<raw_ptr<tabs::TabInterface>, NSMenuItem*> tab_to_menu_item_;
+
+  std::map<tabs::TabHandle, base::CallbackListSubscription>
+      tab_ui_subscriptions_;
 
   // Flag when set forces the menu to be immediately rebuilt on modal change
   // instead of only doing so during menu show.
