@@ -10,6 +10,7 @@ Object: {
 				{
 					frame: string
 					isInPrimaryMainFrame: boolean
+					isOpaqueOrigin: boolean
 					isOutermostMainFrame: boolean
 					name: string
 					processId: number

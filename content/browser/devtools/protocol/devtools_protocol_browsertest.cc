@@ -7396,4 +7396,282 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_EQ(nullptr, agent_host_->GetWebContents());
 }
 
+namespace {
+
+base::Value StopTracingAndReadJson(DevToolsProtocolTest* test) {
+  EXPECT_TRUE(test->SendCommandSync("Tracing.end"));
+  base::DictValue complete =
+      test->WaitForNotification("Tracing.tracingComplete", true);
+  const std::string* stream_handle_ptr = complete.FindString("stream");
+  if (!stream_handle_ptr) {
+    ADD_FAILURE() << "Missing stream handle in Tracing.tracingComplete";
+    return base::Value();
+  }
+  std::string stream_handle = *stream_handle_ptr;
+  std::string trace_json;
+  bool eof = false;
+  while (!eof) {
+    base::DictValue read_params;
+    read_params.Set("handle", stream_handle);
+    const base::DictValue* response =
+        test->SendCommandSync("IO.read", std::move(read_params));
+    if (!response) {
+      ADD_FAILURE() << "IO.read failed";
+      break;
+    }
+    const std::string* data = response->FindString("data");
+    if (data) {
+      if (response->FindBool("base64Encoded").value_or(false)) {
+        std::string decoded;
+        EXPECT_TRUE(base::Base64Decode(*data, &decoded));
+        trace_json += decoded;
+      } else {
+        trace_json += *data;
+      }
+    }
+    eof = response->FindBool("eof").value_or(false);
+  }
+  base::DictValue close_params;
+  close_params.Set("handle", stream_handle);
+  test->SendCommandSync("IO.close", std::move(close_params));
+
+  std::optional<base::Value> parsed =
+      base::JSONReader::Read(trace_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  EXPECT_TRUE(parsed.has_value());
+  return std::move(parsed).value_or(base::Value());
+}
+
+const base::ListValue* GetTraceEventsList(const base::Value& root) {
+  if (root.is_dict()) {
+    return root.GetDict().FindList("traceEvents");
+  }
+  return root.GetIfList();
+}
+
+void StartTimelineTracing(DevToolsProtocolTest* test) {
+  base::DictValue trace_config;
+  base::ListValue categories;
+  categories.Append(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"));
+  trace_config.Set("includedCategories", std::move(categories));
+  base::DictValue start_params;
+  start_params.Set("traceConfig", std::move(trace_config));
+  start_params.Set("transferMode", "ReturnAsStream");
+  ASSERT_TRUE(test->SendCommandSync("Tracing.start", std::move(start_params)));
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolBackForwardCacheTest,
+                       TracingStartedInBrowserOmitsBackForwardCachedFrames) {
+  content::SetupCrossSiteRedirector(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL victim_url =
+      embedded_test_server()->GetURL("victim.com", "/title1.html");
+  GURL attacker_url =
+      embedded_test_server()->GetURL("attacker.com", "/title2.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), victim_url));
+  RenderFrameHostWrapper rfh_victim(
+      shell()->web_contents()->GetPrimaryMainFrame());
+
+  // Attach before navigating away so `IsBackForwardCacheSupported` is active.
+  Attach();
+
+  ASSERT_TRUE(NavigateToURL(shell(), attacker_url));
+  ASSERT_TRUE(rfh_victim->IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kInBackForwardCache));
+
+  StartTimelineTracing(this);
+  base::Value trace_root = StopTracingAndReadJson(this);
+  const base::ListValue* events = GetTraceEventsList(trace_root);
+  ASSERT_TRUE(events);
+
+  const base::ListValue* started_frames = nullptr;
+  for (const base::Value& event_val : *events) {
+    const base::DictValue* event = event_val.GetIfDict();
+    if (!event) {
+      continue;
+    }
+    const std::string* name = event->FindString("name");
+    if (name && *name == "TracingStartedInBrowser") {
+      started_frames = event->FindListByDottedPath("args.data.frames");
+      break;
+    }
+  }
+  ASSERT_TRUE(started_frames);
+
+  int primary_main_frame_count = 0;
+  for (const base::Value& frame_val : *started_frames) {
+    const base::DictValue* frame = frame_val.GetIfDict();
+    ASSERT_TRUE(frame);
+    const std::string* url = frame->FindString("url");
+    ASSERT_TRUE(url);
+    EXPECT_NE(victim_url.spec(), *url);
+    if (frame->FindBool("isInPrimaryMainFrame").value_or(false) &&
+        frame->FindBool("isOutermostMainFrame").value_or(false)) {
+      ++primary_main_frame_count;
+      EXPECT_EQ(attacker_url.spec(), *url);
+      EXPECT_EQ(false, frame->FindBool("isOpaqueOrigin"));
+    }
+  }
+  EXPECT_EQ(1, primary_main_frame_count);
+
+  // Verify that restoring the cached page during an active trace still marks
+  // its FrameCommittedInBrowser event as isInPrimaryMainFrame: true.
+  StartTimelineTracing(this);
+  shell()->web_contents()->GetController().GoBack();
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  base::Value restore_trace = StopTracingAndReadJson(this);
+  const base::ListValue* restore_events = GetTraceEventsList(restore_trace);
+  ASSERT_TRUE(restore_events);
+
+  bool saw_restored_victim_commit = false;
+  for (const base::Value& event_val : *restore_events) {
+    const base::DictValue* event = event_val.GetIfDict();
+    if (!event) {
+      continue;
+    }
+    const std::string* name = event->FindString("name");
+    if (!name || *name != "FrameCommittedInBrowser") {
+      continue;
+    }
+    const base::DictValue* data = event->FindDictByDottedPath("args.data");
+    ASSERT_TRUE(data);
+    const std::string* url = data->FindString("url");
+    if (url && *url == victim_url.spec()) {
+      saw_restored_victim_commit = true;
+      EXPECT_EQ(true, data->FindBool("isOutermostMainFrame"));
+      EXPECT_EQ(true, data->FindBool("isInPrimaryMainFrame"));
+      EXPECT_EQ(false, data->FindBool("isOpaqueOrigin"));
+    }
+  }
+  EXPECT_TRUE(saw_restored_victim_commit);
+}
+
+class DevToolsProtocolPrerenderTracingTest : public DevToolsProtocolTest {
+ public:
+  DevToolsProtocolPrerenderTracingTest()
+      : prerender_helper_(base::BindRepeating(
+            &DevToolsProtocolPrerenderTracingTest::GetWebContents,
+            base::Unretained(this))) {}
+
+  void SetUp() override {
+    prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
+    DevToolsProtocolTest::SetUp();
+  }
+
+  PreloadingEligibility IsPrerender2Supported(
+      WebContents& web_contents,
+      PreloadingTriggerType trigger_type) override {
+    return PreloadingEligibility::kEligible;
+  }
+
+ protected:
+  WebContents* GetWebContents() { return shell()->web_contents(); }
+  test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolPrerenderTracingTest,
+                       TracingFrameCommittedPrimaryVsPrerenderAndOpaqueOrigin) {
+  content::SetupCrossSiteRedirector(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL initial_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  GURL prerender_url = embedded_test_server()->GetURL("a.com", "/title2.html");
+  GURL cross_site_url = embedded_test_server()->GetURL("b.com", "/title1.html");
+  GURL sandbox_url_1 = embedded_test_server()->GetURL(
+      "c.com",
+      "/set-header?Content-Security-Policy:%20sandbox%20allow-scripts");
+  GURL sandbox_url_2 = embedded_test_server()->GetURL(
+      "d.com",
+      "/set-header?Content-Security-Policy:%20sandbox%20allow-scripts");
+
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  AttachToTabTarget(shell()->web_contents());
+  shell()->web_contents()->SetDelegate(this);
+
+  StartTimelineTracing(this);
+  prerender_helper_.AddPrerender(prerender_url);
+  ASSERT_TRUE(NavigateToURL(shell(), cross_site_url));
+  ASSERT_TRUE(NavigateToURL(shell(), sandbox_url_1));
+  base::Value nav_trace = StopTracingAndReadJson(this);
+  const base::ListValue* nav_events = GetTraceEventsList(nav_trace);
+  ASSERT_TRUE(nav_events);
+
+  bool saw_prerender_commit = false;
+  bool saw_cross_site_primary_commit = false;
+  bool saw_sandbox_commit = false;
+  for (const base::Value& event_val : *nav_events) {
+    const base::DictValue* event = event_val.GetIfDict();
+    if (!event) {
+      continue;
+    }
+    const std::string* name = event->FindString("name");
+    if (!name || *name != "FrameCommittedInBrowser") {
+      continue;
+    }
+    const base::DictValue* data = event->FindDictByDottedPath("args.data");
+    ASSERT_TRUE(data);
+    const std::string* url = data->FindString("url");
+    if (!url) {
+      continue;
+    }
+    if (*url == prerender_url.spec()) {
+      saw_prerender_commit = true;
+      EXPECT_EQ(true, data->FindBool("isOutermostMainFrame"));
+      EXPECT_EQ(false, data->FindBool("isInPrimaryMainFrame"));
+      EXPECT_EQ(false, data->FindBool("isOpaqueOrigin"));
+    } else if (*url == cross_site_url.spec()) {
+      saw_cross_site_primary_commit = true;
+      EXPECT_EQ(true, data->FindBool("isOutermostMainFrame"));
+      EXPECT_EQ(true, data->FindBool("isInPrimaryMainFrame"));
+      EXPECT_EQ(false, data->FindBool("isOpaqueOrigin"));
+    } else if (*url == sandbox_url_1.spec()) {
+      saw_sandbox_commit = true;
+      EXPECT_EQ(true, data->FindBool("isOutermostMainFrame"));
+      EXPECT_EQ(true, data->FindBool("isInPrimaryMainFrame"));
+      EXPECT_EQ(true, data->FindBool("isOpaqueOrigin"));
+    }
+  }
+  EXPECT_TRUE(saw_prerender_commit);
+  EXPECT_TRUE(saw_cross_site_primary_commit);
+  EXPECT_TRUE(saw_sandbox_commit);
+
+  // Also verify TracingStartedInBrowser on a committed CSP-sandboxed main
+  // frame reports isOpaqueOrigin: true alongside its URL.
+  ASSERT_TRUE(NavigateToURL(shell(), sandbox_url_2));
+  ASSERT_TRUE(shell()
+                  ->web_contents()
+                  ->GetPrimaryMainFrame()
+                  ->GetLastCommittedOrigin()
+                  .opaque());
+
+  StartTimelineTracing(this);
+  base::Value sandbox_trace = StopTracingAndReadJson(this);
+  const base::ListValue* sandbox_events = GetTraceEventsList(sandbox_trace);
+  ASSERT_TRUE(sandbox_events);
+
+  const base::ListValue* sandbox_frames = nullptr;
+  for (const base::Value& event_val : *sandbox_events) {
+    const base::DictValue* event = event_val.GetIfDict();
+    if (!event) {
+      continue;
+    }
+    const std::string* name = event->FindString("name");
+    if (name && *name == "TracingStartedInBrowser") {
+      sandbox_frames = event->FindListByDottedPath("args.data.frames");
+      break;
+    }
+  }
+  ASSERT_TRUE(sandbox_frames);
+  ASSERT_EQ(1u, sandbox_frames->size());
+  const base::DictValue* main_frame = (*sandbox_frames)[0].GetIfDict();
+  ASSERT_TRUE(main_frame);
+  EXPECT_EQ(sandbox_url_2.spec(), *main_frame->FindString("url"));
+  EXPECT_EQ(true, main_frame->FindBool("isOutermostMainFrame"));
+  EXPECT_EQ(true, main_frame->FindBool("isInPrimaryMainFrame"));
+  EXPECT_EQ(true, main_frame->FindBool("isOpaqueOrigin"));
+}
+
 }  // namespace content

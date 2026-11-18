@@ -59,6 +59,7 @@
 #include "services/tracing/public/mojom/constants.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "components/tracing/common/etw_stack_sampling_win.h"
@@ -211,7 +212,9 @@ void SendProcessReadyInBrowserEvent(const base::UnguessableToken& frame_token,
 
 void FillFrameData(base::trace_event::TracedValue* data,
                    RenderFrameHostImpl* frame_host,
-                   const GURL& url) {
+                   const GURL& url,
+                   const url::Origin& origin,
+                   bool is_in_primary_main_frame) {
   CHECK(frame_host);
   GURL::Replacements strip_fragment;
   strip_fragment.ClearRef();
@@ -220,12 +223,8 @@ void FillFrameData(base::trace_event::TracedValue* data,
   data->SetString("url", std::move(trimmed_url));
   data->SetString("name", frame_host->GetFrameName());
   data->SetBoolean("isOutermostMainFrame", frame_host->IsOutermostMainFrame());
-  // Use FrameTree's primary status since the `frame_host` itself might not be
-  // the primary main RenderFrameHost yet, if this function is called when
-  // `frame_host` is still speculative / pending commit.
-  data->SetBoolean("isInPrimaryMainFrame",
-                   frame_host->IsOutermostMainFrame() &&
-                       frame_host->frame_tree()->is_primary());
+  data->SetBoolean("isInPrimaryMainFrame", is_in_primary_main_frame);
+  data->SetBoolean("isOpaqueOrigin", origin.opaque());
   if (frame_host->GetParent()) {
     data->SetString(
         "parent", frame_host->GetParent()->GetDevToolsFrameToken().ToString());
@@ -1205,11 +1204,22 @@ void TracingHandler::EmitFrameTree() {
         frame_host->frame_tree_node()->frame_tree_node_id().value());
     data->SetBoolean("persistentIds", true);
     data->BeginArray("frames");
-    wc->ForEachRenderFrameHost([&data](RenderFrameHost* rfh) {
+    wc->ForEachRenderFrameHostWithAction([&data](RenderFrameHost* rfh) {
+      RenderFrameHost::LifecycleState lifecycle_state =
+          rfh->GetLifecycleState();
+      if (lifecycle_state ==
+              RenderFrameHost::LifecycleState::kInBackForwardCache ||
+          lifecycle_state ==
+              RenderFrameHost::LifecycleState::kPendingDeletion) {
+        return RenderFrameHost::FrameIterationAction::kSkipChildren;
+      }
+      auto* rfh_impl = static_cast<RenderFrameHostImpl*>(rfh);
       data->BeginDictionary();
-      FillFrameData(data.get(), static_cast<RenderFrameHostImpl*>(rfh),
-                    rfh->GetLastCommittedURL());
+      FillFrameData(data.get(), rfh_impl, rfh_impl->GetLastCommittedURL(),
+                    rfh_impl->GetLastCommittedOrigin(),
+                    rfh_impl->IsInPrimaryMainFrame());
       data->EndDictionary();
+      return RenderFrameHost::FrameIterationAction::kContinue;
     });
     data->EndArray();
   }
@@ -1222,8 +1232,10 @@ void TracingHandler::WillInitiatePrerender(FrameTreeNode* frame_tree_node) {
     return;
   }
   auto data = std::make_unique<base::trace_event::TracedValue>();
-  FillFrameData(data.get(), frame_tree_node->current_frame_host(),
-                frame_tree_node->current_url());
+  RenderFrameHostImpl* frame_host = frame_tree_node->current_frame_host();
+  FillFrameData(data.get(), frame_host, frame_tree_node->current_url(),
+                frame_host->GetLastCommittedOrigin(),
+                /*is_in_primary_main_frame=*/false);
   TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                       "FrameCommittedInBrowser", "data", std::move(data));
 }
@@ -1235,7 +1247,9 @@ void TracingHandler::ReadyToCommitNavigation(
   }
   auto data = std::make_unique<base::trace_event::TracedValue>();
   RenderFrameHostImpl* frame_host = navigation_request->GetRenderFrameHost();
-  FillFrameData(data.get(), frame_host, navigation_request->GetURL());
+  FillFrameData(data.get(), frame_host, navigation_request->GetURL(),
+                navigation_request->GetOriginToCommit().value(),
+                navigation_request->IsInPrimaryMainFrame());
   TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                       "FrameCommittedInBrowser", "data", std::move(data));
   if (frame_host->IsOutermostMainFrame()) {

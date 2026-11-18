@@ -5,6 +5,7 @@ FrameCommittedInBrowser [
     [0] : {
         frame : <string>
         isInPrimaryMainFrame : true
+        isOpaqueOrigin : false
         isOutermostMainFrame : true
         name :
         processId : <number>
