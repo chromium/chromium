@@ -304,6 +304,13 @@ suite('HistoryFilterChipsVisibility', function() {
     return microtasksFinished();
   }
 
+  function resetQueryHistory(term: string = '') {
+    browserProxy.handler.resetResolver('queryHistory');
+    browserProxy.handler.setResultFor('queryHistory', Promise.resolve({
+      results: {info: createHistoryInfo(term), value: []},
+    }));
+  }
+
   test('FilterChipsNotVisible_AllFiltersOff', async () => {
     loadTimeData.overrideValues({
       isGlicWebActuationAvailable: false,
@@ -460,6 +467,7 @@ suite('HistoryFilterChipsVisibility', function() {
     loadTimeData.overrideValues({
       isGlicWebActuationAvailable: true,
       isBrowsingHistoryFilterByDeviceEnabled: true,
+      isBrowsingHistoryFilterByDomainEnabled: false,
       isBrowsingHistoryFilterByTimePeriodEnabled: false,
     });
     await createPage();
@@ -502,6 +510,7 @@ suite('HistoryFilterChipsVisibility', function() {
     loadTimeData.overrideValues({
       isGlicWebActuationAvailable: false,
       isBrowsingHistoryFilterByDeviceEnabled: false,
+      isBrowsingHistoryFilterByDomainEnabled: false,
       isBrowsingHistoryFilterByTimePeriodEnabled: true,
     });
     browserProxy.handler.setResultFor('getTimePeriodOptions', Promise.resolve({
@@ -532,10 +541,7 @@ suite('HistoryFilterChipsVisibility', function() {
         '#timePeriodSelect');
     assertTrue(!!select);
 
-    browserProxy.handler.resetResolver('queryHistory');
-    browserProxy.handler.setResultFor('queryHistory', Promise.resolve({
-      results: {info: createHistoryInfo(''), value: []},
-    }));
+    resetQueryHistory();
     select.value = String(TimePeriodOptionId.kYesterday);
     select.dispatchEvent(new Event('change'));
 
@@ -543,6 +549,38 @@ suite('HistoryFilterChipsVisibility', function() {
     const args = await browserProxy.handler.whenCalled('queryHistory');
     assertDeepEquals({internalValue: BigInt(1000)}, args[2]);  // beginTime
     assertDeepEquals({internalValue: BigInt(2000)}, args[3]);  // endTime
+  });
+
+  test('DomainSelectionIsPassedToQuery', async () => {
+    loadTimeData.overrideValues({
+      isGlicWebActuationAvailable: false,
+      isBrowsingHistoryFilterByDeviceEnabled: false,
+      isBrowsingHistoryFilterByDomainEnabled: true,
+      isBrowsingHistoryFilterByTimePeriodEnabled: false,
+    });
+    await createPage();
+
+    // Selecting a domain passes it to queryHistory with an empty search query.
+    resetQueryHistory();
+    element.$.history.fire('domain-filter-selected', {domain: 'example.com'});
+    let args = await browserProxy.handler.whenCalled('queryHistory');
+    assertEquals('', args[0]);             // query
+    assertEquals('example.com', args[7]);  // domain
+
+    // Updating the search query preserves the active domain.
+    resetQueryHistory('test');
+    element.fire('change-query', {search: 'test'});
+    args = await browserProxy.handler.whenCalled('queryHistory');
+    assertEquals('test', args[0]);
+    assertEquals('example.com', args[7]);
+    await microtasksFinished();
+
+    // Selecting a new domain preserves the active search query.
+    resetQueryHistory('test');
+    element.$.history.fire('domain-filter-selected', {domain: 'chromium.org'});
+    args = await browserProxy.handler.whenCalled('queryHistory');
+    assertEquals('test', args[0]);
+    assertEquals('chromium.org', args[7]);
   });
 
   test('HidesFilterChipsOnGroupedView', async () => {

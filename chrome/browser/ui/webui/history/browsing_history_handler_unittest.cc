@@ -217,11 +217,12 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
   mojom::QueryResultPtr RunQueryHistory(
       const std::string& query,
       std::optional<base::Time> begin_time = std::nullopt,
-      std::optional<base::Time> end_time = std::nullopt) {
+      std::optional<base::Time> end_time = std::nullopt,
+      const std::string& domain = "") {
     mojom::QueryResultPtr history_query_results;
     base::RunLoop run_loop;
     handler_->QueryHistory(
-        query, 150, begin_time, end_time, true, true, {},
+        query, 150, begin_time, end_time, true, true, {}, domain,
         base::BindLambdaForTesting([&](history::mojom::QueryResultPtr result) {
           history_query_results = std::move(result);
           run_loop.Quit();
@@ -256,66 +257,6 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<BrowsingHistoryHandlerWithWebUIForTesting> handler_;
   std::unique_ptr<MockHistoryPage> mock_page_;
 };
-
-TEST_F(BrowsingHistoryHandlerTest, HostnameSuffixParameter) {
-  std::u16string query = u"";
-  QueryOptions options;
-  options.hostname_suffix = "www.chromium.org";
-  MockHistoryServiceCall(query, options);
-
-  auto results_mojom = RunQueryHistory("host:www.chromium.org");
-  EXPECT_EQ("www.chromium.org", results_mojom->info->term);
-}
-
-TEST_F(BrowsingHistoryHandlerTest, WithoutHostnameSuffixParameter) {
-  std::u16string query = u"www.chromium.org";
-  QueryOptions options;
-  MockHistoryServiceCall(query, options);
-
-  auto results_mojom = RunQueryHistory("www.chromium.org");
-  EXPECT_EQ("www.chromium.org", results_mojom->info->term);
-}
-
-TEST_F(BrowsingHistoryHandlerTest, MisplacedHostnameSuffixParameter) {
-  {
-    std::u16string query = u"whost:ww.chromium.org";
-    QueryOptions options;
-    MockHistoryServiceCall(query, options);
-
-    RunQueryHistory("whost:ww.chromium.org");
-  }
-
-  {
-    std::u16string query = u"www.chromium.orghost:";
-    QueryOptions options;
-    MockHistoryServiceCall(query, options);
-
-    RunQueryHistory("www.chromium.orghost:");
-  }
-}
-
-TEST_F(BrowsingHistoryHandlerTest, HostnameSuffixParameterAndTextQuery) {
-  {
-    std::u16string query = u"some-text";
-    QueryOptions options;
-    options.hostname_suffix = "example.com";
-    MockHistoryServiceCall(query, options);
-
-    auto results_mojom = RunQueryHistory("host:example.com some-text");
-    EXPECT_EQ("some-text", results_mojom->info->term);
-  }
-
-  {
-    std::u16string query = u"some-text some-other-text";
-    QueryOptions options;
-    options.hostname_suffix = "example.com";
-    MockHistoryServiceCall(query, options);
-
-    auto results_mojom =
-        RunQueryHistory("some-text host:example.com some-other-text");
-    EXPECT_EQ("some-text some-other-text", results_mojom->info->term);
-  }
-}
 
 TEST_F(BrowsingHistoryHandlerTest, BeginTimestamp) {
   {
@@ -476,7 +417,7 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryMojoOptionMapping) {
   handler()->QueryHistory("query", 150, std::nullopt, std::nullopt,
                           /*include_user_visits=*/false,
                           /*include_actor_visits=*/true,
-                          /*client_ids=*/{}, base::DoNothing());
+                          /*client_ids=*/{}, /*domain=*/"", base::DoNothing());
 }
 #endif
 
@@ -494,7 +435,7 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithActorOnly) {
   handler()->QueryHistory("test_query", 150, std::nullopt, std::nullopt,
                           /*include_user_visits=*/false,
                           /*include_actor_visits=*/true,
-                          /*client_ids=*/{}, base::DoNothing());
+                          /*client_ids=*/{}, /*domain=*/"", base::DoNothing());
 }
 
 TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithUserOnly) {
@@ -511,7 +452,7 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithUserOnly) {
   handler()->QueryHistory("test_query", 150, std::nullopt, std::nullopt,
                           /*include_user_visits=*/true,
                           /*include_actor_visits=*/false,
-                          /*client_ids=*/{}, base::DoNothing());
+                          /*client_ids=*/{}, /*domain=*/"", base::DoNothing());
 }
 
 TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithBothVisits) {
@@ -528,7 +469,7 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithBothVisits) {
   handler()->QueryHistory("test_query", 150, std::nullopt, std::nullopt,
                           /*include_user_visits=*/true,
                           /*include_actor_visits=*/true,
-                          /*client_ids=*/{}, base::DoNothing());
+                          /*client_ids=*/{}, /*domain=*/"", base::DoNothing());
 }
 
 TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithClientIds) {
@@ -544,7 +485,7 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithClientIds) {
   handler()->QueryHistory("test_query", 150, std::nullopt, std::nullopt,
                           /*include_user_visits=*/true,
                           /*include_actor_visits=*/true, kClientIds,
-                          base::DoNothing());
+                          /*domain=*/"", base::DoNothing());
 }
 
 // Regression test for crbug.com/582436669. Destroying the handler while a
@@ -561,10 +502,187 @@ TEST_F(BrowsingHistoryHandlerTest, DestroyWithPendingQueryHistoryOnBoundPipe) {
   remote->QueryHistory("", 150, std::nullopt, std::nullopt,
                        /*include_user_visits=*/true,
                        /*include_actor_visits=*/true,
-                       /*client_ids=*/{}, base::DoNothing());
+                       /*client_ids=*/{}, /*domain=*/"", base::DoNothing());
   remote.FlushForTesting();
 
   handler.reset();
+}
+
+// TODO(crbug.com/584210521): Remove once kBrowsingHistoryFilterByDomain is
+// launched and legacy "host:" prefix parsing is removed.
+class BrowsingHistoryHandlerDomainFilterDisabledTest
+    : public BrowsingHistoryHandlerTest {
+ public:
+  BrowsingHistoryHandlerDomainFilterDisabledTest() {
+    feature_list_.InitAndDisableFeature(
+        history::kBrowsingHistoryFilterByDomain);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(BrowsingHistoryHandlerDomainFilterDisabledTest,
+       HostnameSuffixParameter) {
+  std::u16string query = u"";
+  QueryOptions options;
+  options.hostname_suffix = "www.chromium.org";
+  MockHistoryServiceCall(query, options);
+
+  auto results_mojom = RunQueryHistory("host:www.chromium.org");
+  EXPECT_EQ("www.chromium.org", results_mojom->info->term);
+}
+
+TEST_F(BrowsingHistoryHandlerDomainFilterDisabledTest,
+       WithoutHostnameSuffixParameter) {
+  std::u16string query = u"www.chromium.org";
+  QueryOptions options;
+  MockHistoryServiceCall(query, options);
+
+  auto results_mojom = RunQueryHistory("www.chromium.org");
+  EXPECT_EQ("www.chromium.org", results_mojom->info->term);
+}
+
+TEST_F(BrowsingHistoryHandlerDomainFilterDisabledTest,
+       MisplacedHostnameSuffixParameter) {
+  {
+    std::u16string query = u"whost:ww.chromium.org";
+    QueryOptions options;
+    MockHistoryServiceCall(query, options);
+
+    RunQueryHistory("whost:ww.chromium.org");
+  }
+
+  {
+    std::u16string query = u"www.chromium.orghost:";
+    QueryOptions options;
+    MockHistoryServiceCall(query, options);
+
+    RunQueryHistory("www.chromium.orghost:");
+  }
+}
+
+TEST_F(BrowsingHistoryHandlerDomainFilterDisabledTest,
+       HostnameSuffixParameterAndTextQuery) {
+  {
+    std::u16string query = u"some-text";
+    QueryOptions options;
+    options.hostname_suffix = "example.com";
+    MockHistoryServiceCall(query, options);
+
+    auto results_mojom = RunQueryHistory("host:example.com some-text");
+    EXPECT_EQ("some-text", results_mojom->info->term);
+  }
+
+  {
+    std::u16string query = u"some-text some-other-text";
+    QueryOptions options;
+    options.hostname_suffix = "example.com";
+    MockHistoryServiceCall(query, options);
+
+    auto results_mojom =
+        RunQueryHistory("some-text host:example.com some-other-text");
+    EXPECT_EQ("some-text some-other-text", results_mojom->info->term);
+  }
+}
+
+TEST_F(BrowsingHistoryHandlerDomainFilterDisabledTest,
+       QueryHistoryIgnoresDomain) {
+  {
+    QueryOptions options;
+    options.hostname_suffix = "www.chromium.org";
+    MockHistoryServiceCall(u"", options);
+
+    auto results_mojom = RunQueryHistory("host:www.chromium.org", std::nullopt,
+                                         std::nullopt, "example.com");
+    EXPECT_EQ("www.chromium.org", results_mojom->info->term);
+  }
+
+  {
+    QueryOptions options;
+    MockHistoryServiceCall(u"test_query", options);
+
+    auto results_mojom = RunQueryHistory("test_query", std::nullopt,
+                                         std::nullopt, "example.com");
+    EXPECT_EQ("test_query", results_mojom->info->term);
+  }
+}
+
+// TODO(crbug.com/584210521): Fold these tests into BrowsingHistoryHandlerTest
+// once kBrowsingHistoryFilterByDomain is launched.
+class BrowsingHistoryHandlerDomainFilterTest
+    : public BrowsingHistoryHandlerTest {
+ public:
+  BrowsingHistoryHandlerDomainFilterTest() {
+    feature_list_.InitAndEnableFeature(history::kBrowsingHistoryFilterByDomain);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(BrowsingHistoryHandlerDomainFilterTest, QueryHistoryWithDomain) {
+  {
+    QueryOptions options;
+    options.hostname_suffix = "example.com";
+    MockHistoryServiceCall(u"", options);
+
+    auto results_mojom =
+        RunQueryHistory("", std::nullopt, std::nullopt, "example.com");
+    EXPECT_EQ("", results_mojom->info->term);
+  }
+
+  {
+    QueryOptions options;
+    options.hostname_suffix = "example.com";
+    MockHistoryServiceCall(u"test_query", options);
+
+    auto results_mojom = RunQueryHistory("test_query", std::nullopt,
+                                         std::nullopt, "example.com");
+    EXPECT_EQ("test_query", results_mojom->info->term);
+  }
+}
+
+TEST_F(BrowsingHistoryHandlerDomainFilterTest, QueryHistoryTrimsWhitespace) {
+  {
+    QueryOptions options;
+    MockHistoryServiceCall(u"", options);
+
+    auto results_mojom = RunQueryHistory("   ");
+    EXPECT_EQ("", results_mojom->info->term);
+  }
+
+  {
+    QueryOptions options;
+    options.hostname_suffix = "example.com";
+    MockHistoryServiceCall(u"test_query", options);
+
+    auto results_mojom = RunQueryHistory("  test_query  ", std::nullopt,
+                                         std::nullopt, "example.com");
+    EXPECT_EQ("test_query", results_mojom->info->term);
+  }
+}
+
+// TODO(crbug.com/584210521): Remove once kBrowsingHistoryFilterByDomain is
+// launched and legacy "host:" prefix parsing is removed.
+TEST_F(BrowsingHistoryHandlerDomainFilterTest, QueryHistoryIgnoresHostPrefix) {
+  {
+    QueryOptions options;
+    options.hostname_suffix = "example.com";
+    MockHistoryServiceCall(u"host:chromium.org", options);
+
+    auto results_mojom = RunQueryHistory("host:chromium.org", std::nullopt,
+                                         std::nullopt, "example.com");
+    EXPECT_EQ("host:chromium.org", results_mojom->info->term);
+  }
+
+  {
+    QueryOptions options;
+    MockHistoryServiceCall(u"host:chromium.org", options);
+
+    auto results_mojom = RunQueryHistory("host:chromium.org");
+    EXPECT_EQ("host:chromium.org", results_mojom->info->term);
+  }
 }
 
 class BrowsingHistoryHandlerHistorySyncPromoTest
@@ -907,7 +1025,7 @@ TEST_F(BrowsingHistoryHandlerCriticalActionsTest,
                             /*end_timestamp=*/std::nullopt,
                             /*include_user_visits=*/true,
                             /*include_actor_visits=*/true, /*client_ids=*/{},
-                            query_future.GetCallback());
+                            /*domain=*/"", query_future.GetCallback());
 
   history::mojom::QueryResultPtr results = query_future.Take();
   ASSERT_TRUE(results);

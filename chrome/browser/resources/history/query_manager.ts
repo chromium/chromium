@@ -20,6 +20,7 @@ export type ChangeQueryEvent = CustomEvent<{
   // The selected predefined time period. kAllTime means no time period
   // filtering is applied.
   timePeriodOptionId?: TimePeriodOptionId,
+  domain?: string,
 }>;
 
 declare global {
@@ -63,6 +64,7 @@ export class HistoryQueryManagerElement extends CrLitElement {
     includeActorVisits: true,
     clientIds: [],
     timePeriodOptionId: TimePeriodOptionId.kAllTime,
+    domain: '',
   };
   accessor queryResult: QueryResult = {
     info: null,
@@ -110,7 +112,8 @@ export class HistoryQueryManagerElement extends CrLitElement {
         browserProxy.handler.queryHistory(
             this.queryState.searchTerm, RESULTS_PER_PAGE, beginTime, endTime,
             this.queryState.includeUserVisits,
-            this.queryState.includeActorVisits, this.queryState.clientIds);
+            this.queryState.includeActorVisits, this.queryState.clientIds,
+            this.queryState.domain);
     // Ignore rejected (cancelled) queries.
     promise.then((result) => this.onQueryResult_(result.results), () => {});
   }
@@ -163,6 +166,15 @@ export class HistoryQueryManagerElement extends CrLitElement {
       this.queryState = {
         ...this.queryState,
         timePeriodOptionId: changes.timePeriodOptionId,
+      };
+      needsUpdate = true;
+    }
+
+    if (changes.domain !== undefined &&
+        changes.domain !== this.queryState.domain) {
+      this.queryState = {
+        ...this.queryState,
+        domain: changes.domain,
       };
       needsUpdate = true;
     }

@@ -505,6 +505,7 @@ void BrowsingHistoryHandler::QueryHistory(
     bool include_user_visits,
     bool include_actor_visits,
     const std::vector<std::string>& client_ids,
+    const std::string& domain,
     QueryHistoryCallback callback) {
   // Reset the query history continuation callback. Since it is repopulated in
   // OnQueryComplete(), it cannot be reset earlier, as the early return above
@@ -519,7 +520,7 @@ void BrowsingHistoryHandler::QueryHistory(
   query_history_callback_ = std::move(callback);
 
   SendHistoryQuery(max_count, query, begin_time, end_time, include_user_visits,
-                   include_actor_visits, client_ids);
+                   include_actor_visits, client_ids, domain);
 }
 
 void BrowsingHistoryHandler::SendHistoryQuery(
@@ -529,7 +530,8 @@ void BrowsingHistoryHandler::SendHistoryQuery(
     std::optional<base::Time> end_time,
     bool include_user_visits,
     bool include_actor_visits,
-    const std::vector<std::string>& client_ids) {
+    const std::vector<std::string>& client_ids,
+    const std::string& domain) {
   query_timer_ = base::ElapsedTimer();
   history::QueryOptions options;
   options.max_count = max_count;
@@ -540,21 +542,27 @@ void BrowsingHistoryHandler::SendHistoryQuery(
   options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
   options.include_actor_visits = include_actor_visits;
   options.include_user_visits = include_user_visits;
-  const std::string kHostPrefix = "host:";
-  std::vector<std::string_view> tokens = base::SplitStringPiece(
-      query, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  std::vector<std::string_view> other_tokens;
-  for (std::string_view token : tokens) {
-    if (options.hostname_suffix.empty() && token.starts_with(kHostPrefix)) {
-      options.hostname_suffix =
-          std::string(token.substr(kHostPrefix.length()));
-    } else {
-      other_tokens.push_back(token);
+  std::string text_query;
+  if (base::FeatureList::IsEnabled(history::kBrowsingHistoryFilterByDomain)) {
+    base::TrimWhitespaceASCII(query, base::TRIM_ALL, &text_query);
+    options.hostname_suffix = domain;
+  } else {
+    const std::string kHostPrefix = "host:";
+    std::vector<std::string_view> tokens = base::SplitStringPiece(
+        query, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    std::vector<std::string_view> other_tokens;
+    for (std::string_view token : tokens) {
+      if (options.hostname_suffix.empty() && token.starts_with(kHostPrefix)) {
+        options.hostname_suffix =
+            std::string(token.substr(kHostPrefix.length()));
+      } else {
+        other_tokens.push_back(token);
+      }
     }
-  }
-  std::string text_query = base::JoinString(other_tokens, " ");
+    text_query = base::JoinString(other_tokens, " ");
 
-  query_hostname_suffix_ = options.hostname_suffix;
+    query_hostname_suffix_ = options.hostname_suffix;
+  }
 
   if (begin_time.has_value()) {
     options.begin_time = begin_time.value();
@@ -862,8 +870,12 @@ void BrowsingHistoryHandler::OnQueryComplete(
   auto results_info = history::mojom::HistoryQuery::New();
   // The items which are to be written into results_info_ are also
   // described in ui/webui/resources/cr_components/history/history.mojom.
-  // For host-only queries (`search_text` empty), fall back to
-  // `query_hostname_suffix_` so the frontend detects search mode.
+  // When `kBrowsingHistoryFilterByDomain` is disabled, fall back to
+  // `query_hostname_suffix_` for legacy host-only queries (`search_text` empty)
+  // so the frontend detects search mode. When enabled, `query_hostname_suffix_`
+  // is never populated.
+  // TODO(crbug.com/584210521): Remove the `query_hostname_suffix_` fallback
+  // once `kBrowsingHistoryFilterByDomain` is launched.
   results_info->term = !query_results_info.search_text.empty()
                            ? base::UTF16ToUTF8(query_results_info.search_text)
                            : query_hostname_suffix_;

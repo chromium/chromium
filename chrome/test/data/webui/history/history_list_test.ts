@@ -529,6 +529,10 @@ suite('HistoryListTest', function() {
       isBrowsingHistoryFilterByDomainEnabled: true,
     });
     await finishSetup(TEST_HISTORY_RESULTS);
+    let listChangeQueryFired = false;
+    element.addEventListener('change-query', () => {
+      listChangeQueryFired = true;
+    });
 
     const domainSelectedPromise =
         eventToPromise('domain-filter-selected', element);
@@ -540,6 +544,7 @@ suite('HistoryListTest', function() {
 
     const event = await domainSelectedPromise;
     assertEquals('www.google.com', event.detail.domain);
+    assertFalse(listChangeQueryFired);
   });
 
   test('ChangingSearchDeselectsItems', async function() {

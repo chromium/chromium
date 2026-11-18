@@ -160,6 +160,7 @@ export class HistoryListElement extends HistoryListElementBase {
     includeActorVisits: true,
     clientIds: [],
     timePeriodOptionId: TimePeriodOptionId.kAllTime,
+    domain: '',
   };
   accessor scrollTarget: HTMLElement = document.documentElement;
   accessor scrollOffset: number = 0;
@@ -557,9 +558,11 @@ export class HistoryListElement extends HistoryListElementBase {
       this.fire(
           'domain-filter-selected',
           {domain: this.actionMenuModel_!.item.domain});
+    } else {
+      this.fire(
+          'change-query',
+          {search: 'host:' + this.actionMenuModel_!.item.domain});
     }
-    this.fire(
-        'change-query', {search: 'host:' + this.actionMenuModel_!.item.domain});
     this.actionMenuModel_ = null;
     this.closeMenu_();
   }

@@ -211,6 +211,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
     includeActorVisits: true,
     clientIds: [],
     timePeriodOptionId: TimePeriodOptionId.kAllTime,
+    domain: '',
   };
   protected accessor selectedPage_: string = Page.HISTORY;
   protected accessor selectedTab_: number =
@@ -827,6 +828,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
   protected onDomainFilterSelected_(e: CustomEvent<{domain: string}>) {
     this.domain_ = e.detail.domain;
+    this.fireChangeQuery_();
   }
 
   protected onFilterChanged_(e: CustomEvent<{
@@ -840,12 +842,17 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.clientIds_ = e.detail.clientIds;
     this.selectedTimePeriodOptionId_ = e.detail.timePeriodOptionId;
 
+    this.fireChangeQuery_();
+  }
+
+  private fireChangeQuery_() {
     this.fire('change-query', {
       search: this.queryState_.searchTerm,
       includeActorVisits: this.includeActorVisits_,
       includeUserVisits: this.includeUserVisits_,
       clientIds: this.clientIds_,
       timePeriodOptionId: this.selectedTimePeriodOptionId_,
+      domain: this.domain_,
     });
   }
 

@@ -58,6 +58,7 @@ export class HistoryRouterElement extends CrLitElement {
     includeActorVisits: true,
     clientIds: [],
     timePeriodOptionId: TimePeriodOptionId.kAllTime,
+    domain: '',
   };
   timeRangeStart?: Date;
 

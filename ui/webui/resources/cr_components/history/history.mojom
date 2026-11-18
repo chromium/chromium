@@ -52,6 +52,10 @@ struct QueryState {
   // The selected predefined time period to filter visits by. kAllTime means
   // no time period filtering is applied.
   TimePeriodOptionId time_period_option_id;
+
+  // Domain (hostname suffix) to filter visits by. Empty means no domain
+  // filtering is applied.
+  string domain;
 };
 
 
@@ -260,7 +264,8 @@ interface PageHandler {
 
   // Queries for entries matching the query term. Returns a promise of a
   // result object. `begin_time` (inclusive) and `end_time` (exclusive)
-  // restrict the visit time; null means unbounded.
+  // restrict the visit time; null means unbounded. `domain` restricts visits
+  // to hosts matching that hostname suffix; empty means unrestricted.
   QueryHistory(
       string query,
       int32 max_results,
@@ -268,7 +273,8 @@ interface PageHandler {
       mojo_base.mojom.Time? end_time,
       bool include_user_visits,
       bool include_actor_visits,
-      array<string> client_ids) => (QueryResult results);
+      array<string> client_ids,
+      string domain) => (QueryResult results);
 
   // Completes continuation of ongoing query. Returns a promise of a result
   // object.

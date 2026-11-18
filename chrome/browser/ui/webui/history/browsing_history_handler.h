@@ -74,6 +74,7 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
                     bool include_user_visits,
                     bool include_actor_visits,
                     const std::vector<std::string>& client_ids,
+                    const std::string& domain,
                     QueryHistoryCallback callback) override;
 
   void QueryHistoryContinuation(
@@ -145,7 +146,8 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
                                 std::optional<base::Time> end_time,
                                 bool include_user_visits,
                                 bool include_actor_visits,
-                                const std::vector<std::string>& client_ids);
+                                const std::vector<std::string>& client_ids,
+                                const std::string& domain);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowsingHistoryHandlerTest,
@@ -201,9 +203,12 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
   // results are processed.
   std::optional<base::ElapsedTimer> query_timer_;
 
-  // The hostname suffix from the current query. Used as `results_info->term`
+  // The hostname suffix parsed from a legacy "host:" query. Only populated when
+  // `kBrowsingHistoryFilterByDomain` is disabled; used as `results_info->term`
   // for host-only queries where `search_text` is empty, as the frontend
   // requires a non-empty term to detect search mode.
+  // TODO(crbug.com/584210521): Remove once `kBrowsingHistoryFilterByDomain` is
+  // launched.
   std::string query_hostname_suffix_;
 
   std::queue<RemoveVisitsCallback> remove_visits_callbacks_;
