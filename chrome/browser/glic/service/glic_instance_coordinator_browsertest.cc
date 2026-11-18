@@ -7,6 +7,8 @@
 // and debug. When waiting is required, `base::test::RunUntil` is usually
 // sufficient and simpler than a full `RunTestSequence`.
 
+#include <memory>
+
 #include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/task/single_thread_task_runner.h"
@@ -68,6 +70,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -87,7 +90,6 @@
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "components/sessions/core/tab_restore_service.h"
-#include "content/public/browser/web_contents.h"
 #else
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -2266,12 +2268,20 @@ IN_PROC_BROWSER_TEST_F(
     ReshowInactiveWhenActiveEmbedderNotActivatedDoesNotCrash) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
 
-  // Set up a mock tab that starts activated.
+  // Set up a mock tab that starts activated. Provide a real WebContents that
+  // outlives `instance_helper` so desktop `CreateTabData()` does not return
+  // nullptr into `NotifyPinnedTabsChanged()` if the WebClient finishes binding
+  // before `Show()` auto-pins `mock_tab`.
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(GetProfile()));
   tabs::MockTabInterface mock_tab;
   ui::UnownedUserDataHost user_data_host;
   ON_CALL(mock_tab, GetUnownedUserDataHost())
       .WillByDefault(testing::ReturnRef(user_data_host));
   ON_CALL(mock_tab, GetProfile()).WillByDefault(testing::Return(GetProfile()));
+  ON_CALL(mock_tab, GetContents())
+      .WillByDefault(testing::Return(web_contents.get()));
   base::WeakPtrFactory<tabs::TabInterface> weak_factory(&mock_tab);
   ON_CALL(mock_tab, GetWeakPtr())
       .WillByDefault(testing::Return(weak_factory.GetWeakPtr()));
