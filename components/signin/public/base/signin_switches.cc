@@ -356,7 +356,12 @@ BASE_FEATURE(kEnableAccountPreviewEntityPreviews,
 // signed-out users to sign in is enabled. This flag has no effect if
 // `kEnableAccountPreviewData` is not enabled.
 BASE_FEATURE(kEnableAccountPreviewPreferredAccount,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 BASE_FEATURE_PARAM(size_t,
                    kPasswordsQ1Threshold,
                    &kEnableAccountPreviewPreferredAccount,
@@ -491,7 +496,7 @@ BASE_FEATURE_ENUM_PARAM(
 // account when triggered in this context, and passes it to the native
 // AccountPreviewService
 BASE_FEATURE(kEnableAccountPreviewUseAppAccount,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kAccountPreviewAppAccountExpirationDuration,
                    &kEnableAccountPreviewUseAppAccount,
