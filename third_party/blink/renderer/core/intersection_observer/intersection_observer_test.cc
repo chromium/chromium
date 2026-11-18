@@ -7,11 +7,13 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_document_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_double_doublesequence.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -21,6 +23,7 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_delegate.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
@@ -30,6 +33,8 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/core/view_transition/scoped_view_transition.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_test_utils.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -2158,6 +2163,125 @@ TEST_F(IntersectionObserverV2Test, BasicTransform) {
   EXPECT_EQ(observer_delegate->EntryCount(), 2);
   EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
   EXPECT_FALSE(observer_delegate->LastEntry()->isVisible());
+}
+
+TEST_F(IntersectionObserverV2Test,
+       ScopedViewTransitionOnZeroOpacityScopeOcclusion) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <style>
+      body {
+        margin: 0;
+      }
+      #target {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100px;
+        height: 100px;
+        background: green;
+        z-index: 1;
+      }
+      #scope {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100px;
+        height: 100px;
+        z-index: 2;
+        opacity: 0;
+        will-change: opacity;
+        pointer-events: none;
+        contain: layout;
+      }
+      #box {
+        width: 100px;
+        height: 100px;
+        background: black;
+        view-transition-name: box;
+      }
+      #scope::view-transition-group(*),
+      #scope::view-transition-old(*),
+      #scope::view-transition-new(*) {
+        animation-play-state: paused;
+      }
+    </style>
+    <style id='vt_style'></style>
+    <div id='target'></div>
+    <div id='scope'>
+      <div id='box'></div>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
+  observer_init->setTrackVisibility(true);
+  observer_init->setDelay(100);
+  DummyExceptionStateForTesting exception_state;
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+  IntersectionObserver* observer = IntersectionObserver::Create(
+      observer_init, *observer_delegate,
+      LocalFrameMetricsAggregator::kJavascriptIntersectionObserver,
+      exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  Element* target = GetElementById("target");
+  Element* scope = GetElementById("scope");
+  Element* vt_style = GetElementById("vt_style");
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(scope);
+  ASSERT_TRUE(vt_style);
+  observer->observe(target);
+
+  // Before starting the transition, #scope has opacity: 0, so #target is not
+  // occluded.
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_EQ(observer_delegate->EntryCount(), 1);
+  EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_TRUE(observer_delegate->LastEntry()->isVisible());
+
+  // Start a scoped view transition on the zero-opacity #scope.
+  ScriptState* script_state = ToScriptStateForMainWorld(MainFrame().GetFrame());
+  ScriptState::Scope script_state_scope(script_state);
+  ScopedViewTransition::startViewTransition(script_state, *scope,
+                                            ASSERT_NO_EXCEPTION);
+
+  // Advance through capture to the animating phase.
+  Compositor().BeginFrame();
+  ViewTransitionTestUtils::ProcessPendingDirectives(
+      GetDocument(), Compositor().LayerTreeHost());
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  PseudoElement* vt_pseudo = scope->GetPseudoElement(kPseudoIdViewTransition);
+  ASSERT_TRUE(vt_pseudo);
+
+  // #scope::view-transition is painted under ViewTransitionScopeRootEffect
+  // above #scope's own zero-opacity Effect node, so it visually occludes
+  // #target.
+  HitTestResult occlusion_result =
+      target->GetLayoutObject()->HitTestForOcclusion(
+          PhysicalRect(0, 0, 100, 100));
+  EXPECT_EQ(occlusion_result.InnerNode(), scope);
+  EXPECT_EQ(observer_delegate->CallCount(), 2);
+  EXPECT_EQ(observer_delegate->EntryCount(), 2);
+  EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_FALSE(observer_delegate->LastEntry()->isVisible());
+
+  // When #scope::view-transition itself has opacity: 0, the transition pseudo
+  // tree is also transparent and does not occlude #target.
+  vt_style->setTextContent("#scope::view-transition { opacity: 0; }");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(observer_delegate->CallCount(), 3);
+  EXPECT_EQ(observer_delegate->EntryCount(), 3);
+  EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_TRUE(observer_delegate->LastEntry()->isVisible());
 }
 
 TEST_F(IntersectionObserverTest, ApplyMarginToTarget) {

@@ -1329,9 +1329,25 @@ PaintLayer* PaintLayer::HitTestLayer(
   if (!IsSelfPaintingLayer() && !HasSelfPaintingLayerDescendant())
     return nullptr;
 
-  if ((result.GetHitTestRequest().GetType() &
+  const auto* element = DynamicTo<Element>(layout_object.GetNode());
+  const bool has_scoped_view_transition_pseudo =
+      element && !element->IsDocumentElement() &&
+      element->GetPseudoElement(kPseudoIdViewTransition);
+
+  // A scoped ::view-transition pseudo-element's effect node is parented to
+  // the scope's ViewTransitionScopeRootEffect above the scope's own Effect
+  // node, so the transition overlay can remain opaque even when the scope
+  // itself has zero opacity. Defer the early return until after the
+  // transition_pseudo_pass below when a scoped ::view-transition is present.
+  const bool ignore_zero_opacity_self =
+      (result.GetHitTestRequest().GetType() &
        HitTestRequest::kIgnoreZeroOpacityObjects) &&
-      !layout_object.HasNonZeroEffectiveOpacity()) {
+      !layout_object.HasNonZeroEffectiveOpacity();
+  // An overflow_controls_only pass only tests this layer's own overflow
+  // controls (which paint under its zero-opacity Effect node, like global root
+  // scroller scrollbars below), not the ::view-transition subtree.
+  if (ignore_zero_opacity_self &&
+      (!has_scoped_view_transition_pseudo || overflow_controls_only)) {
     return nullptr;
   }
 
@@ -1354,7 +1370,7 @@ PaintLayer* PaintLayer::HitTestLayer(
 
   // For the global root scroller, hit test the layout viewport scrollbars
   // first, as they are visually presented on top of the content.
-  if (layout_object.IsGlobalRootScroller()) {
+  if (!ignore_zero_opacity_self && layout_object.IsGlobalRootScroller()) {
     // There are a number of early outs below that don't apply to the the
     // global root scroller.
     DCHECK(!Transform());
@@ -1490,22 +1506,28 @@ PaintLayer* PaintLayer::HitTestLayer(
   PaintLayer* candidate_layer = nullptr;
 
   PaintLayer* hit_layer = nullptr;
-  if (auto* element = DynamicTo<Element>(layout_object.GetNode())) {
-    if (element->GetPseudoElement(kPseudoIdViewTransition)) {
-      hit_layer = HitTestChildren(
-          kAllChildren, transform_container, container_fragment, result,
-          recursion_data, container_transform_state,
-          z_offset_for_descendants_ptr, z_offset, local_transform_state,
-          depth_sort_descendants, true /* transition_pseudo_pass */);
-      if (hit_layer) {
-        if (!depth_sort_descendants) {
-          return hit_layer;
-        }
-        // Depth-sorting may override z-index, so we need to check below for
-        // other hit_layer candidates.
-        candidate_layer = hit_layer;
+  if (has_scoped_view_transition_pseudo) {
+    hit_layer = HitTestChildren(
+        kAllChildren, transform_container, container_fragment, result,
+        recursion_data, container_transform_state, z_offset_for_descendants_ptr,
+        z_offset, local_transform_state, depth_sort_descendants,
+        true /* transition_pseudo_pass */);
+    if (hit_layer) {
+      if (!depth_sort_descendants) {
+        return hit_layer;
       }
+      // Depth-sorting may override z-index, so we need to check below for
+      // other hit_layer candidates.
+      candidate_layer = hit_layer;
     }
+  }
+
+  if (ignore_zero_opacity_self) {
+    // Non-initial opacity is a grouping property that forces 3D flattening,
+    // so an overlay hit would have returned above rather than being saved
+    // for depth sorting.
+    DCHECK(!candidate_layer);
+    return nullptr;
   }
 
   // Elements represented via transition pseudos are not hit-tested at their
