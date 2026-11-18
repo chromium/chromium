@@ -3770,6 +3770,70 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxFocusRestoreInteractiveTest,
       /*wait_for_dragged_webui=*/true);
 }
 
+// Verifies that dragging a tab with a focused omnibox out and dropping it into
+// a new window leaves the new window's omnibox unfocused, as the Views omnibox
+// is blurred when a tab drag starts.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxFocusRestoreInteractiveTest,
+                       TabDragIntoNewWindowLeavesOmniboxUnfocused) {
+  if (!CanTestTabDragging()) {
+    GTEST_SKIP() << "Tab dragging with a move loop isn't supported.";
+  }
+  RunTestSequence(SetUpTabsWithOmniboxSelection(2, 7));
+
+  gfx::Point start_point;
+  TabDragController* controller = StartTabDrag(1, &start_point);
+  ASSERT_TRUE(controller);
+
+  // Drop the tab once the new window is shown, which ends the move loop.
+  bool did_drop = false;
+  base::RepeatingClosure drop;
+  drop = base::BindLambdaForTesting([&]() {
+    if (did_drop || !TabDragController::IsActive()) {
+      return;
+    }
+    if (!GetOtherBrowser()) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                                  drop);
+      return;
+    }
+    did_drop = true;
+    controller->EndDrag(EndDragReason::kComplete);
+  });
+  controller->SetDragLoopDoneCallbackForTesting(
+      base::BindLambdaForTesting([&]() { drop.Run(); }));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE, drop);
+  ASSERT_EQ(TabDragController::Liveness::kDeleted,
+            controller->Drag(start_point + gfx::Vector2d(20, 200)));
+
+  RunTestSequence(
+      PollUntil(
+          [this]() {
+            BrowserWindowInterface* dragged_browser = GetOtherBrowser();
+            if (!dragged_browser) {
+              return false;
+            }
+            OmniboxPopupView* popup_view =
+                BrowserWindow::FromBrowser(dragged_browser)
+                    ->GetLocationBar()
+                    ->GetOmniboxPopupView();
+            return popup_view && popup_view->IsPopupHandlerReady();
+          },
+          "WaitForDraggedWindowWebUI"),
+      Do([]() { content::RunAllTasksUntilIdle(); }),
+      CheckResult(
+          [this]() {
+            LocationBar* location_bar =
+                BrowserWindow::FromBrowser(GetOtherBrowser())->GetLocationBar();
+            return location_bar->GetOmniboxController()
+                       ->edit_model()
+                       ->has_focus() ||
+                   location_bar->GetOmniboxController()
+                           ->popup_state_manager()
+                           ->popup_state() == OmniboxPopupState::kFull;
+          },
+          false, "CheckDraggedWindowOmniboxUnfocused"));
+}
+
 // Verifies that dragging a tab with an unfocused omnibox out into a new window
 // and back leaves the omnibox unfocused.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxFocusRestoreInteractiveTest,

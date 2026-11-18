@@ -400,6 +400,16 @@ class LocationBarView
   // to process input and display suggestions.
   void OnFullWebUiOmniboxReady();
 
+  // Blurs the Full WebUI omnibox when a tab drag starts in this window and
+  // refocuses it when the drag ends, as `TabDragController` does for the Views
+  // omnibox.
+  void OnTabDraggingStatusChanged(bool is_dragging);
+
+  // Refocuses the Full WebUI omnibox after a tab drag if `web_contents`, whose
+  // omnibox was focused when the drag started, is active in this window again.
+  void RestoreFocusAfterTabDrag(
+      base::WeakPtr<content::WebContents> web_contents);
+
   // Forwards focus to the WebUI omnibox. Like `OmniboxViewViews::SetFocus()`,
   // this selects all when `select_all` is true or the omnibox didn't already
   // have focus.
@@ -686,6 +696,13 @@ class LocationBarView
   bool is_toolbar_visible_ = true;
 
   void OnMiddleClickPaste(base::TimeTicks event_timestamp, std::u16string text);
+
+  // The active tab when a tab drag started in this window, if the Full WebUI
+  // omnibox was focused then.  Only populated when `FullWebUIOmnibox` is
+  // enabled.
+  base::WeakPtr<content::WebContents> tab_drag_focused_web_contents_;
+
+  base::CallbackListSubscription tab_dragging_status_subscription_;
 
   base::WeakPtrFactory<LocationBarView> weak_factory_{this};
 };

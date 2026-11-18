@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
@@ -146,6 +147,13 @@ class BrowserWidget : public views::Widget,
     return invisible_frame_insets_for_testing_;
   }
 
+  // Registers `callback` to run when a tab drag starts or ends in this window,
+  // i.e. when `tab_drag_kind()` changes to or from `TabDragKind::kNone`.
+  using TabDraggingStatusChangedCallback =
+      base::RepeatingCallback<void(bool is_dragging)>;
+  base::CallbackListSubscription RegisterTabDraggingStatusChanged(
+      TabDraggingStatusChangedCallback callback);
+
  protected:
   // views::Widget:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
@@ -208,6 +216,9 @@ class BrowserWidget : public views::Widget,
   // may change, the fast resize strategy will be used to resize its web
   // contents for smoother dragging.
   TabDragKind tab_drag_kind_ = TabDragKind::kNone;
+
+  base::RepeatingCallbackList<void(bool is_dragging)>
+      tab_dragging_status_changed_callbacks_;
 
 #if BUILDFLAG(IS_LINUX)
   bool tiled_ = false;

@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -423,6 +424,17 @@ void LocationBarView::Init() {
       // NOTE: In classic mode, `OmniboxViewViews` provides the accessible name.
       GetViewAccessibility().SetName(
           l10n_util::GetStringUTF16(IDS_ACCNAME_LOCATION));
+
+      // `browser_` may not have a window yet, so find its `BrowserView` through
+      // this view's widget.
+      if (auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(
+              GetWidget()->GetNativeWindow())) {
+        tab_dragging_status_subscription_ =
+            browser_view->browser_widget()->RegisterTabDraggingStatusChanged(
+                base::BindRepeating(
+                    &LocationBarView::OnTabDraggingStatusChanged,
+                    base::Unretained(this)));
+      }
     }
   }
 
@@ -1339,6 +1351,52 @@ void LocationBarView::SetPermissionPromptShowing(bool showing) {
   }
   if (popup_host) {
     popup_host->SetPermissionPromptShowing(showing);
+  }
+}
+
+void LocationBarView::OnTabDraggingStatusChanged(bool is_dragging) {
+  // The Views omnibox is blurred and refocused by `TabDragController`, which
+  // clears and restores this window's Views focus. The Full WebUI omnibox
+  // holds focus in its popup widget instead, so mirror that here.
+  if (is_dragging) {
+    tab_drag_focused_web_contents_ = nullptr;
+    content::WebContents* web_contents = GetWebContents();
+    if (!web_contents || !GetOmniboxController()->edit_model()->has_focus()) {
+      return;
+    }
+    tab_drag_focused_web_contents_ = web_contents->GetWeakPtr();
+    // Blur the omnibox, as `TabDragController::SaveFocus()` does for the Views
+    // omnibox, so the dragged tab saves an unfocused omnibox and a new window
+    // it's dropped into doesn't focus it. Blurring saves the selection to
+    // restore if the tab comes back.
+    if (auto* popup_view = GetOmniboxPopupView()) {
+      popup_view->Blur();
+    }
+    return;
+  }
+
+  // Like `TabDragController::RestoreFocus()`, refocus the omnibox if the tab
+  // ended up back in this window. A canceled drag resets the drag status before
+  // reselecting the dragged tab, so check once that's done.
+  if (base::WeakPtr<content::WebContents> web_contents =
+          std::exchange(tab_drag_focused_web_contents_, nullptr)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&LocationBarView::RestoreFocusAfterTabDrag,
+                       weak_factory_.GetWeakPtr(), std::move(web_contents)));
+  }
+}
+
+void LocationBarView::RestoreFocusAfterTabDrag(
+    base::WeakPtr<content::WebContents> web_contents) {
+  if (!web_contents || GetWebContents() != web_contents.get() ||
+      !GetWidget() || GetWidget()->IsMinimized() ||
+      GetOmniboxController()->edit_model()->has_focus()) {
+    return;
+  }
+  if (auto* focus_manager = GetFocusManager()) {
+    focus_manager->SetFocusedViewWithReason(
+        this, views::FocusManager::FocusChangeReason::kFocusRestore);
   }
 }
 
