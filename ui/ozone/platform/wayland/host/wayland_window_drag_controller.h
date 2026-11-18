@@ -149,6 +149,10 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // drop, notified through wl_data_source.dnd_drop_performed or a source
   // finish/cancellation.
   void HandleDragEnd(bool completed, base::TimeTicks timestamp);
+  // Handles wl_data_device.leave for `left_window` while dragging a detached
+  // window.
+  void HandleLeaveWhileDetached(WaylandWindow* left_window,
+                                base::TimeTicks timestamp);
   // Handles the mouse button release (i.e: drop). Dispatches the required
   // events and resets the internal state.
   void HandleDropAndResetState(base::TimeTicks timestamp);

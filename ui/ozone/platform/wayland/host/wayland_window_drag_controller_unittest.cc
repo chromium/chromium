@@ -1102,6 +1102,127 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached_TOUCH) {
   SendDndDropAndFinished();
 }
 
+// Verifies wl_data_device::leave events are propagated while in window
+// dragging "detached" mode, such that upper layers stop treating the pointer
+// as being over the window it just left, e.g. when the pointer moves from
+// another window onto the desktop before the drop. Regression test for
+// crbug.com/502159248.
+TEST_P(WaylandWindowDragControllerTest, DragExitTargetWindowWhileDetached) {
+  PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
+  properties.type = PlatformWindowType::kWindow;
+  EXPECT_CALL(delegate_, OnAcceleratedWidgetAvailable(_)).Times(1);
+  auto window_2 =
+      delegate_.CreateWaylandWindow(connection_.get(), std::move(properties));
+  ASSERT_NE(gfx::kNullAcceleratedWidget, window_2->GetWidget());
+
+  auto* source_window = window_.get();
+  auto* target_window = window_2.get();
+
+  SendPointerEnter(source_window, &delegate_);
+  SendPointerPress(source_window, &delegate_, BTN_LEFT);
+  SendPointerMotion(source_window, &delegate_, {10, 10});
+
+  GetWaylandToplevelExtension(*source_window)
+      ->StartWindowDraggingSessionIfNeeded(DragEventSource::kMouse,
+                                           /*allow_system_drag=*/false);
+  EXPECT_EQ(State::kAttached, drag_controller_state());
+
+  auto* move_loop_handler = GetWmMoveLoopHandler(*source_window);
+  ASSERT_TRUE(move_loop_handler);
+
+  enum {
+    kStarted,
+    kEnteredTarget,
+    kDraggingOverTarget,
+    kExitedTarget,
+    kDropping,
+    kDone
+  } test_step = kStarted;
+  int bounds_changes = 0;
+  int bounds_changes_on_exit = 0;
+
+  EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly([&](Event* event) {
+    EXPECT_TRUE(event->IsMouseEvent());
+    switch (test_step) {
+      case kStarted:
+        EXPECT_EQ(EventType::kMouseEntered, event->type());
+        EXPECT_EQ(State::kDetached, drag_controller_state());
+        // Move the pointer from |source_window| into |target_window|. This is
+        // called from within OnDragEnter, so run it via a task.
+        ScheduleTestTask(base::BindLambdaForTesting([&]() {
+          // Leaving the dragged window itself must neither reset the focus
+          // nor move the dragged window.
+          const int bounds_changes_before_leave = bounds_changes;
+          SendDndLeave();
+          EXPECT_EQ(bounds_changes_before_leave, bounds_changes);
+          EXPECT_EQ(source_window,
+                    window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+          test_step = kEnteredTarget;
+          SendDndEnter(target_window, {10, 10});
+        }));
+        break;
+      case kEnteredTarget:
+        EXPECT_EQ(EventType::kMouseEntered, event->type());
+        EXPECT_EQ(State::kDetached, drag_controller_state());
+        test_step = kDraggingOverTarget;
+        ScheduleTestTask(base::BindLambdaForTesting(
+            [&]() { SendDndMotionForWindowDrag({20, 20}); }));
+        break;
+      case kExitedTarget:
+        EXPECT_EQ(EventType::kMouseExited, event->type());
+        EXPECT_EQ(State::kDetached, drag_controller_state());
+        break;
+      case kDropping:
+        EXPECT_EQ(EventType::kMouseReleased, event->type());
+        EXPECT_EQ(State::kDropped, drag_controller_state());
+        test_step = kDone;
+        break;
+      default:
+        FAIL() << " event=" << event->GetName()
+               << " state=" << drag_controller_state()
+               << " step=" << static_cast<int>(test_step);
+    }
+  });
+
+  EXPECT_CALL(delegate_, OnBoundsChanged(_))
+      .WillRepeatedly([&](const PlatformWindowDelegate::BoundsChange& change) {
+        ++bounds_changes;
+        if (test_step == kExitedTarget) {
+          ++bounds_changes_on_exit;
+          return;
+        }
+        if (test_step != kDraggingOverTarget) {
+          return;
+        }
+        EXPECT_EQ(State::kDetached, drag_controller_state());
+        EXPECT_EQ(target_window->GetWidget(),
+                  screen_->GetLocalProcessWidgetAtPoint(
+                      screen_->GetCursorScreenPoint(), {}));
+
+        // Move the pointer out of |target_window|, e.g. onto the desktop, and
+        // drop there.
+        ScheduleTestTask(base::BindLambdaForTesting([&]() {
+          test_step = kExitedTarget;
+          SendDndLeave();
+          EXPECT_EQ(1, bounds_changes_on_exit);
+          EXPECT_FALSE(
+              window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+          EXPECT_EQ(gfx::kNullAcceleratedWidget,
+                    screen_->GetLocalProcessWidgetAtPoint(
+                        screen_->GetCursorScreenPoint(), {}));
+          test_step = kDropping;
+          SendDndDropAndFinished();
+        }));
+      });
+
+  // RunMoveLoop() blocks until the dragging sessions ends.
+  EXPECT_TRUE(move_loop_handler->RunMoveLoop({}));
+
+  Mock::VerifyAndClearExpectations(&delegate_);
+  EXPECT_EQ(kDone, test_step);
+  EXPECT_EQ(State::kIdle, drag_controller_state());
+}
+
 using BoundsChange = PlatformWindowDelegate::BoundsChange;
 
 TEST_P(WaylandWindowDragControllerTest, RestoreDuringWindowDragSession) {

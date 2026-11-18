@@ -81,6 +81,11 @@ constexpr uint32_t kDndActionWindowDrag =
 // [1] //ui/events/gesture_detection/gesture_detector.h
 constexpr int kHorizontalRailExitThreshold = -10;
 
+// Offset, in UI DIP, beyond a window's bottom-right corner, used to move the
+// dragged window when the pointer leaves another window while dragging a
+// detached window. See HandleLeaveWhileDetached().
+constexpr int kDetachedLeaveOffset = 10;
+
 }  // namespace
 
 class WaylandWindowDragController::ExtendedDragSource {
@@ -456,10 +461,12 @@ void WaylandWindowDragController::OnDragLeave(base::TimeTicks timestamp) {
     return;
   }
 
+  WaylandWindow* const left_window = drag_target_window_;
   drag_target_window_ = nullptr;
 
   // In order to guarantee EventType::kMouseReleased event is delivered once the
-  // DND session finishes, the focused window is not reset here. This is similar
+  // DND session finishes, the focused window is not reset here, except in the
+  // detached state (see HandleLeaveWhileDetached()). This is similar
   // to the "implicit grab" behavior implemented by Wayland compositors for
   // wl_pointer events. Additionally, this makes it possible for the drag
   // controller to overcome deviations in the order that wl_data_source and
@@ -477,6 +484,11 @@ void WaylandWindowDragController::OnDragLeave(base::TimeTicks timestamp) {
   DVLOG(1) << "OnLeave";
   data_offer_.reset();
 
+  if (state_ == State::kDetached) {
+    HandleLeaveWhileDetached(left_window, timestamp);
+    return;
+  }
+
   // As wl-shell/xdg-shell clients are only aware of surface-local coordinates
   // and there is no implicit grab during DND sessions, a fake motion event with
   // negative y coordinate is used here to allow higher level UI components to
@@ -489,8 +501,9 @@ void WaylandWindowDragController::OnDragLeave(base::TimeTicks timestamp) {
   //
   // TODO(crbug.com/40209502): Find a better solution for upwards tab
   // detaching.
-  if (state_ != State::kAttached)
+  if (state_ != State::kAttached) {
     return;
+  }
 
   if (*drag_source_ == DragEventSource::kMouse) {
     pointer_delegate_->OnPointerMotionEvent(
@@ -509,6 +522,42 @@ void WaylandWindowDragController::OnDragLeave(base::TimeTicks timestamp) {
           wl::EventDispatchPolicy::kImmediate, /*is_synthesized=*/true);
     }
   }
+}
+
+void WaylandWindowDragController::HandleLeaveWhileDetached(
+    WaylandWindow* left_window,
+    base::TimeTicks timestamp) {
+  CHECK_EQ(state_, State::kDetached);
+
+  // Leaving the dragged window itself, which some compositors send once it
+  // starts following the pointer, says nothing about where the pointer is.
+  if (!left_window || left_window == dragged_window_ || !dragged_window_ ||
+      *drag_source_ != DragEventSource::kMouse) {
+    return;
+  }
+
+  // Motion events only arrive while the pointer is over one of the client's
+  // surfaces, so nothing tells upper layers that the pointer left
+  // `left_window`, e.g. onto the desktop, until the drop. They would keep
+  // treating the pointer as being over it, e.g. a tab drop target shown there
+  // would be used on drop. So reset the pointer focus, such that the pointer
+  // is no longer considered to be over `left_window` (see
+  // WaylandScreen::GetCursorScreenPoint()), and then move the dragged window.
+  // The move only makes upper layers re-evaluate the pointer location (e.g.
+  // TabDragController::OnWidgetBoundsChanged() queries the cursor location,
+  // which no longer overlaps any window); the origin used here doesn't
+  // matter, as long as it differs from the current one. Unlike in the
+  // attached state, resetting the focus is fine here, as the release event is
+  // delivered to `events_grabber_` on drop.
+  if (window_manager_->GetCurrentPointerFocusedWindow() == left_window) {
+    pointer_delegate_->OnPointerFocusChanged(
+        nullptr, pointer_location_, timestamp,
+        wl::EventDispatchPolicy::kImmediate);
+  }
+  const gfx::Size size = left_window->GetBoundsInDIP().size();
+  dragged_window_->SetOrigin(gfx::Point(size.width() + kDetachedLeaveOffset,
+                                        size.height() + kDetachedLeaveOffset) -
+                             drag_offset_);
 }
 
 void WaylandWindowDragController::OnDragDrop(base::TimeTicks timestamp) {
