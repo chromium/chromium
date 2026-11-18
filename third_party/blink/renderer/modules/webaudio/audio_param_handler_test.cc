@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_param_handler.h"
 
+#include <array>
+#include <cmath>
+#include <limits>
 #include <memory>
 
 #include "base/synchronization/lock.h"
@@ -254,6 +257,109 @@ TEST(AudioParamHandlerTest, CancelAndHoldAtTimeWithOutOfOrderAdjacentCurves) {
       ->linearRampToValueAtTime(5.0f, 0.015, exception_state)
       ->cancelAndHoldAtTime(0.010, exception_state);
   EXPECT_FALSE(exception_state.HadException());
+}
+
+// When a SetTarget event is followed by a ramp, the SetTarget event is replaced
+// by a SetValue event at the current frame.  The time of that frame can be one
+// ULP before the SetTarget event, and so before an earlier event at the same
+// time.  Verify that the replacement event keeps the timeline sorted, so that a
+// second evaluation in the same render quantum doesn't fail
+// CHECK_GE(time2, time1).  See crbug.com/579569387.
+TEST(AudioParamHandlerTest, SetTargetFollowedByRampAfterEventAtSameTime) {
+  test::TaskEnvironment task_environment;
+  auto page = std::make_unique<DummyPageHolder>();
+
+  constexpr float kSampleRate = 48000;
+  constexpr unsigned kRenderQuantumFrames = 128;
+  DummyExceptionStateForTesting exception_state;
+  OfflineAudioContext* context = OfflineAudioContext::Create(
+      page->GetFrame().DomWindow(), 1, 1, kSampleRate, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  OscillatorNode* osc = context->createOscillator(exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  AudioParamHandler& handler = osc->frequency()->Handler();
+
+  // `time` is one ULP after `kFrame` / `kSampleRate`, but `time` *
+  // `kSampleRate` still rounds to `kFrame`, which starts a render quantum.
+  constexpr size_t kFrame = 2944;
+  const double frame_time = kFrame / double{kSampleRate};
+  const double time =
+      std::nextafter(frame_time, std::numeric_limits<double>::infinity());
+  ASSERT_GT(time, frame_time);
+  ASSERT_EQ(time * kSampleRate, static_cast<double>(kFrame));
+
+  handler.SetValueAtTime(100, 0, exception_state);
+  handler.SetValueAtTime(200, time, exception_state);
+  handler.SetTargetAtTime(300, time, 0.1, exception_state);
+  handler.LinearRampToValueAtTime(400, time + 1, 0, 0, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  // Compute the k-rate value twice in the render quantum that starts at
+  // `kFrame`, as happens when a node reads the same AudioParam more than once
+  // per render quantum (e.g. PannerHandler::Process() reads its k-rate position
+  // params in UpdateDirtyState() and again in DistanceConeGain()).  The first
+  // computation replaces the SetTarget event.
+  std::array<float, 1> value;
+  for (int i = 0; i < 2; ++i) {
+    handler.ValuesForFrameRange(kFrame, kFrame + 1, 0, value, kSampleRate,
+                                kSampleRate / kRenderQuantumFrames,
+                                handler.MinValue(), handler.MaxValue(),
+                                kRenderQuantumFrames);
+  }
+
+  base::AutoLock locker(handler.events_lock_);
+  for (wtf_size_t i = 1; i < handler.events_.size(); ++i) {
+    EXPECT_LE(handler.events_[i - 1]->Time(), handler.events_[i]->Time());
+  }
+}
+
+// Like SetTargetFollowedByRampAfterEventAtSameTime, but the time of the current
+// frame is one ULP after the ramp that follows the SetTarget event.  This used
+// to fail CHECK_GE(time2, time1) in the first evaluation.  See
+// crbug.com/579569387.
+TEST(AudioParamHandlerTest, SetTargetFollowedByRampAtSameTime) {
+  test::TaskEnvironment task_environment;
+  auto page = std::make_unique<DummyPageHolder>();
+
+  constexpr float kSampleRate = 48000;
+  constexpr unsigned kRenderQuantumFrames = 128;
+  DummyExceptionStateForTesting exception_state;
+  OfflineAudioContext* context = OfflineAudioContext::Create(
+      page->GetFrame().DomWindow(), 1, 1, kSampleRate, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  OscillatorNode* osc = context->createOscillator(exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  AudioParamHandler& handler = osc->frequency()->Handler();
+
+  // `time` is one ULP before `kFrame` / `kSampleRate`, but `time` *
+  // `kSampleRate` still rounds to `kFrame`.
+  constexpr size_t kFrame = 5;
+  const double frame_time = kFrame / double{kSampleRate};
+  const double time = std::nextafter(frame_time, 0.0);
+  ASSERT_LT(time, frame_time);
+  ASSERT_EQ(time * kSampleRate, static_cast<double>(kFrame));
+
+  handler.SetTargetAtTime(300, time, 0.1, exception_state);
+  handler.LinearRampToValueAtTime(400, time, 0, 0, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  std::array<float, kRenderQuantumFrames> values;
+  handler.ValuesForFrameRange(0, kRenderQuantumFrames, 0, values, kSampleRate,
+                              kSampleRate, handler.MinValue(),
+                              handler.MaxValue(), kRenderQuantumFrames);
+
+  // The default value holds until the first event, and the ramp ends at
+  // `kFrame`, so its value holds from there on.
+  EXPECT_FLOAT_EQ(values[kFrame - 1], 0);
+  EXPECT_FLOAT_EQ(values[kFrame], 400);
+  EXPECT_FLOAT_EQ(values[kRenderQuantumFrames - 1], 400);
+
+  base::AutoLock locker(handler.events_lock_);
+  for (wtf_size_t i = 1; i < handler.events_.size(); ++i) {
+    EXPECT_LE(handler.events_[i - 1]->Time(), handler.events_[i]->Time());
+  }
 }
 
 }  // namespace blink

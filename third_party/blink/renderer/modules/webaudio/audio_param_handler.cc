@@ -1382,12 +1382,9 @@ void AudioParamHandler::ValuesForFrameRangeImpl(
       continue;
     }
 
-    // If there's no next event, set nextEventType to LastType to indicate that.
-    ProcessSetTargetFollowedByRamp(
-        i, event,
-        next_event ? static_cast<ParamEvent::Type>(next_event->GetType())
-                   : ParamEvent::Type::kLastType,
-        current_frame, sample_rate, control_rate, value);
+    // If there's no next event, there's nothing to ramp to.
+    ProcessSetTargetFollowedByRamp(i, event, next_event, current_frame,
+                                   sample_rate, control_rate, value);
 
     const float value1 = event->Value();
     const double time1 = event->Time();
@@ -1663,7 +1660,7 @@ bool AudioParamHandler::HandleAllEventsInThePast(
 void AudioParamHandler::ProcessSetTargetFollowedByRamp(
     wtf_size_t event_index,
     ParamEvent*& event,
-    ParamEvent::Type next_event_type,
+    const ParamEvent* next_event,
     size_t current_frame,
     double sample_rate,
     double control_rate,
@@ -1672,9 +1669,11 @@ void AudioParamHandler::ProcessSetTargetFollowedByRamp(
   // LinearRampToValue or ExponentialRampToValue, special handling is needed.
   // In this case, the linear and exponential ramp should start at wherever
   // the SetTarget processing has reached.
-  if (event->GetType() == ParamEvent::Type::kSetTarget &&
-      (next_event_type == ParamEvent::Type::kLinearRampToValue ||
-       next_event_type == ParamEvent::Type::kExponentialRampToValue)) {
+  if (event->GetType() == ParamEvent::Type::kSetTarget && next_event &&
+      (next_event->GetType() == ParamEvent::Type::kLinearRampToValue ||
+       next_event->GetType() == ParamEvent::Type::kExponentialRampToValue)) {
+    const double start_time = std::clamp(current_frame / sample_rate,
+                                         event->Time(), next_event->Time());
     // Replace the SetTarget with a SetValue to set the starting time and
     // value for the ramp using the current frame.  We need to update `value`
     // appropriately depending on whether the ramp has started or not.
@@ -1698,10 +1697,9 @@ void AudioParamHandler::ProcessSetTargetFollowedByRamp(
       // SetTarget is starting somewhere between currentFrame - 1 and
       // currentFrame. Compute the value the SetTarget would have at the
       // currentFrame.
-      value = event->Value() +
-              (value - event->Value()) *
-                  fdlibm::exp(-(current_frame / sample_rate - event->Time()) /
-                              event->TimeConstant());
+      value = event->Value() + (value - event->Value()) *
+                                   fdlibm::exp(-(start_time - event->Time()) /
+                                               event->TimeConstant());
     } else {
       // SetTarget has already started.  Update `value` one frame because it's
       // the value from the previous frame.
@@ -1712,9 +1710,16 @@ void AudioParamHandler::ProcessSetTargetFollowedByRamp(
     }
 
     // Insert a SetValueEvent to mark the starting value and time.
-    // Clear the clamp check because this doesn't need it.
-    events_[event_index] =
-        ParamEvent::CreateSetValueEvent(value, current_frame / sample_rate);
+    //
+    // `IsEventCurrent()` compares times in frames, but the new event time is
+    // computed in seconds, and the two can disagree by one ULP in either
+    // direction.  Clamp the new time between the times of the SetTarget and
+    // the ramp so that `events_` stays sorted.  Otherwise the new event could
+    // be later than the ramp, or earlier than a preceding event scheduled at
+    // the same time as the SetTarget, which a later evaluation of this render
+    // quantum would see.  Either case fails CHECK_GE(time2, time1) in
+    // `ValuesForFrameRangeImpl()`.
+    events_[event_index] = ParamEvent::CreateSetValueEvent(value, start_time);
 
     // Update our pointer to the current event because we just changed it.
     event = events_[event_index].get();
