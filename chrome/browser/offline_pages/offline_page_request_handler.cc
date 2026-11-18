@@ -394,27 +394,25 @@ void OfflinePageRequestHandler::OnOfflinePagesAvailable(
 
 void OfflinePageRequestHandler::OnTrustedOfflinePageFound() {
   const OfflinePageItem& offline_page = GetCurrentOfflinePage();
-  if (!OfflinePageModel::CanSaveURL(offline_page.url)) {
-    OnFileValidationDone(FileValidationResult::FILE_VALIDATION_FAILED);
-    return;
-  }
 
-  // If the match is for original URL, trigger the redirect.
-  // Note: If the offline page has same original URL and final URL (ignoring
-  // fragment), don't trigger the redirect. Some websites might route the
-  // redirect finally back to itself after intermediate redirects for
-  // authentication. Previously this case was not handled and some pages might
-  // be saved with same URLs. Though we fixed the problem, we still need to
-  // support those pages already saved with this.
-  if (!EqualsIgnoringFragment(url_, offline_page.url)) {
-    if (IsProcessingFileOrContentUrlIntent() ||
-        !OfflinePageModel::CanSaveURL(offline_page.original_url_if_different) ||
-        !EqualsIgnoringFragment(url_, offline_page.original_url_if_different)) {
+  // Match `url_` using the same HTTP/HTTPS scheme and fragment-ignoring rules
+  // as PageCriteria::MeetsCriteria(). File/content URL intents never redirect;
+  // regular http/https navigations matching only a pre-redirect URL redirect to
+  // `offline_page.url` (releasing any validation stream first, since this
+  // handler will not proceed to OpenFile()).
+  const OfflinePageUrlMatch url_match =
+      ClassifyOfflinePageUrlMatch(url_, offline_page);
+  if (url_match == OfflinePageUrlMatch::kMatchesOriginalUrl) {
+    if (IsProcessingFileOrContentUrlIntent()) {
       OnFileValidationDone(FileValidationResult::FILE_VALIDATION_FAILED);
       return;
     }
     stream_.reset();
     Redirect(offline_page.url);
+    return;
+  }
+  if (url_match != OfflinePageUrlMatch::kMatchesFinalUrl) {
+    OnFileValidationDone(FileValidationResult::FILE_VALIDATION_FAILED);
     return;
   }
 

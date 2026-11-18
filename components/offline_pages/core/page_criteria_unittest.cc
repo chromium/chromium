@@ -58,6 +58,47 @@ TEST_F(PageCriteriaTest, MeetsCriteria_UrlWithFragment) {
   EXPECT_FALSE(MeetsCriteria(criteria, item));
 }
 
+TEST_F(PageCriteriaTest, MeetsCriteria_OriginalUrlWithFragment) {
+  OfflinePageItem item;
+  item.url = OtherURL();
+  item.original_url_if_different = TestURL();
+
+  PageCriteria criteria;
+  criteria.url = TestURL();
+  EXPECT_TRUE(MeetsCriteria(criteria, item));
+
+  criteria.url = TestURLWithFragment();
+  EXPECT_TRUE(MeetsCriteria(criteria, item));
+
+  item.original_url_if_different = TestURLWithFragment();
+  criteria.url = TestURL();
+  EXPECT_TRUE(MeetsCriteria(criteria, item));
+
+  criteria.url = GURL("http://unrelated.example/");
+  EXPECT_FALSE(MeetsCriteria(criteria, item));
+
+  // Non-empty invalid URLs should not match empty or invalid item URLs.
+  OfflinePageItem empty_url_item;
+  criteria.url = GURL("http://");
+  ASSERT_FALSE(criteria.url.is_empty());
+  ASSERT_FALSE(criteria.url.is_valid());
+  EXPECT_FALSE(MeetsCriteria(criteria, empty_url_item));
+}
+
+TEST_F(PageCriteriaTest, MeetsCriteria_NonHttpOrHttpsUrls) {
+  // Non-HTTP/HTTPS URLs on either `criteria.url` or `item.url` must not match,
+  // whether `criteria.url` equals `item.url` or `original_url_if_different`.
+  OfflinePageItem corrupted_item;
+  corrupted_item.url = GURL("chrome://version");
+  corrupted_item.original_url_if_different = TestURL();
+
+  PageCriteria criteria;
+  criteria.url = TestURL();
+  EXPECT_FALSE(MeetsCriteria(criteria, corrupted_item));
+  criteria.url = GURL("chrome://version");
+  EXPECT_FALSE(MeetsCriteria(criteria, corrupted_item));
+}
+
 TEST_F(PageCriteriaTest, MeetsCriteria_ExcludeTabBoundPages) {
   PageCriteria criteria;
   criteria.exclude_tab_bound_pages = true;

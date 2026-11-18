@@ -42,12 +42,30 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "net/base/schemeful_site.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
+#include "url/url_constants.h"
 
 namespace offline_pages {
 
 namespace {
+
+// Returns true if `final_url` is same-site with `start_url`, or is a
+// same-site (registrable domain) http:// -> https:// upgrade of `start_url`.
+bool IsSameSiteOrHttpsUpgrade(const GURL& start_url, const GURL& final_url) {
+  if (net::SchemefulSite::IsSameSite(start_url, final_url)) {
+    return true;
+  }
+  if (!start_url.SchemeIs(url::kHttpScheme) ||
+      !final_url.SchemeIs(url::kHttpsScheme)) {
+    return false;
+  }
+  GURL::Replacements upgrade_to_https;
+  upgrade_to_https.SetSchemeStr(url::kHttpsScheme);
+  return net::SchemefulSite::IsSameSite(
+      start_url.ReplaceComponents(upgrade_to_https), final_url);
+}
 
 void HandleLoadTerminationCancel(
     Offliner::CompletionCallback completion_callback,
@@ -527,6 +545,27 @@ Offliner::RequestStatus BackgroundLoaderOffliner::CanSavePageInBackground(
   // Don't save Chrome error or interstitial pages.
   if (GetPageType(web_contents) != content::PageType::PAGE_TYPE_NORMAL) {
     return Offliner::RequestStatus::LOADED_PAGE_IS_CHROME_INTERNAL;
+  }
+
+  // Reject cross-site redirects and HTTPS-to-HTTP downgrades for background
+  // auto-fetch requests so an untrusted frame or offline page cannot pivot a
+  // hidden background load into snapshotting an authenticated cross-site
+  // destination. Same-site http:// -> https:// upgrades remain allowed so
+  // offline error-page auto-fetches still succeed when sites upgrade to HTTPS
+  // once online (OfflinePageRequestHandler still redirects pre-upgrade http://
+  // loads to the https:// destination before serving). User-initiated download
+  // namespaces (e.g. URL shorteners or feed links) remain allowed to follow
+  // cross-site redirects.
+  if (pending_request_ &&
+      pending_request_->client_id().name_space == kAutoAsyncNamespace) {
+    const GURL& final_url = web_contents->GetLastCommittedURL();
+    if (!OfflinePageModel::CanSaveURL(final_url) ||
+        !IsSameSiteOrHttpsUpgrade(pending_request_->url(), final_url) ||
+        (!pending_request_->original_url().is_empty() &&
+         !IsSameSiteOrHttpsUpgrade(pending_request_->original_url(),
+                                   final_url))) {
+      return Offliner::RequestStatus::LOADING_FAILED_NO_RETRY;
+    }
   }
 
   return Offliner::RequestStatus::UNKNOWN;

@@ -27,6 +27,7 @@
 #include "components/offline_pages/core/background/offliner.h"
 #include "components/offline_pages/core/background/offliner_policy.h"
 #include "components/offline_pages/core/background/save_page_request.h"
+#include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/stub_offline_page_model.h"
 #include "components/prefs/pref_service.h"
@@ -1008,6 +1009,150 @@ TEST_F(BackgroundLoaderOfflinerTest,
   PumpLoop();
 
   EXPECT_FALSE(completion_callback_called());
+}
+
+TEST_F(BackgroundLoaderOfflinerTest, RejectsCrossSiteRedirectForAutoFetch) {
+  const GURL queued_url("https://first.example.com/pivot");
+  const GURL cross_site_url("https://second.example.org/account");
+  SavePageRequest request(kRequestId, queued_url,
+                          ClientId(kAutoAsyncNamespace, "88"),
+                          base::Time::Now(), /*user_requested=*/false);
+  ASSERT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
+                                      progress_callback()));
+  offliner()->web_contents_tester()->NavigateAndCommit(cross_site_url);
+  CompleteLoading();
+
+  EXPECT_FALSE(SaveInProgress());
+  EXPECT_TRUE(completion_callback_called());
+  EXPECT_EQ(Offliner::RequestStatus::LOADING_FAILED_NO_RETRY, request_status());
+}
+
+TEST_F(BackgroundLoaderOfflinerTest,
+       RejectsCrossSiteHttpsUpgradeRedirectForAutoFetch) {
+  const GURL http_queued_url("http://first.example.com/pivot");
+  const GURL cross_site_https_url("https://second.example.org/account");
+  SavePageRequest request(kRequestId, http_queued_url,
+                          ClientId(kAutoAsyncNamespace, "88"),
+                          base::Time::Now(), /*user_requested=*/false);
+  ASSERT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
+                                      progress_callback()));
+  offliner()->web_contents_tester()->NavigateAndCommit(cross_site_https_url);
+  CompleteLoading();
+
+  EXPECT_FALSE(SaveInProgress());
+  EXPECT_TRUE(completion_callback_called());
+  EXPECT_EQ(Offliner::RequestStatus::LOADING_FAILED_NO_RETRY, request_status());
+}
+
+TEST_F(BackgroundLoaderOfflinerTest,
+       AllowsSameSiteHttpsUpgradeRedirectForAutoFetch) {
+  const GURL http_queued_url("http://example.org/start");
+  const GURL https_committed_url("https://www.example.org/article");
+  SavePageRequest request(kRequestId, http_queued_url,
+                          ClientId(kAutoAsyncNamespace, "88"),
+                          base::Time::Now(), /*user_requested=*/false);
+  ASSERT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
+                                      progress_callback()));
+  offliner()->web_contents_tester()->NavigateAndCommit(https_committed_url);
+  CompleteLoading();
+
+  ASSERT_TRUE(SaveInProgress());
+  EXPECT_EQ(https_committed_url, model()->save_page_params().url);
+  EXPECT_EQ(http_queued_url, model()->save_page_params().original_url);
+  model()->CompleteSavingAsSuccess();
+  PumpLoop();
+  EXPECT_EQ(Offliner::RequestStatus::SAVED, request_status());
+}
+
+TEST_F(BackgroundLoaderOfflinerTest,
+       RejectsHttpsToHttpDowngradeRedirectForAutoFetch) {
+  const GURL https_queued_url("https://example.org/start");
+  const GURL http_downgraded_url("http://example.org/article");
+  SavePageRequest request(kRequestId, https_queued_url,
+                          ClientId(kAutoAsyncNamespace, "88"),
+                          base::Time::Now(), /*user_requested=*/false);
+  ASSERT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
+                                      progress_callback()));
+  offliner()->web_contents_tester()->NavigateAndCommit(http_downgraded_url);
+  CompleteLoading();
+
+  EXPECT_FALSE(SaveInProgress());
+  EXPECT_TRUE(completion_callback_called());
+  EXPECT_EQ(Offliner::RequestStatus::LOADING_FAILED_NO_RETRY, request_status());
+}
+
+TEST_F(BackgroundLoaderOfflinerTest, AllowsSameSiteRedirectForAutoFetch) {
+  const GURL same_site_start("https://example.org/start");
+  const GURL same_site_final("https://www.example.org/article");
+  SavePageRequest request(kRequestId, same_site_start,
+                          ClientId(kAutoAsyncNamespace, "88"),
+                          base::Time::Now(), /*user_requested=*/false);
+  ASSERT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
+                                      progress_callback()));
+  offliner()->web_contents_tester()->NavigateAndCommit(same_site_final);
+  CompleteLoading();
+
+  ASSERT_TRUE(SaveInProgress());
+  EXPECT_EQ(same_site_final, model()->save_page_params().url);
+  EXPECT_EQ(same_site_start, model()->save_page_params().original_url);
+  model()->CompleteSavingAsSuccess();
+  PumpLoop();
+  EXPECT_EQ(Offliner::RequestStatus::SAVED, request_status());
+}
+
+TEST_F(BackgroundLoaderOfflinerTest, RejectsCrossSiteOriginalUrlForAutoFetch) {
+  const GURL same_site_resumed_url(
+      "https://www.second.example.org/intermediate");
+  const GURL cross_site_original_url("https://first.example.com/pivot");
+  const GURL final_url("https://second.example.org/account");
+  SavePageRequest request(kRequestId, same_site_resumed_url,
+                          ClientId(kAutoAsyncNamespace, "88"),
+                          base::Time::Now(), /*user_requested=*/false);
+  request.set_original_url(cross_site_original_url);
+  ASSERT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
+                                      progress_callback()));
+  offliner()->web_contents_tester()->NavigateAndCommit(final_url);
+  CompleteLoading();
+
+  EXPECT_FALSE(SaveInProgress());
+  EXPECT_TRUE(completion_callback_called());
+  EXPECT_EQ(Offliner::RequestStatus::LOADING_FAILED_NO_RETRY, request_status());
+}
+
+TEST_F(BackgroundLoaderOfflinerTest, RejectsUnsaveableFinalUrlForAutoFetch) {
+  const GURL queued_url("https://example.org/start");
+  const GURL unsaveable_final_url("file:///sdcard/local.html");
+  SavePageRequest request(kRequestId, queued_url,
+                          ClientId(kAutoAsyncNamespace, "88"),
+                          base::Time::Now(), /*user_requested=*/false);
+  ASSERT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
+                                      progress_callback()));
+  offliner()->web_contents_tester()->NavigateAndCommit(unsaveable_final_url);
+  CompleteLoading();
+
+  EXPECT_FALSE(SaveInProgress());
+  EXPECT_TRUE(completion_callback_called());
+  EXPECT_EQ(Offliner::RequestStatus::LOADING_FAILED_NO_RETRY, request_status());
+}
+
+TEST_F(BackgroundLoaderOfflinerTest,
+       AllowsCrossSiteRedirectForUserInitiatedDownload) {
+  const GURL shortener_url("https://shortener.example/abc");
+  const GURL publisher_url("https://publisher.example.org/article");
+  SavePageRequest request(kRequestId, shortener_url,
+                          ClientId(kDownloadNamespace, "99"), base::Time::Now(),
+                          /*user_requested=*/true);
+  ASSERT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
+                                      progress_callback()));
+  offliner()->web_contents_tester()->NavigateAndCommit(publisher_url);
+  CompleteLoading();
+
+  ASSERT_TRUE(SaveInProgress());
+  EXPECT_EQ(publisher_url, model()->save_page_params().url);
+  EXPECT_EQ(shortener_url, model()->save_page_params().original_url);
+  model()->CompleteSavingAsSuccess();
+  PumpLoop();
+  EXPECT_EQ(Offliner::RequestStatus::SAVED, request_status());
 }
 
 }  // namespace offline_pages

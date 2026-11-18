@@ -32,9 +32,10 @@ struct PageCriteria {
     kDescendingAccessTime,
   };
 
-  // If non-empty, the page must match this URL. The provided URL
-  // is matched both against the original and the actual URL fields (they
-  // sometimes differ because of possible redirects).
+  // If non-empty, the page must match this URL (which, along with the matched
+  // page URLs, must satisfy OfflinePageModel::CanSaveURL()). The provided URL
+  // is matched ignoring fragments against both the actual and the original URL
+  // fields (which may differ because of redirects).
   GURL url;
   // Whether to exclude pages that may only be opened in a specific tab.
   bool exclude_tab_bound_pages = false;

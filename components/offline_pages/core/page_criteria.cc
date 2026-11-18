@@ -77,9 +77,8 @@ bool MeetsCriteria(const PageCriteria& criteria, const OfflinePageItem& item) {
   }
 
   if (!criteria.url.is_empty() &&
-      !EqualsIgnoringFragment(criteria.url, item.url) &&
-      (item.original_url_if_different.is_empty() ||
-       !EqualsIgnoringFragment(criteria.url, item.original_url_if_different))) {
+      ClassifyOfflinePageUrlMatch(criteria.url, item) ==
+          OfflinePageUrlMatch::kNone) {
     return false;
   }
 

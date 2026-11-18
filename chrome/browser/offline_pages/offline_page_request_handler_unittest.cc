@@ -19,11 +19,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/offline_pages/offline_page_tab_helper.h"
 #include "chrome/browser/offline_pages/offline_page_url_loader.h"
+#include "chrome/browser/offline_pages/offline_page_utils.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/common/chrome_constants.h"
@@ -37,6 +39,7 @@
 #include "components/offline_pages/core/offline_page_metadata_store.h"
 #include "components/offline_pages/core/offline_page_test_archive_publisher.h"
 #include "components/offline_pages/core/offline_page_test_archiver.h"
+#include "components/offline_pages/core/page_criteria.h"
 #include "components/offline_pages/core/request_header/offline_page_navigation_ui_data.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
@@ -235,6 +238,7 @@ class OfflinePageRequestHandlerTest;
 class OfflinePageURLLoaderBuilder : public TestURLLoaderClient::Observer {
  public:
   explicit OfflinePageURLLoaderBuilder(OfflinePageRequestHandlerTest* test);
+  ~OfflinePageURLLoaderBuilder() override;
 
   void OnReceiveRedirect(const GURL& redirected_url) override;
   void OnReceiveResponse(
@@ -247,7 +251,12 @@ class OfflinePageURLLoaderBuilder : public TestURLLoaderClient::Observer {
                         bool is_outermost_main_frame);
 
   OfflinePageRequestHandlerTest* test() { return test_; }
-  const GURL& last_redirected_url() const { return last_redirected_url_; }
+  const GURL& last_redirected_url() const {
+    return redirected_urls_.empty() ? GURL::EmptyGURL()
+                                    : redirected_urls_.back();
+  }
+  const std::vector<GURL>& redirected_urls() const { return redirected_urls_; }
+  const GURL& last_request_url() const { return last_request_url_; }
 
   void Quit() { std::move(quit_closure_).Run(); }
 
@@ -269,9 +278,10 @@ class OfflinePageURLLoaderBuilder : public TestURLLoaderClient::Observer {
   std::unique_ptr<TestURLLoaderClient> client_;
   std::unique_ptr<mojo::SimpleWatcher> handle_watcher_;
   mojo::Remote<network::mojom::URLLoader> loader_;
+  std::vector<GURL> redirected_urls_;
+  GURL last_request_url_;
   std::string mime_type_;
   std::string body_;
-  GURL last_redirected_url_;
   base::OnceClosure quit_closure_;
 };
 
@@ -354,6 +364,12 @@ class OfflinePageRequestHandlerTest : public testing::Test {
   }
   const GURL& last_redirected_url() const {
     return interceptor_factory_.last_redirected_url();
+  }
+  const std::vector<GURL>& redirected_urls() const {
+    return interceptor_factory_.redirected_urls();
+  }
+  const GURL& last_request_url() const {
+    return interceptor_factory_.last_request_url();
   }
 
   bool is_connected_with_good_network() {
@@ -757,11 +773,21 @@ OfflinePageURLLoaderBuilder::OfflinePageURLLoaderBuilder(
   navigation_ui_data_ = std::make_unique<ChromeNavigationUIData>();
 }
 
+OfflinePageURLLoaderBuilder::~OfflinePageURLLoaderBuilder() = default;
+
 void OfflinePageURLLoaderBuilder::OnReceiveRedirect(
     const GURL& redirected_url) {
-  last_redirected_url_ = redirected_url;
-  InterceptRequestInternal(redirected_url, "GET", net::HttpRequestHeaders(),
-                           true);
+  // Copy `redirected_url` before InterceptRequestInternal() replaces `client_`
+  // (which owns the incoming reference), and bound redirect hops so a redirect
+  // loop regression fails deterministically instead of hanging.
+  constexpr size_t kMaxRedirects = 20;
+  const GURL target_url = redirected_url;
+  redirected_urls_.push_back(target_url);
+  if (redirected_urls_.size() > kMaxRedirects) {
+    ReadCompleted(ResponseInfo(net::ERR_TOO_MANY_REDIRECTS));
+    return;
+  }
+  InterceptRequestInternal(target_url, "GET", net::HttpRequestHeaders(), true);
 }
 
 void OfflinePageURLLoaderBuilder::OnReceiveResponse(
@@ -785,6 +811,7 @@ void OfflinePageURLLoaderBuilder::InterceptRequestInternal(
     bool is_outermost_main_frame) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  last_request_url_ = url;
   client_ = std::make_unique<TestURLLoaderClient>(this);
 
   network::ResourceRequest request = CreateResourceRequest(
@@ -812,9 +839,13 @@ void OfflinePageURLLoaderBuilder::InterceptRequest(
     bool is_outermost_main_frame) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  // Reset per-navigation state so sequential LoadPage() calls within a single
+  // test do not carry offline navigation data or redirect history across loads.
+  navigation_ui_data_ = std::make_unique<ChromeNavigationUIData>();
+  redirected_urls_.clear();
+  last_request_url_ = GURL();
   base::RunLoop loop;
   quit_closure_ = loop.QuitWhenIdleClosure();
-  last_redirected_url_ = GURL();
   InterceptRequestInternal(url, method, extra_headers, is_outermost_main_frame);
   loop.Run();
 }
@@ -1470,6 +1501,188 @@ TEST_F(OfflinePageRequestHandlerTest, FailOnIntentFileMismatchForInternalPage) {
 
   EXPECT_EQ(net::ERR_FAILED, request_status());
   EXPECT_NE("multipart/related", mime_type());
+  EXPECT_EQ(0, bytes_read());
+  EXPECT_FALSE(is_offline_page_set_in_navigation_data());
+  EXPECT_FALSE(offline_page_tab_helper()->GetOfflinePageForTest());
+}
+
+TEST_F(OfflinePageRequestHandlerTest, RedirectOriginalUrlWithFragmentMismatch) {
+  SimulateHasNetworkConnectivity(false);
+
+  // Saved original_url with a fragment must redirect when navigated without a
+  // fragment or with a different fragment.
+  const GURL original_url_with_ref("http://first.example.com/from_ref#initial");
+  const GURL destination_url("https://second.example.org/destination");
+  int64_t offline_id =
+      SaveInternalPage(destination_url, original_url_with_ref,
+                       base::FilePath(kFilename1), kFileSize1, std::string());
+
+  LoadPage(GURL("http://first.example.com/from_ref"));
+  EXPECT_EQ(std::vector<GURL>({destination_url}), redirected_urls());
+  EXPECT_EQ(destination_url, last_request_url());
+  ExpectOfflinePageServed(offline_id, kFileSize1);
+
+  LoadPage(GURL("http://first.example.com/from_ref#different"));
+  EXPECT_EQ(std::vector<GURL>({destination_url}), redirected_urls());
+  EXPECT_EQ(destination_url, last_request_url());
+  ExpectOfflinePageServed(offline_id, kFileSize1);
+
+  // On a flaky network (online, but carrying X-Chrome-offline reason=error),
+  // navigating to original_url with a fragment must still redirect to
+  // destination_url rather than serving destination_url's archive under
+  // original_url's origin. Because X-Chrome-offline is not forwarded across
+  // redirects, the redirected leg falls back to the live network.
+  offline_page_tab_helper()->ClearOfflinePage();
+  SimulateHasNetworkConnectivity(true);
+  net::HttpRequestHeaders extra_headers;
+  extra_headers.AddHeaderFromString(
+      UseOfflinePageHeader(OfflinePageHeader::Reason::NET_ERROR, 0));
+  LoadPageWithHeaders(GURL("http://first.example.com/from_ref#flaky"),
+                      extra_headers);
+  EXPECT_EQ(std::vector<GURL>({destination_url}), redirected_urls());
+  EXPECT_EQ(destination_url, last_request_url());
+  EXPECT_EQ(net::ERR_FAILED, request_status());
+  EXPECT_FALSE(is_offline_page_set_in_navigation_data());
+  EXPECT_FALSE(offline_page_tab_helper()->GetOfflinePageForTest());
+}
+
+TEST_F(OfflinePageRequestHandlerTest, NoRedirectWhenOriginalUrlEqualsFinalUrl) {
+  SimulateHasNetworkConnectivity(false);
+
+  // SetUp() calls SetSkipClearingOriginalUrlForTesting(), so saving with
+  // original_url == test_url persists original_url_if_different == test_url.
+  // Verify both exact and fragment-bearing loads of that legacy row serve
+  // directly without redirecting.
+  const GURL test_url(kTestUrl);
+  int64_t offline_id =
+      SaveInternalPage(test_url, test_url, base::FilePath(kFilename1),
+                       kFileSize1, std::string());
+
+  LoadPage(test_url);
+  EXPECT_TRUE(redirected_urls().empty());
+  EXPECT_EQ(test_url, last_request_url());
+  ExpectOfflinePageServed(offline_id, kFileSize1);
+
+  const GURL test_url_with_ref("http://test.org/page#section");
+  LoadPage(test_url_with_ref);
+  EXPECT_TRUE(redirected_urls().empty());
+  EXPECT_EQ(test_url_with_ref, last_request_url());
+  ExpectOfflinePageServed(offline_id, kFileSize1);
+}
+
+TEST_F(OfflinePageRequestHandlerTest,
+       RejectOfflinePageWithUnsaveableDestinationUrl) {
+  SimulateHasNetworkConnectivity(false);
+
+  // Insert a corrupted metadata row whose final URL fails
+  // OfflinePageModel::CanSaveURL() (non-http/https scheme). Navigating to its
+  // pre-redirect URL must neither redirect to chrome:// nor serve the file.
+  OfflinePageItem corrupted_item;
+  corrupted_item.offline_id = 777777;
+  corrupted_item.url = GURL("chrome://version");
+  corrupted_item.original_url_if_different =
+      GURL("http://first.example.com/redirect");
+  corrupted_item.client_id = ClientId(kAsyncNamespace, "corrupted");
+  corrupted_item.file_path =
+      OfflinePageModelFactory::GetForBrowserContext(profile())
+          ->GetArchiveDirectory(kAsyncNamespace)
+          .Append(kFilename1);
+  corrupted_item.file_size = kFileSize1;
+  corrupted_item.creation_time = base::Time::Now();
+
+  base::test::TestFuture<AddPageResult, int64_t> add_future;
+  OfflinePageModelFactory::GetForBrowserContext(profile())->AddPage(
+      corrupted_item, add_future.GetCallback());
+  ASSERT_EQ(AddPageResult::SUCCESS, add_future.Get<0>());
+
+  LoadPage(GURL("http://first.example.com/redirect#frag"));
+  EXPECT_TRUE(redirected_urls().empty());
+  EXPECT_EQ(net::ERR_FAILED, request_status());
+  EXPECT_EQ(0, bytes_read());
+  EXPECT_FALSE(offline_page_tab_helper()->GetOfflinePageForTest());
+}
+
+TEST_F(OfflinePageRequestHandlerTest,
+       SelectPagesWithCriteriaSkipsUnsaveableNewerRow) {
+  OfflinePageModel* model =
+      OfflinePageModelFactory::GetForBrowserContext(profile());
+  const base::FilePath archive_path =
+      model->GetArchiveDirectory(kAsyncNamespace).Append(kFilename1);
+  const base::Time now = base::Time::Now();
+
+  // Insert a newer corrupted row with a non-HTTP/HTTPS final URL alongside an
+  // older valid candidate sharing the same pre-redirect URL. A
+  // `maximum_matches = 1` lookup (such as OfflinePageTabHelper's net-error
+  // reload query) must skip the corrupted row and return the valid candidate.
+  OfflinePageItem corrupted_newer_item;
+  corrupted_newer_item.offline_id = 777777;
+  corrupted_newer_item.url = GURL("chrome://version");
+  corrupted_newer_item.original_url_if_different =
+      GURL("http://first.example.com/redirect");
+  corrupted_newer_item.client_id = ClientId(kAsyncNamespace, "corrupted_newer");
+  corrupted_newer_item.file_path = archive_path;
+  corrupted_newer_item.file_size = kFileSize1;
+  corrupted_newer_item.creation_time = now;
+
+  base::test::TestFuture<AddPageResult, int64_t> add_corrupted_future;
+  model->AddPage(corrupted_newer_item, add_corrupted_future.GetCallback());
+  ASSERT_EQ(AddPageResult::SUCCESS, add_corrupted_future.Get<0>());
+
+  OfflinePageItem valid_older_item;
+  valid_older_item.offline_id = 777776;
+  valid_older_item.url = GURL(kTestUrl);
+  valid_older_item.original_url_if_different =
+      GURL("http://first.example.com/redirect");
+  valid_older_item.client_id = ClientId(kAsyncNamespace, "valid_older");
+  valid_older_item.file_path = archive_path;
+  valid_older_item.file_size = kFileSize1;
+  valid_older_item.creation_time = now - base::Days(1);
+
+  base::test::TestFuture<AddPageResult, int64_t> add_valid_future;
+  model->AddPage(valid_older_item, add_valid_future.GetCallback());
+  ASSERT_EQ(AddPageResult::SUCCESS, add_valid_future.Get<0>());
+
+  PageCriteria single_match_criteria;
+  single_match_criteria.url = GURL("http://first.example.com/redirect");
+  single_match_criteria.maximum_matches = 1;
+  base::test::TestFuture<const std::vector<OfflinePageItem>&> select_future;
+  OfflinePageUtils::SelectPagesWithCriteria(profile()->GetProfileKey(),
+                                            single_match_criteria,
+                                            select_future.GetCallback());
+  const std::vector<OfflinePageItem>& matched_pages = select_future.Get();
+  ASSERT_EQ(1u, matched_pages.size());
+  EXPECT_EQ(valid_older_item.offline_id, matched_pages.front().offline_id);
+}
+
+TEST_F(OfflinePageRequestHandlerTest,
+       FailFileUrlIntentMatchingOnlyOriginalUrl) {
+  SimulateHasNetworkConnectivity(true);
+
+  const std::string expected_data(MakeContentOfSize(2 * 1024));
+  base::FilePath temp_file_path = CreateFileWithContent(expected_data);
+  ArchiveValidator archive_validator;
+  archive_validator.Update(expected_data);
+  const std::string expected_digest = archive_validator.Finish();
+  const int expected_size = expected_data.length();
+
+  const GURL original_url("http://first.example.com/redirect");
+  const GURL destination_url("https://second.example.org/destination");
+  SavePublicPage(destination_url, original_url, temp_file_path, expected_size,
+                 expected_digest);
+
+  // Omit `id` so candidate lookup routes through SelectPagesForURL() (matching
+  // `original_url_if_different`) and reaches OnTrustedOfflinePageFound(). File
+  // URL intents must fail validation rather than redirecting or serving the
+  // archive under `original_url`.
+  OfflinePageHeader intent_header;
+  intent_header.reason = OfflinePageHeader::Reason::FILE_URL_INTENT;
+  intent_header.intent_url = net::FilePathToFileURL(temp_file_path);
+  net::HttpRequestHeaders extra_headers;
+  extra_headers.AddHeaderFromString(intent_header.GetCompleteHeaderString());
+  LoadPageWithHeaders(original_url, extra_headers);
+
+  EXPECT_TRUE(redirected_urls().empty());
+  EXPECT_EQ(net::ERR_FAILED, request_status());
   EXPECT_EQ(0, bytes_read());
   EXPECT_FALSE(is_offline_page_set_in_navigation_data());
   EXPECT_FALSE(offline_page_tab_helper()->GetOfflinePageForTest());
