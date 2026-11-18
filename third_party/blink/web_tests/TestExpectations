@@ -9167,6 +9167,7 @@ crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue
 crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_with_auth/invalid.py [ Failure Pass ]
 crbug.com/559885106 [ Linux ] external/wpt/webdriver/tests/classic/new_session/unhandled_prompt_behavior.py [ Failure Pass ]
 crbug.com/560754596 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/key_events.py [ Failure Pass ]
+crbug.com/587450809 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/pointer_pause_dblclick.py [ Failure Pass ]
 
 # Gardener 2026-10-09 (cherry-picked from crrev.com/c/8549573)
 crbug.com/569736364 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigation_started/navigation_interrupted.py [ Pass Timeout ]
