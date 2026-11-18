@@ -106,29 +106,27 @@ BOOL ShouldFetchAppSwitcherParam(NSString* source_app_id, PrefService* prefs) {
 - (void)recordMetrics {
   [super recordMetrics];
 
-  NSURL* url = self.URLContext.URL;
-  if (!url) {
+  const GURL url = net::GURLWithNSURL(self.URLContext.URL);
+  if (!url.is_valid()) {
     return;
   }
 
-  NSString* scheme = url.scheme.lowercaseString;
-
-  if ([scheme isEqualToString:@"file"]) {
+  if (url.SchemeIsFile()) {
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
                               START_ACTION_OPEN_FILE,
                               MOBILE_SESSION_START_ACTION_COUNT);
   } else {
     MobileSessionStartAction action = START_ACTION_OTHER;
-    if ([scheme isEqualToString:@"http"]) {
+    if (url.SchemeIs(url::kHttpScheme)) {
       action = START_ACTION_OPEN_HTTP_FROM_OS;
       base::RecordAction(
           base::UserMetricsAction("MobileDefaultBrowserViewIntent"));
-    } else if ([scheme isEqualToString:@"https"]) {
+    } else if (url.SchemeIs(url::kHttpsScheme)) {
       action = START_ACTION_OPEN_HTTPS_FROM_OS;
       base::RecordAction(
           base::UserMetricsAction("MobileDefaultBrowserViewIntent"));
     } else {
-      BOOL useHttps = [scheme hasSuffix:@"s"];
+      const bool useHttps = url.GetScheme().ends_with('s');
       action = useHttps ? START_ACTION_OPEN_HTTPS : START_ACTION_OPEN_HTTP;
       base::UmaHistogramEnumeration(kAppLaunchSource,
                                     AppLaunchSource::LINK_OPENED_FROM_APP);
