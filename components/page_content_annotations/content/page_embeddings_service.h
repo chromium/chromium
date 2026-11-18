@@ -123,6 +123,8 @@ class PageEmbeddingsService : public KeyedService,
   virtual void RemoveObserver(Observer* observer);
 
   // Producer<std::vector<PassageEmbedding>>:
+  // Note: Active subscribers currently always use `kContinuous` mode (until
+  // `UsageMode` propagation is added in https://crbug.com/568785146).
   base::CallbackListSubscription Subscribe(
       ConsumerCallback<std::vector<PassageEmbedding>> callback) override;
 
@@ -155,9 +157,6 @@ class PageEmbeddingsService : public KeyedService,
   // Returns the provider for embedder metadata.
   passage_embeddings::EmbedderMetadataProvider* GetEmbedderMetadataProvider();
 
-  void OnPageContentExtracted(content::Page& page,
-                              const PageContent& page_content);
-
  private:
   friend class PageEmbeddingsServiceTest;
   class WebContentsEventsObserver;
@@ -171,7 +170,10 @@ class PageEmbeddingsService : public KeyedService,
   struct WebContentsState;
 
   // Producer<std::vector<PassageEmbedding>>:
-  void OnDemandChanged() override;
+  void OnSubscribersChanged() override;
+
+  void OnPageContentExtracted(content::Page& page,
+                              const PageContent& page_content);
 
   void UpdatePageContentExtractionRegistration();
   void UpdateUsageMode();

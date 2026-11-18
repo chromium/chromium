@@ -185,7 +185,10 @@ base::CallbackListSubscription PageContentExtractionService::Subscribe(
   return subscriber_registry_.Subscribe(std::move(callback));
 }
 
-void PageContentExtractionService::OnDemandChanged() {}
+void PageContentExtractionService::OnSubscribersChanged() {
+  // No-op: extraction enablement is checked per navigation via
+  // `ShouldEnablePageContentExtraction()`.
+}
 
 PageContentExtractionEnablementReason
 PageContentExtractionService::GetPageContentExtractionEnablementReason(
@@ -195,7 +198,7 @@ PageContentExtractionService::GetPageContentExtractionEnablementReason(
     return PageContentExtractionEnablementReason::
         kAutomaticExtractionFeatureEnabled;
   }
-  if (!observers_.empty() || subscriber_registry_.GetSubscriberCount() > 0) {
+  if (!observers_.empty() || subscriber_registry_.HasSubscribers()) {
     return PageContentExtractionEnablementReason::kObserverRegistered;
   }
   if (is_on_demand &&
@@ -369,7 +372,7 @@ void PageContentExtractionService::OnNewNavigation(
     bool feature_enabled = base::FeatureList::IsEnabled(
         page_content_annotations::features::kAnnotatedPageContentExtraction);
     bool has_observers =
-        !observers_.empty() || subscriber_registry_.GetSubscriberCount() > 0;
+        !observers_.empty() || subscriber_registry_.HasSubscribers();
 
     EnablementSource source = EnablementSource::kNone;
     if (feature_enabled && has_observers) {

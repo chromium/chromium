@@ -10,7 +10,9 @@
 #include <variant>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -157,12 +159,18 @@ class PageEmbeddingsServiceTest : public content::RenderViewHostTestHarness {
     return web_contents;
   }
 
+  class TestPageEmbeddingsService : public PageEmbeddingsService {
+   public:
+    using PageEmbeddingsService::OnPageContentExtracted;
+    using PageEmbeddingsService::PageEmbeddingsService;
+  };
+
   PageContentExtractionService& page_content_extraction_service() {
     CHECK(page_content_extraction_service_.has_value());
     return *page_content_extraction_service_;
   }
 
-  PageEmbeddingsService& page_embeddings_service() {
+  TestPageEmbeddingsService& page_embeddings_service() {
     CHECK(page_embeddings_service_.has_value());
     return *page_embeddings_service_;
   }
@@ -185,7 +193,7 @@ class PageEmbeddingsServiceTest : public content::RenderViewHostTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   std::optional<PageContentExtractionService> page_content_extraction_service_;
-  std::optional<PageEmbeddingsService> page_embeddings_service_;
+  std::optional<TestPageEmbeddingsService> page_embeddings_service_;
 };
 
 // Validates that candidate passages are generated from AnnotatedPageContent.
@@ -1522,11 +1530,17 @@ TEST_F(
       page_content_extraction_service().ShouldEnablePageContentExtraction(
           false));
 
-  // Unsubscribing keeps upstream extraction enabled while the observer remains.
+  // Unsubscribing keeps upstream extraction enabled while the observer remains,
+  // and downgrades usage mode back to kOnDemand so new extractions on the
+  // visible tab are not computed eagerly.
   subscription.reset();
   EXPECT_TRUE(
       page_content_extraction_service().ShouldEnablePageContentExtraction(
           false));
+  EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(0);
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents->GetPrimaryPage(),
+      base::MakeRefCounted<RefCountedAnnotatedPageContent>());
 
   page_embeddings_service().RemoveObserver(&on_demand_observer);
   EXPECT_FALSE(

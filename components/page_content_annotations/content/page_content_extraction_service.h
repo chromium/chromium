@@ -13,6 +13,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -101,9 +102,9 @@ class PageContentCacheHandler;
 // This service coordinates:
 // - Caching: Maintains an in-memory and on-disk cache of extracted page
 //   content (for HTML pages). PDF extractions are not cached.
-// - Observers: Automatically extracts page content when an observer is
-//   registered and fires notifications to registered `Observer`s upon
-//   extraction.
+// - Observers and subscribers: Automatically extracts page content when an
+//   `Observer` or `Producer<PageContent>` subscriber is registered and notifies
+//   them upon extraction.
 // - Lifecycle management: Cleans up cached content when tabs are closed,
 //   handles tab visibility/backgrounding state, etc.
 //
@@ -287,9 +288,9 @@ class PageContentExtractionService : public KeyedService,
 
  protected:
   // Invoked when `page_content` (either the APC for a non-PDF page or the PDF
-  // text for a PDF page) is extracted for `page`. Notifies observers and, if
-  // enabled for non-PDF pages, updates the on-disk cache using `tab_id` and
-  // `screenshot_data`.
+  // text for a PDF page) is extracted for `page`. Notifies observers and
+  // `Producer<PageContent>` subscribers and, if enabled for non-PDF pages,
+  // updates the on-disk cache using `tab_id` and `screenshot_data`.
   virtual void OnPageContentExtracted(
       content::Page& page,
       PageContent page_content,
@@ -301,7 +302,7 @@ class PageContentExtractionService : public KeyedService,
   friend class PageContentCacheBrowserTest;
 
   // Producer<PageContent>:
-  void OnDemandChanged() override;
+  void OnSubscribersChanged() override;
 
   AnnotatedPageContentRequest* GetAnnotatedPageContentRequestFromWebContents(
       content::WebContents* web_contents);

@@ -2494,8 +2494,9 @@ chromium-metrics-reviews@google.com.
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
-    Records the number of active observers for page content extraction during a
-    cross-document navigation. Recorded once per cross-document navigation.
+    Records the number of active observers and subscribers for page content
+    extraction during a cross-document navigation. Recorded once per
+    cross-document navigation.
   </summary>
 </histogram>
 

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "content/public/browser/page.h"
@@ -31,7 +32,7 @@ class MockProducer : public Producer<T> {
               Subscribe,
               (ConsumerCallback<T>),
               (override));
-  MOCK_METHOD(void, OnDemandChanged, (), (override));
+  MOCK_METHOD(void, OnSubscribersChanged, (), (override));
 };
 
 using SubscriberRegistryTest = content::RenderViewHostTestHarness;
@@ -39,25 +40,51 @@ using SubscriberRegistryTest = content::RenderViewHostTestHarness;
 TEST_F(SubscriberRegistryTest, TracksDemandAndSubscriberCount) {
   StrictMock<MockProducer<int>> producer;
   SubscriberRegistry<int> registry(producer);
+  EXPECT_FALSE(registry.HasSubscribers());
   EXPECT_EQ(0u, registry.GetSubscriberCount());
 
-  EXPECT_CALL(producer, OnDemandChanged());
+  EXPECT_CALL(producer, OnSubscribersChanged());
   std::optional<base::CallbackListSubscription> sub1 = registry.Subscribe(
       base::BindRepeating([](content::Page&, const int&) {}));
+  EXPECT_TRUE(registry.HasSubscribers());
   EXPECT_EQ(1u, registry.GetSubscriberCount());
 
-  EXPECT_CALL(producer, OnDemandChanged());
+  EXPECT_CALL(producer, OnSubscribersChanged());
   std::optional<base::CallbackListSubscription> sub2 = registry.Subscribe(
       base::BindRepeating([](content::Page&, const int&) {}));
+  EXPECT_TRUE(registry.HasSubscribers());
   EXPECT_EQ(2u, registry.GetSubscriberCount());
 
-  EXPECT_CALL(producer, OnDemandChanged());
+  EXPECT_CALL(producer, OnSubscribersChanged());
   sub1.reset();
+  EXPECT_TRUE(registry.HasSubscribers());
   EXPECT_EQ(1u, registry.GetSubscriberCount());
 
-  EXPECT_CALL(producer, OnDemandChanged());
+  EXPECT_CALL(producer, OnSubscribersChanged());
   sub2.reset();
+  EXPECT_FALSE(registry.HasSubscribers());
   EXPECT_EQ(0u, registry.GetSubscriberCount());
+}
+
+TEST_F(SubscriberRegistryTest,
+       DestroyingRegistryWithActiveSubscriptionDoesNotNotifyProducer) {
+  StrictMock<MockProducer<int>> producer;
+  std::optional<base::CallbackListSubscription> sub;
+  {
+    std::optional<SubscriberRegistry<int>> registry(producer);
+    EXPECT_CALL(producer, OnSubscribersChanged());
+    sub = registry->Subscribe(
+        base::BindRepeating([](content::Page&, const int&) {}));
+    EXPECT_TRUE(registry->HasSubscribers());
+
+    // Destroying `registry` while `sub` is still alive must not invoke
+    // `OnSubscribersChanged()`.
+    EXPECT_CALL(producer, OnSubscribersChanged()).Times(0);
+    registry.reset();
+  }
+
+  // Resetting `sub` after `registry` was destroyed is also a safe no-op.
+  sub.reset();
 }
 
 TEST_F(SubscriberRegistryTest,
@@ -68,18 +95,19 @@ TEST_F(SubscriberRegistryTest,
   std::optional<base::CallbackListSubscription> sub1;
   std::optional<base::CallbackListSubscription> sub2;
 
-  EXPECT_CALL(producer, OnDemandChanged()).Times(2);
+  EXPECT_CALL(producer, OnSubscribersChanged()).Times(2);
   sub1 = registry.Subscribe(
       base::BindLambdaForTesting([&](content::Page&, const int&) {
         sub1.reset();
         sub2.reset();
       }));
   sub2 = registry.Subscribe(
-      base::BindRepeating([](content::Page&, const int&) {}));
+      base::BindRepeating([](content::Page&, const int&) { ADD_FAILURE(); }));
   EXPECT_EQ(2u, registry.GetSubscriberCount());
 
-  EXPECT_CALL(producer, OnDemandChanged()).Times(2);
+  EXPECT_CALL(producer, OnSubscribersChanged()).Times(2);
   registry.Notify(web_contents()->GetPrimaryPage(), 42);
+  EXPECT_FALSE(registry.HasSubscribers());
   EXPECT_EQ(0u, registry.GetSubscriberCount());
 }
 

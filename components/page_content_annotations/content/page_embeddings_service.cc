@@ -324,6 +324,11 @@ PageEmbeddingsService::GetEmbedderMetadataProvider() {
   return embedder_metadata_provider_;
 }
 
+void PageEmbeddingsService::OnSubscribersChanged() {
+  UpdatePageContentExtractionRegistration();
+  UpdateUsageMode();
+}
+
 void PageEmbeddingsService::OnPageContentExtracted(
     content::Page& page,
     const PageContent& page_content) {
@@ -376,16 +381,11 @@ void PageEmbeddingsService::OnPageContentExtracted(
   }
 }
 
-void PageEmbeddingsService::OnDemandChanged() {
-  UpdatePageContentExtractionRegistration();
-  UpdateUsageMode();
-}
-
 void PageEmbeddingsService::UpdatePageContentExtractionRegistration() {
   if (!page_content_extraction_service_ || !embedder_) {
     return;
   }
-  if (!observers_.empty() || subscriber_registry_.GetSubscriberCount() > 0) {
+  if (!observers_.empty() || subscriber_registry_.HasSubscribers()) {
     if (!page_content_extraction_subscription_) {
       page_content_extraction_subscription_ =
           page_content_extraction_service_->Subscribe(base::BindRepeating(
@@ -398,8 +398,8 @@ void PageEmbeddingsService::UpdatePageContentExtractionRegistration() {
 }
 
 void PageEmbeddingsService::UpdateUsageMode() {
-  const UsageMode next_usage_mode = GetActiveUsageMode(
-      observers_, subscriber_registry_.GetSubscriberCount() > 0);
+  const UsageMode next_usage_mode =
+      GetActiveUsageMode(observers_, subscriber_registry_.HasSubscribers());
   if (next_usage_mode > current_usage_mode_ && next_usage_mode == kContinuous) {
     // Compute embeddings eagerly for all foreground tabs, to ensure that they
     // are available.
