@@ -76,7 +76,7 @@ class MockVideoEncoder : public VideoEncoder {
   // and VideoEncoderTest is not a friend of VideoEncoder.
   void CallOnMediaEncoderInfoChanged(
       const media::VideoEncoderInfo& encoder_info) {
-    VideoEncoder::OnMediaEncoderInfoChanged(encoder_info);
+    VideoEncoder::OnMediaEncoderInfoChanged(reset_count_, encoder_info);
   }
 };
 

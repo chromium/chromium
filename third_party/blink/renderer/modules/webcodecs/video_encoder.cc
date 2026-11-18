@@ -799,10 +799,13 @@ std::unique_ptr<media::VideoEncoder> CreateOpenH264VideoEncoder() {
 // with a weak |this|. It's needed in to avoid a persistent reference cycle.
 base::expected<std::unique_ptr<media::VideoEncoder>, media::EncoderStatus>
 VideoEncoder::CreateSoftwareVideoEncoder(VideoEncoder* self,
+                                         uint32_t reset_count,
                                          bool fallback,
                                          media::VideoCodec codec) {
-  if (!self)
+  if (!self || self->state_.AsEnum() != V8CodecState::Enum::kConfigured ||
+      self->reset_count_ != reset_count || !self->active_config_) {
     return base::unexpected(media::EncoderStatus::Codes::kEncoderIllegalState);
+  }
   DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
   std::unique_ptr<media::VideoEncoder> result;
   switch (codec) {
@@ -854,15 +857,16 @@ VideoEncoder::CreateMediaVideoEncoder(
       return std::unique_ptr<media::VideoEncoder>(
           std::make_unique<media::VideoEncoderFallback>(
               std::move(result).value(),
-              ConvertToBaseOnceCallback(
-                  CrossThreadBindOnce(&VideoEncoder::CreateSoftwareVideoEncoder,
-                                      MakeUnwrappingCrossThreadWeakHandle(this),
-                                      /*fallback=*/true, config.codec))));
+              ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                  &VideoEncoder::CreateSoftwareVideoEncoder,
+                  MakeUnwrappingCrossThreadWeakHandle(this), reset_count_,
+                  /*fallback=*/true, config.codec))));
     }
   }
 
   is_platform_encoder = false;
-  return CreateSoftwareVideoEncoder(this, /*fallback=*/false, config.codec);
+  return CreateSoftwareVideoEncoder(this, reset_count_, /*fallback=*/false,
+                                    config.codec);
 }
 
 void VideoEncoder::ContinueConfigureAfterFlush(Request* request) {
@@ -906,9 +910,9 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
   }
 
   media_encoder_ = std::move(encoder_or_error).value();
-  auto info_cb = ConvertToBaseRepeatingCallback(
-      CrossThreadBindRepeating(&VideoEncoder::OnMediaEncoderInfoChanged,
-                               MakeUnwrappingCrossThreadWeakHandle(this)));
+  auto info_cb = ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+      &VideoEncoder::OnMediaEncoderInfoChanged,
+      MakeUnwrappingCrossThreadWeakHandle(this), reset_count_));
 
   auto output_cb = ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
       &VideoEncoder::CallOutputCallback,
@@ -1186,7 +1190,6 @@ void VideoEncoder::ProcessEncode(Request* request) {
   DCHECK_EQ(state_, V8CodecState::Enum::kConfigured);
   DCHECK(media_encoder_);
   DCHECK_EQ(request->type, Request::Type::kEncode);
-  DCHECK_GT(requested_encodes_, 0u);
 
   if (request->encodeOpts->hasUpdateBuffer()) {
     auto* buffer = request->encodeOpts->updateBuffer();
@@ -1194,7 +1197,6 @@ void VideoEncoder::ProcessEncode(Request* request) {
       QueueHandleError(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
           "updateBuffer doesn't belong to this encoder"));
-      request->EndTracing();
       return;
     }
   }
@@ -1204,7 +1206,6 @@ void VideoEncoder::ProcessEncode(Request* request) {
         QueueHandleError(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
             "one of referenceBuffers doesn't belong to this encoder"));
-        request->EndTracing();
         return;
       }
     }
@@ -1278,9 +1279,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
         MakeUnwrappingCrossThreadHandle(request), frame,
         std::move(encode_options), std::move(encode_done_callback)));
 
-    if (StartReadback(std::move(frame), std::move(readback_done_callback))) {
-      request->input->close();
-    } else {
+    if (!StartReadback(std::move(frame), std::move(readback_done_callback))) {
       blocking_request_in_progress_ = nullptr;
       callback_runner_->PostTask(
           FROM_HERE, ConvertToBaseOnceCallback(CrossThreadBindOnce(
@@ -1319,13 +1318,8 @@ void VideoEncoder::ProcessEncode(Request* request) {
     }
   }
 
-  --requested_encodes_;
-  ScheduleDequeueEvent();
   media_encoder_->Encode(frame, encode_options,
                          std::move(encode_done_callback));
-
-  // We passed a copy of frame() above, so this should be safe to close here.
-  request->input->close();
 }
 
 media::VideoEncoder::EncodeOptions VideoEncoder::CreateEncodeOptions(
@@ -1422,8 +1416,6 @@ void VideoEncoder::OnReadbackDone(
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  --requested_encodes_;
-  ScheduleDequeueEvent();
   blocking_request_in_progress_ = nullptr;
   media_encoder_->Encode(std::move(result_frame), encode_options,
                          std::move(done_callback));
@@ -1605,12 +1597,18 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
 }
 
 void VideoEncoder::OnMediaEncoderInfoChanged(
+    uint32_t reset_count,
     const media::VideoEncoderInfo& encoder_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (encoder_info.is_hardware_accelerated)
+  if (state_.AsEnum() != V8CodecState::Enum::kConfigured ||
+      reset_count != reset_count_ || !active_config_) {
+    return;
+  }
+  if (encoder_info.is_hardware_accelerated) {
     ApplyCodecPressure();
-  else
+  } else {
     ReleaseCodecPressure();
+  }
 
   encoder_info_ = encoder_info;
 
@@ -1787,6 +1785,7 @@ void VideoEncoder::ResetInternal(DOMException* ex) {
   Base::ResetInternal(ex);
   active_encodes_ = 0;
   frame_metadata_.clear();
+  frame_reference_buffers_.clear();
   last_decoder_config_.reset();
   first_input_transformation_.reset();
   last_input_transformation_.reset();
@@ -1961,13 +1960,15 @@ ScriptPromise<VideoEncoderSupport> VideoEncoder::isConfigSupported(
 HeapVector<Member<VideoEncoderBuffer>> VideoEncoder::getAllFrameBuffers(
     ScriptState*,
     ExceptionState& exception_state) {
-  if (!active_config_) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Cannot call 'getAllFrameBuffers' on an unconfigured codec.");
+  if (ThrowIfCodecStateClosed(state_, "getAllFrameBuffers", exception_state)) {
     return {};
   }
-  if (!active_config_->options.manual_reference_buffer_control) {
+  if (ThrowIfCodecStateUnconfigured(state_, "getAllFrameBuffers",
+                                    exception_state)) {
+    return {};
+  }
+  if (!active_config_ ||
+      !active_config_->options.manual_reference_buffer_control) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "getAllFrameBuffers() only supported with manual scalability mode.");

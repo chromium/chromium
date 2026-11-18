@@ -84,6 +84,7 @@ class MODULES_EXPORT AudioEncoder : public EncoderBase<AudioEncoderTraits> {
   bool ReadyToProcessNextRequest() override;
   void ProcessEncode(Request* request) override;
   void ProcessConfigure(Request* request) override;
+  void ContinueConfigureAfterFlush(Request* request);
   void ProcessReconfigure(Request* request) override;
 
   ParsedConfig* OnNewConfigure(const AudioEncoderConfig* opts,

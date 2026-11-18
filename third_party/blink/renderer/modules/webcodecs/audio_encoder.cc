@@ -474,19 +474,52 @@ void AudioEncoder::ProcessConfigure(Request* request) {
 
   request->StartTracing();
 
+  blocking_request_in_progress_ = request;
+
   active_config_ = request->config;
   String js_error_message;
   if (!VerifyCodecSupport(active_config_, &js_error_message)) {
-    blocking_request_in_progress_ = request;
     QueueHandleError(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError, js_error_message));
     request->EndTracing();
     return;
   }
 
+  if (media_encoder_) {
+    auto flush_done_callback = [](AudioEncoder* self, Request* req,
+                                  media::EncoderStatus status) {
+      if (!self || self->reset_count_ != req->reset_count) {
+        req->EndTracing(/*aborted=*/true);
+        return;
+      }
+      DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+      if (!status.is_ok()) {
+        self->HandleError(
+            self->MakeEncodingError("Encoding error.", std::move(status)));
+        req->EndTracing();
+        return;
+      }
+      self->ContinueConfigureAfterFlush(req);
+    };
+
+    media_encoder_->Flush(ConvertToBaseOnceCallback(CrossThreadBindOnce(
+        flush_done_callback, MakeUnwrappingCrossThreadWeakHandle(this),
+        MakeUnwrappingCrossThreadHandle(request))));
+    return;
+  }
+
+  ContinueConfigureAfterFlush(request);
+}
+
+void AudioEncoder::ContinueConfigureAfterFlush(Request* request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(blocking_request_in_progress_, request);
+
+  if (media_encoder_) {
+    callback_runner_->DeleteSoon(FROM_HERE, std::move(media_encoder_));
+  }
   media_encoder_ = CreateMediaAudioEncoder(*active_config_);
   if (!media_encoder_) {
-    blocking_request_in_progress_ = request;
     QueueHandleError(MakeOperationError(
         "Encoder creation error.",
         media::EncoderStatus(
@@ -524,7 +557,6 @@ void AudioEncoder::ProcessConfigure(Request* request) {
     self->ProcessRequests();
   };
 
-  blocking_request_in_progress_ = request;
   first_output_after_configure_ = true;
   media_encoder_->Initialize(
       active_config_->options, std::move(output_cb),
@@ -547,13 +579,10 @@ void AudioEncoder::ProcessEncode(Request* request) {
   DCHECK_EQ(state_, V8CodecState::Enum::kConfigured);
   DCHECK(media_encoder_);
   DCHECK_EQ(request->type, Request::Type::kEncode);
-  DCHECK_GT(requested_encodes_, 0u);
 
   request->StartTracing();
 
-  auto* audio_data = request->input.Release();
-
-  auto data = audio_data->data();
+  auto data = request->input->data();
 
   // The data shouldn't be closed at this point.
   DCHECK(data);
@@ -565,12 +594,12 @@ void AudioEncoder::ProcessEncode(Request* request) {
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+    --self->active_encodes_;
     if (!status.is_ok()) {
       self->HandleError(
           self->MakeEncodingError("Encoding error.", std::move(status)));
     }
 
-    --self->active_encodes_;
     req->EndTracing();
     self->ProcessRequests();
   };
@@ -585,8 +614,6 @@ void AudioEncoder::ProcessEncode(Request* request) {
             .WithData("sampleRate", data->sample_rate())));
 
     request->EndTracing();
-
-    audio_data->close();
     return;
   }
 
@@ -596,8 +623,6 @@ void AudioEncoder::ProcessEncode(Request* request) {
 
   base::TimeTicks timestamp = base::TimeTicks() + data->timestamp();
 
-  --requested_encodes_;
-  ScheduleDequeueEvent();
   ++active_encodes_;
 
   media_encoder_->Encode(
@@ -605,12 +630,11 @@ void AudioEncoder::ProcessEncode(Request* request) {
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           done_callback, MakeUnwrappingCrossThreadWeakHandle(this),
           MakeUnwrappingCrossThreadHandle(request))));
-
-  audio_data->close();
 }
 
 void AudioEncoder::ProcessReconfigure(Request* request) {
-  // Audio decoders don't currently support any meaningful reconfiguring
+  // Audio encoders don't currently support any meaningful reconfiguring
+  NOTREACHED();
 }
 
 AudioEncoder::ParsedConfig* AudioEncoder::OnNewConfigure(
@@ -621,10 +645,7 @@ AudioEncoder::ParsedConfig* AudioEncoder::OnNewConfigure(
 
 bool AudioEncoder::CanReconfigure(ParsedConfig& original_config,
                                   ParsedConfig& new_config) {
-  return original_config.options.codec == new_config.options.codec &&
-         original_config.options.channels == new_config.options.channels &&
-         original_config.options.bitrate == new_config.options.bitrate &&
-         original_config.options.sample_rate == new_config.options.sample_rate;
+  return false;
 }
 
 bool AudioEncoder::VerifyCodecSupport(ParsedConfig* config,

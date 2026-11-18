@@ -239,6 +239,7 @@ void EncoderBase<Traits>::ResetInternal(DOMException* ex) {
   }
 
   blocking_request_in_progress_ = nullptr;
+  has_pending_error_ = false;
 
   // Schedule deletion of |media_encoder_| for later.
   // ResetInternal() might be called by an error reporting callback called by
@@ -254,15 +255,20 @@ void EncoderBase<Traits>::ResetInternal(DOMException* ex) {
 
 template <typename Traits>
 void EncoderBase<Traits>::QueueHandleError(DOMException* ex) {
+  has_pending_error_ = true;
   callback_runner_->PostTask(
-      FROM_HERE, BindOnce(&EncoderBase<Traits>::HandleError,
-                          WrapWeakPersistent(this), WrapPersistent(ex)));
+      FROM_HERE,
+      BindOnce(&EncoderBase<Traits>::HandleError, WrapWeakPersistent(this),
+               WrapPersistent(ex), reset_count_));
 }
 
 template <typename Traits>
-void EncoderBase<Traits>::HandleError(DOMException* ex) {
-  if (state_.AsEnum() == V8CodecState::Enum::kClosed)
+void EncoderBase<Traits>::HandleError(DOMException* ex,
+                                      std::optional<uint32_t> reset_count) {
+  if (state_.AsEnum() == V8CodecState::Enum::kClosed ||
+      (reset_count && reset_count_ != *reset_count)) {
     return;
+  }
 
   TRACE_EVENT0(kCategory, GetTraceNames()->handle_error.c_str());
 
@@ -310,7 +316,13 @@ void EncoderBase<Traits>::ProcessRequests() {
         ProcessReconfigure(request);
         break;
       case Request::Type::kEncode:
+        CHECK_GT(requested_encodes_, 0u);
+        --requested_encodes_;
+        ScheduleDequeueEvent();
         ProcessEncode(request);
+        if (request->input) {
+          request->input.Release()->close();
+        }
         break;
       case Request::Type::kFlush:
         ProcessFlush(request);
@@ -325,7 +337,7 @@ void EncoderBase<Traits>::ProcessRequests() {
 
 template <typename Traits>
 bool EncoderBase<Traits>::ReadyToProcessNextRequest() {
-  return !blocking_request_in_progress_;
+  return !blocking_request_in_progress_ && !has_pending_error_;
 }
 
 template <typename Traits>
@@ -396,7 +408,8 @@ void EncoderBase<Traits>::ContextDestroyed() {
 
 template <typename Traits>
 bool EncoderBase<Traits>::HasPendingActivity() const {
-  return blocking_request_in_progress_ || !requests_.empty();
+  return blocking_request_in_progress_ || has_pending_error_ ||
+         !requests_.empty();
 }
 
 template <typename Traits>

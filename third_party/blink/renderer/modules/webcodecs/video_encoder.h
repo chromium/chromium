@@ -114,7 +114,8 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   using Base = EncoderBase<VideoEncoderTraits>;
   using ParsedConfig = VideoEncoderTraits::ParsedConfig;
 
-  void OnMediaEncoderInfoChanged(const media::VideoEncoderInfo& encoder_info);
+  void OnMediaEncoderInfoChanged(uint32_t reset_count,
+                                 const media::VideoEncoderInfo& encoder_info);
   void CallOutputCallback(
       ParsedConfig* active_config,
       uint32_t reset_count,
@@ -138,6 +139,7 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   static base::expected<std::unique_ptr<media::VideoEncoder>,
                         media::EncoderStatus>
   CreateSoftwareVideoEncoder(VideoEncoder* self,
+                             uint32_t reset_count,
                              bool fallback,
                              media::VideoCodec codec);
 

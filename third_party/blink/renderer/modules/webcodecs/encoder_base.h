@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_ENCODER_BASE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/sequence_checker.h"
 #include "media/base/encoder_status.h"
@@ -125,7 +126,8 @@ class MODULES_EXPORT EncoderBase
   };
 
   void QueueHandleError(DOMException* ex);
-  virtual void HandleError(DOMException* ex);
+  void HandleError(DOMException* ex,
+                   std::optional<uint32_t> reset_count = std::nullopt);
   virtual void EnqueueRequest(Request* request);
   virtual void ProcessRequests();
   virtual bool ReadyToProcessNextRequest();
@@ -186,6 +188,11 @@ class MODULES_EXPORT EncoderBase
   //
   // During reset(), this member is used to reject any pending promises.
   Member<Request> blocking_request_in_progress_;
+
+  // True while an async `HandleError()` task posted by `QueueHandleError()` is
+  // pending. Stops `ProcessRequests()` from dispatching further queued requests
+  // and keeps `HasPendingActivity()` true until `ResetInternal()` clears it.
+  bool has_pending_error_ = false;
 
   bool first_output_after_configure_ = true;
 
