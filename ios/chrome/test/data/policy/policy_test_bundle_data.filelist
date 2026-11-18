@@ -46,6 +46,7 @@
 //ios/chrome/test/data/policy/pref_mapping/DefaultSearchProviderSuggestURLPostParams.json
 //ios/chrome/test/data/policy/pref_mapping/DeletingUndecryptablePasswordsEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/DisableSafeBrowsingProceedAnyway.json
+//ios/chrome/test/data/policy/pref_mapping/DisableScreenshots.json
 //ios/chrome/test/data/policy/pref_mapping/DownloadManagerSaveToDriveSettings.json
 //ios/chrome/test/data/policy/pref_mapping/DownloadRestrictions.json
 //ios/chrome/test/data/policy/pref_mapping/EditBookmarksEnabled.json

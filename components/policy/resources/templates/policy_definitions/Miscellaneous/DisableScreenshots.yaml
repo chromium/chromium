@@ -8,6 +8,8 @@ desc: |-
 
   Note that on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, <ph name="MAC_OS_NAME">macOS</ph> and <ph name="LINUX_OS_NAME">Linux</ph>,
   this does not prevent screenshots that are taken with operating system or third party applications.
+
+  On <ph name="IOS_NAME">iOS</ph>, setting the policy to Enabled obscures <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> windows in system screenshots and screen recordings, and makes Full Page screenshots unavailable.
 example_value: true
 features:
   dynamic_refresh: true
@@ -28,5 +30,6 @@ supported_on:
 - chrome_os:22-
 - chrome.*:22-
 - android:143-
+- ios:160-
 tags: []
 type: main

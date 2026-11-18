@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper.h"
 
+#import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "components/content_settings/core/browser/content_settings_utils.h"
@@ -16,10 +17,12 @@
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
+#import "ios/chrome/browser/enterprise/data_protection/model/data_protection_policy_utils.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper_observer.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_url_lookup_service_factory.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/watermark_request_config.h"
 #import "ios/chrome/browser/enterprise/data_protection/public/features.h"
+#import "ios/chrome/browser/enterprise/data_protection/public/pref_names.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_cancel_handler.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
@@ -100,11 +103,23 @@ DataProtectionTabHelper::DataProtectionTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   CHECK(web_state_);
   web_state->AddObserver(this);
+  ProfileIOS* profile = GetProfile();
+  CHECK(profile);
+  pref_change_registrar_.Init(profile->GetPrefs());
+  // `base::Unretained(this)` is safe because `pref_change_registrar_` is
+  // owned by `this` and cleared in `WebStateDestroyed()` and the destructor.
+  pref_change_registrar_.Add(
+      enterprise_data_protection::kDisableScreenshots,
+      base::BindRepeating(
+          &DataProtectionTabHelper::NotifyScreenshotProtectionIfChanged,
+          base::Unretained(this)));
   // Check the currently visible URL
   CheckPolicyForInitialURL();
+  is_screenshot_protection_enabled_ = IsScreenshotProtectionEnabled();
 }
 
 DataProtectionTabHelper::~DataProtectionTabHelper() {
+  pref_change_registrar_.RemoveAll();
   for (auto& observer : observers_) {
     observer.DataProtectionTabHelperDestroyed(this);
   }
@@ -127,6 +142,12 @@ void DataProtectionTabHelper::AddObserver(
 void DataProtectionTabHelper::RemoveObserver(
     DataProtectionTabHelperObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+bool DataProtectionTabHelper::IsScreenshotProtectionEnabled() const {
+  return IsScreenshotsDisabledByPolicy(GetProfile()) ||
+         !std::holds_alternative<Disabled>(
+             committed_navigation_.protection_state);
 }
 
 void DataProtectionTabHelper::WasShown(web::WebState* web_state) {
@@ -331,18 +352,12 @@ void DataProtectionTabHelper::SetProtectionState(
 void DataProtectionTabHelper::SetCommittedProtectionState(
     ProtectionState new_state,
     const std::string& watermark_text) {
-  bool previous_screenshot_protection = IsScreenshotProtectionEnabled();
   std::string previous_watermark = GetWatermarkText();
 
   committed_navigation_.protection_state = new_state;
   committed_navigation_.watermark_text = watermark_text;
 
-  if (previous_screenshot_protection != IsScreenshotProtectionEnabled()) {
-    for (auto& observer : observers_) {
-      observer.ScreenshotProtectionDidChange(web_state_,
-                                             IsScreenshotProtectionEnabled());
-    }
-  }
+  NotifyScreenshotProtectionIfChanged();
 
   if (previous_watermark != watermark_text) {
     OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
@@ -368,6 +383,18 @@ void DataProtectionTabHelper::SetCommittedProtectionState(
   }
 }
 
+void DataProtectionTabHelper::NotifyScreenshotProtectionIfChanged() {
+  bool current_screenshot_protection = IsScreenshotProtectionEnabled();
+  if (is_screenshot_protection_enabled_ == current_screenshot_protection) {
+    return;
+  }
+  is_screenshot_protection_enabled_ = current_screenshot_protection;
+  for (auto& observer : observers_) {
+    observer.ScreenshotProtectionDidChange(web_state_,
+                                           current_screenshot_protection);
+  }
+}
+
 void DataProtectionTabHelper::SetWatermarkTextForTesting(
     const std::string& watermark_text) {
   SetCommittedProtectionState(committed_navigation_.protection_state,
@@ -381,6 +408,7 @@ void DataProtectionTabHelper::DidStopLoading(web::WebState* web_state) {
 }
 
 void DataProtectionTabHelper::WebStateDestroyed(web::WebState* web_state) {
+  pref_change_registrar_.RemoveAll();
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
   pending_navigation_ = NavigationState();
@@ -388,7 +416,9 @@ void DataProtectionTabHelper::WebStateDestroyed(web::WebState* web_state) {
 }
 
 ProfileIOS* DataProtectionTabHelper::GetProfile() const {
-  return ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  return web_state_
+             ? ProfileIOS::FromBrowserState(web_state_->GetBrowserState())
+             : nullptr;
 }
 
 data_controls::IOSRulesService* DataProtectionTabHelper::GetRulesService()

@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/rules_service_observer_bridge.h"
 #import "ios/chrome/browser/enterprise/data_protection/coordinator/watermark_style_utils.h"
+#import "ios/chrome/browser/enterprise/data_protection/model/data_protection_policy_utils.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper_observer_bridge.h"
 #import "ios/chrome/browser/enterprise/data_protection/public/features.h"
@@ -151,11 +152,13 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
+  [self startObservingPrefs];
   [self updateScreenshotProtection];
   [self updateTabGridWatermarking];
 }
 
 - (void)sceneStateDidEnableUI:(SceneState*)sceneState {
+  [self startObservingPrefs];
   [self observeCurrentBrowser];
   [self updateScreenshotProtection];
   [self updateTabGridWatermarking];
@@ -499,6 +502,8 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
 
   _prefObserverBridge->ObserveChangesForPreference(
       enterprise_connectors::kEnterpriseRealTimeUrlCheckMode, &_prefRegistrar);
+  _prefObserverBridge->ObserveChangesForPreference(
+      enterprise_data_protection::kDisableScreenshots, &_prefRegistrar);
 }
 
 // Returns whether the overall Tab Grid should be shielded based on enterprise
@@ -507,6 +512,9 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
   CHECK([self isSceneStateReadyForProtection]);
 
   ProfileIOS* profile = [self currentProfile];
+  if (IsScreenshotsDisabledByPolicy(profile)) {
+    return YES;
+  }
 
   data_controls::IOSRulesService* rulesService =
       data_controls::IOSRulesServiceFactory::GetForProfile(profile);
@@ -529,7 +537,7 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
   auto* activeWebState = currentBrowser->GetWebStateList()->GetActiveWebState();
 
   if (!activeWebState) {
-    return NO;
+    return IsScreenshotsDisabledByPolicy([self currentProfile]);
   }
   DataProtectionTabHelper* tabHelper =
       DataProtectionTabHelper::FromWebState(activeWebState);

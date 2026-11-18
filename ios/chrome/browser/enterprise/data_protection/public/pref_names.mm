@@ -13,6 +13,7 @@ const char kDataProtectionWatermarkedTabs[] =
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kDataProtectionWatermarkedTabs);
+  registry->RegisterBooleanPref(kDisableScreenshots, false);
 }
 
 }  // namespace enterprise_data_protection

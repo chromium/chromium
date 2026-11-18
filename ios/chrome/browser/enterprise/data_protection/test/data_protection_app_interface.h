@@ -13,6 +13,11 @@
 // Sets `watermarkText` on the current active tab's DataProtectionTabHelper.
 + (void)setWatermarkText:(NSString*)watermarkText;
 
+// Requests a Full Page screenshot PDF representation from the foreground
+// active scene's `UIScreenshotServiceDelegate` and returns `YES` if non-empty
+// PDF data is generated before timing out.
++ (BOOL)canGenerateFullPageScreenshotPDF;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_TEST_DATA_PROTECTION_APP_INTERFACE_H_

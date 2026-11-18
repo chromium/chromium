@@ -7,6 +7,12 @@
 
 #import "base/feature_list.h"
 
+// Kill switch for enforcing the DisableScreenshots policy on iOS.
+BASE_DECLARE_FEATURE(kDisableScreenshotsPolicyIOS);
+
+// Returns true if enforcing the DisableScreenshots policy on iOS is enabled.
+bool IsDisableScreenshotsPolicyIOSEnabled();
+
 // Enables the enterprise watermarking feature on iOS.
 BASE_DECLARE_FEATURE(kEnableEnterpriseWatermarkingIOS);
 

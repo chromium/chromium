@@ -4,6 +4,12 @@
 
 #import "ios/chrome/browser/enterprise/data_protection/public/features.h"
 
+BASE_FEATURE(kDisableScreenshotsPolicyIOS, base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsDisableScreenshotsPolicyIOSEnabled() {
+  return base::FeatureList::IsEnabled(kDisableScreenshotsPolicyIOS);
+}
+
 BASE_FEATURE(kEnableEnterpriseWatermarkingIOS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -134,6 +134,12 @@ class DataProtectionSceneAgentTestBase : public PlatformTest {
         base::Value(mode));
   }
 
+  // Sets the DisableScreenshots policy.
+  void SetDisableScreenshotsPolicy(bool disabled) {
+    profile_->GetTestingPrefService()->SetManagedPref(
+        enterprise_data_protection::kDisableScreenshots, base::Value(disabled));
+  }
+
   // Adds an expectation for a call to `applyScreenshotProtection` with the
   // given protection.
   void ExpectApplyScreenshotProtection(BOOL applied_protection,
@@ -338,6 +344,89 @@ TEST_F(DataProtectionSceneAgentInitTest, SingleTab_WithPolicy_Protection) {
 
   ExpectApplyScreenshotProtection(YES);
   [scene_state_ addAgent:agent_];
+}
+
+// Tests that the agent applies protection when `DisableScreenshots` is enabled
+// in single-tab mode on `chrome://newtab` (which Data Controls skips).
+TEST_F(DataProtectionSceneAgentInitTest,
+       SingleTabDisableScreenshotsPolicyProtection) {
+  ASSERT_TRUE(scene_state_.UIEnabled);
+  ASSERT_TRUE(scene_state_.activationLevel >=
+              SceneActivationLevelForegroundInactive);
+  ASSERT_TRUE(scene_state_.profileState.initStage >=
+              ProfileInitStage::kProfileLoaded);
+
+  SetDisableScreenshotsPolicy(true);
+  scene_state_.tabGridState.tabGridVisible = NO;
+  scene_state_.incognitoState.incognitoContentVisible = NO;
+
+  web::FakeWebState* web_state = AddActiveWebState(GURL(kChromeNewTabURL));
+  ASSERT_TRUE(DataProtectionTabHelper::FromWebState(web_state)
+                  ->IsScreenshotProtectionEnabled());
+
+  ExpectApplyScreenshotProtection(YES);
+  [scene_state_ addAgent:agent_];
+}
+
+// Tests that the agent applies protection when `DisableScreenshots` is enabled
+// in single-tab mode even when the browser has no tabs.
+TEST_F(DataProtectionSceneAgentInitTest,
+       SingleTabNoTabsDisableScreenshotsPolicyProtection) {
+  ASSERT_TRUE(scene_state_.UIEnabled);
+  ASSERT_TRUE(scene_state_.activationLevel >=
+              SceneActivationLevelForegroundInactive);
+  ASSERT_TRUE(scene_state_.profileState.initStage >=
+              ProfileInitStage::kProfileLoaded);
+
+  SetDisableScreenshotsPolicy(true);
+  scene_state_.tabGridState.tabGridVisible = NO;
+
+  ExpectApplyScreenshotProtection(YES);
+  [scene_state_ addAgent:agent_];
+}
+
+// Tests that the agent applies protection when `DisableScreenshots` is enabled
+// and the Tab Grid is visible.
+TEST_F(DataProtectionSceneAgentInitTest,
+       TabGridDisableScreenshotsPolicyProtection) {
+  ASSERT_TRUE(scene_state_.UIEnabled);
+  ASSERT_TRUE(scene_state_.activationLevel >=
+              SceneActivationLevelForegroundInactive);
+  ASSERT_TRUE(scene_state_.profileState.initStage >=
+              ProfileInitStage::kProfileLoaded);
+
+  SetDisableScreenshotsPolicy(true);
+  scene_state_.tabGridState.tabGridVisible = YES;
+
+  ExpectApplyScreenshotProtection(YES);
+  [scene_state_ addAgent:agent_];
+}
+
+// Tests that when `addAgent:` runs before `UIEnabled` becomes `YES` (such as on
+// a second scene where `ProfileInitStage` is already final), enabling the UI
+// starts observing `DisableScreenshots` pref changes.
+TEST_F(DataProtectionSceneAgentInitTest,
+       UIEnabledAfterAddAgentObservesDisableScreenshots) {
+  ASSERT_TRUE(scene_state_.activationLevel >=
+              SceneActivationLevelForegroundInactive);
+  ASSERT_TRUE(scene_state_.profileState.initStage >=
+              ProfileInitStage::kProfileLoaded);
+
+  scene_state_.tabGridState.tabGridVisible = NO;
+  scene_state_.UIEnabled = NO;
+
+  [scene_state_ addAgent:agent_];
+
+  // Enabling the UI should register pref observers so subsequent
+  // `DisableScreenshots` policy changes update screenshot protection.
+  scene_state_.UIEnabled = YES;
+
+  ExpectApplyScreenshotProtection(YES);
+  SetDisableScreenshotsPolicy(true);
+  EXPECT_OCMOCK_VERIFY(mock_agent_);
+
+  ExpectApplyScreenshotProtection(NO);
+  SetDisableScreenshotsPolicy(false);
 }
 
 // Test fixture for verifying state transitions after the agent is connected.
@@ -807,6 +896,120 @@ TEST_F(DataProtectionSceneAgentTransitionTest, NewWindowProtection) {
   [[NSNotificationCenter defaultCenter]
       postNotificationName:UIWindowDidBecomeVisibleNotification
                     object:new_window];
+}
+
+// Tests that dynamically enabling and disabling `DisableScreenshots` applies
+// and removes protection in both single-tab and Tab Grid modes.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       DisableScreenshotsPolicyDynamicEnableDisable) {
+  scene_state_.tabGridState.tabGridVisible = NO;
+  AddActiveWebState(GURL(kChromeNewTabURL));
+
+  ExpectApplyScreenshotProtection(YES);
+  SetDisableScreenshotsPolicy(true);
+  EXPECT_OCMOCK_VERIFY(mock_agent_);
+
+  ExpectApplyScreenshotProtection(NO);
+  SetDisableScreenshotsPolicy(false);
+  EXPECT_OCMOCK_VERIFY(mock_agent_);
+
+  scene_state_.tabGridState.tabGridVisible = YES;
+
+  ExpectApplyScreenshotProtection(YES);
+  SetDisableScreenshotsPolicy(true);
+  EXPECT_OCMOCK_VERIFY(mock_agent_);
+
+  ExpectApplyScreenshotProtection(NO);
+  SetDisableScreenshotsPolicy(false);
+}
+
+// Tests that screenshot protection forced by `DisableScreenshots` remains
+// active when switching between regular and Incognito modes without redundant
+// re-application.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       DisableScreenshotsPolicyIncognitoSwitch) {
+  scene_state_.tabGridState.tabGridVisible = NO;
+  AddActiveWebState(GURL(kChromeNewTabURL), /*incognito=*/false);
+  AddActiveWebState(GURL(kChromeNewTabURL), /*incognito=*/true);
+
+  ExpectApplyScreenshotProtection(YES);
+  SetDisableScreenshotsPolicy(true);
+  EXPECT_OCMOCK_VERIFY(mock_agent_);
+
+  // Switching to Incognito and back should keep protection enabled without
+  // redundant calls to `applyScreenshotProtection:toWindow:`.
+  ExpectNoCallsToApplyScreenshotProtection();
+  scene_state_.incognitoState.incognitoContentVisible = YES;
+  [scene_state_ setCurrentBrowser:BrowserForMode(scene_state_,
+                                                 /*is_off_the_record=*/true)];
+  scene_state_.incognitoState.incognitoContentVisible = NO;
+  [scene_state_ setCurrentBrowser:BrowserForMode(scene_state_,
+                                                 /*is_off_the_record=*/false)];
+  EXPECT_OCMOCK_VERIFY(mock_agent_);
+
+  // Disabling the policy while in Incognito removes protection.
+  scene_state_.incognitoState.incognitoContentVisible = YES;
+  [scene_state_ setCurrentBrowser:BrowserForMode(scene_state_,
+                                                 /*is_off_the_record=*/true)];
+  ExpectApplyScreenshotProtection(NO);
+  SetDisableScreenshotsPolicy(false);
+}
+
+// Tests that clearing `DisableScreenshots` keeps the window protected if the
+// active tab is still protected by `DataControlsRules`.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       DisableScreenshotsPolicyClearedKeepsDataControlsProtection) {
+  scene_state_.tabGridState.tabGridVisible = NO;
+  SetDataControlsRulesPolicyManaged();
+
+  ExpectApplyScreenshotProtection(YES);
+  web::FakeWebState* web_state = AddActiveWebState(GURL(kProtectedURL));
+  ASSERT_TRUE(DataProtectionTabHelper::FromWebState(web_state)
+                  ->IsScreenshotProtectionEnabled());
+  EXPECT_OCMOCK_VERIFY(mock_agent_);
+
+  // Enabling and then disabling `DisableScreenshots` should not remove
+  // protection while `DataControlsRules` still protects the active tab.
+  ExpectNoCallsToApplyScreenshotProtection();
+  SetDisableScreenshotsPolicy(true);
+  SetDisableScreenshotsPolicy(false);
+}
+
+// Tests that a new window becoming visible in the scene receives screenshot
+// protection when `DisableScreenshots` is enabled.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       DisableScreenshotsPolicyNewWindowProtection) {
+  scene_state_.tabGridState.tabGridVisible = NO;
+
+  ExpectApplyScreenshotProtection(YES);
+  SetDisableScreenshotsPolicy(true);
+  EXPECT_OCMOCK_VERIFY(mock_agent_);
+
+  UIWindow* new_window = [[UIWindow alloc] init];
+  UIWindowScene* mock_scene = scene_state_.scene;
+  id mock_window = OCMPartialMock(new_window);
+  OCMStub([mock_window windowScene]).andReturn(mock_scene);
+
+  ExpectApplyScreenshotProtection(YES, new_window);
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIWindowDidBecomeVisibleNotification
+                    object:new_window];
+}
+
+// Tests that enabling `DisableScreenshots` is a no-op when the
+// `kDisableScreenshotsPolicyIOS` kill switch is disabled.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       DisableScreenshotsPolicyKillSwitchOffNoOp) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kDisableScreenshotsPolicyIOS);
+
+  scene_state_.tabGridState.tabGridVisible = NO;
+  AddActiveWebState(GURL(kChromeNewTabURL));
+
+  ExpectNoCallsToApplyScreenshotProtection();
+  SetDisableScreenshotsPolicy(true);
+  scene_state_.tabGridState.tabGridVisible = YES;
 }
 
 #pragma mark - Watermarking Tests

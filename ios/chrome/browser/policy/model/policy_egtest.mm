@@ -6,6 +6,7 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/enterprise/browser/enterprise_switches.h"
 #import "components/enterprise/connectors/core/features.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
+#import "ios/chrome/browser/enterprise/data_protection/test/data_protection_app_interface.h"
 #import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
@@ -232,6 +234,10 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
 const char kTestPagePath[] = "/pony.html";
 // The text on the pony page.
 const char kTestPageText[] = "pony";
+
+// Timeout for the initial page load away from the native New Tab Page, allowing
+// WebKit helper processes to launch when exceeding `kWaitForUIElementTimeout`.
+constexpr base::TimeDelta kInitialPageLoadTimeout = base::Seconds(20);
 
 }  // namespace
 
@@ -1130,6 +1136,61 @@ const char kTestPageText[] = "pony";
   print = [[app staticTexts] matchingIdentifier:@"Print"];
   GREYAssertTrue(print.count == 0,
                  @"'Print' option should not have been on the share menu");
+}
+
+// Tests that Full Page screenshot PDF generation is allowed when the
+// `DisableScreenshots` enterprise policy is unset.
+- (void)testDisableScreenshotsUnset {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kTestPagePath)
+              withTimeout:kInitialPageLoadTimeout];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageText];
+  GREYAssertTrue(
+      [DataProtectionAppInterface canGenerateFullPageScreenshotPDF],
+      @"Full Page screenshot PDF should be generated when policy is unset.");
+}
+
+// Tests that Full Page screenshot PDF generation is blocked in both regular and
+// Incognito tabs when the `DisableScreenshots` enterprise policy is set to
+// `true`.
+- (void)testDisableScreenshotsEnabled {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  SetPolicy(true, policy::key::kDisableScreenshots);
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kTestPagePath)
+              withTimeout:kInitialPageLoadTimeout];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageText];
+  GREYAssertFalse(
+      [DataProtectionAppInterface canGenerateFullPageScreenshotPDF],
+      @"Full Page screenshot PDF should be blocked when DisableScreenshots is "
+      @"true.");
+
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kTestPagePath)
+              withTimeout:kInitialPageLoadTimeout];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageText];
+  GREYAssertFalse(
+      [DataProtectionAppInterface canGenerateFullPageScreenshotPDF],
+      @"Full Page screenshot PDF should be blocked in Incognito when "
+      @"DisableScreenshots is true.");
+}
+
+// Tests that Full Page screenshot PDF generation is allowed when the
+// `DisableScreenshots` enterprise policy is set to `false`.
+- (void)testDisableScreenshotsDisabled {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  SetPolicy(false, policy::key::kDisableScreenshots);
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kTestPagePath)
+              withTimeout:kInitialPageLoadTimeout];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageText];
+  GREYAssertTrue(
+      [DataProtectionAppInterface canGenerateFullPageScreenshotPDF],
+      @"Full Page screenshot PDF should be generated when DisableScreenshots "
+      @"is false.");
 }
 
 @end

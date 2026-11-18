@@ -10,11 +10,13 @@ source_set("eg_app_support+eg2") {
   ]
   deps = [
     "//base",
+    "//base/test:test_support",
     "//components/prefs",
     "//ios/chrome/browser/enterprise/data_protection/model",
     "//ios/chrome/browser/enterprise/data_protection/public:pref_names",
     "//ios/chrome/browser/enterprise/data_protection/ui",
     "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/test/app:test_support",
     "//ios/web/public",

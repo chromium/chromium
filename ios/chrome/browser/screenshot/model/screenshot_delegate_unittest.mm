@@ -8,8 +8,12 @@
 #import "base/notreached.h"
 #import "base/strings/stringprintf.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/values.h"
 #import "components/enterprise/data_controls/core/browser/test_utils.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper.h"
+#import "ios/chrome/browser/enterprise/data_protection/public/features.h"
+#import "ios/chrome/browser/enterprise/data_protection/public/pref_names.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -22,6 +26,12 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "url/gurl.h"
+
+namespace {
+
+constexpr char kUnprotectedURL[] = "https://unprotected.com";
+
+}  // namespace
 
 // A fake object that implements BrowserProviderInterface.
 @interface ScreenshotDelegateTestProvider : NSObject <BrowserProviderInterface>
@@ -40,7 +50,6 @@
 }
 
 - (void)createBrowserWithProfile:(ProfileIOS*)profile {
-  CHECK(!profile->IsOffTheRecord());
   _browser = std::make_unique<TestBrowser>(profile);
 }
 
@@ -87,17 +96,21 @@ class ScreenshotDelegateTest : public PlatformTest {
   }
 
   // Creates a `FakeWebState` and sets its browser state and current URL.
-  std::unique_ptr<web::FakeWebState> CreateFakeWebState(const GURL& url) {
+  std::unique_ptr<web::FakeWebState> CreateFakeWebState(
+      const GURL& url,
+      ProfileIOS* profile = nullptr) {
     auto web_state = std::make_unique<web::FakeWebState>();
-    web_state->SetBrowserState(profile_.get());
+    web_state->SetBrowserState(profile ? profile : profile_.get());
     web_state->SetCurrentURL(url);
     return web_state;
   }
 
   // Sets up a browser with a single tab containing `web_state` and configures
   // the screenshot delegate to use it.
-  void SetupMockTab(std::unique_ptr<web::FakeWebState> web_state) {
-    [browser_provider_interface_ createBrowserWithProfile:profile_.get()];
+  void SetupMockTab(std::unique_ptr<web::FakeWebState> web_state,
+                    ProfileIOS* profile = nullptr) {
+    [browser_provider_interface_
+        createBrowserWithProfile:profile ? profile : profile_.get()];
     Browser* browser = browser_provider_interface_.mainBrowser;
     WebStateList* web_state_list = browser->GetWebStateList();
 
@@ -106,6 +119,12 @@ class ScreenshotDelegateTest : public PlatformTest {
         WebStateList::InsertionParams::Automatic().Activate(true));
 
     CreateScreenshotDelegate();
+  }
+
+  // Sets the DisableScreenshots policy.
+  void SetDisableScreenshotsPolicy(bool disabled) {
+    profile_->GetTestingPrefService()->SetManagedPref(
+        enterprise_data_protection::kDisableScreenshots, base::Value(disabled));
   }
 
   // Sets up a Data Controls policy to block screenshots for the given `url`.
@@ -244,3 +263,59 @@ TEST_F(ScreenshotDelegateTest, ScreenshotNotBlockedByDataProtection) {
   VerifyScreenshotBlocked(false);
 }
 
+// Tests that when `DisableScreenshots` policy is enabled, `screenshotService`
+// returns nil PDF data even on an unprotected URL, and returns PDF data when
+// the policy is disabled.
+TEST_F(ScreenshotDelegateTest, ScreenshotBlockedByDisableScreenshotsPolicy) {
+  std::unique_ptr<web::FakeWebState> web_state =
+      CreateFakeWebState(GURL(kUnprotectedURL));
+  DataProtectionTabHelper::CreateForWebState(web_state.get());
+  DataProtectionTabHelper* tab_helper =
+      DataProtectionTabHelper::FromWebState(web_state.get());
+  ASSERT_FALSE(tab_helper->IsScreenshotProtectionEnabled());
+
+  SetupMockTab(std::move(web_state));
+
+  SetDisableScreenshotsPolicy(true);
+  EXPECT_TRUE(tab_helper->IsScreenshotProtectionEnabled());
+  VerifyScreenshotBlocked(true);
+
+  SetDisableScreenshotsPolicy(false);
+  EXPECT_FALSE(tab_helper->IsScreenshotProtectionEnabled());
+  VerifyScreenshotBlocked(false);
+}
+
+// Tests that when `DisableScreenshots` policy is enabled, `screenshotService`
+// returns nil PDF data for an Incognito browser.
+TEST_F(ScreenshotDelegateTest,
+       ScreenshotBlockedByDisableScreenshotsPolicyInIncognito) {
+  ProfileIOS* otr_profile = profile_->GetOffTheRecordProfile();
+  std::unique_ptr<web::FakeWebState> web_state =
+      CreateFakeWebState(GURL(kUnprotectedURL), otr_profile);
+  DataProtectionTabHelper::CreateForWebState(web_state.get());
+
+  SetupMockTab(std::move(web_state), otr_profile);
+
+  SetDisableScreenshotsPolicy(true);
+  VerifyScreenshotBlocked(true);
+
+  SetDisableScreenshotsPolicy(false);
+  VerifyScreenshotBlocked(false);
+}
+
+// Tests that when `kDisableScreenshotsPolicyIOS` kill switch is disabled,
+// `DisableScreenshots` policy does not block `screenshotService`.
+TEST_F(ScreenshotDelegateTest,
+       ScreenshotNotBlockedByDisableScreenshotsPolicyKillSwitchOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kDisableScreenshotsPolicyIOS);
+
+  std::unique_ptr<web::FakeWebState> web_state =
+      CreateFakeWebState(GURL(kUnprotectedURL));
+  DataProtectionTabHelper::CreateForWebState(web_state.get());
+
+  SetupMockTab(std::move(web_state));
+
+  SetDisableScreenshotsPolicy(true);
+  VerifyScreenshotBlocked(false);
+}

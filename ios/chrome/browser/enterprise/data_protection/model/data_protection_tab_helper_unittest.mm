@@ -12,6 +12,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
+#import "base/values.h"
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/enterprise/connectors/core/reporting_constants.h"
@@ -25,12 +26,14 @@
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #import "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper_observer.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_url_lookup_service_factory.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/watermark_request_config.h"
 #import "ios/chrome/browser/enterprise/data_protection/public/features.h"
+#import "ios/chrome/browser/enterprise/data_protection/public/pref_names.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_enterprise_url_lookup_service_factory.h"
@@ -243,6 +246,11 @@ class DataProtectionTabHelperTest : public PlatformTest {
                                 ]
                               })",
                                                        url_pattern.c_str())});
+  }
+
+  void SetDisableScreenshotsPolicy(bool disabled) {
+    profile_->GetTestingPrefService()->SetManagedPref(
+        enterprise_data_protection::kDisableScreenshots, base::Value(disabled));
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -831,4 +839,92 @@ TEST_F(DataProtectionTabHelperTest, WatermarkObserverNotifiedOnStateChange) {
                                   DataProtectionTabHelper::Enabled{}),
                               "");
   EXPECT_TRUE(observer_.watermark_text().empty());
+}
+
+// Tests that enabling the `DisableScreenshots` policy enables screenshot
+// protection immediately (even on NTP URLs), notifies observers on toggle, and
+// does not trigger real-time lookups or record Data Controls metrics.
+TEST_F(DataProtectionTabHelperTest,
+       DisableScreenshotsPolicyBlocksWithoutNavigationOrMetrics) {
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(tab_helper()->IsScreenshotProtectionEnabled());
+
+  SetDisableScreenshotsPolicy(true);
+  EXPECT_TRUE(observer_.Wait());
+  EXPECT_TRUE(tab_helper()->IsScreenshotProtectionEnabled());
+
+  // Navigating to `chrome://newtab` (skipped by Data Controls and real-time
+  // lookups) keeps screenshot protection enabled without recording metrics.
+  std::unique_ptr<web::FakeNavigationContext> ntp_context =
+      CreateNavigationContext(GURL(kChromeUINewTabURL));
+  tab_helper()->DidStartNavigation(web_state_.get(), ntp_context.get());
+  tab_helper()->DidFinishNavigation(web_state_.get(), ntp_context.get());
+  EXPECT_TRUE(tab_helper()->IsScreenshotProtectionEnabled());
+  EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 0u);
+  histogram_tester.ExpectTotalCount(
+      DataProtectionTabHelper::kScreenshotBlockSourceHistogram, 0);
+
+  SetDisableScreenshotsPolicy(false);
+  EXPECT_FALSE(observer_.Wait());
+  EXPECT_FALSE(tab_helper()->IsScreenshotProtectionEnabled());
+}
+
+// Tests that enabling the `DisableScreenshots` policy enables screenshot
+// protection for an Incognito tab and notifies observers on toggle.
+TEST_F(DataProtectionTabHelperTest, DisableScreenshotsPolicyBlocksInIncognito) {
+  ProfileIOS* incognito_profile = profile_->GetOffTheRecordProfile();
+  auto incognito_web_state =
+      std::make_unique<web::FakeWebState>(web::WebStateID::NewUnique());
+  incognito_web_state->SetBrowserState(incognito_profile);
+  OverlayRequestQueue::CreateForWebState(incognito_web_state.get());
+  DataProtectionTabHelper::CreateForWebState(incognito_web_state.get());
+  DataProtectionTabHelper* incognito_tab_helper =
+      DataProtectionTabHelper::FromWebState(incognito_web_state.get());
+  ASSERT_TRUE(incognito_tab_helper);
+
+  TestDataProtectionTabHelperObserver incognito_observer;
+  incognito_tab_helper->AddObserver(&incognito_observer);
+
+  EXPECT_FALSE(incognito_tab_helper->IsScreenshotProtectionEnabled());
+
+  SetDisableScreenshotsPolicy(true);
+  EXPECT_TRUE(observer_.Wait());
+  EXPECT_TRUE(incognito_observer.Wait());
+  EXPECT_TRUE(incognito_tab_helper->IsScreenshotProtectionEnabled());
+
+  SetDisableScreenshotsPolicy(false);
+  EXPECT_FALSE(observer_.Wait());
+  EXPECT_FALSE(incognito_observer.Wait());
+  EXPECT_FALSE(incognito_tab_helper->IsScreenshotProtectionEnabled());
+
+  incognito_tab_helper->RemoveObserver(&incognito_observer);
+}
+
+// Tests that disabling the `DisableScreenshots` policy keeps screenshot
+// protection enabled when the committed URL is still blocked by Data Controls.
+TEST_F(DataProtectionTabHelperTest,
+       DisableScreenshotsPolicyClearedKeepsDataControlsProtection) {
+  SetScreenshotBlockRule(kProtectedUrl);
+  std::unique_ptr<web::FakeNavigationContext> context =
+      CreateNavigationContext(GURL(kProtectedUrl));
+  tab_helper()->DidStartNavigation(web_state_.get(), context.get());
+  tab_helper()->DidFinishNavigation(web_state_.get(), context.get());
+  EXPECT_TRUE(observer_.Wait());
+  EXPECT_TRUE(tab_helper()->IsScreenshotProtectionEnabled());
+
+  SetDisableScreenshotsPolicy(true);
+  EXPECT_TRUE(tab_helper()->IsScreenshotProtectionEnabled());
+
+  SetDisableScreenshotsPolicy(false);
+  EXPECT_TRUE(tab_helper()->IsScreenshotProtectionEnabled());
+}
+
+// Tests that enabling the `DisableScreenshots` policy is a no-op when the
+// `kDisableScreenshotsPolicyIOS` kill switch is disabled.
+TEST_F(DataProtectionTabHelperTest, DisableScreenshotsPolicyKillSwitchOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kDisableScreenshotsPolicyIOS);
+
+  SetDisableScreenshotsPolicy(true);
+  EXPECT_FALSE(tab_helper()->IsScreenshotProtectionEnabled());
 }
