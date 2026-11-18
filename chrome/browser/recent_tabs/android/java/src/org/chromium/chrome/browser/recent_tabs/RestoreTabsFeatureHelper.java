@@ -76,7 +76,9 @@ public class RestoreTabsFeatureHelper {
         }
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         updateTrackerIfFirstStartIsRecent(profile, tracker);
-        if (!tracker.wouldTriggerHelpUi(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE)) {
+        FeatureProperties featureProperties = new FeatureProperties(UiFormat.BOTTOM_SHEET);
+        if (!tracker.wouldTriggerHelpUi(
+                FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE, featureProperties)) {
             RestoreTabsMetricsHelper.recordPromoShowResultHistogram(
                     RestoreTabsOnFREPromoShowResult.NOT_ELIGIBLE);
             return;
@@ -115,7 +117,6 @@ public class RestoreTabsFeatureHelper {
         // successfully, IPH must show. Alternatively, the former lets the logic know if the promo
         // is expected to show, which can help determine if it is being shown for the first or
         // second time.
-        FeatureProperties featureProperties = new FeatureProperties(UiFormat.BOTTOM_SHEET);
         List<ForeignSession> sessions = mForeignSessionHelper.getMobileAndTabletForeignSessions();
         if (hasValidSyncedDevices(sessions)
                 && tracker.shouldTriggerHelpUi(

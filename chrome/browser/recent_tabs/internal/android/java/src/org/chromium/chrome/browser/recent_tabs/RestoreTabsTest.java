@@ -172,7 +172,9 @@ public class RestoreTabsTest {
         List<ForeignSession> sessions = new ArrayList<>();
         sessions.add(session);
 
-        doReturn(true).when(mMockTracker).wouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE));
+        doReturn(true)
+                .when(mMockTracker)
+                .wouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE), any(FeatureProperties.class));
         doReturn(true).when(mMockTracker).shouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE));
         doReturn(true)
                 .when(mMockTracker)
@@ -467,7 +469,9 @@ public class RestoreTabsTest {
         sessions.add(session1);
         sessions.add(session2);
 
-        doReturn(true).when(mMockTracker).wouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE));
+        doReturn(true)
+                .when(mMockTracker)
+                .wouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE), any(FeatureProperties.class));
         doReturn(true).when(mMockTracker).shouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE));
         doReturn(true)
                 .when(mMockTracker)

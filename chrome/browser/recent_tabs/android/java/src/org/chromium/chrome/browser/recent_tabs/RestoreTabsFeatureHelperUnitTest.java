@@ -88,7 +88,9 @@ public class RestoreTabsFeatureHelperUnitTest {
     public void setUp() {
         ForeignSessionHelperJni.setInstanceForTesting(mForeignSessionHelperJniMock);
         TrackerFactory.setTrackerForTests(mMockTracker);
-        when(mMockTracker.wouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE))).thenReturn(true);
+        when(mMockTracker.wouldTriggerHelpUi(
+                        eq(RESTORE_TABS_FEATURE), eq(new FeatureProperties(UiFormat.BOTTOM_SHEET))))
+                .thenReturn(true);
         when(mMockTracker.shouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE), any())).thenReturn(true);
         mNativeForeignSessionHelper = JniUniquePtr.createForTesting(1L);
         when(mForeignSessionHelperJniMock.init(any(Profile.class)))
@@ -171,6 +173,9 @@ public class RestoreTabsFeatureHelperUnitTest {
                 mScrollGTSToRestoredTabsCallback,
                 /* modalDialogManagerSupplier= */ null);
         verify(mMockTracker)
+                .wouldTriggerHelpUi(
+                        eq(RESTORE_TABS_FEATURE), eq(new FeatureProperties(UiFormat.BOTTOM_SHEET)));
+        verify(mMockTracker)
                 .shouldTriggerHelpUi(
                         eq(RESTORE_TABS_FEATURE), eq(new FeatureProperties(UiFormat.BOTTOM_SHEET)));
         verify(mDelegate).showPromo(anyList());
@@ -209,6 +214,9 @@ public class RestoreTabsFeatureHelperUnitTest {
                 mGTSTabListModelSizeSupplier,
                 mScrollGTSToRestoredTabsCallback,
                 /* modalDialogManagerSupplier= */ null);
+        verify(mMockTracker)
+                .wouldTriggerHelpUi(
+                        eq(RESTORE_TABS_FEATURE), eq(new FeatureProperties(UiFormat.BOTTOM_SHEET)));
         verify(mMockTracker)
                 .shouldTriggerHelpUi(
                         eq(RESTORE_TABS_FEATURE), eq(new FeatureProperties(UiFormat.BOTTOM_SHEET)));
@@ -300,7 +308,9 @@ public class RestoreTabsFeatureHelperUnitTest {
         mSharedPreferencesManager.writeLong(
                 ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, oldTimestamp);
 
-        when(mMockTracker.wouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE))).thenReturn(false);
+        when(mMockTracker.wouldTriggerHelpUi(
+                        eq(RESTORE_TABS_FEATURE), eq(new FeatureProperties(UiFormat.BOTTOM_SHEET))))
+                .thenReturn(false);
         when(mMockTracker.shouldTriggerHelpUi(eq(RESTORE_TABS_FEATURE), any())).thenReturn(false);
 
         mHelper.maybeShowPromo(
