@@ -9,7 +9,11 @@ namespace blocked_content {
 
 UrlListManager::UrlListManager() = default;
 
-UrlListManager::~UrlListManager() = default;
+UrlListManager::~UrlListManager() {
+  for (auto& observer : observers_) {
+    observer.OnUrlListManagerDestroying(this);
+  }
+}
 
 void UrlListManager::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);

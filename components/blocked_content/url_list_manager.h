@@ -25,6 +25,13 @@ class UrlListManager {
    public:
     virtual ~Observer() = default;
     virtual void BlockedUrlAdded(int32_t id, const GURL& url) = 0;
+
+    // Called when the UrlListManager is being destroyed. Observers must stop
+    // observing (e.g. reset their ScopedObservation) and must not touch the
+    // manager afterwards. The owning tab helper may be destroyed before UI
+    // surfaces that observe it (e.g. content setting bubbles), so observers
+    // that can outlive the manager must handle this.
+    virtual void OnUrlListManagerDestroying(UrlListManager* manager) {}
   };
 
   UrlListManager();

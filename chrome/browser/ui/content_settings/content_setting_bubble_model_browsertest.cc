@@ -15,10 +15,13 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/content_settings/fake_owner.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -48,6 +51,8 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/widget/widget.h"
 
 using content_settings::PageSpecificContentSettings;
 
@@ -379,6 +384,107 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelPopupTest, PopupsActionsCount) {
       content_settings::POPUPS_ACTION_SELECTED_ALWAYS_ALLOW_POPUPS_FROM, 1);
 
   histograms.ExpectTotalCount("ContentSettings.Popups", 5);
+}
+
+// Tests that the popup bubble model keeps observing the tab's blocked URL list
+// while it is open, so newly blocked popups show up in the bubble.
+IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelPopupTest,
+                       BubbleListUpdatesWhenMorePopupsAreBlocked) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_->GetURL("/popup_blocker/popup-many.html")));
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  std::unique_ptr<ContentSettingBubbleModel> model(
+      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+          BrowserContentSettingBubbleModelDelegate::From(browser()),
+          web_contents->GetPrimaryPage(), ContentSettingsType::POPUPS));
+  std::unique_ptr<FakeOwner> owner =
+      FakeOwner::Create(*model, kDisallowButtonIndex);
+  const size_t initial_count = model->bubble_content().list_items.size();
+  EXPECT_EQ(2u, initial_count);
+
+  ASSERT_TRUE(content::ExecJs(web_contents, "window.open('about:blank');",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ(initial_count + 1, model->bubble_content().list_items.size());
+}
+
+class ContentSettingBubbleViewPopupTest
+    : public ContentSettingBubbleModelPopupTest {
+ protected:
+  // Opens a page that has its popups blocked in a new foreground tab (so that
+  // closing it does not close the browser), then opens the omnibox "Pop-ups
+  // blocked" bubble for it, exactly as a user click on the icon would.
+  // Returns the bubble widget.
+  views::Widget* OpenPopupPageAndShowBubble() {
+    EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), https_server_->GetURL("/popup_blocker/popup-many.html"),
+        WindowOpenDisposition::kNewForegroundTab,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+
+    LocationBarTesting* location_bar_testing =
+        BrowserWindow::FromBrowser(browser())
+            ->GetLocationBar()
+            ->GetLocationBarForTesting();
+    EXPECT_TRUE(location_bar_testing);
+    const size_t popups_index =
+        ContentSettingImageModel::GetContentSettingImageModelIndexForTesting(
+            ContentSettingImageModel::ImageType::kPopups);
+    EXPECT_TRUE(
+        location_bar_testing->IsContentSettingImageVisible(popups_index));
+    EXPECT_TRUE(
+        location_bar_testing->TestContentSettingImagePressed(popups_index));
+    EXPECT_TRUE(
+        location_bar_testing->IsContentSettingBubbleShowing(popups_index));
+    return location_bar_testing->GetContentSettingBubbleWidget(popups_index);
+  }
+};
+
+// Tests closing a tab while its "Pop-ups blocked" bubble is open. The tab's
+// PopupBlockerTabHelper (owned by TabFeatures) is destroyed before the bubble
+// model, so the model must stop observing the helper's UrlListManager when the
+// manager goes away.
+IN_PROC_BROWSER_TEST_F(ContentSettingBubbleViewPopupTest,
+                       CloseTabWithBubbleOpen) {
+  views::Widget* bubble_widget = OpenPopupPageAndShowBubble();
+  ASSERT_TRUE(bubble_widget);
+  views::test::WidgetDestroyedWaiter bubble_destroyed(bubble_widget);
+
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
+  tab_strip->CloseWebContentsAt(tab_strip->active_index(),
+                                TabCloseTypes::CLOSE_NONE);
+  bubble_destroyed.Wait();
+
+  EXPECT_EQ(1, tab_strip->count());
+}
+
+// Same as above, but the tab is closed as part of closing the whole window.
+IN_PROC_BROWSER_TEST_F(ContentSettingBubbleViewPopupTest,
+                       CloseBrowserWithBubbleOpen) {
+  views::Widget* bubble_widget = OpenPopupPageAndShowBubble();
+  ASSERT_TRUE(bubble_widget);
+  CloseBrowserSynchronously(browser());
+}
+
+// Same as above, but the tab is closed by the page itself (renderer-initiated
+// close) while the bubble is open.
+IN_PROC_BROWSER_TEST_F(ContentSettingBubbleViewPopupTest,
+                       PageClosesItselfWithBubbleOpen) {
+  views::Widget* bubble_widget = OpenPopupPageAndShowBubble();
+  ASSERT_TRUE(bubble_widget);
+  views::test::WidgetDestroyedWaiter bubble_destroyed(bubble_widget);
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::WebContentsDestroyedWatcher tab_destroyed(web_contents);
+  // Tabs opened by the browser can't be closed by script, so close through
+  // the WebContents delegate path used for renderer-initiated closes.
+  web_contents->ClosePage();
+  tab_destroyed.Wait();
+  bubble_destroyed.Wait();
+
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
 }
 
 class ContentSettingBubbleModelQuietRequestTest : public InProcessBrowserTest {
