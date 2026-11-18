@@ -25,6 +25,33 @@ source_set("autofill_ai_ui_utils_impl") {
   ]
 }
 
+source_set("verification") {
+  sources = [
+    "autofill_ai_source_split_view.h",
+    "autofill_ai_verification_view.h",
+  ]
+  public_deps = [
+    "//base",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test/mock_autofill_ai_source_split_view.cc",
+    "test/mock_autofill_ai_source_split_view.h",
+    "test/mock_autofill_ai_verification_view.cc",
+    "test/mock_autofill_ai_verification_view.h",
+  ]
+  public_deps = [
+    ":verification",
+    "//base",
+    "//testing/gmock",
+    "//url",
+  ]
+}
+
 if (!is_android) {
   source_set("autofill_ai") {
     public = [ "autofill_ai_import_data_controller.h" ]
