@@ -23,7 +23,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/shelf",
   "+chrome/common/apps/platform_apps/api",
-  "+chrome/grit",
 ]
 
 specific_include_rules = {

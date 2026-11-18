@@ -13582,12 +13582,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
                  desc="Text for the button that opens the app in a tab. (In sentence case.)">
           Open in a tab
         </message>
-        <if expr="is_chromeos">
-          <message name="IDS_APP_CONTEXT_MENU_ACTIVATE_ARC"
-                   desc="Text for the button that activates Android App. (In sentence case.)">
-            Open
-          </message>
-        </if>
       </if>
 
       <if expr="use_titlecase">
@@ -13607,12 +13601,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
                  desc="Text for the button that opens the app in a tab. (In title case.)">
           Open in a Tab
         </message>
-        <if expr="is_chromeos">
-          <message name="IDS_APP_CONTEXT_MENU_ACTIVATE_ARC"
-                   desc="Text for the button that activates Android App. (In title case.)">
-            Open
-          </message>
-        </if>
       </if>
 
       <message name="IDS_APPS_PAGE_DEPRECATED_APP_TITLE" desc="Title text for deprecated apps in the apps page.">

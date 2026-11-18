@@ -12211,6 +12211,12 @@ You can manage this account’s settings by installing the Family Link app on yo
         desc="Text for the context menu item that takes the user to the options of an app. (In sentence case.)">
         Options
       </message>
+
+      <!-- App Service context menu open item -->
+      <message name="IDS_APP_CONTEXT_MENU_ACTIVATE_ARC"
+        desc="Text for the button that activates Android App. (In sentence case.)">
+        Open
+      </message>
     </messages>
   </release>
 </grit>
