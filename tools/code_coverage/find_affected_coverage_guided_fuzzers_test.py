@@ -26,6 +26,13 @@ FINDIT_COVERED_LINES = {2: 7, 3: 7, 5: 7}
 # The commit of make_findit_response()'s report.
 REPORT_REVISION = 'a' * 40
 
+# Mock `git diff-tree` output keyed by the target revision. CL 'abc' changes
+# lines 1-3; REPORT_REVISION matches the CL's parent by default.
+DIFF_TREE_STDOUT = {
+  'abc': b'@@ -1,3 +1,3 @@\n',
+  REPORT_REVISION: b'',
+}
+
 
 def output_json_path(out_dir):
   # The out dir is a temporary directory, so write the output there too.
@@ -87,13 +94,23 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
     return [' '.join(call.args[0]) for call in mock_obj.call_args_list]
 
   def _set_subprocess_run_side_effect(
-    self, git_diff_stdout='', gn_refs_mapping=None
+    self,
+    git_diff_stdout='',
+    gn_refs_mapping=None,
+    diff_tree_stdout=DIFF_TREE_STDOUT,
   ):
 
     def fake_subprocess_run(command, **kwargs):
       mock_result = mock.MagicMock()
       mock_result.stdout = ''
-      if command[0] == 'git':
+      if command[:2] == ['git', 'diff-tree']:
+        # `git diff-tree` takes `<old> <new> -- <path>`.
+        new_revision = command[command.index('--') - 1]
+        if new_revision not in diff_tree_stdout:
+          # Simulate git failing on a commit missing from the local checkout.
+          raise subprocess.CalledProcessError(128, command)
+        mock_result.stdout = diff_tree_stdout[new_revision]
+      elif command[0] == 'git':
         mock_result.stdout = git_diff_stdout
       elif command[:2] == ['gn', 'refs']:
         if gn_refs_mapping:
@@ -110,6 +127,26 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
     out_dir = self.enterContext(tempfile.TemporaryDirectory())
     pathlib.Path(out_dir, 'args.gn').touch()
     return out_dir
+
+  def _mock_findit(self, coverage_by_fuzzer):
+    """Mocks get_findit_coverage() using a map of fuzzer name (or 'any') to
+    raw API response.
+    """
+    module = find_affected_coverage_guided_fuzzers
+
+    def fake_get_findit_coverage(file_path, fuzzer_name='any'):
+      response = coverage_by_fuzzer.get(fuzzer_name)
+      if not response:
+        return None
+      return module.parse_findit_response(
+        dict(response, path=file_path), file_path
+      )
+
+    patcher = mock.patch.object(
+      module, 'get_findit_coverage', side_effect=fake_get_findit_coverage
+    )
+    self.addCleanup(patcher.stop)
+    return patcher.start()
 
   def test_get_modified_files(self):
     self.mock_subprocess_run.return_value.stdout = (
@@ -168,10 +205,12 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
   def test_get_affected_fuzzers(self):
     self._set_subprocess_run_side_effect(
       gn_refs_mapping={
-        '//file1.cc': '//fuzzer1:fuzzer1\n//fuzzer2:fuzzer2\n',
+        # Not every target that depends on a file is a fuzzer.
+        '//file1.cc': '//base:base\n//fuzzer1:fuzzer1\n//fuzzer2:fuzzer2\n',
         '//file2.cc': '//fuzzer2:fuzzer2\n',
       }
     )
+    mock_findit = self._mock_findit({'any': make_findit_response()})
 
     modified_files = ['file1.cc', 'file2.cc', 'file3.cc']
     all_fuzzers = [
@@ -181,59 +220,148 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
     ]
 
     affected = find_affected_coverage_guided_fuzzers.get_affected_fuzzers(
-      modified_files, 'out/test', all_fuzzers
+      modified_files, 'out/test', all_fuzzers, 'abc'
     )
 
-    # '//file3.cc' does not affect any fuzzer, so it maps to an empty list.
+    # '//file3.cc' does not affect any fuzzer, so it maps to an empty set.
     self.assertEqual(
       affected,
       {
-        '//file1.cc': ['//fuzzer1:fuzzer1', '//fuzzer2:fuzzer2'],
-        '//file2.cc': ['//fuzzer2:fuzzer2'],
-        '//file3.cc': [],
+        '//file1.cc': {'//fuzzer1:fuzzer1', '//fuzzer2:fuzzer2'},
+        '//file2.cc': {'//fuzzer2:fuzzer2'},
+        '//file3.cc': set(),
       },
     )
 
-    # We expect 3 calls to gn refs, one for each modified file.
-    self.assertEqual(self.mock_subprocess_run.call_count, 3)
     # The order is non-deterministic because it uses a ThreadPoolExecutor,
     # so we just check that the calls happened with the right arguments.
-    call_args_files = {
-      call.split()[-1] for call in self.get_calls_args(self.mock_subprocess_run)
+    gn_refs_files = {
+      call.split()[-1]
+      for call in self.get_calls_args(self.mock_subprocess_run)
+      if call.startswith('gn refs')
     }
+    self.assertEqual(gn_refs_files, {'//file1.cc', '//file2.cc', '//file3.cc'})
+    # '//file3.cc' has no candidate fuzzers, so no coverage is fetched for it.
     self.assertEqual(
-      call_args_files, {'//file1.cc', '//file2.cc', '//file3.cc'}
+      sorted(call.args for call in mock_findit.call_args_list),
+      [('//file1.cc',), ('//file2.cc',)],
     )
 
   def test_get_affected_fuzzers_with_exception(self):
+    self._set_subprocess_run_side_effect(
+      gn_refs_mapping={'//file1.cc': '//fuzzer1:fuzzer1\n'}
+    )
+    original_side_effect = self.mock_subprocess_run.side_effect
 
     def fake_subprocess_run(command, **kwargs):
-      mock_result = mock.MagicMock()
-      mock_result.stdout = ''
-      if command[:2] == ['gn', 'refs']:
-        if '//file1.cc' in command:
-          mock_result.stdout = '//fuzzer1:fuzzer1\n'
-        elif '//file2.cc' in command:
-          subprocess_mod = find_affected_coverage_guided_fuzzers.subprocess
-          raise subprocess_mod.CalledProcessError(
-            returncode=1, cmd=command, output='out', stderr='err'
-          )
-      return mock_result
+      if command[:2] == ['gn', 'refs'] and '//file2.cc' in command:
+        raise subprocess.CalledProcessError(
+          returncode=1, cmd=command, output='out', stderr='err'
+        )
+      return original_side_effect(command, **kwargs)
 
     self.mock_subprocess_run.side_effect = fake_subprocess_run
+    self._mock_findit({'any': make_findit_response()})
 
     modified_files = ['file1.cc', 'file2.cc']
     all_fuzzers = ['//fuzzer1:fuzzer1']
 
     affected = find_affected_coverage_guided_fuzzers.get_affected_fuzzers(
-      modified_files, 'out/test', all_fuzzers
+      modified_files, 'out/test', all_fuzzers, 'abc'
     )
 
     # The reverse deps of '//file2.cc' can't be computed, so no fuzzer is
     # reported for it.
     self.assertEqual(
-      affected, {'//file1.cc': ['//fuzzer1:fuzzer1'], '//file2.cc': []}
+      affected, {'//file1.cc': {'//fuzzer1:fuzzer1'}, '//file2.cc': set()}
     )
+
+  def test_find_affected_fuzzers_for_file_unknown_to_findit(self):
+    # No Findit data (e.g., a new file) drops all candidate fuzzers.
+    self._set_subprocess_run_side_effect(
+      gn_refs_mapping={'//file1.cc': '//fuzzer1:fuzzer1\n'}
+    )
+    self._mock_findit({})
+    self.assertEqual(
+      find_affected_coverage_guided_fuzzers.find_affected_fuzzers_for_file(
+        'file1.cc', 'out/test', {'//fuzzer1:fuzzer1'}, 'abc'
+      ),
+      ('//file1.cc', set()),
+    )
+
+  def test_find_affected_fuzzers_for_file_no_fuzzer_covers_changes(self):
+    # The CL only changes line 4, which the fuzzers never executed, although
+    # they executed lines 3 and 5 around it.
+    self._set_subprocess_run_side_effect(
+      gn_refs_mapping={'//file1.cc': '//fuzzer1:fuzzer1\n'},
+      diff_tree_stdout=dict(DIFF_TREE_STDOUT, abc=b'@@ -4 +4 @@\n'),
+    )
+    self._mock_findit({'any': make_findit_response()})
+    self.assertEqual(
+      find_affected_coverage_guided_fuzzers.find_affected_fuzzers_for_file(
+        'file1.cc', 'out/test', {'//fuzzer1:fuzzer1'}, 'abc'
+      ),
+      ('//file1.cc', set()),
+    )
+
+  def test_find_affected_fuzzers_for_file_changes_not_in_report(self):
+    # The CL changes lines 1-3. Another CL changed the same lines between the
+    # report's commit and the CL's parent, so the report's lines 1-3 hold
+    # different code and none of the CL's lines can be looked up. The fuzzers
+    # are dropped even though the report shows lines 2 and 3 as covered.
+    self._set_subprocess_run_side_effect(
+      gn_refs_mapping={'//file1.cc': '//fuzzer1:fuzzer1\n'},
+      diff_tree_stdout={
+        **DIFF_TREE_STDOUT,
+        REPORT_REVISION: b'@@ -1,3 +1,3 @@\n',
+      },
+    )
+    self._mock_findit({'any': make_findit_response()})
+    self.assertEqual(
+      find_affected_coverage_guided_fuzzers.find_affected_fuzzers_for_file(
+        'file1.cc', 'out/test', {'//fuzzer1:fuzzer1'}, 'abc'
+      ),
+      ('//file1.cc', set()),
+    )
+
+  def test_find_affected_fuzzers_for_file_report_is_older_than_parent(self):
+    # Prepending a line in the report shifts parent lines 1-3 to 2-4, so hitting
+    # only line 4 (parent line 3) still matches.
+    self._set_subprocess_run_side_effect(
+      gn_refs_mapping={'//file1.cc': '//fuzzer1:fuzzer1\n'},
+      diff_tree_stdout={
+        **DIFF_TREE_STDOUT,
+        REPORT_REVISION: b'@@ -0,0 +1 @@\n',
+      },
+    )
+    self._mock_findit(
+      {
+        'any': dict(
+          make_findit_response(),
+          data={'line_to_data': [[4, {'line': '  if (G())', 'count': 7}]]},
+        )
+      }
+    )
+    self.assertEqual(
+      find_affected_coverage_guided_fuzzers.find_affected_fuzzers_for_file(
+        'file1.cc', 'out/test', {'//fuzzer1:fuzzer1'}, 'abc'
+      ),
+      ('//file1.cc', {'//fuzzer1:fuzzer1'}),
+    )
+
+  def test_get_affected_fuzzers_report_commit_not_fetched(self):
+    # Fail instead of guessing if the report's commit is missing locally.
+    diff_tree_stdout = dict(DIFF_TREE_STDOUT)
+    del diff_tree_stdout[REPORT_REVISION]
+    self._set_subprocess_run_side_effect(
+      gn_refs_mapping={'//file1.cc': '//fuzzer1:fuzzer1\n'},
+      diff_tree_stdout=diff_tree_stdout,
+    )
+    self._mock_findit({'any': make_findit_response()})
+    with self.assertRaises(subprocess.CalledProcessError):
+      find_affected_coverage_guided_fuzzers.get_affected_fuzzers(
+        ['file1.cc'], 'out/test', ['//fuzzer1:fuzzer1'], 'abc'
+      )
 
   def test_run_gn_command_success(self):
     self.mock_subprocess_run.return_value.stdout = (
@@ -290,7 +418,7 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
     result = find_affected_coverage_guided_fuzzers.find_reverse_deps(
       'out/test', '//file1.cc'
     )
-    self.assertEqual(result, ['//target1:target1'])
+    self.assertEqual(result, {'//target1:target1'})
     self.assertEqual(
       self.get_calls_args(self.mock_subprocess_run),
       ['gn refs out/test --all --as=label -q //file1.cc'],
@@ -353,6 +481,7 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
       },
     )
     out_dir = self.make_out_dir()
+    self._mock_findit({'any': make_findit_response()})
 
     with mock.patch('sys.argv', main_argv(out_dir)):
       self.assertEqual(find_affected_coverage_guided_fuzzers.main(), 0)
@@ -367,6 +496,8 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
         f'gn refs {out_dir} //testing/libfuzzer:fuzzing_engine '
         '--all --type=executable --as=label -q',
         f'gn refs {out_dir} --all --as=label -q //file1.cc',
+        'git diff-tree -U0 --text abc~ abc -- file1.cc',
+        f'git diff-tree -U0 --text abc~ {REPORT_REVISION} -- file1.cc',
       ],
     )
 
@@ -381,6 +512,8 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
       },
     )
     out_dir = self.make_out_dir()
+    # The changed lines are covered, so only --max-fuzzers drops a fuzzer.
+    self._mock_findit({'any': make_findit_response()})
 
     with mock.patch('sys.argv', main_argv(out_dir, max_fuzzers=1)):
       self.assertEqual(find_affected_coverage_guided_fuzzers.main(), 0)
@@ -624,9 +757,11 @@ class GitHelpersTest(unittest.TestCase):
     # Between the report's commit and the CL's parent, another CL added x and
     # y, and removed F.
     report = self.commit('base/f.cc', 'A\nB\nC\nD\nE\nF\nG\nH\n')
-    parent = self.commit('base/f.cc', 'A\nB\nx\ny\nC\nD\nE\nG\nH\n')
+    self.commit('base/f.cc', 'A\nB\nx\ny\nC\nD\nE\nG\nH\n')
+    # Only the CL's parent is diffed against the report.
+    cl = self.commit('base/g.cc', 'cl\n')
     hunks = find_affected_coverage_guided_fuzzers.get_diff_hunks(
-      parent, report, 'base/f.cc'
+      cl, report, 'base/f.cc'
     )
     self.assertEqual(
       [
@@ -636,15 +771,45 @@ class GitHelpersTest(unittest.TestCase):
       [1, 2, None, None, 3, 4, 5, 7, 8],
     )
 
+  def test_map_changed_lines_to_report_lines(self):
+    # After the report's commit, another CL removed line 'x' from the top and
+    # changed 'old' to '2'. So the parent's lines 1 and 3-6 are lines 2 and 4-7
+    # in the report, and the parent's line 2 isn't in the report.
+    report = self.commit('base/f.cc', 'x\n1\nold\n3\n4\n5\n6\n')
+    self.commit('base/f.cc', '1\n2\n3\n4\n5\n6\n')
+    cl = self.commit(
+      'base/f.cc',
+      'top\n'  # Inserted at the top.
+      '1\n'
+      'new2\n'  # Line 2 modified.
+      '3\n'
+      'after3\n'  # Inserted after line 3.
+      '4\n'
+      'new5\n'  # Line 5 modified.
+      '6\n',
+    )
+    self.assertEqual(
+      find_affected_coverage_guided_fuzzers.map_changed_lines_to_report_lines(
+        find_affected_coverage_guided_fuzzers.ChangedLines(
+          modified={2, 5}, insertions={0, 3}
+        ),
+        cl,
+        report,
+        'base/f.cc',
+      ),
+      # Line 5 is line 6 in the report, and line 2 changed since, so it's
+      # skipped. The insertion at the top is looked up by line 1 (line 2 in
+      # the report) and the one after line 3 by lines 3 and 4 (lines 4 and 5).
+      {2, 4, 5, 6},
+    )
+
   def test_get_diff_hunks_binary_looking_file(self):
     # Without --text, git prints no hunks for a file with a NUL byte, so the
     # file looks unchanged.
-    old = self.commit('base/f.cc', 'a\0\nb\n')
-    new = self.commit('base/f.cc', 'a\0\nB\n')
+    self.commit('base/f.cc', 'a\0\nb\n')
+    cl = self.commit('base/f.cc', 'a\0\nB\n')
     self.assertEqual(
-      find_affected_coverage_guided_fuzzers.get_diff_hunks(
-        old, new, 'base/f.cc'
-      ),
+      find_affected_coverage_guided_fuzzers.get_diff_hunks(cl, cl, 'base/f.cc'),
       [
         find_affected_coverage_guided_fuzzers.DiffHunk(
           old_start=2, old_count=1, new_count=1
@@ -653,11 +818,12 @@ class GitHelpersTest(unittest.TestCase):
     )
 
   def test_get_diff_hunks_missing_revision(self):
+    self.commit('base/f.cc', 'a\n')  # So that cl has a parent.
+    cl = self.commit('base/f.cc', 'b\n')
     # E.g. a coverage report's commit that the checkout hasn't fetched.
-    revision = self.commit('base/f.cc', 'a\n')
     with self.assertRaises(subprocess.CalledProcessError):
       find_affected_coverage_guided_fuzzers.get_diff_hunks(
-        '1234567890abcdef1234567890abcdef12345678', revision, 'base/f.cc'
+        cl, '1234567890abcdef1234567890abcdef12345678', 'base/f.cc'
       )
 
 

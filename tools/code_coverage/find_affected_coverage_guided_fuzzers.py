@@ -114,11 +114,11 @@ def find_all_fuzzer_targets(out_dir: str) -> List[str]:
   return run_gn_command(args)
 
 
-def find_reverse_deps(out_dir: str, gn_file_path: str) -> List[str]:
+def find_reverse_deps(out_dir: str, gn_file_path: str) -> Set[str]:
   """Finds all targets that depend on the given GN file path."""
   logging.debug('Finding reverse dependencies for %s...', gn_file_path)
   args = ['refs', out_dir, '--all', '--as=label', '-q', gn_file_path]
-  return run_gn_command(args)
+  return set(run_gn_command(args))
 
 
 def get_modified_files(revision: str) -> List[str]:
@@ -147,11 +147,11 @@ def get_modified_files(revision: str) -> List[str]:
 
 
 def get_diff_hunks(
-  old_revision: str, new_revision: str, file_path: str
+  cl_revision: str, new_revision: str, file_path: str
 ) -> List[DiffHunk]:
-  """Returns the hunks of file_path's diff from old_revision to new_revision,
-  in file order. Raises if git fails, e.g. on a revision that isn't fetched,
-  rather than returning no hunks as if the file were unchanged.
+  """Returns the hunks of file_path's diff from cl_revision's parent to
+  new_revision, in file order. Raises if git fails, e.g. on a revision that
+  isn't fetched, rather than returning no hunks as if the file were unchanged.
   """
   # git diff-tree, unlike git diff, ignores diff settings from git config that
   # would break the parsing, e.g. color.ui adds color codes to the '@@' lines
@@ -164,7 +164,7 @@ def get_diff_hunks(
       'diff-tree',
       '-U0',
       '--text',
-      old_revision,
+      f'{cl_revision}~',
       new_revision,
       '--',
       file_path,
@@ -190,7 +190,7 @@ def get_parent_lines_changed_by_cl(
   numbers the file had before cl_revision.
   """
   changes = ChangedLines(modified=set(), insertions=set())
-  for hunk in get_diff_hunks(f'{cl_revision}~', cl_revision, file_path):
+  for hunk in get_diff_hunks(cl_revision, cl_revision, file_path):
     if hunk.old_count == 0:
       changes.insertions.add(hunk.old_start)
     else:
@@ -224,10 +224,68 @@ def map_old_line_to_new(hunks: List[DiffHunk], line: int) -> Optional[int]:
   return line + offset
 
 
+def map_changed_lines_to_report_lines(
+  changed_lines: ChangedLines,
+  cl_revision: str,
+  report_revision: str,
+  file_path: str,
+) -> Set[int]:
+  """Maps the CL's changed lines to line numbers in the coverage report.
+
+  Modified lines map directly; pure insertions map to the lines immediately
+  before and after them. Lines that differ between the CL's parent and the
+  report are skipped.
+
+  Args:
+    changed_lines: Changed lines in the CL's parent.
+    cl_revision: The CL's commit.
+    report_revision: The commit the coverage report was generated at.
+    file_path: Repo-relative path of the file.
+
+  Returns:
+    1-based line numbers to look up in the coverage report.
+
+  Raises:
+    subprocess.CalledProcessError: If git fails (for example, when the
+      checkout is missing report_revision).
+  """
+  # TODO(b/586957271): The report has no coverage data for non-executable lines
+  # such as blank lines and comments, so edits to them (e.g. a comment replaced
+  # by code) and insertions between them look uncovered. Look those up by the
+  # nearest executable lines instead.
+  parent_lines = set(changed_lines.modified)
+  for after in changed_lines.insertions:
+    parent_lines.update((after, after + 1))
+  # An insertion at the top of the file follows line 0, which doesn't exist.
+  parent_lines.discard(0)
+  hunks = get_diff_hunks(cl_revision, report_revision, file_path)
+  report_lines = (map_old_line_to_new(hunks, line) for line in parent_lines)
+  return {line for line in report_lines if line is not None}
+
+
 def find_affected_fuzzers_for_file(
-  file_path: str, out_dir: str, all_fuzzers: Set[str]
-) -> Tuple[str, List[str]]:
-  """Finds the fuzzers affected by a single modified file."""
+  file_path: str, out_dir: str, all_fuzzers: Set[str], revision: str
+) -> Tuple[str, Set[str]]:
+  """Finds the fuzzers that may cover revision's changes in file_path.
+
+  Keeps the file's reverse-dep fuzzers only if Findit's aggregated coverage
+  shows at least one changed line was executed. Files with no coverage data
+  (such as new files) return no fuzzers.
+
+  Args:
+    file_path: Repo-relative path of the modified source file.
+    out_dir: Build directory to query GN reverse dependencies from.
+    all_fuzzers: GN labels of all fuzzer executables in out_dir.
+    revision: The CL's commit.
+
+  Returns:
+    A (gn_path, fuzzers) pair: file_path as a source-absolute path (e.g.
+    '//base/foo.cc') and the GN labels of fuzzers that may cover its changes.
+
+  Raises:
+    subprocess.CalledProcessError: If git fails (for example, when the
+      checkout is missing the coverage report's commit).
+  """
   rel_path = file_path.replace(os.sep, '/')
   # Prefix with '//' so the file path is formatted as a GN label, which is what
   # both the reverse-dep query and the fuzzing coverage API expect.
@@ -242,37 +300,57 @@ def find_affected_fuzzers_for_file(
       gn_path,
       e,
     )
-    return gn_path, []
+    return gn_path, set()
 
-  affected_fuzzers = [f for f in reverse_deps if f in all_fuzzers]
-
-  # TODO: Query the Findit fuzzing coverage API for the changed lines of this
-  # file and drop candidates with no coverage hits.
-  # https://buganizer.corp.google.com/issues/560236801
-
-  # TODO: Before matching, map the changed lines from the CL's parent commit
-  # to the coverage report's commit with get_diff_hunks() and
-  # map_old_line_to_new(), since the file may have changed in between.
-  # https://buganizer.corp.google.com/issues/560236801
+  candidate_fuzzers = reverse_deps & all_fuzzers
+  if not candidate_fuzzers:
+    return gn_path, set()
 
   # TODO: Include newly added fuzzers as it will not have Findit Fuzzing
   # Coverage API hits.
   # https://buganizer.corp.google.com/issues/561529566
 
-  return gn_path, affected_fuzzers
+  changed_lines = get_parent_lines_changed_by_cl(revision, rel_path)
+
+  coverage_report = get_findit_coverage(gn_path)
+  if coverage_report is None:
+    logging.info('No coverage data for %s, dropping its fuzzers.', gn_path)
+    return gn_path, set()
+
+  report_lines = map_changed_lines_to_report_lines(
+    changed_lines, revision, coverage_report.revision, rel_path
+  )
+  logging.debug(
+    '%s: looking up lines %s of the coverage report at %s.',
+    gn_path,
+    sorted(report_lines),
+    coverage_report.revision,
+  )
+  if not report_lines & coverage_report.covered_lines.keys():
+    logging.info(
+      'No fuzzer covers the lines of %s changed by %s.', gn_path, revision
+    )
+    return gn_path, set()
+
+  # TODO(b/560236801): Filter candidate_fuzzers individually instead of keeping
+  # all of them when any fuzzer covers a changed line.
+  return gn_path, candidate_fuzzers
 
 
 def get_affected_fuzzers(
-  modified_files: List[str], out_dir: str, all_fuzzers: List[str]
-) -> Dict[str, List[str]]:
+  modified_files: List[str],
+  out_dir: str,
+  all_fuzzers: List[str],
+  revision: str,
+) -> Dict[str, Set[str]]:
   """Maps modified files to the fuzzers they affect."""
-  affected_map: Dict[str, List[str]] = {}
+  affected_map: Dict[str, Set[str]] = {}
   all_fuzzers_set = set(all_fuzzers)
 
   with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
     futures = [
       executor.submit(
-        find_affected_fuzzers_for_file, f, out_dir, all_fuzzers_set
+        find_affected_fuzzers_for_file, f, out_dir, all_fuzzers_set, revision
       )
       for f in modified_files
     ]
@@ -287,7 +365,7 @@ def get_affected_fuzzers(
 
 
 def pick_fuzzers(
-  affected_fuzzers_map: Dict[str, List[str]], max_fuzzers: int
+  affected_fuzzers_map: Dict[str, Set[str]], max_fuzzers: int
 ) -> List[str]:
   """Returns the GN labels of the first max_fuzzers relevant fuzzers."""
   # TODO(b/560236802): This is a placeholder. Rank the fuzzers by inverse
@@ -312,11 +390,12 @@ def get_findit_coverage(
       aggregated over all LibFuzzer/FUZZ_TEST fuzzers for the file_path.
 
   Returns:
-    The latest collected fuzzing coverage of the file. Its covered_lines is
-    empty if the coverage was fetched but the fuzzer doesn't cover the file.
-    None if the coverage can't be fetched, e.g. because Findit has no report
-    for the fuzzer, the report doesn't have the file, or the request keeps
-    failing.
+    The latest collected fuzzing coverage of the file. Its covered_lines maps
+    only lines executed at least once to their hit counts (unexecuted and
+    non-executable lines are omitted, so it is empty when the fuzzer doesn't
+    cover the file). None if the coverage can't be fetched, e.g. because
+    Findit has no report for the fuzzer, the report doesn't have the file, or
+    the request keeps failing.
 
   Raises:
     AssertionError: if file_path is empty.
@@ -509,7 +588,7 @@ def main():
     return 1
 
   affected_fuzzers_map = get_affected_fuzzers(
-    modified_files, args.out_dir, all_fuzzers
+    modified_files, args.out_dir, all_fuzzers, args.revision
   )
 
   fuzzers = pick_fuzzers(affected_fuzzers_map, args.max_fuzzers)
