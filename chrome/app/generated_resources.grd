@@ -14121,12 +14121,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
 
       <!-- Sync/sign-in error messages -->
-      <message name="IDS_SIGNIN_ERROR_DISPLAY_SOURCE" desc="Context title shown in the notification header of sign-in error notification.">
-        Sign In
-      </message>
-      <message name="IDS_SIGNIN_ERROR_BUBBLE_VIEW_TITLE" desc="Title in the sign-in error bubble view/notification.">
-        Sign-in error
-      </message>
       <message name="IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE" desc="Title in the sync error bubble view/notification.">
         Sync isn't working
       </message>
@@ -14277,9 +14271,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
         <message name="IDS_SYNC_RELOGIN_BUTTON_MAYBE_TITLE_CASE" desc="The text to display on the button when the user needs to sign out and sign in again to use sync on ChromeOS.">
           Sign out
-        </message>
-        <message name="IDS_SYNC_TOKEN_HANDLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error bubble view when the user's token handle is invalid.">
-          Your account sign-in details are out of date. Please sign out and sign in again.
         </message>
       </if>
 

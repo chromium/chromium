@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/constants/ash_login_pref_names.h"
+#include "ash/login/resources/grit/ash_login_strings.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/check_deref.h"
 #include "build/build_config.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"

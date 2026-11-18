@@ -2775,6 +2775,145 @@
       <message name="IDS_RELAUNCH_BUTTON" desc="The label for the relaunch button that relaunches the browser once update is complete">
         Restart
       </message>
+
+      <!-- Sign-in error notification strings -->
+      <message name="IDS_SIGNIN_ERROR_DISPLAY_SOURCE" desc="Context title shown in the notification header of sign-in error notification.">
+        Sign In
+      </message>
+      <message name="IDS_SIGNIN_ERROR_BUBBLE_VIEW_TITLE" desc="Title in the sign-in error bubble view/notification.">
+        Sign-in error
+      </message>
+      <message name="IDS_SYNC_TOKEN_HANDLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error bubble view when the user's token handle is invalid.">
+        Your account sign-in details are out of date. Please sign out and sign in again.
+      </message>
+
+      <!-- Branded sign-in error notification strings -->
+      <if expr="_google_chrome">
+        <then>
+          <if expr="reven">
+            <then>
+              <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE" desc="Context title shown in the notification header of sign-in error notification for ChromeOS Flex Secondary Accounts.">
+                ChromeOS Flex System
+              </message>
+            </then>
+            <else>
+              <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE" desc="Context title shown in the notification header of sign-in error notification for ChromeOS Secondary Accounts.">
+                ChromeOS System
+              </message>
+            </else>
+          </if>
+        </then>
+        <else>
+          <message name="IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE" desc="Context title shown in the notification header of sign-in error notification for ChromiumOS Secondary Accounts.">
+            ChromiumOS System
+          </message>
+        </else>
+      </if>
+      <if expr="_google_chrome">
+        <then>
+          <if expr="reven">
+            <then>
+              <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when the user's sign-in credentials are out of date.">
+                ChromeOS Flex could not sync your data because your account sign-in details are out of date.
+              </message>
+            </then>
+            <else>
+              <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when the user's sign-in credentials are out of date.">
+                ChromeOS could not sync your data because your account sign-in details are out of date.
+              </message>
+            </else>
+          </if>
+        </then>
+        <else>
+          <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when the user's sign-in credentials are out of date.">
+            ChromiumOS could not sync your data because your account sign-in details are out of date.
+          </message>
+        </else>
+      </if>
+      <if expr="_google_chrome">
+        <then>
+          <if expr="reven">
+            <then>
+              <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sign-in error notification when the user's sign-in credentials are out of date.">
+                ChromeOS Flex could not save Chrome data in your Google Account because your account sign-in details are out of date
+              </message>
+            </then>
+            <else>
+              <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sign-in error notification when the user's sign-in credentials are out of date.">
+                ChromeOS could not save Chrome data in your Google Account because your account sign-in details are out of date
+              </message>
+            </else>
+          </if>
+        </then>
+        <else>
+          <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sign-in error notification when the user's sign-in credentials are out of date.">
+            ChromiumOS could not save Chromium data in your Google Account because your account sign-in details are out of date
+          </message>
+        </else>
+      </if>
+      <if expr="_google_chrome">
+        <then>
+          <if expr="reven">
+            <then>
+              <message name="IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when sync is not available for their domain.">
+                ChromeOS Flex could not sync your data because Sync is not available for your domain.
+              </message>
+            </then>
+            <else>
+              <message name="IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when sync is not available for their domain.">
+                ChromeOS could not sync your data because Sync is not available for your domain.
+              </message>
+            </else>
+          </if>
+        </then>
+        <else>
+          <message name="IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when sync is not available for their domain.">
+            ChromiumOS could not sync your data because Sync is not available for your domain.
+          </message>
+        </else>
+      </if>
+      <if expr="_google_chrome">
+        <then>
+          <if expr="reven">
+            <then>
+              <message name="IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when there's an error signing in.">
+                ChromeOS Flex could not sync your data due to an error signing in.
+              </message>
+            </then>
+            <else>
+              <message name="IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when there's an error signing in.">
+                ChromeOS could not sync your data due to an error signing in.
+              </message>
+            </else>
+          </if>
+        </then>
+        <else>
+          <message name="IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when there's an error signing in.">
+            ChromiumOS could not sync your data due to an error signing in.
+          </message>
+        </else>
+      </if>
+      <if expr="_google_chrome">
+        <then>
+          <if expr="reven">
+            <then>
+              <message name="IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sign-in error notification when there's an error signing in.">
+                ChromeOS Flex could not save Chrome data in your Google Account due to an error signing in
+              </message>
+            </then>
+            <else>
+              <message name="IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sign-in error notification when there's an error signing in.">
+                ChromeOS could not save Chrome data in your Google Account due to an error signing in
+              </message>
+            </else>
+          </if>
+        </then>
+        <else>
+          <message name="IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sign-in error notification when there's an error signing in.">
+            ChromiumOS could not save Chromium data in your Google Account due to an error signing in
+          </message>
+        </else>
+      </if>
     </messages>
   </release>
 </grit>
