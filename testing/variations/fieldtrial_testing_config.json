@@ -2547,6 +2547,22 @@
             ]
         }
     ],
+    "AutofillOtpCoordinatorAndroid": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillOtpCoordinator"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillPageLanguageDetection": [
         {
             "platforms": [
