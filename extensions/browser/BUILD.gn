@@ -1101,6 +1101,7 @@ source_set("unit_tests") {
     "api/web_request/web_request_info_unittest.cc",
     "api/web_request/web_request_permissions_unittest.cc",
     "api/web_request/web_request_time_tracker_unittest.cc",
+    "blob_reader_unittest.cc",
     "blocklist_check_unittest.cc",
     "blocklist_extension_prefs_unittest.cc",
     "blocklist_state_fetcher_unittest.cc",
