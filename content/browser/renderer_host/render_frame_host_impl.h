@@ -5196,8 +5196,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // shortly after navigation.
   std::map<std::string, base::WeakPtr<ServiceWorkerClient>>
       service_worker_clients_;
-  // Keeps the track of the latest ServiceWorkerClient.
-  base::WeakPtr<ServiceWorkerClient> last_committed_service_worker_client_;
 
   // The guest frame trees owned by this document.
   std::vector<std::unique_ptr<GuestPageHolderImpl>> guest_pages_;

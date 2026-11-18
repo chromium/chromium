@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/agent_cluster_key.h"
 #include "content/browser/process_lock.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/web_exposed_isolation_info.h"
@@ -83,12 +84,28 @@ ResourceBrokerRoutingDecision ComputeDecision(
     return ResourceBrokerRoutingDecision::kNoncePartitioned;
   }
 
-  // `ServiceWorkerClient::CommitResponse()` attaches the client to `frame`
-  // before `RenderFrameHostImpl::CommitNavigation()` creates subresource
-  // factories. Uncontrolled pages that later gain a controller via
-  // `clients.claim()` are only reflected if factories are recreated.
+  // During `RenderFrameHostImpl::CommitNavigation()`, the committing
+  // navigation's `ServiceWorkerClient` has committed its response, while
+  // `RenderFrameHostImpl::GetLastCommittedServiceWorkerClient()` is only
+  // updated once `DidCommitNavigation` is processed. Uncontrolled pages that
+  // later gain a controller via `clients.claim()` are only reflected if
+  // factories are recreated.
+  NavigationRequest* committing_request = nullptr;
+  for (base::SafeRef<NavigationHandle> handle :
+       frame->GetPendingCommitCrossDocumentNavigations()) {
+    NavigationRequest* candidate = NavigationRequest::From(&*handle);
+    if (candidate->state() < NavigationRequest::READY_TO_COMMIT ||
+        candidate->state() >= NavigationRequest::DID_COMMIT) {
+      continue;
+    }
+    if (!committing_request ||
+        committing_request->NavigationStart() < candidate->NavigationStart()) {
+      committing_request = candidate;
+    }
+  }
   base::WeakPtr<ServiceWorkerClient> service_worker_client =
-      frame->GetLastCommittedServiceWorkerClient();
+      committing_request ? committing_request->GetCommittedServiceWorkerClient()
+                         : frame->GetLastCommittedServiceWorkerClient();
   if (service_worker_client && service_worker_client->controller()) {
     return ResourceBrokerRoutingDecision::kServiceWorkerControlled;
   }

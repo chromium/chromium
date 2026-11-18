@@ -17585,6 +17585,8 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   blink::StorageKey storage_key_to_commit = CalculateStorageKey(
       origin, base::OptionalToPtr(provisional_storage_key.nonce()));
   SetStorageKey(storage_key_to_commit);
+  document_associated_data_->set_service_worker_client(
+      navigation_request->GetCommittedServiceWorkerClient());
 
   coep_reporter_ = navigation_request->TakeCoepReporter();
 
@@ -18597,7 +18599,6 @@ void RenderFrameHostImpl::AddServiceWorkerClient(
             kEnteredBackForwardCacheBeforeServiceWorkerHostAdded);
   }
   CHECK(!service_worker_clients_.contains(uuid));
-  last_committed_service_worker_client_ = service_worker_client;
   service_worker_clients_[uuid] = std::move(service_worker_client);
 }
 
@@ -18612,7 +18613,7 @@ void RenderFrameHostImpl::RemoveServiceWorkerClient(const std::string& uuid) {
 base::WeakPtr<ServiceWorkerClient>
 RenderFrameHostImpl::GetLastCommittedServiceWorkerClient() {
   CHECK_CURRENTLY_ON(BrowserThread::UI);
-  return last_committed_service_worker_client_;
+  return document_associated_data_->service_worker_client();
 }
 
 bool RenderFrameHostImpl::MaybeInterceptCommitCallback(

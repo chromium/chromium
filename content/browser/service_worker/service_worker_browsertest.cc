@@ -93,6 +93,7 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/commit_message_delayer.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -118,6 +119,7 @@
 #include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -1577,6 +1579,239 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
           .then(() => 'resolved', e => e.name)
     )"));
   }
+}
+
+// Forces `kOriginKeyedProcessesByDefault` off for tests that require a
+// same-site, cross-origin navigation in an initial empty iframe to reuse the
+// existing RenderFrameHost rather than swapping to an origin-keyed
+// SiteInstance.
+class ServiceWorkerNoOriginKeyedProcessesByDefaultBrowserTest
+    : public ServiceWorkerBrowserTest {
+ public:
+  ServiceWorkerNoOriginKeyedProcessesByDefaultBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        features::kOriginKeyedProcessesByDefault);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies that a blob dedicated worker created in an iframe while a
+// cross-origin (same-site) navigation is in `CommitNavigation` (and then
+// aborted before the renderer commits) does not inherit the pending target
+// document's ServiceWorkerClient controller and cannot bypass CORS to fetch
+// resources from the target origin.
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerNoOriginKeyedProcessesByDefaultBrowserTest,
+    BlobWorkerCreatedDuringUncommittedNavigationDoesNotInheritController) {
+  StartServerAndNavigateToSetup();
+
+  // Register a service worker on `embedded_test_server()` that synthesizes a
+  // response for every fetch event. If a cross-origin worker inherited this
+  // controller, `fetch(cross_origin_fetch_url)` would be intercepted by the
+  // service worker and succeed with `<title>Title</title>` despite lacking
+  // CORS headers on the server.
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            embedded_test_server()->GetURL(
+                                "/service_worker/create_service_worker.html")));
+  EXPECT_EQ("DONE", EvalJs(shell(), "register('fetch_event_blob.js');"));
+
+  const GURL in_scope_url =
+      embedded_test_server()->GetURL("/service_worker/empty.html");
+  const GURL cross_origin_fetch_url =
+      embedded_test_server()->GetURL("/service_worker/empty.html?from_worker");
+
+  // Start a second server on a different port (same-site, cross-origin on
+  // 127.0.0.1) so that a fresh iframe's first navigation reuses its initial
+  // RenderFrameHostImpl.
+  net::EmbeddedTestServer other_origin_server;
+  net::test_server::ControllableHttpResponse sync_pause_response(
+      &other_origin_server, "/sync_pause");
+  other_origin_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+  ASSERT_TRUE(other_origin_server.Start());
+  const GURL other_url = other_origin_server.GetURL("/title1.html");
+  const url::Origin other_origin = url::Origin::Create(other_url);
+
+  ASSERT_TRUE(NavigateToURL(shell(), other_url));
+  RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(ExecJs(main_frame,
+                     "const f = document.createElement('iframe');"
+                     "document.body.appendChild(f);"));
+  ASSERT_EQ(1u, main_frame->child_count());
+  RenderFrameHostImpl* child_frame =
+      main_frame->child_at(0)->current_frame_host();
+  ASSERT_FALSE(child_frame->has_committed_any_navigation());
+  EXPECT_EQ(other_origin, child_frame->GetLastCommittedOrigin());
+
+  // Observe when `NavigationRequest::CommitNavigation()` runs for
+  // `in_scope_url` and wait until `CommitNavigation()` finishes on the UI
+  // thread (so `AddServiceWorkerClient()` and `SendCommitNavigation()` have
+  // both completed).
+  base::RunLoop commit_navigation_sent_loop;
+  class CommitNavigationSentObserver : public WebContentsObserver {
+   public:
+    CommitNavigationSentObserver(WebContents* web_contents,
+                                 const GURL& target_url,
+                                 base::OnceClosure quit_closure)
+        : WebContentsObserver(web_contents),
+          target_url_(target_url),
+          quit_closure_(std::move(quit_closure)) {}
+
+    void ReadyToCommitNavigation(NavigationHandle* handle) override {
+      if (handle->GetURL() == target_url_ && quit_closure_) {
+        // Post a task so `NavigationRequest::CommitNavigation()` finishes
+        // calling `AddServiceWorkerClient()` and `SendCommitNavigation()`
+        // before `quit_closure_` runs.
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(quit_closure_));
+      }
+    }
+
+   private:
+    const GURL target_url_;
+    base::OnceClosure quit_closure_;
+  } observer(shell()->web_contents(), in_scope_url,
+             commit_navigation_sent_loop.QuitClosure());
+
+  DOMMessageQueue message_queue(shell()->web_contents());
+  ExecuteScriptAsync(main_frame,
+                     JsReplace(R"(
+        const f = document.querySelector('iframe');
+        f.src = $1;
+        // Block the renderer main thread synchronously so the queued
+        // CommitNavigation IPC cannot be processed until the worker is created
+        // and the navigation is aborted.
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', '/sync_pause', false);
+        xhr.send();
+
+        const code = `
+          fetch($2).then(r => r.text()).then(
+              t => postMessage('ok: ' + t),
+              e => postMessage('error: ' + e));
+        `;
+        const blob = new Blob([code], {type: 'text/javascript'});
+        const w = new f.contentWindow.Worker(URL.createObjectURL(blob));
+        f.contentWindow.stop();
+        w.onmessage = e => window.domAutomationController.send(e.data);
+      )",
+                               in_scope_url, cross_origin_fetch_url));
+
+  sync_pause_response.WaitForRequest();
+  commit_navigation_sent_loop.Run();
+
+  // At this point `NavigationRequest::CommitNavigation()` has already added the
+  // pending `ServiceWorkerClient` to `child_frame`, while the renderer is still
+  // blocked before processing `CommitNavigation`.
+  EXPECT_EQ(other_origin, child_frame->GetLastCommittedOrigin());
+  EXPECT_EQ(1u, child_frame->service_worker_clients_for_testing().size());
+  EXPECT_FALSE(child_frame->GetLastCommittedServiceWorkerClient());
+
+  // Unblock the synchronous XHR so the renderer creates the blob worker, aborts
+  // the navigation, and attempts the cross-origin fetch from the worker.
+  sync_pause_response.Send(net::HTTP_OK, "text/plain", "ok");
+  sync_pause_response.Done();
+
+  std::string fetch_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&fetch_result));
+  EXPECT_EQ("\"error: TypeError: Failed to fetch\"", fetch_result);
+  EXPECT_EQ(other_origin, child_frame->GetLastCommittedOrigin());
+}
+
+// Verifies that `RenderFrameHostImpl::GetLastCommittedServiceWorkerClient()`
+// is only updated when a navigation finishes committing in the frame, rather
+// than when `CommitNavigation()` sends the commit IPC.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerNoOriginKeyedProcessesByDefaultBrowserTest,
+                       LastCommittedServiceWorkerClientUpdatedOnlyAfterCommit) {
+  StartServerAndNavigateToSetup();
+
+  // Register a service worker that controls /service_worker/.
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            embedded_test_server()->GetURL(
+                                "/service_worker/create_service_worker.html")));
+  EXPECT_EQ("DONE",
+            EvalJs(shell(), "register('fetch_event_pass_through.js');"));
+
+  const GURL in_scope_url =
+      embedded_test_server()->GetURL("/service_worker/empty.html");
+  const url::Origin in_scope_origin = url::Origin::Create(in_scope_url);
+
+  // Start a second server on a different port (same-site, cross-origin on
+  // 127.0.0.1) so that a fresh iframe's first navigation reuses its initial
+  // RenderFrameHostImpl.
+  net::EmbeddedTestServer other_origin_server;
+  other_origin_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+  ASSERT_TRUE(other_origin_server.Start());
+  const GURL other_url = other_origin_server.GetURL("/title1.html");
+  const url::Origin other_origin = url::Origin::Create(other_url);
+
+  ASSERT_TRUE(NavigateToURL(shell(), other_url));
+  RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(ExecJs(main_frame,
+                     "const f = document.createElement('iframe');"
+                     "document.body.appendChild(f);"));
+  ASSERT_EQ(1u, main_frame->child_count());
+  RenderFrameHostImpl* child_frame =
+      main_frame->child_at(0)->current_frame_host();
+  ASSERT_FALSE(child_frame->has_committed_any_navigation());
+  EXPECT_EQ(other_origin, child_frame->GetLastCommittedOrigin());
+  EXPECT_FALSE(child_frame->GetLastCommittedServiceWorkerClient());
+
+  bool delayer_ran = false;
+  CommitMessageDelayer commit_delayer(
+      shell()->web_contents(), in_scope_url,
+      base::BindLambdaForTesting([&](RenderFrameHost* rfh) {
+        delayer_ran = true;
+        EXPECT_EQ(child_frame, rfh);
+        // `AddServiceWorkerClient()` has already been called during
+        // `NavigationRequest::CommitNavigation()`, but the new document has not
+        // yet committed in `child_frame`.
+        EXPECT_EQ(other_origin, child_frame->GetLastCommittedOrigin());
+        EXPECT_EQ(1u, child_frame->service_worker_clients_for_testing().size());
+        EXPECT_FALSE(child_frame->GetLastCommittedServiceWorkerClient());
+      }));
+
+  ASSERT_TRUE(ExecJs(
+      main_frame,
+      JsReplace("document.querySelector('iframe').src = $1;", in_scope_url)));
+  commit_delayer.Wait();
+  EXPECT_TRUE(delayer_ran);
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // Once the navigation has committed, `GetLastCommittedServiceWorkerClient()`
+  // returns the new document's client and a blob dedicated worker inherits the
+  // controller.
+  ASSERT_EQ(child_frame, main_frame->child_at(0)->current_frame_host());
+  EXPECT_EQ(in_scope_origin, child_frame->GetLastCommittedOrigin());
+  ASSERT_TRUE(child_frame->GetLastCommittedServiceWorkerClient());
+  EXPECT_TRUE(child_frame->GetLastCommittedServiceWorkerClient()->controller());
+
+  const GURL worker_fetch_url =
+      embedded_test_server()->GetURL("/service_worker/empty.html?from_worker");
+  EXPECT_EQ("ok", EvalJs(child_frame, JsReplace(R"(
+    new Promise((resolve, reject) => {
+      const code = `
+        fetch($1).then(() => postMessage('ok'), e => postMessage(String(e)));
+      `;
+      const blob = new Blob([code], {type: 'text/javascript'});
+      const w = new Worker(URL.createObjectURL(blob));
+      w.onmessage = e => resolve(e.data);
+      w.onerror = e => reject(e.message);
+    })
+  )",
+                                                worker_fetch_url)));
+  EXPECT_EQ(true, EvalJs(child_frame, JsReplace(R"(
+    new Promise(resolve => {
+      navigator.serviceWorker.addEventListener('message', e => {
+        resolve(e.data.includes($1));
+      }, {once: true});
+      navigator.serviceWorker.controller.postMessage('get_saw_requests');
+    })
+  )",
+                                                worker_fetch_url.spec())));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, SubresourceTimingAllowPassed) {

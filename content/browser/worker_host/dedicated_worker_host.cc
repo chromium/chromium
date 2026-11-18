@@ -33,6 +33,7 @@
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
+#include "content/browser/service_worker/service_worker_security_utils.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
 #include "content/browser/websockets/websocket_connector_impl.h"
@@ -388,6 +389,12 @@ void DedicatedWorkerHost::StartScriptLoad(
         creator_render_frame_host->GetLastCommittedServiceWorkerClient();
   } else {
     parent_service_worker_client = creator_worker->GetServiceWorkerClient();
+  }
+  if (parent_service_worker_client &&
+      !service_worker_security_utils::
+          AreOriginsCompatibleForServiceWorkerClient(
+              creator_origin_, parent_service_worker_client->key().origin())) {
+    parent_service_worker_client = nullptr;
   }
   std::string fetch_event_client_id;
   if (parent_service_worker_client) {

@@ -24,6 +24,7 @@
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
+#include "content/browser/service_worker/service_worker_security_utils.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/worker_host/shared_worker_host.h"
@@ -539,17 +540,25 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   SharedWorkerHost* host = insertion_result.first->get();
   shared_worker_hosts_[host->token()] = host;
 
+  base::WeakPtr<ServiceWorkerClient> parent_service_worker_client =
+      creator.GetLastCommittedServiceWorkerClient();
+  if (parent_service_worker_client &&
+      !service_worker_security_utils::
+          AreOriginsCompatibleForServiceWorkerClient(
+              instance.creator_storage_key().origin(),
+              parent_service_worker_client->key().origin())) {
+    parent_service_worker_client = nullptr;
+  }
   std::string fetch_event_client_id;
-  if (creator.GetLastCommittedServiceWorkerClient()) {
-    fetch_event_client_id =
-        creator.GetLastCommittedServiceWorkerClient()->client_uuid();
+  if (parent_service_worker_client) {
+    fetch_event_client_id = parent_service_worker_client->client_uuid();
   }
 
   auto service_worker_handle =
       std::make_unique<ServiceWorkerMainResourceHandle>(
           storage_partition_->GetServiceWorkerContext(), base::DoNothing(),
           std::move(fetch_event_client_id),
-          creator.GetLastCommittedServiceWorkerClient());
+          std::move(parent_service_worker_client));
   auto* service_worker_handle_raw = service_worker_handle.get();
   host->SetServiceWorkerHandle(std::move(service_worker_handle));
 
