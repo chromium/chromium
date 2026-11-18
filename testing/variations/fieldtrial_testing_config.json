@@ -9508,7 +9508,8 @@
                     "name": "Enabled_20261109",
                     "enable_features": [
                         "AnnotatedPageContentAutofillOtpRedactions",
-                        "GlicActorAutofillOneTimePassword"
+                        "GlicActorAutofillOneTimePassword",
+                        "GlicActorAutofillOneTimePasswordPslMatching"
                     ]
                 }
             ]
