@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRECONNECT_PRECONNECT_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_PRELOADING_PRECONNECT_PRECONNECT_MANAGER_IMPL_H_
 
+#include <atomic>
 #include <list>
 #include <map>
 #include <memory>
@@ -15,7 +16,9 @@
 #include "base/feature.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/optional_ref.h"
+#include "content/browser/network/cross_thread_network_context.h"
 #include "content/browser/preloading/proxy_lookup_client_impl.h"
 #include "content/browser/preloading/resolve_host_client_impl.h"
 #include "content/public/browser/preconnect_manager.h"
@@ -102,6 +105,11 @@ struct CONTENT_EXPORT PreresolveJob {
   base::UnguessableToken network_restrictions_id;
 };
 
+// See PreconnectManager for the thread affinity of this class and its
+// methods. Most methods (including construction and destruction) must be called
+// on the UI thread, except for StartPreconnectUrl which may be called from any
+// sequence when features::kPreconnectOffTheMainThread is enabled (provided the
+// caller ensures the instance is not deleted concurrently during the call).
 class CONTENT_EXPORT PreconnectManagerImpl : public PreconnectManager {
  public:
   static const size_t kMaxInflightPreresolves = 3;
@@ -130,6 +138,12 @@ class CONTENT_EXPORT PreconnectManagerImpl : public PreconnectManager {
       net::NetworkTrafficAnnotationTag traffic_annotation,
       const content::StoragePartitionConfig* storage_partition_config,
       const base::UnguessableToken& network_restrictions_id) override;
+  // Starts a preconnect to the given URL. When
+  // features::kPreconnectOffTheMainThread is enabled, this may be called from
+  // any sequence. Off-UI-thread callers must ensure that this
+  // `PreconnectManager` instance is not deleted on the UI thread during the
+  // call, and must pass nullptr for `storage_partition_config` (only the
+  // default storage partition is supported off the UI thread).
   void StartPreconnectUrl(
       const GURL& url,
       bool allow_credentials,
@@ -147,12 +161,35 @@ class CONTENT_EXPORT PreconnectManagerImpl : public PreconnectManager {
 
   void SetNetworkContextForTesting(
       network::mojom::NetworkContext* network_context) override;
+  void SetCrossThreadNetworkContextForTesting(
+      scoped_refptr<CrossThreadNetworkContext> context);
   void SetObserverForTesting(Observer* observer) override;
 
  private:
   using PreresolveJobMap = base::IDMap<std::unique_ptr<PreresolveJob>>;
   using PreresolveJobId = PreresolveJobMap::KeyType;
   friend class PreconnectManagerImplTest;
+
+  void StartPreconnectUrlOnUi(
+      const GURL& url,
+      bool allow_credentials,
+      net::NetworkAnonymizationKey network_anonymization_key,
+      net::NetworkTrafficAnnotationTag traffic_annotation,
+      const content::StoragePartitionConfig* storage_partition_config,
+      const base::UnguessableToken& network_restrictions_id,
+      std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+          connection_change_observer_client);
+
+  void StartPreconnectUrlOnNonUi(
+      const GURL& url,
+      bool allow_credentials,
+      net::NetworkAnonymizationKey network_anonymization_key,
+      net::NetworkTrafficAnnotationTag traffic_annotation,
+      const base::UnguessableToken& network_restrictions_id,
+      std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+          connection_change_observer_client);
 
   void PreconnectUrl(
       const GURL& url,
@@ -187,16 +224,21 @@ class CONTENT_EXPORT PreconnectManagerImpl : public PreconnectManager {
   // NOTE: Returns a non-null pointer outside of unittesting contexts.
   network::mojom::NetworkContext* GetNetworkContext(
       const content::StoragePartitionConfig* storage_partition_config) const;
+  bool CheckAndUpdatePreconnectEnabledOnUI();
 
   base::WeakPtr<Delegate> delegate_;
   const raw_ptr<content::BrowserContext> browser_context_;
+  std::atomic<bool> is_preconnect_enabled_{true};
+  scoped_refptr<CrossThreadNetworkContext> cross_thread_network_context_;
+  scoped_refptr<base::SequencedTaskRunner> omt_task_runner_;
   std::list<PreresolveJobId> queued_jobs_;
   PreresolveJobMap preresolve_jobs_;
   std::map<GURL, std::unique_ptr<PreresolveInfo>> preresolve_info_;
   size_t inflight_preresolves_count_ = 0;
 
   // Only used in tests.
-  raw_ptr<network::mojom::NetworkContext> network_context_ = nullptr;
+  raw_ptr<network::mojom::NetworkContext> network_context_for_testing_ =
+      nullptr;
   raw_ptr<Observer> observer_ = nullptr;
 
   base::WeakPtrFactory<PreconnectManagerImpl> weak_factory_{this};

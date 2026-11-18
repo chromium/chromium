@@ -10,10 +10,12 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/not_fatal_until.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "content/browser/preloading/proxy_lookup_client_impl.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -108,11 +110,18 @@ PreresolveJob::~PreresolveJob() = default;
 PreconnectManagerImpl::PreconnectManagerImpl(
     base::WeakPtr<Delegate> delegate,
     content::BrowserContext* browser_context)
-    : delegate_(std::move(delegate)),
-      browser_context_(browser_context),
-      inflight_preresolves_count_(0) {
+    : delegate_(std::move(delegate)), browser_context_(browser_context) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(browser_context_, base::NotFatalUntil::M159);
+  CheckAndUpdatePreconnectEnabledOnUI();
+  if (base::FeatureList::IsEnabled(features::kPreconnectOffTheMainThread)) {
+    omt_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::TaskPriority::USER_VISIBLE});
+    cross_thread_network_context_ =
+        static_cast<StoragePartitionImpl*>(
+            browser_context_->GetDefaultStoragePartition())
+            ->CreateCrossThreadNetworkContext();
+  }
 }
 
 PreconnectManagerImpl::~PreconnectManagerImpl() = default;
@@ -123,7 +132,16 @@ base::WeakPtr<PreconnectManager> PreconnectManagerImpl::GetWeakPtr() {
 
 void PreconnectManagerImpl::SetNetworkContextForTesting(
     network::mojom::NetworkContext* network_context) {
-  network_context_ = network_context;
+  network_context_for_testing_ = network_context;
+}
+
+void PreconnectManagerImpl::SetCrossThreadNetworkContextForTesting(
+    scoped_refptr<CrossThreadNetworkContext> context) {
+  if (!omt_task_runner_) {
+    omt_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::TaskPriority::USER_VISIBLE});
+  }
+  cross_thread_network_context_ = std::move(context);
 }
 
 void PreconnectManagerImpl::SetObserverForTesting(Observer* observer) {
@@ -135,7 +153,7 @@ void PreconnectManagerImpl::Start(
     std::vector<content::PreconnectRequest> requests,
     net::NetworkTrafficAnnotationTag traffic_annotation) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M159);
-  if (!delegate_ || !delegate_->IsPreconnectEnabled()) {
+  if (!CheckAndUpdatePreconnectEnabledOnUI()) {
     return;
   }
   if (!url.SchemeIsHTTPOrHTTPS()) {
@@ -167,7 +185,7 @@ void PreconnectManagerImpl::StartPreresolveHost(
     const base::UnguessableToken& network_restrictions_id) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(!network_restrictions_id.is_empty(), base::NotFatalUntil::M165);
-  if (!delegate_ || !delegate_->IsPreconnectEnabled()) {
+  if (!CheckAndUpdatePreconnectEnabledOnUI()) {
     return;
   }
   if (!url.SchemeIsHTTPOrHTTPS()) {
@@ -191,7 +209,7 @@ void PreconnectManagerImpl::StartPreresolveHosts(
     const base::UnguessableToken& network_restrictions_id) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(!network_restrictions_id.is_empty(), base::NotFatalUntil::M165);
-  if (!delegate_ || !delegate_->IsPreconnectEnabled()) {
+  if (!CheckAndUpdatePreconnectEnabledOnUI()) {
     return;
   }
   // Push jobs in front of the queue due to higher priority.
@@ -222,16 +240,48 @@ void PreconnectManagerImpl::StartPreconnectUrl(
     std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
     mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
         connection_change_observer_client) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M159);
-  CHECK(!network_restrictions_id.is_empty(), base::NotFatalUntil::M165);
-  if (!delegate_ || !delegate_->IsPreconnectEnabled()) {
-    return;
-  }
   if (!url.SchemeIsHTTPOrHTTPS()) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
+  if (content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    StartPreconnectUrlOnUi(url, allow_credentials,
+                           std::move(network_anonymization_key),
+                           traffic_annotation, storage_partition_config,
+                           network_restrictions_id, std::move(keepalive_config),
+                           std::move(connection_change_observer_client));
+  } else {
+    // Off-the-main-thread preconnect only supports the default storage
+    // partition because `cross_thread_network_context_` is bound to the default
+    // partition. Require `storage_partition_config` to be nullptr so
+    // `StoragePartitionConfig` is never accessed off the UI thread.
+    CHECK(!storage_partition_config);
+    StartPreconnectUrlOnNonUi(url, allow_credentials,
+                              std::move(network_anonymization_key),
+                              traffic_annotation, network_restrictions_id,
+                              std::move(keepalive_config),
+                              std::move(connection_change_observer_client));
+  }
+}
+
+void PreconnectManagerImpl::StartPreconnectUrlOnUi(
+    const GURL& url,
+    bool allow_credentials,
+    net::NetworkAnonymizationKey network_anonymization_key,
+    net::NetworkTrafficAnnotationTag traffic_annotation,
+    const content::StoragePartitionConfig* storage_partition_config,
+    const base::UnguessableToken& network_restrictions_id,
+    std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
+    mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+        connection_change_observer_client) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!CheckAndUpdatePreconnectEnabledOnUI()) {
+    return;
+  }
+  CHECK(!network_restrictions_id.is_empty(), base::NotFatalUntil::M165);
+
+  if (base::FeatureList::IsEnabled(features::kPreconnectOffTheMainThread) ||
+      base::FeatureList::IsEnabled(
           features::kPreconnectManagerDirectFastPath)) {
     PreconnectUrl(url.DeprecatedGetOriginAsURL(), /*num_sockets=*/1,
                   allow_credentials, network_anonymization_key,
@@ -250,6 +300,49 @@ void PreconnectManagerImpl::StartPreconnectUrl(
   queued_jobs_.push_front(job_id);
 
   TryToLaunchPreresolveJobs();
+}
+
+void PreconnectManagerImpl::StartPreconnectUrlOnNonUi(
+    const GURL& url,
+    bool allow_credentials,
+    net::NetworkAnonymizationKey network_anonymization_key,
+    net::NetworkTrafficAnnotationTag traffic_annotation,
+    const base::UnguessableToken& network_restrictions_id,
+    std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
+    mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+        connection_change_observer_client) {
+  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  // TODO(crbug.com/556493449): `is_preconnect_enabled_` is only refreshed on
+  // the UI thread when UI-thread preconnect APIs are called. If preconnect is
+  // initiated purely from non-UI threads and the delegate's policy changes
+  // dynamically, this could read a stale value. Consider observing delegate
+  // policy changes or periodically syncing from the UI thread.
+  if (!is_preconnect_enabled_.load(std::memory_order_relaxed)) {
+    return;
+  }
+  CHECK(!network_restrictions_id.is_empty(), base::NotFatalUntil::M165);
+  CHECK(!network_anonymization_key.IsEmpty() ||
+        !net::NetworkAnonymizationKey::IsPartitioningEnabled());
+  if (!base::FeatureList::IsEnabled(features::kPreconnectOffTheMainThread)) {
+    return;
+  }
+  if (!cross_thread_network_context_) {
+    return;
+  }
+  CHECK(omt_task_runner_);
+
+  omt_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &CrossThreadNetworkContext::PreconnectSockets,
+          cross_thread_network_context_, /*num_streams=*/1,
+          url.DeprecatedGetOriginAsURL(),
+          allow_credentials ? network::mojom::CredentialsMode::kInclude
+                            : network::mojom::CredentialsMode::kOmit,
+          network_anonymization_key, network_restrictions_id,
+          net::MutableNetworkTrafficAnnotationTag(traffic_annotation),
+          std::move(keepalive_config),
+          std::move(connection_change_observer_client)));
 }
 
 void PreconnectManagerImpl::Stop(const GURL& url) {
@@ -273,6 +366,7 @@ void PreconnectManagerImpl::PreconnectUrl(
     std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
     mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
         connection_change_observer_client) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!network_restrictions_id.is_empty(), base::NotFatalUntil::M165);
   CHECK(url.DeprecatedGetOriginAsURL() == url, base::NotFatalUntil::M159);
   CHECK(url.SchemeIsHTTPOrHTTPS(), base::NotFatalUntil::M159);
@@ -284,7 +378,9 @@ void PreconnectManagerImpl::PreconnectUrl(
                                connection_change_observer_client);
   }
 
-  auto* network_context = GetNetworkContext(storage_partition_config);
+  network::mojom::NetworkContext* network_context =
+      GetNetworkContext(storage_partition_config);
+  CHECK(network_context);
 
   if (num_sockets > 1 &&
       base::FeatureList::IsEnabled(
@@ -475,8 +571,8 @@ void PreconnectManagerImpl::AllPreresolvesForUrlFinished(PreresolveInfo* info) {
 
 network::mojom::NetworkContext* PreconnectManagerImpl::GetNetworkContext(
     const content::StoragePartitionConfig* storage_partition_config) const {
-  if (network_context_) {
-    return network_context_;
+  if (network_context_for_testing_) {
+    return network_context_for_testing_;
   }
 
   auto* network_context =
@@ -489,6 +585,17 @@ network::mojom::NetworkContext* PreconnectManagerImpl::GetNetworkContext(
           ->GetNetworkContext();
   CHECK(network_context, base::NotFatalUntil::M159);
   return network_context;
+}
+
+bool PreconnectManagerImpl::CheckAndUpdatePreconnectEnabledOnUI() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!delegate_) {
+    is_preconnect_enabled_.store(false, std::memory_order_relaxed);
+    return false;
+  }
+  bool is_enabled = delegate_->IsPreconnectEnabled();
+  is_preconnect_enabled_.store(is_enabled, std::memory_order_relaxed);
+  return is_enabled;
 }
 
 }  // namespace content

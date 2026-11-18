@@ -59,7 +59,11 @@ struct CONTENT_EXPORT PreconnectStats {
 //    number of speculative dns requests in flight.
 //  - When stopped, waits for the pending preresolve requests to finish without
 //    issuing preconnects for them.
-//  - All methods of the class must be called on the UI thread.
+//  - Most methods of the class (including construction and destruction) must
+//    be called on the UI thread. StartPreconnectUrl may be called from any
+//    sequence when features::kPreconnectOffTheMainThread is enabled, provided
+//    the caller ensures PreconnectManager is not destroyed concurrently on the
+//    UI thread during the call.
 class CONTENT_EXPORT PreconnectManager {
  public:
   class Delegate {
@@ -140,8 +144,12 @@ class CONTENT_EXPORT PreconnectManager {
       net::NetworkTrafficAnnotationTag traffic_annotation,
       const StoragePartitionConfig* storage_partition_config,
       const base::UnguessableToken& network_restrictions_id) = 0;
-  // TODO(crbug.com/447954811): Pass network_restriction_id for preconnect,
-  // just like we do for host resolution above.
+  // Starts a preconnect to the given URL. When
+  // features::kPreconnectOffTheMainThread is enabled, this may be called from
+  // any sequence. Off-UI-thread callers must ensure that this
+  // `PreconnectManager` instance is not deleted on the UI thread during the
+  // call, and must pass nullptr for `storage_partition_config` (only the
+  // default storage partition is supported off the UI thread).
   virtual void StartPreconnectUrl(
       const GURL& url,
       bool allow_credentials,

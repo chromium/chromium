@@ -14,15 +14,22 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/network/cross_thread_network_context.h"
 #include "content/browser/preloading/proxy_lookup_client_impl.h"
 #include "content/browser/preloading/resolve_host_client_impl.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/preconnect_manager.h"
 #include "content/public/browser/preconnect_request.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_anonymization_key.h"
@@ -47,6 +54,70 @@ using testing::StrictMock;
 namespace content {
 
 namespace {
+
+class FakeNetworkContextForOMT : public network::TestNetworkContext {
+ public:
+  mojo::PendingRemote<network::mojom::NetworkContext>
+  BindNewPipeAndPassRemote() {
+    mojo::PendingRemote<network::mojom::NetworkContext> remote;
+    receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
+    return remote;
+  }
+
+  void Clone(
+      mojo::PendingReceiver<network::mojom::NetworkContext> receiver) override {
+    ++clone_count_;
+    receivers_.Add(this, std::move(receiver));
+  }
+
+  void PreconnectSockets(
+      uint32_t num_streams,
+      const GURL& url,
+      network::mojom::CredentialsMode credentials_mode,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const base::UnguessableToken& network_restrictions_id,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+      const std::optional<net::ConnectionKeepAliveConfig>& keepalive_config,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+          connection_change_observer_client) override {
+    preconnect_url_ = url;
+    num_streams_ = num_streams;
+    credentials_mode_ = credentials_mode;
+    network_anonymization_key_ = network_anonymization_key;
+    network_restrictions_id_ = network_restrictions_id;
+    if (on_preconnect_sockets_) {
+      on_preconnect_sockets_.Run();
+    }
+  }
+
+  void set_on_preconnect_sockets(base::RepeatingClosure callback) {
+    on_preconnect_sockets_ = std::move(callback);
+  }
+
+  const GURL& preconnect_url() const { return preconnect_url_; }
+  uint32_t num_streams() const { return num_streams_; }
+  network::mojom::CredentialsMode credentials_mode() const {
+    return credentials_mode_;
+  }
+  const net::NetworkAnonymizationKey& network_anonymization_key() const {
+    return network_anonymization_key_;
+  }
+  const base::UnguessableToken& network_restrictions_id() const {
+    return network_restrictions_id_;
+  }
+  size_t clone_count() const { return clone_count_; }
+
+ private:
+  mojo::ReceiverSet<network::mojom::NetworkContext> receivers_;
+  size_t clone_count_ = 0;
+  GURL preconnect_url_;
+  uint32_t num_streams_ = 0;
+  network::mojom::CredentialsMode credentials_mode_ =
+      network::mojom::CredentialsMode::kOmit;
+  net::NetworkAnonymizationKey network_anonymization_key_;
+  base::UnguessableToken network_restrictions_id_;
+  base::RepeatingClosure on_preconnect_sockets_;
+};
 
 net::ProxyInfo GetIndirectProxyInfo() {
   net::ProxyInfo proxy_info;
@@ -256,6 +327,15 @@ class PreconnectManagerImplTest : public testing::Test {
     Mock::VerifyAndClearExpectations(mock_delegate_.get());
   }
 
+  bool HasCrossThreadNetworkContext(
+      const PreconnectManagerImpl& manager) const {
+    return manager.cross_thread_network_context_ != nullptr;
+  }
+
+  bool HasOmtTaskRunner(const PreconnectManagerImpl& manager) const {
+    return manager.omt_task_runner_ != nullptr;
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
@@ -268,10 +348,12 @@ PreconnectManagerImplTest::PreconnectManagerImplTest()
     : browser_context_(std::make_unique<TestBrowserContext>()),
       mock_network_context_(std::make_unique<StrictMock<MockNetworkContext>>()),
       mock_delegate_(
-          std::make_unique<StrictMock<MockPreconnectManagerDelegate>>()),
-      preconnect_manager_(
-          std::make_unique<PreconnectManagerImpl>(mock_delegate_->AsWeakPtr(),
-                                                  browser_context_.get())) {
+          std::make_unique<StrictMock<MockPreconnectManagerDelegate>>()) {
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .Times(testing::AnyNumber())
+      .WillRepeatedly(testing::Return(true));
+  preconnect_manager_ = std::make_unique<PreconnectManagerImpl>(
+      mock_delegate_->AsWeakPtr(), browser_context_.get());
   preconnect_manager_->SetNetworkContextForTesting(mock_network_context_.get());
 }
 
@@ -1673,6 +1755,290 @@ TEST_F(PreconnectManagerImplTest, TestBothProxyAndHostLookupFailed) {
   mock_network_context_->CompleteHostLookup(origin_to_preconnect.host(),
                                             network_anonymization_key,
                                             net::ERR_NAME_NOT_RESOLVED);
+}
+
+TEST_F(PreconnectManagerImplTest,
+       TestDoesNotCloneNetworkContextWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kPreconnectOffTheMainThread);
+
+  FakeNetworkContextForOMT fake_network_context;
+  browser_context_->GetDefaultStoragePartition()->SetNetworkContextForTesting(
+      fake_network_context.BindNewPipeAndPassRemote());
+
+  auto manager = std::make_unique<PreconnectManagerImpl>(
+      mock_delegate_->AsWeakPtr(), browser_context_.get());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(HasCrossThreadNetworkContext(*manager));
+  EXPECT_FALSE(HasOmtTaskRunner(*manager));
+  EXPECT_EQ(0u, fake_network_context.clone_count());
+}
+
+TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrlOffTheMainThread) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPreconnectOffTheMainThread);
+
+  FakeNetworkContextForOMT fake_network_context;
+
+  // Clear mock network_context_for_testing_ so PreconnectManager uses
+  // CrossThreadNetworkContext.
+  preconnect_manager_->SetNetworkContextForTesting(nullptr);
+  preconnect_manager_->SetCrossThreadNetworkContextForTesting(
+      CrossThreadNetworkContext::CreateForTesting(
+          base::BindRepeating(&FakeNetworkContextForOMT::Clone,
+                              base::Unretained(&fake_network_context)),
+          base::SingleThreadTaskRunner::GetCurrentDefault()));
+
+  GURL url("http://cdn.google.com/script.js");
+  net::NetworkAnonymizationKey network_anonymization_key =
+      CreateNetworkAnonymizationKey(url);
+  base::UnguessableToken restriction_token = base::UnguessableToken::Create();
+  GURL expected_origin("http://cdn.google.com");
+  bool allow_credentials = false;
+
+  base::RunLoop run_loop;
+  fake_network_context.set_on_preconnect_sockets(run_loop.QuitClosure());
+
+  scoped_refptr<base::SequencedTaskRunner> background_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({});
+
+  background_runner->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        preconnect_manager_->StartPreconnectUrl(
+            url, allow_credentials, network_anonymization_key,
+            TRAFFIC_ANNOTATION_FOR_TESTS,
+            /*storage_partition_config=*/nullptr, restriction_token,
+            /*keepalive_config=*/std::nullopt, mojo::NullRemote());
+      }));
+
+  run_loop.Run();
+
+  EXPECT_EQ(expected_origin, fake_network_context.preconnect_url());
+  EXPECT_EQ(1u, fake_network_context.num_streams());
+  EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
+            fake_network_context.credentials_mode());
+  EXPECT_EQ(network_anonymization_key,
+            fake_network_context.network_anonymization_key());
+  EXPECT_EQ(restriction_token, fake_network_context.network_restrictions_id());
+}
+
+TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrl_DisabledByDelegate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPreconnectOffTheMainThread);
+
+  FakeNetworkContextForOMT fake_network_context;
+  preconnect_manager_->SetCrossThreadNetworkContextForTesting(
+      CrossThreadNetworkContext::CreateForTesting(
+          base::BindRepeating(&FakeNetworkContextForOMT::Clone,
+                              base::Unretained(&fake_network_context)),
+          base::SingleThreadTaskRunner::GetCurrentDefault()));
+
+  GURL url("http://cdn.google.com/script.js");
+  net::NetworkAnonymizationKey network_anonymization_key =
+      CreateNetworkAnonymizationKey(url);
+  bool allow_credentials = false;
+
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(*mock_network_context_, PreconnectSockets).Times(0);
+
+  // Calling on UI thread records delegate's disabled policy to the atomic flag.
+  preconnect_manager_->StartPreconnectUrl(
+      url, allow_credentials, network_anonymization_key,
+      TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*storage_partition_config=*/nullptr,
+      network::GetTestNetworkRestrictionsId(),
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
+
+  // A subsequent call from a background thread must also be blocked.
+  scoped_refptr<base::SequencedTaskRunner> background_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({});
+  base::RunLoop run_loop;
+  background_runner->PostTask(
+      FROM_HERE,
+      base::BindLambdaForTesting([&, quit_closure = run_loop.QuitClosure()]() {
+        preconnect_manager_->StartPreconnectUrl(
+            url, allow_credentials, network_anonymization_key,
+            TRAFFIC_ANNOTATION_FOR_TESTS,
+            /*storage_partition_config=*/nullptr,
+            network::GetTestNetworkRestrictionsId(),
+            /*keepalive_config=*/std::nullopt, mojo::NullRemote());
+        quit_closure.Run();
+      }));
+  run_loop.Run();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(fake_network_context.preconnect_url().is_empty());
+}
+
+TEST_F(PreconnectManagerImplTest,
+       TestStartPreconnectUrl_NonDefaultPartitionPreservedOnUIThread) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPreconnectOffTheMainThread);
+
+  GURL url("http://cdn.google.com/script.js");
+  net::NetworkAnonymizationKey network_anonymization_key =
+      CreateNetworkAnonymizationKey(url);
+
+  auto partition_config = StoragePartitionConfig::Create(
+      browser_context_.get(), "custom_domain", "custom_name",
+      /*in_memory=*/false);
+
+  FakeNetworkContextForOMT custom_partition_network_context;
+  FakeNetworkContextForOMT default_partition_network_context;
+  FakeNetworkContextForOMT cross_thread_network_context;
+
+  preconnect_manager_->SetNetworkContextForTesting(nullptr);
+  browser_context_->GetStoragePartition(partition_config)
+      ->SetNetworkContextForTesting(
+          custom_partition_network_context.BindNewPipeAndPassRemote());
+  browser_context_->GetDefaultStoragePartition()->SetNetworkContextForTesting(
+      default_partition_network_context.BindNewPipeAndPassRemote());
+  preconnect_manager_->SetCrossThreadNetworkContextForTesting(
+      CrossThreadNetworkContext::CreateForTesting(
+          base::BindRepeating(&FakeNetworkContextForOMT::Clone,
+                              base::Unretained(&cross_thread_network_context)),
+          base::SingleThreadTaskRunner::GetCurrentDefault()));
+
+  base::RunLoop run_loop;
+  custom_partition_network_context.set_on_preconnect_sockets(
+      run_loop.QuitClosure());
+
+  // Calling on UI thread with a non-default partition routes directly to that
+  // partition's NetworkContext.
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillRepeatedly(testing::Return(true));
+
+  preconnect_manager_->StartPreconnectUrl(
+      url, /*allow_credentials=*/true, network_anonymization_key,
+      TRAFFIC_ANNOTATION_FOR_TESTS, &partition_config,
+      network::GetTestNetworkRestrictionsId(),
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
+
+  run_loop.Run();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(url.DeprecatedGetOriginAsURL(),
+            custom_partition_network_context.preconnect_url());
+  EXPECT_EQ(1u, custom_partition_network_context.num_streams());
+  EXPECT_EQ(network::mojom::CredentialsMode::kInclude,
+            custom_partition_network_context.credentials_mode());
+  EXPECT_EQ(network_anonymization_key,
+            custom_partition_network_context.network_anonymization_key());
+  EXPECT_EQ(network::GetTestNetworkRestrictionsId(),
+            custom_partition_network_context.network_restrictions_id());
+  EXPECT_TRUE(default_partition_network_context.preconnect_url().is_empty());
+  EXPECT_TRUE(cross_thread_network_context.preconnect_url().is_empty());
+}
+
+TEST_F(
+    PreconnectManagerImplTest,
+    TestStartPreconnectUrl_DelegateDisabledAtConstructionBlocksBackgroundThread) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPreconnectOffTheMainThread);
+
+  FakeNetworkContextForOMT fake_network_context;
+
+  auto disabled_delegate =
+      std::make_unique<testing::StrictMock<MockPreconnectManagerDelegate>>();
+  EXPECT_CALL(*disabled_delegate, IsPreconnectEnabled())
+      .WillOnce(testing::Return(false));
+
+  auto disabled_preconnect_manager = std::make_unique<PreconnectManagerImpl>(
+      disabled_delegate->AsWeakPtr(), browser_context_.get());
+
+  disabled_preconnect_manager->SetCrossThreadNetworkContextForTesting(
+      CrossThreadNetworkContext::CreateForTesting(
+          base::BindRepeating(&FakeNetworkContextForOMT::Clone,
+                              base::Unretained(&fake_network_context)),
+          base::SingleThreadTaskRunner::GetCurrentDefault()));
+
+  GURL url("http://cdn.google.com/script.js");
+  net::NetworkAnonymizationKey network_anonymization_key =
+      CreateNetworkAnonymizationKey(url);
+
+  // Background thread call without any prior UI thread calls must be blocked.
+  scoped_refptr<base::SequencedTaskRunner> background_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({});
+  base::RunLoop run_loop;
+  background_runner->PostTask(
+      FROM_HERE,
+      base::BindLambdaForTesting([&, quit_closure = run_loop.QuitClosure()]() {
+        disabled_preconnect_manager->StartPreconnectUrl(
+            url, /*allow_credentials=*/true, network_anonymization_key,
+            TRAFFIC_ANNOTATION_FOR_TESTS,
+            /*storage_partition_config=*/nullptr,
+            network::GetTestNetworkRestrictionsId(),
+            /*keepalive_config=*/std::nullopt, mojo::NullRemote());
+        quit_closure.Run();
+      }));
+  run_loop.Run();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(fake_network_context.preconnect_url().is_empty());
+}
+
+TEST_F(PreconnectManagerImplTest,
+       TestStartPreconnectUrlOnUIThread_UsesDirectPreconnect) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPreconnectOffTheMainThread);
+
+  FakeNetworkContextForOMT default_partition_network_context;
+  FakeNetworkContextForOMT cross_thread_network_context;
+  StrictMock<MockPreconnectManagerObserver> mock_observer;
+
+  preconnect_manager_->SetNetworkContextForTesting(nullptr);
+  browser_context_->GetDefaultStoragePartition()->SetNetworkContextForTesting(
+      default_partition_network_context.BindNewPipeAndPassRemote());
+  preconnect_manager_->SetCrossThreadNetworkContextForTesting(
+      CrossThreadNetworkContext::CreateForTesting(
+          base::BindRepeating(&FakeNetworkContextForOMT::Clone,
+                              base::Unretained(&cross_thread_network_context)),
+          base::SingleThreadTaskRunner::GetCurrentDefault()));
+  preconnect_manager_->SetObserverForTesting(&mock_observer);
+
+  GURL url("http://cdn.google.com/script.js");
+  net::NetworkAnonymizationKey network_anonymization_key =
+      CreateNetworkAnonymizationKey(url);
+  base::UnguessableToken restriction_token = base::UnguessableToken::Create();
+  GURL expected_origin("http://cdn.google.com");
+  bool allow_credentials = false;
+
+  base::RunLoop run_loop;
+  default_partition_network_context.set_on_preconnect_sockets(
+      run_loop.QuitClosure());
+
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(mock_observer,
+              OnPreconnectUrl(expected_origin, 1, allow_credentials,
+                              network_anonymization_key, _));
+
+  // Calling on the UI thread should directly invoke PreconnectUrl on the UI
+  // thread's StoragePartition NetworkContext (and notify Observer) without
+  // hopping through CrossThreadNetworkContext.
+  preconnect_manager_->StartPreconnectUrl(
+      url, allow_credentials, network_anonymization_key,
+      TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*storage_partition_config=*/nullptr, restriction_token,
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
+
+  run_loop.Run();
+  task_environment_.RunUntilIdle();
+
+  preconnect_manager_->SetObserverForTesting(nullptr);
+
+  EXPECT_EQ(expected_origin,
+            default_partition_network_context.preconnect_url());
+  EXPECT_EQ(1u, default_partition_network_context.num_streams());
+  EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
+            default_partition_network_context.credentials_mode());
+  EXPECT_EQ(network_anonymization_key,
+            default_partition_network_context.network_anonymization_key());
+  EXPECT_EQ(restriction_token,
+            default_partition_network_context.network_restrictions_id());
+  EXPECT_TRUE(cross_thread_network_context.preconnect_url().is_empty());
 }
 
 }  // namespace content

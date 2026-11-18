@@ -817,6 +817,11 @@ BASE_FEATURE(kPopulateUnattachedAuraScreenInfo,
 BASE_FEATURE(kPreconnectManagerDirectFastPath,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, PreconnectManager::StartPreconnectUrl bypasses UI-thread host
+// preresolve and may be called from non-UI threads using
+// CrossThreadNetworkContext.
+BASE_FEATURE(kPreconnectOffTheMainThread, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, avoids prewarm/prerender contention when
 // `kPreferWarmRendererProcess` is enabled by requiring prerender processes to
 // be ready and have completed loading before being considered warm for
