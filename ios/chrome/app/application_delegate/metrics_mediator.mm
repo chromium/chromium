@@ -67,6 +67,7 @@
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/components/ui_util/dynamic_type_util.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
+#import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
@@ -803,6 +804,7 @@ BOOL _credentialExtensionWasUsed = NO;
       metrics->Stop();
     }
   }
+  ios::provider::SetMetricsReportingEnabled(enabled);
 }
 
 - (void)setAppGroupMetricsEnabled:(BOOL)enabled {

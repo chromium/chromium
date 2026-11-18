@@ -258,6 +258,7 @@ source_set("metrics_mediator") {
     "//ios/chrome/common/credential_provider",
     "//ios/components/ui_util",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
+    "//ios/public/provider/chrome/browser/app_utils:app_utils_api",
     "//ios/web/public",
     "//ios/web/public/thread",
     "//url",

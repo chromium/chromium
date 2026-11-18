@@ -21,5 +21,9 @@ void AttachBrowserAgents(Browser* browser) {
   // Chromium does not attach additional browser agents.
 }
 
+void SetMetricsReportingEnabled(bool enabled) {
+  // Chromium does not have provider-specific metrics reporting.
+}
+
 }  // namespace provider
 }  // namespace ios

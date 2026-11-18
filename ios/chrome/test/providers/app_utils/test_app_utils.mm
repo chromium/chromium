@@ -21,5 +21,9 @@ void AttachBrowserAgents(Browser* browser) {
   // Tests do not attach additional browser agents.
 }
 
+void SetMetricsReportingEnabled(bool enabled) {
+  // Tests do not have provider-specific metrics reporting.
+}
+
 }  // namespace provider
 }  // namespace ios
