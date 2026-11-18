@@ -567,6 +567,7 @@ source_set("impl") {
       "//chrome/android:chrome_jni_headers",
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/enterprise/util:jni_headers",
+      "//chrome/browser/flags:flags_android",
       "//chrome/browser/ui/android/tab_model",
       "//components/enterprise/browser/reporting/android:jni_headers",
       "//components/enterprise/browser/reporting/android:signals_reporting_scheduler",
@@ -892,7 +893,11 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/android:tabs_impl",
       "//chrome/browser/android:tabs_public",
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/profiles:profile",
       "//components/keyed_service/core",
+      "//components/signin/public/identity_manager",
+      "//content/test:test_support",
     ]
   }
 }

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -62,10 +63,12 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -395,6 +398,34 @@ bool ProfileCanBeManaged(Profile* profile) {
   if (!g_browser_process->profile_manager() || !profile) {
     return false;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/553341908): During feature flag cleanup, change #endif to
+  // #else.
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kAndroidNewManagementNotice)) {
+    // If the new management notice is enabled, the acceptance bit is stored
+    // in `SigninPrefs` so this implementation bypasses the profile attribute
+    // storage.
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile);
+    if (!identity_manager) {
+      return false;
+    }
+
+    // `HasPrimaryAccount()` only guarantees a non-empty account id; guard
+    // against an empty Gaia ID since the Android helpers `CHECK()` on it.
+    const GaiaId gaia_id =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .gaia;
+    if (gaia_id.empty()) {
+      return false;
+    }
+
+    return UserAcceptedAccountManagementAndroid(profile, gaia_id);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
