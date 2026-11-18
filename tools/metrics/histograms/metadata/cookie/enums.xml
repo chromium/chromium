@@ -69,14 +69,6 @@ chromium-metrics-reviews@google.com.
       label="Cookie had values in both the plaintext and encrypted fields"/>
 </enum>
 
-<enum name="CookiePrefix">
-  <int value="0" label="No special prefix"/>
-  <int value="1" label="Secure prefix"/>
-  <int value="2" label="Host prefix"/>
-  <int value="3" label="Http prefix"/>
-  <int value="4" label="HostHttp prefix"/>
-</enum>
-
 <enum name="CookieRequestScheme">
   <int value="0" label="Unset Cookie Scheme"/>
   <int value="1" label="Nonsecurely Set Cookie Nonsecure Request"/>

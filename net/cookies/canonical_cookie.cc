@@ -397,10 +397,6 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   bool is_cookie_prefix_valid =
       cookie_util::IsCookiePrefixValid(prefix, url, parsed_cookie);
 
-  if (collect_metrics) {
-    base::UmaHistogramEnumeration("Cookie.CookiePrefix.Subsampled", prefix);
-  }
-
   if (parsed_cookie.Name() == "") {
     is_cookie_prefix_valid =
         !cookie_util::HasHiddenPrefixName(parsed_cookie.Value());

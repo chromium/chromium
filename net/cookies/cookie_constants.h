@@ -388,8 +388,6 @@ enum class CookieSourceType {
 
 // The special cookie prefixes as defined in
 // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-13#name-cookie-name-prefixes
-//
-// This enum is being histogrammed; do not reorder or remove values.
 enum class CookiePrefix {
   kNone = 0,
   kSecure,

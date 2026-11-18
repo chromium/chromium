@@ -78,19 +78,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.CookiePrefix.Subsampled" enum="CookiePrefix"
-    expires_after="2025-07-13">
-  <owner>estark@chromium.org</owner>
-  <summary>
-    Number of times a cookie was set with a name prefixed by
-    &quot;__Secure-&quot; or &quot;__Host-&quot; (prefixes reserved by
-    https://tools.ietf.org/html/draft-west-cookie-prefixes).
-
-    Subsampled to 1/1000. See kHistogramSampleProbability in
-    net/cookies/cookie_constants.h for details.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.CookieSchemeRequestScheme" enum="CookieRequestScheme"
     expires_after="2027-05-12">
   <owner>chlily@chromium.org</owner>
