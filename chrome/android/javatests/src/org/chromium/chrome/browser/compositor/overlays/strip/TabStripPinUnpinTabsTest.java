@@ -39,10 +39,12 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
-import org.chromium.chrome.test.util.TabStripUtils;
+import org.chromium.chrome.test.transit.tab_strip.TabStripFacility;
+import org.chromium.chrome.test.transit.tabmodel.TabsPinnedStatusCondition;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /** Instrumentation tests for pinning and unpinning tabs on LFF tab strip */
@@ -64,6 +66,7 @@ public class TabStripPinUnpinTabsTest {
             PINNED_TAB_WIDTH_WITH_OVERLAP - TAB_OVERLAP_WIDTH;
 
     private CtaPageStation mPage;
+    private TabStripFacility<CtaPageStation> mTabStrip;
     private StripLayoutHelper mStripLayoutHelper;
     private TabModel mTabModel;
     private String mPinTabMenuLabel;
@@ -75,9 +78,9 @@ public class TabStripPinUnpinTabsTest {
     @Before
     public void setUp() throws Exception {
         mPage = mActivityTestRule.startOnBlankPage();
+        mTabStrip = mPage.expectTabStrip();
         mStripLayoutHelper =
-                TabStripTestUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity());
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+                mTabStrip.stripLayoutHelperManagerElement.value().getActiveStripLayoutHelper();
         mTabModel = mActivityTestRule.getActivity().getCurrentTabModel();
         mPinTabMenuLabel =
                 mActivityTestRule
@@ -234,8 +237,15 @@ public class TabStripPinUnpinTabsTest {
         // Open menu and pin tab.
         showMenu(firstGroupedIndex);
         assertFalse("Tab should not be pinned.", tabToPin.getIsPinned());
-        onView(withText(mPinTabMenuLabel)).check(matches(isDisplayed()));
-        onView(withText(mPinTabMenuLabel)).perform(click());
+        waitForView(withText(mPinTabMenuLabel))
+                .clickTo()
+                .exitStateAnd()
+                .waitForAnd(
+                        new TabsPinnedStatusCondition(
+                                mTabModel,
+                                List.of(tabToPin.getTabId()),
+                                /* shouldBePinned= */ true))
+                .reach(mTabStrip.settled());
 
         // Verify the tab being pinned is ungrouped.
         ThreadUtils.runOnUiThreadBlocking(
@@ -417,7 +427,7 @@ public class TabStripPinUnpinTabsTest {
         for (int i = 0; i < numTabs - 1; i++) {
             mPage = mPage.openNewTabFast().loadAboutBlank();
         }
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        mTabStrip = mPage.expectTabStrip();
     }
 
     private void verifyTabIsPinned(

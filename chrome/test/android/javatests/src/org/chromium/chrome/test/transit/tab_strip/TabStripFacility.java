@@ -10,6 +10,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Facility;
+import org.chromium.base.test.transit.Outcome;
 import org.chromium.base.test.transit.SimpleConditions;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.build.annotations.Initializer;
@@ -106,6 +107,23 @@ public class TabStripFacility<HostStationT extends CtaPageStation> extends Facil
      */
     public StripTabFacility<HostStationT> expectTab(int tabId) {
         return noopTo().enterFacility(new StripTabFacility<>(this, tabId));
+    }
+
+    /**
+     * Outcome: the strip is fully shown and settled, see {@link StripViewCondition}. It's already
+     * reached if the strip is settled before the Trigger.
+     */
+    public Outcome<@Nullable Void> settled() {
+        boolean incognito = mHostStation.isIncognito();
+        return Outcome.waitFor(
+                SimpleConditions.<StripLayoutHelperManager>uiThreadCondition(
+                        "Tab strip settled",
+                        stripLayoutHelperManagerElement,
+                        manager -> {
+                            @Nullable String notSettled =
+                                    StripViewCondition.whyNotSettled(manager, incognito);
+                            return whether(notSettled == null, notSettled);
+                        }));
     }
 
     /** Clicks the new tab button of the regular strip and arrives at the new tab's NTP. */
