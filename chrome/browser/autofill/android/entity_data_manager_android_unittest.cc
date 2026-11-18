@@ -121,6 +121,10 @@ class EntityDataManagerAndroidTest : public testing::Test {
   JNIEnv* env() { return env_.get(); }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      {features::kAutofillAiWalletPrivatePasses,
+       wallet::features::kWalletApiPrivatePassesConsent,
+       features::kAutofillEnableAutofillSettingsEnterprisePolicy}};
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   NiceMock<account_settings::MockAccountSettingService>
@@ -190,12 +194,6 @@ TEST_F(EntityDataManagerAndroidTest,
 // Test that when save to wallet fails, it falls back to local save.
 TEST_F(EntityDataManagerAndroidTest,
        AddOrUpdate_WalletSaveFails_FallbackToLocal) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kAutofillAiWalletPrivatePasses,
-       wallet::features::kWalletApiPrivatePassesConsent},
-      {});
-
   identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
                                                  signin::ConsentLevel::kSignin);
 
@@ -239,12 +237,6 @@ TEST_F(EntityDataManagerAndroidTest,
 // entity.
 TEST_F(EntityDataManagerAndroidTest,
        AddOrUpdate_WalletSaveSucceeds_SavedAsWallet) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kAutofillAiWalletPrivatePasses,
-       wallet::features::kWalletApiPrivatePassesConsent},
-      {});
-
   identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
                                                  signin::ConsentLevel::kSignin);
 
@@ -290,9 +282,6 @@ TEST_F(EntityDataManagerAndroidTest,
 // (e.g. due to ineligibility after user turning of sync), it is saved locally.
 TEST_F(EntityDataManagerAndroidTest,
        AddOrUpdate_UserTargetedWalletButBecameIneligible_SavedLocally) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiWalletPrivatePasses};
-
   EntityInstance entity = test::GetPassportEntityInstance(
       {.record_type = EntityInstance::RecordType::kLocal});
 
@@ -430,9 +419,6 @@ TEST_F(EntityDataManagerAndroidTest,
 
 TEST_F(EntityDataManagerAndroidTest,
        GetIsAutofillAiEntityTypeDisabledByEnterprisePolicy) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableAutofillSettingsEnterprisePolicy};
-
   EXPECT_FALSE(entity_data_manager_android_
                    ->GetIsAutofillAiEntityTypeDisabledByEnterprisePolicy(
                        env(), static_cast<int>(EntityTypeName::kPassport)));
