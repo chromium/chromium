@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/user_browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/drop_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
@@ -107,8 +108,8 @@ void ChromeWebContentsViewDelegateViewsMac::BuildMenuAsync(
         params.page_url,
         ui::DataTransferEndpointOptions{
             .notify_if_restricted = false,
-            .off_the_record =
-                web_contents_->GetBrowserContext()->IsOffTheRecord(),
+            .off_the_record = content::GetUserBrowserContext(*web_contents_)
+                                  ->IsOffTheRecord(),
         });
   }
   ui::Clipboard::GetForCurrentThread()->ReadAvailableTypes(

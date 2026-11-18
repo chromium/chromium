@@ -20,6 +20,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/user_browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/buildflags.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
@@ -204,7 +205,7 @@ RenderViewContextMenuBase::RenderViewContextMenuBase(
     : params_(params),
       source_web_contents_(
           WebContents::FromRenderFrameHost(&render_frame_host)),
-      browser_context_(source_web_contents_->GetBrowserContext()),
+      browser_context_(content::GetUserBrowserContext(render_frame_host)),
       menu_model_(this),
       render_frame_id_(render_frame_host.GetRoutingID()),
       render_frame_token_(render_frame_host.GetFrameToken()),

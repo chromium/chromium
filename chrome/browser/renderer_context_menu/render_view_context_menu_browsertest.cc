@@ -205,8 +205,11 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/tab_contents/chrome_web_contents_menu_helper.h"
 #include "chrome/browser/ui/views/context_hub/memory_banks_palette_bubble_controller.h"
 #include "chrome/browser/ui/views/context_hub/save_to_memory_bank_bubble_controller.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #endif
 
 #if BUILDFLAG(ENABLE_COMPOSE)
@@ -5372,5 +5375,41 @@ IN_PROC_BROWSER_TEST_F(ABASearchJourneysContextMenuBrowserTest,
   ASSERT_TRUE(tracker());
   EXPECT_EQ(0u, tracker()->GetRingBufferSizeForTesting());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+class ContextMenuTopChromeWebUIBrowserTest : public InProcessBrowserTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kTopChromeWebUISharedRenderer};
+};
+
+// With kTopChromeWebUISharedRenderer, a Top Chrome WebUI can be in
+// TopChromeWebUIProfile, which is shared by the windows of all profiles and has
+// no prefs or services for the context menu. The menu uses those of the user
+// profile of the WebUI instead.
+IN_PROC_BROWSER_TEST_F(ContextMenuTopChromeWebUIBrowserTest,
+                       UsesUserProfileForEditableField) {
+  Profile* user_profile = browser()->GetProfile();
+  user_profile->GetPrefs()->SetBoolean(
+      prefs::kDefaultSearchProviderContextMenuAccessAllowed, true);
+  Profile* top_chrome_webui_profile = webui::GetTopChromeWebUIProfile();
+  ASSERT_TRUE(top_chrome_webui_profile);
+  std::unique_ptr<WebContents> web_contents =
+      WebContents::Create(WebContents::CreateParams(top_chrome_webui_profile));
+  webui::SetUserProfile(web_contents.get(), user_profile);
+
+  content::ContextMenuParams params;
+  params.is_editable = true;
+  params =
+      AddContextMenuParamsPropertiesFromPreferences(web_contents.get(), params);
+  EXPECT_EQ(1u, params.properties.count(
+                    prefs::kDefaultSearchProviderContextMenuAccessAllowed));
+
+  TestRenderViewContextMenu menu(*web_contents->GetPrimaryMainFrame(), params);
+  menu.Init();
+  EXPECT_EQ(user_profile, menu.GetBrowserContext());
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_PASTE));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

@@ -5049,8 +5049,7 @@ RenderViewContextMenu::CreateDataEndpoint(bool notify_if_restricted) const {
         render_frame_host->GetMainFrame()->GetLastCommittedURL(),
         ui::DataTransferEndpointOptions{
             .notify_if_restricted = notify_if_restricted,
-            .off_the_record =
-                render_frame_host->GetBrowserContext()->IsOffTheRecord()});
+            .off_the_record = browser_context_->IsOffTheRecord()});
   }
   return nullptr;
 }
