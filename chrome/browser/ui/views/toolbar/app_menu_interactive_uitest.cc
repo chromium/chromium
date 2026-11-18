@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/recent_tabs_builder.h"
@@ -34,6 +36,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -65,6 +68,12 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/actions/action_id.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
+#include "ui/base/interaction/polling_state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/ui_controls.h"
@@ -109,6 +118,16 @@ auto NameMenuItemWithTitle(std::string_view name, std::u16string title) {
         }
         return nullptr;
       }));
+}
+
+std::u16string ReadClipboardText() {
+  return ui::clipboard_test_util::ReadText(ui::Clipboard::GetForCurrentThread(),
+                                           ui::ClipboardBuffer::kCopyPaste,
+                                           /*data_dst=*/nullptr);
+}
+
+void WriteClipboardText(std::u16string_view text) {
+  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteText(text);
 }
 
 }  // namespace
@@ -312,6 +331,7 @@ class AppMenuSearchInteractiveTest : public InteractiveBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  content::BrowserTestClipboardScope clipboard_scope_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppMenuSearchInteractiveTest, SearchBarKeyEventRouting) {
@@ -352,6 +372,160 @@ IN_PROC_BROWSER_TEST_F(AppMenuSearchInteractiveTest, SearchBarKeyEventRouting) {
       CheckViewProperty(AppMenuSearchBarView::kSearchIconElementId,
                         &views::View::GetVisible, true));
 }
+
+// A Copy row in the search results acts on the omnibox selection, like the row
+// in the "Find and edit" submenu.
+IN_PROC_BROWSER_TEST_F(AppMenuSearchInteractiveTest,
+                       CopySearchResultActsOnOmniboxSelection) {
+  static constexpr char kCopyResult[] = "copy_result";
+  WriteClipboardText(u"stale clipboard");
+  RunTestSequence(
+      FocusElement(kOmniboxElementId),
+      WithView(kOmniboxElementId,
+               [](OmniboxViewViews* omnibox) {
+                 omnibox->SetUserText(u"omnibox text", /*update_popup=*/false);
+                 omnibox->SelectAll(/*reversed=*/false);
+               }),
+      MoveMouseTo(kToolbarBackButtonElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuSearchBarView::kSearchFieldElementId),
+      WaitForShow(AppMenuModel::kMoreToolsMenuItem),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_DOWN, ui::EF_NONE),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_C, ui::EF_NONE),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_O, ui::EF_NONE),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_P, ui::EF_NONE),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_Y, ui::EF_NONE),
+      WaitForHide(AppMenuModel::kMoreToolsMenuItem),
+      NameViewRelative(
+          AppMenuSearchBarView::kSearchFieldElementId, kCopyResult,
+          [](views::View* search_field) -> views::View* {
+            for (views::View* view = search_field; view;
+                 view = view->parent()) {
+              if (auto* const item =
+                      views::AsViewClass<views::MenuItemView>(view)) {
+                return item->GetRootMenuItem()->GetMenuItemByID(
+                    actions::kActionCopy);
+              }
+            }
+            return nullptr;
+          }),
+      SelectMenuItem(kCopyResult),
+      WaitForHide(AppMenuSearchBarView::kSearchFieldElementId),
+      CheckResult(&ReadClipboardText, u"omnibox text"));
+}
+
+// Chooses Cut, Copy and Paste from the "Find and edit" submenu. They act on
+// whatever had focus in the browser window when the menu opened. The parameter
+// is whether the menu has a search bar, which clears that focus while the menu
+// is open.
+class AppMenuEditCommandInteractiveTest
+    : public InteractiveBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  AppMenuEditCommandInteractiveTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kAppMenuGlowUp, true},
+         {features::kChroMenuSearch, GetParam()}});
+  }
+  ~AppMenuEditCommandInteractiveTest() override = default;
+
+  // Focuses the omnibox with `text` in it, all selected.
+  auto SelectOmniboxText(std::u16string text) {
+    return Steps(FocusElement(kOmniboxElementId),
+                 WithView(kOmniboxElementId, [text](OmniboxViewViews* omnibox) {
+                   omnibox->SetUserText(text, /*update_popup=*/false);
+                   omnibox->SelectAll(/*reversed=*/false);
+                 }));
+  }
+
+  // Opens the app menu and chooses `command` from "Find and edit".
+  auto ChooseEditCommand(actions::ActionId command) {
+    static constexpr char kFindAndEditItem[] = "find_and_edit_item";
+    static constexpr char kCommandItem[] = "edit_command_item";
+    return Steps(
+        PressButton(kToolbarAppMenuButtonElementId),
+        WaitForShow(AppMenuModel::kMoreToolsMenuItem),
+        NameViewRelative(AppMenuModel::kMoreToolsMenuItem, kFindAndEditItem,
+                         [](views::MenuItemView* item) {
+                           return item->GetRootMenuItem()->GetMenuItemByID(
+                               kActionFindAndEditSubmenu);
+                         }),
+        // Small displays scroll the menu when the search header is present; on
+        // Mac, SelectMenuItem clicks with the mouse without scrolling first.
+        ScrollIntoView(kFindAndEditItem), SelectMenuItem(kFindAndEditItem),
+        // Searches the submenu only: rows without an action in the top-level
+        // menu have command id 0, the same as kActionCut.
+        NameViewRelative(kFindAndEditItem, kCommandItem,
+                         [command](views::MenuItemView* item) {
+                           return item->GetMenuItemByID(command);
+                         }),
+        SelectMenuItem(kCommandItem),
+        WaitForHide(AppMenuModel::kMoreToolsMenuItem));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  content::BrowserTestClipboardScope clipboard_scope_;
+};
+
+IN_PROC_BROWSER_TEST_P(AppMenuEditCommandInteractiveTest,
+                       CopyActsOnOmniboxSelection) {
+  WriteClipboardText(u"stale clipboard");
+  RunTestSequence(SelectOmniboxText(u"omnibox text"),
+                  ChooseEditCommand(actions::kActionCopy),
+                  CheckResult(&ReadClipboardText, u"omnibox text"));
+}
+
+IN_PROC_BROWSER_TEST_P(AppMenuEditCommandInteractiveTest,
+                       CutActsOnOmniboxSelection) {
+  WriteClipboardText(u"stale clipboard");
+  RunTestSequence(
+      SelectOmniboxText(u"omnibox text"),
+      ChooseEditCommand(actions::kActionCut),
+      CheckResult(&ReadClipboardText, u"omnibox text"),
+      CheckViewProperty(kOmniboxElementId, &views::Textfield::GetText, u""));
+}
+
+IN_PROC_BROWSER_TEST_P(AppMenuEditCommandInteractiveTest,
+                       PasteReplacesOmniboxSelection) {
+  WriteClipboardText(u"clipboard text");
+  RunTestSequence(SelectOmniboxText(u"omnibox text"),
+                  ChooseEditCommand(actions::kActionPaste),
+                  // The omnibox reads the clipboard asynchronously.
+                  WaitForViewProperty(kOmniboxElementId, views::Textfield, Text,
+                                      u"clipboard text"));
+}
+
+IN_PROC_BROWSER_TEST_P(AppMenuEditCommandInteractiveTest,
+                       CopyActsOnPageSelection) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
+      ui::test::PollingStateObserver<std::u16string>, kClipboardText);
+  WriteClipboardText(u"stale clipboard");
+  RunTestSequence(
+      // The omnibox has a selection of its own from before the page took
+      // focus. The command must still go to the page.
+      SelectOmniboxText(u"omnibox text"), InstrumentTab(kTabId),
+      FocusWebContents(kTabId),
+      ExecuteJs(kTabId,
+                "() => {"
+                "  document.body.innerHTML = `<input value='page text'>`;"
+                "  const field = document.querySelector('input');"
+                "  field.focus();"
+                "  field.select();"
+                "}"),
+      ChooseEditCommand(actions::kActionCopy),
+      // The renderer writes to the clipboard asynchronously.
+      PollState(kClipboardText, base::BindRepeating(&ReadClipboardText)),
+      WaitForState(kClipboardText, std::u16string(u"page text")));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppMenuEditCommandInteractiveTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WithSearch" : "WithoutSearch";
+                         });
 
 // Classic app menu; `AppMenuOtherDeviceTabsGlowUpInteractiveTest` covers
 // kAppMenuGlowUp.

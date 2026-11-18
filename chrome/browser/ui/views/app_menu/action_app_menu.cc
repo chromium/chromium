@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_search_controller.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -196,6 +198,14 @@ actions::ActionInvocationContext BuildActionInvocationContext(
                    static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
                        SidePanelOpenTrigger::kAppMenu))
       .Build();
+}
+
+// Cut, copy and paste act on whichever view has focus in the browser window.
+bool ActsOnFocusedView(const actions::ActionItem& action) {
+  const std::optional<actions::ActionId> action_id = action.GetActionId();
+  return action_id == actions::kActionCut ||
+         action_id == actions::kActionCopy ||
+         action_id == actions::kActionPaste;
 }
 
 }  // namespace
@@ -444,6 +454,12 @@ void ActionAppMenu::ExecuteCommand(int id, int mouse_event_flags) {
   CHECK(action_ptr);
 
   metrics_.LogMenuAction(base_action);
+
+  // A row's action runs before OnMenuClosed() gives the browser window its
+  // focus back, which is too late for an action that needs that focus.
+  if (focus_controller_ && ActsOnFocusedView(*action_ptr)) {
+    focus_controller_->RestoreOwnerFocus();
+  }
 
   action_ptr->InvokeAction(
       BuildActionInvocationContext(base_action, mouse_event_flags));

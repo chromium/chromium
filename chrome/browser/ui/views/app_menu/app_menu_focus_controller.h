@@ -26,7 +26,9 @@ class Widget;
 // search bar while the ChroMenu is open:
 // 1. Clears non-WebView focus on the owning widget (or detaches the active
 //    WebView's TextInputClient without firing a DOM blur event) when the menu
-//    opens, and restores it when the menu closes without executing an action.
+//    opens. ActionAppMenu restores it before running an action that acts on
+//    the focused view (cut, copy, paste), and otherwise when the menu closes,
+//    unless a deferred action is about to run.
 // 2. Preserves focus on the search bar's Textfield across menu item rebuilds
 //    triggered by ShowSearchResults() and RestoreMenu().
 class AppMenuFocusController : public content::WebContentsObserver {
@@ -40,7 +42,9 @@ class AppMenuFocusController : public content::WebContentsObserver {
   // Restores focus or the detached `ui::TextInputClient` on `owner_widget_`
   // when `should_restore` is true. Skipped when `should_restore` is false
   // (e.g. when a deferred menu action is about to execute and transfer focus
-  // to its own target).
+  // to its own target). Only the first call has an effect, whatever
+  // `should_restore` is, so restoring early for an action that needs the
+  // owner's focus makes the call on menu close do nothing.
   void RestoreOwnerFocus(bool should_restore = true);
 
   // Returns a runner that restores focus to the search bar's Textfield when
