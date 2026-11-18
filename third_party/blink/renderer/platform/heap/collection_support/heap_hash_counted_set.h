@@ -56,7 +56,10 @@ using HeapHashCountedSet =
                             Traits>;
 
 static_assert(IsDisallowNew<HeapHashCountedSet<int>>);
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_HEAP_HASH_TABLE_MODIFICATION_CHECKS) == \
+                          BUILDFLAG(ENABLE_HASH_TABLE_MODIFICATION_CHECKS)
 ASSERT_SIZE(HashCountedSet<int>, HeapHashCountedSet<int>);
+#endif
 
 // GCed version of HashCountedSet for referring to GarbageCollected or
 // DISALLOW_NEW() objects with Trace() methods.
@@ -65,7 +68,10 @@ using GCedHeapHashCountedSet =
     BasicHeapHashCountedSet<internal::HeapCollectionType::kGCed, T, Traits>;
 
 static_assert(!IsDisallowNew<GCedHeapHashCountedSet<int>>);
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_HEAP_HASH_TABLE_MODIFICATION_CHECKS) == \
+                          BUILDFLAG(ENABLE_HASH_TABLE_MODIFICATION_CHECKS)
 ASSERT_SIZE(HashCountedSet<int>, GCedHeapHashCountedSet<int>);
+#endif
 
 }  // namespace blink
 

@@ -159,7 +159,7 @@ bool InvalidationSet::InvalidatesElement(Element& element) const {
     }
   }
 
-  if (element.hasAttributes() && HasAttributes()) {
+  if (HasAttributes() && element.hasAttributes()) {
     if (const AtomicString* attribute = FindAnyAttribute(element)) {
       TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART_IF_ENABLED(
           element, kInvalidationSetMatchedAttribute, *this, *attribute);
@@ -167,7 +167,7 @@ bool InvalidationSet::InvalidatesElement(Element& element) const {
     }
   }
 
-  if (element.HasPart() && invalidation_flags_.InvalidatesParts()) {
+  if (invalidation_flags_.InvalidatesParts() && element.HasPart()) {
     TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART_IF_ENABLED(
         element, kInvalidationSetMatchedPart, *this, g_empty_atom);
     return true;

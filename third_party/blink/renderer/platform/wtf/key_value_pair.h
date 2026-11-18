@@ -138,29 +138,32 @@ struct HashTableConstIteratorAdapter<HashTableType,
   using reference = const ValueType&;
 
   HashTableConstIteratorAdapter() = default;
-  HashTableConstIteratorAdapter(
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  ALWAYS_INLINE HashTableConstIteratorAdapter(
       const typename HashTableType::const_iterator& impl)
       : impl_(impl) {}
 
-  const ValueType* Get() const { return (const ValueType*)impl_.Get(); }
-  const ValueType& operator*() const { return *Get(); }
-  const ValueType* operator->() const { return Get(); }
+  ALWAYS_INLINE const ValueType* Get() const {
+    return static_cast<const ValueType*>(impl_.Get());
+  }
+  ALWAYS_INLINE const ValueType& operator*() const { return *Get(); }
+  ALWAYS_INLINE const ValueType* operator->() const { return Get(); }
 
-  HashTableConstIteratorAdapter& operator++() {
+  ALWAYS_INLINE HashTableConstIteratorAdapter& operator++() {
     ++impl_;
     return *this;
   }
-  HashTableConstIteratorAdapter operator++(int) {
+  ALWAYS_INLINE HashTableConstIteratorAdapter operator++(int) {
     HashTableConstIteratorAdapter copy(*this);
     ++*this;
     return copy;
   }
 
-  HashTableConstIteratorAdapter& operator--() {
+  ALWAYS_INLINE HashTableConstIteratorAdapter& operator--() {
     --impl_;
     return *this;
   }
-  HashTableConstIteratorAdapter operator--(int) {
+  ALWAYS_INLINE HashTableConstIteratorAdapter operator--(int) {
     HashTableConstIteratorAdapter copy(*this);
     --*this;
     return copy;
@@ -190,33 +193,39 @@ struct HashTableIteratorAdapter<HashTableType,
   using reference = ValueType&;
 
   HashTableIteratorAdapter() = default;
-  HashTableIteratorAdapter(const typename HashTableType::iterator& impl)
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  ALWAYS_INLINE HashTableIteratorAdapter(
+      const typename HashTableType::iterator& impl)
       : impl_(impl) {}
 
-  ValueType* Get() const { return (ValueType*)impl_.Get(); }
-  ValueType& operator*() const { return *Get(); }
-  ValueType* operator->() const { return Get(); }
+  ALWAYS_INLINE ValueType* Get() const {
+    return static_cast<ValueType*>(impl_.Get());
+  }
+  ALWAYS_INLINE ValueType& operator*() const { return *Get(); }
+  ALWAYS_INLINE ValueType* operator->() const { return Get(); }
 
-  HashTableIteratorAdapter& operator++() {
+  ALWAYS_INLINE HashTableIteratorAdapter& operator++() {
     ++impl_;
     return *this;
   }
-  HashTableIteratorAdapter operator++(int) {
+  ALWAYS_INLINE HashTableIteratorAdapter operator++(int) {
     HashTableIteratorAdapter copy(*this);
     ++*this;
     return copy;
   }
 
-  HashTableIteratorAdapter& operator--() {
+  ALWAYS_INLINE HashTableIteratorAdapter& operator--() {
     --impl_;
     return *this;
   }
-  HashTableIteratorAdapter operator--(int) {
+  ALWAYS_INLINE HashTableIteratorAdapter operator--(int) {
     HashTableIteratorAdapter copy(*this);
     --*this;
     return copy;
   }
 
+  ALWAYS_INLINE
+  // NOLINTNEXTLINE(google-explicit-constructor)
   operator HashTableConstIteratorAdapter<HashTableType, ValueType>() {
     typename HashTableType::const_iterator i = impl_;
     return i;

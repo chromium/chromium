@@ -79,7 +79,10 @@ using HeapHashSet =
     BasicHeapHashSet<internal::HeapCollectionType::kDisallowNew, T, Traits>;
 
 static_assert(IsDisallowNew<HeapHashSet<int>>);
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_HEAP_HASH_TABLE_MODIFICATION_CHECKS) == \
+                          BUILDFLAG(ENABLE_HASH_TABLE_MODIFICATION_CHECKS)
 ASSERT_SIZE(HashSet<int>, HeapHashSet<int>);
+#endif
 
 // GCed version of HashSet for referring to GarbageCollected objects.
 template <typename T, typename Traits = HashTraits<T>>
@@ -87,7 +90,10 @@ using GCedHeapHashSet =
     BasicHeapHashSet<internal::HeapCollectionType::kGCed, T, Traits>;
 
 static_assert(!IsDisallowNew<GCedHeapHashSet<int>>);
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_HEAP_HASH_TABLE_MODIFICATION_CHECKS) == \
+                          BUILDFLAG(ENABLE_HASH_TABLE_MODIFICATION_CHECKS)
 ASSERT_SIZE(HashSet<int>, GCedHeapHashSet<int>);
+#endif
 
 }  // namespace blink
 

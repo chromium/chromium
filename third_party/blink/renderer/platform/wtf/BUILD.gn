@@ -13,6 +13,15 @@ import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/config.gni")
 
 declare_args() {
+  # Enable modification checks in blink::HeapHashTable (HeapHashSet,
+  # HeapHashMap, etc.) to detect modifications during iteration.
+  enable_heap_hash_table_modification_checks = false
+
+  # Enable modification checks in non-garbage-collected blink::HashTable
+  # (i.e. PartitionAllocator-backed HashSet, HashMap, etc.) to detect
+  # modifications during iteration.
+  enable_hash_table_modification_checks = true
+
   # Enable modification checks in blink::HeapVector to detect
   # modifications during iteration.
   enable_heap_vector_modification_checks = false
@@ -27,6 +36,8 @@ buildflag_header("wtf_buildflags") {
   header_dir = "third_party/blink/renderer/platform/wtf"
 
   flags = [
+    "ENABLE_HASH_TABLE_MODIFICATION_CHECKS=$enable_hash_table_modification_checks",
+    "ENABLE_HEAP_HASH_TABLE_MODIFICATION_CHECKS=$enable_heap_hash_table_modification_checks",
     "ENABLE_HEAP_VECTOR_MODIFICATION_CHECKS=$enable_heap_vector_modification_checks",
     "ENABLE_VECTOR_MODIFICATION_CHECKS=$enable_vector_modification_checks",
   ]

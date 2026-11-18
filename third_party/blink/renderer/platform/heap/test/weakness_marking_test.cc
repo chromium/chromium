@@ -253,6 +253,7 @@ TEST_F(WeaknessMarkingTest, StrongLinkedHashSetIteratorAcrossRehashAndGC) {
   EXPECT_EQ(visited, 32u);
 }
 
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_HEAP_HASH_TABLE_MODIFICATION_CHECKS)
 TEST_F(WeaknessMarkingTest, WeakLinkedHashSetModificationDuringIteration) {
   using WeakSet = GCedHeapLinkedHashSet<WeakMember<IntegerObject>>;
   Persistent<WeakSet> set = MakeGarbageCollected<WeakSet>();
@@ -264,10 +265,12 @@ TEST_F(WeaknessMarkingTest, WeakLinkedHashSetModificationDuringIteration) {
   auto it = set->begin();
   EXPECT_EQ(it->Get(), first.Get());
   set->insert(MakeGarbageCollected<IntegerObject>(3));
-  EXPECT_DCHECK_DEATH(++it);
-  EXPECT_DCHECK_DEATH(*it);
-  EXPECT_DCHECK_DEATH(it->Get());
+  EXPECT_CHECK_DEATH_WITH(++it, "HashTable modified while being iterated.");
+  EXPECT_CHECK_DEATH_WITH(*it, "HashTable modified while being iterated.");
+  EXPECT_CHECK_DEATH_WITH(it->Get(),
+                          "HashTable modified while being iterated.");
 }
+#endif
 
 }  // namespace weakness_marking_test
 

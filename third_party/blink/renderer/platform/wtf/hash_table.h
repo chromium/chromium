@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 #if !defined(DUMP_HASHTABLE_STATS)
@@ -95,6 +96,24 @@
 #endif
 
 namespace blink {
+
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_HEAP_HASH_TABLE_MODIFICATION_CHECKS)
+inline constexpr bool kEnableHeapHashTableModificationChecks = true;
+#else
+inline constexpr bool kEnableHeapHashTableModificationChecks = false;
+#endif
+
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_HASH_TABLE_MODIFICATION_CHECKS)
+inline constexpr bool kEnableHashTableModificationChecks = true;
+#else
+inline constexpr bool kEnableHashTableModificationChecks = false;
+#endif
+
+template <typename Allocator>
+inline constexpr bool kEnableHashTableModificationChecksForAllocator =
+    (Allocator::kIsGarbageCollected &&
+     kEnableHeapHashTableModificationChecks) ||
+    (!Allocator::kIsGarbageCollected && kEnableHashTableModificationChecks);
 
 #if DUMP_HASHTABLE_STATS || DUMP_HASHTABLE_STATS_PER_TABLE
 struct WTF_EXPORT HashTableStats {
@@ -246,6 +265,9 @@ class HashTableConstIterator final
   using GetType = typename Traits::IteratorConstGetType;
   using PointerType = const value_type*;
 
+  static constexpr bool kCheckModifications =
+      kEnableHashTableModificationChecksForAllocator<Allocator>;
+
   friend class HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>;
   friend class HashTableIterator<Key,
                                  Value,
@@ -254,7 +276,7 @@ class HashTableConstIterator final
                                  KeyTraits,
                                  Allocator>;
 
-  void SkipEmptyBuckets() {
+  ALWAYS_INLINE void SkipEmptyBuckets() {
     // SAFETY: Advances `position_` until reaching `end_position_`.
     while (position_ != end_position_ &&
            HashTableType::IsEmptyOrDeletedBucket(*position_)) {
@@ -262,7 +284,7 @@ class HashTableConstIterator final
     }
   }
 
-  void ReverseSkipEmptyBuckets() {
+  ALWAYS_INLINE void ReverseSkipEmptyBuckets() {
     // SAFETY: Don't need to check for out-of-bounds positions, as
     // `begin_position_` is always going to be a non-empty bucket.
     while (HashTableType::IsEmptyOrDeletedBucket(*position_)) {
@@ -273,66 +295,71 @@ class HashTableConstIterator final
     }
   }
 
-  HashTableConstIterator(PointerType position,
-                         PointerType begin_position,
-                         PointerType end_position,
-                         const HashTableType* container)
+  ALWAYS_INLINE HashTableConstIterator(PointerType position,
+                                       PointerType begin_position,
+                                       PointerType end_position,
+                                       const HashTableType* container)
       : position_(position),
         end_position_(end_position)
 #if DCHECK_IS_ON()
         ,
-        begin_position_(begin_position),
-        container_(container),
-        container_modifications_(container->Modifications())
+        begin_position_(begin_position)
 #endif
   {
+    if constexpr (kCheckModifications) {
+      modification_state_.container = container;
+      modification_state_.container_modifications = container->Modifications();
+    }
     SkipEmptyBuckets();
   }
 
-  HashTableConstIterator(PointerType position,
-                         PointerType begin_position,
-                         PointerType end_position,
-                         const HashTableType* container,
-                         HashItemKnownGoodTag)
+  ALWAYS_INLINE HashTableConstIterator(PointerType position,
+                                       PointerType begin_position,
+                                       PointerType end_position,
+                                       const HashTableType* container,
+                                       HashItemKnownGoodTag)
       : position_(position),
         end_position_(end_position)
 #if DCHECK_IS_ON()
         ,
-        begin_position_(begin_position),
-        container_(container),
-        container_modifications_(container->Modifications())
+        begin_position_(begin_position)
 #endif
   {
-#if DCHECK_IS_ON()
-    DCHECK_EQ(container_modifications_, container_->Modifications());
-#endif
+    if constexpr (kCheckModifications) {
+      modification_state_.container = container;
+      modification_state_.container_modifications = container->Modifications();
+    }
   }
 
  public:
   constexpr HashTableConstIterator() = default;
 
-  void CheckModifications() const {
-#if DCHECK_IS_ON()
-    // HashTable and collections that build on it do not support
-    // modifications while there is an iterator in use. The exception is
-    // non-weak LinkedHashSet, which has its own iterators that tolerate
-    // modification of the underlying set.
+  ALWAYS_INLINE void CheckModifications() const {
+    if constexpr (kCheckModifications) {
+      // HashTable and collections that build on it do not support
+      // modifications while there is an iterator in use. The exception is
+      // non-weak LinkedHashSet, which has its own iterators that tolerate
+      // modification of the underlying set.
 
-    DCHECK_EQ(container_modifications_, container_->Modifications());
-    DCHECK(!container_->AccessForbidden());
+      CHECK_EQ(modification_state_.container_modifications,
+               modification_state_.container->Modifications())
+          << "HashTable modified while being iterated.";
+#if DCHECK_IS_ON()
+      DCHECK(!modification_state_.container->AccessForbidden());
 #endif
+    }
   }
 
-  GetType Get() const {
+  ALWAYS_INLINE GetType Get() const {
     CheckModifications();
     return position_;
   }
-  typename Traits::IteratorConstReferenceType operator*() const {
+  ALWAYS_INLINE typename Traits::IteratorConstReferenceType operator*() const {
     return *Get();
   }
-  GetType operator->() const { return Get(); }
+  ALWAYS_INLINE GetType operator->() const { return Get(); }
 
-  const_iterator& operator++() {
+  ALWAYS_INLINE const_iterator& operator++() {
     DCHECK_NE(position_, end_position_);
     CheckModifications();
     UNSAFE_TODO(++position_);
@@ -340,13 +367,13 @@ class HashTableConstIterator final
     return *this;
   }
 
-  const_iterator operator++(int) {
+  ALWAYS_INLINE const_iterator operator++(int) {
     auto copy = this;
     ++(*this);
     return copy;
   }
 
-  const_iterator& operator--() {
+  ALWAYS_INLINE const_iterator& operator--() {
 #if DCHECK_IS_ON()
     DCHECK_NE(position_, begin_position_);
 #endif
@@ -356,17 +383,17 @@ class HashTableConstIterator final
     return *this;
   }
 
-  const_iterator operator--(int) {
+  ALWAYS_INLINE const_iterator operator--(int) {
     auto copy = *this;
     --(*this);
     return copy;
   }
 
   // Comparison.
-  bool operator==(const const_iterator& other) const {
+  ALWAYS_INLINE bool operator==(const const_iterator& other) const {
     return position_ == other.position_;
   }
-  bool operator==(const iterator& other) const {
+  ALWAYS_INLINE bool operator==(const iterator& other) const {
     return *this == static_cast<const_iterator>(other);
   }
 
@@ -383,9 +410,17 @@ class HashTableConstIterator final
   PointerType end_position_ = nullptr;
 #if DCHECK_IS_ON()
   PointerType begin_position_ = nullptr;
-  const HashTableType* container_ = nullptr;
-  int64_t container_modifications_ = 0;
 #endif
+  struct ModificationTrackingState {
+    const HashTableType* container = nullptr;
+    uint32_t container_modifications = 0;
+  };
+  struct NoModificationTrackingState {};
+  NO_UNIQUE_ADDRESS
+  std::conditional_t<kCheckModifications,
+                     ModificationTrackingState,
+                     NoModificationTrackingState>
+      modification_state_;
 };
 
 template <typename Key,
@@ -428,16 +463,16 @@ class HashTableIterator final
 
   friend class HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>;
 
-  HashTableIterator(PointerType pos,
-                    PointerType begin,
-                    PointerType end,
-                    const HashTableType* container)
+  ALWAYS_INLINE HashTableIterator(PointerType pos,
+                                  PointerType begin,
+                                  PointerType end,
+                                  const HashTableType* container)
       : iterator_(pos, begin, end, container) {}
-  HashTableIterator(PointerType pos,
-                    PointerType begin,
-                    PointerType end,
-                    const HashTableType* container,
-                    HashItemKnownGoodTag tag)
+  ALWAYS_INLINE HashTableIterator(PointerType pos,
+                                  PointerType begin,
+                                  PointerType end,
+                                  const HashTableType* container,
+                                  HashItemKnownGoodTag tag)
       : iterator_(pos, begin, end, container, tag) {}
 
  public:
@@ -445,41 +480,46 @@ class HashTableIterator final
 
   // default copy, assignment and destructor are OK
 
-  GetType Get() const { return const_cast<GetType>(iterator_.Get()); }
-  typename Traits::IteratorReferenceType operator*() const { return *Get(); }
-  GetType operator->() const { return Get(); }
+  ALWAYS_INLINE GetType Get() const {
+    return const_cast<GetType>(iterator_.Get());
+  }
+  ALWAYS_INLINE typename Traits::IteratorReferenceType operator*() const {
+    return *Get();
+  }
+  ALWAYS_INLINE GetType operator->() const { return Get(); }
 
-  iterator& operator++() {
+  ALWAYS_INLINE iterator& operator++() {
     ++iterator_;
     return *this;
   }
 
-  iterator operator++(int) {
+  ALWAYS_INLINE iterator operator++(int) {
     auto copy = *this;
     ++(*this);
     return copy;
   }
 
-  iterator& operator--() {
+  ALWAYS_INLINE iterator& operator--() {
     --iterator_;
     return *this;
   }
 
-  iterator operator--(int) {
+  ALWAYS_INLINE iterator operator--(int) {
     auto copy = *this;
     --(*this);
     return copy;
   }
 
   // Comparison.
-  bool operator==(const iterator& other) const {
+  ALWAYS_INLINE bool operator==(const iterator& other) const {
     return iterator_ == other.iterator_;
   }
-  bool operator==(const const_iterator& other) const {
+  ALWAYS_INLINE bool operator==(const const_iterator& other) const {
     return iterator_ == other;
   }
 
-  operator const_iterator() const { return iterator_; }
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  ALWAYS_INLINE operator const_iterator() const { return iterator_; }
   std::ostream& PrintTo(std::ostream& stream) const {
     return iterator_.PrintTo(stream);
   }
@@ -582,7 +622,7 @@ struct HashTableAddResult final {
 
  private:
   const HashTableType* container_;
-  const int64_t container_modifications_;
+  const uint32_t container_modifications_;
 #endif
 };
 
@@ -638,6 +678,8 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") HashTable final {
   using KeyTraitsType = KeyTraits;
   using IdentityTranslatorType = IdentityHashTranslator<KeyTraits>;
   using AddResult = HashTableAddResult<HashTable, ValueType>;
+  static constexpr bool kCheckModifications =
+      kEnableHashTableModificationChecksForAllocator<Allocator>;
 
   HashTable();
 
@@ -667,12 +709,16 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") HashTable final {
   // for begin.  This is more efficient because we don't have to skip all the
   // empty and deleted buckets, and iterating an empty table is a common case
   // that's worth optimizing.
-  iterator begin() { return empty() ? end() : MakeIterator(table_); }
-  iterator end() { return MakeKnownGoodIterator(TableEnd()); }
-  const_iterator begin() const {
+  ALWAYS_INLINE iterator begin() {
+    return empty() ? end() : MakeIterator(table_);
+  }
+  ALWAYS_INLINE iterator end() { return MakeKnownGoodIterator(TableEnd()); }
+  ALWAYS_INLINE const_iterator begin() const {
     return empty() ? end() : MakeConstIterator(table_);
   }
-  const_iterator end() const { return MakeKnownGoodConstIterator(TableEnd()); }
+  ALWAYS_INLINE const_iterator end() const {
+    return MakeKnownGoodConstIterator(TableEnd());
+  }
 
   wtf_size_t size() const {
     DCHECK(!AccessForbidden());
@@ -773,23 +819,33 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") HashTable final {
   }
   void LeaveAccessForbiddenScope() { access_forbidden_ = false; }
   bool AccessForbidden() const { return access_forbidden_; }
-  int64_t Modifications() const { return modifications_; }
-  void RegisterModification() { modifications_++; }
-  // HashTable and collections that build on it do not support modifications
-  // while there is an iterator in use. The exception is
-  // non-weak LinkedHashSet, which has its own iterators that tolerate
-  // modification of the underlying set.
-  void CheckModifications(int64_t mods) const {
-    DCHECK_EQ(mods, modifications_);
-  }
 #else
   ALWAYS_INLINE void EnterAccessForbiddenScope() {}
   ALWAYS_INLINE void LeaveAccessForbiddenScope() {}
   ALWAYS_INLINE bool AccessForbidden() const { return false; }
-  ALWAYS_INLINE int64_t Modifications() const { return 0; }
-  ALWAYS_INLINE void RegisterModification() {}
-  ALWAYS_INLINE void CheckModifications(int64_t mods) const {}
 #endif
+  ALWAYS_INLINE uint32_t Modifications() const {
+    if constexpr (kCheckModifications) {
+      return modification_state_.modifications;
+    } else {
+      return 0;
+    }
+  }
+  ALWAYS_INLINE void RegisterModification() {
+    if constexpr (kCheckModifications) {
+      modification_state_.modifications++;
+    }
+  }
+  // HashTable and collections that build on it do not support modifications
+  // while there is an iterator in use. The exception is
+  // non-weak LinkedHashSet, which has its own iterators that tolerate
+  // modification of the underlying set.
+  ALWAYS_INLINE void CheckModifications(uint32_t mods) const {
+    if constexpr (kCheckModifications) {
+      CHECK_EQ(mods, modification_state_.modifications)
+          << "HashTable modified while being iterated.";
+    }
+  }
 
  protected:
   void TraceTable(auto visitor, const ValueType* table) const
@@ -848,22 +904,23 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") HashTable final {
     }
   }
 
-  ValueType* TableEnd() const {
+  ALWAYS_INLINE ValueType* TableEnd() const {
     // SAFETY: Points to one past the end of the allocated `table_` of capacity
     // `table_size_`. Used as a sentinel.
     return UNSAFE_BUFFERS(table_ + table_size_);
   }
 
-  iterator MakeIterator(ValueType* pos) {
+  ALWAYS_INLINE iterator MakeIterator(ValueType* pos) {
     return iterator(pos, table_, TableEnd(), this);
   }
-  const_iterator MakeConstIterator(const ValueType* pos) const {
+  ALWAYS_INLINE const_iterator MakeConstIterator(const ValueType* pos) const {
     return const_iterator(pos, table_, TableEnd(), this);
   }
-  iterator MakeKnownGoodIterator(ValueType* pos) {
+  ALWAYS_INLINE iterator MakeKnownGoodIterator(ValueType* pos) {
     return iterator(pos, table_, TableEnd(), this, kHashItemKnownGood);
   }
-  const_iterator MakeKnownGoodConstIterator(const ValueType* pos) const {
+  ALWAYS_INLINE const_iterator
+  MakeKnownGoodConstIterator(const ValueType* pos) const {
     return const_iterator(pos, table_, TableEnd(), this, kHashItemKnownGood);
   }
 
@@ -887,10 +944,18 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") HashTable final {
 #if DCHECK_IS_ON()
   wtf_size_t deleted_count_ : 30 = 0;
   wtf_size_t access_forbidden_ : 1 = 0;
-  wtf_size_t modifications_ = 0;
 #else
   wtf_size_t deleted_count_ : 31 = 0;
 #endif
+  struct ModificationState {
+    uint32_t modifications = 0;
+  };
+  struct EmptyModificationState {};
+  NO_UNIQUE_ADDRESS
+  std::conditional_t<kCheckModifications,
+                     ModificationState,
+                     EmptyModificationState>
+      modification_state_;
 
 #if DUMP_HASHTABLE_STATS_PER_TABLE
  public:
@@ -1912,9 +1977,10 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::swap(
   deleted_count_ = other.deleted_count_;
   other.deleted_count_ = deleted;
 
-#if DCHECK_IS_ON()
-  std::swap(modifications_, other.modifications_);
-#endif
+  if constexpr (kCheckModifications) {
+    RegisterModification();
+    other.RegisterModification();
+  }
 
 #if DUMP_HASHTABLE_STATS_PER_TABLE
   HashTableStatsPtr<Allocator>::swap(stats_, other.stats_);
@@ -2068,35 +2134,36 @@ struct HashTableConstIteratorAdapter {
   using reference = value_type&;
 
   HashTableConstIteratorAdapter() = default;
-  HashTableConstIteratorAdapter(
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  ALWAYS_INLINE HashTableConstIteratorAdapter(
       const typename HashTableType::const_iterator& impl)
       : impl_(impl) {}
   using GetType = typename Traits::IteratorConstGetType;
   using SourceGetType =
       typename HashTableType::ValueTraits::IteratorConstGetType;
 
-  GetType Get() const {
+  ALWAYS_INLINE GetType Get() const {
     return const_cast<GetType>(SourceGetType(impl_.Get()));
   }
-  typename Traits::IteratorConstReferenceType operator*() const {
+  ALWAYS_INLINE typename Traits::IteratorConstReferenceType operator*() const {
     return *Get();
   }
-  GetType operator->() const { return Get(); }
+  ALWAYS_INLINE GetType operator->() const { return Get(); }
 
-  HashTableConstIteratorAdapter& operator++() {
+  ALWAYS_INLINE HashTableConstIteratorAdapter& operator++() {
     ++impl_;
     return *this;
   }
-  HashTableConstIteratorAdapter operator++(int) {
+  ALWAYS_INLINE HashTableConstIteratorAdapter operator++(int) {
     HashTableConstIteratorAdapter copy = *this;
     ++*this;
     return copy;
   }
-  HashTableConstIteratorAdapter& operator--() {
+  ALWAYS_INLINE HashTableConstIteratorAdapter& operator--() {
     --impl_;
     return *this;
   }
-  HashTableConstIteratorAdapter operator--(int) {
+  ALWAYS_INLINE HashTableConstIteratorAdapter operator--(int) {
     HashTableConstIteratorAdapter copy = *this;
     --*this;
     return copy;
@@ -2117,35 +2184,36 @@ struct HashTableConstIteratorAdapter<HashTableType, Traits> {
   using reference = value_type&;
 
   HashTableConstIteratorAdapter() = default;
-  HashTableConstIteratorAdapter(
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  ALWAYS_INLINE HashTableConstIteratorAdapter(
       const typename HashTableType::const_iterator& impl)
       : impl_(impl) {}
   using GetType = typename Traits::IteratorConstGetType;
   using SourceGetType =
       typename HashTableType::ValueTraits::IteratorConstGetType;
 
-  GetType Get() const {
+  ALWAYS_INLINE GetType Get() const {
     return const_cast<GetType>(SourceGetType(impl_.Get()));
   }
-  typename Traits::IteratorConstReferenceType operator*() const {
+  ALWAYS_INLINE typename Traits::IteratorConstReferenceType operator*() const {
     return *Get();
   }
-  GetType operator->() const { return Get(); }
+  ALWAYS_INLINE GetType operator->() const { return Get(); }
 
-  HashTableConstIteratorAdapter& operator++() {
+  ALWAYS_INLINE HashTableConstIteratorAdapter& operator++() {
     ++impl_;
     return *this;
   }
-  HashTableConstIteratorAdapter operator++(int) {
+  ALWAYS_INLINE HashTableConstIteratorAdapter operator++(int) {
     HashTableConstIteratorAdapter copy = *this;
     ++*this;
     return copy;
   }
-  HashTableConstIteratorAdapter& operator--() {
+  ALWAYS_INLINE HashTableConstIteratorAdapter& operator--() {
     --impl_;
     return *this;
   }
-  HashTableConstIteratorAdapter operator--(int) {
+  ALWAYS_INLINE HashTableConstIteratorAdapter operator--(int) {
     HashTableConstIteratorAdapter copy = *this;
     --*this;
     return copy;
@@ -2174,35 +2242,41 @@ struct HashTableIteratorAdapter {
   using SourceGetType = typename HashTableType::ValueTraits::IteratorGetType;
 
   constexpr HashTableIteratorAdapter() = default;
-  HashTableIteratorAdapter(const typename HashTableType::iterator& impl)
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  ALWAYS_INLINE HashTableIteratorAdapter(
+      const typename HashTableType::iterator& impl)
       : impl_(impl) {}
 
-  GetType Get() const {
+  ALWAYS_INLINE GetType Get() const {
     return const_cast<GetType>(SourceGetType(impl_.get()));
   }
-  typename Traits::IteratorReferenceType operator*() const { return *Get(); }
-  GetType operator->() const { return Get(); }
+  ALWAYS_INLINE typename Traits::IteratorReferenceType operator*() const {
+    return *Get();
+  }
+  ALWAYS_INLINE GetType operator->() const { return Get(); }
 
-  HashTableIteratorAdapter& operator++() {
+  ALWAYS_INLINE HashTableIteratorAdapter& operator++() {
     ++impl_;
     return *this;
   }
-  HashTableIteratorAdapter operator++(int) {
+  ALWAYS_INLINE HashTableIteratorAdapter operator++(int) {
     auto copy = *this;
     ++(*this);
     return copy;
   }
 
-  HashTableIteratorAdapter& operator--() {
+  ALWAYS_INLINE HashTableIteratorAdapter& operator--() {
     --impl_;
     return *this;
   }
-  HashTableIteratorAdapter operator--(int) {
+  ALWAYS_INLINE HashTableIteratorAdapter operator--(int) {
     auto copy = *this;
     --(*this);
     return copy;
   }
 
+  ALWAYS_INLINE
+  // NOLINTNEXTLINE(google-explicit-constructor)
   operator HashTableConstIteratorAdapter<HashTableType, Traits>() {
     typename HashTableType::const_iterator i = impl_;
     return i;
@@ -2227,35 +2301,41 @@ struct HashTableIteratorAdapter<HashTableType, Traits> {
   using SourceGetType = typename HashTableType::ValueTraits::IteratorGetType;
 
   constexpr HashTableIteratorAdapter() = default;
-  HashTableIteratorAdapter(const typename HashTableType::iterator& impl)
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  ALWAYS_INLINE HashTableIteratorAdapter(
+      const typename HashTableType::iterator& impl)
       : impl_(impl) {}
 
-  GetType Get() const {
+  ALWAYS_INLINE GetType Get() const {
     return const_cast<GetType>(SourceGetType(impl_.get()));
   }
-  typename Traits::IteratorReferenceType operator*() const { return *Get(); }
-  GetType operator->() const { return Get(); }
+  ALWAYS_INLINE typename Traits::IteratorReferenceType operator*() const {
+    return *Get();
+  }
+  ALWAYS_INLINE GetType operator->() const { return Get(); }
 
-  HashTableIteratorAdapter& operator++() {
+  ALWAYS_INLINE HashTableIteratorAdapter& operator++() {
     ++impl_;
     return *this;
   }
-  HashTableIteratorAdapter operator++(int) {
+  ALWAYS_INLINE HashTableIteratorAdapter operator++(int) {
     auto copy = *this;
     ++(*this);
     return copy;
   }
 
-  HashTableIteratorAdapter& operator--() {
+  ALWAYS_INLINE HashTableIteratorAdapter& operator--() {
     --impl_;
     return *this;
   }
-  HashTableIteratorAdapter operator--(int) {
+  ALWAYS_INLINE HashTableIteratorAdapter operator--(int) {
     auto copy = *this;
     --(*this);
     return copy;
   }
 
+  ALWAYS_INLINE
+  // NOLINTNEXTLINE(google-explicit-constructor)
   operator HashTableConstIteratorAdapter<HashTableType, Traits>() {
     typename HashTableType::const_iterator i = impl_;
     return i;
@@ -2272,27 +2352,27 @@ std::ostream& operator<<(
 }
 
 template <typename T, typename U>
-inline bool operator==(const HashTableConstIteratorAdapter<T, U>& a,
-                       const HashTableConstIteratorAdapter<T, U>& b) {
+ALWAYS_INLINE bool operator==(const HashTableConstIteratorAdapter<T, U>& a,
+                              const HashTableConstIteratorAdapter<T, U>& b) {
   return a.impl_ == b.impl_;
 }
 
 template <typename T, typename U>
-inline bool operator==(const HashTableIteratorAdapter<T, U>& a,
-                       const HashTableIteratorAdapter<T, U>& b) {
+ALWAYS_INLINE bool operator==(const HashTableIteratorAdapter<T, U>& a,
+                              const HashTableIteratorAdapter<T, U>& b) {
   return a.impl_ == b.impl_;
 }
 
 // Both combinations of Const, non const.
 template <typename T, typename U>
-inline bool operator==(const HashTableConstIteratorAdapter<T, U>& a,
-                       const HashTableIteratorAdapter<T, U>& b) {
+ALWAYS_INLINE bool operator==(const HashTableConstIteratorAdapter<T, U>& a,
+                              const HashTableIteratorAdapter<T, U>& b) {
   return a.impl_ == b.impl_;
 }
 
 template <typename T, typename U>
-inline bool operator==(const HashTableIteratorAdapter<T, U>& a,
-                       const HashTableConstIteratorAdapter<T, U>& b) {
+ALWAYS_INLINE bool operator==(const HashTableIteratorAdapter<T, U>& a,
+                              const HashTableConstIteratorAdapter<T, U>& b) {
   return a.impl_ == b.impl_;
 }
 

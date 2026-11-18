@@ -84,9 +84,12 @@ using HeapHashMap = BasicHeapHashMap<internal::HeapCollectionType::kDisallowNew,
                                      MappedTraitsArg>;
 
 static_assert(IsDisallowNew<HeapHashMap<int, int>>);
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_HEAP_HASH_TABLE_MODIFICATION_CHECKS) == \
+                          BUILDFLAG(ENABLE_HASH_TABLE_MODIFICATION_CHECKS)
 #define COMMA ,
 ASSERT_SIZE(HashMap<int COMMA int>, HeapHashMap<int COMMA int>);
 #undef COMMA
+#endif
 
 // GCed version of HashSet for referring to GarbageCollected objects.
 template <typename KeyArg,
@@ -100,9 +103,12 @@ using GCedHeapHashMap = BasicHeapHashMap<internal::HeapCollectionType::kGCed,
                                          MappedTraitsArg>;
 
 static_assert(!IsDisallowNew<GCedHeapHashMap<int, int>>);
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_HEAP_HASH_TABLE_MODIFICATION_CHECKS) == \
+                          BUILDFLAG(ENABLE_HASH_TABLE_MODIFICATION_CHECKS)
 #define COMMA ,
 ASSERT_SIZE(HashMap<int COMMA int>, GCedHeapHashMap<int COMMA int>);
 #undef COMMA
+#endif
 
 }  // namespace blink
 

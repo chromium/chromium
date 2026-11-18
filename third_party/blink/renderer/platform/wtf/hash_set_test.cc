@@ -31,6 +31,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_test_helper.h"
@@ -488,6 +489,53 @@ TEST(HashSetTest, ConstructFromOtherContainerIterators) {
 
 static_assert(!IsTraceableV<HashSet<int>>,
               "HashSet<int, int> must not be traceable.");
+
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_HASH_TABLE_MODIFICATION_CHECKS)
+TEST(HashSetTest, MutationDuringIteration) {
+  HashSet<int> set = {1, 2, 3};
+  auto it = set.begin();
+  EXPECT_NE(it, set.end());
+  set.insert(4);
+  EXPECT_CHECK_DEATH_WITH([[maybe_unused]] int val = *it,
+                          "HashTable modified while being iterated.");
+}
+
+TEST(HashSetTest, IncrementAfterMutationDuringIteration) {
+  HashSet<int> set = {1, 2, 3};
+  auto it = set.begin();
+  EXPECT_NE(it, set.end());
+  set.insert(4);
+  EXPECT_CHECK_DEATH_WITH(++it, "HashTable modified while being iterated.");
+}
+
+TEST(HashSetTest, EraseDuringIteration) {
+  HashSet<int> set = {1, 2, 3};
+  auto it = set.begin();
+  EXPECT_NE(it, set.end());
+  set.erase(2);
+  EXPECT_CHECK_DEATH_WITH([[maybe_unused]] int val = *it,
+                          "HashTable modified while being iterated.");
+}
+
+TEST(HashSetTest, ClearDuringIteration) {
+  HashSet<int> set = {1, 2, 3};
+  auto it = set.begin();
+  EXPECT_NE(it, set.end());
+  set.clear();
+  EXPECT_CHECK_DEATH_WITH([[maybe_unused]] int val = *it,
+                          "HashTable modified while being iterated.");
+}
+
+TEST(HashSetTest, SwapDuringIteration) {
+  HashSet<int> set1 = {1, 2, 3};
+  HashSet<int> set2 = {4, 5, 6};
+  auto it = set1.begin();
+  EXPECT_NE(it, set1.end());
+  set1.swap(set2);
+  EXPECT_CHECK_DEATH_WITH([[maybe_unused]] int val = *it,
+                          "HashTable modified while being iterated.");
+}
+#endif
 
 }  // anonymous namespace
 
