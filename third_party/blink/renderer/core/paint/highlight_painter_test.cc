@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/core/paint/text_painter.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -35,7 +34,6 @@ class HighlightPainterTest : public PaintControllerPaintTest {
 INSTANTIATE_PAINT_TEST_SUITE_P(HighlightPainterTest);
 
 TEST_P(HighlightPainterTest, TextMatchMarkersAfterRedoAndShrink) {
-  ScopedSearchTextHighlightPseudoForTest search_text_highlight(true);
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>

@@ -406,8 +406,7 @@ HeapVector<HighlightLayer> HighlightOverlay::ComputeLayers(
     layers.emplace_back(HighlightLayerType::kSpelling);
   if (!target.empty())
     layers.emplace_back(HighlightLayerType::kTargetText);
-  if (!search.empty() &&
-      RuntimeEnabledFeatures::SearchTextHighlightPseudoEnabled()) {
+  if (!search.empty()) {
     layers.emplace_back(HighlightLayerType::kSearchText);
     layers.emplace_back(HighlightLayerType::kSearchTextActiveMatch);
   }
@@ -591,8 +590,7 @@ Vector<HighlightEdge> HighlightOverlay::ComputeEdges(
                             HighlightEdgeType::kEnd);
       }
     }
-    if (!search.empty() &&
-        RuntimeEnabledFeatures::SearchTextHighlightPseudoEnabled()) {
+    if (!search.empty()) {
       mapping_context.Reset();
       uint16_t layer_index_not_current =
           HighlightLayerIndex(layers, HighlightLayerType::kSearchText);

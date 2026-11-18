@@ -6075,13 +6075,6 @@
       name: "ScrollVisibilityHiddenScrollers",
       status: "stable",
     },
-    // Allows CSS styling of browser search results.
-    // https://issues.chromium.org/issues/339298411
-    // https://chromestatus.com/feature/5195073796177920
-    {
-      name: "SearchTextHighlightPseudo",
-      status: "stable",
-    },
     // SecurePaymentConfirmation has shipped on some platforms, but its
     // availability is controlled by the browser process (via the
     // SecurePaymentConfirmationBrowser feature), as it requires browser

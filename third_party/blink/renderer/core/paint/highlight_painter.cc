@@ -481,8 +481,7 @@ HighlightPainter::HighlightPainter(
                                            fragment_dom_offsets_->start,
                                            fragment_dom_offsets_->end);
         }
-        if (RuntimeEnabledFeatures::SearchTextHighlightPseudoEnabled() &&
-            !fragment_item_.IsSvgText()) {
+        if (!fragment_item_.IsSvgText()) {
           search_ = controller.MarkersFor(
               *text_node, DocumentMarker::kTextMatch,
               fragment_dom_offsets_->start, fragment_dom_offsets_->end);
@@ -573,8 +572,7 @@ void HighlightPainter::PaintNonCssMarkers(Phase phase) {
 
     switch (marker->GetType()) {
       case DocumentMarker::kTextMatch: {
-        if (RuntimeEnabledFeatures::SearchTextHighlightPseudoEnabled() &&
-            !fragment_item_->IsSvgText()) {
+        if (!fragment_item_->IsSvgText()) {
           break;
         }
         const Document& document = node_->GetDocument();

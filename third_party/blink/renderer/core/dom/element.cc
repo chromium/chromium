@@ -7623,8 +7623,7 @@ const ComputedStyle* Element::RecalcHighlightStyles(
     }
   }
 
-  if (RuntimeEnabledFeatures::SearchTextHighlightPseudoEnabled() &&
-      new_style.HasPseudoElementStyle(kPseudoIdSearchText)) {
+  if (new_style.HasPseudoElementStyle(kPseudoIdSearchText)) {
     const ComputedStyle* highlight_parent_current =
         parent_highlights ? parent_highlights->SearchTextCurrent() : nullptr;
     if (ShouldRecalcHighlightPseudoStyle(highlight_recalc,
@@ -10840,11 +10839,6 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
 
   if (!pseudo_element_specifier) {
     return element_style;
-  }
-
-  if (pseudo_element_specifier == kPseudoIdSearchText &&
-      !RuntimeEnabledFeatures::SearchTextHighlightPseudoEnabled()) {
-    return nullptr;
   }
 
   if (pseudo_element_specifier == kPseudoIdScrollMarker &&

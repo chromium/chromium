@@ -937,12 +937,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
-  if ((match->type == CSSSelector::kPseudoSearchText ||
-       match->type == CSSSelector::kPseudoCurrent) &&
-      !RuntimeEnabledFeatures::SearchTextHighlightPseudoEnabled()) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
   if ((match->type == CSSSelector::kPseudoToolFormActive ||
        match->type == CSSSelector::kPseudoToolSubmitActive) &&
       document &&

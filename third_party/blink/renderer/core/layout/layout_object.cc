@@ -3336,15 +3336,12 @@ void LayoutObject::SetStyle(const ComputedStyle& new_style,
     // We don't do anything regarding ::selection, as ::selection
     // uses its own mechanism for this (see
     // LayoutObject::InvalidateSelectionOnStyleChange()).
-    if (RuntimeEnabledFeatures::SearchTextHighlightPseudoEnabled()) {
-      HighlightPseudoUpdateDiff(kPseudoIdSearchText,
-                                old_style->HighlightData().SearchTextCurrent(),
-                                new_style.HighlightData().SearchTextCurrent());
-      HighlightPseudoUpdateDiff(
-          kPseudoIdSearchText,
-          old_style->HighlightData().SearchTextNotCurrent(),
-          new_style.HighlightData().SearchTextNotCurrent());
-    }
+    HighlightPseudoUpdateDiff(kPseudoIdSearchText,
+                              old_style->HighlightData().SearchTextCurrent(),
+                              new_style.HighlightData().SearchTextCurrent());
+    HighlightPseudoUpdateDiff(kPseudoIdSearchText,
+                              old_style->HighlightData().SearchTextNotCurrent(),
+                              new_style.HighlightData().SearchTextNotCurrent());
     HighlightPseudoUpdateDiff(kPseudoIdTargetText,
                               old_style->HighlightData().TargetText(),
                               new_style.HighlightData().TargetText());
