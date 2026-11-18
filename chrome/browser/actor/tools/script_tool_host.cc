@@ -25,6 +25,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/script_tool_continuation.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -180,6 +181,13 @@ void ScriptToolHost::Invoke(DeprecatedToolCallback callback) {
       &target_document_render_frame_);
   target_document_origin_ = frame->GetLastCommittedOrigin();
 
+  if (base::FeatureList::IsEnabled(blink::features::kWebMCPContinuations)) {
+    continuation_registration_ = content::RegisterExternalScriptToolExecution(
+        *frame, execution_id_, script_tool->name, script_tool->input_arguments,
+        base::BindOnce(&ScriptToolHost::OnContinuationTokenCreated,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
   lifecycle_ = Lifecycle::kInvokeSent;
   target_document_render_frame_->InvokeTool(
       std::move(invocation),
@@ -213,6 +221,7 @@ void ScriptToolHost::Cancel() {
     case Lifecycle::kInvokeSent:
     case Lifecycle::kWaitingForNavigation:
     case Lifecycle::kPendingResultFromNewDocument:
+    case Lifecycle::kWaitingForContinuation:
       journal().Log(JournalURL(), task_id(), "ScriptToolHost::Cancel",
                     JournalDetailsBuilder()
                         .Add("actor_surface_handle", actor_surface_handle_)
@@ -224,6 +233,8 @@ void ScriptToolHost::Cancel() {
 
       // TODO(khushalsagar): Should we cancel the ongoing navigation here? See
       // crbug.com/478276089.
+      // PostErrorResult() calls TearDown(), which destroys
+      // `continuation_registration_` and so cancels the continuation, if any.
       PostErrorResult(std::move(tool_done_callback_),
                       mojom::ActionResultCode::kInvokeCanceled);
       break;
@@ -283,6 +294,19 @@ void ScriptToolHost::OnToolInvokedInOldDocument(mojom::ActionResultPtr result) {
     pending_result_->script_tool_response->tool =
         result->script_tool_response->tool.Clone();
   }
+  // If the tool requested a continuation token, its result comes from the
+  // resumed step, so ignore this one. This relies on the target document's
+  // ModelContextHost::RequestContinuationToken() call being handled before
+  // this reply: Blink sends it before the tool's `execute()` settles, and both
+  // ModelContextHost and ChromeRenderFrame are channel-associated, so they
+  // share one ordered channel. Otherwise, the initial step's result would be
+  // reported as the final result.
+  // Note: ChromeRenderFrame IPC will likely be removed in the future. Whatever
+  // replaces InvokeTool() must preserve this ordering, or this code must stop
+  // depending on it.
+  if (lifecycle_ == Lifecycle::kWaitingForContinuation) {
+    return;
+  }
   if (has_tool_response && !result->script_tool_response->result) {
     lifecycle_ = Lifecycle::kWaitingForNavigation;
     return;
@@ -297,15 +321,72 @@ void ScriptToolHost::OnToolInvokedInOldDocument(mojom::ActionResultPtr result) {
 void ScriptToolHost::OnResultReceivedFromNewDocument(
     const std::string& result) {
   CHECK_EQ(lifecycle_, Lifecycle::kPendingResultFromNewDocument);
+  FinishWithOutput(result);
+}
 
+void ScriptToolHost::OnContinuationTokenCreated() {
+  // The target document can request a token before or after it starts a
+  // navigation, but not once a new document commits, because the target
+  // document is then inactive. TearDown() unregisters the execution whenever
+  // `lifecycle_` becomes kDone, and Invoke() observes the WebContents before
+  // registering it.
+  CHECK(lifecycle_ == Lifecycle::kInvokeSent ||
+        lifecycle_ == Lifecycle::kWaitingForNavigation);
+  CHECK(web_contents());
+  journal().Log(JournalURL(), task_id(),
+                "ScriptToolHost::OnContinuationTokenCreated",
+                JournalDetailsBuilder()
+                    .Add("actor_surface_handle", actor_surface_handle_)
+                    .Build());
+  lifecycle_ = Lifecycle::kWaitingForContinuation;
+  // `timeout_timer_` keeps running, and bounds the whole execution, including
+  // the continuation.
+  // NOTE: Continuation tokens are redeemable for 30 seconds, so the tool may
+  // timeout while a token is active and redeemable.
+  CHECK(continuation_registration_);
+  continuation_registration_->WaitForContinuation(
+      base::BindOnce(&ScriptToolHost::OnContinuationCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ScriptToolHost::OnContinuationCompleted(
+    base::expected<std::string, std::string> result,
+    content::WeakDocumentPtr resumed_document) {
+  CHECK_EQ(lifecycle_, Lifecycle::kWaitingForContinuation);
+  journal().Log(JournalURL(), task_id(),
+                "ScriptToolHost::OnContinuationCompleted",
+                result.has_value()
+                    ? JournalDetailsBuilder()
+                          .Add("actor_surface_handle", actor_surface_handle_)
+                          .Build()
+                    : JournalDetailsBuilder()
+                          .Add("actor_surface_handle", actor_surface_handle_)
+                          .AddError(result.error())
+                          .Build());
+
+  if (!result.has_value()) {
+    PostErrorResult(std::move(tool_done_callback_),
+                    mojom::ActionResultCode::kScriptToolInvocationFailed,
+                    result.error());
+    return;
+  }
+
+  // Wait for page stabilization in the document that ran the resumed step.
+  new_document_ = std::move(resumed_document);
+  FinishWithOutput(*result);
+}
+
+void ScriptToolHost::FinishWithOutput(const std::string& output) {
   lifecycle_ = Lifecycle::kDone;
-  SetScriptToolOutput(result);
+  SetScriptToolOutput(output);
   TearDown();
   RecordMetrics(*pending_result_);
   std::move(tool_done_callback_).Run(std::move(pending_result_));
 }
 
 void ScriptToolHost::RecordMetrics(const mojom::ActionResult& result) {
+  // TODO(crbug.com/555180336): Record whether the execution used a
+  // continuation token, along with the WebMCP continuation UseCounters.
   RecordScriptToolActionResultCode(result.code);
   if (result.code == mojom::ActionResultCode::kOk) {
     RecordScriptToolOutputSizeBytes(
@@ -322,6 +403,14 @@ void ScriptToolHost::DidStartNavigation(
   if (lifecycle_ == Lifecycle::kInitial || lifecycle_ == Lifecycle::kDone ||
       navigation_handle->IsSameDocument() ||
       navigation_handle->GetFrameTreeNodeId() != target_frame_tree_node_id_) {
+    return;
+  }
+
+  // While waiting for a continuation, the result comes from the resumed step
+  // that redeems the token, so navigations don't affect the tool. content/
+  // fails the continuation if the token expires, or if the document running
+  // the resumed step is destroyed.
+  if (lifecycle_ == Lifecycle::kWaitingForContinuation) {
     return;
   }
 
@@ -447,6 +536,12 @@ void ScriptToolHost::RenderFrameDeleted(content::RenderFrameHost* rfh) {
         terminate_with_error = true;
       }
       break;
+    case Lifecycle::kWaitingForContinuation:
+      // Documents may be deleted by navigations while waiting for the
+      // continuation. content/ fails the continuation if the token expires, or
+      // if the document running the resumed step is destroyed. Tab closure is
+      // handled below.
+      break;
   }
 
   // The page is going away, so no result will arrive.
@@ -486,6 +581,9 @@ void ScriptToolHost::TearDown() {
   target_document_render_frame_.reset();
   new_document_render_frame_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
+  // Unregister after invalidating weak pointers, so that cancelling the
+  // continuation can't call back into `this`.
+  continuation_registration_.reset();
 }
 
 void ScriptToolHost::InitializePendingResult() {

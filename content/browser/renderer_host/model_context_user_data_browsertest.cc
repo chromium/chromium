@@ -7,14 +7,18 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/script_tool_continuation.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -255,6 +259,106 @@ IN_PROC_BROWSER_TEST_F(ModelContextUserDataBrowserTest,
       ->SetScriptToolsReady(false);
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "WebMCPWaitForToolsUntil is not enabled.");
+}
+
+class ModelContextContinuationManagerBrowserTest : public ContentBrowserTest {
+ public:
+  ModelContextContinuationManagerBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kWebMCP, blink::features::kWebMCPContinuations}, {});
+  }
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    // Note: 127.0.0.1 is a secure context, as `document.modelContext` requires.
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(
+        NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  }
+
+  RenderFrameHost& main_rfh() {
+    return *shell()->web_contents()->GetPrimaryMainFrame();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Destroying the registration of a browser-initiated tool execution unregisters
+// it, so the target document can no longer request a continuation token for it.
+IN_PROC_BROWSER_TEST_F(ModelContextContinuationManagerBrowserTest,
+                       DestroyingRegistrationUnregistersExecution) {
+  const blink::ToolInvocationToken registered_id;
+  const blink::ToolInvocationToken unregistered_id;
+  base::test::TestFuture<void> token_created;
+  std::unique_ptr<ScriptToolExecutionRegistration> registration =
+      RegisterExternalScriptToolExecution(main_rfh(), registered_id, "tool",
+                                          "{}", token_created.GetCallback());
+  RegisterExternalScriptToolExecution(main_rfh(), unregistered_id, "tool", "{}",
+                                      base::DoNothing())
+      .reset();
+
+  auto* manager =
+      ModelContextContinuationManager::GetForRenderFrameHost(main_rfh());
+  ASSERT_TRUE(manager);
+  EXPECT_FALSE(manager->RequestContinuationToken(main_rfh(), unregistered_id));
+  std::optional<blink::ContinuationToken> token =
+      manager->RequestContinuationToken(main_rfh(), registered_id);
+  ASSERT_TRUE(token);
+  EXPECT_TRUE(token_created.IsReady());
+}
+
+// Destroying the registration after the target document requested a
+// continuation token detaches the caller from the continuation, but leaves the
+// token redeemable.
+IN_PROC_BROWSER_TEST_F(ModelContextContinuationManagerBrowserTest,
+                       DestroyingRegistrationDetachesContinuation) {
+  const blink::ToolInvocationToken invocation_id;
+  std::unique_ptr<ScriptToolExecutionRegistration> registration =
+      RegisterExternalScriptToolExecution(main_rfh(), invocation_id, "tool",
+                                          "{}", base::DoNothing());
+  auto* manager =
+      ModelContextContinuationManager::GetForRenderFrameHost(main_rfh());
+  ASSERT_TRUE(manager);
+  std::optional<blink::ContinuationToken> token =
+      manager->RequestContinuationToken(main_rfh(), invocation_id);
+  ASSERT_TRUE(token);
+  registration->WaitForContinuation(base::DoNothing());
+
+  registration.reset();
+  EXPECT_EQ(manager->GetContinuationToken(invocation_id), token);
+}
+
+class ModelContextContinuationManagerBackForwardCacheBrowserTest
+    : public ModelContextContinuationManagerBrowserTest {
+ public:
+  ModelContextContinuationManagerBackForwardCacheBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+        GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// A browser-initiated execution isn't registered for a document that isn't
+// active, because it can't request a continuation token, and no registration
+// is returned.
+IN_PROC_BROWSER_TEST_F(
+    ModelContextContinuationManagerBackForwardCacheBrowserTest,
+    RegistrationSkippedForInactiveDocument) {
+  RenderFrameHostWrapper cached_rfh(&main_rfh());
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+  ASSERT_TRUE(cached_rfh->IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kInBackForwardCache));
+
+  EXPECT_FALSE(RegisterExternalScriptToolExecution(
+      *cached_rfh.get(), blink::ToolInvocationToken(), "tool", "{}",
+      base::DoNothing()));
+  EXPECT_FALSE(
+      ModelContextContinuationManager::GetForRenderFrameHost(main_rfh()));
 }
 
 }  // namespace content

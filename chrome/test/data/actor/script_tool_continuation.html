@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Actor Script Tool Continuation Test</title>
+</head>
+<body>
+<script>
+const params = new URLSearchParams(window.location.search);
+const step = params.get('step') || 'billing';
+const token = params.get('token');
+
+// Reports a failure to redeem a continuation token, so that tests waiting for
+// DOM automation messages fail with it instead of timing out.
+function reportRedemptionFailure(error) {
+  window.domAutomationController.send(`redemption_failed: ${error.name}`);
+}
+
+if (step === 'billing') {
+  document.modelContext.registerTool({
+    name: 'multi_step_checkout',
+    description: 'Continues across /billing -> /confirmation',
+    inputSchema: {
+      type: 'object',
+      properties: { item: { type: 'string' } },
+      required: ['item']
+    },
+    async execute(args, options) {
+      const nextToken = await options.invocation.requestToken();
+      const nextUrl = new URL('script_tool_continuation.html', window.location.href);
+      nextUrl.searchParams.set('step', 'confirmation');
+      nextUrl.searchParams.set('token', nextToken);
+      window.location.href = nextUrl.toString();
+      return 'billing_intermediate';
+    }
+  });
+
+  document.modelContext.registerTool({
+    name: 'iframe_handoff',
+    description: 'Delegates continuation completion to a same-origin iframe',
+    inputSchema: {
+      type: 'object',
+      properties: { item: { type: 'string' } },
+      required: ['item']
+    },
+    async execute(args, options) {
+      const nextToken = await options.invocation.requestToken();
+      const iframeUrl = new URL('script_tool_continuation.html', window.location.href);
+      iframeUrl.searchParams.set('step', 'confirmation');
+      iframeUrl.searchParams.set('token', nextToken);
+      const iframe = document.createElement('iframe');
+      iframe.src = iframeUrl.toString();
+      document.body.appendChild(iframe);
+      return 'iframe_intermediate';
+    }
+  });
+
+  document.modelContext.registerTool({
+    name: 'cross_origin_bounce',
+    description: 'Navigates cross-origin and back before redeeming continuation',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        item: { type: 'string' },
+        bounce_url: { type: 'string' }
+      },
+      required: ['item', 'bounce_url']
+    },
+    async execute(args, options) {
+      const nextToken = await options.invocation.requestToken();
+      const bounceUrl = new URL(args.bounce_url);
+      bounceUrl.searchParams.set('token', nextToken);
+      window.location.href = bounceUrl.toString();
+      return 'cross_origin_intermediate';
+    }
+  });
+
+  document.modelContext.registerTool({
+    name: 'reject_after_request_token',
+    description: 'Requests a token, passes it to a subframe, and rejects its Promise',
+    inputSchema: { type: 'object', properties: {} },
+    async execute(args, options) {
+      const nextToken = await options.invocation.requestToken();
+      const iframeUrl = new URL('script_tool_continuation.html', window.location.href);
+      iframeUrl.searchParams.set('step', 'confirmation');
+      iframeUrl.searchParams.set('token', nextToken);
+      const iframe = document.createElement('iframe');
+      iframe.src = iframeUrl.toString();
+      document.body.appendChild(iframe);
+      throw new Error('initial execution failed');
+    }
+  });
+
+  document.modelContext.registerTool({
+    name: 'request_token_and_drop',
+    description: 'Requests a continuation token and never redeems it',
+    inputSchema: { type: 'object', properties: {} },
+    async execute(args, options) {
+      await options.invocation.requestToken();
+      return 'token_dropped';
+    }
+  });
+
+  document.modelContext.registerTool({
+    name: 'resume_and_reject',
+    description: 'Navigates to a step whose resumed callback rejects',
+    inputSchema: { type: 'object', properties: {} },
+    async execute(args, options) {
+      const nextToken = await options.invocation.requestToken();
+      const nextUrl = new URL('script_tool_continuation.html', window.location.href);
+      nextUrl.searchParams.set('step', 'reject_on_resume');
+      nextUrl.searchParams.set('token', nextToken);
+      window.location.href = nextUrl.toString();
+      return 'navigating_to_reject';
+    }
+  });
+
+  document.modelContext.registerTool({
+    name: 'request_token_and_navigate',
+    description: 'Requests a continuation token, sends it as a DOM automation ' +
+        'message, and navigates to `url` if set, without redeeming the token',
+    inputSchema: {
+      type: 'object',
+      properties: { url: { type: 'string' } }
+    },
+    async execute(args, options) {
+      window.pendingToken = await options.invocation.requestToken();
+      window.domAutomationController.send(window.pendingToken);
+      if (args.url) {
+        window.location.href = args.url;
+      }
+      return 'token_requested';
+    }
+  });
+
+  document.modelContext.registerTool({
+    name: 'navigate_then_request_token',
+    description: 'Starts a navigation to `url`, then requests a continuation ' +
+        'token and redeems it in this document',
+    inputSchema: {
+      type: 'object',
+      properties: { url: { type: 'string' } },
+      required: ['url']
+    },
+    async execute(args, options) {
+      window.location.href = args.url;
+      const nextToken = await options.invocation.requestToken();
+      document.modelContext.resumeTool(nextToken, async () => 'confirmed')
+          .catch(reportRedemptionFailure);
+      return 'navigating';
+    }
+  });
+
+  document.modelContext.registerTool({
+    name: 'redeem_after_delay',
+    description: 'Redeems its continuation token in this document after a delay',
+    inputSchema: {
+      type: 'object',
+      properties: { delay_ms: { type: 'number' } },
+      required: ['delay_ms']
+    },
+    async execute(args, options) {
+      const nextToken = await options.invocation.requestToken();
+      setTimeout(() => {
+        document.modelContext.resumeTool(nextToken, async () => 'confirmed')
+            .catch(reportRedemptionFailure);
+      }, args.delay_ms);
+      return 'redeeming_after_delay';
+    }
+  });
+
+  document.modelContext.registerTool({
+    name: 'hang_on_resume',
+    description: 'Navigates to a step whose resumed callback never settles',
+    inputSchema: { type: 'object', properties: {} },
+    async execute(args, options) {
+      const nextToken = await options.invocation.requestToken();
+      const nextUrl = new URL('script_tool_continuation.html', window.location.href);
+      nextUrl.searchParams.set('step', 'hang_on_resume');
+      nextUrl.searchParams.set('token', nextToken);
+      window.location.href = nextUrl.toString();
+      return 'navigating_to_hang';
+    }
+  });
+} else if (step === 'bounce' && token && params.has('return_url')) {
+  const returnUrl = new URL(params.get('return_url'));
+  returnUrl.searchParams.set('token', token);
+  window.location.href = returnUrl.toString();
+} else if (step === 'confirmation' && token) {
+  document.modelContext.resumeTool(token, async (args, options) => {
+    return 'confirmed';
+  }).catch(reportRedemptionFailure);
+} else if (step === 'reject_on_resume' && token) {
+  document.modelContext.resumeTool(token, async () => {
+    throw new Error('resumed step failed');
+  }).catch(reportRedemptionFailure);
+} else if (step === 'hang_on_resume' && token) {
+  document.modelContext.resumeTool(token, (args, options) => {
+    options.signal.addEventListener('abort', () => {
+      window.domAutomationController.send('resumed_step_aborted');
+    });
+    window.domAutomationController.send('resumed_step_started');
+    return new Promise(() => {});
+  }).catch(reportRedemptionFailure);
+}
+</script>
+</body>
+</html>

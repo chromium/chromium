@@ -6,9 +6,12 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_SCRIPT_TOOL_HOST_H_
 
 #include <memory>
+#include <optional>
 #include <set>
+#include <string>
 
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
@@ -17,6 +20,10 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+
+namespace content {
+class ScriptToolExecutionRegistration;
+}  // namespace content
 
 namespace actor {
 
@@ -53,6 +60,7 @@ class ScriptToolHost : public Tool, content::WebContentsObserver {
     kInvokeSent,
     kWaitingForNavigation,
     kPendingResultFromNewDocument,
+    kWaitingForContinuation,
     kDone
   };
 
@@ -69,6 +77,11 @@ class ScriptToolHost : public Tool, content::WebContentsObserver {
   void TearDown();
   void OnToolInvokedInOldDocument(mojom::ActionResultPtr result);
   void OnResultReceivedFromNewDocument(const std::string& result);
+  void OnContinuationTokenCreated();
+  void OnContinuationCompleted(base::expected<std::string, std::string> result,
+                               content::WeakDocumentPtr resumed_document);
+  // Finishes the tool successfully with `output` as its result.
+  void FinishWithOutput(const std::string& output);
   void PostErrorResult(DeprecatedToolCallback tool_callback,
                        mojom::ActionResultCode code,
                        const std::string& message = "");
@@ -118,6 +131,12 @@ class ScriptToolHost : public Tool, content::WebContentsObserver {
   // Timer to enforce a timeout when waiting for a cross-document navigation
   // to commit and finish parsing.
   base::OneShotTimer cross_document_timeout_timer_;
+  // Allows the target document to request a continuation token for this
+  // execution. Null if the target document can't request one. Reset in
+  // TearDown(), which unregisters the execution and cancels its continuation,
+  // if any.
+  std::unique_ptr<content::ScriptToolExecutionRegistration>
+      continuation_registration_;
   base::WeakPtrFactory<ScriptToolHost> weak_ptr_factory_{this};
 };
 

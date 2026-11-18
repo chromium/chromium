@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -50,6 +52,7 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/page_transition_types.h"
 #include "url/url_constants.h"
+#include "url/url_util.h"
 
 using base::test::TestFuture;
 
@@ -1428,6 +1431,363 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
 
   actor_task().CancelOngoingActions(mojom::ActionResultCode::kActionsCancelled);
   ExpectErrorResult(result, mojom::ActionResultCode::kActionsCancelled);
+}
+
+namespace {
+
+// Inserts a throttle that cancels the navigation when it starts.
+void CancelNavigationAtStart(content::NavigationThrottleRegistry& registry) {
+  auto throttle = std::make_unique<content::TestNavigationThrottle>(registry);
+  throttle->SetResponse(content::TestNavigationThrottle::WILL_START_REQUEST,
+                        content::TestNavigationThrottle::SYNCHRONOUS,
+                        content::NavigationThrottle::CANCEL);
+  registry.AddThrottle(std::move(throttle));
+}
+
+}  // namespace
+
+class ActorToolsTestScriptToolContinuations : public ActorToolsTestScriptTool {
+ public:
+  ActorToolsTestScriptToolContinuations() {
+    // `IntermediateCrossOriginNavigation` navigates cross-origin while the tool
+    // is waiting for its continuation.
+    features_.InitWithFeatures({blink::features::kWebMCPContinuations},
+                               {kGlicCrossOriginNavigationGating});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolContinuations,
+                       CrossDocumentContinuation) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_continuation.html?step=billing");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  auto action = MakeScriptToolRequest(*main_frame(), "multi_step_checkout",
+                                      R"JSON({"item": "widget"})JSON");
+  auto [action_result, response] = RunScriptTool(std::move(action));
+  EXPECT_EQ(response->result, "confirmed");
+  EXPECT_THAT(web_contents()->GetLastCommittedURL().query(),
+              testing::HasSubstr("step=confirmation"));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolContinuations,
+                       SameOriginIframeContinuation) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_continuation.html?step=billing");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  auto action = MakeScriptToolRequest(*main_frame(), "iframe_handoff",
+                                      R"JSON({"item": "widget"})JSON");
+  auto [action_result, response] = RunScriptTool(std::move(action));
+  EXPECT_EQ(response->result, "confirmed");
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolContinuations,
+                       IntermediateCrossOriginNavigation) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_continuation.html?step=billing");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const GURL return_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_continuation.html?step=confirmation");
+  const std::string query =
+      "step=bounce&return_url=" + url::EncodeUriComponent(return_url.spec());
+  const GURL bounce_url = embedded_https_test_server().GetURL(
+      "b.com", "/actor/script_tool_continuation.html?" + query);
+
+  const std::string input_arguments =
+      base::StringPrintf(R"JSON({"item": "widget", "bounce_url": "%s"})JSON",
+                         bounce_url.spec().c_str());
+  auto action = MakeScriptToolRequest(*main_frame(), "cross_origin_bounce",
+                                      input_arguments);
+  auto [action_result, response] = RunScriptTool(std::move(action));
+  EXPECT_EQ(response->result, "confirmed");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ActorToolsTestScriptToolContinuations,
+    ContinuationSucceedsWhenInitialRejectsAfterRequestToken) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_continuation.html?step=billing");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  auto action =
+      MakeScriptToolRequest(*main_frame(), "reject_after_request_token", "{}");
+  auto [action_result, response] = RunScriptTool(std::move(action));
+  EXPECT_EQ(response->result, "confirmed");
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolContinuations,
+                       ResumedStepRejectionFailsTool) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_continuation.html?step=billing");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  auto action = MakeScriptToolRequest(*main_frame(), "resume_and_reject", "{}");
+  RunScriptToolExpectingError(
+      std::move(action), mojom::ActionResultCode::kScriptToolInvocationFailed);
+}
+
+// Cancelling the tool while it waits for its continuation token to be redeemed
+// fails the tool, but leaves the token redeemable.
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolContinuations,
+                       CancelWhileWaitingForRedemption) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_continuation.html?step=billing");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  content::DOMMessageQueue message_queue(web_contents());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(MakeScriptToolRequest(
+                       *main_frame(), "request_token_and_navigate", "{}")),
+                   result.GetCallback());
+  std::string token;
+  ASSERT_TRUE(message_queue.WaitForMessage(&token));
+
+  actor_task().CancelOngoingActions(mojom::ActionResultCode::kActionsCancelled);
+  ExpectErrorResult(result, mojom::ActionResultCode::kActionsCancelled);
+  EXPECT_EQ("redeemed", content::EvalJs(web_contents(), R"(
+      document.modelContext
+          .resumeTool(window.pendingToken, async () => 'ignored')
+          .then(() => 'redeemed');
+  )"));
+}
+
+// Closing the tab while the tool waits for its continuation token to be
+// redeemed ends the task.
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolContinuations,
+                       TabClosedWhileWaitingForRedemption) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_continuation.html?step=billing");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  content::WebContents* contents = web_contents();
+  // Keep a second tab so the window stays open.
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ::ui::PAGE_TRANSITION_TYPED));
+
+  content::DOMMessageQueue message_queue(contents);
+  ActResultFuture result;
+  actor_task().Act(
+      ToRequestList(MakeScriptToolRequest(*contents->GetPrimaryMainFrame(),
+                                          "request_token_and_navigate", "{}")),
+      result.GetCallback());
+  std::string token;
+  ASSERT_TRUE(message_queue.WaitForMessage(&token));
+
+  browser()->GetTabStripModel()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_USER_GESTURE);
+  ExpectErrorResult(result, mojom::ActionResultCode::kTaskWentAway);
+}
+
+// A navigation that doesn't commit while the tool waits for its continuation
+// token to be redeemed doesn't fail the tool, so the document can still redeem
+// the token.
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolContinuations,
+                       RedeemAfterNavigationDidNotCommit) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_continuation.html?step=billing");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  content::TestNavigationThrottleInserter throttle_inserter(
+      web_contents(), base::BindRepeating(&CancelNavigationAtStart));
+
+  content::TestNavigationObserver nav_observer(web_contents());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(MakeScriptToolRequest(
+                       *main_frame(), "request_token_and_navigate",
+                       R"JSON({"url": "/title1.html"})JSON")),
+                   result.GetCallback());
+  nav_observer.Wait();
+  ASSERT_FALSE(nav_observer.last_navigation_succeeded());
+  EXPECT_FALSE(result.IsReady());
+
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
+      document.modelContext.resumeTool(
+          window.pendingToken, async () => 'confirmed');
+  )"));
+  ExpectOkResult(result);
+  EXPECT_EQ(result.Get()
+                .at(0)
+                .tool_result.deprecated_action_result()
+                ->script_tool_response->result,
+            "confirmed");
+}
+
+// An error page that commits while the tool waits for its continuation token
+// to be redeemed doesn't fail the tool, so a later document can still redeem
+// the token.
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolContinuations,
+                       RedeemAfterErrorPage) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_continuation.html?step=billing");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  content::DOMMessageQueue message_queue(web_contents());
+  content::TestNavigationObserver nav_observer(web_contents());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(MakeScriptToolRequest(
+                       *main_frame(), "request_token_and_navigate",
+                       R"JSON({"url": "/non-existent"})JSON")),
+                   result.GetCallback());
+  std::string token_message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&token_message));
+  nav_observer.Wait();
+  ASSERT_FALSE(nav_observer.last_navigation_succeeded());
+  EXPECT_FALSE(result.IsReady());
+
+  std::string token;
+  base::TrimString(token_message, "\"", &token);
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      embedded_https_test_server().GetURL(
+          "example.com",
+          "/actor/script_tool_continuation.html?step=confirmation&token=" +
+              token)));
+  ExpectOkResult(result);
+  EXPECT_EQ(result.Get()
+                .at(0)
+                .tool_result.deprecated_action_result()
+                ->script_tool_response->result,
+            "confirmed");
+}
+
+// The tool can request a continuation token after it starts a navigation, while
+// its document is still active.
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolContinuations,
+                       RequestTokenAfterStartingNavigation) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_continuation.html?step=billing");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Keep the navigation from committing, so the document stays active.
+  const GURL next_url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
+  content::TestNavigationManager navigation(web_contents(), next_url);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(MakeScriptToolRequest(
+                       *main_frame(), "navigate_then_request_token",
+                       base::StringPrintf(R"JSON({"url": "%s"})JSON",
+                                          next_url.spec().c_str()))),
+                   result.GetCallback());
+  ASSERT_TRUE(navigation.WaitForRequestStart());
+
+  ExpectOkResult(result);
+  EXPECT_EQ(result.Get()
+                .at(0)
+                .tool_result.deprecated_action_result()
+                ->script_tool_response->result,
+            "confirmed");
+}
+
+// Cancelling the tool while its resumed step is running aborts the resumed
+// step's signal, and fails the tool with the cancellation code.
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolContinuations,
+                       CancelDuringResumedStep) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_continuation.html?step=billing");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  content::DOMMessageQueue message_queue(web_contents());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(MakeScriptToolRequest(*main_frame(),
+                                                       "hang_on_resume", "{}")),
+                   result.GetCallback());
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  ASSERT_EQ("\"resumed_step_started\"", message);
+
+  actor_task().CancelOngoingActions(mojom::ActionResultCode::kActionsCancelled);
+  ExpectErrorResult(result, mojom::ActionResultCode::kActionsCancelled);
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"resumed_step_aborted\"", message);
+}
+
+class ActorToolsTestScriptToolContinuationsShortExecutionTimeout
+    : public ActorToolsTestScriptToolContinuations {
+ public:
+  ActorToolsTestScriptToolContinuationsShortExecutionTimeout() {
+    timeout_features_.InitAndEnableFeatureWithParameters(
+        kGlicActorEnableScriptTools, {{"execution_timeout", "2s"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList timeout_features_;
+};
+
+// The tool execution timeout bounds the whole execution, including the time
+// until the continuation token is redeemed.
+IN_PROC_BROWSER_TEST_F(
+    ActorToolsTestScriptToolContinuationsShortExecutionTimeout,
+    ExecutionTimeoutWhileWaitingForRedemption) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_continuation.html?step=billing");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  auto action = MakeScriptToolRequest(*main_frame(), "redeem_after_delay",
+                                      R"JSON({"delay_ms": 3000})JSON");
+  RunScriptToolExpectingError(std::move(action),
+                              mojom::ActionResultCode::kScriptToolNoResponse);
+}
+
+class ActorToolsTestScriptToolContinuationsShortTimeout
+    : public ActorToolsTestScriptToolContinuations {
+ public:
+  ActorToolsTestScriptToolContinuationsShortTimeout() {
+    timeout_features_.InitAndEnableFeatureWithParameters(
+        blink::features::kWebMCPContinuations,
+        {{"continuation_timeout", "100ms"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList timeout_features_;
+};
+
+// A continuation token that is never redeemed expires, and the tool call fails
+// instead of reporting the initial step's intermediate result.
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolContinuationsShortTimeout,
+                       ContinuationTokenExpires) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_continuation.html?step=billing");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  auto action =
+      MakeScriptToolRequest(*main_frame(), "request_token_and_drop", "{}");
+  RunScriptToolExpectingError(
+      std::move(action), mojom::ActionResultCode::kScriptToolInvocationFailed);
+}
+
+// The tool fails when its continuation token expires after a navigation that
+// doesn't commit.
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolContinuationsShortTimeout,
+                       TokenExpiresAfterNavigationDidNotCommit) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_continuation.html?step=billing");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  content::TestNavigationThrottleInserter throttle_inserter(
+      web_contents(), base::BindRepeating(&CancelNavigationAtStart));
+
+  auto action =
+      MakeScriptToolRequest(*main_frame(), "request_token_and_navigate",
+                            R"JSON({"url": "/title1.html"})JSON");
+  RunScriptToolExpectingError(
+      std::move(action), mojom::ActionResultCode::kScriptToolInvocationFailed);
+}
+
+// The tool fails when its continuation token expires after an error page
+// commits.
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolContinuationsShortTimeout,
+                       TokenExpiresAfterErrorPage) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_continuation.html?step=billing");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  auto action =
+      MakeScriptToolRequest(*main_frame(), "request_token_and_navigate",
+                            R"JSON({"url": "/non-existent"})JSON");
+  RunScriptToolExpectingError(
+      std::move(action), mojom::ActionResultCode::kScriptToolInvocationFailed);
 }
 
 }  // namespace actor

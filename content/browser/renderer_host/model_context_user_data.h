@@ -19,6 +19,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/page_user_data.h"
+#include "content/public/browser/script_tool_continuation.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -46,8 +47,11 @@ class CONTENT_EXPORT ContinuedToolExecution {
     kExecuting,
   };
 
+  // `redeeming_document` is the document that ran the resumed step, if the
+  // token was redeemed.
   using CompletionCallback =
-      base::OnceCallback<void(base::expected<std::string, std::string> result)>;
+      base::OnceCallback<void(base::expected<std::string, std::string> result,
+                              WeakDocumentPtr redeeming_document)>;
 
   ContinuedToolExecution(blink::ToolInvocationToken tool_invocation_id,
                          blink::ContinuationToken token,
@@ -123,6 +127,19 @@ class CONTENT_EXPORT ModelContextContinuationManager
 
   ~ModelContextContinuationManager() override;
 
+  void RegisterExternalExecution(
+      RenderFrameHost& target_rfh,
+      const blink::ToolInvocationToken& invocation_id,
+      std::string tool_name,
+      std::string input_arguments,
+      ScriptToolContinuationTokenCreatedCallback on_token_created,
+      ContinuedToolExecution::CompletionCallback on_completed);
+  // Unregisters a browser-initiated execution. If its target document already
+  // requested a continuation token, cancels the continuation (see
+  // CancelContinuation()).
+  void UnregisterExternalExecution(
+      const blink::ToolInvocationToken& invocation_id);
+
   std::optional<blink::ContinuationToken> RequestContinuationToken(
       RenderFrameHost& rfh,
       const blink::ToolInvocationToken& invocation_id);
@@ -139,6 +156,11 @@ class CONTENT_EXPORT ModelContextContinuationManager
 
   std::optional<blink::ContinuationToken> GetContinuationToken(
       const blink::ToolInvocationToken& tool_invocation_id) const;
+
+  // Returns true if `invocation_id` identifies a registered browser-initiated
+  // execution, or an execution with a continuation.
+  bool IsInvocationIdInUse(
+      const blink::ToolInvocationToken& invocation_id) const;
 
   void WaitForContinuation(const blink::ContinuationToken& token,
                            ContinuedToolExecution::CompletionCallback callback);
@@ -170,7 +192,38 @@ class CONTENT_EXPORT ModelContextContinuationManager
   void FailAndRemove(const blink::ToolInvocationToken& tool_invocation_id,
                      const std::string& error_message);
 
-  // Keyed by `tool_invocation_id`.
+  struct ExternalExecution {
+    ExternalExecution(
+        blink::DocumentToken tool_owner_document_token,
+        std::string tool_name,
+        std::string input_arguments,
+        ScriptToolContinuationTokenCreatedCallback on_token_created,
+        ContinuedToolExecution::CompletionCallback on_completed);
+    ExternalExecution(ExternalExecution&&);
+    ExternalExecution& operator=(ExternalExecution&&);
+    ~ExternalExecution();
+
+    // The document running the tool's initial step, which is the only one
+    // that may request a continuation token for it.
+    blink::DocumentToken tool_owner_document_token;
+    std::string tool_name;
+    std::string input_arguments;
+    ScriptToolContinuationTokenCreatedCallback on_token_created;
+    // Becomes the completion callback of the continuation, if the target
+    // document requests a continuation token.
+    ContinuedToolExecution::CompletionCallback on_completed;
+  };
+
+  // Both maps are keyed by `tool_invocation_id`.
+  //
+  // An entry in `external_executions_` is removed when:
+  // - its registration is destroyed (UnregisterExternalExecution()), i.e. when
+  //   the caller's tool execution finishes, fails, or is cancelled,
+  // - its tool owner document is destroyed (OnDocumentDestroyed()),
+  // - its tool owner document requests a continuation token, which moves its
+  //   contents into a `ContinuedToolExecution` in `continuations_`, or
+  // - `this` is destroyed with its WebContents.
+  std::map<blink::ToolInvocationToken, ExternalExecution> external_executions_;
   std::map<blink::ToolInvocationToken, std::unique_ptr<ContinuedToolExecution>>
       continuations_;
 

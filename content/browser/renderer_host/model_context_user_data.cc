@@ -5,11 +5,15 @@
 #include "content/browser/renderer_host/model_context_user_data.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/page_impl.h"
@@ -18,6 +22,7 @@
 #include "content/browser/renderer_host/render_frame_host_manager.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/script_tool_continuation.h"
 #include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/features.h"
@@ -74,6 +79,65 @@ bool IsWebMCPContinuationsEnabled(RenderFrameHost& rfh) {
          base::FeatureList::IsEnabled(blink::features::kWebMCPContinuations);
 }
 
+// Receives the result of the continuation of a browser-initiated execution,
+// and unregisters the execution from `manager_` when destroyed.
+class ScriptToolExecutionRegistrationImpl
+    : public ScriptToolExecutionRegistration {
+ public:
+  explicit ScriptToolExecutionRegistrationImpl(
+      const blink::ToolInvocationToken& invocation_id)
+      : invocation_id_(invocation_id) {}
+
+  ~ScriptToolExecutionRegistrationImpl() override {
+    if (manager_) {
+      manager_->UnregisterExternalExecution(invocation_id_);
+    }
+  }
+
+  void set_manager(base::WeakPtr<ModelContextContinuationManager> manager) {
+    manager_ = std::move(manager);
+  }
+
+  // Returns the callback that the continuation completes with.
+  ContinuedToolExecution::CompletionCallback GetCompletionCallback() {
+    return base::BindOnce(
+        &ScriptToolExecutionRegistrationImpl::OnContinuationCompleted,
+        weak_factory_.GetWeakPtr());
+  }
+
+  // ScriptToolExecutionRegistration:
+  void WaitForContinuation(
+      ScriptToolContinuationCompletedCallback callback) override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK(!callback_);
+    callback_ = std::move(callback);
+  }
+
+ private:
+  void OnContinuationCompleted(base::expected<std::string, std::string> result,
+                               WeakDocumentPtr redeeming_document) {
+    if (!callback_) {
+      return;
+    }
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ScriptToolExecutionRegistrationImpl::RunCallback,
+                       weak_factory_.GetWeakPtr(), std::move(result),
+                       std::move(redeeming_document)));
+  }
+
+  // `callback_` may destroy `this`.
+  void RunCallback(base::expected<std::string, std::string> result,
+                   WeakDocumentPtr redeeming_document) {
+    std::move(callback_).Run(std::move(result), std::move(redeeming_document));
+  }
+
+  base::WeakPtr<ModelContextContinuationManager> manager_;
+  const blink::ToolInvocationToken invocation_id_;
+  ScriptToolContinuationCompletedCallback callback_;
+  base::WeakPtrFactory<ScriptToolExecutionRegistrationImpl> weak_factory_{this};
+};
+
 }  // namespace
 
 ContinuedToolExecution::ContinuedToolExecution(
@@ -126,11 +190,31 @@ void ContinuedToolExecution::CancelCompletionCallback() {
 void ContinuedToolExecution::Complete(
     base::expected<std::string, std::string> result) {
   if (completion_callback_) {
-    std::move(completion_callback_).Run(std::move(result));
+    std::move(completion_callback_).Run(std::move(result), redeeming_document_);
   }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ModelContextContinuationManager);
+
+ModelContextContinuationManager::ExternalExecution::ExternalExecution(
+    blink::DocumentToken tool_owner_document_token,
+    std::string tool_name,
+    std::string input_arguments,
+    ScriptToolContinuationTokenCreatedCallback on_token_created,
+    ContinuedToolExecution::CompletionCallback on_completed)
+    : tool_owner_document_token(tool_owner_document_token),
+      tool_name(std::move(tool_name)),
+      input_arguments(std::move(input_arguments)),
+      on_token_created(std::move(on_token_created)),
+      on_completed(std::move(on_completed)) {}
+
+ModelContextContinuationManager::ExternalExecution::ExternalExecution(
+    ExternalExecution&&) = default;
+ModelContextContinuationManager::ExternalExecution&
+ModelContextContinuationManager::ExternalExecution::operator=(
+    ExternalExecution&&) = default;
+ModelContextContinuationManager::ExternalExecution::~ExternalExecution() =
+    default;
 
 // static
 ModelContextContinuationManager*
@@ -152,13 +236,46 @@ ModelContextContinuationManager::ModelContextContinuationManager(
     : WebContentsUserData<ModelContextContinuationManager>(*web_contents) {}
 
 ModelContextContinuationManager::~ModelContextContinuationManager() {
-  for (auto& [tool_invocation_id, continuation] : continuations_) {
+  // The completion callbacks run below may destroy registrations of
+  // browser-initiated executions, which must not call back into `this`.
+  weak_factory_.InvalidateWeakPtrs();
+  auto continuations = std::move(continuations_);
+  continuations_.clear();
+  for (auto& [tool_invocation_id, continuation] : continuations) {
     if (continuation->HasCompletionCallback()) {
       continuation->Complete(
           base::unexpected("WebContents destroyed during tool continuation."));
     }
   }
-  continuations_.clear();
+}
+
+void ModelContextContinuationManager::RegisterExternalExecution(
+    RenderFrameHost& target_rfh,
+    const blink::ToolInvocationToken& invocation_id,
+    std::string tool_name,
+    std::string input_arguments,
+    ScriptToolContinuationTokenCreatedCallback on_token_created,
+    ContinuedToolExecution::CompletionCallback on_completed) {
+  // Browser-initiated invocation IDs are unguessable tokens minted by the
+  // browser.
+  CHECK(!IsInvocationIdInUse(invocation_id));
+  auto& rfh_impl = static_cast<RenderFrameHostImpl&>(target_rfh);
+  external_executions_.emplace(
+      invocation_id,
+      ExternalExecution(rfh_impl.GetDocumentToken(), std::move(tool_name),
+                        std::move(input_arguments), std::move(on_token_created),
+                        std::move(on_completed)));
+}
+
+void ModelContextContinuationManager::UnregisterExternalExecution(
+    const blink::ToolInvocationToken& invocation_id) {
+  external_executions_.erase(invocation_id);
+  // If the target document requested a continuation token, the caller no
+  // longer waits for the continuation.
+  if (auto it = continuations_.find(invocation_id);
+      it != continuations_.end()) {
+    CancelContinuation(it->second->token());
+  }
 }
 
 std::optional<blink::ContinuationToken>
@@ -190,33 +307,61 @@ ModelContextContinuationManager::RequestContinuationToken(
   auto& rfh_impl = static_cast<RenderFrameHostImpl&>(rfh);
   const blink::DocumentToken document_token = rfh_impl.GetDocumentToken();
 
+  std::string tool_name;
+  std::string input_arguments;
+  bool is_page_execution = false;
+  ScriptToolContinuationTokenCreatedCallback on_token_created;
+  ContinuedToolExecution::CompletionCallback on_completed;
   auto* page_data = ModelContextPageUserData::GetForPage(rfh.GetPage());
-  const auto* pending_execution =
-      page_data ? page_data->FindPendingScriptToolExecution(invocation_id)
-                : nullptr;
-  if (!pending_execution) {
-    return std::nullopt;
-  }
-  if (pending_execution->target_token != document_token ||
-      pending_execution->awaiting_continuation) {
-    // TODO(crbug.com/573662751): Migrate to mojo::ReportBadMessage.
-    bad_message::ReceivedBadMessage(
-        rfh.GetProcess(), bad_message::RFHI_WEBMCP_INVALID_TOOL_CONTINUATION);
+  if (const auto* pending_execution =
+          page_data ? page_data->FindPendingScriptToolExecution(invocation_id)
+                    : nullptr) {
+    if (pending_execution->target_token != document_token ||
+        pending_execution->awaiting_continuation) {
+      // TODO(crbug.com/573662751): Migrate to mojo::ReportBadMessage.
+      bad_message::ReceivedBadMessage(
+          rfh.GetProcess(), bad_message::RFHI_WEBMCP_INVALID_TOOL_CONTINUATION);
+      return std::nullopt;
+    }
+    tool_name = pending_execution->tool_name;
+    input_arguments = pending_execution->input_arguments;
+    is_page_execution = true;
+  } else if (auto ext_it = external_executions_.find(invocation_id);
+             ext_it != external_executions_.end()) {
+    if (ext_it->second.tool_owner_document_token != document_token) {
+      // TODO(crbug.com/573662751): Migrate to mojo::ReportBadMessage.
+      bad_message::ReceivedBadMessage(
+          rfh.GetProcess(), bad_message::RFHI_WEBMCP_INVALID_TOOL_CONTINUATION);
+      return std::nullopt;
+    }
+    tool_name = std::move(ext_it->second.tool_name);
+    input_arguments = std::move(ext_it->second.input_arguments);
+    on_token_created = std::move(ext_it->second.on_token_created);
+    on_completed = std::move(ext_it->second.on_completed);
+    external_executions_.erase(ext_it);
+  } else {
     return std::nullopt;
   }
 
   blink::ContinuationToken new_token(base::Uuid::GenerateRandomV4());
 
-  continuations_.emplace(
+  auto [continuation_it, inserted] = continuations_.emplace(
       invocation_id,
       std::make_unique<ContinuedToolExecution>(
           /*tool_invocation_id=*/invocation_id, new_token,
-          rfh.GetLastCommittedOrigin(), pending_execution->tool_name,
-          pending_execution->input_arguments,
+          rfh.GetLastCommittedOrigin(), std::move(tool_name),
+          std::move(input_arguments),
           blink::features::kWebMCPContinuationTimeout.Get(),
           base::BindOnce(&ModelContextContinuationManager::OnTokenExpired,
                          weak_factory_.GetWeakPtr(), invocation_id)));
-  page_data->OnContinuationTokenCreated(*this, invocation_id, new_token);
+  if (is_page_execution) {
+    page_data->OnContinuationTokenCreated(*this, invocation_id, new_token);
+  } else {
+    continuation_it->second->SetCompletionCallback(std::move(on_completed));
+    if (on_token_created) {
+      std::move(on_token_created).Run();
+    }
+  }
   return new_token;
 }
 
@@ -255,13 +400,20 @@ ModelContextContinuationManager::GetContinuationToken(
   return it->second->token();
 }
 
+bool ModelContextContinuationManager::IsInvocationIdInUse(
+    const blink::ToolInvocationToken& invocation_id) const {
+  return external_executions_.contains(invocation_id) ||
+         continuations_.contains(invocation_id);
+}
+
 void ModelContextContinuationManager::WaitForContinuation(
     const blink::ContinuationToken& token,
     ContinuedToolExecution::CompletionCallback callback) {
   ContinuedToolExecution* continuation = FindByToken(token);
   if (!continuation) {
     std::move(callback).Run(
-        base::unexpected("Continuation token not found or already failed."));
+        base::unexpected("Continuation token not found or already failed."),
+        WeakDocumentPtr());
     return;
   }
   continuation->SetCompletionCallback(std::move(callback));
@@ -284,6 +436,9 @@ void ModelContextContinuationManager::CancelContinuation(
         }
       }
     }
+    // The caller cancelled the continuation, so don't run its completion
+    // callback.
+    continuation->CancelCompletionCallback();
     FailAndRemove(continuation->tool_invocation_id(),
                   "Continuation execution cancelled.");
     return;
@@ -296,6 +451,9 @@ void ModelContextContinuationManager::CancelContinuation(
 
 void ModelContextContinuationManager::OnDocumentDestroyed(
     const blink::DocumentToken& destroyed_document_token) {
+  std::erase_if(external_executions_, [&](const auto& entry) {
+    return entry.second.tool_owner_document_token == destroyed_document_token;
+  });
   std::vector<blink::ToolInvocationToken> to_fail;
   for (const auto& [tool_invocation_id, continuation] : continuations_) {
     const bool redeemer_unloaded_before_completing =
@@ -656,12 +814,14 @@ void ModelContextUserData::ExecuteRemoteScriptTool(
   // continuation can outlive its tool execution (e.g. an unredeemed token stays
   // redeemable after the caller cancels). Otherwise, the target's
   // `RequestContinuationToken()` would find that continuation and kill the
-  // target's renderer instead of the caller's.
+  // target's renderer instead of the caller's. Also check for a registered
+  // browser-initiated execution, which `RequestContinuationToken()` would
+  // otherwise ignore in favor of this execution.
   if (auto* continuation_manager =
           ModelContextContinuationManager::GetForRenderFrameHost(
               render_frame_host());
       continuation_manager &&
-      continuation_manager->GetContinuationToken(invocation_id).has_value()) {
+      continuation_manager->IsInvocationIdInUse(invocation_id)) {
     // TODO(crbug.com/573662751): Migrate to mojo::ReportBadMessage.
     bad_message::ReceivedBadMessage(
         render_frame_host().GetProcess(),
@@ -944,7 +1104,8 @@ void ModelContextPageUserData::OnContinuationTokenCreated(
       base::BindOnce(
           [](base::WeakPtr<ModelContextPageUserData> self,
              blink::ToolInvocationToken invocation_id,
-             base::expected<std::string, std::string> cont_result) {
+             base::expected<std::string, std::string> cont_result,
+             WeakDocumentPtr redeeming_document) {
             if (!self) {
               return;
             }
@@ -1104,6 +1265,34 @@ void ModelContextPageUserData::CancelPendingScriptToolExecutionsForDocument(
 
 base::WeakPtr<ModelContextPageUserData> ModelContextPageUserData::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+std::unique_ptr<ScriptToolExecutionRegistration>
+RegisterExternalScriptToolExecution(
+    RenderFrameHost& target_rfh,
+    const blink::ToolInvocationToken& invocation_id,
+    std::string tool_name,
+    std::string input_arguments,
+    ScriptToolContinuationTokenCreatedCallback on_token_created) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // `RequestContinuationToken()` rejects requests from documents that aren't
+  // active or aren't in the primary page.
+  if (!target_rfh.IsActive() ||
+      !target_rfh.GetMainFrame()->IsInPrimaryMainFrame()) {
+    return nullptr;
+  }
+  auto registration =
+      std::make_unique<ScriptToolExecutionRegistrationImpl>(invocation_id);
+  if (auto* continuation_manager =
+          ModelContextContinuationManager::GetOrCreateForRenderFrameHost(
+              target_rfh)) {
+    continuation_manager->RegisterExternalExecution(
+        target_rfh, invocation_id, std::move(tool_name),
+        std::move(input_arguments), std::move(on_token_created),
+        registration->GetCompletionCallback());
+    registration->set_manager(continuation_manager->GetWeakPtr());
+  }
+  return registration;
 }
 
 }  // namespace content

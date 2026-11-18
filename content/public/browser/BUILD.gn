@@ -388,6 +388,7 @@ source_set("browser_sources") {
     "scoped_authenticator_environment_for_testing.h",
     "screen_orientation_delegate.h",
     "screenlock_observer.h",
+    "script_tool_continuation.h",
     "secure_payment_confirmation_utils.cc",
     "secure_payment_confirmation_utils.h",
     "security_principal.h",
