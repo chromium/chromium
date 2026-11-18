@@ -2757,6 +2757,7 @@ if (_is_default_toolchain) {
       "../browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QRCodeGenerator.java",
       "../browser/share/android/java/src/org/chromium/chrome/browser/share/screenshot/EditorScreenshotTask.java",
       "../browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/NotificationManager.java",
+      "../browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/PageContextBridge.java",
       "../browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfAndroidBridge.java",
       "../browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfMetricsRecorder.java",
       "java/src/org/chromium/chrome/browser/DevToolsServer.java",

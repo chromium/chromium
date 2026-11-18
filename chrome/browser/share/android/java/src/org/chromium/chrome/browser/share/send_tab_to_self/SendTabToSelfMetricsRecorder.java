@@ -33,7 +33,7 @@ public class SendTabToSelfMetricsRecorder {
     public static void attachScrollObserverToTab(Tab tab, @Nullable String scrollToTextFragment) {
         boolean hasScrollPosition = !TextUtils.isEmpty(scrollToTextFragment);
         recordHasScrollPositionOnOpened(hasScrollPosition);
-        SendTabToSelfAndroidBridge.runWhenWebContentsAvailable(
+        PageContextBridge.runWhenWebContentsAvailable(
                 tab, webContents -> attachScrollObserver(webContents, hasScrollPosition));
     }
 

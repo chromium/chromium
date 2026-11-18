@@ -19,19 +19,16 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
-#include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/page_context.h"
-#include "components/send_tab_to_self/proto_conversions.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_list_waiter.h"
-#include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/remote_device_info.h"
@@ -40,7 +37,6 @@
 #include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/SendTabToSelfAndroidBridge_jni.h"
@@ -361,25 +357,6 @@ JNI_SendTabToSelfAndroidBridge_AddTargetDeviceListWaiter(
   // callback runs.
   return jni_zero::MakeUnique<TargetDeviceListWaiter>(
       sync_service, service, GURL(url), std::move(on_target_device_list_ready));
-}
-
-static void JNI_SendTabToSelfAndroidBridge_FillWebContents(
-    JNIEnv* env,
-    content::WebContents* web_contents,
-    const std::vector<uint8_t>& page_context_bytes,
-    const GURL& url) {
-  if (!web_contents || page_context_bytes.empty() || !url.is_valid()) {
-    return;
-  }
-
-  sync_pb::PageContext proto;
-  if (!proto.ParseFromArray(page_context_bytes.data(),
-                            page_context_bytes.size())) {
-    return;
-  }
-
-  PageContext page_context = PageContextFromProto(proto, url);
-  FillWebContents(web_contents, url::Origin::Create(url), page_context);
 }
 
 }  // namespace send_tab_to_self
