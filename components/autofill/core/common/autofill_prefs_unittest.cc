@@ -6,9 +6,11 @@
 
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,10 +22,19 @@ class AutofillProfilePrefsTest : public ::testing::Test {
  public:
   void SetUp() override { RegisterProfilePrefs(pref_service_.registry()); }
 
-  PrefService* pref_service() { return &pref_service_; }
+  sync_preferences::TestingPrefServiceSyncable* pref_service() {
+    return &pref_service_;
+  }
 
  private:
   sync_preferences::TestingPrefServiceSyncable pref_service_;
+};
+
+class AutofillOffersAndLoyaltyCardsMigrationTest
+    : public AutofillProfilePrefsTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillEnableOffersAndLoyaltyCardsSettings};
 };
 
 // Tests that `SetAutofillProfileEnabled` modifies the prefs and records a
@@ -190,6 +201,165 @@ TEST_F(AutofillProfilePrefsTest, SetHasShownWalletReminderNotice) {
 
   SetHasShownWalletReminderNotice(pref_service());
   EXPECT_TRUE(HasShownWalletReminderNotice(pref_service()));
+}
+
+// Tests that nothing is migrated if the feature is disabled.
+TEST_F(AutofillProfilePrefsTest, MigrateOffersAndLoyaltyCards_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillEnableOffersAndLoyaltyCardsSettings);
+  pref_service()->SetBoolean(kAutofillCreditCardEnabled, false);
+
+  MigrateDeprecatedAutofillPrefs(pref_service());
+
+  EXPECT_TRUE(
+      pref_service()->GetBoolean(kAutofillOffersAndLoyaltyCardsEnabled));
+  EXPECT_FALSE(
+      pref_service()->GetBoolean(kAutofillOffersAndLoyaltyCardsMigrated));
+}
+
+// Tests that the migration runs once the feature gets enabled, even if it was
+// disabled on an earlier startup.
+TEST_F(AutofillProfilePrefsTest,
+       MigrateOffersAndLoyaltyCards_FeatureEnabledLater) {
+  pref_service()->SetBoolean(kAutofillCreditCardEnabled, false);
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kAutofillEnableOffersAndLoyaltyCardsSettings);
+    MigrateDeprecatedAutofillPrefs(pref_service());
+    ASSERT_FALSE(
+        pref_service()->GetBoolean(kAutofillOffersAndLoyaltyCardsMigrated));
+  }
+
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableOffersAndLoyaltyCardsSettings};
+  MigrateDeprecatedAutofillPrefs(pref_service());
+
+  EXPECT_FALSE(
+      pref_service()->GetBoolean(kAutofillOffersAndLoyaltyCardsEnabled));
+  EXPECT_TRUE(
+      pref_service()->GetBoolean(kAutofillOffersAndLoyaltyCardsMigrated));
+}
+
+// Tests that users who turned off payment methods autofill also have offers
+// and loyalty cards turned off.
+TEST_F(AutofillOffersAndLoyaltyCardsMigrationTest, CopiesDisabledPaymentsPref) {
+  pref_service()->SetBoolean(kAutofillCreditCardEnabled, false);
+
+  MigrateDeprecatedAutofillPrefs(pref_service());
+
+  EXPECT_FALSE(
+      pref_service()->GetBoolean(kAutofillOffersAndLoyaltyCardsEnabled));
+  EXPECT_TRUE(
+      pref_service()->GetBoolean(kAutofillOffersAndLoyaltyCardsMigrated));
+}
+
+// Tests that a payments pref the user explicitly set to true, e.g. by turning
+// it off and on again, is copied into the new pref.
+TEST_F(AutofillOffersAndLoyaltyCardsMigrationTest, CopiesEnabledPaymentsPref) {
+  pref_service()->SetBoolean(kAutofillCreditCardEnabled, true);
+
+  MigrateDeprecatedAutofillPrefs(pref_service());
+
+  const base::Value* value =
+      pref_service()->GetUserPrefValue(kAutofillOffersAndLoyaltyCardsEnabled);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(*value, base::Value(true));
+  EXPECT_TRUE(
+      pref_service()->GetBoolean(kAutofillOffersAndLoyaltyCardsMigrated));
+}
+
+// Tests that the new pref keeps its default value if the user never changed
+// the payments pref.
+TEST_F(AutofillOffersAndLoyaltyCardsMigrationTest, KeepsDefaultValue) {
+  MigrateDeprecatedAutofillPrefs(pref_service());
+
+  EXPECT_TRUE(
+      pref_service()->GetBoolean(kAutofillOffersAndLoyaltyCardsEnabled));
+  EXPECT_FALSE(
+      pref_service()->GetUserPrefValue(kAutofillOffersAndLoyaltyCardsEnabled));
+  EXPECT_TRUE(
+      pref_service()->GetBoolean(kAutofillOffersAndLoyaltyCardsMigrated));
+}
+
+// Tests that a value the user already chose for the new pref, e.g. one synced
+// from another device, is not overwritten.
+TEST_F(AutofillOffersAndLoyaltyCardsMigrationTest, KeepsUserSetValue) {
+  pref_service()->SetBoolean(kAutofillCreditCardEnabled, false);
+  pref_service()->SetBoolean(kAutofillOffersAndLoyaltyCardsEnabled, true);
+
+  MigrateDeprecatedAutofillPrefs(pref_service());
+
+  EXPECT_TRUE(
+      pref_service()->GetBoolean(kAutofillOffersAndLoyaltyCardsEnabled));
+  EXPECT_TRUE(
+      pref_service()->GetBoolean(kAutofillOffersAndLoyaltyCardsMigrated));
+}
+
+// Tests that a value the user already set for the new pref is not overwritten,
+// even if a policy currently overrides it.
+TEST_F(AutofillOffersAndLoyaltyCardsMigrationTest,
+       KeepsUserSetValueOverriddenByPolicy) {
+  pref_service()->SetBoolean(kAutofillCreditCardEnabled, false);
+  pref_service()->SetBoolean(kAutofillOffersAndLoyaltyCardsEnabled, true);
+  pref_service()->SetManagedPref(kAutofillOffersAndLoyaltyCardsEnabled,
+                                 base::Value(false));
+
+  MigrateDeprecatedAutofillPrefs(pref_service());
+
+  const base::Value* value =
+      pref_service()->GetUserPrefValue(kAutofillOffersAndLoyaltyCardsEnabled);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(*value, base::Value(true));
+  EXPECT_TRUE(
+      pref_service()->GetBoolean(kAutofillOffersAndLoyaltyCardsMigrated));
+}
+
+// Tests that a payments pref managed by policy is not copied into the new
+// pref.
+TEST_F(AutofillOffersAndLoyaltyCardsMigrationTest, SkipsManagedPaymentsPref) {
+  pref_service()->SetManagedPref(kAutofillCreditCardEnabled,
+                                 base::Value(false));
+
+  MigrateDeprecatedAutofillPrefs(pref_service());
+
+  EXPECT_TRUE(
+      pref_service()->GetBoolean(kAutofillOffersAndLoyaltyCardsEnabled));
+  EXPECT_FALSE(
+      pref_service()->GetUserPrefValue(kAutofillOffersAndLoyaltyCardsEnabled));
+  EXPECT_TRUE(
+      pref_service()->GetBoolean(kAutofillOffersAndLoyaltyCardsMigrated));
+}
+
+// Tests that a payments pref the user changed is not copied into the new pref
+// if a policy overrides it.
+TEST_F(AutofillOffersAndLoyaltyCardsMigrationTest,
+       SkipsUserSetPaymentsPrefOverriddenByPolicy) {
+  pref_service()->SetBoolean(kAutofillCreditCardEnabled, false);
+  pref_service()->SetManagedPref(kAutofillCreditCardEnabled, base::Value(true));
+
+  MigrateDeprecatedAutofillPrefs(pref_service());
+
+  EXPECT_FALSE(
+      pref_service()->GetUserPrefValue(kAutofillOffersAndLoyaltyCardsEnabled));
+  EXPECT_TRUE(
+      pref_service()->GetBoolean(kAutofillOffersAndLoyaltyCardsMigrated));
+}
+
+// Tests that the migration only runs once.
+TEST_F(AutofillOffersAndLoyaltyCardsMigrationTest, RunsOnlyOnce) {
+  MigrateDeprecatedAutofillPrefs(pref_service());
+  ASSERT_TRUE(
+      pref_service()->GetBoolean(kAutofillOffersAndLoyaltyCardsMigrated));
+
+  // Turning off the payments pref after the migration doesn't affect the new
+  // pref anymore.
+  pref_service()->SetBoolean(kAutofillCreditCardEnabled, false);
+  MigrateDeprecatedAutofillPrefs(pref_service());
+
+  EXPECT_TRUE(
+      pref_service()->GetBoolean(kAutofillOffersAndLoyaltyCardsEnabled));
 }
 
 }  // namespace

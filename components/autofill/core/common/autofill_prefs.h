@@ -101,6 +101,11 @@ inline constexpr char kAutofillCreditCardEnabled[] =
 // for autofill. Otherwise, filling of offers and loyalty cards is disabled.
 inline constexpr char kAutofillOffersAndLoyaltyCardsEnabled[] =
     "autofill.offers_and_loyalty_cards_enabled";
+// Boolean that is true once `kAutofillOffersAndLoyaltyCardsEnabled` has been
+// initialized from `kAutofillCreditCardEnabled`, so that this only happens once
+// per profile.
+inline constexpr char kAutofillOffersAndLoyaltyCardsMigrated[] =
+    "autofill.offers_and_loyalty_cards_migrated";
 // Boolean that is true if FIDO Authentication is enabled for card unmasking.
 inline constexpr char kAutofillCreditCardFidoAuthEnabled[] =
     "autofill.credit_card_fido_auth_enabled";

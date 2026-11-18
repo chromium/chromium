@@ -37,6 +37,33 @@ constexpr char kAutofillRanExtraDeduplication[] =
 constexpr char kAutofillAiSyncedOptInStatusDeprecated[] =
     "autofill.autofill_ai.synced_opt_in_status";
 
+// Offers and loyalty cards were controlled by the "Save and fill payment
+// methods" pref (`kAutofillCreditCardEnabled`) until they got their own
+// settings page after launch. This migrates the user's payments choice to
+// `kAutofillOffersAndLoyaltyCardsEnabled`, so that users who turned off
+// payment methods autofill stay opted out of offers and loyalty cards. Runs
+// once per profile, when `kAutofillEnableOffersAndLoyaltyCardsSettings` is
+// enabled.
+void MigrateOffersAndLoyaltyCards(PrefService* prefs) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableOffersAndLoyaltyCardsSettings) ||
+      prefs->GetBoolean(kAutofillOffersAndLoyaltyCardsMigrated)) {
+    return;
+  }
+  // Only copy the payments value if the user controls it, since otherwise both
+  // prefs already have the same default value, and a policy value should not be
+  // persisted as a user value. Never overwrite a value the user already set for
+  // the new pref (e.g. one synced from another device), even if a policy
+  // currently overrides it.
+  if (prefs->FindPreference(kAutofillCreditCardEnabled)->IsUserControlled() &&
+      !prefs->FindPreference(kAutofillOffersAndLoyaltyCardsEnabled)
+           ->HasUserSetting()) {
+    prefs->SetBoolean(kAutofillOffersAndLoyaltyCardsEnabled,
+                      prefs->GetBoolean(kAutofillCreditCardEnabled));
+  }
+  prefs->SetBoolean(kAutofillOffersAndLoyaltyCardsMigrated, true);
+}
+
 }  // namespace
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -111,6 +138,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kAutofillEmailVerificationEnabled, true);
   registry->RegisterDictionaryPref(kAutofillEmailVerificationState);
   registry->RegisterBooleanPref(kAutofillCreditCardFidoAuthEnabled, false);
+  registry->RegisterBooleanPref(kAutofillOffersAndLoyaltyCardsMigrated, false);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(kAutofillCreditCardFidoAuthOfferCheckboxState,
                                 true);
@@ -233,6 +261,8 @@ void MigrateDeprecatedAutofillPrefs(PrefService* pref_service) {
   pref_service->ClearPref(kAutofillAiSyncedOptInStatusDeprecated);
   // Added 08/2026
   DeduplicateEmailVerificationState(pref_service);
+  // Added 11/2026
+  MigrateOffersAndLoyaltyCards(pref_service);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
