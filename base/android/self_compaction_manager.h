@@ -170,10 +170,10 @@ class BASE_EXPORT SelfCompactionManager {
   void FinishCompaction(std::unique_ptr<CompactionState> state,
                         scoped_refptr<CompactionMetric> metric)
       LOCKS_EXCLUDED(lock());
-  static std::optional<uint64_t> CompactMemory(
+  static std::optional<ByteSize> CompactMemory(
       std::vector<debug::MappedMemoryRegion>* regions,
-      const uint64_t max_bytes);
-  static std::optional<uint64_t> CompactRegion(
+      const ByteSize max_bytes);
+  static std::optional<ByteSize> CompactRegion(
       debug::MappedMemoryRegion region);
 
   void MaybeRunOnSelfCompactCallback() EXCLUSIVE_LOCKS_REQUIRED(lock());

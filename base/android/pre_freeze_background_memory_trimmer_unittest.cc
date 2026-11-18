@@ -171,7 +171,7 @@ class PreFreezeSelfCompactionTest : public testing::Test {
     return SelfCompactionManager::CompactionIsSupported();
   }
 
-  std::optional<int64_t> CompactRegion(debug::MappedMemoryRegion region) {
+  std::optional<ByteSize> CompactRegion(debug::MappedMemoryRegion region) {
     return SelfCompactionManager::CompactRegion(region);
   }
 
@@ -820,7 +820,7 @@ TEST_F(PreFreezeSelfCompactionTest, Simple) {
   ASSERT_TRUE(region);
 
   const auto result = CompactRegion(std::move(*region));
-  ASSERT_EQ(result, size);
+  ASSERT_EQ(result, ByteSize(size));
 
   EXPECT_EQ(CountResidentPagesInRange(addr, size), 0u);
 
@@ -861,7 +861,7 @@ TEST_F(PreFreezeSelfCompactionTest, File) {
   ASSERT_TRUE(region);
 
   const auto result = CompactRegion(std::move(*region));
-  ASSERT_EQ(result, 0);
+  ASSERT_EQ(result, ByteSize(0));
 
   EXPECT_EQ(CountResidentPagesInRange(addr, size), kNumPages);
 
@@ -889,7 +889,7 @@ TEST_F(PreFreezeSelfCompactionTest, Inaccessible) {
 
   // We expect to not count this region.
   const auto result = CompactRegion(std::move(*region));
-  ASSERT_EQ(result, 0);
+  ASSERT_EQ(result, ByteSize(0));
 
   munmap(addr, size);
 }
@@ -924,7 +924,7 @@ TEST_F(PreFreezeSelfCompactionTest, Locked) {
   ASSERT_TRUE(region);
 
   const auto result = CompactRegion(std::move(*region));
-  ASSERT_EQ(result, 0);
+  ASSERT_EQ(result, ByteSize(0));
 
   EXPECT_EQ(CountResidentPagesInRange(addr, size), kNumPages);
 

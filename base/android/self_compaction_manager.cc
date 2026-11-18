@@ -317,7 +317,7 @@ void SelfCompactionManager::CompactionTask(
 
   TRACE_EVENT0("base", "CompactionTask");
 
-  CompactMemory(&state->regions_, state->max_bytes_.InBytes());
+  CompactMemory(&state->regions_, state->max_bytes_);
 
   MaybePostCompactionTask(std::move(state), std::move(metric));
 }
@@ -359,17 +359,17 @@ void SelfCompactionManager::CompactSelf(
 }
 
 // static
-std::optional<uint64_t> SelfCompactionManager::CompactRegion(
+std::optional<ByteSize> SelfCompactionManager::CompactRegion(
     debug::MappedMemoryRegion region) {
 #if defined(MADV_PAGEOUT)
   using Permission = debug::MappedMemoryRegion::Permission;
   // Skip file-backed regions
   if (region.inode != 0 || region.dev_major != 0) {
-    return 0;
+    return ByteSize(0);
   }
   // Skip shared regions
   if ((region.permissions & Permission::PRIVATE) == 0) {
-    return 0;
+    return ByteSize(0);
   }
 
   const bool is_inaccessible =
@@ -393,23 +393,23 @@ std::optional<uint64_t> SelfCompactionManager::CompactRegion(
       PLOG(ERROR) << "Unexpected error from madvise.";
       return std::nullopt;
     }
-    return 0;
+    return ByteSize(0);
   }
 
-  return is_inaccessible ? 0 : region.end - region.start;
+  return is_inaccessible ? ByteSize(0) : ByteSize(region.end - region.start);
 #else
   return std::nullopt;
 #endif
 }
 
 // static
-std::optional<uint64_t> SelfCompactionManager::CompactMemory(
+std::optional<ByteSize> SelfCompactionManager::CompactMemory(
     std::vector<debug::MappedMemoryRegion>* regions,
-    const uint64_t max_bytes) {
+    const ByteSize max_bytes) {
   TRACE_EVENT1("base", __PRETTY_FUNCTION__, "count", regions->size());
   DCHECK(!regions->empty());
 
-  uint64_t total_bytes_processed = 0;
+  ByteSize total_bytes_processed;
   do {
     const auto region = regions->back();
     regions->pop_back();
@@ -498,8 +498,7 @@ void SelfCompactionManager::CompactionMetric::RecordCompactionMetric(
     ByteSize value_bytes,
     std::string_view metric_name,
     std::string_view suffix) {
-  UmaHistogramMemoryMB(GetMetricName(metric_name, suffix),
-                       static_cast<int>(value_bytes.InMiB()));
+  UmaHistogramMemoryMB(GetMetricName(metric_name, suffix), value_bytes);
 }
 
 void SelfCompactionManager::CompactionMetric::RecordCompactionMetrics(
