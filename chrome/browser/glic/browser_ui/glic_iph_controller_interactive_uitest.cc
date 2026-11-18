@@ -266,8 +266,17 @@ class GlicIphControllerWarmingDisabledInteractiveUiTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/566922692): Flaky TSan data race on M156 (fixed on ToT in
+// crrev.com/c/8638845).
+#if defined(THREAD_SANITIZER)
+#define MAYBE_DoesNotWarmOnIphShownWhenFeatureDisabled \
+  DISABLED_DoesNotWarmOnIphShownWhenFeatureDisabled
+#else
+#define MAYBE_DoesNotWarmOnIphShownWhenFeatureDisabled \
+  DoesNotWarmOnIphShownWhenFeatureDisabled
+#endif
 IN_PROC_BROWSER_TEST_F(GlicIphControllerWarmingDisabledInteractiveUiTest,
-                       DoesNotWarmOnIphShownWhenFeatureDisabled) {
+                       MAYBE_DoesNotWarmOnIphShownWhenFeatureDisabled) {
   base::HistogramTester histogram_tester;
   EXPECT_FALSE(IsWarmed());
 
