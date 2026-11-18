@@ -13,6 +13,8 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -20,6 +22,8 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/base_control_test_widget.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -48,6 +52,16 @@ class LinkTest : public test::BaseControlTestWidget {
   }
 
  protected:
+  // Simulates a left mouse button press on `link`.
+  void PressLink(Link* link) {
+    event_generator()->MoveMouseTo(link->GetBoundsInScreen().CenterPoint());
+    event_generator()->PressLeftButton();
+  }
+
+  SkColor ExpectedColor(ui::ColorId id) {
+    return link()->GetColorProvider()->GetColor(id);
+  }
+
   void CreateWidgetContent(View* container) override {
     // Create a widget containing a link which does not take the full size.
     link_ = container->AddChildView(std::make_unique<Link>(u"TestLink"));
@@ -184,6 +198,103 @@ TEST_F(LinkTest, AccessibleProperties) {
   EXPECT_EQ(link()->GetViewAccessibility().GetCachedName(), std::u16string());
   EXPECT_EQ(data.role, ax::mojom::Role::kLink);
   EXPECT_TRUE(link()->GetViewAccessibility().GetIsIgnored());
+}
+
+// Tests that TypographyProvider maps the link styles to the link color ids.
+TEST_F(LinkTest, TypographyProviderLinkColorIds) {
+  const TypographyProvider& provider = TypographyProvider::Get();
+
+  EXPECT_EQ(ui::kColorLinkForeground,
+            provider.GetColorId(style::CONTEXT_LABEL, style::STYLE_LINK));
+  EXPECT_EQ(
+      ui::kColorLinkForegroundPressed,
+      provider.GetColorId(style::CONTEXT_LABEL, style::STYLE_LINK_PRESSED));
+  EXPECT_EQ(
+      ui::kColorLinkForegroundDisabled,
+      provider.GetColorId(style::CONTEXT_LABEL, style::STYLE_LINK_DISABLED));
+
+  EXPECT_EQ(
+      ui::kColorLinkForegroundOnBubbleFooter,
+      provider.GetColorId(style::CONTEXT_BUBBLE_FOOTER, style::STYLE_LINK));
+  EXPECT_EQ(ui::kColorLinkForegroundPressedOnBubbleFooter,
+            provider.GetColorId(style::CONTEXT_BUBBLE_FOOTER,
+                                style::STYLE_LINK_PRESSED));
+  EXPECT_EQ(ui::kColorLinkForegroundDisabled,
+            provider.GetColorId(style::CONTEXT_BUBBLE_FOOTER,
+                                style::STYLE_LINK_DISABLED));
+}
+
+// Tests the color of a link in the default context in each state.
+TEST_F(LinkTest, GetColor) {
+  EXPECT_EQ(ExpectedColor(ui::kColorLinkForeground), link()->GetColor());
+
+  PressLink(link());
+  EXPECT_EQ(ExpectedColor(ui::kColorLinkForegroundPressed), link()->GetColor());
+
+  link()->OnMouseCaptureLost();
+  EXPECT_EQ(ExpectedColor(ui::kColorLinkForeground), link()->GetColor());
+
+  link()->SetEnabled(false);
+  EXPECT_EQ(ExpectedColor(ui::kColorLinkForegroundDisabled),
+            link()->GetColor());
+}
+
+// Tests the color of a link in the bubble footer context in each state.
+TEST_F(LinkTest, GetColorOnBubbleFooter) {
+  Link* footer_link = widget()->GetContentsView()->AddChildView(
+      std::make_unique<Link>(u"FooterLink", style::CONTEXT_BUBBLE_FOOTER));
+  footer_link->SizeToPreferredSize();
+
+  EXPECT_EQ(ExpectedColor(ui::kColorLinkForegroundOnBubbleFooter),
+            footer_link->GetColor());
+
+  PressLink(footer_link);
+  EXPECT_EQ(ExpectedColor(ui::kColorLinkForegroundPressedOnBubbleFooter),
+            footer_link->GetColor());
+
+  footer_link->OnMouseCaptureLost();
+  footer_link->SetEnabled(false);
+  EXPECT_EQ(ExpectedColor(ui::kColorLinkForegroundDisabled),
+            footer_link->GetColor());
+}
+
+// Tests that an explicitly set enabled color overrides the normal and pressed
+// colors, but not the disabled color.
+TEST_F(LinkTest, GetColorWithRequestedEnabledColor) {
+  link()->SetEnabledColor(SK_ColorMAGENTA);
+  EXPECT_EQ(SK_ColorMAGENTA, link()->GetColor());
+
+  PressLink(link());
+  EXPECT_EQ(SK_ColorMAGENTA, link()->GetColor());
+
+  link()->OnMouseCaptureLost();
+  link()->SetEnabled(false);
+  EXPECT_EQ(ExpectedColor(ui::kColorLinkForegroundDisabled),
+            link()->GetColor());
+}
+
+// Tests that the enabled, non-pressed color is derived from the link's text
+// style, while the pressed and disabled colors are not.
+TEST_F(LinkTest, GetColorUsesTextStyle) {
+  for (int text_style : {style::STYLE_LINK_2, style::STYLE_LINK_3,
+                         style::STYLE_LINK_4, style::STYLE_LINK_5}) {
+    SCOPED_TRACE(testing::Message() << "text_style: " << text_style);
+    link()->SetTextStyle(text_style);
+    EXPECT_EQ(ExpectedColor(ui::kColorLinkForeground), link()->GetColor());
+  }
+
+  link()->SetTextStyle(style::STYLE_SECONDARY);
+  EXPECT_EQ(ExpectedColor(TypographyProvider::Get().GetColorId(
+                style::CONTEXT_LABEL, style::STYLE_SECONDARY)),
+            link()->GetColor());
+
+  PressLink(link());
+  EXPECT_EQ(ExpectedColor(ui::kColorLinkForegroundPressed), link()->GetColor());
+
+  link()->OnMouseCaptureLost();
+  link()->SetEnabled(false);
+  EXPECT_EQ(ExpectedColor(ui::kColorLinkForegroundDisabled),
+            link()->GetColor());
 }
 
 }  // namespace views

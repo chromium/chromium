@@ -165,7 +165,7 @@ std::unique_ptr<views::View> CreateBodyView(
   disclaimer_label->SetDefaultEnabledColorId(ui::kColorSysOnSurfaceVariant);
 
   auto link_view = std::make_unique<views::Link>(
-      link_text, views::style::CONTEXT_LABEL, views::style::STYLE_BODY_5);
+      link_text, views::style::CONTEXT_LABEL, views::style::STYLE_LINK_5);
   link_view->SetFontList(disclaimer_font);
   link_view->SetCallback(std::move(learn_more_callback));
 

@@ -109,6 +109,10 @@ enum TextStyle {
 
   // The style used for links. Usually a solid shade of blue.
   STYLE_LINK,
+  // Disabled "greyed out" link text.
+  STYLE_LINK_DISABLED,
+  // "Pressed" link text.
+  STYLE_LINK_PRESSED,
   // Active tab in a tabbed pane.
   STYLE_TAB_ACTIVE,
 

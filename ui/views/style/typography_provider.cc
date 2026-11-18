@@ -316,6 +316,12 @@ ui::ColorId TypographyProvider::GetColorIdImpl(int context, int style) const {
       return (context == style::CONTEXT_BUBBLE_FOOTER)
                  ? ui::kColorLinkForegroundOnBubbleFooter
                  : ui::kColorLinkForeground;
+    case style::STYLE_LINK_DISABLED:
+      return ui::kColorLinkForegroundDisabled;
+    case style::STYLE_LINK_PRESSED:
+      return (context == style::CONTEXT_BUBBLE_FOOTER)
+                 ? ui::kColorLinkForegroundPressedOnBubbleFooter
+                 : ui::kColorLinkForegroundPressed;
     case style::STYLE_HINT:
       return GetHintColorId(context);
   }

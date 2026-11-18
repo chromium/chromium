@@ -10,7 +10,6 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_variant.h"
 #include "ui/events/event.h"
@@ -21,6 +20,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/style/typography_provider.h"
 
 namespace views {
 
@@ -46,25 +46,20 @@ Link::Link(const std::u16string& title, int text_context, int text_style)
 Link::~Link() = default;
 
 SkColor Link::GetColor() const {
-  // TODO(crbug.com/40268779): Use TypographyProvider::GetColorId().
   const ui::ColorProvider* color_provider = GetColorProvider();
   CHECK(color_provider, base::NotFatalUntil::M163);
+  const TypographyProvider& typography_provider = TypographyProvider::Get();
   if (!GetEnabledInViewsSubtree()) {
-    return color_provider->GetColor(ui::kColorLinkForegroundDisabled);
+    return color_provider->GetColor(typography_provider.GetColorId(
+        GetTextContext(), style::STYLE_LINK_DISABLED));
   }
 
   if (requested_enabled_color_) {
     return requested_enabled_color_.value();
   }
 
-  if (GetTextContext() == style::CONTEXT_BUBBLE_FOOTER) {
-    return color_provider->GetColor(
-        pressed_ ? ui::kColorLinkForegroundPressedOnBubbleFooter
-                 : ui::kColorLinkForegroundOnBubbleFooter);
-  }
-
-  return color_provider->GetColor(pressed_ ? ui::kColorLinkForegroundPressed
-                                           : ui::kColorLinkForeground);
+  return color_provider->GetColor(typography_provider.GetColorId(
+      GetTextContext(), pressed_ ? style::STYLE_LINK_PRESSED : GetTextStyle()));
 }
 
 void Link::SetForceUnderline(bool force_underline) {
