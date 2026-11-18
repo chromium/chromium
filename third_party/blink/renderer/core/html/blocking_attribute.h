@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/keywords.h"
-#include "third_party/blink/renderer/core/loader/render_blocking_level.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -23,7 +22,6 @@ class BlockingAttribute final : public DOMTokenList {
 
   static bool HasRenderToken(const String& attribute_value);
   bool HasRenderToken() const { return contains(keywords::kRender); }
-  RenderBlockingLevel GetBlockingLevel() const;
 
   void OnAttributeValueChanged(const AtomicString& old_value,
                                const AtomicString& new_value);

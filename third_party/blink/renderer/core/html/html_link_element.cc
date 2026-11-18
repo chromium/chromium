@@ -144,7 +144,7 @@ void HTMLLinkElement::ParseAttribute(
   } else if (name == html_names::kHrefAttr) {
     // Log href attribute before logging resource fetching in process().
     LogUpdateAttributeIfIsolatedWorldAndInDocument("link", params);
-    HandleExpectHrefChanges(params.old_value, value);
+    HandleExpectHrefChanges(value);
     MaybeHandlePaymentLink();
     HandleSkeletonPrefetchLink();
     // We can respond to attribute mutations as usual, per the above code, but
@@ -605,13 +605,12 @@ void HTMLLinkElement::HandleExpectBlockingChanges() {
   }
 }
 
-void HTMLLinkElement::HandleExpectHrefChanges(const String& old_value,
-                                              const String& new_value) {
+void HTMLLinkElement::HandleExpectHrefChanges(const String& new_value) {
   if (!rel_attribute_.IsExpect()) {
     return;
   }
 
-  RemoveExpectRenderBlockingLink(old_value);
+  RemoveExpectRenderBlockingLink();
   AddExpectRenderBlockingLinkIfNeeded(new_value);
 }
 
@@ -639,15 +638,14 @@ void HTMLLinkElement::HandleExpectMediaChanges() {
   }
 }
 
-void HTMLLinkElement::RemoveExpectRenderBlockingLink(const String& href) {
+void HTMLLinkElement::RemoveExpectRenderBlockingLink() {
   if (!rel_attribute_.IsExpect()) {
     return;
   }
 
   if (auto* render_blocking_resource_manager =
           GetDocument().GetRenderBlockingResourceManager()) {
-    render_blocking_resource_manager->RemovePendingParsingElementLink(
-        ParseSameDocumentIdFromHref(href), this);
+    render_blocking_resource_manager->RemovePendingParsingElementLink(this);
   }
 }
 
@@ -678,8 +676,7 @@ void HTMLLinkElement::AddExpectRenderBlockingLinkIfNeeded(
   UseCounter::CountWebDXFeature(&GetDocument(), WebDXFeature::kLinkRelExpect);
 
   bool media_matches = media_known_to_match || MediaQueryMatches();
-  RenderBlockingLevel blocking_level = blocking_attribute_->GetBlockingLevel();
-  if (!media_matches || blocking_level == RenderBlockingLevel::kNone ||
+  if (!media_matches || !blocking_attribute_->HasRenderToken() ||
       !isConnected()) {
     return;
   }
@@ -687,7 +684,7 @@ void HTMLLinkElement::AddExpectRenderBlockingLinkIfNeeded(
   if (auto* render_blocking_resource_manager =
           GetDocument().GetRenderBlockingResourceManager()) {
     render_blocking_resource_manager->AddPendingParsingElementLink(
-        ParseSameDocumentIdFromHref(href), this, blocking_level);
+        ParseSameDocumentIdFromHref(href), this);
   }
 }
 

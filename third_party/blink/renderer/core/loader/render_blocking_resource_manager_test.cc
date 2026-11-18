@@ -1135,8 +1135,8 @@ TEST_F(RenderBlockingResourceManagerTest,
        RenderBlockingAttributeTargetingIframeUrlEscapedIdUseCounter) {
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
-  // The link's href is URL-escaped, so the iframe is matched via the second
-  // erase in RemoveTargetElementFromElementLinkMap.
+  // The link's href is URL-escaped, so the iframe is matched against the
+  // URL-escaped target fragment.
   main_resource.Complete(R"HTML(
     <!DOCTYPE html>
     <head>

@@ -35,13 +35,6 @@ bool BlockingAttribute::ValidateTokenValue(const AtomicString& token_value,
   return SupportedTokens().Contains(token_value);
 }
 
-RenderBlockingLevel BlockingAttribute::GetBlockingLevel() const {
-  if (HasRenderToken()) {
-    return RenderBlockingLevel::kBlock;
-  }
-  return RenderBlockingLevel::kNone;
-}
-
 void BlockingAttribute::OnAttributeValueChanged(const AtomicString& old_value,
                                                 const AtomicString& new_value) {
   DidUpdateAttributeValue(old_value, new_value);

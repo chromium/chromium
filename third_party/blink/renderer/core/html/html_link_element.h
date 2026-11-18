@@ -165,11 +165,10 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   bool MediaQueryMatches() const;
 
   void HandleExpectBlockingChanges();
-  void HandleExpectHrefChanges(const String& old_value,
-                               const String& new_value);
+  void HandleExpectHrefChanges(const String& new_value);
   void HandleExpectMediaChanges();
 
-  void RemoveExpectRenderBlockingLink(const String& href = String());
+  void RemoveExpectRenderBlockingLink();
   void AddExpectRenderBlockingLinkIfNeeded(const String& href = String(),
                                            bool media_known_to_match = false);
 
