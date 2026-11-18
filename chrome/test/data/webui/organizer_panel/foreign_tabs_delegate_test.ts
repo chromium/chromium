@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {foreignTabsBrowserProxyFactory, ForeignTabsDelegate, ForeignTabsPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {foreignTabsBrowserProxyFactory, ForeignTabsDelegate, ForeignTabsPageHandlerRemote, OrganizerListSectionItemIconType} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {ForeignTab, OrganizerListSectionItemElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -100,7 +101,12 @@ suite('ForeignTabsDelegateTest', () => {
               {text: expected.elapsed, matchable: false}, item.description[0]);
           assertDeepEquals({text: expected.device}, item.description[1]);
           assertDeepEquals([expected.hostname], item.extraSearchTerms);
-          assertEquals(sampleTabs[i]!.url, item.prefixIcon?.url);
+          assertDeepEquals(
+              {
+                type: OrganizerListSectionItemIconType.FAVICON,
+                url: sampleTabs[i]!.url,
+              },
+              item.prefixIcon);
         }
         assertEquals(1, mockHandler.getCallCount('getForeignTabs'));
       });
@@ -176,12 +182,12 @@ suite('ForeignTabsDelegateTest', () => {
         assertTrue(!!item);
         assertDeepEquals(['Sign in on your phone'], item.item.title);
 
-        const icon = item.item.prefixIcon?.element;
-        assertTrue(!!icon);
+        const icon = item.item.prefixIcon;
+        assert(icon?.type === OrganizerListSectionItemIconType.ELEMENT);
 
         const iconContainer = document.createElement('div');
         document.body.appendChild(iconContainer);
-        render(icon, iconContainer);
+        render(icon.element, iconContainer);
         const crIcon = iconContainer.querySelector<CrIconElement>('cr-icon');
         assertTrue(!!crIcon);
         assertEquals('organizer-panel:login', crIcon.icon);

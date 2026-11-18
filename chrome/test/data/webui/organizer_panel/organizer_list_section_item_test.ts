@@ -4,6 +4,7 @@
 
 import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
+import {OrganizerListSectionItemIconType} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerFaviconElement, OrganizerListSectionItemElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -107,6 +108,7 @@ suite('OrganizerListSectionItemTest', () => {
     listItem.item = {
       title: TEST_TITLE_PARTS,
       prefixIcon: {
+        type: OrganizerListSectionItemIconType.FAVICON,
         url: TEST_URL_1,
       },
     };
@@ -118,23 +120,178 @@ suite('OrganizerListSectionItemTest', () => {
     assertEquals('customIcon', favicon.getAttribute('slot'));
     assertEquals(TEST_URL_1, favicon.url);
     assertEquals('', favicon.secondaryUrl);
+    assertFalse(favicon.stackVertically);
   });
 
   test('renders prefix icon with custom element', async () => {
     listItem.item = {
       title: ['Tab Group'],
       prefixIcon: {
+        type: OrganizerListSectionItemIconType.ELEMENT,
         element: html`<span id="${TEST_CUSTOM_ICON_ID}">${
             TEST_CUSTOM_ICON_TEXT}</span>`,
       },
     };
     await microtasksFinished();
 
-    const crUrlListItem = listItem.$.crUrlListItem;
-    assertTrue(!!crUrlListItem);
-    const customIcon = crUrlListItem.querySelector(`#${TEST_CUSTOM_ICON_ID}`);
+    const customIcon = listItem.shadowRoot.querySelector(
+        `[slot="customIcon"] #${TEST_CUSTOM_ICON_ID}`);
     assertTrue(!!customIcon);
     assertEquals(TEST_CUSTOM_ICON_TEXT, customIcon.textContent);
+  });
+
+  test(
+      'renders prefix icon with multiple URLs as stacked favicons',
+      async () => {
+        listItem.item = {
+          title: ['Split view'],
+          prefixIcon: {
+            type: OrganizerListSectionItemIconType.STACKED_FAVICONS,
+            urls: [TEST_URL_1, TEST_URL_2],
+            stackVertically: false,
+          },
+        };
+        await microtasksFinished();
+
+        const favicon =
+            listItem.shadowRoot.querySelector<OrganizerFaviconElement>(
+                'organizer-favicon');
+        assertTrue(!!favicon);
+        assertEquals('customIcon', favicon.getAttribute('slot'));
+        assertEquals(TEST_URL_1, favicon.url);
+        assertEquals(TEST_URL_2, favicon.secondaryUrl);
+        assertFalse(favicon.stackVertically);
+      });
+
+  test('forwards stacking orientation to organizer favicon', async () => {
+    listItem.item = {
+      title: ['Split view vertical'],
+      prefixIcon: {
+        type: OrganizerListSectionItemIconType.STACKED_FAVICONS,
+        urls: [TEST_URL_1, TEST_URL_2],
+        stackVertically: true,
+      },
+    };
+    await microtasksFinished();
+
+    const favicon = listItem.shadowRoot.querySelector<OrganizerFaviconElement>(
+        'organizer-favicon');
+    assertTrue(!!favicon);
+    assertTrue(favicon.stackVertically);
+  });
+
+  test(
+      'does not render prefix icon when absent or URLs are empty', async () => {
+        listItem.item = {
+          title: ['No Icon'],
+        };
+        await microtasksFinished();
+        assertEquals(
+            0,
+            listItem.shadowRoot.querySelectorAll('[slot="customIcon"]').length);
+
+        listItem.item = {
+          title: ['Empty URL'],
+          prefixIcon: {type: OrganizerListSectionItemIconType.FAVICON, url: ''},
+        };
+        await microtasksFinished();
+        assertEquals(
+            0,
+            listItem.shadowRoot.querySelectorAll('[slot="customIcon"]').length);
+
+        listItem.item = {
+          title: ['Empty Stacked URLs'],
+          prefixIcon: {
+            type: OrganizerListSectionItemIconType.STACKED_FAVICONS,
+            urls: ['', ''],
+            stackVertically: false,
+          },
+        };
+        await microtasksFinished();
+        assertEquals(
+            0,
+            listItem.shadowRoot.querySelectorAll('[slot="customIcon"]').length);
+
+        listItem.item = {
+          title: ['Single Valid Stacked URL'],
+          prefixIcon: {
+            type: OrganizerListSectionItemIconType.STACKED_FAVICONS,
+            urls: ['', TEST_URL_2],
+            stackVertically: true,
+          },
+        };
+        await microtasksFinished();
+        const favicon =
+            listItem.shadowRoot.querySelector<OrganizerFaviconElement>(
+                'organizer-favicon');
+        assertTrue(!!favicon);
+        assertEquals(TEST_URL_2, favicon.url);
+        assertEquals('', favicon.secondaryUrl);
+        assertFalse(favicon.stackVertically);
+      });
+
+  test('renders exclusively when prefixIcon transitions variants', async () => {
+    listItem.item = {
+      title: ['Tab Group'],
+      prefixIcon: {
+        type: OrganizerListSectionItemIconType.ELEMENT,
+        element: html`<span id="${TEST_CUSTOM_ICON_ID}">${
+            TEST_CUSTOM_ICON_TEXT}</span>`,
+      },
+    };
+    await microtasksFinished();
+
+    assertEquals(
+        1, listItem.shadowRoot.querySelectorAll('[slot="customIcon"]').length);
+    assertTrue(!!listItem.shadowRoot.querySelector(`#${TEST_CUSTOM_ICON_ID}`));
+    assertEquals(null, listItem.shadowRoot.querySelector('organizer-favicon'));
+
+    listItem.item = {
+      title: TEST_TITLE_PARTS,
+      prefixIcon: {
+        type: OrganizerListSectionItemIconType.FAVICON,
+        url: TEST_URL_1,
+      },
+    };
+    await microtasksFinished();
+
+    assertEquals(
+        1, listItem.shadowRoot.querySelectorAll('[slot="customIcon"]').length);
+    assertEquals(
+        null, listItem.shadowRoot.querySelector(`#${TEST_CUSTOM_ICON_ID}`));
+    let favicon = listItem.shadowRoot.querySelector<OrganizerFaviconElement>(
+        'organizer-favicon');
+    assertTrue(!!favicon);
+    assertEquals(TEST_URL_1, favicon.url);
+    assertEquals('', favicon.secondaryUrl);
+    assertFalse(favicon.stackVertically);
+
+    listItem.item = {
+      title: ['Split view vertical'],
+      prefixIcon: {
+        type: OrganizerListSectionItemIconType.STACKED_FAVICONS,
+        urls: [TEST_URL_1, TEST_URL_2],
+        stackVertically: true,
+      },
+    };
+    await microtasksFinished();
+
+    assertEquals(
+        1, listItem.shadowRoot.querySelectorAll('[slot="customIcon"]').length);
+    favicon = listItem.shadowRoot.querySelector<OrganizerFaviconElement>(
+        'organizer-favicon');
+    assertTrue(!!favicon);
+    assertEquals(TEST_URL_1, favicon.url);
+    assertEquals(TEST_URL_2, favicon.secondaryUrl);
+    assertTrue(favicon.stackVertically);
+
+    listItem.item = {
+      title: ['No Icon'],
+    };
+    await microtasksFinished();
+
+    assertEquals(
+        0, listItem.shadowRoot.querySelectorAll('[slot="customIcon"]').length);
   });
 
   test('renders trailing icon only', async () => {
@@ -369,60 +526,6 @@ suite('OrganizerListSectionItemTest', () => {
         listItem.$.crUrlListItem.classList.remove('hovered');
         listItem.resetActionButtonStateIfNeeded();
         assertFalse(isVisible(actionButton));
-      });
-
-  test(
-      'renders prefix icon with multiple URLs as stacked favicons',
-      async () => {
-        listItem.item = {
-          title: ['Split view'],
-          prefixIcon: {
-            stackedFavicons: {
-              urls: [TEST_URL_1, TEST_URL_2],
-              stackVertically: false,
-            },
-          },
-        };
-        await microtasksFinished();
-
-        const favicon =
-            listItem.shadowRoot.querySelector<OrganizerFaviconElement>(
-                'organizer-favicon');
-        assertTrue(!!favicon);
-        assertEquals('customIcon', favicon.getAttribute('slot'));
-        assertEquals(TEST_URL_1, favicon.url);
-        assertEquals(TEST_URL_2, favicon.secondaryUrl);
-        assertFalse(favicon.stackVertically);
-      });
-
-  test('forwards stacking orientation to organizer favicon', async () => {
-    listItem.item = {
-      title: ['Split view vertical'],
-      prefixIcon: {
-        stackedFavicons: {
-          urls: [TEST_URL_1, TEST_URL_2],
-          stackVertically: true,
-        },
-      },
-    };
-    await microtasksFinished();
-
-    const favicon = listItem.shadowRoot.querySelector<OrganizerFaviconElement>(
-        'organizer-favicon');
-    assertTrue(!!favicon);
-    assertTrue(favicon.stackVertically);
-  });
-
-  test(
-      'does not render organizer favicon when prefixIcon has no URL',
-      async () => {
-        listItem.item = {
-          title: ['No Icon'],
-        };
-        await microtasksFinished();
-
-        const favicon = listItem.shadowRoot.querySelector('organizer-favicon');
-        assertEquals(null, favicon);
       });
 
   test(

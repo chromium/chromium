@@ -5,6 +5,7 @@
 import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {OrganizerListSectionItemElement} from './organizer_list_section_item.js';
+import {OrganizerListSectionItemIconType} from './organizer_list_section_item.js';
 
 export function getHtml(this: OrganizerListSectionItemElement) {
   // clang-format off
@@ -25,7 +26,8 @@ export function getHtml(this: OrganizerListSectionItemElement) {
         .highlightRanges="${this.descriptionHighlightRanges_()}">
     </organizer-list-section-item-description>
   </div>
-  ${this.item.prefixIcon?.element ? html`
+  ${this.item.prefixIcon?.type === OrganizerListSectionItemIconType.ELEMENT ?
+      html`
     <div slot="customIcon">
       ${this.item.prefixIcon.element}
     </div>

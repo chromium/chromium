@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Color, TabGroupDotSize, tabGroupsBrowserProxyFactory, TabGroupsDelegate, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {Color, OrganizerListSectionItemIconType, TabGroupDotSize, tabGroupsBrowserProxyFactory, TabGroupsDelegate, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionClient, OrganizerListSectionItem, OrganizerListSectionItemElement, TabGroup, TabGroupsOrganizerPageRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -112,14 +113,18 @@ suite('TabGroupsDelegateTest', () => {
 
     const container = document.createElement('div');
     document.body.appendChild(container);
-    render(items[0]!.prefixIcon!.element!, container);
+    const icon0 = items[0]!.prefixIcon;
+    assert(icon0?.type === OrganizerListSectionItemIconType.ELEMENT);
+    render(icon0.element, container);
     let dot = container.querySelector('tab-group-dot');
     assertTrue(!!dot);
     assertEquals(Color.kBlue, dot.color);
     assertTrue(dot.filled);
     assertEquals(TabGroupDotSize.LARGE, dot.size);
 
-    render(items[1]!.prefixIcon!.element!, container);
+    const icon1 = items[1]!.prefixIcon;
+    assert(icon1?.type === OrganizerListSectionItemIconType.ELEMENT);
+    render(icon1.element, container);
     dot = container.querySelector('tab-group-dot');
     assertTrue(!!dot);
     assertEquals(Color.kRed, dot.color);
@@ -203,7 +208,9 @@ suite('TabGroupsDelegateTest', () => {
 
     const container = document.createElement('div');
     document.body.appendChild(container);
-    render(client.items[1]!.prefixIcon!.element!, container);
+    const icon = client.items[1]!.prefixIcon;
+    assert(icon?.type === OrganizerListSectionItemIconType.ELEMENT);
+    render(icon.element, container);
     const dot = container.querySelector('tab-group-dot');
     assertTrue(!!dot);
     assertEquals(Color.kCyan, dot.color);
@@ -258,12 +265,12 @@ suite('TabGroupsDelegateTest', () => {
     assertTrue(!!item);
     assertDeepEquals(['Create tab group'], item.item.title);
 
-    const icon = item.item.prefixIcon?.element;
-    assertTrue(!!icon);
+    const icon = item.item.prefixIcon;
+    assert(icon?.type === OrganizerListSectionItemIconType.ELEMENT);
 
     const iconContainer = document.createElement('div');
     document.body.appendChild(iconContainer);
-    render(icon, iconContainer);
+    render(icon.element, iconContainer);
     const crIcon = iconContainer.querySelector<CrIconElement>('cr-icon');
     assertTrue(!!crIcon);
     assertEquals('organizer-panel:library-add', crIcon.icon);

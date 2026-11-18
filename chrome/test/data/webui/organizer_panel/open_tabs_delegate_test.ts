@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxyFactory, Color, isActive, isSplitTab, OpenTabsDelegate, OpenTabsItemType, PageHandlerRemote, SplitTabLayout, TabAlertState, TabGroupDotSize} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {browserProxyFactory, Color, isActive, isSplitTab, OpenTabsDelegate, OpenTabsItemType, OrganizerListSectionItemIconType, PageHandlerRemote, SplitTabLayout, TabAlertState, TabGroupDotSize} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionClient, OrganizerListSectionItem, PageRemote, ProfileData, Tab} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -189,43 +189,26 @@ suite('OpenTabsDelegateTest', () => {
 
   test('returns tabs sorted by MRU across windows', async () => {
     const items = await delegate.getItems();
-    assertEquals(3, items.length);
-
-    // Most recent tab.
-    assertDeepEquals([youtubeTab.title], items[0]!.title);
-    assertEquals(1, items[0]!.description?.length);
     assertDeepEquals(
-        {text: youtubeTab.lastActiveElapsedText, matchable: false},
-        items[0]!.description?.[0]);
-    assertDeepEquals(['www.youtube.com'], items[0]!.extraSearchTerms);
-    assertEquals(youtubeTab.url, items[0]!.prefixIcon?.url);
-    assertEquals('cr:close', items[0]!.hoveredActionButton?.icon);
+        [youtubeTab.title, chromiumTab.title, googleTab.title],
+        items.map(item => item.title[0]));
+  });
+
+  test('populates section item fields for a tab', async () => {
+    const items = await delegate.getItems();
+    const item = items[0]!;
+    assertDeepEquals([youtubeTab.title], item.title);
+    assertDeepEquals(
+        [{text: youtubeTab.lastActiveElapsedText, matchable: false}],
+        item.description);
+    assertDeepEquals(['www.youtube.com'], item.extraSearchTerms);
+    assertDeepEquals(
+        {type: OrganizerListSectionItemIconType.FAVICON, url: youtubeTab.url},
+        item.prefixIcon);
+    assertEquals('cr:close', item.hoveredActionButton?.icon);
     assertEquals(
-        `Close ${youtubeTab.title}`, items[0]!.hoveredActionButton?.ariaLabel);
-    assertDeepEquals(
-        {type: OpenTabsItemType.TAB, tab: youtubeTab}, items[0]!.data);
-
-    // Second most recent tab.
-    assertDeepEquals([chromiumTab.title], items[1]!.title);
-    assertEquals(1, items[1]!.description?.length);
-    assertDeepEquals(
-        {text: chromiumTab.lastActiveElapsedText, matchable: false},
-        items[1]!.description?.[0]);
-    assertDeepEquals(['www.chromium.org'], items[1]!.extraSearchTerms);
-    assertEquals(chromiumTab.url, items[1]!.prefixIcon?.url);
-    assertDeepEquals(
-        {type: OpenTabsItemType.TAB, tab: chromiumTab}, items[1]!.data);
-
-    // Least recent tab.
-    assertDeepEquals([googleTab.title], items[2]!.title);
-    assertEquals(1, items[2]!.description?.length);
-    assertDeepEquals(
-        {text: googleTab.lastActiveElapsedText, matchable: false},
-        items[2]!.description?.[0]);
-    assertDeepEquals(['www.google.com'], items[2]!.extraSearchTerms);
-    assertEquals(googleTab.url, items[2]!.prefixIcon?.url);
-    assertDeepEquals(
-        {type: OpenTabsItemType.TAB, tab: googleTab}, items[2]!.data);
+        `Close ${youtubeTab.title}`, item.hoveredActionButton?.ariaLabel);
+    assertDeepEquals({type: OpenTabsItemType.TAB, tab: youtubeTab}, item.data);
   });
 
   test('sorts tabs with audio alerts first with an audio icon', async () => {
@@ -587,12 +570,13 @@ suite('OpenTabsDelegateTest', () => {
         assertDeepEquals([splitTab1ElapsedText], item.ariaDescription);
         assertDeepEquals(
             ['docs.google.com', 'sheets.google.com'], item.extraSearchTerms);
-        assertEquals(2, item.prefixIcon?.stackedFavicons?.urls?.length);
-        assertEquals(
-            SPLIT_TAB_1_URL, item.prefixIcon?.stackedFavicons?.urls?.[0]);
-        assertEquals(
-            SPLIT_TAB_2_URL, item.prefixIcon?.stackedFavicons?.urls?.[1]);
-        assertFalse(!!item.prefixIcon?.stackedFavicons?.stackVertically);
+        assertDeepEquals(
+            {
+              type: OrganizerListSectionItemIconType.STACKED_FAVICONS,
+              urls: [SPLIT_TAB_1_URL, SPLIT_TAB_2_URL],
+              stackVertically: false,
+            },
+            item.prefixIcon);
 
         assertTrue(isSplitTab(item.data!));
         assertDeepEquals(
@@ -632,7 +616,13 @@ suite('OpenTabsDelegateTest', () => {
         const items = await delegate.getItems();
         assertEquals(1, items.length);
 
-        assertTrue(!!items[0]!.prefixIcon?.stackedFavicons?.stackVertically);
+        assertDeepEquals(
+            {
+              type: OrganizerListSectionItemIconType.STACKED_FAVICONS,
+              urls: [SPLIT_TAB_1_URL, SPLIT_TAB_2_URL],
+              stackVertically: true,
+            },
+            items[0]!.prefixIcon);
       });
 
   test('switches to first tab when split view item is clicked', async () => {

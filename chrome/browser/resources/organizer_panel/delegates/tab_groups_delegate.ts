@@ -12,6 +12,7 @@ import {TabGroupDotSize} from '/tab_group_shared/tab_group_dot.js';
 
 import type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerSection} from '../organizer_list_section_delegate.js';
 import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
+import {OrganizerListSectionItemIconType} from '../organizer_list_section_item.js';
 import type {BrowserProxy, TabGroup} from '../tab_groups.mojom-webui.js';
 import {browserProxyFactory} from '../tab_groups.mojom-webui.js';
 
@@ -161,6 +162,7 @@ export class TabGroupsDelegate implements
                [stateText]) :
           undefined,
       prefixIcon: {
+        type: OrganizerListSectionItemIconType.ELEMENT,
         element: html`<tab-group-dot .color="${group.color}"
             .filled="${group.isOpen}"
             .size="${TabGroupDotSize.LARGE}"></tab-group-dot>`,

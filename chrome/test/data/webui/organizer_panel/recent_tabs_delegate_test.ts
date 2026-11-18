@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxyFactory, PageHandlerRemote, RecentTabsDelegate, SplitTabLayout} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {browserProxyFactory, OrganizerListSectionItemIconType, PageHandlerRemote, RecentTabsDelegate, SplitTabLayout} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionClient, OrganizerListSectionItem, PageRemote, ProfileData, RecentlyClosedSplitView, RecentlyClosedTab, RecentlyClosedTabGroup} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -140,34 +140,21 @@ suite('RecentTabsDelegateTest', () => {
 
   test('returns tabs sorted by MRU', async () => {
     const items = await delegate.getItems();
-    assertEquals(3, items.length);
-
-    // Most recent tab.
-    assertDeepEquals([youtubeTab.title], items[0]!.title);
-    assertEquals(1, items[0]!.description?.length);
     assertDeepEquals(
-        {text: youtubeTab.lastActiveElapsedText, matchable: false},
-        items[0]!.description?.[0]);
-    assertDeepEquals(['www.youtube.com'], items[0]!.extraSearchTerms);
-    assertEquals(youtubeTab.url, items[0]!.prefixIcon?.url);
+        [youtubeTab, chromiumTab, googleTab], items.map(item => item.data));
+  });
 
-    // Second most recent tab.
-    assertDeepEquals([chromiumTab.title], items[1]!.title);
-    assertEquals(1, items[1]!.description?.length);
+  test('populates section item fields for a tab', async () => {
+    const items = await delegate.getItems();
+    const item = items[0]!;
+    assertDeepEquals([youtubeTab.title], item.title);
     assertDeepEquals(
-        {text: chromiumTab.lastActiveElapsedText, matchable: false},
-        items[1]!.description?.[0]);
-    assertDeepEquals(['www.chromium.org'], items[1]!.extraSearchTerms);
-    assertEquals(chromiumTab.url, items[1]!.prefixIcon?.url);
-
-    // Least recent tab.
-    assertDeepEquals([googleTab.title], items[2]!.title);
-    assertEquals(1, items[2]!.description?.length);
+        [{text: youtubeTab.lastActiveElapsedText, matchable: false}],
+        item.description);
+    assertDeepEquals(['www.youtube.com'], item.extraSearchTerms);
     assertDeepEquals(
-        {text: googleTab.lastActiveElapsedText, matchable: false},
-        items[2]!.description?.[0]);
-    assertDeepEquals(['www.google.com'], items[2]!.extraSearchTerms);
-    assertEquals(googleTab.url, items[2]!.prefixIcon?.url);
+        {type: OrganizerListSectionItemIconType.FAVICON, url: youtubeTab.url},
+        item.prefixIcon);
   });
 
   test('returns tabs and tab groups sorted by MRU', async () => {
@@ -524,9 +511,12 @@ suite('RecentTabsDelegateTest', () => {
         assertDeepEquals(
             ['docs.google.com', 'sheets.google.com'], item.extraSearchTerms);
         assertDeepEquals(
-            ['https://docs.google.com', 'https://sheets.google.com'],
-            item.prefixIcon?.stackedFavicons?.urls);
-        assertFalse(!!item.prefixIcon?.stackedFavicons?.stackVertically);
+            {
+              type: OrganizerListSectionItemIconType.STACKED_FAVICONS,
+              urls: ['https://docs.google.com', 'https://sheets.google.com'],
+              stackVertically: false,
+            },
+            item.prefixIcon);
         assertEquals(splitView, item.data);
       });
 
@@ -551,7 +541,13 @@ suite('RecentTabsDelegateTest', () => {
 
         const items = await delegate.getItems();
         assertEquals(1, items.length);
-        assertTrue(!!items[0]!.prefixIcon?.stackedFavicons?.stackVertically);
+        assertDeepEquals(
+            {
+              type: OrganizerListSectionItemIconType.STACKED_FAVICONS,
+              urls: ['https://docs.google.com', 'https://sheets.google.com'],
+              stackVertically: true,
+            },
+            items[0]!.prefixIcon);
       });
 
   test('returns tabs, tab groups, and split views sorted by MRU', async () => {

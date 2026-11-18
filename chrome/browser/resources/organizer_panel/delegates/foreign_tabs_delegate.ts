@@ -11,7 +11,7 @@ import {browserProxyFactory} from '../foreign_tabs.mojom-webui.js';
 import type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerSection} from '../organizer_list_section_delegate.js';
 import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
 
-import {getCompactZeroState, getHostnameOrUrl} from './tab_delegate_utils.js';
+import {getCompactZeroState, getHostnameOrUrl, getTabPrefixIcon} from './tab_delegate_utils.js';
 
 export class ForeignTabsDelegate implements
     OrganizerListSectionDelegate<ForeignTab> {
@@ -53,7 +53,7 @@ export class ForeignTabsDelegate implements
             {text: tab.deviceName},
           ],
           extraSearchTerms: tab.url ? [getHostnameOrUrl(tab.url)] : undefined,
-          prefixIcon: tab.url ? {url: tab.url} : undefined,
+          prefixIcon: getTabPrefixIcon(tab.url),
           data: tab,
         }));
   }

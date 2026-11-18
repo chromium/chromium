@@ -11,6 +11,7 @@ import './organizer_list_section_item_title.js';
 
 import type {CrUrlListItemElement, CrUrlListItemSize} from '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {MouseHoverableMixinLit} from '//resources/cr_elements/mouse_hoverable_mixin_lit.js';
+import {assertNotReachedCase} from '//resources/js/assert.js';
 import {isRTL} from '//resources/js/util.js';
 import type {PropertyValues, TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -21,27 +22,35 @@ import {getHtml} from './organizer_list_section_item.html.js';
 import type {OrganizerListSectionItemDescriptionElement, OrganizerListSectionItemDescriptionPart} from './organizer_list_section_item_description.js';
 import type {OrganizerListSectionItemTitleElement} from './organizer_list_section_item_title.js';
 
-// Stacked favicons configuration for an organizer list section item.
-export interface OrganizerListSectionItemStackedFavicons {
-  // URLs to display favicons for.
-  urls: [string, string];
+export enum OrganizerListSectionItemIconType {
+  FAVICON = 'favicon',
+  STACKED_FAVICONS = 'stacked_favicons',
+  ELEMENT = 'element',
+}
 
-  // Whether to stack multiple favicons vertically.
+interface FaviconIcon {
+  type: OrganizerListSectionItemIconType.FAVICON;
+  // Displays a single favicon.
+  url: string;
+}
+
+interface StackedFaviconsIcon {
+  type: OrganizerListSectionItemIconType.STACKED_FAVICONS;
+  // Displays two overlapping favicons, with customizable orientation.
+  urls: [string, string];
+  // Whether to stack the favicons vertically.
   stackVertically: boolean;
 }
 
-// Icon for an organizer list section item. Only one of these fields should be
-// defined.
-export interface OrganizerListSectionItemIcon {
-  // Displays a single favicon.
-  url?: string;
-
-  // Displays two overlapping favicons, with customizable orientation.
-  stackedFavicons?: OrganizerListSectionItemStackedFavicons;
-
+interface ElementIcon {
+  type: OrganizerListSectionItemIconType.ELEMENT;
   // Custom element to render as the icon (e.g., a tab group dot).
-  element?: TemplateResult;
+  element: TemplateResult;
 }
+
+// Icon displayed at the beginning of an organizer list section item.
+export type OrganizerListSectionItemIcon =
+    FaviconIcon|StackedFaviconsIcon|ElementIcon;
 
 // Action button displayed when an organizer list section item is hovered.
 export interface OrganizerListSectionItemActionButton {
@@ -74,7 +83,7 @@ export interface OrganizerListSectionItem<T> {
   // UI.
   extraSearchTerms?: string[];
 
-  // Icon displayed at the beginning of the item.
+  // Optional: Icon displayed at the beginning of the item.
   prefixIcon?: OrganizerListSectionItemIcon;
 
   // Optional: Icon to be displayed at the end of the item.
@@ -240,21 +249,40 @@ export class OrganizerListSectionItemElement extends
     return !!this.item.description && this.item.description.length > 0;
   }
 
+  private getValidFaviconUrls_(): string[] {
+    const icon = this.item.prefixIcon;
+    if (!icon) {
+      return [];
+    }
+    switch (icon.type) {
+      case OrganizerListSectionItemIconType.ELEMENT:
+        return [];
+      case OrganizerListSectionItemIconType.FAVICON:
+        return icon.url ? [icon.url] : [];
+      case OrganizerListSectionItemIconType.STACKED_FAVICONS:
+        return icon.urls.filter(Boolean);
+      default:
+        return assertNotReachedCase(icon);
+    }
+  }
+
   protected hasFavicon_(): boolean {
-    return !!this.getPrimaryFaviconUrl_();
+    return this.getValidFaviconUrls_().length > 0;
   }
 
   protected getPrimaryFaviconUrl_(): string {
-    return this.item.prefixIcon?.url ??
-        this.item.prefixIcon?.stackedFavicons?.urls[0] ?? '';
+    return this.getValidFaviconUrls_()[0] ?? '';
   }
 
   protected getSecondaryFaviconUrl_(): string {
-    return this.item.prefixIcon?.stackedFavicons?.urls[1] ?? '';
+    return this.getValidFaviconUrls_()[1] ?? '';
   }
 
   protected shouldStackFaviconsVertically_(): boolean {
-    return !!this.item.prefixIcon?.stackedFavicons?.stackVertically;
+    return this.item.prefixIcon?.type ===
+        OrganizerListSectionItemIconType.STACKED_FAVICONS &&
+        this.getValidFaviconUrls_().length === 2 &&
+        this.item.prefixIcon.stackVertically;
   }
 
   protected hasSuffix_(): boolean {
