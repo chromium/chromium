@@ -506,6 +506,11 @@ void PrivacyIndicatorsTrayItemView::EndAllAnimations() {
   shorter_side_shrink_animation_->End();
   longer_side_shrink_animation_->End();
   expand_animation_->End();
+  // Ending `expand_animation_` above (or a previous expand animation) may have
+  // started the shrink delay timers. Stop them so that the shrink animations
+  // won't start in the middle of the next animation sequence.
+  longer_side_shrink_delay_timer_.Stop();
+  shorter_side_shrink_delay_timer_.Stop();
   animation_state_ = AnimationState::kIdle;
 
   if (throughput_tracker_) {

@@ -130,8 +130,20 @@ class PrivacyIndicatorsTrayItemViewTest
 
   // Simulates completing the animation.
   void SimulateAnimationEnded() {
+    // End all animations first so that no animation keeps running after the
+    // state is reset to `kIdle`.
+    EndAllAnimations();
     privacy_indicators_view()->AnimationEnded(
         privacy_indicators_view()->shorter_side_shrink_animation_.get());
+  }
+
+  void EndAllAnimations() { privacy_indicators_view()->EndAllAnimations(); }
+
+  bool IsShrinkDelayTimerRunning() {
+    return privacy_indicators_view()
+               ->longer_side_shrink_delay_timer_.IsRunning() ||
+           privacy_indicators_view()
+               ->shorter_side_shrink_delay_timer_.IsRunning();
   }
 
  protected:
@@ -686,9 +698,38 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, StateChangeDuringAnimation) {
       /*is_screen_sharing=*/false);
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 
-  // Clean up.
+  // Clean up. `expand_animation()` was restarted when screen sharing started.
+  expand_animation()->End();
   longer_side_shrink_animation()->End();
   shorter_side_shrink_animation()->End();
+}
+
+// Tests that restarting the animation stops the shrink delay timers of the
+// previous animation sequence, so that the shrink animations won't start in
+// the middle of the new expand animation.
+TEST_F(PrivacyIndicatorsTrayItemViewTest, RestartAnimationStopsShrinkTimers) {
+  // Restart while dwelling in the expanded state.
+  SetViewVisibleWithAnimation();
+  expand_animation()->End();
+  ASSERT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kDwellInExpand,
+            animation_state());
+  ASSERT_TRUE(IsShrinkDelayTimerRunning());
+
+  SetViewVisibleWithAnimation();
+  EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kExpand,
+            animation_state());
+  EXPECT_FALSE(IsShrinkDelayTimerRunning());
+
+  // Restart in the middle of the expand animation. Ending the running expand
+  // animation must not leave the shrink delay timers running.
+  ASSERT_TRUE(expand_animation()->is_animating());
+  SetViewVisibleWithAnimation();
+  EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kExpand,
+            animation_state());
+  EXPECT_FALSE(IsShrinkDelayTimerRunning());
+
+  // Clean up.
+  EndAllAnimations();
 }
 
 TEST_F(PrivacyIndicatorsTrayItemViewTest, MultipleAppsAccess) {
