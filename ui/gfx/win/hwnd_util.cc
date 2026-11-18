@@ -289,19 +289,32 @@ std::optional<bool> IsWindowOnCurrentVirtualDesktop(
           window, &on_current_desktop))) {
     return std::nullopt;
   }
-  if (on_current_desktop)
+  if (on_current_desktop) {
     return true;
+  }
 
-  // IsWindowOnCurrentVirtualDesktop() is flaky for newly opened windows,
-  // which causes test flakiness. Occasionally, it incorrectly says a window
-  // is not on the current virtual desktop when it is. In this situation,
-  // it also returns GUID_NULL for the desktop id.
+  // Explorer registers newly tracked windows with GUID_NULL (causing
+  // IsWindowOnCurrentVirtualDesktop() to return FALSE) before asynchronously
+  // assigning the active desktop's GUID. Treat GUID_NULL as on the current
+  // desktop.
   GUID workspace_guid;
   if (FAILED(virtual_desktop_manager->GetWindowDesktopId(window,
                                                          &workspace_guid))) {
     return std::nullopt;
   }
-  return workspace_guid == GUID_NULL;
+  if (workspace_guid == GUID_NULL) {
+    return true;
+  }
+
+  // Explorer may have assigned the desktop GUID after the first
+  // IsWindowOnCurrentVirtualDesktop() call. Because the GUID_NULL to desktop
+  // GUID transition only happens once, seeing a non-null GUID above means the
+  // assignment has finished, so one re-check is sufficient.
+  if (FAILED(virtual_desktop_manager->IsWindowOnCurrentVirtualDesktop(
+          window, &on_current_desktop))) {
+    return std::nullopt;
+  }
+  return on_current_desktop != FALSE;
 }
 
 #pragma warning(pop)
