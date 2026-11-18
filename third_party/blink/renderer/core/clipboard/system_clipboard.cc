@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -430,6 +431,14 @@ void SystemClipboard::CommitWrite() {
   if (!clipboard_.is_bound())
     return;
   clipboard_->CommitWrite();
+  if (WebTestSupport::IsRunningWebTest()) {
+    // Flush the pipe so that subsequent clipboard reads in other frames (which
+    // use separate ClipboardHost pipes) observe the committed write and
+    // updated sequence number.
+    absl::uint128 ignored;
+    clipboard_->GetSequenceNumber(mojom::blink::ClipboardBuffer::kStandard,
+                                  &ignored);
+  }
 }
 
 void SystemClipboard::CopyToFindPboard(const String& text) {

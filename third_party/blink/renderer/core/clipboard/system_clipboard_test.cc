@@ -6,11 +6,14 @@
 
 #include <memory>
 
+#include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/clipboard/data_object_item.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -18,9 +21,13 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -816,5 +823,117 @@ TEST_F(SystemClipboardTest, DataObjectItemGetAsFileRespectsSelectionMode) {
             mojom::blink::ClipboardBuffer::kStandard);
 }
 #endif
+
+TEST_F(SystemClipboardTest, CommitWriteFlushesPipeInWebTestMode) {
+  // Run MockClipboardHost on a separate thread to match multi-process IPC
+  // (where the receiver thread is not inside a same-thread SyncHandleWatcher).
+  std::unique_ptr<NonMainThread> host_thread = NonMainThread::CreateThread(
+      ThreadCreationParams(ThreadType::kTestThread)
+          .SetThreadNameForTest("ClipboardHostThread"));
+  scoped_refptr<base::SingleThreadTaskRunner> host_task_runner =
+      host_thread->GetTaskRunner();
+
+  std::unique_ptr<MockClipboardHost> cross_thread_host;
+  {
+    base::WaitableEvent host_created;
+    PostCrossThreadTask(*host_task_runner, FROM_HERE,
+                        CrossThreadBindOnce(
+                            [](std::unique_ptr<MockClipboardHost>* out_host,
+                               base::WaitableEvent* done) {
+                              *out_host = std::make_unique<MockClipboardHost>();
+                              done->Signal();
+                            },
+                            CrossThreadUnretained(&cross_thread_host),
+                            CrossThreadUnretained(&host_created)));
+    base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+    host_created.Wait();
+  }
+
+  auto bind_to_host_thread = blink::BindRepeating(
+      [](scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+         MockClipboardHost* host, mojo::ScopedMessagePipeHandle handle) {
+        PostCrossThreadTask(
+            *task_runner, FROM_HERE,
+            CrossThreadBindOnce(
+                [](MockClipboardHost* host,
+                   mojo::ScopedMessagePipeHandle handle) {
+                  host->Bind(mojo::PendingReceiver<mojom::blink::ClipboardHost>(
+                      std::move(handle)));
+                },
+                CrossThreadUnretained(host), std::move(handle)));
+      },
+      host_task_runner, blink::Unretained(cross_thread_host.get()));
+
+  auto first_page = std::make_unique<DummyPageHolder>(gfx::Size(1, 1));
+  auto second_page = std::make_unique<DummyPageHolder>(gfx::Size(1, 1));
+  const BrowserInterfaceBrokerProxy& first_broker =
+      first_page->GetFrame().GetBrowserInterfaceBroker();
+  const BrowserInterfaceBrokerProxy& second_broker =
+      second_page->GetFrame().GetBrowserInterfaceBroker();
+  first_broker.SetBinderForTesting(mojom::blink::ClipboardHost::Name_, {});
+  second_broker.SetBinderForTesting(mojom::blink::ClipboardHost::Name_, {});
+  ASSERT_TRUE(first_broker.SetBinderForTesting(
+      mojom::blink::ClipboardHost::Name_, bind_to_host_thread));
+  second_broker.SetBinderForTesting(mojom::blink::ClipboardHost::Name_,
+                                    bind_to_host_thread);
+
+  SystemClipboard& first_clipboard =
+      *(first_page->GetFrame().GetSystemClipboard());
+  SystemClipboard& second_clipboard =
+      *(second_page->GetFrame().GetSystemClipboard());
+  std::ignore = first_clipboard.SequenceNumber();
+  const absl::uint128 initial_sequence_number =
+      second_clipboard.SequenceNumber();
+
+  base::WaitableEvent unblock_host;
+  {
+    // Block the host thread to verify that outside web test mode, CommitWrite()
+    // returns asynchronously without waiting on the pipe.
+    PostCrossThreadTask(
+        *host_task_runner, FROM_HERE,
+        CrossThreadBindOnce(
+            [](base::WaitableEvent* unblock) {
+              base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+              unblock->Wait();
+            },
+            CrossThreadUnretained(&unblock_host)));
+
+    ScopedWebTestMode web_test_mode(false);
+    first_clipboard.WritePlainText("non-web-test text");
+    first_clipboard.CommitWrite();
+    unblock_host.Signal();
+  }
+  // Flush the first write by performing a sync read on first_clipboard.
+  const absl::uint128 after_first_write = first_clipboard.SequenceNumber();
+  EXPECT_NE(after_first_write, initial_sequence_number);
+
+  // Delay the host thread slightly before processing the second write; in web
+  // test mode, CommitWrite() must still block until the write is committed so
+  // second_clipboard immediately sees the new text and sequence number.
+  first_clipboard.WritePlainText("cross-frame text");
+  first_clipboard.CommitWrite();
+
+  EXPECT_NE(second_clipboard.SequenceNumber(), after_first_write);
+  EXPECT_EQ(second_clipboard.ReadPlainText(), "cross-frame text");
+
+  first_broker.SetBinderForTesting(mojom::blink::ClipboardHost::Name_, {});
+  second_broker.SetBinderForTesting(mojom::blink::ClipboardHost::Name_, {});
+  first_page.reset();
+  second_page.reset();
+  {
+    base::WaitableEvent host_destroyed;
+    PostCrossThreadTask(*host_task_runner, FROM_HERE,
+                        CrossThreadBindOnce(
+                            [](std::unique_ptr<MockClipboardHost>* host,
+                               base::WaitableEvent* done) {
+                              host->reset();
+                              done->Signal();
+                            },
+                            CrossThreadUnretained(&cross_thread_host),
+                            CrossThreadUnretained(&host_destroyed)));
+    base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+    host_destroyed.Wait();
+  }
+}
 
 }  // namespace blink
