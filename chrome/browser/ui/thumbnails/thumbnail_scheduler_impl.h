@@ -72,6 +72,8 @@ class ThumbnailSchedulerImpl : public ThumbnailScheduler {
   // track its size).
   int hi_prio_capture_count_ = 0;
   int lo_prio_capture_count_ = 0;
+
+  bool reentrancy_guard_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_SCHEDULER_IMPL_H_
