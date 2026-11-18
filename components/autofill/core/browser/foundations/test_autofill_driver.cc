@@ -14,7 +14,9 @@ namespace autofill {
 TestAutofillDriver::TestAutofillDriver(TestAutofillClient* client)
     : autofill_client_(CHECK_DEREF(client)) {}
 
-TestAutofillDriver::~TestAutofillDriver() = default;
+TestAutofillDriver::~TestAutofillDriver() {
+  autofill_manager_.reset();
+}
 
 LocalFrameToken TestAutofillDriver::GetFrameToken() const {
   return frame_token_;
@@ -25,7 +27,7 @@ TestAutofillClient& TestAutofillDriver::GetAutofillClient() {
 }
 
 AutofillManager& TestAutofillDriver::GetAutofillManager() {
-  return *autofill_manager_;
+  return CHECK_DEREF(autofill_manager_);
 }
 
 ukm::SourceId TestAutofillDriver::GetPageUkmSourceId() const {

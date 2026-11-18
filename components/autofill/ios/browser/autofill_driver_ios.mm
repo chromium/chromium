@@ -170,6 +170,10 @@ AutofillDriverIOS::AutofillDriverIOS(
 }
 
 AutofillDriverIOS::~AutofillDriverIOS() {
+  // Destroy the AutofillManager first because its destructor calls into `this`.
+  // That is known and accepted. See crbug.com/587056767 for pros and cons.
+  manager_observation_.Reset();
+  manager_.reset();
   Unregister();
   RecordTriggeredFormExtractionMetrics();
 }
@@ -207,7 +211,7 @@ AutofillClient& AutofillDriverIOS::GetAutofillClient() {
 }
 
 BrowserAutofillManager& AutofillDriverIOS::GetAutofillManager() {
-  return *manager_;
+  return CHECK_DEREF(manager_);
 }
 
 ukm::SourceId AutofillDriverIOS::GetPageUkmSourceId() const {

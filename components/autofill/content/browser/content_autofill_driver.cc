@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -339,6 +340,9 @@ ContentAutofillDriver::ContentAutofillDriver(
 }
 
 ContentAutofillDriver::~ContentAutofillDriver() {
+  // Destroy the AutofillManager first because its destructor calls into `this`.
+  // That is known and accepted. See crbug.com/587056767 for pros and cons.
+  autofill_manager_.reset();
   owner_->router().UnregisterDriver(*this, /*driver_is_dying=*/true);
 }
 
@@ -484,7 +488,7 @@ ContentAutofillClient& ContentAutofillDriver::GetAutofillClient() {
 }
 
 AutofillManager& ContentAutofillDriver::GetAutofillManager() {
-  return *autofill_manager_;
+  return CHECK_DEREF(autofill_manager_);
 }
 
 std::optional<LocalFrameToken> ContentAutofillDriver::Resolve(
