@@ -8,7 +8,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -219,6 +218,7 @@ class MockPermissionRequestManager
   void SetAlreadyDisplayed() { was_current_request_already_displayed_ = true; }
 
   void ClearRequests() {
+    preignore_timer_.Stop();
     raw_requests_.clear();
     requests_.clear();
   }
@@ -232,6 +232,7 @@ class MockPermissionRequestManager
   void SetRequests(const GURL& origin,
                    const std::vector<permissions::RequestType>& request_types,
                    bool with_gesture) {
+    preignore_timer_.Stop();
     raw_requests_.clear();
     requests_ = base::ToVector(
         request_types,
@@ -258,6 +259,7 @@ class MockPermissionRequestManager
   // Replaces the requests with `request`, e.g. a request that customizes its
   // chip.
   void SetRequest(std::unique_ptr<permissions::PermissionRequest> request) {
+    preignore_timer_.Stop();
     request->set_requesting_frame_id(
         web_contents_->GetPrimaryMainFrame()->GetGlobalId());
     raw_requests_ = {request.get()};
@@ -762,15 +764,8 @@ IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest, DisplayQuietChipAbusiveTest) {
   EXPECT_FALSE(delegate.IsRequestInProgress());
 }
 
-// TODO(crbug.com/40063728): Flaky on Linux due to a race condition with the
-// auto-ignore timer.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ClickOnQuietChipAbusiveTest DISABLED_ClickOnQuietChipAbusiveTest
-#else
-#define MAYBE_ClickOnQuietChipAbusiveTest ClickOnQuietChipAbusiveTest
-#endif
 IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest,
-                       MAYBE_ClickOnQuietChipAbusiveTest) {
+                       ClickOnQuietChipAbusiveTest) {
   auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
       GURL("https://test.origin"), {permissions::RequestType::kNotifications},
       true, QuietUiReason::kTriggeredDueToAbusiveRequests, web_contents_);
