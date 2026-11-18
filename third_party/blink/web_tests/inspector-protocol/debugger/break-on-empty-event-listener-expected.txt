@@ -1,0 +1,5 @@
+Tests that scheduled pause is cleared after processing event with empty handler.
+addEmptyEventListenerAndClick at :11:6
+--setTimeout--
+(anonymous) at :0:0
+
