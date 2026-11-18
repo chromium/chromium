@@ -47,13 +47,13 @@
 #include "services/viz/public/cpp/gpu/gpu.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/jsoncpp/src/include/json/reader.h"
-#include "third_party/jsoncpp/src/include/json/writer.h"
 #include "third_party/openscreen/src/cast/streaming/message_fields.h"
 #include "third_party/openscreen/src/cast/streaming/public/offer_messages.h"
 #include "third_party/openscreen/src/cast/streaming/remoting_capabilities.h"
 #include "third_party/openscreen/src/cast/streaming/sender_message.h"
 #include "third_party/openscreen/src/cast/streaming/ssrc.h"
+#include "third_party/openscreen/src/util/json/json_serialization.h"
+#include "third_party/openscreen/src/util/json/json_value.h"
 
 using media::cast::FrameSenderConfig;
 using media::cast::MockSender;
@@ -127,31 +127,12 @@ class MockRemotingSource : public media::mojom::RemotingSource {
   base::WeakPtrFactory<MockRemotingSource> weak_factory_{this};
 };
 
-Json::Value ParseAsJsoncppValue(std::string_view document) {
-  Json::CharReaderBuilder builder;
-  Json::CharReaderBuilder::strictMode(&builder.settings_);
+openscreen::json::Value ParseJson(std::string_view document) {
   EXPECT_FALSE(document.empty());
-
-  Json::Value root_node;
-  std::string error_msg;
-  std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-  EXPECT_TRUE(reader->parse(&*document.begin(), &*document.end(), &root_node,
-                            &error_msg));
-
-  return root_node;
-}
-
-std::string Stringify(const Json::Value& value) {
-  EXPECT_FALSE(value.empty());
-  Json::StreamWriterBuilder factory;
-  factory["indentation"] = "";
-
-  std::unique_ptr<Json::StreamWriter> const writer(factory.newStreamWriter());
-  std::ostringstream stream;
-  writer->write(value, &stream);
-
-  EXPECT_TRUE(stream);
-  return stream.str();
+  ErrorOr<openscreen::json::Value> parsed = openscreen::json::Parse(document);
+  EXPECT_TRUE(parsed.is_value()) << parsed.error();
+  return parsed.is_value() ? std::move(parsed.value())
+                           : openscreen::json::Value();
 }
 
 openscreen::cast::SenderStats ConstructDefaultSenderStats() {
@@ -264,8 +245,8 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     EXPECT_TRUE(message->message_namespace == mojom::kWebRtcNamespace ||
                 message->message_namespace == mojom::kRemotingNamespace);
 
-    const Json::Value json_value =
-        ParseAsJsoncppValue(message->json_format_data);
+    const openscreen::json::Value json_value =
+        ParseJson(message->json_format_data);
 
     ErrorOr<SenderMessage> parsed_message = SenderMessage::Parse(json_value);
     EXPECT_TRUE(parsed_message);
@@ -356,8 +337,10 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
         .sequence_number = last_sent_offer_->sequence_number,
         .valid = true,
         .body = std::move(answer)};
-    Json::Value message_json = receiver_message.ToJson().value();
-    ErrorOr<std::string> message_string = Stringify(message_json);
+    const openscreen::json::Value message_json =
+        receiver_message.ToJson().value();
+    ErrorOr<std::string> message_string =
+        openscreen::json::Stringify(message_json);
     ASSERT_TRUE(message_string);
 
     mojom::CastMessagePtr message = mojom::CastMessage::New(

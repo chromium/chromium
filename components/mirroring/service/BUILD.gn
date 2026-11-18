@@ -63,7 +63,6 @@ component("mirroring_service") {
     "//mojo/public/cpp/system",
     "//net",
     "//services/viz/public/cpp/gpu",
-    "//third_party/jsoncpp",  # Required by Open Screen API.
     "//third_party/openscreen/src/cast/streaming:common",
     "//third_party/openscreen/src/cast/streaming:sender",
     "//ui/base",

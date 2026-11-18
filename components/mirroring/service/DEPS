@@ -10,8 +10,6 @@ include_rules = [
   "+gpu/config",
   "+gpu/ipc/client",
   "+gpu/ipc/common",
-  # Required by Open Screen API.
-  "+third_party/jsoncpp/src/include/json",
   "+net",
   "+services/network/public",
   "+services/network/test",
@@ -21,6 +19,7 @@ include_rules = [
   "+third_party/openscreen/src/cast/common/public",
   "+third_party/openscreen/src/platform/api",
   "+third_party/openscreen/src/platform/base",
+  "+third_party/openscreen/src/util/json",
   "+third_party/skia/include",
   "+ui/base",
   "+ui/gfx/geometry",
