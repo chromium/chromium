@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -1169,6 +1170,26 @@ void DisplayLockContext::DetermineIfSubtreeHasTopLayerElement() {
   if (!ConnectedToView())
     return;
 
+  if (document_->IsFlatTreeTraversalForbidden() ||
+      document_->IsInSlotAssignmentRecalc()) {
+    ScheduleTopLayerCheck();
+    return;
+  }
+
+  // FlatTreeTraversal::ParentElement() below can trigger a pending slot
+  // assignment recalc, which may mutate Document::TopLayerElements() (for
+  // example by detaching a newly unslotted top-layer element's layout tree and
+  // removing its ::backdrop, or by forcing a style recalc that inserts pending
+  // ::backdrop pseudo-elements and reallocates the vector backing). Resolve
+  // pending slot assignments up front before iterating over TopLayerElements().
+  document_->GetSlotAssignmentEngine().RecalcSlotAssignments();
+  // RecalcSlotAssignments() can synchronously dispatch blur/focusout events
+  // when clearing an input's suggested value in a canvas subtree
+  // (crbug.com/574469802), which may disconnect |element_|.
+  if (!ConnectedToView()) {
+    return;
+  }
+
   ClearHasTopLayerElement();
 
   // Iterate up the ancestor chain from each top layer element.
@@ -1248,6 +1269,11 @@ void DisplayLockContext::DetachDescendantTopLayerElements() {
       document_->TopLayerElements();
 
   for (Member<Element>& top_layer_element : top_layer_elements) {
+    // Detaching an outer top-layer element in an earlier iteration can dispose
+    // a nested top-layer element's ::backdrop and remove it from the top layer.
+    if (!top_layer_element->IsInTopLayer()) {
+      continue;
+    }
     if (top_layer_element->IsBackdropPseudoElement() &&
         top_layer_element->parentElement() == element_) {
       // Keep rendering the ::backdrop for a content-visibility:hidden element.
