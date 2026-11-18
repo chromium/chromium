@@ -63,6 +63,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
@@ -607,7 +608,11 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
 
   TestingProfile* CreateSecondaryProfile(
       std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs = nullptr) {
-    constexpr char kSecondaryProfileName[] = "secondary_profile";
+    // "@test" matters: GetProfilePath() appends it to any name lacking "@",
+    // so without it here the profile's hashed path and the user's login
+    // hash would never match, and GetUserByBrowserContext() couldn't
+    // resolve a user for this profile.
+    constexpr char kSecondaryProfileName[] = "secondary_profile@test";
     const GaiaId kFakeGaia2("fakegaia2");
     LogIn(kSecondaryProfileName, kFakeGaia2);
     return profile_manager()->CreateTestingProfile(
@@ -634,7 +639,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
   void ActivateSecondaryProfile() {
-    const std::string kSecondaryProfileName = "secondary_profile";
+    const std::string kSecondaryProfileName = "secondary_profile@test";
     const AccountId account_id(AccountId::FromUserEmail(kSecondaryProfileName));
     ash::Shell::Get()->session_controller()->SwitchActiveUser(account_id);
   }
@@ -778,6 +783,13 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
              base::BindRepeating(&BuildVolumeManager)}});
     profile_ =
         profile_manager()->CreateGuestProfile(std::move(guest_profile_builder));
+
+    // The guest profile is already annotated with its AccountId, but
+    // BrowserContextHelper::GetUserByBrowserContext() still defaults to a
+    // username-hash match against the profile's directory -- which isn't
+    // derived from any user's hash for guest profiles. Force the
+    // annotated-AccountId lookup instead.
+    ash::BrowserContextHelper::Get()->SetUseAnnotatedAccountIdForTesting();
     return profile_;
   }
 

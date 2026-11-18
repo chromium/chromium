@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ash/app_list/search/ranking/removed_results_ranker.h"
 
+#include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/user_manager/user.h"
 
 namespace app_list {
 namespace {
@@ -23,11 +25,10 @@ bool IsFileSuggestion(const ChromeSearchResult& result) {
 
 }  // namespace
 
-RemovedResultsRanker::RemovedResultsRanker(Profile* profile)
-    : profile_(profile),
+RemovedResultsRanker::RemovedResultsRanker(user_manager::User* user)
+    : user_(CHECK_DEREF(user)),
       proto_(GetFileSuggestKeyedService()->GetProto(
           base::PassKey<RemovedResultsRanker>())) {
-  CHECK(profile_, base::NotFatalUntil::M160);
   CHECK(proto_, base::NotFatalUntil::M160);
 
   on_init_subscription_ = proto_->RegisterOnInit(
@@ -86,7 +87,7 @@ void RemovedResultsRanker::OnRemovedResultsProtoInit() {
 ash::FileSuggestKeyedService*
 RemovedResultsRanker::GetFileSuggestKeyedService() {
   return ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
-      profile_);
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(&user_.get()));
 }
 
 }  // namespace app_list

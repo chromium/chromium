@@ -39,6 +39,7 @@
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -75,7 +76,8 @@ SearchController::~SearchController() = default;
 void SearchController::Initialize() {
   burn_in_controller_ = std::make_unique<BurnInController>(base::BindRepeating(
       &SearchController::OnBurnInPeriodElapsed, base::Unretained(this)));
-  ranker_manager_ = std::make_unique<RankerManager>(profile_);
+  ranker_manager_ = std::make_unique<RankerManager>(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
   metrics_manager_ =
       std::make_unique<SearchMetricsManager>(profile_, notifier_);
   session_metrics_manager_ =

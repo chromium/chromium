@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ash/app_list/search/ranking/util.h"
 
+#include <optional>
+
+#include "base/check.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/profiles/profile.h"
+#include "components/user_manager/user.h"
 
 namespace app_list {
 namespace {
@@ -15,8 +18,10 @@ constexpr char kRankerStateDirectory[] = "launcher_ranking/";
 
 }  // namespace
 
-base::FilePath RankerStateDirectory(Profile* profile) {
-  return profile->GetPath().AppendASCII(kRankerStateDirectory);
+base::FilePath RankerStateDirectory(const user_manager::User& user) {
+  std::optional<base::FilePath> path = user.GetPath();
+  CHECK(path) << "User's home directory is not yet mounted";
+  return path->AppendASCII(kRankerStateDirectory);
 }
 
 std::string CategoryToString(const Category value) {

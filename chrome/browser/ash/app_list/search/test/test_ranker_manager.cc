@@ -13,8 +13,8 @@
 
 namespace app_list {
 
-TestRankerManager::TestRankerManager(Profile* profile)
-    : RankerManager(profile) {}
+TestRankerManager::TestRankerManager(user_manager::User* user)
+    : RankerManager(user) {}
 
 TestRankerManager::~TestRankerManager() = default;
 

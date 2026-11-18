@@ -13,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/check_deref.h"
 #include "base/compiler_specific.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
@@ -37,13 +38,18 @@
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/test_screen.h"
@@ -53,6 +59,8 @@
 namespace app_list::test {
 
 namespace {
+
+constexpr char kEmail[] = "test@example.com";
 
 using testing::ElementsAreArray;
 using testing::UnorderedElementsAreArray;
@@ -155,20 +163,52 @@ class SearchControllerTest : public testing::Test {
   ~SearchControllerTest() override = default;
 
   void SetUp() override {
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            TestingBrowserProcess::GetGlobal()));
+
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId(kEmail, GaiaId("123456"));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
+    user_session_test_environment_->LogIn(account_id);
+
+    profile_ = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            account_id));
+    ASSERT_TRUE(profile_);
+
+    model_updater_ = std::make_unique<FakeAppListModelUpdater>(
+        profile_, /*order_delegate=*/nullptr);
+
     search_controller_ = std::make_unique<SearchController>(
         TestingBrowserProcess::GetGlobal()->local_state(),
-        /*model_updater=*/&model_updater_,
+        /*model_updater=*/model_updater_.get(),
         /*list_controller=*/&list_controller_,
-        /*notifier=*/nullptr, &profile_);
+        /*notifier=*/nullptr, profile_);
     search_controller_->Initialize();
 
-    auto ranker_manager = std::make_unique<TestRankerManager>(&profile_);
+    auto ranker_manager = std::make_unique<TestRankerManager>(&user());
     ranker_manager_ = ranker_manager.get();
     search_controller_->set_ranker_manager_for_test(std::move(ranker_manager));
   }
 
+  void TearDown() override {
+    search_controller_.reset();
+    model_updater_.reset();
+    profile_ = nullptr;
+    user_session_test_environment_.reset();
+    testing::Test::TearDown();
+  }
+
+  user_manager::User& user() {
+    return CHECK_DEREF(
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  }
+
   void ExpectIdOrder(std::vector<std::string> expected_ids) {
-    const auto& actual_results = model_updater_.search_results();
+    const auto& actual_results = model_updater_->search_results();
     EXPECT_EQ(actual_results.size(), expected_ids.size());
     EXPECT_THAT(base::ToVector(actual_results, &ChromeSearchResult::id),
                 ElementsAreArray(expected_ids));
@@ -230,8 +270,14 @@ class SearchControllerTest : public testing::Test {
 
   display::test::TestScreen test_screen_{/*create_dispay=*/true,
                                          /*register_screen=*/true};
-  TestingProfile profile_;
-  FakeAppListModelUpdater model_updater_{&profile_, /*order_delegate=*/nullptr};
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  // TODO(crbug.com/569954060): Replace with a stored user_manager::User*
+  // (returned by user_session_test_environment_->AddRegularUser()) now
+  // that this test's User is no longer derived from `profile_` via a
+  // reverse lookup.
+  raw_ptr<Profile> profile_ = nullptr;
+  std::unique_ptr<FakeAppListModelUpdater> model_updater_;
   std::unique_ptr<SearchController> search_controller_;
   ::test::TestAppListControllerDelegate list_controller_{};
   // Owned by |search_controller_|.
@@ -758,7 +804,7 @@ TEST_F(SearchControllerTest, ZeroStateResultsGetTimedOut) {
 TEST_F(SearchControllerTest, ContinueRanksDriveAboveLocal) {
   // Use the full ranking stack.
   search_controller_->set_ranker_manager_for_test(
-      std::make_unique<RankerManager>(&profile_));
+      std::make_unique<RankerManager>(&user()));
 
   auto drive_provider = std::make_unique<TestSearchProvider>(
       Result::kZeroStateDrive, base::Seconds(0));
@@ -787,7 +833,7 @@ TEST_F(SearchControllerTest, ContinueRanksDriveAboveLocal) {
 TEST_F(SearchControllerTest, ContinueRanksAdminTemplateAboveHelpAppAndDrive) {
   // Use the full ranking stack.
   search_controller_->set_ranker_manager_for_test(
-      std::make_unique<RankerManager>(&profile_));
+      std::make_unique<RankerManager>(&user()));
 
   auto desks_admin_template = std::make_unique<TestSearchProvider>(
       Result::kDesksAdminTemplate, base::Seconds(0));
@@ -967,7 +1013,7 @@ TEST_F(SearchControllerTest, ProviderIsFilteredWithSearchControl) {
   ASSERT_EQ(provider_ptrs.size(), 8u);
 
   ScopedDictPrefUpdate pref_update(
-      profile_.GetPrefs(), ash::prefs::kLauncherSearchCategoryControlStatus);
+      profile_->GetPrefs(), ash::prefs::kLauncherSearchCategoryControlStatus);
 
   const auto toggleable_categories =
       search_controller_->GetToggleableCategories();
@@ -1039,7 +1085,7 @@ TEST_F(SearchControllerTest, InitializeProvidersOnLauncherOpen) {
 
 TEST_F(SearchControllerTest, SweepsAppSearchIconCache) {
   apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(&profile_);
+      apps::AppServiceProxyFactory::GetForProfile(profile_);
   ASSERT_NE(proxy, nullptr);
 
   apps::StubIconLoader stub_icon_loader;
@@ -1107,7 +1153,7 @@ TEST_F(SearchControllerTest, SweepsAppSearchIconCache) {
 
 TEST_F(SearchControllerTest, SweepsAppSearchIconCacheAfterAsyncIconLoad) {
   apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(&profile_);
+      apps::AppServiceProxyFactory::GetForProfile(profile_);
   ASSERT_NE(proxy, nullptr);
 
   DeferredPlaceholderIconLoader icon_loader;

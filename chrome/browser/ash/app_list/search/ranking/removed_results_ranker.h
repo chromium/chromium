@@ -9,16 +9,19 @@
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker.h"
 #include "chrome/browser/ash/app_list/search/ranking/removed_results.pb.h"
 
-class Profile;
-
 namespace ash {
 class FileSuggestKeyedService;
 }  // namespace ash
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace app_list {
 
@@ -30,7 +33,8 @@ namespace app_list {
 // On a call to Rank(), previously removed results are filtered out.
 class RemovedResultsRanker : public Ranker {
  public:
-  explicit RemovedResultsRanker(Profile* profile);
+  // `user` must not be null and must outlive this instance.
+  explicit RemovedResultsRanker(user_manager::User* user);
   ~RemovedResultsRanker() override;
 
   RemovedResultsRanker(const RemovedResultsRanker&) = delete;
@@ -55,7 +59,8 @@ class RemovedResultsRanker : public Ranker {
   // How long to wait until writing any |proto_| updates to disk.
   base::TimeDelta write_delay_;
 
-  const raw_ptr<Profile> profile_;
+  // The user this instance was created for.
+  const raw_ref<user_manager::User> user_;
 
   const raw_ptr<ash::PersistentProto<RemovedResultsProto>> proto_;
 

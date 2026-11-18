@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/ash/app_list/search/ranking/answer_ranker.h"
 #include "chrome/browser/ash/app_list/search/ranking/best_match_ranker.h"
 #include "chrome/browser/ash/app_list/search/ranking/continue_ranker.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/app_list/search/ranking/util.h"
 #include "chrome/browser/ash/app_list/search/util/score_normalizer.h"
 #include "chrome/browser/ash/app_list/search/util/score_normalizer.pb.h"
-#include "chrome/browser/profiles/profile.h"
 
 namespace app_list {
 namespace {
@@ -29,7 +29,9 @@ constexpr base::TimeDelta kStandardWriteDelay = base::Seconds(3);
 
 }  // namespace
 
-RankerManager::RankerManager(Profile* profile) {
+RankerManager::RankerManager(user_manager::User* user_ptr) {
+  user_manager::User& user = CHECK_DEREF(user_ptr);
+
   // Score normalization parameters:
   ScoreNormalizer::Params score_normalizer_params;
   // Change this version number when changing the number of bins below.
@@ -55,14 +57,14 @@ RankerManager::RankerManager(Profile* profile) {
   mrfu_category_params.boost_factor = 7.0f;
   mrfu_category_params.max_items = 20u;
 
-  const auto state_dir = RankerStateDirectory(profile);
+  const auto state_dir = RankerStateDirectory(user);
 
   // 1. Result pre-processing. These filter or modify search results but don't
   // change their scores.
   AddRanker(std::make_unique<QueryHighlighter>());
   AddRanker(std::make_unique<ContinueRanker>());
   AddRanker(std::make_unique<FilteringRanker>());
-  AddRanker(std::make_unique<RemovedResultsRanker>(profile));
+  AddRanker(std::make_unique<RemovedResultsRanker>(&user));
 
   // 2. Score normalization, a precursor to other ranking.
   AddRanker(std::make_unique<ScoreNormalizingRanker>(

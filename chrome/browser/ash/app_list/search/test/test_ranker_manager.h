@@ -19,7 +19,7 @@ namespace app_list {
 // category ranking.
 class TestRankerManager : public RankerManager {
  public:
-  explicit TestRankerManager(Profile* profile);
+  explicit TestRankerManager(user_manager::User* user);
   ~TestRankerManager() override;
 
   TestRankerManager(const TestRankerManager&) = delete;

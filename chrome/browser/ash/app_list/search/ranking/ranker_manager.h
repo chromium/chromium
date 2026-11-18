@@ -8,7 +8,10 @@
 #include "chrome/browser/ash/app_list/search/ranking/ranker.h"
 
 class ChromeSearchResult;
-class Profile;
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace app_list {
 
@@ -20,7 +23,11 @@ namespace app_list {
 // behavior.
 class RankerManager : public Ranker {
  public:
-  explicit RankerManager(Profile* profile);
+  // `user` must not be null and must outlive this instance: this
+  // constructor doesn't store it itself, but passes it to the
+  // RemovedResultsRanker it creates and owns for its own lifetime, and
+  // that one does store a reference to it.
+  explicit RankerManager(user_manager::User* user);
   ~RankerManager() override;
 
   RankerManager(const RankerManager&) = delete;

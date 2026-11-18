@@ -10,13 +10,15 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 
-class Profile;
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace app_list {
 
 // Returns the absolute path of the directory rankers should serialize their
 // state into.
-base::FilePath RankerStateDirectory(Profile* profile);
+base::FilePath RankerStateDirectory(const user_manager::User& user);
 
 std::string CategoryToString(const Category value);
 

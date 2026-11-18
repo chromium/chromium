@@ -32,4 +32,7 @@ specific_include_rules = {
   "mock_file_suggest_keyed_service\\.cc": [
     "+chrome/browser/browser_process.h",
   ],
+  "(file_suggest_keyed_service|local_file_suggestion_provider)_unittest\\.cc": [
+    "+chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h",
+  ],
 }

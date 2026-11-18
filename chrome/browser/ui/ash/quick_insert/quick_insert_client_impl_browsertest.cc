@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/history/core/browser/history_service.h"
@@ -89,8 +90,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertClientImplBrowserTest, StartCrosSearch) {
       ->SetTitle(u"foo.com/tab");
   base::test::TestFuture<void> test_done;
 
-  auto ranker_manager =
-      std::make_unique<app_list::TestRankerManager>(GetProfile());
+  auto ranker_manager = std::make_unique<app_list::TestRankerManager>(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(GetProfile()));
   ranker_manager->SetBestMatchString(u"tab");
   client.set_ranker_manager_for_test(std::move(ranker_manager));
 

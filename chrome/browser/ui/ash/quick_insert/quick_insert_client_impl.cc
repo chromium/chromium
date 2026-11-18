@@ -552,7 +552,8 @@ void QuickInsertClientImpl::SetProfile(Profile* profile) {
   filtered_search_engine_ = nullptr;
   current_filter_category_ = std::nullopt;
 
-  ranker_manager_ = std::make_unique<app_list::RankerManager>(profile_);
+  ranker_manager_ = std::make_unique<app_list::RankerManager>(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
 
   file_suggester_ = std::make_unique<QuickInsertFileSuggester>(profile_);
   thumbnail_loader_ = std::make_unique<QuickInsertThumbnailLoader>(profile_);

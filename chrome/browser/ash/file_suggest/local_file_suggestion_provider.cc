@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggestion_provider.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 
 namespace ash {
 
@@ -102,8 +103,11 @@ LocalFileSuggestionProvider::LocalFileSuggestionProvider(
     // on other files to reduce its score by half.
     params.half_life = 10.0f;
     params.boost_factor = 5.0f;
+    user_manager::User* user =
+        BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+    CHECK(user);
     app_list::MrfuCache::Proto proto(
-        app_list::RankerStateDirectory(profile).AppendASCII(
+        app_list::RankerStateDirectory(*user).AppendASCII(
             "zero_state_local_files.pb"),
         kSaveDelay);
 
