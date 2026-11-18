@@ -107,9 +107,13 @@ ContextImplLiteRt::ContextImplLiteRt(
                        ContextBackendUma::kLiteRT,
                        tflite::GraphBuilderTflite::GetContextProperties(device),
                        std::move(options),
-                       std::move(owning_task_runner),
+                       owning_task_runner,
                        std::move(main_task_runner)),
-      webgpu_properties_(std::move(webgpu_properties)) {}
+      webgpu_resources_(webgpu_properties.IsValid()
+                            ? base::MakeRefCounted<SharedWebGpuResources>(
+                                  std::move(owning_task_runner),
+                                  std::move(webgpu_properties))
+                            : nullptr) {}
 
 ContextImplLiteRt::~ContextImplLiteRt() = default;
 
@@ -130,7 +134,7 @@ void ContextImplLiteRt::CreateGraphImpl(
     // the graph impl so it can fallback to the default behavior.
     GraphImplLiteRt::CreateAndBuild(
         std::move(graph_info), std::move(compute_resource_info),
-        std::move(constant_operands), *this, webgpu_properties_,
+        std::move(constant_operands), *this, webgpu_resources_,
         /*weights_file=*/base::File(base::File::FILE_ERROR_NOT_FOUND),
         /*session=*/mojo::NullRemote(), std::move(callback));
     return;
@@ -177,7 +181,7 @@ void ContextImplLiteRt::DidOpenWeightsFile(
     mojo::PendingRemote<mojom::WeightsFileSession> session) {
   GraphImplLiteRt::CreateAndBuild(
       std::move(graph_info), std::move(compute_resource_info),
-      std::move(constant_operands), *this, webgpu_properties_,
+      std::move(constant_operands), *this, webgpu_resources_,
       std::move(weights_file), std::move(session), std::move(callback));
 }
 

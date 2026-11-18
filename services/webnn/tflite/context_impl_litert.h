@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/webnn/public/cpp/webgpu_context_properties.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
@@ -20,6 +21,8 @@ class WebNNConstantOperand;
 class WebNNContextProviderInRenderer;
 
 namespace litert {
+
+class SharedWebGpuResources;
 
 // `ContextImplLiteRt` is created by `WebNNContextProviderImpl` and responsible
 // for creating a `GraphImplLiteRt` which uses LiteRt for inference.
@@ -122,7 +125,7 @@ class ContextImplLiteRt final : public WebNNContextImpl {
   std::vector<mojom::WebNNExecutionProviderDetailsPtr>
   GetExecutionProvidersInfo() const override;
 
-  WebGpuContextProperties webgpu_properties_;
+  scoped_refptr<SharedWebGpuResources> webgpu_resources_;
 
   // Only be used in the GPU-process flow to indicate whether the profile is in
   // incognito.

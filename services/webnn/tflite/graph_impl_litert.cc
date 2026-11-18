@@ -10,7 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -78,19 +78,11 @@ namespace {
 using ::webnn::tflite::BufferContent;
 using ::webnn::tflite::TensorDescriptor;
 
-// TODO(crbug.com/524317888): Replace this struct with the type defined directly
-// in LiteRT headers once exported.
-struct LiteRtWebGpuFlushCallback {
-  void (*callback)(void* user_data) = nullptr;
-  // RAW_PTR_EXCLUSION: Must match the LiteRT C callback ABI.
-  RAW_PTR_EXCLUSION void* user_data = nullptr;
-};
-
 void RunClosure(void* user_data) {
   if (!user_data) {
     return;
   }
-  auto* closure = static_cast<base::RepeatingClosure*>(user_data);
+  const auto* closure = static_cast<const base::RepeatingClosure*>(user_data);
   if (!closure->is_null()) {
     closure->Run();
   }
@@ -169,6 +161,21 @@ base::expected<T, mojom::ErrorPtr> AsBaseExpected(
 
 }  // namespace
 
+SharedWebGpuResources::SharedWebGpuResources(
+    scoped_refptr<base::SequencedTaskRunner> owning_task_runner,
+    WebGpuContextProperties properties)
+    : base::RefCountedDeleteOnSequence<SharedWebGpuResources>(
+          std::move(owning_task_runner)),
+      properties_(std::move(properties)),
+      flush_callback_{
+          .callback = &RunClosure,
+          .user_data = &properties_.webgpu_flush,
+      } {
+  CHECK(properties_.IsValid());
+}
+
+SharedWebGpuResources::~SharedWebGpuResources() = default;
+
 // Represents the non-thread-safe collection of resources associated with a
 // particular graph and compute context.
 class GraphImplLiteRt::ComputeResources {
@@ -176,12 +183,12 @@ class GraphImplLiteRt::ComputeResources {
   static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
   Create(mojom::Device context_device,
          bool is_xnnpack_enabled,
-         WebGpuContextProperties webgpu_properties,
+         scoped_refptr<SharedWebGpuResources> webgpu_resources,
          tflite::GraphBuilderTflite::Result build_graph_result) {
     auto self = std::make_unique<ComputeResources>(
         std::move(build_graph_result.input_name_to_descriptor),
         std::move(build_graph_result.output_name_to_descriptor));
-    self->webgpu_properties_ = std::move(webgpu_properties);
+    self->webgpu_resources_ = std::move(webgpu_resources);
 
     self->model_content_ = std::move(build_graph_result.buffer);
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -219,39 +226,39 @@ class GraphImplLiteRt::ComputeResources {
           ::litert::EnvironmentOptions::Tag::kSystemGpuAcceleratorHandle,
           static_cast<const void*>(&LiteRtAcceleratorImpl));
 #endif
-      const DawnProcTable* dawn_procs = static_cast<const DawnProcTable*>(
-          self->webgpu_properties_.dawn_procs.get());
-
-      if (!dawn_procs && !self->webgpu_properties_.wgpu_device) {
-        dawn_procs = &dawn::native::GetProcs();
-      }
+      const DawnProcTable* dawn_procs =
+          self->webgpu_resources_
+              ? static_cast<const DawnProcTable*>(
+                    self->webgpu_resources_->properties().dawn_procs.get())
+              : &dawn::native::GetProcs();
       if (dawn_procs) {
         env_options.emplace_back(
             ::litert::EnvironmentOptions::Tag::kWebGpuProcs,
             reinterpret_cast<int64_t>(dawn_procs));
       }
-      if (self->webgpu_properties_.wgpu_device && dawn_procs) {
-        WGPUDevice c_device = self->webgpu_properties_.wgpu_device.get();
+      if (self->webgpu_resources_) {
+        WGPUDevice c_device =
+            self->webgpu_resources_->properties().wgpu_device.get();
+        CHECK(c_device);
+        CHECK(dawn_procs);
         env_options.emplace_back(
             ::litert::EnvironmentOptions::Tag::kWebGpuDevice,
             reinterpret_cast<int64_t>(c_device));
-        // `deviceGetQueue` returns the device's singleton default queue. LiteRT
-        // retains its own reference during Environment creation, and all
-        // underlying queue resources and client proxies are automatically
-        // destroyed when `c_device` is released upon context destruction, so
-        // we don't explicitly release the queue release here.
+        // `deviceGetQueue` returns an owning reference (`+1`) to the device's
+        // default queue, whereas LiteRT stores a non-owning `WGPUQueue`
+        // pointer in `GpuEnvironmentOptions`. Retain it in `wgpu_queue_` and
+        // release it in `~ComputeResources()` after `model_` and `env_` are
+        // torn down.
+        self->wgpu_queue_ = dawn_procs->deviceGetQueue(c_device);
         env_options.emplace_back(
             ::litert::EnvironmentOptions::Tag::kWebGpuQueue,
-            reinterpret_cast<int64_t>(dawn_procs->deviceGetQueue(c_device)));
-      }
-      if (!self->webgpu_properties_.webgpu_flush.is_null()) {
-        self->litert_webgpu_flush_callback_ = {
-            .callback = &RunClosure,
-            .user_data = &self->webgpu_properties_.webgpu_flush,
-        };
-        env_options.emplace_back(
-            ::litert::EnvironmentOptions::Tag::kWebGpuFlushCallback,
-            reinterpret_cast<int64_t>(&self->litert_webgpu_flush_callback_));
+            reinterpret_cast<int64_t>(self->wgpu_queue_.get()));
+        if (const LiteRtWebGpuFlushCallback* flush_callback =
+                self->webgpu_resources_->flush_callback()) {
+          env_options.emplace_back(
+              ::litert::EnvironmentOptions::Tag::kWebGpuFlushCallback,
+              reinterpret_cast<int64_t>(flush_callback));
+        }
       }
     }
     ASSIGN_OR_RETURN(
@@ -364,14 +371,29 @@ class GraphImplLiteRt::ComputeResources {
 
   ~ComputeResources() {
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
-    auto profile_summary = profiler_.GetProfileSummary(model_->Get());
-    if (profile_summary) {
-      VLOG(1) << "LiteRt Profiler Summary:\n" << *profile_summary;
-    } else {
-      VLOG(1) << "Failed to get LiteRt profiler summary: "
-              << profile_summary.Error().Message();
+    if (model_) {
+      auto profile_summary = profiler_.GetProfileSummary(model_->Get());
+      if (profile_summary) {
+        VLOG(1) << "LiteRt Profiler Summary:\n" << *profile_summary;
+      } else {
+        VLOG(1) << "Failed to get LiteRt profiler summary: "
+                << profile_summary.Error().Message();
+      }
     }
 #endif
+    // Reset `model_` and `env_` before releasing `wgpu_queue_` and
+    // `webgpu_resources_` so LiteRT finishes any cleanup (and unregisters its
+    // `WGPUDevice` flush callback) while our queue reference and shared WebGPU
+    // resources are still alive.
+    model_.reset();
+    env_.reset();
+    if (wgpu_queue_) {
+      CHECK(webgpu_resources_);
+      const DawnProcTable* dawn_procs = static_cast<const DawnProcTable*>(
+          webgpu_resources_->properties().dawn_procs.get());
+      CHECK(dawn_procs);
+      dawn_procs->queueRelease(wgpu_queue_.ExtractAsDangling());
+    }
   }
 
   base::expected<void, mojom::ErrorPtr> DoDispatchImpl(
@@ -532,10 +554,8 @@ class GraphImplLiteRt::ComputeResources {
     return std::move(*options);
   }
 
-  WebGpuContextProperties webgpu_properties_;
-  // C ABI adapter passed to LiteRT. The actual flush implementation and
-  // resource lifetime are owned by webgpu_properties.webgpu_flush.
-  LiteRtWebGpuFlushCallback litert_webgpu_flush_callback_;
+  scoped_refptr<SharedWebGpuResources> webgpu_resources_;
+  raw_ptr<WGPUQueueImpl> wgpu_queue_ = nullptr;
   std::unique_ptr<::litert::ScopedFile> weights_file_;
   flatbuffers::DetachedBuffer model_content_;
   std::optional<::litert::Environment> env_;
@@ -553,7 +573,7 @@ void GraphImplLiteRt::CreateAndBuild(
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     ContextImplLiteRt& context,
-    WebGpuContextProperties webgpu_properties,
+    scoped_refptr<SharedWebGpuResources> webgpu_resources,
     base::File weights_file,
     mojo::PendingRemote<mojom::WeightsFileSession> session,
     WebNNContextImpl::CreateGraphImplCallback callback) {
@@ -588,7 +608,7 @@ void GraphImplLiteRt::CreateAndBuild(
       base::BindOnce(&GraphImplLiteRt::DidBuildGraph, context.AsWeakPtr(),
                      std::move(compute_resource_info), context.options().device,
                      context.IsXNNPackInitialized(),
-                     std::move(webgpu_properties),
+                     std::move(webgpu_resources),
                      std::move(session_for_finalize), std::move(callback)));
 }
 
@@ -627,7 +647,7 @@ void GraphImplLiteRt::DidBuildGraph(
     ComputeResourceInfo compute_resource_info,
     mojom::Device context_device,
     bool is_xnnpack_enabled,
-    WebGpuContextProperties webgpu_properties,
+    scoped_refptr<SharedWebGpuResources> webgpu_resources,
     mojo::SharedRemote<mojom::WeightsFileSession> session,
     WebNNContextImpl::CreateGraphImplCallback callback,
     base::expected<tflite::GraphBuilderTflite::Result, mojom::ErrorPtr>
@@ -650,7 +670,7 @@ void GraphImplLiteRt::DidBuildGraph(
            base::WeakPtr<WebNNContextImpl> context,
            ComputeResourceInfo compute_resource_info,
            mojom::Device context_device, bool is_xnnpack_enabled,
-           WebGpuContextProperties webgpu_properties,
+           scoped_refptr<SharedWebGpuResources> webgpu_resources,
            WebNNContextImpl::CreateGraphImplCallback callback,
            tflite::GraphBuilderTflite::Result build_result,
            base::File sealed_file) {
@@ -666,12 +686,12 @@ void GraphImplLiteRt::DidBuildGraph(
           build_result.weights_file = std::move(sealed_file);
           DispatchCreateComputeResources(
               std::move(context), std::move(compute_resource_info),
-              context_device, is_xnnpack_enabled, std::move(webgpu_properties),
+              context_device, is_xnnpack_enabled, std::move(webgpu_resources),
               std::move(callback), std::move(build_result));
         },
         std::move(session), std::move(context),
         std::move(compute_resource_info), context_device, is_xnnpack_enabled,
-        std::move(webgpu_properties), std::move(callback), std::move(*result)));
+        std::move(webgpu_resources), std::move(callback), std::move(*result)));
     return;
   }
 
@@ -681,7 +701,7 @@ void GraphImplLiteRt::DidBuildGraph(
   // and proceed directly to compute resource creation.
   DispatchCreateComputeResources(
       std::move(context), std::move(compute_resource_info), context_device,
-      is_xnnpack_enabled, std::move(webgpu_properties), std::move(callback),
+      is_xnnpack_enabled, std::move(webgpu_resources), std::move(callback),
       std::move(*result));
 }
 
@@ -691,7 +711,7 @@ void GraphImplLiteRt::DispatchCreateComputeResources(
     ComputeResourceInfo compute_resource_info,
     mojom::Device context_device,
     bool is_xnnpack_enabled,
-    WebGpuContextProperties webgpu_properties,
+    scoped_refptr<SharedWebGpuResources> webgpu_resources,
     WebNNContextImpl::CreateGraphImplCallback callback,
     tflite::GraphBuilderTflite::Result build_result) {
   // For WebGPU execution in renderer, Dawn Wire client objects (`wgpu_device`,
@@ -702,19 +722,22 @@ void GraphImplLiteRt::DispatchCreateComputeResources(
   // Dawn and can safely run on the asynchronous worker ThreadPool to avoid
   // blocking the context sequence.
   // TODO(crbug.com/524317888): Remove the background task runner for non-GPU
-  // cases; a single task runner should be used for the entire MLContext.
+  // cases so a single task runner is used for the entire MLContext. Once all
+  // graph compilation and execution in `MLContext` is unified onto
+  // `owning_task_runner`, `ContextImplLiteRt` can own a single
+  // `::litert::Environment` and `WebGpuContextProperties` directly (removing
+  // `SharedWebGpuResources`).
   scoped_refptr<base::TaskRunner> compute_task_runner =
-      webgpu_properties.IsValid()
-          ? context->owning_task_runner()
-          : base::ThreadPool::CreateTaskRunner(
-                {base::TaskPriority::USER_BLOCKING,
-                 base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
-                 base::MayBlock()});
+      webgpu_resources ? context->owning_task_runner()
+                       : base::ThreadPool::CreateTaskRunner(
+                             {base::TaskPriority::USER_BLOCKING,
+                              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
+                              base::MayBlock()});
 
   compute_task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&GraphImplLiteRt::CreateComputeResources, context_device,
-                     is_xnnpack_enabled, std::move(webgpu_properties),
+                     is_xnnpack_enabled, std::move(webgpu_resources),
                      std::move(build_result)),
       base::BindOnce(&GraphImplLiteRt::DidCreateAndBuild, std::move(context),
                      std::move(compute_resource_info), std::move(callback)));
@@ -726,12 +749,12 @@ base::expected<std::unique_ptr<GraphImplLiteRt::ComputeResources>,
 GraphImplLiteRt::CreateComputeResources(
     mojom::Device context_device,
     bool is_xnnpack_enabled,
-    WebGpuContextProperties webgpu_properties,
+    scoped_refptr<SharedWebGpuResources> webgpu_resources,
     tflite::GraphBuilderTflite::Result result) {
-  ASSIGN_OR_RETURN(std::unique_ptr<ComputeResources> compute_resources,
-                   ComputeResources::Create(context_device, is_xnnpack_enabled,
-                                            std::move(webgpu_properties),
-                                            std::move(result)));
+  ASSIGN_OR_RETURN(
+      std::unique_ptr<ComputeResources> compute_resources,
+      ComputeResources::Create(context_device, is_xnnpack_enabled,
+                               std::move(webgpu_resources), std::move(result)));
   return compute_resources;
 }
 
