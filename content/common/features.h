@@ -75,6 +75,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kCancelCompositionWhenWindowLosesFocus);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kCacheStorageOpaqueResponseCredentialedForCorp);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCDPScreenshotNewSurface);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kClampPopupBounds);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kClearPendingUrlOnNonEmptyCompositorFrame);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCodeCacheDeletionWithoutFilter);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCopyFromSurfaceAlwaysCallCallback);

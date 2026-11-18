@@ -397,6 +397,26 @@ void DismissUnboundedSurfaceOnKeyDown(
   }
 }
 
+gfx::Rect ClampPopupBounds(const gfx::Rect& bounds) {
+  if (!base::FeatureList::IsEnabled(features::kClampPopupBounds)) {
+    return bounds;
+  }
+
+  // More than twice the width of an 8K display, so it never constrains a
+  // real popup, while keeping the area (2^28) well inside int. The limit does
+  // not depend on the popup's display, which is unknown until the popup's
+  // view gets a native window in InitAsPopup().
+  constexpr int kMaxPopupWidthOrHeight = 16384;
+  static_assert(kMaxPopupWidthOrHeight <= std::numeric_limits<int>::max() / 4 /
+                                              kMaxPopupWidthOrHeight,
+                "kMaxPopupWidthOrHeight squared must stay well inside int");
+
+  gfx::Rect clamped(bounds);
+  clamped.set_width(std::min(clamped.width(), kMaxPopupWidthOrHeight));
+  clamped.set_height(std::min(clamped.height(), kMaxPopupWidthOrHeight));
+  return clamped;
+}
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2872,8 +2892,10 @@ void RenderWidgetHostImpl::SetPopupBounds(const gfx::Rect& bounds,
   // same time until it acked the changes. Otherwise, if they simultaneously
   // change bounds, browser's bounds can be clobbered.
   if (view_ && !waiting_for_screen_rects_ack_) {
+    const gfx::Rect clamped_bounds = ClampPopupBounds(bounds);
     gfx::Rect constrained_bounds =
-        delegate_ ? delegate_->ConstrainPopupBounds(bounds) : bounds;
+        delegate_ ? delegate_->ConstrainPopupBounds(clamped_bounds)
+                  : clamped_bounds;
     view_->SetBounds(constrained_bounds);
   }
   std::move(callback).Run();
@@ -3062,7 +3084,8 @@ void RenderWidgetHostImpl::ShowPopup(const gfx::Rect& initial_screen_rect,
   // the delegate shutdown but this widget is not yet destroyed.
   if (delegate_) {
     delegate_->ShowCreatedWidget(GetProcess()->GetID(), GetRoutingID(),
-                                 initial_screen_rect, anchor_screen_rect);
+                                 ClampPopupBounds(initial_screen_rect),
+                                 anchor_screen_rect);
   }
   std::move(callback).Run();
 }

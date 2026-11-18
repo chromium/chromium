@@ -532,6 +532,14 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
     constrain_popup_bounds_callback_ = std::move(callback);
   }
 
+  MOCK_METHOD(void,
+              ShowCreatedWidget,
+              (ChildProcessId process_id,
+               int widget_route_id,
+               const gfx::Rect& initial_rect_in_dips,
+               const gfx::Rect& initial_anchor_rect_in_dips),
+              (override));
+
   MOCK_METHOD(bool,
               IsWaitingForPointerLockPrompt,
               (RenderWidgetHostImpl * host),
@@ -1061,6 +1069,38 @@ TEST_F(RenderWidgetHostTest, SetPopupBoundsConstrainedByDelegate) {
   static_cast<blink::mojom::PopupWidgetHost*>(host_.get())
       ->SetPopupBounds(unconstrained_bounds, base::DoNothing());
   EXPECT_EQ(gfx::Rect(5, 100, 20, 20), view_->GetViewBounds());
+}
+
+// Tests that oversized popup bounds from the renderer are clamped to a fixed
+// maximum, since their area would otherwise overflow int browser side.
+TEST_F(RenderWidgetHostTest, PopupBoundsAreClamped) {
+  base::test::ScopedFeatureList feature_list{features::kClampPopupBounds};
+
+  // Mirrors kMaxPopupWidthOrHeight in render_widget_host_impl.cc.
+  constexpr int kMaxPopupWidthOrHeight = 16384;
+  constexpr gfx::Rect kHugeBounds(10, 20, 100000, 100000);
+  ASSERT_FALSE(kHugeBounds.size().GetCheckedArea().IsValid());
+  constexpr gfx::Rect kClampedBounds(10, 20, kMaxPopupWidthOrHeight,
+                                     kMaxPopupWidthOrHeight);
+  auto* popup_widget_host =
+      static_cast<blink::mojom::PopupWidgetHost*>(host_.get());
+  const gfx::Rect anchor(0, 0, 100, 20);
+
+  EXPECT_CALL(*delegate_, ShowCreatedWidget(_, _, kClampedBounds, _));
+  popup_widget_host->ShowPopup(kHugeBounds, anchor, base::DoNothing());
+
+  // Bounds at the maximum are left alone.
+  EXPECT_CALL(*delegate_, ShowCreatedWidget(_, _, kClampedBounds, _));
+  popup_widget_host->ShowPopup(kClampedBounds, anchor, base::DoNothing());
+
+  // Let the initial screen rects settle, otherwise the popup bounds below are
+  // dropped rather than clamped.
+  ClearScreenRects();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !host_->waiting_for_screen_rects_ack_; }));
+
+  popup_widget_host->SetPopupBounds(kHugeBounds, base::DoNothing());
+  EXPECT_EQ(kClampedBounds, view_->GetViewBounds());
 }
 
 TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {

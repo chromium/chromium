@@ -172,6 +172,10 @@ BASE_FEATURE(kCacheStorageOpaqueResponseCredentialedForCorp,
 // This should avoid a possible stall due to frames not being presented.
 BASE_FEATURE(kCDPScreenshotNewSurface, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Killswitch for clamping the size of renderer-supplied popup bounds to a
+// fixed maximum. See https://crbug.com/544041106.
+BASE_FEATURE(kClampPopupBounds, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Killswitch for treating a visually non-empty CompositorFrame in an initial
 // empty document as an access to that document, which stops the omnibox from
 // showing a renderer-initiated pending URL. See https://crbug.com/40055319.
