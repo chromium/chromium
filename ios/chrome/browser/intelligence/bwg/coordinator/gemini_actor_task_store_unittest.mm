@@ -77,7 +77,6 @@
 // updates.
 @interface FakeGeminiTaskStateObserver : NSObject <ActorTaskUpdatesObserver>
 @property(nonatomic, assign) actor::ActorTaskState state;
-@property(nonatomic, assign) BOOL stopped;
 @end
 
 @implementation FakeGeminiTaskStateObserver
@@ -94,12 +93,6 @@
          didChangeState:(actor::ActorTaskState)newState
               fromState:(actor::ActorTaskState)oldState {
   _state = newState;
-}
-
-- (void)actorTaskDidStopWithID:(actor::ActorTaskId)taskID
-                    finalState:(actor::ActorTaskState)finalState {
-  _state = finalState;
-  _stopped = YES;
 }
 
 @end
@@ -973,7 +966,6 @@ TEST_F(GeminiActorTaskStoreTest, DisconnectKeepsTaskWaitingOnUser) {
   [store_ disconnect];
   actor::FlushCurrentSequence();
 
-  EXPECT_FALSE(observer.stopped);
   EXPECT_EQ(observer.state, kWaitingOnUser);
 }
 
@@ -996,13 +988,12 @@ TEST_F(GeminiActorTaskStoreTest, StopTaskCancelsTask) {
   [store_ disconnect];
   [store_ stopTask];
   actor::FlushCurrentSequence();
-  EXPECT_FALSE(observer.stopped);
+  EXPECT_EQ(observer.state, kInit);
 
   store_ = [[GeminiActorTaskStore alloc] initWithTaskID:task_id_
                                            actorService:actor_service_];
   [store_ stopTask];
   actor::FlushCurrentSequence();
-  EXPECT_TRUE(observer.stopped);
   EXPECT_EQ(observer.state, kCancelled);
 }
 

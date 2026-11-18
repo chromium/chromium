@@ -22,7 +22,7 @@
   // Observers of the managed stores.
   CRBProtocolObservers<GeminiActorTaskStoreManagerObserver>* _observers;
   // Store of the running Gemini task, if any.
-  // TODO(crbug.com/565875367): Track multiple concurrent tasks.
+  // TODO(crbug.com/587416718): Track multiple concurrent tasks.
   GeminiActorTaskStore* _activeStore;
 }
 

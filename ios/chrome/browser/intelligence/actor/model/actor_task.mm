@@ -333,14 +333,6 @@ void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
                        stop_reason == ActorTaskStoppedReason::kStoppedByUser;
   background_worker_->OnStopped(success);
 
-  // TODO(crbug.com/565875367): Remove once observers migrate to
-  // `ActorTaskLifecycleObserver`.
-  const ActorTaskId task_id = task_id_;
-  const ActorTaskState final_state = state_;
-  [observers_ postNotification:^(id<ActorTaskUpdatesObserver> observers) {
-    [observers actorTaskDidStopWithID:task_id finalState:final_state];
-  }];
-
   std::move(on_stopped_).Run();
 }
 

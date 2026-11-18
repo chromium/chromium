@@ -80,9 +80,6 @@
 @property(nonatomic, assign) actor::ToolType toolType;
 @property(nonatomic, assign) web::WebStateID toolWebStateId;
 
-@property(nonatomic, assign) BOOL didStopCalled;
-@property(nonatomic, assign) actor::ActorTaskState finalState;
-
 @end
 
 @implementation FakeActorTaskUpdatesObserver
@@ -122,12 +119,6 @@
   _willExecuteToolCalled = YES;
   _toolType = toolType;
   _toolWebStateId = webStateID;
-}
-
-- (void)actorTaskDidStopWithID:(actor::ActorTaskId)taskID
-                    finalState:(actor::ActorTaskState)finalState {
-  _didStopCalled = YES;
-  _finalState = finalState;
 }
 
 @end
@@ -1558,9 +1549,10 @@ TEST_F(ActorTaskBackgroundingTest, BackgroundTaskStoppedWithShutdown) {
 
   task_->Stop(ActorTaskStoppedReason::kShutdown);
 
-  // The stop notification is posted.
-  ASSERT_TRUE(base::test::RunUntil([&]() { return observer.didStopCalled; }));
-  EXPECT_EQ(observer.finalState, ActorTaskState::kCancelled);
+  // The cancellation state change is posted.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer.didChangeStateCalled; }));
+  EXPECT_EQ(observer.newState, ActorTaskState::kCancelled);
   EXPECT_TRUE(context.completed);
   EXPECT_DOUBLE_EQ(context.fractionCompleted, 0.0);
 }
@@ -2175,11 +2167,11 @@ TEST_F(ActorTaskTest, StopWhilePausedRepliesTaskWentAwayToHeldInterrupt) {
 // Tests that interrupting for user confirmation without an intervention
 // delegate is rejected and leaves the task running.
 TEST_F(ActorTaskTest, InterruptWithoutDelegateIsRejected) {
+  SetTaskState(ActorTaskState::kActing);
+
   FakeActorTaskUpdatesObserver* observer =
       [[FakeActorTaskUpdatesObserver alloc] init];
   task_->AddObserver(observer);
-
-  SetTaskState(ActorTaskState::kActing);
 
   InterruptFuture result;
   task_->Interrupt(MakeConfirmation("No delegate prompt"),
@@ -2191,12 +2183,14 @@ TEST_F(ActorTaskTest, InterruptWithoutDelegateIsRejected) {
   FlushCurrentSequence();
 
   EXPECT_EQ(task_->GetState(), ActorTaskState::kActing);
-  EXPECT_FALSE(observer.didStopCalled);
+  EXPECT_FALSE(observer.didChangeStateCalled);
 }
 
 // Tests that interrupting for user confirmation with an empty title is
 // rejected and leaves the task running.
 TEST_F(ActorTaskTest, InterruptWithEmptyConfirmationTitleIsRejected) {
+  SetTaskState(ActorTaskState::kActing);
+
   FakeActorTaskUpdatesObserver* observer =
       [[FakeActorTaskUpdatesObserver alloc] init];
   task_->AddObserver(observer);
@@ -2205,8 +2199,6 @@ TEST_F(ActorTaskTest, InterruptWithEmptyConfirmationTitleIsRejected) {
       [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
 
-  SetTaskState(ActorTaskState::kActing);
-
   InterruptFuture result;
   task_->Interrupt(MakeConfirmation(""), result.GetCallback());
   ASSERT_FALSE(result.Get().has_value());
@@ -2214,7 +2206,7 @@ TEST_F(ActorTaskTest, InterruptWithEmptyConfirmationTitleIsRejected) {
   FlushCurrentSequence();
 
   EXPECT_EQ(task_->GetState(), ActorTaskState::kActing);
-  EXPECT_FALSE(observer.didStopCalled);
+  EXPECT_FALSE(observer.didChangeStateCalled);
   EXPECT_FALSE(delegate.requestConfirmationCalled);
 }
 
@@ -2428,7 +2420,6 @@ TEST_F(ActorTaskTest, NotificationsDroppedWhenTaskDestroyed) {
   task_.reset();
   FlushCurrentSequence();
 
-  EXPECT_FALSE(observer.didStopCalled);
   EXPECT_FALSE(observer.didChangeStateCalled);
 }
 

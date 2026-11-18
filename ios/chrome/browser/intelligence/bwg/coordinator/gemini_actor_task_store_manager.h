@@ -33,7 +33,7 @@ class ActorService;
 
 // Manages a `GeminiActorTaskStore` for each Gemini actor task, and notifies its
 // observers.
-// TODO(crbug.com/565875367): Only create stores for the tasks of this manager's
+// TODO(crbug.com/581356547): Only create stores for the tasks of this manager's
 // container (e.g. matching the conversation ID), as every manager receives the
 // tasks of the whole profile, so several windows create stores for the same
 // task.

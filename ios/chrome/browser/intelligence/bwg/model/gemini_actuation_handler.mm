@@ -24,7 +24,7 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
-#import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_lifecycle_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_data_types.h"
@@ -37,7 +37,7 @@
 #import "url/gurl.h"
 #import "url/origin.h"
 
-@interface GeminiActuationHandler () <ActorTaskUpdatesObserver>
+@interface GeminiActuationHandler () <ActorTaskLifecycleObserver>
 
 // Forgets `taskID` if `response` says it went away, so that follow-up requests
 // are rejected.
@@ -456,7 +456,7 @@ void ForwardNavigationConfirmation(
     _webStateList = webStateList;
     _browserId = browserId;
     if (_actorService) {
-      _actorService->AddTaskUpdatesObserver(self);
+      _actorService->AddTaskLifecycleObserver(self);
     }
   }
   return self;
@@ -464,7 +464,7 @@ void ForwardNavigationConfirmation(
 
 - (void)disconnect {
   if (_actorService) {
-    _actorService->RemoveTaskUpdatesObserver(self);
+    _actorService->RemoveTaskLifecycleObserver(self);
     for (const auto& [taskID, _] : _taskToWebStateIDMap) {
       _actorService->SetNavigationConfirmationCallback(taskID, {});
       _actorService->StopTask(taskID, actor::ActorTaskStoppedReason::kShutdown);
@@ -478,7 +478,7 @@ void ForwardNavigationConfirmation(
 
 - (void)dealloc {
   if (_actorService) {
-    _actorService->RemoveTaskUpdatesObserver(self);
+    _actorService->RemoveTaskLifecycleObserver(self);
   }
 }
 
@@ -522,7 +522,7 @@ void ForwardNavigationConfirmation(
     return taskID;
   }
 
-  // TODO(crbug.com/565875367): Set the conversation ID as the source ID.
+  // TODO(crbug.com/567036810): Set the conversation ID as the source ID.
   taskID = _actorService->CreateTask(
       base::SysNSStringToUTF8(title),
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
@@ -624,11 +624,18 @@ void ForwardNavigationConfirmation(
   _actorService->SetNavigationConfirmationCallback(taskID, std::move(callback));
 }
 
-#pragma mark - ActorTaskUpdatesObserver
+#pragma mark - ActorTaskLifecycleObserver
+
+- (void)actorServiceDidStartTaskWithID:(actor::ActorTaskId)taskID
+                            sourceInfo:
+                                (const actor::TaskSourceInfo&)sourceInfo {
+  // No-op: `GeminiActuationHandler` only reacts to task stops.
+}
 
 // Forgets tasks stopped elsewhere, so that follow-up requests are rejected.
-- (void)actorTaskDidStopWithID:(actor::ActorTaskId)taskID
-                    finalState:(actor::ActorTaskState)finalState {
+- (void)actorServiceDidStopTaskWithID:(actor::ActorTaskId)taskID
+                           sourceInfo:(const actor::TaskSourceInfo&)sourceInfo
+                           finalState:(actor::ActorTaskState)finalState {
   _taskToWebStateIDMap.erase(taskID);
 }
 
@@ -724,9 +731,9 @@ void ForwardNavigationConfirmation(
 }
 
 // Stops the task and invokes `completionBlock`.
-// `actorTaskDidStopWithID:` is posted, so the task is forgotten here directly
-// to reject follow-up requests with `kTaskWentAway`. Any in-flight request is
-// still answered with `kTaskWentAway`.
+// `actorServiceDidStopTaskWithID:` is posted, so the task is forgotten here
+// directly to reject follow-up requests with `kTaskWentAway`. Any in-flight
+// request is still answered with `kTaskWentAway`.
 - (void)handleStopTaskWithID:(actor::ActorTaskId)taskID
                       reason:(actor::ActorTaskStoppedReason)reason
              completionBlock:

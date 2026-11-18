@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 
-#import <algorithm>
 #import <optional>
 #import <set>
 #import <utility>
@@ -28,7 +27,6 @@
 #import "ios/chrome/browser/intelligence/actor/model/posted_observer_list.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_lifecycle_observer.h"
-#import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
@@ -167,7 +165,6 @@ void ActorService::Shutdown() {
   [lifecycle_observers_ removeAllObservers];
   pending_observations_.clear();
   // TODO(crbug.com/568342921): Gracefully cleanup tasks.
-  task_observers_.clear();
   active_tasks_.clear();
   pending_delete_tasks_.clear();
   policy_checker_.reset();
@@ -197,12 +194,6 @@ ActorTaskId ActorService::CreateTask(const std::string& title,
       tool_factory_.get(), profile_context_resolver_.get(), browser_list,
       policy_checker_.get(),
       base::BindOnce(&ActorService::OnTaskStopped, weak_this_, task_id));
-
-  for (id<ActorTaskUpdatesObserver> observer : task_observers_) {
-    if (observer) {
-      task->AddObserver(observer);
-    }
-  }
 
   active_tasks_[task_id] = std::move(task);
   // Copied because blocks capture C++ references by reference, and
@@ -279,34 +270,6 @@ void ActorService::StopAllTasks() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& [task_id, task] : active_tasks_) {
     StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
-  }
-}
-
-// TODO(crbug.com/556295233): Remove once the granular observer is implemented.
-void ActorService::AddTaskUpdatesObserver(
-    id<ActorTaskUpdatesObserver> observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(observer);
-  if (std::ranges::contains(task_observers_, observer)) {
-    return;
-  }
-  std::erase_if(task_observers_, [](id obs) { return obs == nil; });
-  task_observers_.push_back(observer);
-  for (const auto& [task_id, task] : active_tasks_) {
-    task->AddObserver(observer);
-  }
-}
-
-// TODO(crbug.com/556295233): Remove once the granular observer is implemented.
-void ActorService::RemoveTaskUpdatesObserver(
-    id<ActorTaskUpdatesObserver> observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::erase(task_observers_, observer);
-  // Also remove from stopped tasks to cancel any pending notifications.
-  for (const auto* tasks : {&active_tasks_, &pending_delete_tasks_}) {
-    for (const auto& [task_id, task] : *tasks) {
-      task->RemoveObserver(observer);
-    }
   }
 }
 

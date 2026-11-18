@@ -168,12 +168,6 @@ class ActorService : public KeyedService {
     return journal_.get();
   }
 
-  // Registers `observer` for updates of all tasks, including future ones.
-  void AddTaskUpdatesObserver(id<ActorTaskUpdatesObserver> observer);
-
-  // Removes a registered observer for task updates.
-  void RemoveTaskUpdatesObserver(id<ActorTaskUpdatesObserver> observer);
-
   // Registers `observer` for updates of the task identified by `task_id` only.
   // Returns false if there is no active task with `task_id`. A stop enqueued
   // before this call is still delivered to `observer`.
@@ -242,9 +236,6 @@ class ActorService : public KeyedService {
 
   // Stopped tasks awaiting asynchronous destruction.
   std::map<ActorTaskId, std::unique_ptr<ActorTask>> pending_delete_tasks_;
-
-  // Observers for task updates.
-  std::vector<__weak id<ActorTaskUpdatesObserver>> task_observers_;
 
   // Observers notified of task start and stop, held weakly.
   __strong PostedObserverList<id<ActorTaskLifecycleObserver>>*

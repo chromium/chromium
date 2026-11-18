@@ -1210,6 +1210,33 @@ TEST_F(GeminiActuationHandlerTest, ExternalStop_FollowUp) {
             follow_up_future.Get().resultCode);
 }
 
+// Tests that a request sent after an external stop of an idle task gets
+// `kTaskWentAway`.
+TEST_F(GeminiActuationHandlerTest, ExternalStop_Idle_FollowUp) {
+  GeminiActuationHandler* handler = CreateHandler();
+  actor::ActorTaskId task_id = CreateTask(handler);
+
+  actor_service_->StopTask(task_id,
+                           actor::ActorTaskStoppedReason::kStoppedByUser);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !actor_service_->GetActiveTaskState().has_value(); }));
+  // Deliver the posted lifecycle stop notification.
+  actor::FlushCurrentSequence();
+
+  GeminiActuationRequest* request =
+      [[GeminiActuationRequest alloc] initWithActionProtos:@[]
+                                                taskUpdate:@"Action"
+                                               yieldAction:nil];
+  base::test::TestFuture<GeminiActuationResponse*> future;
+  [handler dispatchActuationRequest:request
+                          forTaskID:task_id
+                    completionBlock:GetCompletionBlock(future)];
+
+  ASSERT_NE(nil, future.Get());
+  EXPECT_EQ(actor::mojom::ActionResultCode::kTaskWentAway,
+            future.Get().resultCode);
+}
+
 // Tests that an act sent while another one runs is rejected, without dropping
 // the first one.
 TEST_F(GeminiActuationHandlerTest, ConcurrentActions_Rejected) {

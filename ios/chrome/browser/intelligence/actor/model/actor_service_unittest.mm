@@ -68,7 +68,6 @@
     : NSObject <ActorTaskUpdatesObserver>
 @property(nonatomic, assign) NSInteger registeredCount;
 @property(nonatomic, assign) NSInteger stateChangeCount;
-@property(nonatomic, assign) NSInteger stoppedCount;
 @property(nonatomic, copy) NSString* taskTitle;
 @property(nonatomic, copy) void (^onStateChange)(actor::ActorTaskState);
 // Returns the new states of the received transitions, in delivery order.
@@ -100,11 +99,6 @@
   if (_onStateChange) {
     _onStateChange(newState);
   }
-}
-
-- (void)actorTaskDidStopWithID:(actor::ActorTaskId)taskID
-                    finalState:(actor::ActorTaskState)finalState {
-  _stoppedCount++;
 }
 
 @end
@@ -1058,129 +1052,6 @@ TEST_F(ActorServiceTest, StopTask) {
       base::test::RunUntil([&]() { return !HasTask(service, task_id); }));
 }
 
-// Test lifecycle of a single task updates observer.
-TEST_F(ActorServiceTest, TaskUpdatesObserverLifecycle) {
-  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
-  ASSERT_NE(nullptr, service);
-
-  FakeActorServiceTaskUpdatesObserver* observer =
-      [[FakeActorServiceTaskUpdatesObserver alloc] init];
-  service->AddTaskUpdatesObserver(observer);
-
-  ActorTaskId task_id = CreateTask(service);
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return observer.registeredCount == 1; }));
-  EXPECT_EQ(1, observer.registeredCount);
-  EXPECT_NSEQ(@"Test Task", observer.taskTitle);
-
-  PerformActions(service, task_id);
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return observer.stateChangeCount > 0; }));
-  EXPECT_GT(observer.stateChangeCount, 0);
-
-  service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return observer.stoppedCount == 1; }));
-  EXPECT_EQ(1, observer.stoppedCount);
-
-  service->RemoveTaskUpdatesObserver(observer);
-}
-
-// Test that adding an observer when a task is already running immediately
-// attaches the observer to the active task.
-TEST_F(ActorServiceTest, LateAddedTaskUpdatesObserverAttachesToActiveTasks) {
-  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
-  ASSERT_NE(nullptr, service);
-
-  ActorTaskId task_id = CreateTask(service, "Active Task");
-
-  FakeActorServiceTaskUpdatesObserver* observer =
-      [[FakeActorServiceTaskUpdatesObserver alloc] init];
-  service->AddTaskUpdatesObserver(observer);
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return observer.registeredCount == 1; }));
-  EXPECT_EQ(1, observer.registeredCount);
-  EXPECT_NSEQ(@"Active Task", observer.taskTitle);
-
-  PerformActions(service, task_id);
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return observer.stateChangeCount > 0; }));
-  EXPECT_GT(observer.stateChangeCount, 0);
-
-  service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return observer.stoppedCount == 1; }));
-  EXPECT_EQ(1, observer.stoppedCount);
-
-  service->RemoveTaskUpdatesObserver(observer);
-}
-
-// Test broadcasting to multiple task updates observers and selective removal.
-TEST_F(ActorServiceTest, MultipleTaskUpdatesObserversBroadcastAndRemoval) {
-  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
-  ASSERT_NE(nullptr, service);
-
-  FakeActorServiceTaskUpdatesObserver* observer1 =
-      [[FakeActorServiceTaskUpdatesObserver alloc] init];
-  FakeActorServiceTaskUpdatesObserver* observer2 =
-      [[FakeActorServiceTaskUpdatesObserver alloc] init];
-
-  service->AddTaskUpdatesObserver(observer1);
-  service->AddTaskUpdatesObserver(observer2);
-
-  // Both observers should receive the registration callback on task creation.
-  ActorTaskId task_id = CreateTask(service, "Shared Task");
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return observer1.registeredCount == 1 && observer2.registeredCount == 1;
-  }));
-  EXPECT_EQ(1, observer1.registeredCount);
-  EXPECT_NSEQ(@"Shared Task", observer1.taskTitle);
-  EXPECT_EQ(1, observer2.registeredCount);
-  EXPECT_NSEQ(@"Shared Task", observer2.taskTitle);
-
-  // Performing actions transitions task state and broadcasts to all observers.
-  PerformActions(service, task_id);
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return observer1.stateChangeCount > 0; }));
-  EXPECT_GT(observer1.stateChangeCount, 0);
-  EXPECT_EQ(observer1.stateChangeCount, observer2.stateChangeCount);
-
-  // Stopping the task should only notify the remaining active observer.
-  service->RemoveTaskUpdatesObserver(observer1);
-  service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return observer2.stoppedCount == 1; }));
-  EXPECT_EQ(0, observer1.stoppedCount);
-  EXPECT_EQ(1, observer2.stoppedCount);
-
-  // Creating a new task should only notify observer2.
-  CreateTask(service, "Next Task");
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return observer2.registeredCount == 2; }));
-  EXPECT_EQ(1, observer1.registeredCount);
-  EXPECT_EQ(2, observer2.registeredCount);
-
-  service->RemoveTaskUpdatesObserver(observer2);
-}
-
-// Test that adding a duplicate task updates observer is ignored.
-TEST_F(ActorServiceTest, DuplicateTaskUpdatesObserverIgnored) {
-  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
-  ASSERT_NE(nullptr, service);
-
-  FakeActorServiceTaskUpdatesObserver* observer =
-      [[FakeActorServiceTaskUpdatesObserver alloc] init];
-  service->AddTaskUpdatesObserver(observer);
-  service->AddTaskUpdatesObserver(observer);
-
-  CreateTask(service);
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return observer.registeredCount == 1; }));
-  EXPECT_EQ(1, observer.registeredCount);
-
-  service->RemoveTaskUpdatesObserver(observer);
-}
-
 // Test that a task-scoped observer only receives updates for its task and
 // stops receiving them once removed.
 TEST_F(ActorServiceTest, TaskScopedUpdatesObserver) {
@@ -1202,12 +1073,12 @@ TEST_F(ActorServiceTest, TaskScopedUpdatesObserver) {
   CreateTask(service, "New Task");
   FlushCurrentSequence();
   EXPECT_EQ(1, observer.registeredCount);
-  EXPECT_EQ(0, observer.stoppedCount);
+  EXPECT_EQ(0, observer.stateChangeCount);
 
   service->RemoveTaskUpdatesObserver(observed_task_id, observer);
   service->StopTask(observed_task_id, ActorTaskStoppedReason::kStoppedByUser);
   FlushCurrentSequence();
-  EXPECT_EQ(0, observer.stoppedCount);
+  EXPECT_EQ(0, observer.stateChangeCount);
 }
 
 // Test that adding a task-scoped observer fails for an unknown task.
@@ -1434,8 +1305,11 @@ TEST_F(ActorServiceTest, TaskScopedObserverAddedAfterStopReceivesStop) {
   FakeActorServiceTaskUpdatesObserver* observer =
       [[FakeActorServiceTaskUpdatesObserver alloc] init];
   EXPECT_TRUE(service->AddTaskUpdatesObserver(task_id, observer));
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return observer.stoppedCount == 1; }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !observer.states.empty() &&
+           observer.states.back() == ActorTaskState::kCancelled &&
+           !HasTask(service, task_id);
+  }));
   EXPECT_EQ(1, observer.registeredCount);
   EXPECT_FALSE(HasTask(service, task_id));
 }
@@ -1493,8 +1367,8 @@ TEST_F(ActorServiceTest, CommandsRunInCallOrder) {
   ASSERT_EQ(1u, future.Get().action_results.size());
   EXPECT_EQ(mojom::ActionResultCode::kTaskWentAway,
             future.Get().action_results[0].tool_result.code());
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return observer.stoppedCount == 1; }));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.states.size() >= base_count + 3; }));
 
   // An empty act completes within its command, so it transitions to `kActing`
   // then `kReflecting` before the stop transitions to `kCancelled`. A stop
@@ -2317,27 +2191,30 @@ TEST_F(ActorServiceTest, InterruptTaskStoppedFromObserverRepliesTaskWentAway) {
       service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
     }
   };
-  service->AddTaskUpdatesObserver(observer);
+  ASSERT_TRUE(service->AddTaskUpdatesObserver(task_id, observer));
 
   InterruptFuture future;
   RequestConfirmation(service, task_id, "Please confirm", future);
   ASSERT_FALSE(future.Get().has_value());
   EXPECT_EQ(ActorTaskError::kTaskWentAway, future.Get().error());
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return observer.stoppedCount == 1 && !HasTask(service, task_id);
+    return !observer.states.empty() &&
+           observer.states.back() == ActorTaskState::kCancelled &&
+           !HasTask(service, task_id);
   }));
 
   EXPECT_TRUE(delegate.requestConfirmationCalled);
-  EXPECT_EQ(1, observer.stoppedCount);
+  EXPECT_EQ(ActorTaskState::kCancelled, observer.states.back());
   EXPECT_EQ(std::nullopt, service->GetActiveTaskState());
 
   ASSERT_TRUE(delegate.hasPendingUserIntervention);
+  const size_t state_count = observer.states.size();
   [delegate runUserInterventionCompletion];
   FlushCurrentSequence();
-  EXPECT_EQ(1, observer.stoppedCount);
+  EXPECT_EQ(state_count, observer.states.size());
   EXPECT_FALSE(HasTask(service, task_id));
 
-  service->RemoveTaskUpdatesObserver(observer);
+  service->RemoveTaskUpdatesObserver(task_id, observer);
 }
 
 // Test that calling StopTask from a state change observer notification while an
@@ -2353,7 +2230,7 @@ TEST_F(ActorServiceTest, StopTaskWhileActingRepliesTaskWentAway) {
   observer.onStateChange = ^(ActorTaskState new_state) {
     service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
   };
-  service->AddTaskUpdatesObserver(observer);
+  ASSERT_TRUE(service->AddTaskUpdatesObserver(task_id, observer));
 
   base::test::TestFuture<PerformActionsResult> future;
   service->PerformActions(task_id, {MakeSuccessfulActorAction()}, "Update",
@@ -2369,10 +2246,12 @@ TEST_F(ActorServiceTest, StopTaskWhileActingRepliesTaskWentAway) {
   EXPECT_TRUE(HasTask(service, task_id));
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return observer.stoppedCount == 1 && !HasTask(service, task_id);
+    return !observer.states.empty() &&
+           observer.states.back() == ActorTaskState::kCancelled &&
+           !HasTask(service, task_id);
   }));
 
-  service->RemoveTaskUpdatesObserver(observer);
+  service->RemoveTaskUpdatesObserver(task_id, observer);
 }
 
 // Test that a stopped task that has not been destroyed yet rejects new actions
@@ -2414,23 +2293,31 @@ TEST_F(ActorServiceTest, StopTaskOnStoppedTaskIsNoOp) {
 
   ActorTaskId first_task_id = CreateTask(service, "First Task");
   ActorTaskId second_task_id = CreateTask(service, "Second Task");
+  FakeActorTaskLifecycleObserver* lifecycle_observer =
+      [[FakeActorTaskLifecycleObserver alloc] init];
+  service->AddTaskLifecycleObserver(lifecycle_observer);
   FakeActorServiceTaskUpdatesObserver* observer =
       [[FakeActorServiceTaskUpdatesObserver alloc] init];
   observer.onStateChange = ^(ActorTaskState new_state) {
     service->StopTask(second_task_id, ActorTaskStoppedReason::kStoppedByUser);
   };
-  service->AddTaskUpdatesObserver(observer);
+  ASSERT_TRUE(service->AddTaskUpdatesObserver(first_task_id, observer));
 
   service->StopAllTasks();
   RunAlreadyPostedTasks();
   EXPECT_EQ(std::nullopt, service->GetActiveTaskState());
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return observer.stoppedCount == 2 && !HasTask(service, first_task_id) &&
+    return lifecycle_observer.stoppedCount == 2 &&
+           !HasTask(service, first_task_id) &&
            !HasTask(service, second_task_id);
   }));
+  // Run the redundant stop enqueued by `onStateChange`.
+  FlushCurrentSequence();
+  EXPECT_EQ(2, lifecycle_observer.stoppedCount);
 
-  service->RemoveTaskUpdatesObserver(observer);
+  service->RemoveTaskUpdatesObserver(first_task_id, observer);
+  service->RemoveTaskLifecycleObserver(lifecycle_observer);
 }
 
 // Test that shutting down the service while a stopped task awaits deletion is
@@ -2510,7 +2397,7 @@ TEST_F(ActorServiceTest, ShutdownDropsPendingTaskUpdateNotifications) {
   ActorTaskId task_id = CreateTask(service);
   FakeActorServiceTaskUpdatesObserver* observer =
       [[FakeActorServiceTaskUpdatesObserver alloc] init];
-  service->AddTaskUpdatesObserver(observer);
+  ASSERT_TRUE(service->AddTaskUpdatesObserver(task_id, observer));
   FlushCurrentSequence();
   ASSERT_EQ(1, observer.registeredCount);
 
@@ -2520,7 +2407,6 @@ TEST_F(ActorServiceTest, ShutdownDropsPendingTaskUpdateNotifications) {
   FlushCurrentSequence();
 
   EXPECT_EQ(0, observer.stateChangeCount);
-  EXPECT_EQ(0, observer.stoppedCount);
 }
 
 // Test that observers removed after a task stopped, but before its stop was
@@ -2532,10 +2418,7 @@ TEST_F(ActorServiceTest, ObserversRemovedBeforeStopDeliveryAreNotNotified) {
   ActorTaskId task_id = CreateTask(service);
   FakeActorServiceTaskUpdatesObserver* scoped_observer =
       [[FakeActorServiceTaskUpdatesObserver alloc] init];
-  FakeActorServiceTaskUpdatesObserver* global_observer =
-      [[FakeActorServiceTaskUpdatesObserver alloc] init];
   ASSERT_TRUE(service->AddTaskUpdatesObserver(task_id, scoped_observer));
-  service->AddTaskUpdatesObserver(global_observer);
   FlushCurrentSequence();
 
   service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
@@ -2544,12 +2427,10 @@ TEST_F(ActorServiceTest, ObserversRemovedBeforeStopDeliveryAreNotNotified) {
   ASSERT_TRUE(HasTask(service, task_id));
 
   service->RemoveTaskUpdatesObserver(task_id, scoped_observer);
-  service->RemoveTaskUpdatesObserver(global_observer);
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !HasTask(service, task_id); }));
 
-  EXPECT_EQ(0, scoped_observer.stoppedCount);
-  EXPECT_EQ(0, global_observer.stoppedCount);
+  EXPECT_EQ(0, scoped_observer.stateChangeCount);
 }
 
 // Test that `CreateTask()` returns a null ID and creates no task when web

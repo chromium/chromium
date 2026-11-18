@@ -47,12 +47,6 @@ class WebStateID;
              taskUpdate:(NSString*)taskUpdate
              onWebState:(web::WebStateID)webStateID;
 
-// Called when a task stops.
-// TODO(crbug.com/565875367): Remove once observers migrate to
-// `ActorTaskLifecycleObserver`.
-- (void)actorTaskDidStopWithID:(actor::ActorTaskId)taskID
-                    finalState:(actor::ActorTaskState)finalState;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_PUBLIC_ACTOR_TASK_UPDATES_OBSERVER_H_
