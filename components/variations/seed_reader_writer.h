@@ -33,10 +33,10 @@ class EntropyProviders;
 // Trial and group names for the seed file experiment.
 const char kSeedFileTrial[] = "SeedFileTrial";
 const char kDefaultGroup[] = "Default";
-const char kControlGroup[] = "Control_V15";
+const char kControlGroup[] = "Control_V16";
 // TODO(crbug.com/530049020): Launch on Android and iOS
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-const char kSeedFilesGroup[] = "SeedFiles_V15";
+const char kSeedFilesGroup[] = "SeedFiles_V16";
 #else
 const char kSeedFilesGroup[] = "SeedFilesLaunched";
 #endif

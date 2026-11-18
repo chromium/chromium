@@ -1757,8 +1757,8 @@ TEST_P(StoreSeedDataSeedFilesGroupTest,
 
 // Verifies that if a non-empty seed file already landed on disk in an
 // interrupted first-run session before `on_seed_consumed` ran, a subsequent
-// startup skips re-importing the duplicate initial seed and immediately runs
-// `on_seed_consumed`.
+// startup skips re-importing the duplicate initial seed, immediately runs
+// `on_seed_consumed`, and records the skip in Variations.FirstRunResult.
 TEST_P(StoreSeedDataSeedFilesGroupTest,
        ImportInitialSeedSkipsDuplicateWhenSeedAlreadyStored) {
   file_writer_thread_.FlushForTesting();
@@ -1797,7 +1797,9 @@ TEST_P(StoreSeedDataSeedFilesGroupTest,
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
             GetParam().field_trial_group);
   EXPECT_TRUE(consumed);
-  histogram_tester.ExpectTotalCount("Variations.FirstRunResult", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Variations.FirstRunResult",
+      FirstRunSeedImportResult::kSkippedSeedAlreadyStored, 1);
 
   std::string seed_file_data;
   ASSERT_TRUE(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));

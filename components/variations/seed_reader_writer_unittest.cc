@@ -105,6 +105,15 @@ std::string Compress(const StoredSeedInfo& stored_seed_info) {
       stored_seed_info.SerializeAsString());
 }
 
+// Runs the tasks that are already queued on the current sequence, without
+// waiting for tasks that are posted to it later.
+void FlushMainSequence() {
+  base::RunLoop loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           loop.QuitClosure());
+  loop.Run();
+}
+
 struct SeedReaderWriterTestParams {
   using TupleT =
       std::tuple<SeedFieldsPrefs, std::string_view, version_info::Channel>;
@@ -2831,7 +2840,9 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest,
   EXPECT_FALSE(seed_reader_writer.stored_seed_data_for_testing().has_value());
 }
 
-TEST_P(SeedReaderWriterSeedFilesGroupTest, RunOrScheduleOnSuccessfulWrite) {
+// Runs the callback immediately when no write is scheduled or in flight.
+TEST_P(SeedReaderWriterSeedFilesGroupTest,
+       RunOrScheduleOnSuccessfulWrite_RunsImmediatelyWhenIdle) {
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
             GetParam().field_trial_group);
   SeedReaderWriter seed_reader_writer(
@@ -2841,152 +2852,198 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, RunOrScheduleOnSuccessfulWrite) {
       file_writer_thread_.task_runner());
   seed_reader_writer.SetTimerForTesting(&timer_);
 
-  auto flush_main_sequence = []() {
-    base::RunLoop loop;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, loop.QuitClosure());
-    loop.Run();
-  };
-
-  // 1. Runs immediately when no write is scheduled or in flight.
   seed_reader_writer.RunOrScheduleOnSuccessfulWrite(base::OnceClosure());
   bool immediate_ran = false;
   seed_reader_writer.RunOrScheduleOnSuccessfulWrite(
       base::BindLambdaForTesting([&immediate_ran]() { immediate_ran = true; }));
   EXPECT_TRUE(immediate_ran);
+}
 
-  // 2. Defers execution while a background write is blocked on
-  // `file_writer_thread_`, running only once the write finishes and posts back.
-  {
-    base::WaitableEvent unblock_writer;
-    file_writer_thread_.task_runner()->PostTask(
-        FROM_HERE, base::BindLambdaForTesting(
-                       [&unblock_writer]() { unblock_writer.Wait(); }));
+// Defers the callback while a background write is blocked on
+// `file_writer_thread_`, running it only once the write finishes and posts
+// back.
+TEST_P(SeedReaderWriterSeedFilesGroupTest,
+       RunOrScheduleOnSuccessfulWrite_DefersUntilInFlightWriteFinishes) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), GetHistogramSuffix(),
+      file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
 
-    ASSERT_EQ(seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
-                  .seed_data = CreateVariationsSeed(),
-                  .signature = "seed signature",
-              }),
-              StoreSeedResult::kSuccess);
-    seed_reader_writer.CommitPendingWrite();
+  base::WaitableEvent unblock_writer;
+  file_writer_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting(
+                     [&unblock_writer]() { unblock_writer.Wait(); }));
 
-    base::RunLoop callback_loop;
-    bool deferred_ran = false;
-    seed_reader_writer.RunOrScheduleOnSuccessfulWrite(
-        base::BindLambdaForTesting([&deferred_ran, &callback_loop]() {
-          deferred_ran = true;
-          callback_loop.Quit();
-        }));
-    EXPECT_FALSE(deferred_ran);
+  ASSERT_EQ(seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
+                .seed_data = CreateVariationsSeed(),
+                .signature = "seed signature",
+            }),
+            StoreSeedResult::kSuccess);
+  seed_reader_writer.CommitPendingWrite();
 
-    unblock_writer.Signal();
-    callback_loop.Run();
-    file_writer_thread_.FlushForTesting();
-    EXPECT_TRUE(deferred_ran);
-    EXPECT_TRUE(base::PathExists(temp_seed_file_path_));
-  }
+  base::RunLoop callback_loop;
+  bool deferred_ran = false;
+  seed_reader_writer.RunOrScheduleOnSuccessfulWrite(
+      base::BindLambdaForTesting([&deferred_ran, &callback_loop]() {
+        deferred_ran = true;
+        callback_loop.Quit();
+      }));
+  EXPECT_FALSE(deferred_ran);
 
-  // 3. Waits for all in-flight writes when two writes are committed back to
-  // back (e.g. an empty-seed country migration write followed by an imported
-  // seed write).
-  {
-    base::WaitableEvent unblock_write_1;
-    base::WaitableEvent write_1_done;
-    base::WaitableEvent unblock_write_2;
-    file_writer_thread_.task_runner()->PostTask(
-        FROM_HERE, base::BindLambdaForTesting(
-                       [&unblock_write_1]() { unblock_write_1.Wait(); }));
+  unblock_writer.Signal();
+  callback_loop.Run();
+  file_writer_thread_.FlushForTesting();
+  EXPECT_TRUE(deferred_ran);
+  EXPECT_TRUE(base::PathExists(temp_seed_file_path_));
+}
 
-    ASSERT_EQ(seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
-                  .seed_data = "",
-                  .session_country_code = "us",
-              }),
-              StoreSeedResult::kSuccess);
-    seed_reader_writer.CommitPendingWrite();
+// Waits for all in-flight writes when two writes are committed back to back
+// (e.g. an empty-seed country migration write followed by an imported seed
+// write).
+TEST_P(SeedReaderWriterSeedFilesGroupTest,
+       RunOrScheduleOnSuccessfulWrite_WaitsForAllInFlightWrites) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), GetHistogramSuffix(),
+      file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
 
-    file_writer_thread_.task_runner()->PostTask(
-        FROM_HERE,
-        base::BindLambdaForTesting([&write_1_done, &unblock_write_2]() {
-          write_1_done.Signal();
-          unblock_write_2.Wait();
-        }));
+  base::WaitableEvent unblock_write_1;
+  base::WaitableEvent write_1_done;
+  base::WaitableEvent unblock_write_2;
+  file_writer_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting(
+                     [&unblock_write_1]() { unblock_write_1.Wait(); }));
 
-    const std::string expected_seed = CreateVariationsSeed();
-    ASSERT_EQ(seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
-                  .seed_data = expected_seed,
-                  .signature = "seed signature 2",
-              }),
-              StoreSeedResult::kSuccess);
-    seed_reader_writer.CommitPendingWrite();
+  ASSERT_EQ(seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
+                .seed_data = "",
+                .session_country_code = "us",
+            }),
+            StoreSeedResult::kSuccess);
+  seed_reader_writer.CommitPendingWrite();
 
-    base::RunLoop callback_loop;
-    bool callback_ran = false;
-    seed_reader_writer.RunOrScheduleOnSuccessfulWrite(
-        base::BindLambdaForTesting([&callback_ran, &callback_loop]() {
-          callback_ran = true;
-          callback_loop.Quit();
-        }));
-    EXPECT_FALSE(callback_ran);
+  file_writer_thread_.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindLambdaForTesting([&write_1_done, &unblock_write_2]() {
+        write_1_done.Signal();
+        unblock_write_2.Wait();
+      }));
 
-    unblock_write_1.Signal();
-    write_1_done.Wait();
-    flush_main_sequence();
-    EXPECT_FALSE(callback_ran);
+  const std::string expected_seed = CreateVariationsSeed();
+  ASSERT_EQ(seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
+                .seed_data = expected_seed,
+                .signature = "seed signature 2",
+            }),
+            StoreSeedResult::kSuccess);
+  seed_reader_writer.CommitPendingWrite();
 
-    unblock_write_2.Signal();
-    callback_loop.Run();
-    file_writer_thread_.FlushForTesting();
-    EXPECT_TRUE(callback_ran);
-    EXPECT_EQ(ReadStoredSeedInfo().data(), expected_seed);
-  }
+  base::RunLoop callback_loop;
+  bool callback_ran = false;
+  seed_reader_writer.RunOrScheduleOnSuccessfulWrite(
+      base::BindLambdaForTesting([&callback_ran, &callback_loop]() {
+        callback_ran = true;
+        callback_loop.Quit();
+      }));
+  EXPECT_FALSE(callback_ran);
 
-  // 4. Waits for a timer-scheduled write if an in-flight write completes while
-  // another write is still pending on `timer_`.
-  {
-    base::WaitableEvent unblock_write_1;
-    file_writer_thread_.task_runner()->PostTask(
-        FROM_HERE, base::BindLambdaForTesting(
-                       [&unblock_write_1]() { unblock_write_1.Wait(); }));
+  unblock_write_1.Signal();
+  write_1_done.Wait();
+  FlushMainSequence();
+  EXPECT_FALSE(callback_ran);
 
-    ASSERT_EQ(seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
-                  .seed_data = "",
-                  .session_country_code = "ca",
-              }),
-              StoreSeedResult::kSuccess);
-    seed_reader_writer.CommitPendingWrite();
+  unblock_write_2.Signal();
+  callback_loop.Run();
+  file_writer_thread_.FlushForTesting();
+  EXPECT_TRUE(callback_ran);
+  EXPECT_EQ(ReadStoredSeedInfo().data(), expected_seed);
+}
 
-    const std::string expected_seed = CreateVariationsSeed();
-    ASSERT_EQ(seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
-                  .seed_data = expected_seed,
-                  .signature = "seed signature 3",
-              }),
-              StoreSeedResult::kSuccess);
-    ASSERT_TRUE(timer_.IsRunning());
+// Waits for a timer-scheduled write if an in-flight write completes while
+// another write is still pending on `timer_`.
+TEST_P(SeedReaderWriterSeedFilesGroupTest,
+       RunOrScheduleOnSuccessfulWrite_WaitsForTimerScheduledWrite) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), GetHistogramSuffix(),
+      file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
 
-    base::RunLoop callback_loop;
-    bool callback_ran = false;
-    seed_reader_writer.RunOrScheduleOnSuccessfulWrite(
-        base::BindLambdaForTesting([&callback_ran, &callback_loop]() {
-          callback_ran = true;
-          callback_loop.Quit();
-        }));
-    EXPECT_FALSE(callback_ran);
+  base::WaitableEvent unblock_write_1;
+  file_writer_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting(
+                     [&unblock_write_1]() { unblock_write_1.Wait(); }));
 
-    unblock_write_1.Signal();
-    file_writer_thread_.FlushForTesting();
-    flush_main_sequence();
-    EXPECT_FALSE(callback_ran);
+  ASSERT_EQ(seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
+                .seed_data = "",
+                .session_country_code = "ca",
+            }),
+            StoreSeedResult::kSuccess);
+  seed_reader_writer.CommitPendingWrite();
 
-    timer_.Fire();
-    callback_loop.Run();
-    file_writer_thread_.FlushForTesting();
-    EXPECT_TRUE(callback_ran);
-    EXPECT_EQ(ReadStoredSeedInfo().data(), expected_seed);
-  }
+  const std::string expected_seed = CreateVariationsSeed();
+  ASSERT_EQ(seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
+                .seed_data = expected_seed,
+                .signature = "seed signature 3",
+            }),
+            StoreSeedResult::kSuccess);
+  ASSERT_TRUE(timer_.IsRunning());
 
-  // 5. Retains the callback across a failed serialization (`DoSerialize`
-  // returning `std::nullopt` when metadata updates a deleted file after memory
-  // purge) and runs once a subsequent valid seed write succeeds.
+  base::RunLoop callback_loop;
+  bool callback_ran = false;
+  seed_reader_writer.RunOrScheduleOnSuccessfulWrite(
+      base::BindLambdaForTesting([&callback_ran, &callback_loop]() {
+        callback_ran = true;
+        callback_loop.Quit();
+      }));
+  EXPECT_FALSE(callback_ran);
+
+  unblock_write_1.Signal();
+  file_writer_thread_.FlushForTesting();
+  FlushMainSequence();
+  EXPECT_FALSE(callback_ran);
+
+  timer_.Fire();
+  callback_loop.Run();
+  file_writer_thread_.FlushForTesting();
+  EXPECT_TRUE(callback_ran);
+  EXPECT_EQ(ReadStoredSeedInfo().data(), expected_seed);
+}
+
+// Retains the callback across a failed serialization (`DoSerialize` returning
+// `std::nullopt` when metadata updates a deleted file after memory purge) and
+// runs it once a subsequent valid seed write succeeds.
+TEST_P(SeedReaderWriterSeedFilesGroupTest,
+       RunOrScheduleOnSuccessfulWrite_KeepsCallbackAfterFailedSerialization) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), GetHistogramSuffix(),
+      file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
+
+  // Store a valid seed and let the background write finish, so that the seed
+  // data is on disk and can be purged from memory.
+  ASSERT_EQ(seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
+                .seed_data = CreateVariationsSeed(),
+                .signature = "seed signature",
+            }),
+            StoreSeedResult::kSuccess);
+  seed_reader_writer.CommitPendingWrite();
+  file_writer_thread_.FlushForTesting();
+  FlushMainSequence();
+
   seed_reader_writer.AllowToPurgeSeedDataFromMemory();
   ASSERT_FALSE(seed_reader_writer.stored_seed_data_for_testing().has_value());
 
@@ -3005,7 +3062,7 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, RunOrScheduleOnSuccessfulWrite) {
 
   timer_.Fire();
   file_writer_thread_.FlushForTesting();
-  flush_main_sequence();
+  FlushMainSequence();
   EXPECT_FALSE(after_failure_ran);
 
   ASSERT_EQ(seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{

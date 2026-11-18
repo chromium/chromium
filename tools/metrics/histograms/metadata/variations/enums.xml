@@ -128,6 +128,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Seed import failed - no first run seed"/>
   <int value="3" label="Seed import failed - failed to store seed"/>
   <int value="4" label="Seed import failed - invalid response date string"/>
+  <int value="5" label="Seed import skipped - seed already stored"/>
 </enum>
 
 <enum name="VariationsHeadersOwner">

@@ -618,6 +618,8 @@ void VariationsSeedStore::ImportInitialSeed(
   // overwrite the stored seed.
   if (on_seed_consumed && !seed_reader_writer_->IsEmpty()) {
     std::move(on_seed_consumed).Run();
+    RecordFirstRunSeedImportResult(
+        FirstRunSeedImportResult::kSkippedSeedAlreadyStored);
     return;
   }
 

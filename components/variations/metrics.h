@@ -17,7 +17,8 @@ enum class FirstRunSeedImportResult {
   kFailNoFirstRunSeed = 2,
   kFailStoreFailed = 3,
   kFailInvalidResponseDate = 4,
-  kMaxValue = kFailInvalidResponseDate
+  kSkippedSeedAlreadyStored = 5,
+  kMaxValue = kSkippedSeedAlreadyStored
 };
 
 // The result of attempting to load a variations seed during startup.

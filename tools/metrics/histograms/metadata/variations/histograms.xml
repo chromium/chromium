@@ -276,7 +276,9 @@ chromium-metrics-reviews@google.com.
     Android, Desktop, and iOS Chrome first run. Logged from
     VariationsSeedStore::LoadSeed when seed prefs do not exist. For non-first
     run launches, this value is expected to be &quot;failed - no first run
-    seed.&quot;
+    seed.&quot; On Android Chrome, &quot;skipped - seed already stored&quot; is
+    logged when a first run seed is offered again after an interrupted first run
+    session and a seed is already stored.
 
     Supported for iOS Chrome since M135.
   </summary>
