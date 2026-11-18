@@ -116,6 +116,13 @@ TEST_F(ExtensionActorTrackerTest, SetAndClearActiveActorLifecycle) {
   histogram_tester.ExpectTotalCount(kExtensionActorTrackerClearedHistogram, 1);
 }
 
+TEST_F(ExtensionActorTrackerTest, ScriptInjectionSetsActor) {
+  ExtensionActorTracker::SetActiveActor(web_contents(), "extension_alpha",
+                                        "scripting.executeScript");
+  EXPECT_EQ("extension_alpha",
+            ExtensionActorTracker::GetActiveActor(web_contents()));
+}
+
 TEST_F(ExtensionActorTrackerTest,
        UserInteractionClearsActorUnlessDebuggerOrScroll) {
   base::HistogramTester histogram_tester;

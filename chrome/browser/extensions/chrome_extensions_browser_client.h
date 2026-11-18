@@ -235,6 +235,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
                     content::WebContents** web_contents) const override;
   ScriptExecutor* GetScriptExecutorForTab(
       content::WebContents& web_contents) override;
+  void OnWillExecuteScript(content::WebContents* web_contents,
+                           const ExtensionId& extension_id) override;
   bool IsUsbDeviceAllowedByPolicy(content::BrowserContext* context,
                                   const ExtensionId& extension_id,
                                   int vendor_id,

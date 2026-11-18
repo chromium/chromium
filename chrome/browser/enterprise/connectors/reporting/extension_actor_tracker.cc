@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/api/scripting/scripting_api.h"
 #include "extensions/common/constants.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
@@ -60,6 +61,8 @@ bool IsNavigation(std::string_view command) {
 bool IsTracked(std::string_view command) {
   return IsNavigation(command) ||
          command == extensions::TabsUpdateFunction::static_function_name() ||
+         command == extensions::ScriptingExecuteScriptFunction::
+                        static_function_name() ||
          command == "Page.navigate" || command == "Runtime.evaluate" ||
          command == "Runtime.callFunctionOn" || command.starts_with("Input.") ||
          command == "DOM.focus" || command.starts_with("DOM.set");

@@ -538,6 +538,11 @@ class ExtensionsBrowserClient {
   virtual ScriptExecutor* GetScriptExecutorForTab(
       content::WebContents& web_contents);
 
+  // Called before `extension_id` injects JavaScript into `web_contents`. No-op
+  // by default; can't affect the injection.
+  virtual void OnWillExecuteScript(content::WebContents* web_contents,
+                                   const ExtensionId& extension_id);
+
   // Return true if the USB device is allowed by policy.
   virtual bool IsUsbDeviceAllowedByPolicy(content::BrowserContext* context,
                                           const ExtensionId& extension_id,

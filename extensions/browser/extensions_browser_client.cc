@@ -186,6 +186,10 @@ ScriptExecutor* ExtensionsBrowserClient::GetScriptExecutorForTab(
   return nullptr;
 }
 
+void ExtensionsBrowserClient::OnWillExecuteScript(
+    content::WebContents* web_contents,
+    const ExtensionId& extension_id) {}
+
 bool ExtensionsBrowserClient::IsUsbDeviceAllowedByPolicy(
     content::BrowserContext* context,
     const ExtensionId& extension_id,

@@ -31,6 +31,7 @@
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_web_contents_observer.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/browser/scripting_utils.h"
 #include "extensions/common/content_script_injection_url_getter.h"
@@ -516,6 +517,11 @@ void ScriptExecutor::ExecuteScript(
         }));
   }
 #endif
+
+  if (extension && injection->is_js() && process_type == DEFAULT_PROCESS) {
+    ExtensionsBrowserClient::Get()->OnWillExecuteScript(web_contents_,
+                                                        extension->id());
+  }
 
   auto params = mojom::ExecuteCodeParams::New();
   params->host_id = host_id.Clone();

@@ -108,6 +108,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
@@ -171,6 +172,11 @@
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #endif
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/reporting/extension_actor_tracker.h"
+#include "extensions/browser/api/scripting/scripting_api.h"
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 namespace extensions {
 
@@ -883,6 +889,18 @@ ScriptExecutor* ChromeExtensionsBrowserClient::GetScriptExecutorForTab(
     content::WebContents& web_contents) {
   TabHelper* tab_helper = TabHelper::FromWebContents(&web_contents);
   return tab_helper ? tab_helper->script_executor() : nullptr;
+}
+
+void ChromeExtensionsBrowserClient::OnWillExecuteScript(
+    content::WebContents* web_contents,
+    const ExtensionId& extension_id) {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  // The injected script can navigate the tab. No-op unless enterprise
+  // extension actor attribution is enabled.
+  enterprise_connectors::ExtensionActorTracker::SetActiveActor(
+      web_contents, extension_id,
+      ScriptingExecuteScriptFunction::static_function_name());
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 bool ChromeExtensionsBrowserClient::IsUsbDeviceAllowedByPolicy(

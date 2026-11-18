@@ -26,7 +26,10 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/api/scripting/scripting_api.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -95,6 +98,38 @@ IN_PROC_BROWSER_TEST_F(ExtensionActorTrackerBrowserTest,
       browser()->GetProfile(),
       extensions::api_test_utils::FunctionMode::kNone));
   ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  EXPECT_EQ(observer.actor(), extension->id());
+}
+
+// A script injected with scripting.executeScript can navigate the tab, so the
+// actor should be set before the script runs.
+IN_PROC_BROWSER_TEST_F(ExtensionActorTrackerBrowserTest,
+                       ExecuteScriptSetsActorBeforeNavigation) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  ActorAtNavigationStartObserver observer(web_contents());
+
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("Test")
+          .AddAPIPermission("scripting")
+          .AddHostPermission("<all_urls>")
+          .Build();
+  extensions::ExtensionRegistrar::Get(browser()->GetProfile())
+      ->AddExtension(extension);
+  auto function =
+      base::MakeRefCounted<extensions::ScriptingExecuteScriptFunction>();
+  function->set_extension(extension.get());
+  content::TestNavigationObserver navigation_observer(web_contents());
+  ASSERT_TRUE(extensions::api_test_utils::RunFunction(
+      function.get(),
+      base::StringPrintf(
+          R"([{"target": {"tabId": %d},
+               "func": "() => { location.href = '/title2.html'; }"}])",
+          extensions::ExtensionTabUtil::GetTabId(web_contents())),
+      browser()->GetProfile(),
+      extensions::api_test_utils::FunctionMode::kNone));
+  navigation_observer.Wait();
 
   EXPECT_EQ(observer.actor(), extension->id());
 }
