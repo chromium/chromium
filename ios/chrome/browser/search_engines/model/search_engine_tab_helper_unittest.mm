@@ -7,8 +7,8 @@
 #import <algorithm>
 
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/strings/utf_string_conversions.h"
-#import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "components/favicon/core/favicon_service.h"
 #import "components/favicon/ios/web_favicon_driver.h"
@@ -60,12 +60,8 @@ class SearchEngineTabHelperTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
-        base::BindLambdaForTesting(
-            [this](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              std::unique_ptr<TemplateURLService> model =
-                  search_engines_test_environment_.ReleaseTemplateURLService();
-              return model;
-            }));
+        base::ReturnValueOnce(
+            search_engines_test_environment_.ReleaseTemplateURLService()));
 
     profile_ = std::move(builder).Build();
     web::WebState::CreateParams params(profile_.get());
