@@ -179,6 +179,7 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset(
     'mac-m3-pro-perf',
     'mac-m4-mini-processor-perf',
     'mac-m4-pro-processor-perf',
+    'mac-m5-pro-perf',
     'win-10-processor-perf',
     'win-10_amd_laptop-perf',
     'win-10_laptop_low_end-processor-perf',
@@ -233,6 +234,7 @@ PUBLIC_PERF_BUILDERS = [
   'mac-m4-pro-perf',
   'mac-m4-pro-processor-perf',
   'win-10-perf',
+  'mac-m5-pro-perf',
   'win-10-processor-perf',
   'win-10_amd_laptop-perf',
   'win-10_laptop_low_end-perf',
@@ -1810,6 +1812,17 @@ def is_perf_benchmarks_scheduling_valid(
         'builders. Either schedule or remove it from OTHER_BENCHMARKS.'
         % test_name
       )
+
+    for platform in bot_platforms.ALL_PLATFORMS:
+      if not platform.is_fyi and not platform.pinpoint_only:
+        if (
+          platform.name not in UPLOAD_SKIA_JSON_BUILDERS
+          and platform.name not in LIGHTWEIGHT_TESTERS
+        ):
+          error_messages.append(
+            'Builder %s is a primary waterfall tester but is missing from '
+            'UPLOAD_SKIA_JSON_BUILDERS and LIGHTWEIGHT_TESTERS.' % platform.name
+          )
 
   for test_name in scheduled_non_telemetry_tests.difference(
     all_perf_gtests, all_perf_other_tests

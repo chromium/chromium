@@ -137,6 +137,27 @@ class TestIsPerfBenchmarksSchedulingValid(unittest.TestCase):
       self.test_stream.getvalue(),
     )
 
+  def test_MissingUploadSkiaJsonBuilder(self):
+    self.get_non_telemetry_benchmarks.return_value = {'honda'}
+    perf_data_generator.GTEST_BENCHMARKS = {
+      'honda': BenchmarkMetadata('baz@foo.com'),
+    }
+    perf_data_generator.OTHER_BENCHMARKS = {}
+    with mock.patch.object(
+      perf_data_generator,
+      'UPLOAD_SKIA_JSON_BUILDERS',
+      perf_data_generator.UPLOAD_SKIA_JSON_BUILDERS - {'mac-m5-pro-perf'},
+    ):
+      valid = perf_data_generator.is_perf_benchmarks_scheduling_valid(
+        'dummy', self.test_stream
+      )
+
+    self.assertEqual(valid, False)
+    self.assertIn(
+      'Builder mac-m5-pro-perf is a primary waterfall tester but is missing',
+      self.test_stream.getvalue(),
+    )
+
 
 if __name__ == '__main__':
   unittest.main()

@@ -2055,6 +2055,9 @@
           "--assert-gpu-compositing"
         ],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "module_name": "//chrome/test:performance_test_suite",
