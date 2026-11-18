@@ -86,6 +86,7 @@ component("gtk") {
     "nav_button_provider_gtk.h",
     "os_settings_provider_gtk.h",
     "select_file_dialog_linux_gtk.h",
+    "window_frame_provider_gtk.h",
   ]
 
   sources = [
@@ -115,7 +116,6 @@ component("gtk") {
     "settings_provider_gtk.cc",
     "settings_provider_gtk.h",
     "window_frame_provider_gtk.cc",
-    "window_frame_provider_gtk.h",
   ]
 
   if (enable_printing) {
@@ -213,6 +213,7 @@ if (use_gtk) {
       "nav_button_provider_gtk_unittest.cc",
       "run_all_unittests.cc",
       "select_file_dialog_linux_gtk_unittest.cc",
+      "window_frame_provider_gtk_unittest.cc",
     ]
 
     deps = [

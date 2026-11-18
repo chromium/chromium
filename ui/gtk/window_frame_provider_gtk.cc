@@ -307,11 +307,14 @@ void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
   gfx::ScopedCanvas scoped_canvas(canvas);
   float scale = canvas->UndoDeviceScaleFactor();
 
+  // GetFrameThicknessDip() may add an entry to `assets_`, so call it before
+  // taking a reference to the asset for `scale`.
+  const gfx::Insets frame_thickness_dip = GetFrameThicknessDip();
   const auto& asset = GetOrCreateAsset(scale);
 
   const auto input_insets_px = gfx::ScaleToRoundedInsets(input_insets, scale);
   auto effective_frame_thickness_px =
-      gfx::ScaleToRoundedInsets(GetFrameThicknessDip(), scale);
+      gfx::ScaleToRoundedInsets(frame_thickness_dip, scale);
   effective_frame_thickness_px.SetToMax(input_insets_px);
 
   auto client_bounds_px = gfx::ScaleToRoundedRect(rect_dip, scale);
