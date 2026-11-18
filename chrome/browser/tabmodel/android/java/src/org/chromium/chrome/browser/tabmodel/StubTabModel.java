@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 
@@ -251,7 +252,7 @@ public class StubTabModel extends EmptyTabModel {
     }
 
     @Override
-    public void notifyWillRemoveTabGroup(Token tabGroupId) {
+    public void notifyWillRemoveTabGroup(TabGroupId tabGroupId) {
         throw error();
     }
 

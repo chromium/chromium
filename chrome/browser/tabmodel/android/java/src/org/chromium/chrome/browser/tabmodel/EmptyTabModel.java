@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tabs.TabStripCollection;
 
 import java.util.Collections;
@@ -271,7 +272,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public void notifyDidActiveStateChange(boolean active) {}
 
     @Override
-    public void notifyWillRemoveTabGroup(Token tabGroupId) {}
+    public void notifyWillRemoveTabGroup(TabGroupId tabGroupId) {}
 
     @Override
     public void broadcastSessionRestoreComplete() {}

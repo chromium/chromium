@@ -44,6 +44,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 
@@ -160,7 +161,7 @@ public class TabUngrouperImplUnitTest {
         verify(mOnResult).onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
 
         handler.performAction();
-        verify(mTabModel).notifyWillRemoveTabGroup(tabGroupId);
+        verify(mTabModel).notifyWillRemoveTabGroup(TabGroupId.fromRawToken(tabGroupId));
         verify(mTabModel).moveTabOutOfGroupInDirection(id, /* trailing= */ true);
 
         verifyNoMoreInteractions(mListener);

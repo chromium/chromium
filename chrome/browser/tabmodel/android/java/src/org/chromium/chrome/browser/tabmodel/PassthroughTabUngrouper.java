@@ -12,6 +12,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 import java.util.function.Function;
@@ -67,7 +68,7 @@ public class PassthroughTabUngrouper implements TabUngrouper {
             listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
         }
         if (tabGroupId != null) {
-            tabModel.notifyWillRemoveTabGroup(tabGroupId);
+            tabModel.notifyWillRemoveTabGroup(TabGroupId.fromRawToken(tabGroupId));
         }
         doUngroupTabs(tabModel, tabs, trailing);
         if (listener != null) {

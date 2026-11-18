@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDestroyStatus;
+import org.chromium.components.tab_groups.TabGroupId;
 
 /** Package private internal methods for {@link TabModel}. */
 @NullMarked
@@ -83,7 +83,7 @@ public interface TabModelInternal extends TabModel {
      * @param tabGroupId The id of the tab group being removed.
      * @see TabGroupObserver#onTabGroupRemoving
      */
-    /* package */ void notifyWillRemoveTabGroup(Token tabGroupId);
+    /* package */ void notifyWillRemoveTabGroup(TabGroupId tabGroupId);
 
     /** Destroy the model and return the destroy status. */
     @TabDestroyStatus

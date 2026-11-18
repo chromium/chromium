@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tabs.TabStripCollection;
 
 import java.util.Arrays;
@@ -452,7 +453,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void notifyWillRemoveTabGroup(Token tabGroupId) {
+    public void notifyWillRemoveTabGroup(TabGroupId tabGroupId) {
         mDelegateModel.notifyWillRemoveTabGroup(tabGroupId);
     }
 
