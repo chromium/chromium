@@ -199,9 +199,11 @@ void ReportUploader::Upload() {
 
 void ReportUploader::OnRequestFinished(
     policy::CloudPolicyClient::Result result) {
-  // Crash if the client is not registered, this should not happen.
-  // TODO(b/256553070) Handle unregistered case without crashing.
-  CHECK(!result.IsClientNotRegisteredError());
+  if (result.IsClientNotRegisteredError()) {
+    RecordReportResponseMetrics(ReportResponseMetricsStatus::kOtherError);
+    SendResponse(ReportStatus::kPersistentError);
+    return;
+  }
 
   if (result.IsSuccess()) {
     NextRequest();

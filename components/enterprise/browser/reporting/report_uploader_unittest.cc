@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -167,23 +168,43 @@ class ReportUploaderTestWithReportType
   ReportType GetReportType() override { return GetParam(); }
 };
 
-// TODO(crbug.com/40483507) This death test does not work on Android.
-#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
-TEST_F(ReportUploaderTest, NotRegisteredCrashes) {
-  CreateUploader(/* retry_count = */ 1);
-  EXPECT_CALL(client_, UploadReport)
-      .WillOnce(ScheduleResponse(policy::CloudPolicyClient::Result(
-          policy::CloudPolicyClient::NotRegistered())));
+TEST_P(ReportUploaderTestWithReportType, NotRegisteredStopsUploading) {
+  CreateUploader(/*retry_count=*/1);
+  const auto result = policy::CloudPolicyClient::Result(
+      policy::CloudPolicyClient::NotRegistered());
+  if (GetReportType() == ReportType::kProfileReport) {
+    EXPECT_CALL(client_, UploadChromeProfileReport(use_cookies_, _, _))
+        .WillOnce(ScheduleProfileResponse(result));
+  } else {
+    EXPECT_CALL(client_, UploadReport).WillOnce(ScheduleResponse(result));
+  }
+  UploadReportAndSetExpectation(/*number_of_request=*/2,
+                                ReportUploader::kPersistentError);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  EXPECT_TRUE(has_responded_);
+  histogram_tester_.ExpectUniqueSample(
+      kResponseMetricsName, ReportResponseMetricsStatus::kOtherError, 1);
+}
+
+TEST_F(ReportUploaderTest, NotRegisteredCallbackCanDeleteUploader) {
+  EXPECT_CALL(client_, UploadReport).WillOnce([](auto report, auto callback) {
+    std::move(callback).Run(policy::CloudPolicyClient::Result(
+        policy::CloudPolicyClient::NotRegistered()));
+  });
   ReportRequestQueue requests;
   requests.push(std::make_unique<ReportRequest>(GetReportType()));
-  base::test::TestFuture<ReportUploader::ReportStatus> future;
   uploader_->SetRequestAndUpload(
       ReportGenerationConfig(ReportTrigger::kTriggerNone, GetReportType(),
                              SecuritySignalsMode::kNoSignals, use_cookies_),
-      std::move(requests), future.GetCallback());
-  ASSERT_DEATH(std::ignore = future.Get(), "");
+      std::move(requests),
+      base::BindLambdaForTesting([&](ReportUploader::ReportStatus status) {
+        EXPECT_EQ(ReportUploader::kPersistentError, status);
+        uploader_.reset();
+      }));
+  EXPECT_FALSE(uploader_);
+  histogram_tester_.ExpectUniqueSample(
+      kResponseMetricsName, ReportResponseMetricsStatus::kOtherError, 1);
 }
-#endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ReportUploaderTest, PersistentError) {
   CreateUploader(/* retry_count = */ 1);
