@@ -379,7 +379,9 @@ void LoadPackFileFromApk(const std::string& path,
 
 FileDescriptor GetMainAndroidPackFd(
     base::MemoryMappedFile::Region* out_region) {
-  CHECK_GE(g_resources_pack_fd, 0, base::NotFatalUntil::M163);
+  // TODO(crbug.com/586458730): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_GE(g_resources_pack_fd, 0);
   *out_region = g_resources_pack_region;
   return g_resources_pack_fd;
 }
