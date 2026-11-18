@@ -17,6 +17,7 @@
 #include "media/filters/hls_test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/url_util.h"
 
 namespace media {
 
@@ -446,6 +447,45 @@ TEST_F(HlsDataSourceProviderImplUnittest, RedirectToDataUrlIsDisallowed) {
           &has_error));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(has_error);
+}
+
+TEST_F(HlsDataSourceProviderImplUnittest, LocalSchemesAreDisallowed) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddLocalScheme("content");
+  url::AddLocalScheme("externalfile");
+
+  const std::vector<GURL> disallowed_urls = {
+      GURL("file:///tmp/manifest.m3u8"),
+      GURL("content://org.chromium.chrome.FileProvider/downloads/secret.txt"),
+      GURL("externalfile://drive/root/manifest.m3u8"),
+      GURL("blob:file:///1234-5678"),
+      GURL("filesystem:file:///temporary/manifest.m3u8"),
+      GURL("blob:content://org.chromium.chrome.FileProvider/1234-5678"),
+  };
+
+  for (const auto& url : disallowed_urls) {
+    MockDataSourceFactory::DataSourceBehavior params;
+    params.original_uri = url;
+    factory_->Expect(std::move(params));
+
+    base::RunLoop run_loop;
+    bool has_error = false;
+    impl_->ReadFromUrl(
+        {url, std::nullopt},
+        base::BindOnce(
+            [](bool* error_canary, base::OnceClosure quit_closure,
+               HlsDataSourceProvider::ReadResult result) {
+              ASSERT_FALSE(result.has_value());
+              EXPECT_EQ(result.error(),
+                        HlsDemuxerStatus::Codes::kInvalidContentScheme);
+              *error_canary = true;
+              std::move(quit_closure).Run();
+            },
+            &has_error, run_loop.QuitClosure()));
+    run_loop.Run();
+    EXPECT_TRUE(has_error) << "Failed for URL: " << url;
+    RecreateImpl();
+  }
 }
 
 }  // namespace media

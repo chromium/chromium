@@ -15,10 +15,18 @@
 #include "net/base/data_url.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "url/url_constants.h"
+#include "url/url_util.h"
 
 namespace media {
 
 namespace {
+
+bool HasDisallowedLocalScheme(const GURL& uri, const url::Origin& origin) {
+  const auto& local_schemes = url::GetLocalSchemes();
+  return std::ranges::contains(local_schemes, uri.scheme()) ||
+         (!origin.opaque() &&
+          std::ranges::contains(local_schemes, origin.scheme()));
+}
 
 perfetto::NamedTrack GetTracingTrack(
     const HlsDataSourceProviderImpl* provider) {
@@ -247,25 +255,23 @@ void HlsDataSourceProviderImpl::DataSourceInitialized(
       return;
     }
 
-    if (response_uri.SchemeIsFile()) {
-      // For a base page loaded via the file:// protocol, the chrome network
-      // stack allows media content loaded directly via src=, but for security
-      // reasons, does not allow arbitrary reads from other file:// urls (ie,
-      // via JS using `fetch()`).
-      // Since HLS provides the ability to play local manifests with variable
-      // substitution, a file:// hosted playlist could theoretically make
-      // range requests to any arbitrary other file:// uri and test for
-      // playback.
-
-      // As a result, the only thing we can do is block HLS from using the
-      // file:// protocol entirely.
+    auto response_origin = url::Origin::Create(response_uri);
+    if (HasDisallowedLocalScheme(response_uri, response_origin)) {
+      // For a base page loaded via a local scheme (such as file:// or
+      // content://), the chrome network stack allows media content loaded
+      // directly via src=, but for security reasons does not allow arbitrary
+      // reads from other local URLs (e.g. via JS using `fetch()`). Because
+      // `url::Origin` collapses local URLs of the same scheme/authority into a
+      // single tuple origin, a locally hosted HLS playlist could otherwise
+      // reference arbitrary sibling local files as segments and leak their
+      // contents via buffered ranges. Block all local schemes in HLS.
       std::move(callback).Run(base::unexpected(
           HlsDemuxerStatus{HlsDemuxerStatus::Codes::kInvalidContentScheme}));
       TRACE_EVENT_END("media", GetTracingTrack(this));
       return;
     }
 
-    stream->TrackOrigin(url::Origin::Create(response_uri));
+    stream->TrackOrigin(std::move(response_origin));
     stream->SetPostRedirectUri(response_uri);
   }
 
