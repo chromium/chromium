@@ -447,6 +447,11 @@ public class OmniboxFeatures {
         return sOmniboxAimOpenInNewTab.isEnabled();
     }
 
+    /** Returns whether the AI Mode button stays visible in AI Mode and doubles as send button. */
+    public static boolean isStatefulAiModeButtonEnabled() {
+        return OmniboxCapabilities.isDesktopPlatform() && sOmniboxStatefulAiModeButton.isEnabled();
+    }
+
     private static @Nullable Boolean sDebounceKeyboardVisibilityForTesting;
 
     /** Returns whether keyboard visibility transitions should be debounced. */

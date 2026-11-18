@@ -741,6 +741,27 @@ public class LocationBarMediatorUnitTest {
         clearInvocations(mUrlCoordinator, mUrlBar);
     }
 
+    private AutocompleteInput beginPopoverInputForAiModeButton() {
+        setUpMediatorAndCoordinator();
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setRequestType(AutocompleteRequestType.SEARCH);
+        mMediator.beginInput(input);
+        return input;
+    }
+
+    /** Stubs the views needed for the location bar to reparent into the suggestions container. */
+    private void setUpReparentingToSuggestionsContainer() {
+        doReturn(mLocationBarParent).when(mLocationBarLayout).getParent();
+        doReturn(mSuggestionsContainer).when(mAutocompleteCoordinator).getSuggestionsContainer();
+        doReturn(mDropdown).when(mSuggestionsContainer).takeDropdownView();
+        doReturn(new MarginLayoutParams(-2, -2)).when(mLocationBarLayout).getLayoutParams();
+        doReturn(mPlaceholder)
+                .when(mLocationBarLayout)
+                .findViewById(R.id.suggestions_container_placeholder);
+        doReturn(2).when(mLocationBarLayout).indexOfChild(mPlaceholder);
+    }
+
     @Test
     public void testGetVoiceRecognitionHandler_safeToCallAfterDestroy() {
         mMediator.onFinishNativeInitialization();
@@ -4233,15 +4254,7 @@ public class LocationBarMediatorUnitTest {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
         mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
-        doReturn(mLocationBarParent).when(mLocationBarLayout).getParent();
-        doReturn(mSuggestionsContainer).when(mAutocompleteCoordinator).getSuggestionsContainer();
-        doReturn(mDropdown).when(mSuggestionsContainer).takeDropdownView();
-        MarginLayoutParams layoutParams = new MarginLayoutParams(-2, -2);
-        doReturn(layoutParams).when(mLocationBarLayout).getLayoutParams();
-        doReturn(mPlaceholder)
-                .when(mLocationBarLayout)
-                .findViewById(R.id.suggestions_container_placeholder);
-        doReturn(2).when(mLocationBarLayout).indexOfChild(mPlaceholder);
+        setUpReparentingToSuggestionsContainer();
 
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setRequestType(AutocompleteRequestType.SEARCH);
@@ -5759,6 +5772,7 @@ public class LocationBarMediatorUnitTest {
     @Test
     public void testActivationChipClicked_transitionsStandbyToEnabled() {
         setUpMediatorAndCoordinator();
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setAutocompleteState(AutocompleteState.STANDBY);
         input.setRequestType(AutocompleteRequestType.SEARCH);
@@ -5773,6 +5787,7 @@ public class LocationBarMediatorUnitTest {
     @Test
     public void testActivationChipClicked_otherText() {
         setUpMediatorAndCoordinator();
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setRequestType(AutocompleteRequestType.SEARCH);
         input.setInitialUserText("google.com");
@@ -5790,6 +5805,7 @@ public class LocationBarMediatorUnitTest {
     @Test
     public void testActivationChipClicked_emptyText() {
         setUpMediatorAndCoordinator();
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setRequestType(AutocompleteRequestType.SEARCH);
         input.setInitialUserText("google.com");
@@ -5811,6 +5827,7 @@ public class LocationBarMediatorUnitTest {
     @Test
     public void testActivationChipClicked_currentUrl() {
         setUpMediatorAndCoordinator();
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setRequestType(AutocompleteRequestType.SEARCH);
         mMediator.beginInput(input);
@@ -5834,6 +5851,7 @@ public class LocationBarMediatorUnitTest {
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
 
         setUpMediatorAndCoordinator();
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
 
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setRequestType(AutocompleteRequestType.SEARCH);
@@ -5859,6 +5877,7 @@ public class LocationBarMediatorUnitTest {
                         "https://3p.com/ai?q={searchTerms}", new GURL("https://3p.com/ai")));
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         setUpMediatorAndCoordinator();
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
 
         doReturn(new GURL("https://3p.com/ai?q=cat+pictures"))
                 .when(mTemplateUrlService)
@@ -5895,6 +5914,7 @@ public class LocationBarMediatorUnitTest {
                         "https://3p.com/ai?q={searchTerms}", new GURL("https://3p.com/ai")));
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         setUpMediatorAndCoordinator();
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
 
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setRequestType(AutocompleteRequestType.SEARCH);
@@ -5919,6 +5939,7 @@ public class LocationBarMediatorUnitTest {
                         "https://3p.com/ai?q={searchTerms}", new GURL("https://3p.com/ai")));
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         setUpMediatorAndCoordinator();
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
 
         doReturn(null)
                 .when(mTemplateUrlService)
@@ -5944,6 +5965,7 @@ public class LocationBarMediatorUnitTest {
                         "https://3p.com/ai?q={searchTerms}", new GURL("https://3p.com/ai")));
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         setUpMediatorAndCoordinator();
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
 
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setRequestType(AutocompleteRequestType.SEARCH);
@@ -5962,6 +5984,7 @@ public class LocationBarMediatorUnitTest {
         // Google's config declares no navigation URLs, so the click must reach the in-product
         // handling rather than navigating nowhere.
         setUpMediatorAndCoordinator();
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
 
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setRequestType(AutocompleteRequestType.SEARCH);
@@ -5979,7 +6002,9 @@ public class LocationBarMediatorUnitTest {
 
     @Test
     public void testActivationChipActivatedViaKeyboard_recordsHistograms() {
+        setUpMediatorAndCoordinator();
         setUpTabToActivationChip(DisplayState.SUGGESTIONS, /* withInitialUserText= */ true);
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
 
         // Tab from UrlBar to ActivationChip (which clears unchanged initial URL text).
         assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_TAB, mKeyEvent));
@@ -6144,6 +6169,144 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    public void testAiModeButtonState_flagDisabled_hiddenInAiMode() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        AutocompleteInput input = beginPopoverInputForAiModeButton();
+        assertEquals(AiModeButtonState.VISIBLE_INACTIVE, mMediator.computeAiModeButtonState());
+
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        assertEquals(AiModeButtonState.HIDDEN, mMediator.computeAiModeButtonState());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_STATEFUL_AI_MODE_BUTTON)
+    public void testAiModeButtonState_notDesktop_hiddenInAiMode() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        AutocompleteInput input = beginPopoverInputForAiModeButton();
+        assertEquals(AiModeButtonState.VISIBLE_INACTIVE, mMediator.computeAiModeButtonState());
+
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        assertEquals(AiModeButtonState.HIDDEN, mMediator.computeAiModeButtonState());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_STATEFUL_AI_MODE_BUTTON)
+    public void testAiModeButtonState_derivedFromRequestTypeAndContent() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        AutocompleteInput input = beginPopoverInputForAiModeButton();
+        assertEquals(AiModeButtonState.VISIBLE_INACTIVE, mMediator.computeAiModeButtonState());
+
+        // Typing in conventional search does not change the button.
+        doReturn("query").when(mUrlCoordinator).getTextWithAutocomplete();
+        assertEquals(AiModeButtonState.VISIBLE_INACTIVE, mMediator.computeAiModeButtonState());
+
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        assertEquals(AiModeButtonState.VISIBLE_SEND, mMediator.computeAiModeButtonState());
+
+        doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
+        assertEquals(AiModeButtonState.VISIBLE_ACTIVE, mMediator.computeAiModeButtonState());
+
+        mHasAttachmentsSupplier.set(true);
+        assertEquals(AiModeButtonState.VISIBLE_SEND, mMediator.computeAiModeButtonState());
+
+        // Tool modes behave like AI Mode; only content decides between ACTIVE and SEND.
+        mHasAttachmentsSupplier.set(false);
+        input.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+        assertEquals(AiModeButtonState.VISIBLE_ACTIVE, mMediator.computeAiModeButtonState());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_STATEFUL_AI_MODE_BUTTON)
+    public void testAiModeButtonState_updatedWhenAttachmentsChange() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        AutocompleteInput input = beginPopoverInputForAiModeButton();
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        clearInvocations(mLocationBarLayout);
+
+        mHasAttachmentsSupplier.set(true);
+
+        verify(mLocationBarLayout).setAiModeButtonState(AiModeButtonState.VISIBLE_SEND);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_STATEFUL_AI_MODE_BUTTON)
+    public void testAiModeButtonClicked_active_switchesToSearch() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        AutocompleteInput input = beginPopoverInputForAiModeButton();
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        input.setUserText("").setInitialUserText("initial text");
+
+        mMediator.onActivationChipClicked(/* viaKeyboard= */ false);
+
+        // Back to standby with the original text, like the delete button's final step.
+        assertEquals(AutocompleteRequestType.SEARCH, input.getRequestType());
+        assertEquals("initial text", input.getUserText());
+        assertEquals(AutocompleteState.STANDBY, input.getAutocompleteState());
+        assertEquals(DisplayState.DRAFTING, input.getDisplayState());
+        verify(mUrlCoordinator, never()).dispatchGoEvent();
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_STATEFUL_AI_MODE_BUTTON)
+    public void testAiModeButtonClicked_activeWithCustomTool_exitsToSearch() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        AutocompleteInput input = beginPopoverInputForAiModeButton();
+        input.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+        assertEquals(AiModeButtonState.VISIBLE_ACTIVE, mMediator.computeAiModeButtonState());
+
+        mMediator.onActivationChipClicked(/* viaKeyboard= */ false);
+
+        // Unlike the delete button, does not step back to AI Mode first.
+        assertEquals(AutocompleteRequestType.SEARCH, input.getRequestType());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_STATEFUL_AI_MODE_BUTTON)
+    public void testAiModeButtonClicked_send_submits() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        AutocompleteInput input = beginPopoverInputForAiModeButton();
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        doReturn("query").when(mUrlCoordinator).getTextWithAutocomplete();
+
+        mMediator.onActivationChipClicked(/* viaKeyboard= */ true);
+
+        verify(mUrlCoordinator).dispatchGoEvent();
+        assertEquals(AutocompleteRequestType.AI_MODE, input.getRequestType());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_STATEFUL_AI_MODE_BUTTON)
+    public void testNavigateButton_hiddenWhileAiModeButtonSends() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        AutocompleteInput input = beginPopoverInputForAiModeButton();
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+        mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
+        doReturn("query").when(mUrlCoordinator).getTextWithAutocomplete();
+
+        mMediator.updateButtonVisibility();
+
+        assertFalse(mNavigateButtonIsVisible);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_STATEFUL_AI_MODE_BUTTON)
+    public void testDeleteButtonVisibility_hiddenInAiModeWithStatefulButton() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        AutocompleteInput input = beginPopoverInputForAiModeButton();
+        setUpReparentingToSuggestionsContainer();
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        input.setDisplayState(DisplayState.SUGGESTIONS);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertTrue(mMediator.isParentedToSuggestionsContainer());
+        verify(mLocationBarLayout, never()).setDeleteButtonVisibility(true);
+    }
+
+    @Test
     public void testActivationChipSelectionChanged_clearsUrl() {
         setUpMediatorAndCoordinator();
         AutocompleteInput input = mSessionState.getAutocompleteInput();
@@ -6197,6 +6360,21 @@ public class LocationBarMediatorUnitTest {
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setRequestType(AutocompleteRequestType.SEARCH);
         input.setDisplayState(DisplayState.DRAFTING);
+        mMediator.beginInput(input);
+        input.setInitialUserText("google.com");
+        clearInvocations(mUrlCoordinator);
+
+        mMediator.onActivationChipSelectionChanged(true);
+
+        verify(mUrlCoordinator, never()).setUrlBarData(any(), anyInt(), any());
+    }
+
+    @Test
+    public void testActivationChipSelectionChanged_doesNotClearInAiMode() {
+        setUpMediatorAndCoordinator();
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        input.setDisplayState(DisplayState.SUGGESTIONS);
         mMediator.beginInput(input);
         input.setInitialUserText("google.com");
         clearInvocations(mUrlCoordinator);

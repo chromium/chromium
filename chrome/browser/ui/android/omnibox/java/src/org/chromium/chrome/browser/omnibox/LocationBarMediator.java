@@ -478,9 +478,7 @@ public class LocationBarMediator
                                 mLocationBarLayout::setFuseboxLayoutMode));
         mFuseboxCoordinator
                 .getHasAttachmentsSupplier()
-                .addSyncObserver(
-                        mCallbackController.makeCancelable(
-                                (present) -> updateNavigateButtonVisibility()));
+                .addSyncObserver(mCallbackController.makeCancelable(this::onHasAttachmentsChanged));
         mFuseboxCoordinator.setOnInteractionCompletedCallback(this::onFuseboxInteractionCompleted);
         mLocationBarLayout
                 .getActivationChip()
@@ -1281,13 +1279,7 @@ public class LocationBarMediator
                 mCurrentInput.setRequestType(AutocompleteRequestType.AI_MODE);
                 clearText();
             } else {
-                // Return to conventional search in standby with the original URL.
-                mCurrentInput
-                        .setRequestType(AutocompleteRequestType.SEARCH)
-                        .restoreInitialInput()
-                        .setAutocompleteState(AutocompleteState.STANDBY)
-                        .setDisplayState(DisplayState.DRAFTING);
-                pushUrlBarDataFromCurrentInput();
+                exitAiMode();
             }
         } else {
             clearText();
@@ -1295,6 +1287,17 @@ public class LocationBarMediator
 
         updateButtonVisibility();
         mUrlCoordinator.requestAccessibilityFocus();
+    }
+
+    /** Returns to conventional search in standby with the original URL. */
+    @RequiresNonNull("mCurrentInput")
+    private void exitAiMode() {
+        mCurrentInput
+                .setRequestType(AutocompleteRequestType.SEARCH)
+                .restoreInitialInput()
+                .setAutocompleteState(AutocompleteState.STANDBY)
+                .setDisplayState(DisplayState.DRAFTING);
+        pushUrlBarDataFromCurrentInput();
     }
 
     private void clearText() {
@@ -2271,7 +2274,9 @@ public class LocationBarMediator
                         && !OmniboxCapabilities.hasDesktopExperience(mContext);
         if (isParentedToSuggestionsContainer()) {
             showDeleteButton |=
-                    (mCurrentInput != null && !mCurrentInput.isConventionalRequestType());
+                    mCurrentInput != null
+                            && !mCurrentInput.isConventionalRequestType()
+                            && !OmniboxFeatures.isStatefulAiModeButtonEnabled();
         }
 
         if (mPreviousDeleteButtonVisible == null
@@ -2363,6 +2368,11 @@ public class LocationBarMediator
         mLocationBarLayout.onFuseboxStateChanged(state);
     }
 
+    private void onHasAttachmentsChanged(boolean hasAttachments) {
+        updateNavigateButtonVisibility();
+        updateActivationChip();
+    }
+
     private void onFuseboxInteractionCompleted(boolean actionTaken) {
         AutocompleteInput currentInput = mCurrentInput;
         if (currentInput == null
@@ -2385,7 +2395,13 @@ public class LocationBarMediator
     private void updateNavigateButtonVisibility() {
         boolean isExpandedFusebox =
                 mFuseboxCoordinator.getFuseboxStateSupplier().get() == FuseboxState.EXPANDED;
-        boolean navigateButtonVisible = mUrlHasFocus && isExpandedFusebox && hasTextOrAttachments();
+        // The navigate button is the original send button. In VISIBLE_SEND, the stateful AI Mode
+        // button takes its place.
+        boolean navigateButtonVisible =
+                mUrlHasFocus
+                        && isExpandedFusebox
+                        && hasTextOrAttachments()
+                        && computeAiModeButtonState() != AiModeButtonState.VISIBLE_SEND;
         mLocationBarLayout.setNavigateButtonVisibility(navigateButtonVisible);
     }
 
@@ -3803,16 +3819,27 @@ public class LocationBarMediator
     }
 
     /**
-     * Returns {@link AiModeButtonState#VISIBLE_INACTIVE} if the AI Mode button is eligible to be
-     * shown and the current input is a conventional search, or {@link AiModeButtonState#HIDDEN}
-     * otherwise.
+     * Derives how the AI Mode button should be presented from the current request type and whether
+     * there is content to submit. Without {@link OmniboxFeatures#isStatefulAiModeButtonEnabled()},
+     * the button is only ever {@link AiModeButtonState#HIDDEN} or {@link
+     * AiModeButtonState#VISIBLE_INACTIVE}.
      */
     /* package */ @AiModeButtonState
     int computeAiModeButtonState() {
         if (!isAiModeButtonEligible()) return AiModeButtonState.HIDDEN;
-        return mCurrentInput.getRequestType() == AutocompleteRequestType.SEARCH
-                ? AiModeButtonState.VISIBLE_INACTIVE
-                : AiModeButtonState.HIDDEN;
+
+        @AutocompleteRequestType int requestType = mCurrentInput.getRequestType();
+        if (requestType == AutocompleteRequestType.SEARCH) {
+            return AiModeButtonState.VISIBLE_INACTIVE;
+        }
+        if (OmniboxFeatures.isStatefulAiModeButtonEnabled()
+                && ToolModeUtils.isAimRequest(requestType)) {
+            return hasTextOrAttachments()
+                    ? AiModeButtonState.VISIBLE_SEND
+                    : AiModeButtonState.VISIBLE_ACTIVE;
+        }
+        // AI Mode without the stateful button, or any other request type.
+        return AiModeButtonState.HIDDEN;
     }
 
     /** Returns whether the AI Mode button may be shown at all, regardless of the request type. */
@@ -3841,7 +3868,9 @@ public class LocationBarMediator
     }
 
     /* package */ void onActivationChipSelectionChanged(boolean selected) {
-        if (selected && mCurrentInput != null) {
+        boolean previewsAiMode =
+                selected && mCurrentInput != null && mCurrentInput.isConventionalRequestType();
+        if (previewsAiMode) {
             if (displayStateEquals(DisplayState.SUGGESTIONS)
                     && isUrlBarTextUnchanged()
                     && !TextUtils.isEmpty(mUrlCoordinator.getTextWithoutAutocomplete())) {
@@ -3892,6 +3921,16 @@ public class LocationBarMediator
     void onActivationChipClicked(boolean viaKeyboard) {
         if (mCurrentInput == null) return;
 
+        switch (computeAiModeButtonState()) {
+            case AiModeButtonState.VISIBLE_INACTIVE -> enterAiMode(viaKeyboard);
+            // Unlike the delete button, exits even with a custom tool active, matching desktop.
+            case AiModeButtonState.VISIBLE_ACTIVE -> exitAiMode();
+            case AiModeButtonState.VISIBLE_SEND -> mUrlCoordinator.dispatchGoEvent();
+        }
+    }
+
+    @RequiresNonNull("mCurrentInput")
+    private void enterAiMode(boolean viaKeyboard) {
         boolean userTextPresent =
                 !isUrlBarTextUnchanged()
                         && (!TextUtils.isEmpty(mCurrentInput.getUserText())

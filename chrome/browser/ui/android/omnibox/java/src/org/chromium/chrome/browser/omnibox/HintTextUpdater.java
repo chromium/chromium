@@ -225,7 +225,11 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
             return;
         }
 
-        if (mActivationChipSelectedSupplier.get()) {
+        boolean previewsAiMode =
+                mActivationChipSelectedSupplier.get()
+                        && mCurrentInput != null
+                        && mCurrentInput.isConventionalRequestType();
+        if (previewsAiMode) {
             boolean showDefaultHint =
                     mCurrentInput != null
                             && mCurrentInput.getDisplayState() != DisplayState.SUGGESTIONS
@@ -321,7 +325,10 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
     }
 
     private boolean useAimActivationOrEmptyHint() {
-        return isSuggestionsPopover() && mActivationChipVisibilitySupplier.get();
+        return isSuggestionsPopover()
+                && mActivationChipVisibilitySupplier.get()
+                && mCurrentInput != null
+                && mCurrentInput.isConventionalRequestType();
     }
 
     private boolean isSuggestionsPopover() {

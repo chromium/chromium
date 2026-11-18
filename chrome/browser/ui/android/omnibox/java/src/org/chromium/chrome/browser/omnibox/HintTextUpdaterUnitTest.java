@@ -678,6 +678,29 @@ public class HintTextUpdaterUnitTest {
     }
 
     @Test
+    public void testChipVisibleInAiMode_keepsAiModeHint() {
+        setupAimActivationHintEligible();
+        setInputState(new InputStateBuilder().withHintText("").build());
+        clearInvocations(mUpdateHintTextCallback);
+
+        mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
+
+        verify(mUpdateHintTextCallback).onResult(eq("Ask anything"));
+    }
+
+    @Test
+    public void testChipSelectedInAiMode_keepsAiModeHint() {
+        setInputState(new InputStateBuilder().withHintText("").build());
+        mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        mAutocompleteInput.setDisplayState(DisplayState.SUGGESTIONS);
+        clearInvocations(mUpdateHintTextCallback);
+
+        mActivationChipSelectedSupplier.set(true);
+
+        verify(mUpdateHintTextCallback).onResult(eq("Ask anything"));
+    }
+
+    @Test
     public void testAimActivationHint_ChipSelectedInDrafting_NonEmptyUserText_HidesHint() {
         setupAimActivationHintEligible();
         when(mSearchEngineService.getSearchEngineName()).thenReturn(SEARCH_ENGINE_NAME);
