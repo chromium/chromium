@@ -105,9 +105,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
                               base::BindRepeating(&CreateTestSyncService));
     builder.AddTestingFactory(
         BringAndroidTabsToIOSServiceFactory::GetInstance(),
-        base::BindRepeating([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-          return nullptr;
-        }));
+        KeyedServiceTestingFactoryIOS{});
     profile_ = std::move(builder).Build();
 
     scene_state_ = [[SceneState alloc] init];

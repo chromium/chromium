@@ -542,11 +542,8 @@ TEST_F(ConnectorsInternalsPageHandlerTest,
             /*is_enabled=*/true, std::move(signals),
             DeviceTrustConnectorServiceFactoryIOS::GetForProfile(profile));
       }));
-  builder.AddTestingFactory(
-      IOSUserPermissionServiceFactory::GetInstance(),
-      base::BindOnce([](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-        return nullptr;
-      }));
+  builder.AddTestingFactory(IOSUserPermissionServiceFactory::GetInstance(),
+                            KeyedServiceTestingFactoryIOS{});
   std::unique_ptr<TestProfileIOS> test_profile = std::move(builder).Build();
   SetManagementAuthority(test_profile.get(),
                          policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);

@@ -250,12 +250,8 @@ TEST_F(UniversalOptOutEligibilityUtilsTest,
        TestGPCExtensionEnabledWithNullService) {
   EnableAllFeatures();
   TestProfileIOS::Builder builder;
-  builder.AddTestingFactory(
-      UniversalOptOutServiceFactory::GetInstance(),
-      base::BindRepeating(
-          [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-            return nullptr;
-          }));
+  builder.AddTestingFactory(UniversalOptOutServiceFactory::GetInstance(),
+                            KeyedServiceTestingFactoryIOS{});
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   EXPECT_FALSE(IsGPCExtensionEnabled(profile.get()));
 }

@@ -23,14 +23,6 @@
 
 namespace enterprise_reporting {
 
-namespace {
-
-std::unique_ptr<KeyedService> CreateNullService(ProfileIOS* profile) {
-  return nullptr;
-}
-
-}  // namespace
-
 class SaasUsageReportSchedulerDelegateIOSTest : public PlatformTest {
  public:
   SaasUsageReportSchedulerDelegateIOSTest() = default;
@@ -61,7 +53,7 @@ class SaasUsageReportSchedulerDelegateIOSTest : public PlatformTest {
       builder.AddTestingFactory(
           enterprise_connectors::IOSRealtimeReportingClientFactory::
               GetInstance(),
-          base::BindRepeating(&CreateNullService));
+          KeyedServiceTestingFactoryIOS{});
     }
     return builder;
   }

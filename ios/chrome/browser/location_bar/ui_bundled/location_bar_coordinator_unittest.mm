@@ -117,11 +117,8 @@ class LocationBarCoordinatorTest : public PlatformTest {
         base::BindRepeating(
             &std::make_unique<
                 testing::NiceMock<feature_engagement::test::MockTracker>>));
-    test_profile_builder.AddTestingFactory(
-        GeminiServiceFactory::GetInstance(),
-        base::BindRepeating([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-          return nullptr;
-        }));
+    test_profile_builder.AddTestingFactory(GeminiServiceFactory::GetInstance(),
+                                           KeyedServiceTestingFactoryIOS{});
 
     test_profile_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),

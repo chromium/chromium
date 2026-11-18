@@ -265,11 +265,8 @@ TEST_F(IOSChromePasskeyClientTest, PasswordSyncDisabled) {
 // Tests that passkey saving is disabled when sync service is null.
 TEST_F(IOSChromePasskeyClientTest, SyncServiceNull) {
   TestProfileIOS::Builder builder;
-  builder.AddTestingFactory(
-      SyncServiceFactory::GetInstance(),
-      base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-        return nullptr;
-      }));
+  builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                            KeyedServiceTestingFactoryIOS{});
   auto profile = std::move(builder).Build();
   web::FakeWebState fake_web_state;
   fake_web_state.SetBrowserState(profile.get());
@@ -502,11 +499,8 @@ TEST_F(IOSChromePasskeyClientTest,
 // authorization service is null.
 TEST_F(IOSChromePasskeyClientTest, DeviceAuthorizationServiceNull) {
   TestProfileIOS::Builder builder;
-  builder.AddTestingFactory(
-      IOSDeviceAuthorizationServiceFactory::GetInstance(),
-      base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-        return nullptr;
-      }));
+  builder.AddTestingFactory(IOSDeviceAuthorizationServiceFactory::GetInstance(),
+                            KeyedServiceTestingFactoryIOS{});
   auto profile = std::move(builder).Build();
   web::FakeWebState fake_web_state;
   fake_web_state.SetBrowserState(profile.get());
