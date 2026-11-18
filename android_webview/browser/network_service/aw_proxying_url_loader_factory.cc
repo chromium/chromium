@@ -1372,10 +1372,19 @@ void AwProxyingURLLoaderFactory::GetCookieHeader(
           static_cast<int32_t>(blink::mojom::ResourceType::kMainFrame) ||
       request.resource_type ==
           static_cast<int32_t>(blink::mojom::ResourceType::kSubFrame)) {
+    // WebView intercepts before the network stack can populate the redirect
+    // chain. Direct downloads inherit kMainFrame but have an empty chain here;
+    // use their request URL while preserving real navigation redirect chains.
+    std::vector<GURL> single_url_chain;
+    const std::vector<GURL>* url_chain = &request.navigation_redirect_chain;
+    if (url_chain->empty()) {
+      single_url_chain.push_back(request.url);
+      url_chain = &single_url_chain;
+    }
     options.set_same_site_cookie_context(
         net::cookie_util::ComputeSameSiteContextForRequest(
-            request.method, request.navigation_redirect_chain,
-            request.site_for_cookies, request.request_initiator,
+            request.method, *url_chain, request.site_for_cookies,
+            request.request_initiator,
             request.resource_type ==
                 static_cast<int32_t>(blink::mojom::ResourceType::kMainFrame),
             /*force_ignore_site_for_cookies=*/false,

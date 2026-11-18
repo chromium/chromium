@@ -1679,6 +1679,61 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Network"})
+    public void testInterceptedCookieHeaders_sameSiteStrictAllowedDirectDownload()
+            throws Throwable {
+        // A same-origin download must start with Cookie interception enabled and
+        // retain its SameSite=Strict cookie.
+        mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setIncludeCookiesOnIntercept(true);
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+
+        var cookieManager = mAwContents.getBrowserContextForPublicApi().getCookieManager();
+        cookieManager.removeAllCookies();
+
+        final String pagePath = "/download_page.html";
+        final String downloadPath = "/download.bin";
+        final String pageUrl =
+                addPageToTestServer(
+                        mWebServer,
+                        pagePath,
+                        CommonResources.makeHtmlPageFrom(
+                                "",
+                                "<a id=\"link\" href=\""
+                                        + downloadPath
+                                        + "\" download=\"download.bin\">download</a>"));
+
+        final String downloadUrl = mWebServer.setResponse(downloadPath, "download data", null);
+
+        cookieManager.setCookie(downloadUrl, "session=SECRET; SameSite=Strict");
+
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+
+        var downloadStartHelper = mContentsClient.getOnDownloadStartHelper();
+        final int downloadStartCallCount = downloadStartHelper.getCallCount();
+
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "link");
+
+        // Wait for the response before checking the intercepted and server requests.
+        downloadStartHelper.waitForCallback(downloadStartCallCount);
+        Assert.assertEquals(downloadUrl, downloadStartHelper.getUrl());
+
+        var resourceRequest = mShouldInterceptRequestHelper.getRequestsForUrl(downloadUrl);
+        Assert.assertNotNull(resourceRequest);
+        Assert.assertEquals(
+                "The same-site=Strict cookie SHOULD be attached to a same-origin download",
+                "session=SECRET",
+                resourceRequest.getRequestHeaders().get("Cookie"));
+
+        var serverRequest = mWebServer.getLastRequest(downloadPath);
+        Assert.assertEquals(
+                "The server SHOULD receive the same-site=Strict cookie",
+                "session=SECRET",
+                serverRequest.headerValue("Cookie"));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Network"})
     public void testInjectCorsFailure() throws Throwable {
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
