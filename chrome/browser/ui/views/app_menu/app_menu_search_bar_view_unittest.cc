@@ -19,11 +19,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/view_utils.h"
 
@@ -172,6 +174,49 @@ TEST_F(AppMenuSearchBarViewTest, ClearButtonClearsText) {
   EXPECT_TRUE(GetSearchField(search_bar)->HasFocus());
   EXPECT_TRUE(GetSearchIcon(search_bar)->GetVisible());
   EXPECT_GT(text_changed_count, 0);
+}
+
+TEST_F(AppMenuSearchBarViewTest, HoverHighlightHiddenWhileFocused) {
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetBounds(gfx::Rect(0, 0, 300, 100));
+  auto* search_bar =
+      widget->SetContentsView(std::make_unique<AppMenuSearchBarView>());
+  widget->Show();
+  widget->LayoutRootViewIfNecessary();
+
+  views::Textfield* search_field = GetSearchField(search_bar);
+  views::InkDropHost* ink_drop = views::InkDrop::Get(search_field);
+  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
+  const gfx::Point inside = search_field->GetBoundsInScreen().CenterPoint();
+  // Below the search bar, still inside the widget.
+  const gfx::Point outside =
+      widget->GetWindowBoundsInScreen().bottom_center() - gfx::Vector2d(0, 5);
+
+  generator.MoveMouseTo(inside);
+  EXPECT_TRUE(ink_drop->GetHighlighted());
+  search_field->RequestFocus();
+  ASSERT_TRUE(search_field->HasFocus());
+  EXPECT_FALSE(ink_drop->GetHighlighted());
+  search_field->GetFocusManager()->ClearFocus();
+  ASSERT_FALSE(search_field->HasFocus());
+  EXPECT_FALSE(ink_drop->GetHighlighted());
+  generator.MoveMouseTo(outside);
+  generator.MoveMouseTo(inside);
+  EXPECT_TRUE(ink_drop->GetHighlighted());
+
+  // Focus -> hover while focused -> blur: entering a focused field shows no
+  // highlight, and blurring with the pointer still inside keeps it hidden
+  // until the pointer exits and re-enters.
+  generator.MoveMouseTo(outside);
+  EXPECT_FALSE(ink_drop->GetHighlighted());
+  search_field->RequestFocus();
+  generator.MoveMouseTo(inside);
+  EXPECT_FALSE(ink_drop->GetHighlighted());
+  search_field->GetFocusManager()->ClearFocus();
+  EXPECT_FALSE(ink_drop->GetHighlighted());
+  generator.MoveMouseTo(outside);
+  generator.MoveMouseTo(inside);
+  EXPECT_TRUE(ink_drop->GetHighlighted());
 }
 
 TEST_F(AppMenuSearchBarViewTest, RtlLayoutMirrorsIcons) {

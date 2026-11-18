@@ -64,6 +64,8 @@ class AppMenuSearchBarView::SearchField : public views::Textfield,
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
+  void OnFocus() override;
+  void OnBlur() override;
 
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,
@@ -129,12 +131,7 @@ AppMenuSearchBarView::SearchField::SearchField() {
   text_changed_subscription_ = AddTextChangedCallback(base::BindRepeating(
       &SearchField::UpdateClearButtonVisibility, base::Unretained(this)));
 
-  auto* ink_drop = views::InkDrop::Get(this);
-  ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::UseInkDropForFloodFillRipple(ink_drop,
-                                               /*highlight_on_hover=*/true,
-                                               /*highlight_on_focus=*/true);
-  ink_drop->SetBaseColor(ui::kColorSysStateHoverOnSubtle);
+  views::InkDrop::Get(this)->SetBaseColor(ui::kColorSysStateHoverOnSubtle);
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kCornerRadius);
 }
@@ -162,6 +159,20 @@ void AppMenuSearchBarView::SearchField::Layout(PassKey) {
   clear_button_->SetBoundsRect(gfx::Rect(width() - kIconPadding - icon_size,
                                          leading_bounds.y(), icon_size,
                                          icon_size));
+}
+
+void AppMenuSearchBarView::SearchField::OnFocus() {
+  views::Textfield::OnFocus();
+  if (auto* ink_drop = views::InkDrop::Get(this)) {
+    ink_drop->SetMode(views::InkDropHost::InkDropMode::OFF);
+  }
+}
+
+void AppMenuSearchBarView::SearchField::OnBlur() {
+  views::Textfield::OnBlur();
+  if (auto* ink_drop = views::InkDrop::Get(this)) {
+    ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
+  }
 }
 
 void AppMenuSearchBarView::SearchField::ClearQuery() {
