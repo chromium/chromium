@@ -109,7 +109,6 @@ class RasterInterface : public InterfaceBase {
   virtual void WritePixels(const gpu::Mailbox& dest_mailbox,
                            int dst_x_offset,
                            int dst_y_offset,
-                           GLenum texture_target,
                            const SkPixmap& src_sk_pixmap) = 0;
 
   // Asynchronously writes YUV pixels from caller-owned memory inside
@@ -173,7 +172,6 @@ class RasterInterface : public InterfaceBase {
   // GPU process.
   virtual void ReadbackARGBPixelsAsync(
       const gpu::Mailbox& source_mailbox,
-      GLenum source_target,
       GrSurfaceOrigin source_origin,
       const gfx::Size& source_size,
       const gfx::Point& source_starting_point,
@@ -190,7 +188,6 @@ class RasterInterface : public InterfaceBase {
   // The color spaces are currently ignored.
   virtual void ReadbackYUVPixelsAsync(
       const gpu::Mailbox& source_mailbox,
-      GLenum source_target,
       const gfx::Rect& source_rect,
       bool vertically_flip_texture,
       const SkYUVAPixmaps& dst_pixmaps,

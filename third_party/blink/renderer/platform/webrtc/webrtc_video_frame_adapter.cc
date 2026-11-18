@@ -277,8 +277,7 @@ void WebRtcVideoFrameAdapter::SharedResources::ScaleAndMapFrameAsync(
       }
 
       ri->ReadbackYUVPixelsAsync(
-          shared_image->mailbox(), shared_image->GetTextureTarget(),
-          source_rect,
+          shared_image->mailbox(), source_rect,
           shared_image->surface_origin() != kTopLeft_GrSurfaceOrigin,
           SkYUVAPixmaps::FromExternalPixmaps(even_info, even_planes.data()),
           output_frame->ColorSpace().GetAsFullRangeRGB().ToSkColorSpace(),

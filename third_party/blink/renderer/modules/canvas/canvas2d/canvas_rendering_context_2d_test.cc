@@ -487,7 +487,6 @@ class MockRasterInterface : public viz::TestRasterInterface {
               (const gpu::Mailbox& dest_mailbox,
                int dst_x_offset,
                int dst_y_offset,
-               GLenum texture_target,
                const SkPixmap& src_sk_pixmap),
               (override));
 };

@@ -1005,10 +1005,8 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
       hardware_resource->shared_image()->alpha_type(),
       hardware_resource->shared_image()->color_space().ToSkColorSpace());
   SkPixmap pixmap(info, source_pixels, bytes_per_row);
-  ri->WritePixels(
-      hardware_resource->shared_image()->mailbox(), /*dst_x_offset=*/0,
-      /*dst_y_offset=*/0, hardware_resource->shared_image()->GetTextureTarget(),
-      pixmap);
+  ri->WritePixels(hardware_resource->shared_image()->mailbox(),
+                  /*dst_x_offset=*/0, /*dst_y_offset=*/0, pixmap);
 
   gpu::SyncToken ri_sync_token =
       gpu::RasterScopedAccess::EndAccess(std::move(ri_access));

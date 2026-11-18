@@ -51,8 +51,7 @@ SyncToken RasterInterface::WritePixels(
     const SkPixmap& src_sk_pixmap) {
   CHECK(dest);
   auto access = dest->BeginRasterAccess(this, sync_token, /*readonly=*/false);
-  WritePixels(dest->mailbox(), dst_x_offset, dst_y_offset,
-              dest->GetTextureTarget(), src_sk_pixmap);
+  WritePixels(dest->mailbox(), dst_x_offset, dst_y_offset, src_sk_pixmap);
   auto new_token = RasterScopedAccess::EndAccess(std::move(access));
   dest->UpdateDestructionSyncToken(new_token);
   return new_token;

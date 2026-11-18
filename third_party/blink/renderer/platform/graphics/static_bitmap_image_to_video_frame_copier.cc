@@ -202,8 +202,7 @@ void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsAsync(
       shared_image->BeginRasterAccess(context_provider->RasterInterface(),
                                       image->GetSyncToken(), /*readonly=*/true);
   context_provider->RasterInterface()->ReadbackARGBPixelsAsync(
-      shared_image->mailbox(), shared_image->GetTextureTarget(), image_origin,
-      image_size, src_point, dst_pixmap,
+      shared_image->mailbox(), image_origin, image_size, src_point, dst_pixmap,
       blink::BindOnce(
           &StaticBitmapImageToVideoFrameCopier::OnARGBPixelsReadAsync,
           weak_ptr_factory_.GetWeakPtr(), image, temp_argb_frame,
@@ -240,8 +239,7 @@ void StaticBitmapImageToVideoFrameCopier::ReadYUVPixelsAsync(
       shared_image->BeginRasterAccess(context_provider->RasterInterface(),
                                       image->GetSyncToken(), /*readonly=*/true);
   context_provider->RasterInterface()->ReadbackYUVPixelsAsync(
-      shared_image->mailbox(), shared_image->GetTextureTarget(),
-      gfx::Rect(image_size),
+      shared_image->mailbox(), gfx::Rect(image_size),
       shared_image->surface_origin() != kTopLeft_GrSurfaceOrigin,
       output_frame->GetWritableVisibleSkYUVAPixmaps(),
       output_frame->ColorSpace().GetAsFullRangeRGB().ToSkColorSpace(),

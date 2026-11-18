@@ -1256,7 +1256,7 @@ TEST_F(RasterImplementationTest, ReadbackYUVPixelsAsyncPadding) {
           v_plane_data.data(), v_plane_stride),
   };
   gl_->ReadbackYUVPixelsAsync(
-      mailbox, GL_TEXTURE_2D, source_rect, /*vertically_flip_texture=*/false,
+      mailbox, source_rect, /*vertically_flip_texture=*/false,
       SkYUVAPixmaps::FromExternalPixmaps(yuva_info, pixmaps.data()),
       /*dst_color_space=*/nullptr, std::move(release_mailbox),
       std::move(readback_done));
@@ -1383,8 +1383,7 @@ TEST_F(RasterImplementationTest, WritePixelsShortTransferBufferAlloc) {
   // GL_INVALID_OPERATION rather than writing past the short transfer buffer.
   SetMappedMemoryLimit(1);
   GetExpectedMemory(MaxTransferBufferSize());
-  gl_->WritePixels(mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0,
-                   GL_TEXTURE_2D, src_pixmap);
+  gl_->WritePixels(mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0, src_pixmap);
   EXPECT_TRUE(transfer_buffer_->InSync());
   EXPECT_TRUE(NoCommandsWritten());
   EXPECT_EQ(GL_INVALID_OPERATION, CheckError());
@@ -1395,8 +1394,7 @@ TEST_F(RasterImplementationTest, WritePixelsShortTransferBufferAlloc) {
   ClearCommands();
   GetExpectedMemory(MaxTransferBufferSize());
   ExpectedMemoryInfo mem = GetExpectedMappedMemory(total_size);
-  gl_->WritePixels(mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0,
-                   GL_TEXTURE_2D, src_pixmap);
+  gl_->WritePixels(mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0, src_pixmap);
   EXPECT_TRUE(transfer_buffer_->InSync());
   EXPECT_FALSE(NoCommandsWritten());
   EXPECT_EQ(GL_NO_ERROR, CheckError());
@@ -1489,7 +1487,7 @@ TEST_F(RasterImplementationTest, WritePixelsRowBytesOverflowWhenHeightIsOne) {
     SkPixmap src_pixmap(src_info, src_pixels.data(), oversized_row_bytes);
 
     gl_->WritePixels(mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0,
-                     GL_TEXTURE_2D, src_pixmap);
+                     src_pixmap);
     EXPECT_TRUE(NoCommandsWritten());
     EXPECT_EQ(GL_INVALID_OPERATION, CheckError());
   }
@@ -1566,14 +1564,14 @@ TEST_F(RasterImplementationTest, WritePixelsTransferBufferContractDuringAlloc) {
   std::vector<uint8_t> pixels(src_info.computeMinByteSize(), 0x5A);
   SkPixmap pixmap(src_info, pixels.data(), src_info.minRowBytes());
 
-  ri->WritePixels(gpu::Mailbox::Generate(), 0, 0, GL_TEXTURE_2D, pixmap);
+  ri->WritePixels(gpu::Mailbox::Generate(), 0, 0, pixmap);
   EXPECT_EQ(static_cast<GLenum>(GL_INVALID_OPERATION), ri->GetError());
 
   // Now allow MappedMemoryManager to allocate a fallback chunk while the
   // transfer buffer remains contracted, and verify WritePixels succeeds via
   // the mapped memory fallback.
   cmd_buffer.set_max_create_transfer_buffer_size(UINT32_MAX);
-  ri->WritePixels(gpu::Mailbox::Generate(), 0, 0, GL_TEXTURE_2D, pixmap);
+  ri->WritePixels(gpu::Mailbox::Generate(), 0, 0, pixmap);
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), ri->GetError());
 
   EXPECT_CALL(gpu_control, SetGpuControlClient(nullptr)).Times(1);
@@ -1608,7 +1606,7 @@ TEST_F(RasterImplementationTest, ReadbackYUVPixelsAsyncUnsupportedLayout) {
   base::test::TestFuture<bool> readback_done_future;
   const uint8_t* commands_start = GetPut().data();
   gl_->ReadbackYUVPixelsAsync(
-      gpu::Mailbox::Generate(), GL_TEXTURE_2D, gfx::Rect(kWidth, kHeight),
+      gpu::Mailbox::Generate(), gfx::Rect(kWidth, kHeight),
       /*vertically_flip_texture=*/false, yuva_pixmaps,
       /*dst_color_space=*/nullptr, release_mailbox_future.GetCallback(),
       readback_done_future.GetCallback());

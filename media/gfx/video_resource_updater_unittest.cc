@@ -39,7 +39,6 @@ class UploadCounterRasterInterface : public viz::TestRasterInterface {
   void WritePixels(const gpu::Mailbox& dest_mailbox,
                    int dst_x_offset,
                    int dst_y_offset,
-                   GLenum texture_target,
                    const SkPixmap& src_sk_pixmap) override {
     ++upload_count_;
     last_upload_ = reinterpret_cast<const uint8_t*>(src_sk_pixmap.addr());

@@ -591,8 +591,8 @@ void NavigationEntryScreenshot::DoReadBack(SkBitmap bitmap) {
       raster_interface, shared_image->creation_sync_token(),
       /*readonly=*/true);
   raster_interface->ReadbackARGBPixelsAsync(
-      shared_image->mailbox(), shared_image->GetTextureTarget(),
-      shared_image->surface_origin(), shared_image->size(), src_point, pixmap,
+      shared_image->mailbox(), shared_image->surface_origin(),
+      shared_image->size(), src_point, pixmap,
       base::BindOnce(&NavigationEntryScreenshot::OnReadBack,
                      weak_factory_.GetWeakPtr(), std::move(bitmap)));
   shared_image_provider_->SetReadSyncToken(

@@ -370,8 +370,6 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     ri->BeginQueryEXT(query_target, staging_buffer->query_id);
   }
 
-  uint32_t texture_target = backing->shared_image()->GetTextureTarget();
-
   // Clear to ensure the resource is fully initialized and BeginAccess succeeds.
   if (needs_clear) {
     SkImageInfo dst_info = SkImageInfo::Make(
@@ -382,7 +380,7 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     if (bitmap.tryAllocPixels(dst_info)) {
       bitmap.eraseColor(raster_source->background_color());
       ri->WritePixels(backing->shared_image()->mailbox(), /*dst_x_offset=*/0,
-                      /*dst_y_offset=*/0, texture_target, bitmap.pixmap());
+                      /*dst_y_offset=*/0, bitmap.pixmap());
     }
   }
 

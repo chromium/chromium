@@ -309,8 +309,7 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
 
   gfx::Size texture_size = txt_frame->coded_size();
   ri->ReadbackARGBPixelsAsync(
-      shared_image->mailbox(), shared_image->GetTextureTarget(), origin,
-      texture_size, src_point, dst_pixmap,
+      shared_image->mailbox(), origin, texture_size, src_point, dst_pixmap,
       blink::BindOnce(&BackgroundReadback::OnARGBPixelsFrameReadCompleted,
                       MakeUnwrappingCrossThreadWeakHandle(this),
                       std::move(result_cb), txt_frame, std::move(result)));
@@ -382,9 +381,8 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrame(
                       dest_frame, std::move(done_cb));
 
   gfx::Size texture_size = txt_frame->coded_size();
-  ri->ReadbackARGBPixelsAsync(
-      shared_image->mailbox(), shared_image->GetTextureTarget(), origin,
-      texture_size, src_point, *dst_pixmap, std::move(completion_cb));
+  ri->ReadbackARGBPixelsAsync(shared_image->mailbox(), origin, texture_size,
+                              src_point, *dst_pixmap, std::move(completion_cb));
   media::WaitAndReplaceSyncTokenClient client(ri, std::move(ri_access));
   txt_frame->UpdateReleaseSyncToken(&client);
 }
@@ -449,8 +447,7 @@ void BackgroundReadback::ReadbackYUVTextureBackedFrame(
                       dest_frame, triplanar_frame, std::move(done_cb));
 
   ri->ReadbackYUVPixelsAsync(
-      shared_image->mailbox(), shared_image->GetTextureTarget(),
-      txt_frame->visible_rect(),
+      shared_image->mailbox(), txt_frame->visible_rect(),
       shared_image->surface_origin() != kTopLeft_GrSurfaceOrigin,
       triplanar_frame->GetWritableVisibleSkYUVAPixmaps(),
       triplanar_frame->ColorSpace().GetAsFullRangeRGB().ToSkColorSpace(),

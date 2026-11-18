@@ -53,7 +53,6 @@ class ReadbackTestRasterInterface : public viz::TestRasterInterface {
 
   void ReadbackARGBPixelsAsync(
       const gpu::Mailbox& source_mailbox,
-      GLenum source_target,
       GrSurfaceOrigin source_origin,
       const gfx::Size& source_size,
       const gfx::Point& source_starting_point,

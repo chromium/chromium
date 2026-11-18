@@ -342,9 +342,8 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       SkPixmap pixmap;
       staging_surface_->peekPixels(&pixmap);
 
-      uint32_t texture_target = backing->shared_image()->GetTextureTarget();
       ri->WritePixels(backing->shared_image()->mailbox(), /*dst_x_offset=*/0,
-                      /*dst_y_offset=*/0, texture_target, pixmap);
+                      /*dst_y_offset=*/0, pixmap);
     }
 
     backing->mailbox_sync_token =

@@ -315,7 +315,6 @@ class GpuRasterPixelTest : public testing::Test,
         ri, shared_image->creation_sync_token(), /*readonly=*/false);
     ri->WritePixels(shared_image->mailbox(), /*dst_x_offset=*/0,
                     /*dst_y_offset=*/0,
-                    /*texture_target=*/0,
                     SkPixmap(info, bitmap.getPixels(), info.minRowBytes()));
     EXPECT_EQ(ri->GetError(), static_cast<unsigned>(GL_NO_ERROR));
     return gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
@@ -2814,7 +2813,7 @@ TEST_F(GpuRasterPixelTest, CopySharedImage) {
         ri, source_client_si->creation_sync_token(), /*readonly=*/false);
 
     ri->WritePixels(source_client_si->mailbox(), /*dst_x_offset=*/0,
-                    /*dst_y_offset=*/0, GL_TEXTURE_2D, upload_bitmap.pixmap());
+                    /*dst_y_offset=*/0, upload_bitmap.pixmap());
     gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
   }
 

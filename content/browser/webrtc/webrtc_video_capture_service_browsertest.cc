@@ -223,8 +223,7 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
 
     auto ri_access = shared_image->BeginRasterAccess(
         ri, shared_image->creation_sync_token(), /*readonly=*/false);
-    ri->WritePixels(shared_image->mailbox(), 0, 0, GL_TEXTURE_2D,
-                    frame_bitmap.pixmap());
+    ri->WritePixels(shared_image->mailbox(), 0, 0, frame_bitmap.pixmap());
 
     ri_token = gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
     int8_t* ri_token_data = ri_token.GetData();

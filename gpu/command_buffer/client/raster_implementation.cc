@@ -1201,7 +1201,6 @@ void RasterImplementation::CopySharedImage(const gpu::Mailbox& source_mailbox,
 void RasterImplementation::WritePixels(const gpu::Mailbox& dest_mailbox,
                                        int dst_x_offset,
                                        int dst_y_offset,
-                                       GLenum texture_target,
                                        const SkPixmap& src_sk_pixmap) {
   TRACE_EVENT0("gpu", "RasterImplementation::WritePixels");
   const auto& src_info = src_sk_pixmap.info();
@@ -1644,7 +1643,6 @@ void RasterImplementation::CancelRequests() {
 
 void RasterImplementation::ReadbackARGBPixelsAsync(
     const gpu::Mailbox& source_mailbox,
-    GLenum source_target,
     GrSurfaceOrigin source_origin,
     const gfx::Size& source_size,
     const gfx::Point& source_starting_point,
@@ -1692,7 +1690,6 @@ bool RasterImplementation::ReadbackImagePixels(
 
 void RasterImplementation::ReadbackYUVPixelsAsync(
     const gpu::Mailbox& source_mailbox,
-    GLenum source_target,
     const gfx::Rect& source_rect,
     bool vertically_flip_texture,
     const SkYUVAPixmaps& dst_pixmaps,
