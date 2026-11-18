@@ -21,6 +21,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/trace_event/trace_event.h"
@@ -1743,6 +1744,23 @@ GetScreenshotCollectionOptions(
   }
 
   return screenshot_collection_options_value;
+}
+
+apc::ExecuteJsResult::JavaScriptDialog::Type ToProtoJavaScriptDialogType(
+    JavaScriptDialogType type) {
+  switch (type) {
+    case JavaScriptDialogType::kAlert:
+      return apc::ExecuteJsResult::JavaScriptDialog::TYPE_ALERT;
+    case JavaScriptDialogType::kConfirm:
+      return apc::ExecuteJsResult::JavaScriptDialog::TYPE_CONFIRM;
+    case JavaScriptDialogType::kPrompt:
+      return apc::ExecuteJsResult::JavaScriptDialog::TYPE_PROMPT;
+  }
+  NOTREACHED();
+}
+
+bool IsExecuteJsToolName(std::string_view tool_name) {
+  return tool_name == ExecuteJsToolRequest::kName;
 }
 
 void BuildActionsResultWithObservations(

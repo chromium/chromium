@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/execution_engine.h"
@@ -29,6 +30,19 @@
 #include "ui/gfx/codec/png_codec.h"
 
 namespace actor {
+
+content::WebContents* GetWebContentsIfSurfaceAlive(
+    const ActorSurface* actor_surface) {
+  if (!actor_surface) {
+    return nullptr;
+  }
+  if (std::optional<tabs::TabHandle> tab_handle =
+          actor_surface->GetTabHandle()) {
+    tabs::TabInterface* tab = tab_handle->Get();
+    return tab ? tab->GetContents() : nullptr;
+  }
+  return actor_surface->GetWebContents();
+}
 
 glic::GlicInstance* GetGlicInstanceForTask(const ActorTask& task) {
   glic::GlicKeyedService* glic_service =

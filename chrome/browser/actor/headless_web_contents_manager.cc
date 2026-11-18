@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "chrome/browser/actor/headless_page_host.h"
+#include "chrome/browser/actor/javascript_dialog_interceptor.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -96,6 +97,12 @@ void HeadlessWebContentsManager::RemoveObserver(Observer* observer) {
 }
 
 void HeadlessWebContentsManager::CloseContents(content::WebContents* source) {}
+
+content::JavaScriptDialogManager*
+HeadlessWebContentsManager::GetJavaScriptDialogManager(
+    content::WebContents* source) {
+  return JavaScriptDialogInterceptor::MaybeGetForWebContents(source);
+}
 
 std::vector<HeadlessWebContentsManager::HeadlessPage>::iterator
 HeadlessWebContentsManager::FindPage(const content::WebContents* contents) {

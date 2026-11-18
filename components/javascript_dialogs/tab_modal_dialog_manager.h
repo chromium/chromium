@@ -103,6 +103,7 @@ class TabModalDialogManager
 
   void BrowserActiveStateChanged();
   void CloseDialogWithReason(DismissalCause reason);
+  bool HasDialogOrPendingDialog() const;
 
   void SetDialogShownCallbackForTesting(base::OnceClosure callback);
   bool IsShowingDialogForTesting() const;
