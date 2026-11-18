@@ -138,7 +138,7 @@ public class KeyboardFocusRowManagerTest {
 
         // Switch a 3rd time.
         switchRow();
-        assertOnNone();
+        assertOnContentPane();
     }
 
     @Test
@@ -155,7 +155,7 @@ public class KeyboardFocusRowManagerTest {
 
         // Switch a 2nd time.
         switchRow();
-        assertOnNone();
+        assertOnContentPane();
     }
 
     @Test
@@ -182,7 +182,7 @@ public class KeyboardFocusRowManagerTest {
 
         // Switch a 4th time.
         switchRow();
-        assertOnNone();
+        assertOnContentPane();
     }
 
     @Test
@@ -215,7 +215,7 @@ public class KeyboardFocusRowManagerTest {
 
         // Switch a 4th time.
         switchRow();
-        assertOnNone();
+        assertOnContentPane();
 
         // Clean up and close the side panel.
         ThreadUtils.runOnUiThreadBlocking(
@@ -258,7 +258,7 @@ public class KeyboardFocusRowManagerTest {
 
         // Switch a 5th time.
         switchRow();
-        assertOnNone();
+        assertOnContentPane();
 
         // Clean up and close the side panel.
         ThreadUtils.runOnUiThreadBlocking(
@@ -294,7 +294,7 @@ public class KeyboardFocusRowManagerTest {
 
         // Switch a 4th time.
         switchRow();
-        assertOnNone();
+        assertOnContentPane();
     }
 
     @Test
@@ -321,7 +321,7 @@ public class KeyboardFocusRowManagerTest {
 
         // Now switch and make sure we appropriately switch given our new cycle position.
         switchRow();
-        assertOnNone();
+        assertOnContentPane();
     }
 
     @Test
@@ -346,9 +346,9 @@ public class KeyboardFocusRowManagerTest {
         switchRow();
         assertOnTabStrip();
 
-        // Switch a 4th time -> NONE.
+        // Switch a 4th time -> CONTENT_PANE.
         switchRow();
-        assertOnNone();
+        assertOnContentPane();
 
         // Clean up message.
         dismissMessage(model);
@@ -368,9 +368,9 @@ public class KeyboardFocusRowManagerTest {
         switchRow();
         assertOnMessage();
 
-        // Switch in reverse back to NONE.
+        // Switch in reverse back to CONTENT_PANE.
         switchRowBackward();
-        assertOnNone();
+        assertOnContentPane();
 
         // Clean up message.
         dismissMessage(model);
@@ -397,7 +397,7 @@ public class KeyboardFocusRowManagerTest {
 
         // Switch a 2nd time.
         switchRow();
-        assertOnNone();
+        assertOnContentPane();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -421,7 +421,7 @@ public class KeyboardFocusRowManagerTest {
                     // Assert we haven't moved focus.
                     assertEquals(
                             "Expected no keyboard focus row switch if top controls are hidden",
-                            KeyboardFocusRow.NONE,
+                            KeyboardFocusRow.CONTENT_PANE,
                             mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
 
                     // Clean up.
@@ -472,7 +472,7 @@ public class KeyboardFocusRowManagerTest {
         // Try to switch focus rows.
         switchRow();
         // Assert we haven't moved focus.
-        assertOnNone();
+        assertOnContentPane();
 
         // Clean up.
         ThreadUtils.runOnUiThreadBlocking(() -> modalDialogManager.dismissAllDialogs(UNKNOWN));
@@ -556,13 +556,13 @@ public class KeyboardFocusRowManagerTest {
                                 mKeyboardFocusRowManager.getKeyboardFocusRowForTesting()));
     }
 
-    private void assertOnNone() {
+    private void assertOnContentPane() {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         assertEquals(
-                                "Expected focus to be on none after invocation of keyboard focus"
-                                        + " row switch",
-                                KeyboardFocusRow.NONE,
+                                "Expected focus to be on content pane after invocation of keyboard"
+                                        + " focus row switch",
+                                KeyboardFocusRow.CONTENT_PANE,
                                 mKeyboardFocusRowManager.getKeyboardFocusRowForTesting()));
     }
 

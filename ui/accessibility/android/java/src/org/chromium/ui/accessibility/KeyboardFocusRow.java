@@ -8,10 +8,10 @@ import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 
-/** Keeps track of options for which row of the top controls currently has keyboard focus. */
+/** Keeps track of which browser UI pane or control row currently has keyboard focus. */
 @NullMarked
 @IntDef({
-    KeyboardFocusRow.NONE,
+    KeyboardFocusRow.CONTENT_PANE,
     KeyboardFocusRow.TAB_STRIP,
     KeyboardFocusRow.OMNIBOX,
     KeyboardFocusRow.BOOKMARKS_BAR,
@@ -20,8 +20,11 @@ import org.chromium.build.annotations.NullMarked;
     KeyboardFocusRow.MESSAGE
 })
 public @interface KeyboardFocusRow {
-    /** The focus is not in one of the rows of top controls. */
-    int NONE = 0;
+    /**
+     * Focus targets the content pane (e.g. web contents or native page), or no tracked browser UI
+     * row currently holds focus.
+     */
+    int CONTENT_PANE = 0;
 
     /** The focus is within the tab strip. */
     int TAB_STRIP = 1;

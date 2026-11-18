@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * Controls the keyboard focus location for top controls and side UI (messages, tab strip, omnibox,
- * bookmarks bar, vertical tabs, side panel) on Chrome for Android.
+ * Controls the keyboard focus location across browser UI panes and control rows (content pane,
+ * messages, tab strip, omnibox, bookmarks bar, vertical tabs, side panel) on Chrome for Android.
  *
  * <p>See {@link org.chromium.chrome.browser.KeyboardShortcuts.KeyboardShortcutsSemanticMeaning}
  */
@@ -58,8 +58,8 @@ import java.util.function.Supplier;
 
     /**
      * Constructs a {@link KeyboardFocusRowManager}, which controls the keyboard focus location for
-     * messages, tab strip, omnibox, bookmarks bar, vertical tabs, and side panel on Chrome for
-     * Android.
+     * the content pane, messages, tab strip, omnibox, bookmarks bar, vertical tabs, and side panel
+     * on Chrome for Android.
      *
      * <p>See {@link org.chromium.chrome.browser.KeyboardShortcuts.KeyboardShortcutsSemanticMeaning}
      *
@@ -134,7 +134,7 @@ import java.util.function.Supplier;
     }
 
     /**
-     * Called when the user switches which row of the top controls should have keyboard focus.
+     * Called when the user switches which browser UI pane or control row has keyboard focus.
      *
      * @param forward True if cycling forward, false if cycling reverse.
      */
@@ -151,7 +151,7 @@ import java.util.function.Supplier;
     /* package */ void focusWebContentsPane() {
         if (!canSwitchKeyboardFocusRow()) return;
 
-        setKeyboardFocusRow(getKeyboardFocusRow(), KeyboardFocusRow.NONE);
+        setKeyboardFocusRow(getKeyboardFocusRow(), KeyboardFocusRow.CONTENT_PANE);
     }
 
     private void setKeyboardFocusRow(
@@ -164,7 +164,7 @@ import java.util.function.Supplier;
         }
 
         switch (newKeyboardFocusRow) {
-            case KeyboardFocusRow.NONE -> {
+            case KeyboardFocusRow.CONTENT_PANE -> {
                 var compositorViewHolder = mCompositorViewHolderSupplier.get();
                 if (compositorViewHolder != null) {
                     compositorViewHolder.setFocusOnFirstContentViewItem();
@@ -247,7 +247,8 @@ import java.util.function.Supplier;
             }
         }
 
-        return KeyboardFocusRow.NONE;
+        // Fallback when focus is in the tab content or no tracked row holds focus.
+        return KeyboardFocusRow.CONTENT_PANE;
     }
 
     /**
@@ -260,8 +261,8 @@ import java.util.function.Supplier;
      */
     private @KeyboardFocusRow int getNewKeyboardFocusRow(
             @KeyboardFocusRow int oldKeyboardFocusRow, boolean forward) {
-        // NONE is always an option.
-        List<Integer> keyboardFocusRows = new ArrayList<>(List.of(KeyboardFocusRow.NONE));
+        // CONTENT_PANE is always an option.
+        List<Integer> keyboardFocusRows = new ArrayList<>(List.of(KeyboardFocusRow.CONTENT_PANE));
 
         // The next item in the focus cycle order is MESSAGE, if it is present.
         var messageContainerCoordinator = mMessageContainerCoordinatorSupplier.get();
@@ -307,7 +308,7 @@ import java.util.function.Supplier;
         }
 
         int currentFocusIndex = keyboardFocusRows.indexOf(oldKeyboardFocusRow);
-        if (currentFocusIndex == -1) return KeyboardFocusRow.NONE;
+        if (currentFocusIndex == -1) return KeyboardFocusRow.CONTENT_PANE;
         int delta = forward ? 1 : -1;
         int newFocusIndex =
                 (currentFocusIndex + delta + keyboardFocusRows.size()) % keyboardFocusRows.size();
