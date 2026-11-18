@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.init;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Process;
@@ -36,7 +34,6 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.ChainedTasks;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -151,7 +148,6 @@ import org.chromium.url.GURL;
 import org.chromium.window.WindowApiCheck;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -233,7 +229,6 @@ public class ProcessInitializationHandler {
     @CallSuper
     protected void handlePreNativeInitialization() {
         ChromeCachedFlags.getInstance().setFullListOfFlags();
-        setProcessStateSummaryForAnrs();
         ColorProviderBridgeFactory.setInstance(new ColorProviderBridgeImpl());
 
         PostTask.setShutdownPostTaskPreNativeThreadPoolEnabled(
@@ -561,31 +556,6 @@ public class ProcessInitializationHandler {
                 AccessibilitySettingsBridge.isCaretBrowsingEnabled(profile));
         // TODO(crbug.com/582747594): Remove once AndroidBottomBar is enabled by default.
         BottomBarEducationUtils.maybeBackfillEducationSeen(profile);
-    }
-
-    /**
-     * We use the Android API to store key information which we can't afford to have wrong on our
-     * ANR reports. So, in this function, we store the version number before the native is loaded.
-     * Once native starts to load, AnrCollector.java will store the main .so file's Build ID and the
-     * list of Finch experiments in addition to the version number. Then, when we query Android for
-     * any ANRs that have happened, we can also pull these key fields.
-     *
-     * <p>We are limited to 128 bytes in ProcessStateSummary, so we only store the most important
-     * things that can change between the ANR happening and an upload (when the rest of the metadata
-     * is gathered). Some fields we ignore because they won't change (eg. which channel or what the
-     * .so filename is) and some we ignore because they aren't as critical. In the future, we could
-     * make this point to a file where we would write out all our crash keys, and thus get full
-     * fidelity.
-     */
-    protected void setProcessStateSummaryForAnrs() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            ActivityManager am =
-                    (ActivityManager)
-                            ContextUtils.getApplicationContext()
-                                    .getSystemService(Context.ACTIVITY_SERVICE);
-            byte[] version = VersionInfo.getProductVersion().getBytes(StandardCharsets.UTF_8);
-            am.setProcessStateSummary(version);
-        }
     }
 
     /**

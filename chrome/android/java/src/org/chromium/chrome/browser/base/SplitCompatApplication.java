@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.base;
 
+import android.app.ActivityManager;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Process;
 
@@ -51,6 +53,7 @@ import org.chromium.components.crash.PureJavaExceptionHandler.JavaExceptionRepor
 import org.chromium.components.module_installer.util.ModuleUtil;
 import org.chromium.components.policy.PolicyCache;
 
+import java.nio.charset.StandardCharsets;
 import java.util.function.Supplier;
 
 /**
@@ -234,6 +237,10 @@ public class SplitCompatApplication extends Application {
             if (AppLocaleUtils.shouldUseSystemManagedLocale()) {
                 AppLocaleUtils.maybeMigrateOverrideLanguage();
             }
+            // Process state summary must be set before the potentially slow
+            // performBrowserProcessPreloading(). Otherwise ANRs in this function will not be
+            // reported.
+            setProcessStateSummaryForAnrs(versionName);
             performBrowserProcessPreloading(context);
         }
 
@@ -368,6 +375,28 @@ public class SplitCompatApplication extends Application {
 
     private static Boolean shouldUseDebugFlags() {
         return ChromeFeatureList.sCommandLineOnNonRooted.isEnabled();
+    }
+
+    /**
+     * Stores the version in the process state summary, for use in ANR reports.
+     *
+     * <p>{@code ActivityManager#setProcessStateSummary()} saves up to 128 bytes. Use it to store
+     * the version early in startup. Android returns it in the {@code ApplicationExitInfo} of this
+     * process after exit.
+     *
+     * <p>Later in startup {@code AnrCollector#saveVariations()} replaces the summary with one that
+     * also holds the Build ID of the native library and an MD5 of the variations state (the list of
+     * Finch experiments).
+     *
+     * <p>A later run of Chrome reads the summary back in {@code AnrCollector} and attaches it to
+     * the ANR report. It discards ANRs that have no summary, because it cannot tell which version
+     * they happened on.
+     */
+    private static void setProcessStateSummaryForAnrs(String versionName) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return;
+        ActivityManager am =
+                ContextUtils.getApplicationContext().getSystemService(ActivityManager.class);
+        am.setProcessStateSummary(versionName.getBytes(StandardCharsets.UTF_8));
     }
 
     private static void updateMemoryPressurePolling(@ApplicationState int newState) {

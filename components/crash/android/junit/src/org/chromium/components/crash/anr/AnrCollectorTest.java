@@ -6,22 +6,43 @@ package org.chromium.components.crash.anr;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import android.app.ActivityManager;
+import android.app.ApplicationExitInfo;
+import android.content.Context;
+
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowActivityManager;
+import org.robolectric.shadows.ShadowActivityManager.ApplicationExitInfoBuilder;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.components.crash.anr.AnrDataOuterClass.AnrData;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /** Unit tests for AnrCollector. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class AnrCollectorTest {
+    private static final String ANR_SKIPPED_UMA = "Crashpad.AnrUpload.Skipped";
+
+    @Rule public TemporaryFolder mOutDir = new TemporaryFolder();
+
     // There are a number of lines well over 100 characters, with tab characters present as well.
     // This is a line-for-line copy of exactly what we get from the API. So, to maintain
     // readability, we avoid line wrapping and preserve tab characters.
@@ -1534,5 +1555,72 @@ public final class AnrCollectorTest {
         // handleProcessStateSummary() iterates over the list of files in the ANR variations
         // directory and finds and returns the correct variations string
         assertEquals(correctVariationsString, parsedSummary.get(2));
+    }
+
+    // Makes ActivityManager#getHistoricalProcessExitReasons() report a past ANR whose process had
+    // set |processStateSummary| before dying.
+    private static void addPastAnr(long timestamp, byte[] processStateSummary) {
+        ActivityManager am =
+                (ActivityManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.ACTIVITY_SERVICE);
+        ShadowActivityManager shadowActivityManager = Shadows.shadowOf(am);
+        ApplicationExitInfoBuilder builder =
+                ApplicationExitInfoBuilder.newBuilder()
+                        .setReason(ApplicationExitInfo.REASON_ANR)
+                        .setTimestamp(timestamp)
+                        .setTraceInputStream(
+                                new ByteArrayInputStream(
+                                        TEXT_FROM_GET_TRACE_INPUT_STREAM.getBytes(
+                                                StandardCharsets.UTF_8)));
+        if (processStateSummary != null) {
+            builder.setProcessStateSummary(processStateSummary);
+        }
+        shadowActivityManager.addApplicationExitInfo(builder.build());
+    }
+
+    // The process state summary set early in startup contains only the version: no delimiters, no
+    // build id and no variations hash. This must be enough for the ANR to be reported.
+    @Test
+    @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
+    public void testCollectAndWriteAnrs_VersionOnlySummaryIsKept() throws IOException {
+        // Deliberately not VersionInfo.getProductVersion(): the reported version must be the one
+        // from the process that had the ANR, not the one collecting it.
+        String version = "123.0.4567.89";
+        addPastAnr(1000, version.getBytes(StandardCharsets.UTF_8));
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ANR_SKIPPED_UMA, AnrSkippedReason.NOT_SKIPPED);
+
+        List<String> anrs = AnrCollector.collectAndWriteAnrs(mOutDir.getRoot());
+
+        watcher.assertExpected();
+        assertEquals(4, anrs.size());
+        assertEquals(version, anrs.get(1));
+        assertEquals("", anrs.get(2));
+        assertEquals("", anrs.get(3));
+        File anrFile = new File(anrs.get(0));
+        assertEquals(mOutDir.getRoot(), anrFile.getParentFile());
+        try (FileInputStream in = new FileInputStream(anrFile)) {
+            AnrData anrData = AnrData.parseFrom(in);
+            assertEquals(MAIN_THREAD_STACK_TRACE, anrData.getMainThreadStackTrace());
+        }
+    }
+
+    @Test
+    @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
+    public void testCollectAndWriteAnrs_MissingSummaryIsSkipped() {
+        addPastAnr(1000, null);
+        addPastAnr(2000, new byte[0]);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(ANR_SKIPPED_UMA, AnrSkippedReason.MISSING_VERSION, 2)
+                        .build();
+
+        List<String> anrs = AnrCollector.collectAndWriteAnrs(mOutDir.getRoot());
+
+        watcher.assertExpected();
+        assertTrue(anrs.isEmpty());
+        assertEquals(0, mOutDir.getRoot().list().length);
     }
 }
