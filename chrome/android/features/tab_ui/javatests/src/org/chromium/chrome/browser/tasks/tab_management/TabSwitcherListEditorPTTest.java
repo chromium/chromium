@@ -127,9 +127,9 @@ public class TabSwitcherListEditorPTTest {
     public void testClose2Tabs() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         int firstTabId = firstPage.loadedTabElement.value().getId();
-        RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
+        WebPageStation secondPage = firstPage.openFakeLinkToWebPage("about:blank");
         int secondTabId = secondPage.loadedTabElement.value().getId();
-        RegularNewTabPageStation thirdPage = secondPage.openNewTabFast();
+        WebPageStation thirdPage = secondPage.openFakeLinkToWebPage("about:blank");
         RegularTabSwitcherStation tabSwitcher = thirdPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
                 tabSwitcher.openAppMenu().clickSelectTabs();
@@ -143,7 +143,7 @@ public class TabSwitcherListEditorPTTest {
                 () -> tabSwitcher.getActivity().getSnackbarManager().dismissAllSnackbars());
 
         // Go back to PageStation for InitialStateRule to reset
-        thirdPage = tabSwitcher.leaveHubToPreviousTabViaBack(RegularNewTabPageStation.newBuilder());
+        thirdPage = tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
         assertFinalDestination(thirdPage);
     }
 
@@ -152,7 +152,7 @@ public class TabSwitcherListEditorPTTest {
     public void testCreateTabGroupOf2() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         int firstTabId = firstPage.loadedTabElement.value().getId();
-        RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
+        WebPageStation secondPage = firstPage.openFakeLinkToWebPage("about:blank");
         int secondTabId = secondPage.loadedTabElement.value().getId();
         RegularTabSwitcherStation tabSwitcher = secondPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
@@ -167,8 +167,7 @@ public class TabSwitcherListEditorPTTest {
         dialog.pressDone();
 
         // Go back to PageStation for InitialStateRule to reset
-        secondPage =
-                tabSwitcher.leaveHubToPreviousTabViaBack(RegularNewTabPageStation.newBuilder());
+        secondPage = tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
         assertFinalDestination(secondPage);
     }
 
@@ -342,10 +341,10 @@ public class TabSwitcherListEditorPTTest {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         Tab firstTab = firstPage.loadedTabElement.value();
         int firstTabId = firstTab.getId();
-        RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
+        WebPageStation secondPage = firstPage.openFakeLinkToWebPage("about:blank");
         Tab secondTab = secondPage.loadedTabElement.value();
         int secondTabId = secondTab.getId();
-        RegularNewTabPageStation thirdPage = secondPage.openNewTabFast();
+        WebPageStation thirdPage = secondPage.openFakeLinkToWebPage("about:blank");
         int thirdTabId = thirdPage.loadedTabElement.value().getId();
 
         RegularTabSwitcherStation tabSwitcher = thirdPage.openRegularTabSwitcher();
@@ -366,7 +365,7 @@ public class TabSwitcherListEditorPTTest {
         TabBinningUtil.assertBinsEqual(
                 tabSwitcher.getTabModel(), group(firstTabId, secondTabId, thirdTabId));
 
-        thirdPage = tabSwitcher.leaveHubToPreviousTabViaBack(RegularNewTabPageStation.newBuilder());
+        thirdPage = tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
         assertFinalDestination(thirdPage);
     }
 }
