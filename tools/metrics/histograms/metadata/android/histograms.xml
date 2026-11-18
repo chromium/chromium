@@ -132,6 +132,9 @@ chromium-metrics-reviews@google.com.
   <variant name=".LinkWithInterestFor"
       summary="The context menu was shown for a link (image or non-image)
                that has the `interestfor` attribute."/>
+  <variant name=".Other"
+      summary="The context menu was shown in a context other than those
+               explicitly enumerated (e.g. audio or plugin/embed elements)."/>
   <variant name=".Page" summary="The context menu was shown for a page."/>
   <variant name=".SharedHighlightingInteraction"
       summary="The context menu was shown from tap on highlighted text."/>

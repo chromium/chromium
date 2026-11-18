@@ -220,9 +220,10 @@ public final class ContextMenuUtils {
             return "SharedHighlightingInteraction";
         } else if (params.isPage()) {
             return "Page";
+        } else if (params.isAnchor()) {
+            return "Link";
         }
-        assert params.isAnchor();
-        return "Link";
+        return "Other";
     }
 
     /**

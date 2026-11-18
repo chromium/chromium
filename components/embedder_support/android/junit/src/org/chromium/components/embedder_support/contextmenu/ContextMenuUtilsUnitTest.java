@@ -887,4 +887,177 @@ public class ContextMenuUtilsUnitTest {
         assertEquals(
                 "ImageLink", ContextMenuUtils.getContextMenuTypeForHistogram(linkedCanvasParams));
     }
+
+    @Test
+    public void testGetContextMenuTypeForHistogram_video() {
+        ContextMenuParams bareVideoParams =
+                createParamsForHistogramTest(
+                        ContextMenuDataMediaType.VIDEO,
+                        GURL.emptyGURL(),
+                        /* openedFromHighlight= */ false,
+                        /* openedFromInterestFor= */ false);
+        assertEquals("Video", ContextMenuUtils.getContextMenuTypeForHistogram(bareVideoParams));
+
+        ContextMenuParams linkedVideoParams =
+                createParamsForHistogramTest(
+                        ContextMenuDataMediaType.VIDEO,
+                        sLinkGUrl,
+                        /* openedFromHighlight= */ false,
+                        /* openedFromInterestFor= */ false);
+        assertEquals("Video", ContextMenuUtils.getContextMenuTypeForHistogram(linkedVideoParams));
+    }
+
+    @Test
+    public void testGetContextMenuTypeForHistogram_image() {
+        ContextMenuParams bareImageParams =
+                createParamsForHistogramTest(
+                        ContextMenuDataMediaType.IMAGE,
+                        GURL.emptyGURL(),
+                        /* openedFromHighlight= */ false,
+                        /* openedFromInterestFor= */ false);
+        assertEquals("Image", ContextMenuUtils.getContextMenuTypeForHistogram(bareImageParams));
+    }
+
+    @Test
+    public void testGetContextMenuTypeForHistogram_imageLink() {
+        ContextMenuParams linkedImageParams =
+                createParamsForHistogramTest(
+                        ContextMenuDataMediaType.IMAGE,
+                        sLinkGUrl,
+                        /* openedFromHighlight= */ false,
+                        /* openedFromInterestFor= */ false);
+        assertEquals(
+                "ImageLink", ContextMenuUtils.getContextMenuTypeForHistogram(linkedImageParams));
+    }
+
+    @Test
+    public void testGetContextMenuTypeForHistogram_sharedHighlightingInteraction() {
+        ContextMenuParams highlightParams =
+                createParamsForHistogramTest(
+                        ContextMenuDataMediaType.NONE,
+                        GURL.emptyGURL(),
+                        /* openedFromHighlight= */ true,
+                        /* openedFromInterestFor= */ false);
+        assertEquals(
+                "SharedHighlightingInteraction",
+                ContextMenuUtils.getContextMenuTypeForHistogram(highlightParams));
+    }
+
+    @Test
+    public void testGetContextMenuTypeForHistogram_page() {
+        ContextMenuParams pageParams =
+                createParamsForHistogramTest(
+                        ContextMenuDataMediaType.NONE,
+                        GURL.emptyGURL(),
+                        /* openedFromHighlight= */ false,
+                        /* openedFromInterestFor= */ false);
+        assertEquals("Page", ContextMenuUtils.getContextMenuTypeForHistogram(pageParams));
+
+        ContextMenuParams interestForPageParams =
+                createParamsForHistogramTest(
+                        ContextMenuDataMediaType.NONE,
+                        GURL.emptyGURL(),
+                        /* openedFromHighlight= */ false,
+                        /* openedFromInterestFor= */ true);
+        assertEquals(
+                "Page", ContextMenuUtils.getContextMenuTypeForHistogram(interestForPageParams));
+    }
+
+    @Test
+    public void testGetContextMenuTypeForHistogram_link() {
+        ContextMenuParams linkParams =
+                createParamsForHistogramTest(
+                        ContextMenuDataMediaType.NONE,
+                        sLinkGUrl,
+                        /* openedFromHighlight= */ false,
+                        /* openedFromInterestFor= */ false);
+        assertEquals("Link", ContextMenuUtils.getContextMenuTypeForHistogram(linkParams));
+
+        ContextMenuParams linkedAudioParams =
+                createParamsForHistogramTest(
+                        ContextMenuDataMediaType.AUDIO,
+                        sLinkGUrl,
+                        /* openedFromHighlight= */ false,
+                        /* openedFromInterestFor= */ false);
+        assertEquals("Link", ContextMenuUtils.getContextMenuTypeForHistogram(linkedAudioParams));
+
+        ContextMenuParams linkedPluginParams =
+                createParamsForHistogramTest(
+                        ContextMenuDataMediaType.PLUGIN,
+                        sLinkGUrl,
+                        /* openedFromHighlight= */ false,
+                        /* openedFromInterestFor= */ false);
+        assertEquals("Link", ContextMenuUtils.getContextMenuTypeForHistogram(linkedPluginParams));
+
+        ContextMenuParams linkedFileParams =
+                createParamsForHistogramTest(
+                        ContextMenuDataMediaType.FILE,
+                        sLinkGUrl,
+                        /* openedFromHighlight= */ false,
+                        /* openedFromInterestFor= */ false);
+        assertEquals("Link", ContextMenuUtils.getContextMenuTypeForHistogram(linkedFileParams));
+
+        ContextMenuParams interestForLinkParams =
+                createParamsForHistogramTest(
+                        ContextMenuDataMediaType.NONE,
+                        sLinkGUrl,
+                        /* openedFromHighlight= */ false,
+                        /* openedFromInterestFor= */ true);
+        assertEquals(
+                "Link", ContextMenuUtils.getContextMenuTypeForHistogram(interestForLinkParams));
+    }
+
+    @Test
+    public void testGetContextMenuTypeForHistogram_other() {
+        ContextMenuParams unlinkedAudioParams =
+                createParamsForHistogramTest(
+                        ContextMenuDataMediaType.AUDIO,
+                        GURL.emptyGURL(),
+                        /* openedFromHighlight= */ false,
+                        /* openedFromInterestFor= */ false);
+        assertEquals("Other", ContextMenuUtils.getContextMenuTypeForHistogram(unlinkedAudioParams));
+
+        ContextMenuParams unlinkedPluginParams =
+                createParamsForHistogramTest(
+                        ContextMenuDataMediaType.PLUGIN,
+                        GURL.emptyGURL(),
+                        /* openedFromHighlight= */ false,
+                        /* openedFromInterestFor= */ false);
+        assertEquals(
+                "Other", ContextMenuUtils.getContextMenuTypeForHistogram(unlinkedPluginParams));
+
+        ContextMenuParams unlinkedFileParams =
+                createParamsForHistogramTest(
+                        ContextMenuDataMediaType.FILE,
+                        GURL.emptyGURL(),
+                        /* openedFromHighlight= */ false,
+                        /* openedFromInterestFor= */ false);
+        assertEquals("Other", ContextMenuUtils.getContextMenuTypeForHistogram(unlinkedFileParams));
+    }
+
+    private ContextMenuParams createParamsForHistogramTest(
+            @ContextMenuDataMediaType int mediaType,
+            GURL linkUrl,
+            boolean openedFromHighlight,
+            boolean openedFromInterestFor) {
+        return new ContextMenuParams(
+                /* nativePtr= */ null,
+                mMenuModelBridge,
+                mediaType,
+                ContextMenuDataMediaFlags.MEDIA_NONE,
+                sPageGUrl,
+                linkUrl,
+                linkUrl.isEmpty() ? "" : sLinkText,
+                GURL.emptyGURL(),
+                GURL.emptyGURL(),
+                ALT_TEXT,
+                /* referrer= */ null,
+                /* canSaveMedia= */ false,
+                /* triggeringTouchXDp= */ 0,
+                /* triggeringTouchYDp= */ 0,
+                MenuSourceType.MOUSE,
+                openedFromHighlight,
+                openedFromInterestFor,
+                /* additionalNavigationParams= */ null);
+    }
 }
