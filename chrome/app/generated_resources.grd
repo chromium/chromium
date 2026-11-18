@@ -15400,24 +15400,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_SHELF_CONTEXT_MENU_CLOSE" desc="Title text for the 'close' context menu item of the shelf">
           Close
         </message>
-        <message name="IDS_SHELF_CONTEXT_MENU_PIN" desc="Title text for the 'pin' context menu item of the shelf">
-          Pin
-        </message>
-        <message name="IDS_SHELF_CONTEXT_MENU_UNPIN" desc="Title text for the 'unpin' context menu item of the shelf">
-          Unpin
-        </message>
-        <message name="IDS_SHELF_CONTEXT_MENU_PIN_ENFORCED_BY_POLICY" desc="Short text for the pin/unpin context menu to tell user the setting is enforced by policy of a shelf item">
-          Pinned by administrator
-        </message>
-        <message name="IDS_SHELF_CONTEXT_MENU_SWAP_WITH_NEXT" desc="Label of the context menu item allowing to swap the selected shelf item with the next one">
-          Swap with next
-        </message>
-        <message name="IDS_SHELF_CONTEXT_MENU_SWAP_WITH_PREVIOUS" desc="Label of the context menu item allowing to swap the selected shelf item with the previous one">
-          Swap with previous
-        </message>
-        <message name="IDS_SHELF_APP_MENU_INACTIVE_TAB_TOOLTIP" desc="Tooltip for an item in the shelf application menu that represents a browser tab which is not the active tab of its window. No window preview is shown for such an item, because the window only shows its active tab. The placeholder is the title of the window.">
-          Inactive tab in "<ph name="WINDOW_TITLE">$1<ex>Google Search</ex></ph>"
-        </message>
       </if>
 
       <!-- Live caption. -->
@@ -18115,26 +18097,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Energy Saver
     </message>
 
-    <!-- Promise icon status labels. -->
-    <message name="IDS_PROMISE_STATUS_WAITING" desc="Text label for a promise icon in the Launcher or Shelf to indicate that the app is pending installation">
-      Waiting...
-    </message>
-    <message name="IDS_PROMISE_STATUS_INSTALLING" desc="Text label for a promise icon in the Launcher or Shelf to indicate that the app is currently downloading or installing">
-      Installing...
-    </message>
-    <message name="IDS_PROMISE_APP_ACCESSIBLE_LABEL_WAITING" desc="Accessibility label for a promise icon in the Launcher or Shelf to indicate that the app is pending installation">
-      <ph name="APP_NAME">$1<ex>Gmail</ex></ph>, waiting
-    </message>
-    <message name="IDS_PROMISE_APP_ACCESSIBLE_LABEL_INSTALLING" desc="Accessibility label for a promise icon in the Launcher or Shelf to indicate that the app is currently downloading or installing">
-      <ph name="APP_NAME">$1<ex>Gmail</ex></ph>, installing
-    </message>
-    <message name="IDS_PROMISE_APP_PLACEHOLDER_ACCESSIBLE_LABEL_WAITING" desc="Accessibility label for a promise icon in the Launcher or Shelf to indicate that an app without a name is pending installation">
-      An app, waiting
-    </message>
-    <message name="IDS_PROMISE_APP_PLACEHOLDER_ACCESSIBLE_LABEL_INSTALLING" desc="Accessibility label for a promise icon in the Launcher or Shelf to indicate that an app without a name is currently downloading or installing">
-      An app, installing
-    </message>
-
     <!-- Isolated Web App installer. -->
     <message name="IDS_IWA_INSTALLER_DISABLED_TITLE" desc="Title of the feature disabled screen of the Isolated Web App installer">
       This app can’t be opened because you do not have permission to run isolated web apps
@@ -18244,11 +18206,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_IWA_SUB_APPS_UNINSTALL_INFO" desc="Explanation shown in the uninstall dialog clarifying that removing this specific Sub App will not remove its parent app or other related Sub Apps.">
     This app was installed by <ph name="PARENT_APP_NAME">$1<ex>Google Workspace</ex></ph>. Uninstalling <ph name="APP_NAME">$2<ex>Docs</ex></ph> does not affect <ph name="PARENT_APP_NAME">$1<ex>Google Workspace</ex></ph> or any other apps it has installed.
     </message>
-    <if expr="is_chromeos">
-        <message name="IDS_IWA_INSTALLER_SHELF_ITEM_TITLE" desc="Title of an Isolated Web App installer item on the ChromeOS Shelf.">
-          Application Installer
-        </message>
-    </if>
 
     <!-- Isolated Web Apps Window Management notification. -->
 <message name="IDS_ISOLATED_WEB_APPS_WINDOW_OPEN_PERMISSION_NOTIFICATION_TITLE" desc="Title for the notification displayed when an Isolated Web App opens multiple tabs.">

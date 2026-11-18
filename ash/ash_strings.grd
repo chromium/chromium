@@ -12217,6 +12217,65 @@ You can manage this account’s settings by installing the Family Link app on yo
         desc="Text for the button that activates Android App. (In sentence case.)">
         Open
       </message>
+
+      <!-- Shelf context menu -->
+      <message name="IDS_SHELF_CONTEXT_MENU_PIN" desc="Title text for the 'pin' context menu item of the shelf">
+        Pin
+      </message>
+      <message name="IDS_SHELF_CONTEXT_MENU_UNPIN" desc="Title text for the 'unpin' context menu item of the shelf">
+        Unpin
+      </message>
+      <message name="IDS_SHELF_CONTEXT_MENU_PIN_ENFORCED_BY_POLICY" desc="Short text for the pin/unpin context menu to tell user the setting is enforced by policy of a shelf item">
+        Pinned by administrator
+      </message>
+      <message name="IDS_SHELF_CONTEXT_MENU_SWAP_WITH_NEXT" desc="Label of the context menu item allowing to swap the selected shelf item with the next one">
+        Swap with next
+      </message>
+      <message name="IDS_SHELF_CONTEXT_MENU_SWAP_WITH_PREVIOUS" desc="Label of the context menu item allowing to swap the selected shelf item with the previous one">
+        Swap with previous
+      </message>
+      <message name="IDS_SHELF_APP_MENU_INACTIVE_TAB_TOOLTIP" desc="Tooltip for an item in the shelf application menu that represents a browser tab which is not the active tab of its window. No window preview is shown for such an item, because the window only shows its active tab. The placeholder is the title of the window.">
+        Inactive tab in "<ph name="WINDOW_TITLE">$1<ex>Google Search</ex></ph>"
+      </message>
+
+      <!-- Promise icon status labels. -->
+      <message name="IDS_PROMISE_STATUS_WAITING" desc="Text label for a promise icon in the Launcher or Shelf to indicate that the app is pending installation">
+        Waiting...
+      </message>
+      <message name="IDS_PROMISE_STATUS_INSTALLING" desc="Text label for a promise icon in the Launcher or Shelf to indicate that the app is currently downloading or installing">
+        Installing...
+      </message>
+      <message name="IDS_PROMISE_APP_ACCESSIBLE_LABEL_WAITING" desc="Accessibility label for a promise icon in the Launcher or Shelf to indicate that the app is pending installation">
+        <ph name="APP_NAME">$1<ex>Gmail</ex></ph>, waiting
+      </message>
+      <message name="IDS_PROMISE_APP_ACCESSIBLE_LABEL_INSTALLING" desc="Accessibility label for a promise icon in the Launcher or Shelf to indicate that the app is currently downloading or installing">
+        <ph name="APP_NAME">$1<ex>Gmail</ex></ph>, installing
+      </message>
+      <message name="IDS_PROMISE_APP_PLACEHOLDER_ACCESSIBLE_LABEL_WAITING" desc="Accessibility label for a promise icon in the Launcher or Shelf to indicate that an app without a name is pending installation">
+        An app, waiting
+      </message>
+      <message name="IDS_PROMISE_APP_PLACEHOLDER_ACCESSIBLE_LABEL_INSTALLING" desc="Accessibility label for a promise icon in the Launcher or Shelf to indicate that an app without a name is currently downloading or installing">
+        An app, installing
+      </message>
+
+      <!-- Isolated Web App installer shelf item -->
+      <message name="IDS_IWA_INSTALLER_SHELF_ITEM_TITLE" desc="Title of an Isolated Web App installer item on the ChromeOS Shelf.">
+        Application Installer
+      </message>
+
+      <!-- App list -->
+      <if expr="_google_chrome">
+        <then>
+          <message name="IDS_APP_LIST_EXTENSIONS_UNINSTALL" desc="Title text for the context menu item of a non-platform-app app list item that removes the app.">
+            Remove from Chrome...
+          </message>
+        </then>
+        <else>
+          <message name="IDS_APP_LIST_EXTENSIONS_UNINSTALL" desc="Title text for the context menu item of a non-platform-app app list item that removes the app.">
+            Remove from Chromium...
+          </message>
+        </else>
+      </if>
     </messages>
   </release>
 </grit>

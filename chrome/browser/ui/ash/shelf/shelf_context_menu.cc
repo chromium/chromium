@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/ash/shelf/extension_shelf_context_menu.h"
 #include "chrome/browser/ui/ash/shelf/extension_uninstaller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
