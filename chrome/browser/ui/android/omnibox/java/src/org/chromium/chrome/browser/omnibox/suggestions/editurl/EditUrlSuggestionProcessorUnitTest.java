@@ -8,11 +8,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -355,6 +358,15 @@ public final class EditUrlSuggestionProcessorUnitTest {
     }
 
     @Test
+    public void shareButton_click_tabGone() {
+        mProcessor.populateModel(mInput, mMatch, mModel, 0);
+        mTab = null;
+        mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_SHARE).callback.run();
+        verify(mSuggestionHost, never()).finishInteraction();
+        verify(mShareDelegate, never()).share(any(), anyBoolean(), anyInt());
+    }
+
+    @Test
     public void suggestionView_clickReloadsPage() {
         mProcessor.populateModel(mInput, mMatch, mModel, 0);
 
@@ -389,6 +401,14 @@ public final class EditUrlSuggestionProcessorUnitTest {
         assertEquals(1, monitor.getActionCount("Omnibox.EditUrlSuggestion.Copy"));
         assertEquals(1, monitor.getActions().size());
         monitor.tearDown();
+    }
+
+    @Test
+    public void copyButton_click_tabGone() {
+        mProcessor.populateModel(mInput, mMatch, mModel, 0);
+        mTab = null;
+        mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_COPY).callback.run();
+        verify(mClipboardManager).setPrimaryClip(any());
     }
 
     @Test

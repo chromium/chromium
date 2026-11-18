@@ -177,7 +177,8 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     /** Invoked when user interacts with Share action button. */
     private void onShareLink() {
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Share");
-        Tab tab = assumeNonNull(mTabSupplier.get());
+        Tab tab = mTabSupplier.get();
+        if (tab == null) return;
         var webContents = tab.getWebContents();
         if (webContents != null) {
             // TODO(ender): find out if this is still captured anywhere.
@@ -194,8 +195,8 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     /** Invoked when user interacts with Copy action button. */
     private void onCopyLink(AutocompleteMatch suggestion) {
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Copy");
-        Tab tab = assumeNonNull(mTabSupplier.get());
-        HistoryClustersTabHelper.onCurrentTabUrlCopied(tab.getWebContents());
+        Tab tab = mTabSupplier.get();
+        if (tab != null) HistoryClustersTabHelper.onCurrentTabUrlCopied(tab.getWebContents());
         GURL cleanUrl = WebDistillerUrlUtils.getOriginalUrlFromDistillerUrl(suggestion.getUrl());
         Clipboard.getInstance().copyUrlToClipboard(cleanUrl);
     }
