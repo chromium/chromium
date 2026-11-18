@@ -1628,6 +1628,18 @@ void OmniboxEverywhereUIManager::OnWindowDragEnded() {
   OnWidgetUserDragEnded(widget_.get());
 }
 
+void OmniboxEverywhereUIManager::ForwardMouseEventToRenderer(
+    const blink::WebMouseEvent& event) {
+  content::WebContents* contents = web_contents();
+  if (!contents) {
+    return;
+  }
+  if (content::RenderWidgetHostView* view =
+          contents->GetRenderWidgetHostView()) {
+    view->GetRenderWidgetHost()->ForwardMouseEvent(event);
+  }
+}
+
 // Forwards unhandled keyboard events from the renderer process (such as
 // keyboard shortcuts) to the Views FocusManager so that accelerators and focus
 // traversal work as expected.

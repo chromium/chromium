@@ -65,6 +65,7 @@ source_set("omnibox_everywhere") {
     "//components/feature_engagement/public",
     "//components/prefs",
     "//components/user_education/common",
+    "//third_party/blink/public/common:headers",
     "//ui/base/accelerators/global_accelerator_listener",
     "//ui/gfx",
     "//ui/views",

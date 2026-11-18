@@ -44,6 +44,7 @@ ${this.errorMessage ? html`
         .disableCaretColorAnimation="${this.disableCaretColorAnimation}"
         .showDropdown="${this.showDropdown}"
         .inputPlaceholder="${this.inputPlaceholder}" .input="${this.input}"
+        ?empty-input="${!this.input}"
         .smartComposeEnabled="${this.smartComposeEnabled}"
         .smartComposeInlineHint="${this.smartComposeInlineHint}"
         .submitEnabled="${this.submitEnabled}"

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -74,14 +75,16 @@ OmniboxEverywhereWindowDragController::
 // `PreHandleGestureEvent()`.
 bool OmniboxEverywhereWindowDragController::PreHandleMouseEvent(
     const blink::WebMouseEvent& event) {
-  if (!delegate_->GetWindowDragWidget()) {
+  if (replaying_press_ || !delegate_->GetWindowDragWidget()) {
     return false;
   }
-  if (delegate_->IsWindowDragging() &&
-      !(event.GetType() == blink::WebInputEvent::Type::kMouseUp &&
-        event.button == blink::WebMouseEvent::Button::kLeft)) {
-    // Hide mouse events from Blink while the window is dragged, except the
-    // release that ends the drag.
+  if (delegate_->IsWindowDragging()) {
+    // Hide mouse events from Blink while the window is dragged, including the
+    // release that ends the drag, since Blink never saw its press.
+    if (event.GetType() == blink::WebInputEvent::Type::kMouseUp &&
+        event.button == blink::WebMouseEvent::Button::kLeft) {
+      Reset();
+    }
     return true;
   }
   switch (event.GetType()) {
@@ -98,6 +101,11 @@ bool OmniboxEverywhereWindowDragController::PreHandleMouseEvent(
 
 bool OmniboxEverywhereWindowDragController::HandleMouseDown(
     const blink::WebMouseEvent& event) {
+  if (held_press_ && !IsPlainLeftPress(event)) {
+    // Another button was pressed, so it isn't a drag. Send the held press
+    // first.
+    ReplayHeldPress();
+  }
   Reset();
   if (!IsPlainLeftPress(event) ||
       !delegate_->IsPointInDraggableRegion(
@@ -105,34 +113,36 @@ bool OmniboxEverywhereWindowDragController::HandleMouseDown(
       !PrepareForWindowDrag()) {
     return false;
   }
-  drag_init_point_screen_ = gfx::ToFlooredPoint(event.PositionInScreen());
+  // Hold the press until it's known to be a click or a drag.
+  held_press_ = event;
   window_move_drag_suppression_ = SuppressDataDragsForWindowMove();
-  // Let the press reach Blink so clicks, focus, etc., work.
-  return false;
+  return true;
 }
 
 bool OmniboxEverywhereWindowDragController::HandleMouseMove(
     const blink::WebMouseEvent& event) {
-  if (!drag_init_point_screen_) {
+  if (!held_press_) {
     return false;
   }
   if (event.button == blink::WebMouseEvent::Button::kNoButton) {
     // The button was released without a mouse up reaching us, e.g. while
-    // another window had mouse capture.
+    // another window had mouse capture. Drop the press.
     Reset();
     return false;
   }
-  const gfx::Point press_point_screen = *drag_init_point_screen_;
+  const gfx::Point press_point_screen =
+      gfx::ToFlooredPoint(held_press_->PositionInScreen());
   if (!views::View::ExceededDragThreshold(
           gfx::ToFlooredPoint(event.PositionInScreen()) - press_point_screen)) {
-    return false;
+    // Blink hasn't seen the press, so hide moves from it too.
+    return true;
   }
   // `Widget::RunMoveLoop()` expects the press point relative to the window
   // origin.
   const gfx::Vector2d drag_offset =
       press_point_screen -
       delegate_->GetWindowDragWidget()->GetWindowBoundsInScreen().origin();
-  drag_init_point_screen_.reset();
+  held_press_.reset();
   delegate_->OnWindowDragStarted();
   // Post the move loop so it doesn't run inside mouse event dispatch.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -145,12 +155,22 @@ bool OmniboxEverywhereWindowDragController::HandleMouseMove(
 
 bool OmniboxEverywhereWindowDragController::HandleMouseUp(
     const blink::WebMouseEvent& event) {
-  Reset();
+  if (held_press_) {
+    // A click: send the held press, then let the release follow it.
+    ReplayHeldPress();
+  }
   return false;
 }
 
+void OmniboxEverywhereWindowDragController::ReplayHeldPress() {
+  const blink::WebMouseEvent press = *held_press_;
+  Reset();
+  base::AutoReset<bool> replaying_press(&replaying_press_, true);
+  delegate_->ForwardMouseEventToRenderer(press);
+}
+
 void OmniboxEverywhereWindowDragController::Reset() {
-  drag_init_point_screen_.reset();
+  held_press_.reset();
   window_move_drag_suppression_.RunAndReset();
   if (move_loop_weak_factory_.HasWeakPtrs()) {
     // Cancel a move loop that was posted but hasn't started.

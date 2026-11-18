@@ -245,6 +245,36 @@ class OmniboxEverywhereBrowserTest : public InteractiveBrowserTest {
         true);
   }
 
+  // Moves the cursor to `query` in `web_contents_id` and waits until the
+  // browser's cached draggable region reports `expected_draggable` at that
+  // point.
+  auto WaitForPointDraggable(ui::ElementIdentifier web_contents_id,
+                             const DeepQuery& query,
+                             bool expected_draggable) {
+    return Steps(
+        MoveMouseTo(web_contents_id, query),
+        CheckResult(
+            [expected_draggable]() {
+              OmniboxEverywhereController* controller =
+                  g_browser_process->GetFeatures()
+                      ->omnibox_everywhere_controller();
+              views::View* contents_view = controller->ui_manager()
+                                               ->widget_delegate()
+                                               ->GetContentsView();
+              gfx::Point point_in_contents =
+                  display::Screen::Get()->GetCursorScreenPoint();
+              views::View::ConvertPointFromScreen(contents_view,
+                                                  &point_in_contents);
+              return base::test::RunUntil(
+                  [controller, point_in_contents, expected_draggable]() {
+                    return controller && controller->ui_manager() &&
+                           controller->ui_manager()->IsPointInDraggableRegion(
+                               point_in_contents) == expected_draggable;
+                  });
+            },
+            true));
+  }
+
   // Simulates dragging the mouse from `start_point` to `end_point` within
   // `view`. Crosses the drag threshold to ensure window drag handlers are
   // triggered.
@@ -571,8 +601,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywherePersistentBrowserTest,
       InvokeViaHotkey(), CheckWidgetVisible(true),
       WaitForWidgetActiveState(true),
       WaitForOmniboxWebUIReady(kOmniboxWebContentsId),
-      WaitForDraggableRegions(),
-      MoveMouseTo(kOmniboxWebContentsId, kSearchInputElement), Do([&]() {
+      // Empty input is draggable; typing text must turn it non-draggable so
+      // pointer drags select text instead of moving the window.
+      ExecuteJsAt(kOmniboxWebContentsId, kSearchInputElement,
+                  "el => { el.focus(); el.value = 'query'; "
+                  "el.dispatchEvent(new Event('input', {bubbles: true})); }"),
+      WaitForPointDraggable(kOmniboxWebContentsId, kSearchInputElement, false),
+      Do([&]() {
         initial_origin = controller->ui_manager()
                              ->widget()
                              ->GetWindowBoundsInScreen()
@@ -586,6 +621,119 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywherePersistentBrowserTest,
       Check([&]() {
         views::Widget* widget = controller->ui_manager()->widget();
         return widget->GetWindowBoundsInScreen().origin() == initial_origin;
+      }),
+      InvokeViaHotkey(), CheckWidgetVisible(true),
+      WaitForWidgetActiveState(false));
+}
+
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DragToMoveWindowFromEmptySearchInput \
+  DragToMoveWindowFromEmptySearchInput
+#else
+#define MAYBE_DragToMoveWindowFromEmptySearchInput \
+  DISABLED_DragToMoveWindowFromEmptySearchInput
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxEverywherePersistentBrowserTest,
+                       MAYBE_DragToMoveWindowFromEmptySearchInput) {
+  OmniboxEverywhereController* controller =
+      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+  ASSERT_TRUE(controller);
+
+  gfx::Point initial_origin;
+  gfx::Point threshold_target;
+  gfx::Point drag_target;
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOmniboxWebContentsId);
+
+  const DeepQuery kSearchInputElement = {
+      "omnibox-everywhere-app",
+      "omnibox-everywhere-omnibox",
+      "cr-searchbox-input",
+      "#input",
+  };
+  const DeepQuery kOmniboxElement = {
+      "omnibox-everywhere-app",
+      "omnibox-everywhere-omnibox",
+  };
+
+  RunTestSequence(
+      InvokeViaHotkey(), CheckWidgetVisible(true),
+      WaitForWidgetActiveState(true),
+      WaitForOmniboxWebUIReady(kOmniboxWebContentsId),
+      WaitForPointDraggable(kOmniboxWebContentsId, kSearchInputElement, true),
+      Do([&]() {
+        initial_origin = controller->ui_manager()
+                             ->widget()
+                             ->GetWindowBoundsInScreen()
+                             .origin();
+        const gfx::Point start = display::Screen::Get()->GetCursorScreenPoint();
+        threshold_target = start + gfx::Vector2d(15, 0);
+        drag_target = start + gfx::Vector2d(50, 0);
+      }),
+      // Cross the drag threshold first, so the move loop sees the rest of the
+      // drag.
+      ClickMouse(ui_controls::LEFT, /*release=*/false),
+      MoveMouseTo(std::ref(threshold_target)),
+      MoveMouseTo(std::ref(drag_target)), ReleaseMouse(ui_controls::LEFT),
+      Check([&]() {
+        views::Widget* widget = controller->ui_manager()->widget();
+        return widget->GetWindowBoundsInScreen().origin() != initial_origin;
+      }),
+      // Dragging from empty input must not open zero-suggest dropdown.
+      CheckJsResultAt(kOmniboxWebContentsId, kOmniboxElement,
+                      "el => el.dropdownIsVisible", false),
+      InvokeViaHotkey(), CheckWidgetVisible(true),
+      WaitForWidgetActiveState(false));
+}
+
+// A click on the empty, draggable search input is held in the browser until
+// release, then still reaches the page and focuses the input.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ClickFocusesEmptySearchInput ClickFocusesEmptySearchInput
+#else
+#define MAYBE_ClickFocusesEmptySearchInput DISABLED_ClickFocusesEmptySearchInput
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxEverywherePersistentBrowserTest,
+                       MAYBE_ClickFocusesEmptySearchInput) {
+  OmniboxEverywhereController* controller =
+      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+  ASSERT_TRUE(controller);
+
+  gfx::Point initial_origin;
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOmniboxWebContentsId);
+
+  const DeepQuery kSearchInputElement = {
+      "omnibox-everywhere-app",
+      "omnibox-everywhere-omnibox",
+      "cr-searchbox-input",
+      "#input",
+  };
+
+  RunTestSequence(
+      InvokeViaHotkey(), CheckWidgetVisible(true),
+      WaitForWidgetActiveState(true),
+      WaitForOmniboxWebUIReady(kOmniboxWebContentsId),
+      // Blur the input and record whether the next click focuses it.
+      ExecuteJsAt(
+          kOmniboxWebContentsId, kSearchInputElement,
+          "el => { el.blur(); window.clickFocusedInput = new Promise("
+          "    resolve => el.addEventListener('click', "
+          "        () => resolve(el.getRootNode().activeElement === el),"
+          "        {once: true})); }"),
+      WaitForPointDraggable(kOmniboxWebContentsId, kSearchInputElement, true),
+      Do([&]() {
+        initial_origin = controller->ui_manager()
+                             ->widget()
+                             ->GetWindowBoundsInScreen()
+                             .origin();
+      }),
+      ClickMouse(ui_controls::LEFT),
+      CheckJsResultAt(kOmniboxWebContentsId, kSearchInputElement,
+                      "el => window.clickFocusedInput", true),
+      Check([&]() {
+        return controller->ui_manager()
+                   ->widget()
+                   ->GetWindowBoundsInScreen()
+                   .origin() == initial_origin;
       }),
       InvokeViaHotkey(), CheckWidgetVisible(true),
       WaitForWidgetActiveState(false));

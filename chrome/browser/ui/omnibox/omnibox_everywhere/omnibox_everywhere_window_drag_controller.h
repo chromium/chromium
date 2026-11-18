@@ -10,12 +10,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
-
-namespace blink {
-class WebMouseEvent;
-}  // namespace blink
 
 namespace views {
 class Widget;
@@ -26,10 +23,13 @@ namespace omnibox_everywhere {
 // Moves the Omnibox Everywhere window when the user drags a
 // `-webkit-app-region: drag` area. It works from mouse events seen in
 // `WebContentsDelegate::PreHandleMouseEvent()`, on every platform:
-// - A left press in a draggable region arms a drag, and still reaches Blink so
-//   clicks, focus, etc., work.
-// - Once the press moves past the drag threshold, it posts a widget move-loop
-//   and drops mouse moves until the drag ends.
+// - A left press in a draggable region is held back from Blink until it's known
+//   whether it is a click or a drag.
+// - If the button is released first, the held press is sent to Blink followed
+//   by the release, so clicks, focus, etc., work.
+// - Once the press moves past the drag threshold, the press is dropped, and it
+//   posts a widget move-loop and hides mouse events until the drag ends. Blink
+//   never sees the gesture.
 class OmniboxEverywhereWindowDragController {
  public:
   class Delegate {
@@ -43,6 +43,10 @@ class OmniboxEverywhereWindowDragController {
     virtual bool IsWindowDragging() const = 0;
     virtual void OnWindowDragStarted() = 0;
     virtual void OnWindowDragEnded() = 0;
+    // Sends `event` to the renderer. `PreHandleMouseEvent()` is called again
+    // with `event` from inside this call, and lets it through.
+    virtual void ForwardMouseEventToRenderer(
+        const blink::WebMouseEvent& event) = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -59,26 +63,30 @@ class OmniboxEverywhereWindowDragController {
   // Returns true if `event` should not reach the renderer.
   bool PreHandleMouseEvent(const blink::WebMouseEvent& event);
 
-  // Ends a pending drag and cancels a posted move loop. The owner must
+  // Drops a held press and cancels a posted move loop. The owner must
   // call this whenever the widget may stop delivering mouse events (hidden,
   // deactivated, demoted or destroyed), since the release would never arrive.
   void Reset();
 
-  bool has_pending_drag_for_testing() const {
-    return drag_init_point_screen_.has_value();
-  }
+  bool has_pending_drag_for_testing() const { return held_press_.has_value(); }
 
  private:
   bool HandleMouseDown(const blink::WebMouseEvent& event);
   bool HandleMouseMove(const blink::WebMouseEvent& event);
   bool HandleMouseUp(const blink::WebMouseEvent& event);
+  void ReplayHeldPress();
   bool PrepareForWindowDrag();
   void StartWindowMoveLoop(const gfx::Vector2d& drag_offset);
 
   const raw_ref<Delegate> delegate_;
 
-  // Screen location of the left press that armed the drag.
-  std::optional<gfx::Point> drag_init_point_screen_;
+  // The left press on a draggable region that hasn't become a click or a drag
+  // yet.
+  std::optional<blink::WebMouseEvent> held_press_;
+
+  // True while the held press is being sent to the renderer, so it's let
+  // through.
+  bool replaying_press_ = false;
 
   // Suppresses renderer-initiated data drags while a left press is held on a
   // draggable region waiting to cross the drag threshold, and during the move

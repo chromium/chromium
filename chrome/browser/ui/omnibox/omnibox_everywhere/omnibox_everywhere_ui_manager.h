@@ -407,6 +407,7 @@ class OmniboxEverywhereUIManager
   bool IsWindowDragging() const override;
   void OnWindowDragStarted() override;
   void OnWindowDragEnded() override;
+  void ForwardMouseEventToRenderer(const blink::WebMouseEvent& event) override;
 
 #if defined(USE_AURA)
   std::unique_ptr<OmniboxEverywhereEventHandlerAura> event_handler_;

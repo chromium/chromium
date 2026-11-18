@@ -20,7 +20,7 @@ import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/s
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {FreStage, SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {FreStage, KeywordType, SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
@@ -78,6 +78,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       searchboxLayoutMode: 'TallBottomContext',
       searchboxMultiline: true,
       singleLineOnInlineAutocomplete: true,
+      draggableEmptyInput: true,
     });
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
@@ -1831,6 +1832,66 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       }
     });
   });
+
+  test(
+      'empty input is draggable and transitions to no-drag on text or keyword',
+      async () => {
+        const inputEl = omnibox.$.input.inputElement;
+        assertEquals('', inputEl.value);
+        assertEquals(
+            'drag',
+            getComputedStyle(inputEl).getPropertyValue('-webkit-app-region'));
+
+        // Whitespace-only still hides :placeholder-shown and must stay no-drag.
+        omnibox.setInputText('   ');
+        await microtasksFinished();
+        assertEquals(
+            'no-drag',
+            getComputedStyle(inputEl).getPropertyValue('-webkit-app-region'));
+
+        // Regular text is non-draggable.
+        omnibox.setInputText('hello');
+        await microtasksFinished();
+        assertEquals(
+            'no-drag',
+            getComputedStyle(inputEl).getPropertyValue('-webkit-app-region'));
+
+        // Clearing returns to draggable.
+        omnibox.setInputText('');
+        await microtasksFinished();
+        assertEquals(
+            'drag',
+            getComputedStyle(inputEl).getPropertyValue('-webkit-app-region'));
+
+        // Keyword mode stays no-drag even if the input is empty or shows a
+        // keyword hint placeholder.
+        omnibox.$.input.inputKeywordModel = {
+          type: KeywordType.kInKeyword,
+          keyword: 'history',
+          displayText: 'History',
+          iconPath: '',
+          placeholder: 'Search History',
+        };
+        await microtasksFinished();
+        assertEquals(
+            'no-drag',
+            getComputedStyle(inputEl).getPropertyValue('-webkit-app-region'));
+      });
+
+  test('empty input is not draggable when the flag is disabled', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({draggableEmptyInput: false});
+    const testOmnibox = document.createElement('omnibox-everywhere-omnibox');
+    document.body.appendChild(testOmnibox);
+    await microtasksFinished();
+
+    assertFalse(testOmnibox.hasAttribute('draggable-empty-input'));
+    const inputEl = testOmnibox.$.input.inputElement;
+    assertEquals('', inputEl.value);
+    assertEquals(
+        'no-drag',
+        getComputedStyle(inputEl).getPropertyValue('-webkit-app-region'));
+  });
 });
 
 
@@ -1854,6 +1915,7 @@ suite('OmniboxEverywhereComposeboxTest', () => {
       searchboxLayoutMode: 'TallBottomContext',
       composeboxCancelButtonTitle: 'Close AI Mode',
       composeboxCancelButtonTitleInput: 'Clear text',
+      draggableEmptyInput: true,
     });
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
@@ -2389,6 +2451,21 @@ suite('OmniboxEverywhereComposeboxTest', () => {
     assertEquals(
         '12px', window.getComputedStyle(bottomControls).paddingInlineEnd);
   });
+
+  test(
+      'empty composebox input is draggable and becomes no-drag on text',
+      async () => {
+        const inputEl = composebox.$.composeboxInput.inputElement;
+        assertEquals(
+            'drag',
+            getComputedStyle(inputEl).getPropertyValue('-webkit-app-region'));
+
+        composebox.setInputText('prompt');
+        await microtasksFinished();
+        assertEquals(
+            'no-drag',
+            getComputedStyle(inputEl).getPropertyValue('-webkit-app-region'));
+      });
 });
 
 declare global {
@@ -2439,6 +2516,7 @@ suite('OmniboxEverywhereAppTest', () => {
       smallFont: false,
       isPersistentMode: true,
       omniboxEverywhereMostVisitedHideTitle: true,
+      draggableEmptyInput: true,
       initialFreStage: 0,
       composeboxCancelButtonTitle: 'Close AI Mode',
       composeboxCancelButtonTitleInput: 'Clear text',
