@@ -23,6 +23,7 @@
 #include "base/observer_list_internal.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
+#include "third_party/crubit/support/annotations.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -114,12 +115,16 @@ enum class ObserverListReentrancyPolicy {
 // When `check_empty` is true, assert that the list is empty on destruction.
 // When `reentrancy` is kDisallowReentrancy, iterating through the list while
 // already in the iteration loop will result in DCHECK failure.
+//
+// `CRUBIT_NEVER_BITWISE_RELOCATABLE`, because the list and its live iterators
+// store each other's addresses (so that the list can invalidate the iterators
+// when it is destroyed).
 template <class ObserverType,
           bool check_empty = false,
           ObserverListReentrancyPolicy reentrancy =
               ObserverListReentrancyPolicy::kDisallowReentrancy,
           class ObserverStorageType = internal::CheckedObserverAdapter>
-class ObserverList {
+class CRUBIT_NEVER_BITWISE_RELOCATABLE ObserverList {
  public:
   // Allow declaring an ObserverList<...>::Unchecked that replaces the default
   // ObserverStorageType to use `raw_ptr<T>`. This is required to support legacy
