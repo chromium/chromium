@@ -27,7 +27,7 @@ gfx::Size PinnedTabContainerViewHorizontalLayout::GetMinimumSize(
     const views::View* host) const {
   if (!PinnedTabContainerView().collection_node_ ||
       PinnedTabContainerView().collection_node_->GetDirectChildren().empty()) {
-    return gfx::Size();
+    return gfx::Size(0, TabStyle::Get()->GetStandardHeight());
   }
 
   int min_width = 0;
@@ -56,7 +56,9 @@ gfx::Size PinnedTabContainerViewHorizontalLayout::GetMinimumSize(
 views::ProposedLayout
 PinnedTabContainerViewHorizontalLayout::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
+  const int container_height = TabStyle::Get()->GetStandardHeight();
   views::ProposedLayout layouts;
+  layouts.host_size.set_height(container_height);
   const auto children =
       PinnedTabContainerView().collection_node_
           ? PinnedTabContainerView().collection_node_->GetDirectChildren()
@@ -69,7 +71,6 @@ PinnedTabContainerViewHorizontalLayout::CalculateProposedLayout(
     x = std::min(x, std::max(0, size_bounds.width().value() -
                                     static_cast<int>(detached_range.length())));
   }
-  const int container_height = TabStyle::Get()->GetStandardHeight();
   size_t visible_count = 0;
 
   for (auto* child : children) {
@@ -114,7 +115,7 @@ PinnedTabContainerViewHorizontalLayout::CalculateProposedLayout(
       host_width += tab_overlap / 2;
     }
   }
-  layouts.host_size = gfx::Size(host_width, container_height);
+  layouts.host_size.set_width(host_width);
   return layouts;
 }
 

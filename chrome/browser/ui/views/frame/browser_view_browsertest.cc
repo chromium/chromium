@@ -149,6 +149,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -2477,8 +2478,14 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDeferLayoutTest, DeferLayoutWhileInvisible) {
   // Add a tab while still invisible. Since the contents container initially
   // has empty bounds, layout must proceed to properly size the web contents
   // container.
-  chrome::AddTabAt(browser2, GURL("about:blank"), -1, true);
-  widget2->LayoutRootViewIfNecessary();
+  {
+    // Disable tabstrip animations while adding a new tab.
+    auto animation_mode_ =
+        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    chrome::AddTabAt(browser2, GURL("about:blank"), -1, true);
+    widget2->LayoutRootViewIfNecessary();
+  }
   EXPECT_FALSE(browser_view2->GetContentsSize().IsEmpty());
 
   // Now that the contents container has non-empty bounds, subsequent layout
@@ -2514,8 +2521,14 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDeferLayoutTest,
   // Trigger initial layout pass.
   widget2->LayoutRootViewIfNecessary();
 
-  chrome::AddTabAt(browser2, GURL("about:blank"), -1, true);
-  widget2->LayoutRootViewIfNecessary();
+  {
+    // Disable tabstrip animations while adding a new tab.
+    auto animation_mode_ =
+        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    chrome::AddTabAt(browser2, GURL("about:blank"), -1, true);
+    widget2->LayoutRootViewIfNecessary();
+  }
   EXPECT_FALSE(browser_view2->GetContentsSize().IsEmpty());
 
   // Subsequent layout without size change is deferred.

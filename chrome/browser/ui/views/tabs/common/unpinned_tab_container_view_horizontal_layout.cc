@@ -69,7 +69,7 @@ gfx::Size UnpinnedTabContainerViewHorizontalLayout::GetMinimumSize(
       UnpinnedTabContainerView()
           .collection_node_->GetDirectChildren()
           .empty()) {
-    return gfx::Size();
+    return gfx::Size(0, TabStyle::Get()->GetStandardHeight());
   }
 
   if (std::optional<int> override_width = GetClosingModeOverrideWidth()) {
@@ -88,7 +88,7 @@ gfx::Size UnpinnedTabContainerViewHorizontalLayout::GetMinimumSize(
     }
   }
   if (visible_children.empty()) {
-    return gfx::Size();
+    return gfx::Size(0, TabStyle::Get()->GetStandardHeight());
   }
   int overlap_total = 0;
   for (size_t i = 0; i + 1 < visible_children.size(); ++i) {
@@ -107,7 +107,9 @@ views::ProposedLayout
 UnpinnedTabContainerViewHorizontalLayout::CalculateProposedLayout(
     const views::SizeBounds& size_bounds,
     std::optional<tab_groups::TabGroupId> focused_group_id) const {
+  const int container_height = TabStyle::Get()->GetStandardHeight();
   views::ProposedLayout layouts;
+  layouts.host_size.set_height(container_height);
   if (!UnpinnedTabContainerView().collection_node_) {
     return layouts;
   }
@@ -118,7 +120,6 @@ UnpinnedTabContainerViewHorizontalLayout::CalculateProposedLayout(
     return layouts;
   }
 
-  const int container_height = TabStyle::Get()->GetStandardHeight();
 
   TabStripCollectionLayoutInfo collection = CollectVisibleChildLayoutInfo(
       children, container_height,
@@ -230,7 +231,7 @@ UnpinnedTabContainerViewHorizontalLayout::CalculateProposedLayout(
     visible_index++;
   }
 
-  layouts.host_size = gfx::Size(host_width, container_height);
+  layouts.host_size.set_width(host_width);
   return layouts;
 }
 

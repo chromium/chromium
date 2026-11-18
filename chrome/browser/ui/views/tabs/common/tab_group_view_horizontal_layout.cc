@@ -76,13 +76,14 @@ int TabGroupViewHorizontalLayout::CalculateCrossoverWidth() const {
 
 views::ProposedLayout TabGroupViewHorizontalLayout::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
+  const int container_height = TabStyle::Get()->GetStandardHeight();
   views::ProposedLayout layouts;
+  layouts.host_size.set_height(container_height);
   if (!TabGroupView().collection_node_) {
     return layouts;
   }
 
   const int tab_overlap = TabStyle::Get()->GetTabOverlap();
-  const int container_height = TabStyle::Get()->GetStandardHeight();
 
   // Place the Unfocus button and the group header. A header with zero width
   // is laid out hidden so it neither paints nor takes events.
@@ -196,8 +197,7 @@ views::ProposedLayout TabGroupViewHorizontalLayout::CalculateProposedLayout(
     }
   }
 
-  layouts.host_size = gfx::Size(std::max(total_group_width, dragged_view_right),
-                                container_height);
+  layouts.host_size.set_width(std::max(total_group_width, dragged_view_right));
   return layouts;
 }
 
