@@ -29,7 +29,6 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
     case kInvalidChallenge:
     case kTooManyChallenges:
     case kSessionDeletedDuringRefresh:
-    case kCrossSiteRefreshSessionConfig:
       return DeletionReason::kRefreshFatalError;
     case kInvalidConfigJson:
     case kInvalidSessionId:
@@ -158,7 +157,6 @@ bool SessionError::IsServerError() const {
     case kInvalidScopeIncludeSite:
     case kMissingScopeIncludeSite:
     case kBoundCookieSetForbidden:
-    case kCrossSiteRefreshSessionConfig:
       return true;
     // Registration-only errors never get reported to the server.
     case kSigningKeyGenerationError:
@@ -240,7 +238,6 @@ std::optional<RefreshResult> SessionError::GetRefreshResult() const {
     case kNoCredentials:
     case kInvalidScopeIncludeSite:
     case kMissingScopeIncludeSite:
-    case kCrossSiteRefreshSessionConfig:
       return RefreshResult::kFatalError;
 
     // Specific cases

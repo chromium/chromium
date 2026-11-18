@@ -2105,7 +2105,6 @@ domain Network
       AttestationCertificationError
       AttestationSigningError
       FederatedRegistrationRedirected
-      CrossSiteRefreshSessionConfig
   # LINT.ThenChange(//content/browser/devtools/protocol/network_handler.cc:DeviceBoundSessionFetchResult)
 
   # Details about a failed device bound session network request.

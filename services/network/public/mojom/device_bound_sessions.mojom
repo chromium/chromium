@@ -214,7 +214,6 @@ enum DeviceBoundSessionError {
   kAttestationCertificationError = 88,
   kAttestationSigningError = 89,
   kFederatedRegistrationRedirected = 90,
-  kCrossSiteRefreshSessionConfig = 91,
 };
 
 // LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError)

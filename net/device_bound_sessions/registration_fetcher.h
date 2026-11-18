@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "crypto/sign.h"
@@ -34,11 +33,6 @@ class UnexportableKeyService;
 }
 
 namespace net::device_bound_sessions {
-
-// Kill switch for rejecting DBSC session refresh configurations served by a
-// site different from the session being refreshed.
-// TODO(crbug.com/516490575): Remove once this has shipped to stable.
-NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsRequireSameSiteRefresh);
 
 class SessionService;
 class RegistrationRequestParam;
