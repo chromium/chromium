@@ -11,6 +11,7 @@ namespace desktop_to_mobile_promos {
 // These values are persisted to sync protos. Entries should not be renumbered
 // and numeric values should never be reused. See
 // components/sync/protocol/unencrypted_sharing_message.proto.
+// LINT.IfChange(PromoType)
 enum class PromoType {
   kPassword = 1,
   kAddress = 2,
@@ -21,6 +22,7 @@ enum class PromoType {
   kPriceTracking = 7,
   kMaxValue = kPriceTracking
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSCrossPlatformPromoType)
 
 // Bubble type for the desktop-to-mobile promos. A promo bubble can either
 // feature a QRCode or be a Reminder type.
