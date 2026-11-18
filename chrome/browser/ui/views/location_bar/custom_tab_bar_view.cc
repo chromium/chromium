@@ -6,17 +6,18 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/bubble_anchor_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
-#include "chrome/browser/ui/tabs/tab_change_type.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -24,6 +25,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_controller.h"
@@ -258,7 +260,10 @@ CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
       .SetInteriorMargin(interior_margin);
 
-  browser_->GetTabStripModel()->AddObserver(this);
+  active_tab_subscription_ =
+      browser_->RegisterActiveTabDidChange(base::BindRepeating(
+          &CustomTabBarView::OnActiveTabChanged, base::Unretained(this)));
+  OnActiveTabChanged(browser_);
 }
 
 CustomTabBarView::~CustomTabBarView() = default;
@@ -343,20 +348,17 @@ void CustomTabBarView::OnThemeChanged() {
   title_origin_view_->SetColors(background_color_);
 }
 
-void CustomTabBarView::OnTabChangedAt(tabs::TabInterface* tab,
-                                      TabChangeType change_type) {
-  if (delegate_->GetWebContents() == tab->GetContents()) {
-    UpdateContents();
-  }
-}
-
-void CustomTabBarView::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (selection.active_tab_changed()) {
-    UpdateContents();
-  }
+void CustomTabBarView::OnActiveTabChanged(
+    BrowserWindowInterface* browser_interface) {
+  tabs::TabInterface* const active_tab =
+      browser_interface->GetActiveTabInterface();
+  tab_ui_change_subscription_ =
+      active_tab
+          ? TabUIHelper::From(active_tab)
+                ->AddTabUIChangeCallback(base::BindRepeating(
+                    &CustomTabBarView::UpdateContents, base::Unretained(this)))
+          : base::CallbackListSubscription();
+  UpdateContents();
 }
 
 bool CustomTabBarView::HasSecurityStateChanged() const {

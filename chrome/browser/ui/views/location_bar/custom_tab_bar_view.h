@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_CUSTOM_TAB_BAR_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_CUSTOM_TAB_BAR_VIEW_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
@@ -39,7 +39,6 @@ class CustomTabBarTitleOriginView;
 // outside of the app scope. For Android apps on ChromeOS, CustomTabBarView is
 // additionally used to show a three-dot menu icon.
 class CustomTabBarView : public views::AccessiblePaneView,
-                         public TabStripModelObserver,
                          public ui::SimpleMenuModel::Delegate,
                          public views::ContextMenuController,
                          public IconLabelBubbleView::Delegate,
@@ -70,14 +69,6 @@ class CustomTabBarView : public views::AccessiblePaneView,
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void OnThemeChanged() override;
-
-  // TabstripModelObserver:
-  void OnTabChangedAt(tabs::TabInterface* tab,
-                      TabChangeType change_type) override;
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
 
   // IconLabelBubbleView::Delegate:
   SkColor GetIconLabelBubbleSurroundingForegroundColor() const override;
@@ -110,6 +101,8 @@ class CustomTabBarView : public views::AccessiblePaneView,
   gfx::ElideBehavior GetLocationElideBehaviorForTesting() const;
 
  private:
+  void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
+
   // Takes the web contents for the custom tab bar back to the app scope.
   void GoBackToApp();
 
@@ -149,6 +142,9 @@ class CustomTabBarView : public views::AccessiblePaneView,
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
 
   raw_ptr<views::FlexLayout> layout_manager_;
+
+  base::CallbackListSubscription active_tab_subscription_;
+  base::CallbackListSubscription tab_ui_change_subscription_;
 
   base::WeakPtrFactory<CustomTabBarView> weak_factory_{this};
 };
