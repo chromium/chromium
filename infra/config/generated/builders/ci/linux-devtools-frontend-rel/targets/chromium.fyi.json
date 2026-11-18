@@ -5,7 +5,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/devtools-frontend/src/test/api:devtools_api_tests",
+        "module_name": "//:devtools_api_tests",
         "module_scheme": "mocha",
         "name": "devtools_api_tests",
         "resultdb": {
@@ -19,13 +19,13 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "devtools_api_tests",
-        "test_id_prefix": "ninja://third_party/devtools-frontend/src/test/api:devtools_api_tests/"
+        "test_id_prefix": "ninja://:devtools_api_tests/"
       },
       {
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/devtools-frontend/src/test/e2e:devtools_e2e_tests",
+        "module_name": "//:devtools_e2e_tests",
         "module_scheme": "mocha",
         "name": "devtools_e2e_tests",
         "resultdb": {
@@ -40,13 +40,13 @@
           "shards": 8
         },
         "test": "devtools_e2e_tests",
-        "test_id_prefix": "ninja://third_party/devtools-frontend/src/test/e2e:devtools_e2e_tests/"
+        "test_id_prefix": "ninja://:devtools_e2e_tests/"
       },
       {
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/devtools-frontend/src/test/unit:devtools_node_unit_tests",
+        "module_name": "//:devtools_node_unit_tests",
         "module_scheme": "mocha",
         "name": "devtools_node_unit_tests",
         "resultdb": {
@@ -60,13 +60,13 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "devtools_node_unit_tests",
-        "test_id_prefix": "ninja://third_party/devtools-frontend/src/test/unit:devtools_node_unit_tests/"
+        "test_id_prefix": "ninja://:devtools_node_unit_tests/"
       },
       {
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/devtools-frontend/src/test/unit:devtools_unit_tests",
+        "module_name": "//:devtools_unit_tests",
         "module_scheme": "mocha",
         "name": "devtools_unit_tests",
         "resultdb": {
@@ -81,7 +81,7 @@
           "shards": 4
         },
         "test": "devtools_unit_tests",
-        "test_id_prefix": "ninja://third_party/devtools-frontend/src/test/unit:devtools_unit_tests/"
+        "test_id_prefix": "ninja://:devtools_unit_tests/"
       }
     ]
   }
