@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_SYNC_LOAD_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_SYNC_LOAD_CONTEXT_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/byte_size.h"
@@ -17,6 +18,7 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -135,6 +137,10 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public ResourceRequestClient {
   // `CancelRedirect()` on the same thread after `redirect_or_response_event_`
   // is signaled, which protects it against race condition.
   raw_ptr<SyncLoadContext*> context_for_redirect_;
+
+  // Stores the completion status if OnCompletedRequest() arrives while a
+  // redirect is being handled on the calling thread.
+  std::optional<network::URLLoaderCompletionStatus> deferred_completion_status_;
 
   enum class Mode { kInitial, kDataPipe, kBlob };
   Mode mode_ = Mode::kInitial;
