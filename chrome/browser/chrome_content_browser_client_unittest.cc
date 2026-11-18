@@ -1622,6 +1622,44 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectSearchSettingsURL) {
   EXPECT_EQ(GURL("chrome://settings/search"), dest_url);
 }
 
+TEST_F(ChromeContentSettingsRedirectTest, RedirectSettingsRefresh2026URLs) {
+  TestChromeContentBrowserClient test_content_browser_client;
+  struct RedirectTestCase {
+    const char* source_url;
+    const char* target_url;
+  };
+  constexpr RedirectTestCase kTestCases[] = {
+      {"chrome://settings/people", "chrome://settings/"},
+      {"chrome://settings/defaultBrowser", "chrome://settings/"},
+      {"chrome://settings/onStartup", "chrome://settings/general"},
+      {"chrome://settings/downloads", "chrome://settings/general"},
+      {"chrome://settings/system", "chrome://settings/general"},
+      {"chrome://settings/reset", "chrome://settings/general"},
+      {"chrome://settings/fonts", "chrome://settings/accessibility/font"},
+  };
+
+  {
+    base::test::ScopedFeatureList disabled_feature_list;
+    disabled_feature_list.InitAndDisableFeature(features::kSettingsRefresh2026);
+    for (const auto& test_case : kTestCases) {
+      GURL dest_url(test_case.source_url);
+      test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+      EXPECT_EQ(GURL(test_case.source_url), dest_url);
+    }
+  }
+
+  {
+    base::test::ScopedFeatureList enabled_feature_list;
+    enabled_feature_list.InitWithFeatures(
+        {features::kWebuiRefresh2026, features::kSettingsRefresh2026}, {});
+    for (const auto& test_case : kTestCases) {
+      GURL dest_url(test_case.source_url);
+      test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+      EXPECT_EQ(GURL(test_case.target_url), dest_url);
+    }
+  }
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

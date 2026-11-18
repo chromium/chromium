@@ -542,6 +542,7 @@ inline constexpr char kChromeUITabStripInternalsHost[] = "tab-strip-internals";
 // chrome_autocomplete_provider_client.cc to be listed by the built-in
 // AutocompleteProvider.
 
+inline constexpr char kAccessibilityFontSubPage[] = "accessibility/font";
 inline constexpr char kAccessibilitySubPage[] = "accessibility";
 inline constexpr char kAccountSubPage[] = "account";
 inline constexpr char kAddressesSubPage[] = "addresses";
@@ -562,6 +563,7 @@ inline constexpr char kExperimentalAISettingsSubPage[] = "ai";
 inline constexpr char kFileSystemSettingsSubpage[] =
     "content/filesystem/siteDetails";
 inline constexpr char kFontsSubPage[] = "fonts";
+inline constexpr char kGeneralSubPage[] = "general";
 inline constexpr char kGlicSettingsSubpage[] = "ai/gemini";
 inline constexpr char kGlicEnterpriseSettingsSubpage[] = "ai/geminienterprise";
 inline constexpr char kGlicLoginSettingsSubpage[] = "ai/gemini/login";
@@ -610,6 +612,7 @@ inline constexpr char kSuggestionsFromGeminiSubPage[] = "enhancedAutofill";
 inline constexpr char kSuggestionsSubPage[] = "ai/suggestions";
 inline constexpr char kSyncSetupSubPage[] = "syncSetup";
 inline constexpr char kSyncSetupAdvancedSubPage[] = "syncSetup/advanced";
+inline constexpr char kSystemSubPage[] = "system";
 inline constexpr char kTriggeredResetProfileSettingsSubPage[] =
     "triggeredResetProfileSettings";
 

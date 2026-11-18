@@ -7758,6 +7758,29 @@ bool ChromeContentBrowserClient::HandleWebUI(
     replacements.SetPathStr(chrome::kChromeUISearchSettingsPath);
     *url = url->ReplaceComponents(replacements);
   }
+
+  if (features::IsSettingsRefresh2026Enabled() &&
+      url->SchemeIs(content::kChromeUIScheme) &&
+      url->host() == chrome::kChromeUISettingsHost) {
+    static constexpr auto kSettingsRedirects =
+        base::MakeFixedFlatMap<std::string_view, std::string_view>({
+            {chrome::kPeopleSubPage, "/"},
+            {chrome::kDefaultBrowserSubPage, "/"},
+            {chrome::kOnStartupSubPage, chrome::kGeneralSubPage},
+            {chrome::kDownloadsSubPage, chrome::kGeneralSubPage},
+            {chrome::kSystemSubPage, chrome::kGeneralSubPage},
+            {chrome::kResetSubPage, chrome::kGeneralSubPage},
+            {chrome::kFontsSubPage, chrome::kAccessibilityFontSubPage},
+        });
+    const std::string_view sub_page =
+        base::TrimString(url->path(), "/", base::TRIM_ALL);
+    const auto it = kSettingsRedirects.find(sub_page);
+    if (it != kSettingsRedirects.end()) {
+      GURL::Replacements replacements;
+      replacements.SetPathStr(it->second);
+      *url = url->ReplaceComponents(replacements);
+    }
+  }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
