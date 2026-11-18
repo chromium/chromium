@@ -14,6 +14,7 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -171,6 +172,7 @@ class Annotator : public mojom::Annotator {
                       bool desc_requested,
                       bool icon_requested,
                       const std::vector<uint8_t>& image_bytes);
+    ServerRequestInfo(ServerRequestInfo&& other);
     ServerRequestInfo(const ServerRequestInfo& other) = delete;
     ~ServerRequestInfo();
 
@@ -241,11 +243,16 @@ class Annotator : public mojom::Annotator {
   void OnServerResponseReceived(const std::set<RequestKey>& request_keys,
                                 UrlLoaderList::iterator server_request_it,
                                 std::optional<std::string> json_response);
-  // Called once a response comes back from anchovy_provider_.
-  void OnMantaResponseReceived(const RequestKey& request_key,
-                               base::Time request_time,
-                               base::DictValue dict,
-                               manta::MantaStatus status);
+  // Selects and joins the highest-scoring description and OCR annotations from
+  // a single image's Manta response candidate list.
+  std::vector<mojom::AnnotationPtr> ExtractMantaAnnotations(
+      const base::ListValue& results_list) const;
+
+  // Called once a batched response comes back from `anchovy_provider_`.
+  void OnMantaBatchResponseReceived(std::vector<RequestKey> request_keys,
+                                    base::Time request_time,
+                                    base::DictValue dict,
+                                    manta::MantaStatus status);
 
   // Called when the data decoder service provides parsed JSON data for a server
   // response.

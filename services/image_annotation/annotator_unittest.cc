@@ -9,7 +9,12 @@
 #include <cstring>
 #include <memory>
 #include <optional>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -2601,6 +2606,38 @@ TEST(AnnotatorTest, ServerLanguagesMustContainEnglish) {
 
 class FakeAnchovyProvider : public manta::AnchovyProvider {
  public:
+  struct CapturedBatch {
+    CapturedBatch();
+    CapturedBatch(const CapturedBatch&);
+    CapturedBatch(CapturedBatch&&);
+    CapturedBatch& operator=(const CapturedBatch&);
+    CapturedBatch& operator=(CapturedBatch&&);
+    ~CapturedBatch();
+
+    std::string lang_tag;
+    std::vector<std::string> tags;
+    std::vector<std::vector<uint8_t>> images;
+  };
+
+  struct DeferredCall {
+    DeferredCall(base::DictValue response_dict,
+                 manta::MantaStatus status,
+                 manta::MantaGenericCallback callback);
+    DeferredCall(const DeferredCall&) = delete;
+    DeferredCall& operator=(const DeferredCall&) = delete;
+    DeferredCall(DeferredCall&&);
+    DeferredCall& operator=(DeferredCall&&);
+    ~DeferredCall();
+
+    base::DictValue response_dict;
+    manta::MantaStatus status;
+    manta::MantaGenericCallback callback;
+  };
+
+  using BatchResponder = base::RepeatingCallback<
+      std::pair<base::DictValue, manta::MantaStatusCode>(
+          const manta::anchovy::ImageDescriptionBatchRequest&)>;
+
   explicit FakeAnchovyProvider(
       base::DictValue fake_result,
       manta::MantaStatusCode status_code = manta::MantaStatusCode::kOk)
@@ -2608,50 +2645,136 @@ class FakeAnchovyProvider : public manta::AnchovyProvider {
         fake_result_(std::move(fake_result)),
         status_code_(status_code) {}
 
+  explicit FakeAnchovyProvider(BatchResponder batch_responder)
+      : manta::AnchovyProvider(nullptr, nullptr, {}),
+        batch_responder_(std::move(batch_responder)) {}
+
   FakeAnchovyProvider(const FakeAnchovyProvider&) = delete;
   FakeAnchovyProvider& operator=(const FakeAnchovyProvider&) = delete;
+  ~FakeAnchovyProvider() override = default;
 
   void GetImageDescriptions(
       const manta::anchovy::ImageDescriptionBatchRequest& request,
       net::NetworkTrafficAnnotationTag traffic_annotation,
       manta::MantaGenericCallback callback) override {
+    // Mirror `AnchovyProvider::GetImageDescriptions` and
+    // `AnchovyProtoHelper::ComposeRequest` batch preconditions so malformed
+    // batches fail in unit tests just as in production.
+    CHECK(!request.images.empty());
+    if (request.images.size() > manta::anchovy::kMaxBatchSize) {
+      std::move(callback).Run(
+          base::DictValue(),
+          {manta::MantaStatusCode::kInvalidInput, std::string()});
+      return;
+    }
+
     ++request_count_;
+
+    CapturedBatch captured;
+    captured.lang_tag = request.lang_tag;
+    captured.tags.reserve(request.images.size());
+    captured.images.reserve(request.images.size());
+    for (const auto& entry : request.images) {
+      CHECK(!entry.tag.empty());
+      CHECK(!entry.image_bytes->empty());
+      CHECK(!std::ranges::contains(captured.tags, entry.tag));
+      captured.tags.push_back(entry.tag);
+      captured.images.push_back(*entry.image_bytes);
+    }
+    captured_batches_.push_back(std::move(captured));
+
     base::DictValue response_dict;
-    if (const base::ListValue* single_results =
-            fake_result_.FindList("results");
-        single_results &&
-        !fake_result_.FindDict(manta::anchovy::kResultsByTagKey) &&
-        request.images.size() == 1) {
-      // Wrap single-image `{"results": [...]}` fixtures under the requested tag
-      // in `results_by_tag` so existing single-image tests exercise the batched
-      // provider API unaltered.
+    manta::MantaStatusCode response_code = status_code_;
+    if (batch_responder_) {
+      std::tie(response_dict, response_code) = batch_responder_.Run(request);
+    } else if (const base::ListValue* single_results =
+                   fake_result_.FindList("results");
+               single_results &&
+               !fake_result_.FindDict(manta::anchovy::kResultsByTagKey) &&
+               request.images.size() == 1) {
+      // Wrap single-image `{"results": [...]}` fixtures into the tagged batch
+      // dictionary format so existing single-image tests exercise the batched
+      // code path unaltered.
       response_dict.Set(manta::anchovy::kResultsByTagKey,
                         base::DictValue().Set(request.images[0].tag,
                                               single_results->Clone()));
     } else {
       response_dict = fake_result_.Clone();
     }
+
     manta::MantaStatus status;
-    status.status_code = status_code_;
+    status.status_code = response_code;
     status.locale = "en";
     status.message =
-        status_code_ == manta::MantaStatusCode::kOk ? "ok" : "error";
+        response_code == manta::MantaStatusCode::kOk ? "ok" : "error";
+    if (defer_callbacks_) {
+      // Hold the response so tests can inspect in-flight state, resolve batches
+      // out of order, or destroy `Annotator` before completion.
+      deferred_calls_.emplace_back(std::move(response_dict), std::move(status),
+                                   std::move(callback));
+      return;
+    }
     std::move(callback).Run(std::move(response_dict), std::move(status));
   }
 
   void SetFakeResult(base::DictValue fake_result,
                      manta::MantaStatusCode status_code) {
+    batch_responder_.Reset();
     fake_result_ = std::move(fake_result);
     status_code_ = status_code;
   }
 
+  void SetBatchResponder(BatchResponder batch_responder) {
+    batch_responder_ = std::move(batch_responder);
+  }
+
+  void SetDeferCallbacks(bool defer_callbacks) {
+    defer_callbacks_ = defer_callbacks;
+  }
+
+  std::vector<DeferredCall> TakeDeferredCallbacks() {
+    return std::move(deferred_calls_);
+  }
+
+  size_t deferred_callback_count() const { return deferred_calls_.size(); }
+
   int request_count() const { return request_count_; }
+
+  const std::vector<CapturedBatch>& captured_batches() const {
+    return captured_batches_;
+  }
 
  private:
   base::DictValue fake_result_;
-  manta::MantaStatusCode status_code_;
+  manta::MantaStatusCode status_code_ = manta::MantaStatusCode::kOk;
+  BatchResponder batch_responder_;
+  bool defer_callbacks_ = false;
+  std::vector<DeferredCall> deferred_calls_;
   int request_count_ = 0;
+  std::vector<CapturedBatch> captured_batches_;
 };
+
+FakeAnchovyProvider::CapturedBatch::CapturedBatch() = default;
+FakeAnchovyProvider::CapturedBatch::CapturedBatch(const CapturedBatch&) =
+    default;
+FakeAnchovyProvider::CapturedBatch::CapturedBatch(CapturedBatch&&) = default;
+FakeAnchovyProvider::CapturedBatch&
+FakeAnchovyProvider::CapturedBatch::operator=(const CapturedBatch&) = default;
+FakeAnchovyProvider::CapturedBatch&
+FakeAnchovyProvider::CapturedBatch::operator=(CapturedBatch&&) = default;
+FakeAnchovyProvider::CapturedBatch::~CapturedBatch() = default;
+
+FakeAnchovyProvider::DeferredCall::DeferredCall(
+    base::DictValue response_dict,
+    manta::MantaStatus status,
+    manta::MantaGenericCallback callback)
+    : response_dict(std::move(response_dict)),
+      status(std::move(status)),
+      callback(std::move(callback)) {}
+FakeAnchovyProvider::DeferredCall::DeferredCall(DeferredCall&&) = default;
+FakeAnchovyProvider::DeferredCall& FakeAnchovyProvider::DeferredCall::operator=(
+    DeferredCall&&) = default;
+FakeAnchovyProvider::DeferredCall::~DeferredCall() = default;
 
 void RunAnchovyAnnotatorTest(
     std::unique_ptr<FakeAnchovyProvider> fake_provider,
@@ -3744,6 +3867,1054 @@ TEST(AnnotatorDeathTest, NonPositiveBatchSizeCrashes) {
                                kThrottle, /*batch_size=*/-1,
                                /*min_ocr_confidence=*/1.0, nullptr, nullptr,
                                std::make_unique<TestAnnotatorClient>()));
+}
+
+namespace {
+
+// Builds a tagged batch response dictionary emitting one PRIMARY_CAPTION per
+// input image encoding the request language, assigned tag, and first pixel
+// byte so tests can verify end-to-end correlation.
+std::pair<base::DictValue, manta::MantaStatusCode>
+MakePerImageEchoBatchResponse(
+    const manta::anchovy::ImageDescriptionBatchRequest& request) {
+  base::DictValue results_by_tag;
+  for (const auto& entry : request.images) {
+    const int first_byte =
+        entry.image_bytes->empty() ? -1 : (*entry.image_bytes)[0];
+    base::ListValue list;
+    list.Append(
+        base::DictValue()
+            .Set("type", manta::anchovy::kTypePrimaryCaption)
+            .Set("score", 0.9)
+            .Set("text", base::StringPrintf("%s|tag=%s|byte=%d",
+                                            request.lang_tag.c_str(),
+                                            entry.tag.c_str(), first_byte)));
+    results_by_tag.Set(entry.tag, std::move(list));
+  }
+  return {base::DictValue().Set(manta::anchovy::kResultsByTagKey,
+                                std::move(results_by_tag)),
+          manta::MantaStatusCode::kOk};
+}
+
+}  // namespace
+
+// Verifies that multiple same-language requests arriving within one 300ms
+// throttle window are sent in a single GetImageDescriptions batch using compact
+// decimal tags ("0".."9", never URLs) in chronological FIFO order, cached per
+// image, and counted once in ServerLatencyMs.
+TEST(AnnotatorTest, AnchovyBatchesMultipleSameLanguageImagesInSingleRequest) {
+  base::test::ScopedFeatureList enabled_features;
+  enabled_features.InitAndEnableFeature(
+      features::kImageDescriptionsAlternateRouting);
+
+  base::test::TaskEnvironment test_task_env(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  TestServerURLLoaderFactory test_url_factory(
+      "https://ia-pa.googleapis.com/v1/");
+  base::HistogramTester histogram_tester;
+
+  auto fake_provider = std::make_unique<FakeAnchovyProvider>(
+      base::BindRepeating(&MakePerImageEchoBatchResponse));
+  FakeAnchovyProvider* provider_ptr = fake_provider.get();
+
+  constexpr size_t kNumImages = 10;
+  constexpr base::TimeDelta kBatchThrottle = base::Milliseconds(300);
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */,
+      kBatchThrottle, /*batch_size=*/10, /*min_ocr_confidence=*/0.7,
+      test_url_factory.AsSharedURLLoaderFactory(), std::move(fake_provider),
+      std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiverForTesting(
+      remote_annotator.BindNewPipeAndPassReceiver());
+
+  std::array<TestImageProcessor, kNumImages> processors;
+  std::array<std::optional<mojom::AnnotateImageError>, kNumImages> errors;
+  std::array<std::vector<mojom::Annotation>, kNumImages> annotations;
+
+  base::RunLoop batch_done_loop;
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(kNumImages, batch_done_loop.QuitClosure());
+
+  for (size_t i = 0; i < kNumImages; ++i) {
+    const std::string url =
+        base::StringPrintf("https://www.example.com/batch_img_%zu.jpg", i);
+    remote_annotator->AnnotateImage(
+        url, "en", processors[i].GetPendingRemote(),
+        base::BindOnce(&ReportResult, &errors[i], &annotations[i])
+            .Then(barrier));
+  }
+
+  for (auto& processor : processors) {
+    processor.WaitForGetJpgImageData();
+    ASSERT_THAT(processor.callbacks(), SizeIs(1));
+  }
+
+  // Deliver JPEG bytes in deterministic chronological order (total elapsed
+  // 10ms << 300ms throttle window).
+  for (size_t i = 0; i < kNumImages; ++i) {
+    const uint8_t marker = static_cast<uint8_t>(i + 1);
+    std::move(processors[i].callbacks()[0])
+        .Run({marker, static_cast<uint8_t>(marker + 100)}, kDescDim, kDescDim);
+    processors[i].callbacks().pop_back();
+    test_task_env.FastForwardBy(base::Milliseconds(1));
+  }
+  EXPECT_EQ(provider_ptr->request_count(), 0);
+
+  // Firing the 300ms batch timer sends all 10 images in a single Manta call.
+  test_task_env.FastForwardBy(kBatchThrottle);
+  batch_done_loop.Run();
+
+  EXPECT_THAT(test_url_factory.requests(), IsEmpty());
+  ASSERT_EQ(provider_ptr->request_count(), 1);
+  ASSERT_EQ(provider_ptr->captured_batches().size(), 1u);
+  const auto& captured = provider_ptr->captured_batches()[0];
+  EXPECT_EQ(captured.lang_tag, "en");
+  EXPECT_THAT(captured.tags,
+              ElementsAre("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"));
+  for (const std::string& tag : captured.tags) {
+    EXPECT_FALSE(tag.contains("http"));
+    EXPECT_FALSE(tag.contains("example.com"));
+  }
+  ASSERT_EQ(captured.images.size(), kNumImages);
+  for (size_t i = 0; i < kNumImages; ++i) {
+    const uint8_t marker = static_cast<uint8_t>(i + 1);
+    EXPECT_THAT(captured.images[i],
+                ElementsAre(marker, static_cast<uint8_t>(marker + 100)));
+    EXPECT_EQ(errors[i], std::nullopt);
+    ASSERT_EQ(annotations[i].size(), 1u);
+    EXPECT_EQ(annotations[i][0].type, mojom::AnnotationType::kCaption);
+    EXPECT_EQ(annotations[i][0].text,
+              base::StringPrintf("en|tag=%zu|byte=%d", i, marker));
+  }
+
+  // Latency is recorded once for the batched HTTP response, not once per image.
+  histogram_tester.ExpectTotalCount(metrics_internal::kServerLatency, 1);
+  histogram_tester.ExpectUniqueSample(
+      metrics_internal::kImageRequestIncludesDesc, true, kNumImages);
+
+  // Re-requesting all 10 images serves their distinct results directly from the
+  // cache without fetching pixels or contacting the provider again.
+  std::array<TestImageProcessor, kNumImages> cached_processors;
+  std::array<std::optional<mojom::AnnotateImageError>, kNumImages>
+      cached_errors;
+  std::array<std::vector<mojom::Annotation>, kNumImages> cached_annotations;
+  base::RunLoop cache_done_loop;
+  base::RepeatingClosure cache_barrier =
+      base::BarrierClosure(kNumImages, cache_done_loop.QuitClosure());
+
+  for (size_t i = 0; i < kNumImages; ++i) {
+    const std::string url =
+        base::StringPrintf("https://www.example.com/batch_img_%zu.jpg", i);
+    remote_annotator->AnnotateImage(
+        url, "en", cached_processors[i].GetPendingRemote(),
+        base::BindOnce(&ReportResult, &cached_errors[i], &cached_annotations[i])
+            .Then(cache_barrier));
+  }
+  cache_done_loop.Run();
+
+  EXPECT_EQ(provider_ptr->request_count(), 1);
+  for (size_t i = 0; i < kNumImages; ++i) {
+    EXPECT_THAT(cached_processors[i].callbacks(), IsEmpty());
+    EXPECT_EQ(cached_errors[i], std::nullopt);
+    ASSERT_EQ(cached_annotations[i].size(), 1u);
+    EXPECT_EQ(cached_annotations[i][0].text,
+              base::StringPrintf("en|tag=%zu|byte=%zu", i, i + 1));
+  }
+  histogram_tester.ExpectBucketCount(metrics_internal::kCacheHit, false,
+                                     kNumImages);
+  histogram_tester.ExpectBucketCount(metrics_internal::kCacheHit, true,
+                                     kNumImages);
+}
+
+// Verifies that queued items exceeding `batch_size` or
+// `manta::anchovy::kMaxBatchSize` (100) are drained oldest-first across
+// consecutive throttle ticks, and that the repeating timer stops once the queue
+// empties.
+TEST(AnnotatorTest, AnchovySplitsQueueExceedingBatchSizeAcrossTimerTicks) {
+  base::test::ScopedFeatureList enabled_features;
+  enabled_features.InitAndEnableFeature(
+      features::kImageDescriptionsAlternateRouting);
+
+  constexpr base::TimeDelta kBatchThrottle = base::Milliseconds(300);
+
+  // Case 1: 5 queued images with `batch_size = 3` split into 3 + 2 across two
+  // ticks, then 0 calls on subsequent ticks.
+  {
+    base::test::TaskEnvironment test_task_env(
+        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+    TestServerURLLoaderFactory test_url_factory(
+        "https://ia-pa.googleapis.com/v1/");
+
+    auto fake_provider = std::make_unique<FakeAnchovyProvider>(
+        base::BindRepeating(&MakePerImageEchoBatchResponse));
+    FakeAnchovyProvider* provider_ptr = fake_provider.get();
+
+    Annotator annotator(
+        GURL(kTestServerUrl), GURL(""), std::string() /* api_key */,
+        kBatchThrottle, /*batch_size=*/3, /*min_ocr_confidence=*/0.7,
+        test_url_factory.AsSharedURLLoaderFactory(), std::move(fake_provider),
+        std::make_unique<TestAnnotatorClient>());
+    mojo::Remote<mojom::Annotator> remote_annotator;
+    annotator.BindReceiverForTesting(
+        remote_annotator.BindNewPipeAndPassReceiver());
+
+    constexpr size_t kNumImages = 5;
+    std::array<TestImageProcessor, kNumImages> processors;
+    std::array<std::optional<mojom::AnnotateImageError>, kNumImages> errors;
+    std::array<std::vector<mojom::Annotation>, kNumImages> annotations;
+
+    base::RunLoop tick1_loop;
+    base::RepeatingClosure tick1_barrier =
+        base::BarrierClosure(3, tick1_loop.QuitClosure());
+    base::RunLoop tick2_loop;
+    base::RepeatingClosure tick2_barrier =
+        base::BarrierClosure(2, tick2_loop.QuitClosure());
+
+    for (size_t i = 0; i < kNumImages; ++i) {
+      const std::string url =
+          base::StringPrintf("https://www.example.com/split_%zu.jpg", i);
+      remote_annotator->AnnotateImage(
+          url, "en", processors[i].GetPendingRemote(),
+          base::BindOnce(&ReportResult, &errors[i], &annotations[i])
+              .Then(i < 3 ? tick1_barrier : tick2_barrier));
+    }
+
+    for (auto& processor : processors) {
+      processor.WaitForGetJpgImageData();
+      ASSERT_THAT(processor.callbacks(), SizeIs(1));
+    }
+    for (size_t i = 0; i < kNumImages; ++i) {
+      std::move(processors[i].callbacks()[0])
+          .Run({static_cast<uint8_t>(i + 1)}, kDescDim, kDescDim);
+      processors[i].callbacks().pop_back();
+      test_task_env.FastForwardBy(base::Milliseconds(1));
+    }
+    EXPECT_EQ(provider_ptr->request_count(), 0);
+
+    // First tick dispatches the oldest 3 images (indices 0, 1, 2) with fresh
+    // per-request tags "0".."2".
+    test_task_env.FastForwardBy(kBatchThrottle);
+    tick1_loop.Run();
+
+    ASSERT_EQ(provider_ptr->request_count(), 1);
+    EXPECT_THAT(provider_ptr->captured_batches()[0].tags,
+                ElementsAre("0", "1", "2"));
+    ASSERT_EQ(provider_ptr->captured_batches()[0].images.size(), 3u);
+    EXPECT_THAT(provider_ptr->captured_batches()[0].images[0], ElementsAre(1));
+    EXPECT_THAT(provider_ptr->captured_batches()[0].images[1], ElementsAre(2));
+    EXPECT_THAT(provider_ptr->captured_batches()[0].images[2], ElementsAre(3));
+    EXPECT_TRUE(annotations[3].empty());
+    EXPECT_TRUE(annotations[4].empty());
+
+    // Second tick dispatches the remaining 2 images (indices 3, 4) tagged
+    // "0".."1".
+    test_task_env.FastForwardBy(kBatchThrottle);
+    tick2_loop.Run();
+
+    ASSERT_EQ(provider_ptr->request_count(), 2);
+    EXPECT_THAT(provider_ptr->captured_batches()[1].tags,
+                ElementsAre("0", "1"));
+    ASSERT_EQ(provider_ptr->captured_batches()[1].images.size(), 2u);
+    EXPECT_THAT(provider_ptr->captured_batches()[1].images[0], ElementsAre(4));
+    EXPECT_THAT(provider_ptr->captured_batches()[1].images[1], ElementsAre(5));
+
+    for (size_t i = 0; i < kNumImages; ++i) {
+      ASSERT_EQ(annotations[i].size(), 1u);
+      EXPECT_EQ(
+          annotations[i][0].text,
+          base::StringPrintf("en|tag=%zu|byte=%zu", i < 3 ? i : i - 3, i + 1));
+    }
+
+    // Advancing well past several throttle periods triggers zero extra calls
+    // after the queue drains and stops the timer.
+    test_task_env.FastForwardBy(base::Seconds(5));
+    EXPECT_EQ(provider_ptr->request_count(), 2);
+  }
+
+  // Case 2: 105 queued images with `batch_size = 150` are capped at 100
+  // (`manta::anchovy::kMaxBatchSize`) on tick 1, sending the remaining 5 on
+  // tick 2.
+  {
+    base::test::TaskEnvironment test_task_env(
+        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+    TestServerURLLoaderFactory test_url_factory(
+        "https://ia-pa.googleapis.com/v1/");
+
+    auto fake_provider = std::make_unique<FakeAnchovyProvider>(
+        base::BindRepeating(&MakePerImageEchoBatchResponse));
+    FakeAnchovyProvider* provider_ptr = fake_provider.get();
+
+    Annotator annotator(
+        GURL(kTestServerUrl), GURL(""), std::string() /* api_key */,
+        kBatchThrottle, /*batch_size=*/150, /*min_ocr_confidence=*/0.7,
+        test_url_factory.AsSharedURLLoaderFactory(), std::move(fake_provider),
+        std::make_unique<TestAnnotatorClient>());
+    mojo::Remote<mojom::Annotator> remote_annotator;
+    annotator.BindReceiverForTesting(
+        remote_annotator.BindNewPipeAndPassReceiver());
+
+    constexpr size_t kNumImages = 105;
+    std::array<TestImageProcessor, kNumImages> processors;
+    std::array<std::optional<mojom::AnnotateImageError>, kNumImages> errors;
+    std::array<std::vector<mojom::Annotation>, kNumImages> annotations;
+
+    base::RunLoop tick1_loop;
+    base::RepeatingClosure tick1_barrier =
+        base::BarrierClosure(100, tick1_loop.QuitClosure());
+    base::RunLoop tick2_loop;
+    base::RepeatingClosure tick2_barrier =
+        base::BarrierClosure(5, tick2_loop.QuitClosure());
+
+    for (size_t i = 0; i < kNumImages; ++i) {
+      const std::string url =
+          base::StringPrintf("https://www.example.com/cap_%zu.jpg", i);
+      remote_annotator->AnnotateImage(
+          url, "en", processors[i].GetPendingRemote(),
+          base::BindOnce(&ReportResult, &errors[i], &annotations[i])
+              .Then(i < 100 ? tick1_barrier : tick2_barrier));
+    }
+
+    for (auto& processor : processors) {
+      processor.WaitForGetJpgImageData();
+      ASSERT_THAT(processor.callbacks(), SizeIs(1));
+    }
+    // 105 * 1ms = 105ms < 300ms throttle window.
+    for (size_t i = 0; i < kNumImages; ++i) {
+      std::move(processors[i].callbacks()[0])
+          .Run({static_cast<uint8_t>(i + 1)}, kDescDim, kDescDim);
+      processors[i].callbacks().pop_back();
+      test_task_env.FastForwardBy(base::Milliseconds(1));
+    }
+    EXPECT_EQ(provider_ptr->request_count(), 0);
+
+    // Advance past the 300ms mark (`105ms + 250ms = 355ms`) to fire tick 1.
+    test_task_env.FastForwardBy(base::Milliseconds(250));
+    tick1_loop.Run();
+
+    ASSERT_EQ(provider_ptr->request_count(), 1);
+    ASSERT_EQ(provider_ptr->captured_batches()[0].tags.size(), 100u);
+    EXPECT_EQ(provider_ptr->captured_batches()[0].tags.front(), "0");
+    EXPECT_EQ(provider_ptr->captured_batches()[0].tags.back(), "99");
+    EXPECT_THAT(provider_ptr->captured_batches()[0].images.front(),
+                ElementsAre(1));
+    EXPECT_THAT(provider_ptr->captured_batches()[0].images.back(),
+                ElementsAre(100));
+
+    // Advance another 300ms (`655ms`) to fire tick 2 with the remaining 5.
+    test_task_env.FastForwardBy(kBatchThrottle);
+    tick2_loop.Run();
+
+    ASSERT_EQ(provider_ptr->request_count(), 2);
+    EXPECT_THAT(provider_ptr->captured_batches()[1].tags,
+                ElementsAre("0", "1", "2", "3", "4"));
+    EXPECT_THAT(provider_ptr->captured_batches()[1].images.front(),
+                ElementsAre(101));
+    EXPECT_THAT(provider_ptr->captured_batches()[1].images.back(),
+                ElementsAre(105));
+
+    for (size_t i = 0; i < kNumImages; ++i) {
+      EXPECT_EQ(errors[i], std::nullopt);
+      ASSERT_EQ(annotations[i].size(), 1u);
+    }
+
+    test_task_env.FastForwardBy(base::Seconds(5));
+    EXPECT_EQ(provider_ptr->request_count(), 2);
+  }
+}
+
+// Verifies that mixed-language requests queued in one window are partitioned
+// into one batched GetImageDescriptions request per distinct `desc_lang_tag` in
+// chronological encounter order, with independent `"0".."K-1"` tag sequences
+// and `{source_id, lang}` caching.
+TEST(AnnotatorTest,
+     AnchovyPartitionsMixedLanguagesIntoSeparateBatchedRequests) {
+  base::test::ScopedFeatureList enabled_features;
+  enabled_features.InitAndEnableFeature(
+      features::kImageDescriptionsAlternateRouting);
+
+  base::test::TaskEnvironment test_task_env(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  TestServerURLLoaderFactory test_url_factory(
+      "https://ia-pa.googleapis.com/v1/");
+  base::HistogramTester histogram_tester;
+
+  auto fake_provider = std::make_unique<FakeAnchovyProvider>(
+      base::BindRepeating(&MakePerImageEchoBatchResponse));
+  FakeAnchovyProvider* provider_ptr = fake_provider.get();
+
+  auto client = std::make_unique<TestAnnotatorClient>();
+  client->SetAcceptLanguages({"en", "fr"});
+
+  constexpr base::TimeDelta kBatchThrottle = base::Milliseconds(300);
+  Annotator annotator(GURL(kTestServerUrl), GURL(""),
+                      std::string() /* api_key */, kBatchThrottle,
+                      /*batch_size=*/10, /*min_ocr_confidence=*/0.7,
+                      test_url_factory.AsSharedURLLoaderFactory(),
+                      std::move(fake_provider), std::move(client));
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiverForTesting(
+      remote_annotator.BindNewPipeAndPassReceiver());
+
+  // Interleave 6 "en" and 4 "fr" requests; "en" arrives first so the "en"
+  // batch must dispatch before the "fr" batch.
+  constexpr std::array<const char*, 10> kLangs = {"en", "fr", "en", "fr", "en",
+                                                  "en", "fr", "en", "fr", "en"};
+  constexpr std::array<size_t, 10> kExpectedWithinLangIndex = {0, 0, 1, 1, 2,
+                                                               3, 2, 4, 3, 5};
+
+  std::array<TestImageProcessor, 10> processors;
+  std::array<std::optional<mojom::AnnotateImageError>, 10> errors;
+  std::array<std::vector<mojom::Annotation>, 10> annotations;
+
+  base::RunLoop batch_done_loop;
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(10, batch_done_loop.QuitClosure());
+
+  for (size_t i = 0; i < 10; ++i) {
+    const std::string url =
+        base::StringPrintf("https://www.example.com/mixed_%zu.jpg", i);
+    remote_annotator->AnnotateImage(
+        url, kLangs[i], processors[i].GetPendingRemote(),
+        base::BindOnce(&ReportResult, &errors[i], &annotations[i])
+            .Then(barrier));
+  }
+
+  for (auto& processor : processors) {
+    processor.WaitForGetJpgImageData();
+    ASSERT_THAT(processor.callbacks(), SizeIs(1));
+  }
+  for (size_t i = 0; i < 10; ++i) {
+    std::move(processors[i].callbacks()[0])
+        .Run({static_cast<uint8_t>(i + 1)}, kDescDim, kDescDim);
+    processors[i].callbacks().pop_back();
+    test_task_env.FastForwardBy(base::Milliseconds(1));
+  }
+
+  test_task_env.FastForwardBy(kBatchThrottle);
+  batch_done_loop.Run();
+
+  ASSERT_EQ(provider_ptr->request_count(), 2);
+  ASSERT_EQ(provider_ptr->captured_batches().size(), 2u);
+
+  const auto& en_batch = provider_ptr->captured_batches()[0];
+  EXPECT_EQ(en_batch.lang_tag, "en");
+  EXPECT_THAT(en_batch.tags, ElementsAre("0", "1", "2", "3", "4", "5"));
+  ASSERT_EQ(en_batch.images.size(), 6u);
+  EXPECT_THAT(en_batch.images[0], ElementsAre(1));
+  EXPECT_THAT(en_batch.images[1], ElementsAre(3));
+  EXPECT_THAT(en_batch.images[2], ElementsAre(5));
+  EXPECT_THAT(en_batch.images[3], ElementsAre(6));
+  EXPECT_THAT(en_batch.images[4], ElementsAre(8));
+  EXPECT_THAT(en_batch.images[5], ElementsAre(10));
+
+  const auto& fr_batch = provider_ptr->captured_batches()[1];
+  EXPECT_EQ(fr_batch.lang_tag, "fr");
+  EXPECT_THAT(fr_batch.tags, ElementsAre("0", "1", "2", "3"));
+  ASSERT_EQ(fr_batch.images.size(), 4u);
+  EXPECT_THAT(fr_batch.images[0], ElementsAre(2));
+  EXPECT_THAT(fr_batch.images[1], ElementsAre(4));
+  EXPECT_THAT(fr_batch.images[2], ElementsAre(7));
+  EXPECT_THAT(fr_batch.images[3], ElementsAre(9));
+
+  histogram_tester.ExpectTotalCount(metrics_internal::kServerLatency, 2);
+
+  for (size_t i = 0; i < 10; ++i) {
+    EXPECT_EQ(errors[i], std::nullopt);
+    ASSERT_EQ(annotations[i].size(), 1u);
+    EXPECT_EQ(annotations[i][0].text,
+              base::StringPrintf("%s|tag=%zu|byte=%zu", kLangs[i],
+                                 kExpectedWithinLangIndex[i], i + 1));
+  }
+
+  // Verify cache lookup keys by `{source_id, lang}`: re-requesting `mixed_0` in
+  // "en" hits the cache immediately, whereas requesting `mixed_0` in "fr"
+  // triggers a fresh "fr" batch request.
+  TestImageProcessor cached_en_processor;
+  std::optional<mojom::AnnotateImageError> cached_en_error;
+  std::vector<mojom::Annotation> cached_en_annotations;
+  base::RunLoop cached_en_loop;
+  remote_annotator->AnnotateImage(
+      "https://www.example.com/mixed_0.jpg", "en",
+      cached_en_processor.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &cached_en_error, &cached_en_annotations)
+          .Then(cached_en_loop.QuitClosure()));
+  cached_en_loop.Run();
+  EXPECT_EQ(provider_ptr->request_count(), 2);
+  EXPECT_THAT(cached_en_processor.callbacks(), IsEmpty());
+  ASSERT_EQ(cached_en_annotations.size(), 1u);
+  EXPECT_EQ(cached_en_annotations[0].text, "en|tag=0|byte=1");
+
+  TestImageProcessor new_fr_processor;
+  std::optional<mojom::AnnotateImageError> new_fr_error;
+  std::vector<mojom::Annotation> new_fr_annotations;
+  base::RunLoop new_fr_loop;
+  remote_annotator->AnnotateImage(
+      "https://www.example.com/mixed_0.jpg", "fr",
+      new_fr_processor.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &new_fr_error, &new_fr_annotations)
+          .Then(new_fr_loop.QuitClosure()));
+  new_fr_processor.WaitForGetJpgImageData();
+  ASSERT_THAT(new_fr_processor.callbacks(), SizeIs(1));
+  std::move(new_fr_processor.callbacks()[0]).Run({77}, kDescDim, kDescDim);
+  new_fr_processor.callbacks().pop_back();
+  test_task_env.FastForwardBy(kBatchThrottle);
+  new_fr_loop.Run();
+
+  EXPECT_EQ(provider_ptr->request_count(), 3);
+  EXPECT_EQ(provider_ptr->captured_batches()[2].lang_tag, "fr");
+  ASSERT_EQ(new_fr_annotations.size(), 1u);
+  EXPECT_EQ(new_fr_annotations[0].text, "fr|tag=0|byte=77");
+}
+
+// Verifies per-tag candidate selection, partial server-side filtering/omission
+// (uncached kFailure), and safe ignoring of unrequested tags within one batch.
+TEST(AnnotatorTest,
+     AnchovyBatchHandlesMultiOutputPartialFilteringAndUnknownTags) {
+  base::test::ScopedFeatureList enabled_features;
+  enabled_features.InitAndEnableFeature(
+      features::kImageDescriptionsAlternateRouting);
+
+  base::test::TaskEnvironment test_task_env(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  TestServerURLLoaderFactory test_url_factory(
+      "https://ia-pa.googleapis.com/v1/");
+  base::HistogramTester histogram_tester;
+
+  base::DictValue results_by_tag;
+
+  // Tag "0" (kImage1Url): PRIMARY_CAPTION (0.80) + SECONDARY_CAPTION (1.40,
+  // clamped to 1.0) + LABEL (0.95) -> joined kCaption with score 0.90.
+  base::ListValue tag0_list;
+  tag0_list.Append(base::DictValue()
+                       .Set("type", manta::anchovy::kTypePrimaryCaption)
+                       .Set("score", 0.80)
+                       .Set("text", "A mountain lake"));
+  tag0_list.Append(base::DictValue()
+                       .Set("type", manta::anchovy::kTypeSecondaryCaption)
+                       .Set("score", 1.40)
+                       .Set("text", "Banff National Park"));
+  tag0_list.Append(base::DictValue()
+                       .Set("type", manta::anchovy::kTypeLabel)
+                       .Set("score", 0.95)
+                       .Set("text", "lake"));
+  results_by_tag.Set("0", std::move(tag0_list));
+
+  // Tag "1" (kImage2Url): completely omitted to simulate server-side safety or
+  // quality filtering on image 1.
+
+  // Tag "2" (kImage3Url): orphan SECONDARY_CAPTION + LABEL (0.88) + OCR
+  // (0.85 >= 0.7) -> kLabel + kOcr.
+  base::ListValue tag2_list;
+  tag2_list.Append(base::DictValue()
+                       .Set("type", manta::anchovy::kTypeSecondaryCaption)
+                       .Set("score", 0.92)
+                       .Set("text", "Orphan secondary"));
+  tag2_list.Append(base::DictValue()
+                       .Set("type", manta::anchovy::kTypeLabel)
+                       .Set("score", 0.88)
+                       .Set("text", "skyline"));
+  tag2_list.Append(base::DictValue()
+                       .Set("type", manta::anchovy::kTypeOcr)
+                       .Set("score", 0.85)
+                       .Set("text", "EXIT 42"));
+  results_by_tag.Set("2", std::move(tag2_list));
+
+  // Tag "3" (kImage4Url): only below-threshold OCR (0.40 < 0.7) -> kFailure.
+  base::ListValue tag3_list;
+  tag3_list.Append(base::DictValue()
+                       .Set("type", manta::anchovy::kTypeOcr)
+                       .Set("score", 0.40)
+                       .Set("text", "low confidence text"));
+  results_by_tag.Set("3", std::move(tag3_list));
+
+  // Extraneous unrequested tags ("99" and ""): ignored safely without crashing
+  // or emitting annotations.
+  base::ListValue extra_list;
+  extra_list.Append(base::DictValue()
+                        .Set("type", manta::anchovy::kTypePrimaryCaption)
+                        .Set("score", 0.99)
+                        .Set("text", "Unrequested tag caption"));
+  results_by_tag.Set("99", extra_list.Clone());
+  results_by_tag.Set("", std::move(extra_list));
+
+  auto fake_provider =
+      std::make_unique<FakeAnchovyProvider>(base::DictValue().Set(
+          manta::anchovy::kResultsByTagKey, std::move(results_by_tag)));
+  FakeAnchovyProvider* provider_ptr = fake_provider.get();
+
+  constexpr base::TimeDelta kBatchThrottle = base::Milliseconds(300);
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */,
+      kBatchThrottle, /*batch_size=*/10, /*min_ocr_confidence=*/0.7,
+      test_url_factory.AsSharedURLLoaderFactory(), std::move(fake_provider),
+      std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiverForTesting(
+      remote_annotator.BindNewPipeAndPassReceiver());
+
+  static constexpr char kImage4Url[] = "https://www.example.com/image4.jpg";
+  constexpr std::array<const char*, 4> kUrls = {kImage1Url, kImage2Url,
+                                                kImage3Url, kImage4Url};
+  std::array<TestImageProcessor, 4> processors;
+  std::array<std::optional<mojom::AnnotateImageError>, 4> errors;
+  std::array<std::vector<mojom::Annotation>, 4> annotations;
+
+  base::RunLoop batch_loop;
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(4, batch_loop.QuitClosure());
+
+  for (size_t i = 0; i < 4; ++i) {
+    remote_annotator->AnnotateImage(
+        kUrls[i], "en", processors[i].GetPendingRemote(),
+        base::BindOnce(&ReportResult, &errors[i], &annotations[i])
+            .Then(barrier));
+  }
+
+  for (auto& processor : processors) {
+    processor.WaitForGetJpgImageData();
+    ASSERT_THAT(processor.callbacks(), SizeIs(1));
+  }
+  for (size_t i = 0; i < 4; ++i) {
+    std::move(processors[i].callbacks()[0])
+        .Run({static_cast<uint8_t>(i + 1)}, kDescDim, kDescDim);
+    processors[i].callbacks().pop_back();
+    test_task_env.FastForwardBy(base::Milliseconds(1));
+  }
+
+  test_task_env.FastForwardBy(kBatchThrottle);
+  batch_loop.Run();
+
+  ASSERT_EQ(provider_ptr->request_count(), 1);
+
+  // Image 0: joined PRIMARY_CAPTION + SECONDARY_CAPTION with averaged clamped
+  // score (0.80 + 1.0) / 2 = 0.90.
+  EXPECT_EQ(errors[0], std::nullopt);
+  ASSERT_EQ(annotations[0].size(), 1u);
+  EXPECT_EQ(annotations[0][0].type, mojom::AnnotationType::kCaption);
+  EXPECT_EQ(annotations[0][0].text, "A mountain lake\nBanff National Park");
+  EXPECT_NEAR(annotations[0][0].score, 0.90, 1e-5);
+
+  // Image 1: omitted tag -> kFailure.
+  EXPECT_EQ(errors[1], mojom::AnnotateImageError::kFailure);
+  EXPECT_THAT(annotations[1], IsEmpty());
+
+  // Image 2: orphan secondary ignored -> kLabel + kOcr.
+  EXPECT_EQ(errors[2], std::nullopt);
+  ASSERT_EQ(annotations[2].size(), 2u);
+  EXPECT_EQ(annotations[2][0].type, mojom::AnnotationType::kLabel);
+  EXPECT_EQ(annotations[2][0].text, "skyline");
+  EXPECT_NEAR(annotations[2][0].score, 0.88, 1e-5);
+  EXPECT_EQ(annotations[2][1].type, mojom::AnnotationType::kOcr);
+  EXPECT_EQ(annotations[2][1].text, "EXIT 42");
+  EXPECT_NEAR(annotations[2][1].score, 0.85, 1e-5);
+
+  // Image 3: below-threshold OCR filtered -> kFailure.
+  EXPECT_EQ(errors[3], mojom::AnnotateImageError::kFailure);
+  EXPECT_THAT(annotations[3], IsEmpty());
+
+  histogram_tester.ExpectTotalCount(metrics_internal::kServerLatency, 1);
+  histogram_tester.ExpectBucketCount(metrics_internal::kClientResult,
+                                     ClientResult::kSucceeded, 2);
+  histogram_tester.ExpectBucketCount(metrics_internal::kClientResult,
+                                     ClientResult::kFailed, 2);
+  // Extraneous tags "99" and "" must not emit description metrics.
+  histogram_tester.ExpectTotalCount(metrics_internal::kDescType, 2);
+
+  // Verify neither omitted image 1 (`kImage2Url`) nor filtered image 3
+  // (`kImage4Url`) was cached: retrying both triggers a second server request,
+  // whereas re-requesting `kImage1Url` hits the cache.
+  provider_ptr->SetBatchResponder(
+      base::BindRepeating(&MakePerImageEchoBatchResponse));
+
+  TestImageProcessor cached_proc;
+  std::optional<mojom::AnnotateImageError> cached_err;
+  std::vector<mojom::Annotation> cached_ann;
+  base::RunLoop cached_loop;
+  remote_annotator->AnnotateImage(
+      kImage1Url, "en", cached_proc.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &cached_err, &cached_ann)
+          .Then(cached_loop.QuitClosure()));
+  cached_loop.Run();
+  EXPECT_EQ(provider_ptr->request_count(), 1);
+  EXPECT_THAT(cached_proc.callbacks(), IsEmpty());
+
+  TestImageProcessor retry_proc2;
+  std::optional<mojom::AnnotateImageError> retry_err2;
+  std::vector<mojom::Annotation> retry_ann2;
+  base::RunLoop retry_loop2;
+  remote_annotator->AnnotateImage(
+      kImage2Url, "en", retry_proc2.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &retry_err2, &retry_ann2)
+          .Then(retry_loop2.QuitClosure()));
+  retry_proc2.WaitForGetJpgImageData();
+  ASSERT_THAT(retry_proc2.callbacks(), SizeIs(1));
+  std::move(retry_proc2.callbacks()[0]).Run({22}, kDescDim, kDescDim);
+  retry_proc2.callbacks().pop_back();
+  test_task_env.FastForwardBy(kBatchThrottle);
+  retry_loop2.Run();
+
+  EXPECT_EQ(provider_ptr->request_count(), 2);
+  EXPECT_EQ(retry_err2, std::nullopt);
+  ASSERT_EQ(retry_ann2.size(), 1u);
+  EXPECT_EQ(retry_ann2[0].text, "en|tag=0|byte=22");
+
+  TestImageProcessor retry_proc4;
+  std::optional<mojom::AnnotateImageError> retry_err4;
+  std::vector<mojom::Annotation> retry_ann4;
+  base::RunLoop retry_loop4;
+  remote_annotator->AnnotateImage(
+      kImage4Url, "en", retry_proc4.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &retry_err4, &retry_ann4)
+          .Then(retry_loop4.QuitClosure()));
+  retry_proc4.WaitForGetJpgImageData();
+  ASSERT_THAT(retry_proc4.callbacks(), SizeIs(1));
+  std::move(retry_proc4.callbacks()[0]).Run({44}, kDescDim, kDescDim);
+  retry_proc4.callbacks().pop_back();
+  test_task_env.FastForwardBy(kBatchThrottle);
+  retry_loop4.Run();
+
+  EXPECT_EQ(provider_ptr->request_count(), 3);
+  EXPECT_EQ(retry_err4, std::nullopt);
+  ASSERT_EQ(retry_ann4.size(), 1u);
+  EXPECT_EQ(retry_ann4[0].text, "en|tag=0|byte=44");
+}
+
+// Verifies that both a non-OK status (`kBackendFailure`) and an `kOk` response
+// with an empty dictionary resolve every queued callback in a 3-image batch
+// with `kFailure`, log `ServerLatencyMs` once per batch, cache nothing, and
+// leave zero leaked `pending_requests_`.
+TEST(AnnotatorTest,
+     AnchovyBatchBackendErrorAndEmptyResponseResolveAllCallbacks) {
+  base::test::ScopedFeatureList enabled_features;
+  enabled_features.InitAndEnableFeature(
+      features::kImageDescriptionsAlternateRouting);
+
+  base::test::TaskEnvironment test_task_env(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  TestServerURLLoaderFactory test_url_factory(
+      "https://ia-pa.googleapis.com/v1/");
+  base::HistogramTester histogram_tester;
+
+  auto fake_provider = std::make_unique<FakeAnchovyProvider>(
+      base::DictValue(), manta::MantaStatusCode::kBackendFailure);
+  FakeAnchovyProvider* provider_ptr = fake_provider.get();
+
+  constexpr base::TimeDelta kBatchThrottle = base::Milliseconds(300);
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */,
+      kBatchThrottle, /*batch_size=*/10, /*min_ocr_confidence=*/0.7,
+      test_url_factory.AsSharedURLLoaderFactory(), std::move(fake_provider),
+      std::make_unique<TestAnnotatorClient>());
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator.BindReceiverForTesting(
+      remote_annotator.BindNewPipeAndPassReceiver());
+
+  constexpr std::array<const char*, 3> kUrls = {kImage1Url, kImage2Url,
+                                                kImage3Url};
+
+  auto run_three_image_batch =
+      [&](std::array<std::optional<mojom::AnnotateImageError>, 3>* errors,
+          std::array<std::vector<mojom::Annotation>, 3>* annotations) {
+        std::array<TestImageProcessor, 3> processors;
+        base::RunLoop loop;
+        base::RepeatingClosure barrier =
+            base::BarrierClosure(3, loop.QuitClosure());
+        for (size_t i = 0; i < 3; ++i) {
+          remote_annotator->AnnotateImage(
+              kUrls[i], "en", processors[i].GetPendingRemote(),
+              base::BindOnce(&ReportResult, &(*errors)[i], &(*annotations)[i])
+                  .Then(barrier));
+        }
+        for (auto& processor : processors) {
+          processor.WaitForGetJpgImageData();
+          ASSERT_THAT(processor.callbacks(), SizeIs(1));
+        }
+        for (size_t i = 0; i < 3; ++i) {
+          std::move(processors[i].callbacks()[0])
+              .Run({static_cast<uint8_t>(i + 1)}, kDescDim, kDescDim);
+          processors[i].callbacks().pop_back();
+          test_task_env.FastForwardBy(base::Milliseconds(1));
+        }
+        test_task_env.FastForwardBy(kBatchThrottle);
+        loop.Run();
+      };
+
+  // Batch 1: `kBackendFailure` resolves all 3 callbacks with `kFailure`.
+  std::array<std::optional<mojom::AnnotateImageError>, 3> errors1;
+  std::array<std::vector<mojom::Annotation>, 3> annotations1;
+  run_three_image_batch(&errors1, &annotations1);
+  EXPECT_EQ(provider_ptr->request_count(), 1);
+  for (size_t i = 0; i < 3; ++i) {
+    EXPECT_EQ(errors1[i], mojom::AnnotateImageError::kFailure);
+    EXPECT_THAT(annotations1[i], IsEmpty());
+  }
+  histogram_tester.ExpectTotalCount(metrics_internal::kServerLatency, 1);
+  histogram_tester.ExpectUniqueSample(metrics_internal::kClientResult,
+                                      ClientResult::kFailed, 3);
+
+  // Batch 2: `kOk` with missing `results_by_tag` (`{}`) resolves all 3
+  // callbacks with `kFailure` (proving nothing stuck in `pending_requests_` or
+  // `cached_results_` after Batch 1).
+  provider_ptr->SetFakeResult(base::DictValue(), manta::MantaStatusCode::kOk);
+  std::array<std::optional<mojom::AnnotateImageError>, 3> errors2;
+  std::array<std::vector<mojom::Annotation>, 3> annotations2;
+  run_three_image_batch(&errors2, &annotations2);
+  EXPECT_EQ(provider_ptr->request_count(), 2);
+  for (size_t i = 0; i < 3; ++i) {
+    EXPECT_EQ(errors2[i], mojom::AnnotateImageError::kFailure);
+    EXPECT_THAT(annotations2[i], IsEmpty());
+  }
+  histogram_tester.ExpectTotalCount(metrics_internal::kServerLatency, 2);
+  histogram_tester.ExpectUniqueSample(metrics_internal::kClientResult,
+                                      ClientResult::kFailed, 6);
+
+  // Batch 3: `kOk` with an empty `results_by_tag` dictionary
+  // (`{"results_by_tag": {}}`, matching `AnchovyProtoHelper`'s empty `kOk`
+  // output) also resolves all 3 callbacks with `kFailure` without caching.
+  provider_ptr->SetFakeResult(
+      base::DictValue().Set(manta::anchovy::kResultsByTagKey,
+                            base::DictValue()),
+      manta::MantaStatusCode::kOk);
+  std::array<std::optional<mojom::AnnotateImageError>, 3> errors3;
+  std::array<std::vector<mojom::Annotation>, 3> annotations3;
+  run_three_image_batch(&errors3, &annotations3);
+  EXPECT_EQ(provider_ptr->request_count(), 3);
+  for (size_t i = 0; i < 3; ++i) {
+    EXPECT_EQ(errors3[i], mojom::AnnotateImageError::kFailure);
+    EXPECT_THAT(annotations3[i], IsEmpty());
+  }
+  histogram_tester.ExpectTotalCount(metrics_internal::kServerLatency, 3);
+  histogram_tester.ExpectUniqueSample(metrics_internal::kClientResult,
+                                      ClientResult::kFailed, 9);
+
+  // Batch 4: retrying the same 3 URLs with valid tagged outputs succeeds
+  // cleanly after both empty `kOk` responses.
+  provider_ptr->SetBatchResponder(
+      base::BindRepeating(&MakePerImageEchoBatchResponse));
+  std::array<std::optional<mojom::AnnotateImageError>, 3> errors4;
+  std::array<std::vector<mojom::Annotation>, 3> annotations4;
+  run_three_image_batch(&errors4, &annotations4);
+  EXPECT_EQ(provider_ptr->request_count(), 4);
+  for (size_t i = 0; i < 3; ++i) {
+    EXPECT_EQ(errors4[i], std::nullopt);
+    ASSERT_EQ(annotations4[i].size(), 1u);
+    EXPECT_EQ(annotations4[i][0].text,
+              base::StringPrintf("en|tag=%zu|byte=%zu", i, i + 1));
+  }
+  histogram_tester.ExpectTotalCount(metrics_internal::kServerLatency, 4);
+}
+
+// Verifies that concurrent requests for the same URL and language from
+// distinct origins in the same Manta batch use compact positional tags,
+// demultiplex via `MakeImageId()` without collision, and keep per-origin cache
+// entries isolated.
+TEST(AnnotatorTest, AnchovyCrossOriginConcurrentSameBatch) {
+  base::test::ScopedFeatureList enabled_features;
+  enabled_features.InitAndEnableFeature(
+      features::kImageDescriptionsAlternateRouting);
+
+  base::test::TaskEnvironment test_task_env(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  TestServerURLLoaderFactory test_url_factory(
+      "https://ia-pa.googleapis.com/v1/");
+
+  auto fake_provider = std::make_unique<FakeAnchovyProvider>(
+      base::BindRepeating(&MakePerImageEchoBatchResponse));
+  FakeAnchovyProvider* provider_ptr = fake_provider.get();
+
+  constexpr base::TimeDelta kBatchThrottle = base::Milliseconds(300);
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */,
+      kBatchThrottle, /*batch_size=*/10, /*min_ocr_confidence=*/0.7,
+      test_url_factory.AsSharedURLLoaderFactory(), std::move(fake_provider),
+      std::make_unique<TestAnnotatorClient>());
+
+  const url::Origin origin_a =
+      url::Origin::Create(GURL("https://a.example.com"));
+  const url::Origin origin_b =
+      url::Origin::Create(GURL("https://b.example.com"));
+  mojo::Remote<mojom::Annotator> remote_annotator_a;
+  annotator.BindReceiver(remote_annotator_a.BindNewPipeAndPassReceiver(),
+                         origin_a);
+  mojo::Remote<mojom::Annotator> remote_annotator_b;
+  annotator.BindReceiver(remote_annotator_b.BindNewPipeAndPassReceiver(),
+                         origin_b);
+
+  TestImageProcessor processor_a;
+  std::optional<mojom::AnnotateImageError> error_a;
+  std::vector<mojom::Annotation> annotations_a;
+  TestImageProcessor processor_b;
+  std::optional<mojom::AnnotateImageError> error_b;
+  std::vector<mojom::Annotation> annotations_b;
+
+  base::RunLoop batch_loop;
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(2, batch_loop.QuitClosure());
+
+  remote_annotator_a->AnnotateImage(
+      kImage1Url, "en", processor_a.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &error_a, &annotations_a).Then(barrier));
+  remote_annotator_b->AnnotateImage(
+      kImage1Url, "en", processor_b.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &error_b, &annotations_b).Then(barrier));
+
+  processor_a.WaitForGetJpgImageData();
+  processor_b.WaitForGetJpgImageData();
+  ASSERT_THAT(processor_a.callbacks(), SizeIs(1));
+  ASSERT_THAT(processor_b.callbacks(), SizeIs(1));
+
+  std::move(processor_a.callbacks()[0]).Run({11, 12}, kDescDim, kDescDim);
+  processor_a.callbacks().pop_back();
+  test_task_env.FastForwardBy(base::Milliseconds(1));
+  std::move(processor_b.callbacks()[0]).Run({21, 22}, kDescDim, kDescDim);
+  processor_b.callbacks().pop_back();
+
+  test_task_env.FastForwardBy(kBatchThrottle);
+  batch_loop.Run();
+
+  ASSERT_EQ(provider_ptr->request_count(), 1);
+  ASSERT_EQ(provider_ptr->captured_batches().size(), 1u);
+  EXPECT_THAT(provider_ptr->captured_batches()[0].tags, ElementsAre("0", "1"));
+  EXPECT_EQ(error_a, std::nullopt);
+  ASSERT_EQ(annotations_a.size(), 1u);
+  EXPECT_EQ(annotations_a[0].text, "en|tag=0|byte=11");
+  EXPECT_EQ(error_b, std::nullopt);
+  ASSERT_EQ(annotations_b.size(), 1u);
+  EXPECT_EQ(annotations_b[0].text, "en|tag=1|byte=21");
+
+  // Re-requesting on each origin serves that origin's own cached entry without
+  // cross-contamination.
+  TestImageProcessor cached_proc_a;
+  std::optional<mojom::AnnotateImageError> cached_err_a;
+  std::vector<mojom::Annotation> cached_ann_a;
+  TestImageProcessor cached_proc_b;
+  std::optional<mojom::AnnotateImageError> cached_err_b;
+  std::vector<mojom::Annotation> cached_ann_b;
+  base::RunLoop cache_loop;
+  base::RepeatingClosure cache_barrier =
+      base::BarrierClosure(2, cache_loop.QuitClosure());
+
+  remote_annotator_a->AnnotateImage(
+      kImage1Url, "en", cached_proc_a.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &cached_err_a, &cached_ann_a)
+          .Then(cache_barrier));
+  remote_annotator_b->AnnotateImage(
+      kImage1Url, "en", cached_proc_b.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &cached_err_b, &cached_ann_b)
+          .Then(cache_barrier));
+  cache_loop.Run();
+
+  EXPECT_EQ(provider_ptr->request_count(), 1);
+  EXPECT_THAT(cached_proc_a.callbacks(), IsEmpty());
+  EXPECT_THAT(cached_proc_b.callbacks(), IsEmpty());
+  ASSERT_EQ(cached_ann_a.size(), 1u);
+  EXPECT_EQ(cached_ann_a[0].text, "en|tag=0|byte=11");
+  ASSERT_EQ(cached_ann_b.size(), 1u);
+  EXPECT_EQ(cached_ann_b[0].text, "en|tag=1|byte=21");
+}
+
+// Verifies in-flight duplicate coalescing, out-of-order asynchronous language
+// batch completion, and safe `WeakPtr` cancellation on `Annotator` teardown.
+TEST(AnnotatorTest, AnchovyAsyncInFlightDuplicateAndTeardown) {
+  base::test::ScopedFeatureList enabled_features;
+  enabled_features.InitAndEnableFeature(
+      features::kImageDescriptionsAlternateRouting);
+
+  base::test::TaskEnvironment test_task_env(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  TestServerURLLoaderFactory test_url_factory(
+      "https://ia-pa.googleapis.com/v1/");
+  base::HistogramTester histogram_tester;
+
+  auto fake_provider = std::make_unique<FakeAnchovyProvider>(
+      base::BindRepeating(&MakePerImageEchoBatchResponse));
+  fake_provider->SetDeferCallbacks(true);
+  FakeAnchovyProvider* provider_ptr = fake_provider.get();
+
+  constexpr base::TimeDelta kBatchThrottle = base::Milliseconds(300);
+  auto annotator = std::make_unique<Annotator>(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */,
+      kBatchThrottle, /*batch_size=*/10, /*min_ocr_confidence=*/0.7,
+      test_url_factory.AsSharedURLLoaderFactory(), std::move(fake_provider),
+      std::make_unique<TestAnnotatorClient>());
+
+  mojo::Remote<mojom::Annotator> remote_annotator;
+  annotator->BindReceiverForTesting(
+      remote_annotator.BindNewPipeAndPassReceiver());
+
+  TestImageProcessor proc_en1;
+  std::optional<mojom::AnnotateImageError> err_en1;
+  std::vector<mojom::Annotation> ann_en1;
+  TestImageProcessor proc_fr;
+  std::optional<mojom::AnnotateImageError> err_fr;
+  std::vector<mojom::Annotation> ann_fr;
+
+  base::RunLoop fr_done_loop;
+  remote_annotator->AnnotateImage(
+      kImage1Url, "en", proc_en1.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &err_en1, &ann_en1));
+  remote_annotator->AnnotateImage(
+      kImage2Url, "fr", proc_fr.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &err_fr, &ann_fr)
+          .Then(fr_done_loop.QuitClosure()));
+
+  proc_en1.WaitForGetJpgImageData();
+  proc_fr.WaitForGetJpgImageData();
+  std::move(proc_en1.callbacks()[0]).Run({10}, kDescDim, kDescDim);
+  proc_en1.callbacks().pop_back();
+  test_task_env.FastForwardBy(base::Milliseconds(1));
+  std::move(proc_fr.callbacks()[0]).Run({20}, kDescDim, kDescDim);
+  proc_fr.callbacks().pop_back();
+
+  // Advance to `t = 300ms` (the first throttle tick scheduled when `proc_en1`
+  // delivered pixels at `t = 0ms`): both `"en"` and `"fr"` batches are now in
+  // flight and drained from `server_request_queue_`.
+  test_task_env.FastForwardBy(kBatchThrottle - base::Milliseconds(1));
+  ASSERT_EQ(provider_ptr->request_count(), 2);
+  ASSERT_EQ(provider_ptr->deferred_callback_count(), 2u);
+
+  // Issue a duplicate request for `(kImage1Url, "en")` while the `"en"` batch
+  // is already in flight; `pending_requests_` coalesces it without fetching
+  // pixels again or dispatching a third batch on the next `300ms` tick.
+  TestImageProcessor proc_en_dup;
+  std::optional<mojom::AnnotateImageError> err_en_dup;
+  std::vector<mojom::Annotation> ann_en_dup;
+  remote_annotator->AnnotateImage(
+      kImage1Url, "en", proc_en_dup.GetPendingRemote(),
+      base::BindOnce(&ReportResult, &err_en_dup, &ann_en_dup));
+  remote_annotator.FlushForTesting();
+  EXPECT_THAT(proc_en_dup.callbacks(), IsEmpty());
+  test_task_env.FastForwardBy(kBatchThrottle);
+  EXPECT_EQ(provider_ptr->request_count(), 2);
+  EXPECT_EQ(provider_ptr->deferred_callback_count(), 2u);
+
+  std::vector<FakeAnchovyProvider::DeferredCall> pending_calls =
+      provider_ptr->TakeDeferredCallbacks();
+  ASSERT_EQ(pending_calls.size(), 2u);
+
+  // Resolve `"fr"` out of order after an additional 50ms (`350ms` total since
+  // `SendRequestBatchToServer` dispatched it at `t = 300ms`).
+  test_task_env.FastForwardBy(base::Milliseconds(50));
+  std::move(pending_calls[1].callback)
+      .Run(std::move(pending_calls[1].response_dict),
+           std::move(pending_calls[1].status));
+  fr_done_loop.Run();
+  EXPECT_EQ(err_fr, std::nullopt);
+  ASSERT_EQ(ann_fr.size(), 1u);
+  EXPECT_EQ(ann_fr[0].text, "fr|tag=0|byte=20");
+  histogram_tester.ExpectUniqueSample(metrics_internal::kServerLatency, 350, 1);
+
+  // Destroy `Annotator` while the `"en"` batch (with two waiting client
+  // callbacks) is still in flight; invoking the orphaned Manta callback after
+  // destruction is a safe no-op via `WeakPtr` invalidation.
+  provider_ptr = nullptr;
+  annotator.reset();
+  std::move(pending_calls[0].callback)
+      .Run(std::move(pending_calls[0].response_dict),
+           std::move(pending_calls[0].status));
+  histogram_tester.ExpectBucketCount(metrics_internal::kClientResult,
+                                     ClientResult::kShutdown, 2);
 }
 
 }  // namespace image_annotation

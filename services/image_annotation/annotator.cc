@@ -572,6 +572,9 @@ Annotator::ServerRequestInfo::ServerRequestInfo(
       icon_requested(in_icon_requested),
       image_bytes(in_image_bytes) {}
 
+Annotator::ServerRequestInfo::ServerRequestInfo(ServerRequestInfo&& other) =
+    default;
+
 Annotator::ServerRequestInfo& Annotator::ServerRequestInfo::operator=(
     ServerRequestInfo&& other) = default;
 
@@ -859,27 +862,65 @@ void Annotator::SendRequestBatchToServer() {
   // Use anchovy if the flag is enabled.
   if (features::IsImageDescriptionsAlternateRoutingEnabled()) {
     CHECK(anchovy_provider_);
-    const size_t count = std::min<size_t>(server_request_queue_.size(),
-                                          static_cast<size_t>(batch_size_));
-    for (size_t i = 0; i < count; ++i) {
-      ServerRequestInfo& request_info = server_request_queue_.back();
+
+    // Cap each popped slice at both the configured `batch_size_` and the
+    // server's 100-image per-request ceiling; any remaining entries stay in
+    // `server_request_queue_` for subsequent timer ticks.
+    const size_t batch_count = std::min({server_request_queue_.size(),
+                                         static_cast<size_t>(batch_size_),
+                                         manta::anchovy::kMaxBatchSize});
+    // `OnJpgImageDataReceived` pushes via `emplace_front`, so `back()` is the
+    // oldest queued request. Pop in FIFO order into a local vector upfront
+    // before invoking any provider or client callbacks.
+    std::vector<ServerRequestInfo> batch;
+    batch.reserve(batch_count);
+    for (size_t i = 0; i < batch_count; ++i) {
+      batch.push_back(std::move(server_request_queue_.back()));
+      server_request_queue_.pop_back();
+    }
+
+    using LanguageGroup =
+        std::pair<std::string, std::vector<const ServerRequestInfo*>>;
+    std::vector<LanguageGroup> language_groups;
+    for (const auto& request_info : batch) {
       CHECK(request_info.desc_requested);
       ReportImageRequestIncludesDesc(request_info.desc_requested);
-      const RequestKey request_key = std::move(request_info.request_key);
-      const std::vector<uint8_t> image_bytes =
-          std::move(request_info.image_bytes);
-      server_request_queue_.pop_back();
 
-      // Populate a single-image batch using compact tag "0" rather than sending
-      // visited image URLs (`source_id`) in `tag`.
-      manta::anchovy::ImageDescriptionBatchRequest request(
-          request_key.desc_lang_tag);
-      request.images.emplace_back("0", image_bytes);
-      const auto now = base::Time::Now();
+      // Group eligible requests by exact `desc_lang_tag` in chronological
+      // arrival order because each Manta request carries a single shared
+      // language context.
+      auto group_it = std::ranges::find(language_groups,
+                                        request_info.request_key.desc_lang_tag,
+                                        &LanguageGroup::first);
+      if (group_it == language_groups.end()) {
+        language_groups.emplace_back(
+            request_info.request_key.desc_lang_tag,
+            std::vector<const ServerRequestInfo*>{&request_info});
+      } else {
+        group_it->second.push_back(&request_info);
+      }
+    }
+
+    for (const auto& [lang_tag, group_items] : language_groups) {
+      manta::anchovy::ImageDescriptionBatchRequest batch_request(lang_tag);
+      batch_request.images.reserve(group_items.size());
+      std::vector<RequestKey> group_keys;
+      group_keys.reserve(group_items.size());
+
+      for (size_t i = 0; i < group_items.size(); ++i) {
+        // Populate per-request decimal indices ("0".."K-1") rather than sending
+        // visited image URLs (`source_id`) in `tag`.
+        batch_request.images.emplace_back(base::NumberToString(i),
+                                          group_items[i]->image_bytes);
+        group_keys.push_back(group_items[i]->request_key);
+      }
+
+      const base::Time now = base::Time::Now();
       anchovy_provider_->GetImageDescriptions(
-          request, GetTrafficAnnotation(),
-          base::BindOnce(&Annotator::OnMantaResponseReceived,
-                         weak_factory_.GetWeakPtr(), request_key, now));
+          batch_request, GetTrafficAnnotation(),
+          base::BindOnce(&Annotator::OnMantaBatchResponseReceived,
+                         weak_factory_.GetWeakPtr(), std::move(group_keys),
+                         now));
     }
     return;
   }
@@ -912,36 +953,8 @@ void Annotator::SendRequestBatchToServer() {
   server_request_queue_.erase(begin, end);
 }
 
-void Annotator::OnMantaResponseReceived(const RequestKey& request_key,
-                                        const base::Time request_time,
-                                        base::DictValue dict,
-                                        manta::MantaStatus status) {
-  const auto now = base::Time::Now();
-  const auto delta = now - request_time;
-  ReportServerLatency(delta);
-
-  // Check for a non-OK Manta status first so failed requests are logged and
-  // always resolved in ProcessResult.
-  if (status.status_code != manta::MantaStatusCode::kOk) {
-    DVLOG(1) << "Manta image annotation request failed with status: "
-             << base::ToString(status.status_code);
-    ProcessResult(request_key, {});
-    return;
-  }
-
-  const base::DictValue* results_by_tag =
-      dict.FindDict(manta::anchovy::kResultsByTagKey);
-  if (!results_by_tag) {
-    ProcessResult(request_key, {});
-    return;
-  }
-
-  const base::ListValue* results_list = results_by_tag->FindList("0");
-  if (!results_list || results_list->empty()) {
-    ProcessResult(request_key, {});
-    return;
-  }
-
+std::vector<mojom::AnnotationPtr> Annotator::ExtractMantaAnnotations(
+    const base::ListValue& results_list) const {
   // Candidate selection and scoring overview:
   // 1. Each response entry is bucketed into one of four categories:
   //    PRIMARY_CAPTION (full conceptual sentence), SECONDARY_CAPTION (noun-
@@ -969,7 +982,7 @@ void Annotator::OnMantaResponseReceived(const RequestKey& request_key,
   const base::DictValue* best_ocr = nullptr;
   std::optional<double> best_ocr_score;
 
-  for (const auto& result : *results_list) {
+  for (const auto& result : results_list) {
     const auto* result_dict = result.GetIfDict();
     if (!result_dict) {
       continue;
@@ -1054,15 +1067,60 @@ void Annotator::OnMantaResponseReceived(const RequestKey& request_key,
     annotations.push_back(std::move(annotation));
   }
 
-  // Only populate and cache results when at least one valid annotation was
-  // extracted, matching UnpackJsonResponse().
-  std::map<std::string, mojom::AnnotateImageResultPtr> results;
-  if (!annotations.empty()) {
-    std::string image_id = request_key.MakeImageId();
-    results[image_id] =
-        mojom::AnnotateImageResult::NewAnnotations(std::move(annotations));
+  return annotations;
+}
+
+void Annotator::OnMantaBatchResponseReceived(
+    std::vector<RequestKey> request_keys,
+    const base::Time request_time,
+    base::DictValue dict,
+    manta::MantaStatus status) {
+  // Record latency once per HTTP batch response rather than per image.
+  ReportServerLatency(base::Time::Now() - request_time);
+
+  const std::set<RequestKey> all_keys(request_keys.begin(), request_keys.end());
+
+  // Check for a non-OK Manta status first so failed batch requests are logged
+  // and every queued image in the batch resolves cleanly in ProcessResults().
+  if (status.status_code != manta::MantaStatusCode::kOk) {
+    DVLOG(1) << "Manta image annotation batch request failed with status: "
+             << base::ToString(status.status_code);
+    ProcessResults(all_keys, {});
+    return;
   }
-  ProcessResult(request_key, std::move(results));
+
+  const base::DictValue* results_by_tag =
+      dict.FindDict(manta::anchovy::kResultsByTagKey);
+  if (!results_by_tag || results_by_tag->empty()) {
+    ProcessResults(all_keys, {});
+    return;
+  }
+
+  std::map<std::string, mojom::AnnotateImageResultPtr> results;
+  for (size_t i = 0; i < request_keys.size(); ++i) {
+    // `SendRequestBatchToServer` sent `request_keys[i]` with tag `"i"`, and
+    // `AnchovyProtoHelper` groups all candidates echoed with tag `"i"` under
+    // `results_by_tag["i"]`. Look up only expected indices ("0".."K-1"),
+    // ignoring any extraneous or untagged entries returned by the server.
+    const base::ListValue* tag_results =
+        results_by_tag->FindList(base::NumberToString(i));
+    if (!tag_results || tag_results->empty()) {
+      continue;
+    }
+
+    std::vector<mojom::AnnotationPtr> annotations =
+        ExtractMantaAnnotations(*tag_results);
+    // Only populate and cache results for images that yielded at least one
+    // valid annotation; omitted or fully filtered tags remain absent from
+    // `results` so ProcessResults() resolves them with kFailure without
+    // caching.
+    if (!annotations.empty()) {
+      results[request_keys[i].MakeImageId()] =
+          mojom::AnnotateImageResult::NewAnnotations(std::move(annotations));
+    }
+  }
+
+  ProcessResults(all_keys, results);
 }
 
 void Annotator::OnServerResponseReceived(
