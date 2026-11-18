@@ -93,6 +93,8 @@ extern const base::FeatureParam<int>
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableScanCardOptionWhenNoCardsSaved);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillEnableServerControlledMandatoryReauth);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(
     kAutofillEnableTravelCategoryAndMerchantBenefitsFromCurinos);
 COMPONENT_EXPORT(AUTOFILL)

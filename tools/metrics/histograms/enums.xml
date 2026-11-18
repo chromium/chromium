@@ -14318,6 +14318,8 @@ from previous Chrome versions.
   <int value="-213552607" label="OnStartupSettingsUiDesktop:disabled"/>
   <int value="-213518852" label="protect-sync-credential:enabled"/>
   <int value="-213214894" label="enable-chromevox-arc-support"/>
+  <int value="-211805599"
+      label="AutofillEnableServerControlledMandatoryReauth:enabled"/>
   <int value="-211590646" label="ToolbarPhoneAnimationRefactor:disabled"/>
   <int value="-211162053" label="OmniboxHeaderPaddingUpdate:enabled"/>
   <int value="-208587977" label="OmniboxMaterialDesignWeatherIcons:enabled"/>
@@ -17909,6 +17911,8 @@ from previous Chrome versions.
   <int value="854391022" label="SmartLockUIRevamp:enabled"/>
   <int value="854436130" label="MultiCalendarSupport:enabled"/>
   <int value="854730848" label="disable-app-info-dialog-mac"/>
+  <int value="855173830"
+      label="AutofillEnableServerControlledMandatoryReauth:disabled"/>
   <int value="855384969" label="DeviceSignalsBackfillDisclaimer:enabled"/>
   <int value="855636462" label="DisableBruschettaInstallChecks:disabled"/>
   <int value="855746780" label="disable-physical-keyboard-autocorrect"/>

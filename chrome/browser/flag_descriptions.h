@@ -1185,6 +1185,17 @@ inline constexpr char
         "When enabled, the 'Scan new card' option will be offered even if the "
         "user does not have any credit cards saved in Autofill.";
 
+inline constexpr char kAutofillEnableServerControlledMandatoryReauthName[] =
+    "Enable Server-Controlled Mandatory Re-Authentication for Payments "
+    "Autofill";
+inline constexpr char
+    kAutofillEnableServerControlledMandatoryReauthDescription[] =
+        "When enabled, server card retrieval follows the mandatory "
+        "re-authentication setting stored on the Payments server: biometric "
+        "authentication is mandated when the setting is on, and biometric "
+        "enrollment is mandated on capable devices when the setting has not "
+        "been chosen yet.";
+
 inline constexpr char
     kAutofillEnableTravelCategoryAndMerchantBenefitsFromCurinosName[] =
         "Enable travel category and merchant benefits from Curinos";

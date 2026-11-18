@@ -261,6 +261,13 @@ const base::FeatureParam<int> kAutofillEnableResurrectingPaymentsUsersTreatment{
 BASE_FEATURE(kAutofillEnableScanCardOptionWhenNoCardsSaved,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, server card retrieval follows the mandatory re-authentication
+// setting stored on the Payments server: FIDO authentication is mandated when
+// the setting is on, and FIDO enrollment is mandated on capable devices when
+// the setting has not been chosen yet.
+BASE_FEATURE(kAutofillEnableServerControlledMandatoryReauth,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, travel category and merchant benefits sourced from Curinos will
 // be shown in Autofill.
 BASE_FEATURE(kAutofillEnableTravelCategoryAndMerchantBenefitsFromCurinos,

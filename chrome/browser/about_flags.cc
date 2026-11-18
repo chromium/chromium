@@ -14104,6 +14104,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRestoreTabGroupsOnFreDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kRestoreTabGroupsOnFre)},
 #endif  // BUILDFLAG(IS_ANDROID)
+    {"autofill-enable-server-controlled-mandatory-reauth",
+     flag_descriptions::kAutofillEnableServerControlledMandatoryReauthName,
+     flag_descriptions::
+         kAutofillEnableServerControlledMandatoryReauthDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableServerControlledMandatoryReauth)},
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
