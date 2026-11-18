@@ -2162,7 +2162,7 @@ std::unique_ptr<WebNNTensorRepresentation> D3DImageBacking::ProduceWebNNTensor(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
   CHECK(usage().Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR));
-  DCHECK(d3d12_buffer_.Get() != nullptr);
+  CHECK(d3d12_buffer_.Get() != nullptr);
   return std::make_unique<WebNND3DTensorRepresentation>(manager, this, tracker);
 }
 

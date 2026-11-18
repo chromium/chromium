@@ -354,6 +354,17 @@ SharedImageManager::ProduceWebNNTensor(const Mailbox& mailbox,
     return nullptr;
   }
 
+  // WebNN tensors are accessed across threads on the WebNN worker task runner,
+  // so the backing must have WEBNN_SHARED_TENSOR usage to ensure thread safety
+  // and prevent lazy materialization of non-thread-safe backings off-thread.
+  if (!backing->usage().Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR)) {
+    LOG(ERROR) << "SharedImageManager::ProduceWebNNTensor: Trying to produce a "
+                  "WebNN tensor representation from a backing without "
+                  "WEBNN_SHARED_TENSOR usage: "
+               << backing->GetName();
+    return nullptr;
+  }
+
   std::unique_ptr<WebNNTensorRepresentation> representation =
       backing->ProduceWebNNTensor(this, tracker);
   if (!representation) {

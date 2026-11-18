@@ -731,7 +731,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   }
 
   // D3D11/Texture-based paths below do not yet support thread-safe access.
-  DCHECK(!is_thread_safe);
+  CHECK(!is_thread_safe);
 
   // Without D3D11, we cannot do shared images. This will happen if we're
   // running with Vulkan, D3D12, D3D9, GL or with the non-passthrough command
@@ -1225,6 +1225,12 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
       usage.Has(gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
   const bool is_buffer =
       usage.Has(gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER);
+
+  // WebNN tensors must always be buffer-backed.
+  if (usage.Has(gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR) && !is_buffer) {
+    return false;
+  }
+
   if (is_scanout) {
     if (is_video_decode || gmb_type == gfx::DXGI_SHARED_HANDLE ||
         is_concurrent_read_write) {
