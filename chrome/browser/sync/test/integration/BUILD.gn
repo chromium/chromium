@@ -487,8 +487,6 @@ source_set("sync_integration_test_support") {
     "sync_test_tab_utils.h",
     "trigger_refresh_checker.cc",
     "trigger_refresh_checker.h",
-    "updated_progress_marker_checker.cc",
-    "updated_progress_marker_checker.h",
     "wallet_helper.cc",
     "wallet_helper.h",
   ]
