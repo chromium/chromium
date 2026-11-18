@@ -129,8 +129,8 @@ enum class CompiledModelFormat {
   // The compiled result is wrapped in a single EPContext node (the ORT
   // EPContext contract). The GPU process validates the structure of the
   // compiled model from the (sandboxed, possibly compromised) Compiler process
-  // before handing it to ORT: it must be just a wrapper carrying exactly one
-  // EPContext node and nothing else.
+  // before handing it to ORT: it must be just a wrapper carrying at most one
+  // node, which must be an EPContext node.
   kEpContext,
   // The compiled result is an ordinary ONNX model, which has no such invariant
   // to check and is loaded as produced.

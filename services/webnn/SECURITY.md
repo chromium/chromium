@@ -46,8 +46,16 @@ the EP's precompiled blob, and the validator
 (`ort/epcontext_model_validator.h`) only confirms that shape:
 
 - It must contain exactly one graph.
-- The graph must contain exactly one node.
-- That single node must be an EPContext (`com.microsoft`) node.
+- The graph must contain at most one node.
+- That node, if present, must be an EPContext (`com.microsoft`) node.
+
+A graph with no nodes is expected when every output depends only on
+constants: ORT's constant folding, run in the Compiler before graph
+partitioning, evaluates those nodes with CPU kernels and replaces
+them with initializers, leaving the execution provider nothing to
+compile. Loading such a model in the GPU process creates no kernels;
+ORT only copies the initializers to the outputs. Graph optimizations,
+including constant folding, stay disabled in the GPU process.
 
 This is intentional. A model of this shape passing straight through the
 validator is the expected outcome, not a gap. The check exists only to

@@ -36,10 +36,12 @@ enum class EpContextModelResult {
 // the compiled EPContext ONNX model produced by the sandboxed (and possibly
 // compromised) Compiler process for an EP that follows the ORT EPContext
 // contract. Such a model is just a wrapper around the EP's precompiled blob:
-// its graph carries exactly one EPContext (com.microsoft) node and nothing
-// else. This parses the ONNX envelope and confirms that shape, rejecting any
-// model with zero or several nodes, a stray non-EPContext node, or malformed
-// protobuf.
+// its graph carries at most one node, which must be an EPContext
+// (com.microsoft) node. It has no nodes when constant folding in the Compiler
+// reduces the whole graph to initializers; the outputs are then returned
+// straight from those initializers and no kernel runs. This parses the ONNX
+// envelope and confirms that shape, rejecting any model with several nodes, a
+// stray non-EPContext node, or malformed protobuf.
 //
 // The node's blob is intentionally not inspected here: the execution provider
 // and its backend validate its contents. This structural check just ensures

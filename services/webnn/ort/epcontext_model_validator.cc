@@ -141,7 +141,7 @@ std::optional<bool> IsEpContextNode(base::span<const uint8_t> node) {
 }
 
 // Walks a GraphProto, counting its nodes. Any node that is not an EPContext
-// node is rejected: the graph must contain EPContext nodes and nothing else.
+// node is rejected; the caller checks the node count.
 //
 // TODO(crbug.com/574059455): Allowlist the fields at every level instead of
 // skipping the unknown ones. ORT still acts on some of them, e.g. external
@@ -189,7 +189,7 @@ std::string_view ResultToString(EpContextModelResult result) {
     case EpContextModelResult::kNonEpContextNode:
       return "non-EPContext node";
     case EpContextModelResult::kWrongNodeCount:
-      return "expected exactly one EPContext node";
+      return "expected at most one EPContext node";
   }
   NOTREACHED();
 }
@@ -228,7 +228,9 @@ EpContextModelResult ValidateEpContextModel(
   if (!saw_graph) {
     return EpContextModelResult::kNoGraph;
   }
-  if (node_count != 1u) {
+  // Zero nodes is expected when constant folding reduces the whole graph to
+  // initializers, leaving the EP nothing to compile.
+  if (node_count > 1u) {
     return EpContextModelResult::kWrongNodeCount;
   }
   return EpContextModelResult::kAccepted;

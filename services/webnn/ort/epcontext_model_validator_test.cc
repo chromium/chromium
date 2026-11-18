@@ -32,8 +32,8 @@ namespace {
 
 constexpr std::string_view kHistogramName = "WebNN.ORT.EpContextModelResult";
 
-// The validator only checks the ONNX graph shape: exactly one node, and that
-// node is an EPContext (com.microsoft) node. The node's blob is left to the
+// The validator only checks the ONNX graph shape: at most one node, which must
+// be an EPContext (com.microsoft) node. The node's blob is left to the
 // execution provider to validate, so its contents are irrelevant here.
 
 TEST(WebNNEpContextModelValidatorTest, AcceptsEpContextNodeWithBlob) {
@@ -49,9 +49,10 @@ TEST(WebNNEpContextModelValidatorTest, AcceptsEpContextNodeWithoutBlob) {
             EpContextModelResult::kAccepted);
 }
 
-TEST(WebNNEpContextModelValidatorTest, RejectsEmptyGraph) {
+TEST(WebNNEpContextModelValidatorTest, AcceptsEmptyGraph) {
+  // A graph constant-folded entirely into initializers has no nodes.
   EXPECT_EQ(ValidateEpContextModel(BuildModel({})),
-            EpContextModelResult::kWrongNodeCount);
+            EpContextModelResult::kAccepted);
 }
 
 TEST(WebNNEpContextModelValidatorTest, RejectsMultipleEpContextNodes) {
