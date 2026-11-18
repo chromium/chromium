@@ -340,18 +340,24 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, ResizesInSplitView) {
                      /*other_tab=*/1,
                      /*ratio=*/0.75),
       ResizeContents(500),
-      // In side-by-side mode, wait for the initial 500px resize layout to
-      // complete before triggering the second resize. Otherwise, subsequent
-      // SetContentsSize() calls read stale bounds and calculate incorrect
-      // target window sizes. In stacked mode, 500px total container height is
-      // clamped by minimum window height (~752px), so the initial active height
-      // does not equal 500px and this check is skipped.
-      If([is_side_by_side]() { return is_side_by_side; },
-         Then(CheckResizeValues(
-             base::BindRepeating([](double start_size, double end_size) {
-               return base::IsApproximatelyEqual(start_size, 500.0, 1.0);
-             }),
-             kFirstLayoutObserver))),
+      // Wait for the initial resize layout to complete before triggering the
+      // second resize. Otherwise, subsequent SetContentsSize() calls read stale
+      // bounds and calculate incorrect target window sizes. In stacked mode,
+      // 500px active height may be clamped by the display work area (e.g. to
+      // ~456px on 1024x720 bots), so accept any clamped height in [450, 501].
+      CheckResizeValues(
+          base::BindRepeating(
+              [](bool is_side_by_side, double start_size, double end_size) {
+                return is_side_by_side
+                           ? base::IsApproximatelyEqual(start_size, 500.0,
+                                                        1.0) &&
+                                 base::IsApproximatelyEqual(end_size, 500.0 / 3,
+                                                            1.0)
+                           : start_size >= 450.0 && start_size <= 501.0 &&
+                                 end_size >= 150.0;
+              },
+              is_side_by_side),
+          kFirstLayoutObserver),
 
       // Set the contents size to 450. This value is chosen to be small enough
       // that the window bounds will not get clamped due to screen size
