@@ -3828,7 +3828,7 @@ deps = {
 
   'src/components/metrics/internal': {
       'url': Var('chrome_git') + '/chrome/components/metrics/internal.git' + '@' +
-        '6c5b0a009ec24624e40e58045cc107d1c47672c6',
+        '1bef4866d00aaaf368491c132331fa30a62330d4',
       'condition': 'checkout_src_internal',
   },
 
