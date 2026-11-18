@@ -1,8 +1,8 @@
 source_set("auto_deletion") {
   sources = [
-    "auto_deletion_iph_view_controller.h",
-    "auto_deletion_iph_view_controller.mm",
-    "auto_deletion_mutator.h",
+    "auto_deletion_promo_mutator.h",
+    "auto_deletion_promo_view_controller.h",
+    "auto_deletion_promo_view_controller.mm",
     "auto_deletion_settings_consumer.h",
     "auto_deletion_settings_mutator.h",
   ]

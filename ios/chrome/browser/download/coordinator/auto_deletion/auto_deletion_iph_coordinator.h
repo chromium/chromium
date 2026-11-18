@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-// Coordinator for the Auto-deletion IPH.
+// Coordinator for the Auto-deletion promo.
 @interface AutoDeletionIPHCoordinator : ChromeCoordinator
 @end
 

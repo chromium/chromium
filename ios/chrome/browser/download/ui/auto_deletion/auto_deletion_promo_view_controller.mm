@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/download/ui/auto_deletion/auto_deletion_iph_view_controller.h"
+#import "ios/chrome/browser/download/ui/auto_deletion/auto_deletion_promo_view_controller.h"
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "ios/chrome/browser/download/ui/auto_deletion/auto_deletion_mutator.h"
+#import "ios/chrome/browser/download/ui/auto_deletion/auto_deletion_promo_mutator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -28,7 +28,7 @@ constexpr CGFloat kSymbolBackgroundCornerRadius = 15.0;
 // The height and width of the trash symbol's container.
 constexpr CGFloat kSymbolContainerSize = 64;
 
-// Creates a UIView that contains the the IPH's icon as a subview.
+// Creates a UIView that contains the the promo's icon as a subview.
 UIView* CreateIconContainer() {
   // Create the trash icon.
   UIImage* symbol = SymbolWithPointSize(SymbolArrowUpTrash, kTrashSymbolSize);
@@ -69,7 +69,7 @@ UIView* CreateIconContainer() {
 
 }  // namespace
 
-@interface AutoDeletionIPHViewController () <
+@interface AutoDeletionPromoViewController () <
     ConfirmationAlertActionHandler,
     UIAdaptivePresentationControllerDelegate> {
   // A pointer to the browser object.
@@ -78,8 +78,8 @@ UIView* CreateIconContainer() {
 
 @end
 
-@implementation AutoDeletionIPHViewController {
-  ConfirmationAlertViewController* _iphScreen;
+@implementation AutoDeletionPromoViewController {
+  ConfirmationAlertViewController* _promoScreen;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser {
@@ -92,29 +92,29 @@ UIView* CreateIconContainer() {
 }
 
 - (void)viewDidLoad {
-  _iphScreen = [[ConfirmationAlertViewController alloc] init];
-  _iphScreen.titleString =
+  _promoScreen = [[ConfirmationAlertViewController alloc] init];
+  _promoScreen.titleString =
       l10n_util::GetNSString(IDS_IOS_AUTO_DELETION_IPH_TITLE);
-  _iphScreen.subtitleString =
+  _promoScreen.subtitleString =
       l10n_util::GetNSString(IDS_IOS_AUTO_DELETION_IPH_DESCRIPTION);
-  _iphScreen.configuration.primaryActionString =
+  _promoScreen.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_AUTO_DELETION_IPH_PRIMARY_ACTION);
-  _iphScreen.configuration.secondaryActionString =
+  _promoScreen.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_AUTO_DELETION_IPH_REJECTION);
-  [_iphScreen reloadConfiguration];
-  _iphScreen.aboveTitleView = CreateIconContainer();
-  _iphScreen.actionHandler = self;
+  [_promoScreen reloadConfiguration];
+  _promoScreen.aboveTitleView = CreateIconContainer();
+  _promoScreen.actionHandler = self;
 
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                            target:self
-                           action:@selector(dismissIPH)];
+                           action:@selector(dismissPromo)];
 
-  [self addChildViewController:_iphScreen];
-  [self.view addSubview:_iphScreen.view];
-  _iphScreen.view.translatesAutoresizingMaskIntoConstraints = NO;
-  AddSameConstraints(_iphScreen.view, self.view);
-  [_iphScreen didMoveToParentViewController:self];
+  [self addChildViewController:_promoScreen];
+  [self.view addSubview:_promoScreen.view];
+  _promoScreen.view.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraints(_promoScreen.view, self.view);
+  [_promoScreen didMoveToParentViewController:self];
   [super viewDidLoad];
 }
 
@@ -128,7 +128,7 @@ UIView* CreateIconContainer() {
   [self.mutator enableAutoDeletion];
 }
 
-// Does not enable the Auto-deletion feature and dismisses the IPH.
+// Does not enable the Auto-deletion feature and dismisses the promo.
 - (void)confirmationAlertSecondaryAction {
   base::RecordAction(
       base::UserMetricsAction("IOS.AutoDeletion.IPH.RejectButtonTapped"));
@@ -148,8 +148,8 @@ UIView* CreateIconContainer() {
 
 #pragma mark - Private
 
-// Dismisses the IPH.
-- (void)dismissIPH {
+// Dismisses the promo.
+- (void)dismissPromo {
   base::RecordAction(
       base::UserMetricsAction("IOS.AutoDeletion.IPH.DismissButtonTapped"));
   id<AutoDeletionCommands> handler = HandlerForProtocol(

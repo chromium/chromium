@@ -30,11 +30,11 @@ constexpr CGFloat kKiloBytesInMegaBytes = 1000;
 // The number of bytes in MB.
 constexpr CGFloat kBytesInMegaBytes = kBytesInKiloBytes * kKiloBytesInMegaBytes;
 // The threshold where if the user has less than this percentage of storage
-// remaining on their device then the Auto-deletion IPH should be shown. This
+// remaining on their device then the Auto-deletion promo should be shown. This
 // value is a percentage.
 constexpr CGFloat kAvailableStorageThreshold = 2.0;
 // The threshold where if a file downloaded onto the device is greater than this
-// value then the Auto-deletion IPH should be shown. This value is in units of
+// value then the Auto-deletion promo should be shown. This value is in units of
 // MB.
 constexpr CGFloat kLargeFileSizeThreshold = 20.0;
 }  // namespace
@@ -44,7 +44,7 @@ typedef void (^UIAlertActionHandler)(UIAlertAction* action);
 @implementation AutoDeletionCoordinator {
   // The coordinator that manages the Auto-deletion action sheet.
   ActionSheetCoordinator* _actionSheetCoordinator;
-  // The coordinator that manages the Auto-deletion IPH.
+  // The coordinator that manages the Auto-deletion promo.
   AutoDeletionIPHCoordinator* _IPHCoordinator;
 }
 
@@ -53,10 +53,10 @@ typedef void (^UIAlertActionHandler)(UIAlertAction* action);
   BOOL isAutoDeletionEnabled =
       localState->GetBoolean(prefs::kDownloadAutoDeletionEnabled);
   if (!isAutoDeletionEnabled) {
-    BOOL hasIPHBeenShown =
+    BOOL hasPromoBeenShown =
         localState->GetBoolean(prefs::kDownloadAutoDeletionIPHShown);
-    if (!hasIPHBeenShown && [self shouldIPHBeShown]) {
-      [self presentIPH];
+    if (!hasPromoBeenShown && [self shouldPromoBeShown]) {
+      [self presentPromo];
       return;
     }
 
@@ -119,17 +119,17 @@ typedef void (^UIAlertActionHandler)(UIAlertAction* action);
   return coordinator;
 }
 
-// Creates the coordinator that manages the Auto-deletion IPH and displays the
-// IPH on the screen. This function also initializes the UIGestureRecognizer and
-// attaches it to the window to handle dimssing the IPH properly when the user
-// swipes-down on it.
-- (void)presentIPH {
+// Creates the coordinator that manages the Auto-deletion promo and displays the
+// promo on the screen. This function also initializes the UIGestureRecognizer
+// and attaches it to the window to handle dimssing the promo properly when the
+// user swipes-down on it.
+- (void)presentPromo {
   _IPHCoordinator = [[AutoDeletionIPHCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser];
   [_IPHCoordinator start];
 
-  // Store that the IPH has been displayed.
+  // Store that the promo has been displayed.
   PrefService* localState = GetApplicationContext()->GetLocalState();
   localState->SetBoolean(prefs::kDownloadAutoDeletionIPHShown, true);
 }
@@ -157,14 +157,14 @@ typedef void (^UIAlertActionHandler)(UIAlertAction* action);
   [handler dismissAutoDeletionActionSheet];
 }
 
-// Checks if the Auto-deletion IPH should be shown. The IPH is shown if one of
-// these conditions is met:
+// Checks if the Auto-deletion promo should be shown. The promo is shown if one
+// of these conditions is met:
 // 1. The downloaded file is larger than 20MB OR
 // 2. The device's storage has less than 2% of capacity available OR
 // 3. The user has cleared browsing history in the last 60 days OR
 // 4. The user has used incognito in the past 60 days OR
 // 5. The user is actively downloading content in Incognito.
-- (BOOL)shouldIPHBeShown {
+- (BOOL)shouldPromoBeShown {
   int64_t byteThreshold = kLargeFileSizeThreshold * kBytesInMegaBytes;
   BOOL downloadFileIsLarge = GetApplicationContext()
                                  ->GetAutoDeletionService()
@@ -193,7 +193,7 @@ typedef void (^UIAlertActionHandler)(UIAlertAction* action);
   if (!results) {
     // If the total storage & available capacity cannot be determined, we don't
     // want storage to be the factor that's used to decide whether to display
-    // the IPH. Therefore, 100% will be returned to prevent this.
+    // the promo. Therefore, 100% will be returned to prevent this.
     return 100;
   }
 

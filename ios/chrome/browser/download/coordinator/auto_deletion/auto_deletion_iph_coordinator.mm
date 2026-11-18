@@ -5,26 +5,27 @@
 #import "ios/chrome/browser/download/coordinator/auto_deletion/auto_deletion_iph_coordinator.h"
 
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/download/coordinator/auto_deletion/auto_deletion_mediator.h"
-#import "ios/chrome/browser/download/ui/auto_deletion/auto_deletion_iph_view_controller.h"
+#import "ios/chrome/browser/download/coordinator/auto_deletion/auto_deletion_promo_mediator.h"
+#import "ios/chrome/browser/download/ui/auto_deletion/auto_deletion_promo_view_controller.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ui/base/device_form_factor.h"
 
 @implementation AutoDeletionIPHCoordinator {
-  // The ViewController for the Auto-deletion IPH.
-  AutoDeletionIPHViewController* _viewController;
+  // The ViewController for the Auto-deletion promo.
+  AutoDeletionPromoViewController* _viewController;
   // The mediator for auto-deletion.
-  AutoDeletionMediator* _mediator;
+  AutoDeletionPromoMediator* _mediator;
   // The navigation controller containing the View Controller.
   UINavigationController* _navigationController;
 }
 
 - (void)start {
   _viewController =
-      [[AutoDeletionIPHViewController alloc] initWithBrowser:self.browser];
+      [[AutoDeletionPromoViewController alloc] initWithBrowser:self.browser];
   PrefService* localState = GetApplicationContext()->GetLocalState();
-  _mediator = [[AutoDeletionMediator alloc] initWithLocalState:localState
-                                                       browser:self.browser];
+  _mediator =
+      [[AutoDeletionPromoMediator alloc] initWithLocalState:localState
+                                                    browser:self.browser];
   _viewController.mutator = _mediator;
 
   _navigationController = [[UINavigationController alloc]

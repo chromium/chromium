@@ -4,8 +4,8 @@ source_set("auto_deletion") {
     "auto_deletion_coordinator.mm",
     "auto_deletion_iph_coordinator.h",
     "auto_deletion_iph_coordinator.mm",
-    "auto_deletion_mediator.h",
-    "auto_deletion_mediator.mm",
+    "auto_deletion_promo_mediator.h",
+    "auto_deletion_promo_mediator.mm",
     "auto_deletion_settings_mediator.h",
     "auto_deletion_settings_mediator.mm",
   ]
