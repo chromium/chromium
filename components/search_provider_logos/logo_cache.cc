@@ -79,6 +79,15 @@ const char kDarkMuralCoreContentHeightPx[] =
 const char kDarkMuralCoreContentLeftPx[] = "dark_mural_core_content_left_px";
 const char kDarkMuralCoreContentTopPx[] = "dark_mural_core_content_top_px";
 
+const char kSuperGUrlKey[] = "super_g_url";
+const char kDarkSuperGUrlKey[] = "dark_super_g_url";
+const char kSmallUrlKey[] = "small_url";
+const char kSmallWidthPxKey[] = "small_width_px";
+const char kSmallHeightPxKey[] = "small_height_px";
+const char kDarkSmallUrlKey[] = "dark_small_url";
+const char kDarkSmallWidthPxKey[] = "dark_small_width_px";
+const char kDarkSmallHeightPxKey[] = "dark_small_height_px";
+
 const char kLogoType[] = "LOGO";
 const char kSimpleType[] = "SIMPLE";
 const char kAnimatedType[] = "ANIMATED";
@@ -290,6 +299,10 @@ std::unique_ptr<LogoMetadata> LogoCache::LogoMetadataFromString(
   std::string short_link;
   std::string mural_url;
   std::string dark_mural_url;
+  std::string super_g_url;
+  std::string dark_super_g_url;
+  std::string small_url;
+  std::string dark_small_url;
   if (!get_string(kSourceUrlKey, &source_url) ||
       !get_string(kFingerprintKey, &metadata->fingerprint) ||
       !get_string(kTypeKey, &type) ||
@@ -349,6 +362,14 @@ std::unique_ptr<LogoMetadata> LogoCache::LogoMetadataFromString(
                    &metadata->dark_mural_metadata.core_content_area.left_px) ||
       !get_integer(kDarkMuralCoreContentTopPx,
                    &metadata->dark_mural_metadata.core_content_area.top_px) ||
+      !get_string(kSuperGUrlKey, &super_g_url) ||
+      !get_string(kDarkSuperGUrlKey, &dark_super_g_url) ||
+      !get_string(kSmallUrlKey, &small_url) ||
+      !get_integer(kSmallWidthPxKey, &metadata->small_width_px) ||
+      !get_integer(kSmallHeightPxKey, &metadata->small_height_px) ||
+      !get_string(kDarkSmallUrlKey, &dark_small_url) ||
+      !get_integer(kDarkSmallWidthPxKey, &metadata->dark_small_width_px) ||
+      !get_integer(kDarkSmallHeightPxKey, &metadata->dark_small_height_px) ||
       !get_integer(kWidthPx, &metadata->width_px) ||
       !get_integer(kHeightPx, &metadata->height_px) ||
       !get_integer(kDarkWidthPx, &metadata->dark_width_px) ||
@@ -372,6 +393,10 @@ std::unique_ptr<LogoMetadata> LogoCache::LogoMetadataFromString(
   metadata->short_link = GURL(short_link);
   metadata->mural_metadata.mural_url = GURL(mural_url);
   metadata->dark_mural_metadata.mural_url = GURL(dark_mural_url);
+  metadata->super_g_url = GURL(super_g_url);
+  metadata->dark_super_g_url = GURL(dark_super_g_url);
+  metadata->small_url = GURL(small_url);
+  metadata->dark_small_url = GURL(dark_small_url);
 
   return metadata;
 }
@@ -442,6 +467,14 @@ void LogoCache::LogoMetadataToString(const LogoMetadata& metadata,
            metadata.dark_mural_metadata.core_content_area.left_px);
   dict.Set(kDarkMuralCoreContentTopPx,
            metadata.dark_mural_metadata.core_content_area.top_px);
+  dict.Set(kSuperGUrlKey, metadata.super_g_url.spec());
+  dict.Set(kDarkSuperGUrlKey, metadata.dark_super_g_url.spec());
+  dict.Set(kSmallUrlKey, metadata.small_url.spec());
+  dict.Set(kSmallWidthPxKey, metadata.small_width_px);
+  dict.Set(kSmallHeightPxKey, metadata.small_height_px);
+  dict.Set(kDarkSmallUrlKey, metadata.dark_small_url.spec());
+  dict.Set(kDarkSmallWidthPxKey, metadata.dark_small_width_px);
+  dict.Set(kDarkSmallHeightPxKey, metadata.dark_small_height_px);
   SetTimeValue(dict, kExpirationTimeKey, metadata.expiration_time);
   *str = base::WriteJson(dict).value_or("");
 }

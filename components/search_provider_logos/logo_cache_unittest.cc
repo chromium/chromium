@@ -72,6 +72,15 @@ LogoMetadata GetExampleMetadata() {
   metadata.dark_mural_metadata.core_content_area.height_px = 200;
   metadata.dark_mural_metadata.core_content_area.left_px = 150;
   metadata.dark_mural_metadata.core_content_area.top_px = 100;
+  metadata.super_g_url = GURL("https://www.google.com/logos/super_g.png");
+  metadata.dark_super_g_url =
+      GURL("https://www.google.com/logos/dark_super_g.png");
+  metadata.small_url = GURL("https://www.google.com/logos/small.png");
+  metadata.small_width_px = 120;
+  metadata.small_height_px = 44;
+  metadata.dark_small_url = GURL("https://www.google.com/logos/dark_small.png");
+  metadata.dark_small_width_px = 240;
+  metadata.dark_small_height_px = 88;
   return metadata;
 }
 
@@ -201,6 +210,17 @@ void ExpectMetadataEqual(const LogoMetadata& expected_metadata,
             actual_metadata.dark_mural_metadata.core_content_area.left_px);
   EXPECT_EQ(expected_metadata.dark_mural_metadata.core_content_area.top_px,
             actual_metadata.dark_mural_metadata.core_content_area.top_px);
+  EXPECT_EQ(expected_metadata.super_g_url, actual_metadata.super_g_url);
+  EXPECT_EQ(expected_metadata.dark_super_g_url,
+            actual_metadata.dark_super_g_url);
+  EXPECT_EQ(expected_metadata.small_url, actual_metadata.small_url);
+  EXPECT_EQ(expected_metadata.small_width_px, actual_metadata.small_width_px);
+  EXPECT_EQ(expected_metadata.small_height_px, actual_metadata.small_height_px);
+  EXPECT_EQ(expected_metadata.dark_small_url, actual_metadata.dark_small_url);
+  EXPECT_EQ(expected_metadata.dark_small_width_px,
+            actual_metadata.dark_small_width_px);
+  EXPECT_EQ(expected_metadata.dark_small_height_px,
+            actual_metadata.dark_small_height_px);
 }
 
 void ExpectLogosEqual(const EncodedLogo& expected_logo,

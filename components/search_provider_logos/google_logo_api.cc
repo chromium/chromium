@@ -301,6 +301,36 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(const GURL& base_url,
                        /*is_dark=*/true, logo->metadata.dark_mural_metadata);
   }
 
+  if (const base::DictValue* super_g_image =
+          ddljson->FindDict("super_g_image")) {
+    logo->metadata.super_g_url = ParseUrl(*super_g_image, "url", base_url);
+  }
+  if (const base::DictValue* dark_super_g_image =
+          ddljson->FindDict("dark_super_g_image")) {
+    logo->metadata.dark_super_g_url =
+        ParseUrl(*dark_super_g_image, "url", base_url);
+  }
+  if (const base::DictValue* small_image = ddljson->FindDict("small_image")) {
+    logo->metadata.small_url = ParseUrl(*small_image, "url", base_url);
+    if (std::optional<int> width_px = small_image->FindInt("width")) {
+      logo->metadata.small_width_px = *width_px;
+    }
+    if (std::optional<int> height_px = small_image->FindInt("height")) {
+      logo->metadata.small_height_px = *height_px;
+    }
+  }
+  if (const base::DictValue* dark_small_image =
+          ddljson->FindDict("dark_small_image")) {
+    logo->metadata.dark_small_url =
+        ParseUrl(*dark_small_image, "url", base_url);
+    if (std::optional<int> width_px = dark_small_image->FindInt("width")) {
+      logo->metadata.dark_small_width_px = *width_px;
+    }
+    if (std::optional<int> height_px = dark_small_image->FindInt("height")) {
+      logo->metadata.dark_small_height_px = *height_px;
+    }
+  }
+
   logo->metadata.full_page_url =
       ParseUrl(*ddljson, "fullpage_interactive_url", base_url);
 

@@ -551,6 +551,84 @@ TEST(GoogleNewLogoApiTest, ParsesImageSize) {
   EXPECT_EQ(230, logo->metadata.dark_height_px);
 }
 
+TEST(GoogleNewLogoApiTest, ParsesSuperGAndSmallImageMetadata) {
+  const GURL base_url("https://base.doo/");
+  const std::string json = R"json()]}'
+{
+  "ddljson": {
+    "doodle_type": "SIMPLE",
+    "super_g_image": {
+      "url": "/logos/doodle_super_g.png",
+      "width": 192,
+      "height": 192
+    },
+    "dark_super_g_image": {
+      "url": "https://www.doodle.com/logos/dark_doodle_super_g.png",
+      "width": 192,
+      "height": 192
+    },
+    "small_image": {
+      "url": "/logos/doodle_small.png",
+      "width": 120,
+      "height": 44
+    },
+    "dark_small_image": {
+      "url": "https://www.doodle.com/logos/dark_doodle_small.png",
+      "width": 240,
+      "height": 88
+    }
+  }
+})json";
+
+  bool failed = false;
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
+
+  ASSERT_FALSE(failed);
+  ASSERT_TRUE(logo);
+  EXPECT_EQ(GURL("https://base.doo/logos/doodle_super_g.png"),
+            logo->metadata.super_g_url);
+  EXPECT_EQ(GURL("https://www.doodle.com/logos/dark_doodle_super_g.png"),
+            logo->metadata.dark_super_g_url);
+  EXPECT_EQ(GURL("https://base.doo/logos/doodle_small.png"),
+            logo->metadata.small_url);
+  EXPECT_EQ(120, logo->metadata.small_width_px);
+  EXPECT_EQ(44, logo->metadata.small_height_px);
+  EXPECT_EQ(GURL("https://www.doodle.com/logos/dark_doodle_small.png"),
+            logo->metadata.dark_small_url);
+  EXPECT_EQ(240, logo->metadata.dark_small_width_px);
+  EXPECT_EQ(88, logo->metadata.dark_small_height_px);
+}
+
+TEST(GoogleNewLogoApiTest, RejectsHttpSuperGAndSmallUrlsWhenBaseIsHttps) {
+  const GURL base_url("https://base.doo/");
+  const std::string json = R"json()]}'
+{
+  "ddljson": {
+    "doodle_type": "SIMPLE",
+    "super_g_image": {
+      "url": "http://www.doodle.com/logos/doodle_super_g.png"
+    },
+    "small_image": {
+      "url": "http://www.doodle.com/logos/doodle_small.png",
+      "width": 120,
+      "height": 44
+    }
+  }
+})json";
+
+  bool failed = false;
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
+
+  ASSERT_FALSE(failed);
+  ASSERT_TRUE(logo);
+  EXPECT_EQ(GURL(), logo->metadata.super_g_url);
+  EXPECT_EQ(GURL(), logo->metadata.dark_super_g_url);
+  EXPECT_EQ(GURL(), logo->metadata.small_url);
+  EXPECT_EQ(GURL(), logo->metadata.dark_small_url);
+}
+
 TEST(GoogleNewLogoApiTest, ParsesInteractiveDoodle) {
   const GURL base_url("https://base.doo/");
   const std::string json = R"json()]}'
