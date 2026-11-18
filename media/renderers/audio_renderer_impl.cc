@@ -81,6 +81,12 @@ ChannelLayoutConfig DefaultDecoderTargetLayout(
              : ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_NONE>();
 }
 
+// Decoders like IamfAudioDecoder render directly to the target layout, so the
+// renderer does not need to match or widen to the stream layout.
+bool DecoderHandlesMixing(const AudioDecoderConfig& stream_config) {
+  return stream_config.codec() == AudioCodec::kIAMF;
+}
+
 OutputConfig ComputeBitstreamOutputConfig(
     const AudioDecoderConfig& stream_config,
     const AudioParameters& hw_params) {
@@ -134,9 +140,13 @@ OutputConfig ComputeStreamOutputConfig(const AudioDecoderConfig& stream_config,
                                        int preferred_buffer_size) {
   OutputConfig result;
   result.target_output_layout = DefaultDecoderTargetLayout(hw_params);
+  const bool use_target_layout =
+      DecoderHandlesMixing(stream_config) &&
+      result.target_output_layout.channel_layout() != CHANNEL_LAYOUT_NONE;
   result.params = AudioParameters(
       AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      {stream_config.channel_layout(), stream_config.channels()},
+      use_target_layout ? result.target_output_layout
+                        : stream_config.channel_layout_config(),
       stream_config.samples_per_second(), preferred_buffer_size);
   return result;
 }
@@ -209,6 +219,7 @@ OutputConfig ComputeHardwareOutputConfig(
   ChannelLayoutConfig stream_layout_config =
       stream_config.channel_layout_config();
   const bool use_stream_channel_layout =
+      !DecoderHandlesMixing(stream_config) &&
       hw_channel_layout.channels() <= stream_layout_config.channels();
 
   ChannelLayoutConfig renderer_channel_layout_config =

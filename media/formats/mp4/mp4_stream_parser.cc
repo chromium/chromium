@@ -571,13 +571,12 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
         profile = entry.iacb.profile;
         extra_data = entry.iacb.ia_descriptors;
 
-        // The correct values for the channel layout and sample rate can
-        // be parsed from the descriptor bitstream in `extra_data`.
-        // They are set to the following values here to create a valid
-        // AudioDecoderConfig.
-        // TODO (crbug.com/1513779): Parse the bitstream to set the correct
-        // values here.
-        channel_layout_config = ChannelLayoutConfig::Stereo();
+        channel_layout_config =
+            entry.iacb.channel_layout.value_or(ChannelLayoutConfig::Stereo());
+
+        // The correct value for the sample rate can be parsed from the
+        // descriptor bitstream in `extra_data`. IAMF requires Opus to always
+        // have a sample rate of 48kHz.
         sample_per_second = 48000;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO) || ...
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)

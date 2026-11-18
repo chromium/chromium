@@ -13,6 +13,7 @@
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -1542,6 +1543,26 @@ TEST_F(MP4StreamParserTest, DemuxingAv2InBand) {
   EXPECT_FALSE(AppendAllDataThenParseInPieces(fmp4, 128));
 #endif  // BUILDFLAG(ENABLE_DAV2D_DECODER)
 }
+
+#if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO) || BUILDFLAG(ENABLE_IAMF_TOOLS)
+TEST_F(MP4StreamParserTest, IamfChannelLayout) {
+  const std::pair<const char*, ChannelLayoutConfig> kCases[] = {
+      {"iamf_alternating_sine_waves_714.mp4",
+       ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_7_1_4>()},
+      {"iamf_alternating_sine_waves_stereo.mp4", ChannelLayoutConfig::Stereo()},
+  };
+  for (const auto& [filename, expected_layout] : kCases) {
+    SCOPED_TRACE(filename);
+    parser_ = std::make_unique<MP4StreamParser>(
+        base::flat_set<int>(), /*has_sbr=*/false, /*has_flac=*/false,
+        /*has_iamf=*/true, /*has_dv=*/false);
+    InitializeParser();
+    ASSERT_TRUE(ParseMP4File(filename, /*append_bytes=*/512));
+    EXPECT_EQ(audio_decoder_config_.codec(), AudioCodec::kIAMF);
+    EXPECT_EQ(audio_decoder_config_.channel_layout_config(), expected_layout);
+  }
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO) || ...
 
 }  // namespace mp4
 }  // namespace media

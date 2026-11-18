@@ -2095,6 +2095,47 @@ enum IamfConfigObuType {
   kIamfConfigObuTypeSequenceHeader = 31,
 };
 
+namespace {
+
+// https://aomediacodec.github.io/iamf/v1.0.0.html#obu-audioelement.
+constexpr uint8_t kIamfAudioElementTypeChannelBased = 0;
+
+enum class IamfParamDefinitionType : uint32_t {
+  kMixGain = 0,
+  kDemixing = 1,
+  kReconGain = 2,
+};
+constexpr uint8_t kIamfParamDefinitionModeMask = 0x80;
+constexpr size_t kIamfDefaultDemixingInfoParameterDataSize = 2;
+
+constexpr uint8_t kIamfLayerOutputGainIsPresentMask = 0x08;
+constexpr size_t kIamfLayerSubstreamCountsSize = 2;
+constexpr size_t kIamfLayerOutputGainSize = 3;
+constexpr size_t kIamfLayerExpandedLoudspeakerLayoutSize = 1;
+
+std::optional<ChannelLayoutConfig> ToChannelLayoutConfig(
+    IamfLoudspeakerLayout loudspeaker_layout) {
+  switch (loudspeaker_layout) {
+    case IamfLoudspeakerLayout::kMono:
+      return ChannelLayoutConfig::Mono();
+    case IamfLoudspeakerLayout::kStereo:
+    case IamfLoudspeakerLayout::kBinaural:
+      return ChannelLayoutConfig::Stereo();
+    case IamfLoudspeakerLayout::k5_1:
+      return ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_5_1>();
+    case IamfLoudspeakerLayout::k5_1_4:
+      return ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_5_1_4>();
+    case IamfLoudspeakerLayout::k7_1:
+      return ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_7_1>();
+    case IamfLoudspeakerLayout::k7_1_4:
+      return ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_7_1_4>();
+    default:
+      return std::nullopt;
+  }
+}
+
+}  // namespace
+
 IamfSpecificBox::IamfSpecificBox() = default;
 
 IamfSpecificBox::IamfSpecificBox(const IamfSpecificBox& other) = default;
@@ -2129,13 +2170,23 @@ bool IamfSpecificBox::ReadOBU(BufferReader* reader) {
   uint8_t obu_type;
   uint32_t obu_size;
   RCHECK(ReadOBUHeader(reader, &obu_type, &obu_size));
+  RCHECK(reader->HasBytes(obu_size));
   const size_t read_stop_pos = reader->pos() + obu_size;
 
   switch (static_cast<int>(obu_type)) {
     case kIamfConfigObuTypeCodecConfig:
-    case kIamfConfigObuTypeAudioElement:
     case kIamfConfigObuTypeMixPresentation:
       break;
+    case kIamfConfigObuTypeAudioElement: {
+      BufferReader element_reader(
+          reader->buffer().subspan(reader->pos(), obu_size));
+      ChannelLayoutConfig layout;
+      if (ReadAudioElementLayout(&element_reader, &layout) &&
+          (!channel_layout || layout.channels() > channel_layout->channels())) {
+        channel_layout = layout;
+      }
+      break;
+    }
     case kIamfConfigObuTypeSequenceHeader: {
       uint32_t ia_code;
       RCHECK(reader->Read4(&ia_code));
@@ -2195,23 +2246,159 @@ bool IamfSpecificBox::ReadOBUHeader(BufferReader* reader,
   return true;
 }
 
+bool IamfSpecificBox::ReadAudioElementLayout(
+    BufferReader* reader,
+    ChannelLayoutConfig* layout) const {
+  // `audio_element_id` identifies this element to Mix Presentation OBUs.
+  uint32_t audio_element_id;
+  RCHECK(ReadLeb128Value(reader, &audio_element_id));
+
+  // Only channel-based elements (`audio_element_type` 0) have a loudspeaker
+  // layout.
+  uint8_t audio_element_type;
+  RCHECK(reader->Read1(&audio_element_type));
+  if (audio_element_type >> 5 != kIamfAudioElementTypeChannelBased) {
+    return false;
+  }
+
+  // `codec_config_id` names the Codec Config OBU this element decodes with.
+  uint32_t codec_config_id;
+  RCHECK(ReadLeb128Value(reader, &codec_config_id));
+
+  // `num_substreams` counts the `audio_substream_id`s that carry this element.
+  uint32_t num_substreams;
+  RCHECK(ReadLeb128Value(reader, &num_substreams));
+  for (uint32_t i = 0; i < num_substreams; ++i) {
+    uint32_t audio_substream_id;
+    RCHECK(ReadLeb128Value(reader, &audio_substream_id));
+  }
+
+  // `num_parameters` counts the parameter definitions that follow.
+  uint32_t num_parameters;
+  RCHECK(ReadLeb128Value(reader, &num_parameters));
+  for (uint32_t i = 0; i < num_parameters; ++i) {
+    RCHECK(SkipAudioElementParamDefinition(reader));
+  }
+
+  // `num_layers` is the top 3 bits of its byte.
+  uint8_t num_layers;
+  RCHECK(reader->Read1(&num_layers));
+  num_layers >>= 5;
+  RCHECK(num_layers > 0);
+
+  // Layers are ordered from smallest to largest, so the last
+  // `loudspeaker_layout` is the element's full layout.
+  IamfLoudspeakerLayout loudspeaker_layout = IamfLoudspeakerLayout::kMono;
+  for (uint8_t i = 0; i < num_layers; ++i) {
+    uint8_t channel_audio_layer_config;
+    RCHECK(reader->Read1(&channel_audio_layer_config));
+    loudspeaker_layout =
+        static_cast<IamfLoudspeakerLayout>(channel_audio_layer_config >> 4);
+    const bool output_gain_is_present_flag =
+        channel_audio_layer_config & kIamfLayerOutputGainIsPresentMask;
+    RCHECK(reader->SkipBytes(kIamfLayerSubstreamCountsSize));
+    if (output_gain_is_present_flag) {
+      RCHECK(reader->SkipBytes(kIamfLayerOutputGainSize));
+    }
+    if (loudspeaker_layout == IamfLoudspeakerLayout::kExpanded) {
+      RCHECK(reader->SkipBytes(kIamfLayerExpandedLoudspeakerLayoutSize));
+    }
+  }
+
+  const std::optional<ChannelLayoutConfig> config =
+      ToChannelLayoutConfig(loudspeaker_layout);
+  if (!config) {
+    return false;
+  }
+  *layout = *config;
+  return true;
+}
+
+bool IamfSpecificBox::SkipAudioElementParamDefinition(
+    BufferReader* reader) const {
+  uint32_t param_definition_type;
+  RCHECK(ReadLeb128Value(reader, &param_definition_type));
+
+  // Any `param_definition_type` not in IamfParamDefinitionType is an extension
+  // that carries its own `param_definition_size`.
+  switch (static_cast<IamfParamDefinitionType>(param_definition_type)) {
+    case IamfParamDefinitionType::kMixGain:
+      return false;
+    case IamfParamDefinitionType::kDemixing:
+    case IamfParamDefinitionType::kReconGain:
+      break;
+    default: {
+      uint32_t param_definition_size;
+      RCHECK(ReadLeb128Value(reader, &param_definition_size));
+      return reader->SkipBytes(param_definition_size);
+    }
+  }
+
+  // `parameter_id` ties this definition to its Parameter Block OBUs.
+  uint32_t parameter_id;
+  RCHECK(ReadLeb128Value(reader, &parameter_id));
+
+  // `parameter_rate` is the ticks per second that the durations are counted in.
+  uint32_t parameter_rate;
+  RCHECK(ReadLeb128Value(reader, &parameter_rate));
+
+  // `param_definition_mode` 0 carries the durations here rather than in each
+  // Parameter Block OBU.
+  uint8_t param_definition_mode;
+  RCHECK(reader->Read1(&param_definition_mode));
+  if (!(param_definition_mode & kIamfParamDefinitionModeMask)) {
+    RCHECK(SkipParamDefinitionDurations(reader));
+  }
+
+  // A demixing definition ends with `default_demixing_info_parameter_data`.
+  if (static_cast<IamfParamDefinitionType>(param_definition_type) ==
+      IamfParamDefinitionType::kDemixing) {
+    RCHECK(reader->SkipBytes(kIamfDefaultDemixingInfoParameterDataSize));
+  }
+  return true;
+}
+
+bool IamfSpecificBox::SkipParamDefinitionDurations(BufferReader* reader) const {
+  // `duration` is the length of each parameter block in ticks.
+  uint32_t duration;
+  RCHECK(ReadLeb128Value(reader, &duration));
+
+  // A `constant_subblock_duration` of 0 means each `subblock_duration` is
+  // listed.
+  uint32_t constant_subblock_duration;
+  RCHECK(ReadLeb128Value(reader, &constant_subblock_duration));
+  if (constant_subblock_duration != 0) {
+    return true;
+  }
+
+  // `num_subblocks` counts the `subblock_duration`s that follow.
+  uint32_t num_subblocks;
+  RCHECK(ReadLeb128Value(reader, &num_subblocks));
+  for (uint32_t i = 0; i < num_subblocks; ++i) {
+    uint32_t subblock_duration;
+    RCHECK(ReadLeb128Value(reader, &subblock_duration));
+  }
+  return true;
+}
+
 bool IamfSpecificBox::ReadLeb128Value(BufferReader* reader,
                                       uint32_t* value) const {
   DCHECK(reader);
   DCHECK(value);
-  *value = 0;
-  bool error = true;
-  for (size_t i = 0; i < sizeof(uint32_t); ++i) {
+  constexpr size_t kMaxIamfLeb128Bytes = 8;
+  uint64_t accumulated = 0;
+  for (size_t i = 0; i < kMaxIamfLeb128Bytes; ++i) {
     uint8_t byte;
     RCHECK(reader->Read1(&byte));
-    *value |= ((byte & 0x7f) << (i * 7));
+    accumulated |= (uint64_t{byte} & 0x7f) << (i * 7);
+    RCHECK(accumulated <= std::numeric_limits<uint32_t>::max());
     if (!(byte & 0x80)) {
-      error = false;
-      break;
+      *value = static_cast<uint32_t>(accumulated);
+      return true;
     }
   }
 
-  return !error;
+  return false;
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO) || ...
 

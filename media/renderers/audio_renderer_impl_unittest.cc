@@ -1145,6 +1145,64 @@ TEST_F(AudioRendererImplTest, IamfNamedHardwareLayoutIsNotSquashed) {
             audio_parameters().channel_layout_config());
 }
 
+TEST_F(AudioRendererImplTest, IamfOutputIsNotWidenedToStreamLayout) {
+  const ChannelLayoutConfig kLayout51 =
+      ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_5_1>();
+  AudioParameters hardware_params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                  kLayout51, kOutputSamplesPerSecond, 512);
+  ConfigureConfigChangeRenderer(hardware_params, hardware_params);
+
+  AudioDecoderConfig stream_config(
+      AudioCodec::kIAMF, kSampleFormat,
+      ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_7_1_4>(),
+      kInputSamplesPerSecond, EmptyExtraData(), EncryptionScheme::kUnencrypted);
+  demuxer_stream_.set_audio_decoder_config(stream_config);
+
+  Initialize();
+
+  EXPECT_EQ(kLayout51, decoder_config_.target_output_channel_layout());
+  EXPECT_EQ(kLayout51, audio_parameters().channel_layout_config());
+}
+
+TEST_F(AudioRendererImplTest, IamfStreamParamsOutputFollowsDecoderTarget) {
+  const AudioParameters hardware_params =
+      AudioParameters::UnavailableDeviceParams();
+  ConfigureConfigChangeRenderer(hardware_params, hardware_params);
+  sink_->SetIsOptimizedForHardwareParameters(false);
+
+  AudioDecoderConfig stream_config(
+      AudioCodec::kIAMF, kSampleFormat,
+      ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_7_1_4>(),
+      kInputSamplesPerSecond, EmptyExtraData(), EncryptionScheme::kUnencrypted);
+  demuxer_stream_.set_audio_decoder_config(stream_config);
+
+  Initialize();
+
+  EXPECT_EQ(ChannelLayoutConfig::Stereo(),
+            decoder_config_.target_output_channel_layout());
+  EXPECT_EQ(ChannelLayoutConfig::Stereo(),
+            audio_parameters().channel_layout_config());
+}
+
+TEST_F(AudioRendererImplTest, IamfStreamParamsWithoutDecoderTarget) {
+  const AudioParameters invalid_hardware_params;
+  ConfigureConfigChangeRenderer(invalid_hardware_params,
+                                invalid_hardware_params);
+
+  const ChannelLayoutConfig kLayout714 =
+      ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_7_1_4>();
+  AudioDecoderConfig stream_config(AudioCodec::kIAMF, kSampleFormat, kLayout714,
+                                   kInputSamplesPerSecond, EmptyExtraData(),
+                                   EncryptionScheme::kUnencrypted);
+  demuxer_stream_.set_audio_decoder_config(stream_config);
+
+  Initialize();
+
+  EXPECT_EQ(ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_NONE>(),
+            decoder_config_.target_output_channel_layout());
+  EXPECT_EQ(kLayout714, audio_parameters().channel_layout_config());
+}
+
 TEST_F(AudioRendererImplTest, Underflow_Flush) {
   Initialize();
   Preroll();

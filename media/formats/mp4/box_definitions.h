@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "media/base/audio_codecs.h"
+#include "media/base/channel_layout.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
@@ -519,15 +520,37 @@ struct MEDIA_EXPORT AC4SpecificBox : Box {
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 
 #if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO) || BUILDFLAG(ENABLE_IAMF_TOOLS)
+// The `loudspeaker_layout` of a channel-based IAMF Audio Element layer.
+// https://aomediacodec.github.io/iamf/v1.0.0.html#obu-audioelement.
+enum class IamfLoudspeakerLayout : uint8_t {
+  kMono = 0,
+  kStereo = 1,
+  k5_1 = 2,
+  k5_1_2 = 3,
+  k5_1_4 = 4,
+  k7_1 = 5,
+  k7_1_2 = 6,
+  k7_1_4 = 7,
+  k3_1_2 = 8,
+  kBinaural = 9,
+  // 10 through 14 are reserved.
+  kExpanded = 15,
+};
+
 struct MEDIA_EXPORT IamfSpecificBox : Box {
   DECLARE_BOX_METHODS(IamfSpecificBox);
   bool ReadOBU(BufferReader* reader);
   bool ReadOBUHeader(BufferReader* reader,
                      uint8_t* obu_type,
                      uint32_t* obu_size);
+  bool ReadAudioElementLayout(BufferReader* reader,
+                              ChannelLayoutConfig* layout) const;
+  bool SkipAudioElementParamDefinition(BufferReader* reader) const;
+  bool SkipParamDefinitionDurations(BufferReader* reader) const;
   bool ReadLeb128Value(BufferReader* reader, uint32_t* value) const;
 
   AudioCodecProfile profile = AudioCodecProfile::kUnknown;
+  std::optional<ChannelLayoutConfig> channel_layout;
   bool redundant_copy = false;
 
   std::vector<uint8_t> ia_descriptors;
