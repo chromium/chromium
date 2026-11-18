@@ -207,3 +207,11 @@ crbug.com/567174858 PageInfoTestCase/testOpeningURLFromLastVisitedDismissesPageI
 
 # Gardening suppression 2026-11-17
 crbug.com/584310068 [ iOS26 iOS27 Simulator ] HistoryUITestCase/testContextMenuRepeatedShare [ Pass Failure ]
+
+# Gardening suppression 2026-11-18
+crbug.com/587141953 [ Simulator ] PageInfoTestCase/testShowOneAccessiblePermissionInPageInfo [ Pass Failure ]
+crbug.com/587141953 [ Simulator ] PageInfoTestCase/testShowTwoAccessiblePermissionsInPageInfo [ Pass Failure ]
+crbug.com/587141953 [ Simulator ] PermissionsTestCase/testDenyPermissions [ Pass Failure ]
+crbug.com/587141953 [ Simulator ] PermissionsTestCase/testDismissPermissionsWhenIncognitoKilled [ Pass Failure ]
+crbug.com/587141953 [ Simulator ] PermissionsTestCase/testMicrophonePermissionRecursionCrashRegression [ Pass Failure ]
+crbug.com/587141953 [ Simulator ] PermissionsTestCase/testPermissionsWithReaderMode [ Pass Failure ]
