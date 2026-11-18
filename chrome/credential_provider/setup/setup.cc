@@ -102,9 +102,6 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
   if (GetGlobalFlagOrDefault(kRegEnableVerboseLogging, 1))
     logging::SetMinLogLevel(logging::LOGGING_VERBOSE);
 
-  // Set GCPW as the default credential provider for the end user.
-  MakeGcpwDefaultCP();
-
   if (cmdline->HasSwitch(switches::kLoggingLevel)) {
     std::string log_level =
         cmdline->GetSwitchValueASCII(switches::kLoggingLevel);
@@ -117,17 +114,22 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
     }
   }
 
+  // Check this after setting up logging, so that the error is logged, but
+  // before changing anything on the machine. SYSTEM passes this check too.
+  if (!::IsUserAnAdmin()) {
+    LOGFN(ERROR) << "Setup must be run with administrative privilege.";
+    return -1;
+  }
+
+  // Set GCPW as the default credential provider for the end user.
+  MakeGcpwDefaultCP();
+
   // Make sure the process exits cleanly on unexpected errors.
   base::EnableTerminationOnHeapCorruption();
   base::EnableTerminationOnOutOfMemory();
   logging::RegisterAbslAbortHook();
   base::win::RegisterInvalidParamHandler();
   base::win::SetupCRT(*base::CommandLine::ForCurrentProcess());
-
-  if (!::IsUserAnAdmin()) {
-    LOGFN(ERROR) << "Setup must be run with administrative privilege.";
-    return -1;
-  }
 
   credential_provider::ConfigureGcpInstallerCrashReporting(*cmdline);
 

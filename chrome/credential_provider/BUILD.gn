@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Make the GCP installer.
-action("gcp_installer") {
+# Builds gcp.7z, the archive of GCPW files that gcp_installer.exe embeds.
+action("gcp_archive") {
   script = "build/make_setup.py"
 
-  outputs = [ "$root_out_dir/gcp_installer.exe" ]
+  outputs = [ "$root_out_dir/gcp.7z" ]
 
   args = [
     rebase_path("//", root_build_dir),
@@ -25,13 +25,12 @@ action("gcp_installer") {
     "//chrome/credential_provider/extension:gcpw_extension",
     "//chrome/credential_provider/gaiacp:gaia1_0",
     "//chrome/credential_provider/setup:gcp_setup",
-    "//chrome/credential_provider/setup:gcp_sfx",
   ]
 }
 
 group("credential_provider") {
   # TODO(crbug.com/40155023): Get this working in cross builds.
   if (host_os == "win") {
-    deps = [ ":gcp_installer" ]
+    deps = [ "//chrome/credential_provider/setup:gcp_installer" ]
   }
 }

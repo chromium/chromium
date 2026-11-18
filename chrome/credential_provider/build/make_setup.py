@@ -3,24 +3,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
-# This script builds the credential provider installer that is used to install
-# all required components of the Google Credential Provider for Windows.  The
-# installer is a 7-zip self extracting executable file that wraps three main
-# parts:
+# This script builds the archive of the credential provider installer that is
+# used to install all required components of the Google Credential Provider for
+# Windows.  The installer (setup/gcp_installer.cc) embeds this 7-zip archive,
+# which wraps three main parts:
 #
 #  - the Credential Provider COM DLL
 #  - a DLL that contains Windows EventLog message formatting
 #  - a setup exe that performs action required during install and uninstall
 #
-# In this description "installer" refers to the self extracting executable that
-# wraps all the parts, whereas "setup" refers to an exe inside the installer
-# that runs specific actions at install and uninstall time.
+# In this description "installer" refers to the executable that embeds the
+# archive, whereas "setup" refers to an exe inside the archive that runs
+# specific actions at install and uninstall time.
 #
-# When run, the installer extracts the wrapped files into a new empty
-# directory under %TEMP%.  The setup exe is then run to register the COM
-# objects, install the message format dll, and properly register the credential
-# provider with Windows.  Once installation completes, the new directory
-# containing the extracted files is automatically deleted.
+# When run, the installer extracts the archived files into a new empty
+# directory that other users can't write to.  The setup exe is then run to
+# register the COM objects, install the message format dll, and properly
+# register the credential provider with Windows.  Once installation completes,
+# the new directory containing the extracted files is automatically deleted.
 #
 # The installer can be run multiple times on the same machine.  On an already
 # working computer this is essentially a noop.  On a damaged computer the files
@@ -36,15 +36,14 @@
 # install.  To uninstall the Google Credential Provider for Windows, run the
 # setup exe with the command line argument: /uninstall
 
-"""Creates the GCPW self extracting installer.  This script is not run manually,
-it is called when building the //credential_provider:gcp_installer GN target.
+"""Creates the GCPW installer archive.  This script is not run manually, it is
+called when building the //chrome/credential_provider:gcp_archive GN target.
 
 All paths can be absolute or relative to $root_build_dir.
 """
 
 import argparse
 import os
-import shutil
 import subprocess
 import sys
 
@@ -124,12 +123,9 @@ def main():
   if not os.path.isdir(args.src_path):
     parser.error('Invalid src_path: "%s"' % args.src_path)
 
-  # Absolute path to gcp installer.
-  gcp_installer_fn = os.path.join(args.root_build_path, 'gcp_installer.exe')
   gcp_7z_fn = os.path.join(args.root_build_path, 'gcp.7z')
 
   sz_fn = GetLZMAExec(args.src_path)
-  sfx_fn = os.path.join(args.root_build_path, 'gcp_sfx.exe')
 
   # Build the command line for updating files in the GCP 7z archive.
   u_cmd = GetCmdLine('u', sz_fn, gcp_7z_fn)
@@ -146,12 +142,9 @@ def main():
   # Builds the command line for deleting files in the archive.
   d_cmd = GetCmdLine('d', sz_fn, gcp_7z_fn)
 
-  # Because of the way that 7zS2.sfx determine what program to run after
-  # extraction, only gcp_setup.exe should be placed in the root of the archive.
-  # Other "executable" type files (bat, cmd, exe, inf, msi, html, htm) should
-  # be located only in subfolders. That's why all the files initially added in
-  # the top folder. Then the ones need to move to subfolders are renamed. 7z
-  # doesn't have a method to achieve the same directly.
+  # All the files are initially added in the top folder. Then the ones that are
+  # installed in a subfolder (see kFileNames in setup/gcpw_files.cc) are
+  # renamed. 7z doesn't have a method to achieve the same directly.
 
   # Add the credential provider dll, credential provider extension and setup
   # programs to the archive. If the files added to the archive are changed,
@@ -173,8 +166,7 @@ def main():
         u_cmd + ['gcp_eventlog_provider.dll'], stdout=output_file
       )
       subprocess.check_call(u_cmd + ['gcpw_extension.exe'], stdout=output_file)
-      # Move the executable into a subfolder as there needs to be only one
-      # executable in the parent folder.
+      # Move the extension into the subfolder it is installed in.
       subprocess.check_call(
         rn_cmd
         + [
@@ -188,14 +180,6 @@ def main():
     with open(gcpw_log_file, "r") as output_file:
       print(output_file.read())
     raise e
-
-  # Combine the SFX module with the archive to make a self extracting
-  # executable.
-  with open(gcp_installer_fn, 'wb') as output:
-    with open(sfx_fn, 'rb') as input:
-      shutil.copyfileobj(input, output)
-    with open(gcp_7z_fn, 'rb') as input:
-      shutil.copyfileobj(input, output)
 
   return 0
 
