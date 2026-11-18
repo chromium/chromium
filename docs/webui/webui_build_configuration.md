@@ -618,6 +618,46 @@ generate_zip("build_zip") {
 }
 ```
 
+### **generate_mojo_manifest**
+
+This rule writes a JSON manifest file (`entries` containing `base_dir`,
+`dts_dir`, optional `url_prefix`, and `files`) combining a target's own Mojo JS
+files with the entries from any dependent Mojo manifests (`dep_manifests`).
+
+#### **Arguments**
+```
+out_manifest: Output path for the generated `.json` manifest file.
+base_dir: Optional parameter (required when `in_files` is specified). Base
+          directory containing files listed in `in_files`.
+dts_dir: Optional parameter. Directory containing the `.d.ts` files emitted by
+         `ts_library()` for `in_files`. Defaults to `base_dir`.
+url_prefix: Optional parameter. Import/resource URL prefix prepended to each
+            entry in `in_files` (e.g. the target's repository-relative
+            directory).
+in_files: Optional parameter. List of `.js` file paths relative to `base_dir`
+          and `dts_dir` produced by the current target.
+dep_manifests: Optional parameter. List of manifest files from dependent
+               targets (accepting both `generate_mojo_manifest()` `entries`
+               manifests and `base_dir` + `files` manifests) whose entries
+               should be merged into the output manifest.
+deps: Optional parameter. Targets generating `in_files` or `dep_manifests`.
+public_deps: Optional parameter. Targets generating `in_files` or
+             `dep_manifests` that should be re-exported to dependents.
+```
+
+#### **Example**
+```python
+import("//ui/webui/resources/tools/generate_mojo_manifest.gni")
+
+generate_mojo_manifest("my_mojo_manifest") {
+  out_manifest = "$target_gen_dir/my_mojo_manifest.json"
+  base_dir = "$target_gen_dir/tsc"
+  url_prefix = rebase_path(target_gen_dir, root_gen_dir)
+  in_files = [ "my_webui.mojom-webui.js" ]
+  public_deps = [ ":build_ts" ]
+}
+```
+
 ### **build_webui**
 
 <!-- TODO(crbug.com/40230335): Elevate build_webui() to the top of this document
