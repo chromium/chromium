@@ -21,12 +21,14 @@
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/app/task_request_for_external_action_url_context.h"
+#import "ios/chrome/app/task_request_for_remote_actor_url_context.h"
 #import "ios/chrome/app/task_request_for_standard_url_context.h"
 #import "ios/chrome/app/task_request_for_widget_url_context.h"
 #import "ios/chrome/app/task_request_for_xcallback_url_context.h"
 #import "ios/chrome/app/task_request_private.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_constants.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -120,6 +122,12 @@ void TriggerPostOpeningAction(id<TabOpening> tab_opener,
   }
   if ([url.host isEqualToString:@"x-callback-url"]) {
     return [[TaskRequestForXCallbackURLContext alloc]
+        initWithURLContext:URLContext
+                sceneState:sceneState
+               isColdStart:isColdStart];
+  }
+  if ([url.host isEqualToString:kRemoteActorURLHost]) {
+    return [[TaskRequestForRemoteActorURLContext alloc]
         initWithURLContext:URLContext
                 sceneState:sceneState
                isColdStart:isColdStart];

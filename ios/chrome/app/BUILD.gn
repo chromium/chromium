@@ -102,6 +102,8 @@ source_set("tasks_handling") {
     "task_request.mm",
     "task_request_for_external_action_url_context.h",
     "task_request_for_external_action_url_context.mm",
+    "task_request_for_remote_actor_url_context.h",
+    "task_request_for_remote_actor_url_context.mm",
     "task_request_for_standard_url_context.h",
     "task_request_for_standard_url_context.mm",
     "task_request_for_widget_url_context.h",
