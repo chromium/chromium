@@ -9,6 +9,10 @@ import static androidx.test.espresso.action.ViewActions.swipeUp;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
 
 import android.content.Context;
@@ -48,6 +52,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.notifications.LensIntentFulfilledCondition;
 import org.chromium.chrome.test.transit.notifications.TipsPromoDetailsPageBottomSheetFacility;
 import org.chromium.chrome.test.transit.notifications.TipsPromoMainPageBottomSheetFacility;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
@@ -57,6 +62,7 @@ import org.chromium.chrome.test.transit.settings.SettingsStation;
 import org.chromium.chrome.test.transit.signin.SigninBottomSheetFacility;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 import org.chromium.ui.widget.ButtonCompat;
@@ -146,7 +152,10 @@ public class TipsNotificationsFeaturePromoTest {
                 .isEqualTo(
                         mContext.getString(R.string.tips_promo_bottom_sheet_negative_button_text));
         SettingsStation<SafeBrowsingSettingsFragment> safeBrowsingSettings =
-                mainPageBottomSheet.clickPositiveButton(featureType);
+                mainPageBottomSheet
+                        .settingsButtonElement
+                        .clickTo()
+                        .arriveAt(new SettingsStation<>(SafeBrowsingSettingsFragment.class));
         assertFinalDestination(safeBrowsingSettings);
 
         // Return to a PageStation for InitialStateRule to reset properly.
@@ -193,7 +202,10 @@ public class TipsNotificationsFeaturePromoTest {
                 "esb_feature_promo_detail_page");
 
         SettingsStation<SafeBrowsingSettingsFragment> safeBrowsingSettings =
-                detailsPageBottomSheet.clickPositiveButton(featureType);
+                detailsPageBottomSheet
+                        .settingsButtonElement
+                        .clickTo()
+                        .arriveAt(new SettingsStation<>(SafeBrowsingSettingsFragment.class));
         assertFinalDestination(safeBrowsingSettings);
 
         // Return to a PageStation for InitialStateRule to reset properly.
@@ -227,7 +239,10 @@ public class TipsNotificationsFeaturePromoTest {
                 .isEqualTo(
                         mContext.getString(R.string.tips_promo_bottom_sheet_negative_button_text));
         QuickDeleteDialogFacility quickDeleteDialog =
-                mainPageBottomSheet.clickPositiveButton(featureType);
+                mainPageBottomSheet
+                        .settingsButtonElement
+                        .clickTo()
+                        .replaceFacility(new QuickDeleteDialogFacility());
         assertFinalDestination(openedNtp, quickDeleteDialog);
 
         // Return to a PageStation for InitialStateRule to reset properly.
@@ -272,7 +287,10 @@ public class TipsNotificationsFeaturePromoTest {
                 "quick_delete_feature_promo_detail_page");
 
         QuickDeleteDialogFacility quickDeleteDialog =
-                detailsPageBottomSheet.clickPositiveButton(featureType);
+                detailsPageBottomSheet
+                        .settingsButtonElement
+                        .clickTo()
+                        .replaceFacility(new QuickDeleteDialogFacility());
         assertFinalDestination(openedNtp, quickDeleteDialog);
 
         // Return to a PageStation for InitialStateRule to reset properly.
@@ -300,7 +318,12 @@ public class TipsNotificationsFeaturePromoTest {
         assertThat(((ButtonCompat) mainPageBottomSheet.detailsButtonElement.value()).getText())
                 .isEqualTo(
                         mContext.getString(R.string.tips_promo_bottom_sheet_negative_button_text));
-        mainPageBottomSheet.clickPositiveButton(featureType, mLensController);
+        mainPageBottomSheet
+                .settingsButtonElement
+                .clickTo()
+                .waitForAnd(new LensIntentFulfilledCondition(mLensController))
+                .exitFacility();
+        verify(mLensController, times(1)).startLens(any(WindowAndroid.class), any());
 
         // Return to a PageStation for InitialStateRule to reset properly, which clicking the bottom
         // sheet does since the Google Lens call is intercepted and does not show.
@@ -341,7 +364,12 @@ public class TipsNotificationsFeaturePromoTest {
                 ((View) detailsPageBottomSheet.bottomSheetElement.value()),
                 "google_lens_feature_promo_detail_page");
 
-        detailsPageBottomSheet.clickPositiveButton(featureType, mLensController);
+        detailsPageBottomSheet
+                .settingsButtonElement
+                .clickTo()
+                .waitForAnd(new LensIntentFulfilledCondition(mLensController))
+                .exitFacility();
+        verify(mLensController, times(1)).startLens(any(WindowAndroid.class), any());
 
         // Return to a PageStation for InitialStateRule to reset properly, which clicking the bottom
         // sheet does since the Google Lens call is intercepted and does not show.
@@ -375,7 +403,10 @@ public class TipsNotificationsFeaturePromoTest {
                 .isEqualTo(
                         mContext.getString(R.string.tips_promo_bottom_sheet_negative_button_text));
         SettingsStation<AddressBarSettingsFragment> bottomOmniboxSettings =
-                mainPageBottomSheet.clickPositiveButton(featureType);
+                mainPageBottomSheet
+                        .settingsButtonElement
+                        .clickTo()
+                        .arriveAt(new SettingsStation<>(AddressBarSettingsFragment.class));
         assertFinalDestination(bottomOmniboxSettings);
 
         // Return to a PageStation for InitialStateRule to reset properly.
@@ -423,7 +454,10 @@ public class TipsNotificationsFeaturePromoTest {
                 "bottom_omnibox_feature_promo_detail_page");
 
         SettingsStation<AddressBarSettingsFragment> bottomOmniboxSettings =
-                detailsPageBottomSheet.clickPositiveButton(featureType);
+                detailsPageBottomSheet
+                        .settingsButtonElement
+                        .clickTo()
+                        .arriveAt(new SettingsStation<>(AddressBarSettingsFragment.class));
         assertFinalDestination(bottomOmniboxSettings);
 
         // Return to a PageStation for InitialStateRule to reset properly.
@@ -459,7 +493,7 @@ public class TipsNotificationsFeaturePromoTest {
                 .isEqualTo(
                         mContext.getString(R.string.tips_promo_bottom_sheet_negative_button_text));
 
-        mainPageBottomSheet.clickPositiveButton(featureType);
+        mainPageBottomSheet.settingsButtonElement.clickTo().exitFacility();
         assertFinalDestination(openedNtp);
     }
 
@@ -499,7 +533,7 @@ public class TipsNotificationsFeaturePromoTest {
                 ((View) detailsPageBottomSheet.bottomSheetElement.value()),
                 "password_autofill_feature_promo_detail_page");
 
-        detailsPageBottomSheet.clickPositiveButton(featureType);
+        detailsPageBottomSheet.settingsButtonElement.clickTo().exitFacility();
         assertFinalDestination(openedNtp);
     }
 
@@ -524,8 +558,11 @@ public class TipsNotificationsFeaturePromoTest {
                 .isEqualTo(
                         mContext.getString(R.string.tips_promo_bottom_sheet_negative_button_text));
 
-        SigninBottomSheetFacility signinSheet =
-                mainPageBottomSheet.clickPositiveButton(featureType);
+        SigninBottomSheetFacility<RegularNewTabPageStation> signinSheet =
+                mainPageBottomSheet
+                        .settingsButtonElement
+                        .clickTo()
+                        .replaceFacility(new SigninBottomSheetFacility<>());
         signinSheet.dismiss();
         assertFinalDestination(openedNtp);
     }
@@ -562,8 +599,11 @@ public class TipsNotificationsFeaturePromoTest {
                 ((View) detailsPageBottomSheet.bottomSheetElement.value()),
                 "signin_feature_promo_detail_page");
 
-        SigninBottomSheetFacility signinSheet =
-                detailsPageBottomSheet.clickPositiveButton(featureType);
+        SigninBottomSheetFacility<RegularNewTabPageStation> signinSheet =
+                detailsPageBottomSheet
+                        .settingsButtonElement
+                        .clickTo()
+                        .replaceFacility(new SigninBottomSheetFacility<>());
         signinSheet.dismiss();
         assertFinalDestination(openedNtp);
     }
@@ -592,7 +632,10 @@ public class TipsNotificationsFeaturePromoTest {
                         mContext.getString(R.string.tips_promo_bottom_sheet_negative_button_text));
 
         RegularTabSwitcherStation tabSwitcher =
-                mainPageBottomSheet.clickPositiveButton(featureType);
+                mainPageBottomSheet
+                        .settingsButtonElement
+                        .clickTo()
+                        .arriveAt(RegularTabSwitcherStation.from(openedNtp.getTabModelSelector()));
         assertFinalDestination(tabSwitcher);
 
         tabSwitcher
@@ -635,7 +678,10 @@ public class TipsNotificationsFeaturePromoTest {
                 "create_tab_groups_feature_promo_detail_page");
 
         RegularTabSwitcherStation tabSwitcher =
-                detailsPageBottomSheet.clickPositiveButton(featureType);
+                detailsPageBottomSheet
+                        .settingsButtonElement
+                        .clickTo()
+                        .arriveAt(RegularTabSwitcherStation.from(openedNtp.getTabModelSelector()));
         assertFinalDestination(tabSwitcher);
 
         tabSwitcher
@@ -668,7 +714,7 @@ public class TipsNotificationsFeaturePromoTest {
                 .isEqualTo(
                         mContext.getString(R.string.tips_promo_bottom_sheet_negative_button_text));
 
-        mainPageBottomSheet.clickPositiveButton(featureType);
+        mainPageBottomSheet.settingsButtonElement.clickTo().exitFacility();
         assertFinalDestination(openedNtp);
     }
 
@@ -706,7 +752,7 @@ public class TipsNotificationsFeaturePromoTest {
                 ((View) detailsPageBottomSheet.bottomSheetElement.value()),
                 "customize_mvt_feature_promo_detail_page");
 
-        detailsPageBottomSheet.clickPositiveButton(featureType);
+        detailsPageBottomSheet.settingsButtonElement.clickTo().exitFacility();
         assertFinalDestination(openedNtp);
     }
 
@@ -735,7 +781,11 @@ public class TipsNotificationsFeaturePromoTest {
                 .isEqualTo(
                         mContext.getString(R.string.tips_promo_bottom_sheet_negative_button_text));
 
-        RecentTabsPageStation recentTabsPage = mainPageBottomSheet.clickPositiveButton(featureType);
+        RecentTabsPageStation recentTabsPage =
+                mainPageBottomSheet
+                        .settingsButtonElement
+                        .clickTo()
+                        .arriveAt(RecentTabsPageStation.newBuilder().initOpeningNewTab().build());
 
         // Verify that the opened page is indeed the Recent Tabs page.
         String url =
@@ -780,7 +830,10 @@ public class TipsNotificationsFeaturePromoTest {
                 "recent_tabs_feature_promo_detail_page");
 
         RecentTabsPageStation recentTabsPage =
-                detailsPageBottomSheet.clickPositiveButton(featureType);
+                detailsPageBottomSheet
+                        .settingsButtonElement
+                        .clickTo()
+                        .arriveAt(RecentTabsPageStation.newBuilder().initOpeningNewTab().build());
 
         // Verify that the opened page is indeed the Recent Tabs page.
         String url =

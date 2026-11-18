@@ -5,9 +5,8 @@
 package org.chromium.chrome.test.transit.notifications;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
-
-import static org.chromium.base.test.transit.Condition.whether;
 
 import org.mockito.ArgumentCaptor;
 
@@ -18,11 +17,11 @@ import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.List;
+
 /** Condition fulfilled when the Google Lens intent is launched. */
 public class LensIntentFulfilledCondition extends InstrumentationThreadCondition {
     private final LensController mLensController;
-    private final ArgumentCaptor<LensIntentParams> mLensIntentParamsCaptor =
-            ArgumentCaptor.forClass(LensIntentParams.class);
 
     public LensIntentFulfilledCondition(LensController lensController) {
         mLensController = lensController;
@@ -30,16 +29,24 @@ public class LensIntentFulfilledCondition extends InstrumentationThreadCondition
 
     @Override
     protected ConditionStatus checkWithSuppliers() {
+        ArgumentCaptor<LensIntentParams> paramsCaptor =
+                ArgumentCaptor.forClass(LensIntentParams.class);
         try {
-            verify(mLensController)
-                    .startLens(any(WindowAndroid.class), mLensIntentParamsCaptor.capture());
-            return whether(
-                    mLensIntentParamsCaptor.getValue() != null
-                            && mLensIntentParamsCaptor.getValue().getLensEntryPoint()
-                                    == LensEntryPoint.TIPS_NOTIFICATIONS);
+            verify(mLensController, atLeastOnce())
+                    .startLens(any(WindowAndroid.class), paramsCaptor.capture());
         } catch (AssertionError e) {
-            return notFulfilled();
+            return notFulfilled("startLens() not yet invoked");
         }
+        List<LensIntentParams> captured = paramsCaptor.getAllValues();
+        for (LensIntentParams params : captured) {
+            if (params.getLensEntryPoint() == LensEntryPoint.TIPS_NOTIFICATIONS) {
+                return fulfilled("invocations=%d", captured.size());
+            }
+        }
+        LensIntentParams last = captured.get(captured.size() - 1);
+        return notFulfilled(
+                "startLens() called %d time(s), last entryPoint=%d",
+                captured.size(), last.getLensEntryPoint());
     }
 
     @Override

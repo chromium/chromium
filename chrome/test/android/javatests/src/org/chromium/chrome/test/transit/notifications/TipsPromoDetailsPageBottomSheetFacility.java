@@ -65,12 +65,4 @@ public class TipsPromoDetailsPageBottomSheetFacility<
     public TipsPromoMainPageBottomSheetFacility<HostStationT> pressBack() {
         return pressBackTo().replaceFacility(new TipsPromoMainPageBottomSheetFacility<>());
     }
-
-    /** Performs the positive button click action for a given feature type. */
-    @SuppressWarnings("unchecked")
-    public <T> T clickPositiveButton(int featureType, Object... extraArgs) {
-        return (T)
-                NotificationsTestUtils.clickPositiveButton(
-                        settingsButtonElement, featureType, mHostStation, extraArgs);
-    }
 }
