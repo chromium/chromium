@@ -2815,7 +2815,7 @@
     "bases": ["external/wpt/speculation-rules", "http/tests/inspector-protocol"],
     "exclusive_tests": [],
     "args": [
-      "--enable-features=PrefetchCancelUnrelatedPrefetch"
+      "--enable-features=PrefetchCancelUnrelatedPrefetch,PrefetchMatchResolverUnblockAsync"
     ],
     "owners": [
       "kenoss@chromium.org"
