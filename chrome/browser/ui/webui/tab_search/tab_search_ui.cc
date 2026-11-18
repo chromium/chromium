@@ -57,10 +57,8 @@ std::optional<int> TabSearchUIConfig::GetCommandIdForTesting() {
 }
 
 TabSearchUI::TabSearchUI(content::WebUI* web_ui)
-    : TopChromeWebUIController(
-          web_ui,
-          /*enable_chrome_send=*/true /* Needed for webui browser tests */,
-          /*enable_chrome_histograms=*/true),
+    : TopChromeWebUIController(web_ui,
+                               true /* Needed for webui browser tests */),
       webui_load_timer_(web_ui->GetWebContents(),
                         "Tabs.TabSearch.WebUI.LoadDocumentTime",
                         "Tabs.TabSearch.WebUI.LoadCompletedTime") {

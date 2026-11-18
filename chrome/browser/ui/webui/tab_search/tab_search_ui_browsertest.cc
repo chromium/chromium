@@ -9,8 +9,6 @@
 
 #include "base/base64.h"
 #include "base/feature_list.h"
-#include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -28,7 +26,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/mapping/metrics_mapping_features.h"
 #include "components/metrics/mapping/metrics_name_mapping.pb.h"
 #include "components/split_tabs/split_tab_visual_data.h"
@@ -37,74 +34,18 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/test_extensions_browser_client.h"
 #include "ui/webui/buildflags.h"
 
 #if BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
 #include "chrome/browser/ui/webui/util/webui_util_desktop.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/variations/variations_test_utils.h"
 #include "content/public/common/content_features.h"
 #include "ui/webui/resources/grit/webui_code_cache_resources_map.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
 
-namespace {
-
-class ShutdownTestExtensionsBrowserClient
-    : public extensions::TestExtensionsBrowserClient {
- public:
-  ShutdownTestExtensionsBrowserClient(
-      content::BrowserContext* main_context,
-      extensions::ExtensionsBrowserClient* original_client)
-      : extensions::TestExtensionsBrowserClient(main_context),
-        original_client_(original_client) {}
-  ShutdownTestExtensionsBrowserClient(
-      const ShutdownTestExtensionsBrowserClient&) = delete;
-  ShutdownTestExtensionsBrowserClient& operator=(
-      const ShutdownTestExtensionsBrowserClient&) = delete;
-  ~ShutdownTestExtensionsBrowserClient() override = default;
-
-  // extensions::TestExtensionsBrowserClient:
-  bool IsShuttingDown() override { return true; }
-  void CreateExtensionWebContentsObserver(
-      content::WebContents* web_contents) override {
-    original_client_->CreateExtensionWebContentsObserver(web_contents);
-  }
-  extensions::ExtensionWebContentsObserver* GetExtensionWebContentsObserver(
-      content::WebContents* web_contents) override {
-    return original_client_->GetExtensionWebContentsObserver(web_contents);
-  }
-  extensions::ExtensionSystemProvider* GetExtensionSystemFactory() override {
-    return original_client_->GetExtensionSystemFactory();
-  }
-  extensions::UserScriptListener* GetUserScriptListener() override {
-    return original_client_->GetUserScriptListener();
-  }
-
- private:
-  raw_ptr<extensions::ExtensionsBrowserClient> original_client_;
-};
-
-}  // namespace
-
 class TabSearchUIBrowserTest : public InProcessBrowserTest {
  public:
-  TabSearchUIBrowserTest() {
-    metrics::MetricsNameMappingConfiguration config;
-    config.add_rules()->set_metric_name(
-        "Tabs.TabSearch.WebUI.TabListDataReceived2.IsOverlap");
-    config.add_rules()->set_metric_name(
-        "EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency");
-    config.add_rules()->set_metric_name(
-        "PageLoad.InteractiveTiming.InputDelay3");
-    config.add_rules()->set_metric_name(
-        "Graphics.Smoothness.PercentDroppedFrames3.AllSequences");
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        metrics::features::kWebiumMetricsMapping,
-        {{metrics::features::kWebiumMetricsMappingConfig.name,
-          base::Base64Encode(config.SerializeAsString())}});
-  }
-
   void SetUpOnMainThread() override {
     AppendTab(chrome::kChromeUISettingsURL);
     AppendTab(chrome::kChromeUIHistoryURL);
@@ -139,9 +80,6 @@ class TabSearchUIBrowserTest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<content::WebContents> webui_contents_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO(romanarora): Investigate a way to call WebUI custom methods and refactor
@@ -507,11 +445,32 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest,
   EXPECT_EQ(found_split_tabs, 2);
 }
 
-// Regression test for crbug.com/553315417: loading Tab Search and recording
-// WebUI histograms while the browser is shutting down must not emit an
-// unchecked runtime.lastError console error or crash in dev builds.
-IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest,
-                       RecordsHistogramsDuringShutdownWithoutConsoleError) {
+class TabSearchUIWebiumMetricsMappingBrowserTest
+    : public TabSearchUIBrowserTest {
+ public:
+  TabSearchUIWebiumMetricsMappingBrowserTest() {
+    metrics::MetricsNameMappingConfiguration config;
+    config.add_rules()->set_metric_name(
+        "EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency");
+    config.add_rules()->set_metric_name(
+        "PageLoad.InteractiveTiming.InputDelay3");
+    config.add_rules()->set_metric_name(
+        "Graphics.Smoothness.PercentDroppedFrames3.AllSequences");
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        metrics::features::kWebiumMetricsMapping,
+        {{metrics::features::kWebiumMetricsMappingConfig.name,
+          base::Base64Encode(config.SerializeAsString())}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Regression test for crbug.com/584357363: Tab Search WebUI histograms must
+// still be recorded when WebiumMetricsMapping is enabled without explicit
+// Tabs.TabSearch.* rules in the mapping config.
+IN_PROC_BROWSER_TEST_F(TabSearchUIWebiumMetricsMappingBrowserTest,
+                       RecordsWebUIHistogramsWhenMappingEnabled) {
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return GetWebUIController()->page_handler_for_testing() != nullptr;
   }));
@@ -521,55 +480,17 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest,
                               ISOLATED_WORLD_ID_CHROME_INTERNAL));
 
   base::HistogramTester histogram_tester;
-  content::FetchHistogramsFromChildProcesses();
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   const int initial_overlap_count = histogram_tester.GetBucketCount(
       "Tabs.TabSearch.WebUI.TabListDataReceived2.IsOverlap", false);
 
-  auto* original_client = extensions::ExtensionsBrowserClient::Get();
-  ShutdownTestExtensionsBrowserClient test_client(browser()->GetProfile(),
-                                                  original_client);
-  extensions::ExtensionsBrowserClient::Set(&test_client);
-  base::ScopedClosureRunner reset_client(
-      base::BindOnce(&extensions::ExtensionsBrowserClient::Set,
-                     base::Unretained(original_client)));
+  content::WebContents* tab_contents = chrome::AddAndReturnTabAt(
+      browser(), GURL(chrome::kChromeUITabSearchURL), -1,
+      /*foreground=*/true);
+  ASSERT_TRUE(content::WaitForLoadStop(tab_contents));
 
-  std::unique_ptr<content::WebContents> shutdown_webui_contents =
-      content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->GetProfile()));
-  content::WebContentsConsoleObserver error_observer(
-      shutdown_webui_contents.get());
-  error_observer.SetFilter(base::BindRepeating(
-      [](const content::WebContentsConsoleObserver::Message& message) {
-        return message.log_level == blink::mojom::ConsoleMessageLevel::kError;
-      }));
-
-  shutdown_webui_contents->GetController().LoadURLWithParams(
-      content::NavigationController::LoadURLParams(
-          GURL(chrome::kChromeUITabSearchURL)));
-  ASSERT_TRUE(content::WaitForLoadStop(shutdown_webui_contents.get()));
-
-  TabSearchUI* tab_search_ui = shutdown_webui_contents->GetWebUI()
-                                   ->GetController()
-                                   ->template GetAs<TabSearchUI>();
-  ASSERT_NE(nullptr, tab_search_ui);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return tab_search_ui->page_handler_for_testing() != nullptr; }));
-
-  // Flush a roundtrip to the renderer so any asynchronous IPC error responses
-  // would be delivered and logged to the console before checking.
-  ASSERT_TRUE(content::ExecJs(shutdown_webui_contents.get(),
-                              "new Promise(resolve => setTimeout(resolve, 0))",
-                              content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
-                              ISOLATED_WORLD_ID_CHROME_INTERNAL));
-
-  EXPECT_TRUE(error_observer.messages().empty())
-      << (error_observer.messages().empty() ? ""
-                                            : error_observer.GetMessageAt(0));
-
-  content::FetchHistogramsFromChildProcesses();
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  EXPECT_GT(histogram_tester.GetBucketCount(
-                "Tabs.TabSearch.WebUI.TabListDataReceived2.IsOverlap", false),
-            initial_overlap_count);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Tabs.TabSearch.WebUI.TabListDataReceived2.IsOverlap", false) >
+           initial_overlap_count;
+  }));
 }
