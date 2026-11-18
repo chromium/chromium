@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/launchpad/tasks_store.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
 
@@ -43,6 +44,8 @@ class LaunchpadService : public KeyedService {
 
   const raw_ref<personal_context::PersonalContextService>
       personal_context_service_;
+
+  TasksStore tasks_store_;
 
   base::WeakPtrFactory<LaunchpadService> weak_factory_{this};
 };
