@@ -191,8 +191,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            features::kSecurePaymentConfirmation},
           {wf::EnableSecurePaymentConfirmationDebug,
            features::kSecurePaymentConfirmationDebug},
-          {wf::EnableSendBeaconThrowForBlobWithNonSimpleType,
-           features::kSendBeaconThrowForBlobWithNonSimpleType},
           {wf::EnableSharedArrayBuffer, features::kSharedArrayBuffer},
 #if BUILDFLAG(IS_ANDROID)
           {wf::EnableSmartZoom, features::kSmartZoom},

@@ -233,7 +233,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kScrollFocusedNodeOnOSKViewportReshrink);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSanitizeLocationHeadersDuringNavigation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSanitizeFailedSubframeNavigationUrls);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSanitizeOriginalUrlDuringNavigation);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kSendBeaconThrowForBlobWithNonSimpleType);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kServiceWorkerAvoidMainThreadForInitialization);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(

@@ -6261,12 +6261,6 @@
       name: "SelectUsesFlatTree",
     },
     {
-      name: "SendBeaconThrowForBlobWithNonSimpleType",
-      public: true,
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "SendEarlyLastBeginMainFrame",
       status: "stable",
     },
