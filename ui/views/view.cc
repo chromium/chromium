@@ -3476,6 +3476,14 @@ void View::DoRemoveChildView(View* view,
     GetLayoutManager()->ViewRemoved(this, view);
   }
 
+  // Notify the FocusManager once for the detached subtree, before the
+  // per-descendant removal notifications below.
+  if (widget) {
+    if (FocusManager* focus_manager = widget->GetFocusManager()) {
+      focus_manager->ViewRemoved(view, new_parent);
+    }
+  }
+
   view->PropagateRemoveNotifications(this, new_parent, is_removed_from_widget);
 
   // Make sure the layers belonging to the subtree rooted at |view| get

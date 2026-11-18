@@ -467,6 +467,12 @@ class WebUIToolbarWebView
     return pending_focus_request_.has_value();
   }
 
+  // Defers `OnPageInitialized()` until the returned runner is run or
+  // destroyed, keeping the toolbar in `InitializationState::kPending`. Useful
+  // for deterministically testing events (such as window activation or frame
+  // updates) that race with initial WebUI page load during startup.
+  [[nodiscard]] base::ScopedClosureRunner HoldPageInitializationForTesting();
+
   // Returns the current width of the WebUI location bar. Does this by computing
   // the layout, given the current WebUI toolbar size, rather than by inspecting
   // any location bar state. May only be called when the WebUI location bar is
@@ -520,6 +526,27 @@ class WebUIToolbarWebView
   friend class WebUIToolbarWebViewTestBase;
   friend class WebUIToolbarWebViewBrowserTest;
   friend class WebUIToolbarWebViewInteractiveUiTest;
+
+  // Tracks the hold lifecycle for `HoldPageInitializationForTesting()` in
+  // progression order: `kNotHeld` -> `kAwaitingPageInit` (when the hold is
+  // placed) -> `kPageInitHeld` (once `OnPageInitialized()` arrives; reverts to
+  // `kAwaitingPageInit` on navigation or crash). Releasing the hold returns to
+  // `kNotHeld`, and `DestroyWebContents()` transitions any state to
+  // `kDestroyed`.
+  enum class PageInitHoldState {
+    // Normal operation; `OnPageInitialized()` runs immediately.
+    kNotHeld,
+
+    // `HoldPageInitializationForTesting()` was called; waiting for
+    // `OnPageInitialized()` on the current page.
+    kAwaitingPageInit,
+
+    // `OnPageInitialized()` arrived while held and is deferred until release.
+    kPageInitHeld,
+
+    // Terminal state after `DestroyWebContents()`; initialization cannot run.
+    kDestroyed,
+  };
 
   // WebUIToolbarControlDelegate:
   BrowserWindowInterface* GetBrowser() override;
@@ -715,6 +742,10 @@ class WebUIToolbarWebView
   // is stale and dropped. Otherwise it is left pending.
   void MaybeFlushPendingFocusRequest();
 
+  // Releases a hold from `HoldPageInitializationForTesting()` and runs any
+  // deferred `OnPageInitialized()` call.
+  void ReleaseHeldPageInitializationForTesting();
+
   // Whether all controls are being managed by WebUI.
   const bool is_webui_toolbar_fully_enabled_ =
       features::IsWebUIToolbarFullyEnabled();
@@ -829,6 +860,10 @@ class WebUIToolbarWebView
   // True while `EnsureWidgetActive()` is activating the browser widget prior to
   // opening a menu.
   bool activating_for_menu_ = false;
+
+  // Tracks whether `HoldPageInitializationForTesting()` is holding
+  // `OnPageInitialized()` and whether a call arrived while held.
+  PageInitHoldState page_init_hold_for_testing_ = PageInitHoldState::kNotHeld;
 
   base::ScopedObservation<views::FocusManager, views::FocusChangeListener>
       focus_manager_observation_{this};

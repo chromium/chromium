@@ -26,6 +26,8 @@
 #include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/focus/browser_focus_controller.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -64,6 +66,8 @@
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/polling_state_observer.h"
+#include "ui/base/interaction/state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -76,10 +80,12 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/non_client_view.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -1159,6 +1165,109 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
       }));
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+// Verifies that updating the window frame (such as during theme changes on
+// Linux) does not lose omnibox focus when the WebUI toolbar is focused.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
+                       UpdateFramePreservesOmniboxFocus) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland doesn't support programmatic window activation";
+  }
+#endif
+  WaitForInitialWebUIToolbar(browser());
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  chrome::FocusLocationBar(browser());
+  ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, /*focused=*/true);
+  ASSERT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser());
+  ASSERT_TRUE(browser_view);
+  browser_view->GetWidget()->non_client_view()->UpdateFrame();
+
+  EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+  EXPECT_TRUE(browser_view->GetLocationBar()->IsFocusWithin());
+}
+
+// Verifies that updating the frame view during startup of a new window does
+// not drop the pending focus request before the WebUI toolbar initializes.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
+                       UpdateFrameDuringNewWindowInitPreservesOmniboxFocus) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland doesn't support programmatic window activation";
+  }
+#endif
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewToolbarWebContentsId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kNewOmniboxFocused);
+  WaitForInitialWebUIToolbar(browser());
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  BrowserWindowInterface* const new_browser =
+      chrome::OpenEmptyWindow(browser()->GetProfile());
+  ASSERT_TRUE(new_browser);
+  WebUIToolbarWebView* const new_toolbar = GetWebUIToolbarWebView(new_browser);
+  ASSERT_TRUE(new_toolbar);
+  // Hold `OnPageInitialized()` immediately so the async WebUI load cannot
+  // finish and flush `pending_focus_request_` while waiting for OS window
+  // activation, before `UpdateFrame()` runs below.
+  base::ScopedClosureRunner release_page_init =
+      new_toolbar->HoldPageInitializationForTesting();
+  const views::Widget* const new_widget =
+      BrowserView::GetBrowserViewForBrowser(new_browser)->GetWidget();
+  ASSERT_TRUE(new_widget);
+
+  RunTestSequenceInContext(
+      BrowserElements::From(new_browser)->GetContext(),
+      ObserveState(views::test::kCurrentWidgetFocus),
+      // Wait for the new window to activate while WebUI initialization is held
+      // pending, matching Linux startup when a theme/frame update arrives
+      // before `OnPageInitialized()`.
+      WaitForState(views::test::kCurrentWidgetFocus, new_widget),
+      CheckViewProperty(kWebUIToolbarElementIdentifier,
+                        &WebUIToolbarWebView::IsPendingForTesting,
+                        /*matcher=*/true),
+      CheckViewProperty(kWebUIToolbarElementIdentifier,
+                        &WebUIToolbarWebView::HasPendingFocusRequestForTesting,
+                        /*matcher=*/true),
+      // Recreating the FrameView must preserve ClientView focus and keep the
+      // pending omnibox focus request intact.
+      WithView(kBrowserViewElementId,
+               [](BrowserView* browser_view) {
+                 browser_view->GetWidget()->non_client_view()->UpdateFrame();
+               }),
+      CheckViewProperty(kWebUIToolbarElementIdentifier,
+                        &WebUIToolbarWebView::IsPendingForTesting,
+                        /*matcher=*/true),
+      CheckViewProperty(kWebUIToolbarElementIdentifier,
+                        &WebUIToolbarWebView::HasPendingFocusRequestForTesting,
+                        /*matcher=*/true),
+      // Release held initialization and verify the pending focus request is
+      // flushed to the WebUI omnibox input.
+      Do([&]() { release_page_init.RunAndReset(); }),
+      InstrumentNonTabWebView(kNewToolbarWebContentsId,
+                              new_toolbar->GetWebViewForTesting()),
+      WaitForJsResultAt(kNewToolbarWebContentsId,
+                        DeepQuery{"toolbar-app", "#location-bar", "#omnibox",
+                                  "#textInput", "#input"},
+                        "el => el.matches(':focus')"),
+      CheckViewProperty(kWebUIToolbarElementIdentifier,
+                        &WebUIToolbarWebView::IsPendingForTesting,
+                        /*matcher=*/false),
+      CheckViewProperty(kWebUIToolbarElementIdentifier,
+                        &WebUIToolbarWebView::HasPendingFocusRequestForTesting,
+                        /*matcher=*/false),
+      PollState(kNewOmniboxFocused,
+                [new_browser]() {
+                  return ui_test_utils::IsViewFocused(new_browser,
+                                                      VIEW_ID_OMNIBOX);
+                }),
+      WaitForState(kNewOmniboxFocused, /*value=*/true),
+      StopObservingState(kNewOmniboxFocused));
+}
 
 class WebUIToolbarWebViewDeferStartupLayoutInteractiveTest
     : public WebUIToolbarWebViewInteractiveTest {

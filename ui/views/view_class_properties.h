@@ -121,6 +121,11 @@ VIEWS_EXPORT extern const ui::ClassProperty<FocusManager*>* const
 // is currently blocked by a tab-modal dialog.
 VIEWS_EXPORT extern const ui::ClassProperty<bool>* const kIsBlockedByModalKey;
 
+// Property indicating whether focus on this view or its descendants should be
+// retained when this view is reparented within the same Widget.
+VIEWS_EXPORT extern const ui::ClassProperty<bool>* const
+    kRetainsFocusWhenReparented;
+
 }  // namespace views
 
 // Declare template specializations introduced by Views here to make sure that

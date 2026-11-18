@@ -10,9 +10,11 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -534,6 +536,7 @@ WebUIToolbarWebView::~WebUIToolbarWebView() {
 }
 
 void WebUIToolbarWebView::DestroyWebContents() {
+  page_init_hold_for_testing_ = PageInitHoldState::kDestroyed;
   if (auto* ui = GetWebUIToolbarUI()) {
     ui->DependenciesDestroying();
   }
@@ -924,6 +927,17 @@ void WebUIToolbarWebView::MaybeInitializePageDependentControls() {
 }
 
 void WebUIToolbarWebView::OnPageInitialized() {
+  switch (page_init_hold_for_testing_) {
+    case PageInitHoldState::kNotHeld:
+      break;
+    case PageInitHoldState::kAwaitingPageInit:
+    case PageInitHoldState::kPageInitHeld:
+      page_init_hold_for_testing_ = PageInitHoldState::kPageInitHeld;
+      return;
+    case PageInitHoldState::kDestroyed:
+      return;
+  }
+
   SetInitializationState(InitializationState::kInitialized);
   MaybeInitializePageDependentControls();
 
@@ -1174,6 +1188,9 @@ void WebUIToolbarWebView::DidStartNavigation(
   if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
   }
+  if (page_init_hold_for_testing_ == PageInitHoldState::kPageInitHeld) {
+    page_init_hold_for_testing_ = PageInitHoldState::kAwaitingPageInit;
+  }
   // Transition back to pending if we are already initialized (e.g. reload).
   if (initialization_state_ == InitializationState::kInitialized) {
     SetInitializationState(InitializationState::kPending);
@@ -1265,6 +1282,9 @@ void WebUIToolbarWebView::PrimaryMainFrameRenderProcessGone(
   // The reported draggable area is stale once the renderer is gone; it is
   // reported again once the WebUI is reloaded.
   draggable_region_.reset();
+  if (page_init_hold_for_testing_ == PageInitHoldState::kPageInitHeld) {
+    page_init_hold_for_testing_ = PageInitHoldState::kAwaitingPageInit;
+  }
 
   // TODO(crbug.com/474228715): update the enum definition from
   // //base/process/kill.h to be a enum class, and add IFTTT lint.
@@ -1600,6 +1620,27 @@ base::ScopedClosureRunner WebUIToolbarWebView::SetTickClockForTesting(
 
 views::WebView* WebUIToolbarWebView::GetWebViewForTesting() {
   return web_view_;
+}
+
+base::ScopedClosureRunner
+WebUIToolbarWebView::HoldPageInitializationForTesting() {
+  CHECK_EQ(page_init_hold_for_testing_, PageInitHoldState::kNotHeld);
+  CHECK_NE(initialization_state_, InitializationState::kInitialized);
+  page_init_hold_for_testing_ = PageInitHoldState::kAwaitingPageInit;
+  return base::ScopedClosureRunner(base::BindOnce(
+      &WebUIToolbarWebView::ReleaseHeldPageInitializationForTesting,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void WebUIToolbarWebView::ReleaseHeldPageInitializationForTesting() {
+  if (page_init_hold_for_testing_ == PageInitHoldState::kDestroyed) {
+    return;
+  }
+  if (std::exchange(page_init_hold_for_testing_, PageInitHoldState::kNotHeld) ==
+      PageInitHoldState::kPageInitHeld) {
+    CHECK(web_contents());
+    OnPageInitialized();
+  }
 }
 
 WebUIToolbarUI* WebUIToolbarWebView::GetWebUIToolbarUI() const {

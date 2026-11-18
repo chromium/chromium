@@ -760,10 +760,6 @@ void Widget::ViewHierarchyChanged(const ViewHierarchyChangedDetails& details) {
     if (details.child == dragged_view_) {
       dragged_view_ = nullptr;
     }
-    FocusManager* focus_manager = GetFocusManager();
-    if (focus_manager) {
-      focus_manager->ViewRemoved(details.child);
-    }
     if (native_widget_) {
       native_widget_->ViewRemoved(details.child);
     }
@@ -3043,7 +3039,7 @@ void Widget::ClearFocusManagerFromWidget() {
   // We are being removed from a window hierarchy.  Treat this as
   // the root_view_ being removed.
   if (focus_manager) {
-    focus_manager->ViewRemoved(root_view_.get());
+    focus_manager->ViewRemoved(root_view_.get(), /*new_parent=*/nullptr);
     CHECK(root_view_);
     // Also notify the view tree in the child widget
     // to perform actions when focus is cleared.

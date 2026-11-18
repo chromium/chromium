@@ -61,5 +61,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(FocusManager*,
                              kDetachedViewFocusManagerKey,
                              nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsBlockedByModalKey, false)
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kRetainsFocusWhenReparented, false)
 
 }  // namespace views

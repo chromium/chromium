@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -16,6 +17,7 @@
 #include "base/i18n/test/scoped_icu_locale.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/run_until.h"
@@ -27,6 +29,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -45,6 +48,8 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/frame_view.h"
+#include "ui/views/window/non_client_view.h"
 
 #if defined(USE_AURA)
 #include "base/test/scoped_feature_list.h"
@@ -92,7 +97,16 @@ class SimpleTestView : public View {
 
   SimpleTestView(const SimpleTestView&) = delete;
   SimpleTestView& operator=(const SimpleTestView&) = delete;
+  ~SimpleTestView() override = default;
 
+  bool had_focus_in_removed_from_widget() const {
+    return had_focus_in_removed_from_widget_;
+  }
+  bool blurred_before_removed_from_widget() const {
+    return blurred_before_removed_from_widget_;
+  }
+
+  // View:
   void OnFocus() override {
     event_list_->vec.push_back({
         ON_FOCUS,
@@ -109,8 +123,16 @@ class SimpleTestView : public View {
     });
   }
 
+  void RemovedFromWidget() override {
+    had_focus_in_removed_from_widget_ = HasFocus();
+    blurred_before_removed_from_widget_ =
+        !event_list_->vec.empty() && event_list_->vec.back().type == ON_BLUR;
+  }
+
  private:
   const scoped_refptr<FocusTestEventList> event_list_;
+  bool had_focus_in_removed_from_widget_ = false;
+  bool blurred_before_removed_from_widget_ = false;
 };
 
 BEGIN_METADATA(SimpleTestView)
@@ -1784,6 +1806,162 @@ TEST_F(FocusManagerTest,
 
   GetFocusManager()->ClearFocus();
   GetFocusManager()->RemoveFocusChangeListener(&listener);
+}
+
+// Fixture providing shared setup and focus/blur verification helpers for frame
+// replacement and `kRetainsFocusWhenReparented` tests.
+class FocusManagerReparentingTest : public FocusManagerTest {
+ public:
+  FocusManagerReparentingTest() = default;
+  FocusManagerReparentingTest(const FocusManagerReparentingTest&) = delete;
+  FocusManagerReparentingTest& operator=(const FocusManagerReparentingTest&) =
+      delete;
+  ~FocusManagerReparentingTest() override = default;
+
+ protected:
+  // Adds a focusable `SimpleTestView` to `parent`, focuses it, and clears the
+  // initial focus event so later assertions observe only post-setup events.
+  SimpleTestView* AddFocusedTestView(View* parent) {
+    SimpleTestView* view = parent->AddChildView(
+        std::make_unique<SimpleTestView>(event_list_, /*view_id=*/1));
+    view->RequestFocus();
+    EXPECT_EQ(1u, event_list_->vec.size());
+    if (!event_list_->vec.empty()) {
+      EXPECT_EQ(ON_FOCUS, event_list_->vec[0].type);
+    }
+    EXPECT_EQ(view, GetFocusManager()->GetFocusedView());
+    event_list_->vec.clear();
+    return view;
+  }
+
+  // Adds a container with `kRetainsFocusWhenReparented` set to `parent`, along
+  // with a focused `SimpleTestView` child inside it.
+  std::pair<View*, SimpleTestView*> AddFocusedReparentableContainer(
+      View* parent) {
+    View* container = parent->AddChildView(std::make_unique<View>());
+    container->SetProperty(kRetainsFocusWhenReparented, /*value=*/true);
+    return {container, AddFocusedTestView(container)};
+  }
+
+  // Moves an already-parented `view` into `new_parent`. `AddChildViewRaw()` is
+  // required to exercise atomic reparenting (`new_parent` non-null), because
+  // `RemoveChildViewT()` detaches `view` with a null `new_parent` first.
+  void ReparentView(View* view, View* new_parent) {
+    new_parent->AddChildViewRaw(view);
+  }
+
+  // Replaces the widget's `FrameView` via `NonClientView::SetFrameView()`.
+  void ReplaceFrameView() {
+    GetWidget()->non_client_view()->SetFrameView(
+        GetWidget()->CreateFrameView());
+  }
+
+  // Creates and initializes a child `Widget` parented to `GetWidget()`.
+  std::unique_ptr<Widget> CreateChildWidget() {
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
+    params.child = true;
+    params.bounds =
+        gfx::Rect(/*x=*/10, /*y=*/10, /*width=*/100, /*height=*/100);
+    params.parent = GetWidget()->GetNativeView();
+    auto child_widget = std::make_unique<Widget>();
+    child_widget->Init(std::move(params));
+    return child_widget;
+  }
+
+  // Verifies that `expected_view` remains both the focused and stored focus
+  // view without any focus or blur events firing.
+  void ExpectFocusRetained(const View* expected_view) {
+    EXPECT_TRUE(event_list_->vec.empty());
+    EXPECT_EQ(expected_view, GetFocusManager()->GetFocusedView());
+    EXPECT_EQ(expected_view, GetFocusManager()->GetStoredFocusView());
+  }
+
+  // Verifies that focus and stored focus were cleared with a single `ON_BLUR`.
+  void ExpectFocusClearedWithSingleBlur() {
+    ASSERT_EQ(1u, event_list_->vec.size());
+    EXPECT_EQ(ON_BLUR, event_list_->vec[0].type);
+    EXPECT_EQ(nullptr, GetFocusManager()->GetFocusedView());
+    EXPECT_EQ(nullptr, GetFocusManager()->GetStoredFocusView());
+  }
+
+  // Verifies that `child` was blurred before `RemovedFromWidget()` ran and that
+  // focus was cleared.
+  void ExpectDetachedFromWidgetWithBlur(const SimpleTestView* child) {
+    ExpectFocusClearedWithSingleBlur();
+    EXPECT_FALSE(child->had_focus_in_removed_from_widget());
+    EXPECT_TRUE(child->blurred_before_removed_from_widget());
+  }
+
+  // Records `OnFocus()` and `OnBlur()` events for `SimpleTestView` instances.
+  scoped_refptr<FocusTestEventList> event_list_ =
+      base::MakeRefCounted<FocusTestEventList>();
+};
+
+TEST_F(FocusManagerReparentingTest,
+       SetFrameViewPreservesClientViewFocusWithoutBlur) {
+  SimpleTestView* view = AddFocusedTestView(GetContentsView());
+  MockFocusChangeListener listener;
+  EXPECT_CALL(listener, OnWillChangeFocus).Times(0);
+  EXPECT_CALL(listener, OnDidChangeFocus).Times(0);
+  base::ScopedObservation<FocusManager, FocusChangeListener> observation(
+      &listener);
+  observation.Observe(GetFocusManager());
+
+  ReplaceFrameView();
+
+  ExpectFocusRetained(view);
+}
+
+TEST_F(FocusManagerReparentingTest, SetFrameViewClearsOldFrameViewFocus) {
+  AddFocusedTestView(GetWidget()->non_client_view()->frame_view());
+
+  ReplaceFrameView();
+
+  ExpectFocusClearedWithSingleBlur();
+}
+
+TEST_F(FocusManagerReparentingTest,
+       RetainsFocusWhenFlaggedViewReparentedWithinSameWidget) {
+  View* old_parent = GetContentsView()->AddChildView(std::make_unique<View>());
+  View* new_parent = GetContentsView()->AddChildView(std::make_unique<View>());
+  auto [container, child] = AddFocusedReparentableContainer(old_parent);
+
+  ReparentView(container, new_parent);
+
+  ExpectFocusRetained(child);
+}
+
+TEST_F(FocusManagerReparentingTest, ClearsFocusWhenFlaggedViewDetached) {
+  auto [container, child] = AddFocusedReparentableContainer(GetContentsView());
+
+  std::unique_ptr<View> detached =
+      GetContentsView()->RemoveChildViewT(container);
+
+  ExpectDetachedFromWidgetWithBlur(child);
+}
+
+TEST_F(FocusManagerReparentingTest,
+       ClearsFocusWhenFlaggedViewReparentedAcrossWidgets) {
+  auto [container, child] = AddFocusedReparentableContainer(GetContentsView());
+  std::unique_ptr<Widget> child_widget = CreateChildWidget();
+
+  ReparentView(container, child_widget->GetContentsView());
+
+  ExpectDetachedFromWidgetWithBlur(child);
+}
+
+TEST_F(FocusManagerReparentingTest,
+       ClearsFocusWhenUnflaggedDescendantReparented) {
+  // `GetContentsView()` is inside `ClientView`, which sets
+  // `kRetainsFocusWhenReparented`. Moving an unflagged child out of
+  // `ClientView` into `frame_view()` must still clear focus.
+  SimpleTestView* child = AddFocusedTestView(GetContentsView());
+
+  ReparentView(child, GetWidget()->non_client_view()->frame_view());
+
+  ExpectFocusClearedWithSingleBlur();
 }
 
 }  // namespace views

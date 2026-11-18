@@ -260,11 +260,13 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
   // This is effective only on x11.
   void MaybeResetMenuKeyState(const ui::KeyEvent& key);
 
-  // Called by a RootView when a view within its hierarchy is removed
-  // from its parent. This will only be called by a RootView in a
-  // hierarchy of Widgets that this FocusManager is attached to the
-  // parent Widget of.
-  void ViewRemoved(View* removed);
+  // Called when `removed` is detached from its parent (`new_parent` is
+  // `removed`'s new parent during reparenting, or null otherwise). Only called
+  // for views in `widget_` or in a child Widget sharing this FocusManager.
+  // Clears focus if `removed` contains `focused_view_`, unless:
+  // - `new_parent` is in the same Widget as `removed`, and
+  // - `removed` has `kRetainsFocusWhenReparented` set.
+  void ViewRemoved(View* removed, View* new_parent);
 
   // Adds/removes a listener.  The FocusChangeListener is notified every time
   // the focused view is about to change.
