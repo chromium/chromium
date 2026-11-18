@@ -454,6 +454,7 @@ if (!is_android) {
       "media_stream_focus_delegate_browsertest.cc",
       "same_origin_observer_browsertest.cc",
       "sub_capture_browsertest.cc",
+      "tab_capture_performancetest.cc",
       "tab_desktop_media_list_browsertest.cc",
       "webrtc_apprtc_browsertest.cc",
       "webrtc_browsertest_perf_unittest.cc",
@@ -495,8 +496,11 @@ if (!is_android) {
       "//components/infobars/content",
       "//components/permissions:test_support",
       "//content/test:test_support",
+      "//gpu/config",
       "//net:test_support",
       "//testing/gtest",
+      "//testing/perf",
+      "//third_party/zlib/google:compression_utils",
     ]
 
     if (is_chromeos) {

@@ -768,7 +768,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiPolicyTest,
 // does not have file access enabled.
 IN_PROC_BROWSER_TEST_F(TabCaptureApiPolicyTest, FileUrlWithoutFileAccess) {
   base::FilePath test_file =
-      test_data_dir_.AppendASCII("tab_capture").AppendASCII("balls.html");
+      test_data_dir_.DirName().AppendASCII("test_file.html");
   GURL file_url = net::FilePathToFileURL(test_file);
 
   content::RenderFrameHost* const main_frame = NavigateToURLInNewTab(file_url);
