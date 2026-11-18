@@ -12,6 +12,9 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_search/consent_kit/proto/iframe_interface.pb.h"
+#include "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
+#include "components/contextual_search/footprints/public/fpop_service.h"
+#include "components/contextual_search/footprints/public/proto/footprints_oneplatform.pb.h"
 #include "components/contextual_search/input_state_model.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -97,6 +100,108 @@ class MockDrivePickerHostUIDelegate : public DrivePickerHostUI::Delegate {
   MOCK_METHOD(void, OnTransitionToError, (), (override));
   MOCK_METHOD(void, OnTransitionToConsent, (), (override));
 };
+
+using ConsentEligibilityStatus =
+    drive_picker::DriveDisclaimerController::ConsentEligibilityStatus;
+using ShouldShowMobileConsentFlowCallback = base::OnceCallback<void(
+    bool success,
+    const footprints::oneplatform::ShouldShowMobileConsentFlowResponse&
+        response)>;
+
+class MockFpopService : public contextual_search::FpopService {
+ public:
+  MOCK_METHOD(
+      void,
+      GetFacs,
+      (const footprints::oneplatform::GetFacsRequest& request,
+       base::OnceCallback<void(
+           bool success,
+           const footprints::oneplatform::GetFacsResponse& response)> callback),
+      (override));
+  MOCK_METHOD(
+      void,
+      UpdateActivityControlsSettings,
+      (const footprints::oneplatform::UpdateActivityControlsSettingsRequest&
+           request,
+       base::OnceCallback<void(
+           bool success,
+           const footprints::oneplatform::
+               UpdateActivityControlsSettingsResponse& response)> callback),
+      (override));
+  MOCK_METHOD(
+      void,
+      ShouldShowMobileConsentFlow,
+      (const footprints::oneplatform::ShouldShowMobileConsentFlowRequest&
+           request,
+       ShouldShowMobileConsentFlowCallback callback),
+      (override));
+};
+
+// Builds a `DriveDisclaimerController` backed by a mock FPOP service that
+// responds to `ShouldShowMobileConsentFlow` with `status`. If `success` is
+// false, the RPC is reported as failed regardless of `status`.
+std::unique_ptr<drive_picker::DriveDisclaimerController>
+MakeDisclaimerController(ConsentEligibilityStatus status, bool success = true) {
+  auto fpop_service = std::make_unique<MockFpopService>();
+  EXPECT_CALL(*fpop_service,
+              ShouldShowMobileConsentFlow(testing::_, testing::_))
+      .WillOnce([status, success](
+                    const footprints::oneplatform::
+                        ShouldShowMobileConsentFlowRequest&,
+                    ShouldShowMobileConsentFlowCallback callback) {
+        footprints::oneplatform::ShouldShowMobileConsentFlowResponse response;
+        response.mutable_should_show_flow_result()
+            ->mutable_eligibility()
+            ->set_status(static_cast<int32_t>(status));
+        std::move(callback).Run(success, response);
+      });
+  return std::make_unique<drive_picker::DriveDisclaimerController>(
+      std::move(fpop_service));
+}
+
+// Builds a `DriveDisclaimerController` whose backend reply is held: the
+// callback is stored in `*captured_callback` so the test can respond later.
+std::unique_ptr<drive_picker::DriveDisclaimerController>
+MakePendingDisclaimerController(
+    ShouldShowMobileConsentFlowCallback* captured_callback) {
+  auto fpop_service = std::make_unique<MockFpopService>();
+  EXPECT_CALL(*fpop_service,
+              ShouldShowMobileConsentFlow(testing::_, testing::_))
+      .WillOnce(
+          [captured_callback](const footprints::oneplatform::
+                                  ShouldShowMobileConsentFlowRequest&,
+                              ShouldShowMobileConsentFlowCallback callback) {
+            *captured_callback = std::move(callback);
+          });
+  return std::make_unique<drive_picker::DriveDisclaimerController>(
+      std::move(fpop_service));
+}
+
+footprints::oneplatform::ShouldShowMobileConsentFlowResponse
+MakeEligibilityResponse(ConsentEligibilityStatus status) {
+  footprints::oneplatform::ShouldShowMobileConsentFlowResponse response;
+  response.mutable_should_show_flow_result()->mutable_eligibility()->set_status(
+      static_cast<int32_t>(status));
+  return response;
+}
+
+// Builds an `IframeMessage` carrying a completed `PrivacyFlowResult` for the
+// expected flow with `decision`.
+identity_consent::IframeMessage MakeDecisionMessage(
+    identity_consent::Decision decision) {
+  identity_consent::IframeMessage message;
+  message.set_event(identity_consent::Event::DECISION_RESPONSE_EVENT);
+  message.mutable_privacy_flow_result()->mutable_flow_completed();
+  message.mutable_privacy_flow_result()->set_flow_id(
+      static_cast<identity_consent::ConsentFlowId>(
+          omnibox::kComposeboxDriveConsentFlowId.Get()));
+  auto* result_decision = message.mutable_privacy_flow_result()->add_decision();
+  result_decision->set_ftc_consent_setting_id(
+      identity_consent::ConsentSettingId::
+          PERSONAL_CONTEXT_SEARCH_USING_WORKSPACE);
+  result_decision->set_decision(decision);
+  return message;
+}
 
 }  // namespace
 
@@ -333,6 +438,10 @@ TEST_F(DrivePickerHostUITest, ConsentKitFlowSuccess_RedirectsToPicker) {
           PERSONAL_CONTEXT_SEARCH_USING_WORKSPACE);
   decision->set_decision(identity_consent::Decision::DECISION_CONSENT);
 
+  // The backend confirms the consent was recorded.
+  controller.SetDriveDisclaimerControllerForTesting(
+      MakeDisclaimerController(ConsentEligibilityStatus::kAlreadyConsented));
+
   // Expect ShowDrivePicker to be called next
   base::RunLoop picker_run_loop;
   EXPECT_CALL(mock_bridge, ShowDrivePicker(testing::_, testing::_))
@@ -408,6 +517,10 @@ TEST_F(DrivePickerHostUITest,
       identity_consent::ConsentSettingId::
           PERSONAL_CONTEXT_SEARCH_USING_WORKSPACE);
   decision->set_decision(identity_consent::Decision::DECISION_KEEP_CONSENT);
+
+  // The backend confirms the consent is still recorded.
+  controller.SetDriveDisclaimerControllerForTesting(
+      MakeDisclaimerController(ConsentEligibilityStatus::kAlreadyConsented));
 
   // Expect ShowDrivePicker to be called next
   base::RunLoop picker_run_loop;
@@ -739,4 +852,166 @@ TEST_F(DrivePickerHostUITest,
   controller.set_delegate(nullptr);
   page_handler->OnHideErrorDialog();
   page_handler.FlushForTesting();
+}
+
+// Regression tests for b/571284298: a compromised untrusted renderer can forge
+// a `PrivacyFlowResult` with the public `flow_id` and `DECISION_CONSENT`. The
+// browser must confirm consent with the backend before granting anything.
+class DrivePickerHostUIConsentVerificationTest : public DrivePickerHostUITest {
+ public:
+  void SetUp() override {
+    DrivePickerHostUITest::SetUp();
+    feature_list_.InitAndEnableFeature(
+        omnibox::kComposeboxDriveContextMenuOption);
+    identity_test_env()->MakePrimaryAccountAvailable(
+        kEmail, signin::ConsentLevel::kSignin);
+    test_web_ui_.set_web_contents(web_contents());
+    controller_ = std::make_unique<DrivePickerHostUI>(&test_web_ui_);
+    controller_->SetBridge(mock_bridge_.BindAndGetRemote());
+  }
+
+  void TearDown() override {
+    controller_.reset();
+    DrivePickerHostUITest::TearDown();
+  }
+
+  // Starts a consent flow and waits for the ConsentKit URL to be loaded, so
+  // that `consent_result_handler_` is bound as it would be when the message
+  // arrives in the real flow.
+  void StartConsentFlow() {
+    auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+        drive_picker_host::DrivePickerHostRequest::RequestType::kConsentDialog,
+        result_handler_.BindAndGetRemote());
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_bridge_, LoadConsentKitUrl(testing::_))
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
+    controller_->TriggerDrivePickerHost(std::move(request));
+    run_loop.Run();
+  }
+
+  void SendConsentDecision() {
+    controller_->OnConsentKitIframeMessage(mojo_base::ProtoWrapper(
+        MakeDecisionMessage(identity_consent::Decision::DECISION_CONSENT)));
+  }
+
+  void ExpectErrorAndWait() {
+    base::RunLoop run_loop;
+    EXPECT_CALL(result_handler_,
+                OnError(drive_picker_host::mojom::DrivePickerError::kUnknown))
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
+    run_loop.Run();
+  }
+
+  int ConsentPref() {
+    return profile()->GetPrefs()->GetInteger(
+        contextual_search::kDriveConsentState);
+  }
+
+ protected:
+  content::TestWebUI test_web_ui_;
+  std::unique_ptr<DrivePickerHostUI> controller_;
+  testing::StrictMock<MockDrivePickerBridge> mock_bridge_;
+  testing::StrictMock<MockResultHandler> result_handler_;
+};
+
+TEST_F(DrivePickerHostUIConsentVerificationTest,
+       ForgedConsent_BackendNotAccepted_RelaysErrorWithoutPicker) {
+  StartConsentFlow();
+  controller_->SetDriveDisclaimerControllerForTesting(
+      MakeDisclaimerController(ConsentEligibilityStatus::kCanConsent));
+
+  // Payload from the bug report: valid flow_id + DECISION_CONSENT.
+  SendConsentDecision();
+  ExpectErrorAndWait();
+
+  // StrictMock ensures ShowDrivePicker was not called.
+  EXPECT_FALSE(identity_test_env()->IsAccessTokenRequestPending());
+  EXPECT_NE(ConsentPref(),
+            static_cast<int>(contextual_search::DriveConsentState::kConsent));
+}
+
+TEST_F(DrivePickerHostUIConsentVerificationTest,
+       Consent_BackendRpcFailure_FailsClosed) {
+  StartConsentFlow();
+  controller_->SetDriveDisclaimerControllerForTesting(MakeDisclaimerController(
+      ConsentEligibilityStatus::kAlreadyConsented, /*success=*/false));
+
+  SendConsentDecision();
+  ExpectErrorAndWait();
+
+  EXPECT_FALSE(identity_test_env()->IsAccessTokenRequestPending());
+  EXPECT_NE(ConsentPref(),
+            static_cast<int>(contextual_search::DriveConsentState::kConsent));
+}
+
+TEST_F(DrivePickerHostUIConsentVerificationTest,
+       Consent_TerminateEventDuringVerification_TransitionsToPicker) {
+  testing::StrictMock<MockDrivePickerHostUIDelegate> delegate;
+  controller_->set_delegate(&delegate);
+
+  StartConsentFlow();
+  ShouldShowMobileConsentFlowCallback backend_callback;
+  controller_->SetDriveDisclaimerControllerForTesting(
+      MakePendingDisclaimerController(&backend_callback));
+
+  SendConsentDecision();
+  ASSERT_TRUE(backend_callback);
+
+  // ConsentKit unconditionally posts TERMINATE_EVENT right after
+  // DECISION_RESPONSE_EVENT once its logging flushes. While backend
+  // verification is in flight, TERMINATE_EVENT must not cancel the flow.
+  identity_consent::IframeMessage terminate;
+  terminate.set_event(identity_consent::Event::TERMINATE_EVENT);
+  controller_->OnConsentKitIframeMessage(mojo_base::ProtoWrapper(terminate));
+
+  EXPECT_CALL(delegate, OnTransitionToPicker());
+  base::RunLoop picker_run_loop;
+  EXPECT_CALL(mock_bridge_, ShowDrivePicker(testing::_, testing::_))
+      .WillOnce(
+          [&picker_run_loop](
+              mojo::PendingRemote<
+                  drive_picker_host::mojom::DrivePickerResultHandler>,
+              drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys) {
+            EXPECT_EQ(keys->oauth_token, kAccessToken);
+            picker_run_loop.Quit();
+          });
+
+  std::move(backend_callback)
+      .Run(/*success=*/true, MakeEligibilityResponse(
+                                 ConsentEligibilityStatus::kAlreadyConsented));
+  EXPECT_EQ(ConsentPref(),
+            static_cast<int>(contextual_search::DriveConsentState::kConsent));
+
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Now() + base::Hours(1));
+  picker_run_loop.Run();
+}
+
+TEST_F(DrivePickerHostUIConsentVerificationTest,
+       FlowAbortedDuringVerification_LateAcceptIsIgnored) {
+  StartConsentFlow();
+  ShouldShowMobileConsentFlowCallback backend_callback;
+  controller_->SetDriveDisclaimerControllerForTesting(
+      MakePendingDisclaimerController(&backend_callback));
+
+  SendConsentDecision();
+  ASSERT_TRUE(backend_callback);
+
+  // Untrusted frame disconnects while the backend check is in flight.
+  base::RunLoop disconnect_run_loop;
+  EXPECT_CALL(
+      result_handler_,
+      OnError(drive_picker_host::mojom::DrivePickerError::kMojoDisconnected))
+      .WillOnce([&disconnect_run_loop]() { disconnect_run_loop.Quit(); });
+  mock_bridge_.Disconnect();
+  disconnect_run_loop.Run();
+
+  // A late positive reply must not resurrect the aborted flow.
+  std::move(backend_callback)
+      .Run(/*success=*/true, MakeEligibilityResponse(
+                                 ConsentEligibilityStatus::kAlreadyConsented));
+
+  EXPECT_FALSE(identity_test_env()->IsAccessTokenRequestPending());
+  EXPECT_NE(ConsentPref(),
+            static_cast<int>(contextual_search::DriveConsentState::kConsent));
 }
