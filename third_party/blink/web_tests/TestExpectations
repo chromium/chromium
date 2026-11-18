@@ -2109,6 +2109,17 @@ crbug.com/1507773 external/wpt/webdriver/tests/classic/is_element_enabled/enable
 crbug.com/1499775 external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/context.py [ Failure ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/input/set_files/invalid.py [ Failure ]
 [ Debug ] external/wpt/webdriver/tests/bidi/network/add_intercept/contexts.py [ Failure Pass ]
+crbug.com/577081408 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_characteristic/invalid.py [ Failure Pass ]
+crbug.com/577081408 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_characteristic_response/invalid.py [ Failure Pass ]
+crbug.com/577081408 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_characteristic_response/simulate_characteristic_response.py [ Failure Pass ]
+crbug.com/577081408 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_descriptor/invalid.py [ Failure Pass ]
+crbug.com/577081408 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_descriptor/simulate_descriptor.py [ Failure Pass ]
+crbug.com/573052731 crbug.com/577081408 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_descriptor_response/invalid.py [ Failure Timeout ]
+crbug.com/577081408 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_descriptor_response/simulate_descriptor_response.py [ Failure Pass ]
+crbug.com/577081408 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_gatt_connection_response/simulate_gatt_connection_response.py [ Failure Pass ]
+crbug.com/577081408 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_gatt_disconnection/simulate_gatt_disconnection.py [ Failure Pass ]
+crbug.com/577081408 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_preconnected_peripheral/simulate_preconnected_peripheral.py [ Failure Pass ]
+crbug.com/577081408 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_service/invalid.py [ Failure Pass ]
 
 # Disable certain requestIdleCallback tests pending spec or test changes.
 crbug.com/1316344 virtual/threaded/external/wpt/requestidlecallback/deadline-max-timeout-dynamic.html [ Failure ]
