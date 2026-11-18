@@ -436,6 +436,7 @@ class CacheStorageManagerTest : public testing::Test {
     callback_cache_handle_response_ = nullptr;
     cache_names_.clear();
 
+    disk_cache::FlushCacheThreadForTesting();
     base::RunLoop().RunUntilIdle();
     quota_manager_proxy_ = nullptr;
 
@@ -449,6 +450,7 @@ class CacheStorageManagerTest : public testing::Test {
     // values written to the Cache Storage index files.
 
     cache_manager_ = nullptr;
+    disk_cache::FlushCacheThreadForTesting();
   }
 
   void CheckOpHistograms(base::HistogramTester& histogram_tester,
