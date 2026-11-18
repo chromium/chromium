@@ -1042,6 +1042,11 @@ BASE_FEATURE(kGlicArchiveConversation, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicActorAutofillOneTimePassword,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether Glic OneTimePassword filling accepts OTPs whose sender domain only
+// matches the OTP frame via the Public Suffix List in non-login flows.
+BASE_FEATURE(kGlicActorAutofillOneTimePasswordPslMatching,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether to click a field before filling it in Glic actor autofill.
 // This feature is also gated by |autofill::features::kGlicActorAutofill|.
 BASE_FEATURE(kGlicActorAutofillPreClick, base::FEATURE_ENABLED_BY_DEFAULT);

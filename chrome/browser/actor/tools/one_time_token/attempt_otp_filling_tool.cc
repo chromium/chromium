@@ -14,6 +14,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -33,6 +34,7 @@
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor_webui.mojom.h"
+#include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_switches.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/shared_types.h"
@@ -666,6 +668,10 @@ void AttemptOtpFillingTool::OnActorLoginFlowChecked(
     return;
   }
 
+  const bool allow_psl_matching =
+      is_actor_login ||
+      base::FeatureList::IsEnabled(
+          features::kGlicActorAutofillOneTimePasswordPslMatching);
   LogJournalEvent(
       "AttemptOtpFillingTool::OnActorLoginFlowChecked",
       JournalDetailsBuilder().Add("status", "Calling RetrieveOtp").Build());
@@ -673,8 +679,8 @@ void AttemptOtpFillingTool::OnActorLoginFlowChecked(
       AttemptOtpFillingToolEvent::kCancelledDuringOtpRetrieval;
   tool_delegate().GetActorOneTimeTokenFillingService().RetrieveOtp(
       GetWebContentsForOtpFilling(actor_surface_handle_),
-      otp_frame->GetLastCommittedOrigin(), trigger_field_ids_, is_actor_login,
-      ToServicePredictedOtpType(predicted_otp_type_),
+      otp_frame->GetLastCommittedOrigin(), trigger_field_ids_,
+      allow_psl_matching, ToServicePredictedOtpType(predicted_otp_type_),
       base::BindOnce(&AttemptOtpFillingTool::OnOtpRetrieved,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
