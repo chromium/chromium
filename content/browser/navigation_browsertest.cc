@@ -3001,8 +3001,14 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest,
 }
 
 // Test how cookies are inherited in about:blank iframes.
+// TODO(crbug.com/587080148): Re-enable on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_CookiesInheritedAboutBlank DISABLED_CookiesInheritedAboutBlank
+#else
+#define MAYBE_CookiesInheritedAboutBlank CookiesInheritedAboutBlank
+#endif
 IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest,
-                       CookiesInheritedAboutBlank) {
+                       MAYBE_CookiesInheritedAboutBlank) {
   // This test expects several cross-site navigation to happen.
   if (!AreAllSitesIsolatedForTesting()) {
     return;
