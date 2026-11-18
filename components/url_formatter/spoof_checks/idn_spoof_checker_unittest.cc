@@ -1169,6 +1169,10 @@ const IDNTestCase kIdnCases[] = {
     {"xn--h2by8byc123p.in", u"xn--h2by8byc123p.in", kUnsafe},
     // U+200C(ZWJ)
     {"xn--11b6iy14e.in", u"xn--11b6iy14e.in", kUnsafe},
+    // U+045F (Cyrillic small letter dzhe) top-domain skeleton and WSC
+    {"xn--e1armc1c2gb.com", u"\u0443\u043e\u045f\u0442\u045f\u044c\u0435.com",
+     kUnsafe},
+    {"xn--p1a6b2a.com", u"\u045f\u0440\u0455.com", kUnsafe},
 
     // New test cases go ↑↑ above.
 
@@ -1428,7 +1432,9 @@ TEST(IDNSpoofCheckerNoFixtureTest, Skeletons) {
       {GURL("http://丆est.net"), "test.net"},
       {GURL("http://c丫xe.com"), "cyxe.corn"},
       {GURL("http://cy乂e.com"), "cyxe.corn"},
-      {GURL("http://丩3.com"), "43.corn"}};
+      {GURL("http://丩3.com"), "43.corn"},
+      {GURL("http://уоџтџье.com"), "youtube.corn"},
+      {GURL("http://џрѕ.com"), "ups.corn"}};
 
   IDNSpoofChecker checker;
   for (const TestCase& test_case : kTestCases) {

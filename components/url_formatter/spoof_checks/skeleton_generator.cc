@@ -102,7 +102,7 @@ SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
   //   - {U+0966 (०), U+09E6 (০), U+0A66 (੦), U+0AE6 (૦), U+0B30 (ଠ),
   //      U+0B66 (୦), U+0CE6 (೦), U+1005 (စ)} => o,
   //   - {U+09ED (৭), U+0A67 (੧), U+0AE7 (૧)} => q,
-  //   - {U+0E1A (บ), U+0E9A (ບ)} => u,
+  //   - {U+045F (џ), U+0E1A (บ), U+0E9A (ບ)} => u,
   //   - {U+03B8 (θ)} => 0,
   //   - {U+0968 (२), U+09E8 (২), U+0A68 (੨), U+0A68 (੨), U+0AE8 (૨),
   //      U+0ce9 (೩), U+0ced (೭), U+0577 (շ)} => 2,
@@ -126,7 +126,7 @@ SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
       "[ԃძ]  > d; [ԍဌ] > g; [ടรຣຮ] > s; ၂ > j;"
       "[०০੦૦ଠ୦೦စ] > o;"
       "[৭੧૧] > q;"
-      "[บບ] > u;"
+      "[џบບ] > u;"
       "[θ] > 0;"
       "[२২੨੨૨೩೭շ] > 2;"
       "[зҙӡउওਤ੩૩౩ဒვპੜკ] > 3;"
