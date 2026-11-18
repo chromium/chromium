@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -41,6 +42,11 @@ public class ForegroundPromoController {
     private final Runnable mShowPromoCallback;
 
     private boolean mPromosEvaluatedForCurrentForeground;
+    // Captured in onForegrounded() because ChromeInactivityTracker#onResumeWithNative clears the
+    // stored timestamp before a promo evaluation deferred on tracker initialization runs.
+    private long mTimeSinceLastBackgroundedMs =
+            ChromeInactivityTracker.UNKNOWN_LAST_BACKGROUNDED_TIME;
+    private Callback<Long> mTipsOptInPromoShowCallback = this::maybeShowTipsOptInPromo;
     private @Nullable TipsOptInCoordinator mTipsOptInCoordinator;
     private @Nullable GlicPromoCoordinator mGlicPromoCoordinator;
 
@@ -76,6 +82,7 @@ public class ForegroundPromoController {
                         // Reset the evaluation flag when the app is foregrounded, indicating a
                         // new foreground session has started and promos should be re-evaluated.
                         mPromosEvaluatedForCurrentForeground = false;
+                        mTimeSinceLastBackgroundedMs = timeSinceLastBackgroundedMs;
                         mShowPromoCallback.run();
                     }
                 };
@@ -110,8 +117,7 @@ public class ForegroundPromoController {
         if (!Boolean.TRUE.equals(mTrackerInitializedOneshotSupplier.get())) {
             return;
         }
-        var inactivityTracker = mInactivityTrackerSupplier.get();
-        if (inactivityTracker == null) {
+        if (mInactivityTrackerSupplier.get() == null) {
             return;
         }
         if (mPromosEvaluatedForCurrentForeground) {
@@ -123,7 +129,7 @@ public class ForegroundPromoController {
             return;
         }
 
-        maybeShowTipsOptInPromo(inactivityTracker.getTimeSinceLastBackgroundedMs());
+        mTipsOptInPromoShowCallback.onResult(mTimeSinceLastBackgroundedMs);
     }
 
     private void maybeShowTipsOptInPromo(long timeSinceLastBackgroundedMs) {
@@ -164,5 +170,9 @@ public class ForegroundPromoController {
 
     void setTipsOptInCoordinatorForTesting(@Nullable TipsOptInCoordinator coordinator) {
         mTipsOptInCoordinator = coordinator;
+    }
+
+    void setTipsOptInPromoShowCallbackForTesting(Callback<Long> callback) {
+        mTipsOptInPromoShowCallback = callback;
     }
 }

@@ -47,7 +47,8 @@ public class ChromeInactivityTracker
     public static final String UMA_IS_LAST_VISIBLE_TIME_LOGGED =
             "Startup.Android.IsLastVisibleTimeLogged";
 
-    private static final long UNKNOWN_LAST_BACKGROUNDED_TIME = -1;
+    /** Returned by {@link #getTimeSinceLastBackgroundedMs()} when the time is unknown. */
+    public static final long UNKNOWN_LAST_BACKGROUNDED_TIME = -1;
 
     private final String mPrefName;
     private final ObserverList<InactivityObserver> mInactivityObserverList = new ObserverList<>();

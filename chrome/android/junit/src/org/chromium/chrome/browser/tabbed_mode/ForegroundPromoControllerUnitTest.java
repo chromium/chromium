@@ -12,8 +12,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -57,6 +55,9 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /** Unit tests for {@link ForegroundPromoController}. */
@@ -67,6 +68,8 @@ import java.util.function.Supplier;
     ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS
 })
 public class ForegroundPromoControllerUnitTest {
+    private static final long TIME_IN_BACKGROUND_MS = TimeUnit.HOURS.toMillis(5);
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -89,6 +92,9 @@ public class ForegroundPromoControllerUnitTest {
     private Supplier<Profile> mProfileSupplier;
     private Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private Supplier<SnackbarManager> mSnackbarManagerSupplier;
+
+    /** Values passed to the Tips opt-in promo check, in order. */
+    private final List<Long> mTipsPromoTimes = new ArrayList<>();
 
     private ForegroundPromoController mController;
 
@@ -127,6 +133,7 @@ public class ForegroundPromoControllerUnitTest {
                         mTrackerInitializedSupplier,
                         mBottomSheetControllerSupplier,
                         mSnackbarManagerSupplier);
+        mController.setTipsOptInPromoShowCallbackForTesting(mTipsPromoTimes::add);
     }
 
     /** Delivers the inactivity tracker and returns the observer the controller registered. */
@@ -163,7 +170,7 @@ public class ForegroundPromoControllerUnitTest {
         deliverTrackerInitialized(/* initialized= */ true);
 
         assertNotNull(mController.getGlicPromoCoordinatorForTesting());
-        verify(mInactivityTracker, never()).getTimeSinceLastBackgroundedMs();
+        assertTrue(mTipsPromoTimes.isEmpty());
     }
 
     @Test
@@ -174,7 +181,7 @@ public class ForegroundPromoControllerUnitTest {
         deliverTrackerInitialized(/* initialized= */ true);
 
         assertNull(mController.getGlicPromoCoordinatorForTesting());
-        verify(mInactivityTracker).getTimeSinceLastBackgroundedMs();
+        assertEquals(1, mTipsPromoTimes.size());
     }
 
     @Test
@@ -194,12 +201,12 @@ public class ForegroundPromoControllerUnitTest {
         createController();
         InactivityObserver observer = deliverInactivityTracker();
         deliverTrackerInitialized(/* initialized= */ true);
-        verify(mInactivityTracker).getTimeSinceLastBackgroundedMs();
+        assertEquals(1, mTipsPromoTimes.size());
 
         observer.onForegrounded(/* timeSinceLastBackgroundedMs= */ 0);
         observer.onForegrounded(/* timeSinceLastBackgroundedMs= */ 0);
 
-        verify(mInactivityTracker, times(3)).getTimeSinceLastBackgroundedMs();
+        assertEquals(3, mTipsPromoTimes.size());
         // Foregrounding reuses the callback registered in the constructor.
         verify(mTrackerInitializedSupplier).onAvailable(any());
     }
@@ -210,10 +217,10 @@ public class ForegroundPromoControllerUnitTest {
         InactivityObserver observer = deliverInactivityTracker();
 
         observer.onForegrounded(/* timeSinceLastBackgroundedMs= */ 0);
-        verify(mInactivityTracker, never()).getTimeSinceLastBackgroundedMs();
+        assertTrue(mTipsPromoTimes.isEmpty());
 
         deliverTrackerInitialized(/* initialized= */ true);
-        verify(mInactivityTracker).getTimeSinceLastBackgroundedMs();
+        assertEquals(1, mTipsPromoTimes.size());
     }
 
     @Test
@@ -225,7 +232,45 @@ public class ForegroundPromoControllerUnitTest {
         deliverTrackerInitialized(/* initialized= */ false);
 
         assertNull(mController.getGlicPromoCoordinatorForTesting());
-        verify(mInactivityTracker, never()).getTimeSinceLastBackgroundedMs();
+        assertTrue(mTipsPromoTimes.isEmpty());
+    }
+
+    @Test
+    public void testTipsOptInPromo_warmStart_usesTimeFromOnForegrounded() {
+        createController();
+        InactivityObserver observer = deliverInactivityTracker();
+        deliverTrackerInitialized(/* initialized= */ true);
+        mTipsPromoTimes.clear();
+
+        observer.onForegrounded(TIME_IN_BACKGROUND_MS);
+
+        assertEquals(List.of(TIME_IN_BACKGROUND_MS), mTipsPromoTimes);
+    }
+
+    @Test
+    public void testTipsOptInPromo_coldStart_trackerInitializedAfterForeground() {
+        createController();
+        InactivityObserver observer = deliverInactivityTracker();
+
+        observer.onForegrounded(TIME_IN_BACKGROUND_MS);
+        assertTrue(mTipsPromoTimes.isEmpty());
+
+        deliverTrackerInitialized(/* initialized= */ true);
+        assertEquals(List.of(TIME_IN_BACKGROUND_MS), mTipsPromoTimes);
+    }
+
+    @Test
+    public void testTipsOptInPromo_coldStart_trackerInitializedBeforeForeground() {
+        createController();
+        InactivityObserver observer = deliverInactivityTracker();
+        // The tracker is initialized, but its posted callback has not run yet.
+        doReturn(true).when(mTrackerInitializedSupplier).get();
+
+        observer.onForegrounded(TIME_IN_BACKGROUND_MS);
+        assertEquals(List.of(TIME_IN_BACKGROUND_MS), mTipsPromoTimes);
+
+        deliverTrackerInitialized(/* initialized= */ true);
+        assertEquals(List.of(TIME_IN_BACKGROUND_MS), mTipsPromoTimes);
     }
 
     @Test
@@ -397,7 +442,7 @@ public class ForegroundPromoControllerUnitTest {
         deliverTrackerInitialized(/* initialized= */ true);
 
         assertNull(mController.getGlicPromoCoordinatorForTesting());
-        verify(mInactivityTracker, never()).getTimeSinceLastBackgroundedMs();
+        assertTrue(mTipsPromoTimes.isEmpty());
 
         mController = null;
     }
