@@ -8,6 +8,7 @@
 #include <math.h>
 
 #include <algorithm>
+#include <array>
 #include <ctime>
 
 #include "base/compiler_specific.h"
@@ -335,14 +336,14 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
   // Channel map to CRAS_CHANNEL, values in the same order of
   // corresponding source in Chromium defined Channels.
   static constexpr int kUnsupportedChannel = -4;
-  static constexpr int kChannelMap[] = {
-      CRAS_CH_FL, CRAS_CH_FR, CRAS_CH_FC, CRAS_CH_LFE, CRAS_CH_RL, CRAS_CH_RR,
-      CRAS_CH_FLC, CRAS_CH_FRC, CRAS_CH_RC, CRAS_CH_SL, CRAS_CH_SR,
-      // CRAS doesn't currently define explicit mappings for all channels.
-      kUnsupportedChannel, kUnsupportedChannel, kUnsupportedChannel,
-      kUnsupportedChannel, kUnsupportedChannel, kUnsupportedChannel,
-      kUnsupportedChannel};
-  static_assert(std::size(kChannelMap) == CHANNELS_MAX + 1,
+  static constexpr auto kChannelMap = std::to_array<int>(
+      {CRAS_CH_FL, CRAS_CH_FR, CRAS_CH_FC, CRAS_CH_LFE, CRAS_CH_RL, CRAS_CH_RR,
+       CRAS_CH_FLC, CRAS_CH_FRC, CRAS_CH_RC, CRAS_CH_SL, CRAS_CH_SR,
+       // CRAS doesn't currently define explicit mappings for all channels.
+       kUnsupportedChannel, kUnsupportedChannel, kUnsupportedChannel,
+       kUnsupportedChannel, kUnsupportedChannel, kUnsupportedChannel,
+       kUnsupportedChannel});
+  static_assert(kChannelMap.size() == CHANNELS_MAX + 1,
                 "kChannelMap array size should match");
 
   // If already playing, stop before re-starting.
@@ -390,22 +391,20 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
 
   // Initialize channel layout to all -1 to indicate that none of
   // the channels is set in the layout.
-  int8_t layout[CRAS_CH_MAX];
-  for (int8_t& channel : layout) {
-    channel = -1;
-  }
+  std::array<int8_t, CRAS_CH_MAX> layout;
+  layout.fill(-1);
 
   // Converts to CRAS defined channels. ChannelOrder will return -1
   // for channels that are not present in params_.channel_layout().
-  for (size_t i = 0; i < std::size(kChannelMap); ++i) {
+  for (size_t i = 0; i < kChannelMap.size(); ++i) {
     if (kChannelMap[i] != kUnsupportedChannel) {
-      UNSAFE_TODO(layout[kChannelMap[i]]) =
+      layout.at(kChannelMap[i]) =
           ChannelOrder(params_.channel_layout(), static_cast<Channels>(i));
     }
   }
 
   rc = libcras_stream_params_set_channel_layout(stream_params, CRAS_CH_MAX,
-                                                layout);
+                                                layout.data());
   if (rc) {
     DLOG(WARNING) << "Error setting up the channel layout.";
     ReportStreamStartResult(
