@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
@@ -478,6 +479,103 @@ TEST_F(MojoAudioEncoderTest, MojoErrorCallsAllDoneCallbacks) {
 
   run_loop.Run();
   EXPECT_EQ(error_count, input_count);
+}
+
+TEST_F(MojoAudioEncoderTest, CustomRunnerDefersCallbacksUntilRun) {
+  mojo_audio_encoder_.reset();
+  service_task_runner_->DeleteSoon(FROM_HERE, std::move(receiver_));
+
+  mojo::PendingRemote<mojom::AudioEncoder> remote_audio_encoder;
+  service_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MojoAudioEncoderTest::SetupMojoService,
+                     base::Unretained(this),
+                     remote_audio_encoder.InitWithNewPipeAndPassReceiver()));
+  auto custom_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  mojo_audio_encoder_ = std::make_unique<MojoAudioEncoder>(
+      std::move(remote_audio_encoder), custom_runner);
+
+  AudioEncoder::Options options = MakeOptions();
+  AudioEncoder::OutputCB service_output_cb;
+  base::RunLoop service_init_loop;
+  base::OnceClosure quit_service_init = service_init_loop.QuitClosure();
+  base::RunLoop service_flush_loop;
+  base::OnceClosure quit_service_flush = service_flush_loop.QuitClosure();
+
+  EXPECT_CALL(*mock_audio_encoder_, Initialize(_, _, _))
+      .WillOnce([&](const AudioEncoder::Options&,
+                    AudioEncoder::OutputCB output_cb,
+                    AudioEncoder::EncoderStatusCB done_cb) {
+        service_output_cb = std::move(output_cb);
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
+        std::move(quit_service_init).Run();
+      });
+  EXPECT_CALL(*mock_audio_encoder_, Encode(_, _, _))
+      .WillOnce([&](std::unique_ptr<AudioBus> audio_bus,
+                    base::TimeTicks capture_time,
+                    AudioEncoder::EncoderStatusCB done_cb) {
+        AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                               {CHANNEL_LAYOUT_DISCRETE, audio_bus->channels()},
+                               options.sample_rate, audio_bus->frames());
+        EncodedAudioBuffer output(params, base::HeapArray<uint8_t>::WithSize(4),
+                                  capture_time);
+        service_output_cb.Run(std::move(output), std::nullopt);
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
+      });
+  EXPECT_CALL(*mock_audio_encoder_, Flush(_))
+      .WillOnce([&](AudioEncoder::EncoderStatusCB done_cb) {
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
+        std::move(quit_service_flush).Run();
+      });
+
+  bool init_done = false;
+  int output_count = 0;
+  bool encode_done = false;
+  bool flush_done = false;
+
+  mojo_audio_encoder_->Initialize(
+      options,
+      base::BindLambdaForTesting(
+          [&](EncodedAudioBuffer,
+              std::optional<AudioEncoder::CodecDescription>) {
+            ++output_count;
+          }),
+      base::BindLambdaForTesting([&](EncoderStatus s) {
+        EXPECT_TRUE(s.is_ok());
+        init_done = true;
+      }));
+
+  service_init_loop.Run();
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(init_done);
+
+  custom_runner->RunUntilIdle();
+  EXPECT_TRUE(init_done);
+
+  mojo_audio_encoder_->Encode(MakeInput(0.5f, options.channels, 1024),
+                              FromMilliseconds(0),
+                              base::BindLambdaForTesting([&](EncoderStatus s) {
+                                EXPECT_TRUE(s.is_ok());
+                                encode_done = true;
+                              }));
+  mojo_audio_encoder_->Flush(base::BindLambdaForTesting([&](EncoderStatus s) {
+    EXPECT_TRUE(s.is_ok());
+    flush_done = true;
+  }));
+
+  service_flush_loop.Run();
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(0, output_count);
+  EXPECT_FALSE(encode_done);
+  EXPECT_FALSE(flush_done);
+
+  custom_runner->RunUntilIdle();
+  EXPECT_EQ(1, output_count);
+  EXPECT_TRUE(encode_done);
+  EXPECT_TRUE(flush_done);
+
+  mojo_audio_encoder_.reset();
+  custom_runner->RunUntilIdle();
 }
 
 TEST(MojoAudioEncoderServiceTest, ServiceRejectsInvalidInputs) {

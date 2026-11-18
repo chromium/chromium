@@ -31,6 +31,7 @@
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_background_blur.h"
@@ -1382,9 +1383,15 @@ VideoFrame::CopyToPromise VideoFrame::CopyToAsync(
                                            "Failed to read VideoFrame data.");
         }
       };
-  auto done_cb =
-      BindOnce(readback_done_handler, std::move(contents),
-               MakeUnwrappingCrossThreadHandle(resolver), dest_layout);
+  // `BackgroundReadback` may invoke `done_cb` on a background worker thread or
+  // via `SequencedTaskRunner::GetCurrentDefault()`, neither of which is paused
+  // or frozen with the ExecutionContext. Bind explicitly to an ExecutionContext
+  // task runner.
+  auto done_cb = base::BindPostTask(
+      context->GetTaskRunner(TaskType::kInternalMedia),
+      ConvertToBaseOnceCallback(CrossThreadBindOnce(
+          readback_done_handler, std::move(contents),
+          MakeUnwrappingCrossThreadHandle(resolver), dest_layout)));
 
   background_readback->ReadbackTextureBackedFrame(
       std::move(frame), std::move(dest_frame), std::move(done_cb));
