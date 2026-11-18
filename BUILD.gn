@@ -60,6 +60,7 @@ if (is_linux) {
 }
 
 if (use_blink) {
+  import("//build/config/devtools.gni")
   import("//chrome/common/features.gni")
   import("//v8/gni/snapshot_toolchain.gni")
 }
@@ -1539,6 +1540,27 @@ if (use_blink && !is_cronet_build) {
     if (is_ios) {
       data += [ "//third_party/blink/web_tests/IOSTestExpectations" ]
     }
+  }
+
+  group("devtools_api_tests") {
+    testonly = true
+    data_deps = [ "//$devtools_root_location/test/api:devtools_api_tests" ]
+  }
+
+  group("devtools_e2e_tests") {
+    testonly = true
+    data_deps = [ "//$devtools_root_location/test/e2e:devtools_e2e_tests" ]
+  }
+
+  group("devtools_node_unit_tests") {
+    testonly = true
+    data_deps =
+        [ "//$devtools_root_location/test/unit:devtools_node_unit_tests" ]
+  }
+
+  group("devtools_unit_tests") {
+    testonly = true
+    data_deps = [ "//$devtools_root_location/test/unit:devtools_unit_tests" ]
   }
 }
 
