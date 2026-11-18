@@ -19,6 +19,7 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
@@ -265,13 +266,13 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest, EmptyWindowSaved) {
   service()->ResetFromCurrentBrowsers();
 
   // A window that already had tabs at the rebuild is not counted.
-  std::ignore = AddTabAtIndexToBrowser(browser(), -1, GURL(url::kAboutBlankURL),
-                                       ui::PAGE_TRANSITION_TYPED);
+  std::ignore = chrome::AddSelectedTabWithURL(
+      browser(), GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED);
   histogram_tester.ExpectTotalCount(
       "Session.Counterfactual.EmptyWindowTabWouldHaveBeenLost", 0);
 
-  std::ignore = AddTabAtIndexToBrowser(
-      empty_browser, -1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED);
+  std::ignore = chrome::AddSelectedTabWithURL(
+      empty_browser, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED);
   histogram_tester.ExpectUniqueSample(
       "Session.Counterfactual.EmptyWindowTabWouldHaveBeenLost", true, 1);
 
