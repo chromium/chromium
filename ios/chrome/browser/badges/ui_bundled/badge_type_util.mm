@@ -10,6 +10,14 @@
 
 BadgeType BadgeTypeForInfobarType(InfobarType infobar_type) {
   switch (infobar_type) {
+    case InfobarType::kInfobarTypePasswordSave:
+      return kBadgeTypePasswordSave;
+    case InfobarType::kInfobarTypePasswordUpdate:
+      return kBadgeTypePasswordUpdate;
+    case InfobarType::kInfobarTypeSaveAutofillAddressProfile:
+      return kBadgeTypeSaveAddressProfile;
+    case InfobarType::kInfobarTypeSaveCard:
+      return kBadgeTypeSaveCard;
     case InfobarType::kInfobarTypeTranslate:
       return kBadgeTypeTranslate;
     case InfobarType::kInfobarTypePermissions:
@@ -48,5 +56,26 @@ InfobarType InfobarTypeForBadgeType(BadgeType badge_type) {
 }
 
 bool IsBadgeSupportedForInfobarType(InfobarType infobar_type) {
-  return BadgeTypeForInfobarType(infobar_type) != kBadgeTypeNone;
+  switch (infobar_type) {
+    case InfobarType::kInfobarTypePasswordSave:
+    case InfobarType::kInfobarTypePasswordUpdate:
+    case InfobarType::kInfobarTypeSaveCard:
+    case InfobarType::kInfobarTypeSaveAutofillAddressProfile:
+    case InfobarType::kInfobarTypeAutofillAiSaveEntity:
+      // Sunset autofill and password infobars do not support badges.
+      return false;
+    case InfobarType::kInfobarTypeConfirm:
+    case InfobarType::kInfobarTypeTranslate:
+    case InfobarType::kInfobarTypePermissions:
+    case InfobarType::kInfobarTypeTailoredSecurityService:
+    case InfobarType::kInfobarTypeSyncError:
+    case InfobarType::kInfobarTypeEnhancedSafeBrowsing:
+    case InfobarType::kInfobarTypeSignin:
+    case InfobarType::kInfobarTypeCollaborationGroup:
+    case InfobarType::kInfobarTypeCollaborationOutOfDate:
+    case InfobarType::kInfobarTypeSaveCvc:
+    case InfobarType::kInfobarTypeReaderMode:
+    case InfobarType::kInfobarTypeContextualCue:
+      return BadgeTypeForInfobarType(infobar_type) != kBadgeTypeNone;
+  }
 }
