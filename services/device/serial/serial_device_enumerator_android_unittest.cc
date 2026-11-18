@@ -16,6 +16,7 @@
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "services/device/serial/native_unittests_jni_headers/CppTestHelper_jni.h"
@@ -35,7 +36,7 @@ class SerialDeviceEnumeratorAndroidTest : public testing::Test {
     JNIEnv* env = jni_zero::AttachCurrentThread();
     enumerator->SetSerialManagerForTesting(
         Java_CppTestHelper_createFakeSerialManager(
-            env, reinterpret_cast<int64_t>(enumerator.get())));
+            env, jni_zero::MakeRaw(enumerator.get())));
     return enumerator;
   }
 

@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
 
 /**
@@ -20,10 +21,12 @@ import org.jni_zero.JniType;
 @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
 public class CppTestHelper {
 
-    private static long sNativePointer;
+    private static JniRawPtr<ChromeSerialManager.NativeSerialDeviceEnumeratorAndroid>
+            sNativePointer;
 
     @CalledByNative
-    private static ChromeSerialManager createFakeSerialManager(long nativePointer) {
+    static ChromeSerialManager createFakeSerialManager(
+            JniRawPtr<ChromeSerialManager.NativeSerialDeviceEnumeratorAndroid> nativePointer) {
         sNativePointer = nativePointer;
         ChromeSerialManager instance =
                 new ChromeSerialManager(nativePointer, null) {
@@ -46,7 +49,10 @@ public class CppTestHelper {
                     }
 
                     @Override
-                    protected void close() {}
+                    protected void close() {
+                        nativePointer.release();
+                        sNativePointer = null;
+                    }
 
                     @Override
                     protected String openPort(String name) {

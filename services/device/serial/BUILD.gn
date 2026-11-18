@@ -170,6 +170,7 @@ if (is_android) {
   generate_jni("native_unittests_jni_headers") {
     testonly = true
     sources = javatest_sources_needing_jni
+    deps = [ ":jni_headers" ]
   }
 
   android_library("native_unittests_java") {
