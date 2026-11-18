@@ -439,7 +439,8 @@ TEST_P(ClientCertSourceWritableUnitTest,
 
 #if BUILDFLAG(IS_CHROMEOS)
 
-TEST_P(ClientCertSourceWritableUnitTest, PolicyAllAllowsDeletion) {
+// TODO(crbug.com/587062777): Re-enable once TestFuture timeout flake is fixed.
+TEST_P(ClientCertSourceWritableUnitTest, DISABLED_PolicyAllAllowsDeletion) {
   std::string client_1_hash_hex = ImportToUserSlotForTesting(
       net::GetTestCertsDirectory().AppendASCII("client_1.p12"), "chrome");
   ASSERT_FALSE(client_1_hash_hex.empty());
@@ -486,8 +487,9 @@ TEST_P(ClientCertSourceWritableUnitTest, PolicyAllAllowsDeletion) {
   EXPECT_FALSE(GetCertificateInfosContainsCertWithHash(client_p256_hash_hex));
 }
 
+// TODO(crbug.com/587062777): Re-enable once TestFuture timeout flake is fixed.
 TEST_P(ClientCertSourceWritableUnitTest,
-       PolicyUserOnlyAllowsDeletionOfUserCertsOnly) {
+       DISABLED_PolicyUserOnlyAllowsDeletionOfUserCertsOnly) {
   std::string client_1_hash_hex = ImportToUserSlotForTesting(
       net::GetTestCertsDirectory().AppendASCII("client_1.p12"), "chrome");
   ASSERT_FALSE(client_1_hash_hex.empty());
