@@ -276,12 +276,13 @@ def _populate_complete_native_install(
   probe.set_reg_value(
     ev_key, 'CategoryMessageFile', rf'{install_dir}\remoting_core.dll', view=64
   )
-  probe.set_reg_value(
-    r'SOFTWARE\Google\SecurityKey',
-    'RemoteSecurityKeyPath',
-    rf'{install_dir}\remote_security_key.exe',
-    view=64,
-  )
+  for view in (64, 32):
+    probe.set_reg_value(
+      r'SOFTWARE\Google\SecurityKey',
+      'RemoteSecurityKeyPath',
+      rf'{install_dir}\remote_security_key.exe',
+      view=view,
+    )
 
   com_sd = probe.register_binary_sd(
     b'\x01\x00\x04\x80' + b'\x00' * 16 + b'valid', VALID_COM_SDDL
@@ -612,13 +613,13 @@ class AuditHostInstallTest(unittest.TestCase):
       report.issue_count, 0, msg=audit_host_install.format_report(report)
     )
     self.assertEqual(report.acl_invalid_count, 0)
-    # 43 OK ACLs = 4 filesystem/ProgramData (install_dir, config_dir, host.json,
-    # host_unprivileged.json) + 2 service (SCM + Services\chromoting) + 21
-    # non-COM registry (2 Omaha, 10 NMH, EventLog, SecurityKey, UrlForwarder
+    # 44 OK ACLs = 4 filesystem/ProgramData (install_dir, config_dir, host.json,
+    # host_unprivileged.json) + 2 service (SCM + Services\chromoting) + 22
+    # non-COM registry (2 Omaha, 10 NMH, EventLog, 2 SecurityKey, UrlForwarder
     # cmd, RegisteredApplications, root + 4 branding subkeys) + 16 COM (AppId,
     # AccessPermission, LaunchPermission, CLSID, LocalServer32, 2 ProxyStub
     # CLSIDs, 2 InprocServer32s, 4 Interfaces, TypeLib 1.0, win32, win64).
-    self.assertEqual(report.acl_ok_count, 43)
+    self.assertEqual(report.acl_ok_count, 44)
     with mock.patch('sys.stdout', new_callable=io.StringIO):
       self.assertEqual(audit_host_install.main([], probe=probe), 0)
 

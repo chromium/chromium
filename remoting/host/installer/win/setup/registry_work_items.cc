@@ -95,12 +95,16 @@ void AddRemoteSecurityKeyWorkItems(const base::FilePath& install_dir,
                                    WorkItemList* list) {
   std::wstring binary_path =
       install_dir.Append(kRemoteSecurityKeyBinaryName).value();
-  list->AddCreateRegKeyWorkItem(HKEY_LOCAL_MACHINE, kSecurityKeyRegistryKeyPath,
-                                WorkItem::kWow64Default);
-  list->AddSetRegValueWorkItem(HKEY_LOCAL_MACHINE, kSecurityKeyRegistryKeyPath,
-                               WorkItem::kWow64Default,
-                               L"RemoteSecurityKeyPath", binary_path,
-                               /*overwrite=*/true);
+  // Written to both registry views: the legacy 32-bit MSI wrote this value to
+  // the 32-bit view, so existing consumers may read it from there.
+  for (REGSAM view : kBothRegistryViews) {
+    list->AddCreateRegKeyWorkItem(HKEY_LOCAL_MACHINE,
+                                  kSecurityKeyRegistryKeyPath, view);
+    list->AddSetRegValueWorkItem(HKEY_LOCAL_MACHINE,
+                                 kSecurityKeyRegistryKeyPath, view,
+                                 L"RemoteSecurityKeyPath", binary_path,
+                                 /*overwrite=*/true);
+  }
 }
 
 void AddUrlForwarderWorkItems(const base::FilePath& install_dir,
@@ -372,16 +376,20 @@ void AddUnregisterHostRegistryWorkItems(WorkItemList* list) {
                                 WorkItem::kWow64Default);
 
   // Delete `RemoteSecurityKeyPath` value and remove
-  // `SOFTWARE\Google\SecurityKey` only if no other subkeys or values exist.
-  list->AddDeleteRegValueWorkItem(
-      HKEY_LOCAL_MACHINE, kSecurityKeyRegistryKeyPath, WorkItem::kWow64Default,
-      L"RemoteSecurityKeyPath");
-  list->AddCallbackWorkItem(base::BindOnce([](const CallbackWorkItem&) {
-                              DeleteKeyIfEmpty(HKEY_LOCAL_MACHINE,
-                                               kSecurityKeyRegistryKeyPath);
-                              return true;
-                            }),
-                            base::DoNothing());
+  // `SOFTWARE\Google\SecurityKey` only if no other subkeys or values exist, in
+  // both registry views.
+  for (REGSAM view : kBothRegistryViews) {
+    list->AddDeleteRegValueWorkItem(HKEY_LOCAL_MACHINE,
+                                    kSecurityKeyRegistryKeyPath, view,
+                                    L"RemoteSecurityKeyPath");
+  }
+  list->AddCallbackWorkItem(
+      base::BindOnce([](const CallbackWorkItem&) {
+        DeleteKeyIfEmpty(HKEY_LOCAL_MACHINE, kSecurityKeyRegistryKeyPath,
+                         KEY_WOW64_32KEY | KEY_WOW64_64KEY);
+        return true;
+      }),
+      base::DoNothing());
 
   std::wstring prog_id_key =
       base::StrCat({L"SOFTWARE\\Classes\\", kUrlForwarderProgId});

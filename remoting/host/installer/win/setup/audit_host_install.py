@@ -1620,13 +1620,13 @@ def audit_host_install(
     _check_target(
       probe, cat_msg, False, ev_entry.issues, label='CategoryMessageFile: '
     )
-  for view, src in ((64, 'exe'), (32, 'msi')):
+  for view in (64, 32):
     _audit_reg(
       probe,
       report,
       r'SOFTWARE\Google\SecurityKey',
       view,
-      src,
+      'both',
       val_name='RemoteSecurityKeyPath',
       path_value='RemoteSecurityKeyPath',
     )

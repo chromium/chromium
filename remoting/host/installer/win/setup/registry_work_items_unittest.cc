@@ -133,9 +133,12 @@ TEST_F(RegistryWorkItemsTest, UnregisterEventLogSource) {
 TEST_F(RegistryWorkItemsTest, RegisterSecurityKey) {
   ASSERT_TRUE(RegisterHostEntries());
 
-  EXPECT_EQ(RegistryTestHelperWin::ReadStringValue(kSecurityKeyPath,
-                                                   L"RemoteSecurityKeyPath"),
-            install_dir_.Append(kRemoteSecurityKeyBinaryName).value());
+  for (REGSAM view : kBothRegistryViews) {
+    EXPECT_EQ(RegistryTestHelperWin::ReadStringValue(
+                  kSecurityKeyPath, L"RemoteSecurityKeyPath", view),
+              install_dir_.Append(kRemoteSecurityKeyBinaryName).value())
+        << "view=" << view;
+  }
 }
 
 TEST_F(RegistryWorkItemsTest, UnregisterSecurityKeyWhenEmpty) {
@@ -143,7 +146,10 @@ TEST_F(RegistryWorkItemsTest, UnregisterSecurityKeyWhenEmpty) {
 
   UnregisterHostEntries();
 
-  EXPECT_FALSE(RegistryTestHelperWin::KeyExists(kSecurityKeyPath));
+  for (REGSAM view : kBothRegistryViews) {
+    EXPECT_FALSE(RegistryTestHelperWin::KeyExists(kSecurityKeyPath, view))
+        << "view=" << view;
+  }
 }
 
 TEST_F(RegistryWorkItemsTest, UnregisterPreservesNonEmptySecurityKey) {
@@ -522,6 +528,9 @@ TEST_F(RegistryWorkItemsTest, HostRegistryWorkItem_SuccessAndRollback) {
     for (REGSAM view : kBothRegistryViews) {
       EXPECT_FALSE(RegistryTestHelperWin::KeyExists(key_path, view));
     }
+  }
+  for (REGSAM view : kBothRegistryViews) {
+    EXPECT_FALSE(RegistryTestHelperWin::KeyExists(kSecurityKeyPath, view));
   }
 }
 
