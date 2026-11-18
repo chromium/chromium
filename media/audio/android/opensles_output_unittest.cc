@@ -81,7 +81,7 @@ class OpenSLESOutputStreamTest : public testing::Test {
   }
 
   void SetHardwareLatency(base::TimeDelta latency) {
-    stream_->hardware_latency_ = latency;
+    stream_->SetHardwareLatency(latency);
   }
 
   int CalculateDelayFrames(base::TimeDelta position) const {
@@ -146,29 +146,118 @@ class OpenSLESOutputStreamTest : public testing::Test {
 OpenSLESOutputStreamTest* OpenSLESOutputStreamTest::g_current_test_ = nullptr;
 
 TEST_F(OpenSLESOutputStreamTest,
-       StartAdjustsInitialBaseTimestampForHardwareLatency) {
+       PreservesHardwareLatencyWhenInitialPositionIsNonZero) {
   // Simulate a device where Start() observes GetPosition() = 100ms (e.g. a
   // reused OpenSLES player whose position was not reset on Clear()) and
-  // hardware_latency_ is 40ms. Base timestamp should be initialized to
-  // 100ms - 40ms = 60ms, with 1 buffer (10ms = 480 frames) queued.
+  // hardware_latency_ is 40ms (1920 frames = 4 * kFramesPerBuffer).
+  constexpr int kHardwareLatencyFrames = 4 * kFramesPerBuffer;
   SetHardwareLatency(base::Milliseconds(40));
   position_in_ms_ = 100;
   stream_->Start(&callback_);
   EXPECT_EQ(enqueued_buffers_, 1);
 
-  // When playback has not advanced yet (position_in_ms_ == 100ms, adjusted to
-  // 60ms), all 480 queued frames (10ms) remain unplayed.
+  // While playback has not advanced past base_timestamp + hardware_latency_
+  // (140ms), AdjustPositionForHardwareLatency(position) < 100ms is clamped to
+  // base_timestamp (100ms) without crashing. At position = 100ms, the 1 buffer
+  // (480 frames = 10ms) queued during Start() remains unplayed.
   EXPECT_EQ(CalculateDelayFrames(base::Milliseconds(100)), kFramesPerBuffer);
 
-  // When hardware latency exceeds initial position (e.g. position_in_ms_ = 20ms
-  // with 40ms latency), AdjustPositionForHardwareLatency clamps both the base
-  // timestamp and subsequent positions <= 40ms to 0ms.
+  // Advance 5 callbacks (50ms = 2400 frames filled, total queued = 60ms) while
+  // GetPosition() advances by 50ms to 150ms (1 buffer of 10ms unconsumed in
+  // the OpenSLES queue). In steady state (position > 140ms), the reported
+  // delay must include both the 1 queued buffer (10ms) and the full 40ms of
+  // hardware_latency_ (total 50ms = 2400 frames).
+  EXPECT_CALL(callback_, OnMoreData(_, _, AudioGlitchInfo(), NotNull()))
+      .Times(5)
+      .WillRepeatedly(ZeroAudioBusAndReturnFrames);
+  for (int i = 1; i <= 5; ++i) {
+    position_in_ms_ = 100 + i * 10;
+    TriggerBufferQueueCallback();
+  }
+  EXPECT_EQ(CalculateDelayFrames(base::Milliseconds(150)),
+            kFramesPerBuffer + kHardwareLatencyFrames);
+
+  // Repeat when hardware latency exceeds initial position (position_in_ms_ =
+  // 20ms with 40ms latency). Positions <= 60ms clamp to base_timestamp (20ms),
+  // and steady-state positions (> 60ms) preserve the full 40ms hardware
+  // latency.
   stream_->Stop();
   SetHardwareLatency(base::Milliseconds(40));
   position_in_ms_ = 20;
   stream_->Start(&callback_);
   EXPECT_EQ(CalculateDelayFrames(base::Milliseconds(20)), kFramesPerBuffer);
   EXPECT_EQ(CalculateDelayFrames(base::Milliseconds(35)), kFramesPerBuffer);
+
+  EXPECT_CALL(callback_, OnMoreData(_, _, AudioGlitchInfo(), NotNull()))
+      .Times(5)
+      .WillRepeatedly(ZeroAudioBusAndReturnFrames);
+  for (int i = 1; i <= 5; ++i) {
+    position_in_ms_ = 20 + i * 10;
+    TriggerBufferQueueCallback();
+  }
+  EXPECT_EQ(CalculateDelayFrames(base::Milliseconds(70)),
+            kFramesPerBuffer + kHardwareLatencyFrames);
+
+  // Negative hardware latency must be sanitized to zero so it neither shifts
+  // target positions forward nor shrinks max_delay_frames.
+  stream_->Stop();
+  SetHardwareLatency(base::Milliseconds(-50));
+  position_in_ms_ = 0;
+  stream_->Start(&callback_);
+  EXPECT_EQ(CalculateDelayFrames(base::Milliseconds(0)), kFramesPerBuffer);
+}
+
+TEST_F(OpenSLESOutputStreamTest,
+       IncludesHardwareLatencyExceedingBufferQueueCapacity) {
+  // Simulate an Android TV device with a deep-buffer HAL (e.g. Dolby MS12)
+  // reporting 350ms of hardware output latency (16,800 frames at 48kHz), which
+  // is much larger than the 2-buffer OpenSLES queue capacity (960 frames =
+  // 20ms).
+  constexpr base::TimeDelta kHalLatency = base::Milliseconds(350);
+  constexpr int kHalLatencyFrames = 35 * kFramesPerBuffer;  // 16,800 frames.
+  SetHardwareLatency(kHalLatency);
+  position_in_ms_ = 0;
+  stream_->Start(&callback_);
+
+  // Enqueue 35 buffers (350ms) as each 10ms buffer is consumed into the HAL
+  // pipeline (total 36 buffers = 360ms written, GetPosition() = 350ms).
+  EXPECT_CALL(callback_, OnMoreData(_, _, AudioGlitchInfo(), NotNull()))
+      .Times(35)
+      .WillRepeatedly(ZeroAudioBusAndReturnFrames);
+  for (int i = 1; i <= 35; ++i) {
+    position_in_ms_ = i * 10;
+    TriggerBufferQueueCallback();
+  }
+
+  // When the 36th buffer is consumed from the OpenSLES queue (position =
+  // 360ms), 360ms has been written prior to OnMoreData and
+  // AdjustPositionForHardwareLatency(360ms) = 10ms, so 350ms (16,800 frames)
+  // remains in the HAL pipeline at OnMoreData, and 360ms (17,280 frames =
+  // kFramesPerBuffer + kHalLatencyFrames) once the callback enqueues the new
+  // buffer. Verify that CalculateDelayFrames does not clamp this down to 20ms
+  // (960 frames).
+  position_in_ms_ = 360;
+  base::TimeDelta reported_delay;
+  EXPECT_CALL(callback_, OnMoreData(_, _, AudioGlitchInfo(), NotNull()))
+      .WillOnce(
+          DoAll(SaveArg<0>(&reported_delay), ZeroAudioBusAndReturnFrames));
+  TriggerBufferQueueCallback();
+  EXPECT_EQ(reported_delay, kHalLatency);
+  EXPECT_EQ(CalculateDelayFrames(base::Milliseconds(360)),
+            kFramesPerBuffer + kHalLatencyFrames);
+
+  // Enqueue two more buffers without GetPosition() advancing (total 3 buffers
+  // queued above position, exceeding kMaxNumOfBuffersInQueue = 2). The delay
+  // must clamp to kMaxNumOfBuffersInQueue * kFramesPerBuffer +
+  // kHalLatencyFrames (370ms = 17,760 frames).
+  EXPECT_CALL(callback_, OnMoreData(_, _, AudioGlitchInfo(), NotNull()))
+      .Times(2)
+      .WillRepeatedly(ZeroAudioBusAndReturnFrames);
+  TriggerBufferQueueCallback();
+  TriggerBufferQueueCallback();
+  EXPECT_EQ(CalculateDelayFrames(base::Milliseconds(360)),
+            OpenSLESOutputStream::kMaxNumOfBuffersInQueue * kFramesPerBuffer +
+                kHalLatencyFrames);
 }
 
 TEST_F(OpenSLESOutputStreamTest,

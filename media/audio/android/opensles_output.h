@@ -84,16 +84,19 @@ class MEDIA_EXPORT OpenSLESOutputStream : public MuteableAudioOutputStream {
   // the attached AudioOutputCallback::OnError().
   void HandleError(SLresult error) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Cache |hardware_latency_in_ms_| by asking |audio_manager_| for it, if the
-  // kUseAudioLatencyFromHAL is enabled.
+  // Cache `hardware_latency_` and `hardware_latency_frames_` by asking
+  // `audio_manager_` for output latency, if `kUseAudioLatencyFromHAL` is
+  // enabled.
   void CacheHardwareLatencyIfNeeded();
+  void SetHardwareLatency(base::TimeDelta latency);
 
   // Adjust |position| for hardware latency, and return the result.
   base::TimeDelta AdjustPositionForHardwareLatency(
       base::TimeDelta position) const;
 
-  // Computes the playback delay in frames for |position|, clamped to
-  // [0, kMaxNumOfBuffersInQueue * audio_bus_->frames()].
+  // Computes the playback delay in frames for `position`, clamped to
+  // `[0, kMaxNumOfBuffersInQueue * audio_bus_->frames() +
+  // hardware_latency_frames_]`.
   int CalculateDelayFrames(base::TimeDelta position) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -157,6 +160,7 @@ class MEDIA_EXPORT OpenSLESOutputStream : public MuteableAudioOutputStream {
   // Adjustment for hardware latency.  Needed for some cast targets, since
   // OpenSLES's GetPosition doesn't properly account for HAL latency.
   base::TimeDelta hardware_latency_;
+  int hardware_latency_frames_ = 0;
 };
 
 }  // namespace media

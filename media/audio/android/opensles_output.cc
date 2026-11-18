@@ -9,6 +9,8 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/numerics/clamped_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -125,8 +127,10 @@ void OpenSLESOutputStream::Start(AudioSourceCallback* callback) {
   // we're continuing on from this previous position.
   uint32_t position_in_ms = 0;
   LOG_ON_FAILURE_AND_RETURN((*player_)->GetPosition(player_, &position_in_ms));
-  delay_calculator_.SetBaseTimestamp(
-      AdjustPositionForHardwareLatency(base::Milliseconds(position_in_ms)));
+
+  // Provide the base timestamp as-is to the delay calculator. It will be
+  // restricted to valid bounds later in CalculateDelayFrames().
+  delay_calculator_.SetBaseTimestamp(base::Milliseconds(position_in_ms));
   delay_calculator_.AddFrames(audio_bus_->frames());
 
   started_ = true;
@@ -432,7 +436,14 @@ void OpenSLESOutputStream::CacheHardwareLatencyIfNeeded() {
     return;
   }
 
-  hardware_latency_ = audio_manager_->GetOutputLatency();
+  SetHardwareLatency(audio_manager_->GetOutputLatency());
+}
+
+void OpenSLESOutputStream::SetHardwareLatency(base::TimeDelta latency) {
+  hardware_latency_ = std::max(base::TimeDelta(), latency);
+  hardware_latency_frames_ =
+      base::saturated_cast<int>(AudioTimestampHelper::TimeToFrames(
+          hardware_latency_, samples_per_second_));
 }
 
 base::TimeDelta OpenSLESOutputStream::AdjustPositionForHardwareLatency(
@@ -461,9 +472,13 @@ int OpenSLESOutputStream::CalculateDelayFrames(base::TimeDelta position) const {
   const int delay_frames =
       -delay_calculator_.GetFramesToTarget(target_position);
 
-  // Clamp delay_frames to valid bounds [0, max_frames_in_queue] to guard
-  // against clock skew or underflow.
-  const int max_delay_frames = kMaxNumOfBuffersInQueue * audio_bus_->frames();
+  // Clamp `delay_frames` to valid bounds `[0, max_delay_frames]` to guard
+  // against clock skew or underflow. Include `hardware_latency_frames_` in the
+  // upper bound so HAL output latency (from `kUseAudioLatencyFromHAL`) is not
+  // clamped away when it exceeds the OpenSLES buffer queue capacity.
+  const int max_buffer_frames = kMaxNumOfBuffersInQueue * audio_bus_->frames();
+  const int max_delay_frames =
+      base::ClampAdd(max_buffer_frames, hardware_latency_frames_);
   return std::clamp(delay_frames, 0, max_delay_frames);
 }
 
