@@ -3,4 +3,4 @@ msramek@chromium.org
 
 per-file ...CookiesFragment*=file://components/privacy_sandbox/OWNERS
 per-file ...privacy_guide_cookies*=file://components/privacy_sandbox/OWNERS
-per-file privacy_guide.h=rainhard@chromium.org
+per-file privacy_guide.h=file://chrome/browser/resources/settings/privacy_page/OWNERS
