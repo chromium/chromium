@@ -237,11 +237,10 @@ enum class FillContextStatus {
 - (void)didSelectCreditCard:(CreditCardData*)creditCardData
                     atIndex:(NSInteger)index {
   // Navigation or WebState change has occurred; the originating frame is
-  // detached or destroyed. Suppress refocusing to prevent improperly focusing
-  // elements or summoning the keyboard on the new page. No metric is logged
-  // as this is not a suggestion provider error.
+  // detached or destroyed. Return early without filling or refocusing to
+  // prevent improperly focusing elements or summoning the keyboard on the new
+  // page. No metric is logged as this is not a suggestion provider error.
   if (_fillContextStatus == FillContextStatus::kInvalidatedByWebStateChange) {
-    [self disableBottomSheetAndRefocus:NO];
     return;
   }
 
@@ -262,7 +261,7 @@ enum class FillContextStatus {
   // set incorrectly (for example if local predictions and server
   // predictions are different), simply exit and open the keyboard.
   if (IsStateless() && _fillContextStatus != FillContextStatus::kValid) {
-    [self disableBottomSheetAndRefocus:YES];
+    [self refocus];
     [self logExitReason:kBadProvider];
     return;
   }
@@ -275,8 +274,6 @@ enum class FillContextStatus {
 - (void)fillCreditCard:(CreditCardData*)creditCardData
                atIndex:(NSInteger)index
          crossProvider:(id<FormInputSuggestionsProvider>)crossProvider {
-  [self disableBottomSheetAndRefocus:NO];
-
   // Create a form suggestion containing the selected credit card's backend
   // id so that the suggestion provider can properly fill the form.
   FormSuggestion* suggestion = [FormSuggestion
@@ -320,31 +317,18 @@ enum class FillContextStatus {
                           completion:nil];
 }
 
-- (void)disableBottomSheetAndRefocus:(BOOL)shouldRefocus {
+- (void)refocus {
   // Suppress refocusing when the context was invalidated by navigation or
   // WebState change. Callers (such as `viewDidDisappear:`) default to
   // requesting refocus on exit, but if the WebState has navigated to a new
   // document or changed, refocusing would improperly summon the keyboard or
   // focus an element on the new page.
   if (_fillContextStatus == FillContextStatus::kInvalidatedByWebStateChange) {
-    shouldRefocus = NO;
-  }
-
-  bool useV2 = base::FeatureList::IsEnabled(kAutofillPaymentsSheetV2Ios);
-  if (useV2) {
-    // Do not remove the listeners for the bottom sheet (aka disable) in V2
-    // since the listeners were already removed, as soon as the presentation
-    // started. Hence, just refocus if needed.
-    if (shouldRefocus) {
-      [self refocus];
-    }
     return;
   }
 
-  CHECK(!useV2);
-
   if (AutofillBottomSheetTabHelper* tabHelper = [self tabHelper]) {
-    tabHelper->DetachPaymentsListenersForAllFrames(shouldRefocus);
+    tabHelper->RefocusElementIfNeeded(_params.frame_id);
   }
 }
 
@@ -543,14 +527,6 @@ enum class FillContextStatus {
   return activeWebState
              ? AutofillBottomSheetTabHelper::FromWebState(activeWebState)
              : nullptr;
-}
-
-// Refocuses the field that was blurred to show the payments suggestion
-// bottom sheet, if deemded needed.
-- (void)refocus {
-  if (AutofillBottomSheetTabHelper* tabHelper = [self tabHelper]) {
-    tabHelper->RefocusElementIfNeeded(_params.frame_id);
-  }
 }
 
 // Returns the currently active WebState. Returns nullptr if there is none.

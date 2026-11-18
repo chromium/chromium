@@ -172,11 +172,11 @@ class AutofillBottomSheetTabHelper
 
   // Detach the payments listeners, which will deactivate the payments bottom
   // sheet on the provided frame.
-  void DetachPaymentsListeners(const std::string& frame_id, bool refocus);
+  void DetachPaymentsListeners(const std::string& frame_id);
 
   // Detach the payments listeners, which will deactivate the payments bottom
   // sheet on all frames.
-  void DetachPaymentsListenersForAllFrames(bool refocus);
+  void DetachPaymentsListenersForAllFrames();
 
   // Detach the Ambient Autofill notice listeners, which will deactivate the
   // Ambient Autofill notice bottom sheet on all frames.

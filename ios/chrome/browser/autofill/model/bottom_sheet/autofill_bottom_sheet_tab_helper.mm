@@ -308,7 +308,7 @@ void AutofillBottomSheetTabHelper::OnFormMessageReceived(
       // subsequent focus events, so we need to detach listeners. Detaching on
       // only this frame ensures a frame can't use this to block the bottom
       // sheet on other frames.
-      DetachPaymentsListeners(params.frame_id, /*refocus=*/false);
+      DetachPaymentsListeners(params.frame_id);
       return;
     }
     MaybeShowPaymentsBottomSheet(params);
@@ -394,7 +394,7 @@ void AutofillBottomSheetTabHelper::MaybeShowPaymentsBottomSheet(
 
   // Detach the listeners immediately since there is no guarantee that
   // ShowPaymentsBottomSheet() will be called to trigger the sheet.
-  DetachPaymentsListenersForAllFrames(/*refocus=*/false);
+  DetachPaymentsListenersForAllFrames();
 }
 
 void AutofillBottomSheetTabHelper::OnSuggestionsRetrievedForPaymentsBottomSheet(
@@ -429,12 +429,12 @@ void AutofillBottomSheetTabHelper::ShowPaymentsBottomSheet(
     observer.WillShowPaymentsBottomSheet(params);
   }
   [commands_handler_ showPaymentsBottomSheet:params];
-  if (base::FeatureList::IsEnabled(kAutofillPaymentsSheetV2Ios) && detach) {
-    // In V2, detach the listeners right away to make sure they're always
-    // cleaned up to avoid issues with rogue listeners, see the
-    // documentation in ShowCredentialBottomSheet() for more details. Postpone
-    // refocus for later once the bottom sheet is dismissed.
-    DetachPaymentsListenersForAllFrames(/*refocus=*/false);
+  if (detach) {
+    // Detach the listeners right away to make sure they're always cleaned up to
+    // avoid issues with rogue listeners, see the documentation in
+    // `ShowCredentialBottomSheet()` for more details. Postpone refocus for
+    // later once the bottom sheet is dismissed.
+    DetachPaymentsListenersForAllFrames();
   }
 }
 
@@ -581,8 +581,7 @@ void AutofillBottomSheetTabHelper::
 }
 
 void AutofillBottomSheetTabHelper::DetachPaymentsListeners(
-    const std::string& frame_id,
-    bool refocus) {
+    const std::string& frame_id) {
   if (!web_state_) {
     return;
   }
@@ -593,14 +592,13 @@ void AutofillBottomSheetTabHelper::DetachPaymentsListeners(
   web::WebFrame* frame = webFramesManager->GetFrameWithId(frame_id);
 
   AutofillBottomSheetJavaScriptFeature::GetInstance()->DetachListeners(
-      registered_payments_renderer_ids_[frame_id], frame, refocus);
+      registered_payments_renderer_ids_[frame_id], frame, /*refocus=*/false);
 }
 
-void AutofillBottomSheetTabHelper::DetachPaymentsListenersForAllFrames(
-    bool refocus) {
+void AutofillBottomSheetTabHelper::DetachPaymentsListenersForAllFrames() {
   for (auto& registered_renderer_ids : registered_payments_renderer_ids_) {
     DetachListenersForFrame(registered_renderer_ids.first,
-                            registered_renderer_ids.second, refocus);
+                            registered_renderer_ids.second, /*refocus=*/false);
   }
 }
 

@@ -55,11 +55,6 @@ BASE_DECLARE_FEATURE(kAutofillPaymentsSheetDetachInvalidatedListenersIos);
 // via the FormSuggestionController.
 BASE_DECLARE_FEATURE(kAutofillPaymentsSheetStateless);
 
-// Enables the second version of the payments suggestion bottom sheet to prevent
-// bugs that we've seen in production on other transaction sheets (e.g. some
-// fields becoming unresponsive).
-BASE_DECLARE_FEATURE(kAutofillPaymentsSheetV2Ios);
-
 // Rejects form submission events if they lack user gesture.
 BASE_DECLARE_FEATURE(kAutofillRejectFormSubmissionsWithoutUserGesture);
 

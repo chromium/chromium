@@ -89,7 +89,7 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
   // and other operations which may modify the list of available credit cards
   // can happen between these two operations.
   if (!self.mediator.hasCreditCards) {
-    [self.mediator disableBottomSheetAndRefocus:YES];
+    [self.mediator refocus];
     [self.mediator disconnect];
     return;
   }

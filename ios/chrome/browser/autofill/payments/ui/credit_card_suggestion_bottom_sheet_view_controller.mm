@@ -11,7 +11,6 @@
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
-#import "components/autofill/ios/common/features.h"
 #import "components/grit/components_scaled_resources.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
 #import "ios/chrome/browser/autofill/payments/ui/credit_card_suggestion_bottom_sheet_delegate.h"
@@ -66,8 +65,8 @@ CGFloat const kTitleLogoHeight = 32;
 // YES if the GPay logo should be shown to the user.
 @property(nonatomic, assign) BOOL showGooglePayLogo;
 
-// Whether the bottom sheet will be disabled on exit. Default is YES.
-@property(nonatomic, assign) BOOL disableBottomSheetOnExit;
+// Whether the triggering field should be refocused on exit. Default is YES.
+@property(nonatomic, assign) BOOL refocusOnExit;
 
 @end
 
@@ -80,7 +79,7 @@ CGFloat const kTitleLogoHeight = 32;
   if (self) {
     self.handler = handler;
     _URL = URL;
-    self.disableBottomSheetOnExit = YES;
+    self.refocusOnExit = YES;
     _primaryButtonActive = NO;
   }
   return self;
@@ -134,8 +133,8 @@ CGFloat const kTitleLogoHeight = 32;
 
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
-  if (self.disableBottomSheetOnExit) {
-    [self.delegate disableBottomSheetAndRefocus:YES];
+  if (self.refocusOnExit) {
+    [self.delegate refocus];
   }
   [self.handler viewDidDisappear];
 }
@@ -230,7 +229,7 @@ CGFloat const kTitleLogoHeight = 32;
     return;
   }
 
-  self.disableBottomSheetOnExit = NO;
+  self.refocusOnExit = NO;
 
   base::RecordAction(
       base::UserMetricsAction("BottomSheet_CreditCard_SuggestionAccepted"));
@@ -281,11 +280,11 @@ CGFloat const kTitleLogoHeight = 32;
 #pragma mark - UIResponder
 
 - (BOOL)canBecomeFirstResponder {
-  // In V2, since the listeners are removed early as soon as the presentation
-  // started, allow the sheet to become a first responder to not allow the
-  // keyboard popping over the sheet when there is a focus event on the WebView
+  // Since the listeners are removed early as soon as the presentation started,
+  // allow the sheet to become a first responder to not allow the keyboard
+  // popping over the sheet when there is a focus event on the WebView
   // underneath the sheet.
-  return base::FeatureList::IsEnabled(kAutofillPaymentsSheetV2Ios);
+  return YES;
 }
 
 #pragma mark - Private
@@ -345,7 +344,7 @@ CGFloat const kTitleLogoHeight = 32;
   __weak __typeof(self) weakSelf = self;
   void (^paymentMethodsButtonTapHandler)(UIAction*) = ^(UIAction* action) {
     // Open Payment Methods.
-    weakSelf.disableBottomSheetOnExit = NO;
+    weakSelf.refocusOnExit = NO;
     [weakSelf.handler displayPaymentMethods];
   };
   UIImage* creditCardIcon =
@@ -368,7 +367,7 @@ CGFloat const kTitleLogoHeight = 32;
 
   void (^showDetailsButtonTapHandler)(UIAction*) = ^(UIAction* action) {
     // Open Payments Details.
-    weakSelf.disableBottomSheetOnExit = NO;
+    weakSelf.refocusOnExit = NO;
     [weakSelf.handler
         displayPaymentDetailsForCreditCardIdentifier:creditCardIdentifier];
   };

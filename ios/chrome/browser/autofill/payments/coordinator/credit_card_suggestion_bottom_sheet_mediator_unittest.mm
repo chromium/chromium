@@ -28,6 +28,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+class AutofillBottomSheetTabHelper;
 @class CreditCardData;
 @class FormSuggestion;
 
@@ -36,8 +37,7 @@
 - (void)fillCreditCard:(CreditCardData*)creditCardData
                atIndex:(NSInteger)index
          crossProvider:(id<FormInputSuggestionsProvider>)crossProvider;
-- (void)disableBottomSheetAndRefocus:(BOOL)shouldRefocus;
-- (void)refocus;
+- (AutofillBottomSheetTabHelper*)tabHelper;
 @end
 
 namespace {
@@ -49,8 +49,6 @@ class CreditCardSuggestionBottomSheetMediatorTest : public PlatformTest {
  protected:
   CreditCardSuggestionBottomSheetMediatorTest()
       : test_web_state_(std::make_unique<web::FakeWebState>()) {
-    scoped_feature_list_.InitAndDisableFeature(kAutofillPaymentsSheetV2Ios);
-
     web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
 
     test_web_state_->SetCurrentURL(GURL("http://foo.com"));
@@ -136,7 +134,6 @@ class CreditCardSuggestionBottomSheetMediatorTest : public PlatformTest {
   id delegate_;
   autofill::TestPersonalDataManager personal_data_manager_;
   CreditCardSuggestionBottomSheetMediator* mediator_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests CreditCardSuggestionBottomSheetMediator can be initialized.
@@ -261,7 +258,7 @@ TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
   CreateMediator();
 
   id mediator_mock = OCMPartialMock(mediator_);
-  OCMExpect([mediator_mock disableBottomSheetAndRefocus:YES]);
+  OCMExpect([mediator_mock refocus]);
 
   [mediator_mock didSelectCreditCard:nil atIndex:0];
 
@@ -273,8 +270,8 @@ TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
       /*expected_bucket_count=*/1);
 }
 
-// Test that cross-document navigation start dismisses the bottom sheet and
-// disables it without refocusing upon card selection.
+// Tests that cross-document navigation start dismisses the bottom sheet and
+// ignores card selection without filling or refocusing.
 TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
        DismissesAndInvalidatesOnCrossDocumentNavigation) {
   base::HistogramTester histogram_tester;
@@ -297,13 +294,13 @@ TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
       ->OnNavigationStarted(&cross_doc_context);
 
   id mediator_mock = OCMPartialMock(mediator_);
-  OCMExpect([mediator_mock disableBottomSheetAndRefocus:NO]);
+  OCMReject([mediator_mock refocus]);
   OCMReject([mediator_mock fillCreditCard:[OCMArg any]
                                   atIndex:0
                             crossProvider:[OCMArg any]]);
 
-  // Selecting a credit card when context is invalidated should disable the
-  // sheet without refocusing, and should not log an exit reason metric.
+  // Selecting a credit card when context is invalidated should neither fill nor
+  // refocus, and should not log an exit reason metric.
   [mediator_mock didSelectCreditCard:nil atIndex:0];
 
   EXPECT_OCMOCK_VERIFY(mediator_mock);
@@ -311,8 +308,8 @@ TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
   histogram_tester.ExpectTotalCount("IOS.PaymentsBottomSheet.ExitReason", 0);
 }
 
-// Test that cross-document navigation finish dismisses the bottom sheet and
-// disables it without refocusing upon card selection when navigation has
+// Tests that cross-document navigation finish dismisses the bottom sheet and
+// ignores card selection without filling or refocusing when navigation has
 // committed.
 TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
        DismissesAndInvalidatesOnCrossDocumentNavigationFinished) {
@@ -336,13 +333,13 @@ TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
       ->OnNavigationFinished(&cross_doc_context);
 
   id mediator_mock = OCMPartialMock(mediator_);
-  OCMExpect([mediator_mock disableBottomSheetAndRefocus:NO]);
+  OCMReject([mediator_mock refocus]);
   OCMReject([mediator_mock fillCreditCard:[OCMArg any]
                                   atIndex:0
                             crossProvider:[OCMArg any]]);
 
-  // Selecting a credit card when context is invalidated should disable the
-  // sheet without refocusing, and should not log an exit reason metric.
+  // Selecting a credit card when context is invalidated should neither fill nor
+  // refocus, and should not log an exit reason metric.
   [mediator_mock didSelectCreditCard:nil atIndex:0];
 
   EXPECT_OCMOCK_VERIFY(mediator_mock);
@@ -449,16 +446,15 @@ TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
   [mediator_ onSuggestionsRetrieved:@[]];
 
   id mediator_mock = OCMPartialMock(mediator_);
-  OCMExpect([mediator_mock disableBottomSheetAndRefocus:NO]);
-  OCMReject([mediator_mock disableBottomSheetAndRefocus:YES]);
+  OCMReject([mediator_mock refocus]);
   OCMReject([mediator_mock fillCreditCard:[OCMArg any]
                                   atIndex:0
                             crossProvider:[OCMArg any]]);
 
-  // If the status were downgraded to kInvalidatedNoSuggestions,
-  // didSelectCreditCard would call disableBottomSheetAndRefocus:YES and log
-  // kBadProvider. With kInvalidatedByWebStateChange preserved, it calls
-  // disableBottomSheetAndRefocus:NO.
+  // If the status were downgraded to `kInvalidatedNoSuggestions`,
+  // `didSelectCreditCard` would call `refocus` and log `kBadProvider`. With
+  // `kInvalidatedByWebStateChange` preserved, it returns early without filling
+  // or refocusing.
   [mediator_mock didSelectCreditCard:nil atIndex:0];
 
   EXPECT_OCMOCK_VERIFY(mediator_mock);
@@ -467,15 +463,30 @@ TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
   histogram_tester.ExpectTotalCount("IOS.PaymentsBottomSheet.ExitReason", 0);
 }
 
-// Test that calling `disableBottomSheetAndRefocus:YES` does not trigger
-// refocus when the bottom sheet was dismissed due to navigation.
+// Tests that calling `refocus` invokes the tab helper when the fill context is
+// valid.
 TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
-       DisableBottomSheetAndRefocus_NavigationSuppressesRefocus) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{kAutofillPaymentsSheetV2Ios},
-      /*disabled_features=*/{});
+       Refocus_CallsTabHelperWhenValid) {
+  CreateMediatorWithSuggestions();
+  ASSERT_TRUE(mediator_);
 
+  OCMExpect([consumer_ setCreditCardData:[OCMArg isNotNil]
+                       showGooglePayLogo:YES]);
+  [mediator_ setConsumer:consumer_];
+
+  id mediator_mock = OCMPartialMock(mediator_);
+  OCMExpect([mediator_mock tabHelper]).andForwardToRealObject();
+
+  [mediator_mock refocus];
+
+  EXPECT_OCMOCK_VERIFY(mediator_mock);
+  [mediator_mock stopMocking];
+}
+
+// Tests that calling `refocus` does not trigger refocusing when the bottom
+// sheet was dismissed due to navigation.
+TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
+       Refocus_NavigationSuppressesRefocus) {
   CreateMediatorWithSuggestions();
   ASSERT_TRUE(mediator_);
 
@@ -496,11 +507,11 @@ TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
       ->OnNavigationStarted(&cross_doc_context);
 
   id mediator_mock = OCMPartialMock(mediator_);
-  OCMReject([mediator_mock refocus]);
+  OCMReject([mediator_mock tabHelper]);
 
-  // Requesting refocus:YES while dismissed due to navigation should suppress
-  // refocus.
-  [mediator_mock disableBottomSheetAndRefocus:YES];
+  // Requesting refocus while dismissed due to navigation should suppress
+  // refocusing.
+  [mediator_mock refocus];
 
   EXPECT_OCMOCK_VERIFY(mediator_mock);
   [mediator_mock stopMocking];

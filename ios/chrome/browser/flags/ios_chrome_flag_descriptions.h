@@ -326,12 +326,6 @@ inline constexpr char kAutofillPaymentsFieldSwappingDescription[] =
     "When enabled, swapping autofilled payment suggestions would result"
     "in overriding all of the payments fields with the swapped profile data";
 
-inline constexpr char kAutofillPaymentsSheetV2Name[] =
-    "Enable the payments suggestion bottom sheet V2";
-inline constexpr char kAutofillPaymentsSheetV2Description[] =
-    "When enabled, the V2 of the payments suggestion bottom sheet will be "
-    "used.";
-
 inline constexpr char kAutofillPruneSuggestionsName[] =
     "Autofill Prune Suggestions";
 inline constexpr char kAutofillPruneSuggestionsDescription[] =
