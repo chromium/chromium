@@ -2660,7 +2660,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.DnsConfig.SecureDnsMode" enum="SecureDnsModeDetails"
     expires_after="2027-04-11">
   <owner>horo@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Records details of the secure DNS mode used to configure the host resolver
     at construction of the network service.
@@ -2700,7 +2700,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.DnsPlatformAndroidAttempt.FdAlreadyReadable"
     enum="Boolean" expires_after="2027-05-22">
   <owner>stefanoduo@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Whether the file descriptor returned by android_res_nquery was already
     readable as soon as it was returned. Reported when starting a platform DNS
@@ -2711,7 +2711,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.DnsPlatformAndroidAttempt.ResponseSize.{QueryType}"
     units="bytes" expires_after="2027-05-22">
   <owner>stefanoduo@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     The size of the DNS response in bytes returned by android_res_nresult for
     {QueryType} resource records. Reported when successfully reading a platform
@@ -2723,7 +2723,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.DnsTask.AdditionalHttps.Requested"
     enum="AdditionalHttpsRecordStatus" expires_after="2027-05-09">
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Status of HTTPS DNS records received as additional records in a DnsTask
     querying for HTTPS. This would represent a recurssive resolver that is
@@ -2735,7 +2735,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.DnsTask.PartialAddressSuccess" enum="Boolean"
     expires_after="2027-05-22">
   <owner>stefanoduo@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Whether a successful DnsTask had one of its address (A or AAAA) transactions
     fail while the sibling address transaction succeeded with usable addresses.
@@ -2792,7 +2792,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.DnsTransaction.Insecure.{DohProviderId}FailureTime"
     units="ms" expires_after="2027-04-18">
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Duration of time taken by an insecure DnsTransaction to fail.
     {DohProviderId}
@@ -2802,7 +2802,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.DnsTransaction.Insecure.{DohProviderId}SuccessTime"
     units="ms" expires_after="2027-04-18">
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Duration of time taken by an insecure DnsTransaction to succeed.
     {DohProviderId}
@@ -2813,7 +2813,7 @@ chromium-metrics-reviews@google.com.
     name="Net.DNS.DnsTransaction.SecureNotValidated.{DohProviderId}FailureError"
     enum="NetErrorCodes" expires_after="2027-04-18">
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Counts of specific error codes returned by secure DnsTransactions to a DoH
     server that is unavailable or has unknown availability. These transactions
@@ -2826,7 +2826,7 @@ chromium-metrics-reviews@google.com.
     name="Net.DNS.DnsTransaction.SecureValidated.{DohProviderId}FailureError"
     enum="NetErrorCodes" expires_after="2027-04-04">
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Counts of specific error codes returned by secure DnsTransactions to an
     available DoH server. A DoH server is available if a probe has been
@@ -2839,7 +2839,7 @@ chromium-metrics-reviews@google.com.
     name="Net.DNS.DnsTransaction.SecureValidated.{DohProviderId}FailureTime"
     units="ms" expires_after="2027-05-09">
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Duration of time taken by a secure DnsTransaction to an available DoH server
     to fail. A DoH server is available if a probe has been successfully
@@ -2852,7 +2852,7 @@ chromium-metrics-reviews@google.com.
     name="Net.DNS.DnsTransaction.SecureValidated.{DohProviderId}SuccessTime"
     units="ms" expires_after="2027-04-18">
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Duration of time taken by a secure DnsTransaction to an available DoH server
     to succeed. A DoH server is available if a probe has been successfully
@@ -2956,7 +2956,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.DnsTransaction.{QueryType}.LookupResult"
     enum="NetErrorCodes" expires_after="2027-05-09">
   <owner>stefanoduo@google.com</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Net error codes resulting from completed or aborted DnsTransactions querying
     for {QueryType} resource records. Recorded across all resolution modes when
@@ -2969,7 +2969,7 @@ chromium-metrics-reviews@google.com.
     name="Net.DNS.DnsTransaction.{QueryType}.LookupResult.ClassicTruncatedAndTcpRetried"
     enum="NetErrorCodes" expires_after="2027-05-09">
   <owner>stefanoduo@google.com</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Net error codes resulting from completed or aborted classic (Do53)
     DnsTransactions querying for {QueryType} resource records that experienced
@@ -2982,7 +2982,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.DnsTransaction.{QueryType}.LookupResult.{AttemptMode}"
     enum="NetErrorCodes" expires_after="2027-05-09">
   <owner>stefanoduo@google.com</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Net error codes resulting from completed or aborted DnsTransactions querying
     for {QueryType} resource records using {AttemptMode}. Recorded when a
@@ -3000,7 +3000,7 @@ chromium-metrics-reviews@google.com.
     enum="FallbackFromSecureTransactionPreferredReason"
     expires_after="2027-04-04">
   <owner>bcb@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Records the reason for falling back from a secure DNS transaction to an
     insecure one. This is recorded every time HostResolverManager::PushDnsTasks
@@ -3433,7 +3433,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.ProbeSequence.ConfigChange.Failure.AttemptTime"
     units="ms" expires_after="2024-07-22">
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Duration of time taken by a probe attempt to fail. The time is measured
     since the probe sequence was initiated due to a DNS config change.
@@ -3443,7 +3443,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.ProbeSequence.ConfigChange.Success.AttemptTime"
     units="ms" expires_after="2024-09-22">
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Duration of time taken by a probe attempt to succeed. The time is measured
     since the probe sequence was initiated due to a DNS config change.
@@ -3453,7 +3453,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.ProbeSequence.NetworkChange.Failure.AttemptTime"
     units="ms" expires_after="2024-07-22">
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Duration of time taken by a probe attempt to fail. The time is measured
     since the probe sequence was initiated due to a network change.
@@ -3463,7 +3463,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.ProbeSequence.NetworkChange.Success.AttemptTime"
     units="ms" expires_after="2024-12-08">
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Duration of time taken by a probe attempt to succeed. The time is measured
     since the probe sequence was initiated due to a network change.
@@ -3632,7 +3632,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.UI.ProbeAttemptSuccess" enum="Boolean"
     expires_after="2023-12-17">
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Records the outcome of a DoH probe attempt on the first valid entry in the
     custom text field.
@@ -3642,7 +3642,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.UI.ValidationAttemptSuccess" enum="Boolean"
     expires_after="2024-10-28">
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Records the outcome of a formatting validation attempt on the custom text
     field.
@@ -3652,7 +3652,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.UpgradeConfig.DotUpgradeSucceeded" enum="Boolean"
     expires_after="2027-02-07">
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     True if upgrade to DoH from a DoT hostname was attempted and succeeded.
     False if it was attempted and failed.
@@ -3662,7 +3662,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.UpgradeConfig.HasPublicInsecureNameserver"
     enum="Boolean" expires_after="2026-09-20">
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     True if there was at least one public nameserver during an attempt to
     upgrade to DoH from insecure DNS. False if there were no public nameservers
@@ -3676,7 +3676,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.UpgradeConfig.Ineligible.DohSpecified" enum="Boolean"
     expires_after="2026-05-14">
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     True if upgrade to DoH was not attempted because the DoH config was already
     specified. False if upgrade to DoH was not attempted for some other reason.
@@ -3686,7 +3686,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.UpgradeConfig.Ineligible.UnhandledOptions"
     enum="Boolean" expires_after="2026-05-14">
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     True if upgrade to DoH was not attempted because of unhandled options in the
     system config. False if upgrade to DoH was not attempted for some other
@@ -3697,7 +3697,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.DNS.UpgradeConfig.InsecureUpgradeSucceeded" enum="Boolean"
     expires_after="2027-01-24">
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     True if upgrade to DoH from insecure DNS was attempted and succeeded. False
     if it was attempted and failed.
@@ -3708,7 +3708,7 @@ chromium-metrics-reviews@google.com.
     enum="Boolean" expires_after="2026-12-06">
   <owner>kaklilu@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Recorded if upgrading to DoH from insecure DNS was attempted, failed, then
     succeeded using the fallback DoH server config. This is only emitted when
@@ -3722,7 +3722,7 @@ chromium-metrics-reviews@google.com.
     enum="DnsConfigLocalNameserverState" expires_after="2027-02-28">
   <owner>kaklilu@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
+  <owner>src/net/OWNERS</owner>
   <summary>
     Breaks down what kinds of local nameservers (if any) are on the DNS config
     when Chrome has tried and failed to upgrade it to DoH from insecure DNS.

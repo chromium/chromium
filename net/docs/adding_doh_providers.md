@@ -142,8 +142,7 @@ Chrome team on approval of the request.
         TODO: Document region settings for other operating systems.
         ***
 1.  Send the list modification code review to a reviewer in
-    [DNS OWNERS](/net/dns/OWNERS), or if no DNS owners are available, to a
-    reviewer in [net OWNERS](/net/OWNERS). The reviewer should confirm that the
+    [net OWNERS](/net/OWNERS). The reviewer should confirm that the
     process defined in this document has been followed, especially that the bug
     tracker request has been properly approved.
 1.  If a provider must be initially disabled or partially disabled, e.g. because
