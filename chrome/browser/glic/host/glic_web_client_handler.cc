@@ -663,24 +663,6 @@ class GlicWebClientHandler
             base::BindRepeating(&GlicWebClientHandler::OnResponsivenessChanged,
                                 base::Unretained(this)));
     responsiveness_monitor_->Start();
-    // If chrome://glic is opened in a tab for testing, send a synthetic open
-    // signal.
-    if (!base::FeatureList::IsEnabled(features::kGlicTabGroups) &&
-        host_->webui_contents() != host().webui_contents()) {
-      mojom::PanelOpeningDataPtr panel_opening_data =
-          mojom::PanelOpeningData::New();
-      panel_opening_data->panel_state =
-          host().instance().GetPanelState()->Clone();
-      panel_opening_data->invocation_source =
-          mojom::InvocationSource::kUnsupported;
-      metric_reporter_.RecordBoolean("Host.OpenedInRegularTab", true);
-      web_client_->NotifyPanelWillOpen(std::move(panel_opening_data),
-                                       base::DoNothing());
-      host()
-          .instance_delegate()
-          .skills_manager()
-          .NotifyPanelOpenedOrActivated();
-    }
   }
 
   void CreateTab(const ::GURL& url,
@@ -1694,7 +1676,6 @@ class GlicWebClientHandler
   void PanelWillOpen(glic::mojom::PanelOpeningDataPtr panel_opening_data,
                      PanelWillOpenCallback done) override {
     host().SetInvocationSource(panel_opening_data->invocation_source);
-    metric_reporter_.RecordBoolean("Host.OpenedInRegularTab", false);
     // Computed before the async hop; the Profile may be gone when the callback
     // runs.
 

@@ -2409,19 +2409,6 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 
-<histogram name="Glic{GlicProvider}.Host.OpenedInRegularTab" enum="Boolean"
-    expires_after="2026-11-29">
-  <owner>carlosk@chromium.org</owner>
-  <owner>birnie@chromium.org</owner>
-  <summary>
-    Histogram that records whether the Glic WebUI is being opened in a regular
-    browser tab (records true; expected for development purposes) instead of its
-    expected container types (records false). Recorded when the web client is
-    about to be notified about it being opened.
-  </summary>
-  <token key="GlicProvider" variants="GlicProvider"/>
-</histogram>
-
 <histogram
     name="Glic{GlicProvider}.Instance.AutoOpenedPanel.FirstAction.{Source}"
     enum="GlicDaisyChainFirstAction" expires_after="2027-05-09">
