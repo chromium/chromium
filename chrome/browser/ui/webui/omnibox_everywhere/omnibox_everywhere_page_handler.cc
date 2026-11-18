@@ -63,9 +63,9 @@ void OmniboxEverywherePageHandler::OpenComposebox(
   }
 }
 
-void OmniboxEverywherePageHandler::OnScreenshotCaptureCancelled() {
+void OmniboxEverywherePageHandler::OnContextUploadCancelled() {
   if (page_) {
-    page_->OnScreenshotCaptureCancelled();
+    page_->OnContextUploadCancelled();
   }
 }
 

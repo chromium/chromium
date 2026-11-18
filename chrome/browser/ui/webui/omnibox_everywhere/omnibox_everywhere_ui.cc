@@ -977,7 +977,7 @@ void OmniboxEverywhereUI::OnContextUploadCanceled() {
     SetIsComposebox(false);
   }
   if (page_handler_) {
-    page_handler_->OnScreenshotCaptureCancelled();
+    page_handler_->OnContextUploadCancelled();
   }
   context_upload_origin_was_searchbox_ = false;
 }

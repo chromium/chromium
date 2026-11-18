@@ -44,7 +44,7 @@ class OmniboxEverywherePageHandler
   void OnOverflowMenuClosed();
   void OpenComposebox(
       omnibox_everywhere::mojom::ComposeboxInitialStatePtr initial_state);
-  void OnScreenshotCaptureCancelled();
+  void OnContextUploadCancelled();
   void FocusInput();
   void OnDemoted();
 
