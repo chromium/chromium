@@ -4897,6 +4897,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_DISABLE_PRICE_TRACKING_MENU_ITEM" desc="Menu item which allows user to stop tracking the price of a product page. [CHAR_LIMIT=32]">
         Stop tracking price
       </message>
+      <message name="IDS_EDIT_PRICE_TRACKING_BUTTON_DESCRIPTION" desc="Tooltip and accessibility label for the price tracking toolbar button when the page is already price tracked and clicking it opens the bookmark popup to edit tracking. [CHAR_LIMIT=32]">
+        Edit price tracking
+      </message>
       <message name="IDS_PRICE_TRACKING_BOOKMARKS_FILTER_TITLE" desc="The title of the filter in the bookmarks manager.">
         Tracked products
       </message>

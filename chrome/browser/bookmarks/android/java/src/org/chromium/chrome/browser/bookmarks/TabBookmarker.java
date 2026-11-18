@@ -13,6 +13,7 @@ import android.view.View;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.bookmarks.BookmarkPopupCoordinator.BookmarkPopupLaunchType;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -156,6 +157,44 @@ public class TabBookmarker {
                     mPriceDropNotificationManagerSupplier.get(),
                     anchorView);
         }
+    }
+
+    /** Returns whether bookmark flows open the desktop bookmark popup in this activity. */
+    public boolean shouldUseBookmarkPopup() {
+        return BookmarkUtils.shouldUseBookmarkPopup(mActivity);
+    }
+
+    /**
+     * Opens the desktop bookmark popup to manage price tracking for the current tab's bookmark,
+     * creating the bookmark and starting price tracking if the tab is not yet bookmarked. Callers
+     * gate on {@link #shouldUseBookmarkPopup()} and bookmark editing being enabled.
+     *
+     * @param currentTab The tab being currently shown.
+     * @param anchorView The view that triggered the flow, used to anchor the popup.
+     */
+    public void showPriceTrackingManagePopup(@Nullable Tab currentTab, View anchorView) {
+        if (currentTab == null) return;
+
+        BookmarkId bookmarkId =
+                assumeNonNull(mBookmarkModelSupplier.get()).getUserBookmarkIdForTab(currentTab);
+        if (bookmarkId == null) {
+            addOrEditBookmark(
+                    Collections.singletonList(currentTab),
+                    BookmarkType.NORMAL,
+                    /* fromExplicitTrackUi= */ true,
+                    anchorView);
+            return;
+        }
+
+        BookmarkUtils.showBookmarkPopup(
+                mActivity,
+                currentTab.getProfile(),
+                bookmarkId,
+                BookmarkPopupLaunchType.PRICE_TRACKING_MANAGE,
+                /* isNewBookmark= */ false,
+                mBookmarkManagerOpener,
+                mPriceDropNotificationManagerSupplier.get(),
+                anchorView);
     }
 
     private void addOrEditBookmark(

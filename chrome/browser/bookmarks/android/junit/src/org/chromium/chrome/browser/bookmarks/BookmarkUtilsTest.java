@@ -12,7 +12,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -27,8 +30,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.StringRes;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -55,6 +60,8 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
+import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
+import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -119,6 +126,7 @@ public class BookmarkUtilsTest {
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
     @Mock private PriceDropNotificationManager mPriceDropNotificationManager;
     @Mock private BookmarkModel mTabBookmarkModel;
+    @Mock private PriceTrackingUtils.Natives mPriceTrackingUtilsJni;
 
     private Activity mActivity;
     private FakeBookmarkModel mBookmarkModel;
@@ -135,6 +143,7 @@ public class BookmarkUtilsTest {
         ImageServiceBridgeJni.setInstanceForTesting(mImageServiceBridgeJni);
         CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
         ShoppingServiceFactoryJni.setInstanceForTesting(mShoppingServiceFactoryJniMock);
+        PriceTrackingUtilsJni.setInstanceForTesting(mPriceTrackingUtilsJni);
         doReturn(1L).when(mFaviconHelperJni).init();
         doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
@@ -417,6 +426,14 @@ public class BookmarkUtilsTest {
 
         addOrEditBookmarkWithAnchor(anchorView);
 
+        assertPopupShownWithHeader(R.string.bookmark_added);
+        verify(mPriceTrackingUtilsJni, never())
+                .setPriceTrackingStateForBookmark(
+                        /* profile= */ any(),
+                        /* bookmarkId= */ anyLong(),
+                        /* enabled= */ anyBoolean(),
+                        /* callback= */ any(),
+                        /* bookmarkCreatedForPriceTracking= */ anyBoolean());
         assertPopupAnchoredTo(anchorView, bookmarkButton);
     }
 
@@ -441,27 +458,70 @@ public class BookmarkUtilsTest {
         setUpDesktopPopup();
         View bookmarkButton = addViewToContent(R.id.bookmark_button);
         View anchorView = addViewToContent(View.NO_ID);
-        BookmarkId bookmarkId =
-                mBookmarkModel.addBookmark(
-                        mBookmarkModel.getDefaultBookmarkFolder(),
-                        /* index= */ 0,
-                        "test title",
-                        new GURL("https://test.com"));
-        doReturn(bookmarkId).when(mTabBookmarkModel).getUserBookmarkIdForTab(mTab);
-        TabBookmarker tabBookmarker =
-                new TabBookmarker(
-                        mActivity,
-                        ObservableSuppliers.createNonNull(mTabBookmarkModel),
-                        /* bottomSheetControllerSupplier= */ () -> mBottomSheetController,
-                        /* snackbarManagerSupplier= */ () -> mSnackbarManager,
-                        mBookmarkManagerOpener,
-                        /* priceDropNotificationManagerSupplier= */ () ->
-                                mPriceDropNotificationManager,
-                        /* bookmarkBarVisibilitySupplier= */ () -> false,
-                        /* saveBookmarkOfflineCallback= */ (_, _) -> {});
+        BookmarkId bookmarkId = addBookmarkForTab();
 
-        tabBookmarker.startOrModifyPriceTracking(mTab, anchorView);
+        createTabBookmarker(mTabBookmarkModel).startOrModifyPriceTracking(mTab, anchorView);
 
+        assertPopupShownWithHeader(R.string.price_tracking_title);
+        verify(mPriceTrackingUtilsJni)
+                .setPriceTrackingStateForBookmark(
+                        eq(mProfile),
+                        eq(bookmarkId.getId()),
+                        /* enabled= */ eq(true),
+                        /* callback= */ any(),
+                        /* bookmarkCreatedForPriceTracking= */ eq(false));
+        assertPopupAnchoredTo(anchorView, bookmarkButton);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP)
+    public void testShowPriceTrackingManagePopup_notBookmarked_opensEnablePopup() {
+        setUpDesktopPopup();
+        mBookmarkModel.setEditBookmarksEnabled(true);
+        doReturn(true).when(mTab).isInitialized();
+        View bookmarkButton = addViewToContent(R.id.bookmark_button);
+        View anchorView = addViewToContent(View.NO_ID);
+
+        BookmarkId defaultFolder = mBookmarkModel.getDefaultBookmarkFolder();
+        int initialCount = mBookmarkModel.getChildCount(defaultFolder);
+
+        createTabBookmarker(mBookmarkModel).showPriceTrackingManagePopup(mTab, anchorView);
+
+        List<BookmarkId> children = mBookmarkModel.getChildIds(defaultFolder);
+        assertEquals(initialCount + 1, children.size());
+        BookmarkId createdId = children.get(initialCount);
+        assertPopupShownWithHeader(R.string.price_tracking_title);
+        verify(mPriceTrackingUtilsJni)
+                .setPriceTrackingStateForBookmark(
+                        eq(mProfile),
+                        eq(createdId.getId()),
+                        /* enabled= */ eq(true),
+                        /* callback= */ any(),
+                        /* bookmarkCreatedForPriceTracking= */ eq(false));
+        assertPopupAnchoredTo(anchorView, bookmarkButton);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP)
+    public void testShowPriceTrackingManagePopup_desktop_opensManagePopup() {
+        setUpDesktopPopup();
+        View bookmarkButton = addViewToContent(R.id.bookmark_button);
+        View anchorView = addViewToContent(View.NO_ID);
+        addBookmarkForTab();
+        respondIsBookmarkPriceTracked(/* tracked= */ true);
+
+        createTabBookmarker(mTabBookmarkModel).showPriceTrackingManagePopup(mTab, anchorView);
+
+        assertPopupShownWithHeader(R.string.price_tracking_title);
+        verify(mPriceTrackingUtilsJni, never())
+                .setPriceTrackingStateForBookmark(
+                        /* profile= */ any(),
+                        /* bookmarkId= */ anyLong(),
+                        /* enabled= */ anyBoolean(),
+                        /* callback= */ any(),
+                        /* bookmarkCreatedForPriceTracking= */ anyBoolean());
         assertPopupAnchoredTo(anchorView, bookmarkButton);
     }
 
@@ -1147,5 +1207,52 @@ public class BookmarkUtilsTest {
                 mPriceDropNotificationManager,
                 /* isBookmarkBarVisible= */ false,
                 anchorView);
+    }
+
+    private BookmarkId addBookmarkForTab() {
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getDefaultBookmarkFolder(),
+                        /* index= */ 0,
+                        "test title",
+                        new GURL("https://test.com"));
+        doReturn(bookmarkId).when(mTabBookmarkModel).getUserBookmarkIdForTab(mTab);
+        return bookmarkId;
+    }
+
+    private TabBookmarker createTabBookmarker(BookmarkModel bookmarkModel) {
+        return new TabBookmarker(
+                mActivity,
+                ObservableSuppliers.createNonNull(bookmarkModel),
+                /* bottomSheetControllerSupplier= */ () -> mBottomSheetController,
+                /* snackbarManagerSupplier= */ () -> mSnackbarManager,
+                mBookmarkManagerOpener,
+                /* priceDropNotificationManagerSupplier= */ () -> mPriceDropNotificationManager,
+                /* bookmarkBarVisibilitySupplier= */ () -> false,
+                /* saveBookmarkOfflineCallback= */ (_, _) -> {});
+    }
+
+    private void respondIsBookmarkPriceTracked(boolean tracked) {
+        doAnswer(
+                        invocation -> {
+                            Callback<Boolean> callback = invocation.getArgument(2);
+                            callback.onResult(tracked);
+                            return null;
+                        })
+                .when(mPriceTrackingUtilsJni)
+                .isBookmarkPriceTracked(any(), anyLong(), any());
+    }
+
+    private void assertPopupShownWithHeader(@StringRes int headerResId) {
+        PopupWindow popup =
+                Shadows.shadowOf(RuntimeEnvironment.getApplication()).getLatestPopupWindow();
+        assertNotNull(popup);
+        assertTrue(popup.isShowing());
+        // popup_title lives in this module's R, which is shadowed by the org.chromium.chrome.R
+        // import.
+        TextView header =
+                popup.getContentView()
+                        .findViewById(org.chromium.chrome.browser.bookmarks.R.id.popup_title);
+        assertEquals(mActivity.getString(headerResId), header.getText());
     }
 }

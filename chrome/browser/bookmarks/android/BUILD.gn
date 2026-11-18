@@ -159,6 +159,7 @@ android_library("java") {
     "//base:lifetime_java",
     "//base:supplier_java",
     "//base:tasks_java",
+    "//base:tristate_java",
     "//cc:cc_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android/features/tab_ui:java_strings_grd",

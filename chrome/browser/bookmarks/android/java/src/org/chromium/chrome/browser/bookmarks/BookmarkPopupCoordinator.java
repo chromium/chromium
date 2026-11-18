@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import androidx.annotation.IntDef;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
@@ -24,9 +25,30 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Coordinates the desktop android bookmark popup. */
 @NullMarked
 public class BookmarkPopupCoordinator {
+    /** The user intent that opened the popup. */
+    @IntDef({
+        BookmarkPopupLaunchType.BOOKMARK,
+        BookmarkPopupLaunchType.PRICE_TRACKING_ENABLE,
+        BookmarkPopupLaunchType.PRICE_TRACKING_MANAGE,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface BookmarkPopupLaunchType {
+        /** A bookmark was added or is being edited. */
+        int BOOKMARK = 0;
+
+        /** Price tracking was requested for the bookmark, e.g. from the price tracking button. */
+        int PRICE_TRACKING_ENABLE = 1;
+
+        /** The bookmark is already price tracked, and the user wants to manage it. */
+        int PRICE_TRACKING_MANAGE = 2;
+    }
+
     private final BookmarkPopupMediator mMediator;
     private final BookmarkPopupView mView;
     private final PropertyModel mPropertyModel;
@@ -116,8 +138,16 @@ public class BookmarkPopupCoordinator {
         mPopupWindow.addOnDismissListener(mView::destroy);
     }
 
-    public void show(BookmarkId bookmarkId, boolean isNewBookmark) {
-        mMediator.show(bookmarkId, isNewBookmark);
+    /**
+     * Shows the popup for the given bookmark.
+     *
+     * @param bookmarkId The ID of the bookmark to show.
+     * @param launchType The user intent that opened the popup.
+     * @param isNewBookmark Whether the bookmark was just created.
+     */
+    public void show(
+            BookmarkId bookmarkId, @BookmarkPopupLaunchType int launchType, boolean isNewBookmark) {
+        mMediator.show(bookmarkId, launchType, isNewBookmark);
         mPopupWindow.show();
         mView.focusTitleInput();
     }

@@ -26,6 +26,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.bookmarks.BookmarkPopupCoordinator.BookmarkPopupLaunchType;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -320,20 +321,24 @@ public class BookmarkUtils {
             return;
         }
 
-        ShoppingService shoppingService = ShoppingServiceFactory.getForProfile(profile);
-
         if (shouldUseBookmarkPopup(activity)) {
-            BookmarkPopupCoordinator popupCoordinator =
-                    new BookmarkPopupCoordinator(
-                            activity,
-                            profile,
-                            resolvePopupAnchorView(activity, anchorView),
-                            bookmarkManagerOpener,
-                            shoppingService,
-                            priceDropNotificationManager);
-            popupCoordinator.show(bookmarkId, isNewBookmark);
+            @BookmarkPopupLaunchType
+            int launchType =
+                    fromExplicitTrackUi
+                            ? BookmarkPopupLaunchType.PRICE_TRACKING_ENABLE
+                            : BookmarkPopupLaunchType.BOOKMARK;
+            showBookmarkPopup(
+                    activity,
+                    profile,
+                    bookmarkId,
+                    launchType,
+                    isNewBookmark,
+                    bookmarkManagerOpener,
+                    priceDropNotificationManager,
+                    anchorView);
             return;
         }
+        ShoppingService shoppingService = ShoppingServiceFactory.getForProfile(profile);
         // Redirect the original profile when getting the identity manager, it's not done
         // automatically in native.
         IdentityManager identityManager =
@@ -352,6 +357,39 @@ public class BookmarkUtils {
 
         bookmarkSaveFlowCoordinator.show(
                 bookmarkId, fromExplicitTrackUi, wasBookmarkMoved, isNewBookmark);
+    }
+
+    /**
+     * Shows the desktop bookmark popup.
+     *
+     * @param activity The current Activity.
+     * @param profile The profile currently used.
+     * @param bookmarkId The BookmarkId to show the popup for.
+     * @param launchType The user intent that opened the popup.
+     * @param isNewBookmark Whether the bookmark is newly created.
+     * @param bookmarkManagerOpener Manages opening bookmarks.
+     * @param priceDropNotificationManager Manages price drop notifications.
+     * @param anchorView The view that triggered the popup. Falls back to a default anchor if null
+     *     or not shown.
+     */
+    static void showBookmarkPopup(
+            Activity activity,
+            Profile profile,
+            BookmarkId bookmarkId,
+            @BookmarkPopupLaunchType int launchType,
+            boolean isNewBookmark,
+            BookmarkManagerOpener bookmarkManagerOpener,
+            PriceDropNotificationManager priceDropNotificationManager,
+            @Nullable View anchorView) {
+        BookmarkPopupCoordinator popupCoordinator =
+                new BookmarkPopupCoordinator(
+                        activity,
+                        profile,
+                        resolvePopupAnchorView(activity, anchorView),
+                        bookmarkManagerOpener,
+                        ShoppingServiceFactory.getForProfile(profile),
+                        priceDropNotificationManager);
+        popupCoordinator.show(bookmarkId, launchType, isNewBookmark);
     }
 
     // The legacy code path to add or edit bookmark without triggering the bookmark bottom sheet.
@@ -1009,7 +1047,7 @@ public class BookmarkUtils {
      * strip (desktop, tablets, unfolded foldables); phone-sized displays keep the mobile
      * experience.
      */
-    private static boolean shouldUseBookmarkPopup(Context context) {
+    static boolean shouldUseBookmarkPopup(Context context) {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP)
                 && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }

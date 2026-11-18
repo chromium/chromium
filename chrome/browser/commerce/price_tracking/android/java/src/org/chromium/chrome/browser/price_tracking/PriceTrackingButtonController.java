@@ -10,6 +10,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
@@ -55,9 +56,11 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final BottomSheetObserver mBottomSheetObserver;
     private final Callback<Boolean> mPriceTrackingStateChangedCallback = this::updateButtonIcon;
-    private final ButtonSpec mFilledButtonSpec;
+    private final ButtonSpec mFilledStopButtonSpec;
+    private final ButtonSpec mFilledEditButtonSpec;
     private final ButtonSpec mEmptyButtonSpec;
     private boolean mIsCurrentTabPriceTracked;
+    private boolean mFilledButtonOpensPopup;
 
     /** Constructor. */
     public PriceTrackingButtonController(
@@ -90,18 +93,12 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
         mProfileSupplier = profileSupplier;
 
         mEmptyButtonSpec = mButtonData.getButtonSpec();
-        // Create another ButtonSpec with a filled price tracking icon and a "Stop tracking"
-        // description.
-        mFilledButtonSpec =
-                new ButtonSpec.Builder(
-                                AppCompatResources.getDrawable(
-                                        context, R.drawable.price_tracking_enabled_filled),
-                                context.getString(R.string.disable_price_tracking_menu_item),
-                                /* supportsTinting= */ true)
-                        .setOnClickListener(this)
-                        .setButtonVariant(AdaptiveToolbarButtonVariant.PRICE_TRACKING)
-                        .setIsChecked(true)
-                        .build();
+        // Filled price tracking ButtonSpecs: "Stop tracking" untracks on click, while "Edit" opens
+        // the desktop bookmark popup.
+        mFilledStopButtonSpec =
+                createFilledButtonSpec(context, R.string.disable_price_tracking_menu_item);
+        mFilledEditButtonSpec =
+                createFilledButtonSpec(context, R.string.edit_price_tracking_button_description);
 
         mBottomSheetObserver =
                 new BottomSheetObserver() {
@@ -116,14 +113,41 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
         mPriceTrackingCurrentTabStateSupplier.addSyncObserver(mPriceTrackingStateChangedCallback);
     }
 
+    private ButtonSpec createFilledButtonSpec(Context context, @StringRes int descriptionResId) {
+        return new ButtonSpec.Builder(
+                        AppCompatResources.getDrawable(
+                                context, R.drawable.price_tracking_enabled_filled),
+                        context.getString(descriptionResId),
+                        /* supportsTinting= */ true)
+                .setOnClickListener(this)
+                .setButtonVariant(AdaptiveToolbarButtonVariant.PRICE_TRACKING)
+                .setIsChecked(true)
+                .build();
+    }
+
     private void updateButtonIcon(boolean isCurrentTabPriceTracked) {
         mIsCurrentTabPriceTracked = isCurrentTabPriceTracked;
+        mFilledButtonOpensPopup = isCurrentTabPriceTracked && canManageTrackingInBookmarkPopup();
         ButtonSpec buttonSpecForCurrentTab =
-                isCurrentTabPriceTracked ? mFilledButtonSpec : mEmptyButtonSpec;
+                isCurrentTabPriceTracked
+                        ? (mFilledButtonOpensPopup ? mFilledEditButtonSpec : mFilledStopButtonSpec)
+                        : mEmptyButtonSpec;
         if (!Objects.equals(mButtonData.getButtonSpec(), buttonSpecForCurrentTab)) {
             mButtonData.setButtonSpec(buttonSpecForCurrentTab);
             notifyObservers(mButtonData.canShow());
         }
+    }
+
+    /**
+     * Returns whether the filled button opens the bookmark popup to manage price tracking. The
+     * popup also edits and removes the bookmark, so the button keeps one-tap untrack when bookmark
+     * editing is disabled by policy.
+     */
+    private boolean canManageTrackingInBookmarkPopup() {
+        BookmarkModel bookmarkModel = mBookmarkModelSupplier.get();
+        return mTabBookmarkerSupplier.get().shouldUseBookmarkPopup()
+                && bookmarkModel != null
+                && bookmarkModel.isEditBookmarksEnabled();
     }
 
     @Override
@@ -136,7 +160,11 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
 
     @Override
     public void onClick(View view) {
-        if (mIsCurrentTabPriceTracked) {
+        if (mFilledButtonOpensPopup) {
+            mTabBookmarkerSupplier
+                    .get()
+                    .showPriceTrackingManagePopup(mActiveTabSupplier.get(), view);
+        } else if (mIsCurrentTabPriceTracked) {
             Profile profile = assertNonNull(mProfileSupplier.get());
             PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(
                     assumeNonNull(mBookmarkModelSupplier.get())

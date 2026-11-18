@@ -23,6 +23,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.bookmarks.BookmarkPopupCoordinator.BookmarkPopupLaunchType;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridge;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
@@ -78,13 +79,13 @@ public class BookmarkPopupCoordinatorTest {
         // show() doesn't return anything or have observable side-effects easily mocked without
         // injecting Mediator,
         // but calling it ensures no crash happens.
-        mCoordinator.show(bookmarkId, true);
+        mCoordinator.show(bookmarkId, BookmarkPopupLaunchType.BOOKMARK, /* isNewBookmark= */ true);
     }
 
     @Test
     public void testPopupDismissesOnScreenSizeChange() {
         BookmarkId bookmarkId = new BookmarkId(1, BookmarkType.NORMAL);
-        mCoordinator.show(bookmarkId, true);
+        mCoordinator.show(bookmarkId, BookmarkPopupLaunchType.BOOKMARK, /* isNewBookmark= */ true);
         assertTrue(mCoordinator.getPopupWindowForTesting().isShowing());
 
         mAnchor.layout(0, 0, 500, 500);

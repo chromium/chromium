@@ -8,10 +8,14 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.widget.CompoundButton;
 
+import androidx.annotation.StringRes;
+
 import org.chromium.base.CallbackController;
+import org.chromium.base.TriState;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkDesktopPopupMetrics.BookmarkDesktopPopupOutcome;
+import org.chromium.chrome.browser.bookmarks.BookmarkPopupCoordinator.BookmarkPopupLaunchType;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -41,6 +45,11 @@ public class BookmarkPopupMediator implements SubscriptionsObserver {
     private String mCurrentTitle = "";
     private boolean mIsNewBookmark;
     private boolean mOutcomeRecorded;
+    // The switch state from the latest user toggle (reverted on request failure), or NOT_SET if the
+    // user has not toggled the switch since the popup was shown.
+    private @TriState int mUserToggledPriceTrackingState = TriState.NOT_SET;
+    private int mToggleRequestId;
+    private @BookmarkPopupLaunchType int mLaunchType;
 
     /**
      * Constructs the BookmarkPopupMediator. This logic controller is responsible for binding
@@ -107,16 +116,25 @@ public class BookmarkPopupMediator implements SubscriptionsObserver {
      * Shows the bookmark edit popup for the given bookmark.
      *
      * @param bookmarkId The ID of the bookmark to show.
+     * @param launchType The user intent that opened the popup.
      * @param isNewBookmark Whether this popup is for a newly added bookmark.
      */
-    public void show(BookmarkId bookmarkId, boolean isNewBookmark) {
+    public void show(
+            BookmarkId bookmarkId, @BookmarkPopupLaunchType int launchType, boolean isNewBookmark) {
         mIsNewBookmark = isNewBookmark;
         mOutcomeRecorded = false;
+        mUserToggledPriceTrackingState = TriState.NOT_SET;
+        mToggleRequestId = 0;
+        // Price tracking needs the shopping service; without it this is a plain bookmark popup.
+        mLaunchType = mShoppingService == null ? BookmarkPopupLaunchType.BOOKMARK : launchType;
         mBookmarkId = bookmarkId;
-        mPropertyModel.set(
-                BookmarkPopupProperties.HEADER_TEXT,
-                mContext.getString(
-                        isNewBookmark ? R.string.bookmark_added : R.string.edit_bookmark));
+        // Price tracking launches optimistically show the switch and header in the tracking state.
+        setPriceTrackingSwitchAndHeader(isPriceTrackingLaunch());
+        // Request the subscribe before finishLoadingBookmarkModel so dismissing the popup before
+        // the model loads cannot skip it.
+        if (isPriceTrackingEnableLaunch()) {
+            enablePriceTracking(bookmarkId);
+        }
         mBookmarkModel.finishLoadingBookmarkModel(
                 mCallbackController.makeCancelable(
                         () -> {
@@ -151,64 +169,140 @@ public class BookmarkPopupMediator implements SubscriptionsObserver {
                         }));
     }
 
-    private void bindPowerBookmarkProperties(@Nullable PowerBookmarkMeta meta) {
-        if (meta == null
-                || !meta.hasShoppingSpecifics()
-                || mBookmarkId == null
-                || mShoppingService == null) return;
+    private boolean isPriceTrackingEnableLaunch() {
+        return mLaunchType == BookmarkPopupLaunchType.PRICE_TRACKING_ENABLE;
+    }
 
-        mSubscription = PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(meta);
+    private boolean isPriceTrackingLaunch() {
+        return mLaunchType == BookmarkPopupLaunchType.PRICE_TRACKING_ENABLE
+                || mLaunchType == BookmarkPopupLaunchType.PRICE_TRACKING_MANAGE;
+    }
+
+    private void bindPowerBookmarkProperties(@Nullable PowerBookmarkMeta meta) {
+        if (mBookmarkId == null || mShoppingService == null) return;
+
+        if (meta != null && meta.hasShoppingSpecifics()) {
+            mSubscription = PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(meta);
+        } else if (!isPriceTrackingLaunch()) {
+            return;
+        }
+        // Price tracking launch types may lack shopping meta (e.g. a just-created bookmark); the
+        // switch is shown optimistically. Without meta, mSubscription stays null for the popup's
+        // lifetime, so subscription observer callbacks are ignored.
 
         mPropertyModel.set(BookmarkPopupProperties.PRICE_TRACKING_ENABLED, true);
-        mPropertyModel.set(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_CHECKED, false);
         mPropertyModel.set(BookmarkPopupProperties.PRICE_TRACKING_VISIBLE, true);
         mPropertyModel.set(
                 BookmarkPopupProperties.PRICE_TRACKING_SWITCH_LISTENER,
                 this::handlePriceTrackingSwitchToggle);
 
+        // ENABLE launches already requested the subscribe in show(); keep the optimistic switch.
+        if (isPriceTrackingEnableLaunch()) return;
+
         PriceTrackingUtils.isBookmarkPriceTracked(
                 mProfile,
                 mBookmarkId.getId(),
-                mCallbackController.makeCancelable(this::setPriceTrackingToggleVisualsOnly));
+                mCallbackController.makeCancelable(
+                        (Boolean subscribed) -> {
+                            if (mUserToggledPriceTrackingState != TriState.NOT_SET) return;
+
+                            setPriceTrackingSwitchAndHeader(Boolean.TRUE.equals(subscribed));
+                        }));
+    }
+
+    /** Subscribes the bookmark to price tracking, reverting the optimistic switch on failure. */
+    private void enablePriceTracking(BookmarkId bookmarkId) {
+        mPriceDropNotificationManager.createNotificationChannel();
+        PriceTrackingUtils.setPriceTrackingStateForBookmark(
+                mProfile,
+                bookmarkId.getId(),
+                /* enabled= */ true,
+                mCallbackController.makeCancelable(
+                        (Boolean success) -> {
+                            if (Boolean.TRUE.equals(success)
+                                    || mUserToggledPriceTrackingState != TriState.NOT_SET) {
+                                return;
+                            }
+
+                            setPriceTrackingSwitchAndHeader(/* enabled= */ false);
+                        }));
     }
 
     private void handlePriceTrackingSwitchToggle(CompoundButton view, boolean toggled) {
         if (mBookmarkId == null) return;
 
-        setPriceTrackingToggleVisualsOnly(toggled);
+        // Stamp each toggle so a late failure from an older request cannot revert a newer one. It
+        // would also overwrite mUserToggledPriceTrackingState, so the newer toggle's observer echo
+        // would be dropped as stale.
+        int requestId = ++mToggleRequestId;
+        mUserToggledPriceTrackingState = toggled ? TriState.TRUE : TriState.FALSE;
+        setPriceTrackingSwitchAndHeader(toggled);
         PriceTrackingUtils.setPriceTrackingStateForBookmark(
                 mProfile,
                 mBookmarkId.getId(),
                 toggled,
                 mCallbackController.makeCancelable(
                         (Boolean success) -> {
-                            if (!success) {
-                                setPriceTrackingToggleVisualsOnly(!toggled);
+                            if (!Boolean.TRUE.equals(success) && requestId == mToggleRequestId) {
+                                // Keep the stored state in sync with the reverted switch so
+                                // observer echoes of the real state are not dropped as stale.
+                                mUserToggledPriceTrackingState =
+                                        toggled ? TriState.FALSE : TriState.TRUE;
+                                setPriceTrackingSwitchAndHeader(!toggled);
                             }
                         }));
     }
 
-    private void setPriceTrackingToggleVisualsOnly(boolean enabled) {
+    /** Sets the switch without notifying its listener, and the header that follows it. */
+    private void setPriceTrackingSwitchAndHeader(boolean enabled) {
         mPropertyModel.set(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_LISTENER, null);
         mPropertyModel.set(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_CHECKED, enabled);
         mPropertyModel.set(
                 BookmarkPopupProperties.PRICE_TRACKING_SWITCH_LISTENER,
                 this::handlePriceTrackingSwitchToggle);
+        updateHeader(enabled);
+    }
+
+    /** Updates the header title based on the launch type and price tracking state. */
+    private void updateHeader(boolean trackingOn) {
+        @StringRes
+        int headerResId =
+                isPriceTrackingLaunch() && trackingOn
+                        ? R.string.price_tracking_title
+                        : (mIsNewBookmark ? R.string.bookmark_added : R.string.edit_bookmark);
+        mPropertyModel.set(BookmarkPopupProperties.HEADER_TEXT, mContext.getString(headerResId));
     }
 
     @Override
     public void onSubscribe(CommerceSubscription subscription, boolean succeeded) {
-        if (!succeeded || !subscription.equals(mSubscription)) return;
+        if (!succeeded
+                || !subscription.equals(mSubscription)
+                || isReplacedByUserToggle(/* subscribed= */ true)) {
+            return;
+        }
 
-        setPriceTrackingToggleVisualsOnly(true);
+        setPriceTrackingSwitchAndHeader(/* enabled= */ true);
         mPriceDropNotificationManager.createNotificationChannel();
     }
 
     @Override
     public void onUnsubscribe(CommerceSubscription subscription, boolean succeeded) {
-        if (!succeeded || !subscription.equals(mSubscription)) return;
+        if (!succeeded
+                || !subscription.equals(mSubscription)
+                || isReplacedByUserToggle(/* subscribed= */ false)) {
+            return;
+        }
 
-        setPriceTrackingToggleVisualsOnly(false);
+        setPriceTrackingSwitchAndHeader(/* enabled= */ false);
+    }
+
+    /**
+     * Returns whether an observer echo of {@code subscribed} is stale because a later user toggle
+     * requested the opposite state, e.g. an auto-subscribe success landing after the user turned
+     * the switch off.
+     */
+    private boolean isReplacedByUserToggle(boolean subscribed) {
+        return mUserToggledPriceTrackingState == (subscribed ? TriState.FALSE : TriState.TRUE);
     }
 
     /** Returns the {@link BookmarkId} of the bookmark currently loaded, or null. */

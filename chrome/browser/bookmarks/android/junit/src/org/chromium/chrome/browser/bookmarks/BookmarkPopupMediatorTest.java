@@ -9,14 +9,19 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
+import android.widget.CheckBox;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,6 +39,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkDesktopPopupMetrics.BookmarkDesktopPopupOutcome;
+import org.chromium.chrome.browser.bookmarks.BookmarkPopupCoordinator.BookmarkPopupLaunchType;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
@@ -41,6 +47,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
@@ -63,6 +70,9 @@ public class BookmarkPopupMediatorTest {
     @Mock private Runnable mDismissRunnable;
 
     @Captor private ArgumentCaptor<Callback<Drawable>> mCallbackCaptor;
+    @Captor private ArgumentCaptor<Runnable> mModelLoadedCaptor;
+    @Captor private ArgumentCaptor<Callback<Boolean>> mIsTrackedCallbackCaptor;
+    @Captor private ArgumentCaptor<Callback<Boolean>> mSetTrackingCallbackCaptor;
 
     private final BookmarkId mBookmarkId = new BookmarkId(1, BookmarkType.NORMAL);
     private final BookmarkId mParentId = new BookmarkId(2, BookmarkType.NORMAL);
@@ -133,7 +143,7 @@ public class BookmarkPopupMediatorTest {
                         })
                 .when(mMockPriceTrackingUtilsJni)
                 .isBookmarkPriceTracked(Mockito.any(), Mockito.anyLong(), Mockito.any());
-        mMediator.show(mBookmarkId, true);
+        mMediator.show(mBookmarkId, BookmarkPopupLaunchType.BOOKMARK, /* isNewBookmark= */ true);
 
         ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mBookmarkModel).finishLoadingBookmarkModel(runnableCaptor.capture());
@@ -149,7 +159,7 @@ public class BookmarkPopupMediatorTest {
 
     @Test
     public void testShowAndModelBinding_EditMode() {
-        mMediator.show(mBookmarkId, false);
+        mMediator.show(mBookmarkId, BookmarkPopupLaunchType.BOOKMARK, /* isNewBookmark= */ false);
 
         ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mBookmarkModel).finishLoadingBookmarkModel(runnableCaptor.capture());
@@ -158,6 +168,10 @@ public class BookmarkPopupMediatorTest {
         assertEquals(
                 mActivity.getString(R.string.edit_bookmark),
                 mPropertyModel.get(BookmarkPopupProperties.HEADER_TEXT));
+        assertFalse(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_VISIBLE));
+        verify(mMockPriceTrackingUtilsJni, never())
+                .isBookmarkPriceTracked(
+                        /* profile= */ any(), /* bookmarkId= */ anyLong(), /* callback= */ any());
     }
 
     @Test
@@ -171,7 +185,7 @@ public class BookmarkPopupMediatorTest {
                         })
                 .when(mMockPriceTrackingUtilsJni)
                 .isBookmarkPriceTracked(Mockito.any(), Mockito.anyLong(), Mockito.any());
-        mMediator.show(mBookmarkId, true);
+        mMediator.show(mBookmarkId, BookmarkPopupLaunchType.BOOKMARK, /* isNewBookmark= */ true);
 
         ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mBookmarkModel).finishLoadingBookmarkModel(runnableCaptor.capture());
@@ -197,7 +211,7 @@ public class BookmarkPopupMediatorTest {
                         })
                 .when(mMockPriceTrackingUtilsJni)
                 .isBookmarkPriceTracked(Mockito.any(), Mockito.anyLong(), Mockito.any());
-        mMediator.show(mBookmarkId, true);
+        mMediator.show(mBookmarkId, BookmarkPopupLaunchType.BOOKMARK, /* isNewBookmark= */ true);
 
         ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mBookmarkModel).finishLoadingBookmarkModel(runnableCaptor.capture());
@@ -226,7 +240,7 @@ public class BookmarkPopupMediatorTest {
                         })
                 .when(mMockPriceTrackingUtilsJni)
                 .isBookmarkPriceTracked(Mockito.any(), Mockito.anyLong(), Mockito.any());
-        mMediator.show(mBookmarkId, true);
+        mMediator.show(mBookmarkId, BookmarkPopupLaunchType.BOOKMARK, /* isNewBookmark= */ true);
 
         // Destroy mediator before model loading callback runs
         mMediator.destroy();
@@ -250,7 +264,7 @@ public class BookmarkPopupMediatorTest {
                                 BookmarkDesktopPopupOutcome.REMOVED)
                         .build();
 
-        mMediator.show(mBookmarkId, false);
+        mMediator.show(mBookmarkId, BookmarkPopupLaunchType.BOOKMARK, /* isNewBookmark= */ false);
 
         Runnable removeClickListener =
                 mPropertyModel.get(BookmarkPopupProperties.REMOVE_BUTTON_CLICK_LISTENER);
@@ -272,7 +286,7 @@ public class BookmarkPopupMediatorTest {
                                 BookmarkDesktopPopupOutcome.SAVED)
                         .build();
 
-        mMediator.show(mBookmarkId, false);
+        mMediator.show(mBookmarkId, BookmarkPopupLaunchType.BOOKMARK, /* isNewBookmark= */ false);
 
         ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mBookmarkModel).finishLoadingBookmarkModel(runnableCaptor.capture());
@@ -300,7 +314,7 @@ public class BookmarkPopupMediatorTest {
                                 BookmarkDesktopPopupOutcome.SAVED)
                         .build();
 
-        mMediator.show(mBookmarkId, true);
+        mMediator.show(mBookmarkId, BookmarkPopupLaunchType.BOOKMARK, /* isNewBookmark= */ true);
 
         ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mBookmarkModel).finishLoadingBookmarkModel(runnableCaptor.capture());
@@ -325,7 +339,7 @@ public class BookmarkPopupMediatorTest {
                                 BookmarkDesktopPopupOutcome.EDIT_DIALOG_OPENED)
                         .build();
 
-        mMediator.show(mBookmarkId, true);
+        mMediator.show(mBookmarkId, BookmarkPopupLaunchType.BOOKMARK, /* isNewBookmark= */ true);
 
         Runnable folderRowClickListener =
                 mPropertyModel.get(BookmarkPopupProperties.FOLDER_ROW_CLICK_LISTENER);
@@ -347,7 +361,7 @@ public class BookmarkPopupMediatorTest {
                                 BookmarkDesktopPopupOutcome.DISMISSED)
                         .build();
 
-        mMediator.show(mBookmarkId, false);
+        mMediator.show(mBookmarkId, BookmarkPopupLaunchType.BOOKMARK, /* isNewBookmark= */ false);
 
         Runnable closeClickListener =
                 mPropertyModel.get(BookmarkPopupProperties.CLOSE_BUTTON_CLICK_LISTENER);
@@ -375,7 +389,7 @@ public class BookmarkPopupMediatorTest {
                         })
                 .when(mMockPriceTrackingUtilsJni)
                 .isBookmarkPriceTracked(Mockito.any(), Mockito.anyLong(), Mockito.any());
-        mMediator.show(mBookmarkId, true);
+        mMediator.show(mBookmarkId, BookmarkPopupLaunchType.BOOKMARK, /* isNewBookmark= */ true);
 
         ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mBookmarkModel).finishLoadingBookmarkModel(runnableCaptor.capture());
@@ -383,6 +397,17 @@ public class BookmarkPopupMediatorTest {
 
         assertTrue(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_VISIBLE));
         assertTrue(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_ENABLED));
+        assertTrue(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_CHECKED));
+        assertEquals(
+                mActivity.getString(R.string.bookmark_added),
+                mPropertyModel.get(BookmarkPopupProperties.HEADER_TEXT));
+        verify(mMockPriceTrackingUtilsJni, never())
+                .setPriceTrackingStateForBookmark(
+                        /* profile= */ any(),
+                        /* bookmarkId= */ anyLong(),
+                        /* enabled= */ anyBoolean(),
+                        /* callback= */ any(),
+                        /* bookmarkCreatedForPriceTracking= */ anyBoolean());
     }
 
     @Test
@@ -395,7 +420,7 @@ public class BookmarkPopupMediatorTest {
                         mBookmarkImageFetcher,
                         mActivity,
                         mProfile,
-                        null,
+                        /* shoppingService= */ null,
                         mPriceDropNotificationManager,
                         mDismissRunnable);
 
@@ -413,7 +438,7 @@ public class BookmarkPopupMediatorTest {
                         })
                 .when(mMockPriceTrackingUtilsJni)
                 .isBookmarkPriceTracked(Mockito.any(), Mockito.anyLong(), Mockito.any());
-        mMediator.show(mBookmarkId, true);
+        mMediator.show(mBookmarkId, BookmarkPopupLaunchType.BOOKMARK, /* isNewBookmark= */ true);
 
         ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mBookmarkModel).finishLoadingBookmarkModel(runnableCaptor.capture());
@@ -422,5 +447,249 @@ public class BookmarkPopupMediatorTest {
         // Visible would normally be true, but because shopping service is null, it should return
         // early
         assertFalse(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_VISIBLE));
+    }
+
+    @Test
+    public void testShow_PriceTrackingEnable_NewBookmark_AutoSubscribes() {
+        showAndLoad(BookmarkPopupLaunchType.PRICE_TRACKING_ENABLE, /* isNewBookmark= */ true);
+
+        assertEquals(
+                mActivity.getString(R.string.price_tracking_title),
+                mPropertyModel.get(BookmarkPopupProperties.HEADER_TEXT));
+        assertTrue(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_VISIBLE));
+        assertTrue(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_ENABLED));
+        assertTrue(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_CHECKED));
+        verify(mPriceDropNotificationManager).createNotificationChannel();
+        verifySubscribeRequested();
+        // The subscribe request decides the switch, so the current state is not queried.
+        verify(mMockPriceTrackingUtilsJni, never()).isBookmarkPriceTracked(any(), anyLong(), any());
+    }
+
+    @Test
+    public void testShow_PriceTrackingManage_DoesNotSubscribe() {
+        when(mBookmarkModel.getPowerBookmarkMeta(mBookmarkId)).thenReturn(createShoppingMeta());
+        showAndLoad(BookmarkPopupLaunchType.PRICE_TRACKING_MANAGE, /* isNewBookmark= */ false);
+
+        assertEquals(
+                mActivity.getString(R.string.price_tracking_title),
+                mPropertyModel.get(BookmarkPopupProperties.HEADER_TEXT));
+        assertTrue(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_ENABLED));
+        assertTrue(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_CHECKED));
+
+        respondIsBookmarkPriceTracked(/* tracked= */ true);
+        assertTrue(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_CHECKED));
+        verify(mMockPriceTrackingUtilsJni, never())
+                .setPriceTrackingStateForBookmark(
+                        any(), anyLong(), anyBoolean(), any(), anyBoolean());
+    }
+
+    @Test
+    public void testShow_PriceTrackingManage_NotTracked_SwitchOffAndEditBookmarkHeader() {
+        when(mBookmarkModel.getPowerBookmarkMeta(mBookmarkId)).thenReturn(createShoppingMeta());
+        showAndLoad(BookmarkPopupLaunchType.PRICE_TRACKING_MANAGE, /* isNewBookmark= */ false);
+        respondIsBookmarkPriceTracked(/* tracked= */ false);
+
+        assertFalse(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_CHECKED));
+        assertEquals(
+                mActivity.getString(R.string.edit_bookmark),
+                mPropertyModel.get(BookmarkPopupProperties.HEADER_TEXT));
+    }
+
+    @Test
+    public void testShow_PriceTrackingManage_ManualToggleBeforeCallbackNotOverwritten() {
+        when(mBookmarkModel.getPowerBookmarkMeta(mBookmarkId)).thenReturn(createShoppingMeta());
+        showAndLoad(BookmarkPopupLaunchType.PRICE_TRACKING_MANAGE, /* isNewBookmark= */ false);
+
+        mPropertyModel
+                .get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_LISTENER)
+                .onCheckedChanged(new CheckBox(mActivity), /* isChecked= */ false);
+        respondIsBookmarkPriceTracked(/* tracked= */ true);
+
+        assertFalse(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_CHECKED));
+        assertEquals(
+                mActivity.getString(R.string.edit_bookmark),
+                mPropertyModel.get(BookmarkPopupProperties.HEADER_TEXT));
+        verify(mMockPriceTrackingUtilsJni)
+                .setPriceTrackingStateForBookmark(
+                        any(), anyLong(), /* enabled= */ eq(false), any(), anyBoolean());
+    }
+
+    @Test
+    public void testShow_PriceTrackingEnable_SubscribeEchoAfterUserToggleOffIgnored() {
+        when(mBookmarkModel.getPowerBookmarkMeta(mBookmarkId)).thenReturn(createShoppingMeta());
+        showAndLoad(BookmarkPopupLaunchType.PRICE_TRACKING_ENABLE, /* isNewBookmark= */ true);
+        verifySubscribeRequested();
+        Callback<Boolean> subscribeCallback = mSetTrackingCallbackCaptor.getValue();
+
+        mPropertyModel
+                .get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_LISTENER)
+                .onCheckedChanged(new CheckBox(mActivity), /* isChecked= */ false);
+        // The auto-subscribe success echo arrives after the user turned the switch off.
+        CommerceSubscription subscription =
+                PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(
+                        createShoppingMeta());
+        mMediator.onSubscribe(subscription, /* succeeded= */ true);
+
+        assertFalse(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_CHECKED));
+        assertEquals(
+                mActivity.getString(R.string.bookmark_added),
+                mPropertyModel.get(BookmarkPopupProperties.HEADER_TEXT));
+
+        // The user turns tracking back on before the first unsubscribe echo arrives.
+        mPropertyModel
+                .get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_LISTENER)
+                .onCheckedChanged(new CheckBox(mActivity), /* isChecked= */ true);
+        mMediator.onUnsubscribe(subscription, /* succeeded= */ true);
+        assertTrue(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_CHECKED));
+        assertEquals(
+                mActivity.getString(R.string.price_tracking_title),
+                mPropertyModel.get(BookmarkPopupProperties.HEADER_TEXT));
+
+        // A late failure from the initial subscribe request must not overwrite the user toggle.
+        subscribeCallback.onResult(/* result= */ false);
+        assertTrue(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_CHECKED));
+    }
+
+    @Test
+    public void testShow_PriceTrackingEnable_ExternalUnsubscribeUpdatesSwitchAndHeader() {
+        when(mBookmarkModel.getPowerBookmarkMeta(mBookmarkId)).thenReturn(createShoppingMeta());
+        showAndLoad(BookmarkPopupLaunchType.PRICE_TRACKING_ENABLE, /* isNewBookmark= */ true);
+        CommerceSubscription subscription =
+                PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(
+                        createShoppingMeta());
+
+        mMediator.onUnsubscribe(subscription, /* succeeded= */ true);
+
+        assertFalse(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_CHECKED));
+        assertEquals(
+                mActivity.getString(R.string.bookmark_added),
+                mPropertyModel.get(BookmarkPopupProperties.HEADER_TEXT));
+    }
+
+    @Test
+    public void testShow_PriceTrackingEnable_NullShoppingService() {
+        mMediator =
+                new BookmarkPopupMediator(
+                        mPropertyModel,
+                        mBookmarkModel,
+                        mBookmarkManagerOpener,
+                        mBookmarkImageFetcher,
+                        mActivity,
+                        mProfile,
+                        /* shoppingService= */ null,
+                        mPriceDropNotificationManager,
+                        mDismissRunnable);
+
+        showAndLoad(BookmarkPopupLaunchType.PRICE_TRACKING_ENABLE, /* isNewBookmark= */ true);
+
+        assertEquals(
+                mActivity.getString(R.string.bookmark_added),
+                mPropertyModel.get(BookmarkPopupProperties.HEADER_TEXT));
+        assertFalse(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_VISIBLE));
+        assertFalse(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_CHECKED));
+        verify(mMockPriceTrackingUtilsJni, never())
+                .setPriceTrackingStateForBookmark(
+                        /* profile= */ any(),
+                        /* bookmarkId= */ anyLong(),
+                        /* enabled= */ anyBoolean(),
+                        /* callback= */ any(),
+                        /* bookmarkCreatedForPriceTracking= */ anyBoolean());
+    }
+
+    @Test
+    public void testShow_PriceTrackingEnable_SubscribeFailsBeforeModelLoaded() {
+        mMediator.show(
+                mBookmarkId,
+                BookmarkPopupLaunchType.PRICE_TRACKING_ENABLE,
+                /* isNewBookmark= */ true);
+        verify(mBookmarkModel).finishLoadingBookmarkModel(mModelLoadedCaptor.capture());
+        verifySubscribeRequested();
+
+        mSetTrackingCallbackCaptor.getValue().onResult(/* result= */ false);
+        assertFalse(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_CHECKED));
+
+        mModelLoadedCaptor.getValue().run();
+
+        assertFalse(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_CHECKED));
+        assertTrue(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_ENABLED));
+        assertEquals(
+                mActivity.getString(R.string.bookmark_added),
+                mPropertyModel.get(BookmarkPopupProperties.HEADER_TEXT));
+    }
+
+    @Test
+    public void testShow_PriceTrackingManage_MultipleUserToggles_StaleFailureIgnored() {
+        when(mBookmarkModel.getPowerBookmarkMeta(mBookmarkId)).thenReturn(createShoppingMeta());
+        showAndLoad(BookmarkPopupLaunchType.PRICE_TRACKING_MANAGE, /* isNewBookmark= */ false);
+        respondIsBookmarkPriceTracked(/* tracked= */ true);
+
+        CheckBox toggle = new CheckBox(mActivity);
+        mPropertyModel
+                .get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_LISTENER)
+                .onCheckedChanged(toggle, /* isChecked= */ false);
+        mPropertyModel
+                .get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_LISTENER)
+                .onCheckedChanged(toggle, /* isChecked= */ true);
+        mPropertyModel
+                .get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_LISTENER)
+                .onCheckedChanged(toggle, /* isChecked= */ false);
+
+        verify(mMockPriceTrackingUtilsJni, times(2))
+                .setPriceTrackingStateForBookmark(
+                        /* profile= */ eq(mProfile),
+                        /* bookmarkId= */ eq(mBookmarkId.getId()),
+                        /* enabled= */ eq(false),
+                        mSetTrackingCallbackCaptor.capture(),
+                        /* bookmarkCreatedForPriceTracking= */ eq(false));
+
+        // A late failure from the first OFF toggle must not overwrite the latest OFF toggle.
+        mSetTrackingCallbackCaptor.getAllValues().get(0).onResult(/* result= */ false);
+        assertFalse(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_CHECKED));
+        assertEquals(
+                mActivity.getString(R.string.edit_bookmark),
+                mPropertyModel.get(BookmarkPopupProperties.HEADER_TEXT));
+
+        // Failure of the latest OFF toggle still reverts the switch and header.
+        mSetTrackingCallbackCaptor.getAllValues().get(1).onResult(/* result= */ false);
+        assertTrue(mPropertyModel.get(BookmarkPopupProperties.PRICE_TRACKING_SWITCH_CHECKED));
+        assertEquals(
+                mActivity.getString(R.string.price_tracking_title),
+                mPropertyModel.get(BookmarkPopupProperties.HEADER_TEXT));
+
+        // A subscribe echo matching the reverted (still tracked) state must not be dropped.
+        CommerceSubscription subscription =
+                PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(
+                        createShoppingMeta());
+        mMediator.onSubscribe(subscription, /* succeeded= */ true);
+        verify(mPriceDropNotificationManager).createNotificationChannel();
+    }
+
+    private void showAndLoad(@BookmarkPopupLaunchType int launchType, boolean isNewBookmark) {
+        mMediator.show(mBookmarkId, launchType, isNewBookmark);
+        verify(mBookmarkModel).finishLoadingBookmarkModel(mModelLoadedCaptor.capture());
+        mModelLoadedCaptor.getValue().run();
+    }
+
+    private void respondIsBookmarkPriceTracked(boolean tracked) {
+        verify(mMockPriceTrackingUtilsJni)
+                .isBookmarkPriceTracked(
+                        eq(mProfile), eq(mBookmarkId.getId()), mIsTrackedCallbackCaptor.capture());
+        mIsTrackedCallbackCaptor.getValue().onResult(tracked);
+    }
+
+    private void verifySubscribeRequested() {
+        verify(mMockPriceTrackingUtilsJni)
+                .setPriceTrackingStateForBookmark(
+                        eq(mProfile),
+                        eq(mBookmarkId.getId()),
+                        /* enabled= */ eq(true),
+                        mSetTrackingCallbackCaptor.capture(),
+                        /* bookmarkCreatedForPriceTracking= */ eq(false));
+    }
+
+    private static PowerBookmarkMeta createShoppingMeta() {
+        return PowerBookmarkMeta.newBuilder()
+                .setShoppingSpecifics(ShoppingSpecifics.newBuilder().build())
+                .build();
     }
 }
