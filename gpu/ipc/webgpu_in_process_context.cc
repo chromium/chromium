@@ -69,7 +69,8 @@ ContextResult WebGPUInProcessContext::Initialize(
   transfer_buffer_ = std::make_unique<TransferBuffer>(webgpu_helper.get());
 
   webgpu_implementation_ = std::make_unique<webgpu::WebGPUImplementation>(
-      webgpu_helper.get(), transfer_buffer_.get(), command_buffer_.get());
+      webgpu_helper.get(), transfer_buffer_.get(), command_buffer_.get(),
+      client_task_runner_);
   helper_ = std::move(webgpu_helper);
   webgpu_implementation_->Initialize(memory_limits);
   return result;

@@ -35,6 +35,15 @@ void CountCallback(int* count) {
   (*count)++;
 }
 
+void DrainClientTasks(base::TestSimpleTaskRunner* task_runner) {
+  // Client tasks (such as `InProcessCommandBuffer::OnContextLost`) may post
+  // follow-up Dawn callback tasks (`Disconnect` or `ProcessEvents`) onto the
+  // same runner.
+  while (task_runner->HasPendingTask()) {
+    task_runner->RunPendingTasks();
+  }
+}
+
 }  // anonymous namespace
 
 #define SKIP_TEST_IF(condition) \
@@ -187,7 +196,7 @@ webgpu::WebGPUDecoder* WebGPUTest::GetDecoder() const {
 }
 
 void WebGPUTest::RunPendingTasks() {
-  context_->GetTaskRunner()->RunPendingTasks();
+  DrainClientTasks(context_->GetTaskRunner());
   gpu_service_holder_->ScheduleGpuMainTask(base::BindOnce(
       [](webgpu::WebGPUDecoder* decoder) {
         if (decoder->HasPollingWork()) {
@@ -234,7 +243,7 @@ void WebGPUTest::PollUntilIdle() {
         wait.Signal();
       }));
   wait.Wait();
-  context_->GetTaskRunner()->RunPendingTasks();
+  DrainClientTasks(context_->GetTaskRunner());
 }
 
 wgpu::Device WebGPUTest::GetNewDevice(
