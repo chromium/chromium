@@ -30,7 +30,6 @@ def RecordMainAttributes(
   """Records main attributes to the current span.
 
   Attributes recorded:
-      * main.is_gemini_cli: Indicates if autotest is running via the Gemini CLI.
       * main.is_antigravity: Indicates if autotest is running via an
         Antigravity/Jetski Agent
       * main.targets: The list of targets selected for build/run.
@@ -42,10 +41,8 @@ def RecordMainAttributes(
   if not span.is_recording():
     return
 
-  is_gemini_cli = utils.IsGeminiCli()
   is_antigravity = utils.IsAntigravity()
 
-  span.set_attribute('main.is_gemini_cli', is_gemini_cli)
   span.set_attribute('main.is_antigravity', is_antigravity)
   span.set_attribute('main.targets', str(targets))
   span.set_attribute('main.filter', gtest_filter)

@@ -1216,6 +1216,36 @@ class MainExitCodeTest(TestCase):
     self.mock_run.assert_called_once()
 
 
+class TelemetryTest(unittest.TestCase):
+  def test_record_main_attributes(self):
+    mock_span = mock.MagicMock()
+    mock_span.is_recording.return_value = True
+    with (
+      mock.patch(
+        'utils.telemetry.trace.get_current_span', return_value=mock_span
+      ),
+      mock.patch.dict(os.environ, {'ANTIGRAVITY_AGENT': '1'}, clear=True),
+    ):
+      main.telemetry.RecordMainAttributes(
+        ['chrome/test:unit_tests'], 'Foo.*', True, 'out/Default'
+      )
+
+    recorded_keys = {
+      call.args[0] for call in mock_span.set_attribute.call_args_list
+    }
+    self.assertEqual(
+      recorded_keys,
+      {
+        'main.is_antigravity',
+        'main.targets',
+        'main.filter',
+        'gn.target_used_cache',
+        'build.out_dir',
+      },
+    )
+    mock_span.set_attribute.assert_any_call('main.is_antigravity', True)
+
+
 class IsLlmTest(unittest.TestCase):
   def test_ai_agent_env_vars(self):
     env_vars = (
