@@ -203,8 +203,8 @@ singular `OBSOLETE_HISTOGRAM[Name]=` (including
 `OBSOLETE_HISTOGRAM[Name.{Token}]=`, which does not expand patterned variants).
 Choose `<message>`:
 
-- **Expired:** `Expired on <ExpiryDate> and no longer recorded.` (or
-  `Expired and no longer recorded.` if the dates differ or are missing).
+- **Expired:** `Expired on <ExpiryDate>.` (or `Expired.` if the dates differ or
+  are missing).
 - **Removed before expiry:**
   `<reason it was removed; replaced by <NewHistogram>, if any>.`
 
