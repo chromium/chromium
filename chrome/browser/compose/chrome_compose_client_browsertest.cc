@@ -1779,10 +1779,6 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest, TestCompose) {
       base::StrCat(
           {"Compose.Server", compose::kComposeRequestDurationErrorSuffix}),
       0);
-  // Check that the request metadata had a valid node offset.
-  histograms.ExpectUniqueSample(
-      compose::kInnerTextNodeOffsetFound,
-      compose::ComposeInnerTextNodeOffset::kOffsetFound, 1);
   // Simulate insert call from Compose dialog.
   page_handler()->AcceptComposeResult(base::NullCallback());
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kInsertButton);

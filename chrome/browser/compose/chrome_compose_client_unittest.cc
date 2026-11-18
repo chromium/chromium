@@ -1981,9 +1981,6 @@ TEST_F(ChromeComposeClientTest, TestInnerTextNodeOffsetNotFound) {
   compose::mojom::ComposeResponsePtr result = test_future.Take();
 
   EXPECT_TRUE(result);
-  histograms().ExpectUniqueSample(
-      compose::kInnerTextNodeOffsetFound,
-      compose::ComposeInnerTextNodeOffset::kNoOffsetFound, 1);
 }
 
 TEST_F(ChromeComposeClientTest, TestCloseReasonCanceledWhileWaiting) {

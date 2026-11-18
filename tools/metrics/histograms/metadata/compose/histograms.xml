@@ -81,17 +81,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compose.Dialog.InnerTextNodeOffsetFound"
-    enum="ComposeInnerTextNodeOffset" expires_after="2025-07-13">
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>chrome-compose-frontend@google.com</owner>
-  <summary>
-    Records if a Compose request generated a valid node offset for the inner
-    text. Logged each time the dialog is opened when the inner text response is
-    sent to the new compose session.
-  </summary>
-</histogram>
-
 <histogram name="Compose.Dialog.InnerTextShortenedBy" units="bytes"
     expires_after="2025-03-09">
   <owner>sophey@chromium.org</owner>

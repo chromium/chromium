@@ -35,7 +35,6 @@ extern const char kComposeFirstRunSessionCloseReason[];
 extern const char kComposeFirstRunSessionDialogShownCount[];
 extern const char kComposeMSBBSessionCloseReason[];
 extern const char kComposeMSBBSessionDialogShownCount[];
-extern const char kInnerTextNodeOffsetFound[];
 extern const char kComposeContextMenuCtr[];
 extern const char kComposeProactiveNudgeCtr[];
 extern const char kComposeProactiveNudgeShowStatus[];
@@ -350,15 +349,6 @@ enum class OpenComposeDialogResult {
   kMaxValue = kAutofillFormDataNotFoundAfterSelectAll
 };
 
-// Enum to log if the inner text successfuly found an offset
-// Keep in sync with ComposeInnerTextNodeOffset in
-// src/tools/metrics/histograms/metadata/compose/enums.xml.
-enum class ComposeInnerTextNodeOffset {
-  kNoOffsetFound = 0,
-  kOffsetFound = 1,
-  kMaxValue = kOffsetFound
-};
-
 // Enum to log if all text was selected on behalf of the user.
 // Keep in sync with ComposeSelectAllStatus in
 // src/tools/metrics/histograms/metadata/compose/enums.xml.
@@ -497,9 +487,6 @@ void LogComposeDialogInnerTextShortenedBy(int shortened_by);
 // Log the size (in bytes) of the untrimmed inner text from the page when the
 // dialog is opened.
 void LogComposeDialogInnerTextSize(int size);
-
-// Log if the inner text node offset was found successfully.
-void LogComposeDialogInnerTextOffsetFound(bool inner_offset_found);
 
 // Log the time taken for the dialog to be fully shown and interactable.
 void LogComposeDialogOpenLatency(base::TimeDelta duration);

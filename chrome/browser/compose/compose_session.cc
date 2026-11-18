@@ -1139,7 +1139,6 @@ void ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary(
           inner_text.size() - config.inner_text_max_bytes);
       inner_text.erase(config.inner_text_max_bytes);
     }
-    compose::LogComposeDialogInnerTextOffsetFound(node_offset.has_value());
   }
 
   if (!executor_) {
