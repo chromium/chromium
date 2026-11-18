@@ -19,6 +19,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/nix/xdg_util.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -165,6 +166,8 @@ struct NotificationRequest {
   std::vector<Action> actions;
   int32_t expire_timeout = 0;
   bool silent = false;
+  std::string app_icon;
+  std::string image_path;
 };
 
 struct TestParams {
@@ -240,7 +243,7 @@ NotificationRequest ParseRequest(dbus::MethodCall* method_call) {
   std::string str;
   EXPECT_TRUE(reader.PopString(&str));                  // app_name
   EXPECT_TRUE(reader.PopUint32(&request.replaces_id));  // replaces_id
-  EXPECT_TRUE(reader.PopString(&str));              // app_icon
+  EXPECT_TRUE(reader.PopString(&request.app_icon));     // app_icon
   EXPECT_TRUE(reader.PopString(&request.summary));  // summary
   EXPECT_TRUE(reader.PopString(&request.body));     // body
 
@@ -273,6 +276,8 @@ NotificationRequest ParseRequest(dbus::MethodCall* method_call) {
         std::string x_kde_origin_name;
         EXPECT_TRUE(dict_entry_reader.PopVariantOfString(&x_kde_origin_name));
         request.kde_origin_name = x_kde_origin_name;
+      } else if (str == "image-path") {
+        EXPECT_TRUE(dict_entry_reader.PopVariantOfString(&request.image_path));
       } else {
         EXPECT_TRUE(dict_entry_reader.PopVariant(&variant_reader));
       }
@@ -1465,6 +1470,64 @@ TEST_F(NotificationPlatformBridgeLinuxTest,
       NotificationHandler::Type::WEB_PERSISTENT, profile(),
       NotificationBuilder("").GetResult(), nullptr);
   content::RunAllTasksUntilIdle();
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest, IconUsesAppIconAndImagePath) {
+  fake_notification_proxy_->SetNotifyCallback(base::BindLambdaForTesting(
+      [](const NotificationRequest& request) -> uint32_t {
+        EXPECT_TRUE(base::EndsWith(request.app_icon, "/logo.png"));
+        EXPECT_TRUE(base::EndsWith(request.image_path, "/icon.png"));
+        return 1;
+      }));
+
+  CreateNotificationBridgeLinux(TestParams());
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("")
+          .SetIcon(gfx::test::CreateImage(192, 192))
+          .GetResult(),
+      nullptr);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(1, fake_notification_proxy_->notify_calls());
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest, CinnamonIconOmitsAppIcon) {
+  fake_notification_proxy_->SetNotifyCallback(base::BindLambdaForTesting(
+      [](const NotificationRequest& request) -> uint32_t {
+        // Cinnamon would show `image-path` as a large body image if
+        // `app_icon` were also set.
+        EXPECT_EQ("", request.app_icon);
+        EXPECT_TRUE(base::EndsWith(request.image_path, "/icon.png"));
+        return 1;
+      }));
+
+  CreateNotificationBridgeLinux(
+      TestParams().SetServerName("cinnamon").SetServerVersion("6.6.0"));
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("")
+          .SetIcon(gfx::test::CreateImage(192, 192))
+          .GetResult(),
+      nullptr);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(1, fake_notification_proxy_->notify_calls());
+}
+
+TEST_F(NotificationPlatformBridgeLinuxTest, CinnamonWithoutIconUsesAppIcon) {
+  fake_notification_proxy_->SetNotifyCallback(base::BindLambdaForTesting(
+      [](const NotificationRequest& request) -> uint32_t {
+        EXPECT_TRUE(base::EndsWith(request.app_icon, "/logo.png"));
+        EXPECT_EQ("", request.image_path);
+        return 1;
+      }));
+
+  CreateNotificationBridgeLinux(
+      TestParams().SetServerName("cinnamon").SetServerVersion("6.6.0"));
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("").GetResult(), nullptr);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(1, fake_notification_proxy_->notify_calls());
 }
 
 TEST_F(NotificationPlatformBridgeLinuxTest, NoSettingsButton) {

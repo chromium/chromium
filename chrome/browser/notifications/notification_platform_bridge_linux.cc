@@ -300,6 +300,15 @@ bool ShouldAddCloseButton(const std::string& server_name,
          server_version.CompareToWildcardString("3.8.0") < 0;
 }
 
+bool ShouldOmitAppIconForImagePath(const std::string& server_name) {
+  // When both `app_icon` and a different `image-path` are given, Cinnamon
+  // shows `app_icon` as the small notification icon and `image-path` as a
+  // large (125px) body image, which makes the site icon look oversized.  With
+  // an empty `app_icon`, Cinnamon uses `image-path` as the small icon instead
+  // (https://crbug.com/512509741).
+  return server_name == "cinnamon";
+}
+
 bool ShouldMarkPersistentNotificationsAsCritical(
     const std::string& server_name) {
   // Gnome-based desktops intentionally disregard the notification timeout
@@ -890,10 +899,12 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
 
     std::string app_name(l10n_util::GetStringUTF8(IDS_PRODUCT_NAME));
 
-    std::string app_icon(
-        data->files.has_logo
-            ? "file://" + data->files.dir_path.Append("logo.png").value()
-            : "");
+    std::string app_icon;
+    if (data->files.has_logo &&
+        !(data->files.has_icon &&
+          ShouldOmitAppIconForImagePath(server_name_))) {
+      app_icon = "file://" + data->files.dir_path.Append("logo.png").value();
+    }
 
     std::string summary(
         base::UTF16ToUTF8(CreateNotificationTitle(*notification)));
