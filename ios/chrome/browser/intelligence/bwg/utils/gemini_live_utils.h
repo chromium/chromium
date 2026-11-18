@@ -28,7 +28,8 @@ std::optional<int> GetLiveDormantSnackbarMessageId(
 void UpdateGeminiLiveIconVisibility(ProfileIOS* profile, bool in_live_mode);
 
 // Returns true if the transition from `old_status` to `new_status` represents
-// a Gemini Live prompt submission (entering the `kThinking` state).
+// a Gemini Live prompt submission (entering `kThinking` from `kListening` or
+// `kTranscribing`).
 bool IsGeminiLivePromptSubmitted(ios::provider::GeminiClientMode old_status,
                                  ios::provider::GeminiClientMode new_status);
 

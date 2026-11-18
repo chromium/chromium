@@ -643,13 +643,18 @@ TEST_F(GeminiSessionHandlerTest, TestQuotaReachedMetricRecordedOnResponse) {
   EXPECT_EQ(1, user_action_tester.GetActionCount("MobileGeminiQuotaReached"));
 }
 
-// Tests that transitioning to `kThinking` in Live mode records first prompt and
-// prompt submission method histograms, and increments session prompt count.
+// Tests that transitioning to `kThinking` from `kTranscribing` or `kListening`
+// in Live mode records first prompt and prompt submission method histograms,
+// and increments session prompt count.
 TEST_F(GeminiSessionHandlerTest, TestLiveSessionThinkingRecordsPrompt) {
   NSString* client_id = GetClientID();
   [session_handler_ UIDidAppearWithClientID:client_id serverID:kTestServerID];
 
-  // Transition to thinking.
+  // Transition to transcribing then thinking.
+  [session_handler_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kTranscribing
+                      sessionID:client_id
+                 conversationID:kTestServerID];
   [session_handler_
       didUpdateProcessingStatus:ios::provider::GeminiClientMode::kThinking
                       sessionID:client_id
@@ -671,7 +676,7 @@ TEST_F(GeminiSessionHandlerTest, TestLiveSessionThinkingRecordsPrompt) {
       kPromptSubmissionMethodHistogram,
       IOSGeminiFirstPromptSubmissionMethod::kLivePrompt, 1);
 
-  // Transition out and back into thinking (a second prompt).
+  // Transition out and back into thinking via listening (a second prompt).
   [session_handler_
       didUpdateProcessingStatus:ios::provider::GeminiClientMode::kResponding
                       sessionID:client_id
@@ -714,6 +719,11 @@ TEST_F(GeminiSessionHandlerTest, TestLiveSessionDormantReasonRecordsPrompt) {
   [session_handler_ UIDidAppearWithClientID:client_id serverID:kTestServerID];
 
   [session_handler_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kListening
+                  dormantReason:ios::provider::GeminiDormantReason::kUnknown
+                      sessionID:client_id
+                 conversationID:kTestServerID];
+  [session_handler_
       didUpdateProcessingStatus:ios::provider::GeminiClientMode::kThinking
                   dormantReason:ios::provider::GeminiDormantReason::kUnknown
                       sessionID:client_id
@@ -751,6 +761,21 @@ TEST_F(GeminiSessionHandlerTest, TestLiveSessionErrorOverloadRecordsPrompt) {
   NSError* error = [NSError errorWithDomain:kTestErrorDomain
                                        code:kTestErrorCode
                                    userInfo:nil];
+  OCMExpect([mock_delegate
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kTranscribing
+                  dormantReason:ios::provider::GeminiDormantReason::kUnknown
+                          error:nil
+                      errorCode:ios::provider::GeminiErrorCode::kNone
+                      sessionID:client_id
+                 conversationID:kTestServerID]);
+  [session_handler_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kTranscribing
+                  dormantReason:ios::provider::GeminiDormantReason::kUnknown
+                          error:nil
+                      errorCode:ios::provider::GeminiErrorCode::kNone
+                      sessionID:client_id
+                 conversationID:kTestServerID];
+
   OCMExpect([mock_delegate
       didUpdateProcessingStatus:ios::provider::GeminiClientMode::kThinking
                   dormantReason:ios::provider::GeminiDormantReason::kUnknown
@@ -807,27 +832,45 @@ TEST_F(GeminiSessionHandlerTest, TestAbandonedSessionWithoutPrompts) {
 }
 
 // Tests that a session with both text and live prompts accumulates the prompt
-// count correctly and attributes the first prompt method to the initial chat
-// prompt.
+// count correctly, attributes the first prompt method to the initial chat
+// prompt, and does not record `kLivePrompt` when a chat prompt transitions to
+// `kThinking`.
 TEST_F(GeminiSessionHandlerTest, TestMixedChatAndLivePromptsInSession) {
   NSString* client_id = GetClientID();
   [session_handler_ UIDidAppearWithClientID:client_id serverID:kTestServerID];
 
-  // Send a text prompt first.
+  // Send a text prompt first, which transitions status from `kUnknown` to
+  // `kThinking` and `kResponding` in Chat mode.
   [session_handler_ didSendQueryWithInputType:gemini::InputType::kText
                      isNanoBananaToolSelected:NO
                           imagesAttachedCount:0
                                longPressImage:NO
                           pageContextAttached:NO];
+  [session_handler_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kThinking
+                      sessionID:client_id
+                 conversationID:kTestServerID];
+  [session_handler_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kResponding
+                      sessionID:client_id
+                 conversationID:kTestServerID];
+  [session_handler_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kDormant
+                      sessionID:client_id
+                 conversationID:kTestServerID];
 
   histogram_tester_.ExpectUniqueSample(
       kFirstPromptSubmissionMethodHistogram,
       IOSGeminiFirstPromptSubmissionMethod::kText, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kPromptSubmissionMethodHistogram,
       IOSGeminiFirstPromptSubmissionMethod::kText, 1);
 
-  // Live turn transitions to thinking.
+  // Live turn transitions through transcribing to thinking.
+  [session_handler_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kTranscribing
+                      sessionID:client_id
+                 conversationID:kTestServerID];
   [session_handler_
       didUpdateProcessingStatus:ios::provider::GeminiClientMode::kThinking
                       sessionID:client_id
@@ -841,6 +884,7 @@ TEST_F(GeminiSessionHandlerTest, TestMixedChatAndLivePromptsInSession) {
   histogram_tester_.ExpectBucketCount(
       kPromptSubmissionMethodHistogram,
       IOSGeminiFirstPromptSubmissionMethod::kLivePrompt, 1);
+  histogram_tester_.ExpectTotalCount(kPromptSubmissionMethodHistogram, 2);
 
   [session_handler_ UIDidDisappearWithClientID:client_id
                                       serverID:kTestServerID];
@@ -853,11 +897,16 @@ TEST_F(GeminiSessionHandlerTest, TestMixedChatAndLivePromptsInSession) {
 }
 
 // Tests that tapping new chat resets the live processing status so subsequent
-// thinking transitions are treated as the new session's first prompt.
+// non-Live thinking transitions are not treated as Live prompts, while a new
+// Live turn is treated as the new session's first prompt.
 TEST_F(GeminiSessionHandlerTest, TestNewChatResetsLiveProcessingStatus) {
   NSString* client_id = GetClientID();
   [session_handler_ UIDidAppearWithClientID:client_id serverID:kTestServerID];
 
+  [session_handler_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kListening
+                      sessionID:client_id
+                 conversationID:kTestServerID];
   [session_handler_
       didUpdateProcessingStatus:ios::provider::GeminiClientMode::kThinking
                       sessionID:client_id
@@ -867,11 +916,30 @@ TEST_F(GeminiSessionHandlerTest, TestNewChatResetsLiveProcessingStatus) {
       kFirstPromptSubmissionMethodHistogram,
       IOSGeminiFirstPromptSubmissionMethod::kLivePrompt, 1);
 
-  // Tap new chat button.
+  // Enter listening state, then tap new chat button.
+  [session_handler_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kListening
+                      sessionID:client_id
+                 conversationID:kTestServerID];
   [session_handler_ didTapNewChatButtonWithSessionID:client_id
                                       conversationID:@"new_conv"];
 
-  // Transition to thinking again in the new chat.
+  // Transition to thinking directly in the new chat (e.g., from Chat mode) does
+  // not record a Live prompt because `_lastProcessingStatus` was reset.
+  [session_handler_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kThinking
+                      sessionID:client_id
+                 conversationID:@"new_conv"];
+  histogram_tester_.ExpectBucketCount(
+      kFirstPromptSubmissionMethodHistogram,
+      IOSGeminiFirstPromptSubmissionMethod::kLivePrompt, 1);
+
+  // Transitioning from listening to thinking in the new chat records the new
+  // session's first prompt.
+  [session_handler_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kListening
+                      sessionID:client_id
+                 conversationID:@"new_conv"];
   [session_handler_
       didUpdateProcessingStatus:ios::provider::GeminiClientMode::kThinking
                       sessionID:client_id

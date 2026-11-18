@@ -72,8 +72,13 @@ void UpdateGeminiLiveIconVisibility(ProfileIOS* profile, bool in_live_mode) {
 
 bool IsGeminiLivePromptSubmitted(ios::provider::GeminiClientMode old_status,
                                  ios::provider::GeminiClientMode new_status) {
+  // Both Chat and Live modes transition to `kThinking` when processing a query,
+  // but `kListening` and `kTranscribing` only occur during Live voice input.
+  // Consider the current `kThinking` as an indication of live prompt only if it
+  // was proceeded with live specific status.
   return new_status == ios::provider::GeminiClientMode::kThinking &&
-         old_status != ios::provider::GeminiClientMode::kThinking;
+         (old_status == ios::provider::GeminiClientMode::kListening ||
+          old_status == ios::provider::GeminiClientMode::kTranscribing);
 }
 
 }  // namespace gemini
