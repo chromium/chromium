@@ -6498,7 +6498,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PasswordManager.TrustedVaultKeyRetrievalPromo.Action"
-    enum="PromoWithTrustedVaultKeyRetrievalAction" expires_after="2026-07-19">
+    enum="PromoWithTrustedVaultKeyRetrievalAction" expires_after="2027-03-01">
   <owner>ylahodiuk@google.com</owner>
   <owner>rgod@google.com</owner>
   <summary>
@@ -6507,6 +6507,8 @@ chromium-metrics-reviews@google.com.
     upon' event per a single 'Displayed' event (this can make the interpretation
     harder as we are not be able to distinguish 100 display with 1 activation
     each, or 100 display with 50 having 2 activations and 50 without any).
+    Warning: this histogram was expired from 2026-07-19 to 2026-11-18; data may
+    be missing.
   </summary>
 </histogram>
 
