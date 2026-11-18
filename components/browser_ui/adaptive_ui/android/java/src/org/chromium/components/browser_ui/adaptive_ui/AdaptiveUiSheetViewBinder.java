@@ -30,6 +30,7 @@ import java.util.Set;
  * AdaptiveUiProperties#SHEET_CLOSED_ACCESSIBILITY_STRING_ID}, {@link
  * AdaptiveUiProperties#SHEET_HALF_HEIGHT_RATIO}, {@link
  * AdaptiveUiProperties#SHEET_FULL_HEIGHT_RATIO}, {@link
+ * AdaptiveUiProperties#CUSTOM_VIEW_SCROLLS_ITSELF}, {@link
  * AdaptiveUiProperties#ON_PRIMARY_BUTTON_CLICKED}, {@link
  * AdaptiveUiProperties#ON_SECONDARY_BUTTON_CLICKED}, {@link
  * AdaptiveUiProperties#PRIMARY_BUTTON_KEEPS_OPEN}, {@link
@@ -53,6 +54,7 @@ final class AdaptiveUiSheetViewBinder {
                     AdaptiveUiProperties.SHEET_HALF_HEIGHT_RATIO,
                     AdaptiveUiProperties.SHEET_FULL_HEIGHT_RATIO,
                     AdaptiveUiProperties.BACK_PRESS_HANDLER,
+                    AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF,
                     AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
                     AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
                     AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN,

@@ -39,6 +39,8 @@ android_resources("java_resources") {
   sources = [
     "java/res/layout/adaptive_ui_dialog_body.xml",
     "java/res/layout/adaptive_ui_sheet.xml",
+    "java/res/layout/adaptive_ui_sheet_body.xml",
+    "java/res/layout/adaptive_ui_sheet_body_self_scrolling.xml",
     "java/res/values/dimens.xml",
   ]
   deps = [

@@ -262,7 +262,11 @@ final class AdaptiveUiDialogCoordinator
                     });
         }
 
-        configureBody(context, model.get(AdaptiveUiProperties.CUSTOM_VIEW), builder);
+        configureBody(
+                context,
+                model.get(AdaptiveUiProperties.CUSTOM_VIEW),
+                model.get(AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF),
+                builder);
 
         return builder.build();
     }
@@ -278,7 +282,10 @@ final class AdaptiveUiDialogCoordinator
     }
 
     private static void configureBody(
-            Context context, @Nullable View customView, PropertyModel.Builder builder) {
+            Context context,
+            @Nullable View customView,
+            boolean customViewScrollsItself,
+            PropertyModel.Builder builder) {
         if (customView == null) {
             // DESCRIPTION is applied to MESSAGE_PARAGRAPHS by AdaptiveUiDialogViewBinder, both at
             // the initial bind and on live updates.
@@ -288,7 +295,7 @@ final class AdaptiveUiDialogCoordinator
         // modal_dialog_view.xml assigns layout_height="0dp" and layout_weight="1" to both the
         // paragraph scroll area and the custom_view slot, splitting their combined height 50/50
         // if both are populated. Always wrap a non-null customView in adaptive_ui_dialog_body so
-        // description and customView scroll together and a description added or cleared after
+        // description and customView share one slot and a description added or cleared after
         // creation can be updated live by AdaptiveUiDialogViewBinder.
         ViewGroup body =
                 (ViewGroup)
@@ -296,8 +303,14 @@ final class AdaptiveUiDialogCoordinator
                                 .inflate(R.layout.adaptive_ui_dialog_body, /* root= */ null);
         UiUtils.removeViewFromParent(customView);
         body.addView(customView);
-        builder.with(ModalDialogProperties.CUSTOM_VIEW, body)
-                .with(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true);
+        builder.with(ModalDialogProperties.CUSTOM_VIEW, body);
+        // A self-scrolling customView stays in the dialog's slot outside its scroll view, which is
+        // where the dialog puts a custom view when WRAP_CUSTOM_VIEW_IN_SCROLLABLE is unset.
+        // Setting it to false instead would trip ModalDialogViewBinder's scroll container check,
+        // because View#isScrollContainer() is false until the view is attached to a window.
+        if (!customViewScrollsItself) {
+            builder.with(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true);
+        }
     }
 
     private void onBackPressed() {

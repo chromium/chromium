@@ -51,48 +51,15 @@ found in the LICENSE file.
             android:visibility="gone" />
     </LinearLayout>
 
-    <org.chromium.components.browser_ui.widget.FadingEdgeScrollView
-        android:id="@+id/adaptive_ui_sheet_scroll_view"
+    <!--
+    Replaced by adaptive_ui_sheet_body, or by
+    adaptive_ui_sheet_body_self_scrolling when the custom view scrolls itself.
+    -->
+    <ViewStub
+        android:id="@+id/adaptive_ui_sheet_body_stub"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal=
-                "@dimen/adaptive_ui_sheet_horizontal_margin">
-
-            <TextView
-                android:id="@+id/adaptive_ui_sheet_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop=
-                    "@dimen/adaptive_ui_sheet_vertical_margin"
-                android:textAppearance=
-                    "@style/TextAppearance.TextMedium.Secondary"
-                android:visibility="gone" />
-
-            <FrameLayout
-                android:id="@+id/adaptive_ui_sheet_custom_view_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop=
-                    "@dimen/adaptive_ui_sheet_vertical_margin"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/adaptive_ui_sheet_footer_message"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop=
-                    "@dimen/adaptive_ui_sheet_vertical_margin"
-                android:textAppearance=
-                    "@style/TextAppearance.TextSmall.Secondary"
-                android:visibility="gone" />
-        </LinearLayout>
-    </org.chromium.components.browser_ui.widget.FadingEdgeScrollView>
+        android:layout_weight="1" />
 
     <LinearLayout
         android:id="@+id/adaptive_ui_sheet_button_bar"

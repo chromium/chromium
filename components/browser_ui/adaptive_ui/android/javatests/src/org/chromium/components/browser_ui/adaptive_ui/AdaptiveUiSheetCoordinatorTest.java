@@ -69,6 +69,8 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AdaptiveUiSheetCoordinatorTest {
+    private static final int TALL_CONTENT_HEIGHT_PX = 3000;
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BottomSheetController mBottomSheetController;
@@ -235,6 +237,7 @@ public class AdaptiveUiSheetCoordinatorTest {
                         AdaptiveUiProperties.SHEET_HALF_HEIGHT_RATIO,
                         AdaptiveUiProperties.SHEET_FULL_HEIGHT_RATIO,
                         AdaptiveUiProperties.BACK_PRESS_HANDLER,
+                        AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF,
                         AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
                         AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
                         AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN,
@@ -1625,5 +1628,98 @@ public class AdaptiveUiSheetCoordinatorTest {
 
         verify(mBottomSheetController, never()).hideContent(eq(content), anyBoolean(), anyInt());
         assertEquals(1, mSheetDismissals.size());
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Self-scrolling custom view.
+    // ---------------------------------------------------------------------------------------
+
+    /** Returns a scroll view whose content is taller than any sheet used in these tests. */
+    private ScrollView newScrollingBody() {
+        ScrollView body = new ScrollView(mActivity);
+        View tallContent = new View(mActivity);
+        tallContent.setMinimumHeight(TALL_CONTENT_HEIGHT_PX);
+        body.addView(tallContent);
+        return body;
+    }
+
+    /** Lays the sheet content out the way a sheet sized to its content does. */
+    private static void layoutAsSheet(View root) {
+        root.measure(
+                View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(600, View.MeasureSpec.AT_MOST));
+        root.layout(0, 0, 1000, root.getMeasuredHeight());
+    }
+
+    @Test
+    public void testSelfScrollingCustomView_PinnedBetweenDescriptionAndFooter() {
+        ScrollView body = newScrollingBody();
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.DESCRIPTION, "Description")
+                        .with(AdaptiveUiProperties.FOOTER_MESSAGE, "Footer")
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                        .with(AdaptiveUiProperties.CUSTOM_VIEW, body)
+                        .with(AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF, true)
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+        View root = content.getContentView();
+        layoutAsSheet(root);
+
+        // The body is not inside a framework scroll view, and is cut down to the space left.
+        assertNull(root.findViewById(R.id.adaptive_ui_sheet_scroll_view));
+        ViewGroup container = find(content, R.id.adaptive_ui_sheet_custom_view_container);
+        assertSame(container, body.getParent());
+        assertEquals(600, root.getHeight());
+        assertEquals(1000, container.getWidth());
+        assertTrue(body.getHeight() > 0);
+        assertTrue(body.getHeight() < TALL_CONTENT_HEIGHT_PX);
+
+        View description = find(content, R.id.adaptive_ui_sheet_description);
+        View footer = find(content, R.id.adaptive_ui_sheet_footer_message);
+        assertEquals(View.VISIBLE, description.getVisibility());
+        assertEquals(View.VISIBLE, footer.getVisibility());
+        assertTrue(description.getBottom() <= container.getTop());
+        assertTrue(container.getBottom() <= footer.getTop());
+        assertTrue(find(content, R.id.adaptive_ui_sheet_button_bar).getBottom() <= 600);
+    }
+
+    @Test
+    public void testVerticalScrollOffset_SelfScrollingCustomView() {
+        ScrollView body = newScrollingBody();
+        // The custom view's root doesn't scroll; a view inside it does.
+        FrameLayout customView = new FrameLayout(mActivity);
+        customView.addView(body);
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.CUSTOM_VIEW, customView)
+                        .with(AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF, true)
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+        layoutAsSheet(content.getContentView());
+
+        assertEquals(0, content.getVerticalScrollOffset());
+
+        body.scrollTo(0, 100);
+        assertEquals(100, body.getScrollY());
+        assertEquals(1, content.getVerticalScrollOffset());
+
+        // A scrolled view that is not showing (such as another screen of the body) is ignored.
+        body.setVisibility(View.INVISIBLE);
+        assertEquals(0, content.getVerticalScrollOffset());
+
+        body.setVisibility(View.VISIBLE);
+        body.scrollTo(0, 0);
+        assertEquals(0, content.getVerticalScrollOffset());
+    }
+
+    @Test
+    public void testVerticalScrollOffset_SelfScrollingWithoutCustomView() {
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF, true)
+                        .build();
+
+        assertEquals(0, createContent(model).getVerticalScrollOffset());
     }
 }

@@ -134,6 +134,7 @@ public class AdaptiveUiDialogCoordinatorTest {
                         AdaptiveUiProperties.SHEET_HALF_HEIGHT_RATIO,
                         AdaptiveUiProperties.SHEET_FULL_HEIGHT_RATIO,
                         AdaptiveUiProperties.CUSTOM_VIEW,
+                        AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF,
                         AdaptiveUiProperties.BACK_PRESS_HANDLER,
                         AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
                         AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
@@ -1292,5 +1293,55 @@ public class AdaptiveUiDialogCoordinatorTest {
         verify(mModalDialogManager, never())
                 .dismissDialog(eq(coordinator.getDialogModel()), anyInt());
         assertEquals(List.of(DismissReason.TAB_SWITCHED), mDialogDismissals);
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Self-scrolling custom view.
+    // ---------------------------------------------------------------------------------------
+
+    @Test
+    public void testBody_CustomView_PlacedInDialogScrollView() {
+        View customView = new View(mActivity);
+        PropertyModel model =
+                newModelBuilder().with(AdaptiveUiProperties.CUSTOM_VIEW, customView).build();
+        PropertyModel dialogModel = createCoordinator(model).getDialogModel();
+
+        ModalDialogView dialogView = bindToRealModalDialogView(dialogModel);
+
+        View body = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+        assertSame(
+                dialogView.findViewById(
+                        org.chromium.components.browser_ui.modaldialog.R.id
+                                .custom_view_in_scrollable),
+                body.getParent());
+    }
+
+    @Test
+    public void testBody_SelfScrollingCustomView_PlacedOutsideDialogScrollView() {
+        View customView = new View(mActivity);
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.DESCRIPTION, "Description")
+                        .with(AdaptiveUiProperties.CUSTOM_VIEW, customView)
+                        .with(AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF, true)
+                        .build();
+        PropertyModel dialogModel = createCoordinator(model).getDialogModel();
+
+        // The description stays in the body wrapper, above the custom view.
+        View body = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+        assertNotNull(body);
+        assertSame(body, customView.getParent());
+        TextView descriptionView = body.findViewById(R.id.adaptive_ui_dialog_description);
+        assertEquals("Description", descriptionView.getText().toString());
+        assertNull(dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPHS));
+        assertFalse(dialogModel.get(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE));
+
+        ModalDialogView dialogView = bindToRealModalDialogView(dialogModel);
+
+        assertSame(
+                dialogView.findViewById(
+                        org.chromium.components.browser_ui.modaldialog.R.id
+                                .custom_view_not_in_scrollable),
+                body.getParent());
     }
 }

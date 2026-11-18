@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!--
+Sheet body for a custom view that scrolls itself: the description and the
+footer stay in place, and the custom view gets the height left between them.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/adaptive_ui_sheet_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/adaptive_ui_sheet_vertical_margin"
+        android:layout_marginHorizontal=
+            "@dimen/adaptive_ui_sheet_horizontal_margin"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:visibility="gone" />
+
+    <!-- No side padding: the custom view draws its own, as in a dialog. -->
+    <FrameLayout
+        android:id="@+id/adaptive_ui_sheet_custom_view_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="@dimen/adaptive_ui_sheet_vertical_margin"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/adaptive_ui_sheet_footer_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/adaptive_ui_sheet_vertical_margin"
+        android:layout_marginHorizontal=
+            "@dimen/adaptive_ui_sheet_horizontal_margin"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        android:visibility="gone" />
+</LinearLayout>

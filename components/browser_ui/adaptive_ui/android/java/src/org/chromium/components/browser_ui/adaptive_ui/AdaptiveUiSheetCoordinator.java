@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.ScrollView;
 
 import androidx.activity.OnBackPressedCallback;
@@ -61,7 +62,9 @@ final class AdaptiveUiSheetCoordinator
     private final Runnable mOnShown;
     private final Callback<Integer> mOnDismissed;
     private final View mContentView;
-    private final ScrollView mScrollView;
+    // The sheet's own scroll view around the description, custom view and footer. Null when the
+    // custom view scrolls itself: the body is then laid out without it.
+    private final @Nullable ScrollView mBodyScrollView;
     private final ViewGroup mCustomViewContainer;
     private final PropertyModelChangeProcessor<PropertyModel, View, PropertyKey> mChangeProcessor;
     private final BottomSheetObserver mSheetObserver =
@@ -163,7 +166,24 @@ final class AdaptiveUiSheetCoordinator
         // TODO(crbug.com/580967946): Confirm sheet layout and dimensions with UX.
         mContentView =
                 LayoutInflater.from(context).inflate(R.layout.adaptive_ui_sheet, /* root= */ null);
-        mScrollView = mContentView.findViewById(R.id.adaptive_ui_sheet_scroll_view);
+        // Inflating without a root drops the layout params of the XML root, and the sheet would
+        // then add this view as MATCH_PARENT. On phones a WRAP_CONTENT sheet lays its container
+        // out at the full container height and only shows the content's wrapped height, so a
+        // MATCH_PARENT view would push the button bar below the screen. A half sheet uses
+        // RESIZE_CONTENT, which sizes the container to the sheet, so its view fills it.
+        mContentView.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        isHalfSheet()
+                                ? ViewGroup.LayoutParams.MATCH_PARENT
+                                : ViewGroup.LayoutParams.WRAP_CONTENT));
+        ViewStub bodyStub = mContentView.findViewById(R.id.adaptive_ui_sheet_body_stub);
+        bodyStub.setLayoutResource(
+                model.get(AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF)
+                        ? R.layout.adaptive_ui_sheet_body_self_scrolling
+                        : R.layout.adaptive_ui_sheet_body);
+        bodyStub.inflate();
+        mBodyScrollView = mContentView.findViewById(R.id.adaptive_ui_sheet_scroll_view);
         mCustomViewContainer =
                 mContentView.findViewById(R.id.adaptive_ui_sheet_custom_view_container);
 
@@ -265,7 +285,11 @@ final class AdaptiveUiSheetCoordinator
 
     @Override
     public int getVerticalScrollOffset() {
-        return mScrollView.getScrollY();
+        if (mBodyScrollView != null) return mBodyScrollView.getScrollY();
+        // BottomSheetCoordinator#isContentScrolledToTop only checks `<= 0` (so a downward swipe
+        // scrolls inner content up before dragging the sheet), so returning 1 or 0 suffices.
+        View customView = mModel.get(AdaptiveUiProperties.CUSTOM_VIEW);
+        return customView != null && canScrollUp(customView) ? 1 : 0;
     }
 
     /**
@@ -300,7 +324,7 @@ final class AdaptiveUiSheetCoordinator
     public float getHalfHeightRatio() {
         // The BottomSheetController opens the sheet in its lowest enabled state, so enabling the
         // half state makes the sheet open at the half height.
-        if (mInitialState != SheetState.HALF) return HeightMode.DISABLED;
+        if (!isHalfSheet()) return HeightMode.DISABLED;
         float halfRatio =
                 getCustomRatio(AdaptiveUiProperties.SHEET_HALF_HEIGHT_RATIO, HeightMode.DEFAULT);
         // A half height above the full height would open the sheet above its full height.
@@ -314,9 +338,7 @@ final class AdaptiveUiSheetCoordinator
     public float getFullHeightRatio() {
         // A WRAP_CONTENT full height disables the half state, so a half sheet resizes its content
         // to the sheet height instead, which keeps the button bar on screen at the half height.
-        return mInitialState == SheetState.HALF
-                ? HeightMode.RESIZE_CONTENT
-                : HeightMode.WRAP_CONTENT;
+        return isHalfSheet() ? HeightMode.RESIZE_CONTENT : HeightMode.WRAP_CONTENT;
     }
 
     @Override
@@ -409,6 +431,29 @@ final class AdaptiveUiSheetCoordinator
         boolean blocked = now <= mTapProtectionStartTimestampMs + durationMs;
         mTapProtectionStartTimestampMs = now;
         return blocked;
+    }
+
+    /**
+     * Whether {@code view} or a visible descendant is scrolled down. Uses {@link
+     * View#canScrollVertically}({@code -1}) because {@code RecyclerView#getScrollY()} is always 0
+     * and {@code View#computeVerticalScrollOffset()} is protected.
+     */
+    private static boolean canScrollUp(View view) {
+        if (view.getVisibility() != View.VISIBLE) return false;
+        if (view.canScrollVertically(-1)) return true;
+        if (!(view instanceof ViewGroup group)) return false;
+        for (int i = 0; i < group.getChildCount(); i++) {
+            if (canScrollUp(group.getChildAt(i))) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Whether the sheet opens at the half height. A half sheet takes its height from a ratio of the
+     * screen and resizes its content to fit; any other sheet wraps its content.
+     */
+    private boolean isHalfSheet() {
+        return mInitialState == SheetState.HALF;
     }
 
     private static boolean isSettledOpenState(@SheetState int state) {

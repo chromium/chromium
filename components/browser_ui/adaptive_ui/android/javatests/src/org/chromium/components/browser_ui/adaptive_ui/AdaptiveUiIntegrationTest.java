@@ -21,6 +21,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.widget.FrameLayout;
+import android.widget.ScrollView;
 
 import androidx.activity.ComponentDialog;
 import androidx.activity.OnBackPressedCallback;
@@ -306,6 +307,57 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
     }
 
     @Test
+    public void testSheetSelfScrollingCustomView_SwipeDownWhileScrolledKeepsSheet() {
+        ScrollView body = showSheetWithSelfScrollingBody();
+        body.scrollTo(0, 5 * ROOT_SIZE_PX);
+        assertEquals(5 * ROOT_SIZE_PX, body.getScrollY());
+
+        // The swipe scrolls the body instead of dragging the sheet down.
+        dispatchVerticalSwipe(sheetContainerView());
+        mSheetSupport.endAllAnimations();
+
+        assertTrue(mDismissReasons.isEmpty());
+        assertEquals(SheetState.FULL, mSheetController.getSheetState());
+    }
+
+    @Test
+    public void testSheetSelfScrollingCustomView_SwipeDownAtTopDismisses() {
+        ScrollView body = showSheetWithSelfScrollingBody();
+        assertEquals(0, body.getScrollY());
+
+        dispatchVerticalSwipe(sheetContainerView());
+        mSheetSupport.endAllAnimations();
+
+        assertEquals(List.of(DismissReason.SWIPE_DOWN), mDismissReasons);
+    }
+
+    @Test
+    public void testSheetSelfScrollingCustomView_ShortBodyKeepsFooterAndButtonOnScreen() {
+        // A body much shorter than the container leaves slack below the visible sheet.
+        ScrollView shortBody = new ScrollView(mActivity);
+        View shortContent = new View(mActivity);
+        shortContent.setMinimumHeight(ROOT_SIZE_PX / 20);
+        shortBody.addView(shortContent);
+        showSheet(
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.CUSTOM_VIEW, shortBody)
+                        .with(AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF, true)
+                        .with(AdaptiveUiProperties.FOOTER_MESSAGE, str(R.string.ok))
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, str(R.string.ok))
+                        .build());
+        assertEquals(SheetState.FULL, mSheetController.getSheetState());
+
+        int visibleHeight = mSheetController.getCurrentOffset();
+        assertTrue(visibleHeight < ROOT_SIZE_PX);
+        View footer = sheetButton(R.id.adaptive_ui_sheet_footer_message);
+        View primaryButton = sheetButton(R.id.adaptive_ui_sheet_primary_button);
+        assertTrue(footer.getHeight() > 0);
+        assertTrue(primaryButton.getHeight() > 0);
+        assertTrue(bottomInSheetContent(footer) <= visibleHeight);
+        assertTrue(bottomInSheetContent(primaryButton) <= visibleHeight);
+    }
+
+    @Test
     public void testSheetAccessibilityPaneTitle_CustomAndGenericFallback() {
         String generic = str(R.string.bottom_sheet_accessibility_description);
         // Pair one unset and one custom ID per entry so every open/close mutates the pane title.
@@ -561,6 +613,21 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
         mSheetContainer.layout(0, 0, ROOT_SIZE_PX, ROOT_SIZE_PX);
     }
 
+    /** Shows a sheet whose body is a scroll view with far more content than fits. */
+    private ScrollView showSheetWithSelfScrollingBody() {
+        ScrollView body = new ScrollView(mActivity);
+        View tallContent = new View(mActivity);
+        tallContent.setMinimumHeight(10 * ROOT_SIZE_PX);
+        body.addView(tallContent);
+        var model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.CUSTOM_VIEW, body)
+                        .with(AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF, true)
+                        .build();
+        showSheet(model);
+        return body;
+    }
+
     private AdaptiveUiEntry showSheet(PropertyModel model) {
         var entry = newEntry(model, AdaptiveUiScope.TRANSIENT, AdaptiveUiContainer.BOTTOM_SHEET);
         assertEquals(Integer.valueOf(AdaptiveUiContainer.BOTTOM_SHEET), mController.show(entry));
@@ -599,6 +666,18 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
 
     private View sheetButton(int id) {
         return mSheetController.getCurrentSheetContent().getContentView().findViewById(id);
+    }
+
+    /** Returns the bottom edge of {@code view} relative to the top of the sheet content view. */
+    private int bottomInSheetContent(View view) {
+        View contentView = mSheetController.getCurrentSheetContent().getContentView();
+        int bottom = view.getBottom();
+        for (View parent = (View) view.getParent();
+                parent != contentView;
+                parent = (View) parent.getParent()) {
+            bottom += parent.getTop();
+        }
+        return bottom;
     }
 
     private View dialogButton(@ButtonType int buttonType) {

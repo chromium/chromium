@@ -105,6 +105,19 @@ public class AdaptiveUiProperties {
     public static final WritableObjectPropertyKey<@Nullable View> CUSTOM_VIEW =
             new WritableObjectPropertyKey<>();
 
+    /**
+     * Whether {@link #CUSTOM_VIEW} scrolls its own content (such as a list or a web view). When
+     * {@code true}, the body is placed outside the container's scroll view and gets the height left
+     * between the description and the footer, so it must scroll whatever doesn't fit. In a sheet
+     * the body then spans the full sheet width, and the sheet can only be dragged down while
+     * neither the body nor any visible view inside it can scroll up. Set this whenever the body
+     * scrolls by itself: a scrolling body left inside the container's scroll view is laid out at
+     * its full height and fights that scroll view for touches. Read-only because the containers
+     * pick the layout once, when the entry is shown. Defaults to {@code false}.
+     */
+    public static final ReadableBooleanPropertyKey CUSTOM_VIEW_SCROLLS_ITSELF =
+            new ReadableBooleanPropertyKey();
+
     /** Text for the primary action button. Leaving this unset hides the primary button. */
     public static final WritableObjectPropertyKey<@Nullable String> PRIMARY_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
@@ -182,6 +195,7 @@ public class AdaptiveUiProperties {
                 FOOTER_MESSAGE,
                 BACK_PRESS_HANDLER,
                 CUSTOM_VIEW,
+                CUSTOM_VIEW_SCROLLS_ITSELF,
                 PRIMARY_BUTTON_TEXT,
                 ON_PRIMARY_BUTTON_CLICKED,
                 PRIMARY_BUTTON_DISABLED,

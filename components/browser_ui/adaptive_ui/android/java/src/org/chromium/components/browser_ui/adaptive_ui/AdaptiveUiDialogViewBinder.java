@@ -24,8 +24,9 @@ import java.util.Set;
  * org.chromium.ui.modelutil.PropertyModelChangeProcessor}.
  *
  * <p>Creation-time structural keys ({@link AdaptiveUiProperties#DIALOG_CONTENT_DESCRIPTION}, {@link
- * AdaptiveUiProperties#CUSTOM_VIEW}, and {@link AdaptiveUiProperties#FILTER_TOUCH_FOR_SECURITY})
- * and event-time action keys ({@link AdaptiveUiProperties#ON_PRIMARY_BUTTON_CLICKED}, {@link
+ * AdaptiveUiProperties#CUSTOM_VIEW}, {@link AdaptiveUiProperties#CUSTOM_VIEW_SCROLLS_ITSELF}, and
+ * {@link AdaptiveUiProperties#FILTER_TOUCH_FOR_SECURITY}) and event-time action keys ({@link
+ * AdaptiveUiProperties#ON_PRIMARY_BUTTON_CLICKED}, {@link
  * AdaptiveUiProperties#ON_SECONDARY_BUTTON_CLICKED}, {@link
  * AdaptiveUiProperties#PRIMARY_BUTTON_KEEPS_OPEN}, {@link
  * AdaptiveUiProperties#SECONDARY_BUTTON_KEEPS_OPEN}, and {@link
@@ -50,6 +51,7 @@ final class AdaptiveUiDialogViewBinder {
                     AdaptiveUiProperties.SHEET_HALF_HEIGHT_RATIO,
                     AdaptiveUiProperties.SHEET_FULL_HEIGHT_RATIO,
                     AdaptiveUiProperties.CUSTOM_VIEW,
+                    AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF,
                     AdaptiveUiProperties.BACK_PRESS_HANDLER,
                     AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
                     AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
