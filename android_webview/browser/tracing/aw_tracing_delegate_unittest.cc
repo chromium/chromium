@@ -12,6 +12,7 @@
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/metrics/aw_metrics_test_utils.h"
 #include "base/check_deref.h"
+#include "base/metrics/user_metrics.h"
 #include "base/values.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -32,6 +33,9 @@ class AwTracingDelegateTest : public testing::Test {
         std::make_unique<AwContentBrowserClient>(aw_feature_list_creator);
     browser_process_ = new AwBrowserProcess(aw_content_browser_client.get());
 
+    // Required by MetricsService (via TestMetricsServiceClient) on teardown.
+    base::SetRecordActionTaskRunner(
+        task_environment_.GetMainThreadTaskRunner());
     auto client = std::make_unique<TestMetricsServiceClient>();
     client->Initialize(browser_process_->local_state());
     AwMetricsServiceClient::SetInstance(std::move(client));
