@@ -18,7 +18,6 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/test/task_environment.h"
-#include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink::scheduler {
 
@@ -200,9 +199,6 @@ TEST_F(BlinkSchedulerSingleThreadTaskRunnerTest,
     // Delete this manually since it leaked.
     delete (unowned_test_object);
   }
-#if DCHECK_IS_ON()
-  SetIsBeforeThreadCreatedForTest();
-#endif
 }
 
 }  // namespace blink::scheduler

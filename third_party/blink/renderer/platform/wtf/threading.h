@@ -30,7 +30,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_H_
 
-#include "base/dcheck_is_on.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
@@ -46,12 +45,6 @@ inline base::PlatformThreadId CurrentThread() {
   return base::PlatformThread::CurrentId();
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
-
-#if DCHECK_IS_ON()
-WTF_EXPORT bool IsBeforeThreadCreated();
-WTF_EXPORT void WillCreateThread();
-WTF_EXPORT void SetIsBeforeThreadCreatedForTest();
-#endif
 
 }  // namespace blink
 

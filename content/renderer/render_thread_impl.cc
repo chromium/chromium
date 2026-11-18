@@ -565,6 +565,7 @@ void RenderThreadImpl::Init() {
   vc_manager_ = std::make_unique<blink::WebVideoCaptureImplManager>();
 
   GetContentClient()->renderer()->RenderThreadStarted();
+  WebSecurityPolicy::LockSchemeRegistries();
   ExposeRendererInterfacesToBrowser(weak_factory_.GetWeakPtr(), &binders);
   ExposeInterfacesToBrowser(std::move(binders));
 

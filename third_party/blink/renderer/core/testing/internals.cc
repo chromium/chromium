@@ -200,7 +200,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
-#include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-blink.h"
 #include "ui/base/ui_base_features.h"
@@ -2732,10 +2731,8 @@ void Internals::setMediaControlsTestMode(HTMLMediaElement* media_element,
 
 void Internals::registerURLSchemeAsBypassingContentSecurityPolicy(
     const String& scheme) {
-#if DCHECK_IS_ON()
-  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
-#endif
-  SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy(scheme);
+  SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicyForTest(
+      scheme);
 }
 
 void Internals::registerURLSchemeAsBypassingContentSecurityPolicy(
@@ -2743,23 +2740,18 @@ void Internals::registerURLSchemeAsBypassingContentSecurityPolicy(
     const Vector<String>& policy_areas) {
   uint32_t policy_areas_enum = SchemeRegistry::kPolicyAreaNone;
   for (const auto& policy_area : policy_areas) {
-    if (policy_area == "img")
+    if (policy_area == "img") {
       policy_areas_enum |= SchemeRegistry::kPolicyAreaImage;
-    else if (policy_area == "style")
+    } else if (policy_area == "style") {
       policy_areas_enum |= SchemeRegistry::kPolicyAreaStyle;
+    }
   }
-#if DCHECK_IS_ON()
-  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
-#endif
-  SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy(
+  SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicyForTest(
       scheme, static_cast<SchemeRegistry::PolicyAreas>(policy_areas_enum));
 }
 
 void Internals::removeURLSchemeRegisteredAsBypassingContentSecurityPolicy(
     const String& scheme) {
-#if DCHECK_IS_ON()
-  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
-#endif
   SchemeRegistry::
       RemoveURLSchemeRegisteredAsBypassingContentSecurityPolicyForTest(scheme);
 }

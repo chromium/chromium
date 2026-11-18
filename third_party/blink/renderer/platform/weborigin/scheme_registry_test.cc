@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/scheme_registry.h"
-#include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink {
 namespace {
@@ -16,9 +16,6 @@ const char kTestScheme2[] = "test-scheme-2";
 
 class SchemeRegistryTest : public testing::Test {
   void TearDown() override {
-#if DCHECK_IS_ON()
-    SetIsBeforeThreadCreatedForTest();  // Required for next operation:
-#endif
     SchemeRegistry::
         RemoveURLSchemeRegisteredAsBypassingContentSecurityPolicyForTest(
             kTestScheme);
@@ -33,9 +30,6 @@ TEST_F(SchemeRegistryTest, NoCSPBypass) {
 }
 
 TEST_F(SchemeRegistryTest, FullCSPBypass) {
-#if DCHECK_IS_ON()
-  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
-#endif
   SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy(
       kTestScheme);
   EXPECT_TRUE(
@@ -49,9 +43,6 @@ TEST_F(SchemeRegistryTest, FullCSPBypass) {
 }
 
 TEST_F(SchemeRegistryTest, PartialCSPBypass) {
-#if DCHECK_IS_ON()
-  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
-#endif
   SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy(
       kTestScheme, SchemeRegistry::kPolicyAreaImage);
   EXPECT_FALSE(
@@ -73,9 +64,6 @@ TEST_F(SchemeRegistryTest, BypassSecureContextCheck) {
   EXPECT_FALSE(SchemeRegistry::SchemeShouldBypassSecureContextCheck(scheme2));
   EXPECT_FALSE(SchemeRegistry::SchemeShouldBypassSecureContextCheck(scheme3));
 
-#if DCHECK_IS_ON()
-  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
-#endif
   SchemeRegistry::RegisterURLSchemeBypassingSecureContextCheck("random-scheme");
 
   EXPECT_FALSE(SchemeRegistry::SchemeShouldBypassSecureContextCheck(scheme1));
@@ -88,9 +76,6 @@ TEST_F(SchemeRegistryTest, WebUIScheme) {
   EXPECT_FALSE(SchemeRegistry::IsWebUIScheme(kTestScheme));
   EXPECT_FALSE(SchemeRegistry::IsWebUIScheme(kChromeUIScheme));
 
-#if DCHECK_IS_ON()
-  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
-#endif
   SchemeRegistry::RegisterURLSchemeAsWebUI(kTestScheme);
 
   EXPECT_TRUE(SchemeRegistry::IsWebUIScheme(kTestScheme));
@@ -117,9 +102,6 @@ TEST_F(SchemeRegistryTest, ExtensionScheme) {
   EXPECT_FALSE(CommonSchemeRegistry::IsExtensionScheme(kTestScheme));
   EXPECT_FALSE(CommonSchemeRegistry::IsExtensionScheme(kExtensionScheme));
 
-#if DCHECK_IS_ON()
-  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
-#endif
   CommonSchemeRegistry::RegisterURLSchemeAsExtension(kExtensionScheme);
 
   EXPECT_FALSE(CommonSchemeRegistry::IsExtensionScheme(kTestScheme));
@@ -212,6 +194,20 @@ TEST_F(SchemeRegistryTest, DirectLaunchScheme) {
 
   SchemeRegistry::RemoveURLSchemeAsDirectLaunchForTest(kScheme);
   EXPECT_FALSE(SchemeRegistry::IsDirectLaunchScheme(kScheme));
+}
+
+TEST_F(SchemeRegistryTest, LockSchemeRegistries) {
+  EXPECT_DCHECK_DEATH({
+    SchemeRegistry::LockSchemeRegistries();
+
+    // ForTest mutators bypass the lock check.
+    SchemeRegistry::RegisterURLSchemeAsWebUIForTest(kTestScheme);
+    EXPECT_TRUE(SchemeRegistry::IsWebUIScheme(kTestScheme));
+    SchemeRegistry::RemoveURLSchemeAsWebUIForTest(kTestScheme);
+    EXPECT_FALSE(SchemeRegistry::IsWebUIScheme(kTestScheme));
+
+    SchemeRegistry::RegisterURLSchemeAsWebUI(kTestScheme);
+  });
 }
 
 }  // namespace

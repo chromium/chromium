@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "url/gurl.h"
 #include "url/gurl_abstract_tests.h"
 #include "url/url_features.h"
@@ -899,9 +898,6 @@ TEST(KURLTest, urlStrippedForUseAsReferrerRespectsReferrerScheme) {
   const String foobar_scheme = "foobar";
 
   EXPECT_EQ("", foobar_url.StrippedForUseAsReferrer().Utf8());
-#if DCHECK_IS_ON()
-  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
-#endif
   SchemeRegistry::RegisterURLSchemeAsAllowedForReferrer(foobar_scheme);
   EXPECT_EQ("foobar://somepage/", foobar_url.StrippedForUseAsReferrer());
   SchemeRegistry::RemoveURLSchemeAsAllowedForReferrerForTest(foobar_scheme);
@@ -932,12 +928,6 @@ TEST(KURLTest, strippedForUseAsReferrer) {
 }
 
 TEST(KURLTest, ThreadSafesStaticKurlGetters) {
-#if DCHECK_IS_ON()
-  // Simulate the static getters being called during/after threads have been
-  // started.
-  WillCreateThread();
-#endif
-
   // Take references to the static KURLs, so that each has two references to
   // its internal StringImpl, rather than one.
   KURL blank_url = BlankUrl();
@@ -961,11 +951,6 @@ TEST(KURLTest, ThreadSafesStaticKurlGetters) {
                                       KURL null_url = NullUrl();
                                       EXPECT_TRUE(null_url.IsNull());
                                     }));
-
-#if DCHECK_IS_ON()
-  // Restore the IsBeforeThreadCreated() flag.
-  SetIsBeforeThreadCreatedForTest();
-#endif
 }
 
 // Setting protocol to "file" should not work if the URL has credentials or a

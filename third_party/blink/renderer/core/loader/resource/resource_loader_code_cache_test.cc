@@ -66,9 +66,6 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
   }
 
   void CommonSetup(v8::Isolate* isolate, const char* url_string = nullptr) {
-#if DCHECK_IS_ON()
-    SetIsBeforeThreadCreatedForTest();  // Required for next operation:
-#endif
     SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
         "codecachewithhashing");
 

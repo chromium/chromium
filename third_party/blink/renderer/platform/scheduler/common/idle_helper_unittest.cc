@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 using testing::_;
@@ -931,10 +930,6 @@ TEST_F(IdleHelperTest, OnPendingTasksChanged_TwoTasksAtTheSameTime) {
 
 class MultiThreadedIdleHelperTest : public IdleHelperTest {
  public:
-#if DCHECK_IS_ON()
-  ~MultiThreadedIdleHelperTest() override { SetIsBeforeThreadCreatedForTest(); }
-#endif
-
   void PostIdleTaskFromNewThread(int* run_count) {
     PostDelayedIdleTaskFromNewThread(base::TimeDelta(), run_count);
   }

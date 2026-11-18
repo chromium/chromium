@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-#include "third_party/blink/renderer/platform/wtf/threading.h"
 
 using testing::_;
 using testing::AnyOf;
@@ -87,13 +86,6 @@ class NonMainThreadImplTest : public testing::Test {
     thread_ = NonMainThread::CreateThread(
         ThreadCreationParams(ThreadType::kTestThread));
   }
-
-#if DCHECK_IS_ON()
-  void TearDown() override {
-    thread_.reset();
-    SetIsBeforeThreadCreatedForTest();
-  }
-#endif  // DCHECK_IS_ON()
 
   void RunOnWorkerThread(const base::Location& from_here,
                          base::OnceClosure task) {

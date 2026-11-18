@@ -34,9 +34,6 @@ namespace blink {
 
 std::unique_ptr<NonMainThread> NonMainThread::CreateThread(
     const ThreadCreationParams& params) {
-#if DCHECK_IS_ON()
-  WillCreateThread();
-#endif
   auto thread = std::make_unique<scheduler::NonMainThreadImpl>(params);
   thread->Init();
   return std::move(thread);

@@ -25,6 +25,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/threading/platform_thread.h"
 #include "components/persistent_cache/pending_backend.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -59,7 +60,6 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -140,9 +140,6 @@ class TestPlatformForRedirects final : public TestingPlatformSupport {
 };
 
 void RegisterURLSchemeAsCodeCacheWithHashing() {
-#if DCHECK_IS_ON()
-  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
-#endif
   SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
       "codecachewithhashing");
 }
@@ -2368,16 +2365,10 @@ class WebUIBundledCodeCacheResourceRequestSenderTest
   // ResourceRequestSenderTestBase:
   void SetUp() override {
     ResourceRequestSenderTestBase::SetUp();
-#if DCHECK_IS_ON()
-    SetIsBeforeThreadCreatedForTest();
-#endif
     SchemeRegistry::RegisterURLSchemeAsWebUIBundledBytecode("chrome");
   }
 
   void TearDown() override {
-#if DCHECK_IS_ON()
-    SetIsBeforeThreadCreatedForTest();
-#endif
     SchemeRegistry::RemoveURLSchemeAsWebUIBundledBytecodeForTest("chrome");
     ResourceRequestSenderTestBase::TearDown();
   }

@@ -180,4 +180,8 @@ void WebSecurityPolicy::RegisterURLSchemeAsDirectLaunch(
   SchemeRegistry::RegisterURLSchemeAsDirectLaunch(scheme);
 }
 
+void WebSecurityPolicy::LockSchemeRegistries() {
+  SchemeRegistry::LockSchemeRegistries();
+}
+
 }  // namespace blink

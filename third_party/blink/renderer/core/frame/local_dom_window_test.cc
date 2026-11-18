@@ -66,7 +66,6 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink {
 
@@ -218,9 +217,6 @@ TEST_F(LocalDOMWindowTest, EnforceSandboxFlags) {
   {
     url::ScopedSchemeRegistryForTests scoped_registry;
     url::AddStandardScheme("very-special-scheme", url::SCHEME_WITH_HOST);
-#if DCHECK_IS_ON()
-    SetIsBeforeThreadCreatedForTest();  // Required for next operation:
-#endif
     SchemeRegistry::RegisterURLSchemeBypassingSecureContextCheck(
         "very-special-scheme");
     NavigateWithSandbox(KURL("very-special-scheme://example.test"));

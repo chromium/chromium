@@ -113,9 +113,6 @@ TEST(ScriptResourceTest, RedirectDuringRevalidation) {
 
 TEST(ScriptResourceTest, WebUICodeCacheEnabled) {
   test::TaskEnvironment task_environment;
-#if DCHECK_IS_ON()
-  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
-#endif
   SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
       "codecachewithhashing");
 
@@ -136,9 +133,6 @@ TEST(ScriptResourceTest, WebUICodeCacheEnabled) {
   EXPECT_TRUE(handler->HashRequired());
   EXPECT_EQ(Utf8Encoding().GetName(), handler->Encoding());
 
-#if DCHECK_IS_ON()
-  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
-#endif
   SchemeRegistry::RemoveURLSchemeAsCodeCacheWithHashingForTest(
       "codecachewithhashing");
 }
@@ -278,9 +272,6 @@ TEST(ScriptResourceTest, CreatesHandlerForWebUIBundledCodeCaching) {
 
   // Define lambda to enable / disable bundled code caching for the URL scheme.
   const auto enable_webui_bundled_code_caching = [&](bool enable) {
-#if DCHECK_IS_ON()
-    SetIsBeforeThreadCreatedForTest();  // Required for next operation:
-#endif
     if (enable) {
       SchemeRegistry::RegisterURLSchemeAsWebUIBundledBytecode("chrome");
     } else {

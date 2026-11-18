@@ -27,7 +27,9 @@
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 
 #include <algorithm>
+#include <atomic>
 
+#include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/blink.h"
@@ -35,8 +37,6 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
-#include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "url/url_util.h"
 
 namespace blink {
@@ -87,9 +87,10 @@ class URLSchemesRegistry final {
   // As URLSchemesRegistry is accessed from multiple threads, be very careful to
   // ensure that
   // - URLSchemesRegistry is initialized/modified through
-  //   GetMutableURLSchemesRegistry() before threads can be created, and
+  //   GetMutableURLSchemesRegistry() before LockSchemeRegistries() is called,
+  //   and
   // - The URLSchemesRegistry members below aren't modified when accessed after
-  //   initialization.
+  //   locking.
   URLSchemesSet display_isolated_url_schemes;
   URLSchemesSet empty_document_schemes;
   URLSchemesSet schemes_forbidden_from_domain_relaxation;
@@ -124,25 +125,30 @@ class URLSchemesRegistry final {
   }
 };
 
+std::atomic<bool> g_scheme_registries_locked{false};
+
 const URLSchemesRegistry& GetURLSchemesRegistry() {
   return URLSchemesRegistry::GetInstance();
 }
 
 URLSchemesRegistry& GetMutableURLSchemesRegistry() {
-#if DCHECK_IS_ON()
-  DCHECK(IsBeforeThreadCreated());
-#endif
+  DCHECK(!g_scheme_registries_locked.load(std::memory_order_relaxed))
+      << "Trying to modify SchemeRegistry after it has been locked.";
   return URLSchemesRegistry::GetInstance();
 }
 
 URLSchemesRegistry& GetMutableURLSchemesRegistryForTest() {
-  // Bypasses thread check. This is used when TestRunner tries to mutate
-  // schemes_forbidden_from_domain_relaxation during a test or on resetting
-  // its internal states.
+  // Bypasses lock check. This is used when TestRunner or Internals tries to
+  // mutate the scheme registry during a test or on resetting its internal
+  // states.
   return URLSchemesRegistry::GetInstance();
 }
 
 }  // namespace
+
+void SchemeRegistry::LockSchemeRegistries() {
+  g_scheme_registries_locked.store(true, std::memory_order_relaxed);
+}
 
 void SchemeRegistry::RegisterURLSchemeAsDisplayIsolated(const String& scheme) {
   DCHECK_EQ(scheme, scheme.ToAsciiLower());
@@ -214,8 +220,8 @@ void SchemeRegistry::RegisterURLSchemeAsNotAllowingJavascriptURLs(
 
 void SchemeRegistry::RemoveURLSchemeAsNotAllowingJavascriptURLsForTest(
     const String& scheme) {
-  GetMutableURLSchemesRegistry().not_allowing_javascript_urls_schemes.erase(
-      scheme);
+  GetMutableURLSchemesRegistryForTest()
+      .not_allowing_javascript_urls_schemes.erase(scheme);
 }
 
 bool SchemeRegistry::ShouldTreatURLSchemeAsNotAllowingJavascriptURLs(
@@ -306,8 +312,8 @@ void SchemeRegistry::RegisterURLSchemeAsFirstPartyWhenTopLevel(
 void SchemeRegistry::RemoveURLSchemeAsFirstPartyWhenTopLevelForTest(
     const String& scheme) {
   DCHECK_EQ(scheme, scheme.ToAsciiLower());
-  GetMutableURLSchemesRegistry().first_party_when_top_level_schemes.erase(
-      scheme);
+  GetMutableURLSchemesRegistryForTest()
+      .first_party_when_top_level_schemes.erase(scheme);
 }
 
 bool SchemeRegistry::ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
@@ -367,7 +373,8 @@ void SchemeRegistry::RegisterURLSchemeAsAllowedForReferrer(
 
 void SchemeRegistry::RemoveURLSchemeAsAllowedForReferrerForTest(
     const String& scheme) {
-  GetMutableURLSchemesRegistry().allowed_in_referrer_schemes.erase(scheme);
+  GetMutableURLSchemesRegistryForTest().allowed_in_referrer_schemes.erase(
+      scheme);
 }
 
 bool SchemeRegistry::ShouldTreatURLSchemeAsAllowedForReferrer(
@@ -414,11 +421,19 @@ void SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy(
       .content_security_policy_bypassing_schemes.insert(scheme, policy_areas);
 }
 
+void SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicyForTest(
+    const String& scheme,
+    PolicyAreas policy_areas) {
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
+  GetMutableURLSchemesRegistryForTest()
+      .content_security_policy_bypassing_schemes.insert(scheme, policy_areas);
+}
+
 void SchemeRegistry::
     RemoveURLSchemeRegisteredAsBypassingContentSecurityPolicyForTest(
         const String& scheme) {
   DCHECK_EQ(scheme, scheme.ToAsciiLower());
-  GetMutableURLSchemesRegistry()
+  GetMutableURLSchemesRegistryForTest()
       .content_security_policy_bypassing_schemes.erase(scheme);
 }
 
@@ -495,7 +510,8 @@ void SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
 
 void SchemeRegistry::RemoveURLSchemeAsCodeCacheWithHashingForTest(
     const String& scheme) {
-  GetMutableURLSchemesRegistry().code_cache_with_hashing_schemes.erase(scheme);
+  GetMutableURLSchemesRegistryForTest().code_cache_with_hashing_schemes.erase(
+      scheme);
 }
 
 bool SchemeRegistry::SchemeSupportsCodeCacheWithHashing(const String& scheme) {

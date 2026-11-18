@@ -310,10 +310,6 @@ class VideoCaptureImplTest : public ::testing::Test {
     platform_->SetGpuCapabilities(&fake_capabilities_);
   }
 
-#if DCHECK_IS_ON()
-  ~VideoCaptureImplTest() override { SetIsBeforeThreadCreatedForTest(); }
-#endif
-
   VideoCaptureImplTest(const VideoCaptureImplTest&) = delete;
   VideoCaptureImplTest& operator=(const VideoCaptureImplTest&) = delete;
 

@@ -46,9 +46,8 @@ using URLSchemesSet = HashSet<String>;
 template <typename Mapped, typename MappedTraits>
 using URLSchemesMap = HashMap<String, Mapped, HashTraits<String>, MappedTraits>;
 
-// Scheme registration should happen as early as possible to ensure consistency,
-// though it is technically possible to mutate the scheme registry up until
-// worker threads start.
+// Scheme registration should happen during renderer initialization before the
+// scheme registries are locked via LockSchemeRegistries().
 //
 // In this spirit:
 // - registration functions are callable by anything, including non-test code
@@ -61,6 +60,9 @@ class PLATFORM_EXPORT SchemeRegistry {
   STATIC_ONLY(SchemeRegistry);
 
  public:
+  // Sets a flag to prevent future calls to Register* methods from succeeding.
+  static void LockSchemeRegistries();
+
   static bool ShouldTreatURLSchemeAsRestrictingMixedContent(const String&);
 
   // Display-isolated schemes can only be displayed (in the sense of
@@ -156,6 +158,9 @@ class PLATFORM_EXPORT SchemeRegistry {
     kPolicyAreaAll = ~static_cast<uint32_t>(0),
   };
   static void RegisterURLSchemeAsBypassingContentSecurityPolicy(
+      const String& scheme,
+      PolicyAreas = kPolicyAreaAll);
+  static void RegisterURLSchemeAsBypassingContentSecurityPolicyForTest(
       const String& scheme,
       PolicyAreas = kPolicyAreaAll);
   static void RemoveURLSchemeRegisteredAsBypassingContentSecurityPolicyForTest(

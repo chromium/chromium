@@ -158,6 +158,10 @@ class BLINK_EXPORT WebSecurityPolicy {
   // Blink and will fail to load.
   static void RegisterURLSchemeAsDirectLaunch(const WebString&);
 
+  // Sets a flag to prevent future calls to RegisterURLScheme* and
+  // AddSchemeToSecureContextSafelist from succeeding.
+  static void LockSchemeRegistries();
+
  private:
   WebSecurityPolicy() = delete;
 };

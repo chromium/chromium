@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/cppgc/heap-state.h"
 #include "v8/include/cppgc/testing.h"
@@ -215,15 +214,7 @@ class NativeContainerHolder final
   std::unique_ptr<NativeHolderOfB> native_;
 };
 
-class GcFinalizationTest : public TestSupportingGC {
- protected:
-  void TearDown() override {
-#if DCHECK_IS_ON()
-    SetIsBeforeThreadCreatedForTest();
-#endif
-    TestSupportingGC::TearDown();
-  }
-};
+class GcFinalizationTest : public TestSupportingGC {};
 
 TEST_F(GcFinalizationTest, NotInFinalizationOutsideGc) {
   EXPECT_FALSE(ThreadState::IsInGcFinalization());

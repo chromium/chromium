@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
-#include <atomic>
-
 #include "build/build_config.h"
 
 namespace blink {
@@ -16,25 +14,5 @@ base::PlatformThreadId CurrentThread() {
   return g_id;
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
-
-// For debugging only -- whether a non-main thread has been created.
-
-#if DCHECK_IS_ON()
-namespace {
-std::atomic_bool g_thread_created(false);
-}  // namespace
-
-bool IsBeforeThreadCreated() {
-  return !g_thread_created;
-}
-
-void WillCreateThread() {
-  g_thread_created = true;
-}
-
-void SetIsBeforeThreadCreatedForTest() {
-  g_thread_created = false;
-}
-#endif
 
 }  // namespace blink

@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "url/url_util.h"
 
 namespace blink {
@@ -56,9 +55,6 @@ TEST_F(WindowAgentFactoryTest,
 
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme(kExtensionScheme, url::SCHEME_WITH_HOST);
-#if DCHECK_IS_ON()
-  SetIsBeforeThreadCreatedForTest();
-#endif
   CommonSchemeRegistry::RegisterURLSchemeAsExtension(kExtensionScheme);
 
   auto page_holder1 = std::make_unique<DummyPageHolder>();

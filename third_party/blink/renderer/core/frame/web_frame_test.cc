@@ -1284,12 +1284,6 @@ TEST_F(WebFrameTest, ChromePageNoJavascript) {
   web_view_helper.InitializeAndLoad(chrome_url_ + "history.html");
 
   // Try to run JS against the chrome-style URL after prohibiting it.
-#if DCHECK_IS_ON()
-  // TODO(crbug.com/1329535): Remove if threaded preload scanner doesn't launch.
-  // This is needed because the preload scanner creates a thread when loading a
-  // page.
-  SetIsBeforeThreadCreatedForTest();
-#endif
   WebSecurityPolicy::RegisterURLSchemeAsNotAllowingJavascriptURLs("chrome");
   frame_test_helpers::LoadFrame(web_view_helper.GetWebView()->MainFrameImpl(),
                                 "javascript:document.body.appendChild(document."
@@ -11070,12 +11064,6 @@ TEST_F(WebFrameTest, SiteForCookiesFromChildWithRemoteMainFrame) {
   frame_test_helpers::LoadFrame(local_frame, base_url_ + "foo.html");
   EXPECT_TRUE(local_frame->GetDocument().SiteForCookies().IsNull());
 
-#if DCHECK_IS_ON()
-  // TODO(crbug.com/1329535): Remove if threaded preload scanner doesn't launch.
-  // This is needed because the preload scanner creates a thread when loading a
-  // page.
-  SetIsBeforeThreadCreatedForTest();
-#endif
   SchemeRegistry::RegisterURLSchemeAsFirstPartyWhenTopLevel("http");
   EXPECT_TRUE(net::SiteForCookies::FromUrl(GURL(not_base_url_))
                   .IsEquivalent(local_frame->GetDocument().SiteForCookies()));
