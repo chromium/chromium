@@ -4451,11 +4451,6 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_CERT_EXTENSION_DUMP_ERROR" desc="The text displayed in the certificate details dialog for a given extension which could not be decoded">
           Error: Unable to decode extension
         </message>
-
-        <!-- Certificate manager dialog strings.  These are only used on platforms that don't have a native certificate manager dialog, such as Linux. -->
-        <message name="IDS_CERTIFICATE_MANAGER_TITLE" desc="String to be displayed in the title bar of the certificate manager dialog">
-          Certificate manager
-        </message>
       </if>
 
       <!-- DevTools shared process infobar -->
