@@ -62,6 +62,7 @@ from test_helpers import (
     ANY_TIMESTAMP,
     AnyExtending,
     execute_command,
+    get_mapper_target_id,
     get_tree,
     goto_url,
     read_JSON_message,
@@ -653,7 +654,7 @@ async def browser_ws_url(websocket) -> str:
 
 
 @pytest_asyncio.fixture
-async def mapper_tab_cdp(browser_ws_url):
+async def mapper_tab_cdp(browser_ws_url, websocket):
     """Creates a new direct CDP connection to the browser and attaches to the
     BiDi-CDP Mapper tab.
 
@@ -665,12 +666,7 @@ async def mapper_tab_cdp(browser_ws_url):
     control_cdp = _CdpConnection(control_ws)
     try:
         # Find the Mapper tab started by ChromeDriver and attach to it.
-        targets = await control_cdp.send_command("Target.getTargets")
-        mapper_target_id = next(
-            t["targetId"]
-            for t in targets["targetInfos"]
-            if t["title"] == "BiDi-CDP Mapper"
-        )
+        mapper_target_id = await get_mapper_target_id(websocket)
         attached = await control_cdp.send_command(
             "Target.attachToTarget",
             {"targetId": mapper_target_id, "flatten": True},

@@ -24,7 +24,7 @@ import {LogType} from '../utils/log.js';
 import type {Transport} from '../utils/transport.js';
 
 import {BidiParser} from './BidiParser.js';
-import {generatePage, log} from './mapperTabPage.js';
+import {log} from './logger.js';
 import {WindowBidiTransport, WindowCdpTransport} from './Transport.js';
 
 declare global {
@@ -52,17 +52,9 @@ declare global {
 
     // `window.onBidiMessage` is called via `Runtime.evaluate` from the server side.
     onBidiMessage: ((message: string) => void) | null;
-
-    // Set from the server side if verbose logging is required.
-    sendDebugMessage?: ((message: string) => void) | null;
-
-    // Required to prevent the user from closing the tab.
-    onbeforeunload:
-      ((this: WindowEventHandlers, ev: BeforeUnloadEvent) => any) | null;
   }
 }
 
-generatePage();
 const windowBidiTransport = new WindowBidiTransport();
 const windowCdpTransport = new WindowCdpTransport();
 let windowCdpConnection: MapperCdpConnection | null = null;

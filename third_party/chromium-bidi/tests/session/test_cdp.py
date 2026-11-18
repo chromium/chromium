@@ -23,6 +23,7 @@ from test_helpers import (
     ANY_TIMESTAMP,
     AnyExtending,
     execute_command,
+    get_mapper_target_id,
     get_tree,
     goto_url,
     read_JSON_message,
@@ -301,18 +302,7 @@ async def test_cdp_no_errors_on_non_page_targets(
     html,
     iframe,
 ):
-    targets = await execute_command(
-        websocket,
-        {
-            "method": "goog:cdp.sendCommand",
-            "params": {"method": "Target.getTargets", "params": {}},
-        },
-    )
-    mapper_target_id = next(
-        t["targetId"]
-        for t in targets["result"]["targetInfos"]
-        if t["title"] == "BiDi-CDP Mapper"
-    )
+    mapper_target_id = await get_mapper_target_id(websocket)
     session_id = await get_cdp_session_id(context_id)
     custom_session = await execute_command(
         websocket,
@@ -496,18 +486,7 @@ async def test_cdp_ignores_events_from_non_owning_session(
     # Attach to the BiDi-CDP Mapper target via a custom page session (so
     # CdpTargetManager does not auto-detach the mapper target) to invoke
     # `window.cdp.onmessage` with synthetic CDP events directly.
-    targets = await execute_command(
-        websocket,
-        {
-            "method": "goog:cdp.sendCommand",
-            "params": {"method": "Target.getTargets", "params": {}},
-        },
-    )
-    mapper_target_id = next(
-        t["targetId"]
-        for t in targets["result"]["targetInfos"]
-        if t["title"] == "BiDi-CDP Mapper"
-    )
+    mapper_target_id = await get_mapper_target_id(websocket)
     custom_session = await execute_command(
         websocket,
         {

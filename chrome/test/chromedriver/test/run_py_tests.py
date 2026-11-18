@@ -9914,7 +9914,6 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     conn = self.createWebSocketConnection()
     old_handles = self._driver.GetWindowHandles()
     self.assertEqual(1, len(old_handles))
-    self.assertNotEqual("BiDi Mapper", self._driver.GetTitle())
     conn.SendCommand(
       {'method': 'browsingContext.create', 'params': {'type': 'tab'}}
     )

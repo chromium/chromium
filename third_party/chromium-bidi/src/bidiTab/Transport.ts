@@ -21,23 +21,13 @@ import {
   ErrorCode,
   type ErrorResponse,
 } from '../protocol/protocol.js';
-import {LogType} from '../utils/log.js';
 import type {Transport} from '../utils/transport.js';
 
-import {log} from './mapperTabPage.js';
-
 export class WindowBidiTransport implements BidiTransport {
-  static readonly LOGGER_PREFIX_RECV: `${LogType.bidi}:RECV ◂` =
-    `${LogType.bidi}:RECV ◂` as const;
-  static readonly LOGGER_PREFIX_SEND: `${LogType.bidi}:SEND ▸` =
-    `${LogType.bidi}:SEND ▸` as const;
-  static readonly LOGGER_PREFIX_WARN: LogType.debugWarn = LogType.debugWarn;
-
   #onMessage: ((message: ChromiumBidi.Command) => void) | null = null;
 
   constructor() {
     window.onBidiMessage = (message: string) => {
-      log(WindowBidiTransport.LOGGER_PREFIX_RECV)?.(message);
       try {
         const command = WindowBidiTransport.#parseBidiMessage(message);
         this.#onMessage?.call(null, command);
@@ -54,7 +44,6 @@ export class WindowBidiTransport implements BidiTransport {
   }
 
   sendMessage(message: ChromiumBidi.Message): void {
-    log(WindowBidiTransport.LOGGER_PREFIX_SEND)?.(message);
     const json = JSON.stringify(message);
     window.sendBidiResponse(json);
   }

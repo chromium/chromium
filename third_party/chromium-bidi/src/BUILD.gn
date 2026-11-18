@@ -324,7 +324,7 @@ ts_library("bidi_tab") {
     "bidiTab/BidiParser.ts",
     "bidiTab/Transport.ts",
     "bidiTab/bidiTab.ts",
-    "bidiTab/mapperTabPage.ts",
+    "bidiTab/logger.ts",
   ]
   deps = [ ":bidi_mapper_sources" ]
   ts_deps = [ ":bidi_mapper" ]
@@ -371,6 +371,7 @@ ts_library("unit_tests") {
     "bidiMapper/modules/session/events.test.ts",
     "bidiMapper/modules/storage/StorageProcessor.test.ts",
     "bidiMapper/modules/webExtension/WebExtensionProcessor.test.ts",
+    "bidiTab/logger.test.ts",
     "cdp/CdpClient.test.ts",
     "cdp/CdpConnection.test.ts",
     "protocol-parser/protocol-parser.test.ts",

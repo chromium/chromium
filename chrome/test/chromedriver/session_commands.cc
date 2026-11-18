@@ -379,8 +379,7 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
   if (session->web_socket_url) {
     // The webview that will be visible to the user as the initial one.
     WebView* initial_web_view = nullptr;
-    // The webview that will be used for running BiDi mapper. Can be either
-    // a hidden target or a visible tab.
+    // The hidden target webview that will be used for running BiDi mapper.
     WebView* bidi_mapper_web_view = nullptr;
 
     // Get the currently open web view.
@@ -408,8 +407,7 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
       return status;
     }
 
-    base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-    // Create a hidden target for running  BiDi-CDP mapper in it.
+    // Create a hidden target for running BiDi-CDP mapper in it.
     status = session->chrome->NewHiddenTarget(
         session->window, session->w3c_compliant,
         &session->bidi_mapper_web_view_id);
@@ -438,6 +436,7 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     }
 
     // Start the mapper.
+    base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
     base::FilePath bidi_mapper_path =
         cmd_line->GetSwitchValuePath("bidi-mapper-path");
 

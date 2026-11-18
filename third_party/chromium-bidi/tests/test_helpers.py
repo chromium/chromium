@@ -151,6 +151,28 @@ async def get_tree(websocket, context_id: str | None = None) -> dict:
     )
 
 
+async def get_mapper_target_id(websocket) -> str:
+    """Return the CDP target ID of the hidden BiDi-CDP Mapper target."""
+    tree = await get_tree(websocket)
+    browsing_context_ids = {c["context"] for c in tree["contexts"]}
+    targets = await execute_command(
+        websocket,
+        {
+            "method": "goog:cdp.sendCommand",
+            "params": {"method": "Target.getTargets", "params": {}},
+        },
+    )
+    # Hidden target has type "other" in Chrome and "page" in headless_shell.
+    return next(
+        t["targetId"]
+        for t in targets["result"]["targetInfos"]
+        if t["type"] in {"other", "page"}
+        and t["url"] == "about:blank"
+        and t["attached"]
+        and t["targetId"] not in browsing_context_ids
+    )
+
+
 async def goto_url(
     websocket,
     context_id: str,
