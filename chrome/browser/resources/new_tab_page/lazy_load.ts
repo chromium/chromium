@@ -70,6 +70,7 @@ export {FileAction, FileSuggestionElement} from './modules/file_suggestion/file_
 export {microsoftFilesModuleDescriptor, MicrosoftFilesModuleElement} from './modules/file_suggestion/microsoft_files_module.js';
 export {MicrosoftFilesProxyImpl} from './modules/file_suggestion/microsoft_files_proxy.js';
 export {InfoDialogElement} from './modules/info_dialog.js';
+export {launchpadDescriptor, LaunchpadWidgetElement} from './modules/launchpad/launchpad_widget.js';
 export {ParentTrustedDocumentProxy} from './modules/microsoft_auth_frame_connector.js';
 export {ModuleDescriptor} from './modules/module_descriptor.js';
 export type {InitializeModuleCallback, Module} from './modules/module_descriptor.js';
