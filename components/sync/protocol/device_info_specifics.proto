@@ -107,6 +107,9 @@ message DeviceInfoSpecifics {
 
   // Device specific information for Personal Context feature.
   optional PersonalContextSpecificFields personal_context_fields = 23;
+
+  // Device-specific information for browser actuation features.
+  optional BrowserActuatorSpecificFields browser_actuator_fields = 24;
 }
 
 // Feature specific information about the device that is running a sync-enabled
@@ -281,3 +284,10 @@ message PersonalContextSpecificFields {
   optional bool eligible_for_spii = 3;
 }
 
+// Device-specific information for browser actuation features.
+message BrowserActuatorSpecificFields {
+  // Serialized tink.Keyset with the public key that verifies the co-location
+  // proofs this Chrome signs. Holds one ECDSA P-256 key (SHA-256, DER
+  // signatures). Use it only to verify those proofs.
+  optional bytes colocation_serialized_tink_keyset = 1;
+}

@@ -26,6 +26,7 @@
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/deletion_origin.pb.h"
+#include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/dictionary_specifics.pb.h"
 #include "components/sync/protocol/encrypted_tab_context_container_specifics.pb.h"
 #include "components/sync/protocol/encrypted_tab_context_item_specifics.pb.h"
@@ -638,6 +639,7 @@ VISIT_PROTO_FIELDS(const sync_pb::DeviceInfoSpecifics& proto) {
   VISIT(android_os_build_fingerprint_prefix);
   VISIT(server_determined_model_name);
   VISIT(personal_context_fields);
+  VISIT(browser_actuator_fields);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::DesktopToMobilePromoMessage& proto) {
@@ -692,6 +694,10 @@ VISIT_PROTO_FIELDS(const sync_pb::PersonalContextSpecificFields& proto) {
   VISIT_BYTES(p256dh_v2);
   VISIT_BYTES(serialized_tink_keyset);
   VISIT(eligible_for_spii);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::BrowserActuatorSpecificFields& proto) {
+  VISIT_BYTES(colocation_serialized_tink_keyset);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::DictionarySpecifics& proto) {
