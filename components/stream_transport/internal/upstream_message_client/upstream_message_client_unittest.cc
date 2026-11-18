@@ -24,6 +24,7 @@
 #include "components/stream_transport/internal/features.h"
 #include "components/stream_transport/internal/proto/transport_messages.pb.h"
 #include "components/stream_transport/public/common.h"
+#include "components/version_info/version_info.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/net_errors.h"
@@ -119,6 +120,11 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageSuccess) {
   EXPECT_EQ("session_1", upstream.session_id());
   EXPECT_EQ(1, upstream.client_sequence_number());
   EXPECT_FALSE(upstream.has_responding_to_sequence_number());
+  EXPECT_TRUE(upstream.has_capabilities());
+  EXPECT_GT(upstream.capabilities().chrome_major_version_number(), 0);
+  EXPECT_EQ(version_info::GetMajorVersionNumberAsInt(),
+            upstream.capabilities().chrome_major_version_number());
+  EXPECT_TRUE(upstream.capabilities().supported_features().empty());
   EXPECT_EQ(returned_upstream.SerializeAsString(),
             upstream.SerializeAsString());
 

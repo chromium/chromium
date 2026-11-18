@@ -22,6 +22,7 @@ source_set("upstream_message_client") {
     "//components/stream_transport/internal:features",
     "//components/stream_transport/internal:metrics_utils",
     "//components/stream_transport/internal/proto",
+    "//components/version_info",
     "//google_apis",
     "//services/network/public/mojom",
   ]
@@ -42,6 +43,7 @@ source_set("unit_tests") {
     "//components/stream_transport/internal:features",
     "//components/stream_transport/internal/proto",
     "//components/stream_transport/public",
+    "//components/version_info",
     "//google_apis",
     "//net",
     "//net/traffic_annotation:test_support",

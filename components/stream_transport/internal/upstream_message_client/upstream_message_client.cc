@@ -32,6 +32,7 @@
 #include "components/stream_transport/internal/metrics_utils.h"
 #include "components/stream_transport/internal/proto/transport_messages.pb.h"
 #include "components/stream_transport/public/common.h"
+#include "components/version_info/version_info.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/is_potentially_trustworthy.h"
@@ -138,6 +139,11 @@ UpstreamMessageClient::SendUpstreamMessage(
     upstream_message.set_responding_to_sequence_number(
         *responding_to_sequence_number);
   }
+  // TODO(b/560670671): Also populate `supported_features` and consider sending
+  // `capabilities` only on the session-opening envelope. Populates the Chrome
+  // major version on every envelope for host capability gating.
+  upstream_message.mutable_capabilities()->set_chrome_major_version_number(
+      version_info::GetMajorVersionNumberAsInt());
 
   // Pack payload into Any.
   browser_actuator::ActuatorUpstreamTypedPayload* typed_payload =
