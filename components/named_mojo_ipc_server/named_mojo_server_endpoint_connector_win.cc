@@ -13,13 +13,18 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
+#include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/task/current_thread.h"
@@ -45,11 +50,24 @@ namespace {
 
 constexpr base::TimeDelta kRetryConnectionTimeout = base::Seconds(3);
 
+struct BeforeConnectNamedPipeHook {
+  base::Lock lock;
+  base::OnceClosure hook GUARDED_BY(lock);
+};
+
+BeforeConnectNamedPipeHook& GetBeforeConnectNamedPipeHook() {
+  static base::NoDestructor<BeforeConnectNamedPipeHook> instance;
+  return *instance;
+}
+
 // Returns true iff `pipe`'s kernel object owner matches the current process's
-// default owner SID or user SID. NPFS binds a pipe name's security descriptor
-// (and owner) to the first instance created under that name; subsequent
-// CreateNamedPipeW calls open additional instances against the existing FCB
-// and silently ignore lpSecurityAttributes.
+// default owner SID or user SID.
+//
+// NPFS binds a pipe name's security descriptor (owner and DACL) to the first
+// instance created under that name; subsequent CreateNamedPipeW calls open
+// additional instances against the existing FCB and silently ignore
+// lpSecurityAttributes.
+//
 // Both token->Owner() and token->User() are accepted because on an elevated
 // administrator token, the default owner SID (`O:ow` / `token->Owner()`) is
 // `BUILTIN\Administrators`, whereas callers that explicitly specify the user
@@ -62,8 +80,10 @@ bool IsPipeNameOwnedByThisProcess(HANDLE pipe) {
           OWNER_SECURITY_INFORMATION);
   std::optional<base::win::AccessToken> token =
       base::win::AccessToken::FromCurrentProcess();
-  return sd && sd->owner() && token &&
-         (*sd->owner() == token->Owner() || *sd->owner() == token->User());
+  if (!sd || !sd->owner() || !token) {
+    return false;
+  }
+  return *sd->owner() == token->Owner() || *sd->owner() == token->User();
 }
 
 std::unique_ptr<ConnectionInfo> GetConnectionInfo(
@@ -131,6 +151,14 @@ class NamedMojoServerEndpointConnectorWin final
   base::win::ScopedHandle pending_named_pipe_handle_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Holds a previously connected (or client-closed) pipe instance open until
+  // the next instance is actively listening. Because a client has already
+  // attached to this instance, no new client can connect to it, while NPFS
+  // keeps the pipe name's FCB and security descriptor claimed for as long as
+  // this handle remains open.
+  base::win::ScopedHandle name_keep_alive_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   // Signaled by ConnectNamedPipe() once |pending_named_pipe_handle_| is
   // connected to a client.
   base::WaitableEvent client_connected_event_
@@ -139,12 +167,7 @@ class NamedMojoServerEndpointConnectorWin final
   // Object to allow ConnectNamedPipe() to run asynchronously.
   OVERLAPPED connect_overlapped_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::OneShotTimer retry_connect_timer_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // True once this connector has created the first pipe instance and verified
-  // that the pipe name is owned by this process.
-  bool owns_pipe_name_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  base::OneShotTimer retry_connect_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // True if a pipe claim failure or ownership mismatch has already been logged,
   // to avoid spamming the log on every retry timer tick while squatted.
@@ -162,6 +185,7 @@ NamedMojoServerEndpointConnectorWin::NamedMojoServerEndpointConnectorWin(
 
 NamedMojoServerEndpointConnectorWin::~NamedMojoServerEndpointConnectorWin() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  retry_connect_timer_.Stop();
   if (pending_named_pipe_handle_.is_valid()) {
     CancelIoEx(pending_named_pipe_handle_.Get(), &connect_overlapped_);
 
@@ -185,13 +209,13 @@ void NamedMojoServerEndpointConnectorWin::Connect() {
   options.pipe_name_type = options_.pipe_name_type;
 
   // The first instance created under a pipe name establishes its security
-  // descriptor (FCB) in NPFS. If another process squatted on the name before
-  // this server started, enforce_uniqueness ensures CreateNamedPipeW fails with
-  // ERROR_ACCESS_DENIED or ERROR_PIPE_BUSY rather than attaching to the
-  // squatter's pipe instance and silently discarding this server's DACL.
-  // Once the first instance has been claimed, subsequent instances allow
-  // multiple clients to connect concurrently.
-  options.enforce_uniqueness = !owns_pipe_name_;
+  // descriptor (FCB) in NPFS. While `name_keep_alive_` is valid, this process
+  // already holds an open instance so the FCB remains pinned and additional
+  // instances can be opened concurrently. Otherwise this process holds no
+  // instances, so enforce_uniqueness ensures CreateNamedPipeW passes
+  // FILE_FLAG_FIRST_PIPE_INSTANCE and fails rather than attaching to another
+  // process's pre-existing pipe.
+  options.enforce_uniqueness = !name_keep_alive_.is_valid();
   options.max_clients = PIPE_UNLIMITED_INSTANCES;
 
   mojo::PlatformChannelServerEndpoint server_endpoint =
@@ -209,15 +233,23 @@ void NamedMojoServerEndpointConnectorWin::Connect() {
   if (!IsPipeNameOwnedByThisProcess(pending_named_pipe_handle_.Get())) {
     LOG_IF(ERROR, !std::exchange(logged_claim_error_, true))
         << "Pipe " << options.server_name
-        << " is not owned by this process; refusing to use it";
-    owns_pipe_name_ = false;
+        << " has unexpected owner; refusing to use it";
+    name_keep_alive_.Close();
     OnError();
     return;
   }
   logged_claim_error_ = false;
-  owns_pipe_name_ = true;
 
-  delegate_.AsyncCall(&Delegate::OnServerEndpointCreated);
+  base::OnceClosure before_connect_hook;
+  {
+    auto& instance = GetBeforeConnectNamedPipeHook();
+    base::AutoLock auto_lock(instance.lock);
+    before_connect_hook = std::move(instance.hook);
+  }
+  if (before_connect_hook) {
+    CHECK_IS_TEST();
+    std::move(before_connect_hook).Run();
+  }
 
   // The |lpOverlapped| argument of ConnectNamedPipe() has the annotation of
   // [in, out, optional], so we reset the content before passing it in, just to
@@ -236,15 +268,30 @@ void NamedMojoServerEndpointConnectorWin::Connect() {
   switch (err) {
     case ERROR_PIPE_CONNECTED:
       // A client has connected before the server calls ConnectNamedPipe().
+      delegate_.AsyncCall(&Delegate::OnServerEndpointCreated);
       OnReady();
       return;
     case ERROR_IO_PENDING:
+      // The new instance is listening in NPFS and holds the pipe name open
+      // from here on, so any previous keep-alive handle can be released.
+      name_keep_alive_.Close();
+      delegate_.AsyncCall(&Delegate::OnServerEndpointCreated);
       client_connection_watcher_.StartWatching(
           &client_connected_event_,
           base::BindOnce(
               &NamedMojoServerEndpointConnectorWin::OnConnectedEventSignaled,
               base::Unretained(this)),
           base::SequencedTaskRunner::GetCurrentDefault());
+      return;
+    case ERROR_NO_DATA:
+      // A client connected and disconnected between CreateNamedPipeW() and
+      // ConnectNamedPipe(). This instance can no longer accept a client, but
+      // holding it in `name_keep_alive_` keeps the pipe name claimed in NPFS
+      // (including on the very first instance) while we immediately re-arm.
+      name_keep_alive_ = std::move(pending_named_pipe_handle_);
+      ResetConnectionObjects();
+      retry_connect_timer_.Start(FROM_HERE, base::TimeDelta(), this,
+                                 &NamedMojoServerEndpointConnectorWin::Connect);
       return;
     default:
       PLOG(ERROR) << "Unexpected error: " << err;
@@ -274,26 +321,28 @@ void NamedMojoServerEndpointConnectorWin::OnReady() {
     return;
   }
 
+  // Duplicate a handle to the connected pipe instance into `name_keep_alive_`
+  // until a new instance is listening. This keeps the pipe name claimed in
+  // NPFS even if the delegate closes `endpoint` on its sequence before the
+  // next Connect() finishes (or across an async retry).
+  base::win::ScopedHandle keep_alive =
+      endpoint.platform_handle().GetHandle().Duplicate();
+  if (!keep_alive.is_valid()) {
+    PLOG(ERROR) << "Failed to duplicate pipe handle";
+    OnError();
+    return;
+  }
+  name_keep_alive_ = std::move(keep_alive);
+
   const HANDLE pipe_handle = endpoint.platform_handle().GetHandle().Get();
-  std::unique_ptr<ConnectionInfo> info =
-      GetConnectionInfo(pipe_handle, options_.include_peer_process_info);
-
-  // Duplicate a handle to the connected pipe instance to hold it open across
-  // Connect(). This keeps the pipe name claimed in NPFS even if the delegate
-  // closes `endpoint` on its sequence before Connect() finishes, while allowing
-  // OnClientConnected to be posted before re-arming so callback ordering is
-  // strictly preserved across connections.
-  HANDLE keep_alive_raw = INVALID_HANDLE_VALUE;
-  ::DuplicateHandle(::GetCurrentProcess(), pipe_handle, ::GetCurrentProcess(),
-                    &keep_alive_raw, 0, FALSE, DUPLICATE_SAME_ACCESS);
-  base::win::ScopedHandle keep_alive(keep_alive_raw);
-
-  if (info) {
+  if (std::unique_ptr<ConnectionInfo> info =
+          GetConnectionInfo(pipe_handle, options_.include_peer_process_info)) {
     delegate_.AsyncCall(&Delegate::OnClientConnected)
         .WithArgs(std::move(endpoint), std::move(info));
   }
 
-  Connect();
+  retry_connect_timer_.Start(FROM_HERE, base::TimeDelta(), this,
+                             &NamedMojoServerEndpointConnectorWin::Connect);
 }
 
 void NamedMojoServerEndpointConnectorWin::OnError() {
@@ -319,6 +368,21 @@ bool NamedMojoServerEndpointConnectorWin::TryStart() {
 }
 
 }  // namespace
+
+base::ScopedClosureRunner SetBeforeConnectNamedPipeHookForTesting(
+    base::OnceClosure hook) {
+  CHECK_IS_TEST();
+  {
+    auto& instance = GetBeforeConnectNamedPipeHook();
+    base::AutoLock auto_lock(instance.lock);
+    instance.hook = std::move(hook);
+  }
+  return base::ScopedClosureRunner(base::BindOnce([] {
+    auto& instance = GetBeforeConnectNamedPipeHook();
+    base::AutoLock auto_lock(instance.lock);
+    instance.hook.Reset();
+  }));
+}
 
 // static
 base::SequenceBound<NamedMojoServerEndpointConnector>

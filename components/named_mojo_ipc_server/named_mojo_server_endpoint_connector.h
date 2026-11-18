@@ -12,10 +12,16 @@
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#endif
 
 namespace base {
 class SequencedTaskRunner;
@@ -84,6 +90,14 @@ class NamedMojoServerEndpointConnector {
   base::WeakPtrFactory<NamedMojoServerEndpointConnector> weak_ptr_factory_{
       this};
 };
+
+#if BUILDFLAG(IS_WIN)
+// Sets a one-shot callback invoked on `io_sequence` between creating a pipe
+// instance and calling ConnectNamedPipe(), allowing tests to deterministically
+// exercise pre-ConnectNamedPipe client races.
+base::ScopedClosureRunner SetBeforeConnectNamedPipeHookForTesting(
+    base::OnceClosure hook);
+#endif
 
 }  // namespace named_mojo_ipc_server
 

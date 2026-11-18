@@ -4,8 +4,17 @@
 
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
 
+#include "build/build_config.h"
+
 #if BUILDFLAG(IS_LINUX)
 #include <sys/stat.h>
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/win/scoped_handle.h"
+#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 #endif
 
 #include <memory>
@@ -408,6 +417,56 @@ TEST_P(NamedMojoIpcServerTest, PreexistingPipeRejectedUntilClosed) {
   WaitForServerEndpointCreated();
   base::Process child_process_2 = LaunchClientProcess();
   EXPECT_EQ(0, WaitForProcessExit(child_process_2));
+}
+
+TEST_P(NamedMojoIpcServerTest, ReadOnlyProbesDoNotReleasePipeName) {
+  ipc_server_.reset();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  test_server_name_ = test::GenerateRandomServerName();
+  const std::wstring pipe_name =
+      mojo::NamedPlatformChannel::GetPipeNameFromServerName(
+          test_server_name_,
+          mojo::NamedPlatformChannel::PipeNameType::kDefault);
+
+  mojo::NamedPlatformChannel::Options squat_options;
+  squat_options.server_name = test_server_name_;
+  squat_options.enforce_uniqueness = true;
+
+  bool checked_after_error_no_data = false;
+  base::ScopedClosureRunner reset_hook =
+      SetBeforeConnectNamedPipeHookForTesting(base::BindLambdaForTesting([&] {
+        // Open and immediately close a read-only client handle before
+        // ConnectNamedPipe() so ConnectNamedPipe() deterministically fails
+        // with ERROR_NO_DATA.
+        base::win::ScopedHandle client(
+            ::CreateFileW(pipe_name.c_str(), GENERIC_READ, 0, nullptr,
+                          OPEN_EXISTING, FILE_FLAG_OVERLAPPED, nullptr));
+        EXPECT_TRUE(client.is_valid());
+        client.Close();
+
+        // Posted onto `io_sequence_` ahead of `retry_connect_timer_`, so this
+        // runs right after Connect() handles ERROR_NO_DATA and before the
+        // re-armed Connect() creates the next pipe instance.
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindLambdaForTesting([&] {
+              EXPECT_FALSE(mojo::NamedPlatformChannel(squat_options)
+                               .TakeServerEndpoint()
+                               .is_valid());
+              checked_after_error_no_data = true;
+            }));
+      }));
+
+  CreateIpcServer();
+  ipc_server_->StartServer();
+  WaitForServerEndpointCreated();
+  EXPECT_TRUE(checked_after_error_no_data);
+  EXPECT_FALSE(mojo::NamedPlatformChannel(squat_options)
+                   .TakeServerEndpoint()
+                   .is_valid());
+
+  base::Process child_process = LaunchClientProcess();
+  EXPECT_EQ(0, WaitForProcessExit(child_process));
 }
 #endif
 
