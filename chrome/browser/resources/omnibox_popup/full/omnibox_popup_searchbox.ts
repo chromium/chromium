@@ -2779,7 +2779,7 @@ export class OmniboxPopupSearchboxElement extends
   /**
    * Returns true if any popup element or match row is currently selected,
    * bridging the legacy DOM focus model and the Virtual Focus model (gated by
-   * `realboxVirtualFocusNavigation`). When legacy focus is eventually
+   * `virtualFocusEnabled`). When legacy focus is eventually
    * deprecated and removed along with `selectedMatchIndex`, this can be
    * simplified to just `!selectionsEqual(this.selection, kDefaultSelection)`.
    */

@@ -4400,7 +4400,6 @@ suite('SearchboxMixinVirtualFocusTest', () => {
   test(
       'two tabs from contextual-entrypoint reach virtual AI mode focus',
       async () => {
-        loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
         element.virtualFocusEnabledOverride = true;
         element.isAimButtonVisibleOverride = true;
         element.dropdownIsVisible = true;
@@ -4450,7 +4449,6 @@ suite('SearchboxMixinVirtualFocusTest', () => {
   test(
       'ArrowDown through instant keyword mode matches enters keyword mode',
       async () => {
-        loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
         element.virtualFocusEnabledOverride = true;
 
         const mockInput = element.getInputElement();
@@ -4514,7 +4512,6 @@ suite('SearchboxMixinVirtualFocusTest', () => {
   test(
       'Tab key in Virtual Focus activates keyword mode on keyword chip',
       async () => {
-        loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
         element.virtualFocusEnabledOverride = true;
 
         const mockInput = element.getInputElement();
@@ -4574,7 +4571,6 @@ suite('SearchboxMixinVirtualFocusTest', () => {
   test(
       'Enter on keyword chip opens the selection only with text after keyword',
       async () => {
-        loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
         element.virtualFocusEnabledOverride = true;
 
         const mockInput = element.getInputElement();
