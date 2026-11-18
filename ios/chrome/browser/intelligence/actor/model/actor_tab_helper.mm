@@ -9,6 +9,8 @@
 #import <utility>
 
 #import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/types/optional_ref.h"
@@ -65,6 +67,32 @@ ActorTabHelper::~ActorTabHelper() {
       web_state_ && ActorDisablesInputDuringActuation()) {
     web_state_->GetWebViewProxy().shouldSuppressInputViews = NO;
   }
+}
+
+// static
+bool ActorTabHelper::IsActorControlled(const web::WebState* web_state) {
+  if (!web_state || !web_state->IsRealized()) {
+    return false;
+  }
+  const ActorTabHelper* tab_helper = FromWebState(web_state);
+  return tab_helper && tab_helper->GetControlState() ==
+                           actor::ActorControlState::kActorControlled;
+}
+
+// static
+base::CallbackListSubscription ActorTabHelper::ObserveControlState(
+    web::WebState* web_state,
+    base::RepeatingClosure callback) {
+  if (!web_state || !web_state->IsRealized()) {
+    return {};
+  }
+  ActorTabHelper* tab_helper = FromWebState(web_state);
+  if (!tab_helper) {
+    return {};
+  }
+  return tab_helper->AddControlStateChangedCallback(
+      base::IgnoreArgs<actor::ActorControlState, actor::ActorControlState>(
+          std::move(callback)));
 }
 
 void ActorTabHelper::SetControlState(

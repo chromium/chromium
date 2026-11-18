@@ -669,4 +669,39 @@ INSTANTIATE_TEST_SUITE_P(
       return std::string(info.param.test_name);
     });
 
+// Tests that `IsActorControlled` and `ObserveControlState` handle null,
+// unrealized, helper-less, and realized web states.
+TEST_F(ActorTabHelperTest, IsActorControlledAndObserveControlStateHelpers) {
+  EXPECT_FALSE(ActorTabHelper::IsActorControlled(nullptr));
+
+  web::FakeWebState web_state_without_helper;
+  EXPECT_FALSE(ActorTabHelper::IsActorControlled(&web_state_without_helper));
+
+  int callback_count = 0;
+  auto increment =
+      base::BindRepeating([](int* count) { ++(*count); }, &callback_count);
+  EXPECT_FALSE(ActorTabHelper::ObserveControlState(nullptr, increment));
+  EXPECT_FALSE(ActorTabHelper::ObserveControlState(&web_state_without_helper,
+                                                   increment));
+
+  web_state_->SetIsRealized(false);
+  EXPECT_FALSE(ActorTabHelper::IsActorControlled(web_state_.get()));
+  EXPECT_FALSE(
+      ActorTabHelper::ObserveControlState(web_state_.get(), increment));
+  web_state_->SetIsRealized(true);
+
+  base::CallbackListSubscription subscription =
+      ActorTabHelper::ObserveControlState(web_state_.get(), increment);
+  EXPECT_TRUE(subscription);
+  EXPECT_FALSE(ActorTabHelper::IsActorControlled(web_state_.get()));
+
+  tab_helper_->SetControlState(ActorControlState::kActorControlled);
+  EXPECT_TRUE(ActorTabHelper::IsActorControlled(web_state_.get()));
+  EXPECT_EQ(1, callback_count);
+
+  tab_helper_->SetControlState(ActorControlState::kInactive);
+  EXPECT_FALSE(ActorTabHelper::IsActorControlled(web_state_.get()));
+  EXPECT_EQ(2, callback_count);
+}
+
 }  // namespace

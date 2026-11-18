@@ -1198,8 +1198,20 @@ UIImage* CircularAvatarImageMatchingSize(UIImage* avatar,
     button.alpha = activeAlpha;
   }
 
-  config.baseForegroundColor =
+  UIColor* foregroundColor =
       [ButtonsForegroundColor() colorWithAlphaComponent:activeAlpha];
+  config.baseForegroundColor = foregroundColor;
+  if (IsFiveButtonAppBarLayoutEnabled() && !IsLightAppBarEnabled() &&
+      (button == _backButton || button == _forwardButton)) {
+    // `plainButtonConfiguration` ignores `baseForegroundColor` when disabled
+    // and substitutes `tertiaryLabelColor` for the button's trait collection,
+    // which renders dark-on-dark when the device is in Light Mode and
+    // `kLightAppBar` is off. Applying `foregroundColor` via
+    // `imageColorTransformer` preserves the intended 50% dimmed symbol color.
+    config.imageColorTransformer = ^UIColor*(UIColor*) {
+      return foregroundColor;
+    };
+  }
 
   [self updateVerticalInsetsForButtonConfiguration:config];
 

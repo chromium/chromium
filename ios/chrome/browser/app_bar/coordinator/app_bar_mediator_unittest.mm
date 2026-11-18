@@ -17,6 +17,8 @@
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/application_locale_storage/application_locale_storage.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/lens/lens_overlay_permission_utils.h"
 #import "components/omnibox/browser/mock_aim_eligibility_service.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
@@ -36,9 +38,12 @@
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
@@ -70,8 +75,10 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -231,6 +238,11 @@ class AppBarMediatorTest : public PlatformTest,
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindOnce(
+            &std::make_unique<
+                testing::NiceMock<feature_engagement::test::MockTracker>>));
     // Initialize VariationsService with a default country to prevent crashes
     // in IsGeminiLocationEligible().
     SetLocationEligible(true);
@@ -285,6 +297,23 @@ class AppBarMediatorTest : public PlatformTest,
     [incognito_browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_qr_scanner_handler_
                      forProtocol:@protocol(QRScannerCommands)];
+
+    mock_help_handler_ = OCMProtocolMock(@protocol(HelpCommands));
+    [regular_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_help_handler_
+                     forProtocol:@protocol(HelpCommands)];
+    [incognito_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_help_handler_
+                     forProtocol:@protocol(HelpCommands)];
+
+    mock_page_side_swipe_handler_ =
+        OCMProtocolMock(@protocol(PageSideSwipeCommands));
+    [regular_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_page_side_swipe_handler_
+                     forProtocol:@protocol(PageSideSwipeCommands)];
+    [incognito_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_page_side_swipe_handler_
+                     forProtocol:@protocol(PageSideSwipeCommands)];
 
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(regular_browser_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(incognito_browser_.get());
@@ -618,6 +647,8 @@ class AppBarMediatorTest : public PlatformTest,
   id mock_scene_handler_;
   id mock_browser_coordinator_handler_;
   id mock_qr_scanner_handler_;
+  id mock_help_handler_;
+  id mock_page_side_swipe_handler_;
   id mock_settings_handler_;
   id mock_gemini_handler_;
   id mock_tab_groups_handler_;
@@ -3557,6 +3588,96 @@ TEST_F(AppBarMediatorTest,
     constexpr int kInvalidIndex = -1;
     EXPECT_EQ(kInvalidIndex, raw_nav_manager->last_navigated_index());
   }
+}
+
+// Tests that under `kFiveButtonAppBarLayout`, back and forward buttons are
+// disabled on the consumer and back, forward, and history-menu navigations are
+// blocked while the active tab is `kActorControlled`, then restored when
+// returning to `kInactive`.
+TEST_F(AppBarMediatorTest,
+       TestBackForwardDisabledAndBlockedWhenActorControlled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kNextOldDesign, kFiveButtonAppBarLayout}, {});
+  RecreateMediator();
+
+  constexpr char kTestURL0[] = "https://example.com/0";
+  constexpr char kTestURL1[] = "https://example.com/1";
+  constexpr char kTestURL2[] = "https://example.com/2";
+  constexpr int kFirstIndex = 0;
+  constexpr int kMiddleIndex = 1;
+  constexpr int kNoNavigatedIndex = -1;
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(regular_profile_);
+  auto nav_manager = std::make_unique<TestNavigationManager>();
+  TestNavigationManager* raw_nav_manager = nav_manager.get();
+  nav_manager->AddItem(GURL(kTestURL0), ui::PAGE_TRANSITION_LINK);
+  nav_manager->AddItem(GURL(kTestURL1), ui::PAGE_TRANSITION_LINK);
+  nav_manager->AddItem(GURL(kTestURL2), ui::PAGE_TRANSITION_LINK);
+  nav_manager->SetLastCommittedItemIndex(kMiddleIndex);
+  web::NavigationItem* target_item =
+      raw_nav_manager->GetItemAtIndex(kFirstIndex);
+  web_state->SetNavigationManager(std::move(nav_manager));
+
+  ActorTabHelper::CreateForWebState(web_state.get());
+  ActorTabHelper* actor_tab_helper =
+      ActorTabHelper::FromWebState(web_state.get());
+  ASSERT_NE(nullptr, actor_tab_helper);
+
+  OCMExpect([consumer_ setCanNavigateBack:YES forward:YES]);
+  regular_browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  auto* mock_tracker = static_cast<feature_engagement::test::MockTracker*>(
+      feature_engagement::TrackerFactory::GetForProfile(regular_profile_));
+  ASSERT_NE(nullptr, mock_tracker);
+
+  OCMExpect([consumer_ setCanNavigateBack:NO forward:NO]);
+  actor_tab_helper->SetControlState(actor::ActorControlState::kActorControlled);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  EXPECT_CALL(
+      *mock_tracker,
+      NotifyEvent(feature_engagement::events::kIOSBackForwardButtonTapped))
+      .Times(0);
+  [mediator_ navigateBack];
+  EXPECT_EQ(kMiddleIndex, raw_nav_manager->GetLastCommittedItemIndex());
+
+  [mediator_ navigateForward];
+  EXPECT_EQ(kMiddleIndex, raw_nav_manager->GetLastCommittedItemIndex());
+
+  [mediator_ navigateToPageForItem:target_item];
+  EXPECT_EQ(kNoNavigatedIndex, raw_nav_manager->last_navigated_index());
+  EXPECT_EQ(kMiddleIndex, raw_nav_manager->GetLastCommittedItemIndex());
+  testing::Mock::VerifyAndClearExpectations(mock_tracker);
+
+  OCMExpect([consumer_ setCanNavigateBack:YES forward:YES]);
+  actor_tab_helper->SetControlState(actor::ActorControlState::kInactive);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  EXPECT_CALL(
+      *mock_tracker,
+      NotifyEvent(feature_engagement::events::kIOSBackForwardButtonTapped))
+      .Times(1);
+  [mediator_ navigateBack];
+  EXPECT_EQ(kFirstIndex, raw_nav_manager->GetLastCommittedItemIndex());
+
+  // Activating a second tab unsubscribes from the first tab's `ActorTabHelper`.
+  auto second_web_state = std::make_unique<web::FakeWebState>();
+  second_web_state->SetBrowserState(regular_profile_);
+  second_web_state->SetNavigationManager(
+      std::make_unique<TestNavigationManager>());
+  ActorTabHelper::CreateForWebState(second_web_state.get());
+  regular_browser_->GetWebStateList()->InsertWebState(
+      std::move(second_web_state),
+      WebStateList::InsertionParams::AtIndex(1).Activate());
+
+  OCMReject([consumer_ setCanNavigateBack:NO forward:NO]);
+  actor_tab_helper->SetControlState(actor::ActorControlState::kActorControlled);
+  EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
 INSTANTIATE_TEST_SUITE_P(AppBarMediatorTest,

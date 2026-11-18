@@ -10,6 +10,7 @@
 #import <set>
 
 #import "base/callback_list.h"
+#import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -36,6 +37,7 @@
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent_observer_bridge.h"
@@ -189,6 +191,7 @@ inline LayoutStateAssistantPassKey PassKey() {
       _incognitoFullscreenObserver;
   raw_ptr<WebNavigationBrowserAgent> _regularNavigationBrowserAgent;
   raw_ptr<WebNavigationBrowserAgent> _incognitoNavigationBrowserAgent;
+  base::CallbackListSubscription _activeWebStateControlSubscription;
   raw_ptr<TabBasedIPHBrowserAgent> _regularTabBasedIPHAgent;
   raw_ptr<TabBasedIPHBrowserAgent> _incognitoTabBasedIPHAgent;
   raw_ptr<PrefService> _prefService;
@@ -508,6 +511,7 @@ inline LayoutStateAssistantPassKey PassKey() {
   _regularFullscreenHandler = nil;
   _incognitoFullscreenHandler = nil;
   if (IsFiveButtonAppBarLayoutEnabled()) {
+    _activeWebStateControlSubscription = {};
     _regularNavigationBrowserAgent = nullptr;
     _incognitoNavigationBrowserAgent = nullptr;
     _regularTabBasedIPHAgent = nullptr;
@@ -593,6 +597,10 @@ inline LayoutStateAssistantPassKey PassKey() {
   [self updateConsumer];
 }
 
+- (void)webStateRealized:(web::WebState*)webState {
+  [self updateActiveWebStateControlObservation];
+}
+
 #pragma mark - WebStateListObserving
 
 - (void)didChangeWebStateList:(WebStateList*)webStateList
@@ -610,8 +618,11 @@ inline LayoutStateAssistantPassKey PassKey() {
     return;
   }
 
-  if (status.active_web_state_change() && !_tabGridState.tabGridVisible) {
-    self.currentTabGroup = GetGroupForActiveWebState(webStateList);
+  if (status.active_web_state_change()) {
+    if (!_tabGridState.tabGridVisible) {
+      self.currentTabGroup = GetGroupForActiveWebState(webStateList);
+    }
+    [self updateActiveWebStateControlObservation];
   }
 
   [self updateConsumer];
@@ -621,6 +632,7 @@ inline LayoutStateAssistantPassKey PassKey() {
   if (!_tabGridState.tabGridVisible) {
     self.currentTabGroup = GetGroupForActiveWebState(webStateList);
   }
+  [self updateActiveWebStateControlObservation];
   [self updateConsumer];
 }
 
@@ -847,21 +859,17 @@ inline LayoutStateAssistantPassKey PassKey() {
 
 - (void)navigateBack {
   CHECK(IsFiveButtonAppBarLayoutEnabled(), base::NotFatalUntil::M163);
-  if (!self.currentWebStateList) {
-    return;
-  }
-  BOOL incognito = self.currentWebStateList == _incognitoWebStateList;
   WebNavigationBrowserAgent* navigationBrowserAgent =
-      incognito ? _incognitoNavigationBrowserAgent
-                : _regularNavigationBrowserAgent;
-
-  if (!navigationBrowserAgent) {
+      [self currentNavigationBrowserAgent];
+  if (!navigationBrowserAgent || !navigationBrowserAgent->CanGoBack()) {
     return;
   }
   navigationBrowserAgent->GoBack();
 
   TabBasedIPHBrowserAgent* tabBasedIPHAgent =
-      incognito ? _incognitoTabBasedIPHAgent : _regularTabBasedIPHAgent;
+      self.currentWebStateList == _incognitoWebStateList
+          ? _incognitoTabBasedIPHAgent
+          : _regularTabBasedIPHAgent;
   if (tabBasedIPHAgent) {
     tabBasedIPHAgent->NotifyBackForwardButtonTap();
   }
@@ -869,21 +877,17 @@ inline LayoutStateAssistantPassKey PassKey() {
 
 - (void)navigateForward {
   CHECK(IsFiveButtonAppBarLayoutEnabled(), base::NotFatalUntil::M163);
-  if (!self.currentWebStateList) {
-    return;
-  }
-  BOOL incognito = self.currentWebStateList == _incognitoWebStateList;
   WebNavigationBrowserAgent* navigationBrowserAgent =
-      incognito ? _incognitoNavigationBrowserAgent
-                : _regularNavigationBrowserAgent;
-
-  if (!navigationBrowserAgent) {
+      [self currentNavigationBrowserAgent];
+  if (!navigationBrowserAgent || !navigationBrowserAgent->CanGoForward()) {
     return;
   }
   navigationBrowserAgent->GoForward();
 
   TabBasedIPHBrowserAgent* tabBasedIPHAgent =
-      incognito ? _incognitoTabBasedIPHAgent : _regularTabBasedIPHAgent;
+      self.currentWebStateList == _incognitoWebStateList
+          ? _incognitoTabBasedIPHAgent
+          : _regularTabBasedIPHAgent;
   if (tabBasedIPHAgent) {
     tabBasedIPHAgent->NotifyBackForwardButtonTap();
   }
@@ -910,6 +914,11 @@ inline LayoutStateAssistantPassKey PassKey() {
   }
   web::WebState* activeWebState = [self activeWebState];
   if (!activeWebState) {
+    return;
+  }
+  // The history menu navigates through `NavigationManager` directly, so block
+  // it explicitly while an actor controls `activeWebState`.
+  if (ActorTabHelper::IsActorControlled(activeWebState)) {
     return;
   }
 
@@ -999,6 +1008,7 @@ inline LayoutStateAssistantPassKey PassKey() {
   if (_currentWebStateList) {
     _currentWebStateList->RemoveObserver(_observerBridge.get());
     if (IsFiveButtonAppBarLayoutEnabled()) {
+      _activeWebStateControlSubscription = {};
       _activeWebStateObservationForwarder.reset();
     }
   }
@@ -1016,6 +1026,7 @@ inline LayoutStateAssistantPassKey PassKey() {
       _activeWebStateObservationForwarder =
           std::make_unique<ActiveWebStateObservationForwarder>(
               _currentWebStateList, _webStateObserver.get());
+      [self updateActiveWebStateControlObservation];
     }
   }
   [self updateConsumer];
@@ -1079,8 +1090,7 @@ inline LayoutStateAssistantPassKey PassKey() {
       setInTabGroup:GetGroupForActiveWebState(self.currentWebStateList)];
   if (IsFiveButtonAppBarLayoutEnabled()) {
     WebNavigationBrowserAgent* navigationBrowserAgent =
-        incognito ? _incognitoNavigationBrowserAgent
-                  : _regularNavigationBrowserAgent;
+        [self currentNavigationBrowserAgent];
     if (activeWebState && navigationBrowserAgent) {
       [self.consumer
           setCanNavigateBack:navigationBrowserAgent->CanGoBack(activeWebState)
@@ -1090,6 +1100,18 @@ inline LayoutStateAssistantPassKey PassKey() {
   }
   [self updateAssistantButton];
   [self updateButtonsForCurrentTabGridPage];
+}
+
+// Subscribes to actor control state changes on the active WebState.
+- (void)updateActiveWebStateControlObservation {
+  if (!IsFiveButtonAppBarLayoutEnabled()) {
+    return;
+  }
+  __weak __typeof(self) weakSelf = self;
+  _activeWebStateControlSubscription = ActorTabHelper::ObserveControlState(
+      [self activeWebState], base::BindRepeating(^{
+        [weakSelf updateConsumer];
+      }));
 }
 
 // Updates the button menus on the consumer.
@@ -1237,6 +1259,17 @@ inline LayoutStateAssistantPassKey PassKey() {
     return nullptr;
   }
   return self.currentWebStateList->GetActiveWebState();
+}
+
+// Returns the `WebNavigationBrowserAgent` for `currentWebStateList`, or
+// `nullptr` if no web state list is active.
+- (WebNavigationBrowserAgent*)currentNavigationBrowserAgent {
+  if (!self.currentWebStateList) {
+    return nullptr;
+  }
+  return self.currentWebStateList == _incognitoWebStateList
+             ? _incognitoNavigationBrowserAgent
+             : _regularNavigationBrowserAgent;
 }
 
 // Returns whether the account entry point can be used: the user is either

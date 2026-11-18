@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/toolbar/coordinator/toolbar_mediator.h"
 
+#import "base/callback_list.h"
+#import "base/functional/bind.h"
 #import "base/metrics/user_metrics.h"
 #import "base/notimplemented.h"
 #import "base/strings/string_util.h"
@@ -17,6 +19,7 @@
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
@@ -90,6 +93,7 @@
   raw_ptr<GeminiService> _geminiService;
   raw_ptr<GeminiBrowserAgent> _geminiBrowserAgent;
   std::unique_ptr<GeminiBrowserAgentObserverBridge> _geminiObserver;
+  base::CallbackListSubscription _activeWebStateControlSubscription;
   BOOL _isIncognito;
 }
 
@@ -120,6 +124,8 @@
     _activeWebStateObservationForwarder =
         std::make_unique<ActiveWebStateObservationForwarder>(
             webStateList, _activeWebStateObserver.get());
+    [self updateActiveWebStateControlObservation:_webStateList
+                                                     ->GetActiveWebState()];
 
     _buttonMenuFactory = [[ToolbarButtonMenuFactory alloc]
         initForToolbarWithIncognito:incognito
@@ -232,6 +238,7 @@
   [_browserLayoutState removeObserver:self];
   _browserLayoutState = nil;
   [_defaultBrowserBannerAppAgent removeObserver:self];
+  _activeWebStateControlSubscription = {};
   _activeWebStateObservationForwarder.reset();
   _activeWebStateObserver.reset();
   _webStateList->RemoveObserver(_webStateListObserver.get());
@@ -240,6 +247,7 @@
   _buttonMenuFactory = nil;
   _fullscreenController = nullptr;
   _fullscreenBrowserAgent = nullptr;
+  _navigationBrowserAgent = nullptr;
   _geminiObserver.reset();
   _geminiService = nil;
   _geminiBrowserAgent = nil;
@@ -303,18 +311,22 @@
 }
 
 - (void)goBack {
-  if (self.navigationBrowserAgent) {
-    self.navigationBrowserAgent->GoBack();
+  if (!self.navigationBrowserAgent ||
+      !self.navigationBrowserAgent->CanGoBack()) {
+    return;
   }
+  self.navigationBrowserAgent->GoBack();
   if (self.tabBasedIPHAgent) {
     self.tabBasedIPHAgent->NotifyBackForwardButtonTap();
   }
 }
 
 - (void)goForward {
-  if (self.navigationBrowserAgent) {
-    self.navigationBrowserAgent->GoForward();
+  if (!self.navigationBrowserAgent ||
+      !self.navigationBrowserAgent->CanGoForward()) {
+    return;
   }
+  self.navigationBrowserAgent->GoForward();
   if (self.tabBasedIPHAgent) {
     self.tabBasedIPHAgent->NotifyBackForwardButtonTap();
   }
@@ -384,6 +396,11 @@
   if (!activeWebState) {
     return;
   }
+  // The history menu navigates through `NavigationManager` directly, so block
+  // it explicitly while an actor controls `activeWebState`.
+  if (ActorTabHelper::IsActorControlled(activeWebState)) {
+    return;
+  }
 
   int index = activeWebState->GetNavigationManager()->GetIndexOfItem(item);
   DCHECK_NE(index, -1);
@@ -434,6 +451,10 @@
   [self updateConsumerWithWebState:webState animated:YES];
 }
 
+- (void)webStateRealized:(web::WebState*)webState {
+  [self updateActiveWebStateControlObservation:webState];
+}
+
 #pragma mark - WebStateListObserving
 
 - (void)didChangeWebStateList:(WebStateList*)webStateList
@@ -442,14 +463,19 @@
   if (webStateList->IsBatchInProgress()) {
     return;
   }
-  if (status.active_web_state_change() && status.new_active_web_state) {
-    [self updateConsumerWithWebState:status.new_active_web_state animated:NO];
-  } else {
-    [self updateConsumerTabCountAndGroupState];
+  if (status.active_web_state_change()) {
+    [self updateActiveWebStateControlObservation:status.new_active_web_state];
+    if (status.new_active_web_state) {
+      [self updateConsumerWithWebState:status.new_active_web_state animated:NO];
+      return;
+    }
   }
+  [self updateConsumerTabCountAndGroupState];
 }
 
 - (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
+  [self
+      updateActiveWebStateControlObservation:webStateList->GetActiveWebState()];
   [self updateConsumer];
 }
 
@@ -557,6 +583,15 @@
     [self updateConsumerTabCountAndGroupState];
     [self updateAssistantButton];
   }
+}
+
+// Subscribes to actor control state changes on `webState`.
+- (void)updateActiveWebStateControlObservation:(web::WebState*)webState {
+  __weak __typeof(self) weakSelf = self;
+  _activeWebStateControlSubscription =
+      ActorTabHelper::ObserveControlState(webState, base::BindRepeating(^{
+                                            [weakSelf updateConsumer];
+                                          }));
 }
 
 // Updates keyboard constraints with `notification`. When

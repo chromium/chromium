@@ -974,4 +974,79 @@ TEST_F(AppBarViewControllerTest, TestTabGridButtonTouchDown) {
   EXPECT_OCMOCK_VERIFY(scene_handler);
 }
 
+// Tests that in the five-button layout, disabled back and forward buttons keep
+// a dimmed white `imageColorTransformer` in Light Mode when `kLightAppBar` is
+// disabled rather than falling back to dark `tertiaryLabelColor`.
+TEST_F(AppBarViewControllerTestManual,
+       TestFiveButtonNavigationButtonsDisabledImageColor) {
+  constexpr CGFloat kEnabledAlpha = 1.0;
+  constexpr CGFloat kDisabledAlpha = 0.5;
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kChromeNextIa, kNextOldDesign, kFiveButtonAppBarLayout}, {kLightAppBar});
+
+  AppBarViewController* vc = [[AppBarViewController alloc] init];
+  vc.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+  [vc loadViewIfNeeded];
+
+  UIButton* back_button = [vc valueForKey:@"backButton"];
+  UIButton* forward_button = [vc valueForKey:@"forwardButton"];
+  UIButton* assistant_button = [vc valueForKey:@"assistantButton"];
+  ASSERT_NE(back_button, nil);
+  ASSERT_NE(forward_button, nil);
+  ASSERT_NE(assistant_button, nil);
+
+  [vc setCanNavigateBack:NO forward:NO];
+  [back_button setNeedsUpdateConfiguration];
+  [back_button layoutIfNeeded];
+  [forward_button setNeedsUpdateConfiguration];
+  [forward_button layoutIfNeeded];
+
+  EXPECT_FALSE(back_button.enabled);
+  EXPECT_FALSE(forward_button.enabled);
+  ASSERT_NE(back_button.configuration.imageColorTransformer, nil);
+  ASSERT_NE(forward_button.configuration.imageColorTransformer, nil);
+  EXPECT_EQ(assistant_button.configuration.imageColorTransformer, nil);
+  UIColor* expected_disabled_color =
+      [UIColor.whiteColor colorWithAlphaComponent:kDisabledAlpha];
+  EXPECT_NSEQ(
+      back_button.configuration.imageColorTransformer(UIColor.blackColor),
+      expected_disabled_color);
+  EXPECT_NSEQ(
+      forward_button.configuration.imageColorTransformer(UIColor.blackColor),
+      expected_disabled_color);
+
+  [vc setCanNavigateBack:YES forward:YES];
+  [back_button setNeedsUpdateConfiguration];
+  [back_button layoutIfNeeded];
+  [forward_button setNeedsUpdateConfiguration];
+  [forward_button layoutIfNeeded];
+
+  EXPECT_TRUE(back_button.enabled);
+  EXPECT_TRUE(forward_button.enabled);
+  UIColor* expected_enabled_color =
+      [UIColor.whiteColor colorWithAlphaComponent:kEnabledAlpha];
+  EXPECT_NSEQ(
+      back_button.configuration.imageColorTransformer(UIColor.blackColor),
+      expected_enabled_color);
+  EXPECT_NSEQ(
+      forward_button.configuration.imageColorTransformer(UIColor.blackColor),
+      expected_enabled_color);
+
+  // When `kLightAppBar` is enabled, the workaround is skipped.
+  base::test::ScopedFeatureList light_app_bar_feature_list;
+  light_app_bar_feature_list.InitWithFeatures(
+      {kChromeNextIa, kNextOldDesign, kFiveButtonAppBarLayout, kLightAppBar},
+      {});
+  AppBarViewController* light_vc = [[AppBarViewController alloc] init];
+  [light_vc loadViewIfNeeded];
+  UIButton* light_back_button = [light_vc valueForKey:@"backButton"];
+  ASSERT_NE(light_back_button, nil);
+  [light_vc setCanNavigateBack:NO forward:NO];
+  [light_back_button setNeedsUpdateConfiguration];
+  [light_back_button layoutIfNeeded];
+  EXPECT_EQ(light_back_button.configuration.imageColorTransformer, nil);
+}
+
 }  // namespace

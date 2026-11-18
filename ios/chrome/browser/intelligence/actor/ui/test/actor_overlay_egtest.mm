@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/functional/bind.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/intelligence/actor/tools/test/actor_app_interface.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -22,6 +23,13 @@ namespace {
 // Accessibility identifier for the overlay scrim view.
 NSString* const kActorOverlayScrimAccessibilityIdentifier =
     @"ActorOverlayScrimAccessibilityIdentifier";
+
+constexpr char kPageAPath[] = "/page_a.html";
+constexpr char kPageBPath[] = "/page_b.html";
+constexpr char kPageCPath[] = "/page_c.html";
+constexpr char kPageAText[] = "Page A";
+constexpr char kPageBText[] = "Page B";
+constexpr char kPageCText[] = "Page C";
 
 // Handles custom requests and serves test HTML pages.
 std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
@@ -45,6 +53,18 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
         "Button</button></body></html>");
     return http_response;
   }
+  if (request.relative_url == kPageAPath) {
+    http_response->set_content("<html><body>Page A</body></html>");
+    return http_response;
+  }
+  if (request.relative_url == kPageBPath) {
+    http_response->set_content("<html><body>Page B</body></html>");
+    return http_response;
+  }
+  if (request.relative_url == kPageCPath) {
+    http_response->set_content("<html><body>Page C</body></html>");
+    return http_response;
+  }
   return nullptr;
 }
 
@@ -62,6 +82,11 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kActorTools);
   config.features_enabled.push_back(kChromeNextIa);
+  if ([self isRunningTest:@selector(
+                              testAppBarBackForwardDisabledDuringActuation)]) {
+    config.features_enabled.push_back(kNextOldDesign);
+    config.features_enabled.push_back(kFiveButtonAppBarLayout);
+  }
   return config;
 }
 
@@ -304,6 +329,123 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ActorAppInterface setControlState:actor::ActorControlState::kInactive
                   forWebStateAtIndex:0];
   [self assertOverlayVisible:NO];
+}
+
+// Tests that on the five-button app bar layout on iPhone, back and forward
+// buttons are disabled and do not navigate while the active tab is
+// actor-controlled, then re-enable once inactive.
+- (void)testAppBarBackForwardDisabledDuringActuation {
+  if ([ChromeEarlGrey isRegularXRegularSizeClass]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Five-button app bar is only shown in compact size classes.");
+  }
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageAPath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageAText];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageBPath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageBText];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageCPath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageCText];
+
+  id<GREYMatcher> backButton =
+      grey_accessibilityID(kAppBarBackButtonIdentifier);
+  id<GREYMatcher> forwardButton =
+      grey_accessibilityID(kAppBarForwardButtonIdentifier);
+
+  // Navigate back to Page B so both back and forward history exist.
+  [[EarlGrey selectElementWithMatcher:backButton] performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageBText];
+  [[EarlGrey selectElementWithMatcher:backButton]
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
+                                   nil)];
+  [[EarlGrey selectElementWithMatcher:forwardButton]
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
+                                   nil)];
+
+  // Enter actor-controlled state; both buttons should become disabled and
+  // tapping them must not navigate.
+  [ActorAppInterface setControlState:actor::ActorControlState::kActorControlled
+                  forWebStateAtIndex:0];
+  [self assertOverlayVisible:YES];
+  [[EarlGrey selectElementWithMatcher:backButton]
+      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
+                                   grey_sufficientlyVisible(), nil)];
+  [[EarlGrey selectElementWithMatcher:forwardButton]
+      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
+                                   grey_sufficientlyVisible(), nil)];
+
+  [[EarlGrey selectElementWithMatcher:backButton] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:forwardButton] performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageBText];
+
+  // Return to inactive; buttons re-enable and tapping back lands on Page A
+  // (confirming neither tap during actuation navigated).
+  [ActorAppInterface setControlState:actor::ActorControlState::kInactive
+                  forWebStateAtIndex:0];
+  [self assertOverlayVisible:NO];
+  [[EarlGrey selectElementWithMatcher:backButton]
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
+                                   nil)];
+  [[EarlGrey selectElementWithMatcher:forwardButton]
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
+                                   nil)];
+
+  [[EarlGrey selectElementWithMatcher:backButton] performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageAText];
+}
+
+// Tests that on regular x regular toolbars (iPad and unfolded Duo), back and
+// forward controls are disabled while the active tab is actor-controlled and
+// restored once inactive.
+- (void)testToolbarBackForwardDisabledDuringActuation {
+  if (![ChromeEarlGrey isRegularXRegularSizeClass]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Primary toolbar back/forward buttons require regular x regular.");
+  }
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageAPath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageAText];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageBPath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageBText];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageCPath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageCText];
+
+  // Navigate back to Page B so both back and forward history exist.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageBText];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+      assertWithMatcher:grey_enabled()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ForwardButton()]
+      assertWithMatcher:grey_enabled()];
+
+  // Enter actor-controlled state; back greys out, forward hides on default
+  // Next IA, and tapping back does not navigate.
+  [ActorAppInterface setControlState:actor::ActorControlState::kActorControlled
+                  forWebStateAtIndex:0];
+  [self assertOverlayVisible:YES];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ForwardButton()]
+      assertWithMatcher:grey_nil()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageBText];
+
+  // Return to inactive; back and forward re-appear enabled and back lands on
+  // Page A.
+  [ActorAppInterface setControlState:actor::ActorControlState::kInactive
+                  forWebStateAtIndex:0];
+  [self assertOverlayVisible:NO];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+      assertWithMatcher:grey_enabled()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ForwardButton()]
+      assertWithMatcher:grey_enabled()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageAText];
 }
 
 @end

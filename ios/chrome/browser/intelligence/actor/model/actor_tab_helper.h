@@ -8,6 +8,7 @@
 #import <optional>
 
 #import "base/callback_list.h"
+#import "base/functional/callback_forward.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
@@ -48,6 +49,17 @@ class ActorTabHelper : public web::WebStateObserver,
   ActorTabHelper& operator=(ActorTabHelper&&) = delete;
 
   ~ActorTabHelper() override;
+
+  // Returns true if `web_state` is non-null, realized, and has an
+  // `ActorTabHelper` in `ActorControlState::kActorControlled`.
+  static bool IsActorControlled(const web::WebState* web_state);
+
+  // Subscribes `callback` to `ActorControlState` changes on `web_state` when
+  // `web_state` is realized and has an `ActorTabHelper`; otherwise returns an
+  // empty subscription.
+  [[nodiscard]] static base::CallbackListSubscription ObserveControlState(
+      web::WebState* web_state,
+      base::RepeatingClosure callback);
 
   // Sets the `ActorControlState` for the associated `WebState`, notifying
   // registered callbacks and observers if the control state changes. `kTtc`

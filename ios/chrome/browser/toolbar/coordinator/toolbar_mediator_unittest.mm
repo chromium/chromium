@@ -24,6 +24,8 @@
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_impl.h"
@@ -78,11 +80,25 @@
 
 @interface ToolbarMediator (Test)
 - (void)updateAssistantButton;
+- (void)navigateToPageForItem:(web::NavigationItem*)item;
 @end
 
 namespace {
 
 MenuScenarioHistogram kTestMenuScenario = kMenuScenarioHistogramToolbarMenu;
+
+// `FakeNavigationManager` subclass that records calls to `GoToIndex`.
+class RecordingNavigationManager : public web::FakeNavigationManager {
+ public:
+  void GoToIndex(int index) override {
+    last_navigated_index_ = index;
+    SetLastCommittedItemIndex(index);
+  }
+  int last_navigated_index() const { return last_navigated_index_; }
+
+ private:
+  int last_navigated_index_ = -1;
+};
 
 }  // namespace
 
@@ -482,6 +498,72 @@ TEST_P(ToolbarMediatorTest, TestMutatorGoForward) {
 
   EXPECT_EQ(
       2, fake_web_state->GetNavigationManager()->GetLastCommittedItemIndex());
+}
+
+// Tests that back and forward buttons are disabled on the consumer and mutator
+// and history-menu navigations are blocked while the active tab is
+// `kActorControlled`, then restored when returning to `kInactive`.
+TEST_P(ToolbarMediatorTest,
+       TestBackForwardDisabledAndBlockedWhenActorControlled) {
+  constexpr char kTestURL0[] = "https://example.com/0";
+  constexpr char kTestURL1[] = "https://example.com/1";
+  constexpr char kTestURL2[] = "https://example.com/2";
+  constexpr int kFirstIndex = 0;
+  constexpr int kMiddleIndex = 1;
+  constexpr int kLastIndex = 2;
+  constexpr int kNoNavigatedIndex = -1;
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetVisibleURL(GURL(kTestURL1));
+  web_state->SetBrowserState(profile_.get());
+  auto nav_manager = std::make_unique<RecordingNavigationManager>();
+  RecordingNavigationManager* raw_nav_manager = nav_manager.get();
+  nav_manager->AddItem(GURL(kTestURL0), ui::PAGE_TRANSITION_TYPED);
+  nav_manager->AddItem(GURL(kTestURL1), ui::PAGE_TRANSITION_TYPED);
+  nav_manager->AddItem(GURL(kTestURL2), ui::PAGE_TRANSITION_TYPED);
+  nav_manager->SetLastCommittedItemIndex(kMiddleIndex);
+  web::NavigationItem* target_item =
+      raw_nav_manager->GetItemAtIndex(kLastIndex);
+  web_state->SetNavigationManager(std::move(nav_manager));
+
+  ActorTabHelper::CreateForWebState(web_state.get());
+  ActorTabHelper* actor_tab_helper =
+      ActorTabHelper::FromWebState(web_state.get());
+  ASSERT_NE(nullptr, actor_tab_helper);
+
+  OCMExpect([consumer_ setCanGoBack:YES]);
+  OCMExpect([consumer_ setCanGoForward:YES animated:NO]);
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  OCMExpect([consumer_ setCanGoBack:NO]);
+  OCMExpect([consumer_ setCanGoForward:NO animated:NO]);
+  actor_tab_helper->SetControlState(actor::ActorControlState::kActorControlled);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  [mediator_ goBack];
+  EXPECT_EQ(kMiddleIndex, raw_nav_manager->GetLastCommittedItemIndex());
+
+  [mediator_ goForward];
+  EXPECT_EQ(kMiddleIndex, raw_nav_manager->GetLastCommittedItemIndex());
+
+  [mediator_ navigateToPageForItem:target_item];
+  EXPECT_EQ(kNoNavigatedIndex, raw_nav_manager->last_navigated_index());
+  EXPECT_EQ(kMiddleIndex, raw_nav_manager->GetLastCommittedItemIndex());
+
+  OCMExpect([consumer_ setCanGoBack:YES]);
+  OCMExpect([consumer_ setCanGoForward:YES animated:NO]);
+  actor_tab_helper->SetControlState(actor::ActorControlState::kInactive);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  [mediator_ goBack];
+  EXPECT_EQ(kFirstIndex, raw_nav_manager->GetLastCommittedItemIndex());
+
+  [mediator_ navigateToPageForItem:target_item];
+  EXPECT_EQ(kLastIndex, raw_nav_manager->last_navigated_index());
+  EXPECT_EQ(kLastIndex, raw_nav_manager->GetLastCommittedItemIndex());
 }
 
 // Tests that the mutator handles reload action.

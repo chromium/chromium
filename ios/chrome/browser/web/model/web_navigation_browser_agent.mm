@@ -7,6 +7,7 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -27,7 +28,8 @@ WebNavigationBrowserAgent::WebNavigationBrowserAgent(Browser* browser)
 WebNavigationBrowserAgent::~WebNavigationBrowserAgent() {}
 
 bool WebNavigationBrowserAgent::CanGoBack(const web::WebState* web_state) {
-  if (!web_state || !web_state->IsRealized()) {
+  if (!web_state || !web_state->IsRealized() ||
+      ActorTabHelper::IsActorControlled(web_state)) {
     return false;
   }
 
@@ -53,7 +55,8 @@ bool WebNavigationBrowserAgent::CanGoBack() {
 }
 
 bool WebNavigationBrowserAgent::CanGoForward(const web::WebState* web_state) {
-  if (!web_state || !web_state->IsRealized()) {
+  if (!web_state || !web_state->IsRealized() ||
+      ActorTabHelper::IsActorControlled(web_state)) {
     return false;
   }
 
@@ -70,8 +73,7 @@ bool WebNavigationBrowserAgent::CanGoForward() {
 
 void WebNavigationBrowserAgent::GoBack() {
   web::WebState* active_web_state = web_state_list_->GetActiveWebState();
-  if (!active_web_state ||
-      !active_web_state->GetNavigationManager()->CanGoBack()) {
+  if (!CanGoBack(active_web_state)) {
     return;
   }
 
@@ -97,7 +99,7 @@ void WebNavigationBrowserAgent::GoBack() {
 
 void WebNavigationBrowserAgent::GoForward() {
   web::WebState* active_web_state = web_state_list_->GetActiveWebState();
-  if (active_web_state) {
+  if (CanGoForward(active_web_state)) {
     web_navigation_util::GoForward(active_web_state);
   }
 }
