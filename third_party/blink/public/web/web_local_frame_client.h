@@ -743,11 +743,6 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   virtual void OnFrameVisibilityChanged(mojom::FrameVisibility render_status) {}
 
-  // Called after a navigation which set the shared memory region for
-  // tracking dropped frames UKM.
-  virtual void SetUpSharedMemoryForDroppedFrames(
-      base::ReadOnlySharedMemoryRegion dropped_frames_memory) {}
-
   // Returns the last commited URL used for UKM. This is slightly different
   // than the document's URL because it will contain a data URL if a base URL
   // was used for its load or if an unreachable URL was used.
