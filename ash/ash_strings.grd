@@ -12178,6 +12178,20 @@ You can manage this account’s settings by installing the Family Link app on yo
       <message name="IDS_PROTOCOL_HANDLER_PICKER_APPLICATION_OPTIONS_ACCESSIBLE_NAME" desc="Accessible name for the list of potential protocol handlers.">
         Application options
       </message>
+
+      <!-- Chrome Apps Deprecation -->
+      <message name="IDS_USER_INSTALLED_CHROME_APP_DEPRECATION_NOTIFICATION_MESSAGE" desc="Message of the notification displayed while launching a user-installed app.">
+        This Chrome app will stop working after your ChromeOS version is updated. Save any app data you want to keep. To learn about your options, contact the app developer or your IT support team.
+      </message>
+      <message name="IDS_USER_INSTALLED_CHROME_APP_DEPRECATION_BLOCKED_LAUNCH_DIALOG_TITLE" desc="The title of the dialog displayed when a Crome App launch is blocked.">
+        <ph name="APP_NAME">$1<ex>Application</ex></ph> can't be launched
+      </message>
+      <message name="IDS_USER_INSTALLED_CHROME_APP_DEPRECATION_BLOCKED_LAUNCH_DIALOG_MESSAGE" desc="The content of the dialog displayed when a Crome App launch is blocked, explaining why the app was not launched.">
+        Chrome apps stopped running on ChromeOS devices in July 2025. Consider an alternative app.
+      </message>
+      <message name="IDS_USER_INSTALLED_CHROME_APP_DEPRECATION_BLOCKED_LAUNCH_DIALOG_CLOSE_BUTTON" desc="The text of the button to dismiss the dialog displayed when a Chrome App launch is blocked.">
+        Got it
+      </message>
     </messages>
   </release>
 </grit>
