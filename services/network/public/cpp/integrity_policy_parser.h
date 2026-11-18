@@ -19,10 +19,10 @@ struct IntegrityPolicy;
 enum class IntegrityPolicyHeaderType { kEnforce, kReportOnly };
 
 // Parses the Integrity-Policy and the Integrity-Policy-Report-Only headers.
-// These headers enable develoeprs to enforce that SubresourceIntegrity is used
+// These headers enable developers to enforce that Subresource Integrity is used
 // in their documents when loading resources of certain destinations. Currently
 // the only supported destination is "script".
-// https://github.com/w3c/webappsec-subresource-integrity/pull/133
+// https://w3c.github.io/webappsec-subresource-integrity/#integrity-policy-section
 COMPONENT_EXPORT(NETWORK_CPP_INTEGRITY_POLICY)
 IntegrityPolicy ParseIntegrityPolicyFromHeaders(
     const net::HttpResponseHeaders& headers,

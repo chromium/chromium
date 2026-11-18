@@ -99,9 +99,8 @@ IntegrityPolicy ParseIntegrityPolicyFromHeaders(
   }
 
   bool has_sources_key = false;
-  // Loop through the policy dictionary
-  //
-  // https://datatracker.ietf.org/doc/html/rfc9421#section-4-4
+  // Loop through the policy dictionary:
+  // https://w3c.github.io/webappsec-subresource-integrity/#processing-an-integrity-policy
   for (auto& [key, value] : integrity_policy_dictionary.value()) {
     if (key == "sources") {
       has_sources_key = true;
