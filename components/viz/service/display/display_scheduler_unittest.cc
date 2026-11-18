@@ -249,10 +249,9 @@ class DisplaySchedulerTest : public testing::Test {
   }
 
   PossibleDeadlines CreatePossibleDeadlines() {
-    PossibleDeadlines possible_deadlines(0);
-    possible_deadlines.deadlines.emplace_back(1, base::Milliseconds(8),
-                                              base::Milliseconds(16));
-    return possible_deadlines;
+    return PossibleDeadlines(
+        /*os_preferred_index=*/0,
+        {PossibleDeadline(1, base::Milliseconds(8), base::Milliseconds(16))});
   }
 
   void AdvanceTimeAndBeginFrameForTest(
@@ -602,14 +601,13 @@ TEST_F(DisplaySchedulerTest, SelectFutureFrameDeadline) {
   // frame_time = 20ms.
 
   // Create possible deadlines.
-  args.possible_deadlines = PossibleDeadlines(0);  // Preferred is 0.
   // Deadline 0 is in the past relative to "now".
   base::TimeDelta latch_delta0 = base::Milliseconds(5);
   base::TimeDelta latch_delta1 = base::Milliseconds(50);
-  args.possible_deadlines.deadlines.emplace_back(100, latch_delta0,
-                                                 base::Milliseconds(15));
-  args.possible_deadlines.deadlines.emplace_back(101, latch_delta1,
-                                                 base::Milliseconds(60));
+  args.possible_deadlines = PossibleDeadlines(
+      /*os_preferred_index=*/0,
+      {PossibleDeadline(100, latch_delta0, base::Milliseconds(15)),
+       PossibleDeadline(101, latch_delta1, base::Milliseconds(60))});
 
   // Advance time so that now > frame_time + latch_delta0.
   now_src().Advance(latch_delta0 + base::Milliseconds(1));
@@ -631,13 +629,12 @@ TEST_F(DisplaySchedulerTest, SelectFutureFrameDeadline) {
       BEGINFRAME_FROM_HERE, &now_src());
   args = last_begin_frame_args_;
   // frame_time = 46ms.
-  args.possible_deadlines = PossibleDeadlines(0);
   // Deadline 200 latch time: 46 + 10 = 56ms (< 70ms).
   // Deadline 201 latch time: 46 + 40 = 86ms (> 70ms).
-  args.possible_deadlines.deadlines.emplace_back(200, base::Milliseconds(10),
-                                                 base::Milliseconds(15));
-  args.possible_deadlines.deadlines.emplace_back(201, base::Milliseconds(40),
-                                                 base::Milliseconds(45));
+  args.possible_deadlines = PossibleDeadlines(
+      /*os_preferred_index=*/0,
+      {PossibleDeadline(200, base::Milliseconds(10), base::Milliseconds(15)),
+       PossibleDeadline(201, base::Milliseconds(40), base::Milliseconds(45))});
 
   scheduler_->OnBeginFrameForScheduling(args);
   SurfaceDamaged(root_surface_id);
@@ -1401,8 +1398,9 @@ TEST_F(DisplaySchedulerMultipleSwapsperVsyncTest,
   const base::TimeDelta latch_delta = interval + draw_time + epsilon;
   const base::TimeDelta present_delta = latch_delta + interval;
 
-  PossibleDeadlines bf2_deadlines(0);
-  bf2_deadlines.deadlines.emplace_back(1, latch_delta, present_delta);
+  PossibleDeadlines bf2_deadlines(
+      /*os_preferred_index=*/0,
+      {PossibleDeadline(1, latch_delta, present_delta)});
   AdvanceTimeAndBeginFrameForTest({root_surface_id}, bf2_deadlines);
   EXPECT_TRUE(scheduler_->inside_begin_frame_deadline_interval());
   EXPECT_EQ(1, client_.draw_and_swap_count());
@@ -1610,9 +1608,9 @@ TEST_F(DisplaySchedulerMultipleSwapsperVsyncTest,
   const base::TimeDelta interval = last_begin_frame_args_.interval;
   const base::TimeDelta latch_delta = interval - base::Milliseconds(8);
   const base::TimeDelta present_delta = latch_delta + interval;
-  PossibleDeadlines possible_deadlines(0);
-  possible_deadlines.deadlines = {
-      PossibleDeadline(1, latch_delta, present_delta)};
+  PossibleDeadlines possible_deadlines(
+      /*os_preferred_index=*/0,
+      {PossibleDeadline(1, latch_delta, present_delta)});
 
   // --- VSYNC 2 ---
   // Send BF2.
@@ -1660,8 +1658,9 @@ TEST_F(DisplaySchedulerMultipleSwapsperVsyncTest,
   const base::TimeDelta latch_delta = interval + draw_time + epsilon;
   const base::TimeDelta present_delta = latch_delta + interval;
 
-  PossibleDeadlines bf2_deadlines(0);
-  bf2_deadlines.deadlines.emplace_back(1, latch_delta, present_delta);
+  PossibleDeadlines bf2_deadlines(
+      /*os_preferred_index=*/0,
+      {PossibleDeadline(1, latch_delta, present_delta)});
   AdvanceTimeAndBeginFrameForTest({root_surface_id}, bf2_deadlines);
   EXPECT_TRUE(scheduler_->inside_begin_frame_deadline_interval());
   EXPECT_EQ(1, client_.draw_and_swap_count());
@@ -1796,13 +1795,12 @@ TEST_F(DisplaySchedulerTest, MaxPendingSwapsWithAndroidCustomDeadlines) {
         fake_begin_frame_source_.CreateBeginFrameArgsWithGenerator(
             now, now + interval, interval);
 
-    PossibleDeadlines possible_deadlines(0);
     int multiplier = large_deadline ? 5 : 3;
-    possible_deadlines.deadlines = {
-        PossibleDeadline(1, interval / 2, interval),
-        PossibleDeadline(2, interval * (multiplier - 1),
-                         interval * multiplier)};
-    args.possible_deadlines = possible_deadlines;
+    args.possible_deadlines = PossibleDeadlines(
+        /*os_preferred_index=*/0,
+        {PossibleDeadline(1, interval / 2, interval),
+         PossibleDeadline(2, interval * (multiplier - 1),
+                          interval * multiplier)});
 
     damage_tracker_->ClearUndrawnSurfaces();
     custom_scheduler->OnDisplayDamaged(root_surface_id, BeginFrameId());
@@ -1884,12 +1882,11 @@ TEST_F(DisplaySchedulerTest, MaxPendingSwapsTransition) {
         fake_begin_frame_source_.CreateBeginFrameArgsWithGenerator(
             now, now + interval, interval);
 
-    PossibleDeadlines possible_deadlines(0);
-    possible_deadlines.deadlines = {
-        PossibleDeadline(1, interval / 2, interval),
-        PossibleDeadline(2, interval * target_swaps - interval / 2,
-                         interval * target_swaps)};
-    args.possible_deadlines = possible_deadlines;
+    args.possible_deadlines = PossibleDeadlines(
+        /*os_preferred_index=*/0,
+        {PossibleDeadline(1, interval / 2, interval),
+         PossibleDeadline(2, interval * target_swaps - interval / 2,
+                          interval * target_swaps)});
 
     damage_tracker_->ClearUndrawnSurfaces();
     custom_scheduler->OnDisplayDamaged(root_surface_id, BeginFrameId());

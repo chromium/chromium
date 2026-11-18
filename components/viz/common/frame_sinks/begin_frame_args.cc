@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/trace_event/interned_args_helper.h"
 #include "base/trace_event/traced_value.h"
@@ -94,8 +95,12 @@ void PossibleDeadline::SetTraceTimelineData(
 }
 
 PossibleDeadlines::PossibleDeadlines() = default;
-PossibleDeadlines::PossibleDeadlines(size_t os_preferred_index)
-    : os_preferred_index(os_preferred_index) {}
+PossibleDeadlines::PossibleDeadlines(size_t os_preferred_index,
+                                     std::vector<PossibleDeadline> deadlines)
+    : os_preferred_index_(os_preferred_index),
+      deadlines_(std::move(deadlines)) {
+  CHECK_LT(os_preferred_index_, deadlines_.size());
+}
 PossibleDeadlines::PossibleDeadlines(const PossibleDeadlines& other) = default;
 PossibleDeadlines::PossibleDeadlines(PossibleDeadlines&& other) = default;
 PossibleDeadlines::~PossibleDeadlines() = default;
@@ -105,7 +110,12 @@ PossibleDeadlines& PossibleDeadlines::operator=(PossibleDeadlines&& other) =
     default;
 
 const PossibleDeadline& PossibleDeadlines::GetOSPreferredDeadline() const {
-  return deadlines[os_preferred_index];
+  return deadlines_[os_preferred_index_];
+}
+
+const PossibleDeadline& PossibleDeadlines::GetDeadlineByIndex(
+    size_t index) const {
+  return deadlines_[index];
 }
 
 BeginFrameArgs::BeginFrameArgs()

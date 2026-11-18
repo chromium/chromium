@@ -181,7 +181,8 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback(
                         callback_data);
   CHECK_LT(os_preferred_index, size);
 
-  PossibleDeadlines possible_deadlines(os_preferred_index);
+  std::vector<PossibleDeadline> deadlines;
+  deadlines.reserve(size);
   for (size_t i = 0; i < size; ++i) {
     int64_t vsync_id =
         gfx::AChoreographerCompat33::Get()
@@ -195,10 +196,12 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback(
         gfx::AChoreographerCompat33::Get()
             .AChoreographerFrameCallbackData_getFrameTimelineExpectedPresentationTimeNanosFn(
                 callback_data, i);
-    possible_deadlines.deadlines.emplace_back(
-        vsync_id, base::Nanoseconds(deadline - frame_time_nanos),
-        base::Nanoseconds(present_time - frame_time_nanos));
+    deadlines.emplace_back(vsync_id,
+                           base::Nanoseconds(deadline - frame_time_nanos),
+                           base::Nanoseconds(present_time - frame_time_nanos));
   }
+  PossibleDeadlines possible_deadlines(os_preferred_index,
+                                       std::move(deadlines));
 
   (*self)->OnVSync(frame_time_nanos, possible_deadlines, self);
 
@@ -225,7 +228,7 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback(
           return;
         }
 
-        for (const auto& deadline : possible_deadlines.deadlines) {
+        for (const auto& deadline : possible_deadlines.deadlines()) {
           auto* timeline = data->add_frame_timeline();
           deadline.SetTraceTimelineData(*timeline);
         }
@@ -275,15 +278,15 @@ std::optional<base::TimeDelta> ExternalBeginFrameSourceAndroid::
         const PossibleDeadlines& possible_deadlines) const {
   if (base::android::android_info::sdk_int() <
           base::android::android_info::SDK_VERSION_BAKLAVA ||
-      possible_deadlines.deadlines.size() < 2u ||
+      possible_deadlines.size() < 2u ||
       !base::FeatureList::IsEnabled(
           features::kCalculateDeadlineDerivedInterval)) {
     return std::nullopt;
   }
 
   const base::TimeDelta timeline_derived_interval =
-      possible_deadlines.deadlines[1].present_delta -
-      possible_deadlines.deadlines[0].present_delta;
+      possible_deadlines.GetDeadlineByIndex(1).present_delta -
+      possible_deadlines.GetDeadlineByIndex(0).present_delta;
   if (timeline_derived_interval < kMinDerivedVsyncInterval) {
     return std::nullopt;
   }

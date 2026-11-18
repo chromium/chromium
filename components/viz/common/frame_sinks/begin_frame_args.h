@@ -101,9 +101,11 @@ struct VIZ_COMMON_EXPORT PossibleDeadline {
           AndroidChoreographerFrameCallbackData_FrameTimeline& timeline) const;
 };
 
-struct VIZ_COMMON_EXPORT PossibleDeadlines {
+class VIZ_COMMON_EXPORT PossibleDeadlines {
+ public:
   PossibleDeadlines();
-  explicit PossibleDeadlines(size_t os_preferred_index);
+  PossibleDeadlines(size_t os_preferred_index,
+                    std::vector<PossibleDeadline> deadlines);
   ~PossibleDeadlines();
 
   // Out-of-line copy and assignment operators.
@@ -112,15 +114,20 @@ struct VIZ_COMMON_EXPORT PossibleDeadlines {
   PossibleDeadlines& operator=(const PossibleDeadlines& other);
   PossibleDeadlines& operator=(PossibleDeadlines&& other);
 
-  bool empty() const { return deadlines.empty(); }
-  size_t size() const { return deadlines.size(); }
+  bool empty() const { return deadlines_.empty(); }
+  size_t size() const { return deadlines_.size(); }
 
-  // Should only be called when `deadlines` is non-empty.
+  // Should only be called when `!empty()`.
   const PossibleDeadline& GetOSPreferredDeadline() const;
+  const PossibleDeadline& GetDeadlineByIndex(size_t index) const;
 
-  // Index into to `deadlines` vector picked by the OS as the default.
-  size_t os_preferred_index = 0;
-  std::vector<PossibleDeadline> deadlines;
+  size_t os_preferred_index() const { return os_preferred_index_; }
+  const std::vector<PossibleDeadline>& deadlines() const { return deadlines_; }
+
+ private:
+  // Index into `deadlines_` vector picked by the OS as the default.
+  size_t os_preferred_index_ = 0;
+  std::vector<PossibleDeadline> deadlines_;
 };
 
 struct VIZ_COMMON_EXPORT BeginFrameArgs {
