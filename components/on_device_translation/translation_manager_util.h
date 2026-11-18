@@ -6,6 +6,7 @@
 #define COMPONENTS_ON_DEVICE_TRANSLATION_TRANSLATION_MANAGER_UTIL_H_
 
 #include <optional>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -48,6 +49,12 @@ std::optional<std::string> LookupMatchingLocaleByBestFit(
   }
   return std::nullopt;
 }
+
+// Returns the supported language code that best fits language_code, or nullopt
+// if none fits. Maps he to iw, and maps Chinese region codes to the script of
+// that region, such as zh-TW to zh-Hant.
+std::optional<std::string> GetBestFitLanguageCode(
+    std::string_view language_code);
 
 }  // namespace on_device_translation
 

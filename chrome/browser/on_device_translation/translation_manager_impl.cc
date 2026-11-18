@@ -50,20 +50,6 @@ using blink::mojom::TranslatorLanguageCodePtr;
 using content::BrowserContext;
 using content::RenderProcessHost;
 
-// TODO(crbug.com/419848973): This is a workaround until the "he" language code
-// is fully supported.
-std::string SwitchLanguageCodeToIwIfHe(std::string language_code) {
-  std::string language_subtag = language_code;
-  int pos = language_code.find("-");
-  if (pos != -1) {
-    language_subtag.resize(pos);
-  }
-  if (language_subtag == "he") {
-    language_code.replace(0, 2, "iw");
-  }
-  return language_code;
-}
-
 blink::mojom::CanCreateTranslatorResult GetBlinkCanCreateTranslatorResult(
     OnDeviceTranslationController::CanTranslateResult result) {
   switch (result) {
@@ -268,9 +254,7 @@ std::optional<std::string> TranslationManagerImpl::GetBestFitLanguageCode(
   if (CrashesAllowed() && requested_language == "crash") {
     return requested_language;
   }
-  std::string best_fit =
-      SwitchLanguageCodeToIwIfHe(std::move(requested_language));
-  return LookupMatchingLocaleByBestFit(kSupportedLanguageCodes, best_fit);
+  return on_device_translation::GetBestFitLanguageCode(requested_language);
 }
 
 bool TranslationManagerImpl::CrashesAllowed() {

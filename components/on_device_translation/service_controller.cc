@@ -14,9 +14,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
@@ -70,42 +67,6 @@ constexpr std::string_view kCanTranslateSourceLanguageIsSupportedMetricName =
     "Translate.OnDeviceTranslation.CanTranslate.IsSourceLanguageSupported";
 constexpr std::string_view kCanTranslateTargetLanguageIsSupportedMetricName =
     "Translate.OnDeviceTranslation.CanTranslate.IsTargetLanguageSupported";
-
-// TODO(crbug.com/419848973): This is a workaround until the "he" language code
-// is fully supported.
-std::string SwitchLanguageCodeToIwIfHe(std::string_view language_code) {
-  if (language_code == "he") {
-    return "iw";
-  }
-  auto split = base::SplitStringOnce(language_code, "-");
-  if (!split || split->first != "he") {
-    return std::string(language_code);
-  }
-
-  return base::StrCat({"iw-", split->second});
-}
-
-std::string SwitchLanguageCodeForChinese(std::string_view language_code) {
-  std::string lower_code = base::ToLowerASCII(language_code);
-  if (lower_code == "zh-cn" || lower_code == "zh-hans-cn" ||
-      lower_code == "cmn-hans-cn") {
-    return "zh";
-  }
-  if (lower_code == "zh-tw" || lower_code == "zh-hant-tw" ||
-      lower_code == "cmn-hant-tw" || lower_code == "zh-hk" ||
-      lower_code == "zh-hant-hk" || lower_code == "cmn-hant-hk") {
-    return "zh-Hant";
-  }
-  return std::string(language_code);
-}
-
-std::optional<std::string> GetBestFitLanguageCode(
-    std::string_view language_code) {
-  std::string best_fit = SwitchLanguageCodeToIwIfHe(language_code);
-  best_fit = SwitchLanguageCodeForChinese(best_fit);
-  return LookupMatchingLocaleByBestFit(kSupportedLanguageCodes,
-                                       std::move(best_fit));
-}
 
 // Converts on_device_translation::mojom::CreateTranslatorResult to
 // OnDeviceTranslationController::CreateTranslatorError.

@@ -2392,4 +2392,62 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, FileSchemeUrl) {
       browser(), net::FilePathToFileURL(empty2_html_path)));
   TestTranslationAvailable(browser(), "en", "ja", "downloadable");
 }
+
+// Tests that zh-TW and zh-HK map to zh-Hant and he maps to iw across
+// availability() and create().
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
+                       BestFitLanguageCodeChineseAndHebrew) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
+      .Times(1);
+  mock_component_manager.DoNotExpectCallRegisterLanguagePackComponent();
+  mock_component_manager.InstallMockTranslateKitComponent();
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_ZhHant);
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Iw);
+
+  TestCanTranslateResult(
+      "en", "zh-TW",
+      CanCreateTranslatorResult::kAfterDownloadTranslatorCreationRequired);
+  TestCanTranslateResult(
+      "en", "zh-HK",
+      CanCreateTranslatorResult::kAfterDownloadTranslatorCreationRequired);
+  TestCanTranslateResult(
+      "en", "he",
+      CanCreateTranslatorResult::kAfterDownloadTranslatorCreationRequired);
+  TestCanTranslateResult(
+      "en", "zh-CN",
+      CanCreateTranslatorResult::kAfterDownloadLanguagePackNotReady);
+
+  NavigateToEmptyPage();
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      const twTranslator = await Translator.create({
+        sourceLanguage: 'en',
+        targetLanguage: 'zh-TW',
+      });
+      return await twTranslator.translate('hello');
+    )"),
+            "en to zh-Hant: hello");
+  TestTranslationAvailable(browser(), "en", "zh-TW", "available");
+  TestTranslationAvailable(browser(), "en", "zh-HK", "available");
+  TestTranslationAvailable(browser(), "en", "zh-CN", "downloadable");
+
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      const hkTranslator = await Translator.create({
+        sourceLanguage: 'en',
+        targetLanguage: 'zh-HK',
+      });
+      return await hkTranslator.translate('hello');
+    )"),
+            "en to zh-Hant: hello");
+
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      const heTranslator = await Translator.create({
+        sourceLanguage: 'en',
+        targetLanguage: 'he',
+      });
+      return await heTranslator.translate('hello');
+    )"),
+            "en to iw: hello");
+  TestTranslationAvailable(browser(), "en", "he", "available");
+}
 }  // namespace on_device_translation

@@ -109,4 +109,17 @@ TEST_F(TranslationManagerUtilTest,
   }
 }
 
+TEST_F(TranslationManagerUtilTest, GetBestFitLanguageCodeMapsRegionsAndHebrew) {
+  EXPECT_EQ(GetBestFitLanguageCode("zh"), "zh");
+  EXPECT_EQ(GetBestFitLanguageCode("zh-CN"), "zh");
+  EXPECT_EQ(GetBestFitLanguageCode("zh-Hans-CN"), "zh");
+  EXPECT_EQ(GetBestFitLanguageCode("zh-Hant"), "zh-Hant");
+  EXPECT_EQ(GetBestFitLanguageCode("zh-TW"), "zh-Hant");
+  EXPECT_EQ(GetBestFitLanguageCode("zh-HK"), "zh-Hant");
+  EXPECT_EQ(GetBestFitLanguageCode("zh-Hant-TW"), "zh-Hant");
+  EXPECT_EQ(GetBestFitLanguageCode("he"), "iw");
+  EXPECT_EQ(GetBestFitLanguageCode("he-IL"), "iw");
+  EXPECT_EQ(GetBestFitLanguageCode("xx"), std::nullopt);
+}
+
 }  // namespace on_device_translation
