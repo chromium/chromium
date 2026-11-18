@@ -594,13 +594,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHeapVectorPromptlyFree);
 // If enabled, allows the browser to render new content in place of an image.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kImageReplacement);
 
-#if !BUILDFLAG(IS_ANDROID)
-// If enabled, the initial WebUI will not interact with extensions. This feature
-// intends to optimize performance by reducting extension related tasks.
-// See crbug.com/450192387.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInitialWebUIWithoutExtensions);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 // If enabled, the initial WebUI surface will sync with the browser without
 // deferring the browser view show.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInitialWebUISurfaceSync);

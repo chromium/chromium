@@ -39,6 +39,7 @@
 #include "extensions/browser/service_worker/service_worker_task_queue.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/browser/user_script_world_configuration_manager.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/extension_set.h"
@@ -54,7 +55,6 @@
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ipc/ipc_channel_proxy.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/origin.h"
 
@@ -240,15 +240,13 @@ RendererStartupHelper::~RendererStartupHelper() {
 
 void RendererStartupHelper::OnRenderProcessHostCreated(
     content::RenderProcessHost* host) {
-#if !BUILDFLAG(IS_ANDROID)
   if (host->IsForTopChromeWebUI() &&
       base::FeatureList::IsEnabled(
-          blink::features::kInitialWebUIWithoutExtensions)) {
+          extensions_features::kInitialWebUIWithoutExtensions)) {
     // We initialize extension for topchrome processes on DidStartNavigation or
     // ReadyToCommitNavigation.
     return;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (host->IsForGuestsOnly()) {
     // GuestView initialization is done in OnRenderProcessLaunched()
@@ -261,15 +259,13 @@ void RendererStartupHelper::OnRenderProcessHostCreated(
 
 void RendererStartupHelper::OnRenderProcessLaunched(
     content::RenderProcessHost* host) {
-#if !BUILDFLAG(IS_ANDROID)
   if (host->IsForTopChromeWebUI() &&
       base::FeatureList::IsEnabled(
-          blink::features::kInitialWebUIWithoutExtensions)) {
+          extensions_features::kInitialWebUIWithoutExtensions)) {
     // We initialize extension for topchrome processes on DidStartNavigation or
     // ReadyToCommitNavigation.
     return;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (!host->IsForGuestsOnly()) {
     // Any process that *isn't* for guests or an initial WebUI with disabled

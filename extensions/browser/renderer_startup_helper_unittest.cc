@@ -21,12 +21,12 @@
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
-#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
@@ -650,11 +650,10 @@ TEST_F(RendererStartupHelperTest, InitializeProcessIdempotency) {
   EXPECT_TRUE(IsProcessInitialized(render_process_host_.get()));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(RendererStartupHelperTest, SkipInitializationOnLaunchWithFeature) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      blink::features::kInitialWebUIWithoutExtensions);
+      extensions_features::kInitialWebUIWithoutExtensions);
 
   // Use a new mock process to simulate a fresh launch.
   auto new_process =
@@ -673,7 +672,6 @@ TEST_F(RendererStartupHelperTest, SkipInitializationOnLaunchWithFeature) {
   helper_->InitializeProcess(new_process.get());
   EXPECT_TRUE(IsProcessInitialized(new_process.get()));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(RendererStartupHelperTest,
        ExtensionLoadedParams_ServiceWorkerMojoEnabled) {

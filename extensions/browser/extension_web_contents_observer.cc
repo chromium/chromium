@@ -41,6 +41,7 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -48,7 +49,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -329,7 +329,6 @@ void ExtensionWebContentsObserver::RenderFrameDeleted(
 
 void ExtensionWebContentsObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
-#if !BUILDFLAG(IS_ANDROID)
   // If the navigation is for the TopChrome WebUI, we can skip extension
   // initialization for optimization. Otherwise, we ensure the renderer process
   // is initialized including the non-TopChrome WebUI navigation.
@@ -337,13 +336,12 @@ void ExtensionWebContentsObserver::ReadyToCommitNavigation(
       navigation_handle->GetRenderFrameHost()->GetProcess();
   if (process->IsForTopChromeWebUI() &&
       base::FeatureList::IsEnabled(
-          blink::features::kInitialWebUIWithoutExtensions)) {
+          extensions_features::kInitialWebUIWithoutExtensions)) {
     if (!navigation_handle->IsInitialWebUINavigation()) {
       RendererStartupHelperFactory::GetForBrowserContext(browser_context_)
           ->InitializeProcess(process);
     }
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   SetUpRenderFrameHost(navigation_handle->GetRenderFrameHost());
   MaybeEnableMojoJsBindings(navigation_handle);

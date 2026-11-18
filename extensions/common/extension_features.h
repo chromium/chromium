@@ -275,6 +275,11 @@ BASE_DECLARE_FEATURE(kExtensionsServiceWorkerStartRetry);
 // Forces requests to go through WebRequestProxyingURLLoaderFactory.
 BASE_DECLARE_FEATURE(kForceWebRequestProxyForTest);
 
+// If enabled, the initial WebUI will not interact with extensions. This feature
+// intends to optimize performance by reducing extension related tasks.
+// See crbug.com/450192387.
+BASE_DECLARE_FEATURE(kInitialWebUIWithoutExtensions);
+
 // Launches Native Host executables directly on Windows rather than using a
 // cmd.exe process as a proxy.
 BASE_DECLARE_FEATURE(kLaunchWindowsNativeHostsDirectly);

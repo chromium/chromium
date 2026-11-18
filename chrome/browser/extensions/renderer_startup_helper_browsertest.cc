@@ -4,37 +4,36 @@
 
 #include "extensions/browser/renderer_startup_helper.h"
 
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_controller_factory.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/url_utils.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "third_party/blink/public/common/features.h"
+#include "extensions/common/extension_features.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
-
-// This test exercises support for kInitialWebUIWithoutExtensions, a performance
-// optimization for WebUI "top chrome" which is not supported on Android.
-static_assert(!BUILDFLAG(IS_ANDROID));
 
 namespace extensions {
 
 namespace {
+
+constexpr char kInitialWebUIHost[] = "test-initial";
 
 // A generic factory that returns a base WebUIController for any WebUI URL.
 // This avoids the dependency-heavy WebUIToolbarUI and its associated crashes.
@@ -43,20 +42,29 @@ class WebUITestWebUIControllerFactory : public content::WebUIControllerFactory {
   std::unique_ptr<content::WebUIController> CreateWebUIControllerForURL(
       content::WebUI* web_ui,
       const GURL& url) override {
-    return url.host() == "test-initial"
+    return url.host() == kInitialWebUIHost
                ? std::make_unique<content::WebUIController>(web_ui)
                : nullptr;
   }
   content::WebUI::TypeID GetWebUIType(content::BrowserContext* browser_context,
                                       const GURL& url) override {
-    return url.host() == "test-initial"
+    return url.host() == kInitialWebUIHost
                ? reinterpret_cast<content::WebUI::TypeID>(1)
                : nullptr;
   }
   bool UseWebUIForURL(content::BrowserContext* browser_context,
                       const GURL& url) override {
-    return url.host() == "test-initial";
+    return url.host() == kInitialWebUIHost;
   }
+};
+
+// Enables in-process resource loading V2 for the initial WebUI host.
+class InitialWebUITestConfig
+    : public content::DefaultWebUIConfig<content::WebUIController> {
+ public:
+  InitialWebUITestConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme, kInitialWebUIHost) {}
+  bool SupportsInProcessResourceLoadingV2() const override { return true; }
 };
 
 // Overrides the BrowserClient to mark our dummy URL as an "Initial WebUI".
@@ -81,17 +89,38 @@ class InitialWebUIOverrideChromeContentBrowserClient
 
 }  // namespace
 
-class RendererStartupHelperBrowserTest : public InProcessBrowserTest {
+class RendererStartupHelperBrowserTest : public PlatformBrowserTest {
  public:
   RendererStartupHelperBrowserTest() {
     content::WebUIControllerFactory::RegisterFactory(
         &webui_controller_factory_);
 
     feature_list_.InitWithFeatures(
-        {blink::features::kInitialWebUIWithoutExtensions}, {});
+        {extensions_features::kInitialWebUIWithoutExtensions,
+         features::kWebUIInProcessResourceLoadingV2},
+        {});
+  }
+
+  void SetUpOnMainThread() override {
+    PlatformBrowserTest::SetUpOnMainThread();
+    // Initial WebUI navigations load the document body in the renderer, which
+    // requires in-process resource loading V2.
+    content::WebUIConfigMap::GetInstance().AddWebUIConfig(
+        std::make_unique<InitialWebUITestConfig>());
+    content::WebUIDataSource::CreateAndAdd(browser_context(), kInitialWebUIHost)
+        ->SetResourcePathToResponse("", "<!doctype html><body>bar</body>");
+  }
+
+  void TearDownOnMainThread() override {
+    content::WebUIConfigMap::GetInstance().RemoveConfig(InitialWebUIURL());
+    PlatformBrowserTest::TearDownOnMainThread();
   }
 
  protected:
+  static GURL InitialWebUIURL() {
+    return GURL(base::StrCat({"chrome://", kInitialWebUIHost, "/"}));
+  }
+
   // Helper to check if a process is initialized for extensions.
   bool IsInitialized(content::RenderProcessHost* process) {
     return RendererStartupHelperFactory::GetForBrowserContext(
@@ -99,8 +128,8 @@ class RendererStartupHelperBrowserTest : public InProcessBrowserTest {
         ->IsProcessInitializedForTesting(process);
   }
 
-  content::WebContents* contents() const {
-    return browser()->GetTabStripModel()->GetActiveWebContents();
+  content::BrowserContext* browser_context() {
+    return chrome_test_utils::GetProfile(this);
   }
 
  private:
@@ -111,7 +140,7 @@ class RendererStartupHelperBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(RendererStartupHelperBrowserTest,
                        DeferredInitializationPerNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL initial_url("chrome://test-initial/");
+  GURL initial_url = InitialWebUIURL();
 
   // Mark our test URL as an "Initial WebUI" URL.
   InitialWebUIOverrideChromeContentBrowserClient test_client(initial_url);
@@ -119,9 +148,9 @@ IN_PROC_BROWSER_TEST_F(RendererStartupHelperBrowserTest,
       content::SetBrowserClientForTesting(&test_client);
 
   // Create a new WebContents manually to ensure it is the "first navigation."
-  content::WebContents::CreateParams params(contents()->GetBrowserContext());
-  params.site_instance = content::SiteInstance::CreateForURL(
-      contents()->GetBrowserContext(), initial_url);
+  content::WebContents::CreateParams params(browser_context());
+  params.site_instance =
+      content::SiteInstance::CreateForURL(browser_context(), initial_url);
   std::unique_ptr<content::WebContents> new_web_contents =
       content::WebContents::Create(params);
 
@@ -133,6 +162,17 @@ IN_PROC_BROWSER_TEST_F(RendererStartupHelperBrowserTest,
       new_web_contents->GetPrimaryMainFrame()->GetProcess();
 
   // Verify the process should NOT be initialized for extensions.
+  EXPECT_FALSE(IsInitialized(process));
+
+  // Navigate to the Initial WebUI URL. Initialization should still be skipped
+  // when the navigation is ready to commit.
+  content::TestNavigationObserver observer1(new_web_contents.get());
+  new_web_contents->GetController().LoadURL(initial_url, content::Referrer(),
+                                            ui::PAGE_TRANSITION_TYPED,
+                                            std::string());
+  observer1.Wait();
+  EXPECT_TRUE(observer1.last_navigation_succeeded());
+  EXPECT_EQ(process, new_web_contents->GetPrimaryMainFrame()->GetProcess());
   EXPECT_FALSE(IsInitialized(process));
 
   content::SetBrowserClientForTesting(old_client);

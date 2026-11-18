@@ -315,8 +315,9 @@ Standard [content::WebContents][WebContents] instances normally load multiple
 extension-related scripts and observers, demanding substantial CPU and memory
 during their critical startup phase. To alleviate this overhead, Chrome
 implements an extension bypass gated by the
-`blink::features::kInitialWebUIWithoutExtensions` feature flag. During process
-creation, [`OnRenderProcessHostCreated()`][OnRenderProcessHostCreated] and
+`extensions_features::kInitialWebUIWithoutExtensions` feature flag. During
+process creation,
+[`OnRenderProcessHostCreated()`][OnRenderProcessHostCreated] and
 [`OnRenderProcessLaunched()`][OnRenderProcessLaunched] skip early extension
 initialization for Top Chrome processes. Furthermore, during navigation,
 [ExtensionWebContentsObserver] completely ignores the Initial WebUI navigation,

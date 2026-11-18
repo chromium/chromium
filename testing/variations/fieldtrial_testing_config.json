@@ -868,6 +868,7 @@
                         "AndroidNewTabButtonTabstripWebUI",
                         "AndroidTopChromeWebUIBypassLoaderThrottles",
                         "InitialWebUI",
+                        "InitialWebUIWithoutExtensions",
                         "WebUIToolbarFrameEvictionOptOut",
                         "WebUiAndroidTheming"
                     ]

@@ -200,6 +200,8 @@ BASE_FEATURE(kExtensionsToolbarZeroState, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kForceWebRequestProxyForTest, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kInitialWebUIWithoutExtensions, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLaunchWindowsNativeHostsDirectly,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
