@@ -6,7 +6,6 @@ import os
 
 
 _AI_AGENT_ENV_VARS = (
-  'GEMINI_CLI',
   'CLAUDECODE',
   'ANTIGRAVITY_AGENT',
   'CODEX_SANDBOX',
@@ -18,10 +17,6 @@ _AI_AGENT_ENV_VARS = (
 
 def _IsEnvVarEnabled(name: str) -> bool:
   return (os.getenv(name) or '').lower() not in ('', '0', 'false')
-
-
-def IsGeminiCli():
-  return _IsEnvVarEnabled('GEMINI_CLI')
 
 
 def IsAntigravity():

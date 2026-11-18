@@ -1249,7 +1249,6 @@ class TelemetryTest(unittest.TestCase):
 class IsLlmTest(unittest.TestCase):
   def test_ai_agent_env_vars(self):
     env_vars = (
-      'GEMINI_CLI',
       'CLAUDECODE',
       'ANTIGRAVITY_AGENT',
       'CODEX_SANDBOX',
@@ -1257,6 +1256,7 @@ class IsLlmTest(unittest.TestCase):
       'COPILOT_CLI',
       'AI_AGENT',
     )
+    self.assertEqual(env_vars, target_finder.utils._AI_AGENT_ENV_VARS)
     with mock.patch.dict(os.environ, {}, clear=True):
       self.assertFalse(target_finder.utils.IsLlm())
     for var in env_vars:
