@@ -15834,61 +15834,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Unlock Profile and Relaunch
       </message>
 
-      <!-- Accessibility alerts -->
-      <if expr="is_chromeos">
-        <message name="IDS_A11Y_ALERT_CAPS_OFF" desc="Alert sent to the accessibility api when caps lock is turned off.">
-          caps lock off
-        </message>
-        <message name="IDS_A11Y_ALERT_CAPS_ON" desc="Alert sent to the accessibility api when caps lock is turned on.">
-          caps lock on
-        </message>
-        <message name="IDS_A11Y_ALERT_SCREEN_OFF" desc="Alert sent to the accessibility api when screen is turned off.">
-          screen off
-        </message>
-        <message name="IDS_A11Y_ALERT_SCREEN_ON" desc="Alert sent to the accessibility api when screen is turned on.">
-          screen on
-        </message>
-        <message name="IDS_A11Y_ALERT_WINDOW_MOVED_TO_ANOTHER_DISPLAY" desc="Alert sent to the accessibility api when active window is moved to above display.">
-          Active window moved to another display.
-        </message>
-        <message name="IDS_A11Y_ALERT_WINDOW_NEEDED" desc="Alert sent to the accessibility api when the user attempts a keyboard command that requires a window to work.">
-          Command unavailable. Press control-N to open a new window.
-        </message>
-        <message name="IDS_A11Y_ALERT_FASTER_SPLITSCREEN_TOAST" desc="The text for the Faster Splitscreen toast during faster splitscreen setup.">
-        Choose a window for this side
-        </message>
-        <message name="IDS_A11Y_ALERT_SNAP_GROUP_CREATION" desc="An alert for snap group creation.">
-        Group two side-by-side windows
-        </message>
-        <message name="IDS_A11Y_ALERT_SNAP_GROUP_RESIZE_LEFT" desc="An alert for snap group resize.">
-        Resized windows to the left
-        </message>
-        <message name="IDS_A11Y_ALERT_SNAP_GROUP_RESIZE_RIGHT" desc="An alert for snap group resize.">
-        Resized windows to the right
-        </message>
-        <message name="IDS_A11Y_ALERT_SNAP_GROUP_RESIZE_UP" desc="An alert for snap group resize.">
-        Resized windows to the top
-        </message>
-        <message name="IDS_A11Y_ALERT_SNAP_GROUP_RESIZE_DOWN" desc="An alert for snap group resize.">
-        Resized windows to the bottom
-        </message>
-        <message name="IDS_A11Y_ALERT_WINDOW_OVERVIEW_MODE_ENTERED" desc="The accessible text read when the user enters window overview mode in Ash.">
-          Entered window overview mode. Swipe to navigate, or press tab if using a keyboard.
-        </message>
-        <message name="IDS_A11Y_ALERT_SAVED_DESKS_LIBRARY_MODE_ENTERED" desc="The accessible text read when the user enters saved desks mode in Ash when both Save &amp; Recall and Desk Templates are enabled.">
-          Viewing saved desks and templates. Press tab to navigate.
-        </message>
-        <message name="IDS_A11Y_ALERT_SAVED_DESKS_SAVED_FOR_LATER_MODE_ENTERED" desc="The accessible text read when the user enters saved desks mode in Ash when only Save &amp; Recall is enabled.">
-          Viewing saved desks. Press tab to navigate.
-        </message>
-        <message name="IDS_A11Y_ALERT_WORKSPACE_FULLSCREEN_STATE_ENTERED" desc="The accessible text read when the current workspace state changes to fullscreen, which means the window in current workspace is fullcreen.">
-          Entered full screen
-        </message>
-        <message name="IDS_A11Y_ALERT_WORKSPACE_FULLSCREEN_STATE_EXITED" desc="The accessible text read when the current workspace state changes from fullscreen to others, which means the window in current workspace is not fullscreen.">
-          Exited full screen
-        </message>
-      </if>
-
       <message name="IDS_DESKTOP_MEDIA_PICKER_SHARE" desc="Used for Share on buttons">
         Share
       </message>

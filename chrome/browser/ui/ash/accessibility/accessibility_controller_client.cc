@@ -6,11 +6,11 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "base/i18n/language_tag.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/audio/sounds.h"
 #include "content/public/browser/tts_controller.h"
 #include "ui/aura/window.h"
