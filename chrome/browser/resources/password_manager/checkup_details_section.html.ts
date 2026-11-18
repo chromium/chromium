@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {asyncMap} from 'chrome://resources/cr_elements/async_map_directive.js';
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {CheckupDetailsSectionElement} from './checkup_details_section.js';
@@ -21,7 +22,7 @@ export function getHtml(this: CheckupDetailsSectionElement) {
   </div>
 </div>
 ${!this.isReusedType() ? html`
-  ${this.shownInsecureCredentials_.map((item, index) => html`
+  ${asyncMap(this.shownInsecureCredentials_, (item, index) => html`
     <checkup-list-item .item="${item}" ?first="${!index}"
         .group="${this.getCurrentGroup_(item.id)}"
         ?show-details="${this.isCompromisedType()}"
@@ -30,7 +31,7 @@ ${!this.isReusedType() ? html`
         @more-actions-click="${this.onMoreActionsClick_}"
         @change-password-clicked="${this.onChangePasswordClicked_}">
     </checkup-list-item>
-  `)}
+  `, 50)}
   ${this.mutedCompromisedCredentials_.length ? html`
     <cr-expand-button id="expandMutedCompromisedCredentialsButton"
         class="cr-row list-item" no-hover
@@ -53,7 +54,7 @@ ${!this.isReusedType() ? html`
     </cr-collapse>
   ` : ''}
 ` : html`
-  ${this.credentialsWithReusedPassword_.map(item => html`
+  ${asyncMap(this.credentialsWithReusedPassword_, item => html`
     <div class="cr-secondary-text label reuse-title">
       ${item.title}
     </div>
@@ -66,7 +67,7 @@ ${!this.isReusedType() ? html`
           @change-password-clicked="${this.onChangePasswordClicked_}">
       </checkup-list-item>
     `)}
-  `)}
+  `, 50)}
 `}
 <cr-action-menu id="moreActionsMenu" role-description="$i18n{menu}"
     accessibility-label="$i18n{moreActions}">

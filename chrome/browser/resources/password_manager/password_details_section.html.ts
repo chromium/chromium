@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {asyncMap} from 'chrome://resources/cr_elements/async_map_directive.js';
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {PasswordDetailsSectionElement} from './password_details_section.js';
@@ -21,7 +22,7 @@ export function getHtml(this: PasswordDetailsSectionElement) {
   </h2>
 </div>
 ${this.selectedGroup_?.name ? html`
-  ${this.selectedGroup_.entries.map((item, index) => html`
+  ${asyncMap(this.selectedGroup_.entries, (item, index) => html`
     ${item.isPasskey ? html`
       <passkey-details-card .passkey="${item}"></passkey-details-card>
     ` : html`
@@ -36,7 +37,7 @@ ${this.selectedGroup_?.name ? html`
       <backup-password-details-card .password="${item}">
       </backup-password-details-card>
     ` : ''}
-  `)}
+  `, 10)}
 ` : ''}
 <!--_html_template_end_-->`;
 }

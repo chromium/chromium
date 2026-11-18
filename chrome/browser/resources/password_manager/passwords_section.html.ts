@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {asyncMap} from 'chrome://resources/cr_elements/async_map_directive.js';
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {PasswordsSectionElement} from './passwords_section.js';
@@ -43,13 +44,13 @@ ${this.computeShouldShowNotificationCard_() ? html`
 </div>
 <div class="card" id="passwords" role="list" ?hidden="${this.hideGroupsList_()}"
     aria-label="$i18n{passwordListAriaLabel}">
-  ${this.filteredGroups_.map((item, index) => html`
+  ${asyncMap(this.filteredGroups_, (item, index) => html`
     <password-list-item .item="${item}" ?first="${!index}"
         ?is-account-store-user="${this.isAccountStoreUser}"
         @password-details-shown="${this.onPasswordDetailsShown_}"
         search-term="${this.searchTerm_}" role="listitem">
     </password-list-item>
-  `)}
+  `, 50)}
 </div>
 ${this.showAddPasswordDialog_ ? html`
   <add-password-dialog @close="${this.onAddPasswordDialogClose_}"
