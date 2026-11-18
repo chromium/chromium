@@ -948,8 +948,8 @@ bool IsInterruptedDownloadAutoResumable(download::DownloadItem* download_item,
     return false;
   }
 
-  // TODO(shaktisahu): Use DownloadItemImpl::kMaxAutoResumeAttempts.
-  if (download_item->GetAutoResumeCount() >= 5) {
+  if (download_item->GetAutoResumeCount() >=
+      DownloadItemImpl::kMaxAutoResumeAttempts) {
     return false;
   }
 
