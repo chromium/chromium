@@ -328,6 +328,29 @@ TEST_F(FrameSinkManagerTest, CreateCompositorFrameSink) {
   EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdA));
 }
 
+// Verifies that CreateCompositorFrameSink() doesn't register a second
+// CompositorFrameSinkSupport for a FrameSinkId that already has one, e.g. one
+// that a LayerContextImpl created for an unbounded element.
+TEST_F(FrameSinkManagerTest, CreateCompositorFrameSinkWithExistingSupport) {
+  const FrameSinkId kUnboundedFrameSinkId(kBrowserClientId, 2);
+  auto existing_support =
+      CreateCompositorFrameSinkSupport(kUnboundedFrameSinkId);
+
+  MockCompositorFrameSinkClient compositor_frame_sink_client;
+  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
+  manager_->CreateCompositorFrameSink(
+      kUnboundedFrameSinkId, /*bundle_id=*/std::nullopt,
+      compositor_frame_sink.BindNewPipeAndPassReceiver(),
+      compositor_frame_sink_client.BindInterfaceRemote(),
+      /*render_input_router_config=*/nullptr);
+
+  // The request is dropped, and the existing support stays registered.
+  EXPECT_FALSE(CompositorFrameSinkExists(kUnboundedFrameSinkId));
+  EXPECT_EQ(GetFrameSinkSupport(kUnboundedFrameSinkId), existing_support.get());
+  compositor_frame_sink.FlushForTesting();
+  EXPECT_FALSE(compositor_frame_sink.is_connected());
+}
+
 TEST_F(FrameSinkManagerTest, CompositorFrameSinkConnectionLost) {
   manager_->RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
 

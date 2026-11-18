@@ -430,6 +430,15 @@ void FrameSinkManagerImpl::CreateCompositorFrameSink(
         frame_sink_manager_receiver_);
     return;
   }
+  // A CompositorFrameSinkSupport can also be created elsewhere, e.g. by a
+  // LayerContextImpl for an unbounded element, whose FrameSinkId a renderer
+  // chooses. A FrameSinkId can only have one support, so drop the request
+  // rather than crash. This isn't a bad message, since a renderer can cause it.
+  if (support_map_.contains(frame_sink_id)) {
+    VLOG(1) << "Terminating sink for " << frame_sink_id
+            << ", which already has a CompositorFrameSinkSupport";
+    return;
+  }
   if (bundle_id && !GetFrameSinkBundle(*bundle_id)) {
     VLOG(1) << "Terminating sink established with non-existent bundle";
     return;
