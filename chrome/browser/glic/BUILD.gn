@@ -502,6 +502,8 @@ source_set("impl") {
     "host/context/glic_empty_pinned_tab_manager.h",
     "host/context/glic_page_context_fetcher.cc",
     "host/context/glic_page_features_manager.cc",
+    "host/context/glic_pdf_content_analysis.cc",
+    "host/context/glic_pdf_content_analysis.h",
     "host/context/glic_pin_candidate_comparator.cc",
     "host/context/glic_pin_candidate_comparator.h",
     "host/context/glic_pinned_tab_manager_impl.cc",
@@ -1313,7 +1315,10 @@ source_set("browser_tests") {
     ]
 
     if (enterprise_cloud_content_analysis) {
-      sources += [ "host/glic_drag_and_drop_policy_browsertest.cc" ]
+      sources += [
+        "host/glic_drag_and_drop_policy_browsertest.cc",
+        "host/glic_pdf_content_analysis_browsertest.cc",
+      ]
     }
     deps += [
       ":glic",

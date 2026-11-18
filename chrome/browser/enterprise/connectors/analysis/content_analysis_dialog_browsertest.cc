@@ -40,6 +40,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -50,6 +51,8 @@
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/web_dialogs/test/test_web_dialog_delegate.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace enterprise_connectors {
 
@@ -1626,6 +1629,37 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogDownloadObserverTest,
   dtor_called_closure_ = dtor_run_loop.QuitClosure();
 
   mock_download_item.reset();
+  dtor_run_loop.Run();
+}
+
+// Regression test: the controller must delete itself if its WebContents is
+// destroyed while the scan is pending and before the delayed dialog is shown.
+IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogDownloadObserverTest,
+                       WebContentsDestroyedBeforeDialogShown) {
+  ContentAnalysisDialogController::SetShowDialogDelayForTesting(base::Hours(1));
+  download::MockDownloadItem mock_download_item;
+  content::WebContents* contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  new ContentAnalysisDialogController(
+      std::make_unique<ContentAnalysisDownloadsDelegate>(
+          u"", u"", GURL(), true,
+          /* open_file_callback */ base::DoNothing(),
+          /* discard_callback */ base::DoNothing(), &mock_download_item,
+          ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage(),
+          u""),
+      true, contents, DeepScanAccessPoint::DOWNLOAD, /* file_count */ 1,
+      FinalContentAnalysisResult::SUCCESS);
+
+  EXPECT_TRUE(ctor_called_);
+
+  base::RunLoop dtor_run_loop;
+  dtor_called_closure_ = dtor_run_loop.QuitClosure();
+
+  // Add a tab to keep the browser alive, then close the scanned one.
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  contents->Close();
   dtor_run_loop.Run();
 }
 

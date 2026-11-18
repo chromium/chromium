@@ -22,6 +22,7 @@
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_util.h"
+#include "chrome/browser/glic/host/context/glic_pdf_content_analysis.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -157,7 +158,8 @@ CheckTabStillShareable(const base::WeakPtr<tabs::TabInterface>& tab,
 }
 
 // Builds the `TabContextResult` from `page_context`. The tab may have closed
-// or navigated since the fetch started, so it is re-checked here.
+// or navigated since the fetch started, including during the FILE_ATTACHED
+// scan, so it is re-checked here.
 void BuildTabContextResult(
     FetchContextState state,
     std::unique_ptr<page_content_annotations::FetchPageContextResult>
@@ -295,7 +297,12 @@ void HandleFetchPageResult(
     return;
   }
 
-  BuildTabContextResult(std::move(state), std::move(fetch_result.value()));
+  // Scan any PDF bytes for enterprise content analysis before sharing them.
+  base::WeakPtr<tabs::TabInterface> tab = state.tab;
+  base::WeakPtr<content::Page> primary_page = state.primary_page;
+  MaybeScanPdfForFileAttached(
+      std::move(tab), std::move(primary_page), std::move(fetch_result.value()),
+      base::BindOnce(&BuildTabContextResult, std::move(state)));
 }
 
 }  // namespace

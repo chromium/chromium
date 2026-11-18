@@ -171,7 +171,8 @@ class ContentAnalysisDialogController
   // or not.
   bool accepted_or_cancelled_ = false;
 
-  // Set to true once `DeleteSoon()` is called in `CancelDialogAndDelete()`.
+  // Set to true once `DeleteSoon()` is called in `CancelDialogAndDelete()` or
+  // `CancelDialogWithoutCallback()`.
   // This is used by other pending tasks, such as `ShowDialogNow()` to do
   // nothing if the dialog has been scheduled for deletion.
   bool will_be_deleted_soon_ = false;

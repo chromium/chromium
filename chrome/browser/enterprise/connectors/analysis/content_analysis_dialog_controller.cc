@@ -389,9 +389,13 @@ void ContentAnalysisDialogController::CancelDialogWithoutCallback() {
   delegate_base_.reset(nullptr);
 
   // `widget_` may be null if the dialog was delayed and never shown before the
-  // verdict is known.
+  // verdict is known. In that case nothing else will delete `this`, so do it
+  // here unless a deletion is already scheduled.
   if (widget_) {
     CloseDialog(views::Widget::ClosedReason::kCancelButtonClicked);
+  } else if (!will_be_deleted_soon_) {
+    will_be_deleted_soon_ = true;
+    content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, this);
   }
 }
 
