@@ -186,6 +186,12 @@ BASE_DECLARE_FEATURE(kGeicApiBundleResource);
 // `kGeic`.
 BASE_DECLARE_FEATURE(kGeicProviderChangePrompt);
 
+// After a relaunch that switched the Glic provider (e.g. the admin added,
+// removed or changed the `GeminiEnterpriseUrl` policy), tells the user once that
+// they've been switched. Independent of `kGeicProviderChangePrompt`. Requires
+// `kGeic`.
+BASE_DECLARE_FEATURE(kGeicProviderSwitchNotice);
+
 BASE_DECLARE_FEATURE(kGlicHotkeyLocalScope);
 BASE_DECLARE_FEATURE(kGlicKeyboardPrint);
 

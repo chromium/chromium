@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_provider_change.h"
+#include "chrome/browser/glic/public/glic_provider_switch_notice.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 
 namespace glic {
@@ -33,6 +34,9 @@ void MaybeRelaunchForProviderChange(Profile* profile) {
 
   base::RecordAction(
       base::UserMetricsAction("Glic.ProviderChange.RelaunchClicked"));
+  // Only `profile` is marked: other profiles that pick up a provider change
+  // from this relaunch didn't see the prompt, so they still get the notice.
+  RecordUserInitiatedProviderSwitch(*profile);
   if (RestartCallbackForTesting()) {
     RestartCallbackForTesting().Run();
     return;

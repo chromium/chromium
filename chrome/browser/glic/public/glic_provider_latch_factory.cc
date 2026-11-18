@@ -16,7 +16,9 @@
 #include "chrome/browser/glic/public/glic_provider_change.h"
 #include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/glic/public/glic_provider_switch_notice.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
@@ -100,6 +102,8 @@ GlicProviderLatchFactory::BuildServiceInstanceForBrowserContext(
   }
   GlicProviderLatch::Set(base::PassKey<GlicProviderLatchFactory>(), *context,
                          provider, std::move(geic_options));
+  UpdateKnownProviderAtStartup(base::PassKey<GlicProviderLatchFactory>(),
+                               *Profile::FromBrowserContext(context));
   return std::make_unique<KeyedService>();
 }
 

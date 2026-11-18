@@ -267,6 +267,8 @@ BASE_FEATURE(kGeicProviderChangePrompt,
 #endif
 );
 
+BASE_FEATURE(kGeicProviderSwitchNotice, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<std::string> kGeicGuestURL{&kGeic, "geic-guest-url",
                                                     ""};
 

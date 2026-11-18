@@ -241,6 +241,13 @@ inline constexpr char kGlicLocalStorageCopiedToPrefs[] =
 // holds the layout version.
 inline constexpr char kGlicClientDataStorage[] = "glic.client_data_storage";
 
+// String pref that holds the `GlicProviderKey::ToPrefString()` of the provider
+// the user last onboarded to ("" for Gemini), so that they can be told when
+// it's switched for them (see glic_provider_switch_notice.h). Unset until the
+// user onboards to a provider. Profile-scoped and not synced.
+inline constexpr char kGlicProviderSwitchNoticeKnownProviderKey[] =
+    "glic.provider_switch_notice.known_provider_key";
+
 // Boolean pref that tracks if the Glic profile was previously ineligible.
 inline constexpr char kGlicPreviouslyNotAllowed[] =
     "glic.previously_not_allowed";

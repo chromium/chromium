@@ -49,6 +49,7 @@
 #include "chrome/browser/glic/public/glic_provider_latch_factory.h"
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/glic/public/glic_provider_switch_notice.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -2083,6 +2084,7 @@ void GlicEnabling::UpdateEnabledStatus() {
 }
 
 void GlicEnabling::UpdateConsentStatus() {
+  OnLatchedProviderFreStatusChanged(*profile_);
   RegisterDefaultHotkeyScopeSyntheticTrial(profile_);
   consent_changed_callback_list_.Notify();
   show_settings_page_changed_callback_list_.Notify();

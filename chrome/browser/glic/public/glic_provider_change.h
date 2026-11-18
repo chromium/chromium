@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_PUBLIC_GLIC_PROVIDER_CHANGE_H_
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_PROVIDER_CHANGE_H_
 
+#include <ostream>
 #include <string>
 #include <utility>
 
@@ -53,6 +54,12 @@ class GlicProviderKey {
 
   friend bool operator==(const GlicProviderKey&,
                          const GlicProviderKey&) = default;
+  friend std::ostream& operator<<(std::ostream& os,
+                                  const GlicProviderKey& key) {
+    return key.provider() == GlicProvider::kGemini
+               ? os << "Gemini"
+               : os << "GeminiEnterprise(" << key.guest_url_key_ << ")";
+  }
 
  private:
   explicit GlicProviderKey(std::string guest_url_key)
