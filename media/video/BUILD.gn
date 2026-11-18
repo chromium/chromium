@@ -159,7 +159,13 @@ source_set("unit_tests") {
 
   if (use_libgav1_parser) {
     sources += [ "libgav1_decoder_unittest.cc" ]
-    deps += [ "//third_party/libgav1:libgav1_decoder" ]
+    deps += [
+      "//third_party/libgav1:libgav1_decoder",
+      "//third_party/libgav1:libgav1_parser",
+    ]
+    if (enable_libaom) {
+      sources += [ "av1_video_encoder_unittest.cc" ]
+    }
   }
 
   # TODO(crbug.com/581458350): Enable on Windows and Android once decoder stack

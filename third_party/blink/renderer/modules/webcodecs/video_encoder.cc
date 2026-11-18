@@ -1016,6 +1016,10 @@ bool VideoEncoder::CanReconfigure(ParsedConfig& original_config,
                                   ParsedConfig& new_config) {
   // Reconfigure is intended for things that don't require changing underlying
   // codec implementation and can be changed on the fly.
+  if (original_config.options.manual_reference_buffer_control !=
+      new_config.options.manual_reference_buffer_control) {
+    return false;
+  }
   return original_config.codec == new_config.codec &&
          original_config.profile == new_config.profile &&
          original_config.level == new_config.level &&

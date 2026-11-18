@@ -28,14 +28,6 @@ namespace media {
 
 namespace {
 
-// Map externally visible buffer ids [0, 1, 2] to ids used by libaom.
-constexpr std::array<size_t, 3> kExternalToLibAomBufMap = {
-    0,  // LAST
-    3,  // GOLDEN
-    6,  // ALTREF
-};
-constexpr size_t kNumberOfReferenceBuffers = kExternalToLibAomBufMap.size();
-
 void FreeCodecCtx(aom_codec_ctx_t* codec_ctx) {
   if (codec_ctx->name) {
     // Codec has been initialized, we need to destroy it.
@@ -155,9 +147,11 @@ EncoderStatus SetUpAomConfig(VideoCodecProfile profile,
   config.g_lag_in_frames = 0;
   config.rc_max_quantizer = 56;
   config.rc_min_quantizer = 10;
-  // Only if latency_mode is real time, a frame might be dropped.
+  // Only if latency_mode is real time (and reference buffers are not manually
+  // controlled), a frame might be dropped.
   config.rc_dropframe_thresh =
-      opts.latency_mode == VideoEncoder::LatencyMode::Realtime
+      (opts.latency_mode == VideoEncoder::LatencyMode::Realtime &&
+       !opts.manual_reference_buffer_control)
           ? GetDefaultVideoEncoderDropFrameThreshold()
           : 0;
 
@@ -174,8 +168,10 @@ EncoderStatus SetUpAomConfig(VideoCodecProfile profile,
   // Set the number of threads based on the image width and num of cores.
   config.g_threads = GetNumberOfThreadsForSoftwareEncoding(opts.frame_size);
 
-  // Insert keyframes at will with a given max interval
-  if (opts.keyframe_interval.has_value()) {
+  if (opts.manual_reference_buffer_control) {
+    config.kf_mode = AOM_KF_DISABLED;
+  } else if (opts.keyframe_interval.has_value()) {
+    // Insert keyframes at will with a given max interval
     config.kf_mode = AOM_KF_AUTO;
     config.kf_min_dist = 0;
     config.kf_max_dist = opts.keyframe_interval.value();
@@ -313,6 +309,8 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
   }
 
   profile_ = profile;
+  buffer_last_updated_seq_ = {};
+  encode_seq_ = 0;
 
   // Initialize an encoder instance.
   aom_codec_unique_ptr codec(new aom_codec_ctx_t, FreeCodecCtx);
@@ -360,6 +358,9 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
   CALL_AOM_CONTROL(AV1E_SET_ENABLE_ANGLE_DELTA, 0);
   CALL_AOM_CONTROL(AV1E_SET_ENABLE_FILTER_INTRA, 0);
   CALL_AOM_CONTROL(AV1E_SET_INTRA_DEFAULT_TX_ONLY, 1);
+  if (options.manual_reference_buffer_control) {
+    CALL_AOM_CONTROL(AV1E_SET_MAX_REFERENCE_FRAMES, kNumberOfReferenceBuffers);
+  }
   CALL_AOM_CONTROL(AV1E_SET_SVC_PARAMS, &svc_params_);
 
   if (config_.rc_end_usage == AOM_CBR) {
@@ -568,37 +569,10 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   }
 
   if (options_.manual_reference_buffer_control) {
-    aom_svc_ref_frame_config_t ref_frame_config = {};
-    for (size_t i = 0; i < kNumberOfReferenceBuffers; i++) {
-      base::span(ref_frame_config.ref_idx)[kExternalToLibAomBufMap[i]] = i;
-    }
-
-    if (encode_options.update_buffer.has_value()) {
-      uint8_t update_buffer_idx = encode_options.update_buffer.value();
-      if (update_buffer_idx >= kNumberOfReferenceBuffers) {
-        std::move(done_cb).Run(
-            EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
-                          "update_buffer is out of bounds"));
-        return;
-      }
-      base::span(ref_frame_config.refresh)[update_buffer_idx] = 1;
-    }
-    for (uint8_t ref : encode_options.reference_buffers) {
-      if (ref >= kNumberOfReferenceBuffers) {
-        std::move(done_cb).Run(
-            EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
-                          "reference_buffer is out of bounds"));
-        return;
-      }
-      base::span(ref_frame_config.reference)[kExternalToLibAomBufMap[ref]] = 1;
-    }
-
-    auto error = aom_codec_control(codec_.get(), AV1E_SET_SVC_REF_FRAME_CONFIG,
-                                   &ref_frame_config);
-    if (error != AOM_CODEC_OK) {
-      auto msg = LogAomErrorMessage(codec_.get(), "AOM encoding error", error);
-      std::move(done_cb).Run(
-          EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg));
+    EncoderStatus status =
+        ConfigureManualReferenceBuffers(encode_options, key_frame);
+    if (!status.is_ok()) {
+      std::move(done_cb).Run(std::move(status));
       return;
     }
   }
@@ -624,6 +598,16 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   }
   auto output = GetEncoderOutput(std::move(temporal_id_status).value(),
                                  frame->timestamp(), frame->ColorSpace());
+  if (options_.manual_reference_buffer_control && !output.data.empty()) {
+    ++encode_seq_;
+    if (output.key_frame) {
+      buffer_last_updated_seq_.fill(encode_seq_);
+    }
+    if (encode_options.update_buffer.has_value()) {
+      buffer_last_updated_seq_[encode_options.update_buffer.value()] =
+          encode_seq_;
+    }
+  }
   if (svc_params_.number_temporal_layers > 1) {
     // If we got an unexpected key frame, temporal_svc_frame_index needs to
     // be adjusted, because the next frame should have index 1.
@@ -786,6 +770,89 @@ base::expected<int, EncoderStatus> Av1VideoEncoder::AssignNextTemporalId(
         EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg));
   }
   return temporal_id;
+}
+
+EncoderStatus Av1VideoEncoder::ConfigureManualReferenceBuffers(
+    const EncodeOptions& encode_options,
+    bool key_frame) {
+  // Preferred libaom reference alias order in RTC mode: LAST (0), GOLDEN (3),
+  // ALTREF (6). Libaom favors LAST the most and GOLDEN second most.
+  constexpr std::array<size_t, kNumberOfReferenceBuffers> kPreferredAlias = {
+      0,  // LAST
+      3,  // GOLDEN
+      6,  // ALTREF
+  };
+
+  if (encode_options.update_buffer.has_value() &&
+      encode_options.update_buffer.value() >= kNumberOfReferenceBuffers) {
+    return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+                         "update_buffer is out of bounds");
+  }
+  for (uint8_t ref : encode_options.reference_buffers) {
+    if (ref >= kNumberOfReferenceBuffers) {
+      return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+                           "reference_buffer is out of bounds");
+    }
+  }
+
+  // Order unique referenced buffers from most recently updated to oldest so the
+  // best temporal predictor is aliased as LAST, followed by GOLDEN and ALTREF.
+  // Keyframes (including the initial frame) must not reference any buffers.
+  std::vector<uint8_t> sorted_refs;
+  if (!key_frame && encode_seq_ > 0) {
+    for (uint8_t ref : encode_options.reference_buffers) {
+      if (!std::ranges::contains(sorted_refs, ref)) {
+        sorted_refs.push_back(ref);
+      }
+    }
+    std::ranges::stable_sort(sorted_refs, [this](uint8_t a, uint8_t b) {
+      return buffer_last_updated_seq_[a] > buffer_last_updated_seq_[b];
+    });
+  }
+
+  aom_svc_ref_frame_config_t ref_frame_config = {};
+  auto ref_idx_view = base::span(ref_frame_config.ref_idx);
+  auto reference_view = base::span(ref_frame_config.reference);
+  auto refresh_view = base::span(ref_frame_config.refresh);
+
+  if (!sorted_refs.empty()) {
+    // Point all 7 reference aliases to a known-valid referenced buffer by
+    // default rather than buffer 0, then assign active references in preferred
+    // alias order.
+    std::ranges::fill(ref_idx_view, sorted_refs.back());
+    for (size_t i = 0; i < sorted_refs.size(); ++i) {
+      ref_idx_view[kPreferredAlias[i]] = sorted_refs[i];
+      reference_view[kPreferredAlias[i]] = 1;
+    }
+  }
+
+  if (encode_options.update_buffer.has_value()) {
+    refresh_view[encode_options.update_buffer.value()] = 1;
+  }
+
+  auto error = aom_codec_control(codec_.get(), AV1E_SET_SVC_REF_FRAME_CONFIG,
+                                 &ref_frame_config);
+  if (error != AOM_CODEC_OK) {
+    auto msg = LogAomErrorMessage(codec_.get(), "AOM encoding error", error);
+    return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg);
+  }
+
+  // Enable compound prediction (GOLDEN_LAST and ALTREF_LAST) only when two or
+  // more references are active; libaom otherwise enables `use_comp_ref_nonrd`
+  // even on single-reference frames.
+  aom_svc_ref_frame_comp_pred_t comp_pred = {};
+  if (sorted_refs.size() >= 2) {
+    comp_pred.use_comp_pred[0] = 1;
+    comp_pred.use_comp_pred[2] = 1;
+  }
+  error = aom_codec_control(codec_.get(), AV1E_SET_SVC_REF_FRAME_COMP_PRED,
+                            &comp_pred);
+  if (error != AOM_CODEC_OK) {
+    auto msg = LogAomErrorMessage(codec_.get(), "AOM encoding error", error);
+    return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg);
+  }
+
+  return EncoderStatus::Codes::kOk;
 }
 
 Av1VideoEncoder::~Av1VideoEncoder() = default;

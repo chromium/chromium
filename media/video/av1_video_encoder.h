@@ -5,6 +5,8 @@
 #ifndef MEDIA_VIDEO_AV1_VIDEO_ENCODER_H_
 #define MEDIA_VIDEO_AV1_VIDEO_ENCODER_H_
 
+#include <array>
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -40,11 +42,16 @@ class MEDIA_EXPORT Av1VideoEncoder : public VideoEncoder {
   void Flush(EncoderStatusCB done_cb) override;
 
  private:
+  static constexpr size_t kNumberOfReferenceBuffers = 3;
+
   base::TimeDelta GetFrameDuration(const VideoFrame& frame);
   VideoEncoderOutput GetEncoderOutput(int temporal_id,
                                       base::TimeDelta timestamp,
                                       gfx::ColorSpace color_space) const;
   base::expected<int, EncoderStatus> AssignNextTemporalId(bool key_frame);
+  EncoderStatus ConfigureManualReferenceBuffers(
+      const EncodeOptions& encode_options,
+      bool key_frame);
   void UpdateEncoderColorSpace();
 
   using aom_codec_unique_ptr =
@@ -54,6 +61,12 @@ class MEDIA_EXPORT Av1VideoEncoder : public VideoEncoder {
   aom_codec_enc_cfg_t config_ = {};
   aom_svc_params_t svc_params_ = {};
   aom_image_t image_ = {};
+
+  // Tracks the encode sequence number when each manual reference buffer was
+  // last populated so references can be aliased in recency order (LAST,
+  // GOLDEN, ALTREF).
+  std::array<uint64_t, kNumberOfReferenceBuffers> buffer_last_updated_seq_ = {};
+  uint64_t encode_seq_ = 0;
 
   // This is a timestamp that is always increasing by frame's duration.
   // It's used only for rate control and has nothing to do with timestamps
