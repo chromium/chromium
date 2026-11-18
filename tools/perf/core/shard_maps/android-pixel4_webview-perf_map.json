@@ -8,7 +8,7 @@
                 "abridged": false
             },
             "blink_perf.css": {
-                "end": 36,
+                "end": 52,
                 "abridged": false
             }
         }
@@ -16,7 +16,7 @@
     "1": {
         "benchmarks": {
             "blink_perf.css": {
-                "begin": 36,
+                "begin": 52,
                 "abridged": false
             },
             "blink_perf.dom": {
@@ -29,7 +29,7 @@
                 "abridged": false
             },
             "blink_perf.layout": {
-                "end": 65,
+                "end": 89,
                 "abridged": false
             }
         }
@@ -37,10 +37,7 @@
     "2": {
         "benchmarks": {
             "blink_perf.layout": {
-                "begin": 65,
-                "abridged": false
-            },
-            "blink_perf.service_worker": {
+                "begin": 89,
                 "abridged": false
             },
             "blink_perf.owp_storage": {
@@ -49,11 +46,14 @@
             "blink_perf.parser": {
                 "abridged": false
             },
+            "blink_perf.service_worker": {
+                "abridged": false
+            },
             "blink_perf.shadow_dom": {
                 "abridged": false
             },
             "blink_perf.webaudio": {
-                "end": 1,
+                "end": 7,
                 "abridged": false
             }
         }
@@ -61,7 +61,7 @@
     "3": {
         "benchmarks": {
             "blink_perf.webaudio": {
-                "begin": 1,
+                "begin": 7,
                 "abridged": false
             },
             "blink_perf.webcodecs": {
@@ -128,7 +128,34 @@
                     "--embedder-push-files=/b/swarming/w/ir/third_party/crossbench/config/team/woa/dnsmasq.conf:/data/local/tmp/dnsmasq.conf",
                     "--embedder-push-files=/b/swarming/w/ir/clank/android_webview/tools/crossbench_config/cipd/arm64/dummy_vpn.apk:/data/local/tmp/dummy_vpn.apk"
                 ]
-            },
+            }
+        },
+        "benchmarks": {}
+    },
+    "5": {
+        "crossbench": {
+            "js_bridge.embedder.crossbench": {
+                "crossbench_name": "embedder",
+                "arguments": [
+                    "--embedder=webview_embedder",
+                    "--splashscreen=skip",
+                    "--probe-config=../../third_party/crossbench/config/team/woa/wv_shell_memory.probe.config.hjson",
+                    "--cuj-config=../../third_party/crossbench/config/team/woa/js_bridge_cuj_config.hjson",
+                    "--android-activity=JsBridgeActivity",
+                    "--repetitions=25",
+                    "--cool-down-threshold=moderate"
+                ]
+            }
+        },
+        "benchmarks": {}
+    },
+    "6": {
+        "benchmarks": {
+            "media.mobile": {
+                "abridged": false
+            }
+        },
+        "crossbench": {
             "loading.crossbench": {
                 "crossbench_name": "loading",
                 "arguments": [
@@ -138,20 +165,7 @@
                     "--cool-down-threshold=moderate",
                     "--stories=cnn"
                 ]
-            }
-        },
-        "benchmarks": {}
-    },
-    "5": {
-        "benchmarks": {
-            "media.mobile": {
-                "abridged": false
             },
-            "rasterize_and_record_micro.top_25": {
-                "abridged": false
-            }
-        },
-        "crossbench": {
             "notification.embedder.crossbench": {
                 "crossbench_name": "embedder",
                 "arguments": [
@@ -174,19 +188,13 @@
             }
         }
     },
-    "6": {
-        "benchmarks": {
-            "rendering.mobile": {
-                "end": 63,
-                "abridged": false
-            }
-        }
-    },
     "7": {
         "benchmarks": {
+            "rasterize_and_record_micro.top_25": {
+                "abridged": false
+            },
             "rendering.mobile": {
-                "begin": 63,
-                "end": 123,
+                "end": 58,
                 "abridged": false
             }
         }
@@ -194,8 +202,8 @@
     "8": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 123,
-                "end": 179,
+                "begin": 58,
+                "end": 124,
                 "abridged": false
             }
         }
@@ -203,8 +211,8 @@
     "9": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 179,
-                "end": 236,
+                "begin": 124,
+                "end": 185,
                 "abridged": false
             }
         }
@@ -212,8 +220,8 @@
     "10": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 236,
-                "end": 315,
+                "begin": 185,
+                "end": 249,
                 "abridged": false
             }
         }
@@ -221,8 +229,8 @@
     "11": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 315,
-                "end": 367,
+                "begin": 249,
+                "end": 329,
                 "abridged": false
             }
         }
@@ -230,24 +238,25 @@
     "12": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 367,
-                "abridged": false
-            },
-            "rendering.mobile.notracing": {
+                "begin": 329,
+                "end": 394,
                 "abridged": false
             }
         }
     },
     "13": {
         "benchmarks": {
+            "rendering.mobile": {
+                "begin": 394,
+                "abridged": false
+            },
+            "rendering.mobile.notracing": {
+                "abridged": false
+            },
             "speedometer3-future": {
                 "abridged": false
             },
             "startup.mobile": {
-                "abridged": false
-            },
-            "system_health.common_mobile": {
-                "end": 45,
                 "abridged": false
             }
         },
@@ -270,11 +279,10 @@
     "14": {
         "benchmarks": {
             "system_health.common_mobile": {
-                "begin": 45,
                 "abridged": false
             },
             "system_health.memory_mobile": {
-                "end": 20,
+                "end": 17,
                 "abridged": false,
                 "pageset_repeat": 3
             }
@@ -283,8 +291,8 @@
     "15": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 20,
-                "end": 36,
+                "begin": 17,
+                "end": 31,
                 "abridged": false,
                 "pageset_repeat": 3
             }
@@ -293,8 +301,8 @@
     "16": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 36,
-                "end": 58,
+                "begin": 31,
+                "end": 56,
                 "abridged": false,
                 "pageset_repeat": 3
             }
@@ -303,18 +311,18 @@
     "17": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 58,
+                "begin": 56,
                 "abridged": false,
                 "pageset_repeat": 3
-            },
-            "system_health.webview_startup": {
-                "abridged": false,
-                "pageset_repeat": 20
             }
         }
     },
     "18": {
         "benchmarks": {
+            "system_health.webview_startup": {
+                "abridged": false,
+                "pageset_repeat": 20
+            },
             "v8.browsing_mobile": {
                 "abridged": false
             },
@@ -327,29 +335,29 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1131,
-        "predicted_min_shard_time": 1026.0,
-        "predicted_min_shard_index": 12,
-        "predicted_max_shard_time": 1742.0,
-        "predicted_max_shard_index": 4,
-        "shard #0": 1419.0,
-        "shard #1": 1421.0,
-        "shard #2": 1398.0,
-        "shard #3": 1572.0,
-        "shard #4": 1742.0,
-        "shard #5": 1377.0,
-        "shard #6": 1386.0,
-        "shard #7": 1394.0,
-        "shard #8": 1382.0,
-        "shard #9": 1395.0,
-        "shard #10": 1371.0,
-        "shard #11": 1386.0,
-        "shard #12": 1026.0,
-        "shard #13": 1446.0,
-        "shard #14": 1486.0,
-        "shard #15": 1415.0,
-        "shard #16": 1442.0,
-        "shard #17": 1558.0,
-        "shard #18": 1330.0
+        "num_stories": 1127,
+        "predicted_min_shard_time": 900,
+        "predicted_min_shard_index": 4,
+        "predicted_max_shard_time": 2550,
+        "predicted_max_shard_index": 5,
+        "shard #0": 1470.0,
+        "shard #1": 1439.0,
+        "shard #2": 1453.0,
+        "shard #3": 1220.0,
+        "shard #4": 900,
+        "shard #5": 2550,
+        "shard #6": 1810,
+        "shard #7": 1416.0,
+        "shard #8": 1428.0,
+        "shard #9": 1417.0,
+        "shard #10": 1417.0,
+        "shard #11": 1425.0,
+        "shard #12": 1430.0,
+        "shard #13": 1420.0,
+        "shard #14": 1380.0,
+        "shard #15": 1461.0,
+        "shard #16": 1416.0,
+        "shard #17": 1278.0,
+        "shard #18": 1558.0
     }
 }

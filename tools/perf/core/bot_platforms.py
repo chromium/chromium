@@ -981,6 +981,19 @@ def _crossbench_shell_embedder(
   )
 
 
+@_register('js_bridge.embedder.crossbench')
+def _crossbench_js_bridge_embedder(
+  estimated_runtime: int = 2550, flags: tuple[str, ...] = ()
+):
+  return CrossbenchConfig(
+    'js_bridge.embedder.crossbench',
+    'embedder',
+    estimated_runtime=estimated_runtime,
+    flags=flags,
+    auto_enable_field_trials=False,
+  )
+
+
 @_register('notification.embedder.crossbench')
 def _crossbench_notification_embedder(
   estimated_runtime: int = 900, flags: tuple[str, ...] = ()

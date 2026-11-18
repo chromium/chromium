@@ -20,7 +20,7 @@
                 "abridged": false
             },
             "blink_perf.layout": {
-                "end": 4,
+                "end": 29,
                 "abridged": false
             }
         }
@@ -28,10 +28,7 @@
     "1": {
         "benchmarks": {
             "blink_perf.layout": {
-                "begin": 4,
-                "abridged": false
-            },
-            "blink_perf.service_worker": {
+                "begin": 29,
                 "abridged": false
             },
             "blink_perf.owp_storage": {
@@ -40,19 +37,13 @@
             "blink_perf.parser": {
                 "abridged": false
             },
+            "blink_perf.service_worker": {
+                "abridged": false
+            },
             "blink_perf.shadow_dom": {
                 "abridged": false
             },
             "blink_perf.webaudio": {
-                "end": 8,
-                "abridged": false
-            }
-        }
-    },
-    "2": {
-        "benchmarks": {
-            "blink_perf.webaudio": {
-                "begin": 8,
                 "abridged": false
             },
             "blink_perf.webcodecs": {
@@ -73,7 +64,9 @@
             "dummy_benchmark.stable_benchmark_1": {
                 "abridged": false
             }
-        },
+        }
+    },
+    "2": {
         "crossbench": {
             "embedder.crossbench": {
                 "crossbench_name": "embedder",
@@ -116,9 +109,27 @@
                     "--embedder-push-files=/b/swarming/w/ir/clank/android_webview/tools/crossbench_config/cipd/arm64/dummy_vpn.apk:/data/local/tmp/dummy_vpn.apk"
                 ]
             }
-        }
+        },
+        "benchmarks": {}
     },
     "3": {
+        "crossbench": {
+            "js_bridge.embedder.crossbench": {
+                "crossbench_name": "embedder",
+                "arguments": [
+                    "--embedder=webview_embedder",
+                    "--splashscreen=skip",
+                    "--probe-config=../../third_party/crossbench/config/team/woa/wv_shell_memory.probe.config.hjson",
+                    "--cuj-config=../../third_party/crossbench/config/team/woa/js_bridge_cuj_config.hjson",
+                    "--android-activity=JsBridgeActivity",
+                    "--repetitions=25",
+                    "--cool-down-threshold=moderate"
+                ]
+            }
+        },
+        "benchmarks": {}
+    },
+    "4": {
         "benchmarks": {
             "media.mobile": {
                 "abridged": false
@@ -127,7 +138,7 @@
                 "abridged": false
             },
             "rendering.mobile": {
-                "end": 5,
+                "end": 18,
                 "abridged": false
             }
         },
@@ -164,20 +175,11 @@
             }
         }
     },
-    "4": {
-        "benchmarks": {
-            "rendering.mobile": {
-                "begin": 5,
-                "end": 103,
-                "abridged": false
-            }
-        }
-    },
     "5": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 103,
-                "end": 196,
+                "begin": 18,
+                "end": 130,
                 "abridged": false
             }
         }
@@ -185,8 +187,8 @@
     "6": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 196,
-                "end": 311,
+                "begin": 130,
+                "end": 233,
                 "abridged": false
             }
         }
@@ -194,13 +196,18 @@
     "7": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 311,
+                "begin": 233,
+                "end": 351,
                 "abridged": false
             }
         }
     },
     "8": {
         "benchmarks": {
+            "rendering.mobile": {
+                "begin": 351,
+                "abridged": false
+            },
             "rendering.mobile.notracing": {
                 "abridged": false
             },
@@ -211,12 +218,8 @@
                 "abridged": false
             },
             "system_health.common_mobile": {
+                "end": 18,
                 "abridged": false
-            },
-            "system_health.memory_mobile": {
-                "end": 4,
-                "abridged": false,
-                "pageset_repeat": 3
             }
         },
         "crossbench": {
@@ -237,9 +240,12 @@
     },
     "9": {
         "benchmarks": {
+            "system_health.common_mobile": {
+                "begin": 18,
+                "abridged": false
+            },
             "system_health.memory_mobile": {
-                "begin": 4,
-                "end": 31,
+                "end": 26,
                 "abridged": false,
                 "pageset_repeat": 3
             }
@@ -248,8 +254,8 @@
     "10": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 31,
-                "end": 70,
+                "begin": 26,
+                "end": 68,
                 "abridged": false,
                 "pageset_repeat": 3
             }
@@ -258,7 +264,7 @@
     "11": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 70,
+                "begin": 68,
                 "abridged": false,
                 "pageset_repeat": 3
             },
@@ -278,22 +284,22 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1124,
-        "predicted_min_shard_time": 2129.0,
-        "predicted_min_shard_index": 7,
-        "predicted_max_shard_time": 2355.0,
-        "predicted_max_shard_index": 10,
-        "shard #0": 2242.0,
-        "shard #1": 2226.0,
-        "shard #2": 2159.0,
-        "shard #3": 2252.0,
-        "shard #4": 2245.0,
-        "shard #5": 2251.0,
-        "shard #6": 2260.0,
-        "shard #7": 2129.0,
-        "shard #8": 2260.0,
-        "shard #9": 2265.0,
-        "shard #10": 2355.0,
-        "shard #11": 2247.0
+        "num_stories": 1127,
+        "predicted_min_shard_time": 1800,
+        "predicted_min_shard_index": 2,
+        "predicted_max_shard_time": 2550,
+        "predicted_max_shard_index": 3,
+        "shard #0": 2373.0,
+        "shard #1": 2324.0,
+        "shard #2": 1800,
+        "shard #3": 2550,
+        "shard #4": 2425.0,
+        "shard #5": 2440.0,
+        "shard #6": 2426.0,
+        "shard #7": 2443.0,
+        "shard #8": 2430.0,
+        "shard #9": 2514.0,
+        "shard #10": 2349.0,
+        "shard #11": 2427.0
     }
 }

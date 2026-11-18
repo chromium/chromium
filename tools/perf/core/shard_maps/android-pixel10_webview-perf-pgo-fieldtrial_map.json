@@ -19,12 +19,7 @@
                     "--embedder-drop-caches",
                     "--enable-field-trials"
                 ]
-            }
-        },
-        "benchmarks": {}
-    },
-    "1": {
-        "crossbench": {
+            },
             "gma.embedder.crossbench": {
                 "crossbench_name": "embedder",
                 "arguments": [
@@ -46,6 +41,24 @@
                     "--embedder-push-files=/b/swarming/w/ir/third_party/crossbench/config/team/woa/hosts:/data/local/tmp/hosts",
                     "--embedder-push-files=/b/swarming/w/ir/third_party/crossbench/config/team/woa/dnsmasq.conf:/data/local/tmp/dnsmasq.conf",
                     "--embedder-push-files=/b/swarming/w/ir/clank/android_webview/tools/crossbench_config/cipd/arm64/dummy_vpn.apk:/data/local/tmp/dummy_vpn.apk",
+                    "--enable-field-trials"
+                ]
+            }
+        },
+        "benchmarks": {}
+    },
+    "1": {
+        "crossbench": {
+            "js_bridge.embedder.crossbench": {
+                "crossbench_name": "embedder",
+                "arguments": [
+                    "--embedder=webview_embedder",
+                    "--splashscreen=skip",
+                    "--probe-config=../../third_party/crossbench/config/team/woa/wv_shell_memory.probe.config.hjson",
+                    "--cuj-config=../../third_party/crossbench/config/team/woa/js_bridge_cuj_config.hjson",
+                    "--android-activity=JsBridgeActivity",
+                    "--repetitions=25",
+                    "--cool-down-threshold=moderate",
                     "--enable-field-trials"
                 ]
             }
@@ -88,13 +101,13 @@
         "benchmarks": {}
     },
     "extra_infos": {
-        "num_stories": 4,
+        "num_stories": 5,
         "predicted_min_shard_time": 750,
         "predicted_min_shard_index": 2,
-        "predicted_max_shard_time": 900,
-        "predicted_max_shard_index": 0,
-        "shard #0": 900,
-        "shard #1": 900,
+        "predicted_max_shard_time": 2550,
+        "predicted_max_shard_index": 1,
+        "shard #0": 1800,
+        "shard #1": 2550,
         "shard #2": 750,
         "shard #3": 900
     }
