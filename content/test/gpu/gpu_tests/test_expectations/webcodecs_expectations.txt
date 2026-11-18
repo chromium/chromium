@@ -240,7 +240,6 @@ crbug.com/459560016 [ android android-brya ] WebCodecs_SVC_vp09.00.10.08_prefer-
 
 # Pixel 6
 crbug.com/563435062 [ android android-pixel-6 ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ RetryOnFailure ]
-crbug.com/563435062 [ android android-pixel-6 ] WebCodecs_Encode_hw_decoder_avc1.42001E_prefer-hardware [ RetryOnFailure ]
 crbug.com/563435062 [ android android-pixel-6 ] WebCodecs_FrameSizeChange_avc1.42001E_hw_decoder [ RetryOnFailure ]
 crbug.com/563435062 [ android android-pixel-6 ] WebCodecs_MixedSourceEncoding_* [ RetryOnFailure ]
 
@@ -250,10 +249,6 @@ crbug.com/452841787 [ win11 qualcomm-0x36334330 ] WebCodecs_FrameSizeChange_av01
 # vaInitialize fails on chromeos-board-amd64-generic VMs
 crbug.com/465527389 [ chromeos chromeos-board-amd64-generic ] WebCodecs_copyTo_offscreen [ Failure ]
 
-# Flakily times out on M2 devices.
-crbug.com/473593123 [ mac apple-angle-metal-renderer:-apple-m2 ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
-crbug.com/473593123 [ mac apple-angle-metal-renderer:-apple-m2 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_constant_1500000 [ Failure ]
-crbug.com/473593123 [ apple-angle-metal-renderer:-apple-m2 renderer-graphite-dawn-metal mac ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_variable_1500000 [ Failure ]
 # EncodingError: Decoding error.
 crbug.com/487768758 [ amd-0x7480 linux ] WebCodecs_cropEncode_hw_decoder_*_prefer-software [ Failure ]
 
