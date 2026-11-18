@@ -204,42 +204,140 @@ TEST_F(
       });
     });
 
-TEST_F(
+/**
+ * Returns a fake TenjiTranslator factory whose init() results come from
+ * |results| in order (true, false, or an Error to reject with). The number of
+ * init() calls is counted in |counter.initCalls|.
+ */
+function createTenjiTranslatorFactory(results, counter = {
+  initCalls: 0
+}) {
+  return () => ({
+           init() {
+             const result = results[counter.initCalls++];
+             return result instanceof Error ? Promise.reject(result) :
+                                              Promise.resolve(result);
+           },
+           translate() {},
+           backTranslate() {},
+           isFakeSuccessfulTenjiTranslator_: true,
+         });
+}
+
+/** Makes the UI locale Japanese until the returned function is called. */
+function fakeJapaneseLocale() {
+  const origGetMessage = chrome.i18n.getMessage;
+  chrome.i18n.getMessage = key =>
+      key === '@@ui_locale' ? 'ja' : origGetMessage(key);
+  return () => chrome.i18n.getMessage = origGetMessage;
+}
+
+AX_TEST_F(
     'ChromeVoxBrailleTranslatorManagerTest',
-    'testTenjiInitFailureFallsBackToJaKantenji', function() {
-      this.addChangeListener(function() {
-        this.manager.setTenjiTranslatorFactoryForTest(
-            () => ({
-              init() {
-                return Promise.resolve(false);
-              },
-            }));
-        this.addChangeListener(function() {
-          assertFalse(
-              this.manager.getDefaultTranslator() instanceof TenjiTranslator);
-          assertEquals(
-              'ja-kantenji', this.manager.getDefaultTranslator().table.id);
-        });
-        this.manager.refresh('ja-tenji');
-      });
+    'testTenjiInitFailureTurnsBrailleOff', async function() {
+      await this.manager.loadTablesForTest();
+      this.manager.setTenjiTranslatorFactoryForTest(
+          createTenjiTranslatorFactory([false]));
+      await this.manager.refresh('ja-tenji');
+      // Braille is turned off rather than falling back on ja-kantenji.
+      assertEquals(null, this.manager.getDefaultTranslator());
+      assertEquals(null, this.manager.getExpandingTranslator());
+      assertEquals(null, this.manager.getUncontractedTranslator());
     });
 
-TEST_F(
+AX_TEST_F(
     'ChromeVoxBrailleTranslatorManagerTest',
-    'testTenjiInitExceptionFallsBackToJaKantenji', function() {
-      this.addChangeListener(function() {
+    'testTenjiInitExceptionTurnsBrailleOff', async function() {
+      await this.manager.loadTablesForTest();
+      this.manager.setTenjiTranslatorFactoryForTest(
+          createTenjiTranslatorFactory([new Error('Fake init exception')]));
+      await this.manager.refresh('ja-tenji');
+      assertEquals(null, this.manager.getDefaultTranslator());
+      assertEquals(null, this.manager.getExpandingTranslator());
+    });
+
+AX_TEST_F(
+    'ChromeVoxBrailleTranslatorManagerTest', 'testTenjiInitFailureIsNotRetried',
+    async function() {
+      await this.manager.loadTablesForTest();
+      const counter = {initCalls: 0};
+      this.manager.setTenjiTranslatorFactoryForTest(
+          createTenjiTranslatorFactory([false, true], counter));
+      await this.manager.refresh('ja-tenji');
+      assertEquals(1, counter.initCalls);
+
+      // Refreshing with the same table, as happens on every focus change,
+      // doesn't retry.
+      await this.manager.refresh('ja-tenji');
+      assertEquals(1, counter.initCalls);
+
+      // Neither does coming back from another table, as happens when leaving
+      // an email or url field.
+      await this.manager.refresh('en-ueb-g2');
+      assertEquals('en-ueb-g2', this.manager.getDefaultTranslator().table.id);
+      await this.manager.refresh('ja-tenji');
+      assertEquals(1, counter.initCalls);
+      assertEquals(null, this.manager.getDefaultTranslator());
+    });
+
+AX_TEST_F(
+    'ChromeVoxBrailleTranslatorManagerTest',
+    'testBrailleTableSettingChangeRetriesTenji', async function() {
+      await this.manager.loadTablesForTest();
+      const counter = {initCalls: 0};
+      this.manager.setTenjiTranslatorFactoryForTest(
+          createTenjiTranslatorFactory([false, true], counter));
+      await this.manager.refresh('ja-tenji');
+      assertEquals(null, this.manager.getDefaultTranslator());
+
+      await this.manager.onBrailleTableChanged_('ja-tenji');
+      assertEquals(2, counter.initCalls);
+      assertTrue(
+          this.manager.getDefaultTranslator().isFakeSuccessfulTenjiTranslator_);
+    });
+
+AX_TEST_F(
+    'ChromeVoxBrailleTranslatorManagerTest',
+    'testJapaneseLocaleAndNoTableIdIsStable', async function() {
+      await this.manager.loadTablesForTest();
+      const restoreLocale = fakeJapaneseLocale();
+      try {
         this.manager.setTenjiTranslatorFactoryForTest(
-            () => ({
-              init() {
-                return Promise.reject(new Error('Fake init exception'));
-              },
-            }));
-        this.addChangeListener(function() {
-          assertFalse(
-              this.manager.getDefaultTranslator() instanceof TenjiTranslator);
-          assertEquals(
-              'ja-kantenji', this.manager.getDefaultTranslator().table.id);
-        });
-        this.manager.refresh('ja-tenji');
-      });
+            createTenjiTranslatorFactory([true]));
+        await this.manager.refresh('');
+        assertTrue(this.manager.getDefaultTranslator()
+                       .isFakeSuccessfulTenjiTranslator_);
+
+        // Refreshing again with the same unset table must not switch to the
+        // ja-kantenji liblouis table, which matches the Japanese locale.
+        let changes = 0;
+        this.manager.addChangeListener(() => changes++);
+        await this.manager.refresh('');
+        assertEquals(0, changes);
+        assertTrue(this.manager.getDefaultTranslator()
+                       .isFakeSuccessfulTenjiTranslator_);
+      } finally {
+        restoreLocale();
+      }
+    });
+
+AX_TEST_F(
+    'ChromeVoxBrailleTranslatorManagerTest', 'testLatestRefreshWins',
+    async function() {
+      await this.manager.loadTablesForTest();
+      let resolveInit;
+      this.manager.setTenjiTranslatorFactoryForTest(
+          () => ({
+            init() {
+              return new Promise(resolve => resolveInit = resolve);
+            },
+          }));
+      const tenjiRefresh = this.manager.refresh('ja-tenji');
+      await this.manager.refresh('en-ueb-g2');
+      assertEquals('en-ueb-g2', this.manager.getDefaultTranslator().table.id);
+
+      // The older Tenji refresh finishing late doesn't override the newer one.
+      resolveInit(true);
+      await tenjiRefresh;
+      assertEquals('en-ueb-g2', this.manager.getDefaultTranslator().table.id);
     });

@@ -27,6 +27,14 @@ export class BrailleTranslatorManager {
   private uncontractedTableId_: string|null = null;
   private uncontractedTranslator_: BrailleTranslator|null = null;
   private tenjiTranslatorFactory_: (() => TenjiTranslator)|null = null;
+  /**
+   * Set when the Tenji translator failed to initialize. Braille stays off
+   * until the braille table setting changes, so that refresh() calls on every
+   * focus change don't retry the Tenji installation over and over.
+   */
+  private tenjiInitFailed_ = false;
+  /** Incremented on each refresh() so that only the latest one takes effect. */
+  private refreshId_ = 0;
 
   static instance: BrailleTranslatorManager;
 
@@ -49,7 +57,20 @@ export class BrailleTranslatorManager {
     SettingsManager.addListenerForKey(
         'brailleTable',
         (brailleTable: string) =>
-            BrailleTranslatorManager.instance.refresh(brailleTable));
+            BrailleTranslatorManager.instance.onBrailleTableChanged_(
+                brailleTable));
+  }
+
+  /**
+   * Called when the braille table setting changes. This is also how the user
+   * retries the Tenji translator after it failed to initialize.
+   */
+  private onBrailleTableChanged_(brailleTable: string): Promise<void> {
+    if (this.tenjiInitFailed_) {
+      this.tenjiInitFailed_ = false;
+      this.defaultTableId_ = null;
+    }
+    return this.refresh(brailleTable);
   }
 
   static backTranslate(cells: ArrayBuffer): Promise<string|null> {
@@ -97,38 +118,56 @@ export class BrailleTranslatorManager {
       brailleTable: string, brailleTable8?: string,
       finishCallback?: VoidFunction): Promise<void> {
     finishCallback = finishCallback ?? (() => {});
+    const refreshId = ++this.refreshId_;
+
+    // Resolve an unset table to the Tenji table up front when the locale is
+    // Japanese, so that repeated calls with the same setting are no-ops.
+    const useTenji = this.useTenjiTranslator_(brailleTable);
+    if (useTenji) {
+      brailleTable = JP_BRAILLE_TENJI_TABLE.id;
+    }
     if (brailleTable && brailleTable === this.defaultTableId_) {
       finishCallback();
       return;
     }
 
-    // First check if the Tenji translator should be used, since it is a special
-    // case that does not rely on liblouis tables.
-    if (!(this.defaultTranslator_ instanceof TenjiTranslator) &&
-        this.useTenjiTranslator_(brailleTable)) {
+    // The Tenji translator is a special case that does not rely on liblouis
+    // tables.
+    if (useTenji) {
       const tenjiTranslator = this.tenjiTranslatorFactory_ ?
           this.tenjiTranslatorFactory_() :
           new TenjiTranslator();
-      try {
-        const initSucceeded = await tenjiTranslator.init();
-        if (initSucceeded) {
-          this.defaultTableId_ = JP_BRAILLE_TENJI_TABLE.id;
-          this.defaultTranslator_ = tenjiTranslator;
-          this.expandingTranslator_ =
-              new ExpandingBrailleTranslator(tenjiTranslator, null);
-          this.uncontractedTableId_ = null;
-          this.uncontractedTranslator_ = null;
-          this.changeListeners_.forEach(listener => listener());
+      let initSucceeded = false;
+      if (!this.tenjiInitFailed_) {
+        try {
+          initSucceeded = await tenjiTranslator.init();
+        } catch (error) {
+          console.error('Failed to initialize TenjiTranslator', error);
+        }
+        if (refreshId !== this.refreshId_) {
           finishCallback();
           return;
         }
-      } catch (error) {
-        console.error('Failed to initialize TenjiTranslator', error);
       }
 
-      // Fall back on liblouis translator with its ja-kantenji table if Tenji
-      // translator init fails.
-      brailleTable = 'ja-kantenji';
+      // If Tenji fails to initialize, turn braille off rather than falling
+      // back on liblouis ja-kantenji, which is an 8 dot table unreadable to a
+      // 6 dot Tenji reader.
+      const announceFailure = !initSucceeded && !this.tenjiInitFailed_;
+      this.tenjiInitFailed_ = !initSucceeded;
+      this.defaultTableId_ = JP_BRAILLE_TENJI_TABLE.id;
+      this.defaultTranslator_ = initSucceeded ? tenjiTranslator : null;
+      this.expandingTranslator_ = initSucceeded ?
+          new ExpandingBrailleTranslator(tenjiTranslator, null) :
+          null;
+      this.uncontractedTableId_ = null;
+      this.uncontractedTranslator_ = null;
+      this.changeListeners_.forEach(listener => listener());
+      if (announceFailure) {
+        new Output().format('@tenji_unavailable').go();
+      }
+      finishCallback();
+      return;
     }
 
     // Initialize a liblouis translator.
@@ -195,13 +234,14 @@ export class BrailleTranslatorManager {
         };
 
     const translator = await this.liblouis_.getTranslator(table.fileNames);
-    if (!newUncontractedTableId) {
-      finishRefresh(translator, null);
-    } else {
-      const uncontractedTranslator =
-          await this.liblouis_.getTranslator(uncontractedTable.fileNames);
-      finishRefresh(translator, uncontractedTranslator);
+    const uncontractedTranslator = newUncontractedTableId ?
+        await this.liblouis_.getTranslator(uncontractedTable.fileNames) :
+        null;
+    if (refreshId !== this.refreshId_) {
+      finishCallback();
+      return;
     }
+    finishRefresh(translator, uncontractedTranslator);
   }
 
   /**

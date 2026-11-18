@@ -42,12 +42,24 @@ export class BrailleDisplayManager implements BrailleCaptionsListener {
    * display.
    */
   private realDisplayState_: BrailleDisplayState = this.displayState_;
+  /**
+   * Incremented on each translation request so that a translation finishing
+   * after a newer one doesn't overwrite the display with stale content.
+   */
+  private translationId_ = 0;
+  /**
+   * The content and expansion type of the latest translation request, which
+   * may not be on the display yet.
+   */
+  private requestedContent_ = this.content_;
+  private requestedExpansionType_ = this.expansionType_;
 
   static instance: BrailleDisplayManager;
 
   constructor() {
     BrailleTranslatorManager.instance.addChangeListener(
-        () => this.translateContent_(this.content_, this.expansionType_));
+        () => this.translateContent_(
+            this.requestedContent_, this.requestedExpansionType_));
 
     SettingsManager.addListenerForKey(
         'brailleWordWrap', (wrap: boolean) => this.updatePanStrategy_(wrap));
@@ -371,48 +383,55 @@ export class BrailleDisplayManager implements BrailleCaptionsListener {
   private translateContent_(
       newContent: NavBraille,
       newExpansionType: ExpandingBrailleTranslator.ExpansionType): void {
-    const writeTranslatedContent = (
-        cells: ArrayBuffer, textToBraille: number[], brailleToText: number[])
-        : void => {
-      this.content_ = newContent;
-      this.expansionType_ = newExpansionType;
-      const startIndex = this.content_.startIndex;
-      const endIndex = this.content_.endIndex;
-      let targetPosition;
-      if (startIndex >= 0) {
-        let translatedStartIndex;
-        let translatedEndIndex;
-        if (startIndex >= textToBraille.length) {
-          // Allow the cells to be extended with one extra cell for
-          // a carret after the last character.
-          const extCells = new ArrayBuffer(cells.byteLength + 1);
-          new Uint8Array(extCells).set(new Uint8Array(cells));
-          // Last byte is initialized to 0.
-          cells = extCells;
-          translatedStartIndex = cells.byteLength - 1;
-        } else {
-          translatedStartIndex = textToBraille[startIndex];
-        }
-        if (endIndex >= textToBraille.length) {
-          // endIndex can't be past-the-end of the last cell unless
-          // startIndex is too, so we don't have to do another
-          // extension here.
-          translatedEndIndex = cells.byteLength;
-        } else {
-          translatedEndIndex = textToBraille[endIndex];
-        }
-        // Add the cursor to cells.
-        this.setCursor_(cells, translatedStartIndex, translatedEndIndex);
-        targetPosition = translatedStartIndex;
-      } else {
-        this.setCursor_(cells, -1, -1);
-        targetPosition = 0;
-      }
-      this.panStrategy_.setContent(
-          this.content_.text.toString(), cells, brailleToText, targetPosition);
+    const translationId = ++this.translationId_;
+    this.requestedContent_ = newContent;
+    this.requestedExpansionType_ = newExpansionType;
+    const writeTranslatedContent =
+        (cells: ArrayBuffer, textToBraille: number[],
+         brailleToText: number[]): void => {
+          if (translationId !== this.translationId_) {
+            return;
+          }
+          this.content_ = newContent;
+          this.expansionType_ = newExpansionType;
+          const startIndex = this.content_.startIndex;
+          const endIndex = this.content_.endIndex;
+          let targetPosition;
+          if (startIndex >= 0) {
+            let translatedStartIndex;
+            let translatedEndIndex;
+            if (startIndex >= textToBraille.length) {
+              // Allow the cells to be extended with one extra cell for
+              // a carret after the last character.
+              const extCells = new ArrayBuffer(cells.byteLength + 1);
+              new Uint8Array(extCells).set(new Uint8Array(cells));
+              // Last byte is initialized to 0.
+              cells = extCells;
+              translatedStartIndex = cells.byteLength - 1;
+            } else {
+              translatedStartIndex = textToBraille[startIndex];
+            }
+            if (endIndex >= textToBraille.length) {
+              // endIndex can't be past-the-end of the last cell unless
+              // startIndex is too, so we don't have to do another
+              // extension here.
+              translatedEndIndex = cells.byteLength;
+            } else {
+              translatedEndIndex = textToBraille[endIndex];
+            }
+            // Add the cursor to cells.
+            this.setCursor_(cells, translatedStartIndex, translatedEndIndex);
+            targetPosition = translatedStartIndex;
+          } else {
+            this.setCursor_(cells, -1, -1);
+            targetPosition = 0;
+          }
+          this.panStrategy_.setContent(
+              this.content_.text.toString(), cells, brailleToText,
+              targetPosition);
 
-      this.refresh_();
-    };
+          this.refresh_();
+        };
 
     const translator =
         BrailleTranslatorManager.instance.getExpandingTranslator();

@@ -480,3 +480,64 @@ AX_TEST_F(
         assertEquals(originalImageData[i], newImageData[i])
       }
     });
+
+/**
+ * Tests that a translation finishing after a newer one doesn't overwrite the
+ * display with stale content.
+ */
+AX_TEST_F(
+    'ChromeVoxBrailleDisplayManagerTest', 'IgnoresStaleTranslation',
+    function() {
+      const pending = [];
+      const asyncTranslator = {
+        translate: (spannable, expansionType, callback) => pending.push(
+            () =>
+                this.translator.translate(spannable, expansionType, callback)),
+      };
+      const manager = new BrailleDisplayManager();
+      BrailleTranslatorManager.instance.setTranslator(asyncTranslator);
+      const oldContent = new NavBraille({text: 'Old content'});
+      const newContent = new NavBraille({text: 'New'});
+      manager.setContent(oldContent);
+      manager.setContent(newContent);
+
+      // Finish the translations out of order.
+      pending.pop()();
+      assertEquals(newContent, manager.content_);
+      pending.pop()();
+      assertEquals(newContent, manager.content_);
+    });
+
+/**
+ * Tests that a translator change while a translation is pending retranslates
+ * the latest requested content rather than what is on the display.
+ */
+AX_TEST_F(
+    'ChromeVoxBrailleDisplayManagerTest',
+    'TranslatorChangeUsesLatestRequestedContent', function() {
+      const pending = [];
+      const asyncTranslator = {
+        translate: (spannable, expansionType, callback) => pending.push(
+            () =>
+                this.translator.translate(spannable, expansionType, callback)),
+      };
+      const manager = new BrailleDisplayManager();
+      BrailleTranslatorManager.instance.setTranslator(this.translator);
+      const oldContent = new NavBraille({text: 'Old content'});
+      const newContent = new NavBraille({text: 'New'});
+      manager.setContent(oldContent);
+      assertEquals(oldContent, manager.content_);
+
+      BrailleTranslatorManager.instance.setTranslator(asyncTranslator);
+      manager.setContent(newContent);
+      BrailleTranslatorManager.instance.setTranslator(this.translator);
+      assertEquals(newContent, manager.content_);
+
+      // Finishing the superseded translations doesn't change the display. The
+      // first one would put the old content back if it weren't ignored.
+      assertEquals(2, pending.length);
+      while (pending.length) {
+        pending.shift()();
+        assertEquals(newContent, manager.content_);
+      }
+    });
