@@ -590,4 +590,44 @@ TEST_F(WebGLRenderingContextBaseTest, LostOpaqueWebGLCanvasIsNotOpaque) {
   EXPECT_FALSE(canvas_->IsOpaque());
 }
 
+// Verifies that when `GetSharedImageResourceProvider()` fails and
+// `PaintRenderingResultsToSnapshot()` falls back to `cached_snapshot_`, the
+// cached snapshot is reused while no new draw occurs and refreshed after a
+// subsequent draw.
+TEST_F(
+    WebGLRenderingContextBaseTest,
+    PaintRenderingResultsToSnapshotRefreshesCachedSnapshotOnSubsequentDraws) {
+  CanvasContextCreationAttributesCore attrs;
+  WebGLRenderingContextBase* gl_ctx = CreateWebGLContext(attrs);
+  ASSERT_NE(gl_ctx, nullptr);
+
+  // Force `SharedGpuContext::ContextProviderWrapper()` to return nullptr so
+  // `GetSharedImageResourceProvider()` returns nullptr and
+  // `PaintRenderingResultsToSnapshot()` uses `cached_snapshot_`.
+  SharedGpuContext::Reset();
+  SharedGpuContext::SetContextProviderFactoryForTesting(
+      BindRepeating([]() -> std::unique_ptr<WebGraphicsContext3DProvider> {
+        return nullptr;
+      }));
+
+  CanvasRenderingContext* rendering_ctx = gl_ctx;
+  gl_ctx->clear(GL_COLOR_BUFFER_BIT);
+  scoped_refptr<StaticBitmapImage> snapshot1 =
+      rendering_ctx->PaintRenderingResultsToSnapshot(kBackBuffer);
+  ASSERT_NE(snapshot1, nullptr);
+
+  // Without a new draw, `cached_snapshot_` should be returned directly.
+  scoped_refptr<StaticBitmapImage> snapshot2 =
+      rendering_ctx->PaintRenderingResultsToSnapshot(kBackBuffer);
+  EXPECT_EQ(snapshot1, snapshot2);
+
+  // After a new draw, `cached_snapshot_` must be refreshed rather than
+  // returning the stale snapshot.
+  gl_ctx->clear(GL_COLOR_BUFFER_BIT);
+  scoped_refptr<StaticBitmapImage> snapshot3 =
+      rendering_ctx->PaintRenderingResultsToSnapshot(kBackBuffer);
+  ASSERT_NE(snapshot3, nullptr);
+  EXPECT_NE(snapshot1, snapshot3);
+}
+
 }  // namespace blink

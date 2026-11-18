@@ -2193,11 +2193,9 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     // top-left origin (the orientation that is used by
     // `CanvasNon2DResourceProvider::Snapshot()` when it is not passed an
     // orientation explicitly).
-    if (!cached_snapshot_) {
-      cached_snapshot_ = CopyRenderingResultsToUnacceleratedStaticBitmapImage(
-          source_buffer, viz::SharedImageFormat::N32Format(),
-          kPremul_SkAlphaType, kTopLeft_GrSurfaceOrigin);
-    }
+    cached_snapshot_ = CopyRenderingResultsToUnacceleratedStaticBitmapImage(
+        source_buffer, viz::SharedImageFormat::N32Format(), kPremul_SkAlphaType,
+        kTopLeft_GrSurfaceOrigin);
 
     if (cached_snapshot_) {
       // We successfully painted the canvas' contents.
