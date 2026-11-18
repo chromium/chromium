@@ -5,16 +5,13 @@
 #ifndef SERVICES_WEBNN_PUBLIC_CPP_EXECUTION_PROVIDERS_INFO_H_
 #define SERVICES_WEBNN_PUBLIC_CPP_EXECUTION_PROVIDERS_INFO_H_
 
-#include <windows.h>
-
-#include <appmodel.h>
-
 #include <algorithm>
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/memory/raw_span.h"
 #include "base/strings/cstring_view.h"
+#include "services/webnn/public/cpp/package_version.h"
 #include "services/webnn/public/mojom/webnn_device.mojom.h"
 
 namespace webnn {
@@ -145,10 +142,7 @@ struct SessionConfigEntry {
 };
 
 struct EpInfo {
-  // TODO(crbug.com/575023849): Replace PACKAGE_VERSION with a Chromium struct
-  // of four numbers, converted to PACKAGE_VERSION only where it is passed to
-  // Windows, so that this header no longer needs <appmodel.h> and <windows.h>.
-  PACKAGE_VERSION min_package_version;
+  PackageVersion min_package_version;
   // Represents the vendor id of the hardware device used by the execution
   // provider.
   uint32_t vendor_id;
@@ -199,10 +193,10 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
         {
             .min_package_version =
                 {
-                    .Major = 1,
-                    .Minor = 8,
-                    .Build = 53,
-                    .Revision = 0,
+                    .major = 1,
+                    .minor = 8,
+                    .build = 53,
+                    .revision = 0,
                 },
             .vendor_id = 0x1002,
             .enabled = false,
@@ -214,10 +208,10 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
         {
             .min_package_version =
                 {
-                    .Major = 0,
-                    .Minor = 0,
-                    .Build = 26,
-                    .Revision = 0,
+                    .major = 0,
+                    .minor = 0,
+                    .build = 26,
+                    .revision = 0,
                 },
             .vendor_id = 0x10de,
             // Kept disabled until the EP can compile inside the
@@ -236,10 +230,10 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
         {
             .min_package_version =
                 {
-                    .Major = 1,
-                    .Minor = 8,
-                    .Build = 95,
-                    .Revision = 0,
+                    .major = 1,
+                    .minor = 8,
+                    .build = 95,
+                    .revision = 0,
                 },
             .vendor_id = 0x8086,
             .enabled = true,
@@ -299,10 +293,10 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
         {
             .min_package_version =
                 {
-                    .Major = 2,
-                    .Minor = 2420,
-                    .Build = 40,
-                    .Revision = 0,
+                    .major = 2,
+                    .minor = 2420,
+                    .build = 40,
+                    .revision = 0,
                 },
             .vendor_id = 0x4d4f4351,
             .enabled = false,
@@ -314,10 +308,10 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
         {
             .min_package_version =
                 {
-                    .Major = 1,
-                    .Minor = 8,
-                    .Build = 57,
-                    .Revision = 0,
+                    .major = 1,
+                    .minor = 8,
+                    .build = 57,
+                    .revision = 0,
                 },
             .vendor_id = 0x1022,
             .enabled = false,
@@ -328,10 +322,10 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
         {
             .min_package_version =
                 {
-                    .Major = 0,
-                    .Minor = 4,
-                    .Build = 0,
-                    .Revision = 0,
+                    .major = 0,
+                    .minor = 4,
+                    .build = 0,
+                    .revision = 0,
                 },
             // The WebGPU EP is vendor-agnostic, so the vendor ID is set to 0
             // to match ORT's convention.

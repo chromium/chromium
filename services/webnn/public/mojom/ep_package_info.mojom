@@ -7,7 +7,7 @@ module webnn.mojom;
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/wstring.mojom";
 
-// Corresponds to PACKAGE_VERSION.
+// Corresponds to webnn::PackageVersion.
 struct PackageVersion {
   uint16 revision;
   uint16 build;

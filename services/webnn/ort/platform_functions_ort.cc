@@ -139,7 +139,7 @@ PlatformFunctions::~PlatformFunctions() = default;
 
 base::FilePath PlatformFunctions::InitializePackageDependency(
     base::wcstring_view package_family_name,
-    PACKAGE_VERSION min_version) {
+    PackageVersion min_version) {
   std::wstring dependency_id =
       TryCreatePackageDependencyForProcess(package_family_name, min_version);
   if (dependency_id.empty()) {

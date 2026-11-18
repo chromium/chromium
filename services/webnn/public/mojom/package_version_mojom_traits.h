@@ -5,41 +5,38 @@
 #ifndef SERVICES_WEBNN_PUBLIC_MOJOM_PACKAGE_VERSION_MOJOM_TRAITS_H_
 #define SERVICES_WEBNN_PUBLIC_MOJOM_PACKAGE_VERSION_MOJOM_TRAITS_H_
 
-#include <Windows.h>
-
-#include <appmodel.h>
-
 #include "base/component_export.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "services/webnn/public/cpp/package_version.h"
 #include "services/webnn/public/mojom/ep_package_info.mojom-shared.h"
 
 namespace mojo {
 
 template <>
 struct COMPONENT_EXPORT(WEBNN_MOJOM_TRAITS)
-    StructTraits<webnn::mojom::PackageVersionDataView, PACKAGE_VERSION> {
-  static uint16_t major(const PACKAGE_VERSION& version) {
-    return version.Major;
+    StructTraits<webnn::mojom::PackageVersionDataView, webnn::PackageVersion> {
+  static uint16_t major(const webnn::PackageVersion& version) {
+    return version.major;
   }
 
-  static uint16_t minor(const PACKAGE_VERSION& version) {
-    return version.Minor;
+  static uint16_t minor(const webnn::PackageVersion& version) {
+    return version.minor;
   }
 
-  static uint16_t build(const PACKAGE_VERSION& version) {
-    return version.Build;
+  static uint16_t build(const webnn::PackageVersion& version) {
+    return version.build;
   }
 
-  static uint16_t revision(const PACKAGE_VERSION& version) {
-    return version.Revision;
+  static uint16_t revision(const webnn::PackageVersion& version) {
+    return version.revision;
   }
 
   static bool Read(webnn::mojom::PackageVersionDataView data,
-                   PACKAGE_VERSION* out) {
-    out->Major = data.major();
-    out->Minor = data.minor();
-    out->Build = data.build();
-    out->Revision = data.revision();
+                   webnn::PackageVersion* out) {
+    out->major = data.major();
+    out->minor = data.minor();
+    out->build = data.build();
+    out->revision = data.revision();
     return true;
   }
 };

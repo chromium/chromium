@@ -4,10 +4,6 @@
 
 #include "services/webnn/host/execution_provider_initializer.h"
 
-#include <windows.h>
-
-#include <appmodel.h>
-
 #include <string>
 #include <string_view>
 
@@ -102,7 +98,7 @@ TEST(ExecutionProviderInitializerTest, OverridesRealEp) {
   real_eps.emplace(std::string(kOpenVINOExecutionProvider),
                    mojom::EpPackageInfo::New(
                        /*family_name=*/L"OpenVINOFamily",
-                       /*version=*/PACKAGE_VERSION{},
+                       /*version=*/PackageVersion{},
                        /*library_path=*/base::FilePath(L"C:\\real.dll")));
 
   EpPackageInfoMap map = AddTestingEps(

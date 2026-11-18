@@ -7,12 +7,11 @@
 
 #include <windows.h>
 
-#include <appmodel.h>
-
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/cstring_view.h"
+#include "services/webnn/public/cpp/package_version.h"
 #include "third_party/windows_app_sdk_headers/src/inc/abi/winml/winml/onnxruntime_c_api.h"
 
 namespace webnn::ort {
@@ -44,7 +43,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) PlatformFunctions {
 
   static base::FilePath InitializePackageDependency(
       base::wcstring_view package_family_name,
-      PACKAGE_VERSION min_version);
+      PackageVersion min_version);
 
  private:
   PlatformFunctions(base::ScopedNativeLibrary ort_library,

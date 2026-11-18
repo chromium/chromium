@@ -63,13 +63,19 @@ class PlatformFunctionsWin {
 
   std::wstring TryCreatePackageDependency(
       base::wcstring_view package_family_name,
-      PACKAGE_VERSION min_version,
+      PackageVersion min_version,
       PackageDependencyLifetimeKind lifetime_kind,
       const wchar_t* lifetime_artifact,
       CreatePackageDependencyOptions options) {
+    const PACKAGE_VERSION win_min_version = {
+        .Major = min_version.major,
+        .Minor = min_version.minor,
+        .Build = min_version.build,
+        .Revision = min_version.revision,
+    };
     ScopedWcharType package_dependency_id;
     HRESULT hr = try_create_package_dependency_proc_(
-        /*user=*/nullptr, package_family_name.c_str(), min_version,
+        /*user=*/nullptr, package_family_name.c_str(), win_min_version,
         PackageDependencyProcessorArchitectures_None, lifetime_kind,
         lifetime_artifact, options,
         ScopedWcharType::Receiver(package_dependency_id).get());
@@ -148,7 +154,7 @@ class PlatformFunctionsWin {
 
 base::FilePath InitializePackageDependencyForProcess(
     base::wcstring_view package_family_name,
-    PACKAGE_VERSION min_version) {
+    PackageVersion min_version) {
   std::wstring dependency_id =
       TryCreatePackageDependencyForProcess(package_family_name, min_version);
   if (dependency_id.empty()) {
@@ -159,7 +165,7 @@ base::FilePath InitializePackageDependencyForProcess(
 
 std::wstring TryCreatePackageDependencyForFilePath(
     base::wcstring_view package_family_name,
-    PACKAGE_VERSION min_version,
+    PackageVersion min_version,
     const base::FilePath& file_path,
     CreatePackageDependencyOptions options) {
   auto* platform_functions = PlatformFunctionsWin::GetInstance();
@@ -170,7 +176,7 @@ std::wstring TryCreatePackageDependencyForFilePath(
 
 std::wstring TryCreatePackageDependencyForProcess(
     base::wcstring_view package_family_name,
-    PACKAGE_VERSION min_version) {
+    PackageVersion min_version) {
   auto* platform_functions = PlatformFunctionsWin::GetInstance();
   return platform_functions->TryCreatePackageDependency(
       package_family_name, min_version, PackageDependencyLifetimeKind_Process,

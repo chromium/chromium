@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/strings/cstring_view.h"
+#include "services/webnn/public/cpp/package_version.h"
 
 namespace webnn {
 
@@ -20,14 +21,14 @@ namespace webnn {
 base::FilePath COMPONENT_EXPORT(WEBNN_PUBLIC_CPP_WIN)
     InitializePackageDependencyForProcess(
         base::wcstring_view package_family_name,
-        PACKAGE_VERSION min_version);
+        PackageVersion min_version);
 
 // Creates the package dependency with the lifetime of the provided file path.
 // Returns the dependency ID if successful, or an empty string on failure.
 std::wstring COMPONENT_EXPORT(WEBNN_PUBLIC_CPP_WIN)
     TryCreatePackageDependencyForFilePath(
         base::wcstring_view package_family_name,
-        PACKAGE_VERSION min_version,
+        PackageVersion min_version,
         const base::FilePath& file_path,
         CreatePackageDependencyOptions options =
             CreatePackageDependencyOptions_None);
@@ -37,7 +38,7 @@ std::wstring COMPONENT_EXPORT(WEBNN_PUBLIC_CPP_WIN)
 std::wstring COMPONENT_EXPORT(WEBNN_PUBLIC_CPP_WIN)
     TryCreatePackageDependencyForProcess(
         base::wcstring_view package_family_name,
-        PACKAGE_VERSION min_version);
+        PackageVersion min_version);
 
 // Adds the package dependency using the provided dependency ID. Returns the
 // package path if successful, or an empty path on failure.

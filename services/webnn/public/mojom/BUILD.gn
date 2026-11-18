@@ -154,7 +154,7 @@ mojom_component("mojom") {
           },
           {
             mojom = "webnn.mojom.PackageVersion"
-            cpp = "::PACKAGE_VERSION"
+            cpp = "::webnn::PackageVersion"
           },
         ]
         traits_headers += [

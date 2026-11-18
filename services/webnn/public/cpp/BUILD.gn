@@ -92,6 +92,7 @@ if (is_win) {
       "ep_device_info.cc",
       "ep_device_info.h",
       "execution_providers_info.h",
+      "package_version.h",
       "platform_functions_win.cc",
       "platform_functions_win.h",
       "webnn_device_util.cc",

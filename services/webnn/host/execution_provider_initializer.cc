@@ -4,7 +4,6 @@
 
 #include "services/webnn/host/execution_provider_initializer.h"
 
-#include <appmodel.h>
 #include <wrl.h>
 
 #include <algorithm>
@@ -91,31 +90,18 @@ void RecordEpStatus(std::string_view ep_name,
       status);
 }
 
-bool operator<(const PACKAGE_VERSION& a, const PACKAGE_VERSION& b) {
-  if (a.Major != b.Major) {
-    return a.Major < b.Major;
-  }
-  if (a.Minor != b.Minor) {
-    return a.Minor < b.Minor;
-  }
-  if (a.Build != b.Build) {
-    return a.Build < b.Build;
-  }
-  return a.Revision < b.Revision;
-}
-
-std::string VersionToString(const PACKAGE_VERSION& version) {
+std::string VersionToString(const PackageVersion& version) {
   constexpr std::string_view kPackageVersionFormat = "%u.%u.%u.%u";
-  return base::StringPrintf(kPackageVersionFormat, version.Major, version.Minor,
-                            version.Build, version.Revision);
+  return base::StringPrintf(kPackageVersionFormat, version.major, version.minor,
+                            version.build, version.revision);
 }
 
 // Returns the effective minimum required package version for the specified EP.
 // If the `kWebNNOrtEpMinVersionOverride` feature is enabled and a valid version
 // param is set for the given EP name, that version is returned. Otherwise,
 // returns the pre-defined version in `kKnownEPs`.
-PACKAGE_VERSION GetMinPackageVersion(const std::string& ep_name) {
-  const PACKAGE_VERSION& predefined_version =
+PackageVersion GetMinPackageVersion(const std::string& ep_name) {
+  const PackageVersion& predefined_version =
       kKnownEPs.at(ep_name).min_package_version;
 
   if (!base::FeatureList::IsEnabled(kWebNNOrtEpMinVersionOverride)) {
@@ -139,11 +125,11 @@ PACKAGE_VERSION GetMinPackageVersion(const std::string& ep_name) {
   }
 
   const std::vector<uint32_t>& components = override_version.components();
-  return PACKAGE_VERSION{
-      .Major = base::checked_cast<USHORT>(components[0]),
-      .Minor = base::checked_cast<USHORT>(components[1]),
-      .Build = base::checked_cast<USHORT>(components[2]),
-      .Revision = base::checked_cast<USHORT>(components[3]),
+  return PackageVersion{
+      .major = base::checked_cast<uint16_t>(components[0]),
+      .minor = base::checked_cast<uint16_t>(components[1]),
+      .build = base::checked_cast<uint16_t>(components[2]),
+      .revision = base::checked_cast<uint16_t>(components[3]),
   };
 }
 
@@ -195,7 +181,7 @@ std::vector<TestingEp> ParseTestingEpLibraryPathSwitch(
     testing_eps.emplace_back(std::move(ep_name),
                              mojom::EpPackageInfo::New(
                                  /*family_name=*/std::wstring(),
-                                 /*version=*/PACKAGE_VERSION{},
+                                 /*version=*/PackageVersion{},
                                  /*library_path=*/base::FilePath(parts[1])));
   }
   return testing_eps;
@@ -340,14 +326,14 @@ QueryPackageInfoFromProvider(abi_winml::IExecutionProvider* provider,
       hr = package_id->get_Version(&abi_package_version);
       CHECK_EQ(hr, S_OK);
 
-      PACKAGE_VERSION package_version = {
-          .Major = abi_package_version.Major,
-          .Minor = abi_package_version.Minor,
-          .Build = abi_package_version.Build,
-          .Revision = abi_package_version.Revision,
+      PackageVersion package_version = {
+          .major = abi_package_version.Major,
+          .minor = abi_package_version.Minor,
+          .build = abi_package_version.Build,
+          .revision = abi_package_version.Revision,
       };
 
-      const PACKAGE_VERSION min_package_version = GetMinPackageVersion(ep_name);
+      const PackageVersion min_package_version = GetMinPackageVersion(ep_name);
       if (package_version < min_package_version) {
         RecordEpStatus(ep_name, ExecutionProviderStatusUma::kEpVersionTooLow);
         LOG(WARNING) << "[WebNN] Found [" << ep_name << "] package version: "
