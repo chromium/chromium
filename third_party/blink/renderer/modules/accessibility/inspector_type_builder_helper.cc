@@ -739,11 +739,11 @@ void FillSparseAttributes(AXObject& ax_object,
   return;
 }
 
-void FillCoreProperties(AXObject& ax_object, AXNode* node_object) {
-  ax::mojom::blink::NameFrom name_from;
-  AXObject::AXObjectVector name_objects;
-  ax_object.GetName(name_from, &name_objects, /*name_sources=*/nullptr);
-
+// `name_from` is the source of the name the caller already computed for
+// `ax_object`.
+void FillCoreProperties(AXObject& ax_object,
+                        AXNode* node_object,
+                        ax::mojom::blink::NameFrom name_from) {
   ax::mojom::blink::DescriptionFrom description_from;
   AXObject::AXObjectVector description_objects;
   String description =
@@ -905,7 +905,7 @@ std::unique_ptr<AXNode> BuildProtocolAXNodeForUnignoredAXObject(
   node_object->setProperties(std::move(properties));
   node_object->setName(std::move(name));
 
-  FillCoreProperties(ax_object, node_object.get());
+  FillCoreProperties(ax_object, node_object.get(), name_from);
   return node_object;
 }
 
