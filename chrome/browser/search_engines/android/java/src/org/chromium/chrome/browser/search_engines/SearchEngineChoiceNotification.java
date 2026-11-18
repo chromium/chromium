@@ -12,12 +12,12 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omaha.VersionNumber;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
+import org.chromium.components.search_engines.TemplateUrlService;
 
 import java.util.concurrent.TimeUnit;
 
@@ -36,9 +36,12 @@ public final class SearchEngineChoiceNotification {
      */
     private static class NotificationSnackbarController implements SnackbarController {
         private final Context mContext;
+        private final TemplateUrlService mTemplateUrlService;
 
-        private NotificationSnackbarController(Context context) {
+        private NotificationSnackbarController(
+                Context context, TemplateUrlService templateUrlService) {
             mContext = context;
+            mTemplateUrlService = templateUrlService;
         }
 
         @Override
@@ -46,7 +49,7 @@ public final class SearchEngineChoiceNotification {
             SettingsNavigationFactory.createSettingsNavigation()
                     .startSettings(mContext, SearchEngineSettings.class);
             SearchEngineChoiceMetrics.recordEvent(SearchEngineChoiceMetrics.Events.PROMPT_FOLLOWED);
-            SearchEngineChoiceMetrics.recordSearchEngineTypeBeforeChoice();
+            SearchEngineChoiceMetrics.recordSearchEngineTypeBeforeChoice(mTemplateUrlService);
         }
     }
 
@@ -68,32 +71,36 @@ public final class SearchEngineChoiceNotification {
      *
      * @param context Context in which to show the Snackbar.
      * @param snackbarManager Snackbar manager which will shown and manage the Snackbar.
+     * @param templateUrlService The {@link TemplateUrlService} for checking and recording search
+     *     engine choice.
      */
-    public static void handleSearchEngineChoice(Context context, SnackbarManager snackbarManager) {
+    public static void handleSearchEngineChoice(
+            Context context,
+            SnackbarManager snackbarManager,
+            TemplateUrlService templateUrlService) {
         boolean searchEngineChoiceRequested = wasSearchEngineChoiceRequested();
         boolean searchEngineChoicePresented = wasSearchEngineChoicePresented();
-        boolean searchEngineChoiceAvailable =
-                !TemplateUrlServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile())
-                        .isDefaultSearchManaged();
+        boolean searchEngineChoiceAvailable = !templateUrlService.isDefaultSearchManaged();
 
         if (searchEngineChoiceRequested
                 && searchEngineChoiceAvailable
                 && !searchEngineChoicePresented) {
-            snackbarManager.showSnackbar(buildSnackbarNotification(context));
+            snackbarManager.showSnackbar(buildSnackbarNotification(context, templateUrlService));
             updateSearchEngineChoicePresented();
             SearchEngineChoiceMetrics.recordEvent(SearchEngineChoiceMetrics.Events.SNACKBAR_SHOWN);
         } else {
-            if (SearchEngineChoiceMetrics.recordSearchEngineTypeAfterChoice()) {
+            if (SearchEngineChoiceMetrics.recordSearchEngineTypeAfterChoice(templateUrlService)) {
                 SearchEngineChoiceMetrics.recordEvent(
                         SearchEngineChoiceMetrics.Events.SEARCH_ENGINE_CHANGED);
             }
         }
     }
 
-    private static Snackbar buildSnackbarNotification(Context context) {
+    private static Snackbar buildSnackbarNotification(
+            Context context, TemplateUrlService templateUrlService) {
         return Snackbar.make(
                         context.getString(R.string.search_engine_choice_prompt),
-                        new NotificationSnackbarController(context),
+                        new NotificationSnackbarController(context, templateUrlService),
                         Snackbar.TYPE_NOTIFICATION,
                         Snackbar.UMA_SEARCH_ENGINE_CHOICE_NOTIFICATION)
                 .setAction(context.getString(R.string.settings), null)

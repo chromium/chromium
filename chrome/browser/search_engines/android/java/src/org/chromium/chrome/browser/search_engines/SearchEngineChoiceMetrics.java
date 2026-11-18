@@ -90,9 +90,27 @@ public class SearchEngineChoiceMetrics {
                 "Android.SearchEngineChoice.EventsV2", event, EventsV2.COUNT);
     }
 
-    /** Records the search engine type before the user made a choice about which engine to use. */
+    /**
+     * Records the search engine type before the user made a choice about which engine to use.
+     *
+     * @deprecated Use {@link #recordSearchEngineTypeBeforeChoice(TemplateUrlService)} instead.
+     */
+    @Deprecated
     public static void recordSearchEngineTypeBeforeChoice() {
-        @SearchEngineType int currentSearchEngineType = getDefaultSearchEngineType();
+        // TODO(crbug.com/40254448): Remove once all callers pass TemplateUrlService.
+        recordSearchEngineTypeBeforeChoice(
+                TemplateUrlServiceFactory.getForProfile(
+                        ProfileManager.getLastUsedRegularProfile()));
+    }
+
+    /**
+     * Records the search engine type before the user made a choice about which engine to use.
+     *
+     * @param templateUrlService The {@link TemplateUrlService} for the current profile.
+     */
+    public static void recordSearchEngineTypeBeforeChoice(TemplateUrlService templateUrlService) {
+        @SearchEngineType
+        int currentSearchEngineType = getDefaultSearchEngineType(templateUrlService);
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.SearchEngineChoice.SearchEngineBeforeChoicePrompt",
                 currentSearchEngineType,
@@ -104,12 +122,28 @@ public class SearchEngineChoiceMetrics {
      * Records the search engine type after the user chooses a different search engine.
      *
      * @return Whether the search engine was changed.
+     * @deprecated Use {@link #recordSearchEngineTypeAfterChoice(TemplateUrlService)} instead.
      */
+    @Deprecated
     public static boolean recordSearchEngineTypeAfterChoice() {
+        // TODO(crbug.com/40254448): Remove once all callers pass TemplateUrlService.
+        return recordSearchEngineTypeAfterChoice(
+                TemplateUrlServiceFactory.getForProfile(
+                        ProfileManager.getLastUsedRegularProfile()));
+    }
+
+    /**
+     * Records the search engine type after the user chooses a different search engine.
+     *
+     * @param templateUrlService The {@link TemplateUrlService} for the current profile.
+     * @return Whether the search engine was changed.
+     */
+    public static boolean recordSearchEngineTypeAfterChoice(TemplateUrlService templateUrlService) {
         if (!isSearchEnginePossiblyDifferent()) return false;
 
         @SearchEngineType int previousSearchEngineType = getPreviousSearchEngineType();
-        @SearchEngineType int currentSearchEngineType = getDefaultSearchEngineType();
+        @SearchEngineType
+        int currentSearchEngineType = getDefaultSearchEngineType(templateUrlService);
         boolean didChangeEngine = previousSearchEngineType != currentSearchEngineType;
         if (didChangeEngine) {
             RecordHistogram.recordEnumeratedHistogram(
@@ -154,9 +188,7 @@ public class SearchEngineChoiceMetrics {
 
     /** Translates from the default search engine url to the {@link SearchEngineType} int. */
     @VisibleForTesting
-    static @SearchEngineType int getDefaultSearchEngineType() {
-        TemplateUrlService templateUrlService =
-                TemplateUrlServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile());
+    static @SearchEngineType int getDefaultSearchEngineType(TemplateUrlService templateUrlService) {
         TemplateUrl currentSearchEngine = templateUrlService.getDefaultSearchEngineTemplateUrl();
         if (currentSearchEngine == null) return SearchEngineType.SEARCH_ENGINE_UNKNOWN;
         return templateUrlService.getSearchEngineTypeFromTemplateUrl(

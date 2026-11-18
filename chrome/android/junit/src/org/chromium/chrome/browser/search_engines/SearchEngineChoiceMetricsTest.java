@@ -19,8 +19,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 
@@ -37,14 +35,10 @@ public final class SearchEngineChoiceMetricsTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private TemplateUrl mInitialSearchEngine;
     @Mock private TemplateUrl mAlternativeSearchEngine;
-    @Mock private Profile mProfile;
 
     @Before
     public void setUp() {
-
         // Sets up appropriate responses from Template URL service.
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
-        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         doReturn(TEST_ALTERNATIVE_ENGINE).when(mAlternativeSearchEngine).getKeyword();
         doReturn(SearchEngineType.SEARCH_ENGINE_DUCKDUCKGO)
                 .when(mTemplateUrlService)
@@ -63,7 +57,7 @@ public final class SearchEngineChoiceMetricsTest {
         doReturn(mInitialSearchEngine)
                 .when(mTemplateUrlService)
                 .getDefaultSearchEngineTemplateUrl();
-        SearchEngineChoiceMetrics.recordSearchEngineTypeBeforeChoice();
+        SearchEngineChoiceMetrics.recordSearchEngineTypeBeforeChoice(mTemplateUrlService);
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -73,7 +67,7 @@ public final class SearchEngineChoiceMetricsTest {
         doReturn(mAlternativeSearchEngine)
                 .when(mTemplateUrlService)
                 .getDefaultSearchEngineTemplateUrl();
-        SearchEngineChoiceMetrics.recordSearchEngineTypeBeforeChoice();
+        SearchEngineChoiceMetrics.recordSearchEngineTypeBeforeChoice(mTemplateUrlService);
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -87,12 +81,12 @@ public final class SearchEngineChoiceMetricsTest {
                 .when(mTemplateUrlService)
                 .getDefaultSearchEngineTemplateUrl();
         SearchEngineChoiceMetrics.setPreviousSearchEngineType(
-                SearchEngineChoiceMetrics.getDefaultSearchEngineType());
+                SearchEngineChoiceMetrics.getDefaultSearchEngineType(mTemplateUrlService));
         doReturn(mAlternativeSearchEngine)
                 .when(mTemplateUrlService)
                 .getDefaultSearchEngineTemplateUrl();
 
-        SearchEngineChoiceMetrics.recordSearchEngineTypeAfterChoice();
+        SearchEngineChoiceMetrics.recordSearchEngineTypeAfterChoice(mTemplateUrlService);
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -105,9 +99,9 @@ public final class SearchEngineChoiceMetricsTest {
                 .when(mTemplateUrlService)
                 .getDefaultSearchEngineTemplateUrl();
         SearchEngineChoiceMetrics.setPreviousSearchEngineType(
-                SearchEngineChoiceMetrics.getDefaultSearchEngineType());
+                SearchEngineChoiceMetrics.getDefaultSearchEngineType(mTemplateUrlService));
 
-        SearchEngineChoiceMetrics.recordSearchEngineTypeAfterChoice();
+        SearchEngineChoiceMetrics.recordSearchEngineTypeAfterChoice(mTemplateUrlService);
         assertEquals(
                 0,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -126,14 +120,14 @@ public final class SearchEngineChoiceMetricsTest {
                 .getDefaultSearchEngineTemplateUrl();
         assertEquals(
                 SearchEngineType.SEARCH_ENGINE_GOOGLE,
-                SearchEngineChoiceMetrics.getDefaultSearchEngineType());
+                SearchEngineChoiceMetrics.getDefaultSearchEngineType(mTemplateUrlService));
 
         doReturn(mAlternativeSearchEngine)
                 .when(mTemplateUrlService)
                 .getDefaultSearchEngineTemplateUrl();
         assertEquals(
                 SearchEngineType.SEARCH_ENGINE_DUCKDUCKGO,
-                SearchEngineChoiceMetrics.getDefaultSearchEngineType());
+                SearchEngineChoiceMetrics.getDefaultSearchEngineType(mTemplateUrlService));
     }
 
     @Test
@@ -142,7 +136,7 @@ public final class SearchEngineChoiceMetricsTest {
                 .when(mTemplateUrlService)
                 .getDefaultSearchEngineTemplateUrl();
         SearchEngineChoiceMetrics.setPreviousSearchEngineType(
-                SearchEngineChoiceMetrics.getDefaultSearchEngineType());
+                SearchEngineChoiceMetrics.getDefaultSearchEngineType(mTemplateUrlService));
         assertTrue(SearchEngineChoiceMetrics.isSearchEnginePossiblyDifferent());
     }
 

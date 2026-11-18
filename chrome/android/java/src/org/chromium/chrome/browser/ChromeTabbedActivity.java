@@ -255,6 +255,7 @@ import org.chromium.chrome.browser.recent_tabs.RecentlyClosedWindow;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMagicStackBuilder;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.selection.ChromeSelectionDropdownMenuDelegate;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -1817,7 +1818,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         mLocaleManager.startObservingPhoneChanges();
 
         // This call is not guarded by a feature flag.
-        SearchEngineChoiceNotification.handleSearchEngineChoice(this, getSnackbarManager());
+        getProfileProviderSupplier()
+                .runSyncOrOnAvailable(
+                        profileProvider ->
+                                SearchEngineChoiceNotification.handleSearchEngineChoice(
+                                        this,
+                                        getSnackbarManager(),
+                                        TemplateUrlServiceFactory.getForProfile(
+                                                profileProvider.getOriginalProfile())));
 
         if (!isWarmOnResume()) {
             getProfileProviderSupplier()
