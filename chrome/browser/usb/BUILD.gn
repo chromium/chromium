@@ -146,6 +146,7 @@ source_set("impl") {
       sources += [ "usb_pinned_notification.cc" ]
       deps += [
         "//ash/constants",
+        "//ash/strings",
         "//chromeos/ash/components/settings",
       ]
     }

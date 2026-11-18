@@ -4,8 +4,8 @@
 
 #include "chrome/browser/usb/usb_pinned_notification.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "chrome/browser/device_notifications/device_pinned_notification_renderer.h"
-#include "chrome/grit/generated_resources.h"
 
 UsbPinnedNotification::UsbPinnedNotification()
     : UsbSystemTrayIcon(std::make_unique<DevicePinnedNotificationRenderer>(

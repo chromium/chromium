@@ -12136,6 +12136,14 @@ You can manage this account’s settings by installing the Family Link app on yo
             =2 {Extensions accessing devices: <ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph>, <ph name="EXTENSION2">{2}<ex>Secure Shell</ex></ph>}
             other {Extensions accessing devices: <ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph>, <ph name="EXTENSION2">{2}<ex>Secure Shell</ex></ph> +{3} more}}
       </message>
+
+      <!-- WebUSB pinned notification -->
+      <message name="IDS_WEBUSB_SYSTEM_TRAY_ICON_EXTENSION_LIST" desc="Text for the WebUSB pinned notification message.">
+        {NUM_EXTENSION, plural,
+            =1 {<ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph> is accessing USB devices}
+            =2 {Extensions accessing devices: <ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph>, <ph name="EXTENSION2">{2}<ex>Secure Shell</ex></ph>}
+            other {Extensions accessing devices: <ph name="EXTENSION1">{1}<ex>Google Translate</ex></ph>, <ph name="EXTENSION2">{2}<ex>Secure Shell</ex></ph> +{3} more}}
+      </message>
     </messages>
   </release>
 </grit>
