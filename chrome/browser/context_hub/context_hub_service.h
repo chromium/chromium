@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #endif
 
+class GURL;
 class Profile;
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -447,6 +448,12 @@ class ContextHubService : public KeyedService,
   // Triggered periodically by `first_party_auto_todos_timer_` to generate 1P
   // AutoTodos.
   void OnFirstPartyAutoTodosTimerTriggered();
+
+  // Builds the search URL for a Search History `query` using the profile's
+  // default search provider. Returns an empty GURL when the default search
+  // provider is not Google (or is unavailable), in which case the reference
+  // should not be surfaced.
+  GURL BuildGoogleSearchUrl(std::string_view query) const;
 
   // Adds a TabGroupEntry to TabGroupSyncService and returns its SavedTabGroup
   // GUID if successful, or std::nullopt if conversion failed.

@@ -112,6 +112,15 @@ bool StructTraits<browser::context_hub::mojom::ChromeHistoryEntryDataView,
 }
 
 // static
+bool StructTraits<browser::context_hub::mojom::SearchQueryDataView,
+                  context_hub::SearchQuery>::
+    Read(browser::context_hub::mojom::SearchQueryDataView data,
+         context_hub::SearchQuery* out) {
+  return data.ReadQuery(&out->query) && data.ReadSearchUrl(&out->search_url) &&
+         data.ReadTimestamp(&out->timestamp);
+}
+
+// static
 browser::context_hub::mojom::SourceReferenceDataView::Tag UnionTraits<
     browser::context_hub::mojom::SourceReferenceDataView,
     context_hub::SourceReference>::GetTag(const context_hub::SourceReference&
@@ -123,6 +132,7 @@ browser::context_hub::mojom::SourceReferenceDataView::Tag UnionTraits<
           [](const context_hub::ChromeHistoryEntry&) {
             return Tag::kChromeHistoryEntry;
           },
+          [](const context_hub::SearchQuery&) { return Tag::kSearchQuery; },
       },
       ref);
 }
@@ -164,6 +174,15 @@ bool UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
         return false;
       }
       *out = std::move(history_entry);
+      return true;
+    }
+    case browser::context_hub::mojom::SourceReferenceDataView::Tag::
+        kSearchQuery: {
+      context_hub::SearchQuery search_query;
+      if (!data.ReadSearchQuery(&search_query)) {
+        return false;
+      }
+      *out = std::move(search_query);
       return true;
     }
     case browser::context_hub::mojom::SourceReferenceDataView::Tag::kPhotos:
@@ -303,6 +322,8 @@ UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
       return browser::context_hub::mojom::SourceReferenceDataView::Tag::
           kChromeHistoryEntry;
     case personal_context::proto::SourceReference::kSearchQuery:
+      return browser::context_hub::mojom::SourceReferenceDataView::Tag::
+          kSearchQuery;
     case personal_context::proto::SourceReference::SOURCE_REFERENCE_NOT_SET:
       NOTREACHED();
   }
@@ -346,6 +367,27 @@ UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
       .url = GURL(entry.url()),
       .title = std::string(entry.title()),
       .visit_timestamp = visit_timestamp,
+  };
+}
+
+// static
+context_hub::SearchQuery
+UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
+            personal_context::proto::SourceReference>::
+    search_query(const personal_context::proto::SourceReference& ref) {
+  const personal_context::proto::SearchQuery& search = ref.search_query();
+  base::Time timestamp;
+  if (search.has_timestamp()) {
+    timestamp =
+        base::Time::FromSecondsSinceUnixEpoch(search.timestamp().seconds()) +
+        base::Nanoseconds(search.timestamp().nanos());
+  }
+  return context_hub::SearchQuery{
+      .query = std::string(search.query()),
+      // Smart Search results are not re-linked to a search engine; only Auto
+      // Todo references (built in ContextHubService) carry a search URL.
+      .search_url = GURL(),
+      .timestamp = timestamp,
   };
 }
 
@@ -409,6 +451,27 @@ bool UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
             history_entry.visit_timestamp - base::Time::UnixEpoch();
         personal_context::proto::Timestamp* timestamp =
             history_proto->mutable_visit_timestamp();
+        timestamp->set_seconds(since_epoch.InSeconds());
+        timestamp->set_nanos(static_cast<int32_t>(
+            (since_epoch % base::Seconds(1)).InNanoseconds()));
+      }
+      return true;
+    }
+    case browser::context_hub::mojom::SourceReferenceDataView::Tag::
+        kSearchQuery: {
+      context_hub::SearchQuery search_query;
+      if (!data.ReadSearchQuery(&search_query)) {
+        return false;
+      }
+      personal_context::proto::SearchQuery* search_proto =
+          out->mutable_search_query();
+      search_proto->set_query(search_query.query);
+      if (search_query.timestamp >= base::Time::UnixEpoch() &&
+          !search_query.timestamp.is_inf()) {
+        const base::TimeDelta since_epoch =
+            search_query.timestamp - base::Time::UnixEpoch();
+        personal_context::proto::Timestamp* timestamp =
+            search_proto->mutable_timestamp();
         timestamp->set_seconds(since_epoch.InSeconds());
         timestamp->set_nanos(static_cast<int32_t>(
             (since_epoch % base::Seconds(1)).InNanoseconds()));

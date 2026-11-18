@@ -27,6 +27,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -48,8 +49,10 @@
 #include "chrome/browser/context_hub/tab_group_store/in_memory_tab_group_store.h"
 #include "chrome/browser/context_hub/test/test_image_caption_model_broker.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/image_fetcher/core/mock_image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
@@ -73,6 +76,9 @@
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -437,6 +443,40 @@ class ContextHubServiceTest : public testing::Test {
   const base::DictValue& GetTopicFeedbackPref() const {
     return profile_.GetPrefs()->GetDict(
         prefs::kContextHubTopicsFishfoodFeedback);
+  }
+
+  // Backs the service with a real TemplateURLService so Search History
+  // references can be given a search URL. The prepopulated default search
+  // provider is Google. Only tests that parse search_query references need
+  // this; without it the service sees no TemplateURLService and drops them.
+  void SetUpTemplateURLService() {
+    TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        &profile_,
+        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+    search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service());
+  }
+
+  TemplateURLService* template_url_service() {
+    return TemplateURLServiceFactory::GetForProfile(&profile_);
+  }
+
+  // Returns the URL the default search provider generates for `query`.
+  GURL ExpectedSearchUrl(std::string_view query) {
+    return template_url_service()
+        ->GetDefaultSearchProvider()
+        ->GenerateSearchURL(template_url_service()->search_terms_data(),
+                            base::UTF8ToUTF16(query));
+  }
+
+  // Makes a non-Google engine the user-selected default search provider.
+  void SetNonGoogleDefaultSearchProvider() {
+    TemplateURLData data;
+    data.SetShortName(u"Bing");
+    data.SetKeyword(u"bing.com");
+    data.SetURL("https://www.bing.com/search?q={searchTerms}");
+    TemplateURL* turl =
+        template_url_service()->Add(std::make_unique<TemplateURL>(data));
+    template_url_service()->SetUserSelectedDefaultSearchProvider(turl);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -835,6 +875,181 @@ TEST_F(ContextHubServiceTest,
   EXPECT_EQ(parsed_ref2.url, GURL("https://example.com/history2"));
   EXPECT_EQ(parsed_ref2.title, "History Page 2");
   EXPECT_TRUE(parsed_ref2.visit_timestamp.is_null());
+}
+
+TEST_F(ContextHubServiceTest,
+       GenerateFirstPartyAutoTodos_SearchQueryReferences) {
+  SetUpTemplateURLService();
+  const base::Time search_time =
+      base::Time::FromSecondsSinceUnixEpoch(1700000000) +
+      base::Nanoseconds(500000000);
+
+  // Add an existing first-party Search History todo to the cache.
+  AutoTodoEntry existing_search_entry{
+      .id = "todo_search_1",
+      .title = "Existing Search Todo",
+      .description = "Search Description",
+      .status = AutoTodoEntry::Status::kActive,
+      .importance_score = 0.6f,
+      .data = FirstPartyData{
+          .source_references = {
+              SearchQuery{
+                  .query = "renew passport online",
+                  .search_url =
+                      GURL("https://www.google.com/search?q=renew+passport"),
+                  .timestamp = search_time,
+              },
+              SearchQuery{
+                  .query = "passport photo requirements",
+                  .search_url =
+                      GURL("https://www.google.com/search?q=passport+photo"),
+                  .timestamp = base::Time::UnixEpoch() - base::Seconds(10),
+              },
+          }}};
+
+  base::test::TestFuture<bool> add_future;
+  service_.UpdateAutoTodo(std::move(existing_search_entry),
+                          add_future.GetCallback());
+  EXPECT_TRUE(add_future.Get());
+
+  // Prepare a mock response.
+  personal_context::proto::AutoTodosResponse expected_response;
+  personal_context::proto::AutoTodoItem* todo = expected_response.add_todos();
+  todo->set_id("todo_search_1");
+  todo->set_title("Existing Search Todo");
+  todo->set_description("Search Description");
+  todo->set_importance_score(0.6f);
+  personal_context::proto::SearchQuery* ref1 =
+      todo->add_source_references()->mutable_search_query();
+  ref1->set_query("renew passport online");
+  ref1->mutable_timestamp()->set_seconds(1700000000);
+  ref1->mutable_timestamp()->set_nanos(500000000);
+  personal_context::proto::SearchQuery* ref2 =
+      todo->add_source_references()->mutable_search_query();
+  ref2->set_query("  passport renewal appointment  ");
+  // Blank queries are dropped when parsing the response.
+  todo->add_source_references()->mutable_search_query()->set_query("   ");
+
+  personal_context::proto::Any any_response;
+  expected_response.SerializeToString(any_response.mutable_value());
+
+  EXPECT_CALL(
+      mock_personal_context_service_,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(
+          [&](personal_context::proto::ContextMemoryFeature feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const personal_context::ContextMemoryRequestOptions& options,
+              personal_context::FetchContextCallback callback) {
+            const auto& auto_todos_request =
+                static_cast<const personal_context::proto::AutoTodosRequest&>(
+                    request_metadata);
+            ASSERT_EQ(auto_todos_request.existing_todos_size(), 1);
+            const personal_context::proto::AutoTodoItem& existing =
+                auto_todos_request.existing_todos(0);
+            EXPECT_EQ(existing.id(), "todo_search_1");
+            ASSERT_EQ(existing.source_references_size(), 2);
+            ASSERT_TRUE(existing.source_references(0).has_search_query());
+            const personal_context::proto::SearchQuery& search_ref =
+                existing.source_references(0).search_query();
+            EXPECT_EQ(search_ref.query(), "renew passport online");
+            EXPECT_EQ(search_ref.timestamp().seconds(), 1700000000);
+            EXPECT_EQ(search_ref.timestamp().nanos(), 500000000);
+
+            ASSERT_TRUE(existing.source_references(1).has_search_query());
+            const personal_context::proto::SearchQuery& pre_epoch_search_ref =
+                existing.source_references(1).search_query();
+            EXPECT_EQ(pre_epoch_search_ref.query(),
+                      "passport photo requirements");
+            EXPECT_FALSE(pre_epoch_search_ref.has_timestamp());
+
+            std::move(callback).Run(personal_context::FetchContextResult(
+                base::ok(std::move(any_response))));
+          });
+
+  base::test::TestFuture<bool> future;
+  service_.GenerateFirstPartyAutoTodos(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
+  service_.GetAutoTodos(get_future.GetCallback());
+  const std::vector<AutoTodoEntry>& items = get_future.Get();
+  ASSERT_EQ(items.size(), 1u);
+  EXPECT_EQ(items[0].id, "todo_search_1");
+  EXPECT_TRUE(items[0].is_first_party());
+  const auto* fp_data = std::get_if<FirstPartyData>(&items[0].data);
+  ASSERT_TRUE(fp_data);
+  // The blank query reference is dropped and the remaining query is trimmed.
+  ASSERT_EQ(fp_data->source_references.size(), 2u);
+  ASSERT_TRUE(
+      std::holds_alternative<SearchQuery>(fp_data->source_references[0]));
+  const auto& parsed_ref1 =
+      std::get<SearchQuery>(fp_data->source_references[0]);
+  EXPECT_EQ(parsed_ref1.query, "renew passport online");
+  // The search URL is generated browser-side from the default search provider
+  // rather than taken from the response.
+  EXPECT_EQ(parsed_ref1.search_url, ExpectedSearchUrl("renew passport online"));
+  EXPECT_EQ(parsed_ref1.search_url.host(), "www.google.com");
+  EXPECT_EQ(parsed_ref1.timestamp, search_time);
+
+  ASSERT_TRUE(
+      std::holds_alternative<SearchQuery>(fp_data->source_references[1]));
+  const auto& parsed_ref2 =
+      std::get<SearchQuery>(fp_data->source_references[1]);
+  EXPECT_EQ(parsed_ref2.query, "passport renewal appointment");
+  EXPECT_EQ(parsed_ref2.search_url,
+            ExpectedSearchUrl("passport renewal appointment"));
+  EXPECT_TRUE(parsed_ref2.timestamp.is_null());
+}
+
+TEST_F(
+    ContextHubServiceTest,
+    GenerateFirstPartyAutoTodos_SearchQueryReferencesDroppedForNonGoogleDse) {
+  SetUpTemplateURLService();
+  SetNonGoogleDefaultSearchProvider();
+
+  personal_context::proto::AutoTodosResponse expected_response;
+  personal_context::proto::AutoTodoItem* todo = expected_response.add_todos();
+  todo->set_id("todo_search_1");
+  todo->set_title("Search Todo");
+  todo->add_source_references()->mutable_search_query()->set_query(
+      "renew passport online");
+  personal_context::proto::ChromeHistoryEntry* history_ref =
+      todo->add_source_references()->mutable_chrome_history_entry();
+  history_ref->set_url("https://example.com/history");
+  history_ref->set_title("History Page");
+
+  personal_context::proto::Any any_response;
+  expected_response.SerializeToString(any_response.mutable_value());
+
+  EXPECT_CALL(
+      mock_personal_context_service_,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce([&](personal_context::proto::ContextMemoryFeature,
+                    const google::protobuf::MessageLite&,
+                    const personal_context::ContextMemoryRequestOptions&,
+                    personal_context::FetchContextCallback callback) {
+        std::move(callback).Run(personal_context::FetchContextResult(
+            base::ok(std::move(any_response))));
+      });
+
+  base::test::TestFuture<bool> future;
+  service_.GenerateFirstPartyAutoTodos(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
+  service_.GetAutoTodos(get_future.GetCallback());
+  const std::vector<AutoTodoEntry>& items = get_future.Get();
+  ASSERT_EQ(items.size(), 1u);
+  const auto* fp_data = std::get_if<FirstPartyData>(&items[0].data);
+  ASSERT_TRUE(fp_data);
+  // Search History references are only surfaced when Google is the default
+  // search provider; other references are unaffected.
+  ASSERT_EQ(fp_data->source_references.size(), 1u);
+  EXPECT_TRUE(std::holds_alternative<ChromeHistoryEntry>(
+      fp_data->source_references[0]));
 }
 
 TEST_F(ContextHubServiceTest,

@@ -52,6 +52,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "components/image_fetcher/core/image_fetcher.h"
@@ -77,6 +78,9 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/search_engines/search_engine_type.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
@@ -95,6 +99,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/tab_list/tab_removed_reason.h"
@@ -387,6 +392,16 @@ personal_context::proto::AutoTodoItem ToAutoTodoItemProto(
                       *std::move(visit_timestamp);
                 }
               },
+              [source_ref](const SearchQuery& search_query) {
+                personal_context::proto::SearchQuery* search_proto =
+                    source_ref->mutable_search_query();
+                search_proto->set_query(search_query.query);
+                if (std::optional<personal_context::proto::Timestamp>
+                        timestamp =
+                            TimeToProtoTimestamp(search_query.timestamp)) {
+                  *search_proto->mutable_timestamp() = *std::move(timestamp);
+                }
+              },
           },
           ref);
     }
@@ -634,6 +649,29 @@ void ContextHubService::OnFirstPartyAutoTodosTimerTriggered() {
     auto_todos_store_->DeleteExpiredEntries(base::DoNothing());
   }
   MaybeTriggerFirstPartyAutoTodosGeneration();
+}
+
+GURL ContextHubService::BuildGoogleSearchUrl(std::string_view query) const {
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(&profile_.get());
+  if (!template_url_service) {
+    return GURL();
+  }
+  const TemplateURL* default_provider =
+      template_url_service->GetDefaultSearchProvider();
+  const SearchTermsData& search_terms_data =
+      template_url_service->search_terms_data();
+  // Search History queries come from Google Search, so only re-link them when
+  // Google is the default search provider; sending them to another engine
+  // would not reproduce the user's search.
+  if (!default_provider ||
+      default_provider->GetEngineType(search_terms_data) !=
+          SEARCH_ENGINE_GOOGLE ||
+      !default_provider->url_ref().SupportsReplacement(search_terms_data)) {
+    return GURL();
+  }
+  return default_provider->GenerateSearchURL(search_terms_data,
+                                             base::UTF8ToUTF16(query));
 }
 
 void ContextHubService::OnPrimaryAccountChanged(
@@ -1307,6 +1345,32 @@ void ContextHubService::OnFirstPartyAutoTodosFetched(
               ProtoTimestampToTime(history_proto.visit_timestamp());
         }
         first_party.source_references.push_back(std::move(history_entry));
+      } else if (ref.has_search_query()) {
+        const personal_context::proto::SearchQuery& search_proto =
+            ref.search_query();
+        // A blank query gives the UI nothing to show or open, so drop the
+        // reference rather than surfacing an empty search link.
+        std::string_view query =
+            base::TrimWhitespaceASCII(search_proto.query(), base::TRIM_ALL);
+        if (query.empty()) {
+          continue;
+        }
+        // The search URL is built browser-side from the default search
+        // provider; references are only surfaced when Google is the default
+        // search provider.
+        GURL search_url = BuildGoogleSearchUrl(query);
+        if (!search_url.is_valid()) {
+          continue;
+        }
+        SearchQuery search_query{
+            .query = std::string(query),
+            .search_url = std::move(search_url),
+        };
+        if (search_proto.has_timestamp()) {
+          search_query.timestamp =
+              ProtoTimestampToTime(search_proto.timestamp());
+        }
+        first_party.source_references.push_back(std::move(search_query));
       }
     }
     entry.data = std::move(first_party);

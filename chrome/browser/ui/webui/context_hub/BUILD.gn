@@ -32,6 +32,10 @@ mojom("mojo_bindings") {
           cpp = "::context_hub::ChromeHistoryEntry"
         },
         {
+          mojom = "browser.context_hub.mojom.SearchQuery"
+          cpp = "::context_hub::SearchQuery"
+        },
+        {
           mojom = "browser.context_hub.mojom.SourceReference"
           cpp = "::context_hub::SourceReference"
         },

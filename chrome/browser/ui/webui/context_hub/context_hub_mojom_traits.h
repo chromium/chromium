@@ -85,6 +85,25 @@ struct StructTraits<browser::context_hub::mojom::ChromeHistoryEntryDataView,
 };
 
 template <>
+struct StructTraits<browser::context_hub::mojom::SearchQueryDataView,
+                    context_hub::SearchQuery> {
+  static const std::string& query(const context_hub::SearchQuery& search) {
+    return search.query;
+  }
+
+  static const GURL& search_url(const context_hub::SearchQuery& search) {
+    return search.search_url;
+  }
+
+  static base::Time timestamp(const context_hub::SearchQuery& search) {
+    return search.timestamp;
+  }
+
+  static bool Read(browser::context_hub::mojom::SearchQueryDataView data,
+                   context_hub::SearchQuery* out);
+};
+
+template <>
 struct UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
                    context_hub::SourceReference> {
   static browser::context_hub::mojom::SourceReferenceDataView::Tag GetTag(
@@ -104,6 +123,11 @@ struct UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
   static const context_hub::ChromeHistoryEntry& chrome_history_entry(
       const context_hub::SourceReference& ref) {
     return std::get<context_hub::ChromeHistoryEntry>(ref);
+  }
+
+  static const context_hub::SearchQuery& search_query(
+      const context_hub::SourceReference& ref) {
+    return std::get<context_hub::SearchQuery>(ref);
   }
 
   static bool Read(browser::context_hub::mojom::SourceReferenceDataView data,
@@ -318,6 +342,9 @@ struct UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
   }
 
   static context_hub::ChromeHistoryEntry chrome_history_entry(
+      const personal_context::proto::SourceReference& ref);
+
+  static context_hub::SearchQuery search_query(
       const personal_context::proto::SourceReference& ref);
 
   static bool Read(browser::context_hub::mojom::SourceReferenceDataView data,

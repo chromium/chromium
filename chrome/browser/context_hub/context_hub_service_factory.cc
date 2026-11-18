@@ -28,6 +28,7 @@
 #include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
 #include "chrome/browser/personal_context/personal_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/tab_context_sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -78,6 +79,7 @@ ContextHubServiceFactory::ContextHubServiceFactory()
   DependsOn(
       passage_embeddings::PassageEmbedderModelObserverFactory::GetInstance());
   DependsOn(TabContextSyncServiceFactory::GetInstance());
+  DependsOn(TemplateURLServiceFactory::GetInstance());
 }
 
 ContextHubServiceFactory::~ContextHubServiceFactory() = default;

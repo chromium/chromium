@@ -688,6 +688,24 @@ TEST(ContextHubMojomTraitsTest,
                                        "History Page Title", visit_time)));
 }
 
+TEST(ContextHubMojomTraitsTest, SourceReferenceSerialization_SearchQuery) {
+  const base::Time search_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(1700000000000);
+  context_hub::SourceReference input = context_hub::SearchQuery{
+      .query = "renew passport online",
+      .search_url = GURL("https://www.google.com/search?q=renew+passport"),
+      .timestamp = search_time,
+  };
+  context_hub::SourceReference output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              browser::context_hub::mojom::SourceReference>(input, output));
+  EXPECT_THAT(output,
+              ::testing::VariantWith<SearchQuery>(::testing::FieldsAre(
+                  "renew passport online",
+                  GURL("https://www.google.com/search?q=renew+passport"),
+                  search_time)));
+}
+
 TEST(ContextHubMojomTraitsTest, SmartSearchResultSerialization) {
   personal_context::proto::SmartSearchItem input;
   input.set_description("Document discussing project plan.");
@@ -779,6 +797,48 @@ TEST(ContextHubMojomTraitsTest,
                 .visit_timestamp()
                 .nanos(),
             500000000);
+}
+
+TEST(ContextHubMojomTraitsTest, SmartSearchResultSerialization_SearchQuery) {
+  personal_context::proto::SmartSearchItem input;
+  input.set_description("Result with Search History source.");
+
+  personal_context::proto::SearchQuery* search_ref =
+      input.add_source_references()->mutable_search_query();
+  search_ref->set_query("renew passport online");
+  search_ref->mutable_timestamp()->set_seconds(1700000000);
+  search_ref->mutable_timestamp()->set_nanos(500000000);
+
+  personal_context::proto::SmartSearchItem output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              browser::context_hub::mojom::SmartSearchResult>(input, output));
+  EXPECT_EQ(output.description(), "Result with Search History source.");
+  ASSERT_EQ(output.source_references_size(), 1);
+  ASSERT_TRUE(output.source_references(0).has_search_query());
+  EXPECT_EQ(output.source_references(0).search_query().query(),
+            "renew passport online");
+  EXPECT_EQ(output.source_references(0).search_query().timestamp().seconds(),
+            1700000000);
+  EXPECT_EQ(output.source_references(0).search_query().timestamp().nanos(),
+            500000000);
+}
+
+TEST(ContextHubMojomTraitsTest,
+     SmartSearchResultSerialization_SearchQueryWithoutTimestamp) {
+  personal_context::proto::SmartSearchItem input;
+  input.set_description("Result with Search History source.");
+  input.add_source_references()->mutable_search_query()->set_query(
+      "renew passport online");
+
+  personal_context::proto::SmartSearchItem output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              browser::context_hub::mojom::SmartSearchResult>(input, output));
+  ASSERT_EQ(output.source_references_size(), 1);
+  ASSERT_TRUE(output.source_references(0).has_search_query());
+  EXPECT_EQ(output.source_references(0).search_query().query(),
+            "renew passport online");
+  // A null base::Time round-trips as an unset proto timestamp.
+  EXPECT_FALSE(output.source_references(0).search_query().has_timestamp());
 }
 
 TEST(ContextHubMojomTraitsTest, FirstPartyDataSerialization) {
