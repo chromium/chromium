@@ -411,7 +411,7 @@ public class CustomTabActivityTabControllerUnitTest {
         Tab hiddenTab = env.prepareHiddenTab();
         mTabController.setUpInitialTab(hiddenTab);
         mTabController.finishNativeInitialization();
-        verify(env.reparentingTask).finish(any(), any());
+        verify(env.reparentingTask).finish(any(), any(), any(), any());
     }
 
     @Test
@@ -578,12 +578,12 @@ public class CustomTabActivityTabControllerUnitTest {
                                 tab, sourceSelector, /* shouldReload= */ false, finalizeCallback));
         doAnswer(
                         invocation -> {
-                            Runnable callback = invocation.getArgument(1);
+                            Runnable callback = invocation.getArgument(3);
                             if (callback != null) callback.run();
                             return null;
                         })
                 .when(env.reparentingTask)
-                .finish(any(), any());
+                .finish(any(), any(), any(), any());
 
         mTabController.setUpInitialTab(null);
         mTabController.finishNativeInitialization();

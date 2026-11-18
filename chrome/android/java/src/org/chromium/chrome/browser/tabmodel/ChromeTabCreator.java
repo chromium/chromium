@@ -21,7 +21,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ServiceTabLauncher;
 import org.chromium.chrome.browser.WarmupManager;
-import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFactory;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -386,10 +385,9 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
 
                 ReparentingTask.from(tab)
                         .finish(
-                                ReparentingDelegateFactory.createReparentingTaskDelegate(
-                                        mCompositorViewHolderSupplier.get(),
-                                        mNativeWindow,
-                                        createDefaultTabDelegateFactory()),
+                                mCompositorViewHolderSupplier.get(),
+                                mNativeWindow,
+                                createDefaultTabDelegateFactory(),
                                 params.getFinalizeCallback());
             } else if (asyncParams != null && asyncParams.getWebContents() != null) {
                 loadUrlParams.destroyAdditionalNavigationParams();
@@ -462,11 +460,10 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
                 tab.reparentTab(assumeNonNull(parent));
                 ReparentingTask.from(tab)
                         .finish(
-                                ReparentingDelegateFactory.createReparentingTaskDelegate(
-                                        mCompositorViewHolderSupplier.get(),
-                                        mNativeWindow,
-                                        createDefaultTabDelegateFactory()),
-                                null);
+                                mCompositorViewHolderSupplier.get(),
+                                mNativeWindow,
+                                createDefaultTabDelegateFactory(),
+                                /* finalizeCallback= */ null);
                 RedirectHandlerTabHelper.updateIntentInTab(tab, intent, tab.isCustomTab());
                 // Makes WebContents visible before loading the URL to record metrics for SpareTab
                 // (Ref: https://crbug.com/40266649).
@@ -739,10 +736,9 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             }
             ReparentingTask.from(tab)
                     .finish(
-                            ReparentingDelegateFactory.createReparentingTaskDelegate(
-                                    mCompositorViewHolderSupplier.get(),
-                                    mNativeWindow,
-                                    createDefaultTabDelegateFactory()),
+                            mCompositorViewHolderSupplier.get(),
+                            mNativeWindow,
+                            createDefaultTabDelegateFactory(),
                             params.getFinalizeCallback());
             // TODO(crbug.com/40141359): Photos/videos viewed in custom tabs aren't displayed
             // properly after reparenting. This is a temporary fix for RBS issue crbug.com/40706018,

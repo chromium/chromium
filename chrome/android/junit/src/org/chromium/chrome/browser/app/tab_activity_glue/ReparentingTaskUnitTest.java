@@ -44,7 +44,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
@@ -499,27 +498,9 @@ public class ReparentingTaskUnitTest {
         final View compositorView = compositorViewHolder.getCompositorView();
         // The view may already be white, so start from red to observe finish() changing it.
         compositorView.setBackgroundColor(Color.RED);
-        final ReparentingTask.Delegate delegate =
-                new ReparentingTask.Delegate() {
-                    @Override
-                    public @Nullable CompositorViewHolder getCompositorViewHolder() {
-                        return compositorViewHolder;
-                    }
-
-                    @Override
-                    public WindowAndroid getWindowAndroid() {
-                        return targetWindow;
-                    }
-
-                    @Override
-                    public @Nullable TabDelegateFactory getTabDelegateFactory() {
-                        return targetTabDelegateFactory;
-                    }
-                };
-
         task.begin(mContext, intent, null, null);
         assertEquals(Color.RED, getBackgroundColor(compositorView));
-        task.finish(delegate, finalizeCallback);
+        task.finish(compositorViewHolder, targetWindow, targetTabDelegateFactory, finalizeCallback);
 
         final InOrder inOrder = inOrder(mTab);
         inOrder.verify(mTab).updateAttachment(null, null);

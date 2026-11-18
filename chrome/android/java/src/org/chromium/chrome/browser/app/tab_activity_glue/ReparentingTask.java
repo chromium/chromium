@@ -38,29 +38,6 @@ import org.chromium.ui.base.WindowAndroid;
 public class ReparentingTask implements UserData {
     public static final String TAG = "ReparentingTask";
 
-    /** Provides data to {@link ReparentingTask} facilitate reparenting tabs. */
-    public interface Delegate {
-        /**
-         * Gets a {@link CompositorViewHolder} which is passed on to {@link ReparentingTask}, used
-         * in the reparenting process.
-         *
-         * <p>Can be null if the CompositorViewHolder does not yet exist.
-         */
-        @Nullable CompositorViewHolder getCompositorViewHolder();
-
-        /**
-         * Gets a {@link WindowAndroid} which is passed on to {@link ReparentingTask}, used in the
-         * reparenting process.
-         */
-        WindowAndroid getWindowAndroid();
-
-        /**
-         * Gets a {@link TabDelegateFactory} which is passed on to {@link ReparentingTask}, used in
-         * the reparenting process.
-         */
-        @Nullable TabDelegateFactory getTabDelegateFactory();
-    }
-
     private static final Class<ReparentingTask> USER_DATA_KEY = ReparentingTask.class;
 
     private final Tab mTab;
@@ -194,14 +171,19 @@ public class ReparentingTask implements UserData {
      * tab and related objects to reference it. This updates many delegates inside the tab and
      * {@link WebContents} both on java and native sides.
      *
-     * @param delegate A delegate that provides dependencies.
+     * @param compositorViewHolder The {@link CompositorViewHolder} to prepare for tab reparenting.
+     * @param windowAndroid The new {@link WindowAndroid} to attach the tab to.
+     * @param tabDelegateFactory The new {@link TabDelegateFactory} this tab should be using, or
+     *     null to keep the current one.
      * @param finalizeCallback A Callback to be called after the Tab has been reparented.
      */
-    public void finish(Delegate delegate, @Nullable Runnable finalizeCallback) {
-        if (delegate.getCompositorViewHolder() != null) {
-            delegate.getCompositorViewHolder().prepareForTabReparenting();
-        }
-        attach(delegate.getWindowAndroid(), delegate.getTabDelegateFactory());
+    public void finish(
+            @Nullable CompositorViewHolder compositorViewHolder,
+            WindowAndroid windowAndroid,
+            @Nullable TabDelegateFactory tabDelegateFactory,
+            @Nullable Runnable finalizeCallback) {
+        if (compositorViewHolder != null) compositorViewHolder.prepareForTabReparenting();
+        attach(windowAndroid, tabDelegateFactory);
         if (finalizeCallback != null) finalizeCallback.run();
     }
 
@@ -225,23 +207,10 @@ public class ReparentingTask implements UserData {
     void finishAsNoOp(WindowAndroid originalWindow) {
         AsyncTabParamsManagerSingleton.getInstance().remove(mTab.getId());
         finish(
-                new Delegate() {
-                    @Override
-                    public @Nullable CompositorViewHolder getCompositorViewHolder() {
-                        return null;
-                    }
-
-                    @Override
-                    public WindowAndroid getWindowAndroid() {
-                        return originalWindow;
-                    }
-
-                    @Override
-                    public @Nullable TabDelegateFactory getTabDelegateFactory() {
-                        return null;
-                    }
-                },
-                null);
+                /* compositorViewHolder= */ null,
+                originalWindow,
+                /* tabDelegateFactory= */ null,
+                /* finalizeCallback= */ null);
     }
 
     public Tab getTabForTesting() {

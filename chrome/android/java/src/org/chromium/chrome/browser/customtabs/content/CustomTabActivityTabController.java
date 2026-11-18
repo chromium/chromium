@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ServiceTabLauncher;
 import org.chromium.chrome.browser.WarmupManager;
-import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFactory;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
@@ -496,10 +495,9 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             assert tab != null;
             ReparentingTask.from(tab)
                     .finish(
-                            ReparentingDelegateFactory.createReparentingTaskDelegate(
-                                    /* compositorViewHolder= */ null,
-                                    mWindowAndroid,
-                                    mCustomTabDelegateFactory),
+                            /* compositorViewHolder= */ null,
+                            mWindowAndroid,
+                            mCustomTabDelegateFactory,
                             params.getFinalizeCallback());
         } else {
             // Clear any stale EXTRA_SKIP_LOAD_ON_REPARENTING (e.g. when a task is cold-relaunched
@@ -526,11 +524,10 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                 }
                 ReparentingTask.from(tab)
                         .finish(
-                                ReparentingDelegateFactory.createReparentingTaskDelegate(
-                                        assumeNonNull(null),
-                                        mWindowAndroid,
-                                        mCustomTabDelegateFactory),
-                                null);
+                                /* compositorViewHolder= */ null,
+                                mWindowAndroid,
+                                mCustomTabDelegateFactory,
+                                /* finalizeCallback= */ null);
             } else {
                 WebContents webContents = takeWebContents();
                 Callback<Tab> tabCallback =
@@ -648,8 +645,9 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                     AsyncTabParamsManagerSingleton.getInstance().remove(tab.getId());
             ReparentingTask.from(tab)
                     .finish(
-                            ReparentingDelegateFactory.createReparentingTaskDelegate(
-                                    assumeNonNull(null), mWindowAndroid, mCustomTabDelegateFactory),
+                            /* compositorViewHolder= */ null,
+                            mWindowAndroid,
+                            mCustomTabDelegateFactory,
                             (params == null ? null : params.getFinalizeCallback()));
         } else {
             addTabNavigationObservers(
