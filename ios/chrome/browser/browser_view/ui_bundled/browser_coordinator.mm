@@ -44,15 +44,11 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
-#import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_store_rating/model/features.h"
 #import "ios/chrome/browser/authentication/signin/reauth/coordinator/signin_reauth_coordinator.h"
-#import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
-#import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
@@ -182,7 +178,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
@@ -242,7 +237,6 @@
 #import "ios/chrome/browser/snapshots/model/web_state_snapshot_info.h"
 #import "ios/chrome/browser/spotlight_debugger/ui_bundled/spotlight_debugger_coordinator.h"
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
@@ -331,9 +325,7 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
     SigninReauthCoordinatorDelegate,
     SnackbarCoordinatorDelegate,
     SnapshotGeneratorDelegate,
-    SyncPresenterCommands,
     TextZoomCommands,
-    TrustedVaultReauthenticationCoordinatorDelegate,
     URLLoadingDelegate,
     VoiceSearchCoordinatorDelegate,
     WebNavigationNTPDelegate,
@@ -515,10 +507,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   AutoDeletionCoordinator* _autoDeletionCoordinator;
   SigninReauthCoordinator* _reauthCoordinator;
   SyncPresenterCompletionCallback _reauthCoordinatorCompletion;
-  TrustedVaultReauthenticationCoordinator*
-      _trustedVaultReauthenticationCoordinator;
-  SyncPresenterCompletionCallback
-      _trustedVaultReauthenticationCoordinatorCompletion;
 
   // The coordinator for the Search What You See promo.
   SearchWhatYouSeePromoCoordinator* _searchWhatYouSeePromoCoordinator;
@@ -828,17 +816,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   }
 }
 
-- (void)stopTrustedVaultReauthentication {
-  [_trustedVaultReauthenticationCoordinator stop];
-  _trustedVaultReauthenticationCoordinator.delegate = nil;
-  _trustedVaultReauthenticationCoordinator = nil;
-
-  if (_trustedVaultReauthenticationCoordinatorCompletion) {
-    _trustedVaultReauthenticationCoordinatorCompletion();
-    _trustedVaultReauthenticationCoordinatorCompletion = nil;
-  }
-}
-
 // The Lens UI takes the necessary steps before being backgrounded.
 - (void)updateLensUIForBackground {
   web::WebState* activeWebState = self.activeWebState;
@@ -978,7 +955,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
     @protocol(ReaderModeCommands),
     @protocol(NewTabPageCommands),
     @protocol(PrimaryAccountReauthCommands),
-    @protocol(SyncPresenterCommands),
     @protocol(TextZoomCommands),
   ];
 
@@ -1453,7 +1429,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   [self dismissEnhancedSafeBrowsingPromo];
   [self dismissPriceTrackingPromo];
   [self dismissAutoDeletionActionSheet];
-  [self stopTrustedVaultReauthentication];
   [self dismissSearchWhatYouSeePromo];
   [self dismissTabGroupsPromo];
   [self dismissNotificationsOptIn];
@@ -2649,96 +2624,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   [_signinCoordinator start];
 }
 
-#pragma mark - SyncPresenterCommands
-
-- (void)showSyncPassphraseSettings {
-  [self showSyncPassphraseSettingsWithDismissalCompletion:nil];
-}
-
-- (void)showSyncPassphraseSettingsWithDismissalCompletion:
-    (SyncPresenterCompletionCallback)completion {
-  [HandlerForProtocol(self.dispatcher, SettingsCommands)
-      showSyncPassphraseSettingsFromViewController:self.viewController
-                                        completion:completion];
-}
-
-- (void)showGoogleServicesSettings {
-  [HandlerForProtocol(self.dispatcher, SettingsCommands)
-      showGoogleServicesSettingsFromViewController:self.viewController];
-}
-
-- (void)showAccountSettings {
-  [HandlerForProtocol(self.dispatcher, SettingsCommands)
-      showAccountsSettingsFromViewController:self.viewController
-                        skipIfUINotAvailable:NO];
-}
-
-- (void)showTrustedVaultReauthForFetchKeysWithTrigger:
-            (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger
-                                           completion:
-                                               (SyncPresenterCompletionCallback)
-                                                   completion {
-  [self
-      showTrustedVaultReauthWithTrigger:trigger
-                                 intent:SigninTrustedVaultDialogIntentFetchKeys
-                             completion:completion];
-}
-
-- (void)
-    showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
-        (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger
-                                                    completion:
-                                                        (SyncPresenterCompletionCallback)
-                                                            completion {
-  SigninTrustedVaultDialogIntent intent =
-      SigninTrustedVaultDialogIntentDegradedRecoverability;
-  [self showTrustedVaultReauthWithTrigger:trigger
-                                   intent:intent
-                               completion:completion];
-}
-
-- (void)showBookmarksLimitExceededHelp {
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForProfile(self.browser->GetProfile());
-  if (syncService) {
-    syncService->AcknowledgeBookmarksLimitExceededError(
-        syncer::SyncService::BookmarksLimitExceededHelpClickedSource::
-            kSyncErrorMessage);
-  }
-  GURL helpUrl(kBookmarksLimitExceededHelpCenter);
-  OpenNewTabCommand* command =
-      [OpenNewTabCommand commandWithURLFromChrome:helpUrl
-                                      inIncognito:self.isOffTheRecord];
-  command.appendTo = OpenPosition::kCurrentTab;
-  id<SceneCommands> handler =
-      HandlerForProtocol(self.dispatcher, SceneCommands);
-  [handler closePresentedViewsAndOpenURL:command];
-}
-
-#pragma mark - SyncPresenterCommands helper
-
-- (void)showTrustedVaultReauthWithTrigger:
-            (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger
-                                   intent:(SigninTrustedVaultDialogIntent)intent
-                               completion:
-                                   (SyncPresenterCompletionCallback)completion {
-  if (_trustedVaultReauthenticationCoordinator) {
-    // This can occur in case of double-tap.
-    return;
-  }
-  _trustedVaultReauthenticationCoordinator =
-      [[TrustedVaultReauthenticationCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser
-                              intent:intent
-                    securityDomainID:trusted_vault::SecurityDomainId::
-                                         kChromeSync
-                             trigger:trigger];
-  _trustedVaultReauthenticationCoordinator.delegate = self;
-  _trustedVaultReauthenticationCoordinatorCompletion = completion;
-  [_trustedVaultReauthenticationCoordinator start];
-}
-
 #pragma mark - ReSigninPresenter
 
 - (void)showReSignin {
@@ -3276,14 +3161,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
 - (void)reauthFinishedWithResult:(ReauthResult)result
                           gaiaID:(const GaiaId*)gaiaID {
   [self stopReauthCoordinator];
-}
-
-#pragma mark - TrustedVaultReauthenticationCoordinatorDelegate
-
-- (void)trustedVaultReauthenticationCoordinatorWantsToBeStopped:
-    (TrustedVaultReauthenticationCoordinator*)coordinator {
-  CHECK_EQ(coordinator, _trustedVaultReauthenticationCoordinator);
-  [self stopTrustedVaultReauthentication];
 }
 
 #pragma mark - VoiceSearchCoordinatorDelegate

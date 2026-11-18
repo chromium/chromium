@@ -8,15 +8,13 @@
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/shared/public/commands/primary_account_reauth_commands.h"
-#import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 
 @class NewTabPageCoordinator;
 
 // Coordinator for BrowserViewController. Testing category to expose properties
 // used for tests only.
 @interface BrowserCoordinator (Testing) <OverscrollActionsControllerDelegate,
-                                         PrimaryAccountReauthCommands,
-                                         SyncPresenterCommands>
+                                         PrimaryAccountReauthCommands>
 
 // The coordinator used for the New Tab Page.
 @property(nonatomic, strong, readonly) NewTabPageCoordinator* NTPCoordinator;

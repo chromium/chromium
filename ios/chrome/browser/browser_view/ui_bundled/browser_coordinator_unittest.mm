@@ -13,14 +13,10 @@
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "components/test/ios/test_utils.h"
-#import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/authentication/signin/reauth/coordinator/signin_reauth_coordinator.h"
-#import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
-#import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
@@ -70,7 +66,6 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_sign_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
-#import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -538,165 +533,6 @@ TEST_F(BrowserCoordinatorTest,
   [browser_coordinator stop];
 
   EXPECT_OCMOCK_VERIFY((id)reauth_mock);
-}
-
-// Tests that the completion callback for
-// showTrustedVaultReauthForFetchKeysWithTrigger is called correctly.
-TEST_F(BrowserCoordinatorTest, TestTrustedVaultReauthCompletion) {
-  trusted_vault::TrustedVaultUserActionTriggerForUMA trigger =
-      trusted_vault::TrustedVaultUserActionTriggerForUMA::kSettings;
-  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
-  [browser_coordinator start];
-  id<SyncPresenterCommands> handler = HandlerForProtocol(
-      browser_->GetCommandDispatcher(), SyncPresenterCommands);
-  TrustedVaultReauthenticationCoordinator* trusted_vault_mock =
-      OCMStrictClassMock([TrustedVaultReauthenticationCoordinator class]);
-  OCMExpect([((id)trusted_vault_mock) alloc]).andReturn(trusted_vault_mock);
-  OCMExpect(
-      [trusted_vault_mock
-          initWithBaseViewController:browser_coordinator.viewController
-                             browser:browser_.get()
-                              intent:SigninTrustedVaultDialogIntentFetchKeys
-                    securityDomainID:trusted_vault::SecurityDomainId::
-                                         kChromeSync
-                             trigger:trigger])
-      .andReturn(trusted_vault_mock);
-
-  __block id<TrustedVaultReauthenticationCoordinatorDelegate> delegate;
-  OCMExpect([trusted_vault_mock setDelegate:AssignValueToVariable(delegate)]);
-  OCMExpect([trusted_vault_mock start]);
-
-  __block bool completion_was_called = false;
-  [handler showTrustedVaultReauthForFetchKeysWithTrigger:trigger
-                                              completion:^() {
-                                                completion_was_called = true;
-                                              }];
-  EXPECT_OCMOCK_VERIFY((id)trusted_vault_mock);
-
-  OCMExpect([trusted_vault_mock setDelegate:nil]);
-  OCMExpect([trusted_vault_mock stop]);
-
-  [delegate trustedVaultReauthenticationCoordinatorWantsToBeStopped:
-                trusted_vault_mock];
-  EXPECT_TRUE(completion_was_called);
-
-  [browser_coordinator stop];
-
-  EXPECT_OCMOCK_VERIFY((id)trusted_vault_mock);
-}
-
-// Tests that a double tap on the trusted vault reauth errors button don’t
-// trigger two openings of the trusted vault reauth coordinator.
-TEST_F(BrowserCoordinatorTest, TestDoubleTapTrustedVaultReauth) {
-  trusted_vault::TrustedVaultUserActionTriggerForUMA trigger =
-      trusted_vault::TrustedVaultUserActionTriggerForUMA::kSettings;
-  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
-  [browser_coordinator start];
-  id<SyncPresenterCommands> handler = HandlerForProtocol(
-      browser_->GetCommandDispatcher(), SyncPresenterCommands);
-  TrustedVaultReauthenticationCoordinator* trusted_vault_mock =
-      OCMStrictClassMock([TrustedVaultReauthenticationCoordinator class]);
-  OCMExpect([((id)trusted_vault_mock) alloc]).andReturn(trusted_vault_mock);
-  OCMExpect(
-      [trusted_vault_mock
-          initWithBaseViewController:browser_coordinator.viewController
-                             browser:browser_.get()
-                              intent:SigninTrustedVaultDialogIntentFetchKeys
-                    securityDomainID:trusted_vault::SecurityDomainId::
-                                         kChromeSync
-                             trigger:trigger])
-      .andReturn(trusted_vault_mock);
-  OCMExpect([trusted_vault_mock setDelegate:[OCMArg any]]);
-  OCMExpect([trusted_vault_mock start]);
-  [handler showTrustedVaultReauthForFetchKeysWithTrigger:trigger
-                                              completion:nil];
-  EXPECT_OCMOCK_VERIFY((id)trusted_vault_mock);
-  // Checks that the second tap is ignored.
-  // Checks that the second tap is ignored. No more
-  // TrustedVaultReauthenticationCoordinator are allocated
-  OCMStub([((id)trusted_vault_mock) alloc]).andDo(^(NSInvocation* invocation) {
-    EXPECT_FALSE(true);
-  });
-  [handler showTrustedVaultReauthForFetchKeysWithTrigger:trigger
-                                              completion:nil];
-  [handler showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:trigger
-                                                           completion:nil];
-
-  OCMExpect([trusted_vault_mock setDelegate:nil]);
-  OCMExpect([trusted_vault_mock stop]);
-  [browser_coordinator stop];
-
-  EXPECT_OCMOCK_VERIFY((id)trusted_vault_mock);
-}
-
-// Tests that a double tap on the trusted vault reauth errors button don’t
-// trigger two openings of the trusted vault reauth coordinator.
-TEST_F(BrowserCoordinatorTest,
-       TestDoubleTapTrustedVaultReauthForDegradedRecoverability) {
-  trusted_vault::TrustedVaultUserActionTriggerForUMA trigger =
-      trusted_vault::TrustedVaultUserActionTriggerForUMA::kSettings;
-  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
-  [browser_coordinator start];
-  id<SyncPresenterCommands> handler = HandlerForProtocol(
-      browser_->GetCommandDispatcher(), SyncPresenterCommands);
-  TrustedVaultReauthenticationCoordinator* trusted_vault_mock =
-      OCMStrictClassMock([TrustedVaultReauthenticationCoordinator class]);
-  OCMExpect([((id)trusted_vault_mock) alloc]).andReturn(trusted_vault_mock);
-  SigninTrustedVaultDialogIntent intent =
-      SigninTrustedVaultDialogIntentDegradedRecoverability;
-  OCMExpect([trusted_vault_mock
-                initWithBaseViewController:browser_coordinator.viewController
-                                   browser:browser_.get()
-                                    intent:intent
-                          securityDomainID:trusted_vault::SecurityDomainId::
-                                               kChromeSync
-                                   trigger:trigger])
-      .andReturn(trusted_vault_mock);
-  OCMExpect([trusted_vault_mock setDelegate:[OCMArg any]]);
-  OCMExpect([trusted_vault_mock start]);
-  [handler showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:trigger
-                                                           completion:nil];
-  EXPECT_OCMOCK_VERIFY((id)trusted_vault_mock);
-
-  // Checks that the second tap is ignored. No more
-  // TrustedVaultReauthenticationCoordinator are allocated
-  OCMStub([((id)trusted_vault_mock) alloc]).andDo(^(NSInvocation* invocation) {
-    EXPECT_FALSE(true);
-  });
-  [handler showTrustedVaultReauthForFetchKeysWithTrigger:trigger
-                                              completion:nil];
-  [handler showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:trigger
-                                                           completion:nil];
-
-  OCMExpect([trusted_vault_mock setDelegate:nil]);
-  OCMExpect([trusted_vault_mock stop]);
-  [browser_coordinator stop];
-
-  EXPECT_OCMOCK_VERIFY((id)trusted_vault_mock);
-}
-
-// Tests that showBookmarksLimitExceededHelp acknowledges the error and opens
-// the help URL.
-TEST_F(BrowserCoordinatorTest, ShowBookmarksLimitExceededHelp) {
-  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
-  [browser_coordinator start];
-
-  syncer::MockSyncService* mock_sync_service =
-      static_cast<syncer::MockSyncService*>(
-          SyncServiceFactory::GetForProfile(GetProfile()));
-
-  EXPECT_CALL(*mock_sync_service,
-              AcknowledgeBookmarksLimitExceededError(
-                  syncer::SyncService::BookmarksLimitExceededHelpClickedSource::
-                      kSyncErrorMessage));
-
-  OCMExpect([mock_scene_handler_ closePresentedViewsAndOpenURL:[OCMArg any]]);
-
-  [browser_coordinator showBookmarksLimitExceededHelp];
-
-  EXPECT_OCMOCK_VERIFY((OCMockObject*)mock_scene_handler_);
-
-  [browser_coordinator stop];
 }
 
 // Tests that stopping BrowserCoordinator also stops the child
