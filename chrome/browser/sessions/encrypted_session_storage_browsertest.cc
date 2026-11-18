@@ -423,7 +423,15 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreWithEncryptionTest, BasicRestore) {
   EXPECT_EQ(GetUrl(2), tab_strip_model->GetWebContentsAt(1)->GetURL());
 }
 
-IN_PROC_BROWSER_TEST_P(SessionRestoreWithEncryptionTest, LargeSessionRestore) {
+// TODO(crbug.com/565065380): Flaky timeout on Linux (incl. ASan/dbg) and Mac.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#define MAYBE_LargeSessionRestore DISABLED_LargeSessionRestore
+#else
+#define MAYBE_LargeSessionRestore LargeSessionRestore
+#endif
+IN_PROC_BROWSER_TEST_P(SessionRestoreWithEncryptionTest,
+                       MAYBE_LargeSessionRestore) {
+#undef MAYBE_LargeSessionRestore
   constexpr int kNumTabs = 20;
   AddFileSchemeTabs(browser(), kNumTabs);
   int starting_tab_count = browser()->tab_strip_model()->count();
