@@ -85,6 +85,24 @@ source_set("browser_tests") {
     "//testing/gtest",
   ]
 
+  if (!is_chromeos) {
+    sources += [ "firefox_importer_browsertest.cc" ]
+
+    deps += [
+      ":importer",
+      "//base/test:test_support",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//chrome/test/base:in_process_browser_test",
+      "//components/favicon_base",
+      "//content/test:test_support",
+      "//skia",
+      "//ui/gfx",
+      "//ui/gfx/codec",
+    ]
+  }
+
   if (is_win) {
     sources += [
       "edge_importer_browsertest_win.cc",
