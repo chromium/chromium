@@ -20,6 +20,7 @@ class DictValue;
 
 namespace installer {
 
+class InstallationState;
 class InstallerState;
 
 // Component implementation for the Chrome Platform Runtime inner component,
@@ -30,6 +31,7 @@ class PlatformRuntimeComponent : public ComponentInterface {
   // Returns a new instance. The component takes no input from `command_line`.
   static std::unique_ptr<PlatformRuntimeComponent> Create(
       const base::CommandLine& command_line,
+      const InstallationState& original_state,
       const InstallerState& installer_state);
 
   PlatformRuntimeComponent();

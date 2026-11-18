@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "base/win/security_descriptor.h"
 #include "chrome/installer/setup/installer_state.h"
+#include "chrome/installer/util/installation_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,10 +30,12 @@ constexpr char kCrxId[] = "jidecimafobogahglicpmeajcaaaibib";
 }  // namespace
 
 TEST(PlatformRuntimeComponentTest, Create) {
+  const InstallationState original_state;
   const InstallerState installer_state(InstallerState::SYSTEM_LEVEL);
   std::unique_ptr<PlatformRuntimeComponent> component =
       PlatformRuntimeComponent::Create(
-          base::CommandLine(base::CommandLine::NO_PROGRAM), installer_state);
+          base::CommandLine(base::CommandLine::NO_PROGRAM), original_state,
+          installer_state);
   ASSERT_TRUE(component);
   EXPECT_TRUE(
       component->ReadManifest(base::DictValue().Set("name", kManifestName)));

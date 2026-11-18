@@ -1265,8 +1265,8 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
     } else {
       const base::FilePath source_file =
           cmd_line.GetSwitchValuePath(installer::switches::kInstallComponent);
-      *exit_code =
-          installer::InstallComponent(source_file, *installer_state, cmd_line);
+      *exit_code = installer::InstallComponent(source_file, *original_state,
+                                               *installer_state, cmd_line);
     }
   } else if (cmd_line.HasSwitch(installer::switches::kCreateShortcuts)) {
     std::string install_op_arg =

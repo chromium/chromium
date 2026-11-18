@@ -7,11 +7,15 @@
 #include <windows.h>
 
 #include <shlobj.h>
+#include <stddef.h>
 
+#include <array>
+#include <initializer_list>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/check.h"
 #include "base/command_line.h"
@@ -22,11 +26,14 @@
 #include "base/strings/strcat.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "base/win/access_token.h"
 #include "base/win/security_descriptor.h"
 #include "base/win/sid.h"
 #include "chrome/common/child_module/child_module_helper.h"
 #include "chrome/installer/setup/installer_state.h"
+#include "chrome/installer/util/fake_installation_state.h"
+#include "chrome/installer/util/installation_state.h"
 #include "chrome/installer/util/util_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,22 +66,30 @@ constexpr wchar_t kLpacChromeInstallFilesCapabilitySid[] =
     L"S-1-15-3-1024-2302894289-466761758-1166120688-1039016420-2430351297-"
     L"4240214049-4028510897-3317428798";
 
-// Returns a manifest for a patch to Chrome `base_version`.
-base::DictValue MakeManifest(std::string_view base_version = kBaseVersion) {
+// Returns a manifest with `compatible_versions`.
+base::DictValue MakeManifest(
+    std::initializer_list<std::string_view> compatible_versions = {
+        kBaseVersion}) {
+  base::ListValue list;
+  for (std::string_view version : compatible_versions) {
+    list.Append(version);
+  }
   return base::DictValue()
       .Set("name", kManifestName)
-      .Set("base_version", base_version);
+      .Set("compatible_versions", std::move(list));
 }
 
-// Returns the directory into which patches to kBaseVersion are installed for
+// Returns the directory into which patches to `base_version` are installed for
 // `sid` and `user_data_dir` when Chrome is installed in `target_path`.
-base::FilePath GetExpectedDestinationRoot(const base::FilePath& target_path,
-                                          const base::win::Sid& sid,
-                                          const base::FilePath& user_data_dir) {
+base::FilePath GetExpectedDestinationRoot(
+    const base::FilePath& target_path,
+    const base::win::Sid& sid,
+    const base::FilePath& user_data_dir,
+    std::string_view base_version = kBaseVersion) {
   const base::FilePath user_path_component =
       child_module::ComputeUserPathComponent(sid, user_data_dir);
   CHECK(!user_path_component.empty());
-  return target_path.AppendASCII(kBaseVersion)
+  return target_path.AppendASCII(base_version)
       .Append(child_module::kModulesDirName)
       .Append(user_path_component);
 }
@@ -82,23 +97,32 @@ base::FilePath GetExpectedDestinationRoot(const base::FilePath& target_path,
 }  // namespace
 
 // For a system-level install, the patch is installed for the user and the User
-// Data directory given on the command line.
+// Data directory given on the command line, into the currently-running version
+// from `original_state`.
 TEST(DynamicPatchComponentTest, CreateSystemLevel) {
+  constexpr std::string_view kHigherVersion = "130.0.6723.71";
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  FakeInstallationState original_state;
+  original_state.AddChrome(/*system_install=*/true,
+                           new base::Version(kBaseVersion));
   InstallerState installer_state(InstallerState::SYSTEM_LEVEL);
   installer_state.set_target_path_for_testing(temp_dir.GetPath());
   ASSERT_TRUE(
       base::CreateDirectory(temp_dir.GetPath().AppendASCII(kBaseVersion)));
+  ASSERT_TRUE(
+      base::CreateDirectory(temp_dir.GetPath().AppendASCII(kHigherVersion)));
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchNative(switches::kUserSid, kUserSid);
   command_line.AppendSwitchPath(switches::kUdd, base::FilePath(kUserDataDir));
   std::unique_ptr<DynamicPatchComponent> component =
-      DynamicPatchComponent::Create(command_line, installer_state);
+      DynamicPatchComponent::Create(command_line, original_state,
+                                    installer_state);
   ASSERT_TRUE(component);
 
-  ASSERT_TRUE(component->ReadManifest(MakeManifest()));
+  ASSERT_TRUE(
+      component->ReadManifest(MakeManifest({kBaseVersion, kHigherVersion})));
   EXPECT_THAT(
       component->DetermineDestinationRoot(installer_state, kCrxId),
       base::test::ValueIs(GetExpectedDestinationRoot(
@@ -109,6 +133,9 @@ TEST(DynamicPatchComponentTest, CreateSystemLevel) {
 TEST(DynamicPatchComponentTest, CreateUserLevel) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  FakeInstallationState original_state;
+  original_state.AddChrome(/*system_install=*/false,
+                           new base::Version(kBaseVersion));
   InstallerState installer_state(InstallerState::USER_LEVEL);
   installer_state.set_target_path_for_testing(temp_dir.GetPath());
   ASSERT_TRUE(
@@ -117,7 +144,8 @@ TEST(DynamicPatchComponentTest, CreateUserLevel) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchPath(switches::kUdd, base::FilePath(kUserDataDir));
   std::unique_ptr<DynamicPatchComponent> component =
-      DynamicPatchComponent::Create(command_line, installer_state);
+      DynamicPatchComponent::Create(command_line, original_state,
+                                    installer_state);
   ASSERT_TRUE(component);
 
   ASSERT_OK_AND_ASSIGN(const auto token,
@@ -131,6 +159,7 @@ TEST(DynamicPatchComponentTest, CreateUserLevel) {
 
 // A system-level install requires --user-sid identifying a user account.
 TEST(DynamicPatchComponentTest, CreateRejectsMissingOrInvalidUserSid) {
+  const InstallationState original_state;
   const InstallerState installer_state(InstallerState::SYSTEM_LEVEL);
   const struct {
     const char* description;
@@ -149,12 +178,14 @@ TEST(DynamicPatchComponentTest, CreateRejectsMissingOrInvalidUserSid) {
     if (test_case.user_sid) {
       command_line.AppendSwitchNative(switches::kUserSid, test_case.user_sid);
     }
-    EXPECT_FALSE(DynamicPatchComponent::Create(command_line, installer_state));
+    EXPECT_FALSE(DynamicPatchComponent::Create(command_line, original_state,
+                                               installer_state));
   }
 }
 
 // --udd is required and must be an absolute path without ".." components.
 TEST(DynamicPatchComponentTest, CreateRejectsInvalidUserDataDir) {
+  const InstallationState original_state;
   const InstallerState installer_state(InstallerState::SYSTEM_LEVEL);
   const struct {
     const char* description;
@@ -176,37 +207,139 @@ TEST(DynamicPatchComponentTest, CreateRejectsInvalidUserDataDir) {
       command_line.AppendSwitchPath(switches::kUdd,
                                     base::FilePath(test_case.user_data_dir));
     }
-    EXPECT_FALSE(DynamicPatchComponent::Create(command_line, installer_state));
+    EXPECT_FALSE(DynamicPatchComponent::Create(command_line, original_state,
+                                               installer_state));
   }
 }
 
 TEST(DynamicPatchComponentTest, ReadManifest) {
-  DynamicPatchComponent component(GetUserSid(), base::FilePath(kUserDataDir));
+  DynamicPatchComponent component(GetUserSid(), base::FilePath(kUserDataDir),
+                                  base::Version(kBaseVersion));
   EXPECT_TRUE(component.ReadManifest(MakeManifest()));
+  EXPECT_TRUE(component.ReadManifest(
+      MakeManifest({"130.0.6723.71", kBaseVersion, kBaseVersion})));
 
   // The manifest must contain the component's name.
-  EXPECT_FALSE(component.ReadManifest(
-      base::DictValue().Set("base_version", kBaseVersion)));
+  EXPECT_FALSE(component.ReadManifest(base::DictValue().Set(
+      "compatible_versions", base::ListValue().Append(kBaseVersion))));
   EXPECT_FALSE(component.ReadManifest(
       MakeManifest().Set("name", "Chrome Platform Runtime (Inner)")));
 
-  // The manifest must contain a valid base version in canonical form.
+  // The manifest must contain a non-empty `compatible_versions` list of valid
+  // versions in canonical form.
   EXPECT_FALSE(
       component.ReadManifest(base::DictValue().Set("name", kManifestName)));
-  EXPECT_FALSE(component.ReadManifest(MakeManifest().Set("base_version", 130)));
-  EXPECT_FALSE(component.ReadManifest(MakeManifest("not_a_valid_version")));
-  EXPECT_FALSE(component.ReadManifest(MakeManifest("0130.0.6723.70")));
+  EXPECT_FALSE(component.ReadManifest(
+      MakeManifest().Set("compatible_versions", kBaseVersion)));
+  EXPECT_FALSE(component.ReadManifest(
+      MakeManifest().Set("compatible_versions", base::ListValue())));
+  EXPECT_FALSE(component.ReadManifest(MakeManifest().Set(
+      "compatible_versions", base::ListValue().Append(130))));
+  EXPECT_FALSE(component.ReadManifest(
+      MakeManifest().Set("compatible_versions",
+                         base::ListValue().Append(kBaseVersion).Append(130))));
+  EXPECT_FALSE(component.ReadManifest(MakeManifest({"not_a_valid_version"})));
+  EXPECT_FALSE(component.ReadManifest(
+      MakeManifest({kBaseVersion, "not_a_valid_version"})));
+  EXPECT_FALSE(component.ReadManifest(MakeManifest({"0130.0.6723.70"})));
+  EXPECT_FALSE(
+      component.ReadManifest(MakeManifest({kBaseVersion, "0130.0.6723.71"})));
 }
 
-// A patch is installed within the directory of the version that it patches,
-// which must exist.
+// A patch is installed into the currently-running version's directory if it is
+// compatible and exists on disk; otherwise it is installed into the highest
+// compatible version whose directory exists on disk.
+TEST(DynamicPatchComponentTest, DetermineDestinationRootVersionSelection) {
+  constexpr std::array<std::string_view, 5> kVersions = {
+      "130.0.6723.70", "130.0.6723.71", "130.0.6723.72",
+      "130.0.6723.73", "130.0.6723.74",
+  };
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  InstallerState installer_state(InstallerState::SYSTEM_LEVEL);
+  installer_state.set_target_path_for_testing(temp_dir.GetPath());
+
+  // Create on-disk directories for versions 0, 1, 2, and 4 (leaving 3 absent).
+  for (size_t idx : {0u, 1u, 2u, 4u}) {
+    ASSERT_TRUE(
+        base::CreateDirectory(temp_dir.GetPath().AppendASCII(kVersions[idx])));
+  }
+
+  // Prefers the currently-running version when it is compatible and exists on
+  // disk, even if a higher compatible version also exists.
+  {
+    DynamicPatchComponent component(GetUserSid(), base::FilePath(kUserDataDir),
+                                    base::Version(kVersions[1]));
+    ASSERT_TRUE(component.ReadManifest(
+        MakeManifest({kVersions[0], kVersions[1], kVersions[2]})));
+    EXPECT_THAT(component.DetermineDestinationRoot(installer_state, kCrxId),
+                base::test::ValueIs(GetExpectedDestinationRoot(
+                    temp_dir.GetPath(), GetUserSid(),
+                    base::FilePath(kUserDataDir), kVersions[1])));
+  }
+
+  // Falls back to the highest compatible version on disk when the
+  // currently-running version is compatible but its directory does not exist.
+  {
+    DynamicPatchComponent component(GetUserSid(), base::FilePath(kUserDataDir),
+                                    base::Version(kVersions[3]));
+    ASSERT_TRUE(component.ReadManifest(
+        MakeManifest({kVersions[0], kVersions[2], kVersions[3]})));
+    EXPECT_THAT(component.DetermineDestinationRoot(installer_state, kCrxId),
+                base::test::ValueIs(GetExpectedDestinationRoot(
+                    temp_dir.GetPath(), GetUserSid(),
+                    base::FilePath(kUserDataDir), kVersions[2])));
+  }
+
+  // Falls back to the highest compatible version on disk when the
+  // currently-running version is not compatible, ignoring both non-compatible
+  // directories (kVersions[4]) and missing compatible directories
+  // (kVersions[3]).
+  {
+    DynamicPatchComponent component(GetUserSid(), base::FilePath(kUserDataDir),
+                                    base::Version(kVersions[4]));
+    ASSERT_TRUE(component.ReadManifest(MakeManifest(
+        {kVersions[2], kVersions[0], kVersions[3], kVersions[1]})));
+    EXPECT_THAT(component.DetermineDestinationRoot(installer_state, kCrxId),
+                base::test::ValueIs(GetExpectedDestinationRoot(
+                    temp_dir.GetPath(), GetUserSid(),
+                    base::FilePath(kUserDataDir), kVersions[2])));
+  }
+
+  // Falls back to the highest compatible version on disk when the
+  // currently-running version is unknown (invalid).
+  {
+    DynamicPatchComponent component(GetUserSid(), base::FilePath(kUserDataDir),
+                                    base::Version());
+    ASSERT_TRUE(component.ReadManifest(
+        MakeManifest({kVersions[0], kVersions[1], kVersions[3]})));
+    EXPECT_THAT(component.DetermineDestinationRoot(installer_state, kCrxId),
+                base::test::ValueIs(GetExpectedDestinationRoot(
+                    temp_dir.GetPath(), GetUserSid(),
+                    base::FilePath(kUserDataDir), kVersions[1])));
+  }
+
+  // Fails if no compatible version has a directory on disk.
+  {
+    DynamicPatchComponent component(GetUserSid(), base::FilePath(kUserDataDir),
+                                    base::Version(kVersions[3]));
+    ASSERT_TRUE(component.ReadManifest(MakeManifest({kVersions[3]})));
+    EXPECT_THAT(component.DetermineDestinationRoot(installer_state, kCrxId),
+                base::test::ErrorIs(INSTALL_COMPONENT_INVALID_INPUT));
+  }
+}
+
+// A patch is installed within the directory of a compatible version, which must
+// exist.
 TEST(DynamicPatchComponentTest, DetermineDestinationRoot) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   InstallerState installer_state(InstallerState::SYSTEM_LEVEL);
   installer_state.set_target_path_for_testing(temp_dir.GetPath());
 
-  DynamicPatchComponent component(GetUserSid(), base::FilePath(kUserDataDir));
+  DynamicPatchComponent component(GetUserSid(), base::FilePath(kUserDataDir),
+                                  base::Version(kBaseVersion));
   ASSERT_TRUE(component.ReadManifest(MakeManifest()));
   EXPECT_THAT(component.DetermineDestinationRoot(installer_state, kCrxId),
               base::test::ErrorIs(INSTALL_COMPONENT_INVALID_INPUT));
@@ -221,7 +354,8 @@ TEST(DynamicPatchComponentTest, DetermineDestinationRoot) {
   // Failure to compute the user path component (e.g., for a relative User Data
   // directory, which Create() rejects) is an internal error.
   DynamicPatchComponent relative_udd_component(
-      GetUserSid(), base::FilePath(FILE_PATH_LITERAL("User Data")));
+      GetUserSid(), base::FilePath(FILE_PATH_LITERAL("User Data")),
+      base::Version(kBaseVersion));
   ASSERT_TRUE(relative_udd_component.ReadManifest(MakeManifest()));
   EXPECT_THAT(
       relative_udd_component.DetermineDestinationRoot(installer_state, kCrxId),
@@ -241,7 +375,8 @@ TEST(DynamicPatchComponentTest, InitializeDestinationRootSystemLevel) {
       temp_dir.GetPath().AppendASCII("root");
   ASSERT_TRUE(base::CreateDirectory(destination_root));
 
-  DynamicPatchComponent component(GetUserSid(), base::FilePath(kUserDataDir));
+  DynamicPatchComponent component(GetUserSid(), base::FilePath(kUserDataDir),
+                                  base::Version(kBaseVersion));
   ASSERT_TRUE(component.ReadManifest(MakeManifest()));
   ASSERT_TRUE(
       component.InitializeDestinationRoot(installer_state, destination_root));
@@ -297,7 +432,8 @@ TEST(DynamicPatchComponentTest,
   ASSERT_OK_AND_ASSIGN(const auto token,
                        base::win::AccessToken::FromCurrentProcess(
                            /*impersonation=*/false, TOKEN_ALL_ACCESS));
-  DynamicPatchComponent component(token.User(), base::FilePath(kUserDataDir));
+  DynamicPatchComponent component(token.User(), base::FilePath(kUserDataDir),
+                                  base::Version(kBaseVersion));
   ASSERT_TRUE(component.ReadManifest(MakeManifest()));
   ASSERT_TRUE(
       component.InitializeDestinationRoot(installer_state, destination_root));
@@ -364,7 +500,8 @@ TEST(DynamicPatchComponentTest, InitializeDestinationRootUserLevel) {
                        base::win::SecurityDescriptor::FromFile(
                            destination_root, DACL_SECURITY_INFORMATION));
 
-  DynamicPatchComponent component(GetUserSid(), base::FilePath(kUserDataDir));
+  DynamicPatchComponent component(GetUserSid(), base::FilePath(kUserDataDir),
+                                  base::Version(kBaseVersion));
   ASSERT_TRUE(component.ReadManifest(MakeManifest()));
   EXPECT_TRUE(
       component.InitializeDestinationRoot(installer_state, destination_root));

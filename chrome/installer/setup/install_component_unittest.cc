@@ -33,6 +33,7 @@
 #include "base/win/sid.h"
 #include "chrome/installer/setup/component_interface.h"
 #include "chrome/installer/setup/installer_state.h"
+#include "chrome/installer/util/installation_state.h"
 #include "chrome/installer/util/util_constants.h"
 #include "components/crx_file/crx_creator.h"
 #include "components/crx_file/crx_verifier.h"
@@ -490,9 +491,11 @@ TEST(InstallComponentTest, UnsupportedComponent) {
 
   // Production InstallComponent only supports production components
   // (e.g. kPlatformRuntimeCrxId), so the test CRX is unsupported.
+  const InstallationState original_state;
   const base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   EXPECT_EQ(INSTALL_COMPONENT_INVALID_INPUT,
-            InstallComponent(src_file, installer_state, command_line));
+            InstallComponent(src_file, original_state, installer_state,
+                             command_line));
 
   // Omitting the developer key from supported components must reject the CRX.
   auto empty_factory = [](const std::array<uint8_t, crypto::hash::kSha256Size>&)

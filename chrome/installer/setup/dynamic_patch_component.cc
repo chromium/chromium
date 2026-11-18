@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -15,6 +16,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -38,11 +40,20 @@ namespace {
 // The name of the component in its manifest.
 constexpr char kManifestName[] = "Chrome Dynamic Patch (Inner)";
 
+// Returns the directory within `target_path` for `version` if it exists, or an
+// empty path otherwise.
+base::FilePath FindVersionDir(const base::FilePath& target_path,
+                              const base::Version& version) {
+  base::FilePath version_dir = target_path.AppendASCII(version.GetString());
+  return base::DirectoryExists(version_dir) ? version_dir : base::FilePath();
+}
+
 }  // namespace
 
 // static
 std::unique_ptr<DynamicPatchComponent> DynamicPatchComponent::Create(
     const base::CommandLine& command_line,
+    const InstallationState& original_state,
     const InstallerState& installer_state) {
   base::FilePath user_data_dir =
       command_line.GetSwitchValuePath(switches::kUdd);
@@ -97,13 +108,17 @@ std::unique_ptr<DynamicPatchComponent> DynamicPatchComponent::Create(
     return nullptr;
   }
 
-  return std::make_unique<DynamicPatchComponent>(*std::move(sid),
-                                                 std::move(user_data_dir));
+  return std::make_unique<DynamicPatchComponent>(
+      *std::move(sid), std::move(user_data_dir),
+      installer_state.GetCurrentVersion(original_state));
 }
 
 DynamicPatchComponent::DynamicPatchComponent(base::win::Sid sid,
-                                             base::FilePath user_data_dir)
-    : sid_(std::move(sid)), user_data_dir_(std::move(user_data_dir)) {}
+                                             base::FilePath user_data_dir,
+                                             base::Version current_version)
+    : sid_(std::move(sid)),
+      user_data_dir_(std::move(user_data_dir)),
+      current_version_(std::move(current_version)) {}
 
 DynamicPatchComponent::~DynamicPatchComponent() = default;
 
@@ -115,18 +130,31 @@ bool DynamicPatchComponent::ReadManifest(const base::DictValue& manifest) {
     return false;
   }
 
-  const std::string* base_version_str = manifest.FindString("base_version");
-  if (!base_version_str) {
-    LOG(ERROR) << "Failed to find base_version in manifest.json";
+  const base::ListValue* compatible_versions =
+      manifest.FindList("compatible_versions");
+  if (!compatible_versions || compatible_versions->empty()) {
+    LOG(ERROR)
+        << "Failed to find non-empty compatible_versions in manifest.json";
     return false;
   }
-  base::Version base_version(*base_version_str);
-  if (!base_version.IsValid() ||
-      base_version.GetString() != *base_version_str) {
-    LOG(ERROR) << "Invalid base_version in manifest: " << *base_version_str;
-    return false;
+
+  std::vector<base::Version> versions;
+  versions.reserve(compatible_versions->size());
+  for (const base::Value& entry : *compatible_versions) {
+    const std::string* version_str = entry.GetIfString();
+    if (!version_str) {
+      LOG(ERROR) << "Non-string entry in compatible_versions in manifest.json";
+      return false;
+    }
+    base::Version version(*version_str);
+    if (!version.IsValid() || version.GetString() != *version_str) {
+      LOG(ERROR) << "Invalid version in compatible_versions in manifest: "
+                 << *version_str;
+      return false;
+    }
+    versions.push_back(std::move(version));
   }
-  base_version_ = std::move(base_version);
+  compatible_versions_ = base::flat_set<base::Version>(std::move(versions));
   return true;
 }
 
@@ -134,16 +162,33 @@ base::expected<base::FilePath, InstallStatus>
 DynamicPatchComponent::DetermineDestinationRoot(
     const InstallerState& installer_state,
     std::string_view crx_id) {
-  CHECK(base_version_.IsValid());
+  CHECK(!compatible_versions_.empty());
 
-  base::FilePath base_version_dir =
-      installer_state.target_path().AppendASCII(base_version_.GetString());
-  // Only the existence of the base version's directory is checked; the patch
-  // may target a version other than the current one (e.g., an old version
-  // that is still running and pending cleanup). That is acceptable: patches
-  // live within the base version's directory and are removed along with it.
-  if (!base::DirectoryExists(base_version_dir)) {
-    LOG(ERROR) << "Base version directory does not exist: " << base_version_dir;
+  // Install into the currently-running Chrome version's directory if it is
+  // compatible and exists on disk. Otherwise, install into the highest
+  // compatible version whose directory exists on disk (e.g., an old version
+  // that is still running and pending cleanup).
+  base::FilePath base_version_dir;
+  if (current_version_.IsValid() &&
+      compatible_versions_.contains(current_version_)) {
+    base_version_dir =
+        FindVersionDir(installer_state.target_path(), current_version_);
+  }
+  if (base_version_dir.empty()) {
+    for (const base::Version& version :
+         std::views::reverse(compatible_versions_)) {
+      if (current_version_.IsValid() && version == current_version_) {
+        continue;
+      }
+      base_version_dir = FindVersionDir(installer_state.target_path(), version);
+      if (!base_version_dir.empty()) {
+        break;
+      }
+    }
+  }
+  if (base_version_dir.empty()) {
+    LOG(ERROR) << "No compatible version directory exists in "
+               << installer_state.target_path();
     return base::unexpected(INSTALL_COMPONENT_INVALID_INPUT);
   }
 

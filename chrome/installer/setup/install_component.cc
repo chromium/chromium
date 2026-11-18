@@ -73,6 +73,7 @@ constexpr std::array<uint8_t, crypto::hash::kSha256Size>
 // Factory function type that creates a ComponentInterface from a CommandLine.
 using ComponentFactoryFunction =
     std::unique_ptr<ComponentInterface> (*)(const base::CommandLine&,
+                                            const InstallationState&,
                                             const InstallerState&);
 
 // Helper function template for calling the static Create member function of an
@@ -80,8 +81,9 @@ using ComponentFactoryFunction =
 template <typename ComponentImpl>
 std::unique_ptr<ComponentInterface> CreateComponent(
     const base::CommandLine& command_line,
+    const InstallationState& original_state,
     const InstallerState& installer_state) {
-  return ComponentImpl::Create(command_line, installer_state);
+  return ComponentImpl::Create(command_line, original_state, installer_state);
 }
 
 constexpr auto kSupportedComponents =
@@ -310,15 +312,16 @@ InstallStatus InstallComponentInternal(
 }  // namespace
 
 InstallStatus InstallComponent(const base::FilePath& source_file,
+                               const InstallationState& original_state,
                                const InstallerState& installer_state,
                                const base::CommandLine& command_line) {
   auto factory_lookup =
-      [&command_line, &installer_state](
+      [&command_line, &original_state, &installer_state](
           const std::array<uint8_t, crypto::hash::kSha256Size>& hash)
       -> std::unique_ptr<ComponentInterface> {
     auto it = kSupportedComponents.find(hash);
     return it != kSupportedComponents.end()
-               ? it->second(command_line, installer_state)
+               ? it->second(command_line, original_state, installer_state)
                : nullptr;
   };
   return InstallComponentInternal(

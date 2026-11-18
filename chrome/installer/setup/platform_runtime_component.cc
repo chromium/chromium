@@ -25,6 +25,7 @@ constexpr char kManifestName[] = "Chrome Platform Runtime (Inner)";
 // static
 std::unique_ptr<PlatformRuntimeComponent> PlatformRuntimeComponent::Create(
     const base::CommandLine& command_line,
+    const InstallationState& original_state,
     const InstallerState& installer_state) {
   return std::make_unique<PlatformRuntimeComponent>();
 }

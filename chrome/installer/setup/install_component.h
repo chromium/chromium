@@ -27,17 +27,20 @@ enum class VerifierFormat;
 
 namespace installer {
 
+class InstallationState;
 class InstallerState;
 
 // Installs a Chrome component from an inner CRX to the Chrome application
 // directory (system-level or user-level depending on `installer_state`).
 //
 // `source_file`: Path to the inner CRX component file to install.
+// `original_state`: The current state of Chrome on the machine.
 // `installer_state`: State encapsulating target paths and installation level.
 // `command_line`: The installer's command line, from which component-specific
 // options are read.
 // Returns InstallStatus indicating the result of the installation.
 InstallStatus InstallComponent(const base::FilePath& source_file,
+                               const InstallationState& original_state,
                                const InstallerState& installer_state,
                                const base::CommandLine& command_line);
 
