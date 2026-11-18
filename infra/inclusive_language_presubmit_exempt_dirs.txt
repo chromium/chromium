@@ -422,7 +422,7 @@ third_party/blink/web_tests/wpt_internal
 third_party/blink/web_tests/wpt_internal/fenced_frame/resources
 third_party/blink/web_tests/wpt_internal/hid
 third_party/blink/web_tests/wpt_internal/html/semantics/parser-blocking-stylesheets
-third_party/brotli/enc
+third_party/brotli/src/c/enc
 third_party/byte_buddy
 third_party/chevron
 third_party/closure_compiler/compiler

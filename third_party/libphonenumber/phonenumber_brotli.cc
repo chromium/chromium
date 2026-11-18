@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "third_party/brotli/include/brotli/decode.h"
+#include "third_party/brotli/src/c/include/brotli/decode.h"
 
 namespace i18n::phonenumbers {
 

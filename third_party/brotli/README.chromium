@@ -4,7 +4,7 @@ Version: d89c4b1c52e25ddafe047bc78bbee5c1e24b1809
 Revision: d89c4b1c52e25ddafe047bc78bbee5c1e24b1809
 Update Mechanism: Manual
 License: MIT
-License File: LICENSE
+License File: src/LICENSE
 Security Critical: yes
 Shipped: yes
 CPEPrefix: cpe:/a:google:brotli
@@ -23,7 +23,7 @@ decompresses roughly 1.6-2.0x slower than zlib.
 
 Local Modifications:
 - This only includes the contents of c/ directory, the README.md and the LICENSE
-  files.
-- Auxiliary fuzzer runners removed from fuzz/
-- common/dictionary.bin*: Removed.
+  files, under src/.
+- Auxiliary fuzzer runners removed from src/c/fuzz/
+- src/c/common/dictionary.bin*: Removed.
 - BUILD.gn: Added.

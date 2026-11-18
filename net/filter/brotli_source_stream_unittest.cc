@@ -32,9 +32,9 @@
 #include "net/filter/mock_source_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
-#include "third_party/brotli/include/brotli/decode.h"
-#include "third_party/brotli/include/brotli/encode.h"
-#include "third_party/brotli/include/brotli/shared_dictionary.h"
+#include "third_party/brotli/src/c/include/brotli/decode.h"
+#include "third_party/brotli/src/c/include/brotli/encode.h"
+#include "third_party/brotli/src/c/include/brotli/shared_dictionary.h"
 
 namespace net {
 

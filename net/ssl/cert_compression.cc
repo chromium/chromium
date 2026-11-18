@@ -14,7 +14,7 @@
 #include "base/feature_list.h"
 #include "net/base/features.h"
 #include "net/filter/rust_brotli_decoder.h"
-#include "third_party/brotli/include/brotli/decode.h"
+#include "third_party/brotli/src/c/include/brotli/decode.h"
 #endif
 
 namespace net {

@@ -23,8 +23,8 @@
 #include "net/base/io_buffer.h"
 #include "net/filter/rust_brotli_decoder.h"
 #include "net/filter/source_stream_type.h"
-#include "third_party/brotli/include/brotli/decode.h"
-#include "third_party/brotli/include/brotli/shared_dictionary.h"
+#include "third_party/brotli/src/c/include/brotli/decode.h"
+#include "third_party/brotli/src/c/include/brotli/shared_dictionary.h"
 
 namespace net {
 

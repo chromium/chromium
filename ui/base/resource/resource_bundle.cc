@@ -40,7 +40,7 @@
 #include "build/build_config.h"
 #include "net/filter/gzip_header.h"
 #include "skia/ext/image_operations.h"
-#include "third_party/brotli/include/brotli/decode.h"
+#include "third_party/brotli/src/c/include/brotli/decode.h"
 #include "third_party/skia/include/codec/SkPngRustDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"

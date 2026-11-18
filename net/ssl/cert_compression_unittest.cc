@@ -24,7 +24,7 @@
 #include "third_party/boringssl/src/include/openssl/err.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
-#include "third_party/brotli/include/brotli/encode.h"
+#include "third_party/brotli/src/c/include/brotli/encode.h"
 
 namespace net {
 namespace {
