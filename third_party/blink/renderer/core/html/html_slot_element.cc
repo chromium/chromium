@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 
+#include <algorithm>
 #include <ranges>
 
 #include "base/check.h"
@@ -233,16 +234,10 @@ void HTMLSlotElement::Assign(const HeapVector<Member<Node>>& nodes) {
     }
   }
 
-  updated |= added_nodes.size() != manually_assigned_nodes_.size();
-  if (!updated) {
-    for (auto it1 = added_nodes.begin(), it2 = manually_assigned_nodes_.begin();
-         it1 != added_nodes.end(); ++it1, ++it2) {
-      if (!(*it1 == *it2)) {
-        updated = true;
-        break;
-      }
-    }
-  }
+  static_assert(std::ranges::sized_range<decltype(added_nodes)>);
+  static_assert(std::ranges::sized_range<decltype(manually_assigned_nodes_)>);
+  updated =
+      updated || !std::ranges::equal(added_nodes, manually_assigned_nodes_);
 
   ShadowRoot* shadow_root = ContainingShadowRoot();
   if (updated) {
@@ -295,16 +290,9 @@ void HTMLSlotElement::SetManuallyAssignedNodesForRecalc(
   for (Node* node : nodes) {
     new_nodes.insert(node);
   }
-  bool changed = new_nodes.size() != manually_assigned_nodes_.size();
-  if (!changed) {
-    for (auto it1 = new_nodes.begin(), it2 = manually_assigned_nodes_.begin();
-         it1 != new_nodes.end(); ++it1, ++it2) {
-      if (!(*it1 == *it2)) {
-        changed = true;
-        break;
-      }
-    }
-  }
+  static_assert(std::ranges::sized_range<decltype(new_nodes)>);
+  static_assert(std::ranges::sized_range<decltype(manually_assigned_nodes_)>);
+  bool changed = !std::ranges::equal(new_nodes, manually_assigned_nodes_);
   if (!changed) {
     return;
   }
