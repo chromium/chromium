@@ -511,6 +511,10 @@ template("rust_target") {
     _rust_aliased_deps = _aliased_deps
     _rust_public_deps = _public_deps
     _cxx_deps = _deps
+    if (defined(invoker.cxx_deps)) {
+      assert(_cxx_bindings != [], "`cxx_deps` requires `cxx_bindings`")
+      _cxx_deps += invoker.cxx_deps
+    }
 
     # Include the `chromium` crate in all first-party code. Third-party code
     # (and the `chromium` crate itself) opts out by setting
