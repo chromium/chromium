@@ -4,10 +4,8 @@
 
 // Custom binding for the Media Gallery API.
 
-const blobNatives = requireNative('blob_natives');
 const mediaGalleriesNatives = requireNative('mediaGalleries');
 
-const blobsAwaitingMetadata = {};
 let mediaGalleriesMetadata = {};
 
 function createFileSystemObjectsAndUpdateMetadata(response) {
@@ -70,35 +68,5 @@ apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
           'isMediaDevice': false,
           'isAvailable': false,
         };
-      });
-
-  function getMetadataCallback(uuid, callback, response, blobs) {
-    if (response && blobs) {
-      response.metadata.attachedImages = blobs;
-    }
-
-    if (callback) {
-      callback(response ? response.metadata : null);
-    }
-
-    delete blobsAwaitingMetadata[uuid];
-  }
-
-  apiFunctions.setHandleRequest(
-      'getMetadata', function(mediaFile, options, callback) {
-        const blobUuid = blobNatives.GetBlobUuid(mediaFile);
-        // Store the blob in a global object to keep its refcount nonzero --
-        // this prevents the object from being garbage collected before any
-        // metadata parsing gets to occur (see crbug.com/40385307).
-        blobsAwaitingMetadata[blobUuid] = mediaFile;
-
-        const optArgs = {
-          __proto__: null,
-          customCallback: $Function.bind(getMetadataCallback, null, blobUuid),
-        };
-
-        bindingUtil.sendRequest(
-            'mediaGalleries.getMetadata', [blobUuid, options, callback],
-            optArgs);
       });
 });

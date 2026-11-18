@@ -105,6 +105,8 @@ source_set("extensions") {
         "api/file_manager_private_internal_hooks_delegate.h",
         "api/media_galleries_custom_bindings.cc",
         "api/media_galleries_custom_bindings.h",
+        "api/media_galleries_hooks_delegate.cc",
+        "api/media_galleries_hooks_delegate.h",
         "api/platform_keys_natives.cc",
         "api/platform_keys_natives.h",
       ]

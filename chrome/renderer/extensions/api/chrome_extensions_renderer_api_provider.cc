@@ -37,6 +37,7 @@
 #include "chrome/renderer/extensions/api/file_manager_private_custom_bindings.h"
 #include "chrome/renderer/extensions/api/file_manager_private_internal_hooks_delegate.h"
 #include "chrome/renderer/extensions/api/media_galleries_custom_bindings.h"
+#include "chrome/renderer/extensions/api/media_galleries_hooks_delegate.h"
 #include "chrome/renderer/extensions/api/platform_keys_natives.h"
 #if BUILDFLAG(USE_CUPS)
 #include "chrome/renderer/extensions/api/printing_hooks_delegate.h"
@@ -129,6 +130,8 @@ void ChromeExtensionsRendererAPIProvider::AddBindingsSystemHooks(
   bindings->RegisterHooksDelegate(
       "fileManagerPrivateInternal",
       std::make_unique<FileManagerPrivateInternalHooksDelegate>());
+  bindings->RegisterHooksDelegate(
+      "mediaGalleries", std::make_unique<MediaGalleriesHooksDelegate>());
 #if BUILDFLAG(USE_CUPS)
   bindings->RegisterHooksDelegate(
       "printing", std::make_unique<extensions::PrintingHooksDelegate>());

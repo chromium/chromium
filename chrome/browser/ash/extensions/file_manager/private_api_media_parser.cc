@@ -18,6 +18,7 @@
 #include "components/media_gallery_util/public/mojom/media_parser.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/blob_reader.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/mime_sniffer.h"
 #include "net/base/mime_util.h"
@@ -83,13 +84,13 @@ FileManagerPrivateInternalGetContentMetadataFunction::Run() {
       std::move(blob_for_read),
       base::BindOnce(
           &FileManagerPrivateInternalGetContentMetadataFunction::CanParseBlob,
-          this, blob.Unbind(), params->mime_type, params->include_images),
+          this, std::move(blob), params->mime_type, params->include_images),
       0, net::kMaxBytesToSniff);
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
 void FileManagerPrivateInternalGetContentMetadataFunction::CanParseBlob(
-    mojo::PendingRemote<blink::mojom::Blob> blob,
+    mojo::Remote<blink::mojom::Blob> blob,
     const std::string& mime_type,
     bool include_images,
     std::string /*sniff_bytes*/,

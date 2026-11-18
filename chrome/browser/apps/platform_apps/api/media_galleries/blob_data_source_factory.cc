@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/blob_reader.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 
@@ -70,7 +71,7 @@ class BlobMediaDataSource : public chrome::mojom::MediaDataSource {
 }  // namespace
 
 BlobDataSourceFactory::BlobDataSourceFactory(
-    mojo::PendingRemote<blink::mojom::Blob> blob)
+    mojo::Remote<blink::mojom::Blob> blob)
     : blob_(std::move(blob)) {}
 
 BlobDataSourceFactory::~BlobDataSourceFactory() = default;

@@ -61,8 +61,11 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/mime_sniffer.h"
 #include "storage/browser/blob/blob_data_handle.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -610,13 +613,18 @@ void MediaGalleriesAddUserSelectedFolderFunction::
 ///////////////////////////////////////////////////////////////////////////////
 //                 MediaGalleriesGetMetadataFunction                         //
 ///////////////////////////////////////////////////////////////////////////////
+MediaGalleriesGetMetadataFunction::MediaGalleriesGetMetadataFunction() =
+    default;
+
 MediaGalleriesGetMetadataFunction::~MediaGalleriesGetMetadataFunction() =
     default;
 
 ExtensionFunction::ResponseAction MediaGalleriesGetMetadataFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
-  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
-  const std::string& blob_uuid = args()[0].GetString();
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_dict());
+  mojo::PendingRemote<blink::mojom::Blob> blob_arg = TakeBlobArg(0);
+  EXTENSION_FUNCTION_VALIDATE(blob_arg);
+  mojo::Remote<blink::mojom::Blob> blob(std::move(blob_arg));
 
   if (args().size() < 2)
     return RespondNow(Error("options parameter not specified."));
@@ -630,7 +638,7 @@ ExtensionFunction::ResponseAction MediaGalleriesGetMetadataFunction::Run() {
   const bool result = Setup(
       Profile::FromBrowserContext(browser_context()), &error,
       base::BindOnce(&MediaGalleriesGetMetadataFunction::OnPreferencesInit,
-                     this, options->metadata_type, blob_uuid));
+                     this, options->metadata_type, std::move(blob)));
   if (!result)
     return RespondNow(Error(error));
   // Note: OnPreferencesInit might have been called already.
@@ -639,19 +647,21 @@ ExtensionFunction::ResponseAction MediaGalleriesGetMetadataFunction::Run() {
 
 void MediaGalleriesGetMetadataFunction::OnPreferencesInit(
     MediaGalleries::GetMetadataType metadata_type,
-    const std::string& blob_uuid) {
+    mojo::Remote<blink::mojom::Blob> blob) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
+  mojo::PendingRemote<blink::mojom::Blob> blob_for_sniffing;
+  blob->Clone(blob_for_sniffing.InitWithNewPipeAndPassReceiver());
   BlobReader::Read(
-      browser_context()->GetBlobRemote(blob_uuid),
+      std::move(blob_for_sniffing),
       base::BindOnce(&MediaGalleriesGetMetadataFunction::GetMetadata, this,
-                     metadata_type, blob_uuid),
+                     metadata_type, std::move(blob)),
       0, net::kMaxBytesToSniff);
 }
 
 void MediaGalleriesGetMetadataFunction::GetMetadata(
     MediaGalleries::GetMetadataType metadata_type,
-    const std::string& blob_uuid,
+    mojo::Remote<blink::mojom::Blob> blob,
     std::string blob_header,
     int64_t total_blob_length) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
@@ -681,8 +691,8 @@ void MediaGalleriesGetMetadataFunction::GetMetadata(
       metadata_type == MediaGalleries::GetMetadataType::kAll ||
       metadata_type == MediaGalleries::GetMetadataType::kNone;
 
-  auto media_data_source_factory = std::make_unique<BlobDataSourceFactory>(
-      browser_context()->GetBlobRemote(blob_uuid));
+  auto media_data_source_factory =
+      std::make_unique<BlobDataSourceFactory>(std::move(blob));
   auto parser = std::make_unique<SafeMediaMetadataParser>(
       total_blob_length, mime_type, get_attached_images,
       std::move(media_data_source_factory));

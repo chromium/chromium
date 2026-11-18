@@ -29,6 +29,8 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/event_args.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
 
 namespace content {
 class BlobHandle;
@@ -161,6 +163,8 @@ class MediaGalleriesAddUserSelectedFolderFunction : public ExtensionFunction {
 
 class MediaGalleriesGetMetadataFunction : public ExtensionFunction {
  public:
+  MediaGalleriesGetMetadataFunction();
+
   DECLARE_EXTENSION_FUNCTION("mediaGalleries.getMetadata",
                              MEDIAGALLERIES_GETMETADATA)
 
@@ -171,10 +175,10 @@ class MediaGalleriesGetMetadataFunction : public ExtensionFunction {
  private:
   // Bottom half for RunAsync, invoked after the preferences is initialized.
   void OnPreferencesInit(media_galleries::GetMetadataType metadata_type,
-                         const std::string& blob_uuid);
+                         mojo::Remote<blink::mojom::Blob> blob);
 
   void GetMetadata(media_galleries::GetMetadataType metadata_type,
-                   const std::string& blob_uuid,
+                   mojo::Remote<blink::mojom::Blob> blob,
                    std::string blob_header,
                    int64_t total_blob_length);
 

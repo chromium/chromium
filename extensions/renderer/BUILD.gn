@@ -106,8 +106,6 @@ source_set("renderer") {
     "bindings/js_runner.h",
     "bindings/listener_tracker.cc",
     "bindings/listener_tracker.h",
-    "blob_native_handler.cc",
-    "blob_native_handler.h",
     "chrome_setting.cc",
     "chrome_setting.h",
     "console.cc",

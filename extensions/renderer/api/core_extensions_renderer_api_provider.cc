@@ -22,7 +22,6 @@
 #include "extensions/renderer/api_activity_logger.h"
 #include "extensions/renderer/api_definitions_natives.h"
 #include "extensions/renderer/bindings/api_bindings_system.h"
-#include "extensions/renderer/blob_native_handler.h"
 #include "extensions/renderer/chrome_setting.h"
 #include "extensions/renderer/content_setting.h"
 #include "extensions/renderer/id_generator_custom_bindings.h"
@@ -109,8 +108,6 @@ void CoreExtensionsRendererAPIProvider::RegisterNativeHandlers(
   module_system->RegisterNativeHandler(
       "app_window_natives", std::make_unique<AppWindowCustomBindings>(context));
 #endif
-  module_system->RegisterNativeHandler(
-      "blob_natives", std::make_unique<BlobNativeHandler>(context));
   module_system->RegisterNativeHandler(
       "context_menus", std::make_unique<ContextMenusCustomBindings>(context));
 

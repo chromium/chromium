@@ -17,7 +17,11 @@ function RunMetadataTest(filename, callOptions, verifyMetadataFunction) {
   }
 
   function verifyFile(file) {
-    mediaGalleries.getMetadata(file, callOptions, verifyMetadataFunction);
+    if (callOptions === undefined) {
+      mediaGalleries.getMetadata(file, verifyMetadataFunction);
+    } else {
+      mediaGalleries.getMetadata(file, callOptions, verifyMetadataFunction);
+    }
   }
 
   mediaGalleries.getMediaFileSystems(getMediaFileSystemsCallback);
@@ -45,6 +49,42 @@ function InvalidMultimediaFileTest() {
   // Read a file that is not audio or video.
   // We use getMetadata directly to test with invalid media data.
   chrome.mediaGalleries.getMetadata(new Blob([]), verifyMetadata);
+}
+
+function UnknownMIMETypeTest() {
+  mediaGalleries.getMetadata(
+      new Blob(['not a media file']), {metadataType: 'mimeTypeOnly'},
+      chrome.test.callbackFail('Could not determine MIME type.', metadata => {
+        chrome.test.assertEq(null, metadata);
+      }));
+}
+
+function FakeBlobTest() {
+  // This fake Blob constructor is necessary to get past schema validation
+  // and instead reach hook validation (rejection).
+  function Blob() {}
+
+  chrome.test.assertThrows(
+      () => mediaGalleries.getMetadata(new Blob(), chrome.test.fail),
+      /Argument must be a Blob\./);
+  chrome.test.succeed();
+}
+
+function TransientBlobsMIMETypeOnlyTest() {
+  function verifyMetadata(expectedMimeType, metadata) {
+    chrome.test.assertEq(expectedMimeType, metadata.mimeType);
+    chrome.test.assertEq(0, metadata.attachedImages.length);
+  }
+  mediaGalleries.getMetadata(
+      new Blob([new Uint8Array([0xff, 0xd8, 0xff])]),
+      {metadataType: 'mimeTypeOnly'},
+      chrome.test.callbackPass(
+          metadata => verifyMetadata('image/jpeg', metadata)));
+  mediaGalleries.getMetadata(
+      new Blob([new Uint8Array([0x89, 0x50, 0x4e, 0x47, 13, 10, 26, 10])]),
+      {metadataType: 'mimeTypeOnly'},
+      chrome.test.callbackPass(
+          metadata => verifyMetadata('image/png', metadata)));
 }
 
 function MP3MIMETypeOnlyTest() {
@@ -92,6 +132,20 @@ function MP3TagsTest() {
 
   return RunMetadataTest(
       'id3_png_test.mp3', {metadataType: 'mimeTypeAndTags'}, verifyMetadata);
+}
+
+function MP3OmittedOptionsTest() {
+  function verifyMetadata(metadata) {
+    chrome.test.assertEq('audio/mpeg', metadata.mimeType);
+    chrome.test.assertEq('Airbag', metadata.title);
+    chrome.test.assertEq(1, metadata.attachedImages.length);
+    chrome.test.assertEq('image/png', metadata.attachedImages[0].type);
+    chrome.test.assertEq(155752, metadata.attachedImages[0].size);
+
+    chrome.test.succeed();
+  }
+
+  RunMetadataTest('id3_png_test.mp3', undefined, verifyMetadata);
 }
 
 function MP3AttachedImageTest() {
@@ -174,12 +228,16 @@ chrome.test.getConfig(function(config) {
   let testsToRun = [
     ImageMIMETypeOnlyTest,
     InvalidMultimediaFileTest,
+    UnknownMIMETypeTest,
+    FakeBlobTest,
+    TransientBlobsMIMETypeOnlyTest,
   ];
 
   if (useProprietaryCodecs) {
     testsToRun = testsToRun.concat([
       MP3MIMETypeOnlyTest,
       MP3TagsTest,
+      MP3OmittedOptionsTest,
       MP3AttachedImageTest,
       RotatedVideoTest,
     ]);

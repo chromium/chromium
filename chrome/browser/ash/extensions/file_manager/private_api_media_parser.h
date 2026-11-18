@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/extensions/file_manager/logged_extension_function.h"
 #include "components/media_gallery_util/public/mojom/media_parser.mojom-forward.h"
 #include "components/media_gallery_util/safe_media_metadata_parser.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
 
 namespace extensions {
@@ -53,7 +53,7 @@ class FileManagerPrivateInternalGetContentMetadataFunction
 
  private:
   void CanParseBlob(  // Only audio and video mime types are supported.
-      mojo::PendingRemote<blink::mojom::Blob> blob,
+      mojo::Remote<blink::mojom::Blob> blob,
       const std::string& mime_type,
       bool include_images,
       std::string sniff_bytes,

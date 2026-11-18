@@ -21,7 +21,7 @@ namespace api {
 class BlobDataSourceFactory
     : public SafeMediaMetadataParser::MediaDataSourceFactory {
  public:
-  explicit BlobDataSourceFactory(mojo::PendingRemote<blink::mojom::Blob> blob);
+  explicit BlobDataSourceFactory(mojo::Remote<blink::mojom::Blob> blob);
   BlobDataSourceFactory(const BlobDataSourceFactory&) = delete;
   BlobDataSourceFactory& operator=(const BlobDataSourceFactory&) = delete;
   ~BlobDataSourceFactory() override;
