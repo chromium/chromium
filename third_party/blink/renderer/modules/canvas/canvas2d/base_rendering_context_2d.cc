@@ -199,6 +199,7 @@ BaseRenderingContext2D::BaseRenderingContext2D(
                     attrs.alpha),
       max_pinned_image_bytes_(
           static_cast<size_t>(features::kMaxPinnedImageKB.Get()) * 1024) {
+  FlushForImageListener::Get()->AddObserver(this);
   UpdateRecordingLimits(/*is_graphite=*/false);
 }
 
@@ -214,6 +215,13 @@ BaseRenderingContext2D::~BaseRenderingContext2D() {
   if (sw_image_provider_context_provider_wrapper_) {
     sw_image_provider_context_provider_wrapper_->RemoveObserver(this);
   }
+}
+
+void BaseRenderingContext2D::Dispose() {
+  FlushForImageListener::Get()->RemoveObserver(this);
+  ResetBacking();
+  ResetRecorder();
+  CanvasRenderingContext::Dispose();
 }
 
 const MemoryManagedPaintRecorder* BaseRenderingContext2D::Recorder() const {

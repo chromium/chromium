@@ -210,7 +210,6 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(
       canvas->GetDocument().GetSettings()->GetAntialiasedClips2dCanvasEnabled())
     clip_antialiasing_ = kAntiAliased;
   SetShouldAntialias(true);
-  FlushForImageListener::Get()->AddObserver(this);
 }
 
 V8RenderingContext* CanvasRenderingContext2D::AsV8RenderingContext() {
@@ -1036,11 +1035,8 @@ CanvasHibernationHandler* CanvasRenderingContext2D::GetHibernationHandler()
 }
 
 void CanvasRenderingContext2D::Dispose() {
-  FlushForImageListener::Get()->RemoveObserver(this);
   hibernation_handler_ = nullptr;
-  ResetBacking();
-  ResetRecorder();
-  CanvasRenderingContext::Dispose();
+  BaseRenderingContext2D::Dispose();
 }
 
 void CanvasRenderingContext2D::CreateBacking() {

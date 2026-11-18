@@ -113,7 +113,6 @@ OffscreenCanvasRenderingContext2D::OffscreenCanvasRenderingContext2D(
                              attrs,
                              canvas->GetTopExecutionContext()->GetTaskRunner(
                                  TaskType::kInternalDefault)) {
-  FlushForImageListener::Get()->AddObserver(this);
   ExecutionContext* execution_context = canvas->GetTopExecutionContext();
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     if (window->GetFrame() && window->GetFrame()->GetSettings() &&
@@ -378,13 +377,6 @@ void OffscreenCanvasRenderingContext2D::WillDraw(
 
 sk_sp<PaintFilter> OffscreenCanvasRenderingContext2D::StateGetFilter() {
   return GetState().GetFilterForOffscreenCanvas(Host()->Size(), this);
-}
-
-void OffscreenCanvasRenderingContext2D::Dispose() {
-  FlushForImageListener::Get()->RemoveObserver(this);
-  ResetBacking();
-  ResetRecorder();
-  CanvasRenderingContext::Dispose();
 }
 
 void OffscreenCanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {

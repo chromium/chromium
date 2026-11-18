@@ -396,6 +396,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   void DispatchContextRestoredEvent(TimerBase*);
   void TryRestoreContextEvent(TimerBase*);
   void RestoreFromInvalidSizeIfNeeded() override;
+  void Dispose() override;
 
   static const char kInheritString[];
 
