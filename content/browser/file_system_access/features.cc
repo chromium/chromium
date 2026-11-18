@@ -11,12 +11,19 @@
 
 namespace content::features {
 
+// When enabled, `FileSystemAccessFileHandleImpl::AsBlob()` performs a sensitive
+// entry access check unless the handle is exempt (e.g., OS-initiated
+// single-file handles). When disabled, `AsBlob()` does not perform the
+// blocklist check.
+BASE_FEATURE(kFileSystemAccessAsBlobBlocklistCheck,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // TODO(crbug.com/40896420): Remove this flag eventually.
 // TODO(b/354661640): Temporarily disable this flag while investigating CrOS
 // file saving issue.
 //
-// When enabled, GetFile() and GetEntries() on a directory handle, as well as
-// AsBlob() on a file handle, perform the blocklist check.
+// When enabled, GetFile() and GetEntries() on a directory handle perform the
+// blocklist check.
 BASE_FEATURE(kFileSystemAccessDirectoryIterationBlocklistCheck,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

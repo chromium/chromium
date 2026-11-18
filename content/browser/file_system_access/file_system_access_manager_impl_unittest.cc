@@ -480,22 +480,8 @@ class FileSystemAccessManagerImplTest : public testing::Test {
         std::move(file_system_access_entry->entry_handle->get_file()));
 
     // Check to see if the resulting FileSystemAccessFileHandle can read the
-    // contents of the file at `file_path`.
-    if (base::FeatureList::IsEnabled(
-            features::kFileSystemAccessDirectoryIterationBlocklistCheck)) {
-      const storage::FileSystemURL file_url =
-          manager_->CreateFileSystemURLFromPath(file_path_info);
-      EXPECT_CALL(permission_context_,
-                  ConfirmSensitiveEntryAccess_(
-                      kTestStorageKey.origin(),
-                      PathInfo(file_url.path(), file_path_info.display_name),
-                      HandleType::kFile,
-                      FileSystemAccessPermissionContext::AccessTrigger::
-                          kProgrammaticRead,
-                      frame_id_, testing::_))
-          .WillOnce(RunOnceCallback<5>(FileSystemAccessPermissionContext::
-                                           SensitiveEntryResult::kAllowed));
-    }
+    // contents of the file at `file_path`. Single-file drag-and-drop handles
+    // are exempt from the read-time sensitive entry access check.
     EXPECT_EQ(ReadStringFromFileRemote(std::move(file_handle)),
               expected_file_contents);
   }
@@ -814,7 +800,8 @@ TEST_F(FileSystemAccessManagerImplTest, CreateFileEntryFromPath_Permissions) {
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
           binding_context_, kTestPathInfo,
-          FileSystemAccessPermissionContext::AccessTrigger::kOpen);
+          FileSystemAccessPermissionContext::AccessTrigger::kOpen,
+          FileSystemAccessEntryFactory::SensitiveEntryReadCheck::kEnforce);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -846,7 +833,8 @@ TEST_F(FileSystemAccessManagerImplTest,
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
           binding_context_, kTestPathInfo,
-          FileSystemAccessPermissionContext::AccessTrigger::kSave);
+          FileSystemAccessPermissionContext::AccessTrigger::kSave,
+          FileSystemAccessEntryFactory::SensitiveEntryReadCheck::kEnforce);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -913,7 +901,8 @@ TEST_F(FileSystemAccessManagerImplTest,
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
           binding_context_, kTestPathInfo,
-          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticWrite);
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticWrite,
+          FileSystemAccessEntryFactory::SensitiveEntryReadCheck::kEnforce);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -973,7 +962,8 @@ TEST_F(FileSystemAccessManagerImplTest,
   blink::mojom::FileSystemAccessEntryPtr open_entry =
       manager->CreateFileEntryFromPath(
           binding_context_, kTestPathInfo,
-          FileSystemAccessPermissionContext::AccessTrigger::kOpen);
+          FileSystemAccessPermissionContext::AccessTrigger::kOpen,
+          FileSystemAccessEntryFactory::SensitiveEntryReadCheck::kEnforce);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> open_handle(
       std::move(open_entry->entry_handle->get_file()));
   EXPECT_EQ(PermissionStatus::GRANTED,
@@ -990,7 +980,8 @@ TEST_F(FileSystemAccessManagerImplTest,
   blink::mojom::FileSystemAccessEntryPtr read_only_entry =
       manager->CreateFileEntryFromPath(
           binding_context_, kTestPathInfo,
-          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead);
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead,
+          FileSystemAccessEntryFactory::SensitiveEntryReadCheck::kEnforce);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> read_only_handle(
       std::move(read_only_entry->entry_handle->get_file()));
   EXPECT_EQ(PermissionStatus::DENIED,
@@ -1005,7 +996,8 @@ TEST_F(FileSystemAccessManagerImplTest,
   blink::mojom::FileSystemAccessEntryPtr read_write_entry =
       manager->CreateFileEntryFromPath(
           binding_context_, kTestPathInfo,
-          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticWrite);
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticWrite,
+          FileSystemAccessEntryFactory::SensitiveEntryReadCheck::kEnforce);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> read_write_handle(
       std::move(read_write_entry->entry_handle->get_file()));
   EXPECT_EQ(PermissionStatus::DENIED,
@@ -1524,7 +1516,8 @@ TEST_F(FileSystemAccessManagerImplTest,
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
           binding_context_, kTestPathInfo,
-          FileSystemAccessPermissionContext::AccessTrigger::kOpen);
+          FileSystemAccessPermissionContext::AccessTrigger::kOpen,
+          FileSystemAccessEntryFactory::SensitiveEntryReadCheck::kEnforce);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -1633,7 +1626,8 @@ TEST_F(FileSystemAccessManagerImplTest, SerializeHandle_Native_SingleFile) {
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
           binding_context_, kTestPathInfo,
-          FileSystemAccessPermissionContext::AccessTrigger::kOpen);
+          FileSystemAccessPermissionContext::AccessTrigger::kOpen,
+          FileSystemAccessEntryFactory::SensitiveEntryReadCheck::kEnforce);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -1886,7 +1880,8 @@ TEST_F(FileSystemAccessManagerImplTest, SerializeHandle_ExternalFile) {
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
           binding_context_, kTestPathInfo,
-          FileSystemAccessPermissionContext::AccessTrigger::kOpen);
+          FileSystemAccessPermissionContext::AccessTrigger::kOpen,
+          FileSystemAccessEntryFactory::SensitiveEntryReadCheck::kEnforce);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -1946,7 +1941,8 @@ TEST_F(FileSystemAccessManagerImplTest,
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
           other_binding_context, kTestPathInfo,
-          FileSystemAccessPermissionContext::AccessTrigger::kOpen);
+          FileSystemAccessPermissionContext::AccessTrigger::kOpen,
+          FileSystemAccessEntryFactory::SensitiveEntryReadCheck::kEnforce);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -2056,7 +2052,8 @@ TEST_F(FileSystemAccessManagerImplTest,
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
           other_binding_context, kTestPathInfo,
-          FileSystemAccessPermissionContext::AccessTrigger::kOpen);
+          FileSystemAccessPermissionContext::AccessTrigger::kOpen,
+          FileSystemAccessEntryFactory::SensitiveEntryReadCheck::kEnforce);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
 
@@ -2535,20 +2532,224 @@ TEST_F(FileSystemAccessManagerImplTest,
       std::move(file_system_access_entry->entry_handle->get_file()));
 
   // Check to see if the resulting FileSystemAccessFileHandle can read the
-  // contents of the file at `file_path`. Reading via `AsBlob()` performs a
-  // programmatic read sensitive entry access check.
-  if (base::FeatureList::IsEnabled(
-          features::kFileSystemAccessDirectoryIterationBlocklistCheck)) {
-    EXPECT_CALL(
-        permission_context_,
-        ConfirmSensitiveEntryAccess_(
-            kTestStorageKey.origin(), file_info, HandleType::kFile,
-            FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead,
-            frame_id_, testing::_))
-        .WillOnce(RunOnceCallback<5>(
-            FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
-  }
+  // contents of the file at `file_path`. Single-file drag-and-drop handles
+  // skip the sensitive entry access check both at token redemption and on
+  // `AsBlob()`.
+  EXPECT_CALL(permission_context_, ConfirmSensitiveEntryAccess_).Times(0);
   EXPECT_EQ(ReadStringFromFileRemote(std::move(file_handle)), file_contents);
+}
+
+TEST_F(FileSystemAccessManagerImplTest,
+       GetEntryFromDataTransferToken_File_ReadAllowedWhenBlocklisted) {
+  base::FilePath file_path = dir_.GetPath().AppendASCII("dropped_file.txt");
+  const std::string file_contents = "Dropped from temp dir.";
+  ASSERT_TRUE(base::WriteFile(file_path, file_contents));
+  const PathInfo file_info(file_path);
+
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken>
+      token_remote;
+  manager_->CreateFileSystemAccessDataTransferToken(
+      file_info, binding_context_.process_id(),
+      token_remote.InitWithNewPipeAndPassReceiver());
+
+  EXPECT_CALL(
+      permission_context_,
+      GetReadPermissionGrant(
+          kTestStorageKey.origin(), file_info, HandleType::kFile,
+          FileSystemAccessPermissionContext::AccessTrigger::kDragAndDrop))
+      .WillOnce(testing::Return(allow_grant_));
+  EXPECT_CALL(
+      permission_context_,
+      GetWritePermissionGrant(
+          kTestStorageKey.origin(), file_info, HandleType::kFile,
+          FileSystemAccessPermissionContext::AccessTrigger::kDragAndDrop))
+      .WillOnce(testing::Return(allow_grant_));
+
+  // Simulate the path being on the sensitive-entry blocklist: any read-time
+  // blocklist check would abort. Single-file drag-and-drop reads must skip it.
+  ON_CALL(
+      permission_context_,
+      ConfirmSensitiveEntryAccess_(
+          testing::_, testing::_, testing::_,
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead,
+          testing::_, testing::_))
+      .WillByDefault(RunOnceCallback<5>(
+          FileSystemAccessPermissionContext::SensitiveEntryResult::kAbort));
+  EXPECT_CALL(
+      permission_context_,
+      ConfirmSensitiveEntryAccess_(
+          testing::_, testing::_, testing::_,
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead,
+          testing::_, testing::_))
+      .Times(0);
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         blink::mojom::FileSystemAccessEntryPtr>
+      get_entry_future;
+  manager_remote_->GetEntryFromDataTransferToken(
+      std::move(token_remote), get_entry_future.GetCallback());
+  ASSERT_EQ(get_entry_future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kOk);
+  auto file_system_access_entry = std::get<1>(get_entry_future.Take());
+  ASSERT_FALSE(file_system_access_entry.is_null());
+  ASSERT_TRUE(file_system_access_entry->entry_handle->is_file());
+  mojo::Remote<blink::mojom::FileSystemAccessFileHandle> file_handle(
+      std::move(file_system_access_entry->entry_handle->get_file()));
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         base::File::Info, blink::mojom::SerializedBlobPtr>
+      as_blob_future;
+  file_handle->AsBlob(
+      as_blob_future.GetCallback<blink::mojom::FileSystemAccessErrorPtr,
+                                 const base::File::Info&,
+                                 blink::mojom::SerializedBlobPtr>());
+  EXPECT_EQ(as_blob_future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_FALSE(as_blob_future.Get<2>().is_null());
+
+  // Writes on the same handle must still consult the blocklist and fail when
+  // aborted.
+  EXPECT_CALL(
+      permission_context_,
+      ConfirmSensitiveEntryAccess_(
+          kTestStorageKey.origin(), file_info, HandleType::kFile,
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticWrite,
+          frame_id_, testing::_))
+      .WillOnce(RunOnceCallback<5>(
+          FileSystemAccessPermissionContext::SensitiveEntryResult::kAbort));
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
+      writer_future;
+  file_handle->CreateFileWriter(
+      /*keep_existing_data=*/false, /*auto_close=*/false,
+      blink::mojom::FileSystemAccessWritableFileStreamLockMode::kSiloed,
+      writer_future.GetCallback());
+  EXPECT_EQ(writer_future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kSecurityError);
+}
+
+TEST_F(FileSystemAccessManagerImplTest,
+       CreateFileEntryFromPath_SkipReadBlocklistCheck) {
+  base::FilePath file_path = dir_.GetPath().AppendASCII("launched_file.txt");
+  const std::string file_contents = "Opened via file handler.";
+  ASSERT_TRUE(base::WriteFile(file_path, file_contents));
+  const PathInfo file_info(file_path);
+
+  EXPECT_CALL(permission_context_,
+              GetReadPermissionGrant(
+                  kTestStorageKey.origin(), file_info, HandleType::kFile,
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
+      .WillOnce(testing::Return(allow_grant_));
+  EXPECT_CALL(permission_context_,
+              GetWritePermissionGrant(
+                  kTestStorageKey.origin(), file_info, HandleType::kFile,
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
+      .WillOnce(testing::Return(allow_grant_));
+
+  EXPECT_CALL(
+      permission_context_,
+      ConfirmSensitiveEntryAccess_(
+          testing::_, testing::_, testing::_,
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead,
+          testing::_, testing::_))
+      .Times(0);
+
+  blink::mojom::FileSystemAccessEntryPtr entry =
+      manager_->CreateFileEntryFromPath(
+          binding_context_, file_info,
+          FileSystemAccessPermissionContext::AccessTrigger::kOpen,
+          FileSystemAccessEntryFactory::SensitiveEntryReadCheck::kSkip);
+  mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
+      std::move(entry->entry_handle->get_file()));
+
+  // Reading the launched handle directly skips the read blocklist check.
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         base::File::Info, blink::mojom::SerializedBlobPtr>
+      as_blob_future;
+  handle->AsBlob(
+      as_blob_future.GetCallback<blink::mojom::FileSystemAccessErrorPtr,
+                                 const base::File::Info&,
+                                 blink::mojom::SerializedBlobPtr>());
+  EXPECT_EQ(as_blob_future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_FALSE(as_blob_future.Get<2>().is_null());
+
+  // Transferring the handle within the same origin preserves the exemption.
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
+  handle->Transfer(token_remote.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<blink::mojom::FileSystemAccessFileHandle> transferred_handle;
+  manager_remote_->GetFileHandleFromToken(
+      std::move(token_remote), transferred_handle.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(ReadStringFromFileRemote(std::move(transferred_handle)),
+            file_contents);
+
+  // Writes on the launched handle still enforce the sensitive-entry blocklist.
+  EXPECT_CALL(
+      permission_context_,
+      ConfirmSensitiveEntryAccess_(
+          kTestStorageKey.origin(), file_info, HandleType::kFile,
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticWrite,
+          frame_id_, testing::_))
+      .WillOnce(RunOnceCallback<5>(
+          FileSystemAccessPermissionContext::SensitiveEntryResult::kAbort));
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
+      writer_future;
+  handle->CreateFileWriter(
+      /*keep_existing_data=*/false, /*auto_close=*/false,
+      blink::mojom::FileSystemAccessWritableFileStreamLockMode::kSiloed,
+      writer_future.GetCallback());
+  EXPECT_EQ(writer_future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kSecurityError);
+}
+
+TEST_F(FileSystemAccessManagerImplTest,
+       CreateFileEntryFromPath_EnforceReadBlocklistCheck) {
+  base::FilePath file_path = dir_.GetPath().AppendASCII("picked_file.txt");
+  ASSERT_TRUE(base::WriteFile(file_path, "Picked via file picker."));
+  const PathInfo file_info(file_path);
+
+  EXPECT_CALL(permission_context_,
+              GetReadPermissionGrant(
+                  kTestStorageKey.origin(), file_info, HandleType::kFile,
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
+      .WillOnce(testing::Return(allow_grant_));
+  EXPECT_CALL(permission_context_,
+              GetWritePermissionGrant(
+                  kTestStorageKey.origin(), file_info, HandleType::kFile,
+                  FileSystemAccessPermissionContext::AccessTrigger::kOpen))
+      .WillOnce(testing::Return(allow_grant_));
+
+  blink::mojom::FileSystemAccessEntryPtr entry =
+      manager_->CreateFileEntryFromPath(
+          binding_context_, file_info,
+          FileSystemAccessPermissionContext::AccessTrigger::kOpen,
+          FileSystemAccessEntryFactory::SensitiveEntryReadCheck::kEnforce);
+  mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
+      std::move(entry->entry_handle->get_file()));
+
+  EXPECT_CALL(
+      permission_context_,
+      ConfirmSensitiveEntryAccess_(
+          kTestStorageKey.origin(), file_info, HandleType::kFile,
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead,
+          frame_id_, testing::_))
+      .WillOnce(RunOnceCallback<5>(
+          FileSystemAccessPermissionContext::SensitiveEntryResult::kAbort));
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         base::File::Info, blink::mojom::SerializedBlobPtr>
+      as_blob_future;
+  handle->AsBlob(
+      as_blob_future.GetCallback<blink::mojom::FileSystemAccessErrorPtr,
+                                 const base::File::Info&,
+                                 blink::mojom::SerializedBlobPtr>());
+  EXPECT_EQ(as_blob_future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kSecurityError);
+  EXPECT_TRUE(as_blob_future.Get<2>().is_null());
 }
 
 TEST_F(FileSystemAccessManagerImplTest,
@@ -4010,7 +4211,8 @@ TEST_F(FileSystemAccessManagerImplTest,
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
           binding_context_, kTestPathInfo,
-          FileSystemAccessPermissionContext::AccessTrigger::kOpen);
+          FileSystemAccessPermissionContext::AccessTrigger::kOpen,
+          FileSystemAccessEntryFactory::SensitiveEntryReadCheck::kEnforce);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
   mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
@@ -4079,7 +4281,8 @@ TEST_F(
   blink::mojom::FileSystemAccessEntryPtr entry =
       manager_->CreateFileEntryFromPath(
           binding_context_, kTestPathInfo,
-          FileSystemAccessPermissionContext::AccessTrigger::kOpen);
+          FileSystemAccessPermissionContext::AccessTrigger::kOpen,
+          FileSystemAccessEntryFactory::SensitiveEntryReadCheck::kEnforce);
   mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
       std::move(entry->entry_handle->get_file()));
   mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;

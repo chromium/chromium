@@ -93,9 +93,15 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // (i.e. children of a directory) will inherit these properties from their
   // parent.
   struct CONTENT_EXPORT SharedHandleState {
+    // Constructs shared handle state with the given read and write permission
+    // grants. `read_blocklist_exempt_path` may only be set for OS-initiated
+    // single-file handles (drag-and-drop files and PWA file-handler launches)
+    // and must never be set for directory handles.
     SharedHandleState(
         scoped_refptr<FileSystemAccessPermissionGrant> read_grant,
-        scoped_refptr<FileSystemAccessPermissionGrant> write_grant);
+        scoped_refptr<FileSystemAccessPermissionGrant> write_grant,
+        std::optional<base::FilePath> read_blocklist_exempt_path =
+            std::nullopt);
     SharedHandleState(const SharedHandleState& other);
     ~SharedHandleState();
 
@@ -103,6 +109,13 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
     // handle.
     const scoped_refptr<FileSystemAccessPermissionGrant> read_grant;
     const scoped_refptr<FileSystemAccessPermissionGrant> write_grant;
+
+    // Exact local file path exempt from sensitive-entry read blocklist checks
+    // in `FileSystemAccessFileHandleImpl::AsBlob()`. Only populated for
+    // OS-initiated single-file handles (drag-and-drop files and PWA
+    // file-handler launches); always `std::nullopt` for directory handles and
+    // picker-selected handles, and no longer matches if the handle is moved.
+    const std::optional<base::FilePath> read_blocklist_exempt_path;
   };
 
   // The caller is responsible for ensuring that `permission_context` outlives
@@ -171,7 +184,8 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   blink::mojom::FileSystemAccessEntryPtr CreateFileEntryFromPath(
       const BindingContext& binding_context,
       const PathInfo& path_info,
-      AccessTrigger access_trigger) override;
+      AccessTrigger access_trigger,
+      SensitiveEntryReadCheck read_check) override;
   blink::mojom::FileSystemAccessEntryPtr CreateDirectoryEntryFromPath(
       const BindingContext& binding_context,
       const PathInfo& path_info,
@@ -406,7 +420,8 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       const PathInfo& path_info,
       const blink::StorageKey& storage_key,
       FileSystemAccessPermissionContext::HandleType handle_type,
-      FileSystemAccessPermissionContext::AccessTrigger access_trigger);
+      FileSystemAccessPermissionContext::AccessTrigger access_trigger,
+      std::optional<base::FilePath> read_blocklist_exempt_path = std::nullopt);
   // Same as above, but for paths in a sandboxed file system.
   SharedHandleState GetSharedHandleStateForSandboxedPath();
 
