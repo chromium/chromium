@@ -1961,6 +1961,109 @@ class FullWebUIOmniboxInteractiveTest
         "WaitForBrowserWidgetActive");
   }
 
+  // Waits until `TemplateURLService` has loaded and the WebUI searchbox's
+  // `KeywordModeManager` has received both the default search engine keyword
+  // and its matching `InputKeywordModel` entry.
+  auto WaitForDefaultSearchKeywordReady() {
+    return Steps(
+        Do([this]() {
+          search_test_utils::WaitForTemplateURLServiceToLoad(
+              TemplateURLServiceFactory::GetForProfile(
+                  browser()->GetProfile()));
+        }),
+        WaitForJsConditionAt(
+            kPopupWebView, kPopupSearchbox,
+            "(el) => {"
+            "  const dse = el?.keywordModeManager?.defaultSearchEngineKeyword;"
+            "  return !!dse && el.keywordModeManager.availableKeywordModels"
+            "      .some(m => m.keyword.toLowerCase() === dse.toLowerCase());"
+            "}"));
+  }
+
+  // Asserts that the popup is in "Search Google" keyword mode with an empty
+  // input, types `query` with real key presses, presses Enter, and verifies
+  // navigation to the Google search results page for `query`.
+  auto VerifyDefaultSearchKeywordModeAndCommitSearch(std::string_view query) {
+    static const DeepQuery kInputKeywordChip = {
+        "omnibox-full-app", "omnibox-popup-searchbox", "cr-searchbox-input",
+        "#keyword"};
+    const std::string query_str(query);
+    return Steps(
+        WaitForPopupActive(), WaitForWebUIKeywordMode(true),
+        WaitForMatch(kPopupWebView, kInputKeywordChip, "Search Google"),
+        InAnyContext(WaitForWebUIInputValue("")),
+        InAnyContext(CheckWebUIInputSelection(0, 0)), WaitForOmniboxText(u""),
+        CheckUserInputInProgress(true), TypeWebUITextWithKeyPresses(query),
+        InAnyContext(WaitForWebUIInputValue(query_str)),
+        WaitForOmniboxText(base::ASCIIToUTF16(query)),
+        WaitForWebUIKeywordMode(true), WaitForEditModelKeywordSelected(true),
+        CheckResult(
+            [this]() {
+              const auto* dse = TemplateURLServiceFactory::GetForProfile(
+                                    browser()->GetProfile())
+                                    ->GetDefaultSearchProvider();
+              return dse &&
+                     GetOmniboxControllerForTest()->edit_model()->keyword() ==
+                         dse->keyword();
+            },
+            true, "CheckDefaultSearchProviderKeywordSelected"),
+        WaitForJsConditionAt(
+            kPopupWebView, kPopupSearchbox,
+            base::StringPrintf("(el) => !!el && el.dropdownIsVisible && "
+                               "el.result?.input === %s",
+                               base::GetQuotedJSONString(query).c_str())),
+        InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_RETURN, ui::EF_NONE)
+                         .SetMustRemainVisible(false)),
+        WaitForGoogleSearch(kTab1, {{"q", query_str}}),
+        InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+        WaitForOmniboxFocus(false));
+  }
+
+  // Opens an HTTPS page, blurs the omnibox so the webpage holds focus, sends
+  // `key` + `modifiers` to the browser window to enter "Search Google" keyword
+  // mode, then types "cats" and commits the search with Enter.
+  void RunFocusSearchShortcutFromPageThenSearch(ui::KeyboardCode key,
+                                                int modifiers) {
+    ASSERT_TRUE(embedded_https_test_server().Start());
+    const GURL url = embedded_https_test_server().GetURL("/title1.html");
+    const std::string display_url = url.spec().substr(strlen("https://"));
+
+    RunTestSequence(
+        OpenInitialTabAndFocusOmnibox(kTab1, url),
+        WaitForWebUIInputValue(display_url), WaitForDefaultSearchKeywordReady(),
+        ClickWebPageBody(kTab1),
+        InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+        UninstrumentWebContents(kPopupWebView), WaitForOmniboxFocus(false),
+        WaitForBrowserWidgetActive(), WaitForPopupTransitionLockout(),
+        SendKeyPress(kBrowserViewElementId, key, modifiers),
+        InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+        InAnyContext(
+            InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+        WaitForOmniboxFocus(true), WaitForPopupActive(),
+        VerifyDefaultSearchKeywordModeAndCommitSearch("cats"));
+  }
+
+  // Opens an HTTPS page, clicks the unfocused omnibox so the popup opens on an
+  // unedited steady-state URL, sends `key` + `modifiers` to the popup to enter
+  // "Search Google" keyword mode, then types "cats" and commits the search with
+  // Enter.
+  void RunFocusSearchShortcutWhileFocusedThenSearch(ui::KeyboardCode key,
+                                                    int modifiers) {
+    ASSERT_TRUE(embedded_https_test_server().Start());
+    const GURL url = embedded_https_test_server().GetURL("/title1.html");
+    const std::string display_url = url.spec().substr(strlen("https://"));
+
+    RunTestSequence(
+        WaitForBrowserActive(), AddInstrumentedTab(kTab1, url),
+        WaitForWebContentsReady(kTab1), ClickUnfocusedOmnibox(),
+        WaitForPopupReady(), WaitForWebUIInputValue(display_url),
+        InAnyContext(CheckWebUIInputSelection(0, display_url.length())),
+        CheckUserInputInProgress(false), WaitForDefaultSearchKeywordReady(),
+        WaitForPopupActive(),
+        InAnyContext(SendKeyPress(kPopupWebView, key, modifiers)),
+        VerifyDefaultSearchKeywordModeAndCommitSearch("cats"));
+  }
+
   auto CheckFindBarFocused() {
     return CheckResult([this]() { return GetFindBar()->HasFocus(); }, true,
                        "CheckFindBarFocused");
@@ -2886,6 +2989,70 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       WaitForEditModelKeywordSelected(false), WaitForOmniboxFocus(true));
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+// Verifies that typing "?" on a clean omnibox enters "Search Google" keyword
+// mode, strips the "?" from the input, and then typing "cats" + Enter commits a
+// Google search for "cats".
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       KeywordModeViaQuestionMarkThenSearch) {
+  RunTestSequence(OpenNtpAndWaitForPopupReady(kTab1), WaitForPopupActive(),
+                  WaitForDefaultSearchKeywordReady(),
+                  InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_OEM_2,
+                                            ui::EF_SHIFT_DOWN)),
+                  VerifyDefaultSearchKeywordModeAndCommitSearch("cats"));
+}
+
+#if !BUILDFLAG(IS_MAC)
+// Verifies that pressing Ctrl+K while the webpage has focus opens the popup in
+// "Search Google" keyword mode (clearing the permanent URL), and then typing
+// "cats" + Enter commits a Google search for "cats".
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       KeywordModeViaCtrlKFromPageThenSearch) {
+  RunFocusSearchShortcutFromPageThenSearch(ui::VKEY_K, ui::EF_CONTROL_DOWN);
+}
+
+// Verifies that pressing Ctrl+K while the popup is focused on an unedited URL
+// enters "Search Google" keyword mode (clearing the permanent URL), and then
+// typing "cats" + Enter commits a Google search for "cats".
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       KeywordModeViaCtrlKWhileFocusedThenSearch) {
+  RunFocusSearchShortcutWhileFocusedThenSearch(ui::VKEY_K, ui::EF_CONTROL_DOWN);
+}
+
+// Verifies that pressing Ctrl+E while the webpage has focus opens the popup in
+// "Search Google" keyword mode (clearing the permanent URL), and then typing
+// "cats" + Enter commits a Google search for "cats".
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       KeywordModeViaCtrlEFromPageThenSearch) {
+  RunFocusSearchShortcutFromPageThenSearch(ui::VKEY_E, ui::EF_CONTROL_DOWN);
+}
+
+// Verifies that pressing Ctrl+E while the popup is focused on an unedited URL
+// enters "Search Google" keyword mode (clearing the permanent URL), and then
+// typing "cats" + Enter commits a Google search for "cats".
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       KeywordModeViaCtrlEWhileFocusedThenSearch) {
+  RunFocusSearchShortcutWhileFocusedThenSearch(ui::VKEY_E, ui::EF_CONTROL_DOWN);
+}
+#else   // !BUILDFLAG(IS_MAC)
+// Verifies that pressing Cmd+Option+F while the webpage has focus opens the
+// popup in "Search Google" keyword mode (clearing the permanent URL), and then
+// typing "cats" + Enter commits a Google search for "cats".
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       KeywordModeViaCmdOptionFFromPageThenSearch) {
+  RunFocusSearchShortcutFromPageThenSearch(
+      ui::VKEY_F, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+}
+
+// Verifies that pressing Cmd+Option+F while the popup is focused on an unedited
+// URL enters "Search Google" keyword mode (clearing the permanent URL), and
+// then typing "cats" + Enter commits a Google search for "cats".
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       KeywordModeViaCmdOptionFWhileFocusedThenSearch) {
+  RunFocusSearchShortcutWhileFocusedThenSearch(
+      ui::VKEY_F, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 // Verifies focusing the omnibox without typing a draft, selecting a portion of
 // the URL text, switching away to another tab, and switching back restores
