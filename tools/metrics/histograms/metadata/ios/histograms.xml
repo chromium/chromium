@@ -348,6 +348,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Actor.Dialog.Suppressed" enum="IOSActorSuppressedDialog"
+    expires_after="2027-05-17">
+  <owner>kaklilu@google.com</owner>
+  <owner>bling-ai-foundations@google.com</owner>
+  <summary>
+    Records that a web prompt, dialog, or permission request from a page was
+    suppressed without prompting the user, because an actor task was acting on
+    the tab at the time.
+
+    Recorded once per suppressed dialog or permission request. For media
+    permissions, WebKit delivers camera and microphone as a single decision
+    request, so a page asking for both records one sample under the combined
+    bucket.
+
+    Permission requests denied earlier by parental controls are attributed there
+    and are deliberately absent from this histogram.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Actor.ExecutionEngine.Action.ResultCode"
     enum="ActionResultCode" expires_after="2027-04-15">
   <owner>kaklilu@google.com</owner>

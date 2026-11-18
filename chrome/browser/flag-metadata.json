@@ -6332,6 +6332,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "ios-actor-suppress-dialogs",
+    "owners": [ "kaklilu@chromium.org", "bling-ai-foundations@google.com" ],
+    "expiry_milestone": 180
+  },
+  {
     "name": "ios-actor-tools",
     "owners": [ "ginnyhuang@chromium.org", "kaklilu@chromium.org" ],
     "expiry_milestone": 180

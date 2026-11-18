@@ -286,6 +286,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/actor/metrics/actor_background_task_metrics.h:IOSActorBackgroundTaskIneligibilityReason) -->
 
+<!-- LINT.IfChange(IOSActorSuppressedDialog) -->
+
+<enum name="IOSActorSuppressedDialog">
+  <int value="0" label="Camera permission"/>
+  <int value="1" label="Microphone permission"/>
+  <int value="2" label="Camera and microphone permission"/>
+  <int value="3" label="Geolocation permission"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/intelligence/actor/util/actor_dialog_utils.h:IOSActorSuppressedDialog) -->
+
 <enum name="IOSAddressValidationOutcome">
   <int value="0" label="Address is valid for Long Press"/>
   <int value="1" label="Address is valid for One Tap"/>
@@ -1762,6 +1773,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Denied by saved setting (no prompt)"/>
   <int value="3" label="Blocked by parental controls (no prompt)"/>
   <int value="4" label="Denied in background (no prompt)"/>
+  <int value="5" label="Denied during actor actuation (no prompt)"/>
 </enum>
 
 <!-- LINT.ThenChange(//ios/chrome/browser/permissions/model/permissions_metrics.h:IOSPermissionRequestResolution) -->

@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/enterprise/proxy/model/proxy_service_controller_factory.h"
 #import "ios/chrome/browser/geolocation/model/geolocation_manager.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
+#import "ios/chrome/browser/intelligence/actor/util/actor_dialog_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
@@ -181,6 +182,25 @@ std::optional<web::PermissionDecision> DetermineDomainLevelDecision(
     return web::PermissionDecisionGrant;
   }
 
+  return std::nullopt;
+}
+
+// Maps a `web::Permission` array to the corresponding
+// `IOSActorSuppressedDialog` bucket, or `std::nullopt` if none match.
+std::optional<IOSActorSuppressedDialog> SuppressedDialogForPermissions(
+    NSArray<NSNumber*>* permissions) {
+  const bool has_camera = [permissions containsObject:@(web::PermissionCamera)];
+  const bool has_microphone =
+      [permissions containsObject:@(web::PermissionMicrophone)];
+  if (has_camera && has_microphone) {
+    return IOSActorSuppressedDialog::kCameraAndMicrophonePermission;
+  }
+  if (has_camera) {
+    return IOSActorSuppressedDialog::kCameraPermission;
+  }
+  if (has_microphone) {
+    return IOSActorSuppressedDialog::kMicrophonePermission;
+  }
   return std::nullopt;
 }
 
@@ -436,6 +456,18 @@ void WebStateDelegateBrowserAgent::HandlePermissionsDecisionRequest(
     return;
   }
 
+  if (ShouldSuppressDialogDuringActuation(
+          source, ActorSuppressedDialogType::kPermissions)) {
+    RecordPermissionRequestResolution(
+        permissions, IOSPermissionRequestResolution::kDeniedDuringActuation);
+    if (std::optional<IOSActorSuppressedDialog> suppressed_dialog =
+            SuppressedDialogForPermissions(permissions)) {
+      RecordDialogSuppressedDuringActuation(*suppressed_dialog);
+    }
+    handler(web::PermissionDecisionDeny);
+    return;
+  }
+
   if (IsDomainLevelSitePermissionsEnabled()) {
     if (!source->IsVisible()) {
       RecordPermissionRequestResolution(
@@ -479,6 +511,14 @@ void WebStateDelegateBrowserAgent::RequestGeolocationPermission(
     web::WebState* source,
     const GURL& origin,
     web::WebStatePermissionDecisionHandler handler) {
+  if (ShouldSuppressDialogDuringActuation(
+          source, ActorSuppressedDialogType::kPermissions)) {
+    RecordDialogSuppressedDuringActuation(
+        IOSActorSuppressedDialog::kGeolocationPermission);
+    handler(web::PermissionDecisionDeny);
+    return;
+  }
+
   CLAuthorizationStatus status =
       [GeolocationManager sharedInstance].authorizationStatus;
 

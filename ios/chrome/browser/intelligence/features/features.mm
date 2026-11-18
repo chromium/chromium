@@ -571,6 +571,18 @@ bool ActorDisablesInputDuringActuation() {
   return IsActorEnabled() && kActorDisableInputDuringActuation.Get();
 }
 
+BASE_FEATURE(kActorSuppressDialogs, base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsActorSuppressDialogsEnabled() {
+  return base::FeatureList::IsEnabled(kActorSuppressDialogs);
+}
+
+BASE_FEATURE_PARAM(bool,
+                   kActorSuppressDialogsPermissionsFeatureParam,
+                   &kActorSuppressDialogs,
+                   kActorSuppressDialogsPermissionsParam,
+                   true);
+
 BASE_FEATURE(kActorOriginGating, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsActorOriginGatingEnabled() {

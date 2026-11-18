@@ -3159,6 +3159,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"gemini-native-header", flag_descriptions::kGeminiNativeHeaderName,
      flag_descriptions::kGeminiNativeHeaderDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kGeminiNativeHeader)},
+    {"ios-actor-suppress-dialogs",
+     flag_descriptions::kIOSActorSuppressDialogsName,
+     flag_descriptions::kIOSActorSuppressDialogsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kActorSuppressDialogs)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

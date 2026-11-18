@@ -271,6 +271,23 @@ bool IsActorOriginGatingForExplicitNavigationEnabled();
 // Returns true if origin gating is enabled for implicit navigations.
 bool IsActorOriginGatingForImplicitNavigationEnabled();
 
+// Feature flag for suppressing disruptive UI and auto-rejecting
+// permission-gated web API requests while an actor task is actuating the tab,
+// controlled via per-category feature parameters.
+//
+// Mirrors the Desktop equivalent at
+// https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/features.cc;l=92.
+BASE_DECLARE_FEATURE(kActorSuppressDialogs);
+
+// Returns true if actor dialog suppression is enabled.
+bool IsActorSuppressDialogsEnabled();
+
+// Feature parameter for `kActorSuppressDialogs` controlling whether
+// permission-gated web API requests (such as camera, microphone, and
+// geolocation) are automatically denied while actuating.
+inline constexpr char kActorSuppressDialogsPermissionsParam[] = "permissions";
+BASE_DECLARE_FEATURE_PARAM(bool, kActorSuppressDialogsPermissionsFeatureParam);
+
 // Feature flag for Model based page classification experiment.
 BASE_DECLARE_FEATURE(kModelBasedPageClassification);
 

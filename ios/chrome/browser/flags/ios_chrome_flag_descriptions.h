@@ -1045,6 +1045,13 @@ inline constexpr char kHttpsUpgradesDescription[] =
     "When enabled, eligible navigations will automatically be upgraded to "
     "HTTPS.";
 
+inline constexpr char kIOSActorSuppressDialogsName[] =
+    "iOS Actor Suppress Dialogs";
+inline constexpr char kIOSActorSuppressDialogsDescription[] =
+    "When enabled, permission-gated web API requests (such as camera, "
+    "microphone, and geolocation) made while an AI agent is acting on the "
+    "tab are automatically denied without prompting the user.";
+
 inline constexpr char kIOSActorToolsName[] = "iOS Actor Tools";
 inline constexpr char kIOSActorToolsDescription[] =
     "Enables all actor tools on iOS.";

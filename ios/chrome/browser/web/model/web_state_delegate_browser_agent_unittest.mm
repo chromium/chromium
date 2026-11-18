@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
 
 #import "base/functional/callback_helpers.h"
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -22,16 +23,25 @@
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/geolocation/model/geolocation_manager.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/overlays/default_infobar_overlay_request_factory.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_tab_helper.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
+#import "ios/chrome/browser/intelligence/actor/util/actor_dialog_utils.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_callback_installer.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue_callback_installer.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/http_auth_overlay.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_alert_dialog_overlay.h"
 #import "ios/chrome/browser/permissions/model/permissions_metrics.h"
 #import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -63,6 +73,27 @@ const char kURL1[] = "https://www.some.url.com";
 const char kURL2[] = "https://www.some.url2.com";
 
 namespace {
+
+// OverlayRequestCallbackInstaller that counts how many requests were added to
+// an OverlayRequestQueue, even if they are subsequently closed or cancelled.
+class CountingOverlayRequestCallbackInstaller
+    : public OverlayRequestCallbackInstaller {
+ public:
+  explicit CountingOverlayRequestCallbackInstaller(int* request_count)
+      : request_count_(request_count) {}
+  ~CountingOverlayRequestCallbackInstaller() override = default;
+
+ private:
+  // OverlayRequestCallbackInstaller:
+  const OverlayRequestSupport* GetRequestSupport() const override {
+    return OverlayRequestSupport::All();
+  }
+  void InstallCallbacksInternal(OverlayRequest* request) override {
+    ++(*request_count_);
+  }
+
+  raw_ptr<int> request_count_;
+};
 
 class StubAppLauncherTabHelperDelegate : public AppLauncherTabHelperDelegate {
  public:
@@ -182,6 +213,26 @@ class WebStateDelegateBrowserAgentTest : public PlatformTest {
     tab_helper->SetBrowserPresentationProvider(
         app_launcher_presentation_provider_);
     return tab_helper;
+  }
+
+  ActorTabHelper* AttachActorTabHelper(web::WebState* web_state,
+                                       actor::ActorControlState control_state) {
+    ActorTabHelper::CreateForWebState(web_state);
+    ActorTabHelper* tab_helper = ActorTabHelper::FromWebState(web_state);
+    tab_helper->SetControlState(control_state);
+    return tab_helper;
+  }
+
+  std::unique_ptr<OverlayRequestQueueCallbackInstaller>
+  InstallCountingOverlayRequestInstaller(web::WebState* web_state,
+                                         OverlayModality modality,
+                                         int* request_count) {
+    std::unique_ptr<OverlayRequestQueueCallbackInstaller> queue_installer =
+        OverlayRequestQueueCallbackInstaller::Create(web_state, modality);
+    queue_installer->AddRequestCallbackInstaller(
+        std::make_unique<CountingOverlayRequestCallbackInstaller>(
+            request_count));
+    return queue_installer;
   }
 
  protected:
@@ -903,4 +954,270 @@ TEST_F(WebStateDelegateBrowserAgentTest,
   ASSERT_TRUE(raw_navigation_manager->LoadURLWithParamsWasCalled());
   EXPECT_EQ(GURL(kURL2),
             raw_navigation_manager->GetLastLoadURLWithParams()->url);
+}
+
+// Tests that `HandlePermissionsDecisionRequest()` immediately denies permission
+// without queuing an overlay request when the tab is currently being actuated
+// by an actor task.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       HandlePermissionsDecisionRequest_AutoRejectsWhileActuating) {
+  base::HistogramTester histogram_tester;
+  web::FakeWebState* web_state = InsertFakeWebState(GURL(kURL1));
+  AttachActorTabHelper(web_state, actor::ActorControlState::kActorControlled);
+
+  int overlay_request_count = 0;
+  std::unique_ptr<OverlayRequestQueueCallbackInstaller> queue_installer =
+      InstallCountingOverlayRequestInstaller(
+          web_state, OverlayModality::kWebContentArea, &overlay_request_count);
+
+  base::test::TestFuture<web::PermissionDecision> decision_future;
+  delegate()->HandlePermissionsDecisionRequest(
+      web_state, @[ @(web::PermissionCamera) ],
+      base::CallbackToBlock(decision_future.GetCallback()));
+  EXPECT_EQ(web::PermissionDecisionDeny, decision_future.Get());
+  EXPECT_EQ(0, overlay_request_count);
+  histogram_tester.ExpectUniqueSample(
+      kPermissionRequestResolutionCameraHistogram,
+      IOSPermissionRequestResolution::kDeniedDuringActuation, 1);
+  histogram_tester.ExpectUniqueSample(
+      kActorDialogSuppressedHistogram,
+      IOSActorSuppressedDialog::kCameraPermission, 1);
+}
+
+// Tests that `HandlePermissionsDecisionRequest()` records the microphone bucket
+// when auto-rejecting a microphone-only request while actuating.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       HandlePermissionsDecisionRequest_AutoRejectsMicrophoneWhileActuating) {
+  base::HistogramTester histogram_tester;
+  web::FakeWebState* web_state = InsertFakeWebState(GURL(kURL1));
+  AttachActorTabHelper(web_state, actor::ActorControlState::kActorControlled);
+
+  base::test::TestFuture<web::PermissionDecision> decision_future;
+  delegate()->HandlePermissionsDecisionRequest(
+      web_state, @[ @(web::PermissionMicrophone) ],
+      base::CallbackToBlock(decision_future.GetCallback()));
+  EXPECT_EQ(web::PermissionDecisionDeny, decision_future.Get());
+  histogram_tester.ExpectUniqueSample(
+      kPermissionRequestResolutionMicrophoneHistogram,
+      IOSPermissionRequestResolution::kDeniedDuringActuation, 1);
+  histogram_tester.ExpectUniqueSample(
+      kActorDialogSuppressedHistogram,
+      IOSActorSuppressedDialog::kMicrophonePermission, 1);
+}
+
+// Tests that `HandlePermissionsDecisionRequest()` records the combined camera
+// and microphone bucket when auto-rejecting both permissions while actuating.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       HandlePermissionsDecisionRequest_AutoRejectsCameraAndMicWhileActuating) {
+  base::HistogramTester histogram_tester;
+  web::FakeWebState* web_state = InsertFakeWebState(GURL(kURL1));
+  AttachActorTabHelper(web_state, actor::ActorControlState::kActorControlled);
+
+  base::test::TestFuture<web::PermissionDecision> decision_future;
+  delegate()->HandlePermissionsDecisionRequest(
+      web_state, @[ @(web::PermissionCamera), @(web::PermissionMicrophone) ],
+      base::CallbackToBlock(decision_future.GetCallback()));
+  EXPECT_EQ(web::PermissionDecisionDeny, decision_future.Get());
+  histogram_tester.ExpectUniqueSample(
+      kPermissionRequestResolutionCameraAndMicrophoneHistogram,
+      IOSPermissionRequestResolution::kDeniedDuringActuation, 1);
+  histogram_tester.ExpectUniqueSample(
+      kActorDialogSuppressedHistogram,
+      IOSActorSuppressedDialog::kCameraAndMicrophonePermission, 1);
+}
+
+// Tests that `HandlePermissionsDecisionRequest()` does not auto-reject when the
+// tab is not being actuated.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       HandlePermissionsDecisionRequest_DoesNotAutoRejectWhenNotActuating) {
+  base::HistogramTester histogram_tester;
+  web::FakeWebState* web_state = InsertFakeWebState(GURL(kURL1));
+  AttachActorTabHelper(web_state, actor::ActorControlState::kInactive);
+
+  int overlay_request_count = 0;
+  std::unique_ptr<OverlayRequestQueueCallbackInstaller> queue_installer =
+      InstallCountingOverlayRequestInstaller(
+          web_state, OverlayModality::kWebContentArea, &overlay_request_count);
+
+  delegate()->HandlePermissionsDecisionRequest(
+      web_state, @[ @(web::PermissionCamera) ],
+      ^(web::PermissionDecision decision){
+      });
+  EXPECT_EQ(1, overlay_request_count);
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      web_state, OverlayModality::kWebContentArea);
+  EXPECT_EQ(1U, queue->size());
+  histogram_tester.ExpectTotalCount(kActorDialogSuppressedHistogram, 0);
+}
+
+// Tests that `HandlePermissionsDecisionRequest()` does not auto-reject when the
+// `kActorSuppressDialogs` feature is disabled.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       HandlePermissionsDecisionRequest_DoesNotAutoRejectWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kActorSuppressDialogs);
+
+  base::HistogramTester histogram_tester;
+  web::FakeWebState* web_state = InsertFakeWebState(GURL(kURL1));
+  AttachActorTabHelper(web_state, actor::ActorControlState::kActorControlled);
+
+  int overlay_request_count = 0;
+  std::unique_ptr<OverlayRequestQueueCallbackInstaller> queue_installer =
+      InstallCountingOverlayRequestInstaller(
+          web_state, OverlayModality::kWebContentArea, &overlay_request_count);
+
+  delegate()->HandlePermissionsDecisionRequest(
+      web_state, @[ @(web::PermissionCamera) ],
+      ^(web::PermissionDecision decision){
+      });
+  EXPECT_EQ(1, overlay_request_count);
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      web_state, OverlayModality::kWebContentArea);
+  EXPECT_EQ(1U, queue->size());
+  histogram_tester.ExpectTotalCount(kActorDialogSuppressedHistogram, 0);
+}
+
+// Tests that `HandlePermissionsDecisionRequest()` does not auto-reject when the
+// `kActorSuppressDialogsPermissionsParam` parameter is disabled.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       HandlePermissionsDecisionRequest_DoesNotAutoRejectWhenParamDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kActorSuppressDialogs,
+      {{kActorSuppressDialogsPermissionsParam, "false"}});
+
+  base::HistogramTester histogram_tester;
+  web::FakeWebState* web_state = InsertFakeWebState(GURL(kURL1));
+  AttachActorTabHelper(web_state, actor::ActorControlState::kActorControlled);
+
+  int overlay_request_count = 0;
+  std::unique_ptr<OverlayRequestQueueCallbackInstaller> queue_installer =
+      InstallCountingOverlayRequestInstaller(
+          web_state, OverlayModality::kWebContentArea, &overlay_request_count);
+
+  delegate()->HandlePermissionsDecisionRequest(
+      web_state, @[ @(web::PermissionCamera) ],
+      ^(web::PermissionDecision decision){
+      });
+  EXPECT_EQ(1, overlay_request_count);
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      web_state, OverlayModality::kWebContentArea);
+  EXPECT_EQ(1U, queue->size());
+  histogram_tester.ExpectTotalCount(kActorDialogSuppressedHistogram, 0);
+}
+
+// Tests that `RequestGeolocationPermission()` immediately denies permission
+// without presenting an infobar or queuing an overlay request when the tab is
+// currently being actuated by an actor task.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       RequestGeolocationPermission_AutoRejectsWhileActuating) {
+  ScopedBlockSwizzler swizzler([GeolocationManager class],
+                               @selector(authorizationStatus), ^{
+                                 return kCLAuthorizationStatusDenied;
+                               });
+  base::HistogramTester histogram_tester;
+  web::FakeWebState* web_state = InsertFakeWebState(GURL(kURL1));
+  web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  InfoBarManagerImpl::CreateForWebState(web_state);
+  InfobarOverlayRequestInserter::CreateForWebState(
+      web_state, &DefaultInfobarOverlayRequestFactory);
+  InfobarOverlayTabHelper::CreateForWebState(web_state);
+  AttachActorTabHelper(web_state, actor::ActorControlState::kActorControlled);
+
+  int web_content_overlay_count = 0;
+  std::unique_ptr<OverlayRequestQueueCallbackInstaller>
+      web_content_queue_installer = InstallCountingOverlayRequestInstaller(
+          web_state, OverlayModality::kWebContentArea,
+          &web_content_overlay_count);
+
+  int infobar_banner_overlay_count = 0;
+  std::unique_ptr<OverlayRequestQueueCallbackInstaller>
+      infobar_banner_queue_installer = InstallCountingOverlayRequestInstaller(
+          web_state, OverlayModality::kInfobarBanner,
+          &infobar_banner_overlay_count);
+
+  base::test::TestFuture<web::PermissionDecision> decision_future;
+  delegate()->RequestGeolocationPermission(
+      web_state, GURL(kURL1),
+      base::CallbackToBlock(decision_future.GetCallback()));
+  EXPECT_EQ(web::PermissionDecisionDeny, decision_future.Get());
+  EXPECT_TRUE(InfoBarManagerImpl::FromWebState(web_state)->infobars().empty());
+  EXPECT_EQ(0, web_content_overlay_count);
+  EXPECT_EQ(0, infobar_banner_overlay_count);
+  EXPECT_TRUE(GetApplicationContext()
+                  ->GetLocalState()
+                  ->GetTime(prefs::kIosGeolocationSystemPromptLastShownTime)
+                  .is_null());
+  histogram_tester.ExpectUniqueSample(
+      kActorDialogSuppressedHistogram,
+      IOSActorSuppressedDialog::kGeolocationPermission, 1);
+}
+
+// Tests that `RequestGeolocationPermission()` does not auto-reject when the
+// tab is not being actuated.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       RequestGeolocationPermission_DoesNotAutoRejectWhenNotActuating) {
+  ScopedBlockSwizzler swizzler(
+      [GeolocationManager class], @selector(authorizationStatus), ^{
+        return kCLAuthorizationStatusAuthorizedWhenInUse;
+      });
+  base::HistogramTester histogram_tester;
+  web::FakeWebState* web_state = InsertFakeWebState(GURL(kURL1));
+  AttachActorTabHelper(web_state, actor::ActorControlState::kInactive);
+
+  base::test::TestFuture<web::PermissionDecision> decision_future;
+  delegate()->RequestGeolocationPermission(
+      web_state, GURL(kURL1),
+      base::CallbackToBlock(decision_future.GetCallback()));
+  EXPECT_EQ(web::PermissionDecisionShowDefaultPrompt, decision_future.Get());
+  histogram_tester.ExpectTotalCount(kActorDialogSuppressedHistogram, 0);
+}
+
+// Tests that `RequestGeolocationPermission()` does not auto-reject when the
+// `kActorSuppressDialogs` feature is disabled.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       RequestGeolocationPermission_DoesNotAutoRejectWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kActorSuppressDialogs);
+
+  ScopedBlockSwizzler swizzler(
+      [GeolocationManager class], @selector(authorizationStatus), ^{
+        return kCLAuthorizationStatusAuthorizedWhenInUse;
+      });
+  base::HistogramTester histogram_tester;
+  web::FakeWebState* web_state = InsertFakeWebState(GURL(kURL1));
+  AttachActorTabHelper(web_state, actor::ActorControlState::kActorControlled);
+
+  base::test::TestFuture<web::PermissionDecision> decision_future;
+  delegate()->RequestGeolocationPermission(
+      web_state, GURL(kURL1),
+      base::CallbackToBlock(decision_future.GetCallback()));
+  EXPECT_EQ(web::PermissionDecisionShowDefaultPrompt, decision_future.Get());
+  histogram_tester.ExpectTotalCount(kActorDialogSuppressedHistogram, 0);
+}
+
+// Tests that `RequestGeolocationPermission()` does not auto-reject when the
+// `kActorSuppressDialogsPermissionsParam` parameter is disabled.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       RequestGeolocationPermission_DoesNotAutoRejectWhenParamDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kActorSuppressDialogs,
+      {{kActorSuppressDialogsPermissionsParam, "false"}});
+
+  ScopedBlockSwizzler swizzler(
+      [GeolocationManager class], @selector(authorizationStatus), ^{
+        return kCLAuthorizationStatusAuthorizedWhenInUse;
+      });
+  base::HistogramTester histogram_tester;
+  web::FakeWebState* web_state = InsertFakeWebState(GURL(kURL1));
+  AttachActorTabHelper(web_state, actor::ActorControlState::kActorControlled);
+
+  base::test::TestFuture<web::PermissionDecision> decision_future;
+  delegate()->RequestGeolocationPermission(
+      web_state, GURL(kURL1),
+      base::CallbackToBlock(decision_future.GetCallback()));
+  EXPECT_EQ(web::PermissionDecisionShowDefaultPrompt, decision_future.Get());
+  histogram_tester.ExpectTotalCount(kActorDialogSuppressedHistogram, 0);
 }

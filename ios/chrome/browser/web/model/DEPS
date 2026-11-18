@@ -92,9 +92,19 @@ specific_include_rules = {
     "+ios/chrome/browser/dialogs/ui_bundled/overlay_java_script_dialog_presenter.h",
   ],
   "^web_state_delegate_browser_agent.mm": [
+    # keep-sorted start
     "+ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h",
     "+ios/chrome/browser/dialogs/ui_bundled/nsurl_protection_space_util.h",
     "+ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h",
+    "+ios/chrome/browser/intelligence/actor/util/actor_dialog_utils.h",
+    # keep-sorted end
+  ],
+  "^web_state_delegate_browser_agent_unittest.mm": [
+    # keep-sorted start
+    "+ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h",
+    "+ios/chrome/browser/intelligence/actor/public/actor_control_state.h",
+    "+ios/chrome/browser/intelligence/actor/util/actor_dialog_utils.h",
+    # keep-sorted end
   ],
 
 }
