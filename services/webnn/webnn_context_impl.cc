@@ -176,7 +176,7 @@ WebNNContextImpl::WebNNContextImpl(
                       blink::WebNNContextToken,
                       mojo::Receiver<mojom::WebNNContext>>(
           std::move(receiver),
-          gpu_task_scheduler->scheduler_task_runner()),
+          gpu_task_scheduler->GetTaskRunner()),
       has_context_provider_(true),
       context_provider_(std::move(context_provider)),
       properties_(IntersectWithBaseProperties(std::move(properties))),
@@ -235,6 +235,14 @@ void WebNNContextImpl::InitializeContext(ContextBackendUma backend_uma) {
 base::RepeatingClosure* g_destruction_callback_for_testing = nullptr;
 
 WebNNContextImpl::~WebNNContextImpl() {
+  if (!is_lost_) {
+    for (auto impl : tensor_impls_) {
+      impl->ResetMojoReceiver();
+    }
+    ResetMojoReceiver();
+    ClearGraphBuilders();
+  }
+
   CHECK(!has_graph_builders())
       << "Graph builders must be cleared in OnDisconnect().";
 
@@ -265,21 +273,12 @@ WebNNContextImpl::~WebNNContextImpl() {
   }
 #endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
 
-  // Resetting `gpu_task_scheduler_` invalidates its WeakPtrs so already-
-  // scheduled GPU tasks are skipped. Tasks still queued on the sequence's task
-  // runner (and the MultiplexRouter refs they hold) are dropped when
-  // `DestroyAndRemoveGpuSequence()` destroys the sequence on the main sequence,
-  // posted below.
+  // Destroy `gpu_task_scheduler_` before signaling destruction. This destroys
+  // the GPU sequence (shutting down its task runner and dropping queued tasks'
+  // MultiplexRouter refs) and invalidates WeakPtrs so already-scheduled GPU
+  // tasks are skipped. The callback must fire after this to guarantee the
+  // router is fully cleaned up.
   gpu_task_scheduler_.reset();
-
-  // Sequence destruction must happen on the provider main sequence, and only
-  // after this context has fully torn down (including scheduler shutdown).
-  if (has_context_provider_) {
-    main_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&WebNNContextProviderImpl::DestroyAndRemoveGpuSequence,
-                       context_provider_, handle()));
-  }
 
   if (g_destruction_callback_for_testing) {
     g_destruction_callback_for_testing->Run();

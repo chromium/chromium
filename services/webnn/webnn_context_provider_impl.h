@@ -13,8 +13,8 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/threading/thread.h"
 #include "base/types/optional_ref.h"
-#include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -93,6 +93,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       const WebNNReceiversParams& params);
 
   void SetDisconnectHandlerForTesting(base::RepeatingClosure handler);
+  void FlushForTesting();
 
   size_t GetContextCountForTesting() const;
   std::vector<std::string_view> GetContextBackendNamesForTesting() const;
@@ -114,10 +115,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   // handle. Called when a `WebNNContext` instance has a connection error. After
   // this call, it is no longer safe to use the WebNNContextImpl.
   void RemoveWebNNContextImpl(const blink::WebNNContextToken& handle);
-
-  // Destroys and removes the GPU scheduler sequence associated with the context
-  // `handle`.
-  void DestroyAndRemoveGpuSequence(const blink::WebNNContextToken& handle);
 
 #if BUILDFLAG(IS_WIN)
   // Kill the GPU process to destroy all contexts.
@@ -206,7 +203,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       mojo::PendingRemote<mojom::WebNNContext> remote,
       mojo::ScopedDataPipeProducerHandle write_tensor_producer,
       mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
-      gpu::SequenceId sequence_id,
       gpu::CommandBufferId command_buffer_id,
       mojo::PendingRemote<mojom::WebNNCompilerContext> compiler_context_remote,
       WebNNContextImplPtr context_impl);
@@ -218,7 +214,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
                         CreateWebNNContextCallback callback,
                         bool is_incognito,
                         scoped_refptr<gpu::MemoryTracker> memory_tracker,
-                        gpu::SequenceId sequence_id,
                         gpu::CommandBufferId command_buffer_id);
 
 #if BUILDFLAG(WEBNN_USE_LITERT)
@@ -255,7 +250,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       EpDeviceInfo target_device,
       mojo::PendingRemote<mojom::WebNNCompilerContext> compiler_context_remote,
       mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
-      gpu::SequenceId sequence_id,
       gpu::CommandBufferId command_buffer_id,
       mojo::PendingRemote<mojom::WebNNCompilerHost> compiler_host_remote,
       bool success);
@@ -266,7 +260,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       mojo::PendingRemote<mojom::WebNNContext> remote,
       mojo::ScopedDataPipeProducerHandle write_tensor_producer,
       mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
-      gpu::SequenceId sequence_id,
       gpu::CommandBufferId command_buffer_id,
       mojo::PendingRemote<mojom::WebNNCompilerContext> compiler_context_remote,
       WebNNContextImplPtr context_impl);
@@ -304,7 +297,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       CreateWebNNContextCallback callback,
       bool is_incognito,
       scoped_refptr<gpu::MemoryTracker> memory_tracker,
-      gpu::SequenceId sequence_id,
       gpu::CommandBufferId command_buffer_id,
       mojo::PendingRemote<mojom::WebNNCompilerContext> compiler_context_remote,
       mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
@@ -342,28 +334,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   // WebNNContextImpl(s) since the scheduler is accessed for their destruction.
   const raw_ptr<gpu::Scheduler> scheduler_;
 
+  // Worker thread used by WebNN contexts when not running on the main thread.
+  std::unique_ptr<base::Thread> worker_thread_
+      GUARDED_BY_CONTEXT(main_sequence_checker_);
+
   // Contexts created by this provider. When a context disconnects,
   // it will destroy itself by removing itself from this set.
   WebNNContextImplSet context_impls_ GUARDED_BY_CONTEXT(main_sequence_checker_);
-
-  // Maps context handles to their owned GPU sequence IDs.
-  // Lifecycle:
-  // 1) `CreateWebNNContext()` creates a sequence and inserts its ID into
-  //    `pending_sequences_` before posting backend creation work.
-  // 2) On success, `OnCreateWebNNContextImpl()` removes the sequence ID from
-  //    `pending_sequences_` and inserts it into this map under the new context
-  //    handle.
-  // 3) On failure, disconnect, or provider destruction, the sequence ID is
-  //    destroyed and removed instead of entering (or remaining in) this map.
-  base::flat_map<blink::WebNNContextToken, gpu::SequenceId> sequences_
-      GUARDED_BY_CONTEXT(main_sequence_checker_);
-
-  // Sequence IDs created by `CreateWebNNContext()` that are waiting for
-  // `OnCreateWebNNContextImpl()` to either move them into `sequences_` on
-  // success or destroy them on failure. If the thread pool drops the reply due
-  // to SKIP_ON_SHUTDOWN, the destructor destroys these sequences.
-  base::flat_set<gpu::SequenceId> pending_sequences_
-      GUARDED_BY_CONTEXT(main_sequence_checker_);
 
   // Specifies the thread on which the GPU scheduler should run tasks.
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;

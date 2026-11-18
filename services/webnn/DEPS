@@ -2,6 +2,7 @@ include_rules = [
   "+content/test/fuzzer/mojolpm_fuzzer_support.h",
   "+gpu/command_buffer/common/sync_token.h",
   "+gpu/ipc/common/command_buffer_id.h",
+  "+gpu/command_buffer/service/gpu_task_priority.h",
   "+gpu/command_buffer/service/memory_tracking.h",
   "+gpu/command_buffer/service/sequence_id.h",
   "+gpu/command_buffer/service/scheduler_task_runner.h",
