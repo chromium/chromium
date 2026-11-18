@@ -7461,7 +7461,9 @@
                         "auto_session_end_delay": "300ms"
                     },
                     "enable_features": [
-                        "Dictation"
+                        "Dictation",
+                        "IPH_Dictation",
+                        "IPH_DictationHotkey"
                     ]
                 }
             ]
