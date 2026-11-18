@@ -483,6 +483,14 @@ class VerticalTabStripExpandOnHoverInteractiveUiTest
         "WaitForOmniboxPopupClippedToStrip");
   }
 
+  // Returns the part of the strip that covers the location bar, in screen
+  // coordinates.
+  gfx::Rect GetStripOverLocationBarBounds() {
+    gfx::Rect covered = region_view()->GetBoundsInScreen();
+    covered.Intersect(browser_view()->GetLocationBar()->BoundsInScreen());
+    return covered;
+  }
+
   // Moves the mouse onto the part of the expanded strip that covers the
   // location bar, and checks that the strip keeps the mouse and the omnibox
   // keeps focus. On Mac the strip starts below the toolbar row, so it never
@@ -492,17 +500,17 @@ class VerticalTabStripExpandOnHoverInteractiveUiTest
     return Steps();
 #else
     return Steps(
+        // The WebUI location bar's screen bounds are reported asynchronously
+        // by its renderer, so they may lag behind the browser's layout.
+        PollUntil(
+            [this]() { return !GetStripOverLocationBarBounds().IsEmpty(); },
+            "WaitForStripOverLocationBar"),
         MoveMouseTo(kTabStripRegionElementId,
                     base::BindOnce(
                         [](VerticalTabStripExpandOnHoverInteractiveUiTest* test,
-                           ui::TrackedElement* el) {
-                          gfx::Rect covered =
-                              el->AsA<views::TrackedElementViews>()
-                                  ->view()
-                                  ->GetBoundsInScreen();
-                          covered.Intersect(test->browser_view()
-                                                ->GetLocationBar()
-                                                ->BoundsInScreen());
+                           ui::TrackedElement*) {
+                          const gfx::Rect covered =
+                              test->GetStripOverLocationBarBounds();
                           CHECK(!covered.IsEmpty());
                           return covered.CenterPoint();
                         },
