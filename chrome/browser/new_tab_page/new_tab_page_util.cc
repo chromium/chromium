@@ -25,8 +25,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -241,6 +244,37 @@ bool IsProfileSignedIn(Profile* profile) {
                                       .GetPotentiallyInvalidSignedInAccounts()
                                       .size() > 0);
 }
+
+// Grants `ntp::IsManagedProfile()` access to the private
+// `signin::IdentityManager::FindExtendedPrimaryAccountInfo()`, which, unlike
+// the public `FindExtendedAccountInfo()` when
+// `switches::kSkipRefreshTokenCheckInIdentityManager` is disabled, doesn't
+// require refresh tokens to be loaded.
+// TODO(crbug.com/40183609): Remove once the private call is gone.
+class NewTabPageIdentityManagerAccess {
+ private:
+  friend bool ntp::IsManagedProfile(Profile* profile);
+
+  static AccountInfo FindExtendedPrimaryAccountInfo(
+      signin::IdentityManager& identity_manager) {
+    return identity_manager.FindExtendedPrimaryAccountInfo(
+        signin::ConsentLevel::kSignin);
+  }
+};
+
+namespace ntp {
+
+bool IsManagedProfile(Profile* profile) {
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  // `identity_manager` can be null (e.g. for OTR profiles or if signin is
+  // disabled).
+  return identity_manager &&
+         NewTabPageIdentityManagerAccess::FindExtendedPrimaryAccountInfo(
+             *identity_manager)
+                 .IsManaged() == signin::Tribool::kTrue;
+}
+
+}  // namespace ntp
 
 std::string GetVariationsServiceCountryCode(
     variations::VariationsService* variations_service) {
@@ -541,4 +575,24 @@ void RecordModuleAutoRemovalMetrics(
     base::UmaHistogramSparse(kModulesAutoRemovalReasonStaleDaysCount,
                              base::PersistentHash(module_id));
   }
+}
+
+void RecordNewTabPageNavigationMetrics(Profile* profile, base::Time now) {
+  PrefService* prefs = profile->GetPrefs();
+  const base::Time prev_navigation_time =
+      prefs->GetTime(ntp_prefs::kNtpPrevNavigationTime);
+  if (!prev_navigation_time.is_null()) {
+    base::UmaHistogramCustomTimes("NewTabPage.TimeSinceLastNTP",
+                                  now - prev_navigation_time, base::Seconds(1),
+                                  base::Days(1), 100);
+  }
+  prefs->SetTime(ntp_prefs::kNtpPrevNavigationTime, now);
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  // `identity_manager` can be null (e.g. for OTR profiles or if signin is
+  // disabled).
+  const bool has_credentials =
+      identity_manager && !identity_manager->GetAccountsInCookieJar()
+                               .GetPotentiallyInvalidSignedInAccounts()
+                               .empty();
+  base::UmaHistogramBoolean("NewTabPage.HasCredentials", has_credentials);
 }

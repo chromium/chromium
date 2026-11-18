@@ -10,26 +10,21 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_pref_observer.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_metrics.h"
 #include "chrome/browser/ui/webui/new_tab_page/core/new_tab_page_mojo_handlers.h"
 #include "chrome/browser/ui/webui/new_tab_page/core/ntp_load_time_data.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/new_tab_page_resources.h"
@@ -38,12 +33,8 @@
 #include "chrome/grit/new_tab_shared_resources_map.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/google/core/common/google_util.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -72,17 +63,6 @@ NewTabPageUIConfig::CreateWebUIController(content::WebUI* web_ui,
 }
 
 namespace {
-
-constexpr char kPrevNavigationTimePrefName[] = "NewTabPage.PrevNavigationTime";
-
-bool HasCredentials(Profile* profile) {
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  return
-      /* Can be null if Chrome signin is disabled. */ identity_manager &&
-      !identity_manager->GetAccountsInCookieJar()
-           .GetPotentiallyInvalidSignedInAccounts()
-           .empty();
-}
 
 content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
     Profile* profile,
@@ -191,30 +171,6 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
 WEB_UI_CONTROLLER_TYPE_IMPL(NewTabPageUI)
 
 NewTabPageUI::~NewTabPageUI() = default;
-
-// static
-void NewTabPageUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterTimePref(kPrevNavigationTimePrefName, base::Time());
-  registry->RegisterTimePref(ntp_prefs::kNtpLastModuleStalenessUpdate,
-                             base::Time());
-  registry->RegisterDictionaryPref(ntp_prefs::kNtpModuleStalenessCountDict);
-  registry->RegisterDictionaryPref(
-      ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
-  registry->RegisterBooleanPref(ntp_prefs::kNtpAnimatedDoodlesEnabled, true);
-  registry->RegisterBooleanPref(ntp_prefs::kNtpDoodleMuralsEnabled, true);
-}
-
-// static
-void NewTabPageUI::ResetProfilePrefs(PrefService* prefs) {
-  MostVisitedPrefObserver::ResetProfilePrefs(prefs);
-  prefs->SetTime(ntp_prefs::kNtpLastModuleStalenessUpdate, base::Time());
-  prefs->SetDict(ntp_prefs::kNtpModuleStalenessCountDict, base::DictValue());
-  prefs->SetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict,
-                 base::DictValue());
-  prefs->SetBoolean(ntp_prefs::kNtpAnimatedDoodlesEnabled, true);
-  prefs->SetBoolean(ntp_prefs::kNtpDoodleMuralsEnabled, true);
-  prefs->SetDict(prefs::kContextMenuAnimationState, base::DictValue());
-}
 
 // static
 scoped_refptr<base::RefCountedMemory> NewTabPageUI::GetFaviconResourceBytes(
@@ -369,17 +325,7 @@ void NewTabPageUI::DidStartNavigation(
       navigation_handle->GetURL() == chrome::ChromeUINewTabPageURLAsGURL()) {
     const base::Time now = base::Time::Now();
     OnLoad();
-
-    auto prev_navigation_time =
-        profile_->GetPrefs()->GetTime(kPrevNavigationTimePrefName);
-    if (!prev_navigation_time.is_null()) {
-      base::UmaHistogramCustomTimes("NewTabPage.TimeSinceLastNTP",
-                                    now - prev_navigation_time,
-                                    base::Seconds(1), base::Days(1), 100);
-    }
-    profile_->GetPrefs()->SetTime(kPrevNavigationTimePrefName, now);
-    base::UmaHistogramBoolean("NewTabPage.HasCredentials",
-                              HasCredentials(profile_));
+    RecordNewTabPageNavigationMetrics(profile_, now);
   }
 }
 

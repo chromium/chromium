@@ -476,8 +476,7 @@ source_set("impl") {
       "//chrome/browser/new_tab_page",
       "//chrome/browser/ui/webui/cr_components/most_visited",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker:impl",
-      "//chrome/browser/ui/webui/new_tab_page",
-      "//chrome/browser/ui/webui/new_tab_page:impl",
+      "//chrome/browser/ui/webui/new_tab_page:core",
     ]
   }
 

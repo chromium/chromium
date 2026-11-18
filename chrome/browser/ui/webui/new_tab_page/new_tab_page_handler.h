@@ -106,9 +106,6 @@ class NewTabPageHandler
   // to. Hosts register these with the page's TrackedElementHandler.
   static std::vector<ui::ElementIdentifier> GetTrackedElementIds();
 
-  // Returns whether `profile`'s primary account is managed.
-  static bool IsManagedProfile(Profile* profile);
-
   // Histograms being recorded when a module is dismissed.
   static const char kModuleDismissedHistogram[];
   // Histograms being recorded when auto removal/undo event is triggered.

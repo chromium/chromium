@@ -2,8 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# The ntp_pref_names.h is in a separate BUILD.gn so that the assert in
-# the new_tab_page/BUILD.gn does not need to be removed.
+# New Tab Page pref names and their registration and reset. Kept in a separate
+# BUILD.gn so that the assert(enable_webui_ntp) in new_tab_page/BUILD.gn doesn't
+# apply to pref consumers.
 source_set("prefs") {
-  sources = [ "ntp_pref_names.h" ]
+  sources = [
+    "ntp_pref_names.h",
+    "ntp_prefs.cc",
+    "ntp_prefs.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/common:constants",
+    "//components/prefs",
+  ]
 }

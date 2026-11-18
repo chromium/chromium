@@ -58,7 +58,7 @@ class PrefRegistrySimple;
 class AccountFetcherService;
 class AccountTrackerService;
 class GaiaCookieManagerService;
-class NewTabPageUI;
+class NewTabPageIdentityManagerAccess;
 
 namespace signin {
 
@@ -701,10 +701,10 @@ class IdentityManager : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest, FindExtendedPrimaryAccountInfo);
   FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest, BatchOfPrimaryAccountChanges);
 
-  // Both classes only call FindExtendedPrimaryAccountInfo().
+  // Only calls FindExtendedPrimaryAccountInfo(), from new_tab_page_util.cc.
   // TODO(crbug.com/40183609): Delete once the private calls have been
   // removed.
-  friend class ::NewTabPageUI;
+  friend class ::NewTabPageIdentityManagerAccess;
 
   // Returns the extended account info for the primary account. This function
   // does not require tokens to be loaded.

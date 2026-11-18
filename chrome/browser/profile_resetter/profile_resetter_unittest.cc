@@ -21,12 +21,15 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/with_feature_override.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/google/google_brand.h"
+#include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profile_resetter/brandcode_config_fetcher.h"
 #include "chrome/browser/profile_resetter/profile_reset_report.pb.h"
@@ -1240,9 +1243,35 @@ TEST_F(ProfileResetterTest, ResetNTPCustomizationsTest) {
       /*action_url=*/GURL("https://action.com"),
       /*collection_id=*/"");
   EXPECT_TRUE(ntp_custom_background_service->GetCustomBackground().has_value());
+  PrefService* prefs = profile()->GetPrefs();
+  const base::Time prev_nav_time =
+      base::Time::FromSecondsSinceUnixEpoch(1700000000);
+  prefs->SetTime(ntp_prefs::kNtpPrevNavigationTime, prev_nav_time);
+  prefs->SetBoolean(ntp_prefs::kNtpShortcutsVisible, false);
+  prefs->SetTime(ntp_prefs::kNtpLastModuleStalenessUpdate, prev_nav_time);
+  prefs->SetDict(ntp_prefs::kNtpModuleStalenessCountDict,
+                 base::DictValue().Set("module", 3));
+  prefs->SetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict,
+                 base::DictValue().Set("module", true));
+  prefs->SetBoolean(ntp_prefs::kNtpAnimatedDoodlesEnabled, false);
+  prefs->SetBoolean(ntp_prefs::kNtpDoodleMuralsEnabled, false);
+  prefs->SetDict(prefs::kContextMenuAnimationState,
+                 base::DictValue().Set("state", 1));
+
   ResetAndWait(ProfileResetter::NTP_CUSTOMIZATIONS);
+
   EXPECT_FALSE(
       ntp_custom_background_service->GetCustomBackground().has_value());
+  EXPECT_EQ(prev_nav_time, prefs->GetTime(ntp_prefs::kNtpPrevNavigationTime));
+  EXPECT_TRUE(prefs->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
+  EXPECT_TRUE(
+      prefs->GetTime(ntp_prefs::kNtpLastModuleStalenessUpdate).is_null());
+  EXPECT_TRUE(prefs->GetDict(ntp_prefs::kNtpModuleStalenessCountDict).empty());
+  EXPECT_TRUE(
+      prefs->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict).empty());
+  EXPECT_TRUE(prefs->GetBoolean(ntp_prefs::kNtpAnimatedDoodlesEnabled));
+  EXPECT_TRUE(prefs->GetBoolean(ntp_prefs::kNtpDoodleMuralsEnabled));
+  EXPECT_TRUE(prefs->GetDict(prefs::kContextMenuAnimationState).empty());
 }
 
 }  // namespace

@@ -19,6 +19,7 @@
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
@@ -76,9 +77,8 @@ NewTabPageMojoHandlers::NewTabPageMojoHandlers(
       web_contents_(web_contents),
       tracked_element_handler_getter_(
           std::move(tracked_element_handler_getter)),
-      module_id_details_(ntp::MakeModuleIdDetails(
-          NewTabPageHandler::IsManagedProfile(profile_),
-          profile_)) {
+      module_id_details_(
+          ntp::MakeModuleIdDetails(ntp::IsManagedProfile(profile_), profile_)) {
   instance_count_++;
   base::UmaHistogramCounts100("NewTabPage.Count", instance_count_);
   if (auto* session_handle = GetOrCreateContextualSessionHandle()) {

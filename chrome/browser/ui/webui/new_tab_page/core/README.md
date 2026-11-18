@@ -9,5 +9,12 @@ extension (`//chrome/browser/ui/webui/new_tab_page_extension`).
 
 `:core` must not depend on an NTP host (enforced by `DEPS` for `core/` and by
 `assert_no_deps` in `BUILD.gn`). One exception: `new_tab_page_handler.cc`
-defines `NewTabPageUI::IsManagedProfile()` and
-`NewTabPageUI::kRealboxContextualEntrypointElementId`.
+defines `NewTabPageUI::kRealboxContextualEntrypointElementId`.
+
+Host-agnostic New Tab Page helpers that live outside `:core`:
+
+- `//chrome/browser/new_tab_page/new_tab_page_util.h`: NTP metrics and
+  module/shortcut helpers, e.g. `RecordNewTabPageNavigationMetrics()` and
+  `ntp::IsManagedProfile()`.
+- `//chrome/browser/new_tab_page/prefs/`: NTP pref names (`ntp_pref_names.h`)
+  and their registration and reset (`ntp_prefs.h`).

@@ -50,6 +50,11 @@ inline constexpr char kNtpShortcutsStalenessCount[] =
 inline constexpr char kNtpShortcutsAutoRemovalDisabled[] =
     "ntp.shortcuts_auto_removal_disabled";
 
+// Time of the previous New Tab Page navigation. The value predates the `ntp.`
+// naming convention and must not change, since it is persisted.
+inline constexpr char kNtpPrevNavigationTime[] =
+    "NewTabPage.PrevNavigationTime";
+
 // Tracks the last time the staleness counter was updated for modules.
 inline constexpr char kNtpLastModuleStalenessUpdate[] =
     "ntp.last_module_staleness_update";

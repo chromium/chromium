@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/ntp_tiles/tile_type.h"
 
@@ -42,6 +43,16 @@ bool IsMostRelevantTabResumeModuleEnabled(Profile* profile);
 bool IsOutlookCalendarModuleEnabledForProfile(Profile* profile);
 bool IsMicrosoftModuleEnabledForProfile(Profile* profile);
 bool IsProfileSignedIn(Profile* profile);
+
+namespace ntp {
+
+// Returns whether the profile's primary account is a managed (hosted-domain)
+// account. This is an account check, not browser or profile policy management.
+// Returns false if there is no primary account, its hosted domain isn't known
+// yet, or signin is disabled.
+bool IsManagedProfile(Profile* profile);
+
+}  // namespace ntp
 
 // Return the country code as provided by the variations service.
 std::string GetVariationsServiceCountryCode(
@@ -96,5 +107,10 @@ void RecordModuleAutoRemovalMetrics(
     const base::DictValue& auto_removal_disabled_dict,
     const std::string& module_id,
     const int prev_count);
+
+// Records the `NewTabPage.TimeSinceLastNTP` and `NewTabPage.HasCredentials`
+// histograms for a New Tab Page navigation that starts at `now`, and stores
+// `now` in `ntp_prefs::kNtpPrevNavigationTime`.
+void RecordNewTabPageNavigationMetrics(Profile* profile, base::Time now);
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_NEW_TAB_PAGE_UTIL_H_

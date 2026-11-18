@@ -50,8 +50,6 @@
 class GURL;
 class NewTabPageMojoHandlers;
 class NtpCustomBackgroundService;
-class PrefRegistrySimple;
-class PrefService;
 class Profile;
 
 namespace base {
@@ -86,9 +84,6 @@ class NewTabPageUI : public ui::MojoWebUIController,
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRealboxContextualEntrypointElementId);
 
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-  static void ResetProfilePrefs(PrefService* prefs);
-  static bool IsManagedProfile(Profile* profile);
   static scoped_refptr<base::RefCountedMemory> GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);
 
