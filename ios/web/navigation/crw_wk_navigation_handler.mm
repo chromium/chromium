@@ -58,7 +58,6 @@
 #import "net/base/net_errors.h"
 #import "net/cert/x509_util_apple.h"
 #import "net/http/http_content_disposition.h"
-#import "net/http/http_status_code.h"
 #import "url/gurl.h"
 #import "url/origin.h"
 
@@ -846,12 +845,6 @@ NSError* SanitizeNavigationError(
                    forNavigation:navigation
                  provisionalLoad:YES];
     }
-  } else if (self.pendingNavigationInfo.hasNoContentResponse &&
-             [error.domain isEqualToString:base::SysUTF8ToNSString(
-                                               web::kWebKitErrorDomain)] &&
-             error.code ==
-                 web::kWebKitErrorFrameLoadInterruptedByPolicyChange) {
-    [self handleNoContentNavigation:navigation];
   } else if (error.code == NSURLErrorUnsupportedURL &&
              self.webStateImpl->HasWebUI()) {
     // This is a navigation to WebUI page.
@@ -1521,10 +1514,6 @@ NSError* SanitizeNavigationError(
     }
     self.pendingNavigationInfo.MIMEType = response.response.MIMEType;
     self.pendingNavigationInfo.HTTPHeaders = headers;
-    const int responseCode = headers ? headers->response_code() : 0;
-    self.pendingNavigationInfo.hasNoContentResponse =
-        responseCode == net::HTTP_NO_CONTENT ||
-        responseCode == net::HTTP_RESET_CONTENT;
   }
 }
 
@@ -2384,29 +2373,6 @@ NSError* SanitizeNavigationError(
       self.webStateImpl->OnNavigationFinished(navigationContext.get());
     }
   }
-}
-
-// Finishes a provisional navigation aborted by WebKit after receiving an HTTP
-// 204 No Content or 205 Reset Content response.
-- (void)handleNoContentNavigation:(WKNavigation*)navigation {
-  std::unique_ptr<web::NavigationContextImpl> navigationContext =
-      [self.navigationStates removeNavigation:navigation];
-  const bool isPost = [self isCurrentNavigationItemPOST];
-  [self loadCancelled];
-  self.navigationManagerImpl->DiscardNonCommittedItems();
-  if (!navigationContext) {
-    return;
-  }
-  if (self.pendingNavigationInfo.HTTPHeaders) {
-    navigationContext->SetResponseHeaders(
-        self.pendingNavigationInfo.HTTPHeaders);
-  }
-  if (self.pendingNavigationInfo.MIMEType) {
-    navigationContext->SetMimeType(self.pendingNavigationInfo.MIMEType);
-  }
-  navigationContext->SetIsPost(isPost);
-  navigationContext->ReleaseItem();
-  self.webStateImpl->OnNavigationFinished(navigationContext.get());
 }
 
 // Used to decide whether a load that generates errors with the

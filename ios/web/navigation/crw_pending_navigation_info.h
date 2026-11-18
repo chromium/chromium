@@ -36,9 +36,6 @@
 @property(nonatomic, assign) BOOL hasUserGesture;
 // Whether the navigation had a server redirect.
 @property(nonatomic, assign) BOOL unsafeRedirect;
-// Whether the response had an HTTP 204 No Content or 205 Reset Content status
-// code.
-@property(nonatomic, assign) BOOL hasNoContentResponse;
 @end
 
 #endif  // IOS_WEB_NAVIGATION_CRW_PENDING_NAVIGATION_INFO_H_

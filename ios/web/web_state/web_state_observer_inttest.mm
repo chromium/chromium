@@ -59,18 +59,6 @@
 #import "url/gurl.h"
 #import "url/scheme_host_port.h"
 
-namespace testing {
-
-// Returns a response with HTTP 205 Reset Content status code.
-std::unique_ptr<net::test_server::HttpResponse> HandleResetContent(
-    const net::test_server::HttpRequest& request) {
-  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-  response->set_code(net::HTTP_RESET_CONTENT);
-  return response;
-}
-
-}  // namespace testing
-
 namespace web {
 
 namespace {
@@ -422,38 +410,6 @@ ACTION_P4(VerifyResponseRejectedFinishedContext,
   EXPECT_FALSE((*context)->GetResponseHeaders());
   ASSERT_FALSE(web_state->IsLoading());
   ASSERT_FALSE(web_state->ContentIsHTML());
-}
-
-// Verifies correctness of `NavigationContext` (`arg1`) passed to
-// `DidFinishNavigation` for navigation that received an HTTP 204 No Content or
-// 205 Reset Content response. Asserts that `NavigationContext` is the same as
-// `context`.
-ACTION_P5(VerifyNoContentFinishedContext,
-          web_state,
-          url,
-          expected_response_code,
-          context,
-          nav_id) {
-  ASSERT_EQ(*context, arg1);
-  EXPECT_EQ(web_state, arg0);
-  ASSERT_TRUE((*context));
-  EXPECT_EQ(web_state, (*context)->GetWebState());
-  EXPECT_EQ(*nav_id, (*context)->GetNavigationId());
-  EXPECT_EQ(url, (*context)->GetUrl());
-  EXPECT_TRUE((*context)->HasUserGesture());
-  EXPECT_TRUE(
-      PageTransitionCoreTypeIs(ui::PageTransition::PAGE_TRANSITION_TYPED,
-                               (*context)->GetPageTransition()));
-  EXPECT_FALSE((*context)->IsSameDocument());
-  EXPECT_FALSE((*context)->HasCommitted());
-  EXPECT_FALSE((*context)->IsDownload());
-  EXPECT_FALSE((*context)->IsPost());
-  EXPECT_FALSE((*context)->GetError());
-  EXPECT_FALSE((*context)->IsRendererInitiated());
-  ASSERT_TRUE((*context)->GetResponseHeaders());
-  EXPECT_EQ(expected_response_code,
-            (*context)->GetResponseHeaders()->response_code());
-  ASSERT_FALSE(web_state->IsLoading());
 }
 
 // Verifies correctness of `NavigationContext` (`arg1`) for navigations via POST
@@ -852,9 +808,6 @@ class WebStateObserverTestBase : public WebIntTest {
     test_server_->RegisterRequestHandler(base::BindRepeating(
         &net::test_server::HandlePrefixedRequest, "/download",
         base::BindRepeating(::testing::HandleDownload)));
-    test_server_->RegisterRequestHandler(base::BindRepeating(
-        &net::test_server::HandlePrefixedRequest, "/reset-content",
-        base::BindRepeating(::testing::HandleResetContent)));
     test_server_->RegisterRequestHandler(base::BindRepeating(
         &net::test_server::HandlePrefixedRequest, "/slow-response",
         base::BindRepeating(::testing::HandleSlow)));
@@ -2449,117 +2402,6 @@ TEST_F(WebStateObserverTest, DisallowResponse) {
   test::LoadUrl(web_state(), test_server_->GetURL("/echo"));
   ASSERT_TRUE(test::WaitForPageToFinishLoading(web_state()));
   EXPECT_EQ("", web_state()->GetVisibleURL());
-}
-
-// Tests navigation that receives an HTTP 204 No Content response.
-TEST_F(WebStateObserverTest, NoContentNavigation) {
-  const GURL url = test_server_->GetURL("/nocontent");
-
-  NavigationContext* context = nullptr;
-  int32_t nav_id = 0;
-  EXPECT_CALL(observer_, DidStartLoading(web_state()));
-  const WebStatePolicyDecider::RequestInfo expected_request_info(
-      ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
-      /*target_window_is_cross_origin=*/false,
-      /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
-  const WebStatePolicyDecider::ResponseInfo expected_response_info(
-      /*for_main_frame=*/true);
-  EXPECT_CALL(*decider_, MockShouldAllowRequest(
-                             _, RequestInfoMatch(expected_request_info), _))
-      .WillOnce(
-          RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
-  EXPECT_CALL(observer_, DidStartNavigation(web_state(), _))
-      .WillOnce(VerifyPageStartedContext(
-          web_state(), url, ui::PageTransition::PAGE_TRANSITION_TYPED, &context,
-          &nav_id));
-  EXPECT_CALL(*decider_, ShouldAllowResponse(
-                             _, ResponseInfoMatch(expected_response_info), _))
-      .WillOnce(
-          RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
-  EXPECT_CALL(observer_, DidStopLoading(web_state()));
-  EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _))
-      .WillOnce(VerifyNoContentFinishedContext(
-          web_state(), url, net::HTTP_NO_CONTENT, &context, &nav_id));
-
-  test::LoadUrl(web_state(), url);
-  ASSERT_TRUE(test::WaitForPageToFinishLoading(web_state()));
-  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForPageLoadTimeout, ^{
-        return context != nullptr;
-      }));
-
-  EXPECT_FALSE(web_state()->GetNavigationManager()->GetPendingItem());
-  EXPECT_FALSE(web_state()->GetNavigationManager()->GetLastCommittedItem());
-  EXPECT_TRUE(web_state()->GetVisibleURL().is_empty());
-}
-
-// Tests navigation that receives an HTTP 205 Reset Content response.
-TEST_F(WebStateObserverTest, ResetContentNavigation) {
-  const GURL initial_url = test_server_->GetURL("/echoall");
-
-  // Perform initial committed navigation.
-  EXPECT_CALL(observer_, DidStartLoading(web_state()));
-  const WebStatePolicyDecider::RequestInfo initial_request_info(
-      ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
-      /*target_window_is_cross_origin=*/false,
-      /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
-  const WebStatePolicyDecider::ResponseInfo initial_response_info(
-      /*for_main_frame=*/true);
-  EXPECT_CALL(*decider_, MockShouldAllowRequest(
-                             _, RequestInfoMatch(initial_request_info), _))
-      .WillOnce(
-          RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
-  EXPECT_CALL(observer_, DidStartNavigation(web_state(), _));
-  EXPECT_CALL(*decider_, ShouldAllowResponse(
-                             _, ResponseInfoMatch(initial_response_info), _))
-      .WillOnce(
-          RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
-  EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _));
-  EXPECT_CALL(observer_, DidStopLoading(web_state()));
-  EXPECT_CALL(observer_,
-              PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
-  ASSERT_TRUE(LoadUrl(initial_url));
-
-  // Perform reset content navigation.
-  const GURL reset_url = test_server_->GetURL("/reset-content");
-  NavigationContext* context = nullptr;
-  int32_t nav_id = 0;
-  EXPECT_CALL(observer_, DidStartLoading(web_state()));
-  const WebStatePolicyDecider::RequestInfo expected_request_info(
-      ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
-      /*target_window_is_cross_origin=*/false,
-      /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
-  const WebStatePolicyDecider::ResponseInfo expected_response_info(
-      /*for_main_frame=*/true);
-  EXPECT_CALL(*decider_, MockShouldAllowRequest(
-                             _, RequestInfoMatch(expected_request_info), _))
-      .WillOnce(
-          RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
-  EXPECT_CALL(observer_, DidStartNavigation(web_state(), _))
-      .WillOnce(VerifyPageStartedContext(
-          web_state(), reset_url, ui::PageTransition::PAGE_TRANSITION_TYPED,
-          &context, &nav_id));
-  EXPECT_CALL(*decider_, ShouldAllowResponse(
-                             _, ResponseInfoMatch(expected_response_info), _))
-      .WillOnce(
-          RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
-  EXPECT_CALL(observer_, DidStopLoading(web_state()));
-  EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _))
-      .WillOnce(VerifyNoContentFinishedContext(
-          web_state(), reset_url, net::HTTP_RESET_CONTENT, &context, &nav_id));
-
-  test::LoadUrl(web_state(), reset_url);
-  ASSERT_TRUE(test::WaitForPageToFinishLoading(web_state()));
-  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForPageLoadTimeout, ^{
-        return context != nullptr;
-      }));
-
-  EXPECT_FALSE(web_state()->GetNavigationManager()->GetPendingItem());
-  EXPECT_EQ(initial_url, web_state()->GetVisibleURL());
 }
 
 // Tests rejecting the navigation from ShouldAllowResponse using an async
