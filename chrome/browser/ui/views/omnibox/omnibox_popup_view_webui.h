@@ -26,7 +26,6 @@
 
 class LocationBar;
 class OmniboxController;
-class OmniboxPopupPresenterBase;
 class OmniboxView;
 
 class OmniboxPopupViewWebUI : public OmniboxPopupView,
@@ -39,11 +38,6 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
   OmniboxPopupViewWebUI(const OmniboxPopupViewWebUI&) = delete;
   OmniboxPopupViewWebUI& operator=(const OmniboxPopupViewWebUI&) = delete;
   ~OmniboxPopupViewWebUI() override;
-
-  // TODO(crbug.com/584371333): Remove once the remaining callers use
-  // popup_host().
-  OmniboxPopupPresenterBase* presenter() override;
-  void set_presenter(OmniboxPopupPresenterBase* presenter);
 
   OmniboxPopupHost* popup_host() const override;
 
@@ -83,10 +77,6 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
   // popup widget anchored to the location bar, or OmniboxPopupLocationBarHost,
   // which shows it inside LocationBarView.
   std::unique_ptr<OmniboxPopupHost> popup_host_;
-
-  // TODO(crbug.com/584371333): Remove once the remaining callers use
-  // popup_host().
-  raw_ptr<OmniboxPopupPresenterBase> presenter_ = nullptr;
 
   // Whether the "first shown" metrics have been logged at least once.
   bool logged_first_shown_metric_ = false;

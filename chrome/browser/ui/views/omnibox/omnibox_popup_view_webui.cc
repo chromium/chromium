@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
@@ -16,7 +15,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
@@ -47,18 +45,6 @@ OmniboxPopupViewWebUI::~OmniboxPopupViewWebUI() {
 
 bool OmniboxPopupViewWebUI::IsOpen() const {
   return popup_host_->IsShown();
-}
-
-OmniboxPopupPresenterBase* OmniboxPopupViewWebUI::presenter() {
-  return presenter_;
-}
-
-void OmniboxPopupViewWebUI::set_presenter(
-    OmniboxPopupPresenterBase* presenter) {
-  // TODO(crbug.com/584371333): Remove once the remaining callers use
-  // popup_host().
-  CHECK_EQ(static_cast<OmniboxPopupHost*>(presenter), popup_host_.get());
-  presenter_ = presenter;
 }
 
 OmniboxPopupHost* OmniboxPopupViewWebUI::popup_host() const {
