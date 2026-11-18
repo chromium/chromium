@@ -384,6 +384,14 @@ TEST(LogSigninFunnelEventTest, RecordsHistogramForSupportedAccessPoint) {
                        SigninFunnelEvent::kPromoShownWithAccount);
   LogSigninFunnelEvent(AccessPoint::kFullscreenSigninPromo,
                        SigninFunnelEvent::kPromoShownNoAccount);
+  LogSigninFunnelEvent(AccessPoint::kBookmarkManager,
+                       SigninFunnelEvent::kSigninButtonClicked);
+  LogSigninFunnelEvent(AccessPoint::kNtpFeedTopPromo,
+                       SigninFunnelEvent::kChooseOtherAccountClicked);
+  LogSigninFunnelEvent(AccessPoint::kRecentTabs,
+                       SigninFunnelEvent::kSigninDeclinedButtonClicked);
+  LogSigninFunnelEvent(AccessPoint::kSettingsAutofillAndPasswords,
+                       SigninFunnelEvent::kPromoShownWithAccount);
 
   histogram_tester.ExpectUniqueSample("Signin.SigninFunnel.StartPage",
                                       SigninFunnelEvent::kPromoShownWithAccount,
@@ -392,7 +400,22 @@ TEST(LogSigninFunnelEventTest, RecordsHistogramForSupportedAccessPoint) {
       "Signin.SigninFunnel.FullscreenSigninPromo",
       SigninFunnelEvent::kPromoShownNoAccount,
       /*expected_bucket_count=*/1);
-  EXPECT_EQ(2, histogram_tester.GetTotalCountForPrefix("Signin.SigninFunnel."));
+  histogram_tester.ExpectUniqueSample("Signin.SigninFunnel.BookmarkManager",
+                                      SigninFunnelEvent::kSigninButtonClicked,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninFunnel.NtpFeedTopPromo",
+      SigninFunnelEvent::kChooseOtherAccountClicked,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninFunnel.RecentTabs",
+      SigninFunnelEvent::kSigninDeclinedButtonClicked,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninFunnel.SettingsAutofillAndPasswords",
+      SigninFunnelEvent::kPromoShownWithAccount,
+      /*expected_bucket_count=*/1);
+  EXPECT_EQ(6, histogram_tester.GetTotalCountForPrefix("Signin.SigninFunnel."));
 }
 
 TEST(LogSigninFunnelEventTest, ChecksForUnsupportedAccessPoint) {

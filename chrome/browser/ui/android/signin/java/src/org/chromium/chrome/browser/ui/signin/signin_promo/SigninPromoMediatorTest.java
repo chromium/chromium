@@ -43,6 +43,8 @@ import org.chromium.chrome.browser.signin.services.AccountPreviewPreference;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
@@ -87,6 +89,7 @@ public class SigninPromoMediatorTest {
     private @Mock SigninAndHistorySyncActivityLauncher mLauncher;
     private @Mock HistorySyncHelper mHistorySyncHelper;
     private @Mock Runnable mOnPromoStateChange;
+    private @Mock SigninMetricsUtils.Natives mSigninMetricsUtilsJniMock;
     private ProfileDataCache mProfileDataCache;
     private final boolean mIsIdentityManagerSourceOfAccounts;
     private Context mContext;
@@ -103,6 +106,7 @@ public class SigninPromoMediatorTest {
 
     @Before
     public void setUp() {
+        SigninMetricsUtilsJni.setInstanceForTesting(mSigninMetricsUtilsJniMock);
         FeatureOverrides.overrideFlag(
                 SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
                 mIsIdentityManagerSourceOfAccounts);

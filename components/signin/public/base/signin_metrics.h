@@ -792,8 +792,8 @@ void LogSignInStarted(AccessPoint access_point,
 void LogSigninPendingOffered(AccessPoint access_point);
 
 // Logs an event reached in the sign-in funnel for a given access point.
-// `access_point` must be one of the access points supported by the funnel (the
-// ones that can show the fullscreen sign-in), otherwise this CHECKs.
+// `access_point` must be one of the access points supported by the funnel,
+// otherwise this CHECKs.
 void LogSigninFunnelEvent(AccessPoint access_point, SigninFunnelEvent event);
 
 #if BUILDFLAG(IS_IOS)

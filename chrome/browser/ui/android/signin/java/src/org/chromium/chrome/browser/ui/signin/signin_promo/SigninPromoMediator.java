@@ -25,6 +25,7 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
+import org.chromium.components.signin.metrics.SigninFunnelEvent;
 import org.chromium.components.signin.metrics.SigninPromoAction;
 import org.chromium.components.sync.SyncService;
 import org.chromium.google_apis.gaia.GaiaId;
@@ -146,6 +147,13 @@ final class SigninPromoMediator
                         ? SigninPromoAction.NEW_ACCOUNT_NO_EXISTING_ACCOUNT
                         : SigninPromoAction.WITH_DEFAULT;
         SigninMetricsUtils.logSigninOffered(promoAction, mPromoDelegate.getAccessPoint());
+        // ImpressionTracker can trigger recordImpression() even when canShowPromo() is false.
+        if (canShowPromo()) {
+            logSigninFunnelEvent(
+                    getVisibleAccount() == null
+                            ? SigninFunnelEvent.PROMO_SHOWN_NO_ACCOUNT
+                            : SigninFunnelEvent.PROMO_SHOWN_WITH_ACCOUNT);
+        }
 
         ChromeSharedPreferences.getInstance()
                 .incrementInt(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
@@ -222,6 +230,7 @@ final class SigninPromoMediator
 
     private void onPrimaryButtonClicked(@Nullable DisplayableProfileData profileData) {
         recordEventHistogram(Event.CONTINUED);
+        logSigninFunnelEvent(SigninFunnelEvent.SIGNIN_BUTTON_CLICKED);
         if (mPromoDelegate.shouldOverridePrimaryButtonClick()) {
             mPromoDelegate.onPrimaryButtonClicked(profileData);
         } else {
@@ -231,13 +240,16 @@ final class SigninPromoMediator
     }
 
     private void onAccountPickerClicked() {
+        assert !mPromoDelegate.shouldDisplaySignedInLayout();
         recordEventHistogram(Event.CONTINUED);
+        logSigninFunnelEvent(SigninFunnelEvent.CHOOSE_OTHER_ACCOUNT_CLICKED);
         mMediatorDelegate.startSigninFlow(mPromoDelegate.getConfigForAccountPickerClick());
     }
 
     private void onDismissButtonClicked() {
         assert mPromoDelegate.canBeDismissedPermanently();
         recordEventHistogram(Event.DISMISSED);
+        logSigninFunnelEvent(SigninFunnelEvent.SIGNIN_DECLINED_BUTTON_CLICKED);
         mPromoDelegate.permanentlyDismissPromo();
         refreshPromoContent(/* wasVisibleAccountUpdated= */ false);
     }
@@ -348,6 +360,14 @@ final class SigninPromoMediator
                             + mPromoDelegate.getAccessPointName(),
                     mPromoDelegate.getPromoShownCount(),
                     MAX_TOTAL_PROMO_SHOW_COUNT);
+        }
+    }
+
+    private void logSigninFunnelEvent(@SigninFunnelEvent int event) {
+        // Sign-in funnel events should only be recorded for signed-out sign-in promos, not for
+        // signed-in promos (e.g. bookmarks account settings or history sync promos).
+        if (!mPromoDelegate.shouldDisplaySignedInLayout()) {
+            SigninMetricsUtils.logSigninFunnelEvent(mPromoDelegate.getAccessPoint(), event);
         }
     }
 }

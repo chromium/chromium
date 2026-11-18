@@ -76,6 +76,14 @@ std::string_view GetSigninFunnelAccessPointName(AccessPoint access_point) {
       return "DeepLinkDefault";
     case AccessPoint::kCollaborationJoinTabGroup:
       return "CollaborationJoinTabGroup";
+    case AccessPoint::kBookmarkManager:
+      return "BookmarkManager";
+    case AccessPoint::kNtpFeedTopPromo:
+      return "NtpFeedTopPromo";
+    case AccessPoint::kRecentTabs:
+      return "RecentTabs";
+    case AccessPoint::kSettingsAutofillAndPasswords:
+      return "SettingsAutofillAndPasswords";
     default:
       return std::string_view();
   }
@@ -1150,9 +1158,9 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
 void LogSigninFunnelEvent(AccessPoint access_point, SigninFunnelEvent event) {
   std::string_view access_point_name =
       GetSigninFunnelAccessPointName(access_point);
-  // The funnel is only supported for the access points that can show the
-  // fullscreen sign-in. New callers must add their access point to
-  // `GetSigninFunnelAccessPointName()` and to the histogram variants.
+  // The funnel is only supported for access points listed in
+  // `GetSigninFunnelAccessPointName()`. New callers must add their access
+  // point there and to the histogram variants.
   // TODO(crbug.com/512772292): In the long run, log these events for all access
   // points.
   CHECK(!access_point_name.empty())

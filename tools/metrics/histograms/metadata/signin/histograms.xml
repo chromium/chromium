@@ -184,11 +184,16 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(SigninFunnelAccessPoints) -->
 
 <variants name="SigninFunnelAccessPoints">
+  <variant name="BookmarkManager" summary="Bookmark manager"/>
   <variant name="CollaborationJoinTabGroup"
       summary="Collaboration join tab group"/>
   <variant name="DeepLinkDefault" summary="Deep link"/>
   <variant name="ForcedSignin" summary="Forced sign-in"/>
   <variant name="FullscreenSigninPromo" summary="Fullscreen sign-in promo"/>
+  <variant name="NtpFeedTopPromo" summary="NTP feed top promo"/>
+  <variant name="RecentTabs" summary="Recent tabs"/>
+  <variant name="SettingsAutofillAndPasswords"
+      summary="Autofill and passwords settings"/>
   <variant name="StartPage" summary="Start page (FRE)"/>
 </variants>
 

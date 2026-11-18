@@ -97,6 +97,7 @@ import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SigninFunnelEvent;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -265,11 +266,17 @@ public class SigninPromoCoordinatorTest {
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
     public void testPromoShownAfterAccountsBecomeAvailable(@SigninAccessPoint int accessPoint) {
         try (var _ = mSigninTestRule.blockGetAccountsUpdate()) {
+            var histogramWatcher =
+                    HistogramWatcher.newBuilder()
+                            .expectNoRecords(
+                                    "Signin.SigninFunnel." + getAccessPointToRenderId(accessPoint))
+                            .build();
             setUpSignInPromo(accessPoint);
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         assertFalse(mPromoCoordinator.canShowPromo());
                     });
+            histogramWatcher.assertExpected();
         }
         if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
             // Promo is only shown for signed-in users on the history page.
@@ -347,11 +354,23 @@ public class SigninPromoCoordinatorTest {
     }
 
     private void testPrimaryButtonClickHelper(@SigninAccessPoint int accessPoint) {
-        var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.SyncPromo.Continued.Count."
-                                + getAccessPointToHistogramName(accessPoint),
-                        1);
+        var histogramWatcherBuilder =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncPromo.Continued.Count."
+                                        + getAccessPointToHistogramName(accessPoint),
+                                1);
+        // Sign-in funnel events are only recorded for signed-out sign-in promos, whereas the
+        // history page only shows a history sync promo to already signed-in users.
+        if (accessPoint != SigninAccessPoint.HISTORY_PAGE) {
+            histogramWatcherBuilder.expectIntRecords(
+                    "Signin.SigninFunnel." + getAccessPointToRenderId(accessPoint),
+                    SigninFunnelEvent.PROMO_SHOWN_WITH_ACCOUNT,
+                    SigninFunnelEvent.SIGNIN_BUTTON_CLICKED);
+        } else {
+            histogramWatcherBuilder.expectNoRecords("Signin.SigninFunnel.HistoryPage");
+        }
+        var histogramWatcher = histogramWatcherBuilder.build();
         var impressionHistogramWatcher =
                 getPromoImpressionHistogramWatcher(accessPoint, /* hasAccounts= */ true);
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -515,6 +534,7 @@ public class SigninPromoCoordinatorTest {
                                         + getAccessPointToHistogramName(
                                                 SigninAccessPoint.BOOKMARK_MANAGER),
                                 1)
+                        .expectNoRecords("Signin.SigninFunnel.BookmarkManager")
                         .build();
         var impressionHistogramWatcher =
                 getPromoImpressionHistogramWatcher(
@@ -577,6 +597,10 @@ public class SigninPromoCoordinatorTest {
                                 "Signin.SyncPromo.Continued.Count."
                                         + getAccessPointToHistogramName(accessPoint),
                                 1)
+                        .expectIntRecords(
+                                "Signin.SigninFunnel." + getAccessPointToRenderId(accessPoint),
+                                SigninFunnelEvent.PROMO_SHOWN_WITH_ACCOUNT,
+                                SigninFunnelEvent.CHOOSE_OTHER_ACCOUNT_CLICKED)
                         .build();
         var impressionHistogramWatcher =
                 getPromoImpressionHistogramWatcher(accessPoint, /* hasAccounts= */ true);
@@ -652,7 +676,7 @@ public class SigninPromoCoordinatorTest {
                 dueToUndoneSignin
                         ? SigninPromoMediator.Event.SIGNIN_UNDONE
                         : SigninPromoMediator.Event.DISMISSED;
-        var histogramWatcher =
+        var histogramWatcherBuilder =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Signin.Promo.ImpressionsUntil."
@@ -665,8 +689,24 @@ public class SigninPromoCoordinatorTest {
                                         + event
                                         + ".Count."
                                         + getAccessPointToHistogramName(accessPoint),
-                                1)
-                        .build();
+                                1);
+        // Sign-in funnel events are only recorded for signed-out sign-in promos, whereas the
+        // history page only shows a history sync promo to already signed-in users.
+        if (accessPoint != SigninAccessPoint.HISTORY_PAGE) {
+            if (dueToUndoneSignin) {
+                histogramWatcherBuilder.expectIntRecord(
+                        "Signin.SigninFunnel." + getAccessPointToRenderId(accessPoint),
+                        SigninFunnelEvent.PROMO_SHOWN_NO_ACCOUNT);
+            } else {
+                histogramWatcherBuilder.expectIntRecords(
+                        "Signin.SigninFunnel." + getAccessPointToRenderId(accessPoint),
+                        SigninFunnelEvent.PROMO_SHOWN_NO_ACCOUNT,
+                        SigninFunnelEvent.SIGNIN_DECLINED_BUTTON_CLICKED);
+            }
+        } else {
+            histogramWatcherBuilder.expectNoRecords("Signin.SigninFunnel.HistoryPage");
+        }
+        var histogramWatcher = histogramWatcherBuilder.build();
         var impressionHistogramWatcher =
                 getPromoImpressionHistogramWatcher(
                         accessPoint,
@@ -817,7 +857,11 @@ public class SigninPromoCoordinatorTest {
     @Test
     @MediumTest
     public void testHistorySyncOptIn_RecentTabs() {
-        signinAndOptOutHistorySyncIfNeeded(SigninAccessPoint.RECENT_TABS);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Signin.SigninFunnel.RecentTabs")
+                        .build();
+        signinAndOptOutHistorySync();
         setUpSignInPromo(SigninAccessPoint.RECENT_TABS);
         waitForView(withId(R.id.signin_promo_primary_button)).click();
 
@@ -833,6 +877,7 @@ public class SigninPromoCoordinatorTest {
         assertEquals(
                 context.getString(R.string.history_sync_recent_tabs_subtitle),
                 config.historySyncConfig.subtitle);
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -1155,17 +1200,21 @@ public class SigninPromoCoordinatorTest {
         assertFalse(SyncTestUtil.isBookmarksAndReadingListEnabled());
     }
 
+    private void signinAndOptOutHistorySync() {
+        initNativeIfNeeded();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
+                    syncService.setSelectedType(UserSelectableType.HISTORY, false);
+                    syncService.setSelectedType(UserSelectableType.TABS, false);
+                });
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
+    }
+
     private void signinAndOptOutHistorySyncIfNeeded(@SigninAccessPoint int accessPoint) {
         if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
-            initNativeIfNeeded();
-            mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
-                        syncService.setSelectedType(UserSelectableType.HISTORY, false);
-                        syncService.setSelectedType(UserSelectableType.TABS, false);
-                    });
-            assertFalse(SyncTestUtil.isHistorySyncEnabled());
+            signinAndOptOutHistorySync();
         }
     }
 }
