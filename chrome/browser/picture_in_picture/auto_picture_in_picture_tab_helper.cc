@@ -506,7 +506,19 @@ void AutoPictureInPictureTabHelper::OnOcclusionStateChanged(
       }
       break;
     case OcclusionState::kVisible:
-      MaybeExitAutoPictureInPicture();
+      if (is_in_auto_picture_in_picture_) {
+        // Exit asynchronously so we don't close the picture-in-picture window
+        // while inside a visibility/occlusion observer notification (e.g. while
+        // a child dialog widget is in the middle of showing).
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &AutoPictureInPictureTabHelper::
+                    MaybeExitAutoPictureInPictureIfTabIsActiveAndVisible,
+                weak_factory_.GetWeakPtr()));
+      } else {
+        MaybeExitAutoPictureInPicture();
+      }
       break;
     case OcclusionState::kHidden:
       // Don't make any changes for a hidden state. If we're already in autopip
