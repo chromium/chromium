@@ -4,13 +4,13 @@
 
 #include "chrome/credential_provider/gaiacp/gcp_crash_reporting.h"
 
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/current_module.h"
-#include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gcp_crash_reporter_client.h"
 #include "chrome/credential_provider/gaiacp/gcp_crash_reporting_utils.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
@@ -69,16 +69,32 @@ void ConfigureGcpCrashReporting(const base::CommandLine& command_line) {
   ANNOTATE_LEAKING_OBJECT_PTR(crash_client);
   crash_reporter::SetCrashReporterClient(crash_client);
 
+  base::FilePath path_to_dll;
+  HRESULT hr = GetPathToDllFromHandle(CURRENT_MODULE(), &path_to_dll);
+  if (FAILED(hr)) {
+    LOGFN(ERROR) << "GetPathToDllFromHandle hr=" << putHR(hr);
+    return;
+  }
+
   base::CommandLine dll_main_cmd_line(base::CommandLine::NO_PROGRAM);
 
-  HRESULT hr = GetCommandLineForEntrypoint(
-      CURRENT_MODULE(), kRunAsCrashpadHandlerEntryPoint, &dll_main_cmd_line);
+  hr = GetCommandLineForCrashpadHandler(path_to_dll, &dll_main_cmd_line);
   if (hr == S_FALSE) {
     LOGFN(WARNING) << "Failed to get command line to run crashpad handler";
     return;
   }
   if (FAILED(hr)) {
-    LOGFN(ERROR) << "GetCommandLineForEntryPoint hr=" << putHR(hr);
+    LOGFN(ERROR) << "GetCommandLineForCrashpadHandler hr=" << putHR(hr);
+    return;
+  }
+
+  // If the dll path has spaces, crashpad quotes the argument and rundll32 shows
+  // an error dialog, which blocks the logon UI until it is closed.
+  const std::wstring handler_arg = dll_main_cmd_line.GetArgs()[0];
+  if (handler_arg.find(L' ') != std::wstring::npos) {
+    LOGFN(WARNING) << "Crashpad handler not started because the dll path has "
+                      "spaces: "
+                   << handler_arg;
     return;
   }
 
@@ -95,7 +111,7 @@ void ConfigureGcpCrashReporting(const base::CommandLine& command_line) {
 
   crash_reporter::InitializeCrashpadWithDllEmbeddedHandler(
       process_type.empty(), "GCPW DLL", "", dll_main_cmd_line.GetProgram(),
-      {base::WideToUTF8(dll_main_cmd_line.GetArgs()[0])});
+      {base::WideToUTF8(handler_arg)});
 
   SetCommonCrashKeys(command_line);
 }

@@ -241,10 +241,18 @@ void CALLBACK RunAsCrashpadHandlerW(HWND /*hwnd*/,
   DCHECK_EQ(cmd_line->GetSwitchValueASCII(switches::kProcessType),
             crash_reporter::switches::kCrashpadHandler);
 
-  std::wstring entrypoint_arg;
-  credential_provider::GetEntryPointArgumentForRunDll(
-      CURRENT_MODULE(), credential_provider::kRunAsCrashpadHandlerEntryPoint,
-      &entrypoint_arg);
+  base::FilePath dll_path;
+  credential_provider::GetPathToDllFromHandle(CURRENT_MODULE(), &dll_path);
+  base::CommandLine handler_cmd_line(base::CommandLine::NO_PROGRAM);
+  credential_provider::GetCommandLineForCrashpadHandler(dll_path,
+                                                        &handler_cmd_line);
+  const base::CommandLine::StringVector handler_args =
+      handler_cmd_line.GetArgs();
+  if (handler_args.empty()) {
+    LOGFN(ERROR) << "Failed to rebuild the crashpad handler argument";
+    return;
+  }
+  const std::wstring& entrypoint_arg = handler_args[0];
 
   // Get all the arguments from the original command line except for the
   // entrypoint argument otherwise the crashpad handler will fail to start

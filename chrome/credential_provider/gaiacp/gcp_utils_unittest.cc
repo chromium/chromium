@@ -503,24 +503,81 @@ TEST_F(GcpProcHelperTest, WaitForProcess) {
   EXPECT_STREQ(input_buffer.data(), output_buffer.data());
 }
 
-TEST_F(GcpProcHelperTest, GetCommandLineForEntrypoint) {
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-
-  // In tests, GetCommandLineForEntrypoint() will always return S_FALSE.
-  ASSERT_EQ(S_FALSE,
-            GetCommandLineForEntrypoint(nullptr, L"entrypoint", &command_line));
-
-  // Get short path name of this binary and build the expect command line.
+// Whether the short path of this binary has spaces depends on the 8.3 setting,
+// so the argument format is tested by GcpEntryPointArgumentTest instead.
+TEST_F(GcpProcHelperTest, GetCommandLineForCrashpadHandler) {
+  // Get the path and short path name of this binary.
   wchar_t path[MAX_PATH];
   wchar_t short_path[MAX_PATH];
   ASSERT_LT(0u, GetModuleFileName(nullptr, path, std::size(path)));
   ASSERT_LT(0u, GetShortPathName(path, short_path, std::size(short_path)));
 
-  std::wstring expected_arg =
-      base::StrCat({L"\"", short_path, L"\",entrypoint"});
+  // This binary is not a dll, so S_FALSE is returned.
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  ASSERT_EQ(S_FALSE, GetCommandLineForCrashpadHandler(base::FilePath(path),
+                                                      &command_line));
 
+  EXPECT_EQ(FILE_PATH_LITERAL("rundll32.exe"),
+            command_line.GetProgram().BaseName().value());
   ASSERT_EQ(1u, command_line.GetArgs().size());
-  ASSERT_EQ(expected_arg, command_line.GetArgs()[0]);
+  EXPECT_EQ(FormatRunDllArgumentForCrashpadHandler(short_path),
+            command_line.GetArgs()[0]);
+}
+
+TEST_F(GcpProcHelperTest, GetCommandLineForPerformPostSigninActions) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+
+  // This binary is not a dll, so S_FALSE is returned.
+  ASSERT_EQ(S_FALSE,
+            GetCommandLineForPerformPostSigninActions(nullptr, &command_line));
+
+  // Get short path name of this binary.
+  wchar_t path[MAX_PATH];
+  wchar_t short_path[MAX_PATH];
+  ASSERT_LT(0u, GetModuleFileName(nullptr, path, std::size(path)));
+  ASSERT_LT(0u, GetShortPathName(path, short_path, std::size(short_path)));
+
+  EXPECT_EQ(FILE_PATH_LITERAL("rundll32.exe"),
+            command_line.GetProgram().BaseName().value());
+  ASSERT_EQ(1u, command_line.GetArgs().size());
+  EXPECT_EQ(FormatRunDllArgumentForPerformPostSigninActions(short_path),
+            command_line.GetArgs()[0]);
+}
+
+TEST(GcpEntryPointArgumentTest, PathIsNotQuotedForCrashpadHandler) {
+  constexpr wchar_t kDllPath[] = LR"(C:\PROGRA~1\Google\Gaia1_0.dll)";
+  constexpr wchar_t kExpectedArg[] =
+      LR"(C:\PROGRA~1\Google\Gaia1_0.dll,RunAsCrashpadHandler)";
+
+  EXPECT_EQ(kExpectedArg, FormatRunDllArgumentForCrashpadHandler(kDllPath));
+}
+
+// The crashpad handler cannot start in this case.
+TEST(GcpEntryPointArgumentTest, PathWithSpacesIsNotQuotedForCrashpadHandler) {
+  constexpr wchar_t kDllPath[] = LR"(C:\Program Files\Google\Gaia1_0.dll)";
+  constexpr wchar_t kExpectedArg[] =
+      LR"(C:\Program Files\Google\Gaia1_0.dll,RunAsCrashpadHandler)";
+
+  EXPECT_EQ(kExpectedArg, FormatRunDllArgumentForCrashpadHandler(kDllPath));
+}
+
+TEST(GcpEntryPointArgumentTest, PathIsQuotedForPerformPostSigninActions) {
+  constexpr wchar_t kDllPath[] = LR"(C:\PROGRA~1\Google\Gaia1_0.dll)";
+  constexpr wchar_t kExpectedArg[] =
+      LR"("C:\PROGRA~1\Google\Gaia1_0.dll",PerformPostSigninActions)";
+
+  EXPECT_EQ(kExpectedArg,
+            FormatRunDllArgumentForPerformPostSigninActions(kDllPath));
+}
+
+TEST(GcpEntryPointArgumentTest,
+     PathWithSpacesIsQuotedForPerformPostSigninActions) {
+  constexpr wchar_t kDllPath[] = LR"(C:\Program Files\Google\Gaia1_0.dll)";
+  constexpr wchar_t kExpectedArg[] =
+      LR"("C:\Program Files\Google\Gaia1_0.dll",PerformPostSigninActions)";
+
+  EXPECT_EQ(kExpectedArg,
+            FormatRunDllArgumentForPerformPostSigninActions(kDllPath));
 }
 
 TEST(Enroll, EnrollToGoogleMdmIfNeeded_NotEnabled) {

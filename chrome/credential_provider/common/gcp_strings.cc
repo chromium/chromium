@@ -117,6 +117,9 @@ const char kGcpwEndpointPathPromoParameter[] = "gcpw_endpoint_path";
 
 const wchar_t kRunAsCrashpadHandlerEntryPoint[] = L"RunAsCrashpadHandler";
 
+const wchar_t kPerformPostSigninActionsEntryPoint[] =
+    L"PerformPostSigninActions";
+
 // Flags to manipulate behavior of Chrome when importing credentials for the
 // account signs in through GCPW.
 const wchar_t kAllowImportOnlyOnFirstRun[] = L"allow_import_only_on_first_run";

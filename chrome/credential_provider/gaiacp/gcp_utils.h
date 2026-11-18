@@ -228,29 +228,42 @@ HRESULT InitializeStdHandles(CommDirection direction,
                              ScopedStartupInfo* startupinfo,
                              StdParentHandles* parent_handles);
 
-// Fills |path_to_dll| with the short path to the dll referenced by
-// |dll_handle|. The short path is needed to correctly call rundll32.exe in
-// cases where there might be quotes or spaces in the path.
+// Fills |path_to_dll| with the full path of the module referenced by
+// |dll_handle|, as returned by GetModuleFileName(). The path is not converted
+// to its short (8.3) form. If |dll_handle| is null, this is the path of the
+// executable of the current process. Fails if the path has MAX_PATH characters
+// or more.
 HRESULT GetPathToDllFromHandle(HINSTANCE dll_handle,
                                base::FilePath* path_to_dll);
 
-// This function gets a correctly formatted entry point argument to pass to
-// rundll32.exe for a dll referenced by the handle |dll_handle| and an entry
-// point function with the name |entrypoint|. |entrypoint_arg| will be filled
-// with the argument value.
-HRESULT GetEntryPointArgumentForRunDll(HINSTANCE dll_handle,
-                                       const wchar_t* entrypoint,
-                                       std::wstring* entrypoint_arg);
+// How the dll path is quoted depends on who starts rundll32:
+// - Crashpad starts the handler and quotes the arguments again, which rundll32
+//   cannot parse (see AppendCommandLineArgument() in
+//   third_party/crashpad/crashpad/util/win/command_line.cc).
+// - OSProcessManager::CreateRunningProcess() starts PerformPostSigninActions
+//   without changing the arguments.
+// That's why we need to treat each initialization differently.
 
-// This function is used to build the command line for rundll32 to call an
-// exported entrypoint from the DLL given by |dll_handle|.
-// Returns S_FALSE if a command line can successfully be built but if the
-// path to the "dll" actually points to a non ".dll" file. This allows
-// detection of calls to this function via a unit test which will be
-// running under an ".exe" module.
-HRESULT GetCommandLineForEntrypoint(HINSTANCE dll_handle,
-                                    const wchar_t* entrypoint,
-                                    base::CommandLine* command_line);
+// Builds the rundll32.exe command line that runs the crashpad handler of the
+// dll at |path_to_dll|, from the short (8.3) path of the dll:
+// https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file#short-vs-long-names
+// Returns S_FALSE if |path_to_dll| is not a ".dll" file, as in unit tests.
+HRESULT GetCommandLineForCrashpadHandler(const base::FilePath& path_to_dll,
+                                         base::CommandLine* command_line);
+
+// Returns the argument of that command line: <dll_path>,RunAsCrashpadHandler.
+std::wstring FormatRunDllArgumentForCrashpadHandler(std::wstring_view dll_path);
+
+// Same as GetCommandLineForCrashpadHandler(), for the PerformPostSigninActions
+// entry point of the dll given by |dll_handle|.
+HRESULT GetCommandLineForPerformPostSigninActions(
+    HINSTANCE dll_handle,
+    base::CommandLine* command_line);
+
+// Returns the argument of that command line:
+// "<dll_path>",PerformPostSigninActions.
+std::wstring FormatRunDllArgumentForPerformPostSigninActions(
+    std::wstring_view dll_path);
 
 // Looks up the name associated to the |sid| (if any). Returns an error on any
 // failure or no name is associated with the |sid|.
