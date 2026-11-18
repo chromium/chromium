@@ -387,6 +387,11 @@ IN_PROC_BROWSER_TEST_P(ManagedUserProfileNoticeUIModalPixelTest,
   ShowAndVerifyUi({.selector = "#value-prop"});
 }
 
+IN_PROC_BROWSER_TEST_P(ManagedUserProfileNoticeUIModalPixelTest,
+                       InvokeUi_Disclosure) {
+  ShowAndVerifyUi({.user_already_signed_in = true, .selector = "#disclosure"});
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          ManagedUserProfileNoticeUIModalPixelTest,
                          testing::ValuesIn(GetModalTestParams()),
