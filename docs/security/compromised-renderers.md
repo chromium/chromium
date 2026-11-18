@@ -230,14 +230,23 @@ Protection techniques:
 
 ## JavaScript code cache
 
-Compromised renderers shouldn't be able to poison the JavaScript code cache
-used by scripts executed in cross-site execution contexts.
+Compromised renderers shouldn't be able to poison or read the JavaScript code
+cache used by scripts executed in isolated cross-site execution contexts (i.e.
+locked renderer processes).
 
 Protection techniques:
-- Using trustworthy, browser-side origin lock while writing to and fetching from
-  the code cache by using `ChildProcessSecurityPolicyImpl::GetOriginLock` in
-  `GetSecondaryKeyForCodeCache` in
+- Using trustworthy, browser-side process locks while writing to and fetching
+  from the code cache via `ChildProcessSecurityPolicyImpl::GetProcessLock` in
+  `GetOriginLock` in
   `//content/browser/renderer_host/code_cache_host_impl.cc`
+
+Note that under partial Site Isolation (such as on Android), renderer processes
+that are not locked to a site share a single code cache namespace, so
+non-isolated sites are not protected from other unlocked processes. Likewise,
+entries cached while a site ran in an unlocked process may remain reachable from
+unlocked processes after the site becomes dynamically isolated. See
+[Partial Site Isolation on Android](/content/SECURITY.md#android-partial-site-isolation)
+for details.
 
 
 ## Cross-Origin-Resource-Policy response header
@@ -346,12 +355,15 @@ Protection techniques:
 ## Android-specific protection gaps
 
 Due to resource constraints, on Android platforms only some sites get a
-dedicated renderer process, isolated from other sites.
-(Current heuristic is to isolate the sites where the user has entered a password
-in the past.)
-This means that some sites are hosted in a renderer process that is
-*not* locked to any particular site.  If an attacker compromises
-an unlocked renderer process, they may try to abuse protection gaps listed
+dedicated renderer process, isolated from other sites (for example, sites where
+the user has entered a password or logged in via OAuth; see
+[Partial Site Isolation](/docs/process_model_and_site_isolation.md#partial-site-isolation)).
+This means that other sites are hosted in renderer processes that are
+*not* locked to any particular site.  Unlocked processes are not isolated from
+each other, and dynamic isolation only applies to future BrowsingInstances; see
+[Partial Site Isolation on Android](/content/SECURITY.md#android-partial-site-isolation)
+for the threat model and expectations.  If an attacker compromises
+an unlocked renderer process, they may also try to abuse protection gaps listed
 below.
 
 **Known gaps in protection**:
