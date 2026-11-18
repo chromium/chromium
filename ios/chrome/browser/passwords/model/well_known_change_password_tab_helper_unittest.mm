@@ -70,7 +70,7 @@ void LoadUrlWithTransition(web::WebState* web_state,
   navigation_manager->LoadURLWithParams(params);
 }
 
-std::unique_ptr<KeyedService> MakeMockAffiliationService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> MakeMockAffiliationService(ProfileIOS& profile) {
   auto mock_service =
       std::make_unique<NiceMock<affiliations::MockAffiliationService>>();
   ON_CALL(*mock_service, FetchChangePasswordURL)

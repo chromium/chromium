@@ -34,13 +34,13 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildFakeGeminiService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildFakeGeminiService(ProfileIOS& profile) {
   auto fake_service = std::make_unique<FakeGeminiService>();
   fake_service->SetIsEligible(true);
   return fake_service;
 }
 
-std::unique_ptr<KeyedService> CreateTestTracker(ProfileIOS* context) {
+std::unique_ptr<KeyedService> CreateTestTracker(ProfileIOS& context) {
   auto tracker = std::make_unique<feature_engagement::test::MockTracker>();
   ON_CALL(*tracker, ShouldTriggerHelpUI(testing::_))
       .WillByDefault(testing::Return(true));

@@ -21,7 +21,7 @@
 namespace {
 
 std::unique_ptr<KeyedService> BuildTestInProcessClassificationService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   static base::NoDestructor<
       optimization_guide::TestOptimizationGuideModelProvider>
       test_model_provider;

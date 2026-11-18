@@ -66,8 +66,7 @@ class FakeProfileSessionDurationsService
 };
 
 // Create a test Feature Engagement Tracker.
-std::unique_ptr<KeyedService> BuildFeatureEngagementTestTracker(
-    ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildFeatureEngagementTestTracker(ProfileIOS&) {
   return feature_engagement::CreateTestTracker();
 }
 

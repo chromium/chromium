@@ -59,20 +59,20 @@ class ExtensionServiceFactoryTest : public PlatformTest {
   ~ExtensionServiceFactoryTest() override = default;
 
   std::unique_ptr<KeyedService> CreateOptOutService(bool eligible,
-                                                    ProfileIOS* profile) {
+                                                    ProfileIOS& profile) {
     auto service = std::make_unique<universal_optout::UniversalOptOutService>(
-        *profile->GetPrefs(), *variations_service_,
+        *profile.GetPrefs(), *variations_service_,
         *identity_test_env_.identity_manager(), test_clock_);
-    profile->GetPrefs()->SetBoolean(
+    profile.GetPrefs()->SetBoolean(
         universal_optout::prefs::kUniversalOptOutEligible, eligible);
     return service;
   }
 
   std::unique_ptr<KeyedService> CreateOptedInOptOutService(
       bool eligible,
-      ProfileIOS* profile) {
+      ProfileIOS& profile) {
     auto service = CreateOptOutService(eligible, profile);
-    profile->GetPrefs()->SetBoolean(
+    profile.GetPrefs()->SetBoolean(
         universal_optout::prefs::kUniversalOptOutEnabled, true);
     return service;
   }

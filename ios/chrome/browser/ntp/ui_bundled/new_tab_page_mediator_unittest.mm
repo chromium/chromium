@@ -125,14 +125,13 @@ class NewTabPageMediatorTest : public PlatformTest {
         base::BindRepeating(&CreateTestSyncService));
     test_profile_builder.AddTestingFactory(
         HomeBackgroundCustomizationServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<HomeBackgroundCustomizationService>(
-                  profile->GetPrefs(),
-                  UserUploadedImageManagerFactory::GetForProfile(profile),
-                  HomeBackgroundImageServiceFactory::GetForProfile(profile),
-                  /*url_loader_factory=*/nullptr, profile->GetStatePath());
-            }));
+        base::BindRepeating([](ProfileIOS& profile) {
+          return std::make_unique<HomeBackgroundCustomizationService>(
+              profile.GetPrefs(),
+              UserUploadedImageManagerFactory::GetForProfile(profile),
+              HomeBackgroundImageServiceFactory::GetForProfile(profile),
+              /*url_loader_factory=*/nullptr, profile.GetStatePath());
+        }));
     test_profile_builder.AddTestingFactory(
         ImageFetcherServiceFactory::GetInstance(),
         base::BindRepeating(&std::make_unique<MockImageFetcherService>));

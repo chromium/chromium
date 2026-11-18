@@ -115,7 +115,7 @@ using set_up_list_prefs::SetUpListItemState;
 namespace {
 
 std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   // Allow ShortcutsMediator to call WouldTriggerHelpUI() without causing log
   // noise.
   auto tracker = std::make_unique<feature_engagement::test::MockTracker>();

@@ -373,13 +373,11 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         autofill::PersonalDataManagerFactory::GetInstance(),
-        base::BindOnce(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              std::unique_ptr<autofill::TestPersonalDataManager> service =
-                  std::make_unique<autofill::TestPersonalDataManager>();
-              service->SetPrefService(profile->GetPrefs());
-              return service;
-            }));
+        base::BindOnce([](ProfileIOS& profile) {
+          auto service = std::make_unique<autofill::TestPersonalDataManager>();
+          service->SetPrefService(profile.GetPrefs());
+          return service;
+        }));
     builder.AddTestingFactory(
         IOSPersonalContextFirstRunServiceFactory::GetInstance(),
         base::BindOnce(&std::make_unique<

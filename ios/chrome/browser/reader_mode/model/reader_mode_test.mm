@@ -47,8 +47,8 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildSafeBrowsingClient(ProfileIOS* profile) {
-  return std::make_unique<FakeSafeBrowsingClient>(profile->GetPrefs());
+std::unique_ptr<KeyedService> BuildSafeBrowsingClient(ProfileIOS& profile) {
+  return std::make_unique<FakeSafeBrowsingClient>(profile.GetPrefs());
 }
 
 }  // namespace

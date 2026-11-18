@@ -38,7 +38,7 @@
 namespace {
 
 // Creates a test ShareKitService.
-std::unique_ptr<KeyedService> BuildTestShareKitService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildTestShareKitService(ProfileIOS& profile) {
   data_sharing::DataSharingService* data_sharing_service =
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   TabGroupService* tab_group_service =

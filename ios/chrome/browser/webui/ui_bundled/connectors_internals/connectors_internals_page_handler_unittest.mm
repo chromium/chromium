@@ -200,7 +200,7 @@ class ConnectorsInternalsPageHandlerTest : public PlatformTest {
     builder.AddTestingFactory(
         DeviceTrustServiceFactoryIOS::GetInstance(),
         base::BindOnce(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+            [](ProfileIOS& profile) {
               base::DictValue signals;
               signals.Set("test_signal_key", "test_signal_value");
               return std::make_unique<FakeDeviceTrustService>(
@@ -294,7 +294,7 @@ TEST_F(ConnectorsInternalsPageHandlerTest,
   builder.AddTestingFactory(
       enterprise_reporting::CloudProfileReportingServiceFactoryIOS::
           GetInstance(),
-      base::BindOnce([](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+      base::BindOnce([](ProfileIOS& profile) {
         return std::make_unique<
             enterprise_reporting::CloudProfileReportingServiceIOS>(
             /*profile_id_service=*/nullptr,
@@ -535,7 +535,7 @@ TEST_F(ConnectorsInternalsPageHandlerTest,
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       DeviceTrustServiceFactoryIOS::GetInstance(),
-      base::BindOnce([](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+      base::BindOnce([](ProfileIOS& profile) {
         base::DictValue signals;
         signals.Set("test_signal_key", "test_signal_value");
         return std::make_unique<FakeDeviceTrustService>(

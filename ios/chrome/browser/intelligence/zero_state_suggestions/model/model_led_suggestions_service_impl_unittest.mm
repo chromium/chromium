@@ -32,13 +32,13 @@ namespace {
 
 // Helper function to create a FakeOptimizationGuideService.
 std::unique_ptr<KeyedService> CreateFakeOptimizationGuideService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   return std::make_unique<FakeOptimizationGuideService>(
-      profile->GetProtoDatabaseProvider(), profile->GetStatePath(),
-      profile->IsOffTheRecord(), "en",
+      profile.GetProtoDatabaseProvider(), profile.GetStatePath(),
+      profile.IsOffTheRecord(), "en",
       nullptr,  // hint_store
-      profile->GetPrefs(), BrowserListFactory::GetForProfile(profile),
-      profile->GetSharedURLLoaderFactory(),
+      profile.GetPrefs(), BrowserListFactory::GetForProfile(profile),
+      profile.GetSharedURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile));
 }
 

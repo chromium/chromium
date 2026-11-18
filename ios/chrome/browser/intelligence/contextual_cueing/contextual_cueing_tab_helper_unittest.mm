@@ -103,14 +103,14 @@ namespace contextual_cueing {
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildFakeGeminiService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildFakeGeminiService(ProfileIOS& profile) {
   auto fake_service = std::make_unique<FakeGeminiService>();
   fake_service->SetIsEligible(true);
   return fake_service;
 }
 
 std::unique_ptr<KeyedService> BuildTestInProcessClassificationService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   static base::NoDestructor<
       optimization_guide::TestOptimizationGuideModelProvider>
       test_model_provider;
@@ -175,7 +175,7 @@ class FakeOnDevicePageClassificationService
 };
 
 std::unique_ptr<KeyedService> BuildTestPageClassificationService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   InProcessCategoryClassificationService* in_process_service =
       InProcessCategoryClassificationServiceFactory::GetForProfile(profile);
   return std::make_unique<FakeOnDevicePageClassificationService>(
@@ -266,12 +266,12 @@ class TestOptimizationGuideService : public FakeOptimizationGuideService {
 };
 
 std::unique_ptr<KeyedService> CreateFakeOptimizationGuideService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   return std::make_unique<TestOptimizationGuideService>(
-      profile->GetProtoDatabaseProvider(), profile->GetStatePath(),
-      profile->IsOffTheRecord(), "en",
+      profile.GetProtoDatabaseProvider(), profile.GetStatePath(),
+      profile.IsOffTheRecord(), "en",
       base::WeakPtr<optimization_guide::OptimizationGuideStore>(),
-      profile->GetPrefs(), nullptr, nullptr,
+      profile.GetPrefs(), nullptr, nullptr,
       IdentityManagerFactory::GetForProfile(profile));
 }
 
@@ -343,7 +343,7 @@ optimization_guide::proto::ContextualCueingResponse CreateTestCueResponse(
   return response;
 }
 
-std::unique_ptr<KeyedService> CreateTestTracker(ProfileIOS* context) {
+std::unique_ptr<KeyedService> CreateTestTracker(ProfileIOS& context) {
   auto tracker = std::make_unique<
       testing::NiceMock<feature_engagement::test::MockTracker>>();
   ON_CALL(*tracker, WouldTriggerHelpUI(testing::Ref(

@@ -208,8 +208,8 @@ class MockPhishingImageEmbedder : public safe_browsing::PhishingImageEmbedder {
 };
 
 std::unique_ptr<KeyedService> BuildMockClientSideDetectionService(
-    ProfileIOS* profile) {
-  return std::make_unique<MockClientSideDetectionService>(profile->GetPrefs(),
+    ProfileIOS& profile) {
+  return std::make_unique<MockClientSideDetectionService>(profile.GetPrefs(),
                                                           nullptr);
 }
 

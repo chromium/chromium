@@ -943,14 +943,13 @@ TEST_F(ChromeWebClientTest, GetExtensionController) API_AVAILABLE(ios(18.4)) {
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       ExtensionServiceFactory::GetInstance(),
-      base::BindRepeating(
-          [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-            auto service = std::make_unique<ExtensionServiceImpl>(
-                CHECK_DEREF(profile->GetPrefs()),
-                web::ExtensionController::Create());
-            service->Initialize(web::UniversalOptOutState::kEnabled);
-            return service;
-          }));
+      base::BindRepeating([](ProfileIOS& profile) {
+        auto service = std::make_unique<ExtensionServiceImpl>(
+            CHECK_DEREF(profile.GetPrefs()),
+            web::ExtensionController::Create());
+        service->Initialize(web::UniversalOptOutState::kEnabled);
+        return service;
+      }));
   auto profile_with_service = std::move(builder).Build();
   ExtensionService* service =
       ExtensionServiceFactory::GetForProfile(profile_with_service.get());
@@ -1029,14 +1028,13 @@ API_AVAILABLE(ios(18.4)) {
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       ExtensionServiceFactory::GetInstance(),
-      base::BindRepeating(
-          [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-            auto service = std::make_unique<ExtensionServiceImpl>(
-                CHECK_DEREF(profile->GetPrefs()),
-                web::ExtensionController::Create());
-            service->Initialize(web::UniversalOptOutState::kNotEligible);
-            return service;
-          }));
+      base::BindRepeating([](ProfileIOS& profile) {
+        auto service = std::make_unique<ExtensionServiceImpl>(
+            CHECK_DEREF(profile.GetPrefs()),
+            web::ExtensionController::Create());
+        service->Initialize(web::UniversalOptOutState::kNotEligible);
+        return service;
+      }));
   auto profile_with_service = std::move(builder).Build();
   ExtensionService* service =
       ExtensionServiceFactory::GetForProfile(profile_with_service.get());

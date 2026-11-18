@@ -42,9 +42,9 @@ using ::regional_capabilities::SearchEngineChoiceScreenConditions;
 
 std::unique_ptr<KeyedService> BuildRegionalCapabilitiesServiceWithFakeClient(
     country_codes::CountryId country_id,
-    ProfileIOS* profile) {
-  return regional_capabilities::CreateServiceWithFakeClient(
-      *profile->GetPrefs(), country_id);
+    ProfileIOS& profile) {
+  return regional_capabilities::CreateServiceWithFakeClient(*profile.GetPrefs(),
+                                                            country_id);
 }
 
 }  // namespace

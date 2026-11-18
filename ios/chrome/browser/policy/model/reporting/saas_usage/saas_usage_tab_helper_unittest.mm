@@ -115,7 +115,7 @@ class SaasUsageTabHelperTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  std::unique_ptr<KeyedService> BuildMockController(ProfileIOS* profile) {
+  std::unique_ptr<KeyedService> BuildMockController(ProfileIOS& profile) {
     auto controller = std::make_unique<MockSaasUsageReportingController>(
         &testing_pref_service_);
     mock_controller_ = controller.get();

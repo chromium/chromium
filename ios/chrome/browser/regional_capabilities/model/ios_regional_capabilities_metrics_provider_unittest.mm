@@ -25,8 +25,8 @@ namespace {
 
 std::unique_ptr<KeyedService> BuildServiceWithFakeClient(
     country_codes::CountryId country_id,
-    ProfileIOS* profile) {
-  return CreateServiceWithFakeClient(*profile->GetPrefs(), country_id);
+    ProfileIOS& profile) {
+  return CreateServiceWithFakeClient(*profile.GetPrefs(), country_id);
 }
 
 }  // namespace

@@ -59,7 +59,7 @@ webauthn::DeviceAuthFetchResult ErrorResult() {
 }
 
 std::unique_ptr<KeyedService> BuildMockDeviceAuthorizationService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   auto service = std::make_unique<webauthn::MockDeviceAuthorizationService>();
   ON_CALL(*service, GetOrFetchKeys)
       .WillByDefault(RunOnceCallbackRepeatedly<0>(ErrorResult()));

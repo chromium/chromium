@@ -53,13 +53,13 @@
 namespace {
 
 std::unique_ptr<KeyedService> CreateBackgroundImageService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   return std::make_unique<FakeHomeBackgroundImageService>(
       NtpBackgroundServiceFactory::GetForProfile(profile));
 }
 
 std::unique_ptr<KeyedService> CreateUserUploadedImageManager(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   return std::make_unique<FakeUserUploadedImageManager>(
       base::SequencedTaskRunner::GetCurrentDefault());
 }

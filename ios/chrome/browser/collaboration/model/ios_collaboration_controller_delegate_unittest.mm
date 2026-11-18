@@ -59,7 +59,7 @@ using testing::Return;
 namespace collaboration {
 namespace {
 
-std::unique_ptr<KeyedService> BuildTestShareKitService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildTestShareKitService(ProfileIOS& profile) {
   data_sharing::DataSharingService* data_sharing_service =
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   TabGroupService* tab_group_service =
@@ -70,7 +70,7 @@ std::unique_ptr<KeyedService> BuildTestShareKitService(ProfileIOS* profile) {
 }
 
 std::unique_ptr<KeyedService> BuildMockCollaborationService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   ServiceStatus collaboration_status;
   collaboration_status.collaboration_status =
       CollaborationStatus::kEnabledCreateAndJoin;

@@ -80,7 +80,7 @@ constexpr char kFakeFullName[] = "Full Name";
 constexpr char kFakeGivenName[] = "Full";
 constexpr char kFakeLocale[] = "en-US";
 
-std::unique_ptr<KeyedService> CreateProfileIdService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> CreateProfileIdService(ProfileIOS& profile) {
   return std::make_unique<enterprise::ProfileIdService>(kFakeProfileId);
 }
 

@@ -74,11 +74,11 @@ class UniversalOptOutEligibilityUtilsTest : public PlatformTest {
 
   std::unique_ptr<KeyedService> CreateOptOutServiceForProfile(
       bool eligible,
-      ProfileIOS* profile) {
+      ProfileIOS& profile) {
     auto service = std::make_unique<UniversalOptOutService>(
-        *profile->GetPrefs(), *variations_service_,
+        *profile.GetPrefs(), *variations_service_,
         *identity_test_env_.identity_manager(), test_clock_);
-    profile->GetPrefs()->SetBoolean(prefs::kUniversalOptOutEligible, eligible);
+    profile.GetPrefs()->SetBoolean(prefs::kUniversalOptOutEligible, eligible);
     return service;
   }
 

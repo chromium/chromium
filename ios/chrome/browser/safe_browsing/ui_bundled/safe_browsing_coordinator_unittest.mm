@@ -45,15 +45,15 @@ namespace {
 
 class MockTailoredSecurityService : public ChromeTailoredSecurityService {
  public:
-  MockTailoredSecurityService(ProfileIOS* profile,
+  MockTailoredSecurityService(ProfileIOS& profile,
                               signin::IdentityManager* identity_manager)
-      : ChromeTailoredSecurityService(profile,
+      : ChromeTailoredSecurityService(&profile,
                                       identity_manager,
                                       /*sync_service=*/nullptr) {}
 };
 
 std::unique_ptr<KeyedService> BuildMockTailoredSecurityService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   return std::make_unique<MockTailoredSecurityService>(
       profile, IdentityManagerFactory::GetForProfile(profile));
 }

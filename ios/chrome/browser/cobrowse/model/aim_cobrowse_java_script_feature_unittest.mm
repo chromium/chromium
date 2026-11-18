@@ -57,11 +57,10 @@ class AimCobrowseJavaScriptFeatureTest : public PlatformTest {
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
-        base::BindRepeating([](ProfileIOS* profile)
-                                -> std::unique_ptr<KeyedService> {
+        base::BindRepeating([](ProfileIOS& profile) {
           auto service =
               std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
-                  *profile->GetPrefs(),
+                  *profile.GetPrefs(),
                   ios::TemplateURLServiceFactory::GetForProfile(profile),
                   nullptr, IdentityManagerFactory::GetForProfile(profile));
           ON_CALL(*service, IsFuseboxEligible())
