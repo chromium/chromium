@@ -10,5 +10,5 @@ blink_modules_sources("set_shape") {
     "set_shape.h",
   ]
 
-  deps = [ "//third_party/blink/public/mojom:mojom_platform_blink" ]
+  deps = [ "//third_party/blink/public/mojom:mojom_platform_blink_headers" ]
 }
