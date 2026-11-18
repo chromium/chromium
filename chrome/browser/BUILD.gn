@@ -5533,6 +5533,7 @@ if (is_android) {
       "//chrome/test:test_support_ui_android",
       "//chrome/test/base:chrome_test_utils",
       "//components/download/public/common:public",
+      "//components/site_token_provider",
       "//content/test:test_support",
       "//net:test_support",
       "//services/network:network_service",

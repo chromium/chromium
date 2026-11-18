@@ -26,6 +26,7 @@
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "components/site_token_provider/features.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/navigation_controller.h"
@@ -313,7 +314,14 @@ class MultiNetworkBrowserTest : public PlatformBrowserTest {
     // assertions deterministic disable prewarming.
     // TODO(crbug.com/539786691): Re-enable kPrewarm and filter out the
     // prewarm requests instead.
-    feature_list_.InitAndDisableFeature(features::kPrewarm);
+    //
+    // SiteTokenProvider registers an additional non-network subresource
+    // URLLoaderFactory, which would throw off the factory counts below.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            features::kPrewarm,
+            site_token_provider::features::kSiteTokenProviderEnabled});
   }
 
   void SetUpOnMainThread() override {
