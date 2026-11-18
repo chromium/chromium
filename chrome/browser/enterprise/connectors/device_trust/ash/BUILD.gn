@@ -13,7 +13,7 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser/enterprise:impl",
     "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
-    "//chrome/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

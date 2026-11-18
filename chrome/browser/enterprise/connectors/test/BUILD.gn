@@ -20,16 +20,19 @@ source_set("test_support") {
 
   public_deps = [
     "//base",
+    "//chrome/browser",
+    "//chrome/browser/enterprise/connectors/reporting",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/signin/public/identity_manager:test_support",
     "//testing/gmock",
   ]
 
   deps = [
-    "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
     "//components/enterprise/common/proto:browser_events_proto",
     "//components/enterprise/data_controls/core/browser",
+    "//components/policy/core/common:test_support",
   ]
 
   if (enterprise_cloud_content_analysis) {
@@ -47,11 +50,15 @@ source_set("test_support") {
 
     public_deps += [
       "//chrome/browser/safe_browsing",
+      "//chrome/test/base:in_process_browser_test",
+      "//chrome/test/base:mixin_based_in_process_browser_test",
       "//components/policy/core/common:common_constants",
       "//components/policy/core/common:test_support",
       "//components/policy/proto",
       "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+      "//google_apis:test_support",
+      "//net:test_support",
       "//third_party/abseil-cpp:absl",
     ]
 
@@ -59,10 +66,13 @@ source_set("test_support") {
       "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
+      "//chrome/test/base:ui_test_utils",
       "//components/keyed_service/core",
       "//components/policy/core/browser",
       "//components/policy/core/common",
       "//components/prefs",
+      "//components/signin/public/identity_manager:test_support",
+      "//content/test:test_support",
     ]
   }
 

@@ -37,7 +37,7 @@ source_set("unit_tests") {
       ":test_support",
       "//base",
       "//chrome/browser/enterprise:impl",
-      "//chrome/test:test_support",
+      "//chromeos/ash/components/install_attributes:test_support",
       "//components/device_signals/core/common",
       "//testing/gtest",
     ]
@@ -56,9 +56,11 @@ if (!is_android && is_chromeos) {
       "//chrome/browser:browser_process_platform_part",
       "//chrome/browser/ash/policy/core:test_support",
       "//chrome/browser/enterprise:impl",
-      "//chrome/test:test_support",
+      "//chrome/test/base:testing_profile",
       "//chromeos/ash/components/dbus/shill",
+      "//chromeos/ash/components/network",
       "//chromeos/ash/components/system",
+      "//components/prefs:test_support",
       "//content/test:test_support",
       "//testing/gmock",
     ]
