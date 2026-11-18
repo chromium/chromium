@@ -339,12 +339,13 @@ TEST_F(StandaloneTrustedVaultClientTest,
       TrustedVaultThrottlingConnectionImpl::kThrottlingDuration +
       base::Seconds(1));
 
-  // Mimic user enrolment by rotating the server side key and marking local keys
-  // as stale.
+  // Mimic user enrolment by rotating the server side key. Only the
+  // pre-enrollment constant key is stored locally, so `MarkLocalKeysAsStale()`
+  // returns false and `FetchKeys()` still contacts the server.
   std::vector<uint8_t> new_epoch_key =
       fake_security_domains_server_->RotateTrustedVaultKey(
           GetConstantTrustedVaultKey());
-  EXPECT_TRUE(MarkLocalKeysAsStale(client.get(), account_info));
+  EXPECT_FALSE(MarkLocalKeysAsStale(client.get(), account_info));
 
   // `FetchKeys()` should follow the server side key rotation, notify observers,
   // and register local factors if applicable.
@@ -684,8 +685,9 @@ TEST_F(StandaloneTrustedVaultClientTest,
   ASSERT_THAT(rotated_key, Not(IsEmpty()));
   WaitForIdle(first_client.get());
 
-  // Simulate a client notifying the second device that its local keys are
-  // stale; `FetchKeys()` should download and unwrap `rotated_key`.
+  // `second_client` only holds the pre-enrollment constant key locally, so
+  // `MarkLocalKeysAsStale()` returns false and `FetchKeys()` still downloads
+  // and unwraps `rotated_key`.
   MockTrustedVaultClientObserver second_observer;
   base::ScopedObservation<TrustedVaultClient, TrustedVaultClient::Observer>
       observation(&second_observer);
@@ -693,7 +695,7 @@ TEST_F(StandaloneTrustedVaultClientTest,
   EXPECT_CALL(second_observer,
               OnTrustedVaultKeysChanged(/*trigger=*/Eq(std::nullopt)));
 
-  EXPECT_TRUE(MarkLocalKeysAsStale(second_client.get(), account_info));
+  EXPECT_FALSE(MarkLocalKeysAsStale(second_client.get(), account_info));
   EXPECT_THAT(FetchKeys(second_client.get(), account_info),
               ElementsAre(rotated_key));
   WaitForIdle(second_client.get());

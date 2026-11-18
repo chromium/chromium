@@ -503,10 +503,11 @@ bool StandaloneTrustedVaultBackend::MarkLocalKeysAsStale(
     const CoreAccountInfo& account_info,
     SecurityDomainId security_domain) {
   CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
-  if (storage_->GetVaultKeys(account_info.gaia, security_domain).empty() ||
+  if (!storage_->HasNonConstantKey(account_info.gaia, security_domain) ||
       storage_->GetKeysMarkedAsStaleByConsumer(account_info.gaia,
                                                security_domain)) {
-    // No keys available for |account_info| or they are already marked as stale.
+    // No non-constant keys available for `account_info` or they are already
+    // marked as stale.
     return false;
   }
 

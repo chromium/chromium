@@ -1528,6 +1528,46 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldNotMarkLocalKeysAsStaleWhenOnlyConstantKeyExists) {
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
+  constexpr int kServerConstantKeyVersion = 100;
+  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
+
+  // Empty storage cannot be marked as stale.
+  EXPECT_FALSE(
+      backend()->MarkLocalKeysAsStale(kAccountInfo, security_domain_id()));
+  EXPECT_FALSE(storage()->GetKeysMarkedAsStaleByConsumer(kAccountInfo.gaia,
+                                                         security_domain_id()));
+
+  // Silent recovery factor registration stores `GetConstantTrustedVaultKey()`.
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
+  GetOrCreateRecoveryFactor(kAccountInfo)
+      ->ExpectMaybeRegisterAndRunCallback(
+          TrustedVaultRegistrationStatus::kSuccess, kServerConstantKeyVersion,
+          /*had_local_keys=*/false);
+  ASSERT_THAT(storage()->GetVaultKeys(kAccountInfo.gaia, security_domain_id()),
+              ElementsAre(GetConstantTrustedVaultKey()));
+
+  // Constant-key-only storage must not be marked as stale.
+  EXPECT_FALSE(
+      backend()->MarkLocalKeysAsStale(kAccountInfo, security_domain_id()));
+  EXPECT_FALSE(storage()->GetKeysMarkedAsStaleByConsumer(kAccountInfo.gaia,
+                                                         security_domain_id()));
+
+  // Once a non-constant key is stored, `MarkLocalKeysAsStale()` marks keys
+  // stale once and returns false if called again while already stale.
+  backend()->StoreKeys(kAccountInfo.gaia, security_domain_id(),
+                       {GetConstantTrustedVaultKey(), kVaultKey},
+                       kServerConstantKeyVersion + 1);
+  EXPECT_TRUE(
+      backend()->MarkLocalKeysAsStale(kAccountInfo, security_domain_id()));
+  EXPECT_TRUE(storage()->GetKeysMarkedAsStaleByConsumer(kAccountInfo.gaia,
+                                                        security_domain_id()));
+  EXPECT_FALSE(
+      backend()->MarkLocalKeysAsStale(kAccountInfo, security_domain_id()));
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldDownloadKeysFromFirstRecoveryFactorFirst) {
   const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kVaultKey = {1, 2, 3};
@@ -1537,7 +1577,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   ResetBackend();
 
   StoreKeysAndMimicRecoveryFactorRegistration(
-      {GetConstantTrustedVaultKey()}, kInitialLastKeyVersion, kAccountInfo);
+      {kVaultKey}, kInitialLastKeyVersion, kAccountInfo);
   ASSERT_TRUE(
       backend()->MarkLocalKeysAsStale(kAccountInfo, security_domain_id()));
   SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
@@ -1575,7 +1615,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   ResetBackend();
 
   StoreKeysAndMimicRecoveryFactorRegistration(
-      {GetConstantTrustedVaultKey()}, kInitialLastKeyVersion, kAccountInfo);
+      {kVaultKey}, kInitialLastKeyVersion, kAccountInfo);
   ASSERT_TRUE(
       backend()->MarkLocalKeysAsStale(kAccountInfo, security_domain_id()));
   SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
@@ -1616,8 +1656,6 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   StoreKeysAndMimicRecoveryFactorRegistration(
       {GetConstantTrustedVaultKey()}, kInitialLastKeyVersion, kAccountInfo);
-  ASSERT_TRUE(
-      backend()->MarkLocalKeysAsStale(kAccountInfo, security_domain_id()));
   SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
 
   // FetchKeys() should trigger keys downloading.
