@@ -243,7 +243,10 @@ void ColorChooserPopupUIController::SetValue(const String& value) {
 
 void ColorChooserPopupUIController::DidClosePopup() {
   popup_ = nullptr;
-  To<HTMLFormControlElement>(OwnerElement()).SetFreezeHoverForOpenPopup(false);
+  if (HasOwnerElement()) {
+    To<HTMLFormControlElement>(OwnerElement())
+        .SetFreezeHoverForOpenPopup(false);
+  }
 
   if (frame_ && frame_->GetPage() &&
       frame_->GetPage()
@@ -273,7 +276,7 @@ ChromeClient& ColorChooserPopupUIController::GetChromeClient() {
 void ColorChooserPopupUIController::OpenPopup() {
   DCHECK(!popup_);
   popup_ = chrome_client_->OpenPagePopup(this);
-  if (popup_) {
+  if (popup_ && HasOwnerElement()) {
     To<HTMLFormControlElement>(OwnerElement()).SetFreezeHoverForOpenPopup(true);
   }
 }

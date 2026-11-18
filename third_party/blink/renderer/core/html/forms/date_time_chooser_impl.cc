@@ -66,7 +66,7 @@ DateTimeChooserImpl::DateTimeChooserImpl(
   DCHECK(RuntimeEnabledFeatures::InputMultipleFieldsUIEnabled());
   DCHECK(client_);
   popup_ = chrome_client_->OpenPagePopup(this);
-  if (popup_) {
+  if (popup_ && HasOwnerElement()) {
     To<HTMLFormControlElement>(OwnerElement()).SetFreezeHoverForOpenPopup(true);
   }
   parameters_ = nullptr;
@@ -270,6 +270,10 @@ void DateTimeChooserImpl::WriteDocument(SegmentedBuffer& data) {
   AddLiteral("</script></body>\n", data);
 }
 
+bool DateTimeChooserImpl::HasOwnerElement() const {
+  return client_ && client_->HasOwnerElement();
+}
+
 Element& DateTimeChooserImpl::OwnerElement() {
   return client_->OwnerElement();
 }
@@ -299,8 +303,10 @@ void DateTimeChooserImpl::CancelPopup() {
 }
 
 void DateTimeChooserImpl::DidClosePopup() {
-  To<HTMLFormControlElement>(OwnerElement()).SetFreezeHoverForOpenPopup(false);
-  DCHECK(client_);
+  if (HasOwnerElement()) {
+    To<HTMLFormControlElement>(OwnerElement())
+        .SetFreezeHoverForOpenPopup(false);
+  }
   popup_ = nullptr;
   if (client_) {
     DateTimeChooserClient* client = client_;

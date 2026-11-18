@@ -67,6 +67,7 @@ class CORE_EXPORT InternalPopupMenu final : public PopupMenu,
                              bool is_keyboard_event) override;
   void SetValue(const String&) override;
   void CancelPopup() override;
+  bool HasOwnerElement() const override { return owner_element_ != nullptr; }
   Element& OwnerElement() override;
   ChromeClient& GetChromeClient() override;
   float ZoomFactor() override { return 1.0; }
