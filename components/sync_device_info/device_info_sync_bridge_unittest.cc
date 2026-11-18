@@ -5,10 +5,12 @@
 #include "components/sync_device_info/device_info_sync_bridge.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <map>
 #include <optional>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -203,7 +205,15 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
          expected_specifics.personal_context_fields().eligible_for_spii() ==
              (arg.personal_context_info().has_value()
                   ? arg.personal_context_info()->eligible_for_spii
-                  : false);
+                  : false) &&
+         expected_specifics.browser_actuator_fields()
+                 .colocation_serialized_tink_keyset() ==
+             (arg.browser_actuator_info().has_value()
+                  ? std::string(arg.browser_actuator_info()
+                                    ->colocation_serialized_tink_keyset.begin(),
+                                arg.browser_actuator_info()
+                                    ->colocation_serialized_tink_keyset.end())
+                  : "");
 }
 
 Matcher<std::unique_ptr<EntityData>> HasSpecifics(
@@ -499,7 +509,7 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
         glic_experimental_triggering_version,
         /*glic_experimental_triggering_capabilities=*/
         base::flat_set<std::string>(), android_os_build_fingerprint_prefix,
-        personal_context_info_);
+        personal_context_info_, browser_actuator_info_);
   }
 
   void Clear() override { local_device_info_.reset(); }
@@ -540,6 +550,7 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
       if (personal_context_info_) {
         local_device_info_->set_personal_context_info(*personal_context_info_);
       }
+      local_device_info_->set_browser_actuator_info(browser_actuator_info_);
     }
     return local_device_info_.get();
   }
@@ -573,6 +584,11 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
     personal_context_info_ = personal_context_info;
   }
 
+  void UpdateBrowserActuatorInfo(
+      std::optional<DeviceInfo::BrowserActuatorInfo> browser_actuator_info) {
+    browser_actuator_info_ = std::move(browser_actuator_info);
+  }
+
  private:
   std::unique_ptr<DeviceInfo> local_device_info_;
   std::optional<std::string> fcm_registration_token_;
@@ -580,6 +596,7 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
   std::optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info_;
   std::optional<MobilePromoOnDesktopPromoTypeSet> promo_types_;
   std::optional<DeviceInfo::PersonalContextInfo> personal_context_info_;
+  std::optional<DeviceInfo::BrowserActuatorInfo> browser_actuator_info_;
 };  // namespace
 
 class DeviceInfoSyncBridgeTest : public testing::Test,
@@ -2020,6 +2037,115 @@ TEST_F(DeviceInfoSyncBridgeTest, GetDataForCommitWithPersonalContextFields) {
   DeviceInfoSpecifics specifics = CreateSpecifics(1);
   specifics.mutable_personal_context_fields()->set_serialized_tink_keyset(
       kSerializedKeyset.data(), kSerializedKeyset.size());
+
+  WriteToStoreWithMetadata({local_specifics, specifics},
+                           StateWithEncryption("ekn"));
+  InitializeAndPump();
+
+  EXPECT_THAT(GetDataForCommit({specifics.cache_guid()}),
+              UnorderedElementsAre(
+                  Pair(specifics.cache_guid(), HasDeviceInfo(specifics))));
+}
+
+TEST_F(DeviceInfoSyncBridgeTest,
+       ApplyIncrementalSyncChangesWithBrowserActuatorFields) {
+  InitializeAndMergeInitialData(SyncMode::kFull);
+
+  DeviceInfoSpecifics specifics = CreateSpecifics(1);
+  const std::vector<uint8_t> kPublicKey = {4, 1, 2, 3, 4, 5};
+  specifics.mutable_browser_actuator_fields()
+      ->set_colocation_serialized_tink_keyset(kPublicKey.data(),
+                                              kPublicKey.size());
+
+  std::optional<ModelError> error_on_add =
+      bridge()->ApplyIncrementalSyncChanges(
+          bridge()->CreateMetadataChangeList(), EntityAddList({specifics}));
+
+  ASSERT_FALSE(error_on_add);
+  const DeviceInfo* info =
+      bridge()->GetChromeDeviceInfo(specifics.cache_guid());
+  ASSERT_TRUE(info);
+  EXPECT_THAT(*info, ModelEqualsSpecifics(specifics));
+  ASSERT_TRUE(info->browser_actuator_info().has_value());
+  EXPECT_EQ(info->browser_actuator_info()->colocation_serialized_tink_keyset,
+            kPublicKey);
+}
+
+TEST_F(DeviceInfoSyncBridgeTest,
+       ApplyIncrementalSyncChangesWithEmptyBrowserActuatorKeyset) {
+  InitializeAndMergeInitialData(SyncMode::kFull);
+
+  DeviceInfoSpecifics specifics = CreateSpecifics(1);
+  specifics.mutable_browser_actuator_fields()
+      ->set_colocation_serialized_tink_keyset("");
+  ASSERT_TRUE(specifics.browser_actuator_fields()
+                  .has_colocation_serialized_tink_keyset());
+
+  std::optional<ModelError> error_on_add =
+      bridge()->ApplyIncrementalSyncChanges(
+          bridge()->CreateMetadataChangeList(), EntityAddList({specifics}));
+
+  ASSERT_FALSE(error_on_add);
+  const DeviceInfo* info =
+      bridge()->GetChromeDeviceInfo(specifics.cache_guid());
+  ASSERT_TRUE(info);
+  EXPECT_FALSE(info->browser_actuator_info().has_value());
+}
+
+TEST_F(DeviceInfoSyncBridgeTest, CommitAndClearLocalBrowserActuatorInfo) {
+  const std::string kLocalGuid = CacheGuidForSuffix(kLocalSuffix);
+  const std::vector<uint8_t> kPublicKey = {4, 1, 2, 3, 4, 5};
+
+  InitializeAndMergeInitialData(SyncMode::kFull);
+  ASSERT_EQ(1, change_count());
+  EXPECT_FALSE(ReadAllFromStore()[kLocalGuid].has_browser_actuator_fields());
+
+  local_device()->UpdateBrowserActuatorInfo(DeviceInfo::BrowserActuatorInfo{
+      .colocation_serialized_tink_keyset = kPublicKey});
+  EXPECT_CALL(
+      *processor(),
+      Put(kLocalGuid,
+          HasSpecifics(Property(
+              &sync_pb::EntitySpecifics::device_info,
+              Property(&DeviceInfoSpecifics::browser_actuator_fields,
+                       Property(&sync_pb::BrowserActuatorSpecificFields::
+                                    colocation_serialized_tink_keyset,
+                                std::string(kPublicKey.begin(),
+                                            kPublicKey.end()))))),
+          _))
+      .Times(1)
+      .RetiresOnSaturation();
+  RefreshLocalDeviceInfo();
+  EXPECT_EQ(2, change_count());
+
+  // Refreshing again with an identical key must not trigger another commit.
+  EXPECT_CALL(*processor(), Put).Times(0);
+  RefreshLocalDeviceInfo();
+  EXPECT_EQ(2, change_count());
+  testing::Mock::VerifyAndClearExpectations(processor());
+
+  // Clearing the local info to `std::nullopt` clears `browser_actuator_fields`.
+  local_device()->UpdateBrowserActuatorInfo(std::nullopt);
+  EXPECT_CALL(
+      *processor(),
+      Put(kLocalGuid,
+          HasSpecifics(Property(
+              &sync_pb::EntitySpecifics::device_info,
+              Property(&DeviceInfoSpecifics::has_browser_actuator_fields,
+                       false))),
+          _));
+  RefreshLocalDeviceInfo();
+  EXPECT_EQ(3, change_count());
+  EXPECT_FALSE(ReadAllFromStore()[kLocalGuid].has_browser_actuator_fields());
+}
+
+TEST_F(DeviceInfoSyncBridgeTest, GetDataForCommitWithBrowserActuatorFields) {
+  const DeviceInfoSpecifics local_specifics = CreateLocalDeviceSpecifics();
+  const std::vector<uint8_t> kPublicKey = {4, 1, 2, 3, 4, 5};
+  DeviceInfoSpecifics specifics = CreateSpecifics(1);
+  specifics.mutable_browser_actuator_fields()
+      ->set_colocation_serialized_tink_keyset(kPublicKey.data(),
+                                              kPublicKey.size());
 
   WriteToStoreWithMetadata({local_specifics, specifics},
                            StateWithEncryption("ekn"));

@@ -4,7 +4,9 @@
 
 #include "components/sync_device_info/local_device_info_provider_impl.h"
 
+#include <cstdint>
 #include <optional>
+#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
@@ -87,6 +89,10 @@ class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
               (const override));
   MOCK_METHOD(DeviceInfo::PersonalContextInfo::StatusOrInfo,
               GetLocalPersonalContextInfo,
+              (),
+              (const override));
+  MOCK_METHOD(std::optional<DeviceInfo::BrowserActuatorInfo>,
+              GetLocalBrowserActuatorInfo,
               (),
               (const override));
 };
@@ -377,6 +383,33 @@ TEST_F(LocalDeviceInfoProviderImplTest, PersonalContextInfo) {
   EXPECT_TRUE(local_info->eligible_for_spii);
 }
 
+TEST_F(LocalDeviceInfoProviderImplTest, BrowserActuatorInfo) {
+  ON_CALL(device_info_sync_client_, GetLocalBrowserActuatorInfo())
+      .WillByDefault(Return(std::nullopt));
+
+  InitializeProvider();
+
+  ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
+  EXPECT_FALSE(provider_->GetLocalDeviceInfo()->browser_actuator_info());
+
+  const std::vector<uint8_t> kPublicKey = {4, 1, 2, 3, 4, 5};
+  DeviceInfo::BrowserActuatorInfo browser_actuator_info{
+      .colocation_serialized_tink_keyset = kPublicKey};
+  ON_CALL(device_info_sync_client_, GetLocalBrowserActuatorInfo())
+      .WillByDefault(Return(browser_actuator_info));
+
+  ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
+  const std::optional<DeviceInfo::BrowserActuatorInfo>& local_info =
+      provider_->GetLocalDeviceInfo()->browser_actuator_info();
+  ASSERT_TRUE(local_info);
+  EXPECT_EQ(kPublicKey, local_info->colocation_serialized_tink_keyset);
+
+  ON_CALL(device_info_sync_client_, GetLocalBrowserActuatorInfo())
+      .WillByDefault(Return(std::nullopt));
+  ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
+  EXPECT_FALSE(provider_->GetLocalDeviceInfo()->browser_actuator_info());
+}
+
 TEST_F(LocalDeviceInfoProviderImplTest, ShouldPopulateFCMRegistrationToken) {
   InitializeProvider();
   ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
@@ -431,7 +464,8 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
       std::nullopt,
       /*glic_experimental_triggering_capabilities=*/{},
       /*android_os_build_fingerprint_prefix=*/std::nullopt,
-      personal_context_info);
+      personal_context_info,
+      /*browser_actuator_info=*/std::nullopt);
 
   // |kFCMRegistrationToken|, |kInterestedDataTypes|, |paask_info|, and
   // |personal_context_info| should be taken from

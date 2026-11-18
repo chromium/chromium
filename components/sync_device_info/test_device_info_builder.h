@@ -86,6 +86,8 @@ class TestDeviceInfoBuilder {
   TestDeviceInfoBuilder& WithPersonalContextInfo(
       const std::optional<DeviceInfo::PersonalContextInfo>&
           personal_context_info);
+  TestDeviceInfoBuilder& WithBrowserActuatorInfo(
+      std::optional<DeviceInfo::BrowserActuatorInfo> browser_actuator_info);
 
  private:
   std::string guid_ = "guid";
@@ -118,6 +120,7 @@ class TestDeviceInfoBuilder {
   base::flat_set<std::string> glic_experimental_triggering_capabilities_;
   std::optional<std::string> server_determined_model_name_;
   std::optional<DeviceInfo::PersonalContextInfo> personal_context_info_;
+  std::optional<DeviceInfo::BrowserActuatorInfo> browser_actuator_info_;
 };
 
 }  // namespace syncer

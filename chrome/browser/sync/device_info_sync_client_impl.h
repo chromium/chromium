@@ -58,6 +58,8 @@ class DeviceInfoSyncClientImpl : public syncer::DeviceInfoSyncClient {
       const override;
   syncer::DeviceInfo::PersonalContextInfo::StatusOrInfo
   GetLocalPersonalContextInfo() const override;
+  std::optional<syncer::DeviceInfo::BrowserActuatorInfo>
+  GetLocalBrowserActuatorInfo() const override;
 
  private:
   const raw_ptr<Profile> profile_;

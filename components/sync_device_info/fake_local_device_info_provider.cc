@@ -46,7 +46,8 @@ FakeLocalDeviceInfoProvider::FakeLocalDeviceInfoProvider()
                    std::nullopt,
                    /*glic_experimental_triggering_capabilities=*/{},
                    /*android_os_build_fingerprint_prefix=*/std::nullopt,
-                   /*personal_context_info=*/std::nullopt) {}
+                   /*personal_context_info=*/std::nullopt,
+                   /*browser_actuator_info=*/std::nullopt) {}
 
 FakeLocalDeviceInfoProvider::~FakeLocalDeviceInfoProvider() = default;
 

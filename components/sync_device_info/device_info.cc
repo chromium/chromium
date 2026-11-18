@@ -88,7 +88,8 @@ DeviceInfo::DeviceInfo(
     std::optional<int> glic_experimental_triggering_version,
     base::flat_set<std::string> glic_experimental_triggering_capabilities,
     std::optional<std::string> android_os_build_fingerprint_prefix,
-    std::optional<PersonalContextInfo> personal_context_info)
+    std::optional<PersonalContextInfo> personal_context_info,
+    std::optional<BrowserActuatorInfo> browser_actuator_info)
     : guid_(guid),
       client_name_(client_name),
       chrome_version_(chrome_version),
@@ -120,7 +121,8 @@ DeviceInfo::DeviceInfo(
           glic_experimental_triggering_version),
       glic_experimental_triggering_capabilities_(
           std::move(glic_experimental_triggering_capabilities)),
-      personal_context_info_(std::move(personal_context_info)) {}
+      personal_context_info_(std::move(personal_context_info)),
+      browser_actuator_info_(std::move(browser_actuator_info)) {}
 
 DeviceInfo::DeviceInfo(const DeviceInfo& other) = default;
 
@@ -238,6 +240,11 @@ DeviceInfo::personal_context_info() const {
   return personal_context_info_;
 }
 
+const std::optional<DeviceInfo::BrowserActuatorInfo>&
+DeviceInfo::browser_actuator_info() const {
+  return browser_actuator_info_;
+}
+
 const std::string& DeviceInfo::fcm_registration_token() const {
   return fcm_registration_token_;
 }
@@ -302,6 +309,11 @@ void DeviceInfo::set_paask_info(
 void DeviceInfo::set_personal_context_info(
     std::optional<PersonalContextInfo> personal_context_info) {
   personal_context_info_ = std::move(personal_context_info);
+}
+
+void DeviceInfo::set_browser_actuator_info(
+    std::optional<BrowserActuatorInfo> browser_actuator_info) {
+  browser_actuator_info_ = std::move(browser_actuator_info);
 }
 
 void DeviceInfo::set_client_name(const std::string& client_name) {

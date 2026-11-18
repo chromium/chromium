@@ -14,4 +14,9 @@ DeviceInfoSyncClient::GetGlicExperimentalTriggeringCapabilities() const {
   return {};
 }
 
+std::optional<DeviceInfo::BrowserActuatorInfo>
+DeviceInfoSyncClient::GetLocalBrowserActuatorInfo() const {
+  return std::nullopt;
+}
+
 }  // namespace syncer

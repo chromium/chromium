@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_H_
 
 #include <array>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <set>
@@ -167,6 +168,17 @@ class DeviceInfo {
                            const PersonalContextInfo&) = default;
   };
 
+  // Holds the public key that verifies this device's co-location proofs for
+  // local browser actuation.
+  struct BrowserActuatorInfo {
+    // Serialized tink.Keyset with the key that verifies co-location proofs.
+    // Not synced when empty.
+    std::vector<uint8_t> colocation_serialized_tink_keyset;
+
+    friend bool operator==(const BrowserActuatorInfo&,
+                           const BrowserActuatorInfo&) = default;
+  };
+
   //
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync_device_info
@@ -241,7 +253,8 @@ class DeviceInfo {
       std::optional<int> glic_experimental_triggering_version,
       base::flat_set<std::string> glic_experimental_triggering_capabilities,
       std::optional<std::string> android_os_build_fingerprint_prefix,
-      std::optional<PersonalContextInfo> personal_context_info);
+      std::optional<PersonalContextInfo> personal_context_info,
+      std::optional<BrowserActuatorInfo> browser_actuator_info);
 
   DeviceInfo& operator=(const DeviceInfo&) = delete;
 
@@ -315,6 +328,8 @@ class DeviceInfo {
 
   const std::optional<PersonalContextInfo>& personal_context_info() const;
 
+  const std::optional<BrowserActuatorInfo>& browser_actuator_info() const;
+
   // Returns the FCM registration token for sync invalidations.
   const std::string& fcm_registration_token() const;
 
@@ -360,6 +375,9 @@ class DeviceInfo {
 
   void set_personal_context_info(
       std::optional<PersonalContextInfo> personal_context_info);
+
+  void set_browser_actuator_info(
+      std::optional<BrowserActuatorInfo> browser_actuator_info);
 
   void set_client_name(const std::string& client_name);
 
@@ -462,6 +480,8 @@ class DeviceInfo {
   base::flat_set<std::string> glic_experimental_triggering_capabilities_;
 
   std::optional<PersonalContextInfo> personal_context_info_;
+
+  std::optional<BrowserActuatorInfo> browser_actuator_info_;
 
   // NOTE: when adding a member, don't forget to update
   // |IsStoredLocalDeviceInfoStillAccurate| in device_info_sync_bridge.cc or

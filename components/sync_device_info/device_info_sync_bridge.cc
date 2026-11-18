@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <map>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -219,6 +220,18 @@ SpecificsToPersonalContextInfo(const DeviceInfoSpecifics& specifics) {
       .eligible_for_spii = fields.eligible_for_spii()};
 }
 
+std::optional<DeviceInfo::BrowserActuatorInfo> SpecificsToBrowserActuatorInfo(
+    const DeviceInfoSpecifics& specifics) {
+  const std::string& keyset =
+      specifics.browser_actuator_fields().colocation_serialized_tink_keyset();
+  if (keyset.empty()) {
+    return std::nullopt;
+  }
+  return DeviceInfo::BrowserActuatorInfo{
+      .colocation_serialized_tink_keyset =
+          base::ToVector(base::as_byte_span(keyset))};
+}
+
 // Converts DeviceInfoSpecifics into DeviceInfo.
 DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
   const DeviceInfo::FormFactor device_form_factor =
@@ -263,7 +276,8 @@ DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
       SpecificsToGlicExperimentalTriggeringVersion(specifics),
       SpecificsToGlicExperimentalTriggeringCapabilities(specifics),
       android_os_build_fingerprint_prefix,
-      SpecificsToPersonalContextInfo(specifics));
+      SpecificsToPersonalContextInfo(specifics),
+      SpecificsToBrowserActuatorInfo(specifics));
 }
 
 // Allocate a EntityData and copies |specifics| into it.
@@ -422,6 +436,18 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
     specifics->clear_personal_context_fields();
   }
 
+  const std::optional<DeviceInfo::BrowserActuatorInfo>& browser_actuator_info =
+      info.browser_actuator_info();
+  if (browser_actuator_info &&
+      !browser_actuator_info->colocation_serialized_tink_keyset.empty()) {
+    specifics->mutable_browser_actuator_fields()
+        ->set_colocation_serialized_tink_keyset(
+            browser_actuator_info->colocation_serialized_tink_keyset.data(),
+            browser_actuator_info->colocation_serialized_tink_keyset.size());
+  } else {
+    specifics->clear_browser_actuator_fields();
+  }
+
   return specifics;
 }
 
@@ -472,7 +498,8 @@ bool IsStoredLocalDeviceInfoStillAccurate(const DeviceInfo* stored,
              stored->glic_experimental_triggering_version() &&
          current->glic_experimental_triggering_capabilities() ==
              stored->glic_experimental_triggering_capabilities() &&
-         current->personal_context_info() == stored->personal_context_info();
+         current->personal_context_info() == stored->personal_context_info() &&
+         current->browser_actuator_info() == stored->browser_actuator_info();
 }
 
 int CalculateMaxConcurrentEvents(const std::multimap<base::Time, int>& events) {

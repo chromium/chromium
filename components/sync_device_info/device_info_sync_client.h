@@ -74,6 +74,11 @@ class DeviceInfoSyncClient {
   // yet or the device is not eligible.
   virtual DeviceInfo::PersonalContextInfo::StatusOrInfo
   GetLocalPersonalContextInfo() const = 0;
+
+  // Returns browser actuation data to publish for this device, or
+  // `std::nullopt` to publish none.
+  virtual std::optional<DeviceInfo::BrowserActuatorInfo>
+  GetLocalBrowserActuatorInfo() const;
 };
 
 }  // namespace syncer

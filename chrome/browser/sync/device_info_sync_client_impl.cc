@@ -144,3 +144,8 @@ DeviceInfoSyncClientImpl::GetLocalPersonalContextInfo() const {
   return personal_context::PersonalContextKeyManager::
       GetLocalPersonalContextInfo(profile_->GetPrefs(), eligibility_service);
 }
+
+std::optional<syncer::DeviceInfo::BrowserActuatorInfo>
+DeviceInfoSyncClientImpl::GetLocalBrowserActuatorInfo() const {
+  return std::nullopt;
+}
