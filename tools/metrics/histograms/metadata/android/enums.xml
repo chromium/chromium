@@ -262,6 +262,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="NativeOnlySandboxed"/>
   <int value="2" label="Privileged"/>
   <int value="3" label="Other"/>
+  <int value="4" label="SandboxedGpu"/>
 </enum>
 
 <!-- LINT.IfChange(AndroidConfirmQuitResult) -->

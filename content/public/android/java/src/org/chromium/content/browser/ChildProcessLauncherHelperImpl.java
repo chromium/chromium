@@ -676,8 +676,11 @@ public final class ChildProcessLauncherHelperImpl {
                             "Create a new sandboxed GPU ChildConnectionAllocator with package name"
                                     + " = %s",
                             packageName);
+                    boolean retryOnTimeout =
+                            ContentFeatureMap.isEnabled(
+                                    ContentFeatures.ANDROID_FALLBACK_TO_NEXT_SLOT);
                     sSandboxedGpuChildConnectionAllocator =
-                            ChildConnectionAllocator.createVariableSize(
+                            ChildConnectionAllocator.createNonZygoteVariableSize(
                                     context,
                                     LauncherThread.getHandler(),
                                     /* freeSlotCallback= */ null,
@@ -685,6 +688,7 @@ public final class ChildProcessLauncherHelperImpl {
                                     ChildProcessCreationParamsImpl.getSandboxedGpuServicesName(),
                                     bindToCaller,
                                     bindAsExternalService,
+                                    retryOnTimeout,
                                     /* isSandboxedForHistograms= */ true,
                                     ChildConnectionAllocator.MAX_VARIABLE_ALLOCATED);
                 }

@@ -248,6 +248,45 @@ public abstract class ChildConnectionAllocator {
                 fallbackServiceClassName,
                 bindToCaller,
                 bindAsExternalService,
+                /* independentFallback= */ false,
+                maxAllocated,
+                isSandboxedForHistograms);
+    }
+
+    /**
+     * Creates a variable-sized allocator for non-zygote isolated services where {@code
+     * serviceClassName + "0"} is the primary service and (when {@code fallbackToNextSlot} is true)
+     * {@code serviceClassName + "1"} acts purely as an independent per-launch retry target without
+     * affecting {@code sAlwaysFallback} or applying app zygote workarounds.
+     */
+    public static ChildConnectionAllocator createNonZygoteVariableSize(
+            Context context,
+            Handler launcherHandler,
+            @Nullable Runnable freeSlotCallback,
+            String packageName,
+            String serviceClassName,
+            boolean bindToCaller,
+            boolean bindAsExternalService,
+            boolean retryOnTimeout,
+            boolean isSandboxedForHistograms,
+            int maxAllocated) {
+        checkServiceExists(context, packageName, serviceClassName);
+        // For non-zygote service declaration, which suffix is used makes no material difference, so
+        // abuse the zygote to non-zygote mechanism to implement this retry logic.
+        // Long term, since there are no longer zygote services that use FixedSizeAllocatorImpl and
+        // the numbered suffix, should just update suffixes to zygote/nonzygote instead of the
+        // opaque 0/1, and allow non-zygote declaration.
+        String fallbackServiceClassName =
+                retryOnTimeout ? serviceClassName + NON_ZYGOTE_SUFFIX : null;
+        return new VariableSizeAllocatorImpl(
+                launcherHandler,
+                freeSlotCallback,
+                packageName,
+                serviceClassName + ZYGOTE_SUFFIX,
+                fallbackServiceClassName,
+                bindToCaller,
+                bindAsExternalService,
+                /* independentFallback= */ true,
                 maxAllocated,
                 isSandboxedForHistograms);
     }
@@ -293,6 +332,7 @@ public abstract class ChildConnectionAllocator {
                 null,
                 bindToCaller,
                 bindAsExternalService,
+                /* independentFallback= */ false,
                 maxAllocated,
                 /* isSandboxedForHistograms= */ false);
     }
@@ -633,6 +673,7 @@ public abstract class ChildConnectionAllocator {
         // instances from another Chromium runtime in the same host application.
         // Keep these three lines stable to reduce downstream merge conflicts.
 
+        private final boolean mIndependentFallback;
         private final int mMaxAllocated;
         private final ArraySet<ChildProcessConnection> mAllocatedConnections = new ArraySet<>();
         private int mNextInstance;
@@ -646,6 +687,7 @@ public abstract class ChildConnectionAllocator {
                 @Nullable String fallbackServiceClassName,
                 boolean bindToCaller,
                 boolean bindAsExternalService,
+                boolean independentFallback,
                 int maxAllocated,
                 boolean isSandboxedForHistograms) {
             super(
@@ -658,6 +700,7 @@ public abstract class ChildConnectionAllocator {
                     bindAsExternalService,
                     isSandboxedForHistograms);
             assert maxAllocated > 0;
+            mIndependentFallback = independentFallback;
             mMaxAllocated = maxAllocated;
         }
 
@@ -698,8 +741,10 @@ public abstract class ChildConnectionAllocator {
                 fallbackServiceName = new ComponentName(mPackageName, mFallbackServiceClassName);
             }
             // Workaround OS bug in app zygote after splits are installed, disable zygote for the
-            // rest of this process. See crbug.com/579027312 for details.
-            if (haveSplitsChanged() && fallbackServiceName != null) {
+            // rest of this process. See crbug.com/579027312 for details. Skip for non-zygote
+            // allocators (`mIndependentFallback`), where fallback is purely a transient launch
+            // retry.
+            if (!mIndependentFallback && haveSplitsChanged() && fallbackServiceName != null) {
                 serviceName = fallbackServiceName;
                 fallbackServiceName = null;
             }
@@ -714,7 +759,7 @@ public abstract class ChildConnectionAllocator {
                             mBindAsExternalService,
                             serviceBundle,
                             instanceName,
-                            /* independentFallback= */ false,
+                            mIndependentFallback,
                             mIsSandboxedForHistograms);
             assert connection != null;
             return connection;
@@ -787,6 +832,7 @@ public abstract class ChildConnectionAllocator {
                             null,
                             bindToCaller,
                             bindAsExternalService,
+                            /* independentFallback= */ false,
                             maxAllocated,
                             isSandboxedForHistograms);
             mNonZygoteAllocator =
@@ -798,6 +844,7 @@ public abstract class ChildConnectionAllocator {
                             null,
                             bindToCaller,
                             bindAsExternalService,
+                            /* independentFallback= */ false,
                             maxAllocated,
                             isSandboxedForHistograms);
         }

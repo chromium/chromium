@@ -132,10 +132,11 @@ import javax.annotation.concurrent.GuardedBy;
         assert mConnection != null;
         mBindIntent = bindIntent;
         mConnection.retire();
+        mConnection = null;
         @ChildBindingState int bindingState = getBindingState();
         if (bindingState == ChildBindingState.UNBOUND) {
-            // If ChildProcessConnection fails to bind(), it replaceService() here and then calls
-            // bind() again. So we don't need to bind the connection here.
+            // If ChildProcessConnection fails to bind(), it calls replaceService() here and then
+            // calls bind() again. Clearing `mConnection` above allows bind() to proceed cleanly.
             return;
         }
         mConnection =
@@ -145,9 +146,7 @@ import javax.annotation.concurrent.GuardedBy;
                         mConnectionDelegate,
                         mInstanceName);
         boolean success = mConnection.bindServiceConnection();
-        if (success) {
-            updateBindingState(bindingState);
-        }
+        updateBindingState(success ? bindingState : ChildBindingState.UNBOUND);
     }
 
     @Override

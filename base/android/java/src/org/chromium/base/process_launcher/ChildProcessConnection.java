@@ -911,11 +911,13 @@ public class ChildProcessConnection {
         }
     }
 
+    // LINT.IfChange
     @IntDef({
         ServiceNames.JAVA_SANDBOXED,
         ServiceNames.NATIVE_ONLY_SANDBOXED,
         ServiceNames.PRIVILEGED,
-        ServiceNames.OTHER
+        ServiceNames.OTHER,
+        ServiceNames.SANDBOXED_GPU
     })
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
@@ -924,8 +926,11 @@ public class ChildProcessConnection {
         int NATIVE_ONLY_SANDBOXED = 1;
         int PRIVILEGED = 2;
         int OTHER = 3;
-        int NUM_ENTRIES = 4;
+        int SANDBOXED_GPU = 4;
+        int NUM_ENTRIES = 5;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml)
 
     private static final String NATIVE_SANDBOXED_SERVICE =
             "org.chromium.content.app.NativeOnlySandboxedProcessService";
@@ -933,6 +938,8 @@ public class ChildProcessConnection {
             "org.chromium.content.app.SandboxedProcessService";
     private static final String PRIVILEGED_SERVICE =
             "org.chromium.content.app.PrivilegedProcessService";
+    private static final String SANDBOXED_GPU_SERVICE =
+            "org.chromium.content.app.SandboxedGpuProcessService";
 
     private void fallbackService() {
         assert mFallbackServiceName != null;
@@ -952,6 +959,8 @@ public class ChildProcessConnection {
             serviceName = ServiceNames.NATIVE_ONLY_SANDBOXED;
         } else if (className.startsWith(PRIVILEGED_SERVICE)) {
             serviceName = ServiceNames.PRIVILEGED;
+        } else if (className.startsWith(SANDBOXED_GPU_SERVICE)) {
+            serviceName = ServiceNames.SANDBOXED_GPU;
         } else {
             serviceName = ServiceNames.OTHER;
         }
