@@ -8,7 +8,7 @@
 #include <memory>
 #include <string_view>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
@@ -91,6 +91,27 @@ class MarketingOptInScreen : public BaseScreen {
   void HideImpl() override;
 
  private:
+  // Default country list.
+  static constexpr auto kDefaultCountries =
+      base::MakeFixedFlatSet<std::string_view>({"us", "ca", "gb"});
+
+  // Extended country list.
+  static constexpr auto kAdditionalCountries =
+      base::MakeFixedFlatSet<std::string_view>(
+          {"fr", "nl", "fi", "se", "no", "dk", "es", "it", "jp", "au"});
+
+  // Countries with double opt-in.
+  static constexpr auto kDoubleOptInCountries =
+      base::MakeFixedFlatSet<std::string_view>({"de"});
+
+  // Countries in which the toggle will be enabled by default.
+  static constexpr auto kDefaultOptInCountries =
+      base::MakeFixedFlatSet<std::string_view>({"us"});
+
+  // Countries that require the screen to show a footer with legal information.
+  static constexpr auto kCountriesWithLegalFooter =
+      base::MakeFixedFlatSet<std::string_view>({"ca"});
+
   void OnA11yShelfNavigationButtonPrefChanged();
   void OnUserAction(const base::ListValue& args) override;
   // Checks whether this user is managed.
@@ -108,7 +129,7 @@ class MarketingOptInScreen : public BaseScreen {
   bool ShouldShowOptionToSubscribe();
 
   bool IsDefaultOptInCountry() {
-    return default_opt_in_countries_.count(country_);
+    return kDefaultOptInCountries.contains(country_);
   }
 
   const raw_ref<PrefService> local_state_;
@@ -131,22 +152,6 @@ class MarketingOptInScreen : public BaseScreen {
   // Set by tests so that the sync status of preferences does not interfere when
   // showing the opt-in option.
   bool ignore_pref_sync_for_testing_ = false;
-
-  // Default country list.
-  const base::flat_set<std::string_view> default_countries_{"us", "ca", "gb"};
-
-  // Extended country list.
-  const base::flat_set<std::string_view> additional_countries_{
-      "fr", "nl", "fi", "se", "no", "dk", "es", "it", "jp", "au"};
-
-  // Countries with double opt-in.
-  const base::flat_set<std::string_view> double_opt_in_countries_{"de"};
-
-  // Countries in which the toggle will be enabled by default.
-  const base::flat_set<std::string_view> default_opt_in_countries_{"us"};
-
-  // Countries that require the screen to show a footer with legal information.
-  const base::flat_set<std::string_view> countries_with_legal_footer{"ca"};
 
   base::WeakPtrFactory<MarketingOptInScreen> weak_factory_{this};
 };

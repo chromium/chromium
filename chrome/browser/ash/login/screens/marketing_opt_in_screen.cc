@@ -119,7 +119,7 @@ void MarketingOptInScreen::ShowImpl() {
 
   // Show a verbose legal footer for Canada. (https://crbug.com/40147627)
   const bool legal_footer_visible =
-      email_opt_in_visible_ && countries_with_legal_footer.count(country_);
+      email_opt_in_visible_ && kCountriesWithLegalFooter.contains(country_);
 
   if (view_) {
     view_->Show(/*opt_in_visible=*/email_opt_in_visible_,
@@ -250,13 +250,12 @@ void MarketingOptInScreen::SetCountryFromTimezoneIfAvailable(
 
   // Set the country
   country_.clear();
-  const bool is_default_country = default_countries_.count(region.value());
-  const bool is_extended_country = additional_countries_.count(region.value());
-  const bool is_double_optin_country =
-      double_opt_in_countries_.count(region.value());
+  const bool is_default_country = kDefaultCountries.contains(*region);
+  const bool is_extended_country = kAdditionalCountries.contains(*region);
+  const bool is_double_optin_country = kDoubleOptInCountries.contains(*region);
 
   if (is_default_country || is_extended_country || is_double_optin_country) {
-    country_ = region.value();
+    country_ = *region;
   }
 }
 
