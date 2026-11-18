@@ -322,7 +322,7 @@ if (is_chromeos) {
       "//url",
     ]
     deps = [
-      "//chrome/app:generated_resources",
+      "//ash/strings",
       "//chrome/browser/ui/views:layout_provider",
       "//components/strings:components_strings",
       "//components/vector_icons",
