@@ -21,7 +21,7 @@ import "searchbox_config.proto";
 // DO NOT include any sensitive data in this proto.
 
 // Configuration for AIM eligibility response.
-// Next ID: 17
+// Next ID: 18
 message AimEligibilityResponse {
   // True if the user is eligible for AIM. This is false for users in any AIM
   // holdback.
@@ -111,4 +111,29 @@ message AimEligibilityResponse {
 
   // Configuration for the native folded LHS rail in Chrome NTP.
   LhsRailConfig lhs_rail_config = 16;
+
+  // Which attachments the Chrome composebox may send to the Search results page
+  // (SRP); any other attachment sends the query to AI Mode. The values are
+  // levers for routing more attachment types to the SRP as the server supports
+  // them.
+  enum SrpInputMode {
+    // Nothing attached goes to the SRP.
+    SRP_INPUT_MODE_NONE = 0;
+    // A single image.
+    SRP_INPUT_MODE_SINGLE_IMAGE = 1;
+    // One or more images.
+    SRP_INPUT_MODE_MULTI_IMAGE = 2;
+    // Any combination of images and files.
+    SRP_INPUT_MODE_ANY_COMBINATION_IMAGES_FILES = 3;
+    // Any combination of images, files and tabs.
+    SRP_INPUT_MODE_ANY_COMBINATION_IMAGES_FILES_TABS = 4;
+    // Any combination of images, files and Drive files.
+    SRP_INPUT_MODE_ANY_COMBINATION_IMAGES_FILES_DRIVE = 5;
+    // Any combination of images, files, tabs and Drive files.
+    SRP_INPUT_MODE_ANY_COMBINATION_ALL_TYPES = 6;
+  }
+
+  // Chrome only. The SRP input mode for the composebox. Unset means the client
+  // uses its own default.
+  optional SrpInputMode srp_input_mode = 17;
 }

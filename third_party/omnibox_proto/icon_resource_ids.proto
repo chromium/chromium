@@ -366,6 +366,9 @@ enum IconResourceIds {
   // Symbols:prompt_suggestion:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24 Prompt
   // Suggest suggestions.
   PROMPT_SUGGESTION = 112;
+
+  // Icon: Google Symbols:lightbulb:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
+  LIGHTBULB = 113;
 }
 
 enum IconPositions {
