@@ -54,7 +54,7 @@ class HyphenationComponentInstallerPolicy : public ComponentInstallerPolicy {
 };
 
 // Call once during startup to make the component update service aware of
-// the First-Party Sets component.
+// the Hyphenation component.
 void RegisterHyphenationComponent(ComponentUpdateService* cus);
 
 }  // namespace component_updater
