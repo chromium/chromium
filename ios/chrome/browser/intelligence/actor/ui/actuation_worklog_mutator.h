@@ -15,6 +15,9 @@
 // Requests stopping the active actuation task.
 - (void)stopActuation;
 
+// Requests pausing the active actuation task.
+- (void)pauseActuation;
+
 // Called when the user triggers `action` on the active intervention UI.
 - (void)didTriggerInterventionAction:(ActuationInterventionAction*)action;
 

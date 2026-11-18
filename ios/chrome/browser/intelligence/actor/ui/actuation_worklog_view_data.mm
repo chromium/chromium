@@ -317,6 +317,7 @@ constexpr NSUInteger kMaxColumnActionCount = 3;
 
 - (instancetype)
     initWithActuationActive:(BOOL)actuationActive
+        headerPrimaryAction:(ActuationHeaderPrimaryAction)headerPrimaryAction
               headerContent:(ActuationHeaderContentVariants*)headerContent
                     entries:(NSArray<ActuationWorklogEntry*>*)entries
                intervention:(ActuationInterventionData*)intervention
@@ -329,6 +330,7 @@ constexpr NSUInteger kMaxColumnActionCount = 3;
   self = [super init];
   if (self) {
     _actuationActive = actuationActive;
+    _headerPrimaryAction = headerPrimaryAction;
     _headerContent = headerContent;
     _entries = [entries copy];
     _intervention = intervention;

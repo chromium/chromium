@@ -22,8 +22,12 @@
 
 namespace {
 
-// Point size for the header close button symbol.
-constexpr CGFloat kCloseButtonPointSize = 14.0;
+// Point size for the header button symbols.
+constexpr CGFloat kHeaderButtonPointSize = 14.0;
+
+// Accessibility label of the header pause button.
+// TODO(crbug.com/573515833): Localize the string.
+NSString* const kPauseButtonTitle = @"Pause";
 
 // Text used to measure the header as if it displayed a title and a subtitle.
 NSString* const kHeaderSizingPlaceholderText = @"Placeholder";
@@ -70,6 +74,8 @@ using intelligence::actor::kSpacingLarge;
   ActuationHeaderContentVariants* _headerContentVariants;
   // Offscreen header for content-independent height calculation.
   IntelligenceHeaderView* _sizingHeaderView;
+  // Action of the header's primary button.
+  ActuationHeaderPrimaryAction _headerPrimaryAction;
   // Intervention displayed by `_interventionView`, if any.
   ActuationInterventionData* _intervention;
 
@@ -82,6 +88,7 @@ using intelligence::actor::kSpacingLarge;
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _displayMode = ActuationWorklogDisplayModeCompact;
+    _headerPrimaryAction = ActuationHeaderPrimaryAction::kStop;
     _actuationActive = NO;
   }
   return self;
@@ -141,6 +148,14 @@ using intelligence::actor::kSpacingLarge;
   [self updateVisibility];
 }
 
+- (void)setHeaderPrimaryAction:(ActuationHeaderPrimaryAction)action {
+  if (_headerPrimaryAction == action) {
+    return;
+  }
+  _headerPrimaryAction = action;
+  _headerView.primaryItem = [self createPrimaryItem];
+}
+
 - (void)setHeaderContentVariants:(ActuationHeaderContentVariants*)variants {
   _headerContentVariants = variants;
   [self updateHeaderContent];
@@ -179,7 +194,8 @@ using intelligence::actor::kSpacingLarge;
 - (void)reset {
   _headerContentVariants = nil;
   [_headerView reset];
-  _headerView.primaryItem = [self createCloseItem];
+  _headerPrimaryAction = ActuationHeaderPrimaryAction::kStop;
+  _headerView.primaryItem = [self createPrimaryItem];
   [_compactView reset];
   [_fullView reset];
   [_scrollView setContentOffset:CGPointZero animated:NO];
@@ -223,6 +239,37 @@ using intelligence::actor::kSpacingLarge;
   [self.mutator stopActuation];
 }
 
+// Handles pause button tap to request pausing the active actuation task.
+- (void)pauseActuationButtonTapped {
+  [self.mutator pauseActuation];
+}
+
+// Creates the primary button accessory of `_headerView` for
+// `_headerPrimaryAction`.
+- (IntelligenceHeaderItem*)createPrimaryItem {
+  switch (_headerPrimaryAction) {
+    case ActuationHeaderPrimaryAction::kPause:
+      return [self createPauseItem];
+    case ActuationHeaderPrimaryAction::kStop:
+      return [self createCloseItem];
+  }
+}
+
+// Creates the pause button accessory for `_headerView`.
+- (IntelligenceHeaderItem*)createPauseItem {
+  __weak __typeof(self) weakSelf = self;
+  UIAction* pauseAction = [UIAction actionWithHandler:^(UIAction*) {
+    [weakSelf pauseActuationButtonTapped];
+  }];
+  // The mocks use the stop symbol for the pause button.
+  return [IntelligenceHeaderItem
+                 itemWithIcon:SymbolWithPointSize(SymbolStopFill,
+                                                  kHeaderButtonPointSize)
+                        title:kPauseButtonTitle
+      accessibilityIdentifier:kActuationHeaderPauseButtonAccessibilityIdentifier
+                       action:pauseAction];
+}
+
 // Creates the close button accessory for `_headerView`.
 - (IntelligenceHeaderItem*)createCloseItem {
   __weak __typeof(self) weakSelf = self;
@@ -231,7 +278,7 @@ using intelligence::actor::kSpacingLarge;
   }];
   return [IntelligenceHeaderItem
                  itemWithIcon:SymbolWithPointSize(SymbolXMark,
-                                                  kCloseButtonPointSize)
+                                                  kHeaderButtonPointSize)
                         title:l10n_util::GetNSString(IDS_CLOSE)
       accessibilityIdentifier:kActuationHeaderCloseButtonAccessibilityIdentifier
                        action:closeAction];
@@ -242,7 +289,7 @@ using intelligence::actor::kSpacingLarge;
   _headerView = [[IntelligenceHeaderView alloc] initWithFrame:CGRectZero];
   _headerView.accessibilityIdentifier = kActuationHeaderAccessibilityIdentifier;
   _headerView.loading = _actuationActive;
-  _headerView.primaryItem = [self createCloseItem];
+  _headerView.primaryItem = [self createPrimaryItem];
   _headerView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_headerView];
 

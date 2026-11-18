@@ -19,11 +19,16 @@
 @interface FakeActuationWorklogMutator : NSObject <ActuationWorklogMutator>
 @property(nonatomic, strong) ActuationInterventionAction* triggeredAction;
 @property(nonatomic, assign) BOOL stopActuationCalled;
+@property(nonatomic, assign) BOOL pauseActuationCalled;
 @end
 
 @implementation FakeActuationWorklogMutator
 - (void)stopActuation {
   _stopActuationCalled = YES;
+}
+
+- (void)pauseActuation {
+  _pauseActuationCalled = YES;
 }
 
 - (void)didTriggerInterventionAction:(ActuationInterventionAction*)action {
@@ -211,6 +216,47 @@ TEST_F(ActuationWorklogViewControllerTest, TestSameInterventionIsNotRedrawn) {
   EXPECT_EQ(FindViewById(view_controller_.view, button_id), nil);
   [consumer() setIntervention:intervention];
   EXPECT_NE(FindViewById(view_controller_.view, button_id), nil);
+}
+
+// Tests that the header's primary button pauses or stops the task according
+// to the primary action, and that reset restores the stop button.
+TEST_F(ActuationWorklogViewControllerTest, TestHeaderPrimaryAction) {
+  UIButton* close_button = FindViewById<UIButton>(
+      view_controller_.view,
+      kActuationHeaderCloseButtonAccessibilityIdentifier);
+  ASSERT_NE(close_button, nil);
+  [close_button
+      sendActionsForControlEvents:UIControlEventPrimaryActionTriggered];
+  EXPECT_TRUE(fake_mutator_.stopActuationCalled);
+
+  [consumer() setHeaderPrimaryAction:ActuationHeaderPrimaryAction::kPause];
+  EXPECT_EQ(FindViewById(view_controller_.view,
+                         kActuationHeaderCloseButtonAccessibilityIdentifier),
+            nil);
+  UIButton* pause_button = FindViewById<UIButton>(
+      view_controller_.view,
+      kActuationHeaderPauseButtonAccessibilityIdentifier);
+  ASSERT_NE(pause_button, nil);
+  [pause_button
+      sendActionsForControlEvents:UIControlEventPrimaryActionTriggered];
+  EXPECT_TRUE(fake_mutator_.pauseActuationCalled);
+
+  [consumer() setHeaderPrimaryAction:ActuationHeaderPrimaryAction::kStop];
+  EXPECT_EQ(FindViewById(view_controller_.view,
+                         kActuationHeaderPauseButtonAccessibilityIdentifier),
+            nil);
+  EXPECT_NE(FindViewById(view_controller_.view,
+                         kActuationHeaderCloseButtonAccessibilityIdentifier),
+            nil);
+
+  [consumer() setHeaderPrimaryAction:ActuationHeaderPrimaryAction::kPause];
+  [consumer() reset];
+  EXPECT_EQ(FindViewById(view_controller_.view,
+                         kActuationHeaderPauseButtonAccessibilityIdentifier),
+            nil);
+  EXPECT_NE(FindViewById(view_controller_.view,
+                         kActuationHeaderCloseButtonAccessibilityIdentifier),
+            nil);
 }
 
 }  // namespace

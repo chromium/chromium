@@ -109,6 +109,23 @@ ActuationWorklogChip* ActuationWorklogChipForToolType(
   }
 }
 
+ActuationHeaderPrimaryAction ActuationHeaderPrimaryActionForTaskState(
+    actor::ActorTaskState task_state) {
+  switch (task_state) {
+    case actor::ActorTaskState::kInit:
+    case actor::ActorTaskState::kActing:
+    case actor::ActorTaskState::kReflecting:
+    case actor::ActorTaskState::kWaitingOnUser:
+      return ActuationHeaderPrimaryAction::kPause;
+    case actor::ActorTaskState::kPausedByActor:
+    case actor::ActorTaskState::kPausedByUser:
+    case actor::ActorTaskState::kCancelled:
+    case actor::ActorTaskState::kFinished:
+    case actor::ActorTaskState::kFailed:
+      return ActuationHeaderPrimaryAction::kStop;
+  }
+}
+
 ActuationHeaderContentVariants* ActuationHeaderContentVariantsForTask(
     NSString* task_title,
     actor::ActorTaskState task_state,

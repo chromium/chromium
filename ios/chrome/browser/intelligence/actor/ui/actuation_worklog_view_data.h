@@ -230,6 +230,14 @@ enum class InterventionActionIdentifier : NSInteger {
 
 @end
 
+// Action of the header's primary button.
+enum class ActuationHeaderPrimaryAction {
+  // Pauses the running task.
+  kPause,
+  // Stops the task.
+  kStop,
+};
+
 // View data object describing the text displayed in the actuation header.
 @interface ActuationHeaderContent : NSObject
 
@@ -292,6 +300,10 @@ enum class InterventionActionIdentifier : NSInteger {
 @property(nonatomic, assign, readonly, getter=isActuationActive)
     BOOL actuationActive;
 
+// Action of the header's primary button.
+@property(nonatomic, assign, readonly)
+    ActuationHeaderPrimaryAction headerPrimaryAction;
+
 // Header content to display in each display mode.
 @property(nonatomic, strong, readonly)
     ActuationHeaderContentVariants* headerContent;
@@ -315,6 +327,7 @@ enum class InterventionActionIdentifier : NSInteger {
 // `suggestions` must not be empty.
 - (instancetype)
     initWithActuationActive:(BOOL)actuationActive
+        headerPrimaryAction:(ActuationHeaderPrimaryAction)headerPrimaryAction
               headerContent:(ActuationHeaderContentVariants*)headerContent
                     entries:(NSArray<ActuationWorklogEntry*>*)entries
                intervention:(ActuationInterventionData*)intervention

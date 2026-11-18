@@ -45,6 +45,7 @@ ActuationInterventionData* CreateIntervention() {
 @interface FakeActuationWorklogConsumer
     : NSObject <ActuationSuggestionsConsumer, ActuationWorklogConsumer>
 @property(nonatomic, assign) BOOL actuationActive;
+@property(nonatomic, assign) ActuationHeaderPrimaryAction headerPrimaryAction;
 @property(nonatomic, strong)
     ActuationHeaderContentVariants* headerContentVariants;
 @property(nonatomic, strong) NSMutableArray<ActuationWorklogItem*>* items;
@@ -63,6 +64,7 @@ ActuationInterventionData* CreateIntervention() {
   if ((self = [super init])) {
     _items = [NSMutableArray array];
     _animated = [NSMutableArray array];
+    _headerPrimaryAction = ActuationHeaderPrimaryAction::kStop;
   }
   return self;
 }
@@ -87,6 +89,7 @@ ActuationInterventionData* CreateIntervention() {
   [_animated removeAllObjects];
   _chip = nil;
   _headerContentVariants = nil;
+  _headerPrimaryAction = ActuationHeaderPrimaryAction::kStop;
   _intervention = nil;
 }
 
@@ -108,6 +111,7 @@ ActuationInterventionData* CreateIntervention() {
     ActuationInterventionAction* resolvedAction;
 @property(nonatomic, strong, readonly) ActorFormSuggestion* selectedSuggestion;
 @property(nonatomic, assign, readonly) BOOL taskStopped;
+@property(nonatomic, assign, readonly) BOOL taskPaused;
 @end
 
 @implementation FakeActorTaskDataSource
@@ -140,6 +144,10 @@ ActuationInterventionData* CreateIntervention() {
   _taskStopped = YES;
 }
 
+- (void)pauseTask {
+  _taskPaused = YES;
+}
+
 @end
 
 namespace {
@@ -160,12 +168,15 @@ class ActuationWorklogMediatorTest : public PlatformTest {
   ~ActuationWorklogMediatorTest() override { [mediator_ disconnect]; }
 
   // Publishes the state of an active task displaying `entries`, with
-  // `intervention`, and `suggestions` for the last entry.
+  // `intervention`, `suggestions` for the last entry, and `primary_action`.
   void Publish(NSArray<ActuationWorklogEntry*>* entries,
                ActuationInterventionData* intervention = nil,
-               NSArray<ActorFormSuggestion*>* suggestions = nil) {
+               NSArray<ActorFormSuggestion*>* suggestions = nil,
+               ActuationHeaderPrimaryAction primary_action =
+                   ActuationHeaderPrimaryAction::kPause) {
     data_source_.state = [[ActuationWorklogState alloc]
         initWithActuationActive:YES
+            headerPrimaryAction:primary_action
                   headerContent:header_content_
                         entries:entries
                    intervention:intervention
@@ -323,6 +334,23 @@ TEST_F(ActuationWorklogMediatorTest,
   EXPECT_EQ(consumer_.suggestionsItem, nil);
 }
 
+// Tests that the header primary action of each state is forwarded.
+TEST_F(ActuationWorklogMediatorTest, TestHeaderPrimaryActionIsForwarded) {
+  NSArray<ActuationWorklogEntry*>* entries = @[ Entry(@"A") ];
+  Publish(entries);
+  StartObserving();
+  EXPECT_EQ(consumer_.headerPrimaryAction,
+            ActuationHeaderPrimaryAction::kPause);
+
+  Publish(entries, /*intervention=*/nil, /*suggestions=*/nil,
+          ActuationHeaderPrimaryAction::kStop);
+  EXPECT_EQ(consumer_.headerPrimaryAction, ActuationHeaderPrimaryAction::kStop);
+
+  Publish(entries);
+  EXPECT_EQ(consumer_.headerPrimaryAction,
+            ActuationHeaderPrimaryAction::kPause);
+}
+
 // Tests that stopping observation detaches from the data source and resets the
 // consumer.
 TEST_F(ActuationWorklogMediatorTest, TestStopObservingResetsConsumer) {
@@ -333,6 +361,7 @@ TEST_F(ActuationWorklogMediatorTest, TestStopObservingResetsConsumer) {
 
   EXPECT_EQ(data_source_.observer, nil);
   EXPECT_FALSE(consumer_.actuationActive);
+  EXPECT_EQ(consumer_.headerPrimaryAction, ActuationHeaderPrimaryAction::kStop);
   EXPECT_EQ(consumer_.headerContentVariants, nil);
   EXPECT_EQ(consumer_.items.count, 0u);
 }
@@ -376,10 +405,12 @@ TEST_F(ActuationWorklogMediatorTest, TestUserActionsAreForwarded) {
 
   [mediator_ didTriggerInterventionAction:action];
   [mediator_ suggestionsCoordinator:nil didSelectSuggestion:suggestion];
+  [mediator_ pauseActuation];
   [mediator_ stopActuation];
 
   EXPECT_EQ(data_source_.resolvedAction, action);
   EXPECT_EQ(data_source_.selectedSuggestion, suggestion);
+  EXPECT_TRUE(data_source_.taskPaused);
   EXPECT_TRUE(data_source_.taskStopped);
 }
 

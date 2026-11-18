@@ -11,12 +11,16 @@
 @class ActuationInterventionData;
 @class ActuationWorklogChip;
 @class ActuationWorklogItem;
+enum class ActuationHeaderPrimaryAction;
 
 // Consumer protocol for receiving worklog updates.
 @protocol ActuationWorklogConsumer <NSObject>
 
 // Sets whether actuation is actively executing.
 - (void)setActuationActive:(BOOL)active;
+
+// Sets the action of the header's primary button.
+- (void)setHeaderPrimaryAction:(ActuationHeaderPrimaryAction)action;
 
 // Sets the header content to display in each display mode.
 - (void)setHeaderContentVariants:(ActuationHeaderContentVariants*)variants;

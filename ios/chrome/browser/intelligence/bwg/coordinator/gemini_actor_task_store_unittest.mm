@@ -340,10 +340,14 @@ TEST_F(GeminiActorTaskStoreTest, IgnoresEmptyAndDuplicateUpdates) {
 // Tests that state changes are published.
 TEST_F(GeminiActorTaskStoreTest, StateChangeIsPublished) {
   AttachAndRegister();
+  EXPECT_EQ(observer_.state.headerPrimaryAction,
+            ActuationHeaderPrimaryAction::kPause);
 
   [store_ actorTaskWithID:task_id_ didChangeState:kFinished fromState:kActing];
 
   EXPECT_FALSE(observer_.state.actuationActive);
+  EXPECT_EQ(observer_.state.headerPrimaryAction,
+            ActuationHeaderPrimaryAction::kStop);
   EXPECT_NSEQ(HeaderContent(ActuationWorklogDisplayModeMinimized).title,
               l10n_util::GetNSString(IDS_IOS_ACTOR_HEADER_TASK_DONE));
 }
@@ -878,6 +882,8 @@ TEST_F(GeminiActorTaskStoreTest, PauseShowsResumeCard) {
   // Drain remaining notifications before checking that no entry is added.
   actor::FlushCurrentSequence();
   EXPECT_EQ(observer_.items.count, item_count);
+  EXPECT_EQ(observer_.state.headerPrimaryAction,
+            ActuationHeaderPrimaryAction::kStop);
   EXPECT_EQ(observer_.intervention.type, ActuationInterventionType::kCard);
   EXPECT_NSEQ(observer_.intervention.title, @"Task paused");
   EXPECT_NSEQ(observer_.intervention.subtitle, @(kTaskTitle));
@@ -998,6 +1004,38 @@ TEST_F(GeminiActorTaskStoreTest, StopTaskCancelsTask) {
   actor::FlushCurrentSequence();
   EXPECT_TRUE(observer.stopped);
   EXPECT_EQ(observer.state, kCancelled);
+}
+
+// Tests that pausing the task while a confirmation is pending replaces its card
+// with the paused card.
+TEST_F(GeminiActorTaskStoreTest, PauseTaskWhileConfirmingShowsResumeCard) {
+  AttachAndRegister();
+  ASSERT_EQ(RequestConfirmation(task_id_), std::nullopt);
+  ASSERT_NSEQ(observer_.intervention.title, @(kConfirmationTitle));
+  ASSERT_EQ(observer_.state.headerPrimaryAction,
+            ActuationHeaderPrimaryAction::kPause);
+
+  [store_ pauseTask];
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer_.state.headerPrimaryAction ==
+           ActuationHeaderPrimaryAction::kStop;
+  }));
+
+  EXPECT_EQ(actor_service_->GetActiveTaskState(), kPausedByUser);
+  EXPECT_NSEQ(observer_.intervention.title, @"Task paused");
+}
+
+// Tests that pausing the task after disconnecting is a no-op.
+TEST_F(GeminiActorTaskStoreTest, PauseTaskAfterDisconnectIsNoOp) {
+  AttachAndRegister();
+  FakeGeminiTaskStateObserver* observer = ObserveTaskState(task_id_);
+
+  [store_ disconnect];
+  [store_ pauseTask];
+  actor::FlushCurrentSequence();
+
+  EXPECT_NE(observer.state, kPausedByUser);
+  EXPECT_NE(actor_service_->GetActiveTaskState(), kPausedByUser);
 }
 
 }  // namespace

@@ -19,6 +19,11 @@ inline constexpr NSString* const
     kActuationHeaderCloseButtonAccessibilityIdentifier =
         @"ActuationHeaderCloseButtonAccessibilityIdentifier";
 
+// Accessibility identifier for the actuation header pause button.
+inline constexpr NSString* const
+    kActuationHeaderPauseButtonAccessibilityIdentifier =
+        @"ActuationHeaderPauseButtonAccessibilityIdentifier";
+
 // Accessibility identifier for the compact worklog view.
 inline constexpr NSString* const kCompactWorklogAccessibilityIdentifier =
     @"CompactWorklogAccessibilityIdentifier";

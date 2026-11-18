@@ -35,6 +35,28 @@ TEST_F(ActuationWorklogViewDataBuildersTest, TestNoChipForToolType) {
   EXPECT_FALSE(ActuationWorklogChipForToolType(kUnknown));
 }
 
+// Tests that the header's primary action is pause for a pausable task, and stop
+// for any other task.
+TEST_F(ActuationWorklogViewDataBuildersTest,
+       TestHeaderPrimaryActionForTaskState) {
+  const std::pair<actor::ActorTaskState, ActuationHeaderPrimaryAction>
+      kExpectations[] = {
+          {kInit, ActuationHeaderPrimaryAction::kPause},
+          {kActing, ActuationHeaderPrimaryAction::kPause},
+          {kReflecting, ActuationHeaderPrimaryAction::kPause},
+          {kWaitingOnUser, ActuationHeaderPrimaryAction::kPause},
+          {kPausedByActor, ActuationHeaderPrimaryAction::kStop},
+          {kPausedByUser, ActuationHeaderPrimaryAction::kStop},
+          {kCancelled, ActuationHeaderPrimaryAction::kStop},
+          {kFinished, ActuationHeaderPrimaryAction::kStop},
+          {kFailed, ActuationHeaderPrimaryAction::kStop},
+      };
+  for (const auto& [state, action] : kExpectations) {
+    SCOPED_TRACE(static_cast<int>(state));
+    EXPECT_EQ(ActuationHeaderPrimaryActionForTaskState(state), action);
+  }
+}
+
 // Tests that while the task runs, including while paused, the minimized header
 // shows the task title above the current step, and the other modes only show
 // the task title.

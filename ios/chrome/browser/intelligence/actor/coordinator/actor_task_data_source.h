@@ -54,6 +54,9 @@
 // Stops the task at the user's request.
 - (void)stopTask;
 
+// Pauses the task at the user's request.
+- (void)pauseTask;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_COORDINATOR_ACTOR_TASK_DATA_SOURCE_H_

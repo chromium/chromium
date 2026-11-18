@@ -434,6 +434,13 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
                           actor::ActorTaskStoppedReason::kStoppedByUser);
 }
 
+- (void)pauseTask {
+  if (!_actorService) {
+    return;
+  }
+  _actorService->PauseTask(_taskID);
+}
+
 #pragma mark - Private
 
 // Replaces any pending intervention with a card showing `title`, `subtitle`
@@ -581,6 +588,8 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
 - (void)publishState {
   _state = [[ActuationWorklogState alloc]
       initWithActuationActive:!actor::IsTerminalState(_taskState)
+          headerPrimaryAction:ActuationHeaderPrimaryActionForTaskState(
+                                  _taskState)
                 headerContent:ActuationHeaderContentVariantsForTask(
                                   _taskTitle, _taskState, _latestTaskUpdate)
                       entries:_entries

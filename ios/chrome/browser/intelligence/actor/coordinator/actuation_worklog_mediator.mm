@@ -103,6 +103,7 @@ BOOL CanUpdateEntriesInPlace(NSArray<ActuationWorklogEntry*>* entries,
   _state = state;
 
   [self.consumer setActuationActive:state.actuationActive];
+  [self.consumer setHeaderPrimaryAction:state.headerPrimaryAction];
   [self.consumer setHeaderContentVariants:state.headerContent];
   [self updateEntries:state.entries
       previousEntries:displayedEntries
@@ -148,6 +149,10 @@ BOOL CanUpdateEntriesInPlace(NSArray<ActuationWorklogEntry*>* entries,
 
 - (void)stopActuation {
   [_actionHandler stopTask];
+}
+
+- (void)pauseActuation {
+  [_actionHandler pauseTask];
 }
 
 - (void)didTriggerInterventionAction:(ActuationInterventionAction*)action {

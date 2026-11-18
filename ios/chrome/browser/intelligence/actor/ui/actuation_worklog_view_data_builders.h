@@ -15,11 +15,17 @@
 @class ActuationHeaderContentVariants;
 @class ActuationWorklogChip;
 @class ActuationWorklogItem;
+enum class ActuationHeaderPrimaryAction;
 
 // Returns the chip displayed for `tool_type`, or `nil` if there is no tool or
 // the tool doesn't display a chip.
 ActuationWorklogChip* ActuationWorklogChipForToolType(
     std::optional<actor::ToolType> tool_type);
+
+// Returns the action of the header's primary button for `task_state`: a
+// pausable task shows pause, and any other task shows stop.
+ActuationHeaderPrimaryAction ActuationHeaderPrimaryActionForTaskState(
+    actor::ActorTaskState task_state);
 
 // Returns the header content of a task titled `task_title` in `task_state`.
 // While the task runs, the minimized header shows `current_step` below the
