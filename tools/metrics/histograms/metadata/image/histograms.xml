@@ -60,6 +60,9 @@ chromium-metrics-reviews@google.com.
   <variant name=".AutofillPasswordFavicon"
       summary="Requesting favicons associated with credentials directly from
                websites."/>
+  <variant name=".ContextHubMemoryBank"
+      summary="Fetches saved Memory Bank images for Context Hub chat and
+               on-device captioning."/>
   <variant name=".ContextualSuggestions"
       summary="Showing cache patterns only for ContextualSuggestions."/>
   <variant name=".Cryptids" summary="Asset fetcher for cryptid rendering."/>
