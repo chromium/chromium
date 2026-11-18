@@ -104,17 +104,17 @@ public class NtpBackgroundDataColorUnitTest {
     }
 
     @Test
-    public void testHasSameThemeAndColor() {
-        assertTrue(mDailyAqua.hasSameThemeAndColor(mDailyAquaOtherPlatform));
-        // A rotated color is a visual change, so hasSameThemeAndColor still compares the color ID.
-        assertFalse(mDailyAqua.hasSameThemeAndColor(mDailyBlue));
-        assertFalse(mDailyBlue.hasSameThemeAndColor(mDailyAqua));
+    public void testHasSameAppearance() {
+        assertTrue(mDailyAqua.hasSameAppearance(mDailyAquaOtherPlatform));
+        // A rotated color is a visual change, so hasSameAppearance still compares the color ID.
+        assertFalse(mDailyAqua.hasSameAppearance(mDailyBlue));
+        assertFalse(mDailyBlue.hasSameAppearance(mDailyAqua));
         // Turning daily refresh on or off is a theme change even for the same color.
-        assertFalse(mDailyAqua.hasSameThemeAndColor(mStaticAqua));
-        assertFalse(mStaticAqua.hasSameThemeAndColor(mDailyAqua));
+        assertFalse(mDailyAqua.hasSameAppearance(mStaticAqua));
+        assertFalse(mStaticAqua.hasSameAppearance(mDailyAqua));
         // Static colors still compare by color ID.
-        assertTrue(mStaticAqua.hasSameThemeAndColor(mStaticAquaOtherPlatform));
-        assertFalse(mStaticAqua.hasSameThemeAndColor(mStaticBlue));
+        assertTrue(mStaticAqua.hasSameAppearance(mStaticAquaOtherPlatform));
+        assertFalse(mStaticAqua.hasSameAppearance(mStaticBlue));
     }
 
     @Test

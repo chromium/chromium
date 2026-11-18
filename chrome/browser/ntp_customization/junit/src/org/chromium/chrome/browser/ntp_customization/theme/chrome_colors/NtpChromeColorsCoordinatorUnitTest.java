@@ -660,8 +660,7 @@ public class NtpChromeColorsCoordinatorUnitTest {
                 new NtpBackgroundDataColor(
                         mContext, PlatformType.ANDROID, NtpThemeColorId.NTP_COLORS_BLUE, isChecked);
         verify(mNtpCustomizationConfigManager)
-                .onBackgroundDataChanged(
-                        eq(mContext), argThat(expectedColor::hasSameThemeAndColor));
+                .onBackgroundDataChanged(eq(mContext), argThat(expectedColor::hasSameAppearance));
         verify(mNtpCustomizationConfigManager)
                 .maybeSaveUserSelectedBackgroundTypeToSharedPreference(mContext);
     }

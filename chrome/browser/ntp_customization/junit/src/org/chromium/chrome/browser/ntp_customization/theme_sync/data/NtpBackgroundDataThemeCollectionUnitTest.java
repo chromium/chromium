@@ -155,14 +155,14 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
         // The device the image came from is not part of the theme identity.
         assertEquals(data1, dataFromDesktop);
         assertEquals(data1.hashCode(), dataFromDesktop.hashCode());
-        assertTrue(data1.hasSameThemeAndColor(dataFromDesktop));
+        assertTrue(data1.hasSameAppearance(dataFromDesktop));
 
-        // hasSameThemeAndColor() additionally requires primaryColor to match.
-        assertTrue(data1.hasSameThemeAndColor(data2));
-        assertTrue(data1.hasSameThemeAndColor(data4));
-        assertFalse(data1.hasSameThemeAndColor(data3));
-        assertFalse(data1.hasSameThemeAndColor(dataNullColor));
-        assertFalse(data1.hasSameThemeAndColor(dataOtherCollection));
+        // hasSameAppearance() additionally requires primaryColor to match.
+        assertTrue(data1.hasSameAppearance(data2));
+        assertTrue(data1.hasSameAppearance(data4));
+        assertFalse(data1.hasSameAppearance(data3));
+        assertFalse(data1.hasSameAppearance(dataNullColor));
+        assertFalse(data1.hasSameAppearance(dataOtherCollection));
 
         // isBitmapSaved should not affect equality.
         data1.setIsBitmapSaved(/* isBitmapSaved= */ true);
@@ -171,7 +171,7 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
     }
 
     @Test
-    public void testHasSameThemeAndCompatibleColor() {
+    public void testIsSameThemeAcrossDevices() {
         CustomBackgroundInfo info =
                 new CustomBackgroundInfo(
                         GURL.emptyGURL(),
@@ -193,27 +193,27 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                 createThemeCollection(infoOtherCollection, null);
 
         // Two known colors must match.
-        assertTrue(red.hasSameThemeAndCompatibleColor(red2));
-        assertFalse(red.hasSameThemeAndCompatibleColor(blue));
+        assertTrue(red.isSameThemeAcrossDevices(red2));
+        assertFalse(red.isSameThemeAcrossDevices(blue));
 
         // A null color is "unknown" and is compatible with any color, in both directions.
-        assertTrue(red.hasSameThemeAndCompatibleColor(noColor));
-        assertTrue(noColor.hasSameThemeAndCompatibleColor(red));
-        assertTrue(noColor.hasSameThemeAndCompatibleColor(noColor2));
+        assertTrue(red.isSameThemeAcrossDevices(noColor));
+        assertTrue(noColor.isSameThemeAcrossDevices(red));
+        assertTrue(noColor.isSameThemeAcrossDevices(noColor2));
 
         // The theme identity must still match.
-        assertFalse(noColor.hasSameThemeAndCompatibleColor(otherCollectionNoColor));
-        assertFalse(noColor.hasSameThemeAndCompatibleColor(null));
+        assertFalse(noColor.isSameThemeAcrossDevices(otherCollectionNoColor));
+        assertFalse(noColor.isSameThemeAcrossDevices(null));
         assertFalse(
-                noColor.hasSameThemeAndCompatibleColor(
+                noColor.isSameThemeAcrossDevices(
                         new NtpBackgroundDataBase(PlatformType.ANDROID, "default")));
 
-        // Unlike hasSameThemeAndCompatibleColor(), hasSameThemeAndColor() is strict about null.
-        assertFalse(red.hasSameThemeAndColor(noColor));
+        // Unlike isSameThemeAcrossDevices(), hasSameAppearance() is strict about null.
+        assertFalse(red.hasSameAppearance(noColor));
     }
 
     @Test
-    public void testHasSameThemeAndCompatibleColor_dailyRefresh() {
+    public void testIsSameThemeAcrossDevices_dailyRefresh() {
         // The same collection with daily refresh on two devices, each showing its own image.
         NtpBackgroundDataThemeCollection red =
                 createThemeCollection(
@@ -229,12 +229,12 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         Color.RED);
 
         // The image and its color rotate on each device, so neither is compared.
-        assertTrue(red.hasSameThemeAndCompatibleColor(otherImageBlue));
-        assertFalse(red.hasSameThemeAndCompatibleColor(otherCollection));
+        assertTrue(red.isSameThemeAcrossDevices(otherImageBlue));
+        assertFalse(red.isSameThemeAcrossDevices(otherCollection));
     }
 
     @Test
-    public void testHasSameThemeAndColor_dailyRefresh() {
+    public void testHasSameAppearance_dailyRefresh() {
         NtpBackgroundDataThemeCollection red =
                 createThemeCollection(
                         createDailyRefreshInfo(JUnitTestGURLs.URL_1, TEST_COLLECTION_ID),
@@ -242,19 +242,19 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
 
         // Another image of the collection looks different.
         assertFalse(
-                red.hasSameThemeAndColor(
+                red.hasSameAppearance(
                         createThemeCollection(
                                 createDailyRefreshInfo(JUnitTestGURLs.URL_2, TEST_COLLECTION_ID),
                                 Color.RED)));
         // The same image with another color looks different.
         assertFalse(
-                red.hasSameThemeAndColor(
+                red.hasSameAppearance(
                         createThemeCollection(
                                 createDailyRefreshInfo(JUnitTestGURLs.URL_1, TEST_COLLECTION_ID),
                                 Color.BLUE)));
         // The same image with the same color looks the same.
         assertTrue(
-                red.hasSameThemeAndColor(
+                red.hasSameAppearance(
                         createThemeCollection(
                                 createDailyRefreshInfo(JUnitTestGURLs.URL_1, TEST_COLLECTION_ID),
                                 Color.RED)));

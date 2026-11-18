@@ -26,25 +26,24 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBa
  *
  * <ul>
  *   <li>{@link #equals}: they are the same theme. This identifies an entry of the theme history.
- *   <li>{@link #hasSameThemeAndCompatibleColor}: they are the same theme as far as another device
- *       can tell. This decides whether a theme from another device is already the theme of this
- *       device.
+ *   <li>{@link #isSameThemeAcrossDevices}: they are the same theme as far as another device can
+ *       tell. This decides whether a theme from another device is already the theme of this device.
  *   <li>{@link NtpBackgroundDataImageBase#hasSameImage}: they show the same image, whatever their
  *       colors. This decides whether the bitmap and the image file of one fit the other. Two theme
  *       collection backgrounds with the same image URL show the same image, even if they are
  *       different themes.
- *   <li>{@link #hasSameThemeAndColor}: they look the same right now. This decides whether applying
- *       a theme changes what the user sees.
+ *   <li>{@link #hasSameAppearance}: they look the same right now. This decides whether applying a
+ *       theme changes what the user sees.
  * </ul>
  *
- * <p>What each one compares on top of the background type. The ...CompatibleColor and ...AndColor
+ * <p>What each one compares on top of the background type. The ...AcrossDevices and ...Appearance
  * columns list what the method compares in addition to {@link #equals}. The hasSameImage column
  * lists everything it compares. "Setting" is whether daily refresh is enabled, "color" is the
  * primary color, and "+ daily refresh" is the background above with daily refresh enabled:
  *
  * <pre>
- * Background       | equals                     | ...CompatibleColor | hasSameImage | ...AndColor
- * -----------------+----------------------------+--------------------+--------------+-------------
+ * Background       | equals                     | ...AcrossDevices   | hasSameImage | ...Appearance
+ * -----------------+----------------------------+--------------------+--------------+--------------
  * Default          | nothing                    | nothing            | not an image | nothing
  * Chrome color     | setting, color ID          | nothing            | not an image | nothing
  *  + daily refresh | setting                    | nothing            | not an image | color ID
@@ -151,16 +150,16 @@ public class NtpBackgroundDataBase {
     }
 
     /**
-     * Returns whether {@code obj} is the same theme and looks the same right now (see the class
+     * Returns whether {@code other} is the same theme and looks the same right now (see the class
      * comment). Callers use it to decide whether applying a theme changes what the user sees, e.g.
      * whether to recreate the activity.
      */
-    public boolean hasSameThemeAndColor(@Nullable Object obj) {
-        return equals(obj);
+    public boolean hasSameAppearance(@Nullable NtpBackgroundDataBase other) {
+        return equals(other);
     }
 
     /**
-     * Returns whether {@code obj} is the same theme as far as another device can tell (see the
+     * Returns whether {@code other} is the same theme as far as another device can tell (see the
      * class comment). Callers use it to decide whether a theme from another device is already the
      * theme of this device.
      *
@@ -168,8 +167,8 @@ public class NtpBackgroundDataBase {
      * the primary colors must match, unless one of them is null. A null color means unknown and
      * matches any color, e.g. iOS never sends one.
      */
-    public boolean hasSameThemeAndCompatibleColor(@Nullable Object obj) {
-        return equals(obj);
+    public boolean isSameThemeAcrossDevices(@Nullable NtpBackgroundDataBase other) {
+        return equals(other);
     }
 
     @Override

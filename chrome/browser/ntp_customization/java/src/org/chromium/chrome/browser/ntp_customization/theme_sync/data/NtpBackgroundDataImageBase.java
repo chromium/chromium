@@ -32,10 +32,10 @@ public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
     private @Nullable String mLastUploadImageFilePath;
     private @Nullable Bitmap mBitmap;
     private boolean mIsBitmapSaved;
-    // The primary seed color of this background. Excluded from NtpBackgroundDataImageBase#equals
-    // so that theme collection entries with the same image share the same identity when color is
-    // lazily computed or updated from sync; use #hasSameThemeAndColor when comparing whether the
-    // visual color has changed.
+    // The primary seed color of this background. NtpBackgroundDataThemeCollection#equals leaves it
+    // out, so that a theme collection entry keeps its identity when the color is lazily computed
+    // or updated from sync, whereas NtpBackgroundDataUploadImage#equals compares it. Use
+    // #hasSameAppearance to tell whether the color has changed.
     private @Nullable @ColorInt Integer mPrimaryColor;
 
     /**

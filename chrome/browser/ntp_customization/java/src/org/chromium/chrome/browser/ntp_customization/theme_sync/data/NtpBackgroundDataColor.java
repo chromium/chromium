@@ -127,10 +127,10 @@ public class NtpBackgroundDataColor extends NtpBackgroundDataBase {
      * with daily refresh is a visible change even though it is the same theme.
      */
     @Override
-    public boolean hasSameThemeAndColor(@Nullable Object obj) {
-        return obj instanceof NtpBackgroundDataColor other
-                && equals(obj)
-                && getThemeColorId() == other.getThemeColorId();
+    public boolean hasSameAppearance(@Nullable NtpBackgroundDataBase other) {
+        return other instanceof NtpBackgroundDataColor otherColor
+                && equals(other)
+                && getThemeColorId() == otherColor.getThemeColorId();
     }
 
     @Override

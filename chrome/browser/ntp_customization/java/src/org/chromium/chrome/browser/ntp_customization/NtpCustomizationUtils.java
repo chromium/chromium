@@ -1583,9 +1583,10 @@ public class NtpCustomizationUtils {
      * colors are the same theme whichever color each device currently shows, e.g. the color this
      * device started from, replayed on startup after it rotated.
      *
-     * <p>Colors are compared with {@link NtpBackgroundDataBase#hasSameThemeAndCompatibleColor}, so
-     * a theme collection image synced without a primary color (e.g. from iOS) still matches the
-     * locally applied copy whose color was extracted from the bitmap.
+     * <p>Theme collections are compared with {@link
+     * NtpBackgroundDataBase#isSameThemeAcrossDevices}, so an image synced without a primary color
+     * (e.g. from iOS) still matches the locally applied copy whose color was extracted from the
+     * bitmap.
      *
      * @param syncedBackgroundData The background data received from Chrome Sync, or null for the
      *     default background.
@@ -1612,14 +1613,14 @@ public class NtpCustomizationUtils {
                     || colorData.getThemeColorId() == getNtpThemeColorIdFromSharedPreference();
         }
 
-        return syncedBackgroundData.hasSameThemeAndCompatibleColor(
+        return syncedBackgroundData.isSameThemeAcrossDevices(
                 readPersistedThemeCollection(persistedType));
     }
 
     /**
      * Returns the theme collection persisted on this device, or null if the persisted background
      * isn't a theme collection. Only the data compared by {@link
-     * NtpBackgroundDataBase#hasSameThemeAndCompatibleColor} is read.
+     * NtpBackgroundDataBase#isSameThemeAcrossDevices} is read.
      *
      * @param persistedType The persisted background type.
      */

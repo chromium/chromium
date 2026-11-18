@@ -1255,7 +1255,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         // non-null once NtpSyncedThemeManager extracts the seed color from the bitmap, so the
         // bitmap is only rejected when both colors are non-null and differ. With daily refresh the
         // color isn't compared, since it follows the image.
-        if (!targetCollection.hasSameThemeAndCompatibleColor(downloadedCollection)
+        if (!targetCollection.isSameThemeAcrossDevices(downloadedCollection)
                 || !targetCollection.hasSameImage(downloadedCollection)) {
             return null;
         }
@@ -1603,7 +1603,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         }
         // A null primary color means "unknown" (e.g. iOS never sends one), so the same image with a
         // null color on either side is not a theme change.
-        return !candidateTheme.hasSameThemeAndCompatibleColor(currentTheme);
+        return !candidateTheme.isSameThemeAcrossDevices(currentTheme);
     }
 
     /**
@@ -1653,7 +1653,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                 && themeToApply.getPlatformType() == PlatformType.ANDROID
                 && ((themeToApply instanceof NtpBackgroundDataImageBase imageBase
                                 && imageBase.getBitmap() == null)
-                        || themeToApply.hasSameThemeAndColor(
+                        || themeToApply.hasSameAppearance(
                                 configManager.getSyncedNtpBackgroundData()))) {
             // Promoting a staged incoming Android theme (or an un-downloaded Android image):
             // maybeApplyBackgroundUpdateFromDeviceSync checks for mismatch, promotes
