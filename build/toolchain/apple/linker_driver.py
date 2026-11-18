@@ -477,7 +477,7 @@ class LinkerDriver(object):
         Returns:
            output contents in bytes.
         """
-        toc = b''
+        toc = []
         dylib = self._get_linker_output()
         out = subprocess.check_output(self._otool_cmd + ['-l', dylib])
         lines = out.split(b'\n')
@@ -492,9 +492,9 @@ class LinkerDriver(object):
             if line.lstrip() == b'cmd LC_ID_DYLIB':
                 if found_id:
                     raise ValueError('Too many LC_ID_DYLIBs in %s' % dylib)
-                toc += line + b'\n'
+                toc.append(line + b'\n')
                 for j in range(5):
-                    toc += lines[i + 1 + j] + b'\n'
+                    toc.append(lines[i + 1 + j] + b'\n')
                 found_id = True
 
         # -U ignores undefined symbols
@@ -508,8 +508,8 @@ class LinkerDriver(object):
                 continue
             # fields = (value, type, name)
             # emit [type, name]
-            toc += b' '.join(fields[1:3]) + b'\n'
-        return toc
+            toc.append(b' '.join(fields[1:3]) + b'\n')
+        return b''.join(toc)
 
 
 def _find_tools_paths(full_args):
