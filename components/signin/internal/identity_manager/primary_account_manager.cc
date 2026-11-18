@@ -14,7 +14,6 @@
 #include "base/auto_reset.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -280,19 +279,6 @@ PrimaryAccountManager::PrimaryAccountManager(
   }
 #endif
 
-  // `prefs::kPrefsThemesSearchEnginesAccountStorageEnabled` is set for sync
-  // users and new signed in users. It is not cleared on sign out.
-  if (base::FeatureList::IsEnabled(
-          switches::kEnablePreferencesAccountStorage)) {
-    if (HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-      scoped_pref_commit.SetBoolean(
-          prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, true);
-    }
-  } else {
-    scoped_pref_commit.ClearPref(
-        prefs::kPrefsThemesSearchEnginesAccountStorageEnabled);
-  }
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
       !HasPrimaryAccount(signin::ConsentLevel::kSync)) {
@@ -346,8 +332,6 @@ void PrimaryAccountManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kSigninAllowed, true);
   registry->RegisterBooleanPref(prefs::kSignedInWithCredentialProvider, false);
   registry->RegisterBooleanPref(prefs::kExplicitBrowserSignin, false);
-  registry->RegisterBooleanPref(
-      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, false);
   registry->RegisterBooleanPref(prefs::kPrimaryAccountSetAfterSigninMigration,
                                 false);
 }
@@ -786,8 +770,6 @@ void PrimaryAccountManager::SetExplicitBrowserSigninPrefs(
         // complete.
         scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
         // Reset explicit sign-in prefs for the relevant data types.
-        scoped_pref_commit.SetBoolean(
-            prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, false);
         SigninPrefs(*client_->GetPrefs())
             .SetExtensionsExplicitBrowserSignin(current_gaia_id, false);
         SigninPrefs(*client_->GetPrefs())
@@ -797,12 +779,6 @@ void PrimaryAccountManager::SetExplicitBrowserSigninPrefs(
 
       scoped_pref_commit.SetBoolean(prefs::kExplicitBrowserSignin, true);
 #endif
-
-      if (base::FeatureList::IsEnabled(
-              switches::kEnablePreferencesAccountStorage)) {
-        scoped_pref_commit.SetBoolean(
-            prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, true);
-      }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
       // Record an opt in for the extensions explicit signin feature and use

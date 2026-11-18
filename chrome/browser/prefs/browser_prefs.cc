@@ -1211,6 +1211,10 @@ inline constexpr char kBundledSettingsCheckedMigrateUserToEnhancedBundle[] =
 inline constexpr char kGlicPromotionSourceCohort[] =
     "glic.promotion_source_cohort";
 
+// Deprecated 11/2026.
+inline constexpr char kPrefsThemesSearchEnginesAccountStorageEnabled[] =
+    "signin.prefs_themes_search_engines_account_storage_enabled";
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Deprecated 11/2026.
 inline constexpr char kSuggestedContentEnabled[] =
@@ -1759,6 +1763,10 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 11/2026.
   registry->RegisterStringPref(kGlicPromotionSourceCohort, std::string());
+
+  // Deprecated 11/2026.
+  registry->RegisterBooleanPref(kPrefsThemesSearchEnginesAccountStorageEnabled,
+                                false);
 }
 
 }  // namespace
@@ -3252,6 +3260,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 11/2026.
   profile_prefs->ClearPref(kGlicPromotionSourceCohort);
+
+  // Added 11/2026.
+  profile_prefs->ClearPref(kPrefsThemesSearchEnginesAccountStorageEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

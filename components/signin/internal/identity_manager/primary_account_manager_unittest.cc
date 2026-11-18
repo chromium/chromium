@@ -1103,97 +1103,6 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByWebSignin) {
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 }
 
-TEST_F(PrimaryAccountManagerTest, AccountStoragePrefFeatureDisabled) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(switches::kEnablePreferencesAccountStorage);
-  CreatePrimaryAccountManager();
-  // false by default.
-  EXPECT_FALSE(prefs()->GetBoolean(
-      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
-  // Signing in does not set the pref.
-  CoreAccountId account_id =
-      AddToAccountTracker(GaiaId("account_id"), "user@gmail.com");
-  manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
-      signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
-  EXPECT_FALSE(prefs()->GetBoolean(
-      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
-  manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
-      signin::ConsentLevel::kSync,
-      signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
-  EXPECT_FALSE(prefs()->GetBoolean(
-      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
-}
-
-TEST_F(PrimaryAccountManagerTest, AccountStoragePrefExistingSyncUser) {
-  {
-    // Feature disabled.
-    base::test::ScopedFeatureList feature;
-    feature.InitAndDisableFeature(switches::kEnablePreferencesAccountStorage);
-    CreatePrimaryAccountManager();
-    CoreAccountId account_id =
-        AddToAccountTracker(GaiaId("account_id"), "user@gmail.com");
-    manager_->SetPrimaryAccountInfo(
-        account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
-        signin::ConsentLevel::kSync,
-        signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
-    ASSERT_FALSE(prefs()->GetBoolean(
-        prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
-    ShutDownManager();
-  }
-
-  {
-    // Restarting with kSync consent sets the preference.
-    base::test::ScopedFeatureList feature{
-        switches::kEnablePreferencesAccountStorage};
-    CreatePrimaryAccountManager();
-    ASSERT_TRUE(manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
-    EXPECT_TRUE(prefs()->GetBoolean(
-        prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
-  }
-}
-
-TEST_F(PrimaryAccountManagerTest, AccountStoragePrefRollback) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(switches::kEnablePreferencesAccountStorage);
-
-  prefs()->SetBoolean(prefs::kPrefsThemesSearchEnginesAccountStorageEnabled,
-                      true);
-  CreatePrimaryAccountManager();
-  EXPECT_FALSE(prefs()->GetBoolean(
-      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
-}
-
-TEST_F(PrimaryAccountManagerTest, AccountStoragePrefNewUser) {
-  // New signin sets the prefs.
-  base::test::ScopedFeatureList feature{
-      switches::kEnablePreferencesAccountStorage};
-  CreatePrimaryAccountManager();
-  ASSERT_FALSE(manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  // Pref is false by default.
-  EXPECT_FALSE(prefs()->GetBoolean(
-      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
-  CoreAccountId account_id =
-      AddToAccountTracker(GaiaId("account_id"), "user@gmail.com");
-  // Signing in sets the pref.
-  manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
-      signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
-  EXPECT_TRUE(prefs()->GetBoolean(
-      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
-
-// ChromeOS does not support signing out.
-#if !BUILDFLAG(IS_CHROMEOS)
-  // Signout does not clear the pref.
-  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
-  EXPECT_TRUE(prefs()->GetBoolean(
-      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-}
-
 // Explicit sign-in prefs for bookmarks and extensions are only used on Dice
 // platforms.
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -1239,13 +1148,9 @@ TEST_F(PrimaryAccountManagerTest,
 // TODO(crbug.com/475822503): Delete this test once Dice migration is complete.
 TEST_F(PrimaryAccountManagerTest,
        ExplicitSigninPrefsClearedWhenImplicitlySigningIn) {
-  base::test::ScopedFeatureList feature{
-      switches::kEnablePreferencesAccountStorage};
   GaiaId gaia_id("account_id");
   // Set prefs set during an explicit signin.
   prefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
-  prefs()->SetBoolean(prefs::kPrefsThemesSearchEnginesAccountStorageEnabled,
-                      true);
   SigninPrefs(*prefs()).SetExtensionsExplicitBrowserSignin(gaia_id, true);
   SigninPrefs(*prefs()).SetBookmarksExplicitBrowserSignin(gaia_id, true);
 
@@ -1260,9 +1165,7 @@ TEST_F(PrimaryAccountManagerTest,
   // The explicit signin pref should be cleared.
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 
-  // Prefs, bookmarks and extensions explicit signin prefs should be cleared.
-  EXPECT_FALSE(prefs()->GetBoolean(
-      prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
+  // Bookmarks and extensions explicit signin prefs should be cleared.
   EXPECT_FALSE(
       SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
   EXPECT_FALSE(

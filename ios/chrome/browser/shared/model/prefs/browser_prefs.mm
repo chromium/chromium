@@ -261,6 +261,10 @@ inline constexpr char kBundledSettingsCheckedMigrateUserToEnhancedBundle[] =
 // Deprecated 11/2026.
 inline constexpr char kPumaRcClientId[] = "private_metrics.puma.client_id.rc";
 
+// Deprecated 11/2026.
+inline constexpr char kPrefsThemesSearchEnginesAccountStorageEnabled[] =
+    "signin.prefs_themes_search_engines_account_storage_enabled";
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -948,6 +952,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Deprecated 11/2026.
   registry->RegisterBooleanPref(
       kBundledSettingsCheckedMigrateUserToEnhancedBundle, false);
+
+  // Deprecated 11/2026.
+  registry->RegisterBooleanPref(kPrefsThemesSearchEnginesAccountStorageEnabled,
+                                false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1051,6 +1059,9 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Added 11/2026.
   prefs->ClearPref(kBundledSettingsCheckedMigrateUserToEnhancedBundle);
+
+  // Added 11/2026.
+  prefs->ClearPref(kPrefsThemesSearchEnginesAccountStorageEnabled);
 }
 
 void MigrateObsoleteUserDefault() {

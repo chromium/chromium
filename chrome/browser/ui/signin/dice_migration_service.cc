@@ -54,9 +54,6 @@ bool MaybeMigrateUser(Profile* profile) {
   // TODO(crbug.com/399838468): Consider calling
   // `PrimaryAccountManager::SetExplicitBrowserSigninPrefs` upon explicit signin
   // pref change.
-  prefs->SetBoolean(prefs::kPrefsThemesSearchEnginesAccountStorageEnabled,
-                    true);
-
   prefs->SetBoolean(prefs::kExplicitBrowserSignin, true);
 
   // Mark the migration pref as successful.
