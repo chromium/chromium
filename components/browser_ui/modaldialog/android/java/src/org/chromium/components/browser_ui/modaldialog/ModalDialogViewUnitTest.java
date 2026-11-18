@@ -343,6 +343,95 @@ public class ModalDialogViewUnitTest {
     }
 
     @Test
+    public void testButtonTapProtection_Restarted() {
+        class TestController implements ModalDialogProperties.Controller {
+            int mClickedButton = -1;
+
+            @Override
+            public void onClick(PropertyModel model, int buttonType) {
+                mClickedButton = buttonType;
+            }
+
+            @Override
+            public void onDismiss(PropertyModel model, int dismissalCause) {}
+        }
+        var controller = new TestController();
+
+        var model =
+                mModelBuilder
+                        .with(ModalDialogProperties.CONTROLLER, controller)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, "OK")
+                        .with(ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, 1000L)
+                        .build();
+        PropertyModelChangeProcessor.create(model, mDialogView, new ModalDialogViewBinder());
+
+        // Restarting before the view is attached is a no-op; protection starts once attached.
+        mDialogView.replayButtonTapProtection();
+        ShadowSystemClock.advanceBy(Duration.ofMillis(1100));
+
+        // Attach to window.
+        mActivity.setContentView(mDialogView);
+        var positiveButton = mDialogView.findViewById(R.id.positive_button);
+
+        // Click right after attaching - should be blocked since protection starts on attach, not
+        // on the earlier replay call.
+        positiveButton.performClick();
+        assertEquals(-1, controller.mClickedButton);
+
+        // The protection period elapses while the dialog is not visible to the user yet (e.g.
+        // during the hosting activity's enter animation).
+        ShadowSystemClock.advanceBy(Duration.ofMillis(1100));
+
+        // The dialog becomes visible and the protection period is restarted.
+        mDialogView.replayButtonTapProtection();
+
+        // Click right after becoming visible - should be blocked.
+        ShadowSystemClock.advanceBy(Duration.ofMillis(10));
+        positiveButton.performClick();
+        assertEquals(-1, controller.mClickedButton);
+
+        // Advance time by 1100ms (more than 1000ms since last click).
+        ShadowSystemClock.advanceBy(Duration.ofMillis(1100));
+        positiveButton.performClick();
+        assertEquals(ModalDialogProperties.ButtonType.POSITIVE, controller.mClickedButton);
+    }
+
+    @Test
+    public void testButtonTapProtection_RestartDoesNotShortenScheduledPeriod() {
+        class TestController implements ModalDialogProperties.Controller {
+            int mClickedButton = -1;
+
+            @Override
+            public void onClick(PropertyModel model, int buttonType) {
+                mClickedButton = buttonType;
+            }
+
+            @Override
+            public void onDismiss(PropertyModel model, int dismissalCause) {}
+        }
+        var controller = new TestController();
+
+        var model =
+                mModelBuilder
+                        .with(ModalDialogProperties.CONTROLLER, controller)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, "OK")
+                        .with(ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, 1000L)
+                        .build();
+        PropertyModelChangeProcessor.create(model, mDialogView, new ModalDialogViewBinder());
+        mActivity.setContentView(mDialogView);
+        var positiveButton = mDialogView.findViewById(R.id.positive_button);
+
+        // Protection is scheduled to start 1000ms from now (in the middle of the animation).
+        mDialogView.onEnterAnimationStarted(2000);
+        mDialogView.replayButtonTapProtection();
+
+        // 1500ms from now is still within 1000ms of the scheduled start - should be blocked.
+        ShadowSystemClock.advanceBy(Duration.ofMillis(1500));
+        positiveButton.performClick();
+        assertEquals(-1, controller.mClickedButton);
+    }
+
+    @Test
     @Config(qualifiers = "sw600dp")
     public void measure_LargeFormFactorUi_Tablet_WidthCappedAt480dp() {
         // Wide tablet window (800x800).

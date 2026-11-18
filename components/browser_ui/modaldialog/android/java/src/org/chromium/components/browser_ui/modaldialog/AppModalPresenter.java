@@ -262,6 +262,11 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
     }
 
     @Override
+    protected void replayButtonTapProtection() {
+        if (mDialogView != null) mDialogView.replayButtonTapProtection();
+    }
+
+    @Override
     protected void setInsetObserver(InsetObserver insetObserver) {
         mInsetObserver = insetObserver;
     }

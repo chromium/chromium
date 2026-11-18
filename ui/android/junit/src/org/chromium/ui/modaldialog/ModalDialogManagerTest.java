@@ -134,6 +134,21 @@ public class ModalDialogManagerTest {
         verify(mTabModalPresenter, times(0)).addDialogView(any(), any(), any());
     }
 
+    /** Tests that restarting the tap protection is forwarded to the current presenter only. */
+    @Test
+    @Feature({"ModalDialog"})
+    public void testreplayButtonTapProtection() {
+        // No dialog is showing, nothing to restart.
+        mModalDialogManager.replayButtonTapProtection();
+        verify(mAppModalPresenter, times(0)).replayButtonTapProtection();
+        verify(mTabModalPresenter, times(0)).replayButtonTapProtection();
+
+        mModalDialogManager.showDialog(mDialogModels.get(0), ModalDialogType.TAB);
+        mModalDialogManager.replayButtonTapProtection();
+        verify(mAppModalPresenter, times(0)).replayButtonTapProtection();
+        verify(mTabModalPresenter, times(1)).replayButtonTapProtection();
+    }
+
     /**
      * Tests showing a dialog when another dialog of same or higher priority is currently showing.
      */

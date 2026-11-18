@@ -180,6 +180,11 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
         mDialogView = null;
     }
 
+    @Override
+    protected void replayButtonTapProtection() {
+        if (mDialogView != null) mDialogView.replayButtonTapProtection();
+    }
+
     /**
      * Change view hierarchy for the dialog container to be either the front most or beneath the
      * toolbar.

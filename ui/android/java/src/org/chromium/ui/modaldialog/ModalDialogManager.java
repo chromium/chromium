@@ -160,6 +160,13 @@ public class ModalDialogManager {
         protected void setInsetObserver(InsetObserver insetObserver) {}
 
         /**
+         * Restarts the button tap protection period (see {@link
+         * ModalDialogProperties#BUTTON_TAP_PROTECTION_PERIOD_MS}) of the dialog currently shown by
+         * this presenter, if any.
+         */
+        protected void replayButtonTapProtection() {}
+
+        /**
          * A supplier to determine whether edge-to-edge is active in the enclosing window.
          *
          * @param edgeToEdgeStateSupplier The supplier for edge-to-edge state.
@@ -384,6 +391,15 @@ public class ModalDialogManager {
             presenter.setEdgeToEdgeStateSupplier(
                     mEdgeToEdgeStateSupplier, mIsEdgeToEdgeEverywhereEnabled);
         }
+    }
+
+    /**
+     * Replays the button tap protection period (see {@link
+     * ModalDialogProperties#BUTTON_TAP_PROTECTION_PERIOD_MS}) of the currently visible dialog.
+     */
+    public void replayButtonTapProtection() {
+        if (mCurrentPresenter == null) return;
+        mCurrentPresenter.replayButtonTapProtection();
     }
 
     /**

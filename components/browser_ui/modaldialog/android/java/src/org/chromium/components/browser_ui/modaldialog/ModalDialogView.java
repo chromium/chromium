@@ -293,8 +293,20 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     }
 
     /**
+     * Replays the button tap protection period from now. This should be called when the dialog
+     * becomes visible to the user later than when it was presented, e.g. when the hosting
+     * activity's enter animation completes.
+     */
+    void replayButtonTapProtection() {
+        if (mStartProtectingButtonTimestamp < 0) return;
+
+        mStartProtectingButtonTimestamp =
+                Math.max(mStartProtectingButtonTimestamp, TimeUtils.elapsedRealtimeMillis());
+    }
+
+    /**
      * @param callback The {@link Callback<Integer>} when a button on the dialog button bar is
-     *                 clicked. The {@link Integer} indicates the button type.
+     *     clicked. The {@link Integer} indicates the button type.
      */
     void setOnButtonClickedCallback(Callback<Integer> callback) {
         mOnButtonClickedCallback = callback;

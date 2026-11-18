@@ -442,6 +442,14 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         return mModalDialogManagerSupplier;
     }
 
+    @Override
+    public void onEnterAnimationComplete() {
+        super.onEnterAnimationComplete();
+
+        ModalDialogManager modalDialogManager = mModalDialogManagerSupplier.get();
+        if (modalDialogManager != null) modalDialogManager.replayButtonTapProtection();
+    }
+
     /**
      * Creates a {@link ModalDialogManager} for this class. Subclasses that need one should override
      * this method.
