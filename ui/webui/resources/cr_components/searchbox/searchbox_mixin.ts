@@ -117,7 +117,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       // An 'Enter' pressed before the active query's results arrived waits for
       // them. Starting a new query, or abandoning the active one should abort
       // the pending navigate.
-      this.lastIgnoredEnterEvent_ = null;
+      this.pendingKeydownEvent_ = null;
     }
 
     lastQueriedInput: string|null = null;
@@ -182,7 +182,10 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     // `control_key_state_`.
     controlKeyState: ControlKeyState = ControlKeyState.UP;
 
-    private lastIgnoredEnterEvent_: KeyboardEvent|null = null;
+    // A key press that needs the sync results for the latest input, pressed
+    // before they arrived. It's handled once they arrive. Only one key press
+    // waits at a time; later ones that would also wait are ignored.
+    private pendingKeydownEvent_: KeyboardEvent|null = null;
     // The line of the match the backend was last asked to delete, while
     // waiting for the post-deletion result. Null if no match was selected at
     // the time. See `shouldPreserveSelectionOnMatchDeletion()`.
@@ -490,8 +493,8 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       this.pendingDeletionLine_ = null;
       // Likewise, an 'Enter' pressed before this query's results arrived waits
       // for its first results only, so it can't navigate on a later update.
-      const ignoredEnterEvent = this.lastIgnoredEnterEvent_;
-      this.lastIgnoredEnterEvent_ = null;
+      const pendingKeydownEvent = this.pendingKeydownEvent_;
+      this.pendingKeydownEvent_ = null;
 
       this.result = result;
       const hasMatches = this.hasMatches();
@@ -517,8 +520,8 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
 
         // Navigate to the default up-to-date match if the user typed and
         // pressed 'Enter' too fast.
-        if (ignoredEnterEvent) {
-          this.navigateToMatch(0, ignoredEnterEvent);
+        if (pendingKeydownEvent?.key === 'Enter') {
+          this.navigateToMatch(0, pendingKeydownEvent);
         }
 
       } else {
@@ -698,14 +701,13 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       // On user interaction, freeze the current results to avoid result updates
       // potentially erasing user changes like cursor position. Freezing on
       // 'enter' would break the fast-enter navigations via
-      // `lastIgnoredEnterEvent_`. It'd cause the searchbox to discard the
-      // pending results the navigation is waiting for, causing the navigation
-      // to never occur. But this is a hack; comparing `e.key !=== 'Enter'` is
-      // only a semi-accurate heuristic for whether a navigation is about to
-      // occur. Pressing a modifier key by itself (e.g. the 'Shift' of
-      // 'Shift+Enter') doesn't change the input, so it doesn't freeze the
-      // results either; otherwise, fast modified-Enter navigations would use
-      // stale results.
+      // `pendingKeydownEvent_`. It'd cause the searchbox to discard the pending
+      // results the navigation is waiting for, causing the navigation to never
+      // occur. But this is a hack; comparing `e.key !== 'Enter'` is only a
+      // semi-accurate heuristic for whether a navigation is about to occur.
+      // Pressing a modifier key by itself (e.g. the 'Shift' of 'Shift+Enter')
+      // doesn't change the input, so it doesn't freeze the results either;
+      // otherwise, fast modified-Enter navigations would use stale results.
       if (e.key !== 'Enter' && !MODIFIER_KEYS.includes(e.key)) {
         this.activeQueryId = -1;
       }
@@ -1004,8 +1006,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       if (this.handleVirtualFocusEnter(e)) {
         return;
       }
-      const resultsPending = this.activeQueryId !== -1 &&
-          this.result?.queryId !== this.activeQueryId;
+      const resultsPending = this.areResultsPending_();
       if (isPureCtrlEnter) {
         // Ctrl+Enter adds 'www.' and '.com' to the previewed match or the
         // input, but not to the default match. If new results are pending, the
@@ -1019,15 +1020,25 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         if (this.selectedMatch) {
           this.navigateToMatch(this.matchIndex, e);
         }
-      } else {
+      } else if (!this.pendingKeydownEvent_) {
         // User typed and pressed 'Enter' too quickly. Ignore this for now
-        // because the matches are stale. Navigate to the default match (if
-        // one exists) once the up-to-date matches arrive. Unfreeze
-        // `activeQueryId` so pending query results are accepted. This must come
-        // first, since setting it clears `lastIgnoredEnterEvent_`.
+        // because the matches are stale. Navigate to the default match (if one
+        // exists) once the up-to-date matches arrive. Only queue events if
+        // there is no already queued event; we don't want a later
+        // <shift><enter> to replace the first <enter>. Unfreeze `activeQueryId`
+        // so pending query results are accepted. This must come first, since
+        // setting it clears `pendingKeydownEvent_`.
         this.activeQueryId = this.nextQueryId_ - 1;
-        this.lastIgnoredEnterEvent_ = e;
+        this.pendingKeydownEvent_ = e;
       }
+    }
+
+    /**
+     * Whether the sync results for the current input haven't arrived yet.
+     */
+    private areResultsPending_(): boolean {
+      return this.activeQueryId !== -1 &&
+          this.result?.queryId !== this.activeQueryId;
     }
 
     async handleKeyNavigation(e: KeyboardEvent) {

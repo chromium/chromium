@@ -1968,6 +1968,41 @@ suite('SearchboxMixinTest', () => {
     assertEquals(1, testProxy.handler.getCallCount('openAutocompleteMatch'));
   });
 
+  test('pressing Enter twice on input too quickly', async () => {
+    const mockInput = element.getInputElement();
+    await simulateUserTextInput(mockInput, 'hello');
+    element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
+      input: 'hello',
+      matches: [createSearchMatchForTesting({allowedToBeDefaultMatch: true})],
+    }));
+    await microtasksFinished();
+    assertTrue(element.dropdownIsVisible);
+
+    // Press Enter, then Shift+Enter, before the 'hello world' matches arrive.
+    await simulateUserTextInput(mockInput, 'hello world');
+    mockInput.inputElement.dispatchEvent(createKeyboardEvent('Enter'));
+    mockInput.inputElement.dispatchEvent(
+        createKeyboardEvent('Shift', {shiftKey: true}));
+    const shiftEnter = createKeyboardEvent('Enter', {shiftKey: true});
+    mockInput.inputElement.dispatchEvent(shiftEnter);
+    assertTrue(shiftEnter.defaultPrevented);
+
+    const matches = [createUrlMatch({allowedToBeDefaultMatch: true})];
+    element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
+      input: 'hello world',
+      matches,
+    }));
+    await microtasksFinished();
+
+    // Only the 1st Enter navigates. The 2nd was ignored while the 1st waited.
+    const args = await testProxy.handler.whenCalled('openAutocompleteMatch');
+    assertEquals(matches[0]!.destinationUrl, args.url);
+    assertFalse(args.modifiers.shiftKey);
+    assertEquals(1, testProxy.handler.getCallCount('openAutocompleteMatch'));
+  });
+
   // TODO(crbug.com/453570027): Test is flaky.
   test.skip(
       'pressing Escape selects the first match / hides matches', async () => {
