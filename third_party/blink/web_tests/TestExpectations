@@ -4436,12 +4436,6 @@ crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/tall-
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/transform-017.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/transform-024-print.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-multicol/crashtests/interleaved-bfc-crash.html [ Crash Pass ]
-crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-page/fixedpos-003-print.html [ Failure ]
-crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-page/fixedpos-005-print.html [ Failure ]
-crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-page/fixedpos-007-print.html [ Failure ]
-crbug.com/40267498 virtual/fragmented-oof-in-cb/printing/fixed-positioned-headers-and-footers-larger-than-page.html [ Failure ]
-crbug.com/40267498 virtual/fragmented-oof-in-cb/printing/fixed-positioned-headers-and-footers-transformed.html [ Failure ]
-crbug.com/40267498 virtual/fragmented-oof-in-cb/printing/fixed-positioned-headers-and-footers.html [ Failure ]
 
 crbug.com/325836823 external/wpt/css/printing/table-overflow-quirks-frameset-crash-print.html [ Crash Pass Timeout ]
 

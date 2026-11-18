@@ -96,6 +96,24 @@ void PostProcessFragmentedOofContainer(FragmentedOofContainer* container,
   }
 }
 
+bool AddToFragmentedOofContainer(const LogicalOofPositionedNode& oof_node,
+                                 const FragmentedOofInfo& info,
+                                 LayoutUnit containing_block_size,
+                                 FragmentedOofContainer* container) {
+  container->AddOofPositionedNode(oof_node);
+  const OofInlineContainer<LogicalOffset>& inline_container_info =
+      oof_node.InlineContainerInfo();
+  if (const LayoutInline* inline_container =
+          inline_container_info.Container()) {
+    container->EnsureInlineContainingBlock(
+        *inline_container, inline_container_info.RelativeOffset());
+  }
+
+  return info.WasDiscoveredTooLate() ||
+         (containing_block_size != kIndefiniteSize &&
+          containing_block_size != info.ContainingBlockSizeUsed());
+}
+
 bool BuildFragmentedOofContainerTreeForNode(
     const LogicalOofPositionedNode& oof_node,
     const FragmentedOofPath* source,
@@ -117,20 +135,11 @@ bool BuildFragmentedOofContainerTreeForNode(
                                                   &child_container);
   }
 
-  child_container.AddOofPositionedNode(oof_node);
-  const OofInlineContainer<LogicalOffset>& inline_container_info =
-      oof_node.InlineContainerInfo();
-  if (const LayoutInline* inline_container =
-          inline_container_info.Container()) {
-    child_container.EnsureInlineContainingBlock(
-        *inline_container, inline_container_info.RelativeOffset());
-  }
-
-  const FragmentedOofInfo& info = source->GetFragmentedOofInfo();
   bool is_paginated_root = containing_block.IsLayoutView();
-  return info.WasDiscoveredTooLate() ||
-         (!is_paginated_root &&
-          containing_block_size != info.ContainingBlockSizeUsed());
+  return AddToFragmentedOofContainer(
+      oof_node, source->GetFragmentedOofInfo(),
+      is_paginated_root ? kIndefiniteSize : containing_block_size,
+      &child_container);
 }
 
 }  // anonymous namespace
@@ -1671,10 +1680,15 @@ bool BuildFragmentedOofContainerTree(const LayoutResult& layout_result,
     } else {
       // This happens when the containing block of an OOF is the initial
       // containing block (only for pagination). These will always have the
-      // right dimensions in the first layout pass, but in case we need another
-      // pass because of something else, they need to be in the list, so that
-      // they get picked up and laid out during layout.
-      fragmented_oof_container_root->AddOofPositionedNode(logical_descendant);
+      // right dimensions in the first layout pass, but may still be discovered
+      // too late, so that we have to relayout and place them on the right
+      // page. Even if they don't require another layout pass, some other
+      // element might need it, so they need to be in the list, so that they get
+      // picked up and laid out during layout.
+      needs_relayout |= AddToFragmentedOofContainer(
+          logical_descendant, path->GetFragmentedOofInfo(),
+          /*containing_block_size=*/kIndefiniteSize,
+          fragmented_oof_container_root);
     }
   }
 
