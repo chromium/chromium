@@ -1240,11 +1240,6 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/linux-arm64-rel-fyi.sync_integration_tests.filter",
                 ],
             ),
-            "unit_tests": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/linux-arm64-rel-fyi.unit_tests.filter",
-                ],
-            ),
         },
     ),
     targets_settings = targets.settings(

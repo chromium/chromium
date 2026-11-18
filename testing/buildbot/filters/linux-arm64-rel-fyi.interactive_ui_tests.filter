@@ -1,9 +1,6 @@
 # TODO(https://crbug.com/493612000): Tests are flaky on linux-arm64-rel-fyi.
 -All/ForwardButtonAccessibilityTest.ContextMenu/*
 -All/ForwardButtonAccessibilityTest.MiddleClickForward/1
--All/MultiContentsViewTabDragEntrypointsUiParamTest.DragAndDrop/*
--All/MultiContentsViewTabDragEntrypointsUiParamTest.DragAndDropDisabledForChromePage/*
--All/MultiContentsViewTabDragEntrypointsUiParamTest.ShowAndHideDropTarget/*
 -SidePanelBookmarksTest.ShoppingList
 
 # TODO(https://crbug.com/547746068): Flaky on linux-arm64-rel-fyi.
