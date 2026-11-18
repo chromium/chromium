@@ -178,10 +178,22 @@ external/wpt/html/semantics/embedded-content/the-object-element/object-svg-only-
 external/wpt/html/semantics/embedded-content/the-video-element/resize-during-playback.html
 external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html
 external/wpt/html/semantics/forms/form-submission-target/form-target-blank-useractivation-multi-globals.html
-external/wpt/html/semantics/links/links-created-by-a-and-area-elements/target_blank_useractivation_multi_globals.html
+external/wpt/html/semantics/forms/form-submission-target/rel-input-target.html
+external/wpt/html/semantics/forms/the-input-element/focus-dynamic-type-change.html
+external/wpt/html/semantics/forms/the-input-element/range-intrinsic-size.html
+external/wpt/html/semantics/forms/the-option-element/dynamic-content-change-rendering.html
+external/wpt/html/semantics/links/links-created-by-a-and-area-elements/target_blank_useractivation*
 external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-canceling.html
+external/wpt/html/semantics/interactive-elements/the-dialog-element/top-layer-stacking.tentative.html
 external/wpt/html/semantics/interactive-elements/the-summary-element/interactive-content.html
-external/wpt/html/semantics/text-level-semantics/the-bdi-element/bdi-neutral-separate.html
+external/wpt/html/semantics/popovers/popover-anchor-nested-display.tentative.html
+external/wpt/html/semantics/popovers/popover-focus.html
+external/wpt/html/semantics/popovers/popover-hidden-display.html
+external/wpt/html/semantics/popovers/popover-open-overflow-display.tentative.html
+external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/delay-load-event.html
+external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.html
+external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/*
+external/wpt/html/semantics/text-level-semantics/the-bdi-element/*
 external/wpt/html/webappapis/microtask-queuing/queue-microtask-exceptions.any.*
 external/wpt/html/webappapis/scripting/events/event-handler-all-global-events.html
 external/wpt/html/webappapis/scripting/events/event-handler-onmove-02.tentative.html
@@ -403,6 +415,7 @@ virtual/no-auto-wpt-origin-isolation/external/wpt/html/semantics/embedded-conten
 virtual/no-auto-wpt-origin-isolation/external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_sandbox_window_open_download_allow_downloads.tentative.html
 virtual/no-forced-frame-updates/external/wpt/html/browsers/browsing-the-web/history-traversal/pagereveal/order-in-bfcache-restore-iframe.html
 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/element-render-blocking-036.html
+virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/delay-load-event.html
 virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.html
 virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-*
 virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/ordering/*
@@ -449,6 +462,9 @@ virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/range-bounding-c
 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/scrollTop-display-change.html
 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/smooth-scroll-nonstop.html
 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/delay-load-event.html
+virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.html
+virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-*
+virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/ordering/*
 # Mirrors the non-virtual permissions-policy/bluetooth-* entries above: the
 # Web Bluetooth test API (navigator.bluetooth.test) is only available in
 # content shell.
