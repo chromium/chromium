@@ -776,6 +776,38 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, CrashWhileTranslating) {
   TestSimpleTranslationWorks(browser(), "en", "ja");
 }
 
+// Tests that translateStreaming() fails when the service crashes after the
+// first sentence.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
+                       CrashWhileTranslatingStreaming) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+
+  NavigateToEmptyPage();
+
+  // The mock library splits the input at each period and crashes when it
+  // translates CAUSE_CRASH. See comments in mock_translate_kit_lib.cc.
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      window._translator = await Translator.create({
+        sourceLanguage: 'en',
+        targetLanguage: 'ja',
+      });
+      const stream =
+          window._translator.translateStreaming('hello. CAUSE_CRASH. world.');
+      let result = '';
+      for await (const chunk of stream) {
+        result += chunk;
+      }
+      return result;
+  )"),
+            "UnknownError: Other generic failures occurred.");
+
+  // A new translator can still be created and used.
+  TestSimpleTranslationWorks(browser(), "en", "ja");
+}
+
 // Tests the behavior of failing to load the library
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                        CreateTranslatorErrorLibraryLoadFailed) {

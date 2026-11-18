@@ -128,10 +128,14 @@ void Translator::SplitSentencesCallback(
   pending_translations_[responder_id] = sentences.size();
   const int total_translations = sentences.size();
   for (const auto& sentence : sentences) {
+    // Run the reply callback with nullopt if the service disconnects before
+    // answering, so the stream rejects right away.
     translator_remote_->Translate(
-        sentence, base::BindOnce(&Translator::TranslateStreamingCallback,
-                                 weak_ptr_factory_.GetWeakPtr(), responder_id,
-                                 total_translations));
+        sentence, mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                      base::BindOnce(&Translator::TranslateStreamingCallback,
+                                     weak_ptr_factory_.GetWeakPtr(),
+                                     responder_id, total_translations),
+                      std::nullopt));
   }
 }
 void Translator::TranslateStreamingCallback(
