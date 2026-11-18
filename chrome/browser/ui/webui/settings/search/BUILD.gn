@@ -9,6 +9,8 @@ source_set("search") {
   sources = [
     "appearance_section.cc",
     "appearance_section.h",
+    "privacy_section.cc",
+    "privacy_section.h",
     "security_section.cc",
     "security_section.h",
     "settings_search_handler.cc",
@@ -54,6 +56,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "appearance_section_unittest.cc",
+    "privacy_section_unittest.cc",
     "security_section_unittest.cc",
     "settings_search_handler_unittest.cc",
     "settings_search_registry_unittest.cc",
@@ -70,7 +73,9 @@ source_set("unit_tests") {
     "//chrome/browser/ui/tabs/organizer",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//components/prefs",
     "//components/search",
+    "//components/universal_optout",
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
@@ -95,7 +100,6 @@ source_set("unit_tests") {
 
   if (is_linux) {
     deps += [
-      "//components/prefs",
       "//ui/color:color_provider_key",
       "//ui/ozone",
     ]

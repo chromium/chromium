@@ -36,6 +36,9 @@ TEST(SettingsSectionsTest, CreateSettingsSectionsRegistersSections) {
                                         mojom::SettingId::kAppearance))));
   EXPECT_THAT(registry.GetItems(),
               Contains(Pointee(Property(&SettingsSearchItem::id,
+                                        mojom::SettingId::kPrivacy))));
+  EXPECT_THAT(registry.GetItems(),
+              Contains(Pointee(Property(&SettingsSearchItem::id,
                                         mojom::SettingId::kSecurity))));
 }
 
