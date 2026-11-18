@@ -98,6 +98,28 @@ class PermissionsInttest : public WebTestWithWebController {
     if (web_state()) {
       web_state()->SetDelegate(nullptr);
       web_state()->RemoveObserver(&observer_);
+      // Stop any active capture before destroying the web state. On iOS 18.5
+      // simulators, live microphone capture at teardown can leave the test app
+      // backgrounded. Later tests' pages are then hidden, so viewport
+      // observers never fire and those tests time out.
+      bool had_active_capture = false;
+      for (Permission permission : {PermissionCamera, PermissionMicrophone}) {
+        if (web_state()->GetStateForPermission(permission) ==
+            PermissionStateAllowed) {
+          web_state()->SetStateForPermission(PermissionStateNotAccessible,
+                                             permission);
+          had_active_capture = true;
+        }
+      }
+      if (had_active_capture) {
+        EXPECT_TRUE(
+            WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, true, ^bool {
+              return web_state()->GetStateForPermission(PermissionCamera) !=
+                         PermissionStateAllowed &&
+                     web_state()->GetStateForPermission(PermissionMicrophone) !=
+                         PermissionStateAllowed;
+            }));
+      }
     }
     WebTestWithWebController::TearDown();
   }
