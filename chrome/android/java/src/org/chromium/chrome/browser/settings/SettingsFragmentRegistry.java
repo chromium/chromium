@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.safe_browsing.settings.EnhancedProtectionSett
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.safe_browsing.settings.StandardProtectionSettingsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
+import org.chromium.chrome.browser.safety_hub.SafetyHubPasswordsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubPermissionsFragment;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.search_engines.settings.SiteSearchSettings;
@@ -319,6 +320,7 @@ public class SettingsFragmentRegistry {
 
         // Safety Check / Safety Hub
         registerMapping("/safetyCheck", SafetyHubFragment.class);
+        registerMapping("/safetyCheck/passwords", SafetyHubPasswordsFragment.class);
         registerMapping("/safetyCheck/permissions", SafetyHubPermissionsFragment.class);
 
         // Autofill & Passwords

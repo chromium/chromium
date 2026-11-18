@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.EnhancedProtectionSettingsFragment;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.safe_browsing.settings.StandardProtectionSettingsFragment;
+import org.chromium.chrome.browser.safety_hub.SafetyHubPasswordsFragment;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.PersonalizeGoogleServicesSettings;
@@ -1052,6 +1053,18 @@ public class SettingsFragmentRegistryTest {
         assertEquals(
                 HighlightedOption.NONE,
                 bundle.getInt(AddressBarSettingsFragment.HIGHLIGHTED_OPTION));
+    }
+
+    @Test
+    public void testResolveSafetyCheckPasswords() {
+        SettingsFragmentRegistry.Resolution resolution =
+                resolve("chrome://settings/safetyCheck/passwords");
+        assertNull(resolution.redirectUrl);
+        assertEquals(SafetyHubPasswordsFragment.class, resolution.fragmentClass);
+        assertEquals(
+                "chrome://settings/safetyCheck/passwords",
+                SettingsFragmentRegistry.createUrlForFragment(
+                        SafetyHubPasswordsFragment.class, null));
     }
 
     /** Resolves a URL for the cases that do not depend on browser state. */

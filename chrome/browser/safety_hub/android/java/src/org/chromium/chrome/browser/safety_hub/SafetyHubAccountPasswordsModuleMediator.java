@@ -76,18 +76,21 @@ public class SafetyHubAccountPasswordsModuleMediator
                 return new SafetyHubUnavailablePasswordsModuleHelper(
                         context,
                         mModuleDelegate,
+                        mMediatorDelegate,
                         /* unavailableAccountPasswords= */ true,
                         /* unavailableLocalPasswords= */ false);
             case ModuleType.NO_SAVED_PASSWORDS:
                 return new SafetyHubNoSavedPasswordsModuleHelper(
                         context,
                         mModuleDelegate,
+                        mMediatorDelegate,
                         /* noAccountPasswords= */ true,
                         /* noLocalPasswords= */ false);
             case ModuleType.HAS_COMPROMISED_PASSWORDS:
                 return new SafetyHubCompromisedPasswordsModuleHelper(
                         context,
                         mModuleDelegate,
+                        mMediatorDelegate,
                         mAccountPasswordsDataSource.getCompromisedPasswordCount(),
                         /* localCompromisedPasswordsCount= */ 0,
                         /* unifiedModule= */ false);
@@ -95,12 +98,14 @@ public class SafetyHubAccountPasswordsModuleMediator
                 return new SafetyHubNoCompromisedPasswordsModuleHelper(
                         context,
                         mModuleDelegate,
+                        mMediatorDelegate,
                         mAccountPasswordsDataSource.getAccountEmail(),
                         /* unifiedModule= */ false);
             case ModuleType.HAS_WEAK_PASSWORDS:
                 return new SafetyHubWeakPasswordsModuleHelper(
                         context,
                         mModuleDelegate,
+                        mMediatorDelegate,
                         mAccountPasswordsDataSource.getWeakPasswordCount(),
                         /* localWeakPasswordsCount= */ 0,
                         /* unifiedModule= */ false);
@@ -108,6 +113,7 @@ public class SafetyHubAccountPasswordsModuleMediator
                 return new SafetyHubReusedPasswordsModuleHelper(
                         context,
                         mModuleDelegate,
+                        mMediatorDelegate,
                         mAccountPasswordsDataSource.getReusedPasswordCount(),
                         /* localReusedPasswordsCount= */ 0,
                         /* unifiedModule= */ false);

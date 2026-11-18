@@ -21,16 +21,19 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleStat
 public class SafetyHubUnavailablePasswordsModuleHelper implements SafetyHubModuleHelper {
     private final Context mContext;
     private final SafetyHubModuleDelegate mModuleDelegate;
+    private final SafetyHubModuleMediatorDelegate mMediatorDelegate;
     private final boolean mUnavailableAccountPasswords;
     private final boolean mUnavailableLocalPasswords;
 
     SafetyHubUnavailablePasswordsModuleHelper(
             Context context,
             SafetyHubModuleDelegate moduleDelegate,
+            SafetyHubModuleMediatorDelegate mediatorDelegate,
             boolean unavailableAccountPasswords,
             boolean unavailableLocalPasswords) {
         mContext = context;
         mModuleDelegate = moduleDelegate;
+        mMediatorDelegate = mediatorDelegate;
         mUnavailableAccountPasswords = unavailableAccountPasswords;
         mUnavailableLocalPasswords = unavailableLocalPasswords;
     }
@@ -73,8 +76,7 @@ public class SafetyHubUnavailablePasswordsModuleHelper implements SafetyHubModul
     public OnClickListener getSecondaryButtonListener() {
         if (mUnavailableAccountPasswords && mUnavailableLocalPasswords) {
             return v -> {
-                // TODO(crbug.com/407931779): Change to open the SH passwords page.
-                mModuleDelegate.showLocalPasswordCheckUi(mContext);
+                mMediatorDelegate.startSettingsForModule(SafetyHubPasswordsFragment.class);
             };
         }
         if (mUnavailableAccountPasswords) {

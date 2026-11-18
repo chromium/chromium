@@ -168,6 +168,7 @@ public class SafetyHubPasswordsModuleMediator
             return new SafetyHubCompromisedPasswordsModuleHelper(
                     context,
                     mModuleDelegate,
+                    mMediatorDelegate,
                     mAccountPasswordsDataSource.getCompromisedPasswordCount(),
                     mLocalPasswordsDataSource.getCompromisedPasswordCount(),
                     /* unifiedModule= */ true);
@@ -183,6 +184,7 @@ public class SafetyHubPasswordsModuleMediator
             return new SafetyHubUnavailablePasswordsModuleHelper(
                     context,
                     mModuleDelegate,
+                    mMediatorDelegate,
                     /* unavailableAccountPasswords= */ true,
                     /* unavailableLocalPasswords= */ true);
         }
@@ -193,6 +195,7 @@ public class SafetyHubPasswordsModuleMediator
             return new SafetyHubReusedPasswordsModuleHelper(
                     context,
                     mModuleDelegate,
+                    mMediatorDelegate,
                     mAccountPasswordsDataSource.getReusedPasswordCount(),
                     mLocalPasswordsDataSource.getReusedPasswordCount(),
                     /* unifiedModule= */ true);
@@ -204,6 +207,7 @@ public class SafetyHubPasswordsModuleMediator
             return new SafetyHubWeakPasswordsModuleHelper(
                     context,
                     mModuleDelegate,
+                    mMediatorDelegate,
                     mAccountPasswordsDataSource.getWeakPasswordCount(),
                     mLocalPasswordsDataSource.getWeakPasswordCount(),
                     /* unifiedModule= */ true);
@@ -216,6 +220,7 @@ public class SafetyHubPasswordsModuleMediator
             return new SafetyHubNoCompromisedPasswordsModuleHelper(
                     context,
                     mModuleDelegate,
+                    mMediatorDelegate,
                     mAccountPasswordsDataSource.getAccountEmail(),
                     /* unifiedModule= */ true);
         }
@@ -231,6 +236,7 @@ public class SafetyHubPasswordsModuleMediator
         return new SafetyHubNoSavedPasswordsModuleHelper(
                 context,
                 mModuleDelegate,
+                mMediatorDelegate,
                 /* noAccountPasswords= */ true,
                 /* noLocalPasswords= */ true);
     }

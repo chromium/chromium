@@ -133,6 +133,7 @@ chromium-metrics-reviews@google.com.
   <int value="1398652905" label="UniversalOptOutSettings"/>
   <int value="1409846592" label="TabArchiveSettingsFragment"/>
   <int value="1421890558" label="PasswordSettings"/>
+  <int value="1481772357" label="SafetyHubPasswordsFragment"/>
   <int value="1505293227" label="PrivacySettings"/>
   <int value="1603955025" label="SafetyHubPermissionsFragment"/>
   <int value="1624624514" label="FinancialAccountsManagementFragment"/>

@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleStat
 public class SafetyHubWeakPasswordsModuleHelper implements SafetyHubModuleHelper {
     private final Context mContext;
     private final SafetyHubModuleDelegate mModuleDelegate;
+    private final SafetyHubModuleMediatorDelegate mMediatorDelegate;
     private final int mAccountWeakPasswordsCount;
     private final int mLocalWeakPasswordsCount;
     private final boolean mUnifiedModule;
@@ -26,11 +27,13 @@ public class SafetyHubWeakPasswordsModuleHelper implements SafetyHubModuleHelper
     SafetyHubWeakPasswordsModuleHelper(
             Context context,
             SafetyHubModuleDelegate moduleDelegate,
+            SafetyHubModuleMediatorDelegate mediatorDelegate,
             int accountWeakPasswordsCount,
             int localWeakPasswordsCount,
             boolean unifiedModule) {
         mContext = context;
         mModuleDelegate = moduleDelegate;
+        mMediatorDelegate = mediatorDelegate;
         mAccountWeakPasswordsCount = accountWeakPasswordsCount;
         mLocalWeakPasswordsCount = localWeakPasswordsCount;
         mUnifiedModule = unifiedModule;
@@ -72,8 +75,7 @@ public class SafetyHubWeakPasswordsModuleHelper implements SafetyHubModuleHelper
     public OnClickListener getPrimaryButtonListener() {
         if (mAccountWeakPasswordsCount > 0 && mLocalWeakPasswordsCount > 0) {
             return v -> {
-                // TODO(crbug.com/407931779): Change to open the SH passwords page.
-                mModuleDelegate.showLocalPasswordCheckUi(mContext);
+                mMediatorDelegate.startSettingsForModule(SafetyHubPasswordsFragment.class);
             };
         }
         if (mAccountWeakPasswordsCount > 0) {
@@ -100,8 +102,7 @@ public class SafetyHubWeakPasswordsModuleHelper implements SafetyHubModuleHelper
     public @Nullable OnClickListener getSecondaryButtonListener() {
         if (mUnifiedModule && !(mAccountWeakPasswordsCount > 0 && mLocalWeakPasswordsCount > 0)) {
             return v -> {
-                // TODO(crbug.com/407931779): Change to open the SH passwords page.
-                mModuleDelegate.showLocalPasswordCheckUi(mContext);
+                mMediatorDelegate.startSettingsForModule(SafetyHubPasswordsFragment.class);
             };
         }
         return null;

@@ -19,16 +19,19 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleStat
 public class SafetyHubNoSavedPasswordsModuleHelper implements SafetyHubModuleHelper {
     private final Context mContext;
     private final SafetyHubModuleDelegate mModuleDelegate;
+    private final SafetyHubModuleMediatorDelegate mMediatorDelegate;
     private final boolean mNoAccountPasswords;
     private final boolean mNoLocalPasswords;
 
     SafetyHubNoSavedPasswordsModuleHelper(
             Context context,
             SafetyHubModuleDelegate moduleDelegate,
+            SafetyHubModuleMediatorDelegate mediatorDelegate,
             boolean noAccountPasswords,
             boolean noLocalPasswords) {
         mContext = context;
         mModuleDelegate = moduleDelegate;
+        mMediatorDelegate = mediatorDelegate;
         mNoAccountPasswords = noAccountPasswords;
         mNoLocalPasswords = noLocalPasswords;
 
@@ -74,8 +77,7 @@ public class SafetyHubNoSavedPasswordsModuleHelper implements SafetyHubModuleHel
     public OnClickListener getSecondaryButtonListener() {
         if (mNoAccountPasswords && mNoLocalPasswords) {
             return v -> {
-                // TODO(crbug.com/407931779): Change to open the SH passwords page.
-                mModuleDelegate.showLocalPasswordCheckUi(mContext);
+                mMediatorDelegate.startSettingsForModule(SafetyHubPasswordsFragment.class);
             };
         }
         if (mNoAccountPasswords) {

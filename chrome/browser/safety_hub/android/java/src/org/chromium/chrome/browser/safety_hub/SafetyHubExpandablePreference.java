@@ -178,6 +178,10 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
         return mPrimaryButtonClickListener;
     }
 
+    View.@Nullable OnClickListener getSecondaryButtonClickListener() {
+        return mSecondaryButtonClickListener;
+    }
+
     public void setHasProgressBar(boolean hasProgressBar) {
         if (mHasProgressBar == hasProgressBar) return;
         mHasProgressBar = hasProgressBar;

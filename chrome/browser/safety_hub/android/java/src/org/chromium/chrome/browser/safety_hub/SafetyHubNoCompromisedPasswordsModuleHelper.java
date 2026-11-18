@@ -20,16 +20,19 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleStat
 public class SafetyHubNoCompromisedPasswordsModuleHelper implements SafetyHubModuleHelper {
     private final Context mContext;
     private final SafetyHubModuleDelegate mModuleDelegate;
+    private final SafetyHubModuleMediatorDelegate mMediatorDelegate;
     private final @Nullable String mAccount;
     private final boolean mUnifiedModule;
 
     SafetyHubNoCompromisedPasswordsModuleHelper(
             Context context,
             SafetyHubModuleDelegate moduleDelegate,
+            SafetyHubModuleMediatorDelegate mediatorDelegate,
             @Nullable String account,
             boolean unifiedModule) {
         mContext = context;
         mModuleDelegate = moduleDelegate;
+        mMediatorDelegate = mediatorDelegate;
         mAccount = account;
         mUnifiedModule = unifiedModule;
     }
@@ -95,8 +98,7 @@ public class SafetyHubNoCompromisedPasswordsModuleHelper implements SafetyHubMod
 
         assert mUnifiedModule;
         return v -> {
-            // TODO(crbug.com/407931779): Change to open the SH passwords page.
-            mModuleDelegate.showLocalPasswordCheckUi(mContext);
+            mMediatorDelegate.startSettingsForModule(SafetyHubPasswordsFragment.class);
         };
     }
 

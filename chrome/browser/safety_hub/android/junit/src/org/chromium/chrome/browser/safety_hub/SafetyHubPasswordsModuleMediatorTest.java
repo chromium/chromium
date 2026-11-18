@@ -142,6 +142,10 @@ public class SafetyHubPasswordsModuleMediatorTest {
         assertEquals(WARNING_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
         assertEquals(expectedPrimaryButtonText, mPreference.getPrimaryButtonText());
         assertNull(mPreference.getSecondaryButtonText());
+
+        mPreference.getPrimaryButtonClickListener().onClick(null);
+        verify(mMediatorDelegateMock, times(1))
+                .startSettingsForModule(SafetyHubPasswordsFragment.class);
     }
 
     @Test
@@ -184,6 +188,10 @@ public class SafetyHubPasswordsModuleMediatorTest {
         assertEquals(WARNING_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
         assertEquals(expectedPrimaryButtonText, mPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mPreference.getSecondaryButtonText());
+
+        mPreference.getSecondaryButtonClickListener().onClick(null);
+        verify(mMediatorDelegateMock, times(1))
+                .startSettingsForModule(SafetyHubPasswordsFragment.class);
     }
 
     @Test
@@ -342,6 +350,10 @@ public class SafetyHubPasswordsModuleMediatorTest {
         assertEquals(SAFE_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
         assertNull(mPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mPreference.getSecondaryButtonText());
+
+        mPreference.getSecondaryButtonClickListener().onClick(null);
+        verify(mMediatorDelegateMock, times(1))
+                .startSettingsForModule(SafetyHubPasswordsFragment.class);
     }
 
     @Test
@@ -378,6 +390,10 @@ public class SafetyHubPasswordsModuleMediatorTest {
         assertEquals(INFO_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
         assertEquals(expectedPrimaryButtonText, mPreference.getPrimaryButtonText());
         assertNull(mPreference.getSecondaryButtonText());
+
+        mPreference.getPrimaryButtonClickListener().onClick(null);
+        verify(mMediatorDelegateMock, times(1))
+                .startSettingsForModule(SafetyHubPasswordsFragment.class);
     }
 
     @Test
@@ -416,6 +432,10 @@ public class SafetyHubPasswordsModuleMediatorTest {
         assertEquals(INFO_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
         assertEquals(expectedPrimaryButtonText, mPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mPreference.getSecondaryButtonText());
+
+        mPreference.getSecondaryButtonClickListener().onClick(null);
+        verify(mMediatorDelegateMock, times(1))
+                .startSettingsForModule(SafetyHubPasswordsFragment.class);
     }
 
     @Test
@@ -488,6 +508,10 @@ public class SafetyHubPasswordsModuleMediatorTest {
         assertEquals(INFO_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
         assertEquals(expectedPrimaryButtonText, mPreference.getPrimaryButtonText());
         assertNull(mPreference.getSecondaryButtonText());
+
+        mPreference.getPrimaryButtonClickListener().onClick(null);
+        verify(mMediatorDelegateMock, times(1))
+                .startSettingsForModule(SafetyHubPasswordsFragment.class);
     }
 
     @Test
@@ -525,6 +549,10 @@ public class SafetyHubPasswordsModuleMediatorTest {
         assertEquals(INFO_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
         assertEquals(expectedPrimaryButtonText, mPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mPreference.getSecondaryButtonText());
+
+        mPreference.getSecondaryButtonClickListener().onClick(null);
+        verify(mMediatorDelegateMock, times(1))
+                .startSettingsForModule(SafetyHubPasswordsFragment.class);
     }
 
     @Test
@@ -585,6 +613,10 @@ public class SafetyHubPasswordsModuleMediatorTest {
         assertEquals(INFO_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
         assertNull(mPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mPreference.getSecondaryButtonText());
+
+        mPreference.getSecondaryButtonClickListener().onClick(null);
+        verify(mMediatorDelegateMock, times(1))
+                .startSettingsForModule(SafetyHubPasswordsFragment.class);
     }
 
     @Test
@@ -683,6 +715,10 @@ public class SafetyHubPasswordsModuleMediatorTest {
         assertEquals(INFO_ICON, shadowOf(mPreference.getIcon()).getCreatedFromResId());
         assertNull(mPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mPreference.getSecondaryButtonText());
+
+        mPreference.getSecondaryButtonClickListener().onClick(null);
+        verify(mMediatorDelegateMock, times(1))
+                .startSettingsForModule(SafetyHubPasswordsFragment.class);
     }
 
     @Test
