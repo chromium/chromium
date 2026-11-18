@@ -1,9 +1,13 @@
-<style include="settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ContentSettingsTypes} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage
     page-title="$i18n{siteSettingsCategoryInsecureContent}"
     search-label="$i18n{siteSettingsAllSitesFilter}"
     search-icon="settings20:filter-list"
-    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+    .searchTerm="${this.searchTerm_}"
+    @search-term-changed="${this.onSearchTermChanged_}"
+    route-path="${this.routePath}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsInsecureContentDescription}
   </div>
@@ -11,9 +15,9 @@
     $i18n{siteSettingsInsecureContentBlock}
   </div>
   <category-setting-exceptions
-      category="[[contentSettingsTypesEnum_.MIXEDSCRIPT]]"
+      .category="${ContentSettingsTypes.MIXEDSCRIPT}"
       allow-header="$i18n{siteSettingsInsecureContentAllowedExceptions}"
       block-header="$i18n{siteSettingsInsecureContentBlockedExceptions}"
-      search-filter="[[searchTerm]]">
+      .searchFilter="${this.searchTerm_}">
   </category-setting-exceptions>
 </settings-subpage>

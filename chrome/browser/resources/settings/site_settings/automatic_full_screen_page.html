@@ -1,18 +1,22 @@
-<style include="settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ContentSettingsTypes} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage
     page-title="$i18n{siteSettingsCategoryAutomaticFullscreen}"
     search-label="$i18n{siteSettingsAllSitesFilter}"
     search-icon="settings20:filter-list"
-    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+    .searchTerm="${this.searchTerm_}"
+    @search-term-changed="${this.onSearchTermChanged_}"
+    route-path="${this.routePath}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsAutomaticFullscreenDescription}
   </div>
   <category-setting-exceptions read-only-list
-      category="[[contentSettingsTypesEnum_.AUTOMATIC_FULLSCREEN]]"
+      .category="${ContentSettingsTypes.AUTOMATIC_FULLSCREEN}"
       allow-header=
           "$i18n{siteSettingsAutomaticFullscreenAllowedExceptions}"
       block-header=
           "$i18n{siteSettingsAutomaticFullscreenBlockedExceptions}"
-          search-filter="[[searchTerm]]">
+      .searchFilter="${this.searchTerm_}">
   </category-setting-exceptions>
 </settings-subpage>
