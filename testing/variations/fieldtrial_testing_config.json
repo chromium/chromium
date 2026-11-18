@@ -20291,52 +20291,6 @@
             ]
         }
     ],
-    "UseRustCborParser": [
-        {
-            "platforms": [
-                "android",
-                "android_desktop",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseRustCborParser"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UseRustCborWriter": [
-        {
-            "platforms": [
-                "android",
-                "android_desktop",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseRustCborWriter"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseStrongRefToSharedImageInterface": [
         {
             "platforms": [

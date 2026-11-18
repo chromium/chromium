@@ -28,7 +28,13 @@
 
 namespace cbor {
 
-BASE_FEATURE(kUseRustCborWriter, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseRustCborWriter,
+#if BUILDFLAG(USE_CBOR_RUST)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 namespace {
 
