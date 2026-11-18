@@ -423,6 +423,41 @@ TEST_P(FontDataManagerUnitTest, MatchFamilyStyle) {
   EXPECT_EQ(test_font_data_service_app_.legacy_make_typeface_call_count(), 1u);
 }
 
+TEST_P(FontDataManagerUnitTest, MatchFamilyStyleColorEmoji) {
+  const SkFontStyle style(400, 5, SkFontStyle::kUpright_Slant);
+#if BUILDFLAG(IS_WIN)
+  constexpr char kEmojiFamilyName[] = "Segoe UI Emoji";
+#else
+  constexpr char kEmojiFamilyName[] = "Noto Color Emoji";
+#endif
+
+  const sk_sp<SkTypeface> expected_typeface =
+      skia::MakeTypefaceFromName(kEmojiFamilyName, style);
+  ASSERT_TRUE(expected_typeface);
+
+  const sk_sp<SkTypeface> result =
+      skia_font_manager_->matchFamilyStyle(kEmojiFamilyName, style);
+  ASSERT_TRUE(result);
+
+  SkString result_family_name;
+  result->getFamilyName(&result_family_name);
+  EXPECT_STREQ(result_family_name.c_str(), kEmojiFamilyName);
+
+  // Both text-default (U+263A) and emoji-default (U+1F600) codepoints must
+  // resolve to the same non-zero glyph IDs as the direct SkFontMgr typeface.
+  constexpr SkUnichar kWhiteSmilingFace = 0x263A;
+  constexpr SkUnichar kGrinningFace = 0x1F600;
+  EXPECT_NE(result->unicharToGlyph(kWhiteSmilingFace), 0);
+  EXPECT_EQ(result->unicharToGlyph(kWhiteSmilingFace),
+            expected_typeface->unicharToGlyph(kWhiteSmilingFace));
+  EXPECT_NE(result->unicharToGlyph(kGrinningFace), 0);
+  EXPECT_EQ(result->unicharToGlyph(kGrinningFace),
+            expected_typeface->unicharToGlyph(kGrinningFace));
+
+  EXPECT_GT(result->countTables(), 0);
+  EXPECT_EQ(result->countTables(), expected_typeface->countTables());
+}
+
 TEST_P(FontDataManagerUnitTest, MatchFamilyStyleCacheIgnoresAsciiCase) {
   const SkFontStyle style(400, 5, SkFontStyle::kUpright_Slant);
 #if BUILDFLAG(IS_WIN)
