@@ -62,6 +62,8 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.download_button.DownloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
@@ -71,6 +73,7 @@ import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionHandler;
+import org.chromium.chrome.browser.ttc.TtcEntryPoint;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
@@ -542,6 +545,40 @@ public class TopToolbarCoordinatorUnitTest {
     public void testTtcButtonConnectedToEntryPoint() {
         View ttcButton = mToolbarLayout.findViewById(R.id.ttc_toolbar_button);
         assertNotNull(Shadows.shadowOf(ttcButton).getOnClickListener());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TTC)
+    public void testTtcButtonShownOnlyWhenPinned() {
+        TtcEntryPoint entryPoint = TtcEntryPoint.from(mWindowAndroid);
+        entryPoint.setStateForTesting(/* shouldShow= */ true, /* active= */ false, () -> {});
+        // TTC isn't the toolbar shortcut by default.
+        assertFalse(mToolbarLayout.isTtcButtonWantedForTesting());
+
+        AdaptiveToolbarPrefs.saveToolbarButtonManualOverride(AdaptiveToolbarButtonVariant.TTC);
+        assertTrue(mToolbarLayout.isTtcButtonWantedForTesting());
+
+        // Turning toolbar shortcuts off unpins it, and turning them back on pins it again.
+        AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(false);
+        assertFalse(mToolbarLayout.isTtcButtonWantedForTesting());
+        AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
+        assertTrue(mToolbarLayout.isTtcButtonWantedForTesting());
+
+        // Choosing another toolbar shortcut unpins it.
+        AdaptiveToolbarPrefs.saveToolbarButtonManualOverride(AdaptiveToolbarButtonVariant.SHARE);
+        assertFalse(mToolbarLayout.isTtcButtonWantedForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TTC)
+    public void testTtcButtonHiddenWhenTtcCannotRun() {
+        AdaptiveToolbarPrefs.saveToolbarButtonManualOverride(AdaptiveToolbarButtonVariant.TTC);
+        TtcEntryPoint entryPoint = TtcEntryPoint.from(mWindowAndroid);
+        entryPoint.setStateForTesting(/* shouldShow= */ true, /* active= */ false, () -> {});
+        assertTrue(mToolbarLayout.isTtcButtonWantedForTesting());
+
+        entryPoint.setStateForTesting(/* shouldShow= */ false, /* active= */ false, () -> {});
+        assertFalse(mToolbarLayout.isTtcButtonWantedForTesting());
     }
 
     @Test

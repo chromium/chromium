@@ -20,6 +20,7 @@ import androidx.annotation.ColorInt;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
+import org.chromium.base.shared_preferences.SharedPreferenceObserver;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -53,6 +54,8 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
@@ -66,6 +69,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.download_button.DownloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinator;
@@ -184,6 +188,9 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     private @Nullable TtcEntryPoint mTtcEntryPoint;
 
     private final TtcEntryPoint.Observer mTtcEntryPointObserver = this::updateTtcButton;
+
+    /** Follows the toolbar shortcut settings, which decide whether TTC is pinned. */
+    private @Nullable SharedPreferenceObserver mTtcPinnedObserver;
 
     /**
      * Creates a new {@link TopToolbarCoordinator}.
@@ -406,6 +413,15 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             // button should show and handles its clicks.
             mTtcEntryPoint = TtcEntryPoint.from(windowAndroid);
             mTtcEntryPoint.addObserver(mTtcEntryPointObserver);
+            mTtcPinnedObserver =
+                    ChromeSharedPreferences.getInstance()
+                            .observe(
+                                    List.of(
+                                            ChromePreferenceKeys
+                                                    .ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
+                                            ChromePreferenceKeys
+                                                    .ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED),
+                                    key -> updateTtcButton());
             updateTtcButton();
         }
         controlContainer.setPostInitializationDependencies(
@@ -657,8 +673,15 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     private void updateTtcButton() {
         TtcEntryPoint entryPoint = mTtcEntryPoint;
         if (entryPoint == null || !(mToolbarLayout instanceof ToolbarTablet toolbarTablet)) return;
+        // TTC is pinned by choosing it as the toolbar shortcut.
+        boolean isPinned =
+                AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled()
+                        && AdaptiveToolbarPrefs.getCustomizationSetting()
+                                == AdaptiveToolbarButtonVariant.TTC;
         toolbarTablet.setTtcButtonState(
-                entryPoint.shouldShow(), entryPoint.isActive(), v -> entryPoint.toggleSession());
+                entryPoint.shouldShow() && isPinned,
+                entryPoint.isActive(),
+                v -> entryPoint.toggleSession());
     }
 
     /** Cleans up any code as necessary. */
@@ -671,6 +694,10 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         if (mTtcEntryPoint != null) {
             mTtcEntryPoint.removeObserver(mTtcEntryPointObserver);
             mTtcEntryPoint = null;
+        }
+        if (mTtcPinnedObserver != null) {
+            mTtcPinnedObserver.destroy();
+            mTtcPinnedObserver = null;
         }
         if (mOverlayCoordinator != null) {
             mOverlayCoordinator.destroy();

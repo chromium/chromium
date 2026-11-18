@@ -1105,6 +1105,10 @@ public class ToolbarTablet extends ToolbarLayout {
         }
     }
 
+    boolean isTtcButtonWantedForTesting() {
+        return mTtcButtonWanted;
+    }
+
     @Override
     public @Nullable View getOptionalButtonViewForTesting() {
         return mOptionalButton;

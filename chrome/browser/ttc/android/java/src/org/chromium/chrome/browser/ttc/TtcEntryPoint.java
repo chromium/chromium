@@ -79,6 +79,15 @@ public class TtcEntryPoint {
         notifyObservers();
     }
 
+    /** Sets all of the entry point's state at once, for tests of the toolbar. */
+    public void setStateForTesting(
+            boolean shouldShow, boolean active, @Nullable Runnable toggleHandler) {
+        mToggleHandler = toggleHandler;
+        mShouldShow = shouldShow;
+        mActive = active;
+        notifyObservers();
+    }
+
     private void notifyObservers() {
         for (Observer observer : mObservers) {
             observer.onEntryPointStateChanged();
