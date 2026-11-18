@@ -601,6 +601,83 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
   ASSERT_EQ(frame_url_chain.size(), 1);
   EXPECT_EQ(frame_url_chain[0], "https://initiating.com/");
 }
+
+TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
+       AccessPointMatchesDragAndDrop) {
+  policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
+  constexpr char kPolicy[] = R"(
+      {
+        "service_provider": "google",
+        "enable": [
+          {
+            "url_list": ["*"],
+            "tags": ["dlp"]
+          }
+        ],
+        "block_until_verdict": 1
+      })";
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY, kPolicy);
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::FILE_ATTACHED, kPolicy);
+
+  std::optional<enterprise_connectors::DeepScanAccessPoint>
+      captured_access_point;
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindLambdaForTesting(
+          [&captured_access_point](
+              content::WebContents* contents,
+              enterprise_connectors::ContentAnalysisDelegate::Data data,
+              enterprise_connectors::ContentAnalysisDelegate::CompletionCallback
+                  callback,
+              enterprise_connectors::DeepScanAccessPoint access_point) {
+            captured_access_point = access_point;
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                Create(base::DoNothing(),
+                       base::BindRepeating([](const std::string&,
+                                              const base::FilePath&) {
+                         return enterprise_connectors::test::
+                             FakeContentAnalysisDelegate::SuccessfulResponse(
+                                 {"dlp"});
+                       }),
+                       "dm_token", contents, std::move(data),
+                       std::move(callback), access_point);
+          }));
+
+  auto run_paste = [&](ui::ClipboardMetadata metadata,
+                       content::ClipboardPasteData data) {
+    captured_access_point.reset();
+    base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
+    PasteIfAllowedByPolicy(NoBrowserContextSourceEndpoint(),
+                           DestinationEndpoint(), metadata, std::move(data),
+                           future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    return captured_access_point;
+  };
+
+  EXPECT_EQ(run_paste({.size = 100, .is_drag_and_drop = false},
+                      MakeClipboardPasteData(std::string(100, 'a'), "", {})),
+            enterprise_connectors::DeepScanAccessPoint::PASTE);
+  EXPECT_EQ(run_paste({.size = 100, .is_drag_and_drop = true},
+                      MakeClipboardPasteData(std::string(100, 'a'), "", {})),
+            enterprise_connectors::DeepScanAccessPoint::DRAG_AND_DROP);
+  EXPECT_EQ(
+      run_paste({.format_type = ui::ClipboardFormatType::FilenamesType(),
+                 .is_drag_and_drop = false},
+                MakeClipboardPasteData(
+                    "", "", {base::FilePath(FILE_PATH_LITERAL("file.txt"))})),
+      enterprise_connectors::DeepScanAccessPoint::PASTE);
+  EXPECT_EQ(
+      run_paste({.format_type = ui::ClipboardFormatType::FilenamesType(),
+                 .is_drag_and_drop = true},
+                MakeClipboardPasteData(
+                    "", "", {base::FilePath(FILE_PATH_LITERAL("file.txt"))})),
+      enterprise_connectors::DeepScanAccessPoint::DRAG_AND_DROP);
+
+  enterprise_connectors::ContentAnalysisDelegate::ResetFactoryForTesting();
+}
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, Default) {

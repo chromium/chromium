@@ -354,6 +354,59 @@ TEST(DeepScanningUtilsTest, BinaryUploadServiceResultToString) {
                 false));
 }
 
+TEST(DeepScanningUtilsTest, AccessPointFromRequest) {
+  auto make_request =
+      [](AnalysisConnector connector,
+         ContentAnalysisRequest::Reason reason =
+             ContentAnalysisRequest::UNKNOWN,
+         ContentMetaData::CopiedTextSource::CopiedTextSourceType
+             source_context = ContentMetaData::CopiedTextSource::UNSPECIFIED) {
+        ContentAnalysisRequest request;
+        request.set_analysis_connector(connector);
+        request.set_reason(reason);
+        if (source_context != ContentMetaData::CopiedTextSource::UNSPECIFIED) {
+          request.mutable_request_data()
+              ->mutable_copied_text_source()
+              ->set_context(source_context);
+        }
+        return request;
+      };
+
+  EXPECT_EQ(DeepScanAccessPoint::DOWNLOAD,
+            AccessPointFromRequest(make_request(FILE_DOWNLOADED)));
+  EXPECT_EQ(DeepScanAccessPoint::DRAG_AND_DROP,
+            AccessPointFromRequest(make_request(
+                FILE_ATTACHED, ContentAnalysisRequest::DRAG_AND_DROP)));
+  EXPECT_EQ(DeepScanAccessPoint::PASTE,
+            AccessPointFromRequest(make_request(
+                FILE_ATTACHED, ContentAnalysisRequest::CLIPBOARD_PASTE)));
+  EXPECT_EQ(DeepScanAccessPoint::UPLOAD,
+            AccessPointFromRequest(make_request(FILE_ATTACHED)));
+  EXPECT_EQ(DeepScanAccessPoint::COPY,
+            AccessPointFromRequest(make_request(DATA_COPIED)));
+  EXPECT_EQ(DeepScanAccessPoint::PASTE,
+            AccessPointFromRequest(make_request(BULK_DATA_ENTRY)));
+  EXPECT_EQ(DeepScanAccessPoint::PASTE,
+            AccessPointFromRequest(make_request(
+                BULK_DATA_ENTRY, ContentAnalysisRequest::CLIPBOARD_PASTE)));
+  EXPECT_EQ(DeepScanAccessPoint::DRAG_AND_DROP,
+            AccessPointFromRequest(make_request(
+                BULK_DATA_ENTRY, ContentAnalysisRequest::DRAG_AND_DROP)));
+  EXPECT_EQ(DeepScanAccessPoint::ACTOR,
+            AccessPointFromRequest(make_request(
+                BULK_DATA_ENTRY, ContentAnalysisRequest::CLIPBOARD_PASTE,
+                ContentMetaData::CopiedTextSource::GEMINI_IN_CHROME)));
+  EXPECT_EQ(DeepScanAccessPoint::PRINT,
+            AccessPointFromRequest(make_request(PRINT)));
+  EXPECT_EQ(DeepScanAccessPoint::FILE_TRANSFER,
+            AccessPointFromRequest(make_request(FILE_TRANSFER)));
+  EXPECT_EQ(DeepScanAccessPoint::NETWORK_REQUEST,
+            AccessPointFromRequest(make_request(NETWORK_REQUEST)));
+  EXPECT_EQ(
+      DeepScanAccessPoint::UPLOAD,
+      AccessPointFromRequest(make_request(ANALYSIS_CONNECTOR_UNSPECIFIED)));
+}
+
 class FakeBinaryUploadRequest : public BinaryUploadRequest {
  public:
   FakeBinaryUploadRequest()

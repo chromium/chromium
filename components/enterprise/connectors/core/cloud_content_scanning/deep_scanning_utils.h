@@ -141,11 +141,9 @@ enum class ScanningCrashKey {
 void IncrementCrashKey(ScanningCrashKey key, int delta = 1);
 void DecrementCrashKey(ScanningCrashKey key, int delta = 1);
 
-// Maps the request's connector and reason to the corresponding
-// DeepScanAccessPoint.
+// Maps `request` to the corresponding DeepScanAccessPoint.
 DeepScanAccessPoint AccessPointFromRequest(
-    AnalysisConnector connector,
-    ContentAnalysisRequest::Reason reason);
+    const ContentAnalysisRequest& request);
 
 }  // namespace enterprise_connectors
 

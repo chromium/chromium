@@ -172,7 +172,8 @@ void CompleteAllowedCopy(
 void HandleFileData(
     content::WebContents* web_contents,
     enterprise_connectors::ContentAnalysisDelegate::Data dialog_data,
-    content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
+    content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback,
+    enterprise_connectors::DeepScanAccessPoint access_point) {
   enterprise_connectors::ContentAnalysisDelegate::CreateForFilesInWebContents(
       web_contents, std::move(dialog_data),
       base::BindOnce(
@@ -197,14 +198,15 @@ void HandleFileData(
             std::move(callback).Run(std::move(clipboard_paste_data));
           },
           std::move(callback)),
-      enterprise_connectors::DeepScanAccessPoint::PASTE);
+      access_point);
 }
 
 void HandleStringData(
     content::WebContents* web_contents,
     content::ClipboardPasteData clipboard_paste_data,
     enterprise_connectors::ContentAnalysisDelegate::Data dialog_data,
-    content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
+    content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback,
+    enterprise_connectors::DeepScanAccessPoint access_point) {
   enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
       web_contents, std::move(dialog_data),
       base::BindOnce(
@@ -239,7 +241,7 @@ void HandleStringData(
             std::move(callback).Run(std::move(clipboard_paste_data));
           },
           std::move(clipboard_paste_data), std::move(callback)),
-      enterprise_connectors::DeepScanAccessPoint::PASTE);
+      access_point);
 }
 
 void OnIsClipboardOwnerByContentAnalysis(
@@ -328,15 +330,20 @@ void OnIsClipboardOwnerByContentAnalysis(
     dialog_data.initiating_frame_id = rfh->GetGlobalId();
   }
 
+  enterprise_connectors::DeepScanAccessPoint access_point =
+      metadata.is_drag_and_drop
+          ? enterprise_connectors::DeepScanAccessPoint::DRAG_AND_DROP
+          : enterprise_connectors::DeepScanAccessPoint::PASTE;
+
   if (is_files) {
     dialog_data.paths = std::move(clipboard_paste_data.file_paths);
     HandleFileData(destination.web_contents(), std::move(dialog_data),
-                   std::move(callback));
+                   std::move(callback), access_point);
   } else {
     dialog_data.AddClipboardData(clipboard_paste_data);
     HandleStringData(destination.web_contents(),
                      std::move(clipboard_paste_data), std::move(dialog_data),
-                     std::move(callback));
+                     std::move(callback), access_point);
   }
 }
 

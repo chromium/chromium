@@ -887,8 +887,7 @@ void CloudBinaryUploadServiceBase::QueueForDeepScanning(
   if (!action_id.empty() && !user_action_data_.contains(action_id)) {
     user_action_data_[action_id] = {
         request->cloud_or_local_settings().is_cloud_analysis(),
-        AccessPointFromRequest(request->analysis_connector(),
-                               request->reason())};
+        AccessPointFromRequest(request->content_analysis_request())};
   }
   if (active_requests_.size() >= kDefaultMaxParallelActiveRequests) {
     request_queue_.push_back(std::move(request));

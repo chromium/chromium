@@ -9,8 +9,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
-#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/download/public/common/download_utils.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -641,22 +642,28 @@ void DecrementCrashKey(ScanningCrashKey key, int delta) {
 }
 
 DeepScanAccessPoint AccessPointFromRequest(
-    AnalysisConnector connector,
-    ContentAnalysisRequest::Reason reason) {
-  switch (connector) {
+    const ContentAnalysisRequest& request) {
+  switch (request.analysis_connector()) {
     case FILE_DOWNLOADED:
       return DeepScanAccessPoint::DOWNLOAD;
     case FILE_ATTACHED:
-      if (reason == ContentAnalysisRequest::DRAG_AND_DROP) {
+      if (request.reason() == ContentAnalysisRequest::DRAG_AND_DROP) {
         return DeepScanAccessPoint::DRAG_AND_DROP;
       }
-      if (reason == ContentAnalysisRequest::CLIPBOARD_PASTE) {
+      if (request.reason() == ContentAnalysisRequest::CLIPBOARD_PASTE) {
         return DeepScanAccessPoint::PASTE;
       }
       return DeepScanAccessPoint::UPLOAD;
     case DATA_COPIED:
       return DeepScanAccessPoint::COPY;
     case BULK_DATA_ENTRY:
+      if (request.request_data().copied_text_source().context() ==
+          ContentMetaData::CopiedTextSource::GEMINI_IN_CHROME) {
+        return DeepScanAccessPoint::ACTOR;
+      }
+      if (request.reason() == ContentAnalysisRequest::DRAG_AND_DROP) {
+        return DeepScanAccessPoint::DRAG_AND_DROP;
+      }
       return DeepScanAccessPoint::PASTE;
     case PRINT:
       return DeepScanAccessPoint::PRINT;

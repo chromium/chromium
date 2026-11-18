@@ -329,40 +329,4 @@ TEST_P(DeepScanningUtilsCrashKeysTest, InvalidModifications) {
 }
 #endif  // !BUILDFLAG(USE_CRASH_KEY_STUBS)
 
-TEST(DeepScanningUtilsTest, AccessPointFromRequest) {
-  EXPECT_EQ(enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
-            AccessPointFromRequest(
-                enterprise_connectors::FILE_DOWNLOADED,
-                enterprise_connectors::ContentAnalysisRequest::UNKNOWN));
-  EXPECT_EQ(enterprise_connectors::DeepScanAccessPoint::DRAG_AND_DROP,
-            AccessPointFromRequest(
-                enterprise_connectors::FILE_ATTACHED,
-                enterprise_connectors::ContentAnalysisRequest::DRAG_AND_DROP));
-  EXPECT_EQ(
-      enterprise_connectors::DeepScanAccessPoint::PASTE,
-      AccessPointFromRequest(
-          enterprise_connectors::FILE_ATTACHED,
-          enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE));
-  EXPECT_EQ(enterprise_connectors::DeepScanAccessPoint::UPLOAD,
-            AccessPointFromRequest(
-                enterprise_connectors::FILE_ATTACHED,
-                enterprise_connectors::ContentAnalysisRequest::UNKNOWN));
-  EXPECT_EQ(enterprise_connectors::DeepScanAccessPoint::PASTE,
-            AccessPointFromRequest(
-                enterprise_connectors::BULK_DATA_ENTRY,
-                enterprise_connectors::ContentAnalysisRequest::UNKNOWN));
-  EXPECT_EQ(enterprise_connectors::DeepScanAccessPoint::PRINT,
-            AccessPointFromRequest(
-                enterprise_connectors::PRINT,
-                enterprise_connectors::ContentAnalysisRequest::UNKNOWN));
-  EXPECT_EQ(enterprise_connectors::DeepScanAccessPoint::FILE_TRANSFER,
-            AccessPointFromRequest(
-                enterprise_connectors::FILE_TRANSFER,
-                enterprise_connectors::ContentAnalysisRequest::UNKNOWN));
-  EXPECT_EQ(enterprise_connectors::DeepScanAccessPoint::UPLOAD,
-            AccessPointFromRequest(
-                enterprise_connectors::ANALYSIS_CONNECTOR_UNSPECIFIED,
-                enterprise_connectors::ContentAnalysisRequest::UNKNOWN));
-}
-
 }  // namespace safe_browsing
