@@ -630,7 +630,8 @@ suite('AppMenuButtonTest', function() {
     // 2. Expand when insufficient space: stays collapsed.
     let availableWidth = -10;
     Object.defineProperty(appMenuButton, 'getRootNode', {
-      value: () => ({host: {getAvailableWidth: () => availableWidth}}),
+      value: () =>
+          ({host: {toolbarWidthFitsInWindow: () => availableWidth >= 0}}),
       configurable: true,
     });
     appMenuButton.expandUpToPreferredWidth();

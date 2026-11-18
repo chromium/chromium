@@ -8,12 +8,18 @@ import 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import type {AvatarButtonElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
-import {AvatarToolbarButtonState, BrowserProxyImpl} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import {AvatarToolbarButtonState, BrowserProxyImpl, ToolbarAppElement} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 import {TestToolbarBrowserProxy} from './test_toolbar_browser_proxy.js';
 
 // Height of the button, and also the width of the collapsed button.
 const BUTTON_HEIGHT = 34;
+
+// Returns the narrowest window width at which a toolbar of width `width` is
+// considered to fit, given the toolbar's tolerance for roundoff error.
+function minWindowWidthToFit(width: number): number {
+  return Math.ceil(width - ToolbarAppElement.LAYOUT_TOLERANCE_PX);
+}
 
 // A point at which the button's display mode changes. See getDisplayMode().
 interface Transition {
@@ -52,8 +58,10 @@ suite('AvatarButtonTest', function() {
     toolbar.style.setProperty('--toolbar-icon-default-margin', '0px');
     const getAvatarWidth = () => avatar.getBoundingClientRect().width;
     Object.assign(toolbar, {
-      getAvailableWidth: () => windowWidth - Math.round(getAvatarWidth()),
-      getExactAvailableWidth: () => windowWidth - getAvatarWidth(),
+      getAvailableWidth: () => windowWidth - getAvatarWidth(),
+      // Use the real implementation, which calls getAvailableWidth() above.
+      toolbarWidthFitsInWindow:
+          ToolbarAppElement.prototype.toolbarWidthFitsInWindow,
     });
     document.body.appendChild(toolbar);
 
@@ -116,8 +124,7 @@ suite('AvatarButtonTest', function() {
     // widths are exact.
     const transitions: Transition[] = [
       {
-        // The fake toolbar rounds widths, like the real one.
-        width: Math.round(fullWidth),
+        width: minWindowWidthToFit(fullWidth),
         mode: 'full',
         narrowerMode: 'text',
       },
@@ -224,7 +231,7 @@ suite('AvatarButtonTest', function() {
           textWidth - 2 >= ellipsisWidth,
           `"${text}" is ${textWidth}px wide, ellipsis is ${ellipsisWidth}px`);
 
-      const width = Math.round(fullWidth);
+      const width = minWindowWidthToFit(fullWidth);
       layout(width);
       assertEquals('full', getDisplayMode(), `"${text}" at width ${width}`);
       layout(width - 1);

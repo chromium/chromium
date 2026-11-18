@@ -192,6 +192,7 @@ suite('ToolbarAppTest', () => {
       splitTabsIndicatorWidth: 10,
       splitTabsIndicatorHeight: 10,
       splitTabsIndicatorSpacing: 10,
+      webUIToolbarFullyEnabled: false,
     });
   });
 
@@ -682,12 +683,77 @@ suite('ToolbarAppTest', () => {
     await checkLinearGradientRing(true);
   });
 
-  test('GetAvailableWidth', async () => {
+  // Tests getAvailableWidth(), toolbarWidthFitsInWindow() and
+  // toolbarWidthMatchesWindowWidth() with real element sizes, by adding a
+  // spacer of a known width to the toolbar.
+  test('AvailableWidth', async () => {
+    // These methods are only used when the toolbar is fully enabled, which
+    // also sizes the toolbar to its contents, so the spacer's width affects the
+    // toolbar's width. Disable all optional controls, so the toolbar's own
+    // layout logic only resizes the location bar, which is always present when
+    // fully enabled.
+    loadTimeData.overrideValues({
+      webUIToolbarFullyEnabled: true,
+      enableReloadButton: false,
+      enableSplitTabsButton: false,
+      enableHomeButton: false,
+      enableBackForwardButtons: false,
+      enablePinnedToolbarActions: false,
+      enableAvatarButton: false,
+    });
     app = document.createElement('toolbar-app');
     document.body.appendChild(app);
     await microtasksFinished();
 
-    assertEquals(window.innerWidth - app.clientWidth, app.getAvailableWidth());
+    // Everything below is synchronous, so the toolbar's own layout logic,
+    // which runs asynchronously, can't interfere. It may already have run,
+    // sizing the location bar to fill the window, so shrink the location bar
+    // to make the toolbar narrower than the window.
+    app.shadowRoot.querySelector('location-bar')!.setToMinWidth();
+
+    // Since the spacer is added with no width, the gap before it is included
+    // in `initialAvailableWidth`, and changing the spacer's width changes the
+    // available width by exactly the same amount.
+    const spacer = document.createElement('div');
+    spacer.style.flexShrink = '0';
+    spacer.style.width = '0px';
+    app.shadowRoot.appendChild(spacer);
+
+    const initialAvailableWidth = app.getAvailableWidth();
+    assertEquals(
+        window.innerWidth - app.getBoundingClientRect().width,
+        initialAvailableWidth);
+    assertTrue(
+        initialAvailableWidth >= 1,
+        `Toolbar must be narrower than the window: ${initialAvailableWidth}`);
+
+    // Layout may round widths to a fraction of a pixel (currently 1/64 in
+    // Blink, though this test do not depend on that), so the available width
+    // may differ slightly from the requested one. Only assume that the rounding
+    // error is well under LAYOUT_TOLERANCE_PX, and use values that are either
+    // well within or well outside of the tolerance.
+    const MAX_ROUNDING_ERROR_PX = 0.02;
+    const testCases = [
+      {availableWidth: 0, fits: true, matches: true},
+      // Well within LAYOUT_TOLERANCE_PX of 0.
+      {availableWidth: 0.01, fits: true, matches: true},
+      {availableWidth: -0.01, fits: true, matches: true},
+      // Well outside LAYOUT_TOLERANCE_PX of 0.
+      {availableWidth: 0.25, fits: true, matches: false},
+      {availableWidth: -0.25, fits: false, matches: false},
+      {availableWidth: 1, fits: true, matches: false},
+      {availableWidth: -1, fits: false, matches: false},
+    ];
+    for (const {availableWidth, fits, matches} of testCases) {
+      spacer.style.width = `${initialAvailableWidth - availableWidth}px`;
+      const message = `Requested available width: ${availableWidth}`;
+      assertTrue(
+          Math.abs(app.getAvailableWidth() - availableWidth) <
+              MAX_ROUNDING_ERROR_PX,
+          `${message}, actual: ${app.getAvailableWidth()}`);
+      assertEquals(fits, app.toolbarWidthFitsInWindow(), message);
+      assertEquals(matches, app.toolbarWidthMatchesWindowWidth(), message);
+    }
   });
 
   test('AvatarButtonAnchorHighlightDoesNotPulse', async () => {

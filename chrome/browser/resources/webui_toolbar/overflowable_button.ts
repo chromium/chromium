@@ -153,7 +153,7 @@ export const OverflowableButtonMixin =
 
           const shadowRoot = this.getRootNode() as ShadowRoot;
           const toolbarApp = shadowRoot.host as ToolbarAppElement;
-          if (toolbarApp.getAvailableWidth() < 0) {
+          if (!toolbarApp.toolbarWidthFitsInWindow()) {
             this.setToMinWidth();
           }
         }

@@ -373,7 +373,8 @@ suite('GlicButtonTest', function() {
 
     let availableWidth = -10;
     Object.defineProperty(element, 'getRootNode', {
-      value: () => ({host: {getAvailableWidth: () => availableWidth}}),
+      value: () =>
+          ({host: {toolbarWidthFitsInWindow: () => availableWidth >= 0}}),
       configurable: true,
     });
     element.setToMinWidth();

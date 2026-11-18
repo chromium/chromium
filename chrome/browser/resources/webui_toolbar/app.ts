@@ -114,6 +114,13 @@ async function whenUpgraded(el: CrLitElement): Promise<void> {
 const AppElementBase = HelpBubbleMixinLit(CrLitElement);
 
 export class ToolbarAppElement extends AppElementBase {
+  // Tolerance used when comparing the toolbar's width to the window's, both to
+  // decide whether controls fit and whether a new layout is needed, to allow
+  // for sub-pixel roundoff (layout rounds widths to a fraction of a pixel, e.g.
+  // 1/64 in Blink, and zoom can add more error). Small enough not to be
+  // visible.
+  static readonly LAYOUT_TOLERANCE_PX = 0.05;
+
   static get is() {
     return 'toolbar-app';
   }
@@ -972,9 +979,8 @@ export class ToolbarAppElement extends AppElementBase {
   /**
    * Schedules a layoutIfNeeded_() on the next animation frame, if one isn't
    * already scheduled. layoutIfNeeded_() will layout the ResponsiveControls if
-   * getAvailableWidth() is non-zero, meaning the window and toolbar have
-   * different widths so a new layout is needed, or if `pendingLayout_` is
-   * true.
+   * toolbarWidthMatchesWindowWidth() is false (so a new layout is needed), or
+   * if `pendingLayout_` is true.
    *
    * The scheduled task should be fast if no layout is actually needed.
    *
@@ -1020,35 +1026,48 @@ export class ToolbarAppElement extends AppElementBase {
       return;
     }
 
-    if (this.pendingLayout_ || this.getAvailableWidth() !== 0) {
+    if (this.pendingLayout_ || !this.toolbarWidthMatchesWindowWidth()) {
       // Note that this will set `pendingLayout_` to false.
       this.layoutResponsiveControls();
     }
   }
 
   /**
-   * Returns the amount of available width for the toolbar, in pixels, which is
-   * the difference between the window inner width and the current width of this
-   * element (`window.innerWidth - this.clientWidth`). This is intended to be
-   * used during layout, which attempts to size controls so that there's exactly
-   * 0 available width.
+   * Returns the amount of available width for the toolbar, in (possibly
+   * fractional) pixels, which is the difference between the window inner width
+   * and the current width of this element. This is intended to be used during
+   * layout, which attempts to size controls so that there's no available width.
    *
-   * Note that this value can be negative if the toolbar element's client width
-   * exceeds the window's inner width.
+   * Note that this value can be negative if the toolbar element's width exceeds
+   * the window's inner width.
+   *
+   * Since the result is fractional, it should generally not be compared
+   * directly against 0. Use toolbarWidthFitsInWindow() or
+   * toolbarWidthMatchesWindowWidth() instead.
    */
   getAvailableWidth(): number {
-    return window.innerWidth - this.clientWidth;
+    return window.innerWidth - this.getBoundingClientRect().width;
   }
 
   /**
-   * Like getAvailableWidth(), but uses the toolbar's fractional width, rather
-   * than its `clientWidth`, which is rounded to an integer. Useful for
-   * controls that size themselves to fill the available width, as using the
-   * rounded value may leave them up to a pixel narrower or wider than they
-   * should be.
+   * Returns true if the toolbar, at its current width, fits in the window,
+   * allowing it to be up to LAYOUT_TOLERANCE_PX wider than the window. The
+   * toolbar's width depends on the current state of all controls, so this is
+   * used during layout to check whether the controls sized so far fit.
    */
-  getExactAvailableWidth(): number {
-    return window.innerWidth - this.getBoundingClientRect().width;
+  toolbarWidthFitsInWindow(): boolean {
+    return this.getAvailableWidth() >= -ToolbarAppElement.LAYOUT_TOLERANCE_PX;
+  }
+
+  /**
+   * Returns true if the toolbar's current width matches the window's, to
+   * within LAYOUT_TOLERANCE_PX. Like toolbarWidthFitsInWindow(), this depends
+   * on the current state of all controls. If false when we're not actively
+   * performing a layout, the toolbar needs to be laid out again.
+   */
+  toolbarWidthMatchesWindowWidth(): boolean {
+    return Math.abs(this.getAvailableWidth()) <=
+        ToolbarAppElement.LAYOUT_TOLERANCE_PX;
   }
 
   /**
@@ -1207,7 +1226,7 @@ export class ToolbarAppElement extends AppElementBase {
           control.setToPreferredWidth();
         }
       }
-      if (this.getAvailableWidth() >= 0) {
+      if (this.toolbarWidthFitsInWindow()) {
         if (locationBar.shouldBeShown()) {
           locationBar.setToMaxAvailableWidth();
         }

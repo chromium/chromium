@@ -202,7 +202,12 @@ export class LocationBarElement extends CrLitElement implements
       return 0;
     }
     const toolbarApp = shadowRoot.host as ToolbarAppElement;
-    const availableWidth = toolbarApp.getAvailableWidth() + this.clientWidth;
+    // Use `getBoundingClientRect().width` to get the exact fractional width
+    // rather than the rounded `clientWidth`, to match getAvailableWidth(). With
+    // `box-sizing: border-box` and no border, this is the same as the value
+    // `style.width` is set to.
+    const availableWidth =
+        toolbarApp.getAvailableWidth() + this.getBoundingClientRect().width;
     // Always consider at least the minimum required width available.
     return Math.max(availableWidth, LocationBarElement.LOCATION_BAR_MIN_WIDTH);
   }

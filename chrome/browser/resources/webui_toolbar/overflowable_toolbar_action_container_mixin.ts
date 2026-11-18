@@ -142,7 +142,7 @@ export const OverflowableToolbarActionContainerMixin =
               this.setOverflowed_(toShow, false);
 
               // If they don't fit, hide them again, and return.
-              if (toolbarApp.getAvailableWidth() < 0) {
+              if (!toolbarApp.toolbarWidthFitsInWindow()) {
                 this.setOverflowed_(toShow, true);
                 return;
               }

@@ -177,23 +177,20 @@ export class AvatarButtonElement extends AvatarButtonElementBase {
   override expandUpToPreferredWidth() {
     const toolbarApp = this.getToolbarApp_();
     this.setToPreferredWidth();
-    const availableWidth = toolbarApp.getAvailableWidth();
-    if (availableWidth >= 0) {
+    if (toolbarApp.toolbarWidthFitsInWindow()) {
       return;
     }
 
     if (this.state.text) {
       // Everything is measured before making any changes, so these all use
-      // the layout from the getAvailableWidth() call above.
+      // the layout from the toolbarWidthFitsInWindow() call above.
       const buttonWidth = this.$.button.getBoundingClientRect().width;
       const textWidth = this.$.text.getBoundingClientRect().width;
       const ellipsisWidth = this.$.ellipsis.getBoundingClientRect().width;
       const firstGraphemeWidth = this.getFirstGraphemeWidth_();
 
-      // Round down so the button fits. Uses the exact available width, since
-      // the rounded one can be off by up to half a pixel in either direction.
-      const newButtonWidth =
-          Math.floor(buttonWidth + toolbarApp.getExactAvailableWidth());
+      // The width at which the toolbar exactly fits in the window.
+      const newButtonWidth = buttonWidth + toolbarApp.getAvailableWidth();
       const availableLabelWidth = textWidth - (buttonWidth - newButtonWidth);
       if (availableLabelWidth >= 0) {
         if (availableLabelWidth < ellipsisWidth) {
@@ -206,14 +203,12 @@ export class AvatarButtonElement extends AvatarButtonElementBase {
       }
 
       this.setLabelMode_('collapsed');
-      if (toolbarApp.getAvailableWidth() >= 0) {
-        // Grow to fill any extra space. The exact available width may be
-        // slightly negative even when the rounded one isn't, in which case
-        // leave the button at its natural width.
-        const extraWidth = toolbarApp.getExactAvailableWidth();
+      if (toolbarApp.toolbarWidthFitsInWindow()) {
+        // Grow to fill any extra space.
+        const extraWidth = toolbarApp.getAvailableWidth();
         if (extraWidth > 0) {
-          this.setButtonWidth_(Math.floor(
-              this.$.button.getBoundingClientRect().width + extraWidth));
+          this.setButtonWidth_(
+              this.$.button.getBoundingClientRect().width + extraWidth);
         }
         return;
       }
@@ -260,9 +255,11 @@ export class AvatarButtonElement extends AvatarButtonElementBase {
   }
 
   /**
-   * Sets the width of the button, including its highlight. `width` should be
-   * rounded down, so the button fits. Its contents shrink or grow to fit (see
-   * the `#text`, `#ellipsis`, and `.icon-spacer` CSS rules).
+   * Sets the width of the button, including its highlight. Its contents shrink
+   * or grow to fit (see the `#text`, `#ellipsis`, and `.icon-spacer` CSS
+   * rules). `width` may be fractional. Layout may round it down to a fraction
+   * of a pixel (e.g. 1/64 in Blink), so the button is never wider than
+   * requested.
    */
   private setButtonWidth_(width: number) {
     this.$.button.style.width = `${width}px`;

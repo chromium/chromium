@@ -202,10 +202,9 @@ suite('OverflowableToolbarActionContainerMixinTest', () => {
     // thus grouped with element 1, only element 3 (the last) will be hidden.
 
     let mockHost = {
-      getAvailableWidth: () => {
+      toolbarWidthFitsInWindow: () => {
         const actions = control.getActions();
-        return actions[1]!.classList.contains('overflow-display-none') ? 100 :
-                                                                         -10;
+        return actions[1]!.classList.contains('overflow-display-none');
       },
     };
     Object.defineProperty(control, 'getRootNode', {
@@ -232,11 +231,9 @@ suite('OverflowableToolbarActionContainerMixinTest', () => {
     // This time, elements 1 through 3 should all be shown.
 
     mockHost = {
-      getAvailableWidth: () => {
+      toolbarWidthFitsInWindow: () => {
         const currentActions = control.getActions();
-        return currentActions[0]!.classList.contains('overflow-display-none') ?
-            100 :
-            -10;
+        return currentActions[0]!.classList.contains('overflow-display-none');
       },
     };
 
@@ -256,7 +253,7 @@ suite('OverflowableToolbarActionContainerMixinTest', () => {
 
     // Simulate no available space to expand the pinned actions.
     let mockHost = {
-      getAvailableWidth: () => -10,
+      toolbarWidthFitsInWindow: () => false,
     };
     Object.defineProperty(control, 'getRootNode', {
       value: () => ({host: mockHost}),
@@ -284,7 +281,7 @@ suite('OverflowableToolbarActionContainerMixinTest', () => {
 
     // Simulate ample available space to expand all controls.
     mockHost = {
-      getAvailableWidth: () => 100,
+      toolbarWidthFitsInWindow: () => true,
     };
 
     control.expandUpToPreferredWidth();
@@ -304,12 +301,12 @@ suite('OverflowableToolbarActionContainerMixinTest', () => {
     // Only allow one additional element to be shown beyond those shown at
     // min width (`icon1` and the divider).
     const mockHost = {
-      getAvailableWidth: () => {
+      toolbarWidthFitsInWindow: () => {
         const hiddenCount =
             control.getActions()
                 .filter(a => a.classList.contains('overflow-display-none'))
                 .length;
-        return hiddenCount >= 1 ? 100 : -10;
+        return hiddenCount >= 1;
       },
     };
     Object.defineProperty(control, 'getRootNode', {
