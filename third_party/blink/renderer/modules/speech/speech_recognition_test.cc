@@ -33,6 +33,11 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
+#include "third_party/blink/renderer/modules/speech/speech_recognition_alternative.h"
+#include "third_party/blink/renderer/modules/speech/speech_recognition_event.h"
+#include "third_party/blink/renderer/modules/speech/speech_recognition_result.h"
+#include "third_party/blink/renderer/modules/speech/speech_recognition_result_list.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
@@ -147,20 +152,33 @@ class EventCounter final : public NativeEventListener {
   int count_ = 0;
 };
 
-// Captures the `timeStamp` of each dispatched `result` event.
+// Captures the `timeStamp` and `results` of each dispatched `result` event.
 class ResultEventRecorder final : public NativeEventListener {
  public:
   void Invoke(ExecutionContext*, Event* event) override {
     ++count_;
     last_time_stamp_ = event->PlatformTimeStamp();
+    if (event->InterfaceName() ==
+        event_interface_names::kSpeechRecognitionEvent) {
+      last_results_ = static_cast<SpeechRecognitionEvent*>(event)->results();
+    }
   }
 
   int count() const { return count_; }
   base::TimeTicks last_time_stamp() const { return last_time_stamp_; }
+  SpeechRecognitionResultList* last_results() const {
+    return last_results_.Get();
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(last_results_);
+    NativeEventListener::Trace(visitor);
+  }
 
  private:
   int count_ = 0;
   base::TimeTicks last_time_stamp_;
+  Member<SpeechRecognitionResultList> last_results_;
 };
 
 media::mojom::blink::WebSpeechRecognitionResultPtr MakeResult(
@@ -787,6 +805,97 @@ TEST_F(SpeechRecognitionTest, ResultEventTimeStampFallsBackWithoutTimestamps) {
   // Without recognizer timestamps the event falls back to the dispatch time.
   EXPECT_GE(recorder->last_time_stamp(), before_dispatch);
   EXPECT_LE(recorder->last_time_stamp(), after_dispatch);
+}
+
+TEST_F(SpeechRecognitionTest,
+       ResultSpeechTimestampsReportedInSecondsAndQuantized) {
+  HeapVector<Member<SpeechRecognitionAlternative>> alternatives;
+  alternatives.push_back(
+      MakeGarbageCollected<SpeechRecognitionAlternative>("hello", 1.0));
+
+  // Exact multiples of the 2ms quantization interval are preserved in seconds.
+  auto* exact_result = SpeechRecognitionResult::Create(
+      alternatives, /*final=*/true, base::Milliseconds(500),
+      base::Milliseconds(1500));
+  EXPECT_DOUBLE_EQ(exact_result->speechStartTime(), 0.5);
+  EXPECT_DOUBLE_EQ(exact_result->speechEndTime(), 1.5);
+
+  // Sub-2ms timestamps floor (rather than round) to the nearest 2ms multiple.
+  auto* sub_interval_result = SpeechRecognitionResult::Create(
+      alternatives, /*final=*/true, base::Microseconds(1999),
+      base::Microseconds(3999));
+  EXPECT_DOUBLE_EQ(sub_interval_result->speechStartTime(), 0.0);
+  EXPECT_DOUBLE_EQ(sub_interval_result->speechEndTime(), 0.002);
+
+  auto* fractional_result = SpeechRecognitionResult::Create(
+      alternatives, /*final=*/false, base::Microseconds(123700),
+      base::Microseconds(125999));
+  EXPECT_DOUBLE_EQ(fractional_result->speechStartTime(), 0.122);
+  EXPECT_DOUBLE_EQ(fractional_result->speechEndTime(), 0.124);
+}
+
+TEST_F(SpeechRecognitionTest, ResultSpeechTimestampsDefaultToZeroWhenMissing) {
+  HeapVector<Member<SpeechRecognitionAlternative>> alternatives;
+
+  auto* missing_both = SpeechRecognitionResult::Create(
+      alternatives, /*final=*/true, /*speech_start_time=*/std::nullopt,
+      /*speech_end_time=*/std::nullopt);
+  EXPECT_DOUBLE_EQ(missing_both->speechStartTime(), 0.0);
+  EXPECT_DOUBLE_EQ(missing_both->speechEndTime(), 0.0);
+
+  auto* missing_start = SpeechRecognitionResult::Create(
+      alternatives, /*final=*/true, /*speech_start_time=*/std::nullopt,
+      base::Milliseconds(800));
+  EXPECT_DOUBLE_EQ(missing_start->speechStartTime(), 0.0);
+  EXPECT_DOUBLE_EQ(missing_start->speechEndTime(), 0.8);
+
+  auto* missing_end = SpeechRecognitionResult::Create(
+      alternatives, /*final=*/true, base::Milliseconds(400),
+      /*speech_end_time=*/std::nullopt);
+  EXPECT_DOUBLE_EQ(missing_end->speechStartTime(), 0.4);
+  EXPECT_DOUBLE_EQ(missing_end->speechEndTime(), 0.0);
+}
+
+TEST_F(SpeechRecognitionTest, ResultRetrievedPlumbsSpeechTimestampsToResults) {
+  V8TestingScope scope;
+  auto* speech_recognition = SpeechRecognition::Create(&scope.GetWindow());
+
+  auto* recorder = MakeGarbageCollected<ResultEventRecorder>();
+  speech_recognition->addEventListener(event_type_names::kResult, recorder);
+
+  speech_recognition->AudioStarted();
+
+  Vector<media::mojom::blink::WebSpeechRecognitionResultPtr> results;
+  results.push_back(MakeResult("hello", /*is_provisional=*/false,
+                               base::Microseconds(501500),
+                               base::Microseconds(1503900)));
+  results.push_back(MakeResult("world", /*is_provisional=*/true,
+                               base::Milliseconds(1504),
+                               base::Microseconds(2751200)));
+  results.push_back(MakeResult("untimestamped", /*is_provisional=*/true,
+                               /*audio_start_time=*/std::nullopt,
+                               /*audio_end_time=*/std::nullopt));
+  speech_recognition->ResultRetrieved(std::move(results));
+
+  ASSERT_EQ(recorder->count(), 1);
+  SpeechRecognitionResultList* event_results = recorder->last_results();
+  ASSERT_NE(event_results, nullptr);
+  ASSERT_EQ(event_results->length(), 3u);
+
+  SpeechRecognitionResult* first = event_results->item(0);
+  EXPECT_TRUE(first->isFinal());
+  EXPECT_DOUBLE_EQ(first->speechStartTime(), 0.5);
+  EXPECT_DOUBLE_EQ(first->speechEndTime(), 1.502);
+
+  SpeechRecognitionResult* second = event_results->item(1);
+  EXPECT_FALSE(second->isFinal());
+  EXPECT_DOUBLE_EQ(second->speechStartTime(), 1.504);
+  EXPECT_DOUBLE_EQ(second->speechEndTime(), 2.75);
+
+  SpeechRecognitionResult* third = event_results->item(2);
+  EXPECT_FALSE(third->isFinal());
+  EXPECT_DOUBLE_EQ(third->speechStartTime(), 0.0);
+  EXPECT_DOUBLE_EQ(third->speechEndTime(), 0.0);
 }
 
 }  // namespace blink

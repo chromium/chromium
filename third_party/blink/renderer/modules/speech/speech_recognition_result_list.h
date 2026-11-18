@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_RESULT_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_RESULT_LIST_H_
 
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/speech/speech_recognition_result.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -33,7 +34,7 @@
 
 namespace blink {
 
-class SpeechRecognitionResultList : public ScriptWrappable {
+class MODULES_EXPORT SpeechRecognitionResultList : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
