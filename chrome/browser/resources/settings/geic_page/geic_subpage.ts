@@ -17,13 +17,13 @@ import '../internal/icons.html.js';
 
 // </if>
 
-import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {GlicAssistantSelection} from '../ai_page/constants.js';
+import {GlicBrowserProxyImpl} from '../glic_page/glic_browser_proxy.js';
 import {RelaunchMixinLit, RestartType} from '../relaunch_mixin_lit.js';
 import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
@@ -64,10 +64,10 @@ export class SettingsGeicSubpageElement extends SettingsGeicSubpageElementBase {
     this.devicePolicyButtonDisabled_ = false;
   }
 
-  protected async onDevicePolicyButtonClick_() {
+  protected onDevicePolicyButtonClick_() {
     this.devicePolicyButtonDisabled_ = true;
-    await PrefService.getInstance().setPrefValue(
-        'glic.assistant_selection', GlicAssistantSelection.CONSUMER);
+    GlicBrowserProxyImpl.getInstance().switchAssistantSelection(
+        GlicAssistantSelection.CONSUMER);
     this.performRestart(RestartType.RESTART);
   }
 

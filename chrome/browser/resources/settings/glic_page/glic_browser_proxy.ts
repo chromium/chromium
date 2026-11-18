@@ -4,6 +4,8 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
+import type {GlicAssistantSelection} from '../ai_page/constants.js';
+
 /**
  * Information for a login permission for a given site.
  */
@@ -42,6 +44,7 @@ export interface GlicBrowserProxy {
   startObservingActorLoginPermissions(): void;
   stopObservingActorLoginPermissions(): void;
   onHotkeyScopeSettingsChange(isGlobal: boolean): void;
+  switchAssistantSelection(selection: GlicAssistantSelection): void;
 }
 
 export class GlicBrowserProxyImpl implements GlicBrowserProxy {
@@ -120,6 +123,10 @@ export class GlicBrowserProxyImpl implements GlicBrowserProxy {
 
   onHotkeyScopeSettingsChange(isGlobal: boolean) {
     chrome.send('onHotkeyScopeSettingsChange', [isGlobal]);
+  }
+
+  switchAssistantSelection(selection: GlicAssistantSelection) {
+    chrome.send('switchAssistantSelection', [selection]);
   }
 
   static getInstance(): GlicBrowserProxy {

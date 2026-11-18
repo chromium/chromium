@@ -708,10 +708,10 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     this.devicePolicyButtonDisabled_ = false;
   }
 
-  protected async onDevicePolicyButtonClick_() {
+  protected onDevicePolicyButtonClick_() {
     this.devicePolicyButtonDisabled_ = true;
-    await PrefService.getInstance().setPrefValue(
-        'glic.assistant_selection', GlicAssistantSelection.ENTERPRISE);
+    this.browserProxy_.switchAssistantSelection(
+        GlicAssistantSelection.ENTERPRISE);
     this.performRestart(RestartType.RESTART);
   }
 

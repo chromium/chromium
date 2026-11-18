@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_PROVIDER_SWITCH_NOTICE_H_
 
 #include "base/types/pass_key.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_provider_change.h"
 
 class Profile;
@@ -21,9 +22,9 @@ namespace glic {
 // user last onboarded to. The notice is due when the latched provider differs
 // from it.
 //
-// A switch the user makes themselves from the Glic relaunch prompt (and, in a
-// follow-up, Settings) isn't reported: those call
-// `RecordUserInitiatedProviderSwitch()` first.
+// A switch the user makes themselves from the Glic relaunch prompt or Settings
+// isn't reported: those call `RecordUserInitiatedProviderSwitch()` first,
+// directly or through `SwitchAssistantSelection()`.
 
 class GlicProviderLatchFactory;
 
@@ -45,6 +46,12 @@ void OnLatchedProviderFreStatusChanged(Profile& profile);
 // aborted (e.g. by a `beforeunload` dialog), a switch made for the user before
 // the eventual restart isn't reported either.
 void RecordUserInitiatedProviderSwitch(Profile& profile);
+
+// Sets the assistant selection for `profile`, which applies at the next
+// restart, and records the switch as user-initiated. The caller then restarts
+// Chrome.
+void SwitchAssistantSelection(Profile& profile,
+                              prefs::AssistantSelection selection);
 
 // Returns the switch to tell the user about for `profile`, or `kNone`. Always
 // `kNone` while `features::kGeicProviderSwitchNotice` or `features::kGeic` is

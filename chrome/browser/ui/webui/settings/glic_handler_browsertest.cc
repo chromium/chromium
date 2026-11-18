@@ -45,6 +45,7 @@
 #include "ui/base/ozone_buildflags.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -666,6 +667,25 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerEnterpriseDisabledBrowserTest,
             glic::GlicActorPolicyChecker::CannotActReason::kDisabledByPolicy);
 
   EXPECT_TRUE(GlicHandler::IsWebActuationDisabledForEnterprise(profile));
+}
+
+// The Settings provider switcher sets the selection and marks the switch as
+// user-initiated, so the user isn't told about it after the restart.
+IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, SwitchAssistantSelection) {
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
+  prefs->SetString(glic::prefs::kGlicProviderSwitchNoticeKnownProviderKey, "");
+
+  glic_handler()->RegisterMessages();
+  web_ui()->ProcessWebUIMessage(
+      GURL(), "switchAssistantSelection",
+      base::ListValue().Append(
+          static_cast<int>(glic::prefs::AssistantSelection::kEnterprise)));
+
+  EXPECT_EQ(prefs->GetInteger(glic::prefs::kGlicAssistantSelection),
+            static_cast<int>(glic::prefs::AssistantSelection::kEnterprise));
+  // Marked as user-initiated.
+  EXPECT_FALSE(prefs->HasPrefPath(
+      glic::prefs::kGlicProviderSwitchNoticeKnownProviderKey));
 }
 
 }  // namespace settings

@@ -5,12 +5,13 @@
 import 'chrome://settings/settings.js';
 
 import type {CrCollapseElement, CrExpandButtonElement} from 'chrome://settings/lazy_load.js';
-import {AiSettingsSection, GlicAssistantSelection, LifetimeBrowserProxyImpl, loadTimeData, OpenWindowProxyImpl, PrefService, resetRouterForTesting, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
+import {AiSettingsSection, GlicAssistantSelection, GlicBrowserProxyImpl, LifetimeBrowserProxyImpl, loadTimeData, OpenWindowProxyImpl, PrefService, resetRouterForTesting, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
 import type {CrButtonElement, SettingsGeicSubpageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestGlicBrowserProxy} from './test_glic_browser_proxy.js';
 import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 
 suite('GeicSubpage', function() {
@@ -18,6 +19,7 @@ suite('GeicSubpage', function() {
   let prefService: PrefService;
   let openWindowProxy: TestOpenWindowProxy;
   let lifetimeBrowserProxy: TestLifetimeBrowserProxy;
+  let glicBrowserProxy: TestGlicBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -44,8 +46,8 @@ suite('GeicSubpage', function() {
     OpenWindowProxyImpl.setInstance(openWindowProxy);
     lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
     LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
-    await prefService.setPrefValue(
-        'glic.assistant_selection', GlicAssistantSelection.AUTO);
+    glicBrowserProxy = new TestGlicBrowserProxy();
+    GlicBrowserProxyImpl.setInstance(glicBrowserProxy);
     await createPage();
   });
 
@@ -170,9 +172,17 @@ suite('GeicSubpage', function() {
       assertTrue(isVisible(row));
       assertTrue(isVisible(button));
       assertFalse(button.disabled);
-      assertEquals(
-          GlicAssistantSelection.AUTO,
-          prefService.getPref<number>('glic.assistant_selection').value);
+
+      // The selection is switched before the restart.
+      const calls: string[] = [];
+      const switched =
+          glicBrowserProxy.whenCalled('switchAssistantSelection')
+              .then(selection => {
+                calls.push('switchAssistantSelection');
+                return selection;
+              });
+      const restarted = lifetimeBrowserProxy.whenCalled('restart').then(
+          () => calls.push('restart'));
 
       button.click();
       await microtasksFinished();
@@ -180,11 +190,10 @@ suite('GeicSubpage', function() {
       // <if expr="not is_chromeos">
       await lifetimeBrowserProxy.whenCalled('shouldShowRelaunchDialog');
       // </if>
-      await lifetimeBrowserProxy.whenCalled('restart');
+      const [selection] = await Promise.all([switched, restarted]);
+      assertDeepEquals(['switchAssistantSelection', 'restart'], calls);
       assertEquals(0, lifetimeBrowserProxy.getCallCount('relaunch'));
-      assertEquals(
-          GlicAssistantSelection.CONSUMER,
-          prefService.getPref<number>('glic.assistant_selection').value);
+      assertEquals(GlicAssistantSelection.CONSUMER, selection);
 
       page.onRelaunchDialogClose(new Event('close'));
       await microtasksFinished();

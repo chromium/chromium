@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_switch_notice.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
 #include "chrome/browser/password_manager/factories/account_password_store_factory.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
@@ -105,6 +106,10 @@ void GlicHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getGlicDisallowedByAdmin",
       base::BindRepeating(&GlicHandler::HandleGetGlicDisallowedByAdmin,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "switchAssistantSelection",
+      base::BindRepeating(&GlicHandler::HandleSwitchAssistantSelection,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getActorLoginPermissions",
@@ -336,6 +341,17 @@ void GlicHandler::HandleGetGlicDisallowedByAdmin(const base::ListValue& args) {
       glic::GlicEnabling::EnablementForProfile(profile).DisallowedByAdmin();
 
   ResolveJavascriptCallback(callback_id, base::Value(disallowed));
+}
+
+void GlicHandler::HandleSwitchAssistantSelection(const base::ListValue& args) {
+  CHECK_EQ(1U, args.size());
+  const int selection = args[0].GetInt();
+  CHECK_GE(selection, 0);
+  CHECK_LE(selection,
+           static_cast<int>(glic::prefs::AssistantSelection::kMaxValue));
+  glic::SwitchAssistantSelection(
+      *Profile::FromWebUI(web_ui()),
+      static_cast<glic::prefs::AssistantSelection>(selection));
 }
 
 void GlicHandler::HandleGetGlicSelectionShortcut(const base::ListValue& args) {

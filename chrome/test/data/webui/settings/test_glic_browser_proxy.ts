@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {GlicBrowserProxy, LoginPermission} from 'chrome://settings/settings.js';
+import type {GlicAssistantSelection, GlicBrowserProxy, LoginPermission} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export enum Shortcut {
@@ -42,6 +42,7 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
       'getExperimentalTriggeringEnabled',
       'setExperimentalTriggeringEnabled',
       'onHotkeyScopeSettingsChange',
+      'switchAssistantSelection',
     ]);
   }
 
@@ -185,5 +186,9 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
 
   onHotkeyScopeSettingsChange(isGlobal: boolean) {
     this.methodCalled('onHotkeyScopeSettingsChange', isGlobal);
+  }
+
+  switchAssistantSelection(selection: GlicAssistantSelection) {
+    this.methodCalled('switchAssistantSelection', selection);
   }
 }

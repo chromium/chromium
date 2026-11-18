@@ -120,6 +120,10 @@ class GlicHandler : public SettingsPageUIHandler,
   // Sends the client whether glic is disallowed by the admin or not.
   void HandleGetGlicDisallowedByAdmin(const base::ListValue& args);
 
+  // Sets the assistant selection the user picked before restarting Chrome to
+  // switch Glic provider.
+  void HandleSwitchAssistantSelection(const base::ListValue& args);
+
   // Handles requests for actor login permissions for display in settings.
   void HandleGetActorLoginPermissions(const base::ListValue& args);
 

@@ -80,6 +80,13 @@ void RecordUserInitiatedProviderSwitch(Profile& profile) {
       prefs::kGlicProviderSwitchNoticeKnownProviderKey);
 }
 
+void SwitchAssistantSelection(Profile& profile,
+                              prefs::AssistantSelection selection) {
+  profile.GetPrefs()->SetInteger(prefs::kGlicAssistantSelection,
+                                 static_cast<int>(selection));
+  RecordUserInitiatedProviderSwitch(profile);
+}
+
 GlicProviderChange GetProviderSwitchNotice(Profile& profile) {
   if (!IsProviderSwitchNoticeEnabled()) {
     return GlicProviderChange::kNone;

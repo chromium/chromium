@@ -335,5 +335,19 @@ TEST_F(GlicProviderSwitchNoticeTest, NewProviderOnboardingKeepsNotice) {
             GlicProviderChange::kGeminiToGeic);
 }
 
+TEST_F(GlicProviderSwitchNoticeTest, SwitchAssistantSelection) {
+  InitFeatures(/*finch_guest_url=*/"");
+  TestingProfile* profile =
+      StartUp(CreatePrefs(kGeminiKey, /*onboarded_keys=*/{kGeminiKey}));
+  ASSERT_EQ(KnownProviderKey(), GlicProviderKey::Gemini());
+
+  SwitchAssistantSelection(*profile, prefs::AssistantSelection::kEnterprise);
+
+  EXPECT_EQ(profile->GetPrefs()->GetInteger(prefs::kGlicAssistantSelection),
+            static_cast<int>(prefs::AssistantSelection::kEnterprise));
+  // Marked as user-initiated.
+  EXPECT_EQ(KnownProviderKey(), std::nullopt);
+}
+
 }  // namespace
 }  // namespace glic

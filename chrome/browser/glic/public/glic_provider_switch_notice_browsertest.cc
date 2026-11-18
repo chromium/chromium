@@ -191,11 +191,7 @@ IN_PROC_BROWSER_TEST_F(GlicProviderSwitchNoticeUserOptOutBrowserTest,
   ASSERT_TRUE(KnownProviderKey().has_value());
   ASSERT_NE(KnownProviderKey(), GlicProviderKey::Gemini());
 
-  profile()->GetPrefs()->SetInteger(
-      prefs::kGlicAssistantSelection,
-      std::to_underlying(prefs::AssistantSelection::kConsumer));
-  // As the Settings switcher does before restarting.
-  RecordUserInitiatedProviderSwitch(*profile());
+  SwitchAssistantSelection(*profile(), prefs::AssistantSelection::kConsumer);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicProviderSwitchNoticeUserOptOutBrowserTest,
