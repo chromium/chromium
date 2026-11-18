@@ -49,7 +49,7 @@ class InfoBarView : public infobars::InfoBar,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDismissButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLeftBalancerElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRightSpacerElementId);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kQueuedCountPillElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kQueuedIndicatorElementId);
 
   explicit InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate);
   InfoBarView(const InfoBarView&) = delete;
@@ -68,11 +68,13 @@ class InfoBarView : public infobars::InfoBar,
   views::ImageView* icon() { return icon_; }
   views::View* close_button() { return close_button_.get(); }
 
-  // Shows a passive "+N" pill next to the close button, or hides it when
-  // `count` is 0. PassKey-restricted to InfoBarContainerView, which owns
-  // host selection (never a kCriticalSecurity bar).
-  void SetQueuedInfoBarCount(size_t count,
-                             base::PassKey<InfoBarContainerView> key);
+  // Shows a passive "X of Y" sequence label next to the close button, or hides
+  // it when `index` is 0 or `total` <= 1. PassKey-restricted to
+  // InfoBarContainerView, which owns host selection and batch tracking (never a
+  // kCriticalSecurity or non-closeable bar).
+  void SetQueuedInfoBarPosition(size_t index,
+                                size_t total,
+                                base::PassKey<InfoBarContainerView> key);
 
  protected:
   using Labels = std::vector<views::Label*>;
@@ -91,8 +93,8 @@ class InfoBarView : public infobars::InfoBar,
       const std::u16string& text,
       const std::optional<std::u16string>& accessible_text = std::nullopt);
 
-  // Creates the "+N" pill label shown by SetQueuedInfoBarCount().
-  std::unique_ptr<views::Label> CreateQueuedCountPillLabel() const;
+  // Creates the "X of Y" sequence label shown by SetQueuedInfoBarPosition().
+  std::unique_ptr<views::Label> CreateQueuedIndicatorLabel() const;
 
   // Given |views| and the total |available_width| to display them in, sets
   // each view's size so that the longest view shrinks until it reaches the
@@ -177,8 +179,9 @@ class InfoBarView : public infobars::InfoBar,
   // The close button at the right edge of the InfoBar.
   raw_ptr<views::ImageButton> close_button_ = nullptr;
 
-  // Lazily created by SetQueuedInfoBarCount(), placed before `close_button_`.
-  raw_ptr<views::Label> queued_count_pill_ = nullptr;
+  // Lazily created by SetQueuedInfoBarPosition(), placed before
+  // `close_button_`.
+  raw_ptr<views::Label> queued_indicator_label_ = nullptr;
 
   // Used to run the menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;

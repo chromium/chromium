@@ -247,7 +247,6 @@
   E_CPONLY(kColorInfoBarButtonIconHovered) \
   E_CPONLY(kColorInfoBarContentAreaSeparator) \
   E_CPONLY(kColorInfoBarForeground) \
-  E_CPONLY(kColorInfoBarQueuedCountPillBackground) \
   E_CPONLY(kColorInfoBarQueuedCountPillForeground) \
   /* There is also a kColorInfoBarIcon in /ui/color/color_id.h */ \
   /* Intent Picker colors. */ \

@@ -36,6 +36,7 @@ class InfoBarContainerView : public views::AccessiblePaneView,
       const views::SizeBounds& available_size) const override;
 
   // InfobarContainer:
+  void ChangeInfoBarManager(infobars::InfoBarManager* infobar_manager) override;
   void PlatformSpecificAddInfoBar(infobars::InfoBar* infobar,
                                   size_t position) override;
   void PlatformSpecificRemoveInfoBar(infobars::InfoBar* infobar) override;
@@ -50,30 +51,33 @@ class InfoBarContainerView : public views::AccessiblePaneView,
                          infobars::InfoBar* new_infobar) override;
 
  private:
-  // Re-evaluates which infobar hosts the queued-count pill and its count.
-  // Host: the bottom-most bar that is staying (skips `infobar` and bars
-  // detached from their manager), unless it is kCriticalSecurity, which
-  // suppresses the pill entirely. Safe to call redundantly. With
-  // `preserve_pill_host`, moving the pill to a new host does not count as a
-  // new Shown.
-  void UpdateQueuedCountPill(infobars::InfoBar* infobar = nullptr,
-                             bool preserve_pill_host = false);
+  // Re-evaluates which infobar hosts the queued sequence indicator and its
+  // "X of Y" position. The host is the bottom-most infobar that is staying,
+  // unless it is kCriticalSecurity or non-closeable, which suppresses the
+  // indicator. Safe to call redundantly. With `preserve_indicator_host`, moving
+  // the indicator to a new host does not count as a new Shown.
+  void UpdateQueuedIndicator(const infobars::InfoBar* removing = nullptr,
+                             bool preserve_indicator_host = false);
 
   // This view draws the shadow over the web contents below the
   // lowest infobar. A separate view with a layer is used so it can
   // draw outside the bounds of |this|.
   raw_ptr<views::View> content_shadow_ = nullptr;
 
-  // The infobar hosting the queued-count pill, or null. Cleared in
+  // The infobar hosting the queued sequence indicator, or null. Cleared in
   // PlatformSpecificRemoveInfoBar before the host's view goes away.
-  raw_ptr<InfoBarView> queued_pill_host_ = nullptr;
+  raw_ptr<InfoBarView> queued_indicator_host_ = nullptr;
 
-  // When the pill appeared on `queued_pill_host_`, it feeds HostResolveTime,
-  // recorded in OnInfoBarRemoved so tab switches never contribute samples.
-  base::TimeTicks pill_shown_on_host_at_;
+  // When the indicator appeared on `queued_indicator_host_` with pending
+  // infobars behind it. It feeds HostResolveTime, recorded in OnInfoBarRemoved
+  // so tab switches never contribute samples. Null when no pending infobars
+  // remain (e.g. on the final "3 of 3" infobar).
+  base::TimeTicks indicator_shown_on_host_at_;
 
-  // True while OnInfoBarReplaced runs, deferring pill updates until it settles.
-  bool replacing_infobar_ = false;
+  // True during compound container mutations (e.g: manager swap,
+  // removal/promotion, replacement), deferring indicator updates until state
+  // has settled.
+  bool defer_indicator_updates_ = false;
 
   // True when the focused view was inside this container at the moment an
   // infobar removal started. Used to restore focus back to the infobar region

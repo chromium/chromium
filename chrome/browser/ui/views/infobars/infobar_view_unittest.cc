@@ -15,9 +15,12 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
+#include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/infobars/core/infobar_manager.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/animation/tween.h"
@@ -30,6 +33,7 @@
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -110,6 +114,31 @@ class TestConfirmInfoBarDelegate : public ConfirmInfoBarDelegate {
 class TestConfirmInfoBarDelegateWithLink : public TestConfirmInfoBarDelegate {
  public:
   std::u16string GetLinkText() const override { return u"Test link"; }
+};
+
+class UniqueConfirmInfoBarDelegate : public TestConfirmInfoBarDelegate {
+ public:
+  bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override {
+    return false;
+  }
+};
+
+class FakeInfoBarManager : public infobars::InfoBarManager {
+ public:
+  FakeInfoBarManager() = default;
+  ~FakeInfoBarManager() override = default;
+
+  using InfoBarManager::set_animations_enabled;
+
+  int GetActiveEntryID() override { return 0; }
+  void OpenURL(const GURL& url,
+               ui::mojom::WindowOpenDisposition disposition,
+               const std::string& text_fragment) override {}
+};
+
+class DummyContainerDelegate : public infobars::InfoBarContainer::Delegate {
+ public:
+  void InfoBarContainerStateChanged(bool is_animating) override {}
 };
 
 }  // namespace
@@ -499,5 +528,73 @@ TEST_F(InfoBarViewUnitTest, ShowAndHideKeepLinearTweenWhenFeatureDisabled) {
   EXPECT_DOUBLE_EQ(0.75, slide_animation->GetCurrentValue());
 
   slide_animation->Stop();
+  widget->CloseNow();
+}
+
+TEST_F(InfoBarViewUnitTest, AnimatedCloseKeepsIndicatorVisibleDuringExit) {
+  base::test::ScopedFeatureList feature_list(features::kInfoBarQueuedCountPill);
+  gfx::ScopedAnimationDurationScaleMode normal_duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  auto render_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+  auto reduced_motion =
+      gfx::AnimationTestApi::SetPrefersReducedMotionForTesting(false);
+
+  FakeInfoBarManager manager;
+  manager.set_animations_enabled(false);
+
+  DummyContainerDelegate container_delegate;
+
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params =
+      CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  widget->Init(std::move(params));
+  InfoBarContainerView* container = widget->SetContentsView(
+      std::make_unique<InfoBarContainerView>(&container_delegate));
+  container->SetVisible(true);
+  widget->SetBounds(gfx::Rect(0, 0, 800, 100));
+  widget->Show();
+
+  container->ChangeInfoBarManager(&manager);
+
+  // Add `infobar_1` and `infobar_2` without enter animation so `infobar_1`
+  // starts settled at full open height (animation value == 1.0).
+  ConfirmInfoBar* infobar_1 = manager.AddInfoBar(ConfirmInfoBar::Create(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+      std::make_unique<UniqueConfirmInfoBarDelegate>()));
+  ConfirmInfoBar* infobar_2 = manager.AddInfoBar(ConfirmInfoBar::Create(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+      std::make_unique<UniqueConfirmInfoBarDelegate>()));
+  ASSERT_DOUBLE_EQ(1.0,
+                   std::as_const(*infobar_1).animation().GetCurrentValue());
+  widget->LayoutRootViewIfNecessary();
+
+  views::View* indicator_1 =
+      infobar_1->GetViewByElementId(InfoBarView::kQueuedIndicatorElementId);
+  ASSERT_NE(nullptr, indicator_1);
+  ASSERT_TRUE(indicator_1->GetVisible());
+  const int initial_button_x =
+      infobar_1->ok_button_for_testing()->GetBoundsInScreen().x();
+
+  // Enable animations for dismissal: `infobar_1` stays in the container while
+  // sliding closed and keeps its "1 of 2" label so its centered content does
+  // not jump horizontally mid-exit, while `infobar_2` simultaneously shows
+  // "2 of 2".
+  manager.set_animations_enabled(true);
+  manager.RemoveInfoBar(infobar_1);
+  EXPECT_TRUE(std::as_const(*infobar_1).animation().is_animating());
+  widget->LayoutRootViewIfNecessary();
+
+  EXPECT_TRUE(indicator_1->GetVisible());
+  EXPECT_EQ(initial_button_x,
+            infobar_1->ok_button_for_testing()->GetBoundsInScreen().x());
+
+  views::View* indicator_2 =
+      infobar_2->GetViewByElementId(InfoBarView::kQueuedIndicatorElementId);
+  ASSERT_NE(nullptr, indicator_2);
+  EXPECT_TRUE(indicator_2->GetVisible());
+
+  container->ChangeInfoBarManager(nullptr);
   widget->CloseNow();
 }
