@@ -10,6 +10,7 @@ source_set("renderer_host") {
     "chrome_navigation_ui_data.h",
   ]
   public_deps = [
+    "//base",
     "//chrome/common",
     "//components/actor/core:task_id",
     "//components/offline_pages/buildflags",
@@ -20,6 +21,7 @@ source_set("renderer_host") {
   deps = [
     "//chrome/browser/actor",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
+    "//components/no_state_prefetch/browser",
   ]
 
   if (enable_extensions_core) {
@@ -29,6 +31,47 @@ source_set("renderer_host") {
   if (is_android) {
     sources += [ "android/chrome_navigation_ui_data_android.cc" ]
     deps += [ "//chrome/android:chrome_jni_headers" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "chrome_navigation_ui_data_unittest.cc" ]
+  deps = [
+    ":renderer_host",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor:test_support",
+    "//chrome/browser/preloading/prefetch/no_state_prefetch",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_host_test_harness",
+    "//components/actor/core:task_id",
+    "//components/keyed_service/core",
+    "//components/no_state_prefetch/browser",
+    "//components/offline_pages/buildflags",
+    "//components/offline_pages/core/request_header",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//extensions/buildflags",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+
+  if (is_mac) {
+    sources +=
+        [ "chrome_render_widget_host_view_mac_history_swiper_unittest.mm" ]
+    deps += [
+      ":history_swiper",
+      ":history_swiping_control",
+      "//third_party/ocmock",
+      "//ui/events/blink",
+    ]
   }
 }
 
@@ -66,23 +109,6 @@ if (is_mac) {
   source_set("delegate") {
     sources = [ "chrome_render_widget_host_view_mac_delegate.h" ]
     public_deps = [ "//content/public/browser" ]
-  }
-
-  source_set("unit_tests") {
-    testonly = true
-    sources =
-        [ "chrome_render_widget_host_view_mac_history_swiper_unittest.mm" ]
-    deps = [
-      ":history_swiper",
-      ":history_swiping_control",
-      "//base",
-      "//chrome/test:test_support",
-      "//chrome/test/base:chrome_render_view_host_test_harness",
-      "//testing/gtest",
-      "//third_party/blink/public/common:headers",
-      "//third_party/ocmock",
-      "//ui/events/blink",
-    ]
   }
 
   # TODO(crbug.com/479890756): Merge :delegate and :delegate_impl targets when

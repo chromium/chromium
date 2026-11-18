@@ -4,11 +4,14 @@
 
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 
-#include "build/build_config.h"
+#include <memory>
+#include <utility>
+
+#include "base/check.h"
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/actor/core/task_id.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "content/public/browser/navigation_handle.h"
@@ -33,11 +36,39 @@ actor::TaskId GetActorTaskId(content::WebContents& web_contents) {
 }
 }  // namespace
 
+ChromeNavigationUIData::EnvironmentData::EnvironmentData() = default;
+ChromeNavigationUIData::EnvironmentData::~EnvironmentData() = default;
+ChromeNavigationUIData::EnvironmentData::EnvironmentData(
+    const EnvironmentData&) = default;
+ChromeNavigationUIData::EnvironmentData&
+ChromeNavigationUIData::EnvironmentData::operator=(const EnvironmentData&) =
+    default;
+ChromeNavigationUIData::EnvironmentData::EnvironmentData(
+    EnvironmentData&&) noexcept = default;
+ChromeNavigationUIData::EnvironmentData&
+ChromeNavigationUIData::EnvironmentData::operator=(EnvironmentData&&) noexcept =
+    default;
+
 ChromeNavigationUIData::ChromeNavigationUIData() = default;
+
+ChromeNavigationUIData::ChromeNavigationUIData(const ChromeNavigationUIData&) =
+    default;
 
 ChromeNavigationUIData::ChromeNavigationUIData(
     content::NavigationHandle* navigation_handle) {
-  auto* web_contents = navigation_handle->GetWebContents();
+  CHECK(navigation_handle);
+
+  PopulateEnvironmentFromNavigationHandle(*navigation_handle);
+}
+
+ChromeNavigationUIData::~ChromeNavigationUIData() = default;
+
+void ChromeNavigationUIData::PopulateEnvironmentFromNavigationHandle(
+    content::NavigationHandle& navigation_handle) {
+  content::WebContents* web_contents = navigation_handle.GetWebContents();
+  CHECK(web_contents);
+
+  EnvironmentData env;
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   int tab_id = extension_misc::kUnknownTabId;
   int window_id = extension_misc::kUnknownWindowId;
@@ -46,21 +77,17 @@ ChromeNavigationUIData::ChromeNavigationUIData(
     extensions::ExtensionsBrowserClient::Get()->GetTabAndWindowIdForWebContents(
         web_contents, &tab_id, &window_id);
   }
-  extension_data_ = std::make_unique<extensions::ExtensionNavigationUIData>(
-      navigation_handle, tab_id, window_id);
+
+  env.extension_data = extensions::ExtensionNavigationUIData(&navigation_handle,
+                                                             tab_id, window_id);
 #endif
 
-  auto* no_state_prefetch_contents =
+  env.is_no_state_prefetching =
       prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
-          web_contents);
-  if (no_state_prefetch_contents) {
-    is_no_state_prefetching_ = true;
-  }
-
-  actor_task_id_ = GetActorTaskId(*web_contents);
+          web_contents) != nullptr;
+  env.actor_task_id = GetActorTaskId(*web_contents);
+  env_ = std::move(env);
 }
-
-ChromeNavigationUIData::~ChromeNavigationUIData() = default;
 
 // static
 std::unique_ptr<ChromeNavigationUIData>
@@ -73,6 +100,7 @@ ChromeNavigationUIData::CreateForMainFrameNavigation(
       is_using_https_as_default_scheme;
   navigation_ui_data->force_no_https_upgrade_ = force_no_https_upgrade;
 
+  EnvironmentData env;
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   int tab_id = extension_misc::kUnknownTabId;
   int window_id = extension_misc::kUnknownWindowId;
@@ -82,60 +110,35 @@ ChromeNavigationUIData::CreateForMainFrameNavigation(
         web_contents, &tab_id, &window_id);
   }
 
-  navigation_ui_data->extension_data_ =
-      extensions::ExtensionNavigationUIData::CreateForMainFrameNavigation(
-          web_contents, tab_id, window_id);
+  if (std::unique_ptr<extensions::ExtensionNavigationUIData> extension_data =
+          extensions::ExtensionNavigationUIData::CreateForMainFrameNavigation(
+              web_contents, tab_id, window_id)) {
+    env.extension_data = std::move(*extension_data);
+  }
 #endif
 
-  navigation_ui_data->actor_task_id_ = GetActorTaskId(*web_contents);
+  env.actor_task_id = GetActorTaskId(*web_contents);
+  navigation_ui_data->env_ = std::move(env);
 
   return navigation_ui_data;
 }
 
+// static
+std::unique_ptr<ChromeNavigationUIData>
+ChromeNavigationUIData::CloneUnboundOrNew(
+    const ChromeNavigationUIData* navigation_ui_data) {
+  if (!navigation_ui_data) {
+    return std::make_unique<ChromeNavigationUIData>();
+  }
+
+  CHECK(!navigation_ui_data->env_.has_value());
+#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+  CHECK(!navigation_ui_data->offline_page_data_.is_offline_page());
+#endif
+
+  return base::WrapUnique(new ChromeNavigationUIData(*navigation_ui_data));
+}
+
 std::unique_ptr<content::NavigationUIData> ChromeNavigationUIData::Clone() {
-  auto copy = std::make_unique<ChromeNavigationUIData>();
-
-  copy->is_using_https_as_default_scheme_ = is_using_https_as_default_scheme_;
-  copy->force_no_https_upgrade_ = force_no_https_upgrade_;
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  if (extension_data_) {
-    copy->SetExtensionNavigationUIData(
-        std::make_unique<extensions::ExtensionNavigationUIData>(
-            *extension_data_));
-  }
-#endif
-
-#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-  if (offline_page_data_) {
-    copy->SetOfflinePageNavigationUIData(
-        std::make_unique<offline_pages::OfflinePageNavigationUIData>(
-            *offline_page_data_));
-  }
-#endif
-
-  copy->is_no_state_prefetching_ = is_no_state_prefetching_;
-  copy->bookmark_id_ = bookmark_id_;
-#if BUILDFLAG(IS_ANDROID)
-  copy->twa_launch_token_ = twa_launch_token_;
-#endif
-  copy->actor_task_id_ = actor_task_id_;
-  copy->navigation_initiated_from_sync_ = navigation_initiated_from_sync_;
-
-  return std::move(copy);
+  return base::WrapUnique(new ChromeNavigationUIData(*this));
 }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-void ChromeNavigationUIData::SetExtensionNavigationUIData(
-    std::unique_ptr<extensions::ExtensionNavigationUIData> extension_data) {
-  extension_data_ = std::move(extension_data);
-}
-#endif
-
-#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-void ChromeNavigationUIData::SetOfflinePageNavigationUIData(
-    std::unique_ptr<offline_pages::OfflinePageNavigationUIData>
-        offline_page_data) {
-  offline_page_data_ = std::move(offline_page_data);
-}
-#endif

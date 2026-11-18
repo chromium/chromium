@@ -944,7 +944,7 @@ void OfflinePageURLLoaderBuilder::ReadCompleted(const ResponseInfo& response) {
   loader_.reset();
 
   bool is_offline_page_set_in_navigation_data = false;
-  offline_pages::OfflinePageNavigationUIData* offline_page_data =
+  const offline_pages::OfflinePageNavigationUIData* offline_page_data =
       navigation_ui_data_->GetOfflinePageNavigationUIData();
   if (offline_page_data && offline_page_data->is_offline_page()) {
     is_offline_page_set_in_navigation_data = true;

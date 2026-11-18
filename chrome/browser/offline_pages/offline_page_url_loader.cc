@@ -192,9 +192,8 @@ void OfflinePageURLLoader::SetOfflinePageNavigationUIData(
 
   ChromeNavigationUIData* navigation_data =
       static_cast<ChromeNavigationUIData*>(navigation_ui_data_);
-  std::unique_ptr<OfflinePageNavigationUIData> offline_page_data =
-      std::make_unique<OfflinePageNavigationUIData>(is_offline_page);
-  navigation_data->SetOfflinePageNavigationUIData(std::move(offline_page_data));
+  navigation_data->SetOfflinePageNavigationUIData(
+      OfflinePageNavigationUIData(is_offline_page));
 }
 
 int OfflinePageURLLoader::GetPageTransition() const {
