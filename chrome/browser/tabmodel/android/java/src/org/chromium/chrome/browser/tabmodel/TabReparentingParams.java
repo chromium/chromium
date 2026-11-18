@@ -36,7 +36,13 @@ public class TabReparentingParams implements AsyncTabParams {
             @Nullable Runnable finalizeCallback) {
         mTabToReparent = tabToReparent;
         mSourceSelector = sourceSelector != null ? new WeakReference<>(sourceSelector) : null;
-        mFinalizeCallback = finalizeCallback;
+        mFinalizeCallback =
+                sourceSelector == null
+                        ? finalizeCallback
+                        : () -> {
+                            if (finalizeCallback != null) finalizeCallback.run();
+                            detachFromOriginalModel();
+                        };
     }
 
     @Override
@@ -66,11 +72,7 @@ public class TabReparentingParams implements AsyncTabParams {
 
     @Override
     public @Nullable Runnable getFinalizeCallback() {
-        if (mSourceSelector == null) return mFinalizeCallback;
-        return () -> {
-            if (mFinalizeCallback != null) mFinalizeCallback.run();
-            detachFromOriginalModel();
-        };
+        return mFinalizeCallback;
     }
 
     @Override

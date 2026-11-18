@@ -230,9 +230,11 @@ public class TabReparentingControllerTest {
         TabReparentingParams trp =
                 (TabReparentingParams) mRealAsyncTabParamsManager.getAsyncTabParams().get(1);
         Assert.assertNotNull(trp);
-        Assert.assertNotNull(trp.getFinalizeCallback());
+        Runnable finalizeCallback = trp.getFinalizeCallback();
+        Assert.assertNotNull(finalizeCallback);
+        Assert.assertSame(finalizeCallback, trp.getFinalizeCallback());
 
-        trp.getFinalizeCallback().run();
+        finalizeCallback.run();
         InOrder inOrder = inOrder(mDestroyTabPersistentStoreRunnable, mTabModelSelector);
         inOrder.verify(mDestroyTabPersistentStoreRunnable).run();
         inOrder.verify(mTabModelSelector).detachTabForReparenting(mForegroundTab);
