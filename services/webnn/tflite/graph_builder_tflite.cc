@@ -20,6 +20,7 @@
 #include "base/containers/extend.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/numerics/checked_math.h"
@@ -241,6 +242,7 @@ base::expected<std::vector<int32_t>, std::string> ToSignedDimensions(
     case OperandDataType::kInt4:
       return ::tflite::TensorType_INT4;
     case OperandDataType::kUint4:
+      return ::tflite::TensorType_INT4;
     default:
       NOTREACHED() << "Unsupported data type.";
   }
@@ -822,9 +824,11 @@ auto GraphBuilderTflite::CreateAndBuild(
 ContextProperties GraphBuilderTflite::GetContextProperties(
     mojom::Device context_device) {
   // TODO: crbug.com/345271830 - specify data types for all parameters.
-  static constexpr SupportedDataTypes kInt4AndInts8Int32 = {
-      OperandDataType::kInt4, OperandDataType::kUint8, OperandDataType::kInt8,
-      OperandDataType::kInt32};
+  // Uint4 is only supported as a constant input of DequantizeLinear, where it
+  // is serialized as int4 with its values and zero point shifted by 8.
+  static constexpr SupportedDataTypes kInts4AndInts8Int32 = {
+      OperandDataType::kInt4, OperandDataType::kUint4, OperandDataType::kUint8,
+      OperandDataType::kInt8, OperandDataType::kInt32};
   static constexpr SupportedDataTypes kInts8AndInt32 = {
       OperandDataType::kUint8, OperandDataType::kInt8, OperandDataType::kInt32};
   static constexpr SupportedDataTypes kFloat16To32AndInt8{
@@ -884,7 +888,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties(
       BatchNormalizationAxis::kAny,
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
       {/*input=*/{kAllDataTypesExceptUint4, SupportedRanks::UpTo(8)},
-       /*constant=*/{kAllDataTypesExceptUint4, SupportedRanks::UpTo(8)},
+       /*constant=*/{SupportedDataTypes::All(), SupportedRanks::UpTo(8)},
        /*arg_min_max_input=*/
        {kFloat16To32AndInt8To32AndUint8, SupportedRanks::NonScalarUpTo(8)},
        /*arg_min_max_output=*/
@@ -921,7 +925,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties(
        // DequantizeLinear may be emulated by sub and mul ops that only support
        // max rank up to 6.
        /*dequantize_linear_input=*/
-       {kInt4AndInts8Int32, SupportedRanks::UpTo(6)},
+       {kInts4AndInts8Int32, SupportedRanks::UpTo(6)},
        /*dequantize_linear_scale=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(6)},
        // Limited to 6D when broadcasting is required:
@@ -1289,7 +1293,22 @@ auto GraphBuilderTflite::SerializeOperand(
     // used to create the constant's tensor.
     auto it = constant_operands_->find(operand_id);
     CHECK(it != constant_operands_->end());
-    ASSIGN_OR_RETURN(buffer_info, SerializeBuffer(it->second->ByteSpan()));
+    if (operand.descriptor.data_type() == OperandDataType::kUint4) {
+      // TFLite has no uint4 type. Serialize it as int4 by subtracting 8 from
+      // each value, which flips the high bit of each packed nibble. The zero
+      // point is shifted by the same amount (see
+      // `GetInt64ZeroPointFromInt4()`), so a dequantized value is unchanged.
+      constexpr uint8_t kFlipNibbleHighBits = 0x88;
+      std::vector<uint8_t> int4_bytes = base::ToVector(it->second->ByteSpan());
+      for (uint8_t& byte : int4_bytes) {
+        byte ^= kFlipNibbleHighBits;
+      }
+      ASSIGN_OR_RETURN(buffer_info, SerializeBuffer(int4_bytes));
+    } else {
+      ASSIGN_OR_RETURN(buffer_info, SerializeBuffer(it->second->ByteSpan()));
+    }
+  } else {
+    CHECK_NE(operand.descriptor.data_type(), OperandDataType::kUint4);
   }
 
   // Create `Tensor` with operand shape, the index of buffer and the name.
@@ -9125,7 +9144,9 @@ base::FixedArray<int64_t> GraphBuilderTflite::GetInt64ZeroPointFromInt4(
   const mojom::Operand& operand = GetOperand(zero_point_operand_id);
   const size_t size = operand.descriptor.NumberOfElements();
   CHECK_EQ(operand.kind, mojom::Operand::Kind::kConstant);
-  CHECK_EQ(operand.descriptor.data_type(), OperandDataType::kInt4);
+  const bool is_uint4 =
+      operand.descriptor.data_type() == OperandDataType::kUint4;
+  CHECK(is_uint4 || operand.descriptor.data_type() == OperandDataType::kInt4);
 
   auto it = constant_operands_->find(zero_point_operand_id);
   CHECK(it != constant_operands_->end());
@@ -9136,8 +9157,12 @@ base::FixedArray<int64_t> GraphBuilderTflite::GetInt64ZeroPointFromInt4(
   for (size_t i = 0; i < size; ++i) {
     const size_t byte_index = i / 2;
     int64_t value = (byte_span[byte_index] >> ((i % 2) * 4)) & 0xF;
-    // Sign-extend if necessary.
-    if (value & int4_sign_mask) {
+    if (is_uint4) {
+      // uint4 values are serialized as int4 shifted by 8, see
+      // `SerializeOperand()`.
+      value -= 8;
+    } else if (value & int4_sign_mask) {
+      // Sign-extend if necessary.
       value |= 0xFFFFFFFFFFFFFFF0;
     }
     int64_value[i] = value;
@@ -9150,7 +9175,8 @@ base::FixedArray<int64_t> GraphBuilderTflite::GetConstantInt64Value(
   const mojom::Operand& operand = GetOperand(operand_id);
   base::FixedArray<int64_t> typed_value(operand.descriptor.NumberOfElements());
   switch (operand.descriptor.data_type()) {
-    case OperandDataType::kInt4: {
+    case OperandDataType::kInt4:
+    case OperandDataType::kUint4: {
       return GetInt64ZeroPointFromInt4(operand_id);
     }
     case OperandDataType::kInt8: {
@@ -9181,7 +9207,6 @@ base::FixedArray<int64_t> GraphBuilderTflite::GetConstantInt64Value(
     case OperandDataType::kFloat32:
     case OperandDataType::kFloat16:
     case OperandDataType::kUint64:
-    case OperandDataType::kUint4:
       NOTREACHED() << "This data type is not supported.";
   }
   return typed_value;
@@ -9575,6 +9600,10 @@ auto GraphBuilderTflite::SerializeDequantizeLinear(
       GetOperand(dequantize_linear.scale_operand_id);
   CHECK(context_properties_.data_type_limits.dequantize_linear_scale.Supports(
       scale_operand.descriptor));
+
+  // A uint4 input is only serialized (as int4) when it is a constant.
+  CHECK(input_operand.descriptor.data_type() != OperandDataType::kUint4 ||
+        input_operand.kind == mojom::Operand::Kind::kConstant);
 
   std::optional<QuantizateParametersOffset> quantize_params =
       SerializeQuantizeParams(dequantize_linear.zero_point_operand_id,
