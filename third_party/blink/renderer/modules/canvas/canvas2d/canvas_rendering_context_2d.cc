@@ -703,14 +703,6 @@ void CanvasRenderingContext2D::ResourceContentChanged(SVGResource*) {
   GetState().ClearResolvedFilter();
 }
 
-int CanvasRenderingContext2D::Width() const {
-  return Host()->Size().width();
-}
-
-int CanvasRenderingContext2D::Height() const {
-  return Host()->Size().height();
-}
-
 const std::optional<cc::PaintRecord>&
 CanvasRenderingContext2D::GetLastRecording() {
   return last_recording_;

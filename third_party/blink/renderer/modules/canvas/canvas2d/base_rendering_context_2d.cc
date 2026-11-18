@@ -2838,6 +2838,14 @@ bool BaseRenderingContext2D::OriginClean() const {
   return Host() ? Host()->OriginClean() : true;
 }
 
+int BaseRenderingContext2D::Width() const {
+  return Host()->Size().width();
+}
+
+int BaseRenderingContext2D::Height() const {
+  return Host()->Size().height();
+}
+
 CanvasRenderingContextHost*
 BaseRenderingContext2D::GetCanvasRenderingContextHost() const {
   return Host();

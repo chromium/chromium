@@ -75,9 +75,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   }
 
   // BaseRenderingContext2D implementation
-  int Width() const final;
-  int Height() const final;
-
   bool CanCreateBacking() final;
 
   // Offscreen canvas doesn't have any notion of image orientation.

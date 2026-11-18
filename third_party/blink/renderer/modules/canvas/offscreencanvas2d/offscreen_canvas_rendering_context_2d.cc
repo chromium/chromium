@@ -146,14 +146,6 @@ void OffscreenCanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
 }
 
 // BaseRenderingContext2D implementation
-int OffscreenCanvasRenderingContext2D::Width() const {
-  return Host()->Size().width();
-}
-
-int OffscreenCanvasRenderingContext2D::Height() const {
-  return Host()->Size().height();
-}
-
 bool OffscreenCanvasRenderingContext2D::CanCreateBacking() {
   const CanvasRenderingContextHost* const host = Host();
   if (host == nullptr || host->Size().IsEmpty()) [[unlikely]] {

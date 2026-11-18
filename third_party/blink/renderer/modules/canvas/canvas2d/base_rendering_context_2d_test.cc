@@ -127,9 +127,6 @@ class TestRenderingContext2D final
   // Returns the content of the paint recorder, leaving it empty.
   cc::PaintRecord FlushRecorder() { return Recorder()->ReleaseMainRecording(); }
 
-  int Width() const override { return Host()->width(); }
-  int Height() const override { return Host()->height(); }
-
   bool CanCreateBacking() override { return false; }
 
   RespectImageOrientationEnum RespectImageOrientation() const override {

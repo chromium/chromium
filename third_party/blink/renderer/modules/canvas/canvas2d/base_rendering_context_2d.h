@@ -123,6 +123,9 @@ class MODULES_EXPORT BaseRenderingContext2D
   bool OriginClean() const final;
   void SetOriginTainted() final;
 
+  int Width() const final;
+  int Height() const final;
+
   bool clear_frame() const { return clear_frame_; }
   void set_clear_frame(bool clear_frame) { clear_frame_ = clear_frame; }
 

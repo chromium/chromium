@@ -187,9 +187,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   bool Is2DCanvasAccelerated() const override;
   const std::optional<cc::PaintRecord>& GetLastRecording() override;
 
-  int Width() const final;
-  int Height() const final;
-
   bool CanCreateBacking() final;
 
   RespectImageOrientationEnum RespectImageOrientation() const final;
