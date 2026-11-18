@@ -266,6 +266,7 @@ void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::Configure(
   root_ = &root;
   enable_quarantine_ = config.enable_quarantine;
   enable_zapping_ = config.enable_zapping;
+  zap_max_ = config.zap_max;
   leak_on_destruction_ = config.leak_on_destruction;
   purge_headroom_percent_ = static_cast<uint8_t>(
       std::min(config.purge_headroom_percent, kMaxPurgeHeadroomPercent));
@@ -418,7 +419,8 @@ void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::Quarantine(
     if (enable_zapping_) {
       internal::SecureMemset(
           slot_start.ToObject(), internal::kFreedByte,
-          allocator_root_->GetSlotUsableSize(size_details, slot_span));
+          std::min(allocator_root_->GetSlotUsableSize(size_details, slot_span),
+                   zap_max_));
     }
   };
 
