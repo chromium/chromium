@@ -26,8 +26,13 @@ public @interface TabHidingType {
     /** A tab was hidden together with an activity. */
     int ACTIVITY_HIDDEN = 1;
 
-    /** A tab was hidden while being reparented to a new activity. */
-    int REPARENTED = 2;
+    /**
+     * A tab was hidden while being reparented to a new activity.
+     *
+     * @deprecated Unused. Reparenting no longer hides the tab; it toggles {@link
+     *     Tab#isDetachedFromActivity()} instead.
+     */
+    @Deprecated int REPARENTED = 2;
 
     /** A tab was hidden while tab switcher was shown. */
     int TAB_SWITCHER_SHOWN = 3;
