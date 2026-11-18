@@ -9192,6 +9192,10 @@ crbug.com/568343392 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context
 # Gardener 2026-11-18 (cherry-picked from crrev.com/c/8833544)
 crbug.com/587335371 [ Linux ] external/wpt/element-timing/css-generated-text.html [ Failure Pass ]
 
+# Gardener 2026-11-18
+crbug.com/587146407 [ Linux ] external/wpt/webdriver/tests/bidi/script/call_function/user_activation.py [ Failure Pass ]
+crbug.com/587146407 [ Linux ] external/wpt/webdriver/tests/bidi/script/evaluate/user_activation.py [ Failure Pass ]
+
 # Gardener 2026-11-17 (M156 Skia roll pixel-diff suppressions)
 crbug.com/583971020 [ Mac ] fast/borders/border-radius-different-width-001-double.html [ Failure Pass ]
 crbug.com/583971020 [ Win ] fast/borders/border-radius-different-width-001-double.html [ Failure Pass ]
