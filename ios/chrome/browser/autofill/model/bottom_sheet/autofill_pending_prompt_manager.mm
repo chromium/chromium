@@ -10,6 +10,7 @@
 #import "base/check_op.h"
 #import "base/feature_list.h"
 #import "ios/chrome/browser/autofill/model/autofill_ai_save_entity_prompt_model.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -29,11 +30,21 @@ AutofillPendingPromptManager::~AutofillPendingPromptManager() {
 
 void AutofillPendingPromptManager::WasShown(web::WebState* web_state) {
   CHECK_EQ(web_state, web_state_);
-  if (!base::FeatureList::IsEnabled(kAutofillReshowSavePromptOnTabReturn)) {
+  if (!base::FeatureList::IsEnabled(kAutofillReshowSavePromptOnTabReturn) ||
+      !autofill_handler_) {
     return;
   }
-  if (autofill_handler_ && save_entity_model_) {
+
+  // A tab can have at most one pending prompt at a time because prompts are
+  // mutually exclusive and consumed upon dismissal or interaction. If an
+  // Autofill AI entity prompt is pending, restore it; otherwise restore any
+  // pending card save prompt.
+  if (save_entity_model_) {
     [autofill_handler_ showSaveEntityDialogOnWebState:web_state_];
+  } else if (save_card_model_ &&
+             save_card_model_->save_card_state() ==
+                 autofill::SaveCardBottomSheetModel::SaveCardState::kOffered) {
+    [autofill_handler_ showSaveCardBottomSheetOnOriginWebState:web_state_];
   }
 }
 
@@ -78,11 +89,33 @@ void AutofillPendingPromptManager::WebStateDestroyed(web::WebState* web_state) {
 void AutofillPendingPromptManager::ShowSaveEntityPrompt(
     std::unique_ptr<AutofillAiSaveEntityPromptModel> model) {
   CHECK(model);
-  if (save_entity_model_) {
-    save_entity_model_->OnExpired();
-  }
+  // Supersede any existing pending prompt so that at most one prompt is staged
+  // on this tab at a time. Move existing models into locals to prevent
+  // reentrancy hazards when client callbacks execute synchronously.
+  std::unique_ptr<AutofillAiSaveEntityPromptModel> old_entity_model =
+      std::move(save_entity_model_);
+  std::unique_ptr<autofill::SaveCardBottomSheetModel> old_card_model =
+      std::move(save_card_model_);
+
   save_entity_model_ = std::move(model);
-  if (autofill_handler_) {
+
+  if (old_entity_model) {
+    old_entity_model->OnExpired();
+    if (autofill_handler_) {
+      [autofill_handler_ dismissSaveEntityDialog];
+    }
+  }
+  if (old_card_model) {
+    if (old_card_model->save_card_state() ==
+        autofill::SaveCardBottomSheetModel::SaveCardState::kOffered) {
+      old_card_model->OnIgnored();
+    }
+    if (autofill_handler_) {
+      [autofill_handler_ dismissSaveCardBottomSheet];
+    }
+  }
+
+  if (autofill_handler_ && web_state_) {
     [autofill_handler_ showSaveEntityDialogOnWebState:web_state_];
   }
 }
@@ -102,22 +135,87 @@ AutofillPendingPromptManager::TakeSaveEntityPromptModel() {
   return std::move(save_entity_model_);
 }
 
+void AutofillPendingPromptManager::ShowSaveCardPrompt(
+    std::unique_ptr<autofill::SaveCardBottomSheetModel> model) {
+  CHECK(model);
+  // Supersede any existing pending prompt so that at most one prompt is staged
+  // on this tab at a time. Move existing models into locals to prevent
+  // reentrancy hazards when client callbacks execute synchronously.
+  std::unique_ptr<autofill::SaveCardBottomSheetModel> old_card_model =
+      std::move(save_card_model_);
+  std::unique_ptr<AutofillAiSaveEntityPromptModel> old_entity_model =
+      std::move(save_entity_model_);
+
+  save_card_model_ = std::move(model);
+
+  if (old_card_model) {
+    if (old_card_model->save_card_state() ==
+        autofill::SaveCardBottomSheetModel::SaveCardState::kOffered) {
+      old_card_model->OnIgnored();
+    }
+    if (autofill_handler_) {
+      [autofill_handler_ dismissSaveCardBottomSheet];
+    }
+  }
+  if (old_entity_model) {
+    old_entity_model->OnExpired();
+    if (autofill_handler_) {
+      [autofill_handler_ dismissSaveEntityDialog];
+    }
+  }
+
+  if (autofill_handler_ && web_state_) {
+    [autofill_handler_ showSaveCardBottomSheetOnOriginWebState:web_state_];
+  }
+}
+
+const autofill::SaveCardBottomSheetModel*
+AutofillPendingPromptManager::GetSaveCardPromptModel() const {
+  return save_card_model_.get();
+}
+
+autofill::SaveCardBottomSheetModel*
+AutofillPendingPromptManager::GetSaveCardPromptModel() {
+  return save_card_model_.get();
+}
+
+std::unique_ptr<autofill::SaveCardBottomSheetModel>
+AutofillPendingPromptManager::TakeSaveCardPromptModel() {
+  return std::move(save_card_model_);
+}
+
 void AutofillPendingPromptManager::SetAutofillBottomSheetHandler(
     id<AutofillCommands> autofill_handler) {
-  if (autofill_handler_ && autofill_handler_ != autofill_handler &&
-      save_entity_model_) {
-    [autofill_handler_ dismissSaveEntityDialog];
+  if (autofill_handler_ && autofill_handler_ != autofill_handler) {
+    if (save_entity_model_) {
+      [autofill_handler_ dismissSaveEntityDialog];
+    }
+    if (save_card_model_) {
+      [autofill_handler_ dismissSaveCardBottomSheet];
+    }
   }
   autofill_handler_ = autofill_handler;
 }
 
 void AutofillPendingPromptManager::ExpirePendingPromptAndDismissDialog() {
-  std::unique_ptr<AutofillAiSaveEntityPromptModel> model =
+  std::unique_ptr<AutofillAiSaveEntityPromptModel> entity_model =
       std::move(save_entity_model_);
-  if (model) {
-    model->OnExpired();
+  if (entity_model) {
+    entity_model->OnExpired();
     if (autofill_handler_) {
       [autofill_handler_ dismissSaveEntityDialog];
+    }
+  }
+
+  std::unique_ptr<autofill::SaveCardBottomSheetModel> card_model =
+      std::move(save_card_model_);
+  if (card_model) {
+    if (card_model->save_card_state() ==
+        autofill::SaveCardBottomSheetModel::SaveCardState::kOffered) {
+      card_model->OnIgnored();
+    }
+    if (autofill_handler_) {
+      [autofill_handler_ dismissSaveCardBottomSheet];
     }
   }
 }

@@ -90,6 +90,7 @@ class MockAutofillSaveCardDelegate : public AutofillSaveCardDelegate {
 
   MOCK_METHOD(void, OnUiAccepted, (base::OnceClosure), (override));
   MOCK_METHOD(void, OnUiCanceled, (), (override));
+  MOCK_METHOD(void, OnUiIgnored, (), (override));
   MOCK_METHOD(
       void,
       OnUiUpdatedAndAcceptedForSaveAndFill,
@@ -143,6 +144,35 @@ TEST_F(SaveCardBottomSheetModelTest, OnAccepted) {
 TEST_F(SaveCardBottomSheetModelTest, OnCanceled) {
   EXPECT_CALL(*save_card_delegate_, OnUiCanceled);
   save_card_bottom_sheet_model_->OnCanceled();
+  EXPECT_EQ(save_card_bottom_sheet_model_->save_card_state(),
+            SaveCardBottomSheetModel::SaveCardState::kFailed);
+}
+
+TEST_F(SaveCardBottomSheetModelTest, OnCanceledWhenNotOfferedDoesNothing) {
+  save_card_bottom_sheet_model_->SetSaveCardStateForTesting(
+      SaveCardBottomSheetModel::SaveCardState::kSaveInProgress);
+  EXPECT_CALL(*save_card_delegate_, OnUiCanceled).Times(0);
+  EXPECT_NO_FATAL_FAILURE(save_card_bottom_sheet_model_->OnCanceled());
+}
+
+TEST_F(SaveCardBottomSheetModelTest, OnIgnored) {
+  EXPECT_CALL(*save_card_delegate_, OnUiIgnored);
+  save_card_bottom_sheet_model_->OnIgnored();
+  EXPECT_EQ(save_card_bottom_sheet_model_->save_card_state(),
+            SaveCardBottomSheetModel::SaveCardState::kFailed);
+}
+
+TEST_F(SaveCardBottomSheetModelTest, OnIgnoredWhenNotOfferedDoesNothing) {
+  save_card_bottom_sheet_model_->SetSaveCardStateForTesting(
+      SaveCardBottomSheetModel::SaveCardState::kSaveInProgress);
+  EXPECT_CALL(*save_card_delegate_, OnUiIgnored).Times(0);
+  EXPECT_NO_FATAL_FAILURE(save_card_bottom_sheet_model_->OnIgnored());
+}
+
+TEST_F(SaveCardBottomSheetModelTest, HasBeenShown) {
+  EXPECT_FALSE(save_card_bottom_sheet_model_->has_been_shown());
+  save_card_bottom_sheet_model_->set_has_been_shown(true);
+  EXPECT_TRUE(save_card_bottom_sheet_model_->has_been_shown());
 }
 
 // Test that on successful credit card upload completion, observer is updated

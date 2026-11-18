@@ -105,6 +105,7 @@ source_set("save_card_bottom_sheet_model") {
   deps = [
     "//base",
     "//components/autofill/core/browser",
+    "//components/autofill/ios/browser",
   ]
 }
 

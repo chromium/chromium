@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
+#import "components/autofill/ios/browser/credit_card_save_metrics_ios.h"
 
 namespace autofill {
 
@@ -17,7 +18,9 @@ SaveCardBottomSheetModel::SaveCardBottomSheetModel(
     AutofillSaveCardUiInfo ui_info,
     std::unique_ptr<AutofillSaveCardDelegate> save_card_delegate)
     : ui_info_(std::move(ui_info)),
-      save_card_delegate_(std::move(save_card_delegate)) {}
+      save_card_delegate_(std::move(save_card_delegate)) {
+  CHECK(save_card_delegate_);
+}
 
 SaveCardBottomSheetModel::~SaveCardBottomSheetModel() {
   // Model is destroyed on bottomsheet's dismissal. Presence of
@@ -39,12 +42,34 @@ void SaveCardBottomSheetModel::OnAccepted() {
 }
 
 void SaveCardBottomSheetModel::OnCanceled() {
-  // This method is called when bottomsheet is dismissed using the `No thanks`
-  // button which is enabled only when save card is offered. Once bottomsheet
-  // has been accepted, the button is disabled while showing loading or
-  // confirmation.
-  CHECK(save_card_state_ == SaveCardState::kOffered);
+  if (save_card_state_ != SaveCardState::kOffered) {
+    return;
+  }
+  save_card_state_ = SaveCardState::kFailed;
   save_card_delegate()->OnUiCanceled();
+}
+
+void SaveCardBottomSheetModel::OnIgnored() {
+  if (save_card_state_ != SaveCardState::kOffered) {
+    return;
+  }
+  save_card_state_ = SaveCardState::kFailed;
+  const auto options = save_card_delegate()->GetSaveCreditCardOptions();
+  save_card_delegate()->OnUiIgnored();
+  // While `kAccepted` and `kDenied` are logged by `SaveCardBottomSheetMediator`
+  // during active presentation, `kIgnored` must be logged here in the model.
+  // When a user taps a legal disclosure link, the bottom sheet and its mediator
+  // are deallocated while the model remains pending in the tab helper. If the
+  // user subsequently closes or navigates the background tab, or if another
+  // prompt preempts this offer,
+  // `AutofillPendingPromptManager::ExpirePendingPromptAndDismissDialog()`
+  // expires the model via `OnIgnored()`. Because the UI mediator is no longer
+  // alive at that point, the model layer is responsible for logging `kIgnored`.
+  autofill::autofill_metrics::LogSaveCreditCardPromptResultIOS(
+      autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kIgnored,
+      is_for_upload(), options,
+      autofill::autofill_metrics::SaveCreditCardPromptOverlayType::
+          kBottomSheet);
 }
 
 void SaveCardBottomSheetModel::CreditCardUploadCompleted(

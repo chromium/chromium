@@ -14,18 +14,24 @@
 class AutofillAiSaveEntityPromptModel;
 @protocol AutofillCommands;
 
+namespace autofill {
+class SaveCardBottomSheetModel;
+}  // namespace autofill
+
 namespace web {
 class NavigationContext;
 class WebState;
 }  // namespace web
 
 // Coordinates the lifecycle of staged, pending autofill prompts (such as
-// Autofill AI save entity) for a specific WebState.
+// Autofill AI save entity or Save Card) for a specific WebState.
 //
 // Lifecycle and ownership:
 // - Exactly one instance per WebState.
 // - Owned and instantiated by `AutofillBottomSheetTabHelper` during its
 //   creation for a WebState.
+// - At most one prompt model (`save_card_model_` or `save_entity_model_`) is
+//   held at any time, as prompts are mutually exclusive per tab.
 // - Receives forwarded WebState lifecycle events (`WasShown`,
 //   `DidFinishNavigation`, `WebStateDestroyed`) from
 //   `AutofillBottomSheetTabHelper`.
@@ -55,6 +61,13 @@ class AutofillPendingPromptManager {
   AutofillAiSaveEntityPromptModel* GetSaveEntityPromptModel();
   std::unique_ptr<AutofillAiSaveEntityPromptModel> TakeSaveEntityPromptModel();
 
+  // Save Card bottom sheet prompt management:
+  void ShowSaveCardPrompt(
+      std::unique_ptr<autofill::SaveCardBottomSheetModel> model);
+  const autofill::SaveCardBottomSheetModel* GetSaveCardPromptModel() const;
+  autofill::SaveCardBottomSheetModel* GetSaveCardPromptModel();
+  std::unique_ptr<autofill::SaveCardBottomSheetModel> TakeSaveCardPromptModel();
+
   void SetAutofillBottomSheetHandler(id<AutofillCommands> autofill_handler);
 
  private:
@@ -74,6 +87,11 @@ class AutofillPendingPromptManager {
   // the prompt is staged across tab switches, and reset when accepted, expired,
   // or cleared.
   std::unique_ptr<AutofillAiSaveEntityPromptModel> save_entity_model_;
+
+  // Owned prompt model for the active Save Card bottom sheet offer. Held while
+  // the prompt is staged across tab switches, and reset when accepted, expired,
+  // or cleared.
+  std::unique_ptr<autofill::SaveCardBottomSheetModel> save_card_model_;
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_BOTTOM_SHEET_AUTOFILL_PENDING_PROMPT_MANAGER_H_

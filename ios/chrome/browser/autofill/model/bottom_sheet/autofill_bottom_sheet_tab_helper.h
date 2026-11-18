@@ -218,11 +218,14 @@ class AutofillBottomSheetTabHelper
       autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>
   GetCardUnmaskAuthenticationSelectionDialogController();
 
-  // Returns the model for save card bottomsheet. The caller takes ownership and
-  // subsequent calls will return nullptr until another instance of the
-  // bottomsheet is shown again by calling ShowSaveCardBottomSheet().
+  // Returns a non-owning pointer to the model for save card bottomsheet.
+  const autofill::SaveCardBottomSheetModel* GetSaveCardBottomSheetModel() const;
+  autofill::SaveCardBottomSheetModel* GetSaveCardBottomSheetModel();
+
+  // Takes and transfers ownership of the pending Save Card bottom sheet model.
+  // Used by the coordinator on `didAccept` to manage in-flight upload.
   std::unique_ptr<autofill::SaveCardBottomSheetModel>
-  GetSaveCardBottomSheetModel();
+  TakeSaveCardBottomSheetModel();
 
   // Used to get the callbacks to be run on completion of the VCN enrollment UI.
   // This value is moved and should only be retrieved once per bottom sheet.
@@ -360,11 +363,6 @@ class AutofillBottomSheetTabHelper
   std::unique_ptr<
       autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>
       card_unmask_authentication_selection_controller_;
-
-  // Model providing resources and callbacks for save card bottomsheet. This
-  // will be reset once GetSaveCardBottomSheetModel() is called.
-  std::unique_ptr<autofill::SaveCardBottomSheetModel>
-      save_card_bottom_sheet_model_;
 
   // Callbacks to be run when the virtual card enrollment bottom sheet UI has
   // completed.

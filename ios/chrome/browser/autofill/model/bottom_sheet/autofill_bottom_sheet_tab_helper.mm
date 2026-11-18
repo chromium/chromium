@@ -231,8 +231,7 @@ void AutofillBottomSheetTabHelper::ShowCardUnmaskAuthenticationSelection(
 
 void AutofillBottomSheetTabHelper::ShowSaveCardBottomSheet(
     std::unique_ptr<autofill::SaveCardBottomSheetModel> model) {
-  save_card_bottom_sheet_model_ = std::move(model);
-  [commands_handler_ showSaveCardBottomSheetOnOriginWebState:web_state_];
+  pending_prompt_manager_->ShowSaveCardPrompt(std::move(model));
 }
 
 void AutofillBottomSheetTabHelper::ShowVirtualCardEnrollmentBottomSheet(
@@ -887,9 +886,19 @@ AutofillBottomSheetTabHelper::
   return std::move(card_unmask_authentication_selection_controller_);
 }
 
-std::unique_ptr<autofill::SaveCardBottomSheetModel>
+const autofill::SaveCardBottomSheetModel*
+AutofillBottomSheetTabHelper::GetSaveCardBottomSheetModel() const {
+  return pending_prompt_manager_->GetSaveCardPromptModel();
+}
+
+autofill::SaveCardBottomSheetModel*
 AutofillBottomSheetTabHelper::GetSaveCardBottomSheetModel() {
-  return std::move(save_card_bottom_sheet_model_);
+  return pending_prompt_manager_->GetSaveCardPromptModel();
+}
+
+std::unique_ptr<autofill::SaveCardBottomSheetModel>
+AutofillBottomSheetTabHelper::TakeSaveCardBottomSheetModel() {
+  return pending_prompt_manager_->TakeSaveCardPromptModel();
 }
 
 autofill::VirtualCardEnrollmentCallbacks

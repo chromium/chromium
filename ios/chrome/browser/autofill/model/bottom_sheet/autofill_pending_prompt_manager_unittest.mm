@@ -11,9 +11,13 @@
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
+#import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
+#import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/browser/autofill/model/autofill_ai_save_entity_prompt_model.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -26,8 +30,12 @@ namespace {
 
 using AutofillAiBubbleResult = autofill::AutofillClient::AutofillAiBubbleResult;
 using autofill::AutofillClient;
+using autofill::AutofillSaveCardDelegate;
+using autofill::AutofillSaveCardUiInfo;
 using autofill::EntityInstance;
+using autofill::SaveCardBottomSheetModel;
 using autofill::SaveEntityParams;
+using autofill::payments::PaymentsAutofillClient;
 namespace test = autofill::test;
 
 }  // namespace
@@ -37,6 +45,8 @@ namespace test = autofill::test;
 @interface FakeAutofillCommandsForPromptManager : NSObject
 @property(nonatomic, assign) int showSaveEntityDialogCount;
 @property(nonatomic, assign) int dismissSaveEntityDialogCount;
+@property(nonatomic, assign) int showSaveCardBottomSheetCount;
+@property(nonatomic, assign) int dismissSaveCardBottomSheetCount;
 @end
 
 @implementation FakeAutofillCommandsForPromptManager
@@ -45,6 +55,12 @@ namespace test = autofill::test;
 }
 - (void)dismissSaveEntityDialog {
   _dismissSaveEntityDialogCount++;
+}
+- (void)showSaveCardBottomSheetOnOriginWebState:(web::WebState*)originWebState {
+  _showSaveCardBottomSheetCount++;
+}
+- (void)dismissSaveCardBottomSheet {
+  _dismissSaveCardBottomSheetCount++;
 }
 @end
 
@@ -77,6 +93,30 @@ class AutofillPendingPromptManagerTest : public PlatformTest {
             }),
         /*public_passes_notice=*/{},
         /*show_explicit_decline_button=*/false));
+  }
+
+  class MockSaveCardDelegateForPromptManager
+      : public autofill::AutofillSaveCardDelegate {
+   public:
+    MockSaveCardDelegateForPromptManager()
+        : autofill::AutofillSaveCardDelegate(
+              autofill::payments::PaymentsAutofillClient::
+                  UploadSaveCardPromptCallback(base::DoNothing()),
+              autofill::payments::PaymentsAutofillClient::
+                  SaveCreditCardOptions()) {}
+    ~MockSaveCardDelegateForPromptManager() override = default;
+
+    MOCK_METHOD(void, OnUiIgnored, (), (override));
+  };
+
+  std::unique_ptr<autofill::SaveCardBottomSheetModel> CreateSaveCardModel(
+      MockSaveCardDelegateForPromptManager** out_delegate = nullptr) {
+    auto delegate = std::make_unique<MockSaveCardDelegateForPromptManager>();
+    if (out_delegate) {
+      *out_delegate = delegate.get();
+    }
+    return std::make_unique<autofill::SaveCardBottomSheetModel>(
+        autofill::AutofillSaveCardUiInfo(), std::move(delegate));
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -312,6 +352,133 @@ TEST_F(AutofillPendingPromptManagerTest,
       manager_->TakeSaveEntityPromptModel();
   EXPECT_NE(taken, nullptr);
   EXPECT_EQ(manager_->GetSaveEntityPromptModel(), nullptr);
+}
+
+// Tests that `ShowSaveCardPrompt` notifies the commands handler.
+TEST_F(AutofillPendingPromptManagerTest, ShowSaveCardPromptNotifiesHandler) {
+  manager_->ShowSaveCardPrompt(CreateSaveCardModel());
+  EXPECT_EQ(autofill_handler_.showSaveCardBottomSheetCount, 1);
+}
+
+// Tests that `WasShown` re-triggers `showSaveCardBottomSheetOnOriginWebState:`
+// when a Save Card prompt is pending.
+TEST_F(AutofillPendingPromptManagerTest,
+       WasShownReTriggersSaveCardPromptWhenPending) {
+  manager_->ShowSaveCardPrompt(CreateSaveCardModel());
+  EXPECT_EQ(autofill_handler_.showSaveCardBottomSheetCount, 1);
+
+  manager_->WasShown(&web_state_);
+  EXPECT_EQ(autofill_handler_.showSaveCardBottomSheetCount, 2);
+}
+
+// Tests that borrowing inspects the Save Card prompt model without consuming
+// it, whereas taking transfers ownership and clears the pending prompt.
+TEST_F(AutofillPendingPromptManagerTest,
+       BorrowingRetainsSaveCardModelWhileTakingConsumesModel) {
+  manager_->ShowSaveCardPrompt(CreateSaveCardModel());
+
+  // Borrowing does not consume.
+  EXPECT_NE(manager_->GetSaveCardPromptModel(), nullptr);
+  EXPECT_NE(manager_->GetSaveCardPromptModel(), nullptr);
+
+  // Taking consumes.
+  std::unique_ptr<autofill::SaveCardBottomSheetModel> taken =
+      manager_->TakeSaveCardPromptModel();
+  EXPECT_NE(taken, nullptr);
+  EXPECT_EQ(manager_->GetSaveCardPromptModel(), nullptr);
+}
+
+// Tests that cross-document navigation expires the pending Save Card prompt,
+// triggers OnUiIgnored (0 strikes), and commands UI dismissal.
+TEST_F(AutofillPendingPromptManagerTest, NavigationExpiresSaveCardPrompt) {
+  MockSaveCardDelegateForPromptManager* delegate = nullptr;
+  manager_->ShowSaveCardPrompt(CreateSaveCardModel(&delegate));
+  EXPECT_CALL(*delegate, OnUiIgnored());
+
+  web::FakeNavigationContext context;
+  context.SetHasCommitted(true);
+  context.SetPageTransition(ui::PAGE_TRANSITION_LINK);
+  context.SetHasUserGesture(true);
+
+  manager_->DidFinishNavigation(&web_state_, &context);
+  EXPECT_EQ(autofill_handler_.dismissSaveCardBottomSheetCount, 1);
+  EXPECT_EQ(manager_->GetSaveCardPromptModel(), nullptr);
+}
+
+// Tests that displaying a Save Card prompt preempts and expires an active
+// Autofill AI prompt.
+TEST_F(AutofillPendingPromptManagerTest, SaveCardPreemptsAutofillAiPrompt) {
+  manager_->ShowSaveEntityPrompt(CreateEntityModel());
+  EXPECT_EQ(autofill_handler_.showSaveEntityDialogCount, 1);
+
+  manager_->ShowSaveCardPrompt(CreateSaveCardModel());
+  EXPECT_EQ(std::vector{AutofillAiBubbleResult::kUnknown}, results_);
+  EXPECT_EQ(manager_->GetSaveEntityPromptModel(), nullptr);
+  EXPECT_NE(manager_->GetSaveCardPromptModel(), nullptr);
+  EXPECT_EQ(autofill_handler_.dismissSaveEntityDialogCount, 1);
+  EXPECT_EQ(autofill_handler_.showSaveCardBottomSheetCount, 1);
+}
+
+// Tests that displaying an Autofill AI prompt preempts and expires an active
+// Save Card prompt.
+TEST_F(AutofillPendingPromptManagerTest, AutofillAiPreemptsSaveCardPrompt) {
+  MockSaveCardDelegateForPromptManager* delegate = nullptr;
+  manager_->ShowSaveCardPrompt(CreateSaveCardModel(&delegate));
+  EXPECT_CALL(*delegate, OnUiIgnored());
+  EXPECT_EQ(autofill_handler_.showSaveCardBottomSheetCount, 1);
+
+  manager_->ShowSaveEntityPrompt(CreateEntityModel());
+  EXPECT_EQ(manager_->GetSaveCardPromptModel(), nullptr);
+  EXPECT_NE(manager_->GetSaveEntityPromptModel(), nullptr);
+  EXPECT_EQ(autofill_handler_.dismissSaveCardBottomSheetCount, 1);
+  EXPECT_EQ(autofill_handler_.showSaveEntityDialogCount, 1);
+}
+
+// Tests that displaying a Save Card prompt preempts and expires a previous Save
+// Card prompt.
+TEST_F(AutofillPendingPromptManagerTest,
+       SaveCardPreemptsPreviousSaveCardPrompt) {
+  MockSaveCardDelegateForPromptManager* delegate1 = nullptr;
+  manager_->ShowSaveCardPrompt(CreateSaveCardModel(&delegate1));
+  EXPECT_CALL(*delegate1, OnUiIgnored());
+  EXPECT_EQ(autofill_handler_.showSaveCardBottomSheetCount, 1);
+
+  MockSaveCardDelegateForPromptManager* delegate2 = nullptr;
+  manager_->ShowSaveCardPrompt(CreateSaveCardModel(&delegate2));
+  EXPECT_EQ(autofill_handler_.dismissSaveCardBottomSheetCount, 1);
+  EXPECT_EQ(autofill_handler_.showSaveCardBottomSheetCount, 2);
+  EXPECT_NE(manager_->GetSaveCardPromptModel(), nullptr);
+}
+
+// Tests that navigation does not crash when Save Card is in progress.
+TEST_F(AutofillPendingPromptManagerTest,
+       NavigationDoesNotCrashWhenCardSaveInProgress) {
+  auto model = CreateSaveCardModel();
+  model->SetSaveCardStateForTesting(
+      autofill::SaveCardBottomSheetModel::SaveCardState::kSaveInProgress);
+  manager_->ShowSaveCardPrompt(std::move(model));
+
+  web::FakeNavigationContext context;
+  context.SetHasCommitted(true);
+  context.SetPageTransition(ui::PAGE_TRANSITION_LINK);
+  context.SetHasUserGesture(true);
+
+  EXPECT_NO_FATAL_FAILURE(manager_->DidFinishNavigation(&web_state_, &context));
+  EXPECT_EQ(autofill_handler_.dismissSaveCardBottomSheetCount, 1);
+  EXPECT_EQ(manager_->GetSaveCardPromptModel(), nullptr);
+}
+
+// Tests that WebState destruction does not crash when Save Card is in progress.
+TEST_F(AutofillPendingPromptManagerTest,
+       WebStateDestroyedDoesNotCrashWhenCardSaveInProgress) {
+  auto model = CreateSaveCardModel();
+  model->SetSaveCardStateForTesting(
+      autofill::SaveCardBottomSheetModel::SaveCardState::kSaveInProgress);
+  manager_->ShowSaveCardPrompt(std::move(model));
+
+  EXPECT_NO_FATAL_FAILURE(manager_->WebStateDestroyed(&web_state_));
+  EXPECT_EQ(autofill_handler_.dismissSaveCardBottomSheetCount, 1);
+  EXPECT_EQ(manager_->GetSaveCardPromptModel(), nullptr);
 }
 
 }  // namespace

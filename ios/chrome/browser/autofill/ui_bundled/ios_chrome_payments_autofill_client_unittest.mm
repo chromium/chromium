@@ -866,7 +866,7 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
   EXPECT_TRUE([autofill_commands() showSaveCardBottomSheetCalled]);
 
   // Retrieve the model from the tab helper to verify options.
-  std::unique_ptr<SaveCardBottomSheetModel> model =
+  SaveCardBottomSheetModel* model =
       bottomsheet_tab_helper_->GetSaveCardBottomSheetModel();
   ASSERT_TRUE(model);
 
@@ -885,7 +885,7 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
 
   payments_client()->HideCreditCardSaveAndFillDialog();
 
-  std::unique_ptr<SaveCardBottomSheetModel> model =
+  SaveCardBottomSheetModel* model =
       bottomsheet_tab_helper_->GetSaveCardBottomSheetModel();
   ASSERT_TRUE(model);
   EXPECT_EQ(model->save_card_state(),

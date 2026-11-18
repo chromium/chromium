@@ -55,7 +55,7 @@
     AutofillBottomSheetTabHelper* tabHelper =
         AutofillBottomSheetTabHelper::FromWebState(
             browser->GetWebStateList()->GetActiveWebState());
-    _saveCardBottomSheetModel = tabHelper->GetSaveCardBottomSheetModel();
+    _saveCardBottomSheetModel = tabHelper->TakeSaveCardBottomSheetModel();
     CHECK(_saveCardBottomSheetModel);
   }
   return self;

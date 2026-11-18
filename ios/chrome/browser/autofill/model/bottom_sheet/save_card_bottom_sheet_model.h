@@ -60,6 +60,13 @@ class SaveCardBottomSheetModel {
   // Calls `AutofillSaveCardDelegate` to handle the dismiss event.
   virtual void OnCanceled();
 
+  // Calls `AutofillSaveCardDelegate` to handle the ignored event when the offer
+  // concludes without an explicit user decision (e.g., when the user swipes
+  // down to dismiss the bottom sheet, the tab navigates away via a committed
+  // cross-document navigation, the tab is closed, or the offer is superseded
+  // by another prompt on the same tab).
+  virtual void OnIgnored();
+
   // Called when the user confirms the "Scan and Save" flow with edited details.
   // Forwards the user-provided details to the underlying
   // AutofillSaveCardDelegate.
@@ -149,6 +156,15 @@ class SaveCardBottomSheetModel {
   AutofillSaveCardDelegate* save_card_delegate() {
     return save_card_delegate_.get();
   }
+  const AutofillSaveCardDelegate* save_card_delegate() const {
+    return save_card_delegate_.get();
+  }
+
+  // Returns whether this prompt has already been shown to the user on screen.
+  bool has_been_shown() const { return has_been_shown_; }
+  void set_has_been_shown(bool has_been_shown) {
+    has_been_shown_ = has_been_shown;
+  }
 
   void SetSaveCardStateForTesting(SaveCardState state) {
     save_card_state_ = state;
@@ -167,6 +183,11 @@ class SaveCardBottomSheetModel {
       on_confirmation_closed_callback_;
 
   SaveCardState save_card_state_{SaveCardState::kOffered};
+
+  // Tracks whether the prompt has already been presented on screen, to prevent
+  // duplicate kShown impression logging when re-showing the prompt on tab
+  // return.
+  bool has_been_shown_ = false;
 
   base::ObserverList<Observer> observer_list_;
 

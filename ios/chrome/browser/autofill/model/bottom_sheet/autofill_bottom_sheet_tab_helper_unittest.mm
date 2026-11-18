@@ -14,6 +14,9 @@
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #import "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
+#import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
+#import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
+#import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #import "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #import "components/autofill/core/common/autofill_test_util.h"
@@ -29,6 +32,7 @@
 #import "components/personal_context/first_run/test_personal_context_first_run_service.h"
 #import "ios/chrome/browser/autofill/model/autofill_ai_save_entity_prompt_model.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_controller.h"
@@ -62,6 +66,10 @@
 
 namespace {
 
+using autofill::AutofillSaveCardDelegate;
+using autofill::AutofillSaveCardUiInfo;
+using autofill::SaveCardBottomSheetModel;
+using autofill::payments::PaymentsAutofillClient;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -93,6 +101,8 @@ class TestChromeAutofillClientIOS : public autofill::ChromeAutofillClientIOS {
 @property(nonatomic, assign) BOOL showPaymentsBottomSheetCalled;
 @property(nonatomic, assign) BOOL showSaveEntityDialogCalled;
 @property(nonatomic, assign) BOOL dismissSaveEntityDialogCalled;
+@property(nonatomic, assign) BOOL showSaveCardBottomSheetCalled;
+@property(nonatomic, assign) BOOL dismissSaveCardBottomSheetCalled;
 @end
 
 @implementation FakeAutofillCommandsForBottomSheet
@@ -106,6 +116,14 @@ class TestChromeAutofillClientIOS : public autofill::ChromeAutofillClientIOS {
 
 - (void)dismissSaveEntityDialog {
   _dismissSaveEntityDialogCalled = YES;
+}
+
+- (void)showSaveCardBottomSheetOnOriginWebState:(web::WebState*)originWebState {
+  _showSaveCardBottomSheetCalled = YES;
+}
+
+- (void)dismissSaveCardBottomSheet {
+  _dismissSaveCardBottomSheetCalled = YES;
 }
 
 - (void)dismissEditAddressBottomSheet {
@@ -1109,4 +1127,30 @@ TEST_F(AutofillBottomSheetTabHelperTest,
 
   EXPECT_EQ(helper_->GetAutofillAiSaveEntityPromptModel(), nullptr);
   EXPECT_TRUE(autofill_handler.dismissSaveEntityDialogCalled);
+}
+
+// Tests that `ShowSaveCardBottomSheet` delegates model staging to the
+// pending prompt manager and commands the UI handler.
+TEST_F(AutofillBottomSheetTabHelperTest,
+       ShowSaveCardBottomSheetDelegatesToPendingPromptManager) {
+  FakeAutofillCommandsForBottomSheet* autofill_handler =
+      [[FakeAutofillCommandsForBottomSheet alloc] init];
+  helper_->SetAutofillBottomSheetHandler(
+      (id<AutofillCommands>)autofill_handler);
+
+  auto delegate = std::make_unique<autofill::AutofillSaveCardDelegate>(
+      autofill::payments::PaymentsAutofillClient::UploadSaveCardPromptCallback(
+          base::DoNothing()),
+      autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions());
+  auto model = std::make_unique<autofill::SaveCardBottomSheetModel>(
+      autofill::AutofillSaveCardUiInfo(), std::move(delegate));
+
+  helper_->ShowSaveCardBottomSheet(std::move(model));
+  EXPECT_TRUE(autofill_handler.showSaveCardBottomSheetCalled);
+  EXPECT_NE(helper_->GetSaveCardBottomSheetModel(), nullptr);
+
+  std::unique_ptr<autofill::SaveCardBottomSheetModel> taken =
+      helper_->TakeSaveCardBottomSheetModel();
+  EXPECT_NE(taken, nullptr);
+  EXPECT_EQ(helper_->GetSaveCardBottomSheetModel(), nullptr);
 }
