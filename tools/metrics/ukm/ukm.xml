@@ -3218,7 +3218,7 @@ be describing additional metrics about the same event.
 
 <event name="Autofill.DoubleCtrlPressed">
   <owner>picarella@google.com</owner>
-  <owner>autofill-internal@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Recorded whenever the user presses Ctrl (or Cmd on macOS) twice in quick
     succession inside an editable form field or contenteditable element. This is
