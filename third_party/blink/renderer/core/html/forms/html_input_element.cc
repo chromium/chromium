@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/fileapi/file_list.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/color_chooser.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_chooser.h"
 #include "third_party/blink/renderer/core/html/forms/email_input_type.h"
@@ -979,6 +980,8 @@ void HTMLInputElement::ParseAttribute(
   } else if (name == html_names::kDefaultindeterminateAttr &&
              RuntimeEnabledFeatures::
                  InputDefaultIndeterminateAttributeEnabled()) {
+    UseCounter::CountWebDXFeature(
+        GetDocument(), WebDXFeature::kDRAFT_InputCheckboxDefaultIndeterminate);
     if (!dirty_indeterminateness_) {
       setIndeterminate(!value.IsNull());
       dirty_indeterminateness_ = false;

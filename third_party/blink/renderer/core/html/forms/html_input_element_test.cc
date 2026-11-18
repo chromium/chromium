@@ -10,6 +10,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyboard_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_wheel_event_init.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -1240,12 +1241,16 @@ TEST_F(HTMLInputElementTest, DefaultIndeterminateAttributeEnabled) {
   ScopedInputDefaultIndeterminateAttributeForTest scoped_feature(true);
   SetBodyContent("<input id=test type=checkbox defaultindeterminate>");
   EXPECT_TRUE(TestElement().indeterminate());
+  EXPECT_TRUE(GetDocument().IsWebDXFeatureCounted(
+      mojom::blink::WebDXFeature::kDRAFT_InputCheckboxDefaultIndeterminate));
 }
 
 TEST_F(HTMLInputElementTest, DefaultIndeterminateAttributeDisabled) {
   ScopedInputDefaultIndeterminateAttributeForTest scoped_feature(false);
   SetBodyContent("<input id=test type=checkbox defaultindeterminate>");
   EXPECT_FALSE(TestElement().indeterminate());
+  EXPECT_FALSE(GetDocument().IsWebDXFeatureCounted(
+      mojom::blink::WebDXFeature::kDRAFT_InputCheckboxDefaultIndeterminate));
 }
 
 // Removing a disabled <fieldset> notifies its descendants in tree order.
