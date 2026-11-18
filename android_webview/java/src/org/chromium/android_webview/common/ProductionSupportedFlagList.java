@@ -307,6 +307,10 @@ public final class ProductionSupportedFlagList {
                         + " a field is detected as a COUNTRY when it should be a STATE or vice"
                         + " versa."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_DEFER_SAME_DOCUMENT_SUBMISSION_INFERENCE,
+                "When enabled, defers same-document navigation form submission inference"
+                        + " to avoid forcing synchronous style and layout updates."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_DELAY_APC_FOR_PREDICTIONS,
                 "APC will be delayed by up to 1 second to give Autofill time to generate"
                         + " predictions."),

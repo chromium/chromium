@@ -613,6 +613,15 @@ BASE_FEATURE(kAutofillCustomFormControlExtraction,
 BASE_FEATURE(kAutofillCustomFormControlScripts,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, `FormSubmissionTracker::DidFinishSameDocumentNavigation()`
+// defers `FireSubmissionIfFormDisappear()` to a posted task so that synchronous
+// `history.pushState()` or `history.replaceState()` calls after DOM mutations
+// do not force a synchronous style and layout update via
+// `blink::WebNode::IsFocusable()`.
+// TODO(crbug.com/582024873): Remove when launched.
+BASE_FEATURE(kAutofillDeferSameDocumentSubmissionInference,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, `FormPredictionsTracker` will wait up to 1 second
 // for Autofill to finish parsing forms pesent on a given tab before capturing
 // APC. For more context see: go/autofill-actor-mode-implementation

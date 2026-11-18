@@ -24,6 +24,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/web/modules/autofill/web_form_element_observer.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
@@ -271,14 +272,18 @@ void FormSubmissionTracker::FormControlDidChange(
   if (!unsafe_render_frame()) {
     return;
   }
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  form_control_did_change_weak_ptr_factory_.InvalidateWeakPtrs();
+  // Defer `FormControlDidChangeImpl()` out of the synchronous input / JS
+  // call stack so `ExtractFormData()` (via `blink::WebNode::IsFocusable()` and
+  // `blink::WebElement::BoundsInWidget()`) does not force synchronous style and
+  // layout recalculation while the element or DOM is still updating.
   unsafe_render_frame()
       ->GetWebFrame()
       ->GetTaskRunner(blink::TaskType::kInternalAutofill)
       ->PostTask(
           FROM_HERE,
           base::BindOnce(&FormSubmissionTracker::FormControlDidChangeImpl,
-                         weak_ptr_factory_.GetWeakPtr(),
+                         form_control_did_change_weak_ptr_factory_.GetWeakPtr(),
                          form_util::GetFieldRendererId(element),
                          std::move(callback)));
 }
@@ -314,6 +319,40 @@ void FormSubmissionTracker::DidCommitProvisionalLoad(
 
 void FormSubmissionTracker::DidFinishSameDocumentNavigation() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_submission_tracker_sequence_checker_);
+  if (IsTracking() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillDeferSameDocumentSubmissionInference)) {
+    // Coalesce consecutive navigations in the same turn into the
+    // already-queued check so its FIFO position ahead of any later
+    // `FormControlDidChange()` task is preserved.
+    if (!unsafe_render_frame() ||
+        same_document_navigation_weak_ptr_factory_.HasWeakPtrs()) {
+      return;
+    }
+    // Defer `FireSubmissionIfFormDisappear()` out of the synchronous JS
+    // `history.pushState()` / `history.replaceState()` call stack so
+    // `blink::WebNode::IsFocusable()` does not force synchronous style and
+    // layout recalculation.
+    unsafe_render_frame()
+        ->GetWebFrame()
+        ->GetTaskRunner(blink::TaskType::kInternalAutofill)
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](base::WeakPtr<FormSubmissionTracker> self) {
+                  if (!self) {
+                    return;
+                  }
+                  DCHECK_CALLED_ON_VALID_SEQUENCE(
+                      self->form_submission_tracker_sequence_checker_);
+                  self->submission_triggering_events_
+                      .finished_same_document_navigation = true;
+                  self->FireSubmissionIfFormDisappear(
+                      SubmissionSource::SAME_DOCUMENT_NAVIGATION);
+                },
+                same_document_navigation_weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
   submission_triggering_events_.finished_same_document_navigation = true;
   FireSubmissionIfFormDisappear(SubmissionSource::SAME_DOCUMENT_NAVIGATION);
 }
@@ -687,6 +726,9 @@ void FormSubmissionTracker::ResetLastInteractedElements() {
   last_interacted_ = {};
   submission_triggering_events_ = {};
   form_element_observer_.reset();
+  if (same_document_navigation_weak_ptr_factory_.HasWeakPtrs()) {
+    same_document_navigation_weak_ptr_factory_.InvalidateWeakPtrs();
+  }
 }
 
 bool FormSubmissionTracker::IsTracking() const {
