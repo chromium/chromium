@@ -9,6 +9,7 @@ import os
 import sys
 import unittest
 import zlib
+from unittest import mock
 
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
@@ -17,6 +18,7 @@ import grit.format.resource_map
 from grit.node import misc
 from grit.node import include
 from grit.node import empty
+from grit.node import brotli_util
 from grit import constants
 from grit import util
 
@@ -39,6 +41,31 @@ def checkIsGzipped(filename, compress_attr):
   decompressed_data = zlib.decompress(compressed, 16 + zlib.MAX_WBITS)
   expected = util.ReadFile(os.path.join(test_data_root, filename), util.BINARY)
   return expected == decompressed_data
+
+
+def checkIsBrotli(filename, compress_attr):
+  data = b'code cache contents'
+  with util.TempDir({filename: data}, mode='wb') as temp_dir:
+    root = util.ParseGrdForUnittest(
+      '''
+        <includes>
+          <include name="TEST_CODE_CACHE" file="%s" %s type="BINDATA"/>
+        </includes>'''
+      % (filename, compress_attr),
+      base_dir=temp_dir.GetPath(),
+    )
+    (node,) = root.GetChildrenOfType(include.IncludeNode)
+    with mock.patch.object(
+      brotli_util, 'BrotliCompress', return_value=b'compressed'
+    ) as compress:
+      compressed = node.GetDataPackValue(
+        lang='en', gender=constants.DEFAULT_GENDER, encoding=util.BINARY
+      )
+    compress.assert_called_once_with(data)
+  expected = (
+    constants.BROTLI_CONST + len(data).to_bytes(6, 'little') + b'compressed'
+  )
+  return expected == compressed
 
 
 class IncludeNodeUnittest(unittest.TestCase):
@@ -109,6 +136,10 @@ class IncludeNodeUnittest(unittest.TestCase):
     self.assertTrue(checkIsGzipped('test_css.css', 'compress="default"'))
     self.assertTrue(checkIsGzipped('test_svg.svg', 'compress="default"'))
     self.assertTrue(checkIsGzipped('test_json.json', 'compress="default"'))
+
+  def testCompressBrotliByDefault(self):
+    self.assertTrue(checkIsBrotli('test.code_cache', ''))
+    self.assertTrue(checkIsBrotli('test.code_cache', 'compress="default"'))
 
   def testSkipInResourceMap(self):
     root = util.ParseGrdForUnittest(

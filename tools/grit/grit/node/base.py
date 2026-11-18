@@ -45,8 +45,14 @@ class Node:
   _CONTENT_TYPE_CDATA = 1  # Only CDATA, no children.
   _CONTENT_TYPE_MIXED = 2  # CDATA and children, possibly intermingled
 
-  # Types of files to be compressed by default.
-  _COMPRESS_BY_DEFAULT_EXTENSIONS = ('.js', '.html', '.css', '.svg', '.json')
+  _DEFAULT_COMPRESSION_BY_EXTENSION = {
+    '.code_cache': 'brotli',
+    '.css': 'gzip',
+    '.html': 'gzip',
+    '.js': 'gzip',
+    '.json': 'gzip',
+    '.svg': 'gzip',
+  }
 
   # Types of files to disallow compressing, as it provides no benefit, and can
   # potentially even make the file larger.
@@ -693,14 +699,14 @@ class Node:
       and self.attrs.get('file').endswith(self._COMPRESS_DISALLOWED_EXTENSIONS)
     ), 'Disallowed |compress| attribute found for %s' % self.attrs.get('name')
 
-    # Compress JS, HTML, CSS and SVG files by default (gzip), unless |compress|
-    # is explicitly specified.
-    compress_by_default = compress == 'default' and self.attrs.get(
-      'file'
-    ).endswith(self._COMPRESS_BY_DEFAULT_EXTENSIONS)
+    if compress == 'default':
+      _, dot, extension = self.attrs.get('file').rpartition('.')
+      compress = self._DEFAULT_COMPRESSION_BY_EXTENSION.get(
+        dot + extension, 'default'
+      )
 
     # Compression may happen asynchronously (see compress_util).
-    if compress == 'gzip' or compress_by_default:
+    if compress == 'gzip':
       return compress_util.CompressMaybeAsync(
         grit.format.gzip_string.GzipString, data, prefix=prefix
       )
