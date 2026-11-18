@@ -18,6 +18,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwSettings;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -287,5 +288,131 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
                 "2",
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
                         awContents2, client2, "test.getValue()"));
+    }
+
+    // Legacy apps targeting <= M rely on allowEmptyDocumentPersistence to reuse an unowned main
+    // frame's Window across its initial navigation, so retained bridge objects must keep working.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-JavaBridge"})
+    public void testMainFrameObjectPreservedAcrossInitialNavigation() throws Throwable {
+        class Foo {
+            private final Object mInner = new Object();
+
+            @JavascriptInterface
+            public Object getInner() {
+                return mInner;
+            }
+        }
+        AwActivityTestRule.TestDependencyFactory factory =
+                new AwActivityTestRule.TestDependencyFactory() {
+                    @Override
+                    public AwSettings createAwSettings(
+                            AwContents awContents,
+                            boolean isAccessFromFileUrlsGrantedByDefault,
+                            boolean supportsLegacyQuirks,
+                            boolean allowEmptyDocumentPersistence,
+                            boolean allowGeolocationOnInsecureOrigins,
+                            boolean doNotUpdateSelectionOnMutatingSelectionRange) {
+                        return new AwSettings(
+                                awContents,
+                                isAccessFromFileUrlsGrantedByDefault,
+                                supportsLegacyQuirks,
+                                /* allowEmptyDocumentPersistence= */ true,
+                                allowGeolocationOnInsecureOrigins,
+                                doNotUpdateSelectionOnMutatingSelectionRange);
+                    }
+                };
+        AwContents awContents =
+                mActivityTestRule
+                        .createAwTestContainerViewOnMainSync(mContentsClient, false, factory)
+                        .getAwContents();
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents, new Foo(), "test");
+
+        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                awContents,
+                mContentsClient,
+                "window.saved = window.test; window.savedInner = window.test.getInner();");
+        mActivityTestRule.loadDataSync(
+                awContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                "<html>first</html>",
+                "text/html",
+                false);
+        Assert.assertEquals(
+                "true",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        awContents,
+                        mContentsClient,
+                        "window.saved.getInner() === window.savedInner"
+                                + " && window.test.getInner() === window.savedInner"));
+    }
+
+    // Regression test for crbug.com/575988978. WebView keeps a child frame's RenderFrame for its
+    // first navigation, so objects that another frame took from its initial empty document must
+    // stop working once a cross-origin document commits.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-JavaBridge"})
+    public void testChildFrameObjectInvalidatedOnNavigation() throws Throwable {
+        class Foo {
+            private final Object mInner = new Object();
+
+            @JavascriptInterface
+            public Object getInner() {
+                return mInner;
+            }
+
+            @JavascriptInterface
+            public boolean isNull(Object object) {
+                return object == null;
+            }
+        }
+        AwContents awContents = mTestContainerView.getAwContents();
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents, new Foo(), "test");
+
+        // The servers are cross-origin as their ports differ.
+        try (TestWebServer webServer = TestWebServer.start();
+                TestWebServer childServer = TestWebServer.startAdditional()) {
+            // Runs while the child frame is still on its initial empty document, after the HTTP
+            // request has been sent, but before the HTTP response is received.
+            Runnable retainObject =
+                    () -> {
+                        try {
+                            mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                    awContents,
+                                    mContentsClient,
+                                    "window.retained = frames[0].test;"
+                                            + "window.retainedGetInner = retained.getInner;"
+                                            + "window.retainedInner = retained.getInner();");
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    };
+            String childUrl =
+                    childServer.setResponseWithRunnableAction(
+                            "/child.html", "<html>child</html>", null, retainObject);
+            String mainUrl =
+                    webServer.setResponse(
+                            "/main.html", "<iframe src='" + childUrl + "'></iframe>", null);
+            mActivityTestRule.loadUrlSync(
+                    awContents, mContentsClient.getOnPageFinishedHelper(), mainUrl);
+
+            Assert.assertEquals(
+                    "\"invalidated\"",
+                    mActivityTestRule.executeJavaScriptAndWaitForResult(
+                            awContents,
+                            mContentsClient,
+                            "(function() {"
+                                    + "  if (!window.retainedInner) return 'not retained';"
+                                    + "  if (retained.getInner) return 'has methods';"
+                                    + "  try { retainedGetInner.call(test); return 'callable'; }"
+                                    + "  catch (e) {}"
+                                    + "  if (!test.isNull(retainedInner)) return 'passable';"
+                                    + "  return 'invalidated';"
+                                    + "})()"));
+        }
     }
 }

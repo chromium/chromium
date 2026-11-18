@@ -55,6 +55,10 @@ bool GinJavaBridgeValueConverter::FromV8Object(
   if (!gin::ConvertFromV8(isolate, value, &unwrapped)) {
     return false;
   }
+  // A detached object has no remote, and no longer refers to a Java object.
+  if (!unwrapped->GetRemote()) {
+    return false;
+  }
   *out = GinJavaBridgeValue::CreateObjectIDValue(unwrapped->object_id());
   return true;
 }

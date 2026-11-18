@@ -23,8 +23,10 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content.browser.JavaBridgeActivityTestRule.Controller;
+import org.chromium.content_public.browser.JavaScriptCallback;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
+import org.chromium.content_public.common.IsolatedWorldIds;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -1295,5 +1297,36 @@ public class JavaBridgeBasicsTest {
 
         mActivityTestRule.executeJavaScript("testObject.method()");
         Assert.assertEquals(1, mTestController.waitForIntValue());
+    }
+
+    // Injected objects are only bound to the main world, which is why
+    // GinJavaBridgeDispatcher only cleans up when the main-world context is released.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-JavaBridge"})
+    public void testInjectedObjectNotExposedToIsolatedWorld() throws Throwable {
+        Assert.assertEquals("object", executeJavaScriptAndGetStringResult("typeof testController"));
+
+        final String[] result = new String[1];
+        class ResultCallback extends Controller implements JavaScriptCallback {
+            @Override
+            public void handleJavaScriptResult(String jsonResult) {
+                result[0] = jsonResult;
+                notifyResultIsReady();
+            }
+        }
+        final ResultCallback callback = new ResultCallback();
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () ->
+                                mActivityTestRule
+                                        .getWebContents()
+                                        .getMainFrame()
+                                        .executeJavaScriptInIsolatedWorld(
+                                                "typeof testController",
+                                                IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END,
+                                                callback));
+        callback.waitForResult();
+        Assert.assertEquals("\"undefined\"", result[0]);
     }
 }

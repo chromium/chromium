@@ -25,6 +25,7 @@ import org.chromium.content_public.browser.JavaScriptCallback;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.net.test.util.TestWebServer;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.CountDownLatch;
@@ -306,6 +307,49 @@ public class JavaBridgeChildFrameTest {
                 mActivityTestRule.getWebContents(), "for (var i = 0; i < 2; ++i) gc();");
         Runtime.getRuntime().gc();
         Assert.assertNull(testObject.mWeakRefForInner.get());
+    }
+
+    // Same-origin initial empty child frames reuse their Window and V8 context across their
+    // first navigation, so retained bridge objects must keep working.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-JavaBridge"})
+    public void testSameOriginChildFrameObjectPreservedOnNavigation() throws Throwable {
+        class Foo {
+            private final Object mInner = new Object();
+
+            @JavascriptInterface
+            public Object getInner() {
+                return mInner;
+            }
+        }
+        try (TestWebServer webServer = TestWebServer.start()) {
+            mActivityTestRule.injectObjectAndReload(new Foo(), "test");
+            Runnable retainObject =
+                    () -> {
+                        executeJavaScriptAndGetResult(
+                                mActivityTestRule.getWebContents(),
+                                "window.retained = frames[0].test;"
+                                        + "window.retainedInner = retained.getInner();");
+                    };
+            String childUrl =
+                    webServer.setResponseWithRunnableAction(
+                            "/child.html", "<html>child</html>", null, retainObject);
+            String mainUrl =
+                    webServer.setResponse(
+                            "/main.html", "<iframe src='" + childUrl + "'></iframe>", null);
+            mActivityTestRule.loadUrl(
+                    mActivityTestRule.getWebContents().getNavigationController(),
+                    mActivityTestRule.getTestCallBackHelperContainer(),
+                    new LoadUrlParams(mainUrl));
+
+            Assert.assertEquals(
+                    "true",
+                    executeJavaScriptAndGetResult(
+                            mActivityTestRule.getWebContents(),
+                            "retained.getInner() === retainedInner"
+                                    + " && frames[0].test.getInner() === retainedInner"));
+        }
     }
 
     private String executeJavaScriptAndGetResult(

@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/origin_matcher/origin_matcher.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/renderer/java/gin_java_bridge_object.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
@@ -18,8 +19,6 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "url/origin.h"
 #include "v8/include/v8-context.h"
-#include "v8/include/v8-isolate.h"
-#include "v8/include/v8-object.h"
 
 namespace content {
 
@@ -80,18 +79,23 @@ void GinJavaBridgeDispatcher::DidClearWindowObject() {
 void GinJavaBridgeDispatcher::WillReleaseScriptContext(
     v8::Local<v8::Context> context,
     int32_t world_id) {
-  v8::Isolate* isolate =
-      render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
-  v8::HandleScope handle_scope(isolate);
-  for (const auto& [id, object] : objects_) {
-    if (object) {
-      v8::Local<v8::Object> wrapper;
-      if (object->GetWrapper(isolate).ToLocal(&wrapper)) {
-        if (wrapper->GetCreationContextChecked() == context) {
-          object->ClearTemplateCache();
-        }
+  if (world_id == ISOLATED_WORLD_ID_GLOBAL) {
+    // Objects are only exposed to the main world, so its context going away
+    // means that their document has too. Detach them so that wrappers kept by
+    // another frame stop working. This is not done in DidClearWindowObject()
+    // as Blink can keep the window, and so its objects, across a navigation.
+    //
+    // TODO(crbug.com/575988978): Objects and method callbacks hold a WeakPtr
+    // to the dispatcher but belong to this script context, so they go null
+    // here while the dispatcher lives on. Move `objects_` and the factory into
+    // a per-context object and destroy that instead.
+    weak_ptr_factory_.InvalidateWeakPtrs();
+    for (const auto& [id, object] : objects_) {
+      if (object) {
+        object->Detach();
       }
     }
+    objects_.clear();
   }
 }
 

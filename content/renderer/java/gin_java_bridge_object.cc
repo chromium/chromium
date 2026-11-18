@@ -85,6 +85,11 @@ void GinJavaBridgeObject::ClearTemplateCache() {
   template_cache_.Clear();
 }
 
+void GinJavaBridgeObject::Detach() {
+  ClearTemplateCache();
+  remote_.reset();
+}
+
 gin::ObjectTemplateBuilder GinJavaBridgeObject::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::WrappableWithNamedPropertyInterceptor<
@@ -95,10 +100,10 @@ gin::ObjectTemplateBuilder GinJavaBridgeObject::GetObjectTemplateBuilder(
 v8::Local<v8::Value> GinJavaBridgeObject::GetNamedProperty(
     v8::Isolate* isolate,
     const std::string& property) {
+  if (!dispatcher_) {
+    return v8::Local<v8::Value>();
+  }
   if (!known_methods_.contains(property)) {
-    if (!dispatcher_) {
-      return v8::Local<v8::Value>();
-    }
     if (remote_) {
       bool result = false;
       remote_->HasMethod(property, &result);

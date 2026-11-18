@@ -71,6 +71,9 @@ class GinJavaBridgeObject
   // Clearing this cache severs the roots to allow the context to be GC'ed.
   void ClearTemplateCache();
 
+  // Clears the template cache and closes the connection to the Java object.
+  void Detach();
+
   GinJavaBridgeObject(v8::Isolate* isolate,
                       const base::WeakPtr<GinJavaBridgeDispatcher>& dispatcher,
                       GinJavaBridgeDispatcher::ObjectID object_id);
