@@ -2255,7 +2255,13 @@ void TestLauncher::RunTests() {
                       original_test_names.end());
   }
 
-  broken_threshold_ = std::max(static_cast<size_t>(20), tests_.size() / 10);
+  // Scale the broken threshold by the expected number of tests on the shard
+  // rather than the filtered `test_names.size()`. This prevents the
+  // threshold from shrinking during filtered retry runs.
+  CHECK_GT(total_shards_, 0);
+  const size_t shard_test_count =
+      (tests_.size() * repeats_per_iteration_) / total_shards_;
+  broken_threshold_ = std::max(static_cast<size_t>(20), shard_test_count / 10);
 
   test_started_count_ = test_names.size();
 
