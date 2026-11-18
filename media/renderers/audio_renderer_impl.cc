@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -45,7 +46,17 @@
 
 namespace media {
 
+BASE_FEATURE(kResetExcessiveAudioRenderingDelay,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
+// Hardware and OS audio output latency is typically <500ms (and at most ~4-6s
+// on deep-buffered sinks such as Cast AUDIO_PREFETCH or multizone group audio).
+// Delays beyond 20s indicate a corrupt OS/HAL timestamp (such as a 32-bit
+// unsigned frame position wraparound producing ~24.85h at 48kHz, or a standby
+// clock jump).
+constexpr base::TimeDelta kMaxPlausibleRenderingDelay = base::Seconds(20);
+
 perfetto::NamedTrack GetTracingTrack(const AudioRendererImpl* renderer) {
   return perfetto::NamedTrack::FromPointer("media::AudioRendererImpl",
                                            renderer);
@@ -1381,6 +1392,14 @@ int AudioRendererImpl::Render(base::TimeDelta delay,
         << "Large rendering delay (" << delay.InSecondsF()
         << "s) detected; video may stall or be otherwise out of sync with "
            "audio.";
+    // Reset implausibly large delays to zero so `frames_delayed` cannot
+    // overflow `int` in `AudioClock` or freeze video for hours.
+    // TODO(crbug.com/579139544): Revisit once AudioTimestampHelper's
+    // TimeToFrames() and FramesToTime() saturate without overflow.
+    if (delay > kMaxPlausibleRenderingDelay &&
+        base::FeatureList::IsEnabled(kResetExcessiveAudioRenderingDelay)) {
+      delay = base::TimeDelta();
+    }
   }
 
   int frames_written = 0;

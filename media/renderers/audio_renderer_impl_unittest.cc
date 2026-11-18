@@ -230,6 +230,7 @@ class AudioRendererImplTest : public ::testing::Test,
         base::BindRepeating(&AudioRendererImplTest::CreateAudioDecoderForTest,
                             base::Unretained(this)),
         &mock_media_log_, MediaPlayerLoggingID(0), nullptr);
+    renderer_->tick_clock_ = &tick_clock_;
     testing::Mock::VerifyAndClearExpectations(&demuxer_stream_);
     ConfigureDemuxerStream(true);
   }
@@ -1388,6 +1389,47 @@ TEST_F(AudioRendererImplTest, RenderingDelayDoesNotOverflow) {
   Preroll(base::TimeDelta(), base::TimeDelta::Max(), PIPELINE_OK);
   StartTicking();
   EXPECT_TRUE(ConsumeBufferedData(OutputFrames(1)));
+}
+
+TEST_F(AudioRendererImplTest, ExcessiveRenderingDelayIsReset) {
+  ConfigureWithMockMediaLog();
+  Initialize();
+  Preroll();
+  StartTicking();
+
+  // A corrupt hardware delay beyond 20s (e.g., 0xffffe806 = 4,294,961,158
+  // frames from a 32-bit unsigned frame position wraparound, which would
+  // otherwise narrow to -6138 in `int` and crash `AudioClock::WroteAudio()` or
+  // freeze media time for ~24.85h) should be logged and reset to zero so media
+  // time continues advancing.
+  const base::TimeDelta kWrapped32BitDelay = AudioTimestampHelper::FramesToTime(
+      INT64_C(0xffffe806), hardware_params_.sample_rate());
+  EXPECT_MEDIA_LOG_ON(mock_media_log_,
+                      testing::HasSubstr("Large rendering delay"));
+  EXPECT_TRUE(ConsumeBufferedData(OutputFrames(256), kWrapped32BitDelay));
+  EXPECT_TRUE(ConsumeBufferedData(OutputFrames(256), kWrapped32BitDelay));
+  EXPECT_GT(CurrentMediaTime(), base::TimeDelta());
+
+  StopTicking();
+  tick_clock_.Advance(base::Seconds(1));
+  StartTicking();
+  EXPECT_TRUE(ConsumeBufferedData(OutputFrames(256), kWrapped32BitDelay));
+}
+
+TEST_F(AudioRendererImplTest,
+       ExcessiveRenderingDelayNotResetWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kResetExcessiveAudioRenderingDelay);
+
+  ConfigureWithMockMediaLog();
+  Initialize();
+  Preroll();
+  StartTicking();
+
+  EXPECT_MEDIA_LOG_ON(mock_media_log_,
+                      testing::HasSubstr("Large rendering delay"));
+  EXPECT_TRUE(ConsumeBufferedData(OutputFrames(256), base::Seconds(30)));
+  EXPECT_EQ(CurrentMediaTime(), base::TimeDelta());
 }
 
 TEST_F(AudioRendererImplTest, ImmediateEndOfStream) {

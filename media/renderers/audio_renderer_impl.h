@@ -24,6 +24,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
@@ -48,6 +49,12 @@ class TickClock;
 }  // namespace base
 
 namespace media {
+
+// Kill switch for resetting implausibly large (>20s) OS/hardware rendering
+// delays in AudioRendererImpl::Render() to zero. Remove after M160 stable.
+// TODO(crbug.com/579139544): Revisit once AudioTimestampHelper::TimeToFrames()
+// and FramesToTime() saturate without overflow.
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kResetExcessiveAudioRenderingDelay);
 
 class AudioBufferConverter;
 class AudioBus;
