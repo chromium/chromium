@@ -24,6 +24,7 @@ TEST(GPUConfig, CollectGraphicsInfoDawnGLES) {
   EXPECT_EQ(contextBefore, eglGetCurrentContext());
 #if BUILDFLAG(USE_DAWN)
   histograms.ExpectTotalCount("GPU.WebGPU.Support", 1);
+  histograms.ExpectTotalCount("GPU.WebGPU.ReachTier", 1);
 #endif
 
   CollectDawnInfo(gpu_preferences, false, &dawn_info_list);

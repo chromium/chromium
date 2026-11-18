@@ -26,6 +26,7 @@
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/config/webgpu_blocklist_impl.h"
 #include "skia/buildflags.h"
@@ -316,6 +317,65 @@ void GetDawnTogglesForSkiaGraphite(
 }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 
+bool IsMicrosoftWarp(const wgpu::AdapterInfo& info) {
+  constexpr uint32_t kMicrosoftVendorId = 0x1414;
+  constexpr uint32_t kWarpDeviceId = 0x8c;
+  return info.vendorID == kMicrosoftVendorId && info.deviceID == kWarpDeviceId;
+}
+
+// LINT.IfChange(WebGPUReachTier)
+enum class WebGPUReachTier {
+  // Core (D3D12, Metal, Vulkan) works today.
+  kCoreHardwareSupported = 0,
+  // Blocked by policy/settings (e.g. AAPM https://crbug.com/467747648 or
+  // --disable-gpu), not hardware.
+  kCoreDisabledByPolicy = 1,
+  // Needs Linux Vulkan or Vulkan-GL interop rollout
+  // (https://crbug.com/40218893, https://crbug.com/442791440).
+  kLinuxVulkanInteropAvailable = 2,
+
+  // Compatibility Mode (OpenGLES) works today.
+  kCompatHardwareSupported = 3,
+  // Blocked by policy/settings (e.g. AAPM https://crbug.com/467747648 or
+  // --disable-gpu), not hardware.
+  kCompatDisabledByPolicy = 4,
+  // Needs Dawn OpenGLES on native GLES without ANGLE
+  // (https://crbug.com/576008842) or OpenGLES Compat on ChromeOS/Linux.
+  kOpenGLESCompatAvailable = 5,
+
+  // Needs WebGPU Compatibility Mode on D3D11 (https://crbug.com/41479539).
+  kD3D11HardwareAvailable = 6,
+  // Needs SharedTextureMemory / external image compositor interop
+  // (e.g. ChromeOS DMA-buf/sync FD, https://crbug.com/330385376).
+  kHardwareMissingExternalTextureSupport = 7,
+  // Needs driver/device qualification to relax webgpu_blocklist_impl.cc
+  // (e.g. Android https://crbug.com/40643150, Win https://crbug.com/446254136).
+  kHardwareBlocklisted = 8,
+  // Needs CPU adapter qualification on Microsoft WARP
+  // (https://crbug.com/40057808).
+  kSoftwareWarpAvailable = 9,
+  // No hardware or WARP adapter (e.g. GLES 2.0/3.0 only, or SwiftShader).
+  kNone = 10,
+
+  kMaxValue = kNone,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/enums.xml:WebGPUReachTier)
+
+void RecordWebGPUReachTier(WebGPUReachTier tier) {
+  base::UmaHistogramEnumeration("GPU.WebGPU.ReachTier", tier);
+
+  const gl::GLImplementationParts gl_impl = gl::GetGLImplementationParts();
+  if (gl_impl.gl == gl::kGLImplementationDisabled ||
+      gl_impl.gl == gl::kGLImplementationNone) {
+    base::UmaHistogramEnumeration("GPU.WebGPU.ReachTier.WebGLUnavailable",
+                                  tier);
+  } else if (gl::IsSoftwareGLImplementation(gl_impl)) {
+    base::UmaHistogramEnumeration("GPU.WebGPU.ReachTier.WebGLSoftware", tier);
+  } else {
+    base::UmaHistogramEnumeration("GPU.WebGPU.ReachTier.WebGLHardware", tier);
+  }
+}
+
 void ReportWebGPUAdapterMetrics(
     base::span<dawn::native::Adapter> core_adapters) {
   WGPULimits max_limits{};
@@ -361,6 +421,7 @@ void ReportWebGPUAdapterMetrics(
 }
 
 void ReportWebGPUSupportMetrics(dawn::native::Instance* instance,
+                                const gpu::GpuPreferences& gpu_preferences,
                                 const wgpu::ChainedStruct* chained_toggles) {
   static BASE_FEATURE(kCollectWebGPUSupportMetrics,
                       base::FEATURE_ENABLED_BY_DEFAULT);
@@ -384,8 +445,12 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance,
 
   bool has_core_blocklisted_adapter = false;
   bool has_core_adapter = false;
+  bool has_core_usable_adapter = false;
   bool has_compat_blocklisted_adapter = false;
   bool has_compat_adapter = false;
+  bool has_d3d11_hw_adapter = false;
+  bool has_d3d11_blocklisted_adapter = false;
+  bool has_warp_adapter = false;
 
   wgpu::RequestAdapterOptions adapter_options = {};
   adapter_options.nextInChain = chained_toggles;
@@ -396,6 +461,7 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance,
   dawn::native::d3d::RequestAdapterOptionsLUID adapter_options_luid = {};
   if (!gpu::GetActiveAdapterLuid(&adapter_options_luid.adapterLUID)) {
     UMA_HISTOGRAM_ENUMERATION("GPU.WebGPU.Support", WebGPUSupport::kNone);
+    RecordWebGPUReachTier(WebGPUReachTier::kNone);
     ReportWebGPUAdapterMetrics({});
     return;
   }
@@ -421,21 +487,44 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance,
 
     switch (info.adapterType) {
       case wgpu::AdapterType::CPU:
-        // Skip CPU adapters.
+        has_warp_adapter |= IsMicrosoftWarp(info);
         break;
       default:
         if (gpu::IsWebGPUAdapterBlocklisted(adapter).blocked) {
           has_core_blocklisted_adapter = true;
         } else {
           has_core_adapter = true;
+          has_core_usable_adapter |=
+              gpu::WebGPUAdapterSupportsExternalTextures(native_adapter);
         }
     }
   }
 
-#if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+#if BUILDFLAG(IS_WIN)
+  if (!has_core_usable_adapter) {
+    adapter_options.backendType = wgpu::BackendType::D3D11;
+    adapter_options.featureLevel = wgpu::FeatureLevel::Compatibility;
+    for (const dawn::native::Adapter& native_adapter :
+         instance->EnumerateAdapters(&adapter_options)) {
+      wgpu::Adapter adapter(native_adapter.Get());
+      wgpu::AdapterInfo info = {};
+      adapter.GetInfo(&info);
+
+      if (info.adapterType == wgpu::AdapterType::CPU) {
+        has_warp_adapter |= IsMicrosoftWarp(info);
+      } else if (gpu::IsWebGPUAdapterBlocklisted(
+                     adapter, {.ignores = WebGPUBlocklistReason::D3D11})
+                     .blocked) {
+        has_d3d11_blocklisted_adapter = true;
+      } else {
+        has_d3d11_hw_adapter = true;
+      }
+    }
+  }
+#elif BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   // Core backends always take precedence in WebGPUSupport, so only probe
   // OpenGLES compatibility mode when no usable Core adapter was found.
-  if (!has_core_adapter) {
+  if (!has_core_usable_adapter) {
     adapter_options.backendType = wgpu::BackendType::OpenGLES;
     adapter_options.featureLevel = wgpu::FeatureLevel::Compatibility;
 
@@ -495,6 +584,61 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance,
 
   UMA_HISTOGRAM_ENUMERATION("GPU.WebGPU.Support", tier);
   ReportWebGPUAdapterMetrics(core_adapters);
+
+  const gl::GLImplementationParts gl_impl = gl::GetGLImplementationParts();
+  const bool hardware_gl_enabled =
+      gl_impl.gl != gl::kGLImplementationDisabled &&
+      gl_impl.gl != gl::kGLImplementationNone &&
+      !gl::IsSoftwareGLImplementation(gl_impl);
+  const bool webgpu_allowed =
+      hardware_gl_enabled && gpu_preferences.enable_webgpu &&
+      base::FeatureList::IsEnabled(features::kWebGPUService);
+#if BUILDFLAG(IS_LINUX)
+  const bool core_enabled =
+      gpu_preferences.gr_context_type == gpu::GrContextType::kVulkan ||
+      gpu_preferences.gr_context_type == gpu::GrContextType::kGraphiteDawn ||
+      gpu_preferences.enable_webgpu_on_vk_via_gl_interop;
+#else
+  const bool core_enabled = true;
+#endif
+#if BUILDFLAG(IS_ANDROID)
+  const bool compat_enabled =
+      gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+      base::FeatureList::IsEnabled(features::kWebGPUCompatibilityMode) &&
+      base::FeatureList::IsEnabled(features::kWebGPUAndroidOpenGLES);
+#else
+  const bool compat_enabled = false;
+#endif
+
+  if (has_core_usable_adapter) {
+    if (!core_enabled) {
+      RecordWebGPUReachTier(WebGPUReachTier::kLinuxVulkanInteropAvailable);
+    } else if (!webgpu_allowed) {
+      RecordWebGPUReachTier(WebGPUReachTier::kCoreDisabledByPolicy);
+    } else {
+      RecordWebGPUReachTier(WebGPUReachTier::kCoreHardwareSupported);
+    }
+  } else if (has_compat_adapter) {
+    if (!compat_enabled) {
+      RecordWebGPUReachTier(WebGPUReachTier::kOpenGLESCompatAvailable);
+    } else if (!webgpu_allowed) {
+      RecordWebGPUReachTier(WebGPUReachTier::kCompatDisabledByPolicy);
+    } else {
+      RecordWebGPUReachTier(WebGPUReachTier::kCompatHardwareSupported);
+    }
+  } else if (has_d3d11_hw_adapter) {
+    RecordWebGPUReachTier(WebGPUReachTier::kD3D11HardwareAvailable);
+  } else if (has_core_adapter) {
+    RecordWebGPUReachTier(
+        WebGPUReachTier::kHardwareMissingExternalTextureSupport);
+  } else if (has_core_blocklisted_adapter || has_compat_blocklisted_adapter ||
+             has_d3d11_blocklisted_adapter) {
+    RecordWebGPUReachTier(WebGPUReachTier::kHardwareBlocklisted);
+  } else if (has_warp_adapter) {
+    RecordWebGPUReachTier(WebGPUReachTier::kSoftwareWarpAvailable);
+  } else {
+    RecordWebGPUReachTier(WebGPUReachTier::kNone);
+  }
 }
 #endif  // BUILDFLAG(USE_DAWN)
 
@@ -990,7 +1134,7 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
 #endif
 
   if (collect_metrics) {
-    ReportWebGPUSupportMetrics(instance.get(), &dawn_toggles);
+    ReportWebGPUSupportMetrics(instance.get(), gpu_preferences, &dawn_toggles);
     return;
   }
 
@@ -1132,6 +1276,32 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
       }
     }
   }
+#endif  // BUILDFLAG(USE_DAWN)
+}
+
+bool WebGPUAdapterSupportsExternalTextures(
+    const dawn::native::Adapter& native_adapter) {
+#if BUILDFLAG(USE_DAWN)
+  wgpu::Adapter adapter(native_adapter.Get());
+#if BUILDFLAG(IS_CHROMEOS)
+  return adapter.HasFeature(wgpu::FeatureName::SharedTextureMemoryDmaBuf) &&
+         adapter.HasFeature(wgpu::FeatureName::SharedFenceSyncFD) &&
+         native_adapter.SupportsExternalImages();
+#elif BUILDFLAG(IS_APPLE)
+  return adapter.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface);
+#elif BUILDFLAG(IS_ANDROID)
+  wgpu::AdapterInfo info = {};
+  adapter.GetInfo(&info);
+  if (info.backendType == wgpu::BackendType::OpenGLES) {
+    return native_adapter.SupportsExternalImages();
+  }
+  return adapter.HasFeature(
+      wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer);
+#else
+  return native_adapter.SupportsExternalImages();
+#endif
+#else
+  return false;
 #endif  // BUILDFLAG(USE_DAWN)
 }
 

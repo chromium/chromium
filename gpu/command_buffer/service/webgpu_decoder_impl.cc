@@ -52,6 +52,7 @@
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "gpu/config/gpu_info_collector.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/webgpu_blocklist_impl.h"
 #include "gpu/webgpu/callback.h"
@@ -74,8 +75,6 @@
 #if BUILDFLAG(IS_WIN)
 #include <dawn/native/D3D11Backend.h>
 #include <dawn/native/D3D12Backend.h>
-
-#include "gpu/config/gpu_info_collector.h"
 #endif
 
 namespace gpu {
@@ -1851,38 +1850,14 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     // The adapter must be able to import external textures, or it must be a
     // SwiftShader adapter. For SwiftShader, we will perform a manual
     // upload/readback to/from shared images.
-    bool supports_external_textures = false;
-
-#if BUILDFLAG(IS_CHROMEOS)
-    if (!adapter.HasFeature(wgpu::FeatureName::SharedTextureMemoryDmaBuf) ||
-        !adapter.HasFeature(wgpu::FeatureName::SharedFenceSyncFD)) {
+#if BUILDFLAG(IS_ANDROID)
+    if (adapter_info.backendType == wgpu::BackendType::OpenGLES &&
+        !base::FeatureList::IsEnabled(features::kWebGPUAndroidOpenGLES)) {
       return false;
     }
 #endif
-
-#if BUILDFLAG(IS_APPLE)
-    supports_external_textures =
-        adapter.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface);
-#elif BUILDFLAG(IS_ANDROID)
-    if (adapter_info.backendType == wgpu::BackendType::OpenGLES) {
-      if (!base::FeatureList::IsEnabled(features::kWebGPUAndroidOpenGLES)) {
-        return false;
-      }
-      supports_external_textures = native_adapter.SupportsExternalImages();
-    } else {
-      supports_external_textures = adapter.HasFeature(
-          wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer);
-    }
-#else
-    // Chromium is in the midst of being transitioned to SharedTextureMemory
-    // platform by platform. On platforms that have not yet been transitioned,
-    // Chromium uses the platform-specific ExternalImage API surfaces.  NOTE:
-    // These platforms should be switched to the corresponding
-    // SharedTextureMemory feature check as they are converted to using
-    // SharedTextureMemory.
-    supports_external_textures = native_adapter.SupportsExternalImages();
-#endif
-    if (!(supports_external_textures || is_swiftshader)) {
+    if (!(WebGPUAdapterSupportsExternalTextures(native_adapter) ||
+          is_swiftshader)) {
       return false;
     }
 

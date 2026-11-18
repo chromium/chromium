@@ -2173,6 +2173,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.WebGPU.ReachTier{WebGLState}" enum="WebGPUReachTier"
+    expires_after="2027-05-06">
+  <owner>arthursonzogni@chromium.org</owner>
+  <owner>cwallez@chromium.org</owner>
+  <owner>geofflang@chromium.org</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Highest WebGPU tier supported by the device (or the project/gate needed to
+    unlock it), recorded for {WebGLState}. Used to measure how many WebGL users
+    would be lost by switching to WebGL-on-WebGPU and which project would unlock
+    them. Recorded during delayed Dawn GPU info collection in the GPU process.
+  </summary>
+  <token key="WebGLState">
+    <variant name="" summary="all devices"/>
+    <variant name=".WebGLHardware" summary="devices with hardware WebGL"/>
+    <variant name=".WebGLSoftware"
+        summary="devices with software WebGL (D3D11 WARP or SwiftShader)"/>
+    <variant name=".WebGLUnavailable" summary="devices with WebGL disabled"/>
+  </token>
+</histogram>
+
 <histogram
     name="GPU.{ANGLEOrGraphiteDawnOrWebGPU}.D3D11.Create{ShaderType}ShaderUs"
     units="microseconds" expires_after="2027-04-11">

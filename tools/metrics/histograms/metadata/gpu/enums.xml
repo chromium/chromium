@@ -1466,6 +1466,24 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Occluding and Non-Occluding Damages"/>
 </enum>
 
+<!-- LINT.IfChange(WebGPUReachTier) -->
+
+<enum name="WebGPUReachTier">
+  <int value="0" label="Core Hardware Supported"/>
+  <int value="1" label="Core Disabled By Policy"/>
+  <int value="2" label="Linux Vulkan Interop Available"/>
+  <int value="3" label="Compat Hardware Supported"/>
+  <int value="4" label="Compat Disabled By Policy"/>
+  <int value="5" label="OpenGLES Compat Available"/>
+  <int value="6" label="D3D11 Hardware Available"/>
+  <int value="7" label="Hardware Missing External Texture Support"/>
+  <int value="8" label="Hardware Blocklisted"/>
+  <int value="9" label="Software WARP Available"/>
+  <int value="10" label="None"/>
+</enum>
+
+<!-- LINT.ThenChange(//gpu/config/gpu_info_collector.cc:WebGPUReachTier) -->
+
 <enum name="WebGPURequestAdapterStatus">
   <int value="1" label="Success"/>
   <int value="2" label="CallbackCancelled"/>

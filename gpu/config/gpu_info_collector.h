@@ -29,6 +29,10 @@ namespace base {
 class CommandLine;
 }
 
+namespace dawn::native {
+class Adapter;
+}  // namespace dawn::native
+
 namespace gpu {
 // Collects basic GPU info without creating a GL/DirectX context (and without
 // the danger of crashing), including vendor_id and device_id.
@@ -113,6 +117,11 @@ GPU_CONFIG_EXPORT void CollectDawnInfo(
     const gpu::GpuPreferences& gpu_preferences,
     bool collect_metrics,
     std::vector<std::string>* dawn_info_list);
+
+// Checks whether a Dawn WebGPU adapter can share textures with Chrome's
+// compositor (SharedImage).
+GPU_CONFIG_EXPORT bool WebGPUAdapterSupportsExternalTextures(
+    const dawn::native::Adapter& native_adapter);
 
 }  // namespace gpu
 
