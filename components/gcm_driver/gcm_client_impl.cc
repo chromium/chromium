@@ -68,7 +68,6 @@ const char kSubtypeKey[] = "subtype";
 const char kSendMessageFromValue[] = "gcm@chrome.com";
 const int64_t kDefaultUserSerialNumber = 0LL;
 const int kDestroyGCMStoreDelayMS = 5 * 60 * 1000;  // 5 minutes.
-constexpr base::TimeDelta kTokenInvalidationInterval = base::Days(7);
 
 GCMClient::Result ToGCMClientResult(MCSClient::MessageSendStatus status) {
   switch (status) {
@@ -153,7 +152,7 @@ void GCMClientImpl::Initialize(
   gcm_store_ = std::make_unique<GCMStoreImpl>(path, blocking_task_runner,
                                               std::move(encryptor));
   registration_manager_ =
-      std::make_unique<GCMRegistrationManagerImpl>(*gcm_store_);
+      std::make_unique<GCMRegistrationManagerImpl>(*gcm_store_, *clock_);
   io_task_runner_ = std::move(io_task_runner);
   recorder_.SetDelegate(this);
   state_ = INITIALIZED;
@@ -561,6 +560,7 @@ void GCMClientImpl::Register(
     scoped_refptr<RegistrationInfo> registration_info) {
   DCHECK_EQ(state_, READY);
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(registration_manager_);
 
   // Registrations should never pass as an app_id the special category used
   // internally when registering with a subtype. See security note in
@@ -568,40 +568,11 @@ void GCMClientImpl::Register(
   CHECK_NE(registration_info->app_id,
            chrome_build_info_.product_category_for_subtypes);
 
-  CHECK(registration_manager_);
-  // Find and use the cached registration ID.
-  RegistrationInfoMap::const_iterator registrations_iter =
-      registration_manager_->registrations().find(registration_info);
-  if (registrations_iter != registration_manager_->registrations().end()) {
-    bool matched = true;
-
-    // For GCM registration, we also match the sender IDs since multiple
-    // registrations are not supported.
-    const GCMRegistrationInfo* gcm_registration_info =
-        GCMRegistrationInfo::FromRegistrationInfo(registration_info.get());
-    if (gcm_registration_info) {
-      const GCMRegistrationInfo* cached_gcm_registration_info =
-          GCMRegistrationInfo::FromRegistrationInfo(
-              registrations_iter->first.get());
-      DCHECK(cached_gcm_registration_info);
-      if (gcm_registration_info->sender_ids !=
-          cached_gcm_registration_info->sender_ids) {
-        matched = false;
-        // Senders IDs don't match existing registration.
-      }
-    }
-
-    if (matched) {
-      // Skip registration if token is fresh.
-      base::TimeDelta time_since_last_validation =
-          clock_->Now() - registrations_iter->first->last_validated;
-      if (time_since_last_validation < kTokenInvalidationInterval) {
-        // Token is fresh. Use cached registration.
-        observers_.Notify(&Observer::OnRegisterFinished, registration_info,
-                          registrations_iter->second, SUCCESS);
-        return;
-      }
-    }
+  if (std::optional<std::string> cached_registration_id =
+          registration_manager_->GetCachedRegistrationId(registration_info)) {
+    observers_.Notify(&Observer::OnRegisterFinished, registration_info,
+                      *cached_registration_id, SUCCESS);
+    return;
   }
 
   std::unique_ptr<RegistrationRequest::CustomRequestHandler> request_handler;

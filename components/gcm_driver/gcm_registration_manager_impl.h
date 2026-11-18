@@ -6,13 +6,20 @@
 #define COMPONENTS_GCM_DRIVER_GCM_REGISTRATION_MANAGER_IMPL_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/gcm_driver/gcm_registration_manager.h"
 #include "google_apis/gcm/engine/gcm_store.h"
+
+namespace base {
+class Clock;
+}  // namespace base
 
 namespace gcm {
 
@@ -23,8 +30,8 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
   using InstanceIDDataMap =
       std::map<std::string, std::pair<std::string, std::string>>;
 
-  // `gcm_store` must outlive this instance.
-  explicit GCMRegistrationManagerImpl(GCMStore& gcm_store);
+  // `gcm_store` and `clock` must outlive this instance.
+  GCMRegistrationManagerImpl(GCMStore& gcm_store, base::Clock& clock);
 
   GCMRegistrationManagerImpl(const GCMRegistrationManagerImpl&) = delete;
   GCMRegistrationManagerImpl& operator=(const GCMRegistrationManagerImpl&) =
@@ -37,6 +44,11 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
 
   // Returns true if at least one standalone app is registered for GCM.
   bool HasStandaloneRegisteredApp() const;
+
+  // Returns the cached registration ID if a matching, non-stale registration
+  // exists in `registrations_`, or `std::nullopt` otherwise.
+  std::optional<std::string> GetCachedRegistrationId(
+      scoped_refptr<RegistrationInfo> registration_info) const;
 
   // GCMRegistrationManager implementation:
   bool ValidateRegistration(scoped_refptr<RegistrationInfo> registration_info,
@@ -63,6 +75,7 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
   void RemoveDeprecatedData();
 
   const raw_ref<GCMStore> gcm_store_;
+  const raw_ref<base::Clock> clock_;
 
   // Cached registration info.
   RegistrationInfoMap registrations_;

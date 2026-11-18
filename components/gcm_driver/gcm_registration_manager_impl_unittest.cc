@@ -4,11 +4,13 @@
 
 #include "components/gcm_driver/gcm_registration_manager_impl.h"
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "components/gcm_driver/registration_info.h"
 #include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/engine/fake_gcm_store.h"
@@ -20,6 +22,7 @@ namespace {
 
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
@@ -43,14 +46,18 @@ scoped_refptr<GCMRegistrationInfo> CreateGCMRegistrationInfo(
 
 class GCMRegistrationManagerImplTest : public testing::Test {
  public:
+  GCMRegistrationManagerImplTest() { clock_.SetNow(base::Time::Now()); }
+
   FakeGCMStore& gcm_store() { return gcm_store_; }
+  base::SimpleTestClock& clock() { return clock_; }
   GCMRegistrationManagerImpl& registration_manager() {
     return registration_manager_;
   }
 
  private:
   FakeGCMStore gcm_store_;
-  GCMRegistrationManagerImpl registration_manager_{gcm_store_};
+  base::SimpleTestClock clock_;
+  GCMRegistrationManagerImpl registration_manager_{gcm_store_, clock_};
 };
 
 TEST_F(GCMRegistrationManagerImplTest, AddAndGetInstanceIDData) {
@@ -179,6 +186,34 @@ TEST_F(GCMRegistrationManagerImplTest,
               UnorderedElementsAre(
                   Pair(deprecated_info->GetSerializedKey(),
                        deprecated_info->GetSerializedValue(kRegistrationId))));
+}
+
+TEST_F(GCMRegistrationManagerImplTest, GetCachedRegistrationId) {
+  scoped_refptr<GCMRegistrationInfo> gcm_info =
+      CreateGCMRegistrationInfo(kTestAppId, {kSenderId});
+  gcm_info->last_validated = clock().Now();
+
+  EXPECT_EQ(std::nullopt,
+            registration_manager().GetCachedRegistrationId(gcm_info));
+
+  GCMStore::LoadResult load_result;
+  load_result.registrations[gcm_info->GetSerializedKey()] =
+      gcm_info->GetSerializedValue(kRegistrationId);
+  registration_manager().OnRegistrationDataLoaded(load_result);
+
+  clock().Advance(base::Days(1));
+  EXPECT_THAT(registration_manager().GetCachedRegistrationId(gcm_info),
+              Optional(std::string(kRegistrationId)));
+
+  // Mismatched sender IDs should not return the cached registration ID.
+  EXPECT_EQ(std::nullopt,
+            registration_manager().GetCachedRegistrationId(
+                CreateGCMRegistrationInfo(kTestAppId, {kSenderId2})));
+
+  // Stale registration (>= 7 days old) should return nullopt.
+  clock().Advance(base::Days(7));
+  EXPECT_EQ(std::nullopt,
+            registration_manager().GetCachedRegistrationId(gcm_info));
 }
 
 }  // namespace

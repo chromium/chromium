@@ -13,12 +13,20 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_split.h"
+#include "base/time/clock.h"
+#include "base/time/time.h"
 #include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/engine/gcm_store.h"
 
 namespace gcm {
 
 namespace {
+
+// Client-side cache freshness threshold after which a cached registration/token
+// is treated as stale and re-validated with the server on the next
+// registration/token request (registrations do not expire on the server after 7
+// days).
+constexpr base::TimeDelta kTokenInvalidationInterval = base::Days(7);
 
 // Previously, GCMAccountMapper registered with this app ID. Any persisted
 // registration for it in GCMStore is obsolete and removed on load.
@@ -48,8 +56,9 @@ std::optional<std::pair<std::string, std::string>> DeserializeInstanceIDData(
 
 }  // namespace
 
-GCMRegistrationManagerImpl::GCMRegistrationManagerImpl(GCMStore& gcm_store)
-    : gcm_store_(gcm_store) {}
+GCMRegistrationManagerImpl::GCMRegistrationManagerImpl(GCMStore& gcm_store,
+                                                       base::Clock& clock)
+    : gcm_store_(gcm_store), clock_(clock) {}
 
 GCMRegistrationManagerImpl::~GCMRegistrationManagerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -81,6 +90,45 @@ void GCMRegistrationManagerImpl::OnRegistrationDataLoaded(
 bool GCMRegistrationManagerImpl::HasStandaloneRegisteredApp() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return !registrations_.empty();
+}
+
+std::optional<std::string> GCMRegistrationManagerImpl::GetCachedRegistrationId(
+    scoped_refptr<RegistrationInfo> registration_info) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // `RegistrationInfoComparer` matches `GCMRegistrationInfo` by `app_id` alone
+  // and `InstanceIDTokenInfo` by `(app_id, authorized_entity, scope)`, so
+  // `sender_ids` and `last_validated` must be read from the cached map key
+  // (`registrations_iter->first`) rather than the lookup `registration_info`.
+  RegistrationInfoMap::const_iterator registrations_iter =
+      registrations_.find(registration_info);
+  if (registrations_iter == registrations_.end()) {
+    return std::nullopt;
+  }
+
+  // For GCM registration, also match the sender IDs since multiple
+  // registrations are not supported.
+  const GCMRegistrationInfo* gcm_registration_info =
+      GCMRegistrationInfo::FromRegistrationInfo(registration_info.get());
+  if (gcm_registration_info) {
+    const GCMRegistrationInfo* cached_gcm_registration_info =
+        GCMRegistrationInfo::FromRegistrationInfo(
+            registrations_iter->first.get());
+    CHECK(cached_gcm_registration_info);
+    if (gcm_registration_info->sender_ids !=
+        cached_gcm_registration_info->sender_ids) {
+      return std::nullopt;
+    }
+  }
+
+  // Do not reuse the cached registration if it has become stale.
+  base::TimeDelta time_since_last_validation =
+      clock_->Now() - registrations_iter->first->last_validated;
+  if (time_since_last_validation >= kTokenInvalidationInterval) {
+    return std::nullopt;
+  }
+
+  return registrations_iter->second;
 }
 
 bool GCMRegistrationManagerImpl::ValidateRegistration(
