@@ -50,7 +50,6 @@ const char kComposeProactiveNudgeShowStatus[] =
     "Compose.ProactiveNudge.ShowStatus";
 const char kOpenComposeDialogResult[] =
     "Compose.ContextMenu.OpenComposeDialogResult";
-const char kComposeSelectAll[] = "Compose.ContextMenu.SelectedAll";
 const char kComposeStartSessionEntryPoint[] = "Compose.EntryPoint.SessionStart";
 const char kComposeResumeSessionEntryPoint[] =
     "Compose.EntryPoint.SessionResume";
@@ -457,10 +456,6 @@ void LogComposeRequestFeedback(EvalLocation eval_location,
       base::StrCat(
           {"Compose.", EvalLocationString(eval_location), ".Request.Feedback"}),
       feedback);
-}
-
-void LogComposeSelectAllStatus(ComposeSelectAllStatus select_all_status) {
-  base::UmaHistogramEnumeration(kComposeSelectAll, select_all_status);
 }
 
 void LogComposeSessionEventCounts(std::optional<EvalLocation> eval_location,

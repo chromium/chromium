@@ -349,15 +349,6 @@ enum class OpenComposeDialogResult {
   kMaxValue = kAutofillFormDataNotFoundAfterSelectAll
 };
 
-// Enum to log if all text was selected on behalf of the user.
-// Keep in sync with ComposeSelectAllStatus in
-// src/tools/metrics/histograms/metadata/compose/enums.xml.
-enum class ComposeSelectAllStatus {
-  kNoSelectAll = 0,
-  kSelectedAll = 1,
-  kMaxValue = kSelectedAll
-};
-
 // Class that automatically reports any UKM metrics for the page-level Compose
 // UKM as defined in go/ukm-collection-chrome-compose.
 class PageUkmTracker {
@@ -502,8 +493,6 @@ void LogComposeSessionDuration(
 
 void LogComposeRequestFeedback(EvalLocation eval_location,
                                ComposeRequestFeedback feedback);
-
-void LogComposeSelectAllStatus(ComposeSelectAllStatus select_all_status);
 
 // Emit an enum for for each event present in `session_events`.
 // Split the event counts histogram on `eval_location` if provided.

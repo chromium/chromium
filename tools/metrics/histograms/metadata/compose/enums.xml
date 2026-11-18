@@ -129,13 +129,6 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="The request timed out"/>
 </enum>
 
-<enum name="ComposeSelectAllStatus">
-  <int value="0" label="Selection unchanged">
-    Did not select all text for the user
-  </int>
-  <int value="1" label="Selected all">Selected all text for the user</int>
-</enum>
-
 <enum name="ComposeSessionCloseReasonType">
   <int value="0" label="Inserted model response"/>
   <int value="1" label="Dialog close button"/>

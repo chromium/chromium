@@ -119,11 +119,9 @@ void ComposeManagerImpl::OpenComposeWithUpdatedSelection(
 
     OpenComposeWithFormData(field_id, ui_entry_point, driver,
                             updated_form_data);
-    LogComposeSelectAllStatus(ComposeSelectAllStatus::kSelectedAll);
     return;
   }
   OpenComposeWithFormData(field_id, ui_entry_point, driver, form_data);
-  LogComposeSelectAllStatus(ComposeSelectAllStatus::kNoSelectAll);
 }
 
 void ComposeManagerImpl::OpenComposeWithFormData(
