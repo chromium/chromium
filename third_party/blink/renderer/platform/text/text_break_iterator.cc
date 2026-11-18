@@ -176,9 +176,10 @@ struct LazyLineBreakIterator::Context {
 
    public:
     ContextChar() = default;
-    explicit ContextChar(UChar ch) : ch(ch), is_space(IsBreakableSpace(ch)) {}
+    explicit ContextChar(CharacterType ch)
+        : ch(ch), is_space(IsBreakableSpace(ch)) {}
 
-    UChar ch = 0;
+    CharacterType ch = 0;
     bool is_space = false;
   };
 
@@ -214,8 +215,8 @@ struct LazyLineBreakIterator::Context {
   }
 
   FastBreakResult ShouldBreakFast(bool disable_soft_hyphen) const {
-    const UChar last_ch = last.ch;
-    const UChar ch = current.ch;
+    const CharacterType last_ch = last.ch;
+    const CharacterType ch = current.ch;
     if (last_ch < kFastLineBreakMinChar || ch < kFastLineBreakMinChar)
         [[unlikely]] {
       return FastBreakResult::kNoBreak;
