@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "components/update_client/cancellation.h"
 #include "components/update_client/crx_downloader.h"
 
 namespace update_client {
@@ -40,14 +41,14 @@ class UrlFetcherDownloader : public CrxDownloader {
 
   // Overrides for CrxDownloader.
   ~UrlFetcherDownloader() override;
-  base::OnceClosure DoStartDownload(const GURL& url) override;
+  CancelCallback DoStartDownload(const GURL& url) override;
 
   void CreateDownloadDir();
   void StartURLFetch(const GURL& url);
   void OnNetworkFetcherComplete(int net_error, int64_t content_size);
   void OnResponseStarted(int response_code, int64_t content_length);
   void OnDownloadProgress(int64_t content_length);
-  void Cancel();
+  void Cancel(CancelMode mode);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

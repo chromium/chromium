@@ -33,6 +33,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/update_client/action_runner.h"
+#include "components/update_client/cancellation.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/network.h"
 #include "components/update_client/op_download.h"
@@ -199,19 +200,16 @@ void Component::SetUpdateCheckResult(std::optional<ProtocolParser::App> result,
             weak_ptr_factory_.GetWeakPtr()),
         crx_component_->action_handler, result.value(),
         base::BindOnce(
-            base::BindOnce(
-                [](base::WeakPtr<Component> component,
-                   base::expected<
-                       base::OnceCallback<base::OnceClosure(
-                           base::OnceCallback<void(const CategorizedError&)>)>,
-                       CategorizedError> pipeline) {
-                  if (component) {
-                    component->pipeline_ = std::move(pipeline);
-                    return true;
-                  }
-                  return false;
-                },
-                weak_ptr_factory_.GetWeakPtr()))
+            [](base::WeakPtr<Component> component,
+               base::expected<PipelineStartCallback, CategorizedError>
+                   pipeline) {
+              if (component) {
+                component->pipeline_ = std::move(pipeline);
+                return true;
+              }
+              return false;
+            },
+            weak_ptr_factory_.GetWeakPtr())
             .Then(std::move(callback)));
   } else {
     pipeline_ = base::unexpected(
@@ -492,10 +490,12 @@ void Component::StateUpdating::DoHandle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto& component = Component::State::component();
   if (component.pipeline_.has_value()) {
-    cancel_callback_ =
+    // TODO(crbug.com/584520488): Pass the mode from Component::Cancel().
+    cancel_callback_ = base::BindOnce(
         std::move(component.pipeline_.value())
             .Run(base::BindOnce(&Component::StateUpdating::PipelineComplete,
-                                base::Unretained(this)));
+                                base::Unretained(this))),
+        CancelMode::kDeletePartialDownload);
     return;
   }
   component.error_category_ = component.pipeline_.error().category;

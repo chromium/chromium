@@ -56,9 +56,9 @@ class BackgroundDownloader : public CrxDownloader {
 
   // Overrides for CrxDownloader.
   ~BackgroundDownloader() override;
-  base::OnceClosure DoStartDownload(const GURL& url) override;
+  CancelCallback DoStartDownload(const GURL& url) override;
 
-  base::OnceClosure DoStartDownload(
+  CancelCallback DoStartDownload(
       const GURL& url,
       BackgroundDownloaderSharedSession::OnDownloadCompleteCallback);
 

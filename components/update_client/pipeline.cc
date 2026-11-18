@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
@@ -52,14 +53,23 @@ namespace {
 //   2. A completion callback, which takes a `FilePath` or error. Operations
 //      that don't generate a file (e.g. a "run" action) propagate their input
 //      path.
-// Operations return a cancellation callback when run. Operations that can't
-// be cancelled return `base::DoNothing` as their cancellation callback.
-// The first operation in each pipeline must tolerate an empty FilePath as
-// input.
-using Operation = base::OnceCallback<base::OnceClosure(
-    const base::FilePath&,
-    base::OnceCallback<void(
-        base::expected<base::FilePath, CategorizedError>)>)>;
+// Operations return a cancellation callback (taking `CancelMode`) when run.
+// Operations that can't be cancelled return `base::DoNothing` as their
+// cancellation callback. The first operation in each pipeline must tolerate an
+// empty FilePath as input.
+using OperationCompleteCallback =
+    base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>;
+using Operation = base::OnceCallback<CancelCallback(const base::FilePath&,
+                                                    OperationCompleteCallback)>;
+
+// Adapts an operation whose cancellation doesn't depend on `CancelMode`.
+Operation IgnoreCancelMode(
+    base::OnceCallback<base::OnceClosure(const base::FilePath&,
+                                         OperationCompleteCallback)> op) {
+  return std::move(op).Then(base::BindOnce([](base::OnceClosure cancel) {
+    return base::IgnoreArgs<CancelMode>(std::move(cancel));
+  }));
+}
 
 constexpr CategorizedError kUnsupportedOperationError = CategorizedError(
     {.category = ErrorCategory::kUpdateCheck,
@@ -85,7 +95,7 @@ class Pipeline : public base::RefCountedThreadSafe<Pipeline> {
   Pipeline& operator=(const Pipeline&) = delete;
 
   // Each `Pipeline` can only be used once. Returns a cancellation callback.
-  base::OnceClosure Start(
+  CancelCallback Start(
       base::OnceCallback<void(const CategorizedError&)> callback);
 
  private:
@@ -106,12 +116,12 @@ Pipeline::Pipeline(std::queue<Operation> operations,
                    scoped_refptr<Pipeline> fallback)
     : operations_(std::move(operations)), fallback_(fallback) {}
 
-base::OnceClosure Pipeline::Start(
+CancelCallback Pipeline::Start(
     base::OnceCallback<void(const CategorizedError&)> callback) {
   CHECK(!callback_);
   callback_ = std::move(callback);
   StartNext({});
-  return base::BindOnce(&Cancellation::Cancel, cancel_);
+  return base::BindOnce(&Cancellation::CancelWithMode, cancel_);
 }
 
 void Pipeline::StartNext(const base::FilePath& path) {
@@ -162,17 +172,16 @@ base::OnceClosure RunOperation(
     base::RepeatingCallback<void(base::DictValue)> event_adder,
     base::RepeatingCallback<void(ComponentState)> state_tracker,
     const base::FilePath& previous_operation_output,
-    base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
-        callback) {
-  return RunAction(
-      handler, installer, file, session_id, event_adder, state_tracker,
-      base::BindOnce(
-          [](base::OnceCallback<void(
-                 base::expected<base::FilePath, CategorizedError>)> callback,
-             const base::FilePath& previous_operation_output, bool success,
-             int error,
-             int extra) { std::move(callback).Run(previous_operation_output); },
-          std::move(callback), previous_operation_output));
+    OperationCompleteCallback callback) {
+  return RunAction(handler, installer, file, session_id, event_adder,
+                   state_tracker,
+                   base::BindOnce(
+                       [](OperationCompleteCallback callback,
+                          const base::FilePath& previous_operation_output,
+                          bool success, int error, int extra) {
+                         std::move(callback).Run(previous_operation_output);
+                       },
+                       std::move(callback), previous_operation_output));
 }
 
 // Wraps an operation in a check of the CRX Cache, skipping it if the associated
@@ -187,14 +196,12 @@ Operation SkipIfCached(
              base::OnceCallback<void(
                  base::expected<base::FilePath, UnpackerError>)>)> cache_getter,
          Operation operation, const base::FilePath& path_in,
-         base::OnceCallback<void(
-             base::expected<base::FilePath, CategorizedError>)> callback) {
+         OperationCompleteCallback callback) {
         auto cancellation = base::MakeRefCounted<Cancellation>();
         cache_getter.Run(base::BindOnce(
             [](scoped_refptr<Cancellation> cancellation, Operation operation,
                const base::FilePath& path_in,
-               base::OnceCallback<void(
-                   base::expected<base::FilePath, CategorizedError>)> callback,
+               OperationCompleteCallback callback,
                base::expected<base::FilePath, UnpackerError> cached_path) {
               if (cached_path.has_value()) {
                 // Skip the operation, and return the path to the next step.
@@ -207,7 +214,7 @@ Operation SkipIfCached(
                   std::move(operation).Run(path_in, std::move(callback)));
             },
             cancellation, std::move(operation), path_in, std::move(callback)));
-        return base::BindOnce(&Cancellation::Cancel, cancellation);
+        return base::BindOnce(&Cancellation::CancelWithMode, cancellation);
       },
       cache_getter, std::move(operation));
 }
@@ -222,9 +229,7 @@ std::queue<Operation> MakeErrorOperations(
   error_ops.push(base::BindOnce(
       [](base::RepeatingCallback<void(base::DictValue)> event_adder,
          CategorizedError error, const int event_type, const base::FilePath&,
-         base::OnceCallback<void(
-             base::expected<base::FilePath, CategorizedError>)> callback)
-          -> base::OnceClosure {
+         OperationCompleteCallback callback) -> CancelCallback {
         event_adder.Run(MakeSimpleOperationEvent(
             kInvalidOperationAttributesError, event_type));
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -261,9 +266,9 @@ std::queue<Operation> MakeOperations(
              void(base::expected<base::FilePath, UnpackerError>)>)> cache_check,
     const std::string& install_data) {
   std::queue<Operation> ops;
-  ops.push(SkipIfCached(cache_check,
-                        base::BindOnce(&SpaceCheckOperation, pipeline,
-                                       get_available_space, event_adder)));
+  ops.push(SkipIfCached(cache_check, IgnoreCancelMode(base::BindOnce(
+                                         &SpaceCheckOperation, pipeline,
+                                         get_available_space, event_adder))));
   for (const ProtocolParser::Operation& operation : pipeline.operations) {
     if (operation.type == "download") {
       // expects: `urls` (list of url objects), `size`, and `out` (hash object)
@@ -288,16 +293,16 @@ std::queue<Operation> MakeOperations(
       }
       ops.push(SkipIfCached(
           cache_check,
-          base::BindOnce(&PuffOperation, crx_cache,
-                         config->GetPatcherFactory()->Create(), event_adder,
-                         state_tracker, operation.sha256_previous,
-                         operation.sha256_out, is_foreground)));
+          IgnoreCancelMode(base::BindOnce(
+              &PuffOperation, crx_cache, config->GetPatcherFactory()->Create(),
+              event_adder, state_tracker, operation.sha256_previous,
+              operation.sha256_out, is_foreground))));
     } else if (operation.type == "xz") {
       // expects no extra fields.
       ops.push(SkipIfCached(
-          cache_check,
-          base::BindOnce(&XzOperation, config->GetUnzipperFactory()->Create(),
-                         event_adder, state_tracker, is_foreground)));
+          cache_check, IgnoreCancelMode(base::BindOnce(
+                           &XzOperation, config->GetUnzipperFactory()->Create(),
+                           event_adder, state_tracker, is_foreground))));
     } else if (operation.type == "zucc") {
       // expects: `previous` (hash object) and `out` (hash object)
       if (operation.sha256_previous.empty() || operation.sha256_out.empty()) {
@@ -306,11 +311,11 @@ std::queue<Operation> MakeOperations(
                                    protocol_request::kEventZucchini);
       }
       ops.push(SkipIfCached(
-          cache_check,
-          base::BindOnce(&ZucchiniOperation, crx_cache,
-                         config->GetPatcherFactory()->Create(), event_adder,
-                         state_tracker, operation.sha256_previous,
-                         operation.sha256_out, is_foreground)));
+          cache_check, IgnoreCancelMode(base::BindOnce(
+                           &ZucchiniOperation, crx_cache,
+                           config->GetPatcherFactory()->Create(), event_adder,
+                           state_tracker, operation.sha256_previous,
+                           operation.sha256_out, is_foreground))));
     } else if (operation.type == "crx3") {
       // expects: `in` (hash object)
       // Note: `path` and `arguments` fields are optional.
@@ -319,7 +324,7 @@ std::queue<Operation> MakeOperations(
                                    kInvalidOperationAttributesError,
                                    protocol_request::kEventCrx3);
       }
-      ops.push(base::BindOnce(
+      ops.push(IgnoreCancelMode(base::BindOnce(
           &InstallOperation, crx_cache, config->GetUnzipperFactory()->Create(),
           crx_format, id, config->GetProdId(), operation.sha256_in, pk_hash,
           installer,
@@ -331,7 +336,7 @@ std::queue<Operation> MakeOperations(
                         .arguments = operation.arguments,
                         .server_install_data = install_data}),
           is_foreground, event_adder, state_tracker, install_progress_callback,
-          install_complete_callback));
+          install_complete_callback)));
     } else if (operation.type == "run") {
       // expects: `path`
       // Note: `arguments` field is optional.
@@ -340,9 +345,9 @@ std::queue<Operation> MakeOperations(
                                    kInvalidOperationAttributesError,
                                    protocol_request::kEventAction);
       }
-      ops.push(base::BindOnce(&RunOperation, action_handler, installer,
-                              operation.path, session_id, event_adder,
-                              state_tracker));
+      ops.push(IgnoreCancelMode(base::BindOnce(
+          &RunOperation, action_handler, installer, operation.path, session_id,
+          event_adder, state_tracker)));
     } else {
       // A compliant server shouldn't serve an operation type that was not in
       // the acceptformat, but if it does, or if the client has a bug, replace
@@ -378,9 +383,7 @@ void MakePipeline(
     scoped_refptr<ActionHandler> action_handler,
     const ProtocolParser::App& result,
     base::OnceCallback<void(
-        base::expected<base::OnceCallback<base::OnceClosure(
-                           base::OnceCallback<void(const CategorizedError&)>)>,
-                       CategorizedError>)> callback) {
+        base::expected<PipelineStartCallback, CategorizedError>)> callback) {
   if (result.status == "noupdate") {
     // With a noupdate, there's nothing to do.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

@@ -19,6 +19,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "components/update_client/cancellation.h"
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/net/network_chromium.h"
 #include "components/update_client/network.h"
@@ -158,10 +159,10 @@ class UrlFetcherDownloaderTest : public testing::Test {
 TEST_F(UrlFetcherDownloaderTest, CancelBeforeDownloadDirCreated) {
   auto downloader = MakeDownloader();
   base::RunLoop run_loop;
-  base::OnceClosure cancel = downloader->StartDownloadFromUrl(
+  CancelCallback cancel = downloader->StartDownloadFromUrl(
       GURL(kUrl), kHash, base::DoNothing(), RecordingCallback(run_loop));
 
-  std::move(cancel).Run();
+  std::move(cancel).Run(CancelMode::kDeletePartialDownload);
   run_loop.Run();
 
   EXPECT_EQ(1, num_complete_calls_);
@@ -182,13 +183,13 @@ TEST_F(UrlFetcherDownloaderTest, CancelWhileFetchInFlight) {
       [&](const network::ResourceRequest&) { request_loop.Quit(); }));
 
   base::RunLoop run_loop;
-  base::OnceClosure cancel = downloader->StartDownloadFromUrl(
+  CancelCallback cancel = downloader->StartDownloadFromUrl(
       GURL(kUrl), kHash, base::DoNothing(), RecordingCallback(run_loop));
   // Wait for the fetch to start; the response is never provided.
   request_loop.Run();
   ASSERT_EQ(0, num_complete_calls_);
 
-  std::move(cancel).Run();
+  std::move(cancel).Run(CancelMode::kDeletePartialDownload);
   run_loop.Run();
   ExpectNoFurtherCompletion();
 
@@ -207,7 +208,7 @@ TEST_F(UrlFetcherDownloaderTest, CancelAfterCompletionIsNoOp) {
   test_url_loader_factory_.AddResponse(kUrl, "not a crx");
 
   base::RunLoop run_loop;
-  base::OnceClosure cancel = downloader->StartDownloadFromUrl(
+  CancelCallback cancel = downloader->StartDownloadFromUrl(
       GURL(kUrl), kHash, base::DoNothing(), RecordingCallback(run_loop));
   run_loop.Run();
   ASSERT_EQ(1, num_complete_calls_);
@@ -215,7 +216,7 @@ TEST_F(UrlFetcherDownloaderTest, CancelAfterCompletionIsNoOp) {
   // what matters is that the download completed.
   EXPECT_EQ(std::to_underlying(CrxDownloaderError::BAD_HASH), result_.error);
 
-  std::move(cancel).Run();
+  std::move(cancel).Run(CancelMode::kDeletePartialDownload);
   ExpectNoFurtherCompletion();
 }
 
@@ -231,12 +232,12 @@ TEST_F(UrlFetcherDownloaderTest, CancelWithFetcherCompletingOnCancel) {
       "UrlFetcherDownloaderTest");
 
   base::RunLoop run_loop;
-  base::OnceClosure cancel = downloader->StartDownloadFromUrl(
+  CancelCallback cancel = downloader->StartDownloadFromUrl(
       GURL(kUrl), kHash, base::DoNothing(), RecordingCallback(run_loop));
   start_loop.Run();
   ASSERT_EQ(0, num_complete_calls_);
 
-  std::move(cancel).Run();
+  std::move(cancel).Run(CancelMode::kDeletePartialDownload);
   run_loop.Run();
   ExpectNoFurtherCompletion();
 
@@ -252,12 +253,12 @@ TEST_F(UrlFetcherDownloaderTest, CancelTwice) {
       [&](const network::ResourceRequest&) { request_loop.Quit(); }));
 
   base::RunLoop run_loop;
-  base::OnceClosure cancel = downloader->StartDownloadFromUrl(
+  CancelCallback cancel = downloader->StartDownloadFromUrl(
       GURL(kUrl), kHash, base::DoNothing(), RecordingCallback(run_loop));
   request_loop.Run();
 
-  std::move(cancel).Run();
-  downloader->Cancel();
+  std::move(cancel).Run(CancelMode::kDeletePartialDownload);
+  downloader->Cancel(CancelMode::kDeletePartialDownload);
   run_loop.Run();
   ExpectNoFurtherCompletion();
 

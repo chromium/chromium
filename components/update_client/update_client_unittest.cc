@@ -45,6 +45,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/services/unzip/in_process_unzipper.h"
 #include "components/update_client/activity_data_service.h"
+#include "components/update_client/cancellation.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/network.h"
@@ -754,7 +755,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -875,7 +876,7 @@ TEST_F(UpdateClientTest, CancelQueuedUpdate) {
 
    private:
     ~MockCrxDownloader() override = default;
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -968,7 +969,7 @@ TEST_F(UpdateClientTest, CancelDuringUpdateCheck) {
 
    private:
     ~MockCrxDownloader() override = default;
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -1076,7 +1077,7 @@ TEST_F(UpdateClientTest, CancelWithQueuedPingAndCheckTasks) {
 
    private:
     ~MockCrxDownloader() override = default;
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -1158,7 +1159,7 @@ TEST_F(UpdateClientTest, CancelRunningUpdateCancelsActiveDownload) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       EXPECT_EQ("/download/jebgalgnebhfojomionfpkfelancnnkf.crx",
                 url.GetPath());
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1170,7 +1171,7 @@ TEST_F(UpdateClientTest, CancelRunningUpdateCancelsActiveDownload) {
                             base::WrapRefCounted(this), url);
     }
 
-    void Cancel(const GURL& url) {
+    void Cancel(const GURL& url, CancelMode /*mode*/) {
       DownloadMetrics download_metrics;
       download_metrics.url = url;
       download_metrics.downloader = DownloadMetrics::kNone;
@@ -1295,7 +1296,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       download_metrics.url = url;
       download_metrics.downloader = DownloadMetrics::kNone;
@@ -1478,7 +1479,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       download_metrics.url = url;
       download_metrics.downloader = DownloadMetrics::kNone;
@@ -1646,7 +1647,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       base::FilePath path;
       Result result;
@@ -1792,7 +1793,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -1888,7 +1889,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       base::FilePath path;
       Result result;
@@ -2225,7 +2226,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       base::FilePath path;
       Result result;
@@ -2533,7 +2534,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       download_metrics.url = url;
       download_metrics.downloader = DownloadMetrics::kNone;
@@ -2839,7 +2840,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       base::FilePath path;
       Result result;
@@ -3099,7 +3100,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -3208,7 +3209,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       base::FilePath path;
       Result result;
@@ -3363,7 +3364,7 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -3477,7 +3478,7 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -3564,7 +3565,7 @@ TEST_F(UpdateClientTest, EmptyIdList) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -3622,7 +3623,7 @@ TEST_F(UpdateClientTest, DiskFull) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -3880,7 +3881,7 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       base::FilePath path;
       Result result;
@@ -4100,7 +4101,7 @@ TEST_P(SendPingTest, SendPingTestCases) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       return base::DoNothing();
     }
   };
@@ -4208,7 +4209,7 @@ TEST_F(UpdateClientTest, RetryAfter) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -4337,7 +4338,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       base::FilePath path;
       Result result;
@@ -4507,7 +4508,7 @@ TEST_F(UpdateClientTest, OneCrxUpdateDownloadTimeout) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       download_metrics.url = url;
       download_metrics.downloader = DownloadMetrics::kNone;
@@ -4676,7 +4677,7 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -4831,7 +4832,7 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -5005,7 +5006,7 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       base::FilePath path;
       Result result;
@@ -5135,7 +5136,7 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -5298,7 +5299,7 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -5413,7 +5414,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       base::FilePath path;
       Result result;
@@ -5512,7 +5513,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       base::FilePath path;
       Result result;
@@ -5651,7 +5652,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       base::FilePath path;
       Result result;
@@ -5804,7 +5805,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -5884,7 +5885,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -5999,7 +6000,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -6125,7 +6126,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -6195,7 +6196,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -6299,7 +6300,7 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -6417,7 +6418,7 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       download_metrics.url = url;
       download_metrics.downloader = DownloadMetrics::kNone;
@@ -6635,7 +6636,7 @@ TEST_F(UpdateClientTest, UnsupportedOperationType) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE() << "Intentionally forcing download to fail here.";
       return base::DoNothing();
     }
@@ -6939,7 +6940,7 @@ TEST_F(UpdateClientTest,
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       ADD_FAILURE();
       return base::DoNothing();
     }
@@ -7089,7 +7090,7 @@ TEST_F(UpdateClientTest, Install_StopCancelsActiveDownload) {
    private:
     ~MockCrxDownloader() override = default;
 
-    base::OnceClosure DoStartDownload(const GURL& url) override {
+    CancelCallback DoStartDownload(const GURL& url) override {
       DownloadMetrics download_metrics;
       base::FilePath path;
       Result result;
@@ -7121,11 +7122,12 @@ TEST_F(UpdateClientTest, Install_StopCancelsActiveDownload) {
                                     base::Unretained(this), true, result,
                                     download_metrics));
 
-      EXPECT_CALL(cancel_callback_, Run()).Times(testing::AtLeast(1));
+      EXPECT_CALL(cancel_callback_, Run(CancelMode::kDeletePartialDownload))
+          .Times(testing::AtLeast(1));
       return cancel_callback_.Get();
     }
 
-    base::MockCallback<base::OnceClosure> cancel_callback_;
+    base::MockCallback<CancelCallback> cancel_callback_;
   };
 
   class MockPingManager : public MockPingManagerImpl {

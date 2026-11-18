@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/update_client/cancellation.h"
 #include "url/gurl.h"
 
 namespace update_client {
@@ -94,25 +95,24 @@ class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
   // behavior is undefined. The callback gets invoked if the download can't
   // be started. |expected_hash| represents the SHA256 cryptographic hash of
   // the download payload, represented as a hexadecimal string. Returns a
-  // callback that can be run to cancel the download. Cancelling interrupts the
-  // attempt in progress, whether it is for a fallback URL or in a successor
-  // downloader, if that downloader supports it (only `UrlFetcherDownloader`
-  // does today; BITS, Delivery Optimization, and the macOS
-  // `BackgroundDownloader` do not). In any case, no other URL or successor
-  // downloader is tried afterwards, and a cancelled download that fails
-  // completes with `CrxDownloaderError::CANCELLED`. A downloader that can't
-  // interrupt its transfer may still complete it: if the file passes the hash
-  // verification, the download completes successfully so that the file remains
-  // available to downloaders that cache it (such as the macOS
-  // `BackgroundDownloader`).
-  base::OnceClosure StartDownloadFromUrl(const GURL& url,
-                                         const std::string& expected_hash,
-                                         ProgressCallback progress_callback,
-                                         DownloadCallback download_callback);
-  base::OnceClosure StartDownload(const std::vector<GURL>& urls,
-                                  const std::string& expected_hash,
-                                  ProgressCallback progress_callback,
-                                  DownloadCallback download_callback);
+  // callback that cancels the download and passes `CancelMode` to the attempt
+  // in progress, whether for a fallback URL or in a successor downloader, if
+  // that downloader supports it (only `UrlFetcherDownloader` does today; BITS,
+  // Delivery Optimization, and the macOS `BackgroundDownloader` do not). In any
+  // case, no other URL or successor downloader is tried afterwards, and a
+  // cancelled download that fails completes with
+  // `CrxDownloaderError::CANCELLED`. A downloader that can't interrupt its
+  // transfer may still complete it: if the file passes the hash verification,
+  // the download completes successfully so that the file remains available to
+  // downloaders that cache it (such as the macOS `BackgroundDownloader`).
+  CancelCallback StartDownloadFromUrl(const GURL& url,
+                                      const std::string& expected_hash,
+                                      ProgressCallback progress_callback,
+                                      DownloadCallback download_callback);
+  CancelCallback StartDownload(const std::vector<GURL>& urls,
+                               const std::string& expected_hash,
+                               ProgressCallback progress_callback,
+                               DownloadCallback download_callback);
 
   const std::vector<DownloadMetrics> download_metrics() const;
 
@@ -145,8 +145,10 @@ class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
  private:
   friend class base::RefCountedThreadSafe<CrxDownloader>;
 
-  // Returns a callback that can be run to cancel the download.
-  virtual base::OnceClosure DoStartDownload(const GURL& url) = 0;
+  // Returns a callback that cancels the download. Implementations that can
+  // keep partial download state should keep it for
+  // `CancelMode::kKeepPartialDownload`.
+  virtual CancelCallback DoStartDownload(const GURL& url) = 0;
 
   void HandleDownloadError(bool is_handled,
                            const Result& result,
@@ -156,8 +158,8 @@ class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
   // attempt, unless the attempt completed during the call.
   void StartAttempt(const GURL& url);
 
-  // Cancels the download and the attempt in progress.
-  void CancelDownload();
+  // Cancels the download and passes `mode` to the attempt in progress.
+  void CancelDownload(CancelMode mode);
 
   // Ends the download handled by this downloader with `result`.
   void FinishDownload(const Result& result);
@@ -190,7 +192,7 @@ class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
   // DoStartDownload() for the current URL, or the one returned by the
   // successor once the download is routed to it. Reset when an attempt of
   // this downloader completes, since it may retain this downloader.
-  base::OnceClosure cancel_attempt_callback_;
+  CancelCallback cancel_attempt_callback_;
 };
 
 std::ostream& operator<<(std::ostream& os,

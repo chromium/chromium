@@ -566,7 +566,7 @@ void DeliveryOptimizationDownloader::OnTimer() {
       base::BindOnce(&DeliveryOptimizationDownloader::OnDownloading, this));
 }
 
-base::OnceClosure DeliveryOptimizationDownloader::DoStartDownload(
+CancelCallback DeliveryOptimizationDownloader::DoStartDownload(
     const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   com_task_runner_->PostTask(

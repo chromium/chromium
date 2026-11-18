@@ -146,7 +146,7 @@ void DownloadComplete(
 
 }  // namespace
 
-base::OnceClosure DownloadOperation(
+CancelCallback DownloadOperation(
     scoped_refptr<Configurator> config,
     const std::string& id,
     bool is_foreground,
@@ -178,7 +178,7 @@ base::OnceClosure DownloadOperation(
           progress_callback, size),
       base::BindOnce(&DownloadComplete, id, crx_downloader, cancellation,
                      event_adder, std::move(callback))));
-  return base::BindOnce(&Cancellation::Cancel, cancellation);
+  return base::BindOnce(&Cancellation::CancelWithMode, cancellation);
 }
 
 }  // namespace update_client

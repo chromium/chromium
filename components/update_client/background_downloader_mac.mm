@@ -530,7 +530,7 @@ BackgroundDownloader::BackgroundDownloader(
 
 BackgroundDownloader::~BackgroundDownloader() = default;
 
-base::OnceClosure BackgroundDownloader::DoStartDownload(const GURL& url) {
+CancelCallback BackgroundDownloader::DoStartDownload(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return DoStartDownload(
       url, base::BindPostTaskToCurrentDefault(
@@ -539,7 +539,7 @@ base::OnceClosure BackgroundDownloader::DoStartDownload(const GURL& url) {
                FROM_HERE));
 }
 
-base::OnceClosure BackgroundDownloader::DoStartDownload(
+CancelCallback BackgroundDownloader::DoStartDownload(
     const GURL& url,
     OnDownloadCompleteCallback on_download_complete_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

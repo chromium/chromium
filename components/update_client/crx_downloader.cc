@@ -29,6 +29,7 @@
 #endif
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "components/update_client/cancellation.h"
 #include "components/update_client/network.h"
 #include "components/update_client/task_traits.h"
 #include "components/update_client/update_client_errors.h"
@@ -65,7 +66,7 @@ CrxDownloader::download_metrics() const {
   return retval;
 }
 
-base::OnceClosure CrxDownloader::StartDownloadFromUrl(
+CancelCallback CrxDownloader::StartDownloadFromUrl(
     const GURL& url,
     const std::string& expected_hash,
     ProgressCallback progress_callback,
@@ -76,7 +77,7 @@ base::OnceClosure CrxDownloader::StartDownloadFromUrl(
                        std::move(download_callback));
 }
 
-base::OnceClosure CrxDownloader::StartDownload(
+CancelCallback CrxDownloader::StartDownload(
     const std::vector<GURL>& urls,
     const std::string& expected_hash,
     ProgressCallback progress_callback,
@@ -113,13 +114,13 @@ base::OnceClosure CrxDownloader::StartDownload(
 void CrxDownloader::StartAttempt(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_attempt_in_progress_ = true;
-  base::OnceClosure cancel_attempt_callback = DoStartDownload(url);
+  CancelCallback cancel_attempt_callback = DoStartDownload(url);
   if (is_attempt_in_progress_) {
     cancel_attempt_callback_ = std::move(cancel_attempt_callback);
   }
 }
 
-void CrxDownloader::CancelDownload() {
+void CrxDownloader::CancelDownload(CancelMode mode) {
   TRACE_EVENT("update_client", "CrxDownloader::CancelDownload",
               perfetto::Flow::FromPointer(this));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -129,7 +130,7 @@ void CrxDownloader::CancelDownload() {
   }
   is_cancelled_ = true;
   if (cancel_attempt_callback_) {
-    std::move(cancel_attempt_callback_).Run();
+    std::move(cancel_attempt_callback_).Run(mode);
   }
 }
 

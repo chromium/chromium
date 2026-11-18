@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/update_client/cancellation.h"
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/update_engine.h"
 
@@ -34,7 +35,7 @@ class Configurator;
 // If unsuccessful or cancelled, `callback` will be invoked with an error. The
 // cancellation callback can only be invoked on the same sequence the operation
 // is started on.
-base::OnceClosure DownloadOperation(
+CancelCallback DownloadOperation(
     scoped_refptr<Configurator> config,
     const std::string& id,
     bool is_foreground,

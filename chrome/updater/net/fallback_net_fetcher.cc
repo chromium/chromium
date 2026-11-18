@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -108,18 +109,19 @@ base::OnceClosure FallbackNetFetcher::DownloadToFile(
     update_client::NetworkFetcher::DownloadToFileCompleteCallback
         download_to_file_complete_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cancellation_->OnCancel(impl_->DownloadToFile(
-      url, file_path,
-      base::BindRepeating(
-          &FallbackNetFetcher::ResponseStarted,
-          base::Unretained(this),  // Assume the fetcher outlives the fetch.
-          response_started_callback),
-      progress_callback,
-      base::BindOnce(
-          &FallbackNetFetcher::DownloadToFileDone,
-          base::Unretained(this),  // Assume the fetcher outlives the fetch.
-          url, file_path, response_started_callback, progress_callback,
-          std::move(download_to_file_complete_callback))));
+  cancellation_->OnCancel(
+      base::IgnoreArgs<update_client::CancelMode>(impl_->DownloadToFile(
+          url, file_path,
+          base::BindRepeating(
+              &FallbackNetFetcher::ResponseStarted,
+              base::Unretained(this),  // Assume the fetcher outlives the fetch.
+              response_started_callback),
+          progress_callback,
+          base::BindOnce(
+              &FallbackNetFetcher::DownloadToFileDone,
+              base::Unretained(this),  // Assume the fetcher outlives the fetch.
+              url, file_path, response_started_callback, progress_callback,
+              std::move(download_to_file_complete_callback)))));
   return base::BindOnce(&update_client::Cancellation::Cancel, cancellation_);
 }
 
@@ -140,9 +142,10 @@ void FallbackNetFetcher::DownloadToFileDone(
                                !cancellation_->IsCancelled();
   if (should_fallback && next_) {
     VLOG(1) << __func__ << " Falling back to next NetFetcher for " << url;
-    cancellation_->OnCancel(next_->DownloadToFile(
-        url, file_path, response_started_callback, progress_callback,
-        std::move(download_to_file_complete_callback)));
+    cancellation_->OnCancel(
+        base::IgnoreArgs<update_client::CancelMode>(next_->DownloadToFile(
+            url, file_path, response_started_callback, progress_callback,
+            std::move(download_to_file_complete_callback))));
     return;
   }
   std::move(download_to_file_complete_callback).Run(net_error, content_size);

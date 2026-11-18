@@ -20,6 +20,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/update_client/cancellation.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/net/network_chromium.h"
 #include "components/update_client/test_utils.h"
@@ -55,7 +56,7 @@ class FailingSuccessorDownloader : public CrxDownloader {
  private:
   ~FailingSuccessorDownloader() override = default;
 
-  base::OnceClosure DoStartDownload(const GURL& url) override {
+  CancelCallback DoStartDownload(const GURL& url) override {
     ADD_FAILURE() << "Successor started after cancellation: " << url;
     DownloadMetrics metrics;
     metrics.url = url;
@@ -73,6 +74,12 @@ class FailingSuccessorDownloader : public CrxDownloader {
 // Delivery Optimization and NSURLSession, which can't interrupt it.
 class ControlledDownloader : public CrxDownloader {
  public:
+  struct CancelledAttempt {
+    int attempt;
+    CancelMode mode;
+    bool operator==(const CancelledAttempt&) const = default;
+  };
+
   ControlledDownloader(scoped_refptr<CrxDownloader> successor,
                        bool completes_on_cancel)
       : CrxDownloader(std::move(successor)),
@@ -101,14 +108,14 @@ class ControlledDownloader : public CrxDownloader {
 
   int num_attempts() const { return num_attempts_; }
 
-  const std::vector<int>& cancelled_attempts() const {
+  const std::vector<CancelledAttempt>& cancelled_attempts() const {
     return cancelled_attempts_;
   }
 
  private:
   ~ControlledDownloader() override = default;
 
-  base::OnceClosure DoStartDownload(const GURL& url) override {
+  CancelCallback DoStartDownload(const GURL& url) override {
     const int attempt = num_attempts_++;
     if (attempt_started_callback_) {
       std::move(attempt_started_callback_).Run();
@@ -116,8 +123,8 @@ class ControlledDownloader : public CrxDownloader {
     return base::BindOnce(&ControlledDownloader::CancelAttempt, this, attempt);
   }
 
-  void CancelAttempt(int attempt) {
-    cancelled_attempts_.push_back(attempt);
+  void CancelAttempt(int attempt, CancelMode mode) {
+    cancelled_attempts_.push_back({attempt, mode});
     if (!completes_on_cancel_) {
       return;
     }
@@ -129,7 +136,7 @@ class ControlledDownloader : public CrxDownloader {
 
   const bool completes_on_cancel_;
   int num_attempts_ = 0;
-  std::vector<int> cancelled_attempts_;
+  std::vector<CancelledAttempt> cancelled_attempts_;
   base::OnceClosure attempt_started_callback_;
 };
 
@@ -551,14 +558,14 @@ TEST_F(CrxDownloaderTest, CancelDoesNotFallBackToSuccessor) {
       [&](const network::ResourceRequest&) { request_loop.Quit(); }));
 
   DownloadRecorder recorder;
-  base::OnceClosure cancel = downloader->StartDownloadFromUrl(
+  CancelCallback cancel = downloader->StartDownloadFromUrl(
       GURL("http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf"),
       hash_jebg,
       /*progress_callback=*/base::DoNothing(), recorder.Callback());
   request_loop.Run();
   ASSERT_EQ(0, recorder.num_completions());
 
-  std::move(cancel).Run();
+  std::move(cancel).Run(CancelMode::kDeletePartialDownload);
   recorder.Wait();
 
   EXPECT_EQ(1, recorder.num_completions());
@@ -576,7 +583,7 @@ TEST_F(CrxDownloaderTest, CancelInterruptsUrlRetry) {
       /*completes_on_cancel=*/true);
 
   DownloadRecorder recorder;
-  base::OnceClosure cancel = downloader->StartDownload(
+  CancelCallback cancel = downloader->StartDownload(
       {GURL("http://localhost/download/first.crx"),
        GURL("http://localhost/download/second.crx")},
       hash_jebg, /*progress_callback=*/base::DoNothing(), recorder.Callback());
@@ -588,10 +595,12 @@ TEST_F(CrxDownloaderTest, CancelInterruptsUrlRetry) {
   retry_loop.Run();
   ASSERT_EQ(2, downloader->num_attempts());
 
-  std::move(cancel).Run();
+  std::move(cancel).Run(CancelMode::kDeletePartialDownload);
   recorder.Wait();
 
-  EXPECT_THAT(downloader->cancelled_attempts(), ElementsAre(1));
+  EXPECT_THAT(downloader->cancelled_attempts(),
+              ElementsAre(ControlledDownloader::CancelledAttempt{
+                  1, CancelMode::kDeletePartialDownload}));
   EXPECT_EQ(1, recorder.num_completions());
   EXPECT_EQ(std::to_underlying(CrxDownloaderError::CANCELLED),
             recorder.result().error);
@@ -613,7 +622,7 @@ TEST_F(CrxDownloaderTest, CancelInterruptsSuccessor) {
       successor, /*completes_on_cancel=*/true);
 
   DownloadRecorder recorder;
-  base::OnceClosure cancel = downloader->StartDownloadFromUrl(
+  CancelCallback cancel = downloader->StartDownloadFromUrl(
       GURL("http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"),
       hash_jebg, /*progress_callback=*/base::DoNothing(), recorder.Callback());
 
@@ -623,11 +632,13 @@ TEST_F(CrxDownloaderTest, CancelInterruptsSuccessor) {
   fallback_loop.Run();
   ASSERT_EQ(1, successor->num_attempts());
 
-  std::move(cancel).Run();
+  std::move(cancel).Run(CancelMode::kKeepPartialDownload);
   recorder.Wait();
 
   EXPECT_THAT(downloader->cancelled_attempts(), IsEmpty());
-  EXPECT_THAT(successor->cancelled_attempts(), ElementsAre(0));
+  EXPECT_THAT(successor->cancelled_attempts(),
+              ElementsAre(ControlledDownloader::CancelledAttempt{
+                  0, CancelMode::kKeepPartialDownload}));
   EXPECT_EQ(1, recorder.num_completions());
   EXPECT_EQ(std::to_underlying(CrxDownloaderError::CANCELLED),
             recorder.result().error);
@@ -649,7 +660,7 @@ TEST_F(CrxDownloaderTest, CancelPreventsRetryAfterUninterruptibleFailure) {
       /*completes_on_cancel=*/false);
 
   DownloadRecorder recorder;
-  base::OnceClosure cancel = downloader->StartDownload(
+  CancelCallback cancel = downloader->StartDownload(
       {GURL("http://localhost/download/first.crx"),
        GURL("http://localhost/download/second.crx")},
       hash_jebg, /*progress_callback=*/base::DoNothing(), recorder.Callback());
@@ -660,8 +671,10 @@ TEST_F(CrxDownloaderTest, CancelPreventsRetryAfterUninterruptibleFailure) {
     recorder.Quit();
   }));
 
-  std::move(cancel).Run();
-  EXPECT_THAT(downloader->cancelled_attempts(), ElementsAre(0));
+  std::move(cancel).Run(CancelMode::kKeepPartialDownload);
+  EXPECT_THAT(downloader->cancelled_attempts(),
+              ElementsAre(ControlledDownloader::CancelledAttempt{
+                  0, CancelMode::kKeepPartialDownload}));
 
   downloader->FailAttempt(net::ERR_ABORTED);
   recorder.Wait();
@@ -688,7 +701,7 @@ TEST_F(CrxDownloaderTest, CancelAfterFailureDoesNotCancelCompletedAttempt) {
       /*completes_on_cancel=*/true);
 
   DownloadRecorder recorder;
-  base::OnceClosure cancel = downloader->StartDownload(
+  CancelCallback cancel = downloader->StartDownload(
       {GURL("http://localhost/download/first.crx"),
        GURL("http://localhost/download/second.crx")},
       hash_jebg, /*progress_callback=*/base::DoNothing(), recorder.Callback());
@@ -702,7 +715,7 @@ TEST_F(CrxDownloaderTest, CancelAfterFailureDoesNotCancelCompletedAttempt) {
   // The failure is handled by a posted task, which runs after the
   // cancellation.
   downloader->FailAttempt(net::ERR_FILE_NOT_FOUND);
-  std::move(cancel).Run();
+  std::move(cancel).Run(CancelMode::kDeletePartialDownload);
   recorder.Wait();
 
   EXPECT_THAT(downloader->cancelled_attempts(), IsEmpty());
@@ -731,14 +744,14 @@ TEST_F(CrxDownloaderTest, CancelDuringHashVerificationCompletesSuccessfully) {
       /*completes_on_cancel=*/true);
 
   DownloadRecorder recorder;
-  base::OnceClosure cancel = downloader->StartDownloadFromUrl(
+  CancelCallback cancel = downloader->StartDownloadFromUrl(
       GURL("http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"),
       hash_jebg, /*progress_callback=*/base::DoNothing(), recorder.Callback());
 
   // The file is verified by a posted task, whose reply runs after the
   // cancellation.
   downloader->SucceedAttempt(file);
-  std::move(cancel).Run();
+  std::move(cancel).Run(CancelMode::kDeletePartialDownload);
   recorder.Wait();
 
   EXPECT_THAT(downloader->cancelled_attempts(), IsEmpty());
@@ -763,7 +776,7 @@ TEST_F(CrxDownloaderTest, CancelUninterruptibleSuccessorPreventsFallback) {
       successor, /*completes_on_cancel=*/true);
 
   DownloadRecorder recorder;
-  base::OnceClosure cancel = downloader->StartDownload(
+  CancelCallback cancel = downloader->StartDownload(
       {GURL("http://localhost/download/first.crx"),
        GURL("http://localhost/download/second.crx")},
       hash_jebg, /*progress_callback=*/base::DoNothing(), recorder.Callback());
@@ -786,8 +799,10 @@ TEST_F(CrxDownloaderTest, CancelUninterruptibleSuccessorPreventsFallback) {
     recorder.Quit();
   }));
 
-  std::move(cancel).Run();
-  EXPECT_THAT(successor->cancelled_attempts(), ElementsAre(0));
+  std::move(cancel).Run(CancelMode::kDeletePartialDownload);
+  EXPECT_THAT(successor->cancelled_attempts(),
+              ElementsAre(ControlledDownloader::CancelledAttempt{
+                  0, CancelMode::kDeletePartialDownload}));
 
   successor->FailAttempt(net::ERR_ABORTED);
   recorder.Wait();

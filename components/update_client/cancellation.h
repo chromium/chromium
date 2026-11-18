@@ -6,11 +6,23 @@
 #define COMPONENTS_UPDATE_CLIENT_CANCELLATION_H_
 
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 
 namespace update_client {
+
+// How cancellation treats partial download state.
+enum class CancelMode {
+  // Deletes partial download state. Use when the update won't be retried
+  // soon, for example on stop or uninstall.
+  kDeletePartialDownload,
+  // Asks the downloader to keep partial download state so a later update can
+  // reuse it, for example on a metered network. Downloaders that can't keep
+  // state treat this as `kDeletePartialDownload`.
+  kKeepPartialDownload,
+};
+
+using CancelCallback = base::OnceCallback<void(CancelMode)>;
 
 // Some update_client operations may be cancelled by the user while underway.
 // When this happens, update_client conducts an orderly tear-down by
@@ -20,7 +32,7 @@ namespace update_client {
 // Depending on how much progress the operation has made, different steps may
 // be required to interrupt and cancel ongoing work. A `Cancellation` is a
 // container for these steps. When a function starts interruptible work, it
-// should add a closure to interrupt the work to a `Cancellation` using
+// should add a callback to interrupt the work to a `Cancellation` using
 // `OnCancel`. When the work is completed or can no longer be interrupted, it
 // should `Clear` the `Cancellation`. All functions of `Cancellation` must be
 // called on the sequence on which the `Cancellation` was created.
@@ -30,17 +42,20 @@ class Cancellation : public base::RefCountedThreadSafe<Cancellation> {
   Cancellation(const Cancellation&) = delete;
   Cancellation& operator=(const Cancellation&) = delete;
 
-  // Trigger cancellation: sets the state to cancelled, and calls any closure
-  // registered via `OnCancel`.
+  // Same as `CancelWithMode(CancelMode::kDeletePartialDownload)`.
   void Cancel();
 
-  // Returns whether `Cancel` was previously called.
+  // Triggers cancellation with `mode`. Only the first call's `mode` is used;
+  // subsequent calls are no-ops.
+  void CancelWithMode(CancelMode mode);
+
+  // Returns whether cancellation was triggered.
   [[nodiscard]] bool IsCancelled();
 
-  // Registers a closure to be called when Cancel is called. If `Cancel` has
-  // already been called, a task will be posted to run the callback. Only one
-  // task may be registered at once.
-  void OnCancel(base::OnceClosure callback);
+  // Registers `callback` to run on cancel (or runs it immediately if already
+  // cancelled), replacing any previously registered callback. `callback`
+  // receives the mode of the first cancellation.
+  void OnCancel(CancelCallback callback);
 
   // Unregisters the cancellation callback.
   void Clear();
@@ -51,7 +66,8 @@ class Cancellation : public base::RefCountedThreadSafe<Cancellation> {
 
   SEQUENCE_CHECKER(sequence_checker_);
   bool cancelled_ = false;
-  base::OnceClosure task_ = base::DoNothing();
+  CancelMode cancel_mode_ = CancelMode::kDeletePartialDownload;
+  CancelCallback task_;
 };
 
 }  // namespace update_client

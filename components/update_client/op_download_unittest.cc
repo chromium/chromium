@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,6 +15,7 @@
 #include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -24,6 +26,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/update_client/cancellation.h"
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/persisted_data.h"
@@ -49,18 +52,20 @@ class FakeDownloader : public CrxDownloader {
  public:
   FakeDownloader(scoped_refptr<CrxDownloader> successor,
                  const base::FilePath& dest,
-                 const FakeDownloadStep& step)
-      : CrxDownloader(std::move(successor)), dest_(dest), step_(step) {}
+                 const FakeDownloadStep& step,
+                 std::optional<CancelMode>* cancelled_mode)
+      : CrxDownloader(std::move(successor)),
+        dest_(dest),
+        step_(step),
+        cancelled_mode_(cancelled_mode) {}
 
-  base::OnceClosure DoStartDownload(const GURL& url) override {
+  CancelCallback DoStartDownload(const GURL& url) override {
     if (step_.result.has_value()) {
       base::WriteFile(dest_, step_.result.value());
       OnDownloadComplete(true, {.response = dest_}, step_.metrics);
     } else if (step_.result.error() ==
                std::to_underlying(CrxDownloaderError::CANCELLED)) {
-      return base::BindOnce(&FakeDownloader::OnDownloadComplete, this, true,
-                            Result{.error = step_.result.error()},
-                            step_.metrics);
+      return base::BindOnce(&FakeDownloader::Cancel, this);
     } else {
       // A failure which is not handled falls through to the next url, or to
       // the successor in the chain, if any.
@@ -73,23 +78,34 @@ class FakeDownloader : public CrxDownloader {
   ~FakeDownloader() override = default;
 
  private:
+  void Cancel(CancelMode mode) {
+    *cancelled_mode_ = mode;
+    OnDownloadComplete(true, Result{.error = step_.result.error()},
+                       step_.metrics);
+  }
+
   const base::FilePath dest_;
   const FakeDownloadStep step_;
+  raw_ptr<std::optional<CancelMode>> cancelled_mode_;
 };
 
 // Builds a chain of fake downloaders, one per step, in the order given.
 class FakeFactory : public CrxDownloaderFactory {
  public:
-  FakeFactory(const base::FilePath& dest, std::vector<FakeDownloadStep> steps)
-      : dest_(dest), steps_(std::move(steps)) {}
+  FakeFactory(const base::FilePath& dest,
+              std::vector<FakeDownloadStep> steps,
+              std::optional<CancelMode>* cancelled_mode)
+      : dest_(dest),
+        steps_(std::move(steps)),
+        cancelled_mode_(cancelled_mode) {}
 
   scoped_refptr<CrxDownloader> MakeCrxDownloader(
       const std::string& prod_id,
       bool background_download_enabled) const override {
     scoped_refptr<CrxDownloader> downloader;
     for (auto it = steps_.rbegin(); it != steps_.rend(); ++it) {
-      downloader = base::MakeRefCounted<FakeDownloader>(std::move(downloader),
-                                                        dest_, *it);
+      downloader = base::MakeRefCounted<FakeDownloader>(
+          std::move(downloader), dest_, *it, cancelled_mode_);
     }
     return downloader;
   }
@@ -100,6 +116,7 @@ class FakeFactory : public CrxDownloaderFactory {
  private:
   const base::FilePath dest_;
   const std::vector<FakeDownloadStep> steps_;
+  raw_ptr<std::optional<CancelMode>> cancelled_mode_;
 };
 
 }  // namespace
@@ -123,7 +140,7 @@ class OpDownloadTest : public testing::Test {
         base::MakeRefCounted<TestConfigurator>(pref_.get());
     config->SetCrxDownloaderFactory(base::MakeRefCounted<FakeFactory>(
         temp_dir_.GetPath().Append(FILE_PATH_LITERAL("OpDownloadTest_File")),
-        std::move(steps)));
+        std::move(steps), &cancelled_mode_));
     return config;
   }
 
@@ -155,6 +172,7 @@ class OpDownloadTest : public testing::Test {
     runloop_.Run();
   }
 
+  std::optional<CancelMode> cancelled_mode_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestingPrefServiceSimple> pref_ =
       std::make_unique<TestingPrefServiceSimple>();
@@ -294,7 +312,7 @@ TEST_F(OpDownloadTest, DownloadCancelled) {
   base::HistogramTester histograms;
   const std::string data = "data";
   constexpr int kCancelled = std::to_underlying(CrxDownloaderError::CANCELLED);
-  base::OnceClosure cancel = DownloadOperation(
+  CancelCallback cancel = DownloadOperation(
       MakeConfigurator(
           base::unexpected(kCancelled),
           {.url = GURL("http://test"),
@@ -308,9 +326,10 @@ TEST_F(OpDownloadTest, DownloadCancelled) {
       data.length(), base::HexEncode(crypto::hash::Sha256(data)),
       MakePingCallback(), base::DoNothing(), MakeProgressCallback(), {},
       MakeDoneCallback());
-  std::move(cancel).Run();
+  std::move(cancel).Run(CancelMode::kKeepPartialDownload);
   runloop_.Run();
 
+  EXPECT_EQ(cancelled_mode_, CancelMode::kKeepPartialDownload);
   ASSERT_FALSE(outcome_.has_value());
   EXPECT_EQ(outcome_.error().category, ErrorCategory::kService);
   EXPECT_EQ(outcome_.error().code, std::to_underlying(ServiceError::CANCELLED));

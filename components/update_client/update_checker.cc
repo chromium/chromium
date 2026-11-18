@@ -18,6 +18,7 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -262,7 +263,7 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
       config_->GetDownloadPreference(), config_->IsMachineExternallyManaged(),
       additional_attributes, updater_state_attributes, std::move(apps));
 
-  cancellation_->OnCancel(
+  cancellation_->OnCancel(base::IgnoreArgs<CancelMode>(
       base::MakeRefCounted<RequestSender>(config_->GetNetworkFetcherFactory())
           ->Send({url},
                  BuildUpdateCheckExtraRequestHeaders(
@@ -282,7 +283,7 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
                                base::ToVector(base::span(urls).subspan(1u)),
                                additional_attributes, cache_contents,
                                updater_state_attributes, active_ids))
-                         : std::nullopt)));
+                         : std::nullopt))));
 }
 
 void UpdateCheckerImpl::OnRequestSenderComplete(

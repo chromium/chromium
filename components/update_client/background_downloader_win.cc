@@ -457,7 +457,7 @@ void BackgroundDownloader::OnTimer() {
       FROM_HERE, base::BindOnce(&BackgroundDownloader::OnDownloading, this));
 }
 
-base::OnceClosure BackgroundDownloader::DoStartDownload(const GURL& url) {
+CancelCallback BackgroundDownloader::DoStartDownload(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   com_task_runner_->PostTask(
       FROM_HERE,

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
 
 namespace update_client {
@@ -17,8 +16,19 @@ Cancellation::~Cancellation() = default;
 
 void Cancellation::Cancel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CancelWithMode(CancelMode::kDeletePartialDownload);
+}
+
+void Cancellation::CancelWithMode(CancelMode mode) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (cancelled_) {
+    return;
+  }
   cancelled_ = true;
-  std::move(task_).Run();
+  cancel_mode_ = mode;
+  if (task_) {
+    std::move(task_).Run(cancel_mode_);
+  }
 }
 
 bool Cancellation::IsCancelled() {
@@ -26,18 +36,20 @@ bool Cancellation::IsCancelled() {
   return cancelled_;
 }
 
-void Cancellation::OnCancel(base::OnceClosure task) {
+void Cancellation::OnCancel(CancelCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (IsCancelled()) {
-    std::move(task).Run();
+  if (cancelled_) {
+    if (callback) {
+      std::move(callback).Run(cancel_mode_);
+    }
   } else {
-    task_ = std::move(task);
+    task_ = std::move(callback);
   }
 }
 
 void Cancellation::Clear() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  task_ = base::DoNothing();
+  task_.Reset();
 }
 
 }  // namespace update_client

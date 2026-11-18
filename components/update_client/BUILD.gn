@@ -318,6 +318,7 @@ source_set("unit_tests") {
     "patch/patch_impl_unittest.cc",
     "persisted_data_unittest.cc",
     "ping_manager_unittest.cc",
+    "pipeline_unittest.cc",
     "protocol_parser_json_unittest.cc",
     "protocol_serializer_json_unittest.cc",
     "protocol_serializer_unittest.cc",

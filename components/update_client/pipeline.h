@@ -14,6 +14,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/crx_file/crx_verifier.h"
+#include "components/update_client/cancellation.h"
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/protocol_parser.h"
 #include "components/update_client/update_client.h"
@@ -28,7 +29,7 @@ namespace update_client {
 class Configurator;
 class CrxCache;
 
-using PipelineStartCallback = base::OnceCallback<base::OnceClosure(
+using PipelineStartCallback = base::OnceCallback<CancelCallback(
     base::OnceCallback<void(const CategorizedError&)>)>;
 
 // Creates a pipeline of operations to update an item, and returns a callback
