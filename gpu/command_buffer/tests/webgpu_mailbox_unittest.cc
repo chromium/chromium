@@ -1470,9 +1470,9 @@ TEST_P(WebGPUMailboxTextureTest, AssociateDissociateMailboxWhenNotCurrent) {
   auto CreateAndMakeGLContextCurrent =
       [&](scoped_refptr<gl::GLContext>* gl_context_out,
           scoped_refptr<gl::GLSurface>* gl_surface_out) {
-        GetGpuServiceHolder()->ScheduleGpuMainTask(base::BindOnce(
-            [](scoped_refptr<gl::GLContext>* gl_context_out,
-               scoped_refptr<gl::GLSurface>* gl_surface_out) {
+        base::WaitableEvent wait;
+        GetGpuServiceHolder()->ScheduleGpuMainTask(
+            base::BindLambdaForTesting([&]() {
               auto gl_surface = gl::init::CreateOffscreenGLSurface(
                   gl::GetDefaultDisplay(), gfx::Size());
               auto gl_context = gl::init::CreateGLContext(
@@ -1483,11 +1483,9 @@ TEST_P(WebGPUMailboxTextureTest, AssociateDissociateMailboxWhenNotCurrent) {
 
               *gl_context_out = std::move(gl_context);
               *gl_surface_out = std::move(gl_surface);
-            },
-            gl_context_out, gl_surface_out));
-        GetGpuServiceHolder()
-            ->gpu_main_thread_task_runner()
-            ->RunsTasksInCurrentSequence();
+              wait.Signal();
+            }));
+        wait.Wait();
       };
 
   // Create a GL context and make it current.
@@ -1533,14 +1531,18 @@ TEST_P(WebGPUMailboxTextureTest, AssociateDissociateMailboxWhenNotCurrent) {
 
   WaitForCompletion(device_);
 
-  // Delete the GL contexts on the GPU thread.
-  GetGpuServiceHolder()->ScheduleGpuMainTask(
-      base::BindOnce([](scoped_refptr<gl::GLContext> gl_context1,
-                        scoped_refptr<gl::GLContext> gl_context2,
-                        scoped_refptr<gl::GLSurface> gl_surface1,
-                        scoped_refptr<gl::GLSurface> gl_surface2) {},
-                     std::move(gl_context1), std::move(gl_context2),
-                     std::move(gl_surface1), std::move(gl_surface2)));
+  // Release and delete the GL contexts on the GPU thread.
+  base::WaitableEvent wait;
+  GetGpuServiceHolder()->ScheduleGpuMainTask(base::BindLambdaForTesting([&]() {
+    gl_context1->ReleaseCurrent(gl_surface1.get());
+    gl_context2->ReleaseCurrent(gl_surface2.get());
+    gl_context1.reset();
+    gl_context2.reset();
+    gl_surface1.reset();
+    gl_surface2.reset();
+    wait.Signal();
+  }));
+  wait.Wait();
 }
 
 // Test that a SharedImage that is presented while still uninitialized stays
