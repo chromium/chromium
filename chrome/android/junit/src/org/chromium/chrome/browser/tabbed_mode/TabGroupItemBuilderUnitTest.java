@@ -172,6 +172,7 @@ public class TabGroupItemBuilderUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS)
     public void testTabGroupsSubmenu_WithGroups() {
         Token token1 = new Token(1L, 1L);
         when(mTabModel.getTabGroupCount()).thenReturn(1);
@@ -235,6 +236,7 @@ public class TabGroupItemBuilderUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS)
     public void testTabGroupsSubmenu_Favicons_GroupedNonIncognito() {
         setUpMockTabGroup(mTabModel, /* isIncognito= */ false, /* hasGroupId= */ true);
         GURL tabUrl = JUnitTestGURLs.URL_1;
@@ -280,6 +282,7 @@ public class TabGroupItemBuilderUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS)
     public void testTabGroupsSubmenu_Favicons_GroupedIncognito() {
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
@@ -657,6 +660,7 @@ public class TabGroupItemBuilderUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS)
     @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
     public void testBuildTabGroupsParentItem_withGroupWindowChecker_crossWindow() {
         Token token1 = Token.createRandom();
@@ -819,6 +823,7 @@ public class TabGroupItemBuilderUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS)
     @EnableFeatures(
             ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
     public void testBuildTabGroupsParentItem_withGroupWindowChecker_remoteGroup() {
@@ -1047,6 +1052,7 @@ public class TabGroupItemBuilderUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS)
     @EnableFeatures(
             ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
     public void testBuildTabGroupsParentItem_withGroupWindowChecker_closingGroup() {
@@ -1116,6 +1122,7 @@ public class TabGroupItemBuilderUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS)
     @EnableFeatures(
             ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
     public void testBuildTabGroupsParentItem_closingGroupInAnotherWindow() {
@@ -1412,7 +1419,10 @@ public class TabGroupItemBuilderUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    @DisableFeatures({
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS,
+        ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS
+    })
     public void testBuildTabGroupsParentItem_crossWindowDisabled_onlyCurrentGroupIncluded() {
         Token tokenCurrent = new Token(1L, 1L);
         Token tokenAnother = new Token(2L, 2L);
@@ -1516,6 +1526,7 @@ public class TabGroupItemBuilderUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS)
     public void testBuildSubmenuForSpecificGroup_incognito_buildsTabsFromModel() {
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
@@ -1567,6 +1578,7 @@ public class TabGroupItemBuilderUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS)
     @EnableFeatures({
         ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true"
     })
