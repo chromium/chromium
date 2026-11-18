@@ -15535,7 +15535,21 @@
         {
             "platforms": [
                 "android",
-                "android_desktop",
+                "android_desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PasswordSaveInContextErrorResolution"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PasswordSaveInContextErrorResolutionV2": [
+        {
+            "platforms": [
                 "chromeos",
                 "linux",
                 "mac",
