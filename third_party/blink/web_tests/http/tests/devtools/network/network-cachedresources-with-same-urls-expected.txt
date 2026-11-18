@@ -1,5 +1,0 @@
-Tests that loading the same image url twice in the same document reuses the cached resource (available-image reuse).
-
-Number of resource.php requests: 1
-http://127.0.0.1:8000/devtools/network/resources/resource.php?type=image&random=1
-
