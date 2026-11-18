@@ -151,6 +151,19 @@ public class DisplayedCondition<ViewT extends View> extends ConditionWithResult<
             }
         }
 
+        // ViewGroups skip layout() on GONE children, leaving PFLAG_FORCE_LAYOUT set on matchedView
+        // while GONE; root DecorView still clears its flag once the resulting layout pass finishes.
+        boolean layoutRequested = false;
+        if (mOptions.mExpectedEffectiveVisibility != View.GONE && matchedView.isLayoutRequested()) {
+            fulfilled = false;
+            layoutRequested = true;
+            messages.add("layout requested");
+        } else if (displayedMatch.viewAndRoot.root.getDecorView().isLayoutRequested()) {
+            fulfilled = false;
+            layoutRequested = true;
+            messages.add("root layout requested");
+        }
+
         if (mOptions.mSettleTimeMs > 0) {
             long nowMs = System.currentTimeMillis();
             int[] locationOnScreen = new int[2];
@@ -159,7 +172,8 @@ public class DisplayedCondition<ViewT extends View> extends ConditionWithResult<
             int newY = locationOnScreen[1];
             int newWidth = matchedView.getWidth();
             int newHeight = matchedView.getHeight();
-            if (mPreviousViewX != newX
+            if (layoutRequested
+                    || mPreviousViewX != newX
                     || mPreviousViewY != newY
                     || mPreviousViewWidth != newWidth
                     || mPreviousViewHeight != newHeight) {
