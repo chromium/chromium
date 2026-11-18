@@ -101,8 +101,9 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
     private final Set<Long> mOutstandingNavigations = new ArraySet<>();
 
     // Outstanding navigations that skipped the load lock (ClankOmniboxMinimization). They take the
-    // lock if they do not finish within the slow-load fallback delay, or if the tab is hidden.
-    // Always a subset of mOutstandingNavigations.
+    // lock if they do not finish within the slow-load fallback delay, on tab hide or a WebContents
+    // swap, or at commit when they no longer qualify to stay hidden. Always a subset of
+    // mOutstandingNavigations.
     private final Set<Long> mKeepHiddenNavigationIds = new ArraySet<>();
 
     @SuppressLint("HandlerLeak")
@@ -236,6 +237,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
     private void onWebContentsUpdated(@Nullable WebContents contents) {
         if (mWebContents == contents) return;
         mWebContents = contents;
+        lockKeptHiddenNavigations();
 
         if (mWebContents == null) return;
 
@@ -383,12 +385,35 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
         return BrowserControlsStateProviderSupplier.getValueOrNullFrom(mTab.getWindowAndroid());
     }
 
+    /**
+     * Finishes tracking a navigation that skipped the load lock at start, snapping the browser
+     * controls to {@link BrowserControlsState#SHOWN} without animation and acquiring the load lock
+     * if the committed page no longer qualifies to keep the Omnibox hidden.
+     */
     private void onKeptHiddenNavigationFinished(NavigationHandle navigation) {
         if (!mKeepHiddenNavigationIds.remove(navigation.getNavigationId())) return;
         if (mKeepHiddenNavigationIds.isEmpty()) {
             mHandler.removeMessages(MSG_ID_SHOW_CONTROLS_ON_SLOW_LOAD);
         }
-        // TODO(crbug.com/579544758): Re-check the origin and error state at commit.
+        // Uncommitted navigations (e.g. 204, download, abort) leave the previous document on
+        // screen.
+        if (!navigation.hasCommitted() || canKeepControlsHiddenOnCommit(navigation)) return;
+
+        // TabBrowserControlsConstraintsHelper's observer runs first on navigation finish:
+        // - BOTH: the helper sends (BOTH, BOTH, true) (a no-op in cc), then this
+        //   (BOTH, SHOWN, false) snap sets the shown ratio to 1.0 immediately before
+        //   updateWaitingForLoad(true) transitions constraints to SHOWN and sends
+        //   (SHOWN, BOTH, true).
+        // - SHOWN (another lock already active while controls are not fully visible): the helper
+        //   sends (SHOWN, BOTH, true) to start a slide-in on the new renderer, so cc ignores this
+        //   snap while keeping the lock.
+        // - HIDDEN (e.g. composed fullscreen): TabBrowserControlsConstraintsHelper#update drops
+        //   this SHOWN snap, while updateWaitingForLoad(true) still records the load lock here.
+        if (!mTab.isFrozen() && mTab.getWebContents() != null) {
+            TabBrowserControlsConstraintsHelper.update(
+                    mTab, BrowserControlsState.SHOWN, /* animate= */ false);
+        }
+        updateWaitingForLoad(true);
     }
 
     /** Takes the load lock that the kept-hidden navigations skipped. */
@@ -398,6 +423,26 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
         mKeepHiddenNavigationIds.clear();
         // Released getLoadDelayMs() after the last outstanding navigation finishes.
         updateWaitingForLoad(true);
+    }
+
+    /**
+     * Returns whether a committed navigation that skipped the load lock at start still qualifies to
+     * keep the browser controls hidden.
+     */
+    private boolean canKeepControlsHiddenOnCommit(NavigationHandle navigation) {
+        // Re-check tab and window eligibility in case the tab moved windows or changed controls
+        // position while the navigation was in flight.
+        if (!canKeepOmniboxHiddenInTab()) return false;
+        // If the user scrolled to partially reveal the controls mid-load, finish showing and lock
+        // them rather than leaving them partially visible on the new document.
+        if (!areBrowserControlsOffScreen()) return false;
+        // Error pages must always display the Omnibox even when NavigationHandle#isSameOrigin() is
+        // true.
+        if (navigation.isErrorPage()) return false;
+        // Use the committed document's security origin (not URL comparison) so cross-origin
+        // redirects and opaque origins (e.g. CSP sandbox) reveal the URL.
+        if (!navigation.isSameOrigin()) return false;
+        return UrlUtilities.isHttpOrHttps(navigation.getUrl());
     }
 
     /** Returns the constraints that determine the visibility of the browser controls. */
