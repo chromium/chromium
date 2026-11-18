@@ -1,0 +1,19 @@
+upstream {
+  version: "7.21.1"
+  artifacts {
+    name: "unrarsrc-7.2.5.tar.gz"
+    http {
+      url: "https://www.rarlab.com/rar/unrarsrc-7.2.5.tar.gz"
+      digest: "sha256:3d7b402ce7b9825af32a5f593379269e742c883d9d276527be19d0e9f6a114f9"
+    }
+  }
+}
+stages {
+  input {
+    unpack {}
+    patch { copybara {} }
+  }
+  publish { git {} }
+}
+# TODO(b/552678988): Add latest {} once Crowbar can snapshot a URL. Until
+# then, README.md says how to roll by hand.
