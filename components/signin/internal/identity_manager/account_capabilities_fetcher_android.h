@@ -34,6 +34,9 @@ class AccountCapabilitiesFetcherAndroid : public AccountCapabilitiesFetcher {
   void StartImpl() override;
 
  private:
+  void OnCapabilitiesFetchComplete(
+      const base::android::JavaRef<jobject>& account_capabilities);
+
   // A reference to the Java counterpart of this object.
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 
