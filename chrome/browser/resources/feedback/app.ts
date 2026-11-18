@@ -53,7 +53,6 @@ export class AppElement extends CrLitElement {
    */
   private feedbackInfo: chrome.feedbackPrivate.FeedbackInfo = {
     attachedFile: undefined,
-    attachedFileBlobUuid: undefined,
     autofillMetadata: '',
     categoryTag: undefined,
     description: '...',

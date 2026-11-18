@@ -82,14 +82,7 @@ class FeedbackDataTest : public testing::Test {
     data_ = base::MakeRefCounted<FeedbackData>(uploader_->AsWeakPtr(), nullptr);
   }
 
-  void Send() {
-    bool attached_file_completed = data_->attached_file_uuid().empty();
-    bool screenshot_completed = data_->screenshot_uuid().empty();
-
-    if (screenshot_completed && attached_file_completed) {
-      data_->OnFeedbackPageDataComplete();
-    }
-  }
+  void Send() { data_->OnFeedbackPageDataComplete(); }
 
   void RunMessageLoop() {
     run_loop_ = std::make_unique<base::RunLoop>();

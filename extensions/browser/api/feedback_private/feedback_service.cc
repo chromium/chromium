@@ -190,12 +190,14 @@ FeedbackService::~FeedbackService() = default;
 void FeedbackService::RedactThenSendFeedback(
     const FeedbackParams& params,
     scoped_refptr<feedback::FeedbackData> feedback_data,
+    FeedbackAttachments attachments,
     SendFeedbackCallback callback) {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&RedactFeedbackData, feedback_data),
       base::BindOnce(&FeedbackService::SendFeedback, this, params,
-                     feedback_data, std::move(callback)));
+                     feedback_data, std::move(attachments),
+                     std::move(callback)));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -211,22 +213,24 @@ void FeedbackService::SetLogFilesRootPathForTesting(
 void FeedbackService::SendFeedback(
     const FeedbackParams& params,
     scoped_refptr<feedback::FeedbackData> feedback_data,
+    FeedbackAttachments attachments,
     SendFeedbackCallback callback) {
   auto* browser_client = ExtensionsBrowserClient::Get();
   feedback_data->set_locale(browser_client->GetApplicationLocale());
   feedback_data->set_user_agent(embedder_support::GetUserAgent());
 
   FetchAttachedFileAndScreenshot(
-      feedback_data,
+      feedback_data, std::move(attachments),
       base::BindOnce(&FeedbackService::OnAttachedFileAndScreenshotFetched, this,
                      params, feedback_data, std::move(callback)));
 }
 
 void FeedbackService::FetchAttachedFileAndScreenshot(
     scoped_refptr<feedback::FeedbackData> feedback_data,
+    FeedbackAttachments attachments,
     base::OnceClosure callback) {
-  const bool must_attach_file = !feedback_data->attached_file_uuid().empty();
-  const bool must_attach_screenshot = !feedback_data->screenshot_uuid().empty();
+  const bool must_attach_file = attachments.attached_file.is_valid();
+  const bool must_attach_screenshot = attachments.screenshot.is_valid();
   auto barrier_closure = base::BarrierClosure(
       (must_attach_file ? 1 : 0) + (must_attach_screenshot ? 1 : 0),
       std::move(callback));
@@ -235,27 +239,23 @@ void FeedbackService::FetchAttachedFileAndScreenshot(
     auto populate_attached_file = base::BindOnce(
         [](scoped_refptr<feedback::FeedbackData> feedback_data,
            std::string data, int64_t /*length*/) {
-          feedback_data->set_attached_file_uuid(std::string());
           feedback_data->AttachAndCompressFileData(std::move(data));
         },
         feedback_data);
 
-    BlobReader::Read(
-        browser_context_->GetBlobRemote(feedback_data->attached_file_uuid()),
-        std::move(populate_attached_file).Then(barrier_closure));
+    BlobReader::Read(std::move(attachments.attached_file),
+                     std::move(populate_attached_file).Then(barrier_closure));
   }
 
   if (must_attach_screenshot) {
     auto populate_screenshot = base::BindOnce(
         [](scoped_refptr<feedback::FeedbackData> feedback_data,
            std::string data, int64_t /*length*/) {
-          feedback_data->set_screenshot_uuid(std::string());
           feedback_data->set_image(std::move(data));
         },
         feedback_data);
-    BlobReader::Read(
-        browser_context_->GetBlobRemote(feedback_data->screenshot_uuid()),
-        std::move(populate_screenshot).Then(barrier_closure));
+    BlobReader::Read(std::move(attachments.screenshot),
+                     std::move(populate_screenshot).Then(barrier_closure));
   }
 }
 
@@ -414,9 +414,6 @@ void FeedbackService::OnAllLogsFetched(
   if (params.send_autofill_metadata) {
     feedback_data->CompressAutofillMetadata();
   }
-
-  DCHECK(feedback_data->attached_file_uuid().empty());
-  DCHECK(feedback_data->screenshot_uuid().empty());
 
   // Signal the feedback object that the data from the feedback page has been
   // filled - the object will manage sending of the actual report.

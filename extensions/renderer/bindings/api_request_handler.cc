@@ -452,7 +452,8 @@ v8::Local<v8::Promise> APIRequestHandler::StartRequest(
     binding::AsyncResponseType async_type,
     v8::Local<v8::Function> callback,
     v8::Local<v8::Function> custom_callback,
-    binding::ResultModifierFunction result_modifier) {
+    binding::ResultModifierFunction result_modifier,
+    std::vector<mojo::PendingRemote<blink::mojom::Blob>> blobs) {
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
   v8::Local<v8::Promise> promise;
@@ -480,6 +481,7 @@ v8::Local<v8::Promise> APIRequestHandler::StartRequest(
   request->has_user_gesture =
       interaction_provider_->HasActiveInteraction(context);
   request->arguments_list = std::move(arguments_list);
+  request->blobs = std::move(blobs);
   request->method_name = method;
 
   last_sent_request_id_ = request_id;

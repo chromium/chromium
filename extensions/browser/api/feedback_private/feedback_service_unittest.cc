@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/feedback/feedback_data.h"
 #include "components/feedback/feedback_report.h"
@@ -23,6 +24,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "storage/browser/test/fake_blob.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -338,6 +340,7 @@ class FeedbackServiceTest : public ApiUnitTest {
                               const FeedbackParams& params,
                               SendFeedbackCallback mock_callback) {
     feedback_service->RedactThenSendFeedback(params, feedback_data_,
+                                             FeedbackAttachments(),
                                              std::move(mock_callback));
     base::ThreadPoolInstance::Get()->FlushForTesting();
     task_environment()->RunUntilIdle();
@@ -374,6 +377,35 @@ TEST_F(FeedbackServiceTest, SendFeedbackWithoutSysInfo) {
       browser_context(), feedback_delegate.get());
 
   RunUntilFeedbackIsSent(feedback_service, params, mock_callback.Get());
+}
+
+TEST_F(FeedbackServiceTest, SendFeedbackWithAttachments) {
+  storage::FakeBlob attached_file("attachment");
+  attached_file.set_body("attached file contents");
+  storage::FakeBlob screenshot("screenshot");
+  screenshot.set_body("screenshot contents");
+  feedback_data_->set_attached_filename("attachment.txt");
+  FeedbackAttachments attachments{attached_file.Clone(), screenshot.Clone()};
+
+  base::test::TestFuture<void> report_sent;
+  EXPECT_CALL(*mock_uploader_, QueueReport)
+      .WillOnce([&report_sent](std::unique_ptr<std::string>, bool, int) {
+        report_sent.SetValue();
+      });
+  base::test::TestFuture<bool> callback;
+  MockFeedbackPrivateDelegate delegate;
+  scoped_refptr<FeedbackService> service =
+      base::MakeRefCounted<FeedbackService>(browser_context(), &delegate);
+  service->RedactThenSendFeedback(FeedbackParams(), feedback_data_,
+                                  std::move(attachments),
+                                  callback.GetCallback());
+
+  EXPECT_TRUE(callback.Get());
+  ASSERT_TRUE(report_sent.Wait());
+  EXPECT_EQ("screenshot contents", feedback_data_->image());
+  ASSERT_EQ(1u, feedback_data_->attachments());
+  EXPECT_EQ("attachment.txt.zip", feedback_data_->attachment(0)->name);
+  EXPECT_FALSE(feedback_data_->attachment(0)->data.empty());
 }
 
 TEST_F(FeedbackServiceTest, SendFeedbackLoadSysInfo) {

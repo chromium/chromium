@@ -48,7 +48,6 @@ generate_grd("build_grdp") {
     "declarative_webrequest_custom_bindings.js",
     "entry_id_manager.js",
     "extension_fonts.css",
-    "feedback_private_custom_bindings.js",
     "file_entry_binding_util.js",
     "file_system_custom_bindings.js",
     "greasemonkey_api.js",

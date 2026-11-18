@@ -36,6 +36,8 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/extra_response_data.mojom.h"
 #include "extensions/common/stack_frame.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
@@ -301,6 +303,10 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   // Specifies the raw arguments to the function, as a JSON value.
   void SetArgs(base::ListValue args);
+  // These args are Blobs, which don't fit into a base::Value. The meaning and
+  // ordering of the args is function-dependent.
+  void SetBlobArgs(
+      std::vector<mojo::PendingRemote<blink::mojom::Blob>> blob_args);
 
   // Retrieves the results of the function as a base::ListValue for testing
   // purposes.
@@ -600,6 +606,10 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Sets the Blobs whose ownership is being transferred to the renderer.
   void SetTransferredBlobs(std::vector<blink::mojom::SerializedBlobPtr> blobs);
 
+  // Takes ownership of the blob argument at `index`. Returns a null remote if
+  // `index` is out of range or the argument is null or has already been taken.
+  mojo::PendingRemote<blink::mojom::Blob> TakeBlobArg(int index);
+
   bool has_args() const { return args_.has_value(); }
 
   // Returns args. They may have been modified via GetMutableArgs() since they
@@ -761,6 +771,9 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   // The blobs transferred to the renderer process.
   std::vector<blink::mojom::SerializedBlobPtr> transferred_blobs_;
+
+  // Blob arguments received with the request.
+  std::vector<mojo::PendingRemote<blink::mojom::Blob>> blob_args_;
 
   // The JS call stack snapshot captured at function invocation time.
   std::optional<extensions::StackTrace> js_callstack_;

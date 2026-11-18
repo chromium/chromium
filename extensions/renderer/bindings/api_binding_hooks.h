@@ -7,10 +7,13 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
 #include "v8/include/v8.h"
 
 namespace gin {
@@ -59,6 +62,8 @@ class APIBindingHooks {
     binding::ResultModifierFunction result_modifier;
     v8::Local<v8::Value> return_value;  // Only valid if code == HANDLED.
     std::string error;
+    // Blobs referenced by the updated arguments.
+    std::vector<mojo::PendingRemote<blink::mojom::Blob>> blobs;
   };
 
   APIBindingHooks(const std::string& api_name,

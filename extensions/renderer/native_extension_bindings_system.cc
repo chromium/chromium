@@ -1145,6 +1145,7 @@ void NativeExtensionBindingsSystem::SendRequest(
   auto params = mojom::RequestParams::New();
   params->name = request->method_name;
   params->arguments = std::move(request->arguments_list);
+  params->blobs = std::move(request->blobs);
   params->extension_id = script_context->GetExtensionID();
   params->source_url = url;
   params->context_type = script_context->context_type();

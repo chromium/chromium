@@ -99,6 +99,7 @@ bool IsGoogleInternalAccountEmail(content::BrowserContext* context) {
 void SendFeedback(content::BrowserContext* browser_context,
                   const FeedbackInfo& feedback_info,
                   const bool load_system_info,
+                  FeedbackAttachments attachments,
                   base::OnceCallback<void(feedback_private::LandingPageType,
                                           bool)> callback) {
   // Populate feedback_params
@@ -153,18 +154,9 @@ void SendFeedback(content::BrowserContext* browser_context,
   feedback_data->set_is_offensive_or_unsafe(
       feedback_info.is_offensive_or_unsafe);
 
-  // Note that the blob_uuids are generated in
-  // renderer/resources/feedback_private_custom_bindings.js
-  if (feedback_info.attached_file_blob_uuid &&
-      !feedback_info.attached_file_blob_uuid->empty()) {
+  if (attachments.attached_file) {
     feedback_data->set_attached_filename(
-        StripFakepath((*feedback_info.attached_file).name));
-    feedback_data->set_attached_file_uuid(
-        *feedback_info.attached_file_blob_uuid);
-  }
-  if (feedback_info.screenshot_blob_uuid &&
-      !feedback_info.screenshot_blob_uuid->empty()) {
-    feedback_data->set_screenshot_uuid(*feedback_info.screenshot_blob_uuid);
+        StripFakepath(feedback_info.attached_file->name));
   }
 
   if (feedback_info.system_information) {
@@ -181,6 +173,7 @@ void SendFeedback(content::BrowserContext* browser_context,
       ->Get(browser_context)
       ->GetService()
       ->RedactThenSendFeedback(feedback_params, feedback_data,
+                               std::move(attachments),
                                std::move(send_callback));
 }
 
@@ -379,6 +372,20 @@ ExtensionFunction::ResponseAction FeedbackPrivateSendFeedbackFunction::Run() {
       feedback_private::SendFeedback::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
+  FeedbackAttachments attachments;
+  if (params->feedback.attached_file) {
+    EXTENSION_FUNCTION_VALIDATE(
+        params->feedback.attached_file->attached_file_blob_index);
+    attachments.attached_file =
+        TakeBlobArg(*params->feedback.attached_file->attached_file_blob_index);
+    EXTENSION_FUNCTION_VALIDATE(attachments.attached_file);
+  }
+  if (params->feedback.screenshot_blob_index) {
+    attachments.screenshot =
+        TakeBlobArg(*params->feedback.screenshot_blob_index);
+    EXTENSION_FUNCTION_VALIDATE(attachments.screenshot);
+  }
+
   bool load_system_info =
       (params->load_system_info && *params->load_system_info);
   if (params->form_open_time) {
@@ -392,6 +399,7 @@ ExtensionFunction::ResponseAction FeedbackPrivateSendFeedbackFunction::Run() {
 
   SendFeedback(
       browser_context(), params->feedback, load_system_info,
+      std::move(attachments),
       base::BindOnce(&FeedbackPrivateSendFeedbackFunction::OnCompleted, this));
 
   return RespondLater();

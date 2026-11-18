@@ -223,10 +223,13 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
     EXPECT_EQ(mock_private_delegate.get(),
               mock_feedback_service->GetFeedbackPrivateDelegate());
 
-    EXPECT_CALL(*mock_feedback_service, RedactThenSendFeedback(_, _, _))
+    EXPECT_CALL(*mock_feedback_service, RedactThenSendFeedback(_, _, _, _))
         .WillOnce([&](const extensions::FeedbackParams& params,
                       scoped_refptr<FeedbackData> feedback_data,
+                      extensions::FeedbackAttachments attachments,
                       extensions::SendFeedbackCallback callback) {
+          EXPECT_FALSE(attachments.attached_file);
+          EXPECT_FALSE(attachments.screenshot);
           // Pass the feedback data out to verify its properties
           actual_feedback_data = feedback_data;
 

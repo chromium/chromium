@@ -38,8 +38,6 @@ declare namespace chrome {
       systemInformation?: LogsMapEntry[];
       sendHistograms?: boolean;
       flow?: FeedbackFlow;
-      attachedFileBlobUuid?: string;
-      screenshotBlobUuid?: string;
       useSystemWindowFrame?: boolean;
       sendAutofillMetadata?: boolean;
       sendBluetoothLogs?: boolean;

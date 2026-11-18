@@ -59,14 +59,6 @@ class FeedbackData : public FeedbackCommon {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return attached_filename_;
   }
-  const std::string& attached_file_uuid() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return attached_file_uuid_;
-  }
-  const std::string& screenshot_uuid() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return screenshot_uuid_;
-  }
   int trace_id() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return trace_id_;
@@ -76,14 +68,6 @@ class FeedbackData : public FeedbackCommon {
   void set_attached_filename(const std::string& attached_filename) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     attached_filename_ = attached_filename;
-  }
-  void set_attached_file_uuid(const std::string& uuid) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    attached_file_uuid_ = uuid;
-  }
-  void set_screenshot_uuid(const std::string& uuid) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    screenshot_uuid_ = uuid;
   }
   void set_trace_id(int trace_id) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -106,8 +90,6 @@ class FeedbackData : public FeedbackCommon {
   base::WeakPtr<feedback::FeedbackUploader> uploader_;
 
   std::string attached_filename_ GUARDED_BY_CONTEXT(sequence_checker_);
-  std::string attached_file_uuid_ GUARDED_BY_CONTEXT(sequence_checker_);
-  std::string screenshot_uuid_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtr<TracingManager> tracing_manager_;
   int trace_id_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;

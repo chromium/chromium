@@ -23,6 +23,8 @@ source_set("feedback_private") {
     "//extensions/browser:browser_sources",
     "//extensions/browser/api:extensions_api_client",
     "//extensions/common/api",
+    "//mojo/public/cpp/bindings",
+    "//third_party/blink/public/common",
     "//ui/gfx/geometry",
   ]
 

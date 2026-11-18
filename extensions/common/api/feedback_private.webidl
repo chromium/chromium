@@ -5,6 +5,8 @@
 dictionary AttachedFile {
   required DOMString name;
   [instanceOf = Blob] object data;
+  // Set by the hooks to point at the blob in RequestParams::blobs.
+  long attachedFileBlobIndex;
 };
 
 dictionary LogsMapEntry {
@@ -58,6 +60,8 @@ dictionary FeedbackInfo {
 
   // Screenshot to send with this feedback.
   [instanceOf = Blob] object screenshot;
+  // Set by the hooks to point at the blob in RequestParams::blobs.
+  long screenshotBlobIndex;
 
   // Optional id for performance trace data that can be included in this
   // report.
@@ -72,11 +76,6 @@ dictionary FeedbackInfo {
 
   // Optional feedback UI flow. Default is the regular user flow.
   FeedbackFlow flow;
-
-  // TODO(rkc): Remove these once we have bindings to send blobs to Chrome.
-  // Used internally to store the blob uuid after parameter customization.
-  DOMString attachedFileBlobUuid;
-  DOMString screenshotBlobUuid;
 
   // Whether to use the system-provided window frame or custom frame controls.
   boolean useSystemWindowFrame;

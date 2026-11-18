@@ -720,6 +720,20 @@ void ExtensionFunction::ReportInspectorIssue(
   render_frame_host_->ReportInspectorIssue(std::move(info));
 }
 
+void ExtensionFunction::SetBlobArgs(
+    std::vector<mojo::PendingRemote<blink::mojom::Blob>> blob_args) {
+  DCHECK(blob_args_.empty());
+  blob_args_ = std::move(blob_args);
+}
+
+mojo::PendingRemote<blink::mojom::Blob> ExtensionFunction::TakeBlobArg(
+    int index) {
+  if (index < 0 || static_cast<size_t>(index) >= blob_args_.size()) {
+    return {};
+  }
+  return std::move(blob_args_[index]);
+}
+
 void ExtensionFunction::SetTransferredBlobs(
     std::vector<blink::mojom::SerializedBlobPtr> blobs) {
   DCHECK(transferred_blobs_.empty());  // Should only be called once.

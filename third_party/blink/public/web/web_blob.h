@@ -31,7 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_BLOB_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_BLOB_H_
 
+#include "third_party/blink/public/mojom/blob/blob.mojom-shared.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom-forward.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -67,6 +69,7 @@ class BLINK_EXPORT WebBlob {
   void Reset();
   void Assign(const WebBlob&);
   WebString Uuid();
+  CrossVariantMojoRemote<mojom::BlobInterfaceBase> CloneBlobRemote() const;
 
   bool IsNull() const { return private_.IsNull(); }
 

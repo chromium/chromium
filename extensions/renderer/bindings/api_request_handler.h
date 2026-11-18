@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -17,6 +18,8 @@
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_last_error.h"
 #include "extensions/renderer/bindings/interaction_provider.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
 #include "v8/include/v8.h"
 
 namespace extensions {
@@ -43,6 +46,7 @@ class APIRequestHandler {
     bool has_async_response_handler = false;
     bool has_user_gesture = false;
     base::ListValue arguments_list;
+    std::vector<mojo::PendingRemote<blink::mojom::Blob>> blobs;
   };
 
   // Details about a newly-added request to provide as a return to callers.
@@ -80,7 +84,8 @@ class APIRequestHandler {
       binding::AsyncResponseType async_type,
       v8::Local<v8::Function> callback,
       v8::Local<v8::Function> custom_callback,
-      binding::ResultModifierFunction result_modifier);
+      binding::ResultModifierFunction result_modifier,
+      std::vector<mojo::PendingRemote<blink::mojom::Blob>> blobs = {});
 
   // Adds a pending request for the request handler to manage (and complete via
   // CompleteRequest). This is used by renderer-side implementations that

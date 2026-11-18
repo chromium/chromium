@@ -351,6 +351,7 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
   if (!function.get()) {
     return;
   }
+  function->SetBlobArgs(std::move(params->blobs));
 
   if (extension && ExtensionsBrowserClient::Get()->CanExtensionCrossIncognito(
                        extension, browser_context_)) {

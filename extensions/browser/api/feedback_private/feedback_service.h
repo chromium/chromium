@@ -16,6 +16,8 @@
 #include "build/chromeos_buildflags.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "extensions/browser/api/feedback_private/feedback_private_delegate.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include <optional>
@@ -53,6 +55,11 @@ struct FeedbackParams {
   base::TimeTicks form_submit_time;
 };
 
+struct FeedbackAttachments {
+  mojo::PendingRemote<blink::mojom::Blob> attached_file;
+  mojo::PendingRemote<blink::mojom::Blob> screenshot;
+};
+
 // Callback invoked when the feedback report is ready to be sent.
 // True will be passed to indicate that it is being successfully sent now,
 // and false to indicate that it will be delayed due to being offline.
@@ -72,6 +79,7 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
   virtual void RedactThenSendFeedback(
       const FeedbackParams& params,
       scoped_refptr<feedback::FeedbackData> feedback_data,
+      FeedbackAttachments attachments,
       SendFeedbackCallback callback);
 
   FeedbackPrivateDelegate* GetFeedbackPrivateDelegate() { return delegate_; }
@@ -91,10 +99,12 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
 
   void SendFeedback(const FeedbackParams& params,
                     scoped_refptr<feedback::FeedbackData> feedback_data,
+                    FeedbackAttachments attachments,
                     SendFeedbackCallback callback);
 
   void FetchAttachedFileAndScreenshot(
       scoped_refptr<feedback::FeedbackData> feedback_data,
+      FeedbackAttachments attachments,
       base::OnceClosure callback);
   void OnAttachedFileAndScreenshotFetched(
       const FeedbackParams& params,

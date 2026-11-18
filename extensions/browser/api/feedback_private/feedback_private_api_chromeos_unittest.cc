@@ -15,6 +15,7 @@
 #include "extensions/browser/api/feedback_private/feedback_service.h"
 #include "extensions/browser/api/feedback_private/log_source_access_manager.h"
 #include "extensions/browser/api/feedback_private/mock_feedback_service.h"
+#include "storage/browser/test/fake_blob.h"
 
 namespace extensions {
 
@@ -135,9 +136,29 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
     EXPECT_TRUE(params);
 
     scoped_refptr<FeedbackData> actual_feedback_data;
-    SetupMockFeedbackService(expected_params, actual_feedback_data);
+    const std::optional<int> attached_file_blob_index =
+        params->feedback.attached_file
+            ? params->feedback.attached_file->attached_file_blob_index
+            : std::nullopt;
+    SetupMockFeedbackService(
+        expected_params, actual_feedback_data,
+        attached_file_blob_index.has_value(),
+        params->feedback.screenshot_blob_index.has_value());
 
     auto function = base::MakeRefCounted<FeedbackPrivateSendFeedbackFunction>();
+    storage::FakeBlob attached_file("attachment");
+    storage::FakeBlob screenshot("screenshot");
+    std::vector<mojo::PendingRemote<blink::mojom::Blob>> blobs;
+    if (attached_file_blob_index) {
+      EXPECT_EQ(static_cast<int>(blobs.size()), *attached_file_blob_index);
+      blobs.push_back(attached_file.Clone());
+    }
+    if (params->feedback.screenshot_blob_index) {
+      EXPECT_EQ(static_cast<int>(blobs.size()),
+                *params->feedback.screenshot_blob_index);
+      blobs.push_back(screenshot.Clone());
+    }
+    function->SetBlobArgs(std::move(blobs));
 
     std::optional<base::Value> result_value =
         RunFunctionAndReturnValue(function.get(), args);
@@ -148,16 +169,22 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
 
   void SetupMockFeedbackService(
       const FeedbackParams& expected_params,
-      scoped_refptr<FeedbackData>& actual_feedback_data) {
+      scoped_refptr<FeedbackData>& actual_feedback_data,
+      bool has_attached_file,
+      bool has_screenshot) {
     auto mock = base::MakeRefCounted<MockFeedbackService>(browser_context());
 
     // scoped_refptr<FeedbackData> actual_feedback_data;
-    EXPECT_CALL(*mock, RedactThenSendFeedback(_, _, _))
-        .WillOnce([&](const FeedbackParams& params,
+    EXPECT_CALL(*mock, RedactThenSendFeedback(_, _, _, _))
+        .WillOnce([&, has_attached_file, has_screenshot](
+                      const FeedbackParams& params,
                       scoped_refptr<FeedbackData> feedback_data,
+                      FeedbackAttachments attachments,
                       SendFeedbackCallback callback) {
           // Pass the feedback data out to verify its properties
           actual_feedback_data = feedback_data;
+          EXPECT_EQ(has_attached_file, attachments.attached_file.is_valid());
+          EXPECT_EQ(has_screenshot, attachments.screenshot.is_valid());
           // Verify that the flags in params are set correctly
           EXPECT_EQ(expected_params.is_internal_email,
                     params.is_internal_email);
@@ -418,10 +445,9 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithSysInfo) {
   const std::string args = R"([
   {
     "attachedFile": {
-      "data": {},
+      "attachedFileBlobIndex": 0,
       "name": "C:\\fakepath\\chrome_40px.svg"
     },
-    "attachedFileBlobUuid": "2e3996de-db9e-4c3d-b62c-80d19b6418b9",
     "autofillMetadata": "",
     "categoryTag": "test-tag",
     "description": "test-desc",
@@ -432,8 +458,7 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithSysInfo) {
     "includeBluetoothLogs": true,
     "pageUrl": "https://test.com",
     "productId": 1122,
-    "screenshot": {},
-    "screenshotBlobUuid": "3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
+    "screenshotBlobIndex": 1,
     "sendAutofillMetadata": false,
     "sendBluetoothLogs": true,
     "sendWifiDebugLogs": false,
@@ -462,10 +487,6 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithSysInfo) {
   EXPECT_EQ("test-desc", feedback_data->description());
   EXPECT_EQ("test-tag", feedback_data->category_tag());
   EXPECT_EQ("tester@test.com", feedback_data->user_email());
-  EXPECT_EQ("2e3996de-db9e-4c3d-b62c-80d19b6418b9",
-            feedback_data->attached_file_uuid());
-  EXPECT_EQ("3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
-            feedback_data->screenshot_uuid());
   EXPECT_EQ("https://test.com", feedback_data->page_url());
 
   EXPECT_TRUE(feedback_data->sys_info());
@@ -475,10 +496,6 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithSysInfo) {
 TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithoutSysInfo) {
   const std::string args = R"([
   {
-    "attachedFile": {
-      "data": {},
-      "name":""
-    },
     "autofillMetadata": "",
     "categoryTag": "",
     "description": "test-desc",
@@ -488,8 +505,6 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithoutSysInfo) {
     "fromAutofill": false,
     "includeBluetoothLogs": false,
     "pageUrl": "",
-    "screenshot": {},
-    "screenshotBlobUuid": "",
     "sendAutofillMetadata": false,
     "sendBluetoothLogs": false,
     "sendWifiDebugLogs": false,
@@ -515,8 +530,6 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithoutSysInfo) {
   EXPECT_EQ("test-desc", feedback_data->description());
   EXPECT_EQ("", feedback_data->category_tag());
   EXPECT_EQ("", feedback_data->user_email());
-  EXPECT_EQ("", feedback_data->attached_file_uuid());
-  EXPECT_EQ("", feedback_data->screenshot_uuid());
   EXPECT_EQ("", feedback_data->page_url());
 
   EXPECT_TRUE(feedback_data->sys_info());
@@ -527,11 +540,10 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsTrue) {
   const std::string args = R"([
   {
     "attachedFile": {
-      "data": {},
+      "attachedFileBlobIndex": 0,
       "name": "C:\\fakepath\\chrome_40px.svg"
     },
     "assistantDebugInfoAllowed": true,
-    "attachedFileBlobUuid": "2e3996de-db9e-4c3d-b62c-80d19b6418b9",
     "autofillMetadata": "",
     "categoryTag": "test-tag",
     "description": "test-desc",
@@ -543,8 +555,7 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsTrue) {
     "includeBluetoothLogs": true,
     "pageUrl": "https://test.com",
     "productId": 1122,
-    "screenshot": {},
-    "screenshotBlobUuid": "3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
+    "screenshotBlobIndex": 1,
     "sendAutofillMetadata": false,
     "sendBluetoothLogs": true,
     "sendWifiDebugLogs": false,
@@ -573,10 +584,6 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsTrue) {
   EXPECT_EQ("test-desc", feedback_data->description());
   EXPECT_EQ("test-tag", feedback_data->category_tag());
   EXPECT_EQ("tester@test.com", feedback_data->user_email());
-  EXPECT_EQ("2e3996de-db9e-4c3d-b62c-80d19b6418b9",
-            feedback_data->attached_file_uuid());
-  EXPECT_EQ("3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
-            feedback_data->screenshot_uuid());
   EXPECT_EQ("https://test.com", feedback_data->page_url());
 
   EXPECT_TRUE(feedback_data->sys_info());
@@ -586,10 +593,6 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsTrue) {
 TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsFalse) {
   const std::string args = R"([
   {
-    "attachedFile": {
-      "data": {},
-      "name":""
-    },
     "assistantDebugInfoAllowed": false,
     "autofillMetadata": "",
     "categoryTag": "",
@@ -601,8 +604,6 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsFalse) {
     "fromAutofill": false,
     "includeBluetoothLogs": false,
     "pageUrl": "",
-    "screenshot": {},
-    "screenshotBlobUuid": "",
     "sendAutofillMetadata": false,
     "sendBluetoothLogs": false,
     "sendWifiDebugLogs": false,
@@ -630,8 +631,6 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsFalse) {
   EXPECT_EQ("test-desc", feedback_data->description());
   EXPECT_EQ("", feedback_data->category_tag());
   EXPECT_EQ("", feedback_data->user_email());
-  EXPECT_EQ("", feedback_data->attached_file_uuid());
-  EXPECT_EQ("", feedback_data->screenshot_uuid());
   EXPECT_EQ("", feedback_data->page_url());
 
   EXPECT_TRUE(feedback_data->sys_info());
@@ -642,11 +641,10 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithAutofillInfo) {
   const std::string args = R"([
   {
     "attachedFile": {
-      "data": {},
+      "attachedFileBlobIndex": 0,
       "name": "C:\\fakepath\\chrome_40px.svg"
     },
     "assistantDebugInfoAllowed": true,
-    "attachedFileBlobUuid": "2e3996de-db9e-4c3d-b62c-80d19b6418b9",
     "autofillMetadata": "test-metadata",
     "categoryTag": "test-tag",
     "description": "test-desc",
@@ -658,8 +656,7 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithAutofillInfo) {
     "includeBluetoothLogs": true,
     "pageUrl": "https://test.com",
     "productId": 1122,
-    "screenshot": {},
-    "screenshotBlobUuid": "3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
+    "screenshotBlobIndex": 1,
     "sendAutofillMetadata": true,
     "sendBluetoothLogs": true,
     "sendWifiDebugLogs": false,
@@ -686,10 +683,6 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithAutofillInfo) {
   EXPECT_EQ("test-desc", feedback_data->description());
   EXPECT_EQ("test-tag", feedback_data->category_tag());
   EXPECT_EQ("tester@test.com", feedback_data->user_email());
-  EXPECT_EQ("2e3996de-db9e-4c3d-b62c-80d19b6418b9",
-            feedback_data->attached_file_uuid());
-  EXPECT_EQ("3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
-            feedback_data->screenshot_uuid());
   EXPECT_EQ("https://test.com", feedback_data->page_url());
   EXPECT_EQ("test-metadata", feedback_data->autofill_metadata());
 

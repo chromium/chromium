@@ -21,6 +21,7 @@ class MockFeedbackService : public FeedbackService {
               RedactThenSendFeedback,
               (const FeedbackParams&,
                scoped_refptr<feedback::FeedbackData>,
+               FeedbackAttachments,
                SendFeedbackCallback),
               (override));
 
