@@ -27,10 +27,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "gpu/command_buffer/common/scheduling_priority.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "media/base/android/media_codec_util.h"
@@ -644,14 +645,6 @@ bool ProfileNeedsConfigDataInBitstream(VideoCodecProfile profile) {
   }
 }
 
-void WaitForSyncTokensOnGpuThread(
-    scoped_refptr<CommandBufferHelper> command_buffer_helper,
-    std::vector<gpu::SyncToken> sync_tokens,
-    base::OnceClosure done_cb) {
-  command_buffer_helper->WaitForSyncTokens(std::move(sync_tokens),
-                                           std::move(done_cb));
-}
-
 constexpr std::string_view kEncoderStatusHistogramPrefix =
     "Media.VideoEncoder.NDKVEA.EncodeStatus.";
 
@@ -732,17 +725,20 @@ NdkVideoEncodeAccelerator::PendingEncode::operator=(PendingEncode&&) = default;
 
 NdkVideoEncodeAccelerator::NdkVideoEncodeAccelerator(
     scoped_refptr<base::SequencedTaskRunner> runner,
-    const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+    gpu::Scheduler* gpu_scheduler)
     : task_runner_(std::move(runner)),
       // We just need an arbitrary non-zero value for the first timestamp
       // due to issues with EGL surface path.
       next_timestamp_(base::TimeTicks::Now().since_origin()),
+      gpu_scheduler_(gpu_scheduler),
       gpu_workarounds_(gpu_workarounds) {}
 
 NdkVideoEncodeAccelerator::~NdkVideoEncodeAccelerator() {
   // It's supposed to be cleared by Destroy(), it basically checks
   // that we destroy `this` correctly.
   DCHECK(!media_codec_);
+  DCHECK(wait_sequence_id_.is_null());
 
   if (!error_occurred_ && have_encoded_frames_) {
     base::UmaHistogramEnumeration(
@@ -979,6 +975,10 @@ void NdkVideoEncodeAccelerator::Destroy() {
     // functions will use it via saved `userdata` pointers.
     media_codec_.reset();
   }
+  if (!wait_sequence_id_.is_null()) {
+    gpu_scheduler_->DestroySequence(wait_sequence_id_);
+    wait_sequence_id_ = gpu::SequenceId();
+  }
   metrics_helper_.reset();
   delete this;
 }
@@ -1144,16 +1144,20 @@ void NdkVideoEncodeAccelerator::FeedInput() {
         // We don't have CommandBufferHelper yet, let's wait till it's set.
         return;
       }
+      CHECK(gpu_scheduler_);
+      if (wait_sequence_id_.is_null()) {
+        wait_sequence_id_ = gpu_scheduler_->CreateSequence(
+            gpu::SchedulingPriority::kNormal,
+            base::SingleThreadTaskRunner::GetCurrentDefault());
+      }
       next_encode.sync_state = SyncState::kSyncInProgress;
-      auto sync_done_callback = base::BindPostTaskToCurrentDefault(
+      auto sync_done_callback =
           base::BindOnce(&NdkVideoEncodeAccelerator::OnSyncDone,
-                         weak_ptr_factory_.GetWeakPtr(), frame->unique_id()));
-      gpu_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&WaitForSyncTokensOnGpuThread, command_buffer_helper_,
-                         frame->shared_image()->GetSyncTokensForVideoFrame(
-                             frame->acquire_sync_token()),
-                         std::move(sync_done_callback)));
+                         weak_ptr_factory_.GetWeakPtr(), frame->unique_id());
+      gpu_scheduler_->ScheduleTask(gpu::Scheduler::Task(
+          wait_sequence_id_, std::move(sync_done_callback),
+          frame->shared_image()->GetSyncTokensForVideoFrame(
+              frame->acquire_sync_token())));
       return;
     }
     case SyncState::kSyncInProgress:

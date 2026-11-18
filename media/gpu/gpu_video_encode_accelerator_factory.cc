@@ -61,7 +61,8 @@ namespace {
 std::unique_ptr<VideoEncodeAccelerator> CreateV4L2VEA(
     const gpu::GpuPreferences&,
     const gpu::GpuDriverBugWorkarounds&,
-    const gpu::GPUInfo::GPUDevice&) {
+    const gpu::GPUInfo::GPUDevice&,
+    gpu::Scheduler*) {
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/901264): Encoders use hack for passing offset within
   // a DMA-buf, which is not supported upstream.
@@ -77,7 +78,8 @@ std::unique_ptr<VideoEncodeAccelerator> CreateV4L2VEA(
 std::unique_ptr<VideoEncodeAccelerator> CreateVaapiVEA(
     const gpu::GpuPreferences&,
     const gpu::GpuDriverBugWorkarounds&,
-    const gpu::GPUInfo::GPUDevice&) {
+    const gpu::GPUInfo::GPUDevice&,
+    gpu::Scheduler*) {
 #if BUILDFLAG(IS_LINUX)
   if (!base::FeatureList::IsEnabled(kAcceleratedVideoEncodeLinux)) {
     return nullptr;
@@ -92,9 +94,11 @@ std::unique_ptr<VideoEncodeAccelerator> CreateVaapiVEA(
 std::unique_ptr<VideoEncodeAccelerator> CreateAndroidVEA(
     const gpu::GpuPreferences&,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    const gpu::GPUInfo::GPUDevice&) {
+    const gpu::GPUInfo::GPUDevice&,
+    gpu::Scheduler* gpu_scheduler) {
   return base::WrapUnique<VideoEncodeAccelerator>(new NdkVideoEncodeAccelerator(
-      base::SequencedTaskRunner::GetCurrentDefault(), gpu_workarounds));
+      base::SequencedTaskRunner::GetCurrentDefault(), gpu_workarounds,
+      gpu_scheduler));
 }
 #endif
 
@@ -102,7 +106,8 @@ std::unique_ptr<VideoEncodeAccelerator> CreateAndroidVEA(
 std::unique_ptr<VideoEncodeAccelerator> CreateVTVEA(
     const gpu::GpuPreferences&,
     const gpu::GpuDriverBugWorkarounds&,
-    const gpu::GPUInfo::GPUDevice&) {
+    const gpu::GPUInfo::GPUDevice&,
+    gpu::Scheduler*) {
   return base::WrapUnique<VideoEncodeAccelerator>(
       new VTVideoEncodeAccelerator());
 }
@@ -112,7 +117,8 @@ std::unique_ptr<VideoEncodeAccelerator> CreateVTVEA(
 std::unique_ptr<VideoEncodeAccelerator> CreateMediaFoundationVEA(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    const gpu::GPUInfo::GPUDevice& gpu_device) {
+    const gpu::GPUInfo::GPUDevice& gpu_device,
+    gpu::Scheduler*) {
   if (!base::FeatureList::IsEnabled(kMediaFoundationVideoEncodeAccelerator)) {
     return nullptr;
   }
@@ -140,7 +146,8 @@ Microsoft::WRL::ComPtr<IDXGIAdapter> GetDxgiAdapterByLuid(CHROME_LUID luid) {
 std::unique_ptr<VideoEncodeAccelerator> CreateD3D12VEA(
     const gpu::GpuPreferences&,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    const gpu::GPUInfo::GPUDevice& gpu_device) {
+    const gpu::GPUInfo::GPUDevice& gpu_device,
+    gpu::Scheduler*) {
   if (gpu_workarounds.disable_d3d12_video_encoder) {
     return nullptr;
   }
@@ -170,7 +177,8 @@ std::unique_ptr<VideoEncodeAccelerator> CreateD3D12VEA(
 std::unique_ptr<VideoEncodeAccelerator> CreateFuchsiaVEA(
     const gpu::GpuPreferences&,
     const gpu::GpuDriverBugWorkarounds&,
-    const gpu::GPUInfo::GPUDevice&) {
+    const gpu::GPUInfo::GPUDevice&,
+    gpu::Scheduler*) {
   if (!base::FeatureList::IsEnabled(kFuchsiaMediacodecVideoEncoder)) {
     return nullptr;
   }
@@ -182,7 +190,8 @@ std::unique_ptr<VideoEncodeAccelerator> CreateFuchsiaVEA(
 using VEAFactoryFunction = std::unique_ptr<VideoEncodeAccelerator> (*)(
     const gpu::GpuPreferences&,
     const gpu::GpuDriverBugWorkarounds&,
-    const gpu::GPUInfo::GPUDevice&);
+    const gpu::GPUInfo::GPUDevice&,
+    gpu::Scheduler*);
 
 // Returns an array of VEAFactoryFunctions potentially usable on the current
 // platform, ordered by priority from most to least preferred, if applicable.
@@ -241,7 +250,8 @@ VideoEncodeAccelerator::SupportedProfiles GetSupportedProfilesInternal(
   VideoEncodeAccelerator::SupportedProfiles profiles;
   for (VEAFactoryFunction create_vea :
        GetVEAFactoryFunctions(gpu_preferences)) {
-    auto vea = create_vea(gpu_preferences, gpu_workarounds, gpu_device);
+    auto vea = create_vea(gpu_preferences, gpu_workarounds, gpu_device,
+                          /*gpu_scheduler=*/nullptr);
     if (!vea) {
       continue;
     }
@@ -286,7 +296,8 @@ GpuVideoEncodeAcceleratorFactory::CreateVEA(
     const gpu::GPUInfo::GPUDevice& gpu_device,
     std::unique_ptr<MediaLog> media_log,
     GetCommandBufferHelperCB get_command_buffer_helper_cb,
-    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+    gpu::Scheduler* gpu_scheduler) {
   // NullMediaLog silently and safely does nothing.
   if (!media_log)
     media_log = std::make_unique<media::NullMediaLog>();
@@ -297,7 +308,7 @@ GpuVideoEncodeAcceleratorFactory::CreateVEA(
       GetVEAFactoryFunctions(gpu_preferences);
   for (VEAFactoryFunction create_vea : create_vea_functions) {
     std::unique_ptr<VideoEncodeAccelerator> vea =
-        create_vea(gpu_preferences, gpu_workarounds, gpu_device);
+        create_vea(gpu_preferences, gpu_workarounds, gpu_device, gpu_scheduler);
     if (!vea) {
       continue;
     }

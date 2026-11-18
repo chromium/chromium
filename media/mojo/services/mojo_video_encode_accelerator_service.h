@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/lru_cache.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -26,6 +27,10 @@
 #include "media/video/video_encode_accelerator.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+
+namespace gpu {
+class Scheduler;
+}  // namespace gpu
 
 namespace media {
 
@@ -49,7 +54,8 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
           const gpu::GPUInfo::GPUDevice& gpu_device,
           std::unique_ptr<MediaLog> media_log,
           GetCommandBufferHelperCB get_command_buffer_helper_cb,
-          scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner)>;
+          scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+          gpu::Scheduler* gpu_scheduler)>;
 
   static void Create(
       mojo::PendingReceiver<mojom::VideoEncodeAccelerator> receiver,
@@ -58,7 +64,8 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       const gpu::GPUInfo::GPUDevice& gpu_device,
       GetCommandBufferHelperCB get_command_buffer_helper_cb,
-      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+      gpu::Scheduler* gpu_scheduler = nullptr);
 
   MojoVideoEncodeAcceleratorService(
       CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
@@ -66,7 +73,8 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       const gpu::GPUInfo::GPUDevice& gpu_device,
       GetCommandBufferHelperCB get_command_buffer_helper_cb,
-      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+      gpu::Scheduler* gpu_scheduler = nullptr);
 
   MojoVideoEncodeAcceleratorService(const MojoVideoEncodeAcceleratorService&) =
       delete;
@@ -117,6 +125,7 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
   const gpu::GPUInfo::GPUDevice gpu_device_;
   GetCommandBufferHelperCB get_command_buffer_helper_cb_;
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
+  raw_ptr<gpu::Scheduler> gpu_scheduler_;
 
   // Owned pointer to the underlying VideoEncodeAccelerator.
   std::unique_ptr<::media::VideoEncodeAccelerator> encoder_;

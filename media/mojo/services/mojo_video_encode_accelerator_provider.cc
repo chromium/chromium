@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
@@ -30,11 +31,13 @@ void BindVEAProvider(
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
     const gpu::GPUInfo::GPUDevice& gpu_device,
     base::WeakPtr<media::MediaGpuChannelManager> media_gpu_channel_manager,
-    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+    gpu::Scheduler* gpu_scheduler) {
   auto vea_provider =
       std::make_unique<media::MojoVideoEncodeAcceleratorProvider>(
           std::move(create_vea_callback), gpu_preferences, gpu_workarounds,
-          gpu_device, media_gpu_channel_manager, gpu_task_runner);
+          gpu_device, media_gpu_channel_manager, gpu_task_runner,
+          gpu_scheduler);
   mojo::MakeSelfOwnedReceiver(std::move(vea_provider), std::move(receiver));
 }
 
@@ -75,13 +78,15 @@ void MojoVideoEncodeAcceleratorProvider::Create(
     const gpu::GPUInfo::GPUDevice& gpu_device,
     scoped_refptr<base::SequencedTaskRunner> runner,
     base::WeakPtr<media::MediaGpuChannelManager> media_gpu_channel_manager,
-    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+    gpu::Scheduler* gpu_scheduler) {
   CHECK(runner, base::NotFatalUntil::M163);
   runner->PostTask(
-      FROM_HERE, base::BindOnce(BindVEAProvider, std::move(receiver),
-                                std::move(create_vea_callback), gpu_preferences,
-                                gpu_workarounds, gpu_device,
-                                media_gpu_channel_manager, gpu_task_runner));
+      FROM_HERE,
+      base::BindOnce(BindVEAProvider, std::move(receiver),
+                     std::move(create_vea_callback), gpu_preferences,
+                     gpu_workarounds, gpu_device, media_gpu_channel_manager,
+                     gpu_task_runner, base::Unretained(gpu_scheduler)));
 }
 
 MojoVideoEncodeAcceleratorProvider::MojoVideoEncodeAcceleratorProvider(
@@ -90,13 +95,15 @@ MojoVideoEncodeAcceleratorProvider::MojoVideoEncodeAcceleratorProvider(
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     const gpu::GPUInfo::GPUDevice& gpu_device,
     base::WeakPtr<media::MediaGpuChannelManager> media_gpu_channel_manager,
-    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+    gpu::Scheduler* gpu_scheduler)
     : create_vea_callback_(std::move(create_vea_callback)),
       gpu_preferences_(gpu_preferences),
       gpu_workarounds_(gpu_workarounds),
       gpu_device_(gpu_device),
       media_gpu_channel_manager_(media_gpu_channel_manager),
-      gpu_task_runner_(gpu_task_runner) {}
+      gpu_task_runner_(gpu_task_runner),
+      gpu_scheduler_(gpu_scheduler) {}
 
 MojoVideoEncodeAcceleratorProvider::~MojoVideoEncodeAcceleratorProvider() =
     default;
@@ -113,7 +120,7 @@ void MojoVideoEncodeAcceleratorProvider::CreateVideoEncodeAccelerator(
   auto create_service_cb = base::BindOnce(
       &MojoVideoEncodeAcceleratorService::Create, std::move(receiver),
       create_vea_callback_, gpu_preferences_, gpu_workarounds_, gpu_device_,
-      get_helper_cb, gpu_task_runner_);
+      get_helper_cb, gpu_task_runner_, base::Unretained(gpu_scheduler_));
 
   scoped_refptr<base::TaskRunner> runner;
 #if BUILDFLAG(IS_WIN)

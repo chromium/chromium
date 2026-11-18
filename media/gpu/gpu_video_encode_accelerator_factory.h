@@ -16,6 +16,7 @@
 namespace gpu {
 struct GpuPreferences;
 class GpuDriverBugWorkarounds;
+class Scheduler;
 }  // namespace gpu
 
 namespace media {
@@ -43,7 +44,8 @@ class MEDIA_GPU_EXPORT GpuVideoEncodeAcceleratorFactory {
       std::unique_ptr<MediaLog> media_log = nullptr,
       GetCommandBufferHelperCB get_command_buffer_helper_cb =
           GetCommandBufferHelperCB(),
-      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner = nullptr);
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner = nullptr,
+      gpu::Scheduler* gpu_scheduler = nullptr);
 
   // Gets the supported codec profiles for video encoding on the platform.
   static VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles(

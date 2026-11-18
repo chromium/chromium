@@ -93,7 +93,8 @@ CreateAndInitializeFakeVEA(
     std::unique_ptr<media::MediaLog> media_log,
     media::MojoVideoEncodeAcceleratorService::GetCommandBufferHelperCB
     /*get_command_buffer_helper_cb*/,
-    scoped_refptr<base::SingleThreadTaskRunner> /*gpu_task_runner*/) {
+    scoped_refptr<base::SingleThreadTaskRunner> /*gpu_task_runner*/,
+    gpu::Scheduler* /*gpu_scheduler*/) {
   auto vea = std::make_unique<media::FakeVideoEncodeAccelerator>(
       base::SingleThreadTaskRunner::GetCurrentDefault());
   vea->SetWillInitializationSucceed(will_succeed);

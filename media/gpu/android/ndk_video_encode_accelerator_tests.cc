@@ -27,11 +27,13 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/service/feature_info.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/ahardwarebuffer_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/command_buffer/service/vulkan_context_provider.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -438,7 +440,8 @@ class NdkVideoEncoderAcceleratorTest
   std::unique_ptr<VideoEncodeAccelerator> MakeNdkAccelerator() {
     auto runner = task_environment_.GetMainThreadTaskRunner();
     return base::WrapUnique<VideoEncodeAccelerator>(
-        new NdkVideoEncodeAccelerator(runner, gpu::GpuDriverBugWorkarounds()));
+        new NdkVideoEncodeAccelerator(runner, gpu::GpuDriverBugWorkarounds(),
+                                      &gpu_scheduler_));
   }
 
   void SetCommandBufferHelper() {
@@ -544,14 +547,8 @@ class NdkVideoEncoderAcceleratorTest
         std::make_unique<gpu::AHardwareBufferImageBackingFactory>(
             context_state_->feature_info(), gpu_preferences, context_state_);
 
-    auto runner = task_environment_.GetMainThreadTaskRunner();
     auto command_buffer_helper =
         base::MakeRefCounted<MockCommandBufferHelper>(fake_gpu_runner_);
-    ON_CALL(*command_buffer_helper, WaitForSyncTokens)
-        .WillByDefault(
-            [runner](std::vector<gpu::SyncToken>, base::OnceClosure done_cb) {
-              runner->PostTask(FROM_HERE, std::move(done_cb));
-            });
     ON_CALL(*command_buffer_helper, GetSharedImageManager())
         .WillByDefault(Return(&shared_image_manager_));
     command_buffer_helper_ = command_buffer_helper;
@@ -564,6 +561,8 @@ class NdkVideoEncoderAcceleratorTest
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS};
+  gpu::SyncPointManager sync_point_manager_;
+  gpu::Scheduler gpu_scheduler_{&sync_point_manager_};
   std::unique_ptr<base::RunLoop> loop_ = std::make_unique<base::RunLoop>();
   std::unique_ptr<VideoEncodeAccelerator> accelerator_;
   size_t output_buffer_size_ = 0;

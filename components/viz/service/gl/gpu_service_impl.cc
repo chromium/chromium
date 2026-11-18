@@ -665,6 +665,10 @@ void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(
 #elif BUILDFLAG(IS_WIN)
   // Windows hardware encoder requires a COM STA thread.
   runner = base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()});
+#elif BUILDFLAG(IS_ANDROID)
+  // NdkVideoEncodeAccelerator requires a SingleThreadTaskRunner to create a
+  // gpu::Scheduler sequence on its own thread.
+  runner = base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()});
 #else
   // MayBlock() because MF VEA can take long time running GetSupportedProfiles()
   if (base::FeatureList::IsEnabled(
@@ -679,7 +683,7 @@ void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(
       base::BindRepeating(&media::GpuVideoEncodeAcceleratorFactory::CreateVEA),
       gpu_preferences_, gpu_channel_manager_->gpu_driver_bug_workarounds(),
       gpu_info_.active_gpu(), std::move(runner),
-      media_gpu_channel_manager_->AsWeakPtr(), main_runner_);
+      media_gpu_channel_manager_->AsWeakPtr(), main_runner_, GetGpuScheduler());
 }
 
 void GpuServiceImpl::BindWebNNContextProvider(

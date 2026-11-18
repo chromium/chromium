@@ -32,11 +32,13 @@ void MojoVideoEncodeAcceleratorService::Create(
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     const gpu::GPUInfo::GPUDevice& gpu_device,
     GetCommandBufferHelperCB get_command_buffer_helper_cb,
-    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+    gpu::Scheduler* gpu_scheduler) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<MojoVideoEncodeAcceleratorService>(
           std::move(create_vea_callback), gpu_preferences, gpu_workarounds,
-          gpu_device, get_command_buffer_helper_cb, gpu_task_runner),
+          gpu_device, get_command_buffer_helper_cb, gpu_task_runner,
+          gpu_scheduler),
       std::move(receiver));
 }
 
@@ -46,13 +48,15 @@ MojoVideoEncodeAcceleratorService::MojoVideoEncodeAcceleratorService(
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     const gpu::GPUInfo::GPUDevice& gpu_device,
     GetCommandBufferHelperCB get_command_buffer_helper_cb,
-    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+    gpu::Scheduler* gpu_scheduler)
     : create_vea_callback_(std::move(create_vea_callback)),
       gpu_preferences_(gpu_preferences),
       gpu_workarounds_(gpu_workarounds),
       gpu_device_(gpu_device),
       get_command_buffer_helper_cb_(get_command_buffer_helper_cb),
       gpu_task_runner_(gpu_task_runner),
+      gpu_scheduler_(gpu_scheduler),
       output_buffer_size_(0),
       supports_frame_size_change(false),
       timestamps_(128) {
@@ -172,7 +176,7 @@ void MojoVideoEncodeAcceleratorService::Initialize(
       std::move(create_vea_callback_)
           .Run(config, this, gpu_preferences_, gpu_workarounds_, gpu_device_,
                media_log_->Clone(), get_command_buffer_helper_cb_,
-               gpu_task_runner_);
+               gpu_task_runner_, gpu_scheduler_);
   if (!encoder_or_error.has_value()) {
     MEDIA_LOG(ERROR, media_log_.get())
         << __func__ << " Error creating or initializing VEA";

@@ -16,11 +16,13 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
+#include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/bitrate.h"
 #include "media/base/media_log.h"
@@ -31,6 +33,7 @@
 #include "media/video/video_encode_accelerator.h"
 
 namespace gpu {
+class Scheduler;
 class SharedImageManager;
 }
 
@@ -46,9 +49,9 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
  public:
   // |runner| - a task runner that will be used for all callbacks and external
   // calls to this instance.
-  NdkVideoEncodeAccelerator(
-      scoped_refptr<base::SequencedTaskRunner> runner,
-      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
+  NdkVideoEncodeAccelerator(scoped_refptr<base::SequencedTaskRunner> runner,
+                            const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+                            gpu::Scheduler* gpu_scheduler = nullptr);
 
   NdkVideoEncodeAccelerator(const NdkVideoEncodeAccelerator&) = delete;
   NdkVideoEncodeAccelerator& operator=(const NdkVideoEncodeAccelerator&) =
@@ -254,6 +257,8 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
 
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
   scoped_refptr<CommandBufferHelper> command_buffer_helper_;
+  const raw_ptr<gpu::Scheduler> gpu_scheduler_;
+  gpu::SequenceId wait_sequence_id_;
 
   std::unique_ptr<VEAEncodingLatencyMetricsHelper> metrics_helper_;
 
