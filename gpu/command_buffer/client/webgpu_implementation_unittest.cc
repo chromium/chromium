@@ -6,10 +6,14 @@
 
 #include "gpu/command_buffer/client/webgpu_implementation.h"
 
+#include <dawn/wire/client/webgpu_cpp.h>
+
 #include <memory>
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/client/mock_transfer_buffer.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
@@ -34,16 +38,16 @@ namespace webgpu {
 
 class WebGPUImplementationTest : public testing::Test {
  protected:
-  static const uint8_t kInitialValue = 0xBD;
-  static const uint32_t kNumCommandEntries = 500;
-  static const uint32_t kCommandBufferSizeBytes =
+  static constexpr uint8_t kInitialValue = 0xBD;
+  static constexpr uint32_t kNumCommandEntries = 500;
+  static constexpr uint32_t kCommandBufferSizeBytes =
       kNumCommandEntries * sizeof(CommandBufferEntry);
-  static const uint32_t kTransferBufferSize = 512;
+  static constexpr uint32_t kTransferBufferSize = 512;
 
-  static const GLint kMaxCombinedTextureImageUnits = 8;
-  static const GLint kMaxTextureImageUnits = 8;
-  static const GLint kMaxTextureSize = 128;
-  static const GLint kNumCompressedTextureFormats = 0;
+  static constexpr GLint kMaxCombinedTextureImageUnits = 8;
+  static constexpr GLint kMaxTextureImageUnits = 8;
+  static constexpr GLint kMaxTextureSize = 128;
+  static constexpr GLint kNumCompressedTextureFormats = 0;
 
   WebGPUImplementationTest() {}
 
@@ -99,6 +103,9 @@ class WebGPUImplementationTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(Initialize()); }
 
   void TearDown() override {
+    if (!gl_) {
+      return;
+    }
     gl_->FlushCommands();
     Mock::VerifyAndClear(gl_.get());
     EXPECT_CALL(*command_buffer_, OnFlush()).Times(AnyNumber());
@@ -119,6 +126,7 @@ class WebGPUImplementationTest : public testing::Test {
     return limits;
   }
 
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<MockClientCommandBuffer> command_buffer_;
   std::unique_ptr<MockClientGpuControl> gpu_control_;
   std::unique_ptr<WebGPUCmdHelper> helper_;
@@ -129,6 +137,38 @@ class WebGPUImplementationTest : public testing::Test {
 };
 
 #include "gpu/command_buffer/client/webgpu_implementation_unittest_autogen.h"
+
+TEST_F(WebGPUImplementationTest,
+       OnGpuControlLostContextDefersWireClientCallbacks) {
+  base::RunLoop run_loop;
+  bool callback_called = false;
+  wgpu::Instance(gl_->GetAPIChannel()->GetWGPUInstance())
+      .RequestAdapter(
+          nullptr, wgpu::CallbackMode::AllowProcessEvents,
+          [&](wgpu::RequestAdapterStatus status, wgpu::Adapter adapter,
+              wgpu::StringView) {
+            EXPECT_EQ(status, wgpu::RequestAdapterStatus::CallbackCancelled);
+            EXPECT_EQ(adapter, nullptr);
+            callback_called = true;
+            EXPECT_CALL(*gpu_control_, SetGpuControlClient(nullptr)).Times(1);
+            gl_.reset();
+            run_loop.Quit();
+          });
+
+  gl_->OnGpuControlLostContext();
+
+  // Wire client callbacks must not run synchronously inside
+  // `OnGpuControlLostContext()`, where `this` is still on the call stack.
+  EXPECT_FALSE(callback_called);
+  EXPECT_NE(gl_, nullptr);
+
+  EXPECT_CALL(*command_buffer_, OnFlush()).Times(AnyNumber());
+  EXPECT_CALL(*command_buffer_, DestroyTransferBuffer(_)).Times(AtLeast(1));
+  run_loop.Run();
+
+  EXPECT_TRUE(callback_called);
+  EXPECT_EQ(gl_, nullptr);
+}
 
 }  // namespace webgpu
 }  // namespace gpu
