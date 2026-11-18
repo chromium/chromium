@@ -18,20 +18,24 @@
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
+#include "net/base/url_util.h"
 #include "net/http/http_auth.h"
 #include "net/http/http_auth_multi_round_parse.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_values.h"
 #include "net/log/net_log_with_source.h"
 #include "net/net_buildflags.h"
+#include "url/url_canon.h"
 
 namespace net {
 
@@ -658,6 +662,10 @@ ScopedSecurityContext::ScopedSecurityContext(GSSAPILibrary* gssapi_lib)
 }
 
 ScopedSecurityContext::~ScopedSecurityContext() {
+  reset();
+}
+
+void ScopedSecurityContext::reset() {
   if (security_context_ != GSS_C_NO_CONTEXT) {
     gss_buffer_desc output_token = GSS_C_EMPTY_BUFFER;
     OM_uint32 minor_status = 0;
@@ -703,6 +711,206 @@ bool HttpAuthGSSAPI::AllowsExplicitCredentials() const {
 
 void HttpAuthGSSAPI::SetDelegation(DelegationType delegation_type) {
   delegation_type_ = delegation_type;
+}
+
+bool HttpAuthGSSAPI::ResetSecurityContext() {
+  scoped_sec_context_.reset();
+  decoded_server_auth_token_.clear();
+  return true;
+}
+
+namespace {
+
+bool OidEquals(const gss_OID oid, base::span<const char> expected) {
+  if (!oid || !oid->elements || oid->length == 0) {
+    return false;
+  }
+  // SAFETY: The GSS-API contract is that `elements` points to `length` bytes.
+  auto oid_bytes = UNSAFE_BUFFERS(
+      base::span(static_cast<const char*>(oid->elements), oid->length));
+  return oid_bytes == expected;
+}
+
+bool IsHostbasedServiceOid(const gss_OID oid) {
+  // Match `GSS_C_NT_HOSTBASED_SERVICE` (1.2.840.113554.1.2.1.4) and deprecated
+  // `GSS_C_NT_HOSTBASED_SERVICE_X` (1.3.6.1.5.6.2, RFC 2744 Appendix A).
+  return OidEquals(oid, base::span_from_cstring(
+                            "\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x04")) ||
+         OidEquals(oid, base::span_from_cstring("\x2b\x06\x01\x05\x06\x02"));
+}
+
+bool IsUserNameOid(const gss_OID oid) {
+  // `GSS_C_NT_USER_NAME` (1.2.840.113554.1.2.1.1, RFC 2744 Appendix A).
+  return OidEquals(
+      oid, base::span_from_cstring("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x01"));
+}
+
+bool IsKrb5PrincipalOid(const gss_OID oid) {
+  // `GSS_KRB5_NT_PRINCIPAL_NAME` (1.2.840.113554.1.2.2.1, RFC 1964 Section
+  // 2.1.1).
+  return OidEquals(
+      oid, base::span_from_cstring("\x2a\x86\x48\x86\xf7\x12\x01\x02\x02\x01"));
+}
+
+bool IsSpnegoOid(const gss_OID oid) {
+  // SPNEGO mechanism OID (1.3.6.1.5.5.2).
+  return OidEquals(oid, base::span_from_cstring("\x2b\x06\x01\x05\x05\x02"));
+}
+
+bool IsNtlmsspOid(const gss_OID oid) {
+  // Microsoft NTLMSSP mechanism OID (1.3.6.1.4.1.311.2.2.10), negotiated when
+  // SPNEGO falls back from Kerberos to NTLM (e.g. `GSS.framework` on macOS or
+  // `gss-ntlmssp` on Linux).
+  return OidEquals(
+      oid, base::span_from_cstring("\x2b\x06\x01\x04\x01\x82\x37\x02\x02\x0a"));
+}
+
+}  // namespace
+
+base::expected<std::string, HttpAuthMechanism::TargetPrincipalError>
+HttpAuthGSSAPI::GetTargetPrincipalHost() const {
+  if (scoped_sec_context_.get() == GSS_C_NO_CONTEXT) {
+    return base::unexpected(TargetPrincipalError::kNotReported);
+  }
+  gss_name_t targ_name = GSS_C_NO_NAME;
+  gss_OID mech_type = GSS_C_NO_OID;
+  int open = 0;
+  OM_uint32 minor_status = 0;
+  OM_uint32 major_status = library_->inquire_context(
+      &minor_status, scoped_sec_context_.get(), nullptr, &targ_name, nullptr,
+      &mech_type, nullptr, nullptr, &open);
+  ScopedName scoped_targ_name(targ_name, library_.get());
+  if (major_status != GSS_S_COMPLETE) {
+    // Heimdal SPNEGO returns `GSS_S_NO_CONTEXT` for an incomplete round-1
+    // context that only proposed a mechanism list (no optimistic mechanism
+    // token, so no ticket or delegated credential exists yet).
+    if (GSS_ROUTINE_ERROR(major_status) == GSS_S_NO_CONTEXT && !open) {
+      return base::unexpected(TargetPrincipalError::kNotReported);
+    }
+    return base::unexpected(TargetPrincipalError::kQueryFailed);
+  }
+  // NTLM has no KDC tickets, TGT delegation, or krb5 DNS canonicalization, so
+  // skip Kerberos principal validation once the context reports NTLMSSP. (Until
+  // SPNEGO completes, MIT krb5 reports the SPNEGO OID instead, and
+  // `gss-ntlmssp` displays its target as `HTTP/<host>` under
+  // `GSS_C_NT_HOSTBASED_SERVICE`, which is validated below.)
+  if (IsNtlmsspOid(mech_type)) {
+    return base::unexpected(TargetPrincipalError::kNotReported);
+  }
+  // Incomplete round-1 SPNEGO contexts (and Heimdal/macOS `GSS.framework` NTLM
+  // contexts) can succeed with `targ_name == GSS_C_NO_NAME`.
+  if (targ_name == GSS_C_NO_NAME) {
+    return base::unexpected(TargetPrincipalError::kNotReported);
+  }
+  gss_buffer_desc output_name_buffer = GSS_C_EMPTY_BUFFER;
+  gss_OID output_name_type = GSS_C_NO_OID;
+  major_status = library_->display_name(&minor_status, targ_name,
+                                        &output_name_buffer, &output_name_type);
+  ScopedBuffer scoped_output_name(&output_name_buffer, library_.get());
+  if (major_status != GSS_S_COMPLETE || !output_name_buffer.value ||
+      !output_name_buffer.length) {
+    return base::unexpected(TargetPrincipalError::kQueryFailed);
+  }
+  std::string_view display_name(
+      static_cast<const char*>(output_name_buffer.value),
+      output_name_buffer.length);
+  // Strip at most one trailing NUL if a GSSAPI provider includes a terminator
+  // in `output_name_buffer.length`.
+  if (display_name.ends_with('\0')) {
+    display_name.remove_suffix(1);
+  }
+  if (display_name.empty()) {
+    return base::unexpected(TargetPrincipalError::kQueryFailed);
+  }
+  // Reject interior NULs and backslash-escaped Kerberos/hostbased delimiters
+  // (`\/` or `\@`), which can't be split into service and host unambiguously.
+  // The explicit length keeps the embedded NUL in the search set.
+  constexpr std::string_view kNulOrBackslash("\0\\", 2);
+  if (display_name.find_first_of(kNulOrBackslash) != std::string_view::npos) {
+    return base::unexpected(TargetPrincipalError::kUnparsableHost);
+  }
+  // Accept both `HTTP` and `host` service prefixes: KDCs with service aliasing
+  // (e.g. FreeIPA, MIT krb5, Heimdal) can canonicalize `HTTP/<fqdn>` to the
+  // machine's `host/<fqdn>@REALM` keytab principal in an authenticated
+  // `TGS-REP`.
+  //
+  // Accept `HTTP@<host>` and `host@<host>` for hostbased name types.
+  //
+  // On incomplete SPNEGO contexts (`!open && IsSpnegoOid(mech_type)`, which MIT
+  // krb5 reports until SPNEGO negotiation completes), also accept them under an
+  // empty or unrecognized name type. This is only a defensive fallback: no
+  // known provider reports that form (MIT krb5 displays `HTTP/<host>@REALM` and
+  // `gss-ntlmssp` displays `HTTP/<host>`, both handled by the `http/` branch),
+  // so validating the host against the URL host and policy is preferred over
+  // failing authentication for an unknown provider. `GSS_C_NT_USER_NAME` and
+  // `GSS_KRB5_NT_PRINCIPAL_NAME` are excluded so that 1-component Kerberos UPNs
+  // such as `HTTP@REALM` are still rejected.
+  std::string_view target_part;
+  if (base::StartsWith(display_name, "http/",
+                       base::CompareCase::INSENSITIVE_ASCII) ||
+      base::StartsWith(display_name, "host/",
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+    target_part = display_name.substr(5);
+    size_t at_pos = target_part.find('@');
+    if (at_pos != std::string_view::npos) {
+      if (target_part.find('@', at_pos + 1) != std::string_view::npos) {
+        return base::unexpected(TargetPrincipalError::kUnparsableHost);
+      }
+      target_part = target_part.substr(0, at_pos);
+    }
+  } else if ((IsHostbasedServiceOid(output_name_type) ||
+              (!open && IsSpnegoOid(mech_type) &&
+               !IsUserNameOid(output_name_type) &&
+               !IsKrb5PrincipalOid(output_name_type))) &&
+             (base::StartsWith(display_name, "http@",
+                               base::CompareCase::INSENSITIVE_ASCII) ||
+              base::StartsWith(display_name, "host@",
+                               base::CompareCase::INSENSITIVE_ASCII))) {
+    target_part = display_name.substr(5);
+  } else {
+    return base::unexpected(TargetPrincipalError::kNonHttpServicePrincipal);
+  }
+  if (target_part.empty() ||
+      target_part.find_first_of("/@") != std::string_view::npos) {
+    return base::unexpected(TargetPrincipalError::kUnparsableHost);
+  }
+  std::string parsed_host;
+  std::string_view raw_host;
+  if (!target_part.starts_with('[') &&
+      target_part.find(':') != target_part.rfind(':')) {
+    // Multiple colons without '[' can only be a bare IPv6 literal; skip
+    // `ParseHostAndPort()`, which would treat the final `:<group>` as a port.
+    raw_host = target_part;
+  } else {
+    int port = -1;
+    if (!ParseHostAndPort(target_part, &parsed_host, &port)) {
+      return base::unexpected(TargetPrincipalError::kUnparsableHost);
+    }
+    raw_host = parsed_host;
+  }
+  std::string trimmed_host = TrimEndingDot(raw_host);
+  if (trimmed_host.empty() || trimmed_host.ends_with('.')) {
+    return base::unexpected(TargetPrincipalError::kUnparsableHost);
+  }
+  url::CanonHostInfo host_info;
+  std::string canonical_host =
+      CanonicalizeHostSupportsBareIPV6(trimmed_host, &host_info);
+  // Host canonicalization is many-to-one (for example, percent-decoding, IPv4
+  // shorthand such as `0x0a.0.0.2` or `167772162`, IPv6 zero compression, and
+  // UTS-46 mapping of IDN labels, fullwidth letters, or ignored code points),
+  // so a distinct principal could otherwise compare equal to the requested
+  // host. Require the host to already be canonical, ignoring only ASCII case
+  // and IPv6 brackets.
+  std::string expected_host = base::ToLowerASCII(trimmed_host);
+  if (host_info.family == url::CanonHostInfo::IPV6 &&
+      !expected_host.starts_with('[')) {
+    expected_host = base::StrCat({"[", expected_host, "]"});
+  }
+  if (host_info.family == url::CanonHostInfo::BROKEN ||
+      canonical_host != expected_host) {
+    return base::unexpected(TargetPrincipalError::kUnparsableHost);
+  }
+  return canonical_host;
 }
 
 HttpAuth::AuthorizationResult HttpAuthGSSAPI::ParseChallenge(

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/native_library.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/completion_once_callback.h"
@@ -219,6 +220,9 @@ class ScopedSecurityContext {
   gss_ctx_id_t get() const { return security_context_; }
   gss_ctx_id_t* receive() { return &security_context_; }
 
+  // Deletes the security context, if any.
+  void reset();
+
  private:
   gss_ctx_id_t security_context_ = GSS_C_NO_CONTEXT;
   raw_ptr<GSSAPILibrary> gssapi_lib_;
@@ -244,6 +248,9 @@ class NET_EXPORT_PRIVATE HttpAuthGSSAPI : public HttpAuthMechanism {
                         const NetLogWithSource& net_log,
                         CompletionOnceCallback callback) override;
   void SetDelegation(HttpAuth::DelegationType delegation_type) override;
+  base::expected<std::string, TargetPrincipalError> GetTargetPrincipalHost()
+      const override;
+  bool ResetSecurityContext() override;
 
  private:
   int GetNextSecurityToken(const std::string& spn,

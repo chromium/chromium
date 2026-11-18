@@ -4,21 +4,30 @@
 
 #include "net/http/http_auth_handler_negotiate.h"
 
+#include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/address_family.h"
 #include "net/base/address_list.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
+#include "net/base/url_util.h"
 #include "net/cert/x509_util.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/http_auth.h"
@@ -67,6 +76,48 @@ std::unique_ptr<HttpAuthMechanism> CreateAuthSystem(
   return std::make_unique<HttpAuthGSSAPI>(std::move(auth_library),
                                           CHROME_GSS_SPNEGO_MECH_OID_DESC);
 #endif
+}
+
+// Returns `std::nullopt` if no target principal was reported.
+std::optional<HttpAuthHandlerNegotiate::TargetHostValidationResult>
+ToTargetHostValidationResult(HttpAuthMechanism::TargetPrincipalError error) {
+  using Error = HttpAuthMechanism::TargetPrincipalError;
+  using Result = HttpAuthHandlerNegotiate::TargetHostValidationResult;
+  switch (error) {
+    case Error::kNotReported:
+      return std::nullopt;
+    case Error::kQueryFailed:
+      return Result::kPrincipalQueryFailed;
+    case Error::kNonHttpServicePrincipal:
+      return Result::kNonHttpServicePrincipal;
+    case Error::kUnparsableHost:
+      return Result::kUnparsableHost;
+  }
+  NOTREACHED();
+}
+
+std::string_view TargetHostValidationFailureReason(
+    HttpAuthHandlerNegotiate::TargetHostValidationResult result) {
+  using Result = HttpAuthHandlerNegotiate::TargetHostValidationResult;
+  switch (result) {
+    case Result::kSameHost:
+    case Result::kAllowedDifferentHost:
+    case Result::kAllowedWithClampedDelegation:
+      NOTREACHED();
+    case Result::kPrincipalQueryFailed:
+      return "principal_query_failed";
+    case Result::kNonHttpServicePrincipal:
+      return "non_http_service_principal";
+    case Result::kUnparsableHost:
+      return "unparsable_host";
+    case Result::kMissingPreferences:
+      return "missing_preferences";
+    case Result::kDisallowedByServerAllowlist:
+      return "disallowed_by_server_allowlist";
+    case Result::kDisallowedByDelegateAllowlist:
+      return "disallowed_by_delegate_allowlist";
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -197,7 +248,8 @@ bool HttpAuthHandlerNegotiate::Init(
     return false;
   }
 #endif
-  auth_system_->SetDelegation(GetDelegationType());
+  delegation_type_ = GetDelegationType();
+  auth_system_->SetDelegation(delegation_type_);
   auth_scheme_ = HttpAuth::AUTH_SCHEME_NEGOTIATE;
   score_ = 4;
   properties_ = ENCRYPTS_IDENTITY | IS_CONNECTION_BASED;
@@ -399,8 +451,151 @@ int HttpAuthHandlerNegotiate::DoGenerateAuthToken() {
 
 int HttpAuthHandlerNegotiate::DoGenerateAuthTokenComplete(int rv) {
   DCHECK_NE(ERR_IO_PENDING, rv);
+  // The server and delegation allowlists only apply to servers:
+  // `AllowsDefaultCredentials()` always allows proxies and
+  // `GetDelegationType()` never delegates to them. So for
+  // `HttpAuth::AUTH_PROXY`, a different principal host cannot receive anything
+  // those policies would withhold, and principal validation is skipped to leave
+  // proxy auth unchanged.
+  // Disabling `kValidateNegotiateTargetPrincipalHost` skips querying the
+  // target principal altogether.
+  if (rv == OK && target_ == HttpAuth::AUTH_SERVER &&
+      base::FeatureList::IsEnabled(
+          features::kValidateNegotiateTargetPrincipalHost)) {
+    base::expected<std::string, HttpAuthMechanism::TargetPrincipalError>
+        principal_host = auth_system_->GetTargetPrincipalHost();
+    std::optional<TargetHostValidationResult> validation_result;
+    if (principal_host.has_value()) {
+      validation_result = ValidateTargetHost(*principal_host);
+    } else {
+      validation_result = ToTargetHostValidationResult(principal_host.error());
+    }
+    // `std::nullopt` means the mechanism does not report a Kerberos-style
+    // target principal (Android, SSPI for now, negotiated NTLMSSP under SPNEGO,
+    // or an incomplete context with `GSS_C_NO_NAME` or `GSS_S_NO_CONTEXT`).
+    if (validation_result.has_value()) {
+      // `AuthServerAllowlist` governs whether to authenticate and
+      // `AuthNegotiateDelegateAllowlist` governs whether to delegate. So if
+      // only delegation is disallowed for the target host and no token has
+      // been returned yet, withhold delegation instead of failing.
+      if (*validation_result ==
+              TargetHostValidationResult::kDisallowedByDelegateAllowlist &&
+          !auth_token_generated_) {
+        validation_result =
+            TargetHostValidationResult::kAllowedWithClampedDelegation;
+      }
+      base::UmaHistogramEnumeration(
+          "Net.HttpAuth.NegotiateTargetPrincipalValidationResult",
+          *validation_result);
+      if (*validation_result ==
+          TargetHostValidationResult::kAllowedWithClampedDelegation) {
+        net_log().AddEvent(
+            NetLogEventType::AUTH_TARGET_PRINCIPAL_DELEGATION_CLAMPED, [&] {
+              base::DictValue params;
+              params.Set("requested_host", scheme_host_port_.host());
+              params.Set("principal_host", *principal_host);
+              return params;
+            });
+        // Discard the unsent round-1 token, which may carry a delegated
+        // credential, and regenerate it with the delegation allowed for the
+        // target host. Since that is strictly weaker each time, this
+        // terminates.
+        if (auth_token_) {
+          auth_token_->clear();
+        }
+        if (auth_system_->ResetSecurityContext()) {
+          delegation_type_ =
+              http_auth_preferences_->GetDelegationType(url::SchemeHostPort(
+                  scheme_host_port_.scheme(), TrimEndingDot(*principal_host),
+                  scheme_host_port_.port()));
+          auth_system_->SetDelegation(delegation_type_);
+          next_state_ = STATE_GENERATE_AUTH_TOKEN;
+          return OK;
+        }
+        rv = ERR_MISCONFIGURED_AUTH_ENVIRONMENT;
+      } else if (*validation_result != TargetHostValidationResult::kSameHost &&
+                 *validation_result !=
+                     TargetHostValidationResult::kAllowedDifferentHost) {
+        net_log().AddEvent(
+            NetLogEventType::AUTH_TARGET_PRINCIPAL_REJECTED, [&] {
+              base::DictValue params;
+              params.Set("requested_host", scheme_host_port_.host());
+              if (principal_host.has_value()) {
+                params.Set("principal_host", *principal_host);
+              }
+              params.Set("reason",
+                         TargetHostValidationFailureReason(*validation_result));
+              return params;
+            });
+        // Disable Negotiate for this transaction so `HttpAuthController`
+        // falls back to other offered schemes instead of prompting for
+        // credentials (for example, on ChromeOS where
+        // `AllowsExplicitCredentials()` is true).
+        rv = ERR_MISCONFIGURED_AUTH_ENVIRONMENT;
+        if (auth_token_) {
+          auth_token_->clear();
+        }
+      }
+    }
+  }
+  if (rv == OK) {
+    auth_token_generated_ = true;
+  }
   auth_token_ = nullptr;
   return rv;
+}
+
+HttpAuthHandlerNegotiate::TargetHostValidationResult
+HttpAuthHandlerNegotiate::ValidateTargetHost(
+    std::string_view target_host) const {
+  std::string trimmed_target_host = TrimEndingDot(target_host);
+  if (trimmed_target_host.empty() || trimmed_target_host.ends_with('.')) {
+    return TargetHostValidationResult::kUnparsableHost;
+  }
+  // Build a `url::SchemeHostPort` with the request's scheme and port to
+  // evaluate the same per-origin policies against `trimmed_target_host`.
+  url::SchemeHostPort target_scheme_host_port(scheme_host_port_.scheme(),
+                                              trimmed_target_host,
+                                              scheme_host_port_.port());
+  if (!target_scheme_host_port.IsValid()) {
+    return TargetHostValidationResult::kUnparsableHost;
+  }
+  // Compare after `TrimEndingDot()` so a trailing-dot request URL (such as
+  // `https://service.corp.com./`) matches a principal whose trailing dot was
+  // stripped by the Kerberos library.
+  if (target_scheme_host_port.host() ==
+      TrimEndingDot(scheme_host_port_.host())) {
+    return TargetHostValidationResult::kSameHost;
+  }
+  // On POSIX, where GSSAPI reports a principal host, `Init()` already rejects
+  // server auth without preferences (`AllowsDefaultCredentials()` returns
+  // false), so fail closed here too.
+  if (!http_auth_preferences_) {
+    return TargetHostValidationResult::kMissingPreferences;
+  }
+#if BUILDFLAG(IS_POSIX)
+  // POSIX Negotiate mechanisms (`HttpAuthGSSAPI` and
+  // `HttpAuthNegotiateAndroid`) ignore `credentials_` and always use ambient OS
+  // credentials, matching `Init()`.
+  const bool uses_default_credentials = true;
+#else
+  // The server allowlist only governs ambient credentials.
+  const bool uses_default_credentials = !has_credentials_;
+#endif
+  if (uses_default_credentials &&
+      !http_auth_preferences_->CanUseDefaultCredentials(
+          target_scheme_host_port)) {
+    return TargetHostValidationResult::kDisallowedByServerAllowlist;
+  }
+  // The delegation configured on `auth_system_` in `Init()` must also be
+  // allowed for the target host, since that is who receives the delegated
+  // credentials.
+  if (delegation_type_ != DelegationType::kNone &&
+      http_auth_preferences_->GetDelegationType(target_scheme_host_port) <
+          delegation_type_) {
+    return TargetHostValidationResult::kDisallowedByDelegateAllowlist;
+  }
+  return TargetHostValidationResult::kAllowedDifferentHost;
 }
 
 DelegationType HttpAuthHandlerNegotiate::GetDelegationType() const {

@@ -715,6 +715,7 @@ component("net") {
     "http/http_auth_handler_factory.h",
     "http/http_auth_handler_ntlm.cc",
     "http/http_auth_handler_ntlm.h",
+    "http/http_auth_mechanism.cc",
     "http/http_auth_mechanism.h",
     "http/http_auth_multi_round_parse.cc",
     "http/http_auth_multi_round_parse.h",

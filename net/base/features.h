@@ -1226,6 +1226,15 @@ NET_EXPORT BASE_DECLARE_FEATURE(kRestrictProxyPorts);
 // verified safe.
 NET_EXPORT BASE_DECLARE_FEATURE(kRejectHttp09FromHttpProxy);
 
+// Enables validating in `HttpAuthHandlerNegotiate`, after a token is generated,
+// the host in the service principal that the auth mechanism actually targeted
+// (reported only by GSSAPI on POSIX), recording the result to UMA and NetLog.
+// Tokens that fail validation are rejected, to prevent unvetted ambient
+// credentials or delegation tickets from being sent when a GSSAPI library
+// canonicalizes the requested host via DNS. Disabling it skips querying the
+// target principal altogether.
+NET_EXPORT BASE_DECLARE_FEATURE(kValidateNegotiateTargetPrincipalHost);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

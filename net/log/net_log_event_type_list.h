@@ -3840,6 +3840,27 @@ EVENT_TYPE(AUTH_LIBRARY_INIT_SEC_CTX)
 //  }
 EVENT_TYPE(AUTH_CHANNEL_BINDINGS)
 
+// Logged when a Negotiate authentication token fails target service principal
+// host validation against the challenged origin and `HttpAuthPreferences`.
+//  {
+//     "requested_host": <Host of the origin that issued the challenge>,
+//     "principal_host": <Canonical host extracted from the target principal,
+//                        omitted if the principal could not be queried or
+//                        parsed>,
+//     "reason": <Specific validation failure reason string>
+//  }
+EVENT_TYPE(AUTH_TARGET_PRINCIPAL_REJECTED)
+
+// Logged when the first Negotiate authentication token targets a service
+// principal host that `AuthServerAllowlist` permits but whose delegation is
+// more restricted than the challenged origin's, so the token is regenerated
+// with the delegation allowed for that host.
+//  {
+//     "requested_host": <Host of the origin that issued the challenge>,
+//     "principal_host": <Canonical host extracted from the target principal>
+//  }
+EVENT_TYPE(AUTH_TARGET_PRINCIPAL_DELEGATION_CLAMPED)
+
 // ------------------------------------------------------------------------
 // Global events
 // ------------------------------------------------------------------------

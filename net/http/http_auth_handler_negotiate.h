@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -98,6 +99,30 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
   bool AllowsDefaultCredentials() override;
   bool AllowsExplicitCredentials() override;
 
+  // Result of validating a Negotiate target host (such as the target service
+  // principal host reported by GSSAPI) against the challenged origin and
+  // `HttpAuthPreferences`.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(NegotiateTargetHostValidationResult)
+  enum class TargetHostValidationResult {
+    kSameHost = 0,
+    kAllowedDifferentHost = 1,
+    // See `HttpAuthMechanism::TargetPrincipalError` for the next three values.
+    kPrincipalQueryFailed = 2,
+    kNonHttpServicePrincipal = 3,
+    kUnparsableHost = 4,
+    kMissingPreferences = 5,
+    kDisallowedByServerAllowlist = 6,
+    kDisallowedByDelegateAllowlist = 7,
+    // Only delegation was disallowed for the target host on the first token,
+    // so it is regenerated with the delegation allowed for that host.
+    kAllowedWithClampedDelegation = 8,
+    kMaxValue = kAllowedWithClampedDelegation,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:NegotiateTargetHostValidationResult)
+
   const std::string& spn_for_testing() const { return spn_; }
 
  protected:
@@ -134,6 +159,12 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
   int DoGenerateAuthTokenComplete(int rv);
   HttpAuth::DelegationType GetDelegationType() const;
 
+  // Validates a candidate target host (such as the service principal host from
+  // `HttpAuthMechanism::GetTargetPrincipalHost()`) against `scheme_host_port_`
+  // and `http_auth_preferences_`.
+  TargetHostValidationResult ValidateTargetHost(
+      std::string_view target_host) const;
+
   std::unique_ptr<HttpAuthMechanism> auth_system_;
   const raw_ptr<HostResolver> resolver_;
 
@@ -155,6 +186,12 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
   handles::NetworkHandle target_network_ = handles::kInvalidNetworkHandle;
 
   State next_state_ = STATE_NONE;
+
+  // Whether a token has been returned to the caller, after which target
+  // validation failures can no longer be handled by regenerating the token.
+  bool auth_token_generated_ = false;
+
+  HttpAuth::DelegationType delegation_type_ = HttpAuth::DelegationType::kNone;
 
   raw_ptr<const HttpAuthPreferences> http_auth_preferences_;
 };

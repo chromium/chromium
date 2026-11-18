@@ -4,6 +4,8 @@ desc: |-
   Setting the policy to Enabled skips CNAME lookup. The server name is used as entered when generating the Kerberos SPN.
 
   Setting the policy to Disabled or leaving it unset means CNAME lookup determines the canonical name of the server when generating the Kerberos SPN.
+
+  Note: On <ph name="LINUX_OS_NAME">Linux</ph>, <ph name="MAC_OS_NAME">macOS</ph> and <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, enabling this policy skips <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s own CNAME lookup, but the system GSSAPI/Kerberos library may still canonicalize the service principal host (for example via <ph name="KRB5_CONFIG">krb5</ph> DNS settings). Negotiate authentication then fails unless that host is permitted by <ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME">AuthServerAllowlist</ph>, and delegation is withheld unless it is also permitted by <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME">AuthNegotiateDelegateAllowlist</ph>.
 example_value: false
 features:
   dynamic_refresh: true

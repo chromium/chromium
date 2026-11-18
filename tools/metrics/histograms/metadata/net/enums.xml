@@ -1275,6 +1275,22 @@ historical analysis. -->
   <int value="1" label="draft-07"/>
 </enum>
 
+<!-- LINT.IfChange(NegotiateTargetHostValidationResult) -->
+
+<enum name="NegotiateTargetHostValidationResult">
+  <int value="0" label="Same host"/>
+  <int value="1" label="Allowed different host"/>
+  <int value="2" label="Principal query failed"/>
+  <int value="3" label="Non-HTTP service principal"/>
+  <int value="4" label="Unparsable host"/>
+  <int value="5" label="Missing preferences"/>
+  <int value="6" label="Disallowed by server allowlist"/>
+  <int value="7" label="Disallowed by delegate allowlist"/>
+  <int value="8" label="Allowed with clamped delegation"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_auth_handler_negotiate.h:NegotiateTargetHostValidationResult) -->
+
 <enum name="NetCertificateNameNormalization">
   <int value="0" label="Error parsing certificate chain"/>
   <int value="1" label="Byte equal Names"/>

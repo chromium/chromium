@@ -6,23 +6,35 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
+#include "base/base64.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "net/base/auth.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_auth.h"
+#include "net/http/http_auth_challenge_tokenizer.h"
 #include "net/http/http_auth_mechanism.h"
+#include "net/http/http_auth_preferences.h"
 #include "net/http/http_request_info.h"
 #include "net/http/mock_allow_http_auth_preferences.h"
+#include "net/log/net_log_entry.h"
+#include "net/log/net_log_event_type.h"
+#include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
+#include "net/log/test_net_log.h"
+#include "net/log/test_net_log_util.h"
 #include "net/net_buildflags.h"
 #include "net/ssl/ssl_info.h"
 #include "net/test/gtest_util.h"
@@ -97,7 +109,18 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
   void TearDown() override { MockAuthLibrary::RemoveTestAccounts(); }
 #endif
 
-  void SetupMocks(MockAuthLibrary* mock_library) {
+  std::unique_ptr<HttpAuthPreferences> CreateHttpAuthPreferences() {
+    auto prefs = std::make_unique<HttpAuthPreferences>();
+#if BUILDFLAG(IS_ANDROID)
+    prefs->set_auth_android_negotiate_account_type(
+        "org.chromium.test.DummySpnegoAuthenticator");
+#endif
+    return prefs;
+  }
+
+  void SetupMocks(
+      MockAuthLibrary* mock_library,
+      const std::string& target_name = "HTTP/canonical.example.com@REALM") {
 #if BUILDFLAG(IS_WIN)
     security_package_ = std::make_unique<SecPkgInfoW>();
     UNSAFE_TODO(memset(security_package_.get(), 0x0, sizeof(SecPkgInfoW)));
@@ -153,21 +176,21 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
         "\x69\xE3\x55\xF9\x30\xD3\xD4\x08\xC8\xCA\x62\xF8\x64\xEC\x9B\x92"
         "\x1A\xF1\x03\x2E\xCC\xDC\xEB\x17\xDE\x09\xAC\xA9\x58\x86";
     test::GssContextMockImpl context1(
-        "localhost",                         // Source name
-        "example.com",                       // Target name
-        23,                                  // Lifetime
-        *CHROME_GSS_SPNEGO_MECH_OID_DESC,    // Mechanism
-        0,                                   // Context flags
-        1,                                   // Locally initiated
-        0);                                  // Open
+        "localhost",                       // Source name
+        target_name.c_str(),               // Target name
+        23,                                // Lifetime
+        *CHROME_GSS_SPNEGO_MECH_OID_DESC,  // Mechanism
+        0,                                 // Context flags
+        1,                                 // Locally initiated
+        0);                                // Open
     test::GssContextMockImpl context2(
-        "localhost",                         // Source name
-        "example.com",                       // Target name
-        23,                                  // Lifetime
-        *CHROME_GSS_SPNEGO_MECH_OID_DESC,    // Mechanism
-        0,                                   // Context flags
-        1,                                   // Locally initiated
-        1);                                  // Open
+        "localhost",                       // Source name
+        target_name.c_str(),               // Target name
+        23,                                // Lifetime
+        *CHROME_GSS_SPNEGO_MECH_OID_DESC,  // Mechanism
+        0,                                 // Context flags
+        1,                                 // Locally initiated
+        1);                                // Open
     MockAuthLibrary::SecurityContextQuery queries[] = {
         MockAuthLibrary::SecurityContextQuery(
             "Negotiate",            // Package name
@@ -228,7 +251,8 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
                     bool use_port,
                     bool synchronous_resolve_mode,
                     const std::string& url_string,
-                    std::unique_ptr<HttpAuthHandlerNegotiate>* handler) {
+                    std::unique_ptr<HttpAuthHandlerNegotiate>* handler,
+                    HttpAuth::Target target = HttpAuth::AUTH_SERVER) {
     http_auth_preferences_->set_negotiate_disable_cname_lookup(
         disable_cname_lookup);
     http_auth_preferences_->set_negotiate_enable_port(use_port);
@@ -243,8 +267,8 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
     std::unique_ptr<HttpAuthHandler> generic_handler;
     SSLInfo null_ssl_info;
     int rv = factory_->CreateAuthHandlerFromString(
-        "Negotiate", HttpAuth::AUTH_SERVER, null_ssl_info,
-        network_anonymization_key(), scheme_host_port, NetLogWithSource(),
+        "Negotiate", target, null_ssl_info, network_anonymization_key(),
+        scheme_host_port, NetLogWithSource::Make(NetLogSourceType::NONE),
         resolver_.get(), &generic_handler);
     if (rv != OK)
       return rv;
@@ -254,10 +278,26 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
     return rv;
   }
 
+  int CreateProxyHandler(bool disable_cname_lookup,
+                         bool use_port,
+                         bool synchronous_resolve_mode,
+                         const std::string& url_string,
+                         std::unique_ptr<HttpAuthHandlerNegotiate>* handler) {
+    return CreateHandler(disable_cname_lookup, use_port,
+                         synchronous_resolve_mode, url_string, handler,
+                         HttpAuth::AUTH_PROXY);
+  }
+
   MockAuthLibrary* AuthLibrary() { return auth_library_; }
   MockCachingHostResolver* resolver() { return resolver_.get(); }
-  MockAllowHttpAuthPreferences* http_auth_preferences() {
+  HttpAuthPreferences* http_auth_preferences() {
     return http_auth_preferences_.get();
+  }
+  void SetHttpAuthPreferences(
+      std::unique_ptr<HttpAuthPreferences> http_auth_preferences) {
+    factory_->set_http_auth_preferences(nullptr);
+    http_auth_preferences_ = std::move(http_auth_preferences);
+    factory_->set_http_auth_preferences(http_auth_preferences_.get());
   }
 
   const NetworkAnonymizationKey& network_anonymization_key() const {
@@ -273,7 +313,7 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
   std::unique_ptr<MockAuthLibrary> auth_library_for_android_;
 #endif
   std::unique_ptr<MockCachingHostResolver> resolver_;
-  std::unique_ptr<MockAllowHttpAuthPreferences> http_auth_preferences_;
+  std::unique_ptr<HttpAuthPreferences> http_auth_preferences_;
   std::unique_ptr<HttpAuthHandlerNegotiate::Factory> factory_;
 
   // |auth_library_| is passed to |factory_|, which assumes ownership of it, but
@@ -304,7 +344,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, GenerateAuthTokenIsAsync) {
 #endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(HttpAuthHandlerNegotiateTest, DisableCname) {
-  SetupMocks(AuthLibrary());
+  SetupMocks(AuthLibrary(), "HTTP/alias@REALM");
   std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
   EXPECT_EQ(OK, CreateHandler(
       true, false, true, "http://alias:500", &auth_handler));
@@ -323,7 +363,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, DisableCname) {
 }
 
 TEST_F(HttpAuthHandlerNegotiateTest, DisableCnameStandardPort) {
-  SetupMocks(AuthLibrary());
+  SetupMocks(AuthLibrary(), "HTTP/alias@REALM");
   std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
   EXPECT_EQ(OK, CreateHandler(
       true, true, true, "http://alias:80", &auth_handler));
@@ -341,7 +381,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, DisableCnameStandardPort) {
 }
 
 TEST_F(HttpAuthHandlerNegotiateTest, DisableCnameNonstandardPort) {
-  SetupMocks(AuthLibrary());
+  SetupMocks(AuthLibrary(), "HTTP/alias@REALM");
   std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
   EXPECT_EQ(OK, CreateHandler(
       true, true, true, "http://alias:500", &auth_handler));
@@ -518,7 +558,827 @@ TEST_F(HttpAuthHandlerNegotiateTest, AllowGssapiLibraryLoad) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(USE_EXTERNAL_GSSAPI)
+
+namespace {
+
+constexpr char kTargetPrincipalValidationHistogram[] =
+    "Net.HttpAuth.NegotiateTargetPrincipalValidationResult";
+
+// Expects an `init_sec_context()` call establishing `context`. The tokens must
+// outlive the mock's expectation.
+void ExpectInitSecContext(MockAuthLibrary* library,
+                          const test::GssContextMockImpl& context,
+                          OM_uint32 major_status,
+                          const char* expected_input_token,
+                          const char* output_token) {
+  MockAuthLibrary::SecurityContextQuery query("Negotiate", major_status, 0,
+                                              context, expected_input_token,
+                                              output_token);
+  library->ExpectSecurityContext(
+      query.expected_package, query.response_code, query.minor_response_code,
+      query.context_info, query.expected_input_token, query.output_token);
+}
+
+}  // namespace
+
+class HttpAuthHandlerNegotiateTargetValidationTest
+    : public HttpAuthHandlerNegotiateTest {
+ public:
+  void SetUp() override {
+    HttpAuthHandlerNegotiateTest::SetUp();
+    AddScopedFeatureList().InitAndEnableFeature(
+        features::kValidateNegotiateTargetPrincipalHost);
+  }
+};
+
+TEST_F(HttpAuthHandlerNegotiateTest,
+       TargetValidationFeatureDisabledSkipsPrincipalQuery) {
+  // Disabling `kValidateNegotiateTargetPrincipalHost` is the kill switch for
+  // the `gss_inquire_context()` and `gss_display_name()` calls themselves.
+  AddScopedFeatureList().InitAndDisableFeature(
+      features::kValidateNegotiateTargetPrincipalHost);
+  base::HistogramTester histogram_tester;
+
+  SetupMocks(AuthLibrary(), "HTTP/canonical.test@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("alias.test");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  ASSERT_EQ(OK, CreateHandler(/*disable_cname_lookup=*/true, /*use_port=*/false,
+                              /*synchronous_resolve_mode=*/true,
+                              "http://alias.test:80", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+  EXPECT_FALSE(token.empty());
+  EXPECT_EQ(0, AuthLibrary()->inquire_context_call_count());
+  histogram_tester.ExpectTotalCount(kTargetPrincipalValidationHistogram, 0);
+}
+
+TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
+       DisableCnamePolicyAllowsAllowlistedLibraryCanonicalization) {
+  base::HistogramTester histogram_tester;
+  RecordingNetLogObserver net_log_observer;
+
+  SetupMocks(AuthLibrary(), "HTTP/canonical.test@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("alias.test,canonical.test");
+  prefs->SetDelegateAllowlist("alias.test,canonical.test");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  ASSERT_EQ(OK, CreateHandler(/*disable_cname_lookup=*/true, /*use_port=*/false,
+                              /*synchronous_resolve_mode=*/true,
+                              "http://alias.test:80", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+  EXPECT_FALSE(token.empty());
+  EXPECT_EQ("HTTP@alias.test", auth_handler->spn_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      kTargetPrincipalValidationHistogram,
+      HttpAuthHandlerNegotiate::TargetHostValidationResult::
+          kAllowedDifferentHost,
+      1);
+  EXPECT_TRUE(
+      net_log_observer
+          .GetEntriesWithType(NetLogEventType::AUTH_TARGET_PRINCIPAL_REJECTED)
+          .empty());
+}
+
+TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
+       CanonicalTargetNotInServerAllowlist) {
+  base::HistogramTester histogram_tester;
+  RecordingNetLogObserver net_log_observer;
+
+  SetupMocks(AuthLibrary(), "HTTP/canonical.test@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("alias.test");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  EXPECT_EQ(OK,
+            CreateHandler(/*disable_cname_lookup=*/false, /*use_port=*/false,
+                          /*synchronous_resolve_mode=*/true,
+                          "http://alias.test:80", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv),
+              IsError(ERR_MISCONFIGURED_AUTH_ENVIRONMENT));
+  EXPECT_TRUE(token.empty());
+
+  histogram_tester.ExpectUniqueSample(
+      kTargetPrincipalValidationHistogram,
+      HttpAuthHandlerNegotiate::TargetHostValidationResult::
+          kDisallowedByServerAllowlist,
+      1);
+  std::vector<NetLogEntry> entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::AUTH_TARGET_PRINCIPAL_REJECTED);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ("alias.test",
+            GetStringValueFromParams(entries[0], "requested_host"));
+  EXPECT_EQ("canonical.test",
+            GetStringValueFromParams(entries[0], "principal_host"));
+  EXPECT_EQ("disallowed_by_server_allowlist",
+            GetStringValueFromParams(entries[0], "reason"));
+}
+
+TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
+       CanonicalTargetNotInServerAllowlistWithCredentials) {
+  base::HistogramTester histogram_tester;
+  SetupMocks(AuthLibrary(), "HTTP/canonical.test@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("alias.test");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  ASSERT_EQ(OK,
+            CreateHandler(/*disable_cname_lookup=*/false, /*use_port=*/false,
+                          /*synchronous_resolve_mode=*/true,
+                          "http://alias.test:80", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  AuthCredentials credentials(u"user", u"pass");
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(&credentials, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv),
+              IsError(ERR_MISCONFIGURED_AUTH_ENVIRONMENT));
+  EXPECT_TRUE(token.empty());
+  histogram_tester.ExpectUniqueSample(
+      kTargetPrincipalValidationHistogram,
+      HttpAuthHandlerNegotiate::TargetHostValidationResult::
+          kDisallowedByServerAllowlist,
+      1);
+}
+
+TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
+       UserPrincipalNameTargetRejected) {
+  base::HistogramTester histogram_tester;
+  RecordingNetLogObserver net_log_observer;
+
+  SetupMocks(AuthLibrary(), "user@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  ASSERT_EQ(OK,
+            CreateHandler(/*disable_cname_lookup=*/false, /*use_port=*/false,
+                          /*synchronous_resolve_mode=*/true,
+                          "http://alias.test:80", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv),
+              IsError(ERR_MISCONFIGURED_AUTH_ENVIRONMENT));
+  EXPECT_TRUE(token.empty());
+
+  histogram_tester.ExpectUniqueSample(
+      kTargetPrincipalValidationHistogram,
+      HttpAuthHandlerNegotiate::TargetHostValidationResult::
+          kNonHttpServicePrincipal,
+      1);
+  std::vector<NetLogEntry> entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::AUTH_TARGET_PRINCIPAL_REJECTED);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ("alias.test",
+            GetStringValueFromParams(entries[0], "requested_host"));
+  EXPECT_FALSE(GetOptionalStringValueFromParams(entries[0], "principal_host"));
+  EXPECT_EQ("non_http_service_principal",
+            GetStringValueFromParams(entries[0], "reason"));
+}
+
+TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
+       PercentEncodedTargetPrincipalRejected) {
+  base::HistogramTester histogram_tester;
+  SetupMocks(AuthLibrary(), "HTTP/app%2edev.test@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("alias.test,*.dev.test");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  ASSERT_EQ(OK,
+            CreateHandler(/*disable_cname_lookup=*/false, /*use_port=*/false,
+                          /*synchronous_resolve_mode=*/true,
+                          "http://alias.test:80", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv),
+              IsError(ERR_MISCONFIGURED_AUTH_ENVIRONMENT));
+  EXPECT_TRUE(token.empty());
+  histogram_tester.ExpectUniqueSample(
+      kTargetPrincipalValidationHistogram,
+      HttpAuthHandlerNegotiate::TargetHostValidationResult::kUnparsableHost, 1);
+}
+
+// `AuthServerAllowlist` permits the canonical host but
+// `AuthNegotiateDelegateAllowlist` doesn't, so the unsent first-round token is
+// regenerated without delegation instead of failing authentication.
+TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
+       CanonicalTargetNotInDelegateAllowlistClampsDelegation) {
+  base::HistogramTester histogram_tester;
+  RecordingNetLogObserver net_log_observer;
+
+  test::GssContextMockImpl context("localhost", "HTTP/canonical.test@REALM", 23,
+                                   *CHROME_GSS_SPNEGO_MECH_OID_DESC, 0, 1, 0);
+  ExpectInitSecContext(AuthLibrary(), context, GSS_S_CONTINUE_NEEDED,
+                       /*expected_input_token=*/nullptr, "DelegatingToken");
+  ExpectInitSecContext(AuthLibrary(), context, GSS_S_CONTINUE_NEEDED,
+                       /*expected_input_token=*/nullptr, "NonDelegatingToken");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("alias.test,canonical.test");
+  prefs->SetDelegateAllowlist("alias.test");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  ASSERT_EQ(OK,
+            CreateHandler(/*disable_cname_lookup=*/false, /*use_port=*/false,
+                          /*synchronous_resolve_mode=*/true,
+                          "http://alias.test:80", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+  EXPECT_EQ("Negotiate " + base::Base64Encode("NonDelegatingToken"), token);
+  EXPECT_EQ(AuthLibrary()->init_sec_context_req_flags(),
+            (std::vector<OM_uint32>{GSS_C_DELEG_FLAG, 0}));
+
+  histogram_tester.ExpectBucketCount(
+      kTargetPrincipalValidationHistogram,
+      HttpAuthHandlerNegotiate::TargetHostValidationResult::
+          kAllowedWithClampedDelegation,
+      1);
+  histogram_tester.ExpectBucketCount(
+      kTargetPrincipalValidationHistogram,
+      HttpAuthHandlerNegotiate::TargetHostValidationResult::
+          kAllowedDifferentHost,
+      1);
+  histogram_tester.ExpectTotalCount(kTargetPrincipalValidationHistogram, 2);
+  std::vector<NetLogEntry> entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::AUTH_TARGET_PRINCIPAL_DELEGATION_CLAMPED);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ("alias.test",
+            GetStringValueFromParams(entries[0], "requested_host"));
+  EXPECT_EQ("canonical.test",
+            GetStringValueFromParams(entries[0], "principal_host"));
+  EXPECT_TRUE(
+      net_log_observer
+          .GetEntriesWithType(NetLogEventType::AUTH_TARGET_PRINCIPAL_REJECTED)
+          .empty());
+}
+
+TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
+       CanonicalTargetDowngradesDelegationFromUnconstrainedToKdcPolicy) {
+  test::GssContextMockImpl context("localhost", "HTTP/canonical.test@REALM", 23,
+                                   *CHROME_GSS_SPNEGO_MECH_OID_DESC, 0, 1, 0);
+  ExpectInitSecContext(AuthLibrary(), context, GSS_S_CONTINUE_NEEDED,
+                       /*expected_input_token=*/nullptr, "UnconstrainedToken");
+  ExpectInitSecContext(AuthLibrary(), context, GSS_S_CONTINUE_NEEDED,
+                       /*expected_input_token=*/nullptr, "KdcPolicyToken");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("alias.test,canonical.test");
+  prefs->SetDelegateAllowlist("alias.test,canonical.test");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  // `Init()` snapshots `DelegationType::kUnconstrained` on `auth_system_`.
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  ASSERT_EQ(OK,
+            CreateHandler(/*disable_cname_lookup=*/false, /*use_port=*/false,
+                          /*synchronous_resolve_mode=*/true,
+                          "http://alias.test:80", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  // Tightening policy before token completion leaves `canonical.test` with
+  // `kByKdcPolicy`, which is weaker than the `kUnconstrained` flag already set
+  // on `auth_system_`, so the first-round token is regenerated with it.
+  http_auth_preferences()->set_delegate_by_kdc_policy(true);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+  EXPECT_EQ("Negotiate " + base::Base64Encode("KdcPolicyToken"), token);
+  EXPECT_EQ(
+      AuthLibrary()->init_sec_context_req_flags(),
+      (std::vector<OM_uint32>{GSS_C_DELEG_FLAG, GSS_C_DELEG_POLICY_FLAG}));
+}
+
+TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
+       DisableCnameDisabledAllowsAllowlistedCanonicalization) {
+  SetupMocks(AuthLibrary(), "HTTP/canonical.test@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("alias.test,canonical.test");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  EXPECT_EQ(OK,
+            CreateHandler(/*disable_cname_lookup=*/false, /*use_port=*/false,
+                          /*synchronous_resolve_mode=*/true,
+                          "http://alias.test:80", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+  EXPECT_FALSE(token.empty());
+}
+
+TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
+       AllowlistedCanonicalizationWithKdcPolicyDelegation) {
+  SetupMocks(AuthLibrary(), "HTTP/canonical.test@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("alias.test,canonical.test");
+  prefs->SetDelegateAllowlist("alias.test,canonical.test");
+  prefs->set_delegate_by_kdc_policy(true);
+  SetHttpAuthPreferences(std::move(prefs));
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  ASSERT_EQ(OK,
+            CreateHandler(/*disable_cname_lookup=*/false, /*use_port=*/false,
+                          /*synchronous_resolve_mode=*/true,
+                          "http://alias.test:80", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+  EXPECT_FALSE(token.empty());
+}
+
+TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
+       AllowlistedCanonicalizationWithUnconstrainedDelegation) {
+  SetupMocks(AuthLibrary(), "HTTP/canonical.test@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("alias.test,canonical.test");
+  prefs->SetDelegateAllowlist("alias.test,canonical.test");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  ASSERT_EQ(OK,
+            CreateHandler(/*disable_cname_lookup=*/false, /*use_port=*/false,
+                          /*synchronous_resolve_mode=*/true,
+                          "http://alias.test:80", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+  EXPECT_FALSE(token.empty());
+}
+
+TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
+       HostServicePrefixAndTrailingDotUrlMatchSameHost) {
+  base::HistogramTester histogram_tester;
+  SetupMocks(AuthLibrary(), "host/service.test@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  ASSERT_EQ(OK, CreateHandler(/*disable_cname_lookup=*/true, /*use_port=*/false,
+                              /*synchronous_resolve_mode=*/true,
+                              "http://service.test.:80", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+  EXPECT_FALSE(token.empty());
+  histogram_tester.ExpectUniqueSample(
+      kTargetPrincipalValidationHistogram,
+      HttpAuthHandlerNegotiate::TargetHostValidationResult::kSameHost, 1);
+}
+
+TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
+       NtlmsspFallbackUnderSpnegoSkipsTargetValidation) {
+  base::HistogramTester histogram_tester;
+  RecordingNetLogObserver net_log_observer;
+
+  gss_OID_desc ntlmssp_mech_oid = {
+      10, const_cast<char*>("\x2b\x06\x01\x04\x01\x82\x37\x02\x02\x0a")};
+  gss_OID_desc user_name_oid = {
+      10, const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x01")};
+  test::GssContextMockImpl context("localhost", "HTTP@alias.test", 23,
+                                   ntlmssp_mech_oid, 0, 1, 1);
+  context.targ_name_type = user_name_oid;
+  static constexpr char kNtlmToken[] = "NTLMSSP";
+  MockAuthLibrary::SecurityContextQuery query("Negotiate", GSS_S_COMPLETE, 0,
+                                              context, nullptr, kNtlmToken);
+  AuthLibrary()->ExpectSecurityContext(
+      query.expected_package, query.response_code, query.minor_response_code,
+      query.context_info, query.expected_input_token, query.output_token);
+
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("alias.test");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  ASSERT_EQ(OK, CreateHandler(/*disable_cname_lookup=*/true, /*use_port=*/false,
+                              /*synchronous_resolve_mode=*/true,
+                              "http://alias.test:80", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+  EXPECT_FALSE(token.empty());
+  histogram_tester.ExpectTotalCount(kTargetPrincipalValidationHistogram, 0);
+  EXPECT_TRUE(
+      net_log_observer
+          .GetEntriesWithType(NetLogEventType::AUTH_TARGET_PRINCIPAL_REJECTED)
+          .empty());
+}
+
+TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
+       IncompleteSpnegoContextWithNoTargetNameSkipsValidation) {
+  base::HistogramTester histogram_tester;
+
+  test::GssContextMockImpl context("localhost", "", 23,
+                                   *CHROME_GSS_SPNEGO_MECH_OID_DESC, 0, 1, 0);
+  context.has_targ_name = false;
+  static constexpr char kSpnegoToken[] = "SPNEGO";
+  MockAuthLibrary::SecurityContextQuery query(
+      "Negotiate", GSS_S_CONTINUE_NEEDED, 0, context, nullptr, kSpnegoToken);
+  AuthLibrary()->ExpectSecurityContext(
+      query.expected_package, query.response_code, query.minor_response_code,
+      query.context_info, query.expected_input_token, query.output_token);
+
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("alias.test");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  ASSERT_EQ(OK, CreateHandler(/*disable_cname_lookup=*/true, /*use_port=*/false,
+                              /*synchronous_resolve_mode=*/true,
+                              "http://alias.test:80", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+  EXPECT_FALSE(token.empty());
+  histogram_tester.ExpectTotalCount(kTargetPrincipalValidationHistogram, 0);
+}
+
+TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
+       BareIpv6TargetPrincipalMatchesUrl) {
+  base::HistogramTester histogram_tester;
+  SetupMocks(AuthLibrary(), "HTTP/2001:DB8::1@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  ASSERT_EQ(OK, CreateHandler(/*disable_cname_lookup=*/true, /*use_port=*/false,
+                              /*synchronous_resolve_mode=*/true,
+                              "http://[2001:db8::1]:80", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+  EXPECT_FALSE(token.empty());
+  histogram_tester.ExpectUniqueSample(
+      kTargetPrincipalValidationHistogram,
+      HttpAuthHandlerNegotiate::TargetHostValidationResult::kSameHost, 1);
+}
+
+// Principal hosts that only match the requested host after many-to-one host
+// canonicalization are distinct principals and must not take the `kSameHost`
+// path, which skips the allowlist checks.
+TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
+       NonCanonicalTargetPrincipalHostsRejected) {
+  static constexpr struct {
+    const char* target_name;
+    const char* url;
+  } kTestCases[] = {
+      {"HTTP/0x0a.0.0.2@REALM", "http://10.0.0.2:80"},
+      {"HTTP/167772162@REALM", "http://10.0.0.2:80"},
+      {"HTTP/2001:0DB8:0:0:0:0:0:1@REALM", "http://[2001:db8::1]:80"},
+      {"HTTP/b\xc3\xbc"
+       "cher.test@REALM",
+       "http://xn--bcher-kva.test:80"},
+      {"HTTP/\xef\xbd\x81"
+       "lias.test@REALM",
+       "http://alias.test:80"},
+      {"HTTP/ali\xc2\xad"
+       "as.test@REALM",
+       "http://alias.test:80"},
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.target_name);
+    base::HistogramTester histogram_tester;
+    test::GssContextMockImpl context("localhost", test_case.target_name, 23,
+                                     *CHROME_GSS_SPNEGO_MECH_OID_DESC, 0, 1, 0);
+    static constexpr char kSpnegoToken[] = "SPNEGO";
+    MockAuthLibrary::SecurityContextQuery query(
+        "Negotiate", GSS_S_CONTINUE_NEEDED, 0, context, nullptr, kSpnegoToken);
+    AuthLibrary()->ExpectSecurityContext(
+        query.expected_package, query.response_code, query.minor_response_code,
+        query.context_info, query.expected_input_token, query.output_token);
+    std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+    prefs->SetServerAllowlist("*");
+    SetHttpAuthPreferences(std::move(prefs));
+
+    std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+    ASSERT_EQ(OK,
+              CreateHandler(/*disable_cname_lookup=*/true, /*use_port=*/false,
+                            /*synchronous_resolve_mode=*/true, test_case.url,
+                            &auth_handler));
+    ASSERT_TRUE(auth_handler);
+
+    TestCompletionCallback callback;
+    HttpRequestInfo request_info;
+    std::string token;
+    int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                             callback.callback(), &token);
+    EXPECT_THAT(callback.GetResult(rv),
+                IsError(ERR_MISCONFIGURED_AUTH_ENVIRONMENT));
+    EXPECT_TRUE(token.empty());
+    histogram_tester.ExpectUniqueSample(
+        kTargetPrincipalValidationHistogram,
+        HttpAuthHandlerNegotiate::TargetHostValidationResult::kUnparsableHost,
+        1);
+  }
+}
+
+// MIT krb5 reports the SPNEGO `mech_type` on partially established contexts,
+// where an underlying `gss-ntlmssp` mechanism displays its target as
+// `HTTP/<host>` under `GSS_C_NT_HOSTBASED_SERVICE`. That host is validated, so
+// the NTLM fallback still succeeds when it matches the URL host.
+TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
+       PartiallyEstablishedSpnegoNtlmTargetMatchesUrl) {
+  base::HistogramTester histogram_tester;
+
+  gss_OID_desc hostbased_service_oid = {
+      10, const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x04")};
+  test::GssContextMockImpl context("localhost", "HTTP/alias.test", 23,
+                                   *CHROME_GSS_SPNEGO_MECH_OID_DESC, 0, 1, 0);
+  context.targ_name_type = hostbased_service_oid;
+  static constexpr char kNtlmToken[] = "NTLMSSP";
+  MockAuthLibrary::SecurityContextQuery query(
+      "Negotiate", GSS_S_CONTINUE_NEEDED, 0, context, nullptr, kNtlmToken);
+  AuthLibrary()->ExpectSecurityContext(
+      query.expected_package, query.response_code, query.minor_response_code,
+      query.context_info, query.expected_input_token, query.output_token);
+
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("alias.test");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  ASSERT_EQ(OK, CreateHandler(/*disable_cname_lookup=*/true, /*use_port=*/false,
+                              /*synchronous_resolve_mode=*/true,
+                              "http://alias.test:80", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+  EXPECT_FALSE(token.empty());
+  histogram_tester.ExpectUniqueSample(
+      kTargetPrincipalValidationHistogram,
+      HttpAuthHandlerNegotiate::TargetHostValidationResult::kSameHost, 1);
+}
+
+// On partially established SPNEGO contexts, 1-component `GSS_C_NT_USER_NAME`
+// and `GSS_KRB5_NT_PRINCIPAL_NAME` principals (`HTTP@<name>`) are still
+// rejected as `kNonHttpServicePrincipal`.
+TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
+       PartiallyEstablishedSpnegoKerberosUserPrincipalRejected) {
+  const struct {
+    const char* label;
+    gss_OID_desc oid;
+  } kNameTypes[] = {
+      {"GSS_C_NT_USER_NAME",
+       {10, const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x01\x01")}},
+      {"GSS_KRB5_NT_PRINCIPAL_NAME",
+       {10, const_cast<char*>("\x2a\x86\x48\x86\xf7\x12\x01\x02\x02\x01")}},
+  };
+  for (const auto& name_type : kNameTypes) {
+    SCOPED_TRACE(name_type.label);
+    base::HistogramTester histogram_tester;
+    test::GssContextMockImpl context("localhost", "HTTP@alias.test", 23,
+                                     *CHROME_GSS_SPNEGO_MECH_OID_DESC, 0, 1,
+                                     /*open=*/0);
+    context.targ_name_type = name_type.oid;
+    static constexpr char kSpnegoToken[] = "SPNEGO";
+    MockAuthLibrary::SecurityContextQuery query(
+        "Negotiate", GSS_S_CONTINUE_NEEDED, 0, context, nullptr, kSpnegoToken);
+    AuthLibrary()->ExpectSecurityContext(
+        query.expected_package, query.response_code, query.minor_response_code,
+        query.context_info, query.expected_input_token, query.output_token);
+
+    std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+    prefs->SetServerAllowlist("alias.test");
+    SetHttpAuthPreferences(std::move(prefs));
+
+    std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+    ASSERT_EQ(OK, CreateHandler(/*disable_cname_lookup=*/true,
+                                /*use_port=*/false,
+                                /*synchronous_resolve_mode=*/true,
+                                "http://alias.test:80", &auth_handler));
+    ASSERT_TRUE(auth_handler);
+
+    TestCompletionCallback callback;
+    HttpRequestInfo request_info;
+    std::string token;
+    int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                             callback.callback(), &token);
+    EXPECT_THAT(callback.GetResult(rv),
+                IsError(ERR_MISCONFIGURED_AUTH_ENVIRONMENT));
+    EXPECT_TRUE(token.empty());
+    histogram_tester.ExpectUniqueSample(
+        kTargetPrincipalValidationHistogram,
+        HttpAuthHandlerNegotiate::TargetHostValidationResult::
+            kNonHttpServicePrincipal,
+        1);
+  }
+}
+
+// Once a token has been returned (for example, when policy tightens
+// mid-handshake), a disallowed delegation can't be withdrawn by regenerating
+// the token, so authentication fails closed.
+TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
+       DelegationDisallowedAfterFirstRoundFailsClosed) {
+  base::HistogramTester histogram_tester;
+
+  test::GssContextMockImpl round1_context(
+      "localhost", "HTTP/canonical.test@REALM", 23,
+      *CHROME_GSS_SPNEGO_MECH_OID_DESC, 0, 1, /*open=*/0);
+  test::GssContextMockImpl round2_context(
+      "localhost", "HTTP/canonical.test@REALM", 23,
+      *CHROME_GSS_SPNEGO_MECH_OID_DESC, 0, 1, /*open=*/1);
+  ExpectInitSecContext(AuthLibrary(), round1_context, GSS_S_CONTINUE_NEEDED,
+                       /*expected_input_token=*/nullptr, "Round1Token");
+  ExpectInitSecContext(AuthLibrary(), round2_context, GSS_S_COMPLETE,
+                       "ServerToken", "Round2Token");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("alias.test,canonical.test");
+  prefs->SetDelegateAllowlist("alias.test,canonical.test");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  ASSERT_EQ(OK, CreateHandler(/*disable_cname_lookup=*/true, /*use_port=*/false,
+                              /*synchronous_resolve_mode=*/true,
+                              "http://alias.test:80", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+  EXPECT_EQ("Negotiate " + base::Base64Encode("Round1Token"), token);
+
+  http_auth_preferences()->SetDelegateAllowlist("alias.test");
+  const std::string challenge_text =
+      "Negotiate " + base::Base64Encode("ServerToken");
+  HttpAuthChallengeTokenizer challenge(challenge_text);
+  EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_ACCEPT,
+            auth_handler->HandleAnotherChallenge(&challenge));
+
+  std::string round2_token;
+  rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                       callback.callback(), &round2_token);
+  EXPECT_THAT(callback.GetResult(rv),
+              IsError(ERR_MISCONFIGURED_AUTH_ENVIRONMENT));
+  EXPECT_TRUE(round2_token.empty());
+  EXPECT_EQ(AuthLibrary()->init_sec_context_req_flags(),
+            (std::vector<OM_uint32>{GSS_C_DELEG_FLAG, GSS_C_DELEG_FLAG}));
+  histogram_tester.ExpectBucketCount(
+      kTargetPrincipalValidationHistogram,
+      HttpAuthHandlerNegotiate::TargetHostValidationResult::
+          kAllowedDifferentHost,
+      1);
+  histogram_tester.ExpectBucketCount(
+      kTargetPrincipalValidationHistogram,
+      HttpAuthHandlerNegotiate::TargetHostValidationResult::
+          kDisallowedByDelegateAllowlist,
+      1);
+  histogram_tester.ExpectTotalCount(kTargetPrincipalValidationHistogram, 2);
+}
+
+// Heimdal SPNEGO returns `GSS_S_NO_CONTEXT` from `gss_inquire_context()` when
+// the first-round `NegTokenInit` only proposes a mechanism list (for example,
+// without a Kerberos TGT when falling back to NTLMSSP). No ticket exists yet,
+// so validation is skipped instead of failing closed.
+TEST_F(HttpAuthHandlerNegotiateTargetValidationTest,
+       MechListOnlySpnegoContextSkipsValidation) {
+  base::HistogramTester histogram_tester;
+
+  test::GssContextMockImpl context("localhost", "HTTP/canonical.test@REALM", 23,
+                                   *CHROME_GSS_SPNEGO_MECH_OID_DESC, 0, 1,
+                                   /*open=*/0);
+  context.inquire_context_status = GSS_S_NO_CONTEXT;
+  ExpectInitSecContext(AuthLibrary(), context, GSS_S_CONTINUE_NEEDED,
+                       /*expected_input_token=*/nullptr, "MechListToken");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("alias.test");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  ASSERT_EQ(OK, CreateHandler(/*disable_cname_lookup=*/true, /*use_port=*/false,
+                              /*synchronous_resolve_mode=*/true,
+                              "http://alias.test:80", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+  EXPECT_EQ("Negotiate " + base::Base64Encode("MechListToken"), token);
+  histogram_tester.ExpectTotalCount(kTargetPrincipalValidationHistogram, 0);
+}
+
+#endif  // BUILDFLAG(USE_EXTERNAL_GSSAPI)
 #endif  // BUILDFLAG(IS_POSIX)
+
+TEST_F(HttpAuthHandlerNegotiateTest, ProxyAuthBypassesTargetValidation) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kValidateNegotiateTargetPrincipalHost);
+  SetupMocks(AuthLibrary(), "HTTP/canonical.test@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("alias.test");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  EXPECT_EQ(
+      OK, CreateProxyHandler(/*disable_cname_lookup=*/true, /*use_port=*/false,
+                             /*synchronous_resolve_mode=*/true,
+                             "http://alias.test:80", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+  EXPECT_FALSE(token.empty());
+}
 
 class TestAuthSystem : public HttpAuthMechanism {
  public:

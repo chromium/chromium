@@ -1275,4 +1275,7 @@ BASE_FEATURE(kRestrictProxyPorts, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRejectHttp09FromHttpProxy, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kValidateNegotiateTargetPrincipalHost,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace net::features

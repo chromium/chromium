@@ -4027,6 +4027,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpAuth.NegotiateTargetPrincipalValidationResult"
+    enum="NegotiateTargetHostValidationResult" expires_after="2027-05-01">
+  <owner>ydago@chromium.org</owner>
+  <owner>seblalancette@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Recorded each time Negotiate server authentication generates a token and the
+    authentication mechanism reports a target service principal (GSSAPI on
+    POSIX), while the ValidateNegotiateTargetPrincipalHost feature is enabled.
+    Reports whether the principal host matched the challenged origin or matched
+    policy allowlists for a canonicalized host, or why the principal could not
+    be queried or parsed, or failed allowlist/delegation validation. If only
+    delegation is disallowed for the principal host on the first token, records
+    clamped delegation, and the regenerated token records another sample.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpAuth.SchemeAllowedByAllSchemesPolicy"
     enum="HttpAuthSchemeAllowedTarget" expires_after="2027-02-01">
   <owner>ydago@chromium.org</owner>

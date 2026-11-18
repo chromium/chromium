@@ -5,6 +5,8 @@ desc: |-
         Leaving the policy unset means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> tries to detect if a server is on the intranet. Only then will it respond to IWA requests. If a server is detected as internet, then <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> ignores IWA requests from it.
 
         Note: Separate multiple server names with commas. Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
+
+        On <ph name="LINUX_OS_NAME">Linux</ph>, <ph name="MAC_OS_NAME">macOS</ph> and <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, the system GSSAPI/Kerberos library can canonicalize a server hostname into a different service principal host (for example through DNS CNAME or reverse-DNS PTR lookups). Negotiate authentication then fails unless that host is also permitted by this policy.
 example_value: '*.example.com,example.com'
 features:
   dynamic_refresh: true

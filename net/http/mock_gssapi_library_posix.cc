@@ -19,6 +19,7 @@ namespace test {
 struct GssNameMockImpl {
   std::string name;
   gss_OID_desc name_type;
+  OM_uint32 display_status = GSS_S_COMPLETE;
 
   static GssNameMockImpl* FromGssName(gss_name_t name) {
     return reinterpret_cast<GssNameMockImpl*>(name);
@@ -130,16 +131,21 @@ GssContextMockImpl::GssContextMockImpl()
     ctx_flags(0),
     locally_initiated(0),
     open(0) {
+  ClearOid(&targ_name_type);
   ClearOid(&mech_type);
 }
 
 GssContextMockImpl::GssContextMockImpl(const GssContextMockImpl& other)
-  : src_name(other.src_name),
-    targ_name(other.targ_name),
-    lifetime_rec(other.lifetime_rec),
-    ctx_flags(other.ctx_flags),
-    locally_initiated(other.locally_initiated),
-    open(other.open) {
+    : src_name(other.src_name),
+      targ_name(other.targ_name),
+      has_targ_name(other.has_targ_name),
+      inquire_context_status(other.inquire_context_status),
+      display_targ_name_status(other.display_targ_name_status),
+      lifetime_rec(other.lifetime_rec),
+      ctx_flags(other.ctx_flags),
+      locally_initiated(other.locally_initiated),
+      open(other.open) {
+  CopyOid(&targ_name_type, &other.targ_name_type);
   CopyOid(&mech_type, &other.mech_type);
 }
 
@@ -156,10 +162,12 @@ GssContextMockImpl::GssContextMockImpl(const char* src_name_in,
       ctx_flags(ctx_flags_in),
       locally_initiated(locally_initiated_in),
       open(open_in) {
+  ClearOid(&targ_name_type);
   CopyOid(&mech_type, &mech_type_in);
 }
 
 GssContextMockImpl::~GssContextMockImpl() {
+  ClearOid(&targ_name_type);
   ClearOid(&mech_type);
 }
 
@@ -169,6 +177,10 @@ void GssContextMockImpl::Assign(
     return;
   src_name = other.src_name;
   targ_name = other.targ_name;
+  has_targ_name = other.has_targ_name;
+  CopyOid(&targ_name_type, &other.targ_name_type);
+  inquire_context_status = other.inquire_context_status;
+  display_targ_name_status = other.display_targ_name_status;
   lifetime_rec = other.lifetime_rec;
   CopyOid(&mech_type, &other.mech_type);
   ctx_flags = other.ctx_flags;
@@ -314,6 +326,9 @@ OM_uint32 MockGSSAPILibrary::display_name(
   if (!output_name_type)
     return GSS_S_CALL_BAD_STRUCTURE;
   GssNameMockImpl* internal_name = GssNameMockImpl::FromGssName(input_name);
+  if (internal_name->display_status != GSS_S_COMPLETE) {
+    return internal_name->display_status;
+  }
   std::string name = internal_name->name;
   SetGssBuffer(output_name_buffer, name);
   if (output_name_type) {
@@ -391,6 +406,7 @@ OM_uint32 MockGSSAPILibrary::init_sec_context(
     *minor_status = 0;
   if (!context_handle)
     return GSS_S_CALL_BAD_STRUCTURE;
+  init_sec_context_req_flags_.push_back(req_flags);
   GssContextMockImpl** internal_context_handle =
       reinterpret_cast<test::GssContextMockImpl**>(context_handle);
   // Create it if necessary.
@@ -408,13 +424,7 @@ OM_uint32 MockGSSAPILibrary::init_sec_context(
   OM_uint32 major_status = security_query.response_code;
   if (minor_status)
     *minor_status = security_query.minor_response_code;
-  context.src_name = security_query.context_info.src_name;
-  context.targ_name = security_query.context_info.targ_name;
-  context.lifetime_rec = security_query.context_info.lifetime_rec;
-  CopyOid(&context.mech_type, &security_query.context_info.mech_type);
-  context.ctx_flags = security_query.context_info.ctx_flags;
-  context.locally_initiated = security_query.context_info.locally_initiated;
-  context.open = security_query.context_info.open;
+  context.Assign(security_query.context_info);
   if (!input_token) {
     EXPECT_FALSE(security_query.expected_input_token.length);
   } else {
@@ -469,6 +479,7 @@ OM_uint32 MockGSSAPILibrary::inquire_context(
     OM_uint32* ctx_flags,
     int* locally_initiated,
     int* open) {
+  ++inquire_context_call_count_;
   if (minor_status)
     *minor_status = 0;
   if (!context_handle)
@@ -476,14 +487,32 @@ OM_uint32 MockGSSAPILibrary::inquire_context(
   GssContextMockImpl* internal_context_ptr =
       reinterpret_cast<GssContextMockImpl*>(context_handle);
   GssContextMockImpl& context = *internal_context_ptr;
+  if (context.inquire_context_status != GSS_S_COMPLETE) {
+    // Still report `open` so tests can model failures on both incomplete and
+    // established contexts.
+    if (open) {
+      *open = context.open;
+    }
+    return context.inquire_context_status;
+  }
   if (src_name)
     *src_name = NameFromString(context.src_name);
-  if (targ_name)
-    *targ_name = NameFromString(context.targ_name);
+  if (targ_name) {
+    if (context.has_targ_name) {
+      *targ_name = NameFromString(context.targ_name);
+      GssNameMockImpl* mock_targ_name =
+          GssNameMockImpl::FromGssName(*targ_name);
+      CopyOid(&mock_targ_name->name_type, &context.targ_name_type);
+      mock_targ_name->display_status = context.display_targ_name_status;
+    } else {
+      *targ_name = GSS_C_NO_NAME;
+    }
+  }
   if (lifetime_rec)
     *lifetime_rec = context.lifetime_rec;
-  if (mech_type)
-    CopyOid(*mech_type, &context.mech_type);
+  if (mech_type) {
+    *mech_type = context.mech_type.length ? &context.mech_type : GSS_C_NO_OID;
+  }
   if (ctx_flags)
     *ctx_flags = context.ctx_flags;
   if (locally_initiated)
