@@ -173,9 +173,10 @@ class PrefHashFilter final : public InterceptablePrefFilter {
 
   // Performs the deferred work of re-validating preferences after the
   // encryptor has been fetched. This is posted from FinalizeFilterOnLoad.
-  // |pref_store_contents_at_load| is a copy of the preference dictionary as
-  //     it was read from disk, before any resets. This is used to validate
-  //     against the original state.
+  // |pref_store_contents_at_load| is a copy of the parts of the preference
+  //     dictionary returned by CopyContentsForRevalidation(), as they were
+  //     read from disk, before any resets. This is used to validate against
+  //     the original state.
   // |already_reset_paths| is a set of preference paths that were already
   //     found to be invalid and were reset during the initial synchronous
   //     validation pass. These paths will be skipped.
@@ -192,11 +193,23 @@ class PrefHashFilter final : public InterceptablePrefFilter {
   // preference in `changed_paths_`.
   void RecordPrefValueChanges() const;
 
+  // Returns a copy of the parts of |pref_store_contents| that are needed by
+  // DeferredEncryptorRevalidation(): tracked preferences, their hashes, and the
+  // list of reset preferences. This avoids copying the entire pref store.
+  base::DictValue CopyContentsForRevalidation(
+      const base::DictValue& pref_store_contents) const;
+
+  // Returns a copy of the list of reset preferences in |pref_store_contents|,
+  // if present.
+  static std::optional<base::ListValue> CloneResetList(
+      const base::DictValue& pref_store_contents);
+
   // Applies resets found during any validation pass to the live PrefService.
-  // This is posted as a task to run after PrefService initialization is
+  // |reset_list| is the list of reset preferences, or nullopt if there is
+  // none. This is posted as a task to run after PrefService initialization is
   // complete.
   void UpdateTrackedPreferencesResetListInPrefStore(
-      const base::DictValue& pref_store_contents_at_load);
+      std::optional<base::ListValue> reset_list);
 
   // Callback to be invoked only once (and subsequently reset) on the next
   // FilterOnLoad event. It will be allowed to modify the |prefs| handed to

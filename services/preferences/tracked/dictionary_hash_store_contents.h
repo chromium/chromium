@@ -21,6 +21,11 @@ class DictionaryHashStoreContents : public HashStoreContents {
   // |storage|.
   explicit DictionaryHashStoreContents(base::DictValue& storage);
 
+  // Copies all values used by DictionaryHashStoreContents (i.e. under
+  // "protection") from |source| into |dest|.
+  static void CopyContents(const base::DictValue& source,
+                           base::DictValue& dest);
+
   DictionaryHashStoreContents(const DictionaryHashStoreContents&) = delete;
   DictionaryHashStoreContents& operator=(const DictionaryHashStoreContents&) =
       delete;

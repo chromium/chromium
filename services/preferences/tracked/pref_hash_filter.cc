@@ -396,15 +396,16 @@ void PrefHashFilter::FinalizeFilterOnLoad(
   reset_on_load_observer_.reset();
 
   // If encrypted hashing is on, post a deferred task to re-validate with the
-  // encryptor once it's available. Pass a clone of the pref store contents
-  // so the task operates on the exact state at load time. Also pass the list of
-  // prefs already reset by the synchronous validation.
+  // encryptor once it's available. Pass a copy of the relevant parts of the
+  // pref store contents so the task operates on the exact state at load time.
+  // Also pass the list of prefs already reset by the synchronous validation.
   if (encrypted_hashing_enabled_) {
     deferred_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&PrefHashFilter::DeferredEncryptorRevalidation,
                        weak_ptr_factory_.GetWeakPtr(),
-                       pref_store_contents.Clone(), std::move(reset_paths)));
+                       CopyContentsForRevalidation(pref_store_contents),
+                       std::move(reset_paths)));
   } else {
     // No deferred task will be posted, so validation is complete.
     // Log metrics now.
@@ -424,7 +425,7 @@ void PrefHashFilter::FinalizeFilterOnLoad(
       FROM_HERE,
       base::BindOnce(
           &PrefHashFilter::UpdateTrackedPreferencesResetListInPrefStore,
-          weak_ptr_factory_.GetWeakPtr(), pref_store_contents.Clone()));
+          weak_ptr_factory_.GetWeakPtr(), CloneResetList(pref_store_contents)));
 
   // Immediately call the callback with the original pref_store_contents to
   // allow startup to proceed without waiting for the encryptor.
@@ -513,7 +514,8 @@ void PrefHashFilter::DeferredEncryptorRevalidation(
   // `pref_store_contents_at_load` has been updated. Propagate this change to
   // the live PrefService to ensure it's persisted.
   if (pref_to_write == user_prefs::kPreferenceResetTime) {
-    UpdateTrackedPreferencesResetListInPrefStore(pref_store_contents_at_load);
+    UpdateTrackedPreferencesResetListInPrefStore(
+        CloneResetList(pref_store_contents_at_load));
   }
 
   // This is the final validation pass. Log metrics if we haven't already.
@@ -531,8 +533,36 @@ base::WeakPtr<InterceptablePrefFilter> PrefHashFilter::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+base::DictValue PrefHashFilter::CopyContentsForRevalidation(
+    const base::DictValue& pref_store_contents) const {
+  base::DictValue copy;
+  for (const auto& [path, _] : tracked_paths_) {
+    if (const base::Value* value = pref_store_contents.FindByDottedPath(path)) {
+      copy.SetByDottedPath(path, value->Clone());
+    }
+  }
+  DictionaryHashStoreContents::CopyContents(pref_store_contents, copy);
+  // The reset list uses a non-dotted key, to match TrackedPreference.
+  if (std::optional<base::ListValue> reset_list =
+          CloneResetList(pref_store_contents)) {
+    copy.Set(user_prefs::kTrackedPreferencesReset, std::move(*reset_list));
+  }
+  return copy;
+}
+
+// static
+std::optional<base::ListValue> PrefHashFilter::CloneResetList(
+    const base::DictValue& pref_store_contents) {
+  const base::ListValue* reset_list =
+      pref_store_contents.FindList(user_prefs::kTrackedPreferencesReset);
+  if (!reset_list) {
+    return std::nullopt;
+  }
+  return reset_list->Clone();
+}
+
 void PrefHashFilter::UpdateTrackedPreferencesResetListInPrefStore(
-    const base::DictValue& pref_store_contents_at_load) {
+    std::optional<base::ListValue> reset_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // This task should only run after PrefService is created.
   if (!pref_service_) {
@@ -542,11 +572,9 @@ void PrefHashFilter::UpdateTrackedPreferencesResetListInPrefStore(
     return;
   }
 
-  const base::ListValue* reset_list = pref_store_contents_at_load.FindList(
-      user_prefs::kTrackedPreferencesReset);
   if (reset_list) {
     pref_service_->SetList(user_prefs::kTrackedPreferencesReset,
-                           reset_list->Clone());
+                           std::move(*reset_list));
   } else {
     pref_service_->ClearPref(user_prefs::kTrackedPreferencesReset);
   }

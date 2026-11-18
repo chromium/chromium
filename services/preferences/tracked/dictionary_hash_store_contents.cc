@@ -24,6 +24,17 @@ DictionaryHashStoreContents::DictionaryHashStoreContents(
     base::DictValue& storage)
     : storage_(storage) {}
 
+// static
+void DictionaryHashStoreContents::CopyContents(const base::DictValue& source,
+                                               base::DictValue& dest) {
+  for (const char* path :
+       {kPrefAuthenticatorsPath, kSuperHmacPref, kSuperEncryptedHashPref}) {
+    if (const base::Value* value = source.FindByDottedPath(path)) {
+      dest.SetByDottedPath(path, value->Clone());
+    }
+  }
+}
+
 bool DictionaryHashStoreContents::IsCopyable() const {
   return false;
 }

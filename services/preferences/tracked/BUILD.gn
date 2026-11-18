@@ -73,6 +73,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "device_id_unittest.cc",
+    "dictionary_hash_store_contents_unittest.cc",
     "interceptable_pref_filter_unittest.cc",
     "pref_hash_calculator_unittest.cc",
     "pref_hash_filter_unittest.cc",

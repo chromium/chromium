@@ -2456,6 +2456,62 @@ TEST_P(PrefHashFilterEncryptedTest,
   EXPECT_EQ(kAtomicPref, final_list[0].GetString());
 }
 
+// Resets from the synchronous pass must be carried into the deferred pass, so
+// that they are combined with resets found by the deferred pass.
+TEST_P(PrefHashFilterEncryptedTest, SyncAndDeferredResetsAreCombined) {
+  if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
+    return;
+  }
+
+  InitializeAsyncOSCrypt();
+  ResetImpl(true, test_os_crypt_async_.get());
+
+  mock_pref_service_ = std::make_unique<MockPrefService>();
+  mock_pref_service_->registry()->RegisterStringPref(kAtomicPref, "");
+  mock_pref_service_->registry()->RegisterStringPref(kAtomicPref2, "");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
+  mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
+                                                     "0");
+  mock_pref_service_->registry()->RegisterStringPref(
+      user_prefs::kPreferenceResetTime, "0");
+  pref_hash_filter_->SetPrefService(mock_pref_service_.get());
+
+  pref_store_contents_.Set(kAtomicPref, "value_at_load");
+  pref_store_contents_.Set(kAtomicPref2, "value_at_load2");
+  pref_store_contents_.Set("untracked_pref", "untracked");
+  mock_pref_service_->SetString(kAtomicPref2, "value_at_load2");
+
+  // `kAtomicPref` is reset by the synchronous pass.
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::CHANGED_HMAC);
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref2,
+                                        ValueState::UNCHANGED_HMAC);
+  base::HistogramTester histogram_tester;
+  pref_hash_filter_->FilterOnLoad(
+      base::BindOnce(&PrefHashFilterTest::GetPrefsBack, base::Unretained(this),
+                     true /* expected_altered */),
+      std::move(pref_store_contents_));
+
+  // `kAtomicPref2` is reset by the deferred pass.
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref2,
+                                        ValueState::CHANGED_ENCRYPTED);
+  base::RunLoop revalidation_run_loop;
+  bool callback_ran = false;
+  pref_hash_filter_->SetOnDeferredRevalidationCompleteForTesting(base::BindOnce(
+      &PrefHashFilterEncryptedTest::OnDeferredRevalidationComplete,
+      base::Unretained(this), &callback_ran,
+      revalidation_run_loop.QuitClosure()));
+  revalidation_run_loop.Run();
+  ASSERT_TRUE(callback_ran);
+
+  const base::ListValue& final_list =
+      mock_pref_service_->GetList(user_prefs::kTrackedPreferencesReset);
+  EXPECT_EQ(base::ListValue().Append(kAtomicPref).Append(kAtomicPref2),
+            final_list);
+  histogram_tester.ExpectUniqueSample("Settings.TrackedPreferenceResets.Count",
+                                      2, 1);
+}
+
 TEST_P(PrefHashFilterEncryptedTest,
        SyncResetIsPatchedToLivePrefServiceWhenFlagOff) {
   if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
