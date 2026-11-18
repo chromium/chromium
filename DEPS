@@ -2160,7 +2160,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/highway.git' + '@' + Var('highway_revision'),
 
   'src/third_party/apache-portable-runtime/src': {
-      'url': Var('chromium_git') + '/external/apache-portable-runtime.git' + '@' + 'c3f11fcd86b42922834cae91103cf068246c6bb6',
+      'url': Var('chromium_git') + '/external/github.com/apache/apr.git' + '@' + 'cff6e3232872e7f92617e291a0382c06915e28c3',
       'condition': 'checkout_android',
   },
 

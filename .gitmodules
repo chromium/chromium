@@ -113,7 +113,7 @@
 	url = https://chromium.googlesource.com/external/github.com/google/highway
 [submodule "third_party/apache-portable-runtime/src"]
 	path = third_party/apache-portable-runtime/src
-	url = https://chromium.googlesource.com/external/apache-portable-runtime
+	url = https://chromium.googlesource.com/external/github.com/apache/apr
 	gclient-condition = checkout_android
 [submodule "third_party/google_benchmark/src"]
 	path = third_party/google_benchmark/src

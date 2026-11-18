@@ -21,7 +21,6 @@ shared_library("netty-tcnative-so") {
     "src/c/sslutils.c",
     "src/c/tcn.h",
   ]
-  include_dirs = [ "//third_party/apache-portable-runtime/src/include" ]
   defines = [ "HAVE_OPENSSL" ]
   cflags = [ "-w" ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
