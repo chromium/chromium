@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ai/ai_summarizer.h"
 
+#include <tuple>
+
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -25,6 +28,7 @@
 #include "components/optimization_guide/core/model_execution/configs/summarize_solution_config.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/fake_manifest_broker.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/scenario_builder.h"
+#include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -896,6 +900,8 @@ TEST_F(AISummarizerTest, VerifyPromptComposition) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+constexpr uint32_t kSpeedMaxExecuteTokens = 8192;
+
 class AISummarizerWithFeatureConfigTest : public AISummarizerTest {
  public:
   void SetupBroker() override {
@@ -918,7 +924,7 @@ class AISummarizerWithFeatureConfigTest : public AISummarizerTest {
     proto::SolutionConfig speed_solution = default_solution;
     speed_solution.mutable_feature()
         ->mutable_input_config()
-        ->set_max_execute_tokens(blink::mojom::kTinyModelMaxInputTokenSize);
+        ->set_max_execute_tokens(kSpeedMaxExecuteTokens);
 
     fake_broker_ = std::make_unique<optimization_guide::FakeManifestBroker>();
     optimization_guide::ScenarioBuilder(fake_broker_->component_state())
@@ -958,21 +964,40 @@ class AISummarizerWithFeatureConfigTest : public AISummarizerTest {
   }
 };
 
-TEST_F(AISummarizerWithFeatureConfigTest,
+class AISummarizerSpeedPreferenceParamsTest
+    : public AISummarizerWithFeatureConfigTest,
+      public testing::WithParamInterface<
+          std::tuple<blink::mojom::AISummarizerType,
+                     blink::mojom::AISummarizerLength>> {};
+
+TEST_P(AISummarizerSpeedPreferenceParamsTest,
        CanCreateAndCreateWithManifestSpeedPreference) {
+  const auto [type, length] = GetParam();
   auto options = GetDefaultOptions();
   options->preference = blink::mojom::PerformancePreference::kSpeed;
+  options->type = type;
+  options->length = length;
   options->output_language = blink::mojom::AILanguageCode::New("en");
 
-  fake_broker_->client().RequestAssetsFor(
-      "summarizer_small_expert_model");
-  ASSERT_TRUE(base::test::RunUntil([&] {
-    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
-    GetAIManagerInterface()->CanCreateSummarizer(options.Clone(),
-                                                 future.GetCallback());
-    return future.Get() ==
-           blink::mojom::ModelAvailabilityCheckResult::kAvailable;
-  }));
+  fake_broker_->client().RequestAssetsFor("summarizer_small_expert_model");
+  // Passively wait for the manifest broker to finish loading assets on the
+  // background thread pool before checking availability. Polling
+  // CanCreateSummarizer() with a nested TestFuture inside
+  // base::test::RunUntil() posts immediate Mojo tasks on every idle callback,
+  // which can starve worker threads and freeze MOCK_TIME in a tight loop.
+  base::test::TestFuture<base::WeakPtr<optimization_guide::ModelClient>>
+      client_future;
+  fake_broker_->client()
+      .GetSubscriber("summarizer_small_expert_model")
+      .WaitForClient(client_future.GetCallback());
+  ASSERT_TRUE(client_future.Get());
+
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult>
+      availability_future;
+  GetAIManagerInterface()->CanCreateSummarizer(
+      options.Clone(), availability_future.GetCallback());
+  EXPECT_EQ(availability_future.Get(),
+            blink::mojom::ModelAvailabilityCheckResult::kAvailable);
 
   TestCreateSummarizerClient summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
@@ -981,9 +1006,19 @@ TEST_F(AISummarizerWithFeatureConfigTest,
 
   auto result = summarizer_client.result().Take();
   EXPECT_TRUE(result.has_value());
-  EXPECT_EQ(summarizer_client.context_window(),
-            blink::mojom::kTinyModelMaxInputTokenSize);
+  EXPECT_EQ(summarizer_client.context_window(), kSpeedMaxExecuteTokens);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AISummarizerSpeedPreferenceParamsTest,
+    testing::Combine(
+        testing::Values(blink::mojom::AISummarizerType::kTLDR,
+                        blink::mojom::AISummarizerType::kKeyPoints,
+                        blink::mojom::AISummarizerType::kHeadline),
+        testing::Values(blink::mojom::AISummarizerLength::kShort,
+                        blink::mojom::AISummarizerLength::kMedium,
+                        blink::mojom::AISummarizerLength::kLong)));
 
 TEST_F(AISummarizerWithFeatureConfigTest,
        CanCreateSummarizerWithSpeedPreferenceDownloadable) {
@@ -1059,22 +1094,6 @@ TEST_F(AISummarizerWithFeatureConfigTest,
 }
 
 TEST_F(AISummarizerWithFeatureConfigTest,
-       CanCreateIncompatibleOptionsForSpeedPreference) {
-  // Incompatible because speed preference requires kShort or kMedium length,
-  // but we use kLong.
-  auto options = GetDefaultOptions();
-  options->preference = blink::mojom::PerformancePreference::kSpeed;
-  options->length = blink::mojom::AISummarizerLength::kLong;
-
-  base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
-  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableIncompatiblePreferenceOptions));
-
-  GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
-                                               callback.Get());
-}
-
-TEST_F(AISummarizerWithFeatureConfigTest,
        CanCreateIncompatibleFormatForSpeedPreference) {
   auto options = GetDefaultOptions();
   options->preference = blink::mojom::PerformancePreference::kSpeed;
@@ -1090,9 +1109,11 @@ TEST_F(AISummarizerWithFeatureConfigTest,
 
 TEST_F(AISummarizerWithFeatureConfigTest,
        CanCreateIncompatibleTypeForSpeedPreference) {
+  // Incompatible because speed preference does not support kTeaser type.
   auto options = GetDefaultOptions();
   options->preference = blink::mojom::PerformancePreference::kSpeed;
   options->type = blink::mojom::AISummarizerType::kTeaser;
+  options->output_language = blink::mojom::AILanguageCode::New("en");
 
   base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
   EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
@@ -1188,11 +1209,11 @@ TEST_F(AISummarizerWithFeatureConfigTest,
 
 TEST_F(AISummarizerWithFeatureConfigTest,
        CreateIncompatibleOptionsForSpeedPreference) {
-  // Incompatible because speed preference requires kShort or kMedium length,
-  // but we use kLong.
+  // Incompatible because speed preference does not support kTeaser type.
   auto options = GetDefaultOptions();
   options->preference = blink::mojom::PerformancePreference::kSpeed;
-  options->length = blink::mojom::AISummarizerLength::kLong;
+  options->type = blink::mojom::AISummarizerType::kTeaser;
+  options->output_language = blink::mojom::AILanguageCode::New("en");
 
   TestCreateSummarizerClient create_summarizer_client;
   mojo::test::BadMessageObserver observer;
@@ -1252,18 +1273,15 @@ TEST_F(AISummarizerWithFeatureConfigTest,
   mojo::Remote<blink::mojom::AISummarizer> summarizer_remote(
       std::move(result.value()));
 
-  fake_broker_->settings().set_size_in_tokens(
-      blink::mojom::kTinyModelMaxInputTokenSize + 1);
+  fake_broker_->settings().set_size_in_tokens(kSpeedMaxExecuteTokens + 1);
 
   AITestUtils::TestStreamingResponder responder;
   summarizer_remote->Summarize("input", "", responder.BindRemote());
   EXPECT_FALSE(responder.WaitForCompletion());
   EXPECT_EQ(responder.error_status(),
             blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
-  ASSERT_EQ(responder.quota_error_info().requested,
-            blink::mojom::kTinyModelMaxInputTokenSize + 1);
-  ASSERT_EQ(responder.quota_error_info().quota,
-            blink::mojom::kTinyModelMaxInputTokenSize);
+  ASSERT_EQ(responder.quota_error_info().requested, kSpeedMaxExecuteTokens + 1);
+  ASSERT_EQ(responder.quota_error_info().quota, kSpeedMaxExecuteTokens);
 }
 
 TEST_F(AISummarizerWithFeatureConfigTest,

@@ -603,8 +603,8 @@ bool IsLanguageInSet(const blink::mojom::AILanguageCodePtr& language,
 // Checks if the provided options satisfy the requirements for the 'speed'
 // performance preference:
 // 1. Languages must be supported for speed preference.
-// 2. Type must be TLDR or KeyPoints. 3. Length must be short or medium.
-// 4. `shared_context` must not be specified.
+// 2. Type must not be Teaser.
+// 3. `shared_context` must not be specified.
 // TODO(crbug.com/508631503): In the long term, model configs should express
 // the subset of supported options, and this matching code should be more
 // generalized.
@@ -614,7 +614,6 @@ enum class SpeedPreferenceIncompatibilityReason {
   kContextLanguageNotSupported,
   kSharedContextNotSupported,
   kTypeNotSupported,
-  kLengthNotSupported,
   kManifestBrokerDisabled,
 };
 
@@ -651,16 +650,9 @@ IsSpeedPreferenceCompatible(
         SpeedPreferenceIncompatibilityReason::kSharedContextNotSupported);
   }
 
-  if (options->type != blink::mojom::AISummarizerType::kTLDR &&
-      options->type != blink::mojom::AISummarizerType::kKeyPoints) {
+  if (options->type == blink::mojom::AISummarizerType::kTeaser) {
     return base::unexpected(
         SpeedPreferenceIncompatibilityReason::kTypeNotSupported);
-  }
-
-  if (options->length != blink::mojom::AISummarizerLength::kShort &&
-      options->length != blink::mojom::AISummarizerLength::kMedium) {
-    return base::unexpected(
-        SpeedPreferenceIncompatibilityReason::kLengthNotSupported);
   }
 
   return base::ok();
