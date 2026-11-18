@@ -7,6 +7,9 @@
 #[path = "task/sequenced_task_runner_unittest.rs"]
 mod sequenced_task_runner_unittest;
 
+#[path = "task/thread_lock_unittest.rs"]
+mod thread_lock_unittest;
+
 #[path = "files/file_path_unittest.rs"]
 mod file_path_unittest;
 

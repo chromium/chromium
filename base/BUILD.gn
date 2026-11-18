@@ -869,6 +869,8 @@ component("base") {
     "task/sequence_manager/work_queue_sets.h",
     "task/sequence_manager/work_tracker.cc",
     "task/sequence_manager/work_tracker.h",
+    "task/sequenced_rust_ffi.cc",
+    "task/sequenced_rust_ffi.h",
     "task/sequenced_task_runner.cc",
     "task/sequenced_task_runner.h",
     "task/sequenced_task_runner_helpers.h",
@@ -2719,6 +2721,7 @@ group("base_rust") {
     ":file_path",
     ":histogram",
     ":run_loop",
+    ":sequenced",
     ":sequenced_task_runner",
     ":unguessable_token",
   ]
@@ -2907,6 +2910,17 @@ source_set("histogram_shim") {
   ]
 }
 
+rust_static_library("sequenced") {
+  sources = [
+    "task/sequenced.rs",
+    "task/thread_lock.rs",
+  ]
+  crate_root = "task/sequenced.rs"
+  cxx_bindings = [ "task/thread_lock.rs" ]
+  allow_unsafe = true
+  deps = [ "//base" ]
+}
+
 rust_static_library("sequenced_task_runner") {
   sources = [ "task/sequenced_task_runner.rs" ]
   crate_root = "task/sequenced_task_runner.rs"
@@ -2978,6 +2992,7 @@ rust_static_library("base_rust_unittests") {
     "files/file_path_unittest.rs",
     "metrics/histogram_unittest.rs",
     "task/sequenced_task_runner_unittest.rs",
+    "task/thread_lock_unittest.rs",
   ]
   crate_root = "base_rust_unittests.rs"
   deps = [
@@ -2985,11 +3000,13 @@ rust_static_library("base_rust_unittests") {
     ":file_path",
     ":histogram",
     ":scoped_refptr",
+    ":sequenced",
     ":sequenced_task_runner",
     ":sequenced_task_runner_test_bridge",
     "//base/test:histogram_tester",
     "//base/test:task_environment",
     "//testing/rust_gtest_interop",
+    "//third_party/rust/static_assertions/v1:lib",
   ]
 }
 
