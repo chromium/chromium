@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.facilitated_payments;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
@@ -83,9 +84,12 @@ import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.autofill.payments.PaymentInstrument;
 import org.chromium.components.autofill.payments.PaymentRail;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
+import org.chromium.components.facilitated_payments.core.ui_utils.UiEvent;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -94,6 +98,7 @@ import org.chromium.ui.test.util.RenderTestRule.Component;
 import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.widget.ButtonCompat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Instrumentation tests for {@link FacilitatedPaymentsPaymentMethodsView}. */
@@ -317,6 +322,83 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                     assertThat(mView.getVerticalScrollOffset(), is(0));
                 });
         BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
+    }
+
+    @Test
+    @MediumTest
+    public void testViewCannotBeReshownWhileAnimatingClosed() {
+        List<Integer> uiEvents = new ArrayList<>();
+        runOnUiThreadBlocking(
+                () -> {
+                    mView.setUiEventListener(uiEvents::add);
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            BANK_ACCOUNT, createBankAccountModel(BANK_ACCOUNT_1)));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // Hide the sheet, then immediately try to re-show while the close animation is running.
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE_STATE, HIDDEN);
+                    assertThat(mBottomSheetController.isSheetHiding(), is(true));
+                    mModel.set(SCREEN, PROGRESS_SCREEN);
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
+
+        assertThat(mBottomSheetController.isSheetOpen(), is(false));
+        assertThat(
+                uiEvents,
+                contains(
+                        UiEvent.NEW_SCREEN_SHOWN,
+                        UiEvent.SCREEN_COULD_NOT_BE_SHOWN,
+                        UiEvent.SCREEN_CLOSED_NOT_BY_USER));
+    }
+
+    @Test
+    @MediumTest
+    public void testViewCanBeShownWhileAnotherSheetContentIsOpen() {
+        // Occupy the bottom sheet with another feature's content, so that the sheet is open while
+        // this view has no current screen.
+        TestBottomSheetContent otherContent =
+                runOnUiThreadBlocking(
+                        () -> {
+                            TestBottomSheetContent content =
+                                    new TestBottomSheetContent(mActivityTestRule.getActivity());
+                            content.setPeekHeight(BottomSheetContent.HeightMode.DISABLED);
+                            mBottomSheetController.requestShowContent(
+                                    content, /* animate= */ false);
+                            return content;
+                        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        assertThat(mBottomSheetController.getCurrentSheetContent(), is(otherContent));
+
+        List<Integer> uiEvents = new ArrayList<>();
+        runOnUiThreadBlocking(
+                () -> {
+                    mView.setUiEventListener(uiEvents::add);
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            BANK_ACCOUNT, createBankAccountModel(BANK_ACCOUNT_1)));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        // The view's higher priority content replaces the other content.
+        pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                mBottomSheetController.getCurrentSheetContent(), is(mView)));
+        assertThat(mView.getContentView().isShown(), is(true));
+        assertThat(uiEvents, contains(UiEvent.NEW_SCREEN_SHOWN));
     }
 
     @Test
