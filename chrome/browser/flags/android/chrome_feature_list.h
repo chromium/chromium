@@ -316,6 +316,7 @@ BASE_DECLARE_FEATURE(kTabGroupActionsSubmenus);
 BASE_DECLARE_FEATURE(kTabGroupContextMenuLiveTitleUpdate);
 BASE_DECLARE_FEATURE(kTabSearchForDesktop);
 BASE_DECLARE_FEATURE(kTabSharingToolbarAndroid);
+BASE_DECLARE_FEATURE(kTabStateAttributesMarkDirtyEagerly);
 BASE_DECLARE_FEATURE(kTabStorageSqlitePrototype);
 BASE_DECLARE_FEATURE(kTabStripHeightTransitionGlitchFix);
 BASE_DECLARE_FEATURE(kTabStripLayoutTransitionDebounceFix);

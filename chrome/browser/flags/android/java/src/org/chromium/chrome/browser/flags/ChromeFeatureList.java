@@ -884,6 +884,8 @@ public abstract class ChromeFeatureList {
             "TabGroupContextMenuLiveTitleUpdate";
     public static final String TAB_SEARCH_FOR_DESKTOP = "TabSearchForDesktop";
     public static final String TAB_SHARING_TOOLBAR_ANDROID = "TabSharingToolbarAndroid";
+    public static final String TAB_STATE_ATTRIBUTES_MARK_DIRTY_EAGERLY =
+            "TabStateAttributesMarkDirtyEagerly";
     public static final String TAB_STORAGE_SQLITE_PROTOTYPE = "TabStorageSqlitePrototype";
     public static final String TAB_STRIP_HEIGHT_TRANSITION_GLITCH_FIX =
             "TabStripHeightTransitionGlitchFix";
@@ -1915,6 +1917,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TAB_BOTTOM_SHEET_SMOOTH_KEYBOARD_RESIZE, true);
     public static final MutableFlagWithSafeDefault sTabSearchForDesktop =
             newMutableFlagWithSafeDefault(TAB_SEARCH_FOR_DESKTOP, false);
+    public static final MutableFlagWithSafeDefault sTabStateAttributesMarkDirtyEagerly =
+            newMutableFlagWithSafeDefault(TAB_STATE_ATTRIBUTES_MARK_DIRTY_EAGERLY, true);
     public static final MutableFlagWithSafeDefault sTabSwitcherGroupSuggestionsAndroid =
             newMutableFlagWithSafeDefault(TAB_SWITCHER_GROUP_SUGGESTIONS_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabSwitcherGroupSuggestionsTestModeAndroid =

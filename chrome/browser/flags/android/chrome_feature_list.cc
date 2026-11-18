@@ -526,6 +526,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabGroupContextMenuLiveTitleUpdate,
     &kTabSearchForDesktop,
     &kTabSharingToolbarAndroid,
+    &kTabStateAttributesMarkDirtyEagerly,
     &kTabStorageSqlitePrototype,
     &kTabStripHeightTransitionGlitchFix,
     &kTabStripLayoutTransitionDebounceFix,
@@ -991,6 +992,7 @@ BASE_FEATURE(kTabGroupActionsSubmenus, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTabGroupContextMenuLiveTitleUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabSearchForDesktop, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTabSharingToolbarAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTabStateAttributesMarkDirtyEagerly, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabStorageSqlitePrototype, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTabStripHeightTransitionGlitchFix, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabStripLayoutTransitionDebounceFix, base::FEATURE_ENABLED_BY_DEFAULT);
