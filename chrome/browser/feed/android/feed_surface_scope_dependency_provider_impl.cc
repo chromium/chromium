@@ -12,7 +12,6 @@
 #include "chrome/browser/feed/android/jni_translation.h"
 #include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/variations/variations_ids_provider.h"
@@ -26,9 +25,11 @@ namespace feed::android {
 
 namespace {
 
-static FeedApi* GetFeedApi() {
-  FeedService* service = FeedServiceFactory::GetForBrowserContext(
-      ProfileManager::GetLastUsedProfile());
+static FeedApi* GetFeedApi(Profile* profile) {
+  if (!profile) {
+    return nullptr;
+  }
+  FeedService* service = FeedServiceFactory::GetForBrowserContext(profile);
   if (!service) {
     return nullptr;
   }
@@ -55,13 +56,17 @@ void OnFetchResourceFinished(JNIEnv* env,
 
 static void JNI_FeedSurfaceScopeDependencyProviderImpl_FetchResource(
     JNIEnv* env,
+    Profile* profile,
     const GURL& url,
     const std::string& method,
     const std::vector<std::string>& header_name_and_values,
     const base::android::JavaRef<jbyteArray>& j_post_data,
     const base::android::JavaRef<jobject>& callback_obj) {
-  FeedApi* feed_stream_api = GetFeedApi();
+  FeedApi* feed_stream_api = GetFeedApi(profile);
   if (!feed_stream_api) {
+    OnFetchResourceFinished(env, callback_obj,
+                            NetworkResponse(/*response_bytes=*/std::string(),
+                                            /*status_code=*/0));
     return;
   }
   std::string post_data;

@@ -20,6 +20,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
 import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
 import org.chromium.chrome.browser.xsurface.SurfaceHeaderOffsetObserver;
@@ -54,15 +55,17 @@ public class FeedSurfaceScopeDependencyProviderImpl
     private final Activity mActivity;
     private final Context mActivityContext;
     private final boolean mDarkMode;
+    private final Profile mProfile;
     private final ObserverList<SurfaceHeaderOffsetObserver> mObserverList = new ObserverList<>();
     private final FeedPersistentKeyValueCache mPersistentKeyValueCache =
             new FeedPersistentKeyValueCache();
 
     public FeedSurfaceScopeDependencyProviderImpl(
-            Activity activity, Context activityContext, boolean darkMode) {
+            Activity activity, Context activityContext, boolean darkMode, Profile profile) {
         mActivityContext = FeedProcessScopeDependencyProvider.createFeedContext(activityContext);
         mDarkMode = darkMode;
         mActivity = activity;
+        mProfile = profile;
     }
 
     @Override
@@ -118,6 +121,7 @@ public class FeedSurfaceScopeDependencyProviderImpl
     public void processViewAction(byte[] data, LoggingParameters loggingParameters) {
         FeedProcessScopeDependencyProviderJni.get()
                 .processViewAction(
+                        mProfile,
                         data,
                         FeedLoggingParameters.convertToProto(loggingParameters).toByteArray());
     }
@@ -129,13 +133,14 @@ public class FeedSurfaceScopeDependencyProviderImpl
 
     @Override
     public ResourceFetcher getAsyncDataFetcher() {
-        return new FeedResourceFetcher();
+        return new FeedResourceFetcher(mProfile);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
         void fetchResource(
+                @JniType("Profile*") Profile profile,
                 @JniType("GURL") GURL url,
                 @JniType("std::string") String method,
                 @JniType("std::vector<std::string>") String[] headerNameAndValues,

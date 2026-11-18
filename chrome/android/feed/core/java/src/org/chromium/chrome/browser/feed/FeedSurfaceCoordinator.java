@@ -885,7 +885,7 @@ public class FeedSurfaceCoordinator
         if (processScope != null) {
             mDependencyProvider =
                     new FeedSurfaceScopeDependencyProviderImpl(
-                            mActivity, mActivity, mShowDarkBackground);
+                            mActivity, mActivity, mShowDarkBackground, mProfile);
 
             mSurfaceScope = processScope.obtainFeedSurfaceScope(mDependencyProvider);
             if (mScrollableContainerDelegate != null) {

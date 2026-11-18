@@ -14,6 +14,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 import org.chromium.chrome.modules.on_demand.OnDemandModule;
@@ -61,9 +62,7 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
 
         byte[] getFeedLaunchCuiMetadata();
 
-        @JniType("std::string")
-        String getSessionId();
-
-        void processViewAction(byte[] actionData, byte[] loggingParameters);
+        void processViewAction(
+                @JniType("Profile*") Profile profile, byte[] actionData, byte[] loggingParameters);
     }
 }

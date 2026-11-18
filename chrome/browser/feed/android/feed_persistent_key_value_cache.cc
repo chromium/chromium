@@ -46,6 +46,9 @@ void CallRunnable(base::android::ScopedJavaGlobalRef<jobject> runnable,
   }
 }
 
+// TODO(crbug.com/40254448): This cache is held as a process-wide
+// (account-level) dependency by xsurface, so it cannot be bound to a single
+// Profile. Resolve per-profile once the account scope is keyed by profile.
 PersistentKeyValueStore* GetStore() {
   Profile* profile = ProfileManager::GetLastUsedProfile();
   if (!profile)

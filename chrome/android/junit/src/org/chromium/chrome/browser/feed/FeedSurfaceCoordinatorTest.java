@@ -53,6 +53,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -94,6 +95,7 @@ import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScopeDependencyProvider;
+import org.chromium.chrome.browser.xsurface.feed.ResourceFetcher;
 import org.chromium.chrome.browser.xsurface_provider.XSurfaceProcessScopeProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feature_engagement.Tracker;
@@ -107,7 +109,9 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.url.GURL;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Supplier;
 
@@ -173,6 +177,7 @@ public class FeedSurfaceCoordinatorTest {
 
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock private FeedProcessScopeDependencyProvider.Natives mProcessScopeJniMock;
+    @Mock private FeedSurfaceScopeDependencyProviderImpl.Natives mSurfaceScopeJniMock;
     @Mock private FeedReliabilityLoggingBridge.Natives mFeedReliabilityLoggingBridgeJniMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
 
@@ -223,6 +228,7 @@ public class FeedSurfaceCoordinatorTest {
                 .thenAnswer(inv -> JniUniquePtr.createForTesting(1L));
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
         FeedProcessScopeDependencyProviderJni.setInstanceForTesting(mProcessScopeJniMock);
+        FeedSurfaceScopeDependencyProviderImplJni.setInstanceForTesting(mSurfaceScopeJniMock);
         FeedReliabilityLoggingBridgeJni.setInstanceForTesting(mFeedReliabilityLoggingBridgeJniMock);
         when(mFeedReliabilityLoggingBridgeJniMock.init(any()))
                 .thenAnswer(inv -> JniUniquePtr.createForTesting(1L));
@@ -650,6 +656,54 @@ public class FeedSurfaceCoordinatorTest {
         assertFalse(mCoordinator.hasDrawnFrame());
         mCoordinator.getView().draw(new Canvas());
         assertTrue(mCoordinator.hasDrawnFrame());
+    }
+
+    @Test
+    public void testProcessViewActionUsesCoordinatorProfile() {
+        ProfileManager.setLastUsedProfileForTesting(mock(Profile.class));
+        ArgumentCaptor<FeedSurfaceScopeDependencyProvider> dependencyProviderCaptor =
+                ArgumentCaptor.forClass(FeedSurfaceScopeDependencyProvider.class);
+        verify(mProcessScope, Mockito.atLeastOnce())
+                .obtainFeedSurfaceScope(dependencyProviderCaptor.capture());
+        byte[] actionData = new byte[] {1, 2, 3};
+
+        dependencyProviderCaptor
+                .getValue()
+                .processViewAction(
+                        actionData,
+                        new FeedLoggingParameters(
+                                /* clientInstanceId= */ "instance-id",
+                                /* accountName= */ "account",
+                                /* loggingEnabled= */ true,
+                                /* viewActionsEnabled= */ true,
+                                /* rootEventId= */ new byte[] {5}));
+
+        verify(mProcessScopeJniMock).processViewAction(eq(mProfileMock), eq(actionData), any());
+    }
+
+    @Test
+    public void testAsyncDataFetcherUsesCoordinatorProfile() {
+        ProfileManager.setLastUsedProfileForTesting(mock(Profile.class));
+        ArgumentCaptor<FeedSurfaceScopeDependencyProvider> dependencyProviderCaptor =
+                ArgumentCaptor.forClass(FeedSurfaceScopeDependencyProvider.class);
+        verify(mProcessScope, Mockito.atLeastOnce())
+                .obtainFeedSurfaceScope(dependencyProviderCaptor.capture());
+        ResourceFetcher.Request request = new ResourceFetcher.Request();
+        request.uri = "https://example.com/feed";
+        request.method = "GET";
+        request.headers = List.of();
+
+        dependencyProviderCaptor.getValue().getAsyncDataFetcher().fetch(request, response -> {});
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mSurfaceScopeJniMock)
+                .fetchResource(
+                        eq(mProfileMock),
+                        eq(new GURL("https://example.com/feed")),
+                        eq("GET"),
+                        any(),
+                        isNull(),
+                        any());
     }
 
     private boolean hasStreamBound() {

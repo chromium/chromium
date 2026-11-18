@@ -21,37 +21,23 @@
 namespace feed {
 namespace android {
 
-static FeedApi* GetFeedApi() {
-  FeedService* service = FeedServiceFactory::GetForBrowserContext(
-      ProfileManager::GetLastUsedProfile());
-  if (!service)
-    return nullptr;
-  return service->GetStream();
-}
-
 static void JNI_FeedProcessScopeDependencyProvider_ProcessViewAction(
     JNIEnv* env,
+    Profile* profile,
     const base::android::JavaRef<jbyteArray>& action_data,
     const base::android::JavaRef<jbyteArray>& logging_parameters) {
-  FeedApi* feed_stream_api = GetFeedApi();
-  if (!feed_stream_api)
+  if (!profile) {
     return;
+  }
+  FeedService* service = FeedServiceFactory::GetForBrowserContext(profile);
+  if (!service) {
+    return;
+  }
   std::string action_data_string;
   base::android::JavaByteArrayToString(env, action_data, &action_data_string);
 
-  feed_stream_api->ProcessViewAction(
+  service->GetStream()->ProcessViewAction(
       action_data_string, ToNativeLoggingParameters(env, logging_parameters));
-}
-
-static std::string JNI_FeedProcessScopeDependencyProvider_GetSessionId(
-    JNIEnv* env) {
-  std::string session;
-  FeedApi* feed_stream_api = GetFeedApi();
-  if (feed_stream_api) {
-    session = feed_stream_api->GetSessionId();
-  }
-
-  return session;
 }
 
 static base::android::ScopedJavaLocalRef<jintArray>

@@ -12,6 +12,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedSurfaceScopeDependencyProviderImpl.NetworkResponse;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.xsurface.feed.ResourceFetcher;
 import org.chromium.chrome.browser.xsurface.feed.ResourceFetcher.Header;
 import org.chromium.chrome.browser.xsurface.feed.ResourceFetcher.Request;
@@ -70,7 +71,11 @@ public class FeedResourceFetcher implements ResourceFetcher {
         }
     }
 
-    public FeedResourceFetcher() {}
+    private final Profile mProfile;
+
+    public FeedResourceFetcher(Profile profile) {
+        mProfile = profile;
+    }
 
     @Override
     public void fetch(Request request, ResponseCallback responseCallback) {
@@ -84,6 +89,7 @@ public class FeedResourceFetcher implements ResourceFetcher {
                     }
                     FeedSurfaceScopeDependencyProviderImplJni.get()
                             .fetchResource(
+                                    mProfile,
                                     new GURL(request.uri),
                                     request.method,
                                     headerNamesAndValues.toArray(
