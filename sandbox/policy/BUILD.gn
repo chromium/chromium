@@ -6,6 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/cast.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//media/media_options.gni")
+import("//sandbox/features.gni")
 import("//testing/test.gni")
 
 # Most consumers of sandbox::policy should depend on this target.
@@ -242,6 +243,16 @@ source_set("tests") {
     "//sandbox/policy/mojom",
     "//testing/gtest",
   ]
+
+  if (is_android && use_seccomp_bpf) {
+    sources += [ "linux/bpf_gpu_policy_android_unittest.cc" ]
+    deps += [
+      "//sandbox/linux:sandbox_linux_test_utils",
+      "//sandbox/linux:sandbox_services",
+      "//sandbox/linux:sandbox_services_headers",
+      "//sandbox/linux:seccomp_bpf",
+    ]
+  }
 
   if (is_linux || is_chromeos) {
     sources += [ "linux/bpf_speech_recognition_policy_linux_unittest.cc" ]

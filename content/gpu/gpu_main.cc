@@ -95,6 +95,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include <android/hardware_buffer.h>
 #include <dlfcn.h>
+#include <media/NdkImageReader.h>
+#include <vulkan/vulkan_core.h>
 
 #include "base/android/android_info.h"
 #include "base/android/meminfo_dump_provider.h"
@@ -149,6 +151,7 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread*,
 #elif BUILDFLAG(IS_ANDROID)
 bool StartSandboxAndroid(gpu::GpuWatchdogThread*);
 #if BUILDFLAG(USE_SECCOMP_BPF)
+void WarmUpSeccompSandbox();
 bool StartSeccompSandboxAndroid();
 #endif
 #elif BUILDFLAG(IS_WIN)
@@ -219,6 +222,21 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
 #elif BUILDFLAG(IS_MAC)
     return sandbox::Seatbelt::IsSandboxed();
 #elif BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(USE_SECCOMP_BPF)
+    const base::CommandLine& command_line =
+        *base::CommandLine::ForCurrentProcess();
+    const bool seccomp_enabled =
+        !command_line.HasSwitch(sandbox::policy::switches::kNoSandbox) &&
+        !command_line.HasSwitch(
+            sandbox::policy::switches::kDisableSeccompFilterSandbox) &&
+        base::FeatureList::IsEnabled(
+            sandbox::policy::features::kSeccompFilterGpuSandbox);
+    if (seccomp_enabled) {
+      // Warm up dynamic libraries before Landlock restricts filesystem access
+      // to /system or /apex, and before Seccomp-BPF blocks PROT_EXEC mappings.
+      WarmUpSeccompSandbox();
+    }
+#endif
     bool landlock_res = true;
     if (base::FeatureList::IsEnabled(
             sandbox::policy::features::kAndroidGpuSandbox)) {
@@ -226,13 +244,7 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
     }
     bool seccomp_res = true;
 #if BUILDFLAG(USE_SECCOMP_BPF)
-    const base::CommandLine& command_line =
-        *base::CommandLine::ForCurrentProcess();
-    if (!command_line.HasSwitch(sandbox::policy::switches::kNoSandbox) &&
-        !command_line.HasSwitch(
-            sandbox::policy::switches::kDisableSeccompFilterSandbox) &&
-        base::FeatureList::IsEnabled(
-            sandbox::policy::features::kSeccompFilterGpuSandbox)) {
+    if (seccomp_enabled) {
       seccomp_res = StartSeccompSandboxAndroid();
     }
 #endif
@@ -634,11 +646,49 @@ void WarmUpSeccompSandbox() {
   codec_config.profile = media::VP8PROFILE_ANY;
   codec_config.initial_expected_coded_size = gfx::Size(64, 64);
   std::ignore = media::MediaCodecBridgeImpl::CreateVideoDecoder(codec_config);
+
+  // 3. Load libmediandk.so and create/delete a minimal 1x1 AImageReader so
+  //    libgui.so loads any lazy vendor BufferQueue/mapper plugins before
+  //    PROT_EXEC mappings are blocked.
+  if (void* mediandk_lib = dlopen("libmediandk.so", RTLD_NOW)) {
+    using PFN_AImageReader_newWithUsage = decltype(&AImageReader_newWithUsage);
+    using PFN_AImageReader_delete = decltype(&AImageReader_delete);
+    auto new_with_usage = reinterpret_cast<PFN_AImageReader_newWithUsage>(
+        dlsym(mediandk_lib, "AImageReader_newWithUsage"));
+    auto delete_reader = reinterpret_cast<PFN_AImageReader_delete>(
+        dlsym(mediandk_lib, "AImageReader_delete"));
+    if (new_with_usage && delete_reader) {
+      AImageReader* reader = nullptr;
+      if (new_with_usage(/*width=*/1, /*height=*/1, AIMAGE_FORMAT_PRIVATE,
+                         AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE,
+                         /*maxImages=*/1, &reader) == AMEDIA_OK &&
+          reader) {
+        delete_reader(reader);
+      }
+    }
+  }
+
+  // 4. Conservatively probe libvulkan.so and invoke a single global extension
+  //    count query to trigger the Android Vulkan loader's one-time
+  //    initialization (loading the vendor Vulkan ICD via libvndksupport.so) on
+  //    devices that support Vulkan.
+  if (void* vulkan_lib = dlopen("libvulkan.so", RTLD_NOW)) {
+    auto get_instance_proc_addr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(
+        dlsym(vulkan_lib, "vkGetInstanceProcAddr"));
+    auto enumerate_exts =
+        get_instance_proc_addr
+            ? reinterpret_cast<PFN_vkEnumerateInstanceExtensionProperties>(
+                  get_instance_proc_addr(
+                      nullptr, "vkEnumerateInstanceExtensionProperties"))
+            : nullptr;
+    if (enumerate_exts) {
+      uint32_t count = 0;
+      enumerate_exts(nullptr, &count, nullptr);
+    }
+  }
 }
 
 bool StartSeccompSandboxAndroid() {
-  WarmUpSeccompSandbox();
-
   sandbox::SeccompStarterAndroid starter(
       base::android::android_info::sdk_int());
   starter.set_policy(

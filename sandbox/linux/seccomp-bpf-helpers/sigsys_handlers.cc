@@ -559,6 +559,11 @@ void AllocateCrashKeys() {
       "seccomp-sigsys-ioctl", base::debug::CrashKeySize::Size256);
 }
 
+void ResetCrashKeysForTesting() {
+  seccomp_crash_key = nullptr;
+  seccomp_ioctl_crash_key = nullptr;
+}
+
 const char* GetErrorMessageContentForTests() {
   return SECCOMP_MESSAGE_COMMON_CONTENT;
 }

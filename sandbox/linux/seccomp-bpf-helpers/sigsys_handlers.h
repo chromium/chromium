@@ -120,7 +120,11 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr RewriteSocketcallSIGSYS();
 #endif  // defined(__NR_socketcall)
 
 // Allocates a crash key so that Seccomp information can be recorded.
-void AllocateCrashKeys();
+SANDBOX_EXPORT void AllocateCrashKeys();
+
+// Resets cached Seccomp crash key pointers when a test replaces or tears down
+// base::debug::CrashKeyImplementation.
+SANDBOX_EXPORT void ResetCrashKeysForTesting();
 
 // Following four functions return substrings of error messages used
 // in the above four functions. They are useful in death tests.

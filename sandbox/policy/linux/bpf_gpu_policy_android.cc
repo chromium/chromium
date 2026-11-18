@@ -17,7 +17,11 @@ using sandbox::bpf_dsl::ResultExpr;
 
 namespace sandbox::policy {
 
-GpuProcessPolicyAndroid::GpuProcessPolicyAndroid() = default;
+GpuProcessPolicyAndroid::GpuProcessPolicyAndroid() {
+  // Allocate crash keys set by Seccomp signal handlers, since this policy
+  // inherits directly from bpf_dsl::Policy rather than BaselinePolicy.
+  AllocateCrashKeys();
+}
 
 GpuProcessPolicyAndroid::~GpuProcessPolicyAndroid() = default;
 
