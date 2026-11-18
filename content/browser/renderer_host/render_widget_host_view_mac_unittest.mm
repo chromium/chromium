@@ -623,6 +623,20 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
     return base::UTF16ToUTF8(rwhv_mac_->GetTextSelection()->selected_text());
   }
 
+  // Waits until at least one input event is sent to the renderer, and returns
+  // the names of the input events sent until then.
+  std::string WaitForDispatchedMessageNames() {
+    MockWidgetInputHandler::MessageVector events;
+    EXPECT_TRUE(base::test::RunUntil([&] {
+      MockWidgetInputHandler::MessageVector new_events =
+          host_->GetAndResetDispatchedMessages();
+      std::move(new_events.begin(), new_events.end(),
+                std::back_inserter(events));
+      return !events.empty();
+    }));
+    return GetMessageNames(events);
+  }
+
   MockRenderWidgetHostDelegate delegate_;
 
   std::unique_ptr<TestBrowserContext> browser_context_;
@@ -758,6 +772,70 @@ TEST_F(RenderWidgetHostViewMacTest, HiddenViewDeliversMouseExit) {
     return !events.empty();
   }));
   EXPECT_EQ("MouseLeave", GetMessageNames(events));
+}
+
+// A nested event-tracking loop, such as the one AppKit runs for a native
+// <select> popup menu, can consume the left mouse-up so that the view never
+// sees it. AppKit only sends mouse moved events while no button is pressed, so
+// the next one must end the open mouse-down. Otherwise the view keeps handling
+// moves over an overlapping view and both views fight over the cursor, e.g.
+// the inspected page over docked DevTools after using a DevTools <select>.
+// See https://crbug.com/573358004.
+TEST_F(RenderWidgetHostViewMacTest, MouseMoveEndsOpenMouseDownWithoutMouseUp) {
+  // Cover the right half of the view with an overlapping view.
+  const NSRect bounds = window_.contentView.bounds;
+  NSView* overlapping_view = [[NSView alloc]
+      initWithFrame:NSMakeRect(NSMidX(bounds), NSMinY(bounds),
+                               NSWidth(bounds) / 2, NSHeight(bounds))];
+  [window_.contentView addSubview:overlapping_view];
+  const NSPoint uncovered_point =
+      NSMakePoint(NSMinX(bounds) + NSWidth(bounds) / 4, NSMidY(bounds));
+  const NSPoint covered_point =
+      NSMakePoint(NSMaxX(bounds) - NSWidth(bounds) / 4, NSMidY(bounds));
+
+  [rwhv_cocoa_ mouseDown:cocoa_test_event_utils::LeftMouseDownAtPointInWindow(
+                             uncovered_point, window_)];
+  EXPECT_EQ("MouseDown", WaitForDispatchedMessageNames());
+
+  // While the button is held, drags over the overlapping view still go to the
+  // view where the mouse-down started.
+  [rwhv_cocoa_
+      mouseDragged:cocoa_test_event_utils::MouseEventAtPointInWindow(
+                       covered_point, NSEventTypeLeftMouseDragged, window_, 1)];
+  EXPECT_EQ("MouseMove", WaitForDispatchedMessageNames());
+
+  // The mouse-up is consumed elsewhere. The next move over the overlapping view
+  // is ignored again.
+  [rwhv_cocoa_
+      mouseMoved:cocoa_test_event_utils::MouseEventAtPointInWindow(
+                     covered_point, NSEventTypeMouseMoved, window_, 0)];
+  EXPECT_EQ("MouseLeave", WaitForDispatchedMessageNames());
+}
+
+// Same as above, but for the mouse leaving the view: the next mouse moved event
+// must also end the drag that BaseView tracks from the mouse-down. Otherwise
+// BaseView holds back the mouse exited event until that drag ends, which never
+// happens, so the page never sees the mouse leave. If the page shows e.g. a
+// pointer cursor where the mouse leaves it, that cursor stays stuck over the
+// browser UI next to the page, such as the bookmark bar.
+TEST_F(RenderWidgetHostViewMacTest, MouseExitAfterMouseDownWithoutMouseUp) {
+  const NSRect bounds = window_.contentView.bounds;
+  const NSPoint down_point = NSMakePoint(NSMidX(bounds), NSMidY(bounds));
+  const NSPoint moved_point = NSMakePoint(NSMidX(bounds), NSMaxY(bounds) - 1);
+  const NSPoint exit_point = NSMakePoint(NSMidX(bounds), NSMaxY(bounds) + 1);
+
+  [rwhv_cocoa_ mouseDown:cocoa_test_event_utils::LeftMouseDownAtPointInWindow(
+                             down_point, window_)];
+  EXPECT_EQ("MouseDown", WaitForDispatchedMessageNames());
+
+  // The mouse-up is consumed elsewhere, then the mouse moves within the view.
+  [rwhv_cocoa_ mouseMoved:cocoa_test_event_utils::MouseEventAtPointInWindow(
+                              moved_point, NSEventTypeMouseMoved, window_, 0)];
+  EXPECT_EQ("MouseMove", WaitForDispatchedMessageNames());
+
+  [rwhv_cocoa_
+      mouseExited:cocoa_test_event_utils::ExitEvent(exit_point, window_)];
+  EXPECT_EQ("MouseLeave", WaitForDispatchedMessageNames());
 }
 
 // This test verifies that RenderWidgetHostViewCocoa's implementation of

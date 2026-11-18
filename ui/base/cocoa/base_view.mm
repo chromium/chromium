@@ -58,8 +58,10 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
   }
 }
 
-- (void)handleLeftMouseUp:(NSEvent*)theEvent {
-  CHECK_EQ(theEvent.type, NSEventTypeLeftMouseUp, base::NotFatalUntil::M163);
+- (void)endDragWithEvent:(NSEvent*)theEvent {
+  CHECK(theEvent.type == NSEventTypeLeftMouseUp ||
+            theEvent.type == NSEventTypeMouseMoved,
+        base::NotFatalUntil::M163);
   _dragging = NO;
   if (!_pendingExitEvent) {
     return;
@@ -113,7 +115,7 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
 
 - (void)mouseUp:(NSEvent*)theEvent {
   [self mouseEvent:theEvent];
-  [self handleLeftMouseUp:theEvent];
+  [self endDragWithEvent:theEvent];
 }
 
 - (void)rightMouseUp:(NSEvent*)theEvent {
@@ -126,6 +128,17 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
 
 - (void)mouseMoved:(NSEvent*)theEvent {
   _mouseInside = YES;
+  // AppKit only sends mouse moved events while no mouse button is pressed, so
+  // a drag still in progress here has ended even though its
+  // NSEventTypeLeftMouseUp never reached this view. That happens when a nested
+  // event-tracking loop, such as the one AppKit runs for a native <select>
+  // popup menu, consumes the mouse-up. End the drag now, before this move, so
+  // that mouse exited events are no longer held back. Otherwise -mouseEvent:
+  // never sees the mouse leave, and e.g. a web page's cursor stays stuck. See
+  // https://crbug.com/573358004.
+  if (_dragging) {
+    [self endDragWithEvent:theEvent];
+  }
   [self mouseEvent:theEvent];
 }
 

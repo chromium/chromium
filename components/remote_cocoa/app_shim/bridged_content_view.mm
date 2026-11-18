@@ -476,7 +476,7 @@ SEL EditingActionForKeyEquivalent(NSEvent* event) {
     } else {
       [self mouseEvent:theEvent];
       if ([theEvent type] == NSEventTypeLeftMouseUp)
-        [self handleLeftMouseUp:theEvent];
+        [self endDragWithEvent:theEvent];
     }
     return;
   }

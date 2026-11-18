@@ -1263,6 +1263,17 @@ static NSWindow* __weak _deferredResignKeyWindow;
     }
   }
 
+  // AppKit only sends NSEventTypeMouseMoved while no mouse button is pressed,
+  // so any open mouse-down has ended even if its NSEventTypeLeftMouseUp never
+  // reached this view. That happens when a nested event-tracking loop, such as
+  // a native <select> popup menu, consumes the mouse-up. A stale open
+  // mouse-down makes -shouldIgnoreMouseEvent: accept moves over overlapping
+  // views (e.g. the inspected page over docked DevTools), and both views then
+  // fight over the cursor.
+  if (type == NSEventTypeMouseMoved) {
+    _hasOpenMouseDown = NO;
+  }
+
   if ([self shouldIgnoreMouseEvent:theEvent]) {
     // If this is the first such event, send a mouse exit to the host view.
     // Mouse exited events are also delivered for hidden views, so that hover

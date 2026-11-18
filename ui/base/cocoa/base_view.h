@@ -25,12 +25,14 @@ COMPONENT_EXPORT(UI_BASE)
 // constructor.
 - (instancetype)initWithFrame:(NSRect)frame tracking:(BOOL)tracking;
 
-// Process an NSEventTypeLeftMouseUp event on this view that wasn't dispatched
-// already to BaseView (e.g. if captured via an event monitor). This may
-// generate a synthetic NSEventTypeMouseExited if the mouse exited the view area
-// during a drag and should be invoked after a call to -mouseEvent: for the
-// mouse up.
-- (void)handleLeftMouseUp:(NSEvent*)theEvent;
+// Ends the drag that started with a left mouse-down on this view. If the mouse
+// exited the view area during the drag, this sends the held back
+// NSEventTypeMouseExited to -mouseEvent:. BaseView calls this itself for
+// -mouseUp:, and for -mouseMoved: in case the mouse-up never reached this view.
+// Call it for an NSEventTypeLeftMouseUp event that wasn't dispatched to
+// BaseView (e.g. if captured via an event monitor), after the call to
+// -mouseEvent: for the mouse up.
+- (void)endDragWithEvent:(NSEvent*)theEvent;
 
 // Override these methods (mouseEvent, keyEvent, forceTouchEvent) in a
 // subclass.

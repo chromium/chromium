@@ -108,4 +108,50 @@ TEST_F(BaseViewTest, HideViewUnderCursorSynthesizesMouseExit) {
   [window close];
 }
 
+// A mouse exited event during a drag is held back until the drag ends. A
+// nested event-tracking loop, such as the one AppKit runs for a native <select>
+// popup menu, can consume the left mouse-up so that the view never sees it.
+// AppKit only sends mouse moved events while no button is pressed, so the next
+// one must end the drag. See https://crbug.com/573358004.
+TEST_F(BaseViewTest, MouseMoveEndsDragWithoutMouseUp) {
+  NSWindow* window = test_window();
+  MouseEventRecordingView* view = [[MouseEventRecordingView alloc]
+      initWithFrame:NSMakeRect(0, 0, 100, 100)];
+  [window.contentView addSubview:view];
+  const NSPoint inside = NSMakePoint(50, 50);
+  const NSPoint outside = NSMakePoint(150, 150);
+
+  // The mouse-up ends the drag and sends the held back mouse exited event.
+  [view mouseDown:cocoa_test_event_utils::LeftMouseDownAtPointInWindow(inside,
+                                                                       window)];
+  [view mouseExited:cocoa_test_event_utils::ExitEvent(outside, window)];
+  EXPECT_EQ(0u, view.mouseExitedCount);
+  [view mouseUp:cocoa_test_event_utils::MouseEventAtPointInWindow(
+                    outside, NSEventTypeLeftMouseUp, window, 1)];
+  EXPECT_EQ(1u, view.mouseExitedCount);
+
+  // Without the mouse-up, the next mouse moved event does the same.
+  [view mouseEntered:cocoa_test_event_utils::EnterEvent(inside, window)];
+  [view mouseDown:cocoa_test_event_utils::LeftMouseDownAtPointInWindow(inside,
+                                                                       window)];
+  [view mouseExited:cocoa_test_event_utils::ExitEvent(outside, window)];
+  EXPECT_EQ(1u, view.mouseExitedCount);
+  [view mouseMoved:cocoa_test_event_utils::MouseEventAtPointInWindow(
+                       outside, NSEventTypeMouseMoved, window, 0)];
+  EXPECT_EQ(2u, view.mouseExitedCount);
+
+  // Once a mouse moved event ended the drag, mouse exited events are no longer
+  // held back.
+  [view mouseEntered:cocoa_test_event_utils::EnterEvent(inside, window)];
+  [view mouseDown:cocoa_test_event_utils::LeftMouseDownAtPointInWindow(inside,
+                                                                       window)];
+  [view mouseMoved:cocoa_test_event_utils::MouseEventAtPointInWindow(
+                       inside, NSEventTypeMouseMoved, window, 0)];
+  EXPECT_EQ(2u, view.mouseExitedCount);
+  [view mouseExited:cocoa_test_event_utils::ExitEvent(outside, window)];
+  EXPECT_EQ(3u, view.mouseExitedCount);
+
+  [view removeFromSuperview];
+}
+
 }  // namespace
