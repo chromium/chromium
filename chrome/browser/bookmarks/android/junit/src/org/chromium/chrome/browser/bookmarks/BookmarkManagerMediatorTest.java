@@ -953,6 +953,67 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
+    public void testDrag_detachedViewHolderAndSwapGuards() {
+        mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.MANUAL);
+        mDragReorderableRecyclerViewAdapter.registerType(
+                ViewType.SEARCH_BOX,
+                parent -> new View(parent.getContext()),
+                (model, view, key) -> {});
+        mDragReorderableRecyclerViewAdapter.registerDraggableType(
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
+                parent -> new View(parent.getContext()),
+                (model, view, key) -> {},
+                (viewHolder, itemTouchHelper) -> {},
+                mMediator.getDraggabilityProvider());
+        mRecyclerView.setAdapter(mDragReorderableRecyclerViewAdapter);
+
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        int spec = View.MeasureSpec.makeMeasureSpec(/* size= */ 500, View.MeasureSpec.EXACTLY);
+        mRecyclerView.measure(spec, spec);
+        mRecyclerView.layout(/* l= */ 0, /* t= */ 0, /* r= */ 500, /* b= */ 500);
+
+        RecyclerView.ViewHolder attachedHolder =
+                mRecyclerView.findViewHolderForAdapterPosition(/* position= */ 1);
+        assertNotNull(attachedHolder);
+        assertTrue(mDragTouchHandler.isActivelyDraggable(attachedHolder));
+
+        // A detached ViewHolder with a registered draggable viewType (bindingAdapterPosition ==
+        // NO_POSITION) must return false rather than throwing IndexOutOfBoundsException.
+        RecyclerView.ViewHolder detachedHolder =
+                mDragReorderableRecyclerViewAdapter.createViewHolder(
+                        mRecyclerView, ViewType.IMPROVED_BOOKMARK_COMPACT);
+        assertEquals(ViewType.IMPROVED_BOOKMARK_COMPACT, detachedHolder.getItemViewType());
+        assertEquals(RecyclerView.NO_POSITION, detachedHolder.getBindingAdapterPosition());
+        assertFalse(mDragTouchHandler.isActivelyDraggable(detachedHolder));
+        assertFalse(mDragTouchHandler.isPassivelyDraggable(detachedHolder));
+        mRecyclerView.setAdapter(/* adapter= */ null);
+
+        // Queued swap callbacks must be ignored when drag is disabled by sort order, in
+        // non-reorderable folders (reading list / root), or after entering search mode.
+        verify(mDragTouchHandler).addDragListener(mDragListenerArgumentCaptor.capture());
+
+        mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.CHRONOLOGICAL);
+        mDragListenerArgumentCaptor.getValue().onSwap(/* targetIndex= */ 1);
+
+        mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.MANUAL);
+        mMediator.openFolder(mReadingListFolderId);
+        mDragListenerArgumentCaptor.getValue().onSwap(/* targetIndex= */ 1);
+
+        mMediator.openFolder(mPartnerBookmarkFolderId);
+        mDragListenerArgumentCaptor.getValue().onSwap(/* targetIndex= */ 1);
+
+        mMediator.openFolder(mRootFolderId);
+        mDragListenerArgumentCaptor.getValue().onSwap(/* targetIndex= */ 1);
+
+        mMediator.openFolder(mFolderId1);
+        mMediator.search("query");
+        mDragListenerArgumentCaptor.getValue().onSwap(/* targetIndex= */ 1);
+
+        verify(mBookmarkModel, never()).reorderBookmarks(any(), any());
+    }
+
+    @Test
     public void testDrag_improvedBookmarks_whileFiltering() {
         mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.MANUAL);
 

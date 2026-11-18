@@ -118,6 +118,9 @@ public class BookmarkManagerCoordinator
 
         @Override
         public void onViewRecycled(SimpleRecyclerViewAdapter.ViewHolder holder) {
+            if (holder.itemView instanceof ImprovedBookmarkRow row) {
+                row.setDragHelper(/* dragHelper= */ null);
+            }
             if (holder.itemView instanceof CancelableAnimator cancelable) {
                 // Try to eagerly clean up any in progress animations if there are anything. This
                 // should reduce the amount of transient state the view has, which could get in the
@@ -816,6 +819,10 @@ public class BookmarkManagerCoordinator
     @SuppressLint("ClickableViewAccessibility")
     private void bindDragProperties(
             RecyclerView.ViewHolder viewHolder, ItemTouchHelper itemTouchHelper) {
+        if (viewHolder.itemView instanceof ImprovedBookmarkRow row) {
+            row.setDragHelper(/* dragHelper= */ null);
+        }
+
         int position = viewHolder.getBindingAdapterPosition();
         if (position == RecyclerView.NO_POSITION) return;
 
@@ -839,7 +846,9 @@ public class BookmarkManagerCoordinator
                         viewHolder,
                         isDragEnabled);
 
-        model.set(ImprovedBookmarkRowProperties.DRAG_HELPER, dragHelper);
+        if (viewHolder.itemView instanceof ImprovedBookmarkRow row) {
+            row.setDragHelper(dragHelper);
+        }
 
         model.set(
                 ImprovedBookmarkRowProperties.ROW_BODY_TOUCH_LISTENER, dragHelper::onRowBodyTouch);

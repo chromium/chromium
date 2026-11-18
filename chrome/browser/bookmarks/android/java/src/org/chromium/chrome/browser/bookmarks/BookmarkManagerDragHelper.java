@@ -51,6 +51,8 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
     // the grab handle’s onTouch listener on drag start. Also prevents the row body's ACTION_MOVE
     // from starting a second drag.
     private boolean mDragInteractionActive;
+    private boolean mDisallowInterceptRequested;
+    private boolean mIsDestroyed;
 
     private final Runnable mSelectRunnable = this::selectItem;
     private final Runnable mStartDragRunnable = this::startDrag;
@@ -101,7 +103,7 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
      */
     public boolean onRowBodyTouch(View v, MotionEvent event) {
         // The mobile bookmarks folder, bookmarks bar folder, etc. are not draggable.
-        if (!mIsDragEnabled) return false;
+        if (!mIsDragEnabled || mIsDestroyed) return false;
 
         int action = event.getActionMasked();
 
@@ -164,10 +166,8 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
                 v.performClick();
             }
 
-            // Always re-enable interception (unblock scrolling) on release as a safety measure.
-            if (mRecyclerView != null) {
-                mRecyclerView.requestDisallowInterceptTouchEvent(false);
-            }
+            // Re-enable interception (unblock scrolling) on release if we requested it.
+            resetDisallowInterceptIfNeeded();
             // Reset.
             mIsLongPressTriggered = false;
             return true;
@@ -184,7 +184,7 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
      * @return True if the listener has consumed the event, false otherwise.
      */
     public boolean onDragHandleTouch(View v, MotionEvent event) {
-        if (!mIsDragEnabled) return false;
+        if (!mIsDragEnabled || mIsDestroyed) return false;
 
         int action = event.getActionMasked();
         // Captures both traditional mice and modern Android trackpads (excluding touchscreens,
@@ -206,9 +206,7 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
             if (isMouse) {
                 // While waiting for mouse movement to exceed touch slop, disallow parent scroll
                 // interception.
-                if (mRecyclerView != null) {
-                    mRecyclerView.requestDisallowInterceptTouchEvent(/* disallowIntercept= */ true);
-                }
+                requestDisallowIntercept();
                 // Closed hand (grabbing) when mouse down over grab handle.
                 PointerIcon grabbing =
                         PointerIcon.getSystemIcon(mContext, PointerIcon.TYPE_GRABBING);
@@ -267,9 +265,7 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
             // Reset the flag for the next interaction.
             mDragInteractionActive = false;
 
-            if (mRecyclerView != null) {
-                mRecyclerView.requestDisallowInterceptTouchEvent(false);
-            }
+            resetDisallowInterceptIfNeeded();
             return true;
         }
         return false;
@@ -286,7 +282,7 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
      */
     public boolean onRowBodyHover(View v, MotionEvent event) {
         // The mobile bookmarks folder, bookmarks bar folder, etc. are not draggable.
-        if (!mIsDragEnabled) return false;
+        if (!mIsDragEnabled || mIsDestroyed) return false;
 
         int action = event.getActionMasked();
         View dragHandle = mViewHolder.itemView.findViewById(R.id.drag_handle);
@@ -319,7 +315,7 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
 
     /** Handles hover events for the Drag Handle itself. */
     public boolean onDragHandleHover(View v, MotionEvent event) {
-        if (!mIsDragEnabled) return false;
+        if (!mIsDragEnabled || mIsDestroyed) return false;
 
         // Set the cursor to be an open hand.
         v.setPointerIcon(PointerIcon.getSystemIcon(mContext, PointerIcon.TYPE_GRAB));
@@ -342,18 +338,32 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
 
     @Override
     public void onViewDetachedFromWindow(View v) {
-        // If the view is detached (recycled) while a timer is running, we must cancel everything to
-        // prevent a drag starting on a view that is no longer on screen.
+        // Reset active timers and gesture state without tearing down row.mDragHelper or the attach
+        // listener so transient detach/re-attach cycles remain cancellable on later detaches or
+        // rebinds.
+        resetActiveState();
+    }
+
+    /** Cancels pending timers, resets active touch state, and detaches listeners. */
+    public void destroy() {
+        if (mIsDestroyed) return;
+        mIsDestroyed = true;
+
+        resetActiveState();
+        mViewHolder.itemView.removeOnAttachStateChangeListener(this);
+        if (mViewHolder.itemView instanceof ImprovedBookmarkRow row) {
+            row.clearDragHelper(this);
+        }
+    }
+
+    private void resetActiveState() {
         cleanupTimers();
         mHandler.removeCallbacks(mHideHandleRunnable);
-
-        // When the view (ImprovedBookmarkRow) is detached, it will be recycled, so we need to reset
-        // v.setPressed, v.setVisibility, etc. But the BookmarkManagerDragHelper object gets garbage
-        // collected and a new helper is created every time coordinator#bindDragProperties is
-        // called. We therefore don't need to reset internal variables inside this class.
-        v.setPressed(false);
-        // Remove listener to prevent the recycled view from accumulating old DragHelper objects.
-        v.removeOnAttachStateChangeListener(this);
+        mIsLongPressTriggered = false;
+        mIsHandleTouched = false;
+        mDragInteractionActive = false;
+        resetDisallowInterceptIfNeeded();
+        mViewHolder.itemView.setPressed(/* pressed= */ false);
     }
 
     private void cleanupTimers() {
@@ -361,18 +371,40 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
         mHandler.removeCallbacks(mStartDragRunnable);
     }
 
+    private void requestDisallowIntercept() {
+        if (mRecyclerView != null) {
+            mRecyclerView.requestDisallowInterceptTouchEvent(/* disallowIntercept= */ true);
+            mDisallowInterceptRequested = true;
+        }
+    }
+
+    private void resetDisallowInterceptIfNeeded() {
+        if (mDisallowInterceptRequested && mRecyclerView != null) {
+            mRecyclerView.requestDisallowInterceptTouchEvent(/* disallowIntercept= */ false);
+        }
+        mDisallowInterceptRequested = false;
+    }
+
+    private boolean isViewHolderDetached() {
+        return mIsDestroyed
+                || mRecyclerView == null
+                || mRecyclerView.getAdapter() == null
+                || !mViewHolder.itemView.isAttachedToWindow()
+                || mViewHolder.getBindingAdapterPosition() == RecyclerView.NO_POSITION;
+    }
+
     // Logic for Runnable 1: Selection (500ms). Runs when the user touches an unselected row body
     // and
     // holds for 500ms (and doesn't move enough to cancel it).
     private void selectItem() {
+        if (isViewHolderDetached()) return;
+
         mIsLongPressTriggered = true;
         if (mSelectionDelegate != null && mBookmarkId != null) {
             // This protects the 100ms gap after selection (500ms) but before drag start
             // (600ms). We call the parent (RecyclerView) to stop watching touches to
             // prevent accidental scrolling.
-            if (mRecyclerView != null) {
-                mRecyclerView.requestDisallowInterceptTouchEvent(true);
-            }
+            requestDisallowIntercept();
 
             // Perform Action. Item is selected, updateView() is called.
             mSelectionDelegate.toggleSelectionForItem(mBookmarkId);
@@ -390,9 +422,8 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
         // Interception may have been blocked (by selectItem() or a mouse ACTION_DOWN on the
         // handle) to stop scrolling. We must unblock it now so ItemTouchHelper (attached to the
         // parent, which is the RecyclerView) can intercept the stream and handle the drag.
-        if (mRecyclerView != null) {
-            mRecyclerView.requestDisallowInterceptTouchEvent(false);
-        }
+        resetDisallowInterceptIfNeeded();
+        if (isViewHolderDetached()) return;
 
         // Prevents ACTION_UP from being treated as a click once a drag has started.
         mIsLongPressTriggered = true;
@@ -410,6 +441,7 @@ public class BookmarkManagerDragHelper implements View.OnAttachStateChangeListen
     // Logic for Runnable 3: Hides the handle. Runs when the user moves the mouse out of the row
     // (HOVER_EXIT).
     private void hideDragHandle() {
+        if (mIsDestroyed) return;
         View dragHandle = mViewHolder.itemView.findViewById(R.id.drag_handle);
         if (dragHandle == null) return;
 

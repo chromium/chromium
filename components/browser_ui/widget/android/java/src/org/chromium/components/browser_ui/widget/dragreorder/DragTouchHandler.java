@@ -20,6 +20,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -136,12 +137,14 @@ public class DragTouchHandler extends ItemTouchHelper.Callback {
             RecyclerView.ViewHolder viewHolder,
             BiFunction<DraggabilityProvider, PropertyModel, Boolean> isDraggable) {
         if (!mDragEnabled) return false;
-        DraggabilityProvider draggabilityProvider =
-                mDraggabilityProviderMap.get(viewHolder.getItemViewType());
+        int viewType = viewHolder.getItemViewType();
+        DraggabilityProvider draggabilityProvider = mDraggabilityProviderMap.get(viewType);
         if (draggabilityProvider == null) return false;
         int position = viewHolder.getBindingAdapterPosition();
-        PropertyModel propertyModel = mListData.get(position).model;
-        return isDraggable.apply(draggabilityProvider, propertyModel);
+        if (position < 0 || position >= mListData.size()) return false;
+        ListItem item = mListData.get(position);
+        if (item.type != viewType) return false;
+        return isDraggable.apply(draggabilityProvider, item.model);
     }
 
     /** Gets the value for {@link mDraggedViewHolder}. */
@@ -207,7 +210,14 @@ public class DragTouchHandler extends ItemTouchHelper.Callback {
             RecyclerView.ViewHolder target) {
         int from = current.getBindingAdapterPosition();
         int to = target.getBindingAdapterPosition();
-        if (from == to) return false;
+        if (!mDragEnabled
+                || from < 0
+                || from >= mListData.size()
+                || to < 0
+                || to >= mListData.size()
+                || from == to) {
+            return false;
+        }
         mListData.move(from, to);
         return true;
     }
@@ -219,7 +229,7 @@ public class DragTouchHandler extends ItemTouchHelper.Callback {
         // similar to getMovementFlags, this method may be called multiple times
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && mDraggedViewHolder != viewHolder) {
             mDraggedViewHolder = viewHolder;
-            mStartPosition = viewHolder.getAdapterPosition();
+            mStartPosition = viewHolder.getBindingAdapterPosition();
             onDragStateChange(true);
             updateVisualState(true, viewHolder);
             if (mRecyclerView != null) {
@@ -261,15 +271,24 @@ public class DragTouchHandler extends ItemTouchHelper.Callback {
         }
         // No need to commit change if recycler view is not attached to window, such as dragging
         // is terminated by destroying activity.
-        int currentPosition = viewHolder.getAdapterPosition();
-        if (currentPosition != mStartPosition && recyclerView.isAttachedToWindow()) {
+        int currentPosition = viewHolder.getBindingAdapterPosition();
+        if (mDragEnabled
+                && currentPosition != RecyclerView.NO_POSITION
+                && mStartPosition != RecyclerView.NO_POSITION
+                && currentPosition != mStartPosition
+                && recyclerView.isAttachedToWindow()) {
             // Commit the position change for the dragged item when it's dropped and
             // RecyclerView has finished layout computing.
-            recyclerView.post(() -> onSwap(currentPosition));
+            recyclerView.post(
+                    () -> {
+                        if (mDragEnabled && recyclerView.isAttachedToWindow()) {
+                            onSwap(currentPosition);
+                        }
+                    });
         }
         mDraggedViewHolder = null;
-        onDragStateChange(false);
-        updateVisualState(false, viewHolder);
+        onDragStateChange(/* drag= */ false);
+        updateVisualState(/* dragged= */ false, viewHolder);
     }
 
     @Override

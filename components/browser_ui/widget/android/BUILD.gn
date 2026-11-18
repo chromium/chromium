@@ -547,6 +547,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/components/browser_ui/widget/containment/ContainmentItemDecorationUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/displaystyle/UiConfigTest.java",
     "java/src/org/chromium/components/browser_ui/widget/displaystyle/ViewResizerUtilTest.java",
+    "java/src/org/chromium/components/browser_ui/widget/dragreorder/DragTouchHandlerUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/floating_pill/FloatingPillContainerTest.java",
     "java/src/org/chromium/components/browser_ui/widget/floating_pill/FloatingPillViewTest.java",
     "java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListenerTest.java",

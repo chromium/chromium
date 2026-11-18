@@ -86,6 +86,7 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
     private @Nullable ViewPropertyAnimator mFadeAnimator;
 
     private @Nullable ImageView mDragHandle;
+    private @Nullable BookmarkManagerDragHelper mDragHelper;
     private boolean mIsDragEnabled;
     private boolean mBookmarkIdEditable;
     private boolean mEndImageViewVisible;
@@ -164,6 +165,23 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
     public void setDragEnabled(boolean dragEnabled) {
         mIsDragEnabled = dragEnabled;
         updateView();
+    }
+
+    void setDragHelper(@Nullable BookmarkManagerDragHelper dragHelper) {
+        if (mDragHelper != null && mDragHelper != dragHelper) {
+            mDragHelper.destroy();
+        }
+        mDragHelper = dragHelper;
+    }
+
+    void clearDragHelper(BookmarkManagerDragHelper dragHelper) {
+        if (mDragHelper == dragHelper) {
+            mDragHelper = null;
+        }
+    }
+
+    @Nullable BookmarkManagerDragHelper getDragHelperForTesting() {
+        return mDragHelper;
     }
 
     @SuppressLint("ClickableViewAccessibility")

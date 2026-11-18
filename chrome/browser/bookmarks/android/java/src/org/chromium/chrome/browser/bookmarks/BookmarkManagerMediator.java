@@ -283,6 +283,16 @@ class BookmarkManagerMediator
             new DragListener() {
                 @Override
                 public void onSwap(int targetIndex) {
+                    BookmarkId currentFolderId = getCurrentFolderId();
+                    if (mIsDestroyed
+                            || !mDragStateDelegate.getDragEnabled()
+                            || isSearching()
+                            || topLevelFoldersShowing()
+                            || currentFolderId == null
+                            || currentFolderId.getType() == BookmarkType.READING_LIST
+                            || currentFolderId.getType() == BookmarkType.PARTNER) {
+                        return;
+                    }
                     mIsBookmarkModelReorderingInProgress = true;
                     try {
                         setOrder();
