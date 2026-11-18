@@ -1147,7 +1147,7 @@ class PrefetchServicePrePrefetchTest : public PrefetchServiceTest {
     return pre_prefetch_service_.get();
   }
 
-  [[nodiscard]] std::unique_ptr<PrePrefetchHandle> MakePrePrefetch(
+  [[nodiscard]] std::unique_ptr<PrePrefetchHandle> PostMakePrePrefetchAndWait(
       const GURL& prefetch_url) {
     base::test::TestFuture<std::unique_ptr<PrePrefetchHandle>> future;
     base::ThreadPool::PostTaskAndReplyWithResult(
@@ -1734,8 +1734,8 @@ TEST_P(PrefetchServicePrePrefetchTest, SuccessCase_Embedder_PrePrefetch) {
   const PrefetchType prefetch_type =
       PrefetchType(PreloadingTriggerType::kEmbedder,
                    /*use_prefetch_proxy=*/false);
-  auto handle =
-      AddPrefetchFromPrePrefetch(MakePrePrefetch(GURL("https://example.com")));
+  auto handle = AddPrefetchFromPrePrefetch(
+      PostMakePrePrefetchAndWait(GURL("https://example.com")));
 
   VerifyCommonRequestState(
       GURL("https://example.com"),
@@ -3150,7 +3150,7 @@ TEST_P(PrefetchServicePrePrefetchTest,
       PrefetchType(PreloadingTriggerType::kEmbedder,
                    /*use_prefetch_proxy=*/false);
   auto handle = AddPrefetchFromPrePrefetch(
-      MakePrePrefetch(GURL("https://example.com/?a=1")));
+      PostMakePrePrefetchAndWait(GURL("https://example.com/?a=1")));
 
   VerifyCommonRequestState(
       GURL("https://example.com/?a=1"),

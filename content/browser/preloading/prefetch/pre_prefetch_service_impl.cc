@@ -420,17 +420,17 @@ PrePrefetchServiceImpl::StartPrePrefetchRequest(
           should_append_variations_header,
           should_disable_block_until_head_timeout, should_bypass_http_cache);
 
-  return StartPrePrefetchRequestInternal(std::move(prefetch_request));
+  return PostStartPrePrefetchRequestAndWait(std::move(prefetch_request));
 }
 
 std::unique_ptr<PrePrefetchHandle>
 PrePrefetchServiceImpl::StartPrePrefetchRequestForTesting(  // IN-TEST
     std::unique_ptr<const PrefetchRequest> prefetch_request) {
-  return StartPrePrefetchRequestInternal(std::move(prefetch_request));
+  return PostStartPrePrefetchRequestAndWait(std::move(prefetch_request));
 }
 
 std::unique_ptr<PrePrefetchHandle>
-PrePrefetchServiceImpl::StartPrePrefetchRequestInternal(
+PrePrefetchServiceImpl::PostStartPrePrefetchRequestAndWait(
     std::unique_ptr<const PrefetchRequest> prefetch_request) {
   CHECK(!BrowserThread::CurrentlyOn(content::BrowserThread::UI),
         base::NotFatalUntil::M159);

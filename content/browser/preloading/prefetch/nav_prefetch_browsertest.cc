@@ -790,7 +790,7 @@ class PrePrefetchBrowserTest : public NavPrefetchBrowserTest {
   // the PrePrefetch network request, and returns its handle. `url` should be
   // same-origin with `GetUrl("a.test", "/")`, i.e. the origin hint of
   // `pre_prefetch_service_`; otherwise this may return nullptr.
-  [[nodiscard]] std::unique_ptr<PrePrefetchHandle> StartPrePrefetch(
+  [[nodiscard]] std::unique_ptr<PrePrefetchHandle> PostStartPrePrefetchAndWait(
       const GURL& url) {
     base::test::TestFuture<std::unique_ptr<PrePrefetchHandle>> handle_future;
     base::ThreadPool::PostTaskAndReplyWithResult(
@@ -830,7 +830,8 @@ IN_PROC_BROWSER_TEST_F(PrePrefetchBrowserTest, PrePrefetchConsumption) {
 
   test::TestPrefetchWatcher test_prefetch_watcher;
 
-  std::unique_ptr<PrePrefetchHandle> handle = StartPrePrefetch(prefetch_url);
+  std::unique_ptr<PrePrefetchHandle> handle =
+      PostStartPrePrefetchAndWait(prefetch_url);
   EXPECT_NE(handle, nullptr);
 
   // Wait for PrePrefetch network request.
@@ -894,7 +895,8 @@ IN_PROC_BROWSER_TEST_F(PrePrefetchServiceWorkerBrowserTest,
 
   // Start a PrePrefetch. Its network request doesn't go through the
   // ServiceWorker.
-  std::unique_ptr<PrePrefetchHandle> handle = StartPrePrefetch(prefetch_url);
+  std::unique_ptr<PrePrefetchHandle> handle =
+      PostStartPrePrefetchAndWait(prefetch_url);
   ASSERT_NE(handle, nullptr);
 
   // Wait for PrePrefetch network request.
@@ -956,7 +958,8 @@ IN_PROC_BROWSER_TEST_F(PrePrefetchServiceWorkerBrowserTest,
 
   // Start a PrePrefetch. Its network request doesn't go through the
   // ServiceWorker.
-  std::unique_ptr<PrePrefetchHandle> handle = StartPrePrefetch(prefetch_url);
+  std::unique_ptr<PrePrefetchHandle> handle =
+      PostStartPrePrefetchAndWait(prefetch_url);
   ASSERT_NE(handle, nullptr);
   WaitForRequest(prefetch_url);
   EXPECT_EQ(GetRequestCount(prefetch_url), 1);

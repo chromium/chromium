@@ -112,9 +112,8 @@ class CONTENT_EXPORT PrePrefetchServiceImpl : public PrePrefetchService {
 
  private:
   [[nodiscard]] std::unique_ptr<PrePrefetchHandle>
-  StartPrePrefetchRequestInternal(
+  PostStartPrePrefetchRequestAndWait(
       std::unique_ptr<const PrefetchRequest> prefetch_request);
-
 
   // This is UI-thread bound, and must not be dereferenced during this
   // `PrePrefetchServiceCore` sequence.

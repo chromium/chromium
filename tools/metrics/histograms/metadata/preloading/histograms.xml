@@ -448,7 +448,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-prerendering@google.com</owner>
   <summary>
     Records the time spent blocking the thread on
-    `PrePrefetchServiceImpl::StartPrePrefetchRequestInternal()` waiting for
+    `PrePrefetchServiceImpl::PostStartPrePrefetchRequestAndWait()` waiting for
     `PrePrefetchServiceCore::StartPrePrefetchRequest` to complete execution on
     its core sequence task runner.
   </summary>
