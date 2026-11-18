@@ -142,3 +142,18 @@ source_set("unit_tests") {
     "UIKit.framework",
   ]
 }
+
+source_set("request_handler") {
+  sources = [
+    "remote_actor_request_handler.h",
+    "remote_actor_request_handler.mm",
+  ]
+  deps = [
+    ":remote_actor",
+    "//base",
+    "//ios/chrome/app:actor_request",
+    "//ios/chrome/browser/passwords/model/remote_actor/proto",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
+}

@@ -16,10 +16,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/task/thread_pool.h"
 #import "base/time/time.h"
 #import "base/trace_event/trace_event.h"
-#import "base/types/expected.h"
 #import "base/types/expected_macros.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/data_sharing/public/data_sharing_utils.h"
@@ -96,10 +94,7 @@
 #import "ios/chrome/browser/menu/public/menu_histograms.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
-#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_callback_util.h"
-#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_payload_parser.h"
-#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_precondition_checker.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_request_handler.h"
 #import "ios/chrome/browser/picture_in_picture/model/picture_in_picture_scene_agent.h"
 #import "ios/chrome/browser/policy/model/browser_management_service.h"
 #import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
@@ -315,13 +310,6 @@ GeminiAppSwitcherAccountStatus GetAppSwitcherAccountStatus(
     return GeminiAppSwitcherAccountStatus::kClientAppOnlySignedIn;
   }
   return GeminiAppSwitcherAccountStatus::kBothSignedOut;
-}
-
-// Decrypts `payload` and `nonce` on a background sequence.
-base::expected<remote_actor::proto::RemoteActorPasswordUploadRequest,
-               RemoteActorParsingError>
-DecryptRemoteActorPayload(std::string payload, std::string nonce) {
-  return ParseRemoteActorPayload(payload, nonce);
 }
 
 }  // namespace
@@ -2756,65 +2744,8 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 - (void)handleRemoteActorCredentialSharing {
   ASSIGN_OR_RETURN(RemoteActorRequest remoteActorRequest,
                    [self consumePendingRemoteActorRequest], [] {});
-
-  if (remoteActorRequest.request.has_value()) {
-    [self processDecryptedRemoteActorRequest:*remoteActorRequest.request];
-    return;
-  }
-
-  __weak __typeof(self) weakSelf = self;
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&DecryptRemoteActorPayload,
-                     std::move(remoteActorRequest.payload),
-                     std::move(remoteActorRequest.nonce)),
-      base::BindOnce(
-          [](SceneController* controller,
-             base::expected<
-                 remote_actor::proto::RemoteActorPasswordUploadRequest,
-                 RemoteActorParsingError> result) {
-            [controller handleParsedRemoteActorPayload:std::move(result)];
-          },
-          weakSelf));
-}
-
-// Handles the result of background decryption for a Remote Actor request.
-- (void)handleParsedRemoteActorPayload:
-    (base::expected<remote_actor::proto::RemoteActorPasswordUploadRequest,
-                    RemoteActorParsingError>)result {
-  if (!self.currentInterface.browser || !result.has_value()) {
-    return;
-  }
-  [self processDecryptedRemoteActorRequest:*result];
-}
-
-// Validates preconditions and presents the Remote Actor credential bottom sheet
-// for a decrypted `request`.
-- (void)processDecryptedRemoteActorRequest:
-    (const remote_actor::proto::RemoteActorPasswordUploadRequest&)request {
-  base::expected<void, RemoteActorPreconditionError> preconditionResult =
-      CheckRemoteActorPreconditions(self.currentInterface.profile,
-                                    request.gaia_id());
-  if (!preconditionResult.has_value()) {
-    RemoteActorPreconditionCallbackParams callbackParams =
-        GetPreconditionFailureCallbackParams(preconditionResult.error());
-    OpenGeminiCallbackURL(request.task_id(), callbackParams.status,
-                          callbackParams.reason, base::DoNothing());
-    return;
-  }
-
-  CommandDispatcher* dispatcher =
-      self.currentInterface.browser
-          ? self.currentInterface.browser->GetCommandDispatcher()
-          : nil;
-  if (![dispatcher dispatchingForProtocol:@protocol(SceneCommands)]) {
-    OpenGeminiCallbackURL(request.task_id(), RemoteActorCallbackStatus::kFailed,
-                          RemoteActorCallbackReason::kUploadFailed,
-                          base::DoNothing());
-    return;
-  }
-  [HandlerForProtocol(dispatcher, SceneCommands)
-      showRemoteActorCredentialBottomSheetWithRequest:request];
+  HandleRemoteActorCredentialSharingRequest(self.currentInterface.browser,
+                                            std::move(remoteActorRequest));
 }
 
 // Returns the condition to check in order to show the `IncognitoIntertitial`
