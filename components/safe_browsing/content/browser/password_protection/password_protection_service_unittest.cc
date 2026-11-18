@@ -31,7 +31,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
-#include "components/safe_browsing/content/browser/client_side_detection_feature_cache.h"
+#include "components/safe_browsing/content/browser/client_side_detection/client_side_detection_feature_cache.h"
 #include "components/safe_browsing/content/browser/password_protection/mock_password_protection_service.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"

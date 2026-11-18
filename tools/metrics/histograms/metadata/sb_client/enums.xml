@@ -442,7 +442,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Superseded by a newer capture request"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/safe_browsing/content/browser/client_side_detection_host.h:BrowserCaptureResult) -->
+<!-- LINT.ThenChange(//components/safe_browsing/content/browser/client_side_detection/client_side_detection_host.h:BrowserCaptureResult) -->
 
 <!-- LINT.IfChange(SBClientPhishingCancelClassificationReason) -->
 
@@ -480,7 +480,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Visible"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/safe_browsing/content/browser/client_side_detection_host.h:ClassificationVisibility) -->
+<!-- LINT.ThenChange(//components/safe_browsing/content/browser/client_side_detection/client_side_detection_host.h:ClassificationVisibility) -->
 
 <!-- LINT.IfChange(SBClientPhishingDelayedForceRequestPingEvent) -->
 

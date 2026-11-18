@@ -156,7 +156,7 @@ source_set("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "client_side_detection_feature_cache_unittest.cc",
+    "client_side_detection/client_side_detection_feature_cache_unittest.cc",
     "threat_details/client_report_util_unittest.cc",
     "url_checker/async_check_tracker_unittest.cc",
   ]
@@ -226,8 +226,8 @@ source_set("unit_tests") {
 
 source_set("client_side_detection_images_cache") {
   sources = [
-    "client_side_detection_feature_cache.cc",
-    "client_side_detection_feature_cache.h",
+    "client_side_detection/client_side_detection_feature_cache.cc",
+    "client_side_detection/client_side_detection_feature_cache.h",
   ]
 
   deps = [
@@ -245,8 +245,8 @@ source_set("client_side_detection_images_cache") {
 if (safe_browsing_mode != 0) {
   source_set("client_side_detection_service") {
     sources = [
-      "client_side_detection_service.cc",
-      "client_side_detection_service.h",
+      "client_side_detection/client_side_detection_service.cc",
+      "client_side_detection/client_side_detection_service.h",
     ]
 
     deps = [
@@ -273,8 +273,8 @@ if (safe_browsing_mode != 0) {
 
   source_set("client_side_detection") {
     sources = [
-      "client_side_detection_host.cc",
-      "client_side_detection_host.h",
+      "client_side_detection/client_side_detection_host.cc",
+      "client_side_detection/client_side_detection_host.h",
       "safe_browsing_tab_observer.cc",
       "safe_browsing_tab_observer.h",
     ]

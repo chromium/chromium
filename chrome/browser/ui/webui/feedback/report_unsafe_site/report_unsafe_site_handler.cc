@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/feedback/report_unsafe_site/report_unsafe_site_handler.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/safe_browsing/content/browser/client_side_detection_host.h"
+#include "components/safe_browsing/content/browser/client_side_detection/client_side_detection_host.h"
 #include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"

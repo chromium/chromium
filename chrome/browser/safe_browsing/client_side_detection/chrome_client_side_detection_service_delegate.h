@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_CHROME_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/safe_browsing/content/browser/client_side_detection_service.h"
+#include "components/safe_browsing/content/browser/client_side_detection/client_side_detection_service.h"
 
 class Profile;
 

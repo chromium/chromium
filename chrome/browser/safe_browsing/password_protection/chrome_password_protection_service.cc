@@ -59,7 +59,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/safe_browsing/content/browser/client_side_detection_host.h"
+#include "components/safe_browsing/content/browser/client_side_detection/client_side_detection_host.h"
 #include "components/safe_browsing/content/browser/interstitials/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/interstitials/ui_manager.h"
 #include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"

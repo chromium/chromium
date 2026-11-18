@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/client_side_detection_host.h"
+#include "components/safe_browsing/content/browser/client_side_detection/client_side_detection_host.h"
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -32,8 +32,8 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/browser/client_side_detection_feature_cache.h"
-#include "components/safe_browsing/content/browser/client_side_detection_service.h"
+#include "components/safe_browsing/content/browser/client_side_detection/client_side_detection_feature_cache.h"
+#include "components/safe_browsing/content/browser/client_side_detection/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/interstitials/ui_manager.h"
 #include "components/safe_browsing/core/browser/client_side_detection/credit_card_form_event.h"
 #include "components/safe_browsing/core/browser/client_side_detection/csd_model_type.h"

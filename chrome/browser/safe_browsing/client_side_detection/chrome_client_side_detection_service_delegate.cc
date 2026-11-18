@@ -12,7 +12,7 @@
 #include "chrome/browser/safe_browsing/client_side_detection/client_side_detection_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/client_side_detection_service.h"
+#include "components/safe_browsing/content/browser/client_side_detection/client_side_detection_service.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

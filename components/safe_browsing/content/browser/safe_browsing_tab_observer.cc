@@ -7,8 +7,8 @@
 #include "base/functional/bind.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/browser/client_side_detection_host.h"
-#include "components/safe_browsing/content/browser/client_side_detection_service.h"
+#include "components/safe_browsing/content/browser/client_side_detection/client_side_detection_host.h"
+#include "components/safe_browsing/content/browser/client_side_detection/client_side_detection_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 

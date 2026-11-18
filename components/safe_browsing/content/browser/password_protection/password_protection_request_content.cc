@@ -10,7 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "components/safe_browsing/content/browser/client_side_detection_feature_cache.h"
+#include "components/safe_browsing/content/browser/client_side_detection/client_side_detection_feature_cache.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"

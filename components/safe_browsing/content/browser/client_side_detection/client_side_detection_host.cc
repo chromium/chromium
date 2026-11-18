@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/client_side_detection_host.h"
+#include "components/safe_browsing/content/browser/client_side_detection/client_side_detection_host.h"
 
 #include <algorithm>
 #include <memory>
@@ -47,8 +47,8 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/client_side_detection_feature_cache.h"
-#include "components/safe_browsing/content/browser/client_side_detection_service.h"
+#include "components/safe_browsing/content/browser/client_side_detection/client_side_detection_feature_cache.h"
+#include "components/safe_browsing/content/browser/client_side_detection/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/interstitials/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/interstitials/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
