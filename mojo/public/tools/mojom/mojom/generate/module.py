@@ -419,6 +419,7 @@ ATTRIBUTE_STABLE = 'Stable'
 ATTRIBUTE_SUPPORTS_URGENT = 'SupportsUrgent'
 ATTRIBUTE_SYNC = 'Sync'
 ATTRIBUTE_UNLIMITED_SIZE = 'UnlimitedSize'
+ATTRIBUTE_UNVERIFIED = 'Unverified'
 ATTRIBUTE_UUID = 'Uuid'
 
 
@@ -1066,6 +1067,14 @@ class Parameter:
       self.attributes.get(ATTRIBUTE_MIN_VERSION) if self.attributes else None
     )
 
+  @property
+  def unverified(self):
+    return (
+      self.attributes.get(ATTRIBUTE_UNVERIFIED, False)
+      if self.attributes
+      else False
+    )
+
   def __eq__(self, rhs):
     return isinstance(rhs, Parameter) and (
       self.mojom_name,
@@ -1172,6 +1181,10 @@ class Method:
     return (
       self.attributes.get(ATTRIBUTE_MIN_VERSION) if self.attributes else None
     )
+
+  @property
+  def has_unverified_parameters(self):
+    return any(param.unverified for param in self.parameters)
 
   @property
   def sync(self):
@@ -1393,6 +1406,10 @@ class Interface(ReferenceKind):
       if self.attributes
       else None
     )
+
+  @property
+  def has_unverified_parameters(self):
+    return any(method.has_unverified_parameters for method in self.methods)
 
   def __hash__(self):
     return id(self)
