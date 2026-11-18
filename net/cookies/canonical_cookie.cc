@@ -349,15 +349,6 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     return nullptr;
   }
 
-  if (collect_metrics) {
-    // Record warning for non-ASCII octecs in the Domain attribute.
-    // This should lead to rejection of the cookie in the future.
-    base::UmaHistogramBoolean(
-        "Cookie.DomainHasNonASCII.Subsampled",
-        parsed_cookie.Domain() &&
-            !base::IsStringASCII(parsed_cookie.Domain().value()));
-  }
-
   // Record some histograms about nameless cookies. (See also
   // Cookie.Parse.EmptyNameParseType* below.)
   UMA_HISTOGRAM_BOOLEAN("Cookie.Parse.EmptyName", parsed_cookie.Name().empty());

@@ -227,20 +227,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.DomainHasNonASCII" enum="Boolean"
-    expires_after="2024-11-17">
-  <owner>johannhof@chromium.org</owner>
-  <owner>src/net/cookies/OWNERS</owner>
-  <summary>
-    Whether a site tried to set a cookie with a Domain attribute that has at
-    least one non-ASCII character in it.
-
-    This metric is recorded everytime a cookie is created from a string (i.e.
-    when it is set via Set-Cookie or document.cookie write), regardless of
-    whether or not the cookie is ultimately stored.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.DomainSet.Subsampled" enum="Boolean"
     expires_after="2027-05-12">
   <owner>chlily@chromium.org</owner>
