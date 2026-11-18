@@ -151,33 +151,40 @@ void ExternalVkImageDawnImageRepresentation::EndAccess() {
   if (!dawn::native::vulkan::ExportVulkanImage(
           texture_.Get(), VK_IMAGE_LAYOUT_UNDEFINED, &export_info)) {
     DLOG(ERROR) << "Failed to export Dawn Vulkan image.";
-  } else {
-    if (export_info.isInitialized) {
-      SetCleared();
-    }
-
-    // Exporting to VK_IMAGE_LAYOUT_UNDEFINED means no transition should be
-    // done. The old/new layouts are the same.
-    DCHECK_EQ(export_info.releasedOldLayout, export_info.releasedNewLayout);
-
-    // Save the layout on the GrBackendTexture. Other shared image
-    // representations read it from here.
-    GrBackendTexture backend_texture = backing_impl()->backend_texture();
-    backend_texture.setMutableState(skgpu::MutableTextureStates::MakeVulkan(
-        export_info.releasedNewLayout, VK_QUEUE_FAMILY_EXTERNAL));
-
-    // TODO(enga): Handle waiting on multiple semaphores from dawn
-    DCHECK(export_info.semaphoreHandles.size() == 1);
-
-    // Wrap file descriptor in a handle
-    SemaphoreHandle handle(VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT_KHR,
-                           base::ScopedFD(export_info.semaphoreHandles[0]));
-
-    auto semaphore = ExternalSemaphore::CreateFromHandle(
-        backing_impl()->context_provider(), std::move(handle));
-
-    backing_impl()->EndAccess(false, std::move(semaphore), /*is_gl=*/false);
+    backing_impl()->EndAccess(false, ExternalSemaphore(), /*is_gl=*/false);
+    texture_.Destroy();
+    texture_ = nullptr;
+    backing_impl()->ReleaseSemaphoresWithFenceHelper(
+        std::move(begin_access_semaphores_));
+    begin_access_semaphores_.clear();
+    return;
   }
+
+  if (export_info.isInitialized) {
+    SetCleared();
+  }
+
+  // Exporting to VK_IMAGE_LAYOUT_UNDEFINED means no transition should be
+  // done. The old/new layouts are the same.
+  DCHECK_EQ(export_info.releasedOldLayout, export_info.releasedNewLayout);
+
+  // Save the layout on the GrBackendTexture. Other shared image
+  // representations read it from here.
+  GrBackendTexture backend_texture = backing_impl()->backend_texture();
+  backend_texture.setMutableState(skgpu::MutableTextureStates::MakeVulkan(
+      export_info.releasedNewLayout, VK_QUEUE_FAMILY_EXTERNAL));
+
+  // TODO(enga): Handle waiting on multiple semaphores from dawn
+  DCHECK(export_info.semaphoreHandles.size() == 1);
+
+  // Wrap file descriptor in a handle
+  SemaphoreHandle handle(VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT_KHR,
+                         base::ScopedFD(export_info.semaphoreHandles[0]));
+
+  auto semaphore = ExternalSemaphore::CreateFromHandle(
+      backing_impl()->context_provider(), std::move(handle));
+
+  backing_impl()->EndAccess(false, std::move(semaphore), /*is_gl=*/false);
 
   // Destroy the texture, signaling the semaphore in dawn
   texture_.Destroy();

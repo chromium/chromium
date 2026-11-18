@@ -206,9 +206,6 @@ void DawnOzoneImageRepresentation::EndAccess() {
   if (shared_texture_memory_.EndAccess(texture_, &end_access_desc) !=
       wgpu::Status::Success) {
     LOG(ERROR) << "Failed to end access for DawnOzoneImageRepresentation";
-    texture_.Destroy();
-    texture_ = nullptr;
-    return;
   }
 
   if (end_access_desc.initialized) {

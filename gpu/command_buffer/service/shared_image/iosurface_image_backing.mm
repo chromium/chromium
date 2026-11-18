@@ -931,8 +931,10 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
   wgpu::SharedTextureMemoryMetalEndAccessState metal_end_access_state = {};
   end_access_state.nextInChain = &metal_end_access_state;
 
-  CHECK_EQ(shared_texture_memory_.EndAccess(texture_, &end_access_state),
-           wgpu::Status::Success);
+  if (shared_texture_memory_.EndAccess(texture_, &end_access_state) !=
+      wgpu::Status::Success) {
+    LOG(ERROR) << "SharedTextureMemory::EndAccess() failed";
+  }
   CHECK(end_access_state.fenceCount == end_access_state.signaledValueCount);
 
   if (end_access_state.initialized) {

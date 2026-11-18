@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -31,6 +33,8 @@
 
 namespace gpu {
 namespace {
+
+using ::testing::Each;
 
 class MockBufferMapCallback {
  public:
@@ -122,6 +126,23 @@ class WebGPUMailboxTestBase : public WebGPUTest {
     return decoder->DoCommands(1, (const void*)&cmd,
                                ComputeNumEntries(sizeof(cmd) + data_size),
                                &entries_processed);
+  }
+
+  base::span<const uint8_t> MapBufferForReadback(const wgpu::Device& device,
+                                                 const wgpu::Buffer& buffer) {
+    const size_t size = static_cast<size_t>(buffer.GetSize());
+    wgpu::FutureWaitInfo wait_info{buffer.MapAsync(
+        wgpu::MapMode::Read, 0, size, wgpu::CallbackMode::AllowSpontaneous,
+        ToMockBufferMapCallback)};
+    EXPECT_CALL(*mock_buffer_map_callback,
+                Call(wgpu::MapAsyncStatus::Success, testing::_))
+        .Times(1);
+    WaitForFutureCompletion(device, wait_info);
+    // SAFETY: `buffer.GetConstMappedRange(0, size)` returns a valid pointer to
+    // `size` mapped bytes after `MapAsync` succeeds.
+    return UNSAFE_BUFFERS(base::span(
+        static_cast<const uint8_t*>(buffer.GetConstMappedRange(0, size)),
+        size));
   }
 };
 
@@ -291,6 +312,55 @@ class WebGPUMailboxTextureTest
 
     wgpu::Queue queue = device.GetQueue();
     queue.Submit(1, &commands);
+  }
+
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      AccessType access_type = AccessType::ReadWrite,
+      const gfx::Size& size = {1, 1}) {
+    return GetSharedImageInterface()->CreateSharedImage(
+        {GetParam().format, size, gfx::ColorSpace::CreateSRGB(),
+         GetSharedImageUsage(access_type), "TestLabel"},
+        kNullSurfaceHandle);
+  }
+
+  wgpu::Buffer EncodeT2BForReadback(const wgpu::CommandEncoder& encoder,
+                                    const wgpu::Texture& src_texture,
+                                    const wgpu::Extent3D& copy_size = {1, 1, 1},
+                                    const wgpu::Origin3D& src_origin = {},
+                                    uint32_t src_mip_level = 0) {
+    const uint32_t bytes_per_texel = BytesPerTexel(GetParam().format);
+    constexpr uint32_t kBytesPerRowAlignment = 256;
+    const uint32_t bytes_per_row = base::bits::AlignUp(
+        copy_size.width * bytes_per_texel, kBytesPerRowAlignment);
+    const size_t total_rows =
+        static_cast<size_t>(copy_size.height) * copy_size.depthOrArrayLayers;
+    const uint64_t buffer_size = total_rows > 0
+                                     ? (total_rows - 1) * bytes_per_row +
+                                           copy_size.width * bytes_per_texel
+                                     : 0;
+
+    wgpu::BufferDescriptor buffer_desc = {
+        .usage = wgpu::BufferUsage::MapRead | wgpu::BufferUsage::CopyDst,
+        .size = buffer_size,
+    };
+    wgpu::Buffer readback_buffer = device_.CreateBuffer(&buffer_desc);
+
+    wgpu::TexelCopyTextureInfo copy_src = {
+        .texture = src_texture,
+        .mipLevel = src_mip_level,
+        .origin = src_origin,
+    };
+    wgpu::TexelCopyBufferInfo copy_dst = {
+        .layout =
+            {
+                .offset = 0,
+                .bytesPerRow = bytes_per_row,
+                .rowsPerImage = copy_size.height,
+            },
+        .buffer = readback_buffer,
+    };
+    encoder.CopyTextureToBuffer(&copy_src, &copy_dst, &copy_size);
+    return readback_buffer;
   }
 
   wgpu::Device device_;
@@ -1516,6 +1586,97 @@ TEST_P(WebGPUMailboxTextureTest,
       base::MakeExpectedRunClosure(FROM_HERE));
   EXPECT_WEBGPU_DEVICE_LOST(device_, WebGPUTextureScopedAccess::EndAccess(
                                          std::move(webgpu_scoped_access)));
+}
+
+// Regression test for crbug.com/577360270: queue.WriteTexture() sets Dawn's
+// subresource initialized bit eagerly, while device.Destroy() drops the write.
+// Dissociating the mailbox afterwards must leave an uninitialized SharedImage
+// uncleared.
+TEST_P(WebGPUMailboxTextureTest,
+       WriteTextureThenDestroyDeviceLeavesSharedImageUncleared) {
+  scoped_refptr<gpu::ClientSharedImage> shared_image = CreateSharedImage();
+
+  // Populate the backing with non-zero data first so that if the SharedImage is
+  // erroneously marked cleared after WEBGPU_MAILBOX_DISCARD, subsequent reads
+  // would observe stale non-zero contents.
+  InitializeTextureColor(device_, shared_image, {1.0, 0.0, 0.0, 1.0});
+  WaitForCompletion(device_);
+
+  wgpu::Device write_device = GetNewDevice();
+  gpu::SyncToken sync_token;
+  {
+    wgpu::TextureDescriptor write_desc = {
+        .usage = wgpu::TextureUsage::CopyDst,
+    };
+    std::unique_ptr<WebGPUTextureScopedAccess> write_access =
+        shared_image->BeginWebGPUTextureAccess(
+            webgpu(), gpu::SyncToken(), write_device, write_desc, /*usage=*/0,
+            webgpu::WEBGPU_MAILBOX_DISCARD);
+
+    const uint32_t bytes_per_texel = BytesPerTexel(GetParam().format);
+    std::vector<uint8_t> write_data(bytes_per_texel, 0x41);
+    wgpu::TexelCopyTextureInfo dst = {
+        .texture = write_access->texture(),
+    };
+    wgpu::TexelCopyBufferLayout data_layout = {
+        .bytesPerRow = bytes_per_texel,
+        .rowsPerImage = 1,
+    };
+    wgpu::Extent3D write_size = {1, 1, 1};
+    write_device.GetQueue().WriteTexture(
+        &dst, write_data.data(), write_data.size(), &data_layout, &write_size);
+
+    // Destroy the device before dissociating the mailbox so the recorded
+    // WriteTexture copy is dropped without executing.
+    write_device.Destroy();
+
+    sync_token = WebGPUTextureScopedAccess::EndAccess(std::move(write_access));
+  }
+
+  // Read-only access without a lazy-clearing usage must be rejected (producing
+  // an error texture) because the SharedImage must remain uncleared.
+  {
+    wgpu::TextureDescriptor read_only_desc = {
+        .usage = wgpu::TextureUsage::CopySrc,
+    };
+    std::unique_ptr<WebGPUTextureScopedAccess> read_only_access =
+        shared_image->BeginWebGPUTextureAccess(webgpu(), sync_token, device_,
+                                               read_only_desc, /*usage=*/0,
+                                               webgpu::WEBGPU_MAILBOX_NONE);
+
+    wgpu::CommandEncoder encoder = device_.CreateCommandEncoder();
+    wgpu::Buffer readback_buffer =
+        EncodeT2BForReadback(encoder, read_only_access->texture());
+    EXPECT_WEBGPU_ERROR(device_, wgpu::ErrorType::Validation, encoder.Finish());
+
+    sync_token =
+        WebGPUTextureScopedAccess::EndAccess(std::move(read_only_access));
+    WaitForCompletion(device_);
+  }
+
+  // Accessing with a usage supporting lazy clearing should succeed and lazily
+  // clear the SharedImage to zero rather than exposing the prior red contents
+  // or the dropped WriteTexture data.
+  {
+    wgpu::TextureDescriptor lazy_clear_desc = {
+        .usage =
+            wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::RenderAttachment,
+    };
+    std::unique_ptr<WebGPUTextureScopedAccess> lazy_clear_access =
+        shared_image->BeginWebGPUTextureAccess(webgpu(), sync_token, device_,
+                                               lazy_clear_desc, /*usage=*/0,
+                                               webgpu::WEBGPU_MAILBOX_NONE);
+
+    wgpu::CommandEncoder encoder = device_.CreateCommandEncoder();
+    wgpu::Buffer readback_buffer =
+        EncodeT2BForReadback(encoder, lazy_clear_access->texture());
+    wgpu::CommandBuffer commands = encoder.Finish();
+    device_.GetQueue().Submit(1, &commands);
+
+    WebGPUTextureScopedAccess::EndAccess(std::move(lazy_clear_access));
+
+    EXPECT_THAT(MapBufferForReadback(device_, readback_buffer), Each(0));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
