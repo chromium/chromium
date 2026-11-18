@@ -130,10 +130,10 @@ source_set("test_support") {
       "dlp_reporting_manager_test_helper.h",
     ]
     public_deps += [
-      "//chrome/test:test_support",
       "//components/reporting/client:test_support",
       "//components/reporting/util:status",
     ]
+    deps = [ "//ui/views" ]
   }
 }
 
@@ -151,10 +151,18 @@ source_set("unit_tests") {
     "//chrome/browser/enterprise/connectors/test:test_support",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
-    "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
+    "//chrome/test/base:testing_profile",
     "//components/enterprise/data_controls/core/browser:unit_tests",
+    "//components/policy/core/common:test_support",
   ]
+
+  if (is_chromeos) {
+    deps += [
+      "//chromeos/ash/components/network",
+      "//chromeos/ash/services/network_config/public/cpp:test_support",
+    ]
+  }
 
   if (enable_extensions && enterprise_data_controls) {
     sources += [ "dlp_reporting_manager_unittest.cc" ]
@@ -184,9 +192,16 @@ if (!is_android) {
       ":data_controls",
       ":test_support",
       "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:browser_commands",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/test:dialog",
       "//chrome/browser/ui/webui:chrome_web_contents_handler",
-      "//chrome/test:test_support",
+      "//chrome/test/base:in_process_browser_test",
       "//content/test:test_support",
+      "//ui/views",
+      "//ui/views/controls/webview",
       "//ui/web_dialogs:test_support",
     ]
   }
@@ -203,7 +218,6 @@ if (is_android) {
     deps = [
       ":data_controls",
       "//base",
-      "//chrome/test:test_support",
       "//chrome/test/base:chrome_test_utils",
       "//content/test:test_support",
       "//testing/gmock",

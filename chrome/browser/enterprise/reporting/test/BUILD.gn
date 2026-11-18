@@ -17,14 +17,18 @@ source_set("test_support") {
     "realtime_event_uploader_test_base.cc",
     "test_utils.cc",
   ]
-
+  public_deps = [
+    "//chrome/browser/enterprise/connectors/reporting",
+    "//chrome/test/base:testing_profile",
+    "//content/test:test_support",
+  ]
   deps = [
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",
+    "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
-    "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
     "//components/account_id",
     "//components/device_signals/core/browser",
@@ -32,6 +36,7 @@ source_set("test_support") {
     "//components/enterprise",
     "//components/enterprise:test_support",
     "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
     "//components/prefs",
     "//components/sync_preferences",
     "//services/network:test_support",
