@@ -816,32 +816,24 @@ INSTANTIATE_TEST_SUITE_P(MSE_Widevine,
                          Values(kWidevineKeySystem));
 #endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM)
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioClearVideo_WebM) {
-  TestSimplePlayback("bear-320x240-av_enc-a.webm");
-}
-
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoAudio_WebM) {
-  TestSimplePlayback("bear-320x240-av_enc-av.webm");
-}
-
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM) {
-  TestSimplePlayback("bear-320x240-av_enc-v.webm");
-}
-
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VP9Video_WebM_Fullsample) {
-  TestSimplePlayback("bear-320x240-v-vp9_fullsample_enc-v.webm");
-}
-
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VP9Video_WebM_Subsample) {
-  TestSimplePlayback("bear-320x240-v-vp9_subsample_enc-v.webm");
-}
-
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoAudio_WebM_Opus) {
-  TestSimplePlayback("bear-320x240-opus-av_enc-av.webm");
-}
-
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM_Opus) {
-  TestSimplePlayback("bear-320x240-opus-av_enc-v.webm");
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_WebM) {
+  static constexpr const char* kMediaFiles[] = {
+      "bear-320x240-av_enc-a.webm",
+      "bear-320x240-av_enc-av.webm",
+      "bear-320x240-av_enc-v.webm",
+      "bear-320x240-v-vp9_fullsample_enc-v.webm",
+      "bear-320x240-v-vp9_subsample_enc-v.webm",
+      "bear-320x240-opus-av_enc-av.webm",
+      "bear-320x240-opus-av_enc-v.webm",
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+      "bear-av1-cenc.webm",
+      "bear-av1-320x180-10bit-cenc.webm",
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
+  };
+  for (const char* media_file : kMediaFiles) {
+    SCOPED_TRACE(media_file);
+    TestSimplePlayback(media_file);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_Multiple_VideoAudio_WebM) {
@@ -852,12 +844,24 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_Multiple_VideoAudio_WebM) {
   TestMultiplePlayback("bear-320x240-av_enc-av.webm");
 }
 
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_AudioOnly_MP4_FLAC) {
-  TestSimplePlayback("bear-flac-cenc.mp4");
-}
-
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_AudioOnly_MP4_OPUS) {
-  TestSimplePlayback("bear-opus-cenc.mp4");
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_MP4) {
+  static constexpr const char* kMediaFiles[] = {
+      "bear-flac-cenc.mp4",
+      "bear-opus-cenc.mp4",
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+      "bear-av1-cenc.mp4",
+      "bear-av1-320x180-10bit-cenc.mp4",
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+      "bear-640x360-v_frag-cenc.mp4",
+      "bear-640x360-v_frag-cenc-mdat.mp4",
+      "bear-640x360-v_frag-cbcs.mp4",
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+  };
+  for (const char* media_file : kMediaFiles) {
+    SCOPED_TRACE(media_file);
+    TestSimplePlayback(media_file);
+  }
 }
 
 // TODO(crbug.com/40116010): Flaky on multiple platforms.
@@ -892,69 +896,31 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
   TestSimplePlayback("bear-320x240-v-vp9_profile2_subsample_cenc-v.mp4");
 }
 
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_WebM_AV1) {
-  TestSimplePlayback("bear-av1-cenc.webm");
-}
-
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_WebM_AV1_10bit) {
-  TestSimplePlayback("bear-av1-320x180-10bit-cenc.webm");
-}
-
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_VideoOnly_MP4_AV1) {
-  TestSimplePlayback("bear-av1-cenc.mp4");
-}
-
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       Playback_VideoOnly_MP4_AV1_10bit) {
-  TestSimplePlayback("bear-av1-320x180-10bit-cenc.mp4");
-}
-
-#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
-
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, InvalidResponseKeyError) {
   RunInvalidResponseTest();
 }
 
 // This is not really an "encrypted" media test. Keep it here for completeness.
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, ConfigChangeVideo_ClearToClear) {
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, ConfigChangeVideo) {
   LOG(INFO) << UnitTest::GetInstance()->current_test_info()->name();
   if (!IsPlayBackPossible(CurrentKeySystem())) {
     GTEST_SKIP() << "ConfigChange test requires video playback.";
   }
 
-  TestConfigChange(ConfigChangeType::CLEAR_TO_CLEAR);
-}
-
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       ConfigChangeVideo_ClearToEncrypted) {
-  LOG(INFO) << UnitTest::GetInstance()->current_test_info()->name();
-  if (!IsPlayBackPossible(CurrentKeySystem())) {
-    GTEST_SKIP() << "ConfigChange test requires video playback.";
+  struct ConfigChangeCase {
+    const char* name;
+    ConfigChangeType type;
+  };
+  static constexpr ConfigChangeCase kCases[] = {
+      {"CLEAR_TO_CLEAR", ConfigChangeType::CLEAR_TO_CLEAR},
+      {"CLEAR_TO_ENCRYPTED", ConfigChangeType::CLEAR_TO_ENCRYPTED},
+      {"ENCRYPTED_TO_CLEAR", ConfigChangeType::ENCRYPTED_TO_CLEAR},
+      {"ENCRYPTED_TO_ENCRYPTED", ConfigChangeType::ENCRYPTED_TO_ENCRYPTED},
+  };
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(test_case.name);
+    TestConfigChange(test_case.type);
   }
-
-  TestConfigChange(ConfigChangeType::CLEAR_TO_ENCRYPTED);
-}
-
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       ConfigChangeVideo_EncryptedToClear) {
-  LOG(INFO) << UnitTest::GetInstance()->current_test_info()->name();
-  if (!IsPlayBackPossible(CurrentKeySystem())) {
-    GTEST_SKIP() << "ConfigChange test requires video playback.";
-  }
-
-  TestConfigChange(ConfigChangeType::ENCRYPTED_TO_CLEAR);
-}
-
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       ConfigChangeVideo_EncryptedToEncrypted) {
-  LOG(INFO) << UnitTest::GetInstance()->current_test_info()->name();
-  if (!IsPlayBackPossible(CurrentKeySystem())) {
-    GTEST_SKIP() << "ConfigChange test requires video playback.";
-  }
-
-  TestConfigChange(ConfigChangeType::ENCRYPTED_TO_ENCRYPTED);
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, FrameSizeChangeVideo) {
@@ -999,46 +965,24 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, EncryptedMediaDisabled) {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_VideoOnly_MP4) {
-  TestSimplePlayback("bear-640x360-v_frag-cenc.mp4");
-}
-
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_VideoOnly_MP4_MDAT) {
-  TestSimplePlayback("bear-640x360-v_frag-cenc-mdat.mp4");
-}
-
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_Encryption_CBCS) {
-  TestSimplePlayback("bear-640x360-v_frag-cbcs.mp4");
-}
-
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       Playback_EncryptedVideo_MP4_ClearAudio_WEBM) {
-  TestDifferentContainers("bear-640x360-v_frag-cenc.mp4",
-                          "bear-320x240-audio-only.webm");
-}
-
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       Playback_ClearVideo_WEBM_EncryptedAudio_MP4) {
-  TestDifferentContainers("bear-320x240-video-only.webm",
-                          "bear-640x360-a_frag-cenc.mp4");
-}
-
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       Playback_EncryptedVideo_WEBM_EncryptedAudio_MP4) {
-  TestDifferentContainers("bear-320x240-v_enc-v.webm",
-                          "bear-640x360-a_frag-cenc.mp4");
-}
-
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       Playback_EncryptedVideo_CBCS_EncryptedAudio_CENC) {
-  TestDifferentContainers("bear-640x360-v_frag-cbcs.mp4",
-                          "bear-640x360-a_frag-cenc.mp4");
-}
-
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       Playback_EncryptedVideo_CENC_EncryptedAudio_CBCS) {
-  TestDifferentContainers("bear-640x360-v_frag-cenc.mp4",
-                          "bear-640x360-a_frag-cbcs.mp4");
+                       Playback_MixedContainersAndSchemes) {
+  struct ContainerPair {
+    const char* video_file;
+    const char* audio_file;
+  };
+  static constexpr ContainerPair kPairs[] = {
+      {"bear-640x360-v_frag-cenc.mp4", "bear-320x240-audio-only.webm"},
+      {"bear-320x240-video-only.webm", "bear-640x360-a_frag-cenc.mp4"},
+      {"bear-320x240-v_enc-v.webm", "bear-640x360-a_frag-cenc.mp4"},
+      {"bear-640x360-v_frag-cbcs.mp4", "bear-640x360-a_frag-cenc.mp4"},
+      {"bear-640x360-v_frag-cenc.mp4", "bear-640x360-a_frag-cbcs.mp4"},
+  };
+  for (const auto& pair : kPairs) {
+    SCOPED_TRACE(testing::Message()
+                 << pair.video_file << " + " << pair.audio_file);
+    TestDifferentContainers(pair.video_file, pair.audio_file);
+  }
 }
 
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -1188,59 +1132,51 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, LoadSessionAfterClose) {
                             media::kEndedTitle);
 }
 
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, DecryptOnly_VideoAudio_WebM) {
-  RunSimpleEncryptedMediaTest("bear-320x240-av_enc-av.webm",
-                              media::kExternalClearKeyDecryptOnlyKeySystem,
-                              SrcType::MSE, PlayCount::ONCE);
-}
-
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, DecryptOnly_VideoOnly_MP4_VP9) {
-  RunSimpleEncryptedMediaTest("bear-320x240-v_frag-vp9-cenc.mp4",
-                              media::kExternalClearKeyDecryptOnlyKeySystem,
-                              SrcType::MSE, PlayCount::ONCE);
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, DecryptOnly) {
+  static constexpr const char* kMediaFiles[] = {
+      "bear-320x240-av_enc-av.webm",
+      "bear-320x240-v_frag-vp9-cenc.mp4",
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+      // 'cbcs' decryption is supported on CDM 10 or later as long as the
+      // appropriate buildflag is enabled.
+      "bear-640x360-v_frag-cbcs.mp4",
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+  };
+  for (const char* media_file : kMediaFiles) {
+    SCOPED_TRACE(media_file);
+    RunSimpleEncryptedMediaTest(media_file,
+                                media::kExternalClearKeyDecryptOnlyKeySystem,
+                                SrcType::MSE, PlayCount::ONCE);
+  }
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, DecryptOnly_VideoOnly_MP4_CBCS) {
-  // 'cbcs' decryption is supported on CDM 10 or later as long as the
-  // appropriate buildflag is enabled.
-  std::string expected_result = media::kEndedTitle;
-
-  RunEncryptedMediaTest(kDefaultEmePlayer, "bear-640x360-v_frag-cbcs.mp4",
-                        media::kExternalClearKeyDecryptOnlyKeySystem,
-                        SrcType::MSE, kNoSessionToLoad, false, PlayCount::ONCE,
-                        expected_result);
-}
-
 // Encryption Scheme tests. ClearKey key system is covered in
 // content/browser/media/encrypted_media_browsertest.cc.
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, Playback_Encryption_CENC) {
-  RunEncryptedMediaMultipleFileTest(
-      media::kExternalClearKeyKeySystem, "bear-640x360-v_frag-cenc.mp4",
-      "bear-640x360-a_frag-cenc.mp4", media::kEndedTitle);
-}
-
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, Playback_Encryption_CBC1) {
-  RunEncryptedMediaMultipleFileTest(media::kExternalClearKeyKeySystem,
-                                    "bear-640x360-v_frag-cbc1.mp4",
-                                    std::string(), media::kErrorTitle);
-}
-
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, Playback_Encryption_CENS) {
-  RunEncryptedMediaMultipleFileTest(media::kExternalClearKeyKeySystem,
-                                    "bear-640x360-v_frag-cens.mp4",
-                                    std::string(), media::kErrorTitle);
-}
-
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, Playback_Encryption_CBCS) {
-  // 'cbcs' decryption is supported on CDM 10 or later as long as the
-  // appropriate buildflag is enabled.
-  std::string expected_result = media::kEndedTitle;
-
-  RunEncryptedMediaMultipleFileTest(
-      media::kExternalClearKeyKeySystem, "bear-640x360-v_frag-cbcs.mp4",
-      "bear-640x360-a_frag-cbcs.mp4", expected_result);
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, Playback_EncryptionSchemes) {
+  struct EncryptionSchemeCase {
+    const char* name;
+    const char* video_file;
+    const char* audio_file;
+    const char* expected_title;
+  };
+  static constexpr EncryptionSchemeCase kCases[] = {
+      {"CENC", "bear-640x360-v_frag-cenc.mp4", "bear-640x360-a_frag-cenc.mp4",
+       media::kEndedTitle},
+      {"CBC1", "bear-640x360-v_frag-cbc1.mp4", "", media::kErrorTitle},
+      {"CENS", "bear-640x360-v_frag-cens.mp4", "", media::kErrorTitle},
+      // 'cbcs' decryption is supported on CDM 10 or later as long as the
+      // appropriate buildflag is enabled.
+      {"CBCS", "bear-640x360-v_frag-cbcs.mp4", "bear-640x360-a_frag-cbcs.mp4",
+       media::kEndedTitle},
+  };
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(test_case.name);
+    RunEncryptedMediaMultipleFileTest(
+        media::kExternalClearKeyKeySystem, test_case.video_file,
+        test_case.audio_file, test_case.expected_title);
+  }
 }
 
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
