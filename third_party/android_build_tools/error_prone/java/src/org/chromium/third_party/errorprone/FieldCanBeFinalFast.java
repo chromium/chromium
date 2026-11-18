@@ -21,7 +21,6 @@ import static com.google.errorprone.util.ASTHelpers.canBeRemoved;
 import static com.google.errorprone.util.ASTHelpers.getSymbol;
 import static com.google.errorprone.util.ASTHelpers.hasAnnotation;
 import static com.google.errorprone.util.ASTHelpers.stripParentheses;
-import static com.google.errorprone.util.AnnotationNames.VAR_ANNOTATION;
 import static com.google.errorprone.util.MoreAnnotations.asElement;
 
 import com.google.common.collect.ImmutableSet;
@@ -108,6 +107,7 @@ public class FieldCanBeFinalFast extends BugChecker implements CompilationUnitTr
                             // keep-sorted start
                             "com.beust.jcommander.Parameter",
                             "com.google.common.annotations.NonFinalForGwt",
+                            "com.google.errorprone.annotations.Var",
                             "com.google.gwt.uibinder.client.UiField",
                             "com.google.inject.testing.fieldbinder.Bind",
                             "com.google.testing.junit.testparameterinjector.TestParameter",
@@ -120,8 +120,7 @@ public class FieldCanBeFinalFast extends BugChecker implements CompilationUnitTr
                             "org.kohsuke.args4j.Argument",
                             "org.kohsuke.args4j.Option",
                             "org.mockito.Spy",
-                            "picocli.CommandLine.Option",
-                            VAR_ANNOTATION
+                            "picocli.CommandLine.Option"
                             // keep-sorted end
                             )
                     .build();
