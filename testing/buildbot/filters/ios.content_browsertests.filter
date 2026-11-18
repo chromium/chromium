@@ -188,6 +188,7 @@
 -All/DumpAccessibilityTreeTestWithIgnoredNodes.AccessibilityInputRadioCheckboxLabel/blink
 
 # TODO(crbug.com/41483598): These emit an extra inlineTextBox
+-All/DumpAccessibilityTreeTest.AccessibilityNoSourceVideoAuthorName/blink
 -All/DumpAccessibilityTreeTest.ReusedMapChangeMapName/blink
 -All/DumpAccessibilityTreeTest.ReusedMapMoveImage/blink
 -All/YieldingParserDumpAccessibilityTreeTest.ReusedMapChangeMapName/blink
