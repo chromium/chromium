@@ -12205,6 +12205,12 @@ You can manage this account’s settings by installing the Family Link app on yo
       <message name="IDS_ARC_APPLICATION_INFO_MANAGE_LINK" desc="Text for the link that opens a dialog allowing to manage supported links.">
         Manage supported links
       </message>
+
+      <!-- Extension app context menu options -->
+      <message name="IDS_NEW_TAB_APP_OPTIONS"
+        desc="Text for the context menu item that takes the user to the options of an app. (In sentence case.)">
+        Options
+      </message>
     </messages>
   </release>
 </grit>

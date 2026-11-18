@@ -13566,10 +13566,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
 
       <if expr="not use_titlecase">
-        <message name="IDS_NEW_TAB_APP_OPTIONS"
-                 desc="Text for the context menu item that takes the user to the options of an app. (In sentence case.)">
-          Options
-        </message>
         <message name="IDS_NEW_TAB_APP_DETAILS"
                  desc="Text for the context menu item that takes the user to the app in Web Store. (In sentence case.)">
           View in Web Store
@@ -13595,10 +13591,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </if>
 
       <if expr="use_titlecase">
-        <message name="IDS_NEW_TAB_APP_OPTIONS"
-                 desc="Text for the context menu item that takes the user to the options of an app. (In title case.)">
-          Options
-        </message>
         <message name="IDS_NEW_TAB_APP_DETAILS"
                  desc="Text for the context menu item that takes the user to the app in Web Store. (In title case.)">
           View in Web Store
