@@ -8453,9 +8453,10 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
   form_structure->field(4)->SetTypeTo(AutofillType(PASSPORT_NUMBER),
                                       std::nullopt);
 
-  // Fill address fields.
+  // Fill address fields from a non-AI-fillable field so `NAME_LAST` remains
+  // blocked by Autofill AI and can be tested as manually filled below.
   FormData response_data =
-      AutofillFormAndGetResults(form, form.fields()[0], kElvisProfileGuid);
+      AutofillFormAndGetResults(form, form.fields()[1], kElvisProfileGuid);
 
   const HatsSurveyStringData expected_first_survey_data = {
       {"All field types",

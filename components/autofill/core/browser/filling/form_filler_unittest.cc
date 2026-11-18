@@ -32,12 +32,14 @@
 #include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/autofill_ai/field_filling_entity_util.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/filling/form_filler_test_api.h"
@@ -64,6 +66,8 @@
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
+#include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -83,7 +87,9 @@ namespace autofill {
 namespace {
 
 using ::testing::_;
+using ::testing::AnyNumber;
 using ::testing::AtLeast;
+using ::testing::Bool;
 using ::testing::Contains;
 using ::testing::DoAll;
 using ::testing::Each;
@@ -101,6 +107,8 @@ using ::testing::Property;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::UnorderedElementsAre;
+using ::testing::Values;
+using ::testing::ValuesIn;
 using ::testing::VariantWith;
 
 constexpr char kAppLocale[] = "en-US";
@@ -575,7 +583,7 @@ TEST_F(FormFillerTest, UndoPreviewDoesNotChangeTheCache) {
   ASSERT_EQ(autofill_field->last_modifier(), FieldModifier::kAutofill);
 
   EXPECT_CALL(autofill_driver(), ApplyFormAction)
-      .Times(testing::AnyNumber())
+      .Times(AnyNumber())
       .WillRepeatedly([](mojom::FormActionType, mojom::ActionPersistence,
                          base::span<const FormFieldData> fields, const FillId&,
                          bool, const url::Origin&,
@@ -1024,15 +1032,15 @@ class PartialCreditCardDateTest
 INSTANTIATE_TEST_SUITE_P(
     CreditCardFormFillerTest,
     PartialCreditCardDateTest,
-    testing::ValuesIn({PartialCreditCardDateParams{.expected_filled_date = u""},
-                       PartialCreditCardDateParams{.cc_month = "04",
-                                                   .expected_filled_date = u""},
-                       PartialCreditCardDateParams{.cc_year = "2999",
-                                                   .expected_filled_date = u""},
-                       PartialCreditCardDateParams{
-                           .cc_month = "04",
-                           .cc_year = "2999",
-                           .expected_filled_date = u"2999-04"}}));
+    ValuesIn({PartialCreditCardDateParams{.expected_filled_date = u""},
+              PartialCreditCardDateParams{.cc_month = "04",
+                                          .expected_filled_date = u""},
+              PartialCreditCardDateParams{.cc_year = "2999",
+                                          .expected_filled_date = u""},
+              PartialCreditCardDateParams{
+                  .cc_month = "04",
+                  .cc_year = "2999",
+                  .expected_filled_date = u"2999-04"}}));
 
 // Test that we correctly fill a credit card form with month input type.
 TEST_P(PartialCreditCardDateTest, FillWithPartialDate) {
@@ -2243,6 +2251,70 @@ TEST_F(FormFillerTest, FillOrPreviewForm_WithBlockedFields) {
           FieldFillingSkipReason::kBlockedByOtherFillingOperationOrProduct));
 }
 
+// Tests that triggering an address fill on a field that is also fillable by
+// Autofill AI does not block the trigger field itself, while still blocking
+// other Autofill AI fields and respecting caller-supplied `blocked_fields`.
+TEST_F(FormFillerTest,
+       FillOrPreviewForm_AddressTriggerFieldNotBlockedByAutofillAi) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWithDataSchema};
+  AutofillWebDataServiceTestHelper webdata_helper{
+      std::make_unique<EntityTable>()};
+  autofill_client().set_entity_data_manager(std::make_unique<EntityDataManager>(
+      autofill_client().GetPrefs(), autofill_client().GetIdentityManager(),
+      autofill_client().GetSyncService(),
+      webdata_helper.autofill_webdata_service(),
+      /*history_service=*/nullptr,
+      /*pcontext_manager=*/nullptr,
+      /*strike_database=*/nullptr,
+      /*variation_country_code=*/GeoIpCountryCode("US")));
+  autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(
+      test::GetPassportEntityInstance());
+  webdata_helper.WaitUntilIdle();
+  autofill_client().SetUpPrefsAndIdentityForAutofillAi();
+
+  FormData form = FormSeen(
+      {.fields = {{.server_type = NO_SERVER_DATA, .heuristic_type = NAME_FULL},
+                  {.server_type = PASSPORT_NUMBER},
+                  {.server_type = PASSPORT_ISSUING_COUNTRY,
+                   .heuristic_type = ADDRESS_HOME_COUNTRY},
+                  {.server_type = NO_SERVER_DATA,
+                   .heuristic_type = ADDRESS_HOME_LINE1}}});
+  FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
+  ASSERT_THAT(GetFieldsFillableByAutofillAi(*form_structure, autofill_client()),
+              UnorderedElementsAre(form.fields()[0].global_id(),
+                                   form.fields()[1].global_id(),
+                                   form.fields()[2].global_id()));
+
+  // Caller-supplied `blocked_fields` must still block the trigger field if
+  // explicitly requested.
+  base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
+      caller_blocked_skip_reasons = FormFiller::GetFieldFillingSkipReasons(
+          *form_structure, *form_structure->field(0),
+          FormFiller::RefillOptions::NotRefill(), FillingProduct::kAddress,
+          AutofillTriggerSource::kPopup, autofill_client(),
+          /*blocked_fields=*/{form.fields()[0].global_id()});
+  EXPECT_THAT(
+      caller_blocked_skip_reasons[form.fields()[0].global_id()],
+      Contains(
+          FieldFillingSkipReason::kBlockedByOtherFillingOperationOrProduct));
+
+  // Without caller-supplied `blocked_fields`, the trigger field (`NAME_FULL`)
+  // and non-AI address field (`ADDRESS_HOME_LINE1`) are filled, while other AI
+  // fields (`PASSPORT_NUMBER`, `PASSPORT_ISSUING_COUNTRY`) remain blocked.
+  AutofillProfile profile = test::GetFullProfile();
+  std::vector<FormFieldData> filled_fields =
+      AutofillForm(form, form.fields()[0], &profile).fields();
+
+  EXPECT_THAT(filled_fields[0],
+              AutofilledWith(profile.GetInfo(NAME_FULL, kAppLocale)));
+  EXPECT_FALSE(filled_fields[1].is_autofilled_according_to_renderer());
+  EXPECT_FALSE(filled_fields[2].is_autofilled_according_to_renderer());
+  EXPECT_THAT(filled_fields[3],
+              AutofilledWith(profile.GetInfo(ADDRESS_HOME_LINE1, kAppLocale)));
+}
+
 // Tests that refills respect the blocked field set from the initial fill.
 TEST_F(FormFillerTest, Refill_UsesBlockedFields) {
   FormData form = test::GetFormData(
@@ -2616,9 +2688,7 @@ class RefillTest_SuppressAutomaticRefills
   bool should_suppress_automatic_refills() const { return GetParam(); }
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         RefillTest_SuppressAutomaticRefills,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(, RefillTest_SuppressAutomaticRefills, Bool());
 
 // Tests that SuppressAutomaticRefills() prevents automatic refills for the
 // given FillId.
@@ -2753,7 +2823,7 @@ TEST_P(ExpirationDateRefillTest, RefillJavascriptModifiedExpirationDates) {
 INSTANTIATE_TEST_SUITE_P(
     CreditCardFormFillerTest,
     ExpirationDateRefillTest,
-    testing::Values(
+    Values(
         // This is the classic case: Autofill filled 04/2999, website overrode
         // 04 / 29, we need to fix this to 04 / 99.
         RefillTestCase{.exp_date_from_js = u"04 / 29",

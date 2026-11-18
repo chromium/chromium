@@ -687,7 +687,14 @@ FormFiller::GetFieldFillingSkipReasons(
   type_count.reserve(form.fields().size());
 
   if (filling_product == FillingProduct::kAddress) {
-    blocked_fields.insert_range(GetFieldsFillableByAutofillAi(form, client));
+    // If an address fill is triggered on `trigger_field`, Autofill AI did not
+    // claim this operation on `trigger_field` (e.g., it had no matching
+    // suggestions), so `trigger_field` itself must remain fillable while other
+    // AI-fillable fields in the form stay blocked.
+    base::flat_set<FieldGlobalId> ai_fields =
+        GetFieldsFillableByAutofillAi(form, client);
+    ai_fields.erase(trigger_field.global_id());
+    blocked_fields.insert_range(ai_fields);
   }
 
   auto skip_reasons =
