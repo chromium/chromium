@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_mode.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "third_party/omnibox_proto/model_mode.pb.h"
+#import "third_party/omnibox_proto/tool_mode.pb.h"
 
 namespace base {
 class UnguessableToken;
@@ -35,7 +36,7 @@ class UnguessableToken;
 
 // Called when the user taps a tool in embedded mode.
 - (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator
-                       didTapTool:(ComposeboxMode)toolMode;
+                   didTapToolMode:(omnibox::ToolMode)toolMode;
 
 // Called when the user taps a model in embedded mode.
 - (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator

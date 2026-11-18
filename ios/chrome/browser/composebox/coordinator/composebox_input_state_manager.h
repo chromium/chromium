@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_mode.h"
+#import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_constants.h"
 #import "third_party/omnibox_proto/model_mode.pb.h"
 #import "third_party/omnibox_proto/searchbox_config.pb.h"
 #import "third_party/omnibox_proto/tool_mode.pb.h"
@@ -70,6 +71,11 @@ class WebStateID;
 // The delegate to be notified of state updates.
 @property(nonatomic, weak) id<ComposeboxInputStateManagerDelegate> delegate;
 
+// The current active tool mode: `TOOL_MODE_UNSPECIFIED` in regular search,
+// `TOOL_MODE_AIM` in plain AI Mode, or the active server tool. Use
+// `setActiveToolMode:` or `toggleToolMode:activationSource:` to update it.
+@property(nonatomic, readonly) omnibox::ToolMode activeToolMode;
+
 // The current active model, or `MODEL_MODE_UNSPECIFIED` when no model applies
 // (e.g. in regular search). Use `setActiveModel:explicitUserAction:` to set the
 // model.
@@ -108,6 +114,11 @@ class WebStateID;
 // Mode, and `TOOL_MODE_UNSPECIFIED` returns to the default mode for the
 // entrypoint.
 - (void)setActiveToolMode:(omnibox::ToolMode)toolMode;
+
+// Selects `toolMode`, or toggles back to the entrypoint's default mode if
+// `toolMode` is already active, recording associated selection metrics.
+- (void)toggleToolMode:(omnibox::ToolMode)toolMode
+      activationSource:(AiModeActivationSource)activationSource;
 
 // Sets the active model if eligible. `MODEL_MODE_UNSPECIFIED` clears the
 // explicit selection. If `explicitUserAction` is `YES`, records metrics.

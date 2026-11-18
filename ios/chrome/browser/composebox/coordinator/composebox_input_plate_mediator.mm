@@ -728,7 +728,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     _awaitingAttachmentSignals = YES;
   }
 
-  _modeHolder.mode = params.toolMode;
+  [self setToolMode:params.toolMode];
 
   if (params.modelMode != omnibox::ModelMode::MODEL_MODE_UNSPECIFIED) {
     [self setModel:params.modelMode explicitUserAction:YES];
@@ -745,6 +745,12 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
 - (void)setToolMode:(omnibox::ToolMode)toolMode {
   [_stateManager setActiveToolMode:toolMode];
+}
+
+- (void)toggleToolMode:(omnibox::ToolMode)toolMode
+      activationSource:(AiModeActivationSource)activationSource {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [_stateManager toggleToolMode:toolMode activationSource:activationSource];
 }
 
 - (void)setModel:(omnibox::ModelMode)model

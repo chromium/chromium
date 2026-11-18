@@ -291,6 +291,10 @@ omnibox::InputType InputTypeForAttachmentOption(
   _metricsRecorder = nil;
 }
 
+- (omnibox::ToolMode)activeToolMode {
+  return ToolModeForComposeboxMode([self activeMode]);
+}
+
 - (void)setActiveToolMode:(omnibox::ToolMode)toolMode {
   if (![self canSelectToolMode:toolMode]) {
     return;
@@ -301,6 +305,24 @@ omnibox::InputType InputTypeForAttachmentOption(
   }
   if (std::optional<ComposeboxMode> mode = ModeForToolMode(toolMode)) {
     _modeHolder.mode = *mode;
+  }
+}
+
+- (void)toggleToolMode:(omnibox::ToolMode)toolMode
+      activationSource:(AiModeActivationSource)activationSource {
+  if (self.activeToolMode == toolMode) {
+    [self setActiveToolMode:ToolModeForComposeboxMode([self defaultTool])];
+    return;
+  }
+  if (![self canSelectToolMode:toolMode]) {
+    return;
+  }
+  [self setActiveToolMode:toolMode];
+  if (toolMode == omnibox::ToolMode::TOOL_MODE_AIM) {
+    [self.metricsRecorder recordAiModeActivationSource:activationSource];
+  }
+  if (toolMode != omnibox::ToolMode::TOOL_MODE_UNSPECIFIED) {
+    [self.metricsRecorder recordToolSelected:toolMode];
   }
 }
 

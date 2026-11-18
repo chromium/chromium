@@ -92,6 +92,7 @@
 #import "net/base/apple/url_conversions.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "third_party/omnibox_proto/searchbox_config.pb.h"
+#import "third_party/omnibox_proto/tool_mode.pb.h"
 #import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace {
@@ -117,6 +118,24 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
       return contextual_search::ContextualSearchSource::kOmnibox;
     case ComposeboxEntrypoint::kCobrowse:
       return contextual_search::ContextualSearchSource::kContextualTasks;
+  }
+}
+
+// Returns the `omnibox::ToolMode` corresponding to `mode`.
+omnibox::ToolMode ToolModeForComposeboxMode(ComposeboxMode mode) {
+  switch (mode) {
+    case ComposeboxMode::kAIM:
+      return omnibox::ToolMode::TOOL_MODE_AIM;
+    case ComposeboxMode::kImageGeneration:
+      return omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
+    case ComposeboxMode::kCanvas:
+      return omnibox::ToolMode::TOOL_MODE_CANVAS;
+    case ComposeboxMode::kDeepSearch:
+      return omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH;
+    case ComposeboxMode::kPTM:
+      return omnibox::ToolMode::TOOL_MODE_GEMINI_PRO;
+    case ComposeboxMode::kRegularSearch:
+      return omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
   }
 }
 
@@ -752,18 +771,8 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 /// already active, and records associated metrics.
 - (void)selectTool:(ComposeboxMode)toolMode
     activationSource:(AiModeActivationSource)activationSource {
-  if (_modeHolder.mode == toolMode) {
-    ComposeboxMode defaultMode = _entrypoint == ComposeboxEntrypoint::kCobrowse
-                                     ? ComposeboxMode::kAIM
-                                     : ComposeboxMode::kRegularSearch;
-    _modeHolder.mode = defaultMode;
-  } else {
-    _modeHolder.mode = toolMode;
-    if (toolMode == ComposeboxMode::kAIM) {
-      [_metricsRecorder recordAiModeActivationSource:activationSource];
-    }
-    [_metricsRecorder recordToolSelected:toolMode];
-  }
+  [_mediator toggleToolMode:ToolModeForComposeboxMode(toolMode)
+           activationSource:activationSource];
 }
 
 /// Dismisses the composebox via a command to the browser coordinator.
@@ -1000,8 +1009,9 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 #pragma mark - ComposeboxMenuCoordinatorInputPlateDelegate
 
 - (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator
-                       didTapTool:(ComposeboxMode)toolMode {
-  [self selectTool:toolMode activationSource:AiModeActivationSource::kToolMenu];
+                   didTapToolMode:(omnibox::ToolMode)toolMode {
+  [_mediator toggleToolMode:toolMode
+           activationSource:AiModeActivationSource::kToolMenu];
 }
 
 - (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator

@@ -394,10 +394,9 @@ std::string GetStringForPickerAttachmentType(
   }
 }
 
-- (void)recordToolSelected:(ComposeboxMode)tool {
+- (void)recordToolSelected:(omnibox::ToolMode)tool {
   if (_contextualSearchMetricsRecorder) {
-    _contextualSearchMetricsRecorder->RecordToolSelected(
-        ToolModeFromComposeboxMode(tool));
+    _contextualSearchMetricsRecorder->RecordToolSelected(tool);
   }
 }
 

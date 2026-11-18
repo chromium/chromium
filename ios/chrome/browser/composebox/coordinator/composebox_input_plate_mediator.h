@@ -160,6 +160,12 @@ class ContextualSearchSessionHandle;
 // Sets the active tool mode to `toolMode`.
 - (void)setToolMode:(omnibox::ToolMode)toolMode;
 
+// Selects `toolMode` in the input state manager, or toggles back to the
+// entrypoint's default mode if `toolMode` is already active, recording
+// associated selection metrics.
+- (void)toggleToolMode:(omnibox::ToolMode)toolMode
+      activationSource:(AiModeActivationSource)activationSource;
+
 // Sets the `model` to use in queries, specifying whether the choice was caused
 // by an `explicitUserAction` (e.g. picked from the menu).
 - (void)setModel:(omnibox::ModelMode)model

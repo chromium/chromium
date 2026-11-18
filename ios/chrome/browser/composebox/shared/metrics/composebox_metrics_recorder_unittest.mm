@@ -298,7 +298,7 @@ TEST_F(ComposeboxMetricsRecorderTest, AttachmentCountAtSubmission) {
 }
 
 TEST_F(ComposeboxMetricsRecorderTest, ToolSelected) {
-  [recorder_ recordToolSelected:ComposeboxMode::kCanvas];
+  [recorder_ recordToolSelected:omnibox::ToolMode::TOOL_MODE_CANVAS];
   histogram_tester_.ExpectBucketCount(
       "ContextualSearch.Tools.Selected.Unknown",
       static_cast<int>(omnibox::ToolMode::TOOL_MODE_CANVAS), 1);

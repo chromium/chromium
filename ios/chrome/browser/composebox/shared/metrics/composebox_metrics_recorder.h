@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_mode.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_constants.h"
 #import "third_party/omnibox_proto/model_mode.pb.h"
+#import "third_party/omnibox_proto/tool_mode.pb.h"
 
 namespace contextual_search {
 class ContextualSearchMetricsRecorder;
@@ -97,8 +98,8 @@ enum class ComposeboxEntrypoint;
 // Records that the given `model` was displayed.
 - (void)recordModelModeShown:(omnibox::ModelMode)model;
 
-// Records the tool explicitly selected in the menu.
-- (void)recordToolSelected:(ComposeboxMode)tool;
+// Records the tool explicitly selected in the menu or input plate.
+- (void)recordToolSelected:(omnibox::ToolMode)tool;
 
 // Records the model explicitly selected in the menu.
 - (void)recordModelSelected:(omnibox::ModelMode)model;

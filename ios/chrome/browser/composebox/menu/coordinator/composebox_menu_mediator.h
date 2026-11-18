@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
 #import "ios/web/public/web_state_id.h"
 #import "third_party/omnibox_proto/model_mode.pb.h"
+#import "third_party/omnibox_proto/tool_mode.pb.h"
 
 struct ComposeboxTabSelection;
 class WebStateList;
@@ -30,7 +31,7 @@ class WebStateList;
 
 // Called when a tool option is tapped.
 - (void)composeboxMenuMediator:(ComposeboxMenuMediator*)mediator
-                    didTapTool:(ComposeboxMode)toolMode;
+                didTapToolMode:(omnibox::ToolMode)toolMode;
 
 // Called when a model is tapped.
 - (void)composeboxMenuMediator:(ComposeboxMenuMediator*)mediator

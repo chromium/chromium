@@ -3,5 +3,6 @@ include_rules = [
   "+components/contextual_search/contextual_search_metrics_recorder.h",
   "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
   "+third_party/omnibox_proto/model_mode.pb.h",
+  "+third_party/omnibox_proto/tool_mode.pb.h",
   # keep-sorted end
 ]

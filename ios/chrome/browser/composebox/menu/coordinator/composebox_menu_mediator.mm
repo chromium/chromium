@@ -177,23 +177,27 @@
   switch (type) {
     case ComposeboxMenuItemType::kAIM:
       [self.delegate composeboxMenuMediator:self
-                                 didTapTool:ComposeboxMode::kAIM];
+                             didTapToolMode:omnibox::ToolMode::TOOL_MODE_AIM];
       break;
     case ComposeboxMenuItemType::kCreateImage:
-      [self.delegate composeboxMenuMediator:self
-                                 didTapTool:ComposeboxMode::kImageGeneration];
+      [self.delegate
+          composeboxMenuMediator:self
+                  didTapToolMode:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN];
       break;
     case ComposeboxMenuItemType::kDeepSearch:
-      [self.delegate composeboxMenuMediator:self
-                                 didTapTool:ComposeboxMode::kDeepSearch];
+      [self.delegate
+          composeboxMenuMediator:self
+                  didTapToolMode:omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH];
       break;
     case ComposeboxMenuItemType::kCanvas:
-      [self.delegate composeboxMenuMediator:self
-                                 didTapTool:ComposeboxMode::kCanvas];
+      [self.delegate
+          composeboxMenuMediator:self
+                  didTapToolMode:omnibox::ToolMode::TOOL_MODE_CANVAS];
       break;
     case ComposeboxMenuItemType::kPTM:
-      [self.delegate composeboxMenuMediator:self
-                                 didTapTool:ComposeboxMode::kPTM];
+      [self.delegate
+          composeboxMenuMediator:self
+                  didTapToolMode:omnibox::ToolMode::TOOL_MODE_GEMINI_PRO];
       break;
     case ComposeboxMenuItemType::kCurrentTab: {
       [self processCurrentTab];

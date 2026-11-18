@@ -248,13 +248,13 @@ CGFloat const kSheetPresentationCornerRadius = 38.0f;
 #pragma mark - ComposeboxMenuMediatorDelegate
 
 - (void)composeboxMenuMediator:(ComposeboxMenuMediator*)mediator
-                    didTapTool:(ComposeboxMode)toolMode {
+                didTapToolMode:(omnibox::ToolMode)toolMode {
   _successfulActionPerformed = YES;
 
   __weak __typeof(self) weakSelf = self;
   if (_isStandaloneMenu) {
     [_metricsRecorder recordToolSelected:toolMode];
-    if (toolMode == ComposeboxMode::kAIM) {
+    if (toolMode == omnibox::ToolMode::TOOL_MODE_AIM) {
       [_metricsRecorder
           recordAiModeActivationSource:AiModeActivationSource::kToolMenu];
     }
@@ -271,7 +271,7 @@ CGFloat const kSheetPresentationCornerRadius = 38.0f;
     }];
   } else {
     [self.inputPlateDelegate composeboxMenuCoordinator:self
-                                            didTapTool:toolMode];
+                                        didTapToolMode:toolMode];
     [self dismissUIWithCompletion:^{
       [weakSelf requestMenuDismissal];
     }];
@@ -288,7 +288,7 @@ CGFloat const kSheetPresentationCornerRadius = 38.0f;
     ComposeboxFocusParams* focusParams = [[ComposeboxFocusParams alloc]
         initWithEntrypoint:_entrypoint
                      query:nil
-                  toolMode:ComposeboxMode::kRegularSearch
+                  toolMode:omnibox::ToolMode::TOOL_MODE_UNSPECIFIED
                  modelMode:model
             attachmentList:nil];
     [self dismissUIWithCompletion:^{
@@ -310,7 +310,7 @@ CGFloat const kSheetPresentationCornerRadius = 38.0f;
     ComposeboxFocusParams* focusParams = [[ComposeboxFocusParams alloc]
         initWithEntrypoint:_entrypoint
                      query:nil
-                  toolMode:ComposeboxMode::kRegularSearch
+                  toolMode:omnibox::ToolMode::TOOL_MODE_UNSPECIFIED
                  modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
             attachmentList:attachments];
     [self dismissUIWithCompletion:^{

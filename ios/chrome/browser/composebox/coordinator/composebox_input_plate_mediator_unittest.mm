@@ -957,7 +957,7 @@ TEST_F(ComposeboxInputPlateMediatorTest, AwaitingSignalsSetOnFocus) {
   ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
       initWithEntrypoint:ComposeboxEntrypoint::kOther
                    query:nil
-                toolMode:ComposeboxMode::kRegularSearch
+                toolMode:omnibox::ToolMode::TOOL_MODE_UNSPECIFIED
                modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
           attachmentList:selection];
 
@@ -984,7 +984,7 @@ TEST_F(ComposeboxInputPlateMediatorTest, AwaitingSignalsClearedOnItemRemoval) {
   ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
       initWithEntrypoint:ComposeboxEntrypoint::kOther
                    query:nil
-                toolMode:ComposeboxMode::kRegularSearch
+                toolMode:omnibox::ToolMode::TOOL_MODE_UNSPECIFIED
                modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
           attachmentList:selection];
 
@@ -1021,7 +1021,7 @@ TEST_F(ComposeboxInputPlateMediatorTest, AwaitingSignalsClearedOnItemError) {
   ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
       initWithEntrypoint:ComposeboxEntrypoint::kOther
                    query:nil
-                toolMode:ComposeboxMode::kRegularSearch
+                toolMode:omnibox::ToolMode::TOOL_MODE_UNSPECIFIED
                modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
           attachmentList:selection];
 
@@ -1059,7 +1059,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
       initWithEntrypoint:ComposeboxEntrypoint::kOther
                    query:nil
-                toolMode:ComposeboxMode::kRegularSearch
+                toolMode:omnibox::ToolMode::TOOL_MODE_UNSPECIFIED
                modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
           attachmentList:selection];
 
@@ -1099,7 +1099,7 @@ TEST_F(ComposeboxInputPlateMediatorTest, LogsOmniboxMetricOnNTP) {
   ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
       initWithEntrypoint:ComposeboxEntrypoint::kOther
                    query:nil
-                toolMode:ComposeboxMode::kRegularSearch
+                toolMode:omnibox::ToolMode::TOOL_MODE_UNSPECIFIED
                modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
           attachmentList:nil];
   [mediator_ applyFocusParams:params];
@@ -1135,7 +1135,7 @@ TEST_F(ComposeboxInputPlateMediatorTest, LogsOmniboxMetricOnStartSurface) {
   ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
       initWithEntrypoint:ComposeboxEntrypoint::kOther
                    query:nil
-                toolMode:ComposeboxMode::kRegularSearch
+                toolMode:omnibox::ToolMode::TOOL_MODE_UNSPECIFIED
                modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
           attachmentList:nil];
   [mediator_ applyFocusParams:params];
@@ -3759,4 +3759,23 @@ TEST_F(ComposeboxInputPlateMediatorMockTimeTest,
   EXPECT_FALSE(delegate_.showedSnackbarForItemUploadDidFail);
   EXPECT_FALSE(cobrowse_consumer_.sendPending);
 }
+
+// Tests that applying `ComposeboxFocusParams` with a non-unspecified `toolMode`
+// selects that tool in the mediator.
+TEST_F(ComposeboxInputPlateMediatorTest, ApplyFocusParamsSelectsToolMode) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  SetCreateImageEligible(true);
+  ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
+      initWithEntrypoint:ComposeboxEntrypoint::kNTPImageGenerationButton
+                   query:nil
+                toolMode:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN
+               modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
+          attachmentList:nil];
+
+  [mediator_ applyFocusParams:params];
+
+  EXPECT_EQ([mediator_ composeboxMode], ComposeboxMode::kImageGeneration);
+}
+
 }  // namespace

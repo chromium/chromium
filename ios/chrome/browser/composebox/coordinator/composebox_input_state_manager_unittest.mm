@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_state_manager.h"
 
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/contextual_search/contextual_search_metrics_recorder.h"
@@ -16,6 +17,7 @@
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
+#import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_collection.h"
 #import "ios/chrome/browser/composebox/ui/composebox_model_item.h"
@@ -1480,4 +1482,90 @@ TEST_F(ComposeboxInputStateManagerTest,
 
   [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_UNSPECIFIED];
   EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kRegularSearch);
+}
+
+// Tests that `toggleToolMode:activationSource:` activates an eligible tool,
+// records selection metrics, and toggles back to regular search when tapped
+// again.
+TEST_F(ComposeboxInputStateManagerTest,
+       ToggleToolModeActivatesRecordsMetricsAndTogglesOff) {
+  base::HistogramTester histogram_tester;
+  contextual_search::ContextualSearchMetricsRecorder contextual_recorder(
+      contextual_search::ContextualSearchSource::kOmnibox);
+  ComposeboxMetricsRecorder* recorder = [[ComposeboxMetricsRecorder alloc]
+      initWithEntrypoint:ComposeboxEntrypoint::kOther];
+  recorder.contextualSearchMetricsRecorder = &contextual_recorder;
+  manager_.metricsRecorder = recorder;
+
+  omnibox::SearchboxConfig config;
+  config.mutable_rule_set();
+  omnibox::ToolConfig* canvas_config = config.add_tool_configs();
+  canvas_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  canvas_config->mutable_rule()->set_allow_all_input_types(true);
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  ASSERT_TRUE(aim_eligibility_callback_);
+  aim_eligibility_callback_.Run();
+
+  [manager_ toggleToolMode:omnibox::ToolMode::TOOL_MODE_AIM
+          activationSource:AiModeActivationSource::kDedicatedButton];
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_AIM);
+  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kAIM);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.AiModeActivationSource",
+      static_cast<int>(AiModeActivationSource::kDedicatedButton), 1);
+  histogram_tester.ExpectBucketCount(
+      "ContextualSearch.Tools.Selected.Omnibox",
+      static_cast<int>(omnibox::ToolMode::TOOL_MODE_AIM), 1);
+
+  [manager_ toggleToolMode:omnibox::ToolMode::TOOL_MODE_CANVAS
+          activationSource:AiModeActivationSource::kToolMenu];
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_CANVAS);
+  histogram_tester.ExpectBucketCount(
+      "ContextualSearch.Tools.Selected.Omnibox",
+      static_cast<int>(omnibox::ToolMode::TOOL_MODE_CANVAS), 1);
+
+  [manager_ toggleToolMode:omnibox::ToolMode::TOOL_MODE_CANVAS
+          activationSource:AiModeActivationSource::kToolMenu];
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kRegularSearch);
+
+  recorder.contextualSearchMetricsRecorder = nullptr;
+}
+
+// Tests that toggling off an active tool in Cobrowse returns to plain AI Mode
+// (`TOOL_MODE_AIM`) rather than regular search.
+TEST_F(ComposeboxInputStateManagerTest,
+       ToggleToolModeOffInCobrowseReturnsToAIMode) {
+  [manager_ disconnect];
+  mode_holder_.mode = ComposeboxMode::kAIM;
+  manager_ = [[ComposeboxInputStateManager alloc]
+       initWithWebStateList:&web_state_list_
+                 modeHolder:mode_holder_
+                prefService:&pref_service_
+      aimEligibilityService:mock_aim_service_.get()
+            identityManager:identity_test_env_.identity_manager()
+         templateURLService:nullptr
+              sessionHandle:session_handle_.get()
+                 entrypoint:ComposeboxEntrypoint::kCobrowse
+                isIncognito:NO];
+
+  omnibox::SearchboxConfig config;
+  config.mutable_rule_set();
+  omnibox::ToolConfig* canvas_config = config.add_tool_configs();
+  canvas_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  canvas_config->mutable_rule()->set_allow_all_input_types(true);
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  ASSERT_TRUE(aim_eligibility_callback_);
+  aim_eligibility_callback_.Run();
+
+  [manager_ toggleToolMode:omnibox::ToolMode::TOOL_MODE_CANVAS
+          activationSource:AiModeActivationSource::kToolMenu];
+  ASSERT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_CANVAS);
+
+  [manager_ toggleToolMode:omnibox::ToolMode::TOOL_MODE_CANVAS
+          activationSource:AiModeActivationSource::kToolMenu];
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_AIM);
+  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kAIM);
 }

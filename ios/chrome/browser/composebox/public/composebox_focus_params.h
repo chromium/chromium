@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/web/public/web_state_id.h"
 #import "third_party/omnibox_proto/model_mode.pb.h"
+#import "third_party/omnibox_proto/tool_mode.pb.h"
 
 namespace contextual_search {
 class ContextualSearchSessionHandle;
@@ -34,8 +35,9 @@ class ContextualSearchSessionHandle;
 // The entrypoint that triggered the composebox.
 @property(nonatomic, readonly) ComposeboxEntrypoint entrypoint;
 
-// The initial tool mode.
-@property(nonatomic, readonly) ComposeboxMode toolMode;
+// The initial tool mode (`TOOL_MODE_UNSPECIFIED` for regular search,
+// `TOOL_MODE_AIM` for plain AI Mode, or a specific server tool).
+@property(nonatomic, readonly) omnibox::ToolMode toolMode;
 
 // The initial model mode, or `MODEL_MODE_UNSPECIFIED` to use the default model.
 @property(nonatomic, readonly) omnibox::ModelMode modelMode;
@@ -79,12 +81,12 @@ class ContextualSearchSessionHandle;
 @property(nonatomic, strong)
     AssistantAIMMetricsRecorder* assistantMetricsRecorder;
 
-// Initializes a new instance with the given `entrypoint`, `query`, `toolMode`,
-// `modelMode` (or `MODEL_MODE_UNSPECIFIED` to use the default model), and
-// `attachmentList`.
+// Initializes a new instance with the given `entrypoint`, `query`, `toolMode`
+// (or `TOOL_MODE_UNSPECIFIED` for regular search), `modelMode` (or
+// `MODEL_MODE_UNSPECIFIED` to use the default model), and `attachmentList`.
 - (instancetype)initWithEntrypoint:(ComposeboxEntrypoint)entrypoint
                              query:(NSString*)query
-                          toolMode:(ComposeboxMode)toolMode
+                          toolMode:(omnibox::ToolMode)toolMode
                          modelMode:(omnibox::ModelMode)modelMode
                     attachmentList:
                         (ComposeboxAttachmentSelection*)attachmentList

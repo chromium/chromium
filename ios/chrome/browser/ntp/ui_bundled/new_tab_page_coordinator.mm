@@ -197,6 +197,7 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "third_party/omnibox_proto/tool_mode.pb.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface NewTabPageCoordinator () <AccountMenuCoordinatorDelegate,
@@ -2580,7 +2581,7 @@
   ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
       initWithEntrypoint:ComposeboxEntrypoint::kNTPAttachImageButton
                    query:nil
-                toolMode:ComposeboxMode::kAIM
+                toolMode:omnibox::ToolMode::TOOL_MODE_AIM
                modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
           attachmentList:attachments];
 

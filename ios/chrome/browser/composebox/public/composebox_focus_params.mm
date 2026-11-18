@@ -16,7 +16,7 @@
 
 - (instancetype)initWithEntrypoint:(ComposeboxEntrypoint)entrypoint
                              query:(NSString*)query
-                          toolMode:(ComposeboxMode)toolMode
+                          toolMode:(omnibox::ToolMode)toolMode
                          modelMode:(omnibox::ModelMode)modelMode
                     attachmentList:
                         (ComposeboxAttachmentSelection*)attachmentList {
@@ -55,20 +55,19 @@
 }
 
 - (instancetype)initWithEntrypoint:(ComposeboxEntrypoint)entrypoint {
-  ComposeboxMode toolMode;
+  omnibox::ToolMode toolMode = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
   switch (entrypoint) {
     case ComposeboxEntrypoint::kNTPAIMButton:
     case ComposeboxEntrypoint::kCobrowse:
     case ComposeboxEntrypoint::kNTPAttachImageButton:
-      toolMode = ComposeboxMode::kAIM;
+      toolMode = omnibox::ToolMode::TOOL_MODE_AIM;
       break;
     case ComposeboxEntrypoint::kNTPImageGenerationButton:
-      toolMode = ComposeboxMode::kImageGeneration;
+      toolMode = omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
       break;
     case ComposeboxEntrypoint::kNTPFakebox:
     case ComposeboxEntrypoint::kNTPPlusButton:
     case ComposeboxEntrypoint::kOther:
-      toolMode = ComposeboxMode::kRegularSearch;
       break;
   }
 
