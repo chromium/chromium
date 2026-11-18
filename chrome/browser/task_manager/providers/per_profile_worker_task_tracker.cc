@@ -118,7 +118,9 @@ void PerProfileWorkerTaskTracker::OnVersionStartedRunning(
     // A matching OnVersionStoppedRunning() call is still expected for this
     // service worker.
     const bool inserted = ignored_service_worker_.insert(version_id).second;
-    CHECK(inserted, base::NotFatalUntil::M162);
+    // TODO(crbug.com/584407421): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(inserted);
     return;
   }
 
