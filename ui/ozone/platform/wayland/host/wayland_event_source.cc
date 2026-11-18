@@ -23,7 +23,6 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
-#include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/ozone/events_ozone.h"
@@ -244,6 +243,7 @@ void WaylandEventSource::OnKeyboardModifiersChanged(int modifiers) {
 uint32_t WaylandEventSource::OnKeyboardKeyEvent(
     EventType type,
     DomCode dom_code,
+    std::optional<uint32_t> xkb_keycode,
     bool repeat,
     std::optional<uint32_t> serial,
     base::TimeTicks timestamp,
@@ -255,18 +255,25 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(
   DomKey dom_key;
   KeyboardCode key_code;
   auto* layout_engine = KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
-  if (!layout_engine || !layout_engine->Lookup(dom_code, keyboard_modifiers_,
-                                               &dom_key, &key_code)) {
+  if (!layout_engine) {
     LOG(ERROR) << "Failed to decode key event.";
     return POST_DISPATCH_NONE;
   }
-
-#if BUILDFLAG(USE_GTK)
-  // GTK expects the state of a key event to be the mask of modifier keys
-  // _prior_ to this event. Some IMEs rely on this behavior. See
-  // https://crbug.com/1086946#c11.
-  int state_before_event = keyboard_modifiers_;
-#endif
+  if (dom_code == DomCode::NONE) {
+    // The key has no DomCode, so look it up by keycode. Keys that the keymap
+    // does not map either are dropped.
+    if (!xkb_keycode.has_value() ||
+        !layout_engine->LookupNativeKeycode(*xkb_keycode, keyboard_modifiers_,
+                                            &dom_key, &key_code)) {
+      VLOG(1) << "Dropping unmapped key with XKB keycode "
+              << xkb_keycode.value_or(0);
+      return POST_DISPATCH_NONE;
+    }
+  } else if (!layout_engine->Lookup(dom_code, keyboard_modifiers_, &dom_key,
+                                    &key_code)) {
+    LOG(ERROR) << "Failed to decode key event.";
+    return POST_DISPATCH_NONE;
+  }
 
   KeyEvent event(type, key_code, dom_code,
                  keyboard_modifiers_ | (repeat ? EF_IS_REPEAT : 0), dom_key,
@@ -282,20 +289,6 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(
   Event::DispatcherApi(&event).set_target(focus);
 
   Event::Properties properties;
-#if BUILDFLAG(USE_GTK)
-  // GTK uses XKB keycodes.
-  uint32_t converted_key_code =
-      ui::KeycodeConverter::DomCodeToXkbKeycode(dom_code);
-  properties.emplace(
-      kPropertyKeyboardHwKeyCode,
-      std::vector<uint8_t>{static_cast<unsigned char>(converted_key_code)});
-  // Save state before event. The flags have different values than what GTK
-  // expects, but GtkUiPlatformWayland::GetGdkKeyEventState() takes care of the
-  // conversion.
-  properties.emplace(kPropertyKeyboardState,
-                     ToLittleEndianByteVector(state_before_event));
-#endif
-
   if (serial.has_value()) {
     properties.emplace(WaylandKeyboard::kPropertyWaylandSerial,
                        ToLittleEndianByteVector(serial.value()));
@@ -320,10 +313,10 @@ void WaylandEventSource::OnSynthesizedKeyPressEvent(WaylandWindow* window,
     window_manager_->SetKeyboardFocusedWindow(window);
   }
 
-  std::ignore =
-      OnKeyboardKeyEvent(EventType::kKeyPressed, dom_code, /*repeat=*/false,
-                         /*serial=*/std::nullopt, timestamp,
-                         /*device_id=*/0, WaylandKeyboard::KeyEventKind::kKey);
+  std::ignore = OnKeyboardKeyEvent(
+      EventType::kKeyPressed, dom_code, /*xkb_keycode=*/std::nullopt,
+      /*repeat=*/false, /*serial=*/std::nullopt, timestamp,
+      /*device_id=*/0, WaylandKeyboard::KeyEventKind::kKey);
 
   // The previously focused window may get destroyed as a side-effect of the
   // above dispatched event, thus only restore focus here if it's still alive.

@@ -671,6 +671,13 @@ bool IsControlCharacter(uint32_t character) {
   return (character < 0x20) || (character > 0x7E && character < 0xA0);
 }
 
+KeyboardCode FallbackKeyboardCode(DomCode dom_code, DomKey dom_key) {
+  if (dom_code == DomCode::NONE) {
+    dom_code = UsLayoutDomKeyToDomCode(dom_key);
+  }
+  return DomCodeToUsLayoutNonLocatedKeyboardCode(dom_code);
+}
+
 }  // anonymous namespace
 
 XkbKeyCodeConverter::XkbKeyCodeConverter() {
@@ -784,11 +791,7 @@ bool XkbKeyboardLayoutEngine::Lookup(DomCode dom_code,
                << KeycodeConverter::DomCodeToCodeString(dom_code) << "'";
     return false;
   }
-  xkb_mod_mask_t xkb_flags = EventFlagsToXkbFlags(flags);
-  // Obtain keysym and character.
-  xkb_keysym_t xkb_keysym;
-  uint32_t character = 0;
-  if (!XkbLookup(xkb_keycode, xkb_flags, &xkb_keysym, &character)) {
+  if (!LookupXkbKeycode(dom_code, xkb_keycode, flags, dom_key, key_code)) {
     // If we do not have matching legacy Xkb keycode for the Dom code,
     // we could be dealing with a newer application launcher or similar
     // key. Let's see if we have a basic mapping for it.
@@ -798,7 +801,30 @@ bool XkbKeyboardLayoutEngine::Lookup(DomCode dom_code,
       *dom_key = DomKey::UNIDENTIFIED;
       *key_code = DomCodeToUsLayoutNonLocatedKeyboardCode(dom_code);
     }
-    return true;
+  }
+  return true;
+}
+
+bool XkbKeyboardLayoutEngine::LookupNativeKeycode(
+    uint32_t native_keycode,
+    int flags,
+    DomKey* dom_key,
+    KeyboardCode* key_code) const {
+  return LookupXkbKeycode(KeycodeConverter::XkbKeycodeToDomCode(native_keycode),
+                          native_keycode, flags, dom_key, key_code);
+}
+
+bool XkbKeyboardLayoutEngine::LookupXkbKeycode(DomCode dom_code,
+                                               xkb_keycode_t xkb_keycode,
+                                               int flags,
+                                               DomKey* dom_key,
+                                               KeyboardCode* key_code) const {
+  xkb_mod_mask_t xkb_flags = EventFlagsToXkbFlags(flags);
+  // Obtain keysym and character.
+  xkb_keysym_t xkb_keysym;
+  uint32_t character = 0;
+  if (!XkbLookup(xkb_keycode, xkb_flags, &xkb_keysym, &character)) {
+    return false;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -838,8 +864,9 @@ bool XkbKeyboardLayoutEngine::Lookup(DomCode dom_code,
     *dom_key = NonPrintableXKeySymToDomKey(xkb_keysym);
     if (*dom_key != DomKey::NONE) {
       *key_code = NonPrintableDomKeyToKeyboardCode(*dom_key);
-      if (*key_code == VKEY_UNKNOWN)
-        *key_code = DomCodeToUsLayoutNonLocatedKeyboardCode(dom_code);
+      if (*key_code == VKEY_UNKNOWN) {
+        *key_code = FallbackKeyboardCode(dom_code, *dom_key);
+      }
       return true;
     }
     if (character == 0) {
@@ -885,8 +912,9 @@ bool XkbKeyboardLayoutEngine::Lookup(DomCode dom_code,
   if (*key_code == VKEY_UNKNOWN) {
     *key_code = DifficultKeyboardCode(dom_code, flags, xkb_keycode, xkb_flags,
                                       xkb_keysym, character);
-    if (*key_code == VKEY_UNKNOWN)
-      *key_code = DomCodeToUsLayoutNonLocatedKeyboardCode(dom_code);
+    if (*key_code == VKEY_UNKNOWN) {
+      *key_code = FallbackKeyboardCode(dom_code, *dom_key);
+    }
   }
   return true;
 }
@@ -1155,6 +1183,14 @@ KeyboardCode XkbKeyboardLayoutEngine::DifficultKeyboardCode(
   if ((simple != std::end(kSimpleMap)) &&
       (simple->plain_character == plain_character)) {
     return simple->key_code;
+  }
+
+  if (dom_code == DomCode::NONE) {
+    // Without a DomCode, kMultiMap cannot match and characters like space are
+    // not in kSimpleMap either. Fall back to the US layout DomCode for the
+    // unmodified character.
+    return DomCodeToUsLayoutNonLocatedKeyboardCode(
+        UsLayoutDomKeyToDomCode(DomKey::FromCharacter(plain_character)));
   }
 
   return VKEY_UNKNOWN;

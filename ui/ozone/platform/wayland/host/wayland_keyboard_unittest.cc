@@ -4,7 +4,10 @@
 
 #include <linux/input.h>
 #include <wayland-server.h>
+
 #include <memory>
+#include <string_view>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -12,8 +15,11 @@
 #include "base/timer/timer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/buildflags.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_keyboard.h"
@@ -224,6 +230,88 @@ TEST_F(WaylandKeyboardTest, CapsLockModifier) {
   EXPECT_EQ(ui::EF_CAPS_LOCK_ON, key_event->flags());
   EXPECT_EQ(ui::VKEY_A, key_event->key_code());
   EXPECT_EQ(EventType::kKeyPressed, key_event->type());
+}
+
+// Keys that have no DomCode (e.g. XKB keycodes above 202) are dispatched if
+// the keymap maps them. See crbug.com/456218402.
+TEST_F(WaylandKeyboardTest, KeycodesWithoutDomCode) {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    // XKB keycodes 203 and 300 (evdev 195 and 292) have no DomCode.
+    constexpr std::string_view kKeymap = R"(xkb_keymap {
+      xkb_keycodes "test" {
+        minimum = 8;
+        maximum = 400;
+        <I203> = 203;
+        <I300> = 300;
+      };
+      xkb_types "test" {
+        type "ONE_LEVEL" {
+          modifiers = none;
+          level_name[Level1] = "Any";
+        };
+      };
+      xkb_compatibility "test" {};
+      xkb_symbols "test" {
+        key <I203> { [ b ] };
+        key <I300> { [ c ] };
+      };
+    };)";
+    size_t keymap_size = kKeymap.size() + 1;
+    base::UnsafeSharedMemoryRegion shared_keymap_region =
+        base::UnsafeSharedMemoryRegion::Create(keymap_size);
+    base::WritableSharedMemoryMapping shared_keymap =
+        shared_keymap_region.Map();
+    base::subtle::PlatformSharedMemoryRegion platform_shared_keymap =
+        base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+            std::move(shared_keymap_region));
+    ASSERT_TRUE(shared_keymap.IsValid());
+    auto keymap_span = shared_keymap.GetMemoryAsSpan<char>();
+    keymap_span.copy_prefix_from(kKeymap);
+    keymap_span[kKeymap.size()] = '\0';
+
+    wl_keyboard_send_keymap(server->seat()->keyboard()->resource(),
+                            WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
+                            platform_shared_keymap.GetPlatformHandle().fd,
+                            keymap_size);
+  });
+  SendEnter();
+
+  std::vector<std::unique_ptr<Event>> events;
+  EXPECT_CALL(delegate_, DispatchEvent(_))
+      .Times(2)
+      .WillRepeatedly(AppendEvent(&events));
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* const keyboard = server->seat()->keyboard()->resource();
+    // XKB keycode 203.
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), 195,
+                         WL_KEYBOARD_KEY_STATE_PRESSED);
+    // XKB keycode 204 is not in the keymap, so it is dropped.
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), 196,
+                         WL_KEYBOARD_KEY_STATE_PRESSED);
+    // XKB keycode 300.
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), 292,
+                         WL_KEYBOARD_KEY_STATE_PRESSED);
+  });
+
+  ASSERT_EQ(2u, events.size());
+  ASSERT_TRUE(events[0]->IsKeyEvent());
+  ASSERT_TRUE(events[1]->IsKeyEvent());
+  auto* key_event_b = events[0]->AsKeyEvent();
+  auto* key_event_c = events[1]->AsKeyEvent();
+
+  EXPECT_EQ(EventType::kKeyPressed, key_event_b->type());
+  EXPECT_EQ(DomCode::NONE, key_event_b->code());
+  EXPECT_EQ(DomKey::FromCharacter('b'), key_event_b->GetDomKey());
+  EXPECT_EQ(VKEY_B, key_event_b->key_code());
+
+  EXPECT_EQ(EventType::kKeyPressed, key_event_c->type());
+  EXPECT_EQ(DomCode::NONE, key_event_c->code());
+  EXPECT_EQ(DomKey::FromCharacter('c'), key_event_c->GetDomKey());
+  EXPECT_EQ(VKEY_C, key_event_c->key_code());
 }
 #endif
 

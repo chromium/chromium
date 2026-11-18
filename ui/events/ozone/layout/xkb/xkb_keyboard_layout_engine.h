@@ -54,6 +54,10 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
               int flags,
               DomKey* dom_key,
               KeyboardCode* key_code) const override;
+  bool LookupNativeKeycode(uint32_t native_keycode,
+                           int flags,
+                           DomKey* dom_key,
+                           KeyboardCode* key_code) const override;
 
   void SetInitCallbackForTest(base::OnceClosure closure) override;
 
@@ -130,6 +134,15 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
     raw_ptr<xkb_keymap> keymap;
   };
   std::vector<XkbKeymapEntry> xkb_keymaps_;
+
+  // Shared implementation of Lookup() and LookupNativeKeycode().
+  // `dom_code` may be DomCode::NONE. Returns false, without setting the output
+  // parameters, if `xkb_keycode` has no keysym in the current layout.
+  bool LookupXkbKeycode(DomCode dom_code,
+                        xkb_keycode_t xkb_keycode,
+                        int flags,
+                        DomKey* dom_key,
+                        KeyboardCode* key_code) const;
 
   // Returns the XKB modifiers flags corresponding to the given EventFlags.
   xkb_mod_mask_t EventFlagsToXkbFlags(int ui_flags) const;

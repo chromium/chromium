@@ -912,8 +912,8 @@ void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
                        ? EventType::kKeyPressed
                        : EventType::kKeyReleased;
   key_delegate_->OnKeyboardKeyEvent(
-      type, dom_code, /*repeat=*/false, std::nullopt,
-      wl::EventMillisecondsToTimeTicks(time), device_id,
+      type, dom_code, /*xkb_keycode=*/std::nullopt, /*repeat=*/false,
+      std::nullopt, wl::EventMillisecondsToTimeTicks(time), device_id,
       WaylandKeyboard::KeyEventKind::kKey);
 #else
   NOTIMPLEMENTED();

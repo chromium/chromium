@@ -5,6 +5,8 @@
 #ifndef UI_EVENTS_OZONE_LAYOUT_KEYBOARD_LAYOUT_ENGINE_H_
 #define UI_EVENTS_OZONE_LAYOUT_KEYBOARD_LAYOUT_ENGINE_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <string_view>
 
@@ -77,6 +79,18 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) KeyboardLayoutEngine {
                       int event_flags,
                       DomKey* dom_key,
                       KeyboardCode* key_code) const = 0;
+
+  // Like Lookup(), but for a platform-native keycode (an XKB keycode for
+  // XKB-based engines) instead of a DomCode. This allows looking up keys that
+  // the current layout maps but that have no DomCode.
+  //
+  // Returns false if the engine does not support native keycodes, or if the
+  // key has no meaning in the current layout; in this case it does not set any
+  // of the output parameters.
+  virtual bool LookupNativeKeycode(uint32_t native_keycode,
+                                   int event_flags,
+                                   DomKey* dom_key,
+                                   KeyboardCode* key_code) const;
 
   // Tests may need to wait for the keyboard layout to be fully initialised.
   // The implementation should run |closure| when it is ready to handle calls to

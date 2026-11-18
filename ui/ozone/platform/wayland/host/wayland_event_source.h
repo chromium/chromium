@@ -99,6 +99,7 @@ class WaylandEventSource : public PlatformEventSource,
   void OnKeyboardModifiersChanged(int modifiers) override;
   uint32_t OnKeyboardKeyEvent(EventType type,
                               DomCode dom_code,
+                              std::optional<uint32_t> xkb_keycode,
                               bool repeat,
                               std::optional<uint32_t> serial,
                               base::TimeTicks timestamp,

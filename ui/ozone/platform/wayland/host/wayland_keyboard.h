@@ -160,9 +160,12 @@ class WaylandKeyboard::Delegate {
   virtual void OnKeyboardFocusChanged(WaylandWindow* window, bool focused) = 0;
   virtual void OnKeyboardModifiersChanged(int modifiers) = 0;
   // Returns a mask of ui::PostDispatchAction indicating how the event was
-  // dispatched.
+  // dispatched. `dom_code` is DomCode::NONE for keys that have no DomCode,
+  // which are looked up by `xkb_keycode` instead; synthesized callers that
+  // always supply a DomCode may pass std::nullopt for `xkb_keycode`.
   virtual uint32_t OnKeyboardKeyEvent(EventType type,
                                       DomCode dom_code,
+                                      std::optional<uint32_t> xkb_keycode,
                                       bool repeat,
                                       std::optional<uint32_t> serial,
                                       base::TimeTicks timestamp,

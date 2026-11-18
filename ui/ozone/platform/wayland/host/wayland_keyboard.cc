@@ -9,6 +9,7 @@
 #include <sys/mman.h>
 
 #include <cstddef>
+#include <limits>
 #include <string_view>
 #include <utility>
 
@@ -450,15 +451,21 @@ void WaylandKeyboard::DispatchKey(unsigned int key,
                                   int device_id,
                                   int flags,
                                   KeyEventKind kind) {
-  DomCode dom_code = KeycodeConverter::EvdevCodeToDomCode(key);
-  if (dom_code == ui::DomCode::NONE)
+  // wl_keyboard keycodes are evdev codes, which XKB offsets by 8.
+  constexpr uint32_t kXkbKeycodeOffset = 8;
+  if (key > std::numeric_limits<uint32_t>::max() - kXkbKeycodeOffset) {
     return;
+  }
+  const uint32_t xkb_keycode = key + kXkbKeycodeOffset;
+  // Keys without a DomCode (e.g. most evdev codes above KEY_F24) may still be
+  // mapped by the keymap; the delegate then looks them up by `xkb_keycode`.
+  DomCode dom_code = KeycodeConverter::EvdevCodeToDomCode(key);
 
   // Pass empty DomKey and KeyboardCode here so the delegate can pre-process
   // and decode it when needed.
   uint32_t result = delegate_->OnKeyboardKeyEvent(
-      down ? EventType::kKeyPressed : EventType::kKeyReleased, dom_code, repeat,
-      serial, timestamp, device_id, kind);
+      down ? EventType::kKeyPressed : EventType::kKeyReleased, dom_code,
+      xkb_keycode, repeat, serial, timestamp, device_id, kind);
 
   if (extended_keyboard_ && !(result & POST_DISPATCH_STOP_PROPAGATION) &&
       serial.has_value()) {

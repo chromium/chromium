@@ -17,6 +17,7 @@ component("layout") {
   output_name = "events_ozone_layout"
 
   sources = [
+    "keyboard_layout_engine.cc",
     "keyboard_layout_engine.h",
     "keyboard_layout_engine_manager.cc",
     "keyboard_layout_engine_manager.h",

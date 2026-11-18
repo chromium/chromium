@@ -17,6 +17,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/layout/scoped_keyboard_layout_engine.h"
@@ -1268,6 +1269,123 @@ TEST(XkbKeyboardLayoutEngineTest, NoStateBeforeKeymap) {
                                              /*locked=*/0, /*group=*/0));
   EXPECT_EQ(DomCode::NONE,
             layout_engine.GetDomCodeByKeysym(XKB_KEY_a, std::nullopt));
+}
+
+// Keymaps may map keycodes that have no DomCode, e.g. XKB keycodes above 202
+// (evdev KEY_F24). LookupNativeKeycode() resolves them from the keymap.
+TEST(XkbKeyboardLayoutEngineTest, LookupNativeKeycodeWithoutDomCode) {
+  constexpr char kKeymap[] = R"(xkb_keymap {
+    xkb_keycodes "test" {
+      minimum = 8;
+      maximum = 400;
+      <AC01> = 38;
+      <I203> = 203;
+      <I300> = 300;
+      <I301> = 301;
+      <I302> = 302;
+      <I303> = 303;
+      <I304> = 304;
+      <I305> = 305;
+      <I306> = 306;
+      <I307> = 307;
+    };
+    xkb_types "test" {
+      type "ONE_LEVEL" {
+        modifiers = none;
+        level_name[Level1] = "Any";
+      };
+      type "TWO_LEVEL" {
+        modifiers = Shift;
+        map[Shift] = Level2;
+        level_name[Level1] = "Base";
+        level_name[Level2] = "Shift";
+      };
+    };
+    xkb_compatibility "test" {
+      interpret Shift_L {
+        action = SetMods(modifiers=Shift);
+      };
+      interpret Control_L {
+        action = SetMods(modifiers=Control);
+      };
+    };
+    xkb_symbols "test" {
+      key <AC01> { type = "TWO_LEVEL", [ a, A ] };
+      key <I203> { type = "TWO_LEVEL", [ b, B ] };
+      key <I300> { type = "TWO_LEVEL", [ c, C ] };
+      key <I301> { type = "ONE_LEVEL", [ space ] };
+      key <I302> { type = "TWO_LEVEL", [ period, greater ] };
+      key <I303> { type = "TWO_LEVEL", [ comma, less ] };
+      key <I304> { type = "TWO_LEVEL", [ minus, underscore ] };
+      key <I305> { type = "TWO_LEVEL", [ equal, plus ] };
+      key <I306> { type = "TWO_LEVEL", [ NoSymbol, exclam ] };
+      key <I307> { type = "ONE_LEVEL", [ XF86Close ] };
+    };
+  };)";
+
+  XkbEvdevCodes evdev_codes;
+  XkbKeyboardLayoutEngine layout_engine(evdev_codes);
+  ASSERT_TRUE(layout_engine.SetCurrentLayoutFromBuffer(kKeymap));
+
+  // Keycodes without a DomCode.
+  for (uint32_t code : {203u, 300u, 301u, 302u, 303u, 304u, 305u, 306u, 307u}) {
+    ASSERT_EQ(DomCode::NONE, KeycodeConverter::XkbKeycodeToDomCode(code))
+        << code;
+  }
+
+  const auto expect_lookup = [&](uint32_t keycode, int flags,
+                                 DomKey expected_key,
+                                 KeyboardCode expected_vkey) {
+    SCOPED_TRACE(testing::Message()
+                 << "keycode=" << keycode << " flags=" << flags);
+    DomKey dom_key = DomKey::NONE;
+    KeyboardCode key_code = VKEY_UNKNOWN;
+    EXPECT_TRUE(
+        layout_engine.LookupNativeKeycode(keycode, flags, &dom_key, &key_code));
+    EXPECT_EQ(expected_key, dom_key);
+    EXPECT_EQ(expected_vkey, key_code);
+  };
+
+  expect_lookup(203, EF_NONE, DomKey::FromCharacter('b'), VKEY_B);
+  expect_lookup(203, EF_SHIFT_DOWN, DomKey::FromCharacter('B'), VKEY_B);
+  expect_lookup(300, EF_NONE, DomKey::FromCharacter('c'), VKEY_C);
+
+  // Space and ASCII punctuation fall back to US-layout VKEYs when DomCode is
+  // DomCode::NONE.
+  expect_lookup(301, EF_NONE, DomKey::FromCharacter(' '), VKEY_SPACE);
+  expect_lookup(301, EF_CONTROL_DOWN, DomKey::FromCharacter(' '), VKEY_SPACE);
+  expect_lookup(302, EF_NONE, DomKey::FromCharacter('.'), VKEY_OEM_PERIOD);
+  expect_lookup(302, EF_SHIFT_DOWN, DomKey::FromCharacter('>'),
+                VKEY_OEM_PERIOD);
+  expect_lookup(303, EF_NONE, DomKey::FromCharacter(','), VKEY_OEM_COMMA);
+  expect_lookup(303, EF_SHIFT_DOWN, DomKey::FromCharacter('<'), VKEY_OEM_COMMA);
+  expect_lookup(304, EF_NONE, DomKey::FromCharacter('-'), VKEY_OEM_MINUS);
+  expect_lookup(304, EF_SHIFT_DOWN, DomKey::FromCharacter('_'), VKEY_OEM_MINUS);
+  expect_lookup(305, EF_NONE, DomKey::FromCharacter('='), VKEY_OEM_PLUS);
+  expect_lookup(305, EF_SHIFT_DOWN, DomKey::FromCharacter('+'), VKEY_OEM_PLUS);
+
+  // Key with unmapped Level1 (NoSymbol) and printable shifted character falls
+  // back via the resolved DomKey.
+  expect_lookup(306, EF_SHIFT_DOWN, DomKey::FromCharacter('!'), VKEY_1);
+
+  // Non-printable keysym whose VKEY comes from the DomCode fallback table.
+  expect_lookup(307, EF_NONE, DomKey::CLOSE, VKEY_CLOSE);
+
+  // A keycode with a DomCode gives the same result as Lookup().
+  expect_lookup(38, EF_NONE, DomKey::FromCharacter('a'), VKEY_A);
+
+  // Keycodes (or levels) the keymap doesn't map are not resolved, and the
+  // outputs are left untouched.
+  DomKey dom_key = DomKey::NONE;
+  KeyboardCode key_code = VKEY_UNKNOWN;
+  EXPECT_FALSE(
+      layout_engine.LookupNativeKeycode(204, EF_NONE, &dom_key, &key_code));
+  EXPECT_FALSE(
+      layout_engine.LookupNativeKeycode(306, EF_NONE, &dom_key, &key_code));
+  EXPECT_FALSE(
+      layout_engine.LookupNativeKeycode(1000, EF_NONE, &dom_key, &key_code));
+  EXPECT_EQ(DomKey::NONE, dom_key);
+  EXPECT_EQ(VKEY_UNKNOWN, key_code);
 }
 
 }  // namespace ui
