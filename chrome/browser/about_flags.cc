@@ -7481,6 +7481,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(ntp_features::kNtpShortcutsReorder)},
 
+    {"ntp-scaled-action-chips", flag_descriptions::kNtpScaledActionChipsName,
+     flag_descriptions::kNtpScaledActionChipsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpScaledActionChips)},
+
+    {"ntp-scaled-action-chips-small",
+     flag_descriptions::kNtpScaledActionChipsSmallName,
+     flag_descriptions::kNtpScaledActionChipsSmallDescription, kOsAll,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpScaledActionChipsSmall)},
+
 #if !BUILDFLAG(IS_ANDROID)
     {"chrome-dark-neutrals-26", flag_descriptions::kChromeDarkNeutrals26Name,
      flag_descriptions::kChromeDarkNeutrals26Description, kOsDesktop,
@@ -7604,15 +7613,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kRealboxCr23Theming,
                                     kNtpRealboxCr23ThemingVariations,
                                     "NtpRealboxCr23Theming")},
-
-    {"ntp-scaled-action-chips", flag_descriptions::kNtpScaledActionChipsName,
-     flag_descriptions::kNtpScaledActionChipsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpScaledActionChips)},
-
-    {"ntp-scaled-action-chips-small",
-     flag_descriptions::kNtpScaledActionChipsSmallName,
-     flag_descriptions::kNtpScaledActionChipsSmallDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpScaledActionChipsSmall)},
 
     {"ntp-sharepoint-module", flag_descriptions::kNtpSharepointModuleName,
      flag_descriptions::kNtpSharepointModuleDescription, kOsDesktop,
