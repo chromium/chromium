@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -25,6 +26,7 @@
 #include "components/permissions/test/test_permissions_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace permissions {
 namespace {
@@ -81,16 +83,26 @@ class PermissionDecisionAutoBlockerUnitTest : public testing::Test {
 class MockObserver : public PermissionDecisionAutoBlocker::Observer {
  public:
   void OnEmbargoStarted(const GURL& origin,
-                        ContentSettingsType content_setting) override {
-    callbacks_[origin].push_back(content_setting);
+                        ContentSettingsType content_type) override {
+    callbacks_[origin].push_back(content_type);
   }
 
   std::map<GURL, std::vector<ContentSettingsType>>& GetCallbacks() {
     return callbacks_;
   }
 
+  void OnEmbargoRemoved(const GURL& origin,
+                        ContentSettingsType content_type) override {
+    removed_callbacks_[origin].push_back(content_type);
+  }
+
+  std::map<GURL, std::vector<ContentSettingsType>>& GetRemovedCallbacks() {
+    return removed_callbacks_;
+  }
+
  private:
   std::map<GURL, std::vector<ContentSettingsType>> callbacks_;
+  std::map<GURL, std::vector<ContentSettingsType>> removed_callbacks_;
 };
 
 class PermissionDecisionAutoBlockerWithApproximateLocationUnitTest
@@ -1047,6 +1059,82 @@ TEST_P(PermissionDecisionAutoBlockerWithApproximateLocationUnitTest,
   EXPECT_TRUE(autoblocker()->RecordDismissAndEmbargo(
       url, content_settings::GeolocationContentSettingsType(), false));
   EXPECT_EQ(0u, observer.GetCallbacks().size());
+}
+
+TEST_P(PermissionDecisionAutoBlockerWithApproximateLocationUnitTest,
+       ObserverIsNotifiedWhenEmbargoRemoved) {
+  GURL url("https://www.google.com");
+  MockObserver observer;
+  autoblocker()->AddObserver(&observer);
+
+  // Removing counts for an origin that is not under embargo does not notify.
+  EXPECT_FALSE(autoblocker()->RecordDismissAndEmbargo(
+      url, content_settings::GeolocationContentSettingsType(), false));
+  autoblocker()->RemoveEmbargoAndResetCounts(
+      url, content_settings::GeolocationContentSettingsType());
+  EXPECT_EQ(0u, observer.GetRemovedCallbacks().size());
+
+  for (int i = 0; i < 3; ++i) {
+    autoblocker()->RecordDismissAndEmbargo(
+        url, content_settings::GeolocationContentSettingsType(), false);
+  }
+  ASSERT_TRUE(autoblocker()->IsEmbargoed(
+      url, content_settings::GeolocationContentSettingsType()));
+
+  autoblocker()->RemoveEmbargoAndResetCounts(
+      url, content_settings::GeolocationContentSettingsType());
+  EXPECT_EQ(1u, observer.GetRemovedCallbacks().size());
+  ASSERT_EQ(1u, observer.GetRemovedCallbacks()[url].size());
+  EXPECT_EQ(content_settings::GeolocationContentSettingsType(),
+            observer.GetRemovedCallbacks()[url][0]);
+
+  // Removing again (no active embargo) does not notify.
+  autoblocker()->RemoveEmbargoAndResetCounts(
+      url, content_settings::GeolocationContentSettingsType());
+  EXPECT_EQ(1u, observer.GetRemovedCallbacks()[url].size());
+
+  autoblocker()->RemoveObserver(&observer);
+}
+
+TEST_P(PermissionDecisionAutoBlockerWithApproximateLocationUnitTest,
+       ObserverIsNotifiedWhenEmbargoRemovedByFilter) {
+  GURL url1("https://www.google.com");
+  GURL url2("https://www.example.com");
+  MockObserver observer;
+  autoblocker()->AddObserver(&observer);
+
+  for (int i = 0; i < 3; ++i) {
+    autoblocker()->RecordDismissAndEmbargo(
+        url1, content_settings::GeolocationContentSettingsType(), false);
+    autoblocker()->RecordDismissAndEmbargo(
+        url1, ContentSettingsType::NOTIFICATIONS, false);
+    autoblocker()->RecordDismissAndEmbargo(
+        url2, content_settings::GeolocationContentSettingsType(), false);
+  }
+  // A permission with counts but no embargo.
+  autoblocker()->RecordDismissAndEmbargo(url1, ContentSettingsType::MIDI_SYSEX,
+                                         false);
+  ASSERT_FALSE(
+      autoblocker()->IsEmbargoed(url1, ContentSettingsType::MIDI_SYSEX));
+
+  autoblocker()->RemoveEmbargoAndResetCounts(
+      base::BindRepeating(&FilterGoogle));
+
+  EXPECT_FALSE(autoblocker()->IsEmbargoed(
+      url1, content_settings::GeolocationContentSettingsType()));
+  EXPECT_FALSE(
+      autoblocker()->IsEmbargoed(url1, ContentSettingsType::NOTIFICATIONS));
+  EXPECT_TRUE(autoblocker()->IsEmbargoed(
+      url2, content_settings::GeolocationContentSettingsType()));
+
+  // Only the lifted embargoes on `url1` are reported.
+  ASSERT_EQ(1u, observer.GetRemovedCallbacks().size());
+  EXPECT_THAT(observer.GetRemovedCallbacks()[url1],
+              testing::UnorderedElementsAre(
+                  content_settings::GeolocationContentSettingsType(),
+                  ContentSettingsType::NOTIFICATIONS));
+
+  autoblocker()->RemoveObserver(&observer);
 }
 
 }  // namespace permissions
