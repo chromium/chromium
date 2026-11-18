@@ -13136,6 +13136,31 @@
             ]
         }
     ],
+    "MemoryPurgeInBackground": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "PurgeAfter1Minute",
+                    "params": {
+                        "memory_purge_background_max_delay": "70s",
+                        "memory_purge_background_min_delay": "50s"
+                    },
+                    "enable_features": [
+                        "MemoryPurgeInBackground"
+                    ]
+                }
+            ]
+        }
+    ],
     "MenuSimplification": [
         {
             "platforms": [
