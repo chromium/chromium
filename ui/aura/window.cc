@@ -1471,7 +1471,9 @@ void Window::StackChildRelativeTo(Window* child,
   CHECK_NE(child, target, base::NotFatalUntil::M163);
   CHECK(child, base::NotFatalUntil::M163);
   CHECK(target, base::NotFatalUntil::M163);
-  CHECK_EQ(this, child->parent(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/586118968): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(this, child->parent());
   CHECK_EQ(this, target->parent(), base::NotFatalUntil::M163);
 
   WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
