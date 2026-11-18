@@ -4,6 +4,8 @@
 
 #include "content/browser/declarative_performance_observer/declarative_performance_observer.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/declarative_performance_observer/declarative_performance_observer_store.h"
@@ -16,12 +18,14 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "net/base/isolation_info.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/url_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -520,6 +524,68 @@ void DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
   entry.Set("error", std::move(error_detail));
 
   store->StoreEarlyFailureReport(origin, std::move(entry));
+}
+
+// static
+void DeclarativePerformanceObserver::FlushAbortedPostHeaderNavigation(
+    NavigationHandle* handle,
+    const url::Origin& origin,
+    StoragePartition* partition,
+    const std::optional<base::flat_map<std::string, std::string>>&
+        reporting_endpoints) {
+  if (!handle || !partition || !GURL::SchemeIsCryptographic(origin.scheme())) {
+    return;
+  }
+
+  const network::mojom::DeclarativePerformanceObserverPolicy* policy =
+      handle->GetDeclarativePerformanceObserverPolicy();
+  if (!policy || !policy->reporting_endpoint) {
+    return;
+  }
+
+  const GURL sanitized_url =
+      network::SerializeResponseUrlForReporting(handle->GetURL());
+  if (!sanitized_url.is_valid()) {
+    return;
+  }
+
+  base::ListValue entries;
+  if (std::ranges::contains(
+          policy->entry_types,
+          network::mojom::PerformanceEntryType::kNavigation)) {
+    entries.Append(BuildNavigationEntry(sanitized_url, handle));
+  }
+  if (std::ranges::contains(
+          policy->entry_types,
+          network::mojom::PerformanceEntryType::kVisibilityState)) {
+    WebContents* web_contents = handle->GetWebContents();
+    entries.Append(BuildVisibilityStateEntry(
+        web_contents && web_contents->GetVisibility() == Visibility::VISIBLE));
+  }
+  if (entries.empty()) {
+    return;
+  }
+  entries.Append(BuildSessionEndEntry(handle->NavigationStart()));
+
+  // `SetDocumentReportingEndpoints` requires
+  // `IsolationInfo::RequestType::kOther` rather than
+  // `NavigationHandle::GetIsolationInfo()` (`kMainFrame`).
+  const net::IsolationInfo isolation_info =
+      net::IsolationInfo::CreateForInternalRequest(origin);
+  const base::UnguessableToken reporting_source =
+      base::UnguessableToken::Create();
+  network::mojom::NetworkContext* network_context =
+      partition->GetNetworkContext();
+  if (reporting_endpoints && !reporting_endpoints->empty()) {
+    network_context->SetDocumentReportingEndpoints(
+        reporting_source, origin, isolation_info, *reporting_endpoints);
+  }
+  network_context->QueueReport(
+      kDeclarativePerformanceObserverReportType, *policy->reporting_endpoint,
+      sanitized_url, reporting_source,
+      isolation_info.network_anonymization_key(),
+      base::DictValue().Set("entries", std::move(entries)));
+  network_context->SendReportsAndRemoveSource(reporting_source);
 }
 
 void DeclarativePerformanceObserver::OnEarlyFailureReportsTaken(

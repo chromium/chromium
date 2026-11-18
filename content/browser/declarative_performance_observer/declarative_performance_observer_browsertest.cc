@@ -491,4 +491,29 @@ IN_PROC_BROWSER_TEST_F(DeclarativePerformanceObserverBrowserTest,
   EXPECT_EQ(GetReceivedReports().size(), 1u);
 }
 
+// Verifies end-to-end that a navigation aborted after receiving response
+// headers (`WaitForResponse()`) and before commit (`shell()->Stop()`)
+// immediately dispatches its session report without `capture-early-failures`.
+IN_PROC_BROWSER_TEST_F(
+    DeclarativePerformanceObserverBrowserTest,
+    FlushesSessionReportWhenAbortedAfterHeadersBeforeCommit) {
+  GURL expected_sanitized_url = https_server()->GetURL(
+      "origin1.com", "/declarative-performance-observer-page");
+  GURL aborted_url(expected_sanitized_url.spec() + "#frag");
+
+  TestNavigationManager aborted_nav(shell()->web_contents(), aborted_url);
+  shell()->LoadURL(aborted_url);
+  ASSERT_TRUE(aborted_nav.WaitForResponse());
+  shell()->Stop();
+  ASSERT_TRUE(aborted_nav.WaitForNavigationFinished());
+  EXPECT_FALSE(aborted_nav.was_committed());
+
+  WaitForReportCount(1u);
+  std::vector<std::string> reports = GetReceivedReports();
+  ASSERT_EQ(reports.size(), 1u);
+  EXPECT_TRUE(reports[0].contains(expected_sanitized_url.spec()));
+  EXPECT_FALSE(reports[0].contains("#frag"));
+  EXPECT_TRUE(reports[0].contains("session-end"));
+}
+
 }  // namespace content

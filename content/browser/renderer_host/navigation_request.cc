@@ -2342,11 +2342,23 @@ NavigationRequest::~NavigationRequest() {
     net_error_ = net::ERR_ABORTED;
   }
 
-  if (!early_navigation_failure_recorded_ && !response() &&
-      IsInPrimaryMainFrame() && net_error_ == net::ERR_ABORTED &&
-      CanRecordEarlyNavigationFailure()) {
-    DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
-        this, GetStoragePartitionWithCurrentSiteInfo(), net::ERR_ABORTED);
+  if (!early_navigation_failure_recorded_ && IsInPrimaryMainFrame() &&
+      net_error_ == net::ERR_ABORTED && CanRecordEarlyNavigationFailure()) {
+    if (!response()) {
+      DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
+          this, GetStoragePartitionWithCurrentSiteInfo(), net::ERR_ABORTED);
+    } else if (declarative_performance_observer_origin_ &&
+               // Only flush navigations directly aborted while waiting to
+               // process the response or commit; navigations cancelled or
+               // blocked by throttles or failing with network errors transition
+               // to `CANCELING` or `WILL_FAIL_REQUEST`, and committed
+               // navigations transition to `DID_COMMIT`.
+               (state_ == WILL_PROCESS_RESPONSE || state_ == READY_TO_COMMIT)) {
+      DeclarativePerformanceObserver::FlushAbortedPostHeaderNavigation(
+          this, *declarative_performance_observer_origin_,
+          GetStoragePartitionWithCurrentSiteInfo(),
+          response()->parsed_headers->reporting_endpoints);
+    }
   }
 
   // IMPORTANT NOTE: DO NOT return early from the destructor before this line.
@@ -9702,6 +9714,22 @@ void NavigationRequest::WillProcessResponse() {
               perfetto::Flow::FromPointer(this));
   EnterChildTraceEvent("WillProcessResponse", this);
   CHECK_EQ(state_, WILL_PROCESS_RESPONSE);
+
+  // Snapshot the canonical commit origin after all `OnResponseStarted()`
+  // security/rendering checks pass and while `net_error_` is still `net::OK`
+  // (before cancellation or `~NavigationRequest()` sets `net::ERR_ABORTED`,
+  // which makes `GetOriginToCommit()` return an error-page opaque origin).
+  // `GURL::SchemeIsCryptographic(origin->scheme())` matches
+  // `RenderFrameHostImpl`'s `SetDocumentReportingEndpoints()` gate and rejects
+  // all opaque origins (`scheme()` is empty) and non-rendered responses
+  // (`GetOriginToCommit()` returns `std::nullopt`).
+  if (IsInPrimaryMainFrame() && !IsPageActivation() &&
+      GetDeclarativePerformanceObserverPolicy()) {
+    if (std::optional<url::Origin> origin = GetOriginToCommit();
+        origin && GURL::SchemeIsCryptographic(origin->scheme())) {
+      declarative_performance_observer_origin_ = std::move(origin);
+    }
+  }
 
   processing_navigation_throttle_ = true;
   was_get_response_body_called_ = false;

@@ -7,9 +7,11 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "content/browser/declarative_performance_observer/declarative_performance_observer_coordinator.h"
@@ -17,12 +19,15 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_navigation_throttle.h"
+#include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_storage_partition.h"
 #include "content/public/test/test_utils.h"
@@ -1815,6 +1820,119 @@ TEST_F(DeclarativePerformanceObserverTest,
   EXPECT_EQ(network_context_.dropped_reports_due_to_expired_source(), 0u);
   ASSERT_EQ(network_context_.reports().size(), 1u);
   EXPECT_EQ(network_context_.reports()[0].type, "performance-observer");
+}
+
+// Verifies through `NavigationRequest` that post-header abort flushing:
+// 1) skips renderer-only entry types (`mark`), opaque commit origins via
+//    `GetOriginToCommit()` (`CSP: sandbox`), and throttle cancellations
+//    (`CANCELING` / `WILL_FAIL_REQUEST`), and
+// 2) immediately queues the session report (`navigation`, `visibility-state`,
+//    and `session-end`) without `capture-early-failures` and expires the
+//    transient reporting source on eligible pre-commit aborts.
+TEST_F(DeclarativePerformanceObserverTest,
+       FlushesAbortedPostHeaderNavigationForEligibleOriginsOnly) {
+  const GURL kAbortedURL("https://user:pass@example.com/page?q=1#section");
+  const GURL kSanitizedURL("https://example.com/page?q=1");
+  web_contents()->WasShown();
+
+  auto* storage_partition =
+      static_cast<StoragePartitionImpl*>(main_rfh()->GetStoragePartition());
+  mojo::Receiver<network::mojom::NetworkContext> network_context_receiver(
+      &network_context_);
+  storage_partition->SetNetworkContextForTesting(
+      network_context_receiver.BindNewPipeAndPassRemote());
+
+  auto make_headers = [](std::string_view entry_types, bool sandbox = false) {
+    auto headers =
+        base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+    headers->AddHeader("Reporting-Endpoints",
+                       "telemetry_sink=\"https://example.com/report\"");
+    headers->AddHeader(
+        "Performance-Observer",
+        base::StrCat(
+            {"report-to=\"telemetry_sink\", entry-types=(", entry_types, ")"}));
+    if (sandbox) {
+      headers->AddHeader("Content-Security-Policy", "sandbox");
+    }
+    return headers;
+  };
+
+  // 1. Renderer-only entry types (`mark`) produce no browser-side entries.
+  {
+    auto sim = NavigationSimulator::CreateBrowserInitiated(kAbortedURL,
+                                                           web_contents());
+    sim->Start();
+    sim->SetResponseHeaders(make_headers("\"mark\""));
+    sim->AbortCommit();
+    storage_partition->FlushNetworkInterfaceForTesting();
+    EXPECT_TRUE(network_context_.reports().empty());
+  }
+
+  // 2. Opaque commit origin (`CSP: sandbox`) aborted before commit: no report.
+  {
+    auto sim = NavigationSimulator::CreateBrowserInitiated(kAbortedURL,
+                                                           web_contents());
+    sim->Start();
+    sim->SetResponseHeaders(
+        make_headers("\"navigation\" \"visibility-state\"", /*sandbox=*/true));
+    sim->AbortCommit();
+    storage_partition->FlushNetworkInterfaceForTesting();
+    EXPECT_TRUE(network_context_.reports().empty());
+  }
+
+  // 3. Throttle `CANCEL` in `WillProcessResponse` (`CANCELING` /
+  // `WILL_FAIL_REQUEST`): no report.
+  {
+    TestNavigationThrottleInserter inserter(
+        web_contents(),
+        base::BindRepeating([](NavigationThrottleRegistry& registry) {
+          auto throttle = std::make_unique<TestNavigationThrottle>(registry);
+          throttle->SetResponse(TestNavigationThrottle::WILL_PROCESS_RESPONSE,
+                                TestNavigationThrottle::SYNCHRONOUS,
+                                NavigationThrottle::CANCEL);
+          registry.AddThrottle(std::move(throttle));
+        }));
+    auto sim = NavigationSimulator::CreateBrowserInitiated(kAbortedURL,
+                                                           web_contents());
+    sim->Start();
+    sim->SetResponseHeaders(
+        make_headers("\"navigation\" \"visibility-state\""));
+    sim->ReadyToCommit();
+    storage_partition->FlushNetworkInterfaceForTesting();
+    EXPECT_TRUE(network_context_.reports().empty());
+  }
+
+  // 4. Eligible secure non-opaque navigation aborted before commit: flushes
+  // immediately without `capture-early-failures` and expires the source.
+  {
+    auto sim = NavigationSimulator::CreateBrowserInitiated(kAbortedURL,
+                                                           web_contents());
+    sim->Start();
+    sim->SetResponseHeaders(
+        make_headers("\"navigation\" \"visibility-state\""));
+    sim->AbortCommit();
+    storage_partition->FlushNetworkInterfaceForTesting();
+  }
+
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  EXPECT_EQ(network_context_.dropped_reports_due_to_expired_source(), 0u);
+  const auto& report = network_context_.reports()[0];
+  EXPECT_EQ(report.type, "performance-observer");
+  EXPECT_EQ(report.group, "telemetry_sink");
+  EXPECT_EQ(report.url, kSanitizedURL);
+  ASSERT_TRUE(report.reporting_source.has_value());
+  EXPECT_TRUE(
+      network_context_.expired_sources().contains(*report.reporting_source));
+
+  const base::ListValue* entries = report.body.FindList("entries");
+  ASSERT_TRUE(entries);
+  ASSERT_EQ(entries->size(), 3u);
+  EXPECT_EQ(*(*entries)[0].GetDict().FindString("entryType"), "navigation");
+  EXPECT_EQ(*(*entries)[0].GetDict().FindString("name"), kSanitizedURL.spec());
+  EXPECT_EQ(*(*entries)[1].GetDict().FindString("entryType"),
+            "visibility-state");
+  EXPECT_EQ(*(*entries)[1].GetDict().FindString("name"), "visible");
+  EXPECT_EQ(*(*entries)[2].GetDict().FindString("entryType"), "session-end");
 }
 
 }  // namespace

@@ -6,8 +6,10 @@
 #define CONTENT_BROWSER_DECLARATIVE_PERFORMANCE_OBSERVER_DECLARATIVE_PERFORMANCE_OBSERVER_H_
 
 #include <optional>
+#include <string>
 
 #include "base/containers/enum_set.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -21,6 +23,7 @@
 #include "services/network/public/mojom/declarative_performance_observer.mojom.h"
 #include "third_party/blink/public/mojom/timing/declarative_performance_observer.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -63,6 +66,17 @@ class CONTENT_EXPORT DeclarativePerformanceObserver
   static void RecordEarlyNavigationFailure(NavigationHandle* handle,
                                            StoragePartition* partition,
                                            int net_error);
+
+  // Queues and dispatches a single-session report using a transient reporting
+  // source when a primary main-frame navigation with cryptographic non-opaque
+  // commit `origin` is aborted after receiving response headers and before
+  // committing a document.
+  static void FlushAbortedPostHeaderNavigation(
+      NavigationHandle* handle,
+      const url::Origin& origin,
+      StoragePartition* partition,
+      const std::optional<base::flat_map<std::string, std::string>>&
+          reporting_endpoints);
 
   static void Bind(
       RenderFrameHost* rfh,

@@ -4009,6 +4009,15 @@ class CONTENT_EXPORT NavigationRequest
   // for this navigation, preventing duplicate recordings in the destructor.
   bool early_navigation_failure_recorded_ = false;
 
+  // Cryptographic non-opaque origin computed via `GetOriginToCommit()` at
+  // `WillProcessResponse()` when a primary main-frame navigation carries an
+  // active `DeclarativePerformanceObserver` policy. Remains `std::nullopt`
+  // before `WillProcessResponse()` or when the response will not commit a
+  // secure non-opaque document (e.g., 204/downloads, page activations, or
+  // sandboxed/PDF/MHTML opaque origins), allowing `~NavigationRequest()` to
+  // flush post-header aborts after `net_error_` becomes `net::ERR_ABORTED`.
+  std::optional<url::Origin> declarative_performance_observer_origin_;
+
   // A token that will be used to retrieve the InitiatorNavigationState of the
   // document created by this navigation at commit time (if any). Note that this
   // does not identify the initiator of this navigation. See
