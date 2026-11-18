@@ -9,11 +9,8 @@
 #include <type_traits>
 
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/audio_encoder.h"
-
-namespace base {
-class SequencedTaskRunner;
-}
 
 namespace media {
 
@@ -30,10 +27,12 @@ class MEDIA_EXPORT OffloadingAudioEncoder final : public AudioEncoder {
       scoped_refptr<base::SequencedTaskRunner> work_runner,
       scoped_refptr<base::SequencedTaskRunner> callback_runner);
 
-  // Uses current task runner for callbacks and asks thread pool for a new task
-  // runner to do actual encoding work.
+  // Uses `callback_runner` (defaulting to current task runner) for callbacks
+  // and asks thread pool for a new task runner to do actual encoding work.
   explicit OffloadingAudioEncoder(
-      std::unique_ptr<AudioEncoder> wrapped_encoder);
+      std::unique_ptr<AudioEncoder> wrapped_encoder,
+      scoped_refptr<base::SequencedTaskRunner> callback_runner =
+          base::SequencedTaskRunner::GetCurrentDefault());
 
   ~OffloadingAudioEncoder() override;
 

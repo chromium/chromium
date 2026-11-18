@@ -13,6 +13,10 @@ class GpuVideoAcceleratorFactories;
 
 namespace blink {
 
+// Note: `callback` may be invoked synchronously, on a worker's default
+// (unpausable) task runner, or on the media thread. Callers that touch
+// ExecutionContext/V8 state must pre-bind `callback` to an ExecutionContext
+// task runner via `base::BindPostTask()`.
 using OutputCB = CrossThreadOnceFunction<void(
     media::GpuVideoAcceleratorFactories* factories)>;
 

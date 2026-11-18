@@ -32,13 +32,14 @@ OffloadingVideoEncoder::OffloadingVideoEncoder(
 }
 
 OffloadingVideoEncoder::OffloadingVideoEncoder(
-    std::unique_ptr<VideoEncoder> wrapped_encoder)
+    std::unique_ptr<VideoEncoder> wrapped_encoder,
+    scoped_refptr<base::SequencedTaskRunner> callback_runner)
     : OffloadingVideoEncoder(
           std::move(wrapped_encoder),
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::TaskPriority::USER_BLOCKING,
                base::WithBaseSyncPrimitives(), base::MayBlock()}),
-          base::SequencedTaskRunner::GetCurrentDefault()) {}
+          std::move(callback_runner)) {}
 
 void OffloadingVideoEncoder::Initialize(VideoCodecProfile profile,
                                         const Options& options,

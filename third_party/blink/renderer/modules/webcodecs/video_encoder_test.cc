@@ -14,19 +14,24 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_support.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
+#include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_encoder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -494,7 +499,8 @@ TEST_F(VideoEncoderTest,
   EXPECT_CALL(
       *mock_encoder_metrics_provider,
       MockInitialize(media::VideoCodecProfile::VP8PROFILE_ANY, kEncodeSize,
-                     false, media::SVCScalabilityMode::kL1T1));
+                     false, media::SVCScalabilityMode::kL1T1))
+      .Times(2);
   EXPECT_CALL(*mock_media_encoder, Initialize(_, _, _, _, _))
       .WillOnce(DoAll(
           SaveArg<3>(&output_cb),
@@ -510,10 +516,6 @@ TEST_F(VideoEncoderTest,
             FROM_HERE, blink::BindOnce(std::move(done_cb),
                                        media::EncoderStatus::Codes::kOk));
       });
-  EXPECT_CALL(
-      *mock_encoder_metrics_provider,
-      MockInitialize(media::VideoCodecProfile::VP8PROFILE_ANY, kEncodeSize,
-                     false, media::SVCScalabilityMode::kL1T1));
   EXPECT_CALL(*mock_media_encoder, ChangeOptions(_, _, _))
       .WillOnce(WithArgs<2>([quit_closure = run_loop.QuitWhenIdleClosure()](
                                 media::VideoEncoder::EncoderStatusCB done_cb) {
@@ -596,6 +598,7 @@ TEST_F(VideoEncoderTest, NoAvailableMediaVideoEncoder) {
       .WillOnce(Return(media::EncoderStatus(
           media::EncoderStatus::Codes::kEncoderUnsupportedProfile)));
   encoder->configure(config, es);
+  test::RunPendingTasks();
 }
 
 TEST_F(VideoEncoderTest, EncodePreservesVisibleRect) {
@@ -674,6 +677,96 @@ TEST_F(VideoEncoderTest, EncodePreservesVisibleRect) {
   ScriptPromiseTester tester(script_state, encoder->flush(es));
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
+}
+
+class ChunkCollector : public ScriptFunction {
+ public:
+  explicit ChunkCollector(v8::Isolate* isolate) : isolate_(isolate) {}
+
+  ScriptValue Call(ScriptState* script_state, ScriptValue args) override {
+    auto* chunk = V8EncodedVideoChunk::ToWrappable(isolate_, args.V8Value());
+    EXPECT_TRUE(chunk);
+    if (chunk) {
+      chunks_.emplace_back(chunk->timestamp(), chunk->duration());
+    }
+    return ScriptValue();
+  }
+
+  const Vector<std::pair<int64_t, std::optional<uint64_t>>>& chunks() const {
+    return chunks_;
+  }
+
+ private:
+  raw_ptr<v8::Isolate> const isolate_;
+  Vector<std::pair<int64_t, std::optional<uint64_t>>> chunks_;
+};
+
+TEST_F(VideoEncoderTest, SoftwareEncoderCallbacksDeferredWhileFrozenOrPaused) {
+  for (bool freeze : {true, false}) {
+    SCOPED_TRACE(freeze ? "Frozen" : "Paused");
+    V8TestingScope v8_scope;
+    auto& es = v8_scope.GetExceptionState();
+    auto* script_state = v8_scope.GetScriptState();
+
+    MockFunctionScope mock_function(script_state);
+    auto* collector =
+        MakeGarbageCollected<ChunkCollector>(script_state->GetIsolate());
+    auto* init =
+        CreateInit(script_state, collector, mock_function.ExpectNoCall());
+    auto* encoder = CreateEncoder(script_state, init, es);
+    ASSERT_FALSE(es.HadException());
+
+    auto* config = CreateConfig();
+    encoder->configure(config, es);
+    ASSERT_FALSE(es.HadException());
+
+    {
+      auto promise = encoder->flush(es);
+      ScriptPromiseTester tester(script_state, promise);
+      tester.WaitUntilSettled();
+      ASSERT_TRUE(tester.IsFulfilled());
+    }
+
+    if (freeze) {
+      v8_scope.GetPage().GetPageScheduler()->SetPageVisible(false);
+      v8_scope.GetPage().GetPageScheduler()->SetPageFrozen(true);
+    } else {
+      v8_scope.GetPage().SetPaused(true);
+    }
+
+    encoder->encode(
+        MakeVideoFrame(script_state, config->width(), config->height(), 100),
+        MakeGarbageCollected<VideoEncoderEncodeOptions>(), es);
+    ASSERT_FALSE(es.HadException());
+    auto flush_promise = encoder->flush(es);
+    ASSERT_FALSE(es.HadException());
+    auto support_promise =
+        VideoEncoder::isConfigSupported(script_state, config, es);
+    ASSERT_FALSE(es.HadException());
+
+    task_environment_.RunUntilIdle();
+    v8_scope.PerformMicrotaskCheckpoint();
+
+    EXPECT_TRUE(collector->chunks().empty());
+    EXPECT_EQ(v8::Promise::kPending, flush_promise.V8Promise()->State());
+    EXPECT_EQ(v8::Promise::kPending, support_promise.V8Promise()->State());
+
+    if (freeze) {
+      v8_scope.GetPage().GetPageScheduler()->SetPageFrozen(false);
+      v8_scope.GetPage().GetPageScheduler()->SetPageVisible(true);
+    } else {
+      v8_scope.GetPage().SetPaused(false);
+    }
+
+    ScriptPromiseTester flush_tester(script_state, flush_promise);
+    flush_tester.WaitUntilSettled();
+    EXPECT_TRUE(flush_tester.IsFulfilled());
+    EXPECT_EQ(1u, collector->chunks().size());
+
+    ScriptPromiseTester support_tester(script_state, support_promise);
+    support_tester.WaitUntilSettled();
+    EXPECT_TRUE(support_tester.IsFulfilled());
+  }
 }
 }  // namespace
 
