@@ -29,11 +29,12 @@ OffloadingAudioEncoder::OffloadingAudioEncoder(
 }
 
 OffloadingAudioEncoder::OffloadingAudioEncoder(
-    std::unique_ptr<AudioEncoder> wrapped_encoder)
+    std::unique_ptr<AudioEncoder> wrapped_encoder,
+    scoped_refptr<base::SequencedTaskRunner> callback_runner)
     : OffloadingAudioEncoder(std::move(wrapped_encoder),
                              base::ThreadPool::CreateSequencedTaskRunner(
                                  {base::TaskPriority::USER_BLOCKING}),
-                             base::SequencedTaskRunner::GetCurrentDefault()) {}
+                             std::move(callback_runner)) {}
 
 void OffloadingAudioEncoder::Initialize(const Options& options,
                                         OutputCB output_cb,

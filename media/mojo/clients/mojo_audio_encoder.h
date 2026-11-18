@@ -23,8 +23,12 @@ namespace media {
 class MojoAudioEncoder final : public AudioEncoder,
                                public mojom::AudioEncoderClient {
  public:
+  // `runner` must run tasks on the calling/owning sequence, as Mojo endpoints
+  // and client callbacks are bound directly to it.
   explicit MojoAudioEncoder(
-      mojo::PendingRemote<mojom::AudioEncoder> remote_encoder);
+      mojo::PendingRemote<mojom::AudioEncoder> remote_encoder,
+      scoped_refptr<base::SequencedTaskRunner> runner =
+          base::SequencedTaskRunner::GetCurrentDefault());
 
   static bool IsSupported(AudioCodec codec);
 

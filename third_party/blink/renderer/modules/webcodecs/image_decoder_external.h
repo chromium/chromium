@@ -130,6 +130,7 @@ class MODULES_EXPORT ImageDecoderExternal final
 
   // The workhorse which actually does the decoding. Bound to another sequence.
   scoped_refptr<base::SequencedTaskRunner> decode_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   std::unique_ptr<SequenceBound<ImageDecoderCore>> decoder_;
 
   // List of tracks in this image. Filled in during OnMetadata().
