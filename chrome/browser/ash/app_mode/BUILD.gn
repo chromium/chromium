@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//content/public/common/features.gni")
-import("//pdf/features.gni")
 
 assert(is_chromeos)
 
@@ -430,7 +429,6 @@ source_set("browser_tests") {
     "//components/session_manager/core",
     "//content/test:test_support",
     "//extensions/browser",
-    "//pdf:buildflags",
     "//testing/gtest",
     "//ui/base",
     "//ui/events:test_support",
@@ -443,8 +441,4 @@ source_set("browser_tests") {
     "//chrome/browser/ash/app_mode/test:browser_tests",
     "//chrome/browser/ash/app_mode/web_app:browser_tests",
   ]
-
-  if (enable_pdf) {
-    deps += [ "//pdf:features" ]
-  }
 }

@@ -138,6 +138,7 @@
 #include "chrome/browser/ui/browser_select_file_dialog_controller.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -205,7 +206,6 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/base/network_change_notifier.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "pdf/buildflags.h"
 #include "services/network/public/mojom/network_change_manager.mojom-shared.h"
 #include "storage/browser/file_system/copy_or_move_operation_delegate.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -238,10 +238,6 @@
 #include "url/url_canon.h"
 #include "url/url_util.h"
 
-#if BUILDFLAG(ENABLE_PDF)
-#include "pdf/pdf_features.h"
-#endif  // BUILDFLAG(ENABLE_PDF)
-
 namespace ash {
 namespace smb_client {
 class SmbUrl;
@@ -259,11 +255,6 @@ class Extension;
 namespace guest_os {
 class GuestOsFileWatcher;
 }  // namespace guest_os
-
-#if BUILDFLAG(ENABLE_PDF)
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "pdf/pdf_features.h"
-#endif  // BUILDFLAG(ENABLE_PDF)
 
 using ::testing::_;
 
@@ -2463,14 +2454,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(ash::features::kSkyVaultV2);
     disabled_features.push_back(ash::features::kSkyVaultV3);
   }
-
-#if BUILDFLAG(ENABLE_PDF)
-  if (options.enable_oopif_pdf) {
-    enabled_features.push_back(chrome_pdf::features::kPdfOopif);
-  } else {
-    disabled_features.push_back(chrome_pdf::features::kPdfOopif);
-  }
-#endif  // BUILDFLAG(ENABLE_PDF)
 
   // This is destroyed in |TearDown()|. We cannot initialize this in the
   // constructor due to this feature values' above dependence on virtual

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/args.gni")
-import("//pdf/features.gni")
 
 assert(is_chromeos)
 
@@ -583,10 +582,6 @@ source_set("browser_tests") {
     "//ui/views",
     "//url",
   ]
-
-  if (enable_pdf) {
-    deps += [ "//pdf:features" ]
-  }
 }
 
 if (!is_chromeos_device) {

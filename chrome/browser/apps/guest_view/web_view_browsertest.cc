@@ -232,10 +232,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "base/test/with_feature_override.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
-#include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 using extensions::ContextMenuMatcher;
@@ -5329,46 +5327,19 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestFocusWhileFocused) {
 }
 
 #if BUILDFLAG(ENABLE_PDF)
-class WebViewPdfTest
-    : public WebViewTestBase,
-      public testing::WithParamInterface<testing::tuple<bool, bool>> {
+class WebViewPdfTest : public WebViewTest {
  public:
-  WebViewPdfTest() {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{chrome_pdf::features::kPdfOopif, testing::get<0>(GetParam())},
-         {features::kGuestViewMPArch, testing::get<1>(GetParam())}});
-  }
-
-  static std::string DescribeParams(
-      const testing::TestParamInfo<ParamType>& info) {
-    const auto [pdf_oopif, mparch] = info.param;
-    return base::StringPrintf(
-        "%s_%s", pdf_oopif ? "PdfOopifEnabled" : "PdfOopifDisabled",
-        mparch ? "MPArch" : "InnerWebContents");
-  }
-
-  bool UseOopif() const { return testing::get<0>(GetParam()); }
-
-  pdf::TestMimeHandlerStreamManager* GetTestMimeHandlerStreamManager(
-      content::WebContents* contents) {
-    return factory_.GetTestMimeHandlerStreamManager(contents);
-  }
-
   // Waits until the PDF has loaded in the given `web_view_rfh`.
   testing::AssertionResult WaitUntilPdfLoaded(
       content::RenderFrameHost* web_view_rfh) {
-    if (UseOopif()) {
-      auto* web_contents =
-          content::WebContents::FromRenderFrameHost(web_view_rfh);
-      return GetTestMimeHandlerStreamManager(web_contents)
-          ->WaitUntilPdfLoaded(web_view_rfh);
-    }
-    return pdf_extension_test_util::EnsurePDFHasLoaded(web_view_rfh);
+    return factory_
+        .GetTestMimeHandlerStreamManager(
+            content::WebContents::FromRenderFrameHost(web_view_rfh))
+        ->WaitUntilPdfLoaded(web_view_rfh);
   }
 
  private:
   pdf::TestMimeHandlerStreamManagerFactory factory_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that the PDF viewer has the same bounds as the WebView.
@@ -5377,23 +5348,16 @@ IN_PROC_BROWSER_TEST_P(WebViewPdfTest, PdfContainerBounds) {
 
   TestHelper("testPDFInWebview", "web_view/shim", NO_TEST_SERVER);
 
-  // OOPIF PDF should only have one guest for the WebView. GuestView PDF should
-  // have a second guest for the PDF (`MimeHandlerViewGuest`).
-  const size_t expected_guest_count = UseOopif() ? 1u : 2u;
-  std::vector<content::RenderFrameHost*> guest_rfh_list;
-  GetGuestViewManager()->WaitForNumGuestsCreated(expected_guest_count);
-  GetGuestViewManager()->GetGuestRenderFrameHostList(&guest_rfh_list);
-  ASSERT_EQ(expected_guest_count, guest_rfh_list.size());
-
-  content::RenderFrameHost* web_view_rfh = guest_rfh_list[0];
+  content::RenderFrameHost* web_view_rfh =
+      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
+  ASSERT_TRUE(web_view_rfh);
 
   // Make sure the PDF loaded.
   ASSERT_TRUE(WaitUntilPdfLoaded(web_view_rfh));
 
   content::RenderFrameHost* extension_rfh =
-      UseOopif() ? pdf_extension_test_util::GetPdfExtensionHostFromEmbedder(
-                       web_view_rfh, /*allow_multiple_frames=*/false)
-                 : guest_rfh_list[1];
+      pdf_extension_test_util::GetPdfExtensionHostFromEmbedder(
+          web_view_rfh, /*allow_multiple_frames=*/false);
   ASSERT_TRUE(extension_rfh);
 
   gfx::Rect web_view_container_bounds =
@@ -5411,23 +5375,16 @@ IN_PROC_BROWSER_TEST_P(WebViewPdfTest, ContextMenuNavigationInWebView) {
 
   TestHelper("testNavigateToPDFInWebview", "web_view/shim", NO_TEST_SERVER);
 
-  // OOPIF PDF should only have one guest for the WebView. GuestView PDF should
-  // have a second guest for the PDF (`MimeHandlerViewGuest`).
-  const size_t expected_guest_count = UseOopif() ? 1u : 2u;
-  std::vector<content::RenderFrameHost*> guest_rfh_list;
-  GetGuestViewManager()->WaitForNumGuestsCreated(expected_guest_count);
-  GetGuestViewManager()->GetGuestRenderFrameHostList(&guest_rfh_list);
-  ASSERT_EQ(expected_guest_count, guest_rfh_list.size());
-
-  content::RenderFrameHost* web_view_rfh = guest_rfh_list[0];
+  content::RenderFrameHost* web_view_rfh =
+      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
+  ASSERT_TRUE(web_view_rfh);
 
   // Make sure the PDF loaded.
   ASSERT_TRUE(WaitUntilPdfLoaded(web_view_rfh));
 
   content::RenderFrameHost* extension_rfh =
-      UseOopif() ? pdf_extension_test_util::GetPdfExtensionHostFromEmbedder(
-                       web_view_rfh, /*allow_multiple_frames=*/false)
-                 : guest_rfh_list[1];
+      pdf_extension_test_util::GetPdfExtensionHostFromEmbedder(
+          web_view_rfh, /*allow_multiple_frames=*/false);
   ASSERT_TRUE(extension_rfh);
 
   // Ensure the <webview> has a previous entry, so we can navigate back to it.
@@ -5470,9 +5427,6 @@ IN_PROC_BROWSER_TEST_P(WebViewPdfTest, Shim_TestDialogInPdf) {
 // PDF content frame.
 IN_PROC_BROWSER_TEST_P(WebViewPdfTest, ExecuteScriptInEmbeddedPdf) {
   SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-  if (!UseOopif()) {
-    GTEST_SKIP();
-  }
 
   TestHelper("testExecuteScriptInEmbeddedPdf", "web_view/shim",
              NEEDS_TEST_SERVER);
@@ -5499,12 +5453,10 @@ IN_PROC_BROWSER_TEST_P(WebViewPdfTest, ExecuteScriptInEmbeddedPdf) {
                                             "/pdf/test.pdf"));
 }
 
-// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
-// launches.
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          WebViewPdfTest,
-                         testing::Combine(testing::Bool(), testing::Bool()),
-                         WebViewPdfTest::DescribeParams);
+                         testing::Bool(),
+                         WebViewTest::DescribeParams);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestMailtoLink) {

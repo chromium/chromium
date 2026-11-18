@@ -53,6 +53,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/download_test_observer.h"
+#include "pdf/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
@@ -595,14 +596,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewVideo"),
         TestCase("openQuickViewVideoOnDrive"),
 #if BUILDFLAG(ENABLE_PDF)
-        TestCase("openQuickViewPdf").SetEnableOopifPdf(false),
-        TestCase("openQuickViewPdf").SetEnableOopifPdf(true),
-        TestCase("openQuickViewPdfPopup").SetEnableOopifPdf(false),
-        TestCase("openQuickViewPdfPopup").SetEnableOopifPdf(true),
+        TestCase("openQuickViewPdf"),
+        TestCase("openQuickViewPdfPopup"),
 #if !defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
         // TODO(http://crbug.com/40818544): Flaky on ASan non-DEBUG.
-        TestCase("openQuickViewPdfPreviewsDisabled").SetEnableOopifPdf(false),
-        TestCase("openQuickViewPdfPreviewsDisabled").SetEnableOopifPdf(true),
+        TestCase("openQuickViewPdfPreviewsDisabled"),
 #endif  // !defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
 #endif  // BUILDFLAG(ENABLE_PDF)
         TestCase("openQuickViewKeyboardUpDownChangesView"),

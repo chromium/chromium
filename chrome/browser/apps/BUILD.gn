@@ -69,7 +69,6 @@ if (is_chromeos && enable_extensions) {
       "//content/test:browsertest_support",
       "//content/test:test_support",
       "//extensions/browser:test_support",
-      "//pdf:features",
       "//ui/events:gesture_detection",
     ]
   }
