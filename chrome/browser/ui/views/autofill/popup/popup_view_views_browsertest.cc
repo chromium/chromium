@@ -591,7 +591,14 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_AutofillAi_SubMenu) {
+// TODO(crbug.com/587087910): Re-enable on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_AutofillAi_SubMenu DISABLED_InvokeUi_AutofillAi_SubMenu
+#else
+#define MAYBE_InvokeUi_AutofillAi_SubMenu InvokeUi_AutofillAi_SubMenu
+#endif
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       MAYBE_InvokeUi_AutofillAi_SubMenu) {
   Suggestion source_attribution(
       u"From Gemini and connected apps · Photos\u00A0[1]",
       SuggestionType::kAutofillAiSourceAttribution);
@@ -617,8 +624,16 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_AutofillAi_SubMenu) {
   ShowAndVerifyUi(/*popup_has_parent=*/true);
 }
 
+// TODO(crbug.com/587087910): Re-enable on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_AutofillAi_SubMenu_Selected \
+  DISABLED_InvokeUi_AutofillAi_SubMenu_Selected
+#else
+#define MAYBE_InvokeUi_AutofillAi_SubMenu_Selected \
+  InvokeUi_AutofillAi_SubMenu_Selected
+#endif
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       InvokeUi_AutofillAi_SubMenu_Selected) {
+                       MAYBE_InvokeUi_AutofillAi_SubMenu_Selected) {
   Suggestion source_attribution(
       u"From Gemini and connected apps · Photos\u00A0[1]",
       SuggestionType::kAutofillAiSourceAttribution);
