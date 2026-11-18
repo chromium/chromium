@@ -79,6 +79,7 @@ export class CategoriesElement extends CategoriesElementBase {
       isWallpaperSearchSelected_: {type: Boolean},
       wallpaperSearchEnabled_: {type: Boolean},
       chromeWebStoreThemesEnabled_: {type: Boolean},
+      organizerPanelEnabled_: {type: Boolean},
     };
   }
 
@@ -93,6 +94,8 @@ export class CategoriesElement extends CategoriesElementBase {
       loadTimeData.getBoolean('wallpaperSearchEnabled');
   protected accessor chromeWebStoreThemesEnabled_: boolean =
       loadTimeData.getBoolean('chromeWebStoreThemesEnabled');
+  private accessor organizerPanelEnabled_: boolean =
+      loadTimeData.getBoolean('organizerPanelEnabled');
   private imageErrorDetectionEnabled_: boolean =
       loadTimeData.getBoolean('imageErrorDetectionEnabled');
 
@@ -232,6 +235,12 @@ export class CategoriesElement extends CategoriesElementBase {
   protected isCollectionSelected_(id: string) {
     return this.selectedCategory_.type === CategoryType.COLLECTION &&
         this.selectedCategory_.collectionId === id;
+  }
+
+  protected getCornerNewTabPageSrc_(): string {
+    return this.organizerPanelEnabled_ ?
+        'icons/corner_new_tab_page_organizer_panel.svg' :
+        'icons/corner_new_tab_page.svg';
   }
 
   protected onClassicChromeClick_() {

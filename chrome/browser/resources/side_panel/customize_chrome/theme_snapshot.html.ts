@@ -32,7 +32,7 @@ ${this.themeType_ === CustomizeThemeType.CLASSIC_CHROME ? html`
         @click="${this.onThemeSnapshotClick_}">
       <svg id="miniNewTabPage" aria-hidden="true" viewBox="0 0 240 126"
           preserveAspectRatio="xMidYMid meet">
-        <use href="icons/mini_new_tab_page.svg#miniNewTabPage"></use>
+        <use href="${this.getMiniNewTabPageSrc_()}"></use>
       </svg>
       <div class="overlay"></div>
       <cr-ripple></cr-ripple>

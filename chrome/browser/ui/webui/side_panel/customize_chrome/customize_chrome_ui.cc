@@ -47,6 +47,7 @@
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar_handler.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.h"
@@ -348,6 +349,12 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
 
   source->AddBoolean("footerEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpFooter));
+#if !BUILDFLAG(IS_ANDROID)
+  source->AddBoolean("organizerPanelEnabled",
+                     organizer_panel::IsOrganizerPanelFeatureEnabled());
+#else
+  source->AddBoolean("organizerPanelEnabled", false);
+#endif
 
   webui::SetupWebUIDataSource(
       source, kSidePanelCustomizeChromeResources,

@@ -21,7 +21,7 @@ export function getHtml(this: CategoriesElement) {
       <customize-chrome-check-mark-wrapper
           ?checked="${this.isClassicChromeSelected_}">
         <div id="cornerNewTabPageTile" class="image-container">
-          <img id="cornerNewTabPage" src="icons/corner_new_tab_page.svg">
+          <img id="cornerNewTabPage" src="${this.getCornerNewTabPageSrc_()}">
         </div>
       </customize-chrome-check-mark-wrapper>
       <div class="label">$i18n{classicChrome}</div>

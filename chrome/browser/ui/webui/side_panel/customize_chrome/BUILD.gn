@@ -134,6 +134,7 @@ if (!is_android || enable_webui_ntp) {
       deps += [
         "//chrome/browser/themes",
         "//chrome/browser/ui:browser_window_header",
+        "//chrome/browser/ui/tabs/organizer",
         "//chrome/browser/ui/views/side_panel",
         "//chrome/browser/ui/views/side_panel/customize_chrome",
         "//chrome/browser/ui/webui:theme_handler",

@@ -395,15 +395,36 @@ suite('CategoriesTest', () => {
     );
   });
 
-  test('classic chrome tile shows correct image', async () => {
-    await setInitialSettings({numCollections: 0});
+  async function assertClassicChromeTileImage(
+      organizerPanelEnabled: boolean, expectedImage: string) {
+    const originalOrganizerPanelEnabled =
+        loadTimeData.getBoolean('organizerPanelEnabled');
+    loadTimeData.overrideValues({
+      organizerPanelEnabled,
+    });
+    try {
+      await setInitialSettings({numCollections: 0});
+      assertEquals(
+          $$<HTMLImageElement>(
+              categoriesElement,
+              '#classicChromeTile #cornerNewTabPageTile #cornerNewTabPage')!
+              .src,
+          `chrome://customize-chrome-side-panel.top-chrome/icons/${
+              expectedImage}`);
+    } finally {
+      loadTimeData.overrideValues({
+        organizerPanelEnabled: originalOrganizerPanelEnabled,
+      });
+    }
+  }
 
-    assertEquals(
-        $$<HTMLImageElement>(
-            categoriesElement,
-            '#classicChromeTile #cornerNewTabPageTile #cornerNewTabPage')!.src,
-        'chrome://customize-chrome-side-panel.top-chrome/icons/' +
-            'corner_new_tab_page.svg');
+  test('classic chrome tile shows correct image', async () => {
+    await assertClassicChromeTileImage(false, 'corner_new_tab_page.svg');
+  });
+
+  test('classic chrome tile shows organizer panel image', async () => {
+    await assertClassicChromeTileImage(
+        true, 'corner_new_tab_page_organizer_panel.svg');
   });
 
   [true, false].forEach((flagEnabled) => {

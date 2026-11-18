@@ -8,6 +8,7 @@ import type {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-pan
 import {browserProxyFactory, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import type {ThemeSnapshotElement} from 'chrome://customize-chrome-side-panel.top-chrome/theme_snapshot.js';
 import {CustomizeThemeType} from 'chrome://customize-chrome-side-panel.top-chrome/theme_snapshot.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -116,27 +117,44 @@ suite('ThemeSnapshotTest', () => {
            '.snapshot-container #uploadedThemeTitle')!.textContent.trim());
   });
 
+  async function assertClassicChromeSnapshotImage(
+      organizerPanelEnabled: boolean, expectedHref: string): Promise<void> {
+    const originalOrganizerPanelEnabled =
+        loadTimeData.getBoolean('organizerPanelEnabled');
+    loadTimeData.overrideValues({organizerPanelEnabled});
+    try {
+      await createThemeSnapshotElement();
+      const theme = createTheme();
+
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+
+      assertEquals(1, handler.getCallCount('updateTheme'));
+      const page =
+          themeSnapshotElement.shadowRoot.querySelector('.snapshot-container');
+      assertTrue(!!page);
+      assertEquals(
+          CustomizeThemeType.CLASSIC_CHROME, page.getAttribute('theme-type'));
+      assertEquals(
+          $$<SVGUseElement>(
+              themeSnapshotElement,
+              '#classicChromeBackground svg use')!.href.baseVal,
+          expectedHref);
+    } finally {
+      loadTimeData.overrideValues(
+          {organizerPanelEnabled: originalOrganizerPanelEnabled});
+    }
+  }
+
   test('classic chrome snapshot shows correct image', async () => {
-    // Arrange.
-    createThemeSnapshotElement();
-    const theme = createTheme();
+    await assertClassicChromeSnapshotImage(
+        false, 'icons/mini_new_tab_page.svg#miniNewTabPage');
+  });
 
-    // Act.
-    callbackRouterRemote.setTheme(theme);
-    await callbackRouterRemote.$.flushForTesting();
-
-    // Assert.
-    assertEquals(1, handler.getCallCount('updateTheme'));
-    const page =
-        themeSnapshotElement.shadowRoot.querySelector('.snapshot-container');
-    assertTrue(!!page);
-    assertEquals(
-        CustomizeThemeType.CLASSIC_CHROME, page.getAttribute('theme-type'));
-    assertEquals(
-        $$<SVGUseElement>(
-            themeSnapshotElement,
-            '#classicChromeBackground svg use')!.href.baseVal,
-        'icons/mini_new_tab_page.svg#miniNewTabPage');
+  test('classic chrome snapshot shows organizer panel image', async () => {
+    await assertClassicChromeSnapshotImage(
+        true,
+        'icons/mini_new_tab_page_organizer_panel.svg#EXPORT_miniNewTabPage');
   });
 
   test(
