@@ -208,11 +208,11 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
     }, {once: true});
   }
 
-  protected getItemAriaDescription_(): string|undefined {
+  private getItemAriaDescription_(): string|undefined {
     return this.itemAriaDescription || this.description;
   }
 
-  protected getItemAriaLabel_(): string {
+  private getItemAriaLabel_(): string {
     return this.itemAriaLabel || this.title;
   }
 

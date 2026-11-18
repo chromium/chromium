@@ -192,7 +192,7 @@ export class ContextualActionMenuElement extends
   protected accessor sharingTabsText_: string = '';
   // Only close menu if the context management flag and the
   // `keepMenuOpenOnTabSelectForRealbox` param are enabled.
-  protected get closeMenuOnSelect(): boolean {
+  private get closeMenuOnSelect(): boolean {
     return this.contextManagementInComposeboxEnabled &&
         !getLoadTimeBoolean('keepMenuOpenOnTabSelectForRealbox', false);
   }
@@ -209,7 +209,7 @@ export class ContextualActionMenuElement extends
   private wasSmartTabSharingOptionShown_: boolean = false;
   private accessor isOpen_: boolean = false;
 
-  protected get supportedTools_(): Map<ToolMode, {
+  private get supportedTools_(): Map<ToolMode, {
     icon: string,
   }> {
     return new Map([
@@ -611,10 +611,6 @@ export class ContextualActionMenuElement extends
     return disabledItems.includes(item);
   }
 
-  protected isToolAllowed_(tool: ToolMode): boolean {
-    return this.isItemAllowed_(tool, this.inputState?.allowedTools);
-  }
-
   protected isToolDisabled_(tool: ToolMode): boolean {
     if (this.isToolActive_(tool)) {
       return false;
@@ -627,10 +623,6 @@ export class ContextualActionMenuElement extends
       return false;
     }
     return this.inputState.activeTool === tool;
-  }
-
-  protected isModelAllowed_(model: ModelMode): boolean {
-    return this.isItemAllowed_(model, this.inputState?.allowedModels);
   }
 
   protected isModelDisabled_(model: ModelMode): boolean {
@@ -974,7 +966,7 @@ export class ContextualActionMenuElement extends
     }
   }
 
-  protected maybeCloseMenuBasedOnEntrypoint_() {
+  private maybeCloseMenuBasedOnEntrypoint_() {
     if ((this.closeMenuOnSelect && this.metricsSource_ === 'NewTabPage') ||
         this.metricsSource_ === 'Omnibox' || this.unboundedMenuEnabled ||
         this.metricsSource_ === 'OmniboxEverywhere') {
@@ -982,12 +974,12 @@ export class ContextualActionMenuElement extends
     }
   }
 
-  protected deleteTabContext_(tabId: number) {
+  private deleteTabContext_(tabId: number) {
     this.fire('delete-tab-context', {tabId: tabId, fromUserAction: true});
     this.maybeCloseMenuBasedOnEntrypoint_();
   }
 
-  protected addTabContext_(tabInfo: TabInfo, singleTabType?: SingleTabType) {
+  private addTabContext_(tabInfo: TabInfo, singleTabType?: SingleTabType) {
     this.fire('add-tab-context', {
       id: tabInfo.tabId,
       title: tabInfo.title,

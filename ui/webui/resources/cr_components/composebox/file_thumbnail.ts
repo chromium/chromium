@@ -87,14 +87,14 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
         this.file.type === 'pdf' || this.file.type === 'application/pdf';
   }
 
-  protected isVideo_(): boolean {
+  private isVideo_(): boolean {
     return Boolean(
         this.file?.type &&
         (this.file.type.startsWith('video/') ||
          this.file.type.includes('video')));
   }
 
-  protected isImage_(): boolean {
+  private isImage_(): boolean {
     return Boolean(
         this.file?.type &&
         (this.file.type.startsWith('image/') ||

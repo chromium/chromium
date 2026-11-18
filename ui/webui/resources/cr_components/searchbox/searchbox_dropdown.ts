@@ -402,7 +402,7 @@ export class SearchboxDropdownElement extends CrLitElement {
   /**
    * @returns The side type for the given suggestion group ID.
    */
-  protected sideTypeForGroup_(groupId: number): SideType {
+  private sideTypeForGroup_(groupId: number): SideType {
     return this.result?.suggestionGroupsMap[groupId]?.sideType ??
         SideType.kDefaultPrimary;
   }

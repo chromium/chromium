@@ -70,7 +70,7 @@ export class PolicyLogsAppElement extends CrLitElement {
     }
   }
 
-  protected fetchLogsAndDisplay() {
+  private fetchLogsAndDisplay() {
     this.fetchLogs();
   }
 
@@ -94,7 +94,7 @@ export class PolicyLogsAppElement extends CrLitElement {
     this.filterPattern = (e.target as HTMLInputElement).value;
   }
 
-  protected onSeverityChange(severity: string, checked: boolean) {
+  private onSeverityChange(severity: string, checked: boolean) {
     this.checkedSeverities = {
       ...this.checkedSeverities,
       [severity]: checked,

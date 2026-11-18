@@ -243,20 +243,12 @@ export class ComposeboxDropdownElement extends CrLitElement {
     }
   }
 
-  /**
-   * @returns Index of the match in the autocomplete result. Passed to the match
-   *     so it knows its position in the list of matches.
-   */
-  protected matchIndex_(match: AutocompleteMatch): number {
-    return this.result?.matches.indexOf(match) ?? -1;
-  }
-
   protected isSelected_(index: number): boolean {
     return index === this.selectedMatchIndex;
   }
 
   /** Returns the maximum index of the visible matches. */
-  protected getMaxVisibleIndex_(): number {
+  private getMaxVisibleIndex_(): number {
     if (!this.result) {
       return -1;
     }
@@ -297,7 +289,7 @@ export class ComposeboxDropdownElement extends CrLitElement {
    * verbatim matches when context is uploaded. In this case the verbatim
    * match is "empty" and allows for navigation to context with no text.
    */
-  protected hideVerbatimMatch_(index: number): boolean {
+  private hideVerbatimMatch_(index: number): boolean {
     assert(this.result);
 
     // Only matches at index 0 can be verbatim matches.

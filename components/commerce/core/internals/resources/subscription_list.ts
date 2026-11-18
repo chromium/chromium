@@ -38,7 +38,7 @@ export class SubscriptionListElement extends CrLitElement {
     this.loadSubscriptions_();
   }
 
-  protected async loadSubscriptions_() {
+  private async loadSubscriptions_() {
     const subscriptions =
         (await this.commerceInternalsApi_.getSubscriptionDetails())
             .subscriptions;

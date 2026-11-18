@@ -415,12 +415,12 @@ export class PolicyAppElement extends CrLitElement {
       this.showToast_(loadTimeData.getString('reportUploaded'));
     });
   }
-  // </if>
 
   protected onViewLogsClick_() {
     this.closeActionMenu_();
     window.location.href = 'chrome://policy/logs';
   }
+  // </if>
 
   protected onShowUnsetCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     this.showUnset_ = e.detail.value;

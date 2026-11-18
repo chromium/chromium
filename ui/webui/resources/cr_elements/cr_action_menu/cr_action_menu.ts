@@ -331,7 +331,7 @@ export class CrActionMenuElement extends CrLitElement {
     }
   }
 
-  protected onFocusout_(e: FocusEvent) {
+  private onFocusout_(e: FocusEvent) {
     if (this.autoCloseOnFocusout && hasFocusoutOutside(e, this)) {
       this.close();
     }

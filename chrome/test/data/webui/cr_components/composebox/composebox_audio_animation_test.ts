@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_components/search/audio_wave.js';
 
-import {bezierEasing} from 'chrome://resources/cr_components/search/audio_simulation_utils.js';
+import {bezierEasing, makeSimulatedAudioBump} from 'chrome://resources/cr_components/search/audio_simulation_utils.js';
 import type {Bump} from 'chrome://resources/cr_components/search/audio_simulation_utils.js';
 import {weightedAverage} from 'chrome://resources/cr_components/search/audio_wave.js';
 import type {AudioWaveElement} from 'chrome://resources/cr_components/search/audio_wave.js';
@@ -18,7 +18,7 @@ type MockAudioWaveElement = Omit<
     |'isExpanding_'|'animationFrameId_'|'decayingAmplitude_'|
     'lastSyllableCount_'|'containerWidth_'|'volumeHistory_'|
     'activeSimulatedBumps_'|'frame_'|'onStartListen_'|'updateVolume_'|
-    'makeSimulatedAudioBump_'|'getSimulatedAudioBumpsSum_'>&{
+    'getSimulatedAudioBumpsSum_'>&{
   isExpanding_: boolean,
   animationFrameId_: number,
   decayingAmplitude_: number,
@@ -29,9 +29,6 @@ type MockAudioWaveElement = Omit<
   frame_: number,
   onStartListen_: () => void,
   updateVolume_: () => void,
-  makeSimulatedAudioBump_:
-      (durationMultiplier: number, durationOffset: number, startTime: number,
-       maxVolMultiplier: number, maxVolOffset: number) => void,
   getSimulatedAudioBumpsSum_: () => number,
 };
 
@@ -454,8 +451,9 @@ suite('Composebox audio wave animation', () => {
       const quietLevel = audioWaveElement.volumeHistory_[0]!;
 
       // Bump of duration 20, max volume of 1
-      audioWaveElement.makeSimulatedAudioBump_(
-          0, 20, audioWaveElement.frame_, 0, 1.0);
+      makeSimulatedAudioBump(
+          audioWaveElement.activeSimulatedBumps_, 0, 20,
+          audioWaveElement.frame_, 0, 1.0);
 
       // Move halfway
       for (let i = 0; i < 10; i++) {

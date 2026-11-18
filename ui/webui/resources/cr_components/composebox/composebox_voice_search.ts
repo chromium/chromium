@@ -1005,7 +1005,7 @@ export class ComposeboxVoiceSearchElement extends
     }
   }
 
-  protected voiceModeEndCleanup_() {
+  private voiceModeEndCleanup_() {
     this.removeOutsideListeners_();
     abortRecognition(this.voiceRecognition_);
     this.resetState_();

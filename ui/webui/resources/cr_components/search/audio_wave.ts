@@ -179,7 +179,7 @@ export class AudioWaveElement extends CrLitElement {
     }
   }
 
-  protected onStartListen_() {
+  private onStartListen_() {
     this.isExpanding_ = true;
     this.lastSyllableCount_ = 0;
 
@@ -192,7 +192,7 @@ export class AudioWaveElement extends CrLitElement {
     }
   }
 
-  protected onStopListen_() {
+  private onStopListen_() {
     this.frame_ = 0;
     this.decayingAmplitude_ = 0;
     this.lastSyllableCount_ = 0;
@@ -242,7 +242,7 @@ export class AudioWaveElement extends CrLitElement {
     }
   };
 
-  protected drawEclipseWavePath_(rawInputLevel: number) {
+  private drawEclipseWavePath_(rawInputLevel: number) {
     this.frame_++;
 
     // Snap up immediately if new volume is louder.
@@ -352,7 +352,7 @@ export class AudioWaveElement extends CrLitElement {
     this.$.clipPathShape.setAttribute('d', clipPathString);
   }
 
-  protected updateVolume_() {
+  private updateVolume_() {
     /* 0 to 1 represents how much decimal % of volume can be
      * added in current frame due to mapping in mapToRange.
      */
@@ -368,24 +368,13 @@ export class AudioWaveElement extends CrLitElement {
     }
   }
 
-  // Delegated to audio_simulation_utils.ts for shared syllable bump logic.
-  protected handleNewWords_() {
+  private handleNewWords_() {
     this.lastSyllableCount_ = triggerSyllableBumps(
         this.activeSimulatedBumps_, this.transcript, this.lastSyllableCount_,
         this.frame_);
   }
 
-  // Delegated to audio_simulation_utils.ts for backwards compatibility with
-  // tests.
-  protected makeSimulatedAudioBump_(
-      durationMultiplier: number, durationOffset: number, startTime: number,
-      maxVolMultiplier: number, maxVolOffset: number) {
-    makeSimulatedAudioBump(
-        this.activeSimulatedBumps_, durationMultiplier, durationOffset,
-        startTime, maxVolMultiplier, maxVolOffset);
-  }
-
-  protected getSimulatedAudioBumpsSum_(): number {
+  private getSimulatedAudioBumpsSum_(): number {
     return updateBumpsAndGetSum(this.activeSimulatedBumps_, this.frame_);
   }
 

@@ -241,7 +241,7 @@ export class ExperimentElement extends CrLitElement {
     return true;
   }
 
-  protected computeIsDefault_(): boolean {
+  private computeIsDefault_(): boolean {
     if (this.showEnableDisableSelect_() || this.showMultiValueSelect_()) {
       return this.feature_.is_default;
     }

@@ -80,7 +80,7 @@ export class TracingScenariosConfigElement extends CrLitElement {
     clearInterval(this.refreshIntervalId_);
   }
 
-  protected async initializeConfig_(): Promise<void> {
+  private async initializeConfig_(): Promise<void> {
     this.isLoading_ = true;
 
     await this.loadScenariosConfig_();
@@ -111,7 +111,7 @@ export class TracingScenariosConfigElement extends CrLitElement {
         setInterval(this.loadScenariosConfig_.bind(this), 1000);
   }
 
-  protected async loadScenariosConfig_(): Promise<void> {
+  private async loadScenariosConfig_(): Promise<void> {
     const {config: scenarios} =
         await this.traceReportProxy_.handler.getAllScenarios();
     this.localConfig_ = [];

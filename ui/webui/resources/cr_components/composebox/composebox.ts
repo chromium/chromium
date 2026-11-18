@@ -18,13 +18,13 @@ import '//resources/cr_components/localized_link/localized_link.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
-import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
+import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {ComposeboxFile, ProcessFilesError, recordContextAdditionMethod} from './common.js';
+import {ComposeboxFile, ProcessFilesError} from './common.js';
 import type {TabUpload} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
@@ -257,12 +257,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       this.queryAutocomplete(/* clearMatches= */ true);
     }
     return file;
-  }
-
-  protected onFileChange_(e: CustomEvent<{files: FileList}>) {
-    this.processFiles(e.detail.files);
-    recordContextAdditionMethod(
-        ComposeboxContextAddedMethod.CONTEXT_MENU, this.composeboxSource);
   }
 
   protected onLensClick_() {

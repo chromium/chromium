@@ -76,7 +76,7 @@ export class TraceReportListElement extends CrLitElement {
     this.initializeList(true);
   }
 
-  protected async initializeList(hasLoading: boolean = false): Promise<void> {
+  private async initializeList(hasLoading: boolean = false): Promise<void> {
     this.isLoading_ = hasLoading;
     const {reports} = await this.traceReportProxy_.handler.getAllTraceReports();
     if (reports) {

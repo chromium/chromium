@@ -85,7 +85,7 @@ export class TracesAppElement extends CrLitElement {
    * Returns the index of the currently selected tab corresponding to the
    * path or zero if no match.
    */
-  protected selectedFromPath_(path: string): number {
+  private selectedFromPath_(path: string): number {
     const index = this.tabs.findIndex(tab => path === tab.path);
     return Math.max(index, 0);
   }

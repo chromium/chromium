@@ -72,7 +72,7 @@ export class TraceReportElement extends CrLitElement {
     return `${displayedSize.toFixed(2)} ${sizes[i]}`;
   }
 
-  protected getSkipReason_(trace: ClientTraceReport): string {
+  private getSkipReason_(trace: ClientTraceReport): string {
     // Keep this in sync with the values of SkipUploadReason in
     // tracereport.mojom
     const skipReasonMap: string[] = [

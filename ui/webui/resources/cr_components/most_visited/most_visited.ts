@@ -812,7 +812,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     return index >= this.maxVisibleTiles_;
   }
 
-  protected onSingleRowChange_() {
+  private onSingleRowChange_() {
     if (!this.isConnected) {
       return;
     }
@@ -959,7 +959,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     this.dialogTileTitle_ = (e.target as HTMLInputElement).value;
   }
 
-  protected onDocumentKeyDown_(e: KeyboardEvent) {
+  private onDocumentKeyDown_(e: KeyboardEvent) {
     if (this.nonEditable || e.altKey || e.shiftKey) {
       return;
     }
@@ -1425,7 +1425,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
   }
 
-  protected onTilesRendered_() {
+  private onTilesRendered_() {
     performance.measure('most-visited-rendered');
     assert(this.maxVisibleTiles_ > 0);
     this.browserProxy_.handler.onMostVisitedTilesRendered(

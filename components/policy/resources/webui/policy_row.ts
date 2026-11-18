@@ -63,7 +63,7 @@ export class PolicyRowElement extends CrLitElement {
   accessor visibleColumns: OptionalPolicyColumn[] =
       [...OPTIONAL_POLICY_COLUMNS];
 
-  protected get unset(): boolean {
+  private get unset(): boolean {
     return !!(this.policy && this.policy.value === undefined);
   }
 

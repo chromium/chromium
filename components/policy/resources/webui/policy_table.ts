@@ -137,7 +137,7 @@ export class PolicyTableElement extends CrLitElement {
     return this.visibleColumns.includes(column);
   }
 
-  protected sortColumn(ascending: boolean, field: keyof PolicyUiModel) {
+  private sortColumn(ascending: boolean, field: keyof PolicyUiModel) {
     this.sortAscending = ascending;
     this.mostRecentSortedColumn = field;
   }
@@ -147,7 +147,7 @@ export class PolicyTableElement extends CrLitElement {
     this.sortColumn(e.detail.ascending, e.detail.field);
   }
 
-  protected getSortedPolicies(): PolicyUiModel[] {
+  private getSortedPolicies(): PolicyUiModel[] {
     if (!this.dataModel || !this.dataModel.policies) {
       return [];
     }
