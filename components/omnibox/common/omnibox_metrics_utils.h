@@ -8,8 +8,7 @@
 #include <string>
 #include <string_view>
 
-#include "third_party/omnibox_proto/model_mode.pb.h"
-#include "third_party/omnibox_proto/tool_mode.pb.h"
+#include "components/omnibox/common/input_state.h"
 
 namespace omnibox {
 
@@ -62,9 +61,9 @@ enum class ResultToContentReadyEarlyExitReason {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxPopupResultToContentReadyEarlyExitReason)
 
-std::string GetToolModeString(omnibox::ToolMode mode);
+std::string GetToolModeString(ToolKey mode);
 
-std::string GetModelModeString(omnibox::ModelMode mode);
+std::string GetModelModeString(ModelKey mode);
 
 std::string GetContextTypeString(ContextType type);
 

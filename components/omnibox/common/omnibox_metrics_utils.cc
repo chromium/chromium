@@ -14,7 +14,7 @@
 namespace omnibox {
 
 // LINT.IfChange(ToolMode)
-std::string GetToolModeString(omnibox::ToolMode mode) {
+std::string GetToolModeString(ToolKey mode) {
   switch (mode) {
     case omnibox::TOOL_MODE_UNSPECIFIED:
       return "Unspecified";
@@ -50,7 +50,7 @@ std::string GetToolModeString(omnibox::ToolMode mode) {
 // //tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxToolMode)
 
 // LINT.IfChange(ModelMode)
-std::string GetModelModeString(omnibox::ModelMode mode) {
+std::string GetModelModeString(ModelKey mode) {
   switch (mode) {
     case omnibox::MODEL_MODE_UNSPECIFIED:
       return "Unspecified";

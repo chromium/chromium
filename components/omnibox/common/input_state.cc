@@ -57,11 +57,11 @@ size_t InputState::EstimateMemoryUsage() const {
   return res;
 }
 
-ModelMode InputState::GetDefaultModel() const {
+ModelKey InputState::GetDefaultModel() const {
   if (!allowed_models.empty()) {
     return allowed_models[0];
   }
-  return ModelMode::MODEL_MODE_UNSPECIFIED;
+  return kUnspecifiedModelKey;
 }
 
 }  // namespace omnibox
