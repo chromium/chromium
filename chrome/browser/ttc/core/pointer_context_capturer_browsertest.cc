@@ -4,17 +4,27 @@
 
 #include "chrome/browser/ttc/core/pointer_context_capturer.h"
 
+#include <string>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ttc/core/ttc_core_browser_test_base.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -22,6 +32,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/size.h"
@@ -122,6 +133,133 @@ IN_PROC_BROWSER_TEST_P(PointerContextCapturerScaleBrowserTest,
   const ContentNode& root = result->page_content.root_node();
   EXPECT_TRUE(root.content_attributes().geometry().has_visible_bounding_box());
   EXPECT_TRUE(HasHitTestableDescendant(root));
+}
+
+// A page with fields whose values must not leave the device: the fields, and
+// the features, off by default, that painting over them needs.
+struct SensitiveFields {
+  const char* name;
+  const char* path;
+  std::vector<const char*> selectors;
+  std::vector<base::test::FeatureRef> features;
+};
+
+// The screenshot is the page context fetcher's, which paints over fields
+// with sensitive values. get_pointer sends the model a part of it, so check
+// that it does so for a capture made the way the capturer makes it.
+class PointerContextCapturerRedactionBrowserTest
+    : public PointerContextCapturerBrowserTest,
+      public testing::WithParamInterface<SensitiveFields> {
+ public:
+  PointerContextCapturerRedactionBrowserTest() {
+    // Passwords are painted over by default; payment fields and one-time
+    // codes only with features. Each page gets only the features for its own
+    // kind of field, so that it is not painted over thanks to another's.
+    if (!GetParam().features.empty()) {
+      scoped_feature_list_.InitWithFeatures(GetParam().features, {});
+    }
+  }
+
+  void SetUp() override {
+    // Without this the screenshot is black all over, and so would be where
+    // a field should have been painted over but was not.
+    EnablePixelOutput();
+    PointerContextCapturerBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PointerContextCapturerRedactionBrowserTest,
+    testing::Values(
+        SensitiveFields{"Password", "/password.html", {"#filled-password"}, {}},
+        SensitiveFields{
+            "CreditCard",
+            "/optimization_guide/credit_card.html",
+            {"#filled-cc-number", "#filled-cc-exp"},
+            {page_content_annotations::kGlicScreenshotSensitivePaymentRedaction,
+             optimization_guide::features::
+                 kAnnotatedPageContentAutofillCreditCardRedactions}},
+        SensitiveFields{"OneTimeCode",
+                        "/optimization_guide/otp_redaction.html",
+                        {"#otp"},
+                        {optimization_guide::features::
+                             kAnnotatedPageContentAutofillOtpRedactions}}),
+    [](const testing::TestParamInfo<SensitiveFields>& info) {
+      return std::string(info.param.name);
+    });
+
+IN_PROC_BROWSER_TEST_P(PointerContextCapturerRedactionBrowserTest,
+                       SensitiveFieldsArePaintedOver) {
+  base::HistogramTester histograms;
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL(GetParam().path)));
+  content::WaitForCopyableViewInWebContents(web_contents());
+  if (!GetParam().features.empty()) {
+    // Payment fields and one-time codes are known as such from Autofill,
+    // which parses a page's forms asynchronously. A capture made before it
+    // has would leave the fields as they are.
+    autofill::ContentAutofillDriver* driver =
+        autofill::ContentAutofillDriver::GetForRenderFrameHost(
+            web_contents()->GetPrimaryMainFrame());
+    ASSERT_TRUE(driver);
+    ASSERT_TRUE(autofill::WaitForMatchingForm(
+        &driver->GetAutofillManager(),
+        base::BindRepeating(
+            [](const autofill::FormStructure&) { return true; })));
+  }
+
+  PointerContextCapturer capturer(TestTimeouts::action_timeout());
+  base::test::TestFuture<PointerContextCapturer::Result> future;
+  capturer.Capture(web_contents(), future.GetCallback());
+  PointerContextCapturer::Result result = future.Take();
+  ASSERT_TRUE(result.has_value());
+  const SkBitmap screenshot = gfx::JPEGCodec::Decode(result->screenshot);
+  ASSERT_FALSE(screenshot.drawsNothing());
+
+  for (const char* selector : GetParam().selectors) {
+    SCOPED_TRACE(selector);
+    // The middle of the field, in the screenshot's pixels however the page is
+    // zoomed and scaled, is the color that sensitive fields are painted over
+    // with: black.
+    const content::EvalJsResult center_result = content::EvalJs(
+        web_contents(),
+        content::JsReplace(
+            "(() => {"
+            "  const r = document.querySelector($1).getBoundingClientRect();"
+            "  const s = window.devicePixelRatio * visualViewport.scale;"
+            "  return [Math.floor((r.left + r.width / 2) * s),"
+            "          Math.floor((r.top + r.height / 2) * s)];"
+            "})()",
+            selector));
+    ASSERT_TRUE(center_result.is_list()) << center_result;
+    const base::ListValue& center = center_result.ExtractList();
+    ASSERT_EQ(center.size(), 2u);
+    ASSERT_TRUE(center[0].is_int());
+    ASSERT_TRUE(center[1].is_int());
+    const int x = center[0].GetInt();
+    const int y = center[1].GetInt();
+    ASSERT_GE(x, 0);
+    ASSERT_LT(x, screenshot.width());
+    ASSERT_GE(y, 0);
+    ASSERT_LT(y, screenshot.height());
+    const SkColor field_color = screenshot.getColor(x, y);
+    EXPECT_LT(SkColorGetR(field_color) + SkColorGetG(field_color) +
+                  SkColorGetB(field_color),
+              0x30u);
+  }
+  // The page, whose fields are all near its top left, is white elsewhere.
+  const SkColor page_color =
+      screenshot.getColor(screenshot.width() / 2, screenshot.height() / 2);
+  EXPECT_GT(SkColorGetR(page_color) + SkColorGetG(page_color) +
+                SkColorGetB(page_color),
+            3 * 0xE0u);
+  // The fetcher records whether it painted over anything.
+  histograms.ExpectUniqueSample("Glic.PageContextFetcher.ScreenshotRedacted",
+                                true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PointerContextCapturerBrowserTest, TimesOut) {
