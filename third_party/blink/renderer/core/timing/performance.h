@@ -380,7 +380,7 @@ class CORE_EXPORT Performance : public EventTarget {
       ScriptState* script_state,
       const AtomicString& measure_name,
       const V8UnionPerformanceMeasureOptionsOrString* start_or_options,
-      std::optional<String> end_mark,
+      const String& end_mark,
       ExceptionState& exception_state);
 
   PerformanceMeasure* MeasureWithDetail(ScriptState* script_state,

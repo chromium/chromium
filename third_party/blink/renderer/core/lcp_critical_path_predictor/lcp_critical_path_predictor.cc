@@ -188,7 +188,7 @@ bool LCPCriticalPathPredictor::IsElementMatchingLocator(
 
 void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
     const Element& lcp_element,
-    std::optional<const KURL> maybe_image_url) {
+    const KURL& maybe_image_url) {
   if (base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor) ||
       base::FeatureList::IsEnabled(features::kLCPPLazyLoadImagePreload) ||
       IsTimingPredictorEnabled()) {
@@ -228,8 +228,8 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
   if (base::FeatureList::IsEnabled(features::kLCPPAutoPreconnectLcpOrigin)) {
     auto root_origin =
         url::Origin::Create((GURL)lcp_element.GetDocument().Url());
-    if (maybe_image_url.has_value()) {
-      const KURL& lcp_image_url = *maybe_image_url;
+    if (!maybe_image_url.IsNull()) {
+      const KURL& lcp_image_url = maybe_image_url;
       if (!lcp_image_url.IsEmpty() && lcp_image_url.IsValid() &&
           lcp_image_url.ProtocolIsInHttpFamily()) {
         auto lcp_origin = url::Origin::Create((GURL)lcp_image_url);

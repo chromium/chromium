@@ -1093,7 +1093,7 @@ PerformanceMeasure* Performance::measure(ScriptState* script_state,
                                          ExceptionState& exception_state) {
   // When |startOrOptions| is not provided, it's assumed to be an empty
   // dictionary.
-  return MeasureInternal(script_state, measure_name, nullptr, std::nullopt,
+  return MeasureInternal(script_state, measure_name, nullptr, String(),
                          exception_state);
 }
 
@@ -1102,8 +1102,8 @@ PerformanceMeasure* Performance::measure(
     const AtomicString& measure_name,
     const V8UnionPerformanceMeasureOptionsOrString* start_or_options,
     ExceptionState& exception_state) {
-  return MeasureInternal(script_state, measure_name, start_or_options,
-                         std::nullopt, exception_state);
+  return MeasureInternal(script_state, measure_name, start_or_options, String(),
+                         exception_state);
 }
 
 PerformanceMeasure* Performance::measure(
@@ -1112,8 +1112,8 @@ PerformanceMeasure* Performance::measure(
     const V8UnionPerformanceMeasureOptionsOrString* start_or_options,
     const String& end,
     ExceptionState& exception_state) {
-  return MeasureInternal(script_state, measure_name, start_or_options,
-                         std::optional<String>(end), exception_state);
+  return MeasureInternal(script_state, measure_name, start_or_options, end,
+                         exception_state);
 }
 
 // |MeasureInternal| exists to unify the arguments from different
@@ -1130,13 +1130,13 @@ PerformanceMeasure* Performance::measure(
 //  - If an options dictionary contains neither a 'start' nor an 'end' field.
 //  - If an options dictionary contains all of 'start', 'duration' and 'end'.
 //
-// |end_mark| will be std::nullopt unless the `performance.measure()` overload
+// |end_mark| will be a null string unless the `performance.measure()` overload
 // specified an end mark.
 PerformanceMeasure* Performance::MeasureInternal(
     ScriptState* script_state,
     const AtomicString& measure_name,
     const V8UnionPerformanceMeasureOptionsOrString* start_or_options,
-    std::optional<String> end_mark,
+    const String& end_mark,
     ExceptionState& exception_state) {
   // An empty option is treated with no difference as null, undefined.
   if (start_or_options && start_or_options->IsPerformanceMeasureOptions() &&
@@ -1144,7 +1144,7 @@ PerformanceMeasure* Performance::MeasureInternal(
           *start_or_options->GetAsPerformanceMeasureOptions())) {
     UseCounter::Count(GetExecutionContext(), WebFeature::kUserTimingL3);
     // measure("name", { start, end }, *)
-    if (end_mark) {
+    if (!end_mark.IsNull()) {
       exception_state.ThrowTypeError(
           "If a non-empty PerformanceMeasureOptions object was passed, "
           "|end_mark| must not be passed.");
@@ -1189,8 +1189,8 @@ PerformanceMeasure* Performance::MeasureInternal(
   // We let |end_mark| behave the same whether it's empty, undefined or null
   // in JS, as long as |end_mark| is null in C++.
   V8UnionDoubleOrString* end = nullptr;
-  if (end_mark) {
-    end = MakeGarbageCollected<V8UnionDoubleOrString>(*end_mark);
+  if (!end_mark.IsNull()) {
+    end = MakeGarbageCollected<V8UnionDoubleOrString>(end_mark);
   }
   return MeasureWithDetail(script_state, measure_name, start,
                            /* duration = */ std::nullopt, end, ScriptValue(),

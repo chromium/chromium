@@ -78,7 +78,7 @@ class CORE_EXPORT LCPCriticalPathPredictor final
 
   void OnLargestContentfulPaintUpdated(
       const Element& lcp_element,
-      std::optional<const KURL> maybe_image_url);
+      const KURL& maybe_image_url);
   void OnFontFetched(const KURL& url);
   void OnStartPreload(const KURL& url, const ResourceType& resource_type);
   void OnOutermostMainFrameDocumentLoad();
