@@ -332,6 +332,6 @@ void NewTabPageUI::DidStartNavigation(
 void NewTabPageUI::OnLoad() {
   content::WebUIDataSource::Update(
       profile_, chrome::kChromeUINewTabPageHost,
-      ntp::BuildNavigationLoadTimeData(profile_, web_contents(),
+      ntp::BuildNavigationLoadTimeData(profile_,
                                        handlers_->module_id_details()));
 }

@@ -45,7 +45,7 @@ import {ParentTrustedDocumentProxy} from './modules/microsoft_auth_frame_connect
 import type {PageCallbackRouter, PageHandlerInterface, Theme} from './new_tab_page.mojom-webui.js';
 import {browserProxyFactory as newTabPageProxyFactory, NtpBackgroundImageSource} from './new_tab_page.mojom-webui.js';
 import type {NtpComposeboxElement} from './ntp_composebox.js';
-import {ShowNtpPromosResult} from './ntp_promo.mojom-webui.js';
+import {BrowserPromoType, browserProxyFactory as ntpPromoProxyFactory, ShowNtpPromosResult} from './ntp_promo.mojom-webui.js';
 import type {NtpSearchboxElement} from './ntp_searchbox.js';
 import {$$, ActionChipsRetrievalState} from './utils.js';
 import {WindowProxy} from './window_proxy.js';
@@ -265,7 +265,7 @@ export class AppElement extends AppElementBase {
       shortcutsReorderEnabled_: {type: Boolean},
       modulesEnabled_: {type: Boolean},
 
-      browserPromoType_: {type: String},
+      browserPromoType_: {type: Number},
       showBrowserPromo_: {type: Boolean},
       caretAnimationsEnabled_: {type: Boolean},
       usePecApi_: {type: Boolean},
@@ -431,9 +431,9 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('ntpShortcutsReorderEnabled');
   protected accessor modulesEnabled_: boolean =
       loadTimeData.getBoolean('modulesEnabled');
-  protected accessor browserPromoType_: string =
-      loadTimeData.getString('browserPromoType');
-  protected accessor showBrowserPromo_: boolean = false;
+  private accessor browserPromoType_: BrowserPromoType =
+      BrowserPromoType.kDisabled;
+  private accessor showBrowserPromo_: boolean = false;
   protected accessor modulesShownToUser: boolean = false;
   protected accessor microsoftModuleEnabled_: boolean =
       loadTimeData.getBoolean('microsoftModuleEnabled');
@@ -514,6 +514,7 @@ export class AppElement extends AppElementBase {
   private showWebstoreToastListenerId_: number|null = null;
   private pendingUndoToasts_: Array<{message: string, undo: () => void}> = [];
   private rhsWrapperResizeObserver_: ResizeObserver|null = null;
+  private browserPromoTypePromise_: Promise<void>;
 
   constructor() {
     performance.mark('app-creation-start');
@@ -527,6 +528,7 @@ export class AppElement extends AppElementBase {
     this.customizeButtonsHandler_ =
         customizeButtonsProxyFactory.getInstance().handler;
     this.backgroundManager_ = BackgroundManager.getInstance();
+    this.browserPromoTypePromise_ = this.initializeBrowserPromoType_();
     this.shouldPrintPerformance_ =
         new URLSearchParams(location.search).has('print_perf');
 
@@ -1600,20 +1602,35 @@ export class AppElement extends AppElementBase {
          !this.modulesShownToUser);
   }
 
-  protected recordBrowserPromoMetrics_() {
+  protected showIndividualPromos_(): boolean {
+    return this.showBrowserPromo_ &&
+        this.browserPromoType_ === BrowserPromoType.kSimple;
+  }
+
+  private async initializeBrowserPromoType_() {
+    if (!loadTimeData.getBoolean('browserPromosEnabled')) {
+      return;
+    }
+    const {type} =
+        await ntpPromoProxyFactory.getInstance().handler.getBrowserPromoType();
+    this.browserPromoType_ = type;
+  }
+
+  protected async recordBrowserPromoMetrics_() {
     if (!this.showBrowserPromo_) {
       recordShowBrowserPromosResult(ShowNtpPromosResult.kNotShownDueToPolicy);
       return;
     }
 
+    await this.browserPromoTypePromise_;
     switch (this.browserPromoType_) {
-      case 'disabled':
+      case BrowserPromoType.kDisabled:
         recordShowBrowserPromosResult(ShowNtpPromosResult.kNotShownDueToPolicy);
         break;
-      case 'empty':
+      case BrowserPromoType.kEmpty:
         recordShowBrowserPromosResult(ShowNtpPromosResult.kNotShownNoPromos);
         break;
-      case 'simple':
+      case BrowserPromoType.kSimple:
         recordShowBrowserPromosResult(ShowNtpPromosResult.kShown);
         break;
       default:

@@ -71,7 +71,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
-#include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo_handler.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace ntp {
@@ -112,16 +111,6 @@ bool IsThreadsRailEnabled(bool aim_eligible, bool has_lhs_rail_config) {
 #else
   return false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}
-
-std::string_view GetNtpPromoType(Profile* profile,
-                                 content::WebContents* web_contents) {
-// TODO(b/502297163): Implement for Android.
-#if BUILDFLAG(IS_ANDROID)
-  return "disabled";
-#else
-  return NtpPromoHandler::GetNtpPromoType(profile, web_contents);
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -747,16 +736,23 @@ base::DictValue BuildLoadTimeData(Profile* profile,
           ntp_features::kNtpScaledActionChipsUncappedWidth));
 
   // User education browser promos.
+  bool browser_promos_enabled = false;
   int browser_promo_limit = 0;
   int browser_completed_promo_limit = 0;
   switch (user_education::features::GetNtpBrowserPromoType()) {
     case user_education::features::NtpBrowserPromoType::kSimple:
+      browser_promos_enabled = true;
       // Hard code the limit to 1 for now, as we removed the param accessor.
       browser_promo_limit = 1;
       break;
     case user_education::features::NtpBrowserPromoType::kNone:
       break;
   }
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(b/502297163): Implement for Android.
+  browser_promos_enabled = false;
+#endif  // BUILDFLAG(IS_ANDROID)
+  dict.Set("browserPromosEnabled", browser_promos_enabled);
   dict.Set("browserPromoLimit", browser_promo_limit);
   dict.Set("browserPromoCompletedLimit", browser_completed_promo_limit);
 
@@ -815,13 +811,11 @@ base::DictValue BuildLoadTimeData(Profile* profile,
 
 base::DictValue BuildNavigationLoadTimeData(
     Profile* profile,
-    content::WebContents* web_contents,
     const std::vector<ModuleIdDetail>& module_id_details) {
   base::DictValue update;
   update.Set("modulesEnabled",
              HasModulesEnabled(module_id_details,
                                IdentityManagerFactory::GetForProfile(profile)));
-  update.Set("browserPromoType", GetNtpPromoType(profile, web_contents));
   return update;
 }
 

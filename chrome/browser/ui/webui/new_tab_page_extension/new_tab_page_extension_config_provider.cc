@@ -55,7 +55,7 @@ base::DictValue NewTabPageExtensionConfigProvider::GetLoadTimeData(
   dict.Set("modulesEnabled", false);
   dict.Set("microsoftModuleEnabled", false);
   dict.Set("enableThreadsRail", false);
-  dict.Set("browserPromoType", "disabled");
+  dict.Set("browserPromosEnabled", false);
   dict.Set("showCustomizeButton", false);
   dict.Set("wallpaperSearchButtonEnabled", false);
   dict.Set("backgroundColor", "var(--color-new-tab-page-background)");

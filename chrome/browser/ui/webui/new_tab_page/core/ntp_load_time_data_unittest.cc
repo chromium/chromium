@@ -8,10 +8,13 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/user_education/common/user_education_features.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "skia/ext/skia_utils_base.h"
@@ -89,18 +92,29 @@ TEST_F(NtpLoadTimeDataTest, BuildLoadTimeDataExcludesDynamicEntries) {
   EXPECT_NE(dict.FindString("undoDescription"), nullptr);
   // Navigation- and theme-dependent entries are built separately.
   EXPECT_EQ(dict.FindBool("modulesEnabled"), std::nullopt);
-  EXPECT_EQ(dict.FindString("browserPromoType"), nullptr);
   EXPECT_EQ(dict.FindString("backgroundColor"), nullptr);
   EXPECT_EQ(dict.FindString("backgroundImageUrl"), nullptr);
 }
 
+TEST_F(NtpLoadTimeDataTest, BrowserPromosEnabledByDefault) {
+  base::DictValue dict =
+      ntp::BuildLoadTimeData(profile(), /*session_allows_drag_and_drop=*/false);
+  EXPECT_EQ(dict.FindBool("browserPromosEnabled"), !BUILDFLAG(IS_ANDROID));
+}
+
+TEST_F(NtpLoadTimeDataTest, BrowserPromosDisabledWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      user_education::features::kEnableNtpBrowserPromos);
+  base::DictValue dict =
+      ntp::BuildLoadTimeData(profile(), /*session_allows_drag_and_drop=*/false);
+  EXPECT_EQ(dict.FindBool("browserPromosEnabled"), false);
+}
+
 TEST_F(NtpLoadTimeDataTest, BuildNavigationLoadTimeData) {
-  base::DictValue update = ntp::BuildNavigationLoadTimeData(
-      profile(), web_contents(), /*module_id_details=*/{});
+  base::DictValue update =
+      ntp::BuildNavigationLoadTimeData(profile(), /*module_id_details=*/{});
   EXPECT_EQ(update.FindBool("modulesEnabled"), false);
-  ASSERT_NE(update.FindString("browserPromoType"), nullptr);
-  // `web_contents()` is not in a browser tab, so promos are disabled.
-  EXPECT_EQ(*update.FindString("browserPromoType"), "disabled");
 }
 
 TEST_F(NtpLoadTimeDataTest, BuildCustomBackgroundImageLoadTimeData) {

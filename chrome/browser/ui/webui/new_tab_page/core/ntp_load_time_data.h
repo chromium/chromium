@@ -38,11 +38,9 @@ bool AreActionChipsEnabled(Profile* profile);
 base::DictValue BuildLoadTimeData(Profile* profile,
                                   bool session_allows_drag_and_drop);
 
-// Builds the per-navigation `loadTimeData` entries (`"modulesEnabled"` and
-// `"browserPromoType"`).
+// Builds the per-navigation `loadTimeData` entries (`"modulesEnabled"`).
 base::DictValue BuildNavigationLoadTimeData(
     Profile* profile,
-    content::WebContents* web_contents,
     const std::vector<ModuleIdDetail>& module_id_details);
 
 // Builds the `"backgroundColor"` `loadTimeData` entry for `web_contents`'s

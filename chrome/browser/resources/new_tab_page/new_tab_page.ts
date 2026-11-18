@@ -45,7 +45,7 @@ export type {ActionChip, PageRemote as ActionChipsPageRemote, TabInfo} from './a
 export {ActionChipsHandlerRemote, browserProxyFactory as actionChipsProxyFactory} from './action_chips.mojom-webui.js';
 export type {CalendarEvent, Attachment} from './calendar_data.mojom-webui.js';
 export type {Promo as NtpPromo, NtpPromoHandlerInterface} from './ntp_promo.mojom-webui.js';
-export {browserProxyFactory as ntpPromoProxyFactory} from './ntp_promo.mojom-webui.js';
+export {BrowserPromoType, browserProxyFactory as ntpPromoProxyFactory, ShowNtpPromosResult} from './ntp_promo.mojom-webui.js';
 export type {CustomizeChromePageRemote} from './customize_chrome.mojom-webui.js';
 export {CustomizeChromeSection} from './customize_chrome.mojom-webui.js';
 export type {CustomizeButtonsDocumentRemote} from './customize_buttons.mojom-webui.js';

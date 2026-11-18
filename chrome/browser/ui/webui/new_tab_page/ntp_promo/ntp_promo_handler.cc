@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/notimplemented.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom-forward.h"
@@ -22,14 +21,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-// Constants sent to the UI to ensure that the correct promo is shown and the
-// correct metrics are recorded. The distinction between empty and disabled is
-// that empty means that promos would have been shown, whereas disabled
-// indicates that no promo is allowed for the current page.
-constexpr std::string_view kSimpleBrowserPromo = "simple";
-constexpr std::string_view kEmptyBrowserPromo = "empty";
-constexpr std::string_view kDisabledBrowserPromo = "disabled";
 
 void CheckController(user_education::NtpPromoController* controller) {
   CHECK(controller)
@@ -61,30 +52,24 @@ NtpPromoHandler::NtpPromoHandler(
 
 NtpPromoHandler::~NtpPromoHandler() = default;
 
-// static
-std::string_view NtpPromoHandler::GetNtpPromoType(
-    Profile* profile,
-    content::WebContents* web_contents) {
-  auto* controller = UserEducationServiceFactory::GetForBrowserContext(profile)
-                         ->ntp_promo_controller();
-  if (!controller) {
-    return kDisabledBrowserPromo;
+void NtpPromoHandler::GetBrowserPromoType(
+    GetBrowserPromoTypeCallback callback) {
+  using ntp_promo::mojom::BrowserPromoType;
+  BrowserPromoType type = BrowserPromoType::kDisabled;
+  if (promo_controller_) {
+    if (const user_education::UserEducationContextPtr context = GetContext()) {
+      switch (user_education::features::GetNtpBrowserPromoType()) {
+        case user_education::features::NtpBrowserPromoType::kSimple:
+          type = promo_controller_->HasShowablePromo(context)
+                     ? BrowserPromoType::kSimple
+                     : BrowserPromoType::kEmpty;
+          break;
+        case user_education::features::NtpBrowserPromoType::kNone:
+          break;
+      }
+    }
   }
-  auto* user_education =
-      BrowserUserEducationInterface::MaybeGetForWebContentsInTab(web_contents);
-  if (!user_education) {
-    return kDisabledBrowserPromo;
-  }
-  auto context =
-      user_education->GetUserEducationContext(base::PassKey<NtpPromoHandler>());
-
-  switch (user_education::features::GetNtpBrowserPromoType()) {
-    case user_education::features::NtpBrowserPromoType::kSimple:
-      return controller->HasShowablePromo(context) ? kSimpleBrowserPromo
-                                                   : kEmptyBrowserPromo;
-    case user_education::features::NtpBrowserPromoType::kNone:
-      return kDisabledBrowserPromo;
-  }
+  std::move(callback).Run(type);
 }
 
 user_education::UserEducationContextPtr NtpPromoHandler::GetContext() const {

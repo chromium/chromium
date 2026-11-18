@@ -85,7 +85,6 @@ using user_education::features::NtpBrowserPromoType;
 using Eligibility = user_education::NtpPromoSpecification::Eligibility;
 
 inline constexpr char kTestPromoName[] = "test_promo";
-const InteractiveBrowserTestApi::DeepQuery kPathToNtp = {"ntp-app"};
 const InteractiveBrowserTestApi::DeepQuery kPathToPromo = {
     "ntp-app", "individual-promos", "#promos", "#promo"};
 const InteractiveBrowserTestApi::DeepQuery kPathToMenuButton = {
@@ -109,7 +108,6 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNtpElementId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBrowser2NtpElementId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTestPromoShownEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTestPromoClickedEvent);
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMetricsRecordedEvent);
 
 // Contains variables on which these tests may be parameterized. This approach
 // makes it easy to build sets of relevant tests, vs. the brute-force
@@ -240,19 +238,16 @@ class NtpPromoUiTest
       "UserEducation.NtpPromos.ShowResult";
 
   auto CheckShowMetrics(ShowNtpPromosResult expected_result) {
-    StateChange state_change;
-    state_change.type = StateChange::Type::kExistsAndConditionTrue;
-    state_change.where = kPathToNtp;
-    state_change.test_function =
-        "el => {"
-        "return el.getAttribute('modules-loaded-status_') !== '0' || "
-        "!el.querySelector('ntp-modules');"
-        "}";
-    state_change.event = kMetricsRecordedEvent;
     auto steps = Steps(
-        WaitForStateChange(kNtpElementId, std::move(state_change)), Do([]() {
-          metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-        }),
+        // The page records the metric once `NtpPromoHandler` responds.
+        PollUntil(
+            [this]() {
+              metrics::SubprocessMetricsProvider::
+                  MergeHistogramDeltasForTesting();
+              return !histogram_tester_.GetAllSamples(kShowResultHistogramName)
+                          .empty();
+            },
+            "Wait for the show result metric."),
         Do([this, expected_result]() {
           histogram_tester_.ExpectBucketCount(kShowResultHistogramName,
                                               expected_result, 1);

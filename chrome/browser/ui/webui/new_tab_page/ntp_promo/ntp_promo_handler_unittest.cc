@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -16,6 +18,7 @@
 #include "components/user_education/common/ntp_promo/ntp_promo_registry.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_specification.h"
 #include "components/user_education/common/user_education_context.h"
+#include "components/user_education/common/user_education_features.h"
 #include "components/user_education/test/mock_user_education_context.h"
 #include "components/user_education/test/test_user_education_storage_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -56,6 +59,9 @@ class MockController : public user_education::NtpPromoController {
   using user_education::NtpPromoController::NtpPromoController;
   ~MockController() override = default;
 
+  MOCK_METHOD(bool,
+              HasShowablePromo,
+              (const user_education::UserEducationContextPtr&));
   MOCK_METHOD(std::optional<user_education::NtpShowablePromo>,
               GenerateShowablePromo,
               (const user_education::UserEducationContextPtr&));
@@ -170,4 +176,53 @@ TEST_F(NtpPromoHandlerTest, RespondsToRequest) {
   run_loop.Run();
 
   VerifyShowablePromo(actual_promo);
+}
+
+TEST_F(NtpPromoHandlerTest, GetBrowserPromoTypeSimpleWhenPromoShowable) {
+  EXPECT_CALL(mock_controller(), HasShowablePromo(mock_context()))
+      .WillOnce(testing::Return(true));
+  base::test::TestFuture<ntp_promo::mojom::BrowserPromoType> future;
+  handler().GetBrowserPromoType(future.GetCallback());
+  EXPECT_EQ(ntp_promo::mojom::BrowserPromoType::kSimple, future.Get());
+}
+
+TEST_F(NtpPromoHandlerTest, GetBrowserPromoTypeEmptyWhenNoPromoShowable) {
+  EXPECT_CALL(mock_controller(), HasShowablePromo(mock_context()))
+      .WillOnce(testing::Return(false));
+  base::test::TestFuture<ntp_promo::mojom::BrowserPromoType> future;
+  handler().GetBrowserPromoType(future.GetCallback());
+  EXPECT_EQ(ntp_promo::mojom::BrowserPromoType::kEmpty, future.Get());
+}
+
+TEST_F(NtpPromoHandlerTest, GetBrowserPromoTypeDisabledWithoutContext) {
+  MockClient client;
+  TestNtpPromoHandler handler(
+      client.BindAndGetRemote(),
+      mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler>(),
+      /*ue_context=*/nullptr, &mock_controller());
+  EXPECT_CALL(mock_controller(), HasShowablePromo).Times(0);
+  base::test::TestFuture<ntp_promo::mojom::BrowserPromoType> future;
+  handler.GetBrowserPromoType(future.GetCallback());
+  EXPECT_EQ(ntp_promo::mojom::BrowserPromoType::kDisabled, future.Get());
+}
+
+TEST_F(NtpPromoHandlerTest, GetBrowserPromoTypeDisabledWithoutController) {
+  MockClient client;
+  TestNtpPromoHandler handler(
+      client.BindAndGetRemote(),
+      mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler>(),
+      mock_context(), /*promo_controller=*/nullptr);
+  base::test::TestFuture<ntp_promo::mojom::BrowserPromoType> future;
+  handler.GetBrowserPromoType(future.GetCallback());
+  EXPECT_EQ(ntp_promo::mojom::BrowserPromoType::kDisabled, future.Get());
+}
+
+TEST_F(NtpPromoHandlerTest, GetBrowserPromoTypeDisabledWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      user_education::features::kEnableNtpBrowserPromos);
+  EXPECT_CALL(mock_controller(), HasShowablePromo).Times(0);
+  base::test::TestFuture<ntp_promo::mojom::BrowserPromoType> future;
+  handler().GetBrowserPromoType(future.GetCallback());
+  EXPECT_EQ(ntp_promo::mojom::BrowserPromoType::kDisabled, future.Get());
 }

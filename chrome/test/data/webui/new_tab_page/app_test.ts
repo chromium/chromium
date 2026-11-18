@@ -9,7 +9,7 @@ import {ActionChipsHandlerRemote, actionChipsProxyFactory, IconType, InputSource
 import type {ActionChipsPageRemote, CustomizeButtonsDocumentRemote, FuseboxAction, TabInfo} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$, BackgroundManager, browserCommandProxyFactory, CONTEXTUAL_ENTRYPOINT_ELEMENT_ID, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsHandlerRemote, customizeButtonsProxyFactory, CustomizeChromeSection, CustomizeDialogPage, GlifAnimationState, newTabPageProxyFactory, NtpCustomizeChromeEntryPoint, NtpElement, SearchboxBrowserProxy, SidePanelOpenTrigger, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {AppElement, NtpSearchboxElement, PageRemote} from 'chrome://new-tab-page/new_tab_page.js';
-import {NtpBackgroundImageSource, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.js';
+import {BrowserPromoType, NtpBackgroundImageSource, ntpPromoProxyFactory, PageHandlerRemote, ShowNtpPromosResult} from 'chrome://new-tab-page/new_tab_page.js';
 import {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ContextUploadStatus, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
@@ -30,6 +30,7 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestNtpPromoHandler} from './ntp_promo/ntp_promo_test_common.js';
 import {assertCenterAligned, assertEffectiveBorderRadiiCloseTo, assertNotStyle, assertStyle, createBackgroundImage, createFuseboxAction, createTheme, getCenter, getEffectiveBorderRadii, getTextCenter, installMock, LAYOUT_TOLERANCE_PX, queryShadowPath} from './test_support.js';
 
 const VOICE_ACTIONS_METRIC = 'NewTabPage.VoiceActions';
@@ -66,6 +67,7 @@ suite('NewTabPageAppTest', () => {
   let backgroundManager: TestMock<BackgroundManager>;
   let moduleResolver: PromiseResolver<Module[]>;
   let searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
+  let ntpPromoHandler: TestNtpPromoHandler;
 
   const url: URL = new URL(location.href);
   const backgroundImageLoadTime: number = 123;
@@ -119,6 +121,9 @@ suite('NewTabPageAppTest', () => {
     moduleResolver = new PromiseResolver();
     moduleRegistry.setResultFor('initializeModules', moduleResolver.promise);
     metrics = fakeMetricsPrivate();
+    ntpPromoHandler = new TestNtpPromoHandler();
+    ntpPromoProxyFactory.setInstance(
+        ntpPromoProxyFactory.createForTest(ntpPromoHandler).instance);
 
     installMock(
         ComposeboxPageHandlerRemote,
@@ -186,6 +191,119 @@ suite('NewTabPageAppTest', () => {
   function getScrim(): HTMLElement|null {
     return app.shadowRoot.querySelector<HTMLElement>('#scrim');
   }
+
+  suite('BrowserPromos', () => {
+    const SHOW_RESULT_METRIC = 'UserEducation.NtpPromos.ShowResult';
+
+    let browserPromoTypeResolver: PromiseResolver<{type: BrowserPromoType}>;
+
+    async function createAppWithPromos(
+        {enabled = true, modulesEnabled = false}:
+            {enabled?: boolean, modulesEnabled?: boolean} = {}) {
+      loadTimeData.overrideValues(
+          {browserPromosEnabled: enabled, modulesEnabled});
+      ntpPromoHandler.reset();
+      browserPromoTypeResolver = new PromiseResolver();
+      ntpPromoHandler.browserPromoTypeResponse =
+          browserPromoTypeResolver.promise;
+      metrics = fakeMetricsPrivate();
+      await recreateApp();
+    }
+
+    async function respondWithPromoType(type: BrowserPromoType) {
+      browserPromoTypeResolver.resolve({type});
+      await microtasksFinished();
+    }
+
+    async function loadModules() {
+      const modules = $$(app, 'ntp-modules');
+      assertTrue(!!modules);
+      modules.dispatchEvent(new CustomEvent('modules-loaded', {detail: 0}));
+      await microtasksFinished();
+    }
+
+    function hasIndividualPromos(): boolean {
+      return !!app.shadowRoot.querySelector('individual-promos');
+    }
+
+    test('shows promos once the handler returns simple', async () => {
+      await createAppWithPromos();
+      assertEquals(1, ntpPromoHandler.getCallCount('getBrowserPromoType'));
+      assertFalse(hasIndividualPromos());
+      assertEquals(0, metrics.count(SHOW_RESULT_METRIC));
+
+      await respondWithPromoType(BrowserPromoType.kSimple);
+
+      assertTrue(hasIndividualPromos());
+      assertEquals(1, metrics.count(SHOW_RESULT_METRIC));
+      assertEquals(
+          1, metrics.count(SHOW_RESULT_METRIC, ShowNtpPromosResult.kShown));
+    });
+
+    test('records no promos when the handler returns empty', async () => {
+      await createAppWithPromos();
+      await respondWithPromoType(BrowserPromoType.kEmpty);
+
+      assertFalse(hasIndividualPromos());
+      assertEquals(1, metrics.count(SHOW_RESULT_METRIC));
+      assertEquals(
+          1,
+          metrics.count(
+              SHOW_RESULT_METRIC, ShowNtpPromosResult.kNotShownNoPromos));
+    });
+
+    test('records policy when the handler returns disabled', async () => {
+      await createAppWithPromos();
+      await respondWithPromoType(BrowserPromoType.kDisabled);
+
+      assertFalse(hasIndividualPromos());
+      assertEquals(1, metrics.count(SHOW_RESULT_METRIC));
+      assertEquals(
+          1,
+          metrics.count(
+              SHOW_RESULT_METRIC, ShowNtpPromosResult.kNotShownDueToPolicy));
+    });
+
+    test('does not ask the handler when promos are disabled', async () => {
+      await createAppWithPromos({enabled: false});
+
+      assertEquals(0, ntpPromoHandler.getCallCount('getBrowserPromoType'));
+      assertFalse(hasIndividualPromos());
+      assertEquals(1, metrics.count(SHOW_RESULT_METRIC));
+      assertEquals(
+          1,
+          metrics.count(
+              SHOW_RESULT_METRIC, ShowNtpPromosResult.kNotShownDueToPolicy));
+    });
+
+    test('waits for modules when the handler responds first', async () => {
+      await createAppWithPromos({modulesEnabled: true});
+      await respondWithPromoType(BrowserPromoType.kSimple);
+      assertFalse(hasIndividualPromos());
+      assertEquals(0, metrics.count(SHOW_RESULT_METRIC));
+
+      await loadModules();
+
+      assertTrue(hasIndividualPromos());
+      assertEquals(1, metrics.count(SHOW_RESULT_METRIC));
+      assertEquals(
+          1, metrics.count(SHOW_RESULT_METRIC, ShowNtpPromosResult.kShown));
+    });
+
+    test('waits for the handler when modules load first', async () => {
+      await createAppWithPromos({modulesEnabled: true});
+      await loadModules();
+      assertFalse(hasIndividualPromos());
+      assertEquals(0, metrics.count(SHOW_RESULT_METRIC));
+
+      await respondWithPromoType(BrowserPromoType.kSimple);
+
+      assertTrue(hasIndividualPromos());
+      assertEquals(1, metrics.count(SHOW_RESULT_METRIC));
+      assertEquals(
+          1, metrics.count(SHOW_RESULT_METRIC, ShowNtpPromosResult.kShown));
+    });
+  });
 
   suite('Misc', () => {
     suiteSetup(() => {

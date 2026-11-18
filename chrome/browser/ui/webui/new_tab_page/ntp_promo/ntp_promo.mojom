@@ -17,8 +17,21 @@ enum ShowNtpPromosResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:show_ntp_promos_result_enum)
 
+// The kind of browser promo the New Tab Page can show.
+enum BrowserPromoType {
+  // No promo is allowed for the page.
+  kDisabled,
+  // Promos are allowed, but none is currently showable.
+  kEmpty,
+  // A single promo can be shown.
+  kSimple,
+};
+
 // Browser-side handler for requests from WebUI page.
 interface NtpPromoHandler {
+  // Returns the kind of browser promo the New Tab Page in this tab can show.
+  GetBrowserPromoType() => (BrowserPromoType type);
+
   // Requests a set of promos be sent from the browser. The response is sent
   // asynchronously through a call to `SetPromos()`.
   RequestPromos();

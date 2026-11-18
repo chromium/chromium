@@ -152,7 +152,7 @@ import {SubmitButtonIconType} from 'chrome://resources/cr_components/composebox/
             </cr-button>
           </cr-toast>
         ` : ''}
-        ${ this.showBrowserPromo_ && this.browserPromoType_ === 'simple' ? html`
+        ${ this.showIndividualPromos_() ? html`
             <individual-promos></individual-promos>
         ` : '' }
       ${!this.isFooterVisible_ ? html`

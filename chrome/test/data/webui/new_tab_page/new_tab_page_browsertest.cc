@@ -338,6 +338,11 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, Theming) {
           "runMochaSuite('NewTabPageAppTest Theming')");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, BrowserPromos) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest BrowserPromos')");
+}
+
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, Promo) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest Promo')");

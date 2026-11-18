@@ -318,6 +318,7 @@ source_set("unit_tests") {
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/public:test_support",
     "//components/themes",
+    "//components/user_education/common",
     "//components/variations:test_support",
     "//content/test:test_support",
     "//services/network/public/cpp",
