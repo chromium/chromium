@@ -567,4 +567,7 @@ public class Features {
     // WebSettingsCompat.setWebGraphicsEnabled
     // WebSettingsCompat.getWebGraphicsEnabled
     public static final String WEB_GRAPHICS_ENABLED = "WEB_GRAPHICS_ENABLED";
+
+    // WebGPU.getWGPUProcGetProcAddress
+    public static final String WEBGPU = "WEBGPU";
 }

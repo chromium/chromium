@@ -21,6 +21,7 @@ import com.android.webview.chromium.SharedTracingControllerAdapter;
 import com.android.webview.chromium.WebViewChromiumAwInit;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
+import org.chromium.android_webview.AwDawnLoader;
 import org.chromium.android_webview.AwServiceWorkerController;
 import org.chromium.android_webview.AwTracingController;
 import org.chromium.android_webview.AwWebContent;
@@ -171,6 +172,7 @@ public class SupportLibWebViewChromiumFactory
                 Features.HEADER_INTERCEPTOR + Features.DEV_SUFFIX,
                 Features.GOOGLE_ACCOUNTS_CALLBACK,
                 Features.PROFILE_SELECTED_SITE_ISOLATION_V1,
+                Features.WEBGPU + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The one
                 // exception is when adding a new method to an interface that extends from
@@ -442,6 +444,7 @@ public class SupportLibWebViewChromiumFactory
         ApiCall.CAN_CONFIGURE_ISOLATED_SITES,
         ApiCall.SET_WEB_GRAPHICS_ENABLED,
         ApiCall.GET_WEB_GRAPHICS_ENABLED,
+        ApiCall.GET_WGPU_PROC_GET_PROC_ADDRESS,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -697,8 +700,9 @@ public class SupportLibWebViewChromiumFactory
         int CAN_CONFIGURE_ISOLATED_SITES = 243;
         int SET_WEB_GRAPHICS_ENABLED = 244;
         int GET_WEB_GRAPHICS_ENABLED = 245;
+        int GET_WGPU_PROC_GET_PROC_ADDRESS = 246;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 246;
+        int COUNT = 247;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)
@@ -1170,5 +1174,14 @@ public class SupportLibWebViewChromiumFactory
             // or convert the Proxy way to use BiConsumer similar to WebViewBuilder.
         }
         return profilesToLoad;
+    }
+
+    @Override
+    public long getWGPUProcGetProcAddress(int majorVersion, long minorVersion) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.GET_WGPU_PROC_GET_PROC_ADDRESS")) {
+            recordApiCall(ApiCall.GET_WGPU_PROC_GET_PROC_ADDRESS);
+            return AwDawnLoader.getWGPUProcGetProcAddress(majorVersion, minorVersion);
+        }
     }
 }

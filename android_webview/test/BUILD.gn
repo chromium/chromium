@@ -442,6 +442,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/AwCrashyClassUtilsTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwCrossOriginIsolatedAllowlistTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwDarkModeTest.java",
+    "../javatests/src/org/chromium/android_webview/test/AwDawnLoaderTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwDisplayCutoutTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwFileChooserTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwHeaderInterceptorStoreTest.java",
