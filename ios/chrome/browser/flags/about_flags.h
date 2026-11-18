@@ -11,7 +11,6 @@
 #include <stddef.h>
 
 #include <string>
-#include <vector>
 
 #include "base/values.h"
 #include "components/webui/flags/flags_state.h"
@@ -24,26 +23,11 @@ namespace flags_ui {
 class FlagsStorage;
 }
 
+// Returns the global `flags_ui::FlagsState` instance for iOS.
+flags_ui::FlagsState& GetGlobalFlagsState();
+
 // Adds all switches from experimental flags to `command_line`.
 void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line);
-
-// Reads the state from `flags_storage` and adds the command line flags
-// belonging to the active feature entries to `command_line` in addition
-// to the flags from experimental settings. Does nothing if `command_line` has
-// `--no-experiments`.
-void ConvertFlagsToSwitches(flags_ui::FlagsStorage* flags_storage,
-                            base::CommandLine* command_line);
-
-// Registers variations parameter values selected for features in about:flags.
-// The selected flags are retrieved from `flags_storage`, the registered
-// variation parameters are connected to their corresponding features in
-// `feature_list`. Returns the (possibly empty) list of additional variation ids
-// to register in the MetricsService that come from variations selected using
-// chrome://flags. Does nothing and returns an empty list if the process
-// command line has `--no-experiments`.
-std::vector<std::string> RegisterAllFeatureVariationParameters(
-    flags_ui::FlagsStorage* flags_storage,
-    base::FeatureList* feature_list);
 
 // Gets the list of feature entries. Entries that are available for the current
 // platform are appended to `supported_entries`; all other entries are appended

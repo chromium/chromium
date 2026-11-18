@@ -11,6 +11,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/raw_ref.h"
 #import "components/memory_system/memory_system.h"
+#import "components/variations/feature_list_creator/feature_list_creator_client.h"
 #import "ios/chrome/browser/flags/ios_chrome_field_trials.h"
 #import "ios/web/public/init/web_main_parts.h"
 
@@ -22,7 +23,8 @@ class ApplicationContextImpl;
 class PrefService;
 class IOSThreadProfiler;
 
-class IOSChromeMainParts : public web::WebMainParts {
+class IOSChromeMainParts : public web::WebMainParts,
+                           public variations::FeatureListCreatorClient {
  public:
   explicit IOSChromeMainParts(const base::CommandLine& parsed_command_line);
 
@@ -44,9 +46,13 @@ class IOSChromeMainParts : public web::WebMainParts {
   void PostMainMessageLoopRun() override;
   void PostDestroyThreads() override;
 
-  // Sets up the field trials and related initialization. Call only after
-  // about:flags have been converted to switches.
-  void SetUpFieldTrials();
+  // variations::FeatureListCreatorClient:
+  flags_ui::FlagsState& GetFlagsState() override;
+  std::unique_ptr<flags_ui::FlagsStorage> CreateFlagsStorage() override;
+  metrics_services_manager::MetricsServicesManager&
+  GetOrCreateMetricsServicesManager() override;
+  void WillSetUpFieldTrials(base::FeatureList& feature_list) override;
+  variations::PlatformFieldTrials& GetPlatformFieldTrials() override;
 
   // Constructs the metrics service and initializes metrics recording.
   void SetupMetrics();

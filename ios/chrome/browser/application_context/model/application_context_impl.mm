@@ -26,8 +26,6 @@
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
-#import "base/time/default_clock.h"
-#import "base/time/default_tick_clock.h"
 #import "build/blink_buildflags.h"
 #import "components/activity_reporter/activity_reporter.h"
 #import "components/application_locale_storage/application_locale_storage.h"
@@ -427,13 +425,8 @@ network_time::NetworkTimeTracker*
 ApplicationContextImpl::GetNetworkTimeTrackerMaybeUninitialized() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!network_time_tracker_) {
-    network_time_tracker_ = std::make_unique<network_time::NetworkTimeTracker>(
-        std::make_unique<base::DefaultClock>(),
-        std::make_unique<base::DefaultTickClock>(),
-        /*pref_service=*/nullptr,
-        /*url_loader_factory=*/nullptr,
-        /*fetch_behavior=*/std::nullopt);
-    CHECK(!network_time_tracker_->is_initialized());
+    network_time_tracker_ =
+        network_time::NetworkTimeTracker::CreateUninitialized();
   }
   return network_time_tracker_.get();
 }

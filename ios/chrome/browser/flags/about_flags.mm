@@ -3165,11 +3165,6 @@ bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;
 }
 
-flags_ui::FlagsState& GetGlobalFlagsState() {
-  static base::NoDestructor<flags_ui::FlagsState> flags_state(kFeatureEntries,
-                                                              nullptr);
-  return *flags_state;
-}
 // Creates the experimental test policies map, used by AsyncPolicyLoader and
 // PolicyLoaderIOS to locally enable policies.
 NSMutableDictionary* CreateExperimentalTestingPolicies() {
@@ -3398,6 +3393,12 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
 
 }  // namespace
 
+flags_ui::FlagsState& GetGlobalFlagsState() {
+  static base::NoDestructor<flags_ui::FlagsState> flags_state(kFeatureEntries,
+                                                              nullptr);
+  return *flags_state;
+}
+
 // Add all switches from experimental flags to `command_line`.
 void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
@@ -3481,29 +3482,6 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
   }
 
   ios::provider::AppendSwitchesFromExperimentalSettings(defaults, command_line);
-}
-
-void ConvertFlagsToSwitches(flags_ui::FlagsStorage* flags_storage,
-                            base::CommandLine* command_line) {
-  if (command_line->HasSwitch(switches::kNoExperiments)) {
-    return;
-  }
-
-  GetGlobalFlagsState().ConvertFlagsToSwitches(
-      flags_storage, command_line, flags_ui::kAddSentinels,
-      switches::kEnableFeatures, switches::kDisableFeatures);
-}
-
-std::vector<std::string> RegisterAllFeatureVariationParameters(
-    flags_ui::FlagsStorage* flags_storage,
-    base::FeatureList* feature_list) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kNoExperiments)) {
-    return {};
-  }
-
-  return GetGlobalFlagsState().RegisterAllFeatureVariationParameters(
-      flags_storage, feature_list);
 }
 
 void GetFlagFeatureEntries(flags_ui::FlagsStorage* flags_storage,

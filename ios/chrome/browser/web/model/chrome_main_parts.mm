@@ -6,9 +6,11 @@
 
 #import <Foundation/Foundation.h>
 
+#import <memory>
 #import <string>
 
 #import "base/allocator/partition_alloc_support.h"
+#import "base/check_deref.h"
 #import "base/check_op.h"
 #import "base/debug/asan_service.h"
 #import "base/feature_list.h"
@@ -29,7 +31,6 @@
 #import "build/blink_buildflags.h"
 #import "components/content_settings/core/common/content_settings_pattern.h"
 #import "components/crash/core/common/crash_key.h"
-#import "components/crash/core/common/crash_keys.h"
 #import "components/crash/core/common/reporter_running_ios.h"
 #import "components/memory_system/initializer.h"
 #import "components/memory_system/parameters.h"
@@ -41,19 +42,17 @@
 #import "components/metrics_services_manager/metrics_services_manager.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
-#import "components/prefs/json_pref_store.h"
 #import "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/sampling_profiler/process_type.h"
 #import "components/signin/public/identity_manager/tribool.h"
-#import "components/variations/field_trial_config/field_trial_util.h"
-#import "components/variations/service/variations_network_clock.h"
+#import "components/variations/feature_list_creator/feature_list_creator.h"
 #import "components/variations/service/variations_service.h"
+#import "components/variations/service/variations_service_utils.h"
 #import "components/variations/synthetic_trial_registry.h"
 #import "components/variations/synthetic_trials.h"
 #import "components/variations/synthetic_trials_active_group_id_provider.h"
 #import "components/variations/variations_ids_provider.h"
-#import "components/variations/variations_switches.h"
 #import "components/webui/flags/pref_service_flags_storage.h"
 #import "ios/chrome/browser/application_context/model/application_context_impl.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
@@ -178,20 +177,23 @@ void IOSChromeMainParts::ApplyFeatureList() {
   local_state_ = application_context_->GetLocalState();
   DCHECK(local_state_);
 
-  flags_ui::PrefServiceFlagsStorage flags_storage(
-      application_context_->GetLocalState());
-  ConvertFlagsToSwitches(&flags_storage, command_line);
-  // Record command line switches and features in crash keys after flags are
-  // converted to switches, before field trials are initialized.
-  crash_keys::SetFeaturesFromCommandLine(*command_line);
-  crash_keys::SetSwitchesFromCommandLine(*command_line,
-                                         &crash_keys::IsDefaultBoringSwitch);
+  base::SetRecordActionTaskRunner(web::GetUIThreadTaskRunner({}));
 
-  // Now that the command line has been mutated based on about:flags, we can
-  // initialize field trials. The field trials are needed by IOThread's
-  // initialization which happens in BrowserProcess:PreCreateThreads. Metrics
-  // initialization is handled in PreMainMessageLoopRun since it posts tasks.
-  SetUpFieldTrials();
+  // This will occur inside //content for blink.
+#if !BUILDFLAG(USE_BLINK)
+  // FeatureList requires VariationsIdsProvider to be created.
+  variations::CreateVariationsIdsProvider(
+      variations::VariationsIdsProvider::Mode::kUseSignedInState,
+      application_context_->GetNetworkTimeTrackerMaybeUninitialized());
+#endif
+
+  // Convert `about:flags` to switches and initialize field trials. The field
+  // trials are needed by IOThread's initialization which happens in
+  // BrowserProcess:PreCreateThreads. Metrics initialization is handled in
+  // PreMainMessageLoopRun since it posts tasks.
+  variations::CreateFeatureList(*this);
+  application_context_->GetAdditionalFeaturesController()
+      ->FeatureListDidCompleteSetup();
 
   // Initialize //base features that depend on the `FeatureList`.
   base::features::Init();
@@ -392,41 +394,31 @@ void IOSChromeMainParts::PostDestroyThreads() {
   application_context_->PostDestroyThreads();
 }
 
-// This will be called after the command-line has been mutated by about:flags
-void IOSChromeMainParts::SetUpFieldTrials() {
-  base::SetRecordActionTaskRunner(web::GetUIThreadTaskRunner({}));
+flags_ui::FlagsState& IOSChromeMainParts::GetFlagsState() {
+  return ::GetGlobalFlagsState();
+}
 
-// This will occur inside //content for blink.
-#if !BUILDFLAG(USE_BLINK)
-  // FeatureList requires VariationsIdsProvider to be created.
-  variations::VariationsIdsProvider::CreateInstance(
-      variations::VariationsIdsProvider::Mode::kUseSignedInState,
-      std::make_unique<variations::VariationsNetworkClock>(
-          application_context_->GetNetworkTimeTrackerMaybeUninitialized()));
-#endif
-
-  // Initialize FieldTrialList to support FieldTrials that use one-time
-  // randomization.
-  application_context_->GetMetricsServicesManager()
-      ->InstantiateFieldTrialList();
-
-  std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-
-  // Associate parameters chosen in about:flags and create trial/group for them.
-  flags_ui::PrefServiceFlagsStorage flags_storage(
+std::unique_ptr<flags_ui::FlagsStorage>
+IOSChromeMainParts::CreateFlagsStorage() {
+  return std::make_unique<flags_ui::PrefServiceFlagsStorage>(
       application_context_->GetLocalState());
-  std::vector<std::string> variation_ids =
-      RegisterAllFeatureVariationParameters(&flags_storage, feature_list.get());
+}
 
-  // Register additional features to the feature list.
-  AdditionalFeaturesController* additional_features_controller =
-      application_context_->GetAdditionalFeaturesController();
-  additional_features_controller->RegisterFeatureList(feature_list.get());
+metrics_services_manager::MetricsServicesManager&
+IOSChromeMainParts::GetOrCreateMetricsServicesManager() {
+  // The first call to `GetMetricsServicesManager()` creates the
+  // `MetricsServicesManager`.
+  return CHECK_DEREF(application_context_->GetMetricsServicesManager());
+}
 
-  application_context_->GetVariationsService()->SetUpFieldTrials(
-      variation_ids, std::vector<base::FeatureList::FeatureOverrideInfo>(),
-      std::move(feature_list), &ios_field_trials_);
-  additional_features_controller->FeatureListDidCompleteSetup();
+void IOSChromeMainParts::WillSetUpFieldTrials(base::FeatureList& feature_list) {
+  // Register additional features on `feature_list`.
+  application_context_->GetAdditionalFeaturesController()->RegisterFeatureList(
+      &feature_list);
+}
+
+variations::PlatformFieldTrials& IOSChromeMainParts::GetPlatformFieldTrials() {
+  return ios_field_trials_;
 }
 
 void IOSChromeMainParts::SetupMetrics() {
